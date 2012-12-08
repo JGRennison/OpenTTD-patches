@@ -102,7 +102,7 @@ static void Ptrs_CAPY()
 
 extern const ChunkHandler _economy_chunk_handlers[] = {
 	{ 'CAPY', Save_CAPY,     Load_CAPY,     Ptrs_CAPY, NULL, CH_ARRAY},
-	{ 'PRIC', NULL,          Load_PRIC,     NULL,      NULL, CH_RIFF | CH_AUTO_LENGTH},
-	{ 'CAPR', NULL,          Load_CAPR,     NULL,      NULL, CH_RIFF | CH_AUTO_LENGTH},
+	{ 'PRIC', NULL,          Load_PRIC,     NULL,      NULL, CH_RIFF },
+	{ 'CAPR', NULL,          Load_CAPR,     NULL,      NULL, CH_RIFF },
 	{ 'ECMY', Save_ECMY,     Load_ECMY,     NULL,      NULL, CH_RIFF | CH_LAST},
 };
