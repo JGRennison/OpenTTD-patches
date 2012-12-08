@@ -102,7 +102,6 @@ enum ChunkType {
 	CH_TYPE_MASK    =  3,
 	CH_EXT_HDR      = 15, ///< Extended chunk header
 	CH_LAST         =  8, ///< Last chunk in this array.
-	CH_AUTO_LENGTH  = 16,
 };
 
 /** Flags for chunk extended headers */
