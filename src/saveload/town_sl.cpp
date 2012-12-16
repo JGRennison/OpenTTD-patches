@@ -267,8 +267,6 @@ static void RealSave_Town(Town *t)
 		}
 	}
 
-	if (IsSavegameVersionBefore(166)) return;
-
 	SlObject(&t->cargo_accepted, GetTileMatrixDesc());
 	if (t->cargo_accepted.area.w != 0) {
 		uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
