@@ -1266,11 +1266,11 @@ static bool CheckFreeformEdges(int32 p1)
 		/* Make tiles at the border water again. */
 		for (uint i = 0; i < MapMaxX(); i++) {
 			SetTileHeight(TileXY(i, 0), 0);
-			SetTileType(TileXY(i, 0), MP_WATER);
+			MakeSea(TileXY(i, 0));
 		}
 		for (uint i = 0; i < MapMaxY(); i++) {
 			SetTileHeight(TileXY(0, i), 0);
-			SetTileType(TileXY(0, i), MP_WATER);
+			MakeSea(TileXY(0, i));
 		}
 	}
 	MarkWholeScreenDirty();
