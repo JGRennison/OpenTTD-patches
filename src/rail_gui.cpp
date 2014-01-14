@@ -34,6 +34,7 @@
 #include "vehicle_func.h"
 #include "zoom_func.h"
 #include "rail_gui.h"
+#include "programmable_signals.h"
 
 #include "station_map.h"
 #include "tunnelbridge_map.h"
@@ -49,8 +50,10 @@ static DiagDirection _build_depot_direction; ///< Currently selected depot direc
 static byte _waypoint_count = 1;             ///< Number of waypoint types
 static byte _cur_waypoint_type;              ///< Currently selected waypoint type
 static bool _convert_signal_button;          ///< convert signal button in the signal GUI pressed
+static bool _program_signal_button;          ///< program signal button in the signal GUI pressed
 static SignalVariant _cur_signal_variant;    ///< set the signal variant (for signal GUI)
 static SignalType _cur_signal_type;          ///< set the signal type (for signal GUI)
+static uint _cur_signal_button;              ///< set the signal button (for signal GUI)
 
 /* Map the setting: default_signal_type to the corresponding signal type */
 static const SignalType _default_signal_type[] = {SIGTYPE_NORMAL, SIGTYPE_PBS, SIGTYPE_PBS_ONEWAY};
@@ -224,34 +227,44 @@ static void GenericPlaceSignals(TileIndex tile)
 
 	if (_remove_button_clicked) {
 		DoCommandP(tile, track, 0, CMD_REMOVE_SIGNALS | CMD_MSG(STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM), CcPlaySound1E);
-	} else {
-		const Window *w = FindWindowById(WC_BUILD_SIGNAL, 0);
+		return;
+	}
 
-		/* Map the setting cycle_signal_types to the lower and upper allowed signal type. */
-		static const uint cycle_bounds[] = {SIGTYPE_NORMAL | (SIGTYPE_LAST_NOPBS << 3), SIGTYPE_PBS | (SIGTYPE_LAST << 3), SIGTYPE_NORMAL | (SIGTYPE_LAST << 3)};
-
-		/* various bitstuffed elements for CmdBuildSingleSignal() */
-		uint32 p1 = track;
-
-		if (w != NULL) {
-			/* signal GUI is used */
-			SB(p1, 3, 1, _ctrl_pressed);
-			SB(p1, 4, 1, _cur_signal_variant);
-			SB(p1, 5, 3, _cur_signal_type);
-			SB(p1, 8, 1, _convert_signal_button);
-			SB(p1, 9, 6, cycle_bounds[_settings_client.gui.cycle_signal_types]);
-		} else {
-			SB(p1, 3, 1, _ctrl_pressed);
-			SB(p1, 4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
-			SB(p1, 5, 3, _default_signal_type[_settings_client.gui.default_signal_type]);
-			SB(p1, 8, 1, 0);
-			SB(p1, 9, 6, cycle_bounds[_settings_client.gui.cycle_signal_types]);
+	if (_program_signal_button) {
+		if (IsPlainRailTile(tile) && HasTrack(tile, track) && HasSignalOnTrack(tile,track) && IsPresignalProgrammable(tile, track)) {
+			// Show program gui if there is a programmable signal
+			ShowSignalProgramWindow(SignalReference(tile, track));
+			return;
 		}
 
-		DoCommandP(tile, p1, 0, CMD_BUILD_SIGNALS |
-				CMD_MSG((w != NULL && _convert_signal_button) ? STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE : STR_ERROR_CAN_T_BUILD_SIGNALS_HERE),
-				CcPlaySound1E);
+		// Don't display error here even though program-button is pressed and there is no programmable signal,
+		// instead just handle it normally. That way player can keep the program-button pressed all the time
+		// to build slightly faster.
 	}
+
+	const Window *w = FindWindowById(WC_BUILD_SIGNAL, 0);
+
+	/* various bitstuffed elements for CmdBuildSingleSignal() */
+	uint32 p1 = track;
+
+	if (w != NULL) {
+		/* signal GUI is used */
+		SB(p1, 3, 1, _ctrl_pressed);
+		SB(p1, 4, 1, _cur_signal_variant);
+		SB(p1, 5, 3, _cur_signal_type);
+		SB(p1, 8, 1, _convert_signal_button);
+		SB(p1, 9, 6, _settings_client.gui.cycle_signal_types);
+	} else {
+		SB(p1, 3, 1, _ctrl_pressed);
+		SB(p1, 4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
+		SB(p1, 5, 3, _default_signal_type[_settings_client.gui.default_signal_type]);
+		SB(p1, 8, 1, 0);
+		SB(p1, 9, 6, _settings_client.gui.cycle_signal_types);
+	}
+
+	DoCommandP(tile, p1, 0, CMD_BUILD_SIGNALS |
+			CMD_MSG((w != NULL && _convert_signal_button) ? STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE : STR_ERROR_CAN_T_BUILD_SIGNALS_HERE),
+			CcPlaySound1E);
 }
 
 /**
@@ -1564,11 +1577,27 @@ public:
 	{
 		if (IsInsideMM(widget, WID_BS_SEMAPHORE_NORM, WID_BS_ELECTRIC_PBS_OWAY + 1)) {
 			/* Extract signal from widget number. */
-			int type = (widget - WID_BS_SEMAPHORE_NORM) % SIGTYPE_END;
+			SignalType type = TypeForClick((widget - WID_BS_SEMAPHORE_NORM) % SIGTYPE_END);
 			int var = SIG_SEMAPHORE - (widget - WID_BS_SEMAPHORE_NORM) / SIGTYPE_END; // SignalVariant order is reversed compared to the widgets.
 			SpriteID sprite = GetRailTypeInfo(_cur_railtype)->gui_sprites.signals[type][var][this->IsWidgetLowered(widget)];
 
 			this->DrawSignalSprite(widget, sprite);
+		}
+	}
+
+	inline SignalType TypeForClick(uint id) const
+	{
+		switch(id) {
+			case 0: return SIGTYPE_NORMAL;
+			case 1: return SIGTYPE_ENTRY;
+			case 2: return SIGTYPE_EXIT;
+			case 3: return SIGTYPE_COMBO;
+			case 4: return SIGTYPE_PROG;
+			case 5: return SIGTYPE_PBS;
+			case 6: return SIGTYPE_PBS_ONEWAY;
+			default:
+				assert(!"Bad signal type button ID");
+				return SIGTYPE_NORMAL;
 		}
 	}
 
@@ -1579,17 +1608,20 @@ public:
 			case WID_BS_SEMAPHORE_ENTRY:
 			case WID_BS_SEMAPHORE_EXIT:
 			case WID_BS_SEMAPHORE_COMBO:
+			case WID_BS_SEMAPHORE_PROG:
 			case WID_BS_SEMAPHORE_PBS:
 			case WID_BS_SEMAPHORE_PBS_OWAY:
 			case WID_BS_ELECTRIC_NORM:
 			case WID_BS_ELECTRIC_ENTRY:
 			case WID_BS_ELECTRIC_EXIT:
 			case WID_BS_ELECTRIC_COMBO:
+			case WID_BS_ELECTRIC_PROG:
 			case WID_BS_ELECTRIC_PBS:
 			case WID_BS_ELECTRIC_PBS_OWAY:
-				this->RaiseWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_type);
+				this->RaiseWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_button);
 
-				_cur_signal_type = (SignalType)((uint)((widget - WID_BS_SEMAPHORE_NORM) % (SIGTYPE_LAST + 1)));
+				_cur_signal_button = (uint)((widget - WID_BS_SEMAPHORE_NORM) % (SIGTYPE_END));
+				_cur_signal_type = TypeForClick(_cur_signal_button);
 				_cur_signal_variant = widget >= WID_BS_ELECTRIC_NORM ? SIG_ELECTRIC : SIG_SEMAPHORE;
 
 				/* If 'remove' button of rail build toolbar is active, disable it. */
@@ -1597,11 +1629,18 @@ public:
 					Window *w = FindWindowById(WC_BUILD_TOOLBAR, TRANSPORT_RAIL);
 					if (w != NULL) ToggleRailButton_Remove(w);
 				}
-
 				break;
 
 			case WID_BS_CONVERT:
 				_convert_signal_button = !_convert_signal_button;
+				if(_convert_signal_button)
+					_program_signal_button = false;
+				break;
+
+			case WID_BS_PROGRAM:
+				_program_signal_button = !_program_signal_button;
+				if(_program_signal_button)
+					_convert_signal_button = false;
 				break;
 
 			case WID_BS_DRAG_SIGNALS_DENSITY_DECREASE:
@@ -1632,9 +1671,10 @@ public:
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
 	{
 		if (!gui_scope) return;
-		this->LowerWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_type);
+		this->LowerWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_button);
 
 		this->SetWidgetLoweredState(WID_BS_CONVERT, _convert_signal_button);
+		this->SetWidgetLoweredState(WID_BS_PROGRAM, _program_signal_button);
 
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_DECREASE, _settings_client.gui.drag_signals_density == 1);
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, _settings_client.gui.drag_signals_density == 20);
@@ -1653,15 +1693,18 @@ static const NWidgetPart _nested_signal_builder_widgets[] = {
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_ENTRY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_EXIT), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_COMBO), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP), EndContainer(), SetFill(1, 1),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PROG), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PBS), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PBS_OWAY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_CONVERT), SetDataTip(SPR_IMG_SIGNAL_CONVERT, STR_BUILD_SIGNAL_CONVERT_TOOLTIP), SetFill(1, 1),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN), EndContainer(), SetFill(1, 1),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_NORM), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_ENTRY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_EXIT), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_COMBO), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP), EndContainer(), SetFill(1, 1),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PROG), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PBS), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PBS_OWAY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP), SetFill(1, 1),
@@ -1674,6 +1717,7 @@ static const NWidgetPart _nested_signal_builder_widgets[] = {
 				EndContainer(),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 2), SetFill(1, 0),
 			EndContainer(),
+			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_PROGRAM), SetDataTip(SPR_IMG_SETTINGS, STR_PROGRAM_SIGNAL_TOOLTIP), SetFill(1, 1),
 		EndContainer(),
 	EndContainer(),
 };
@@ -1957,7 +2001,7 @@ bool ResetSignalVariant(int32 p)
 		Window *w = FindWindowById(WC_BUILD_SIGNAL, 0);
 		if (w != NULL) {
 			w->SetDirty();
-			w->RaiseWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_type);
+			w->RaiseWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_button);
 		}
 		_cur_signal_variant = new_variant;
 	}
@@ -1974,7 +2018,12 @@ void InitializeRailGUI()
 	SetDefaultRailGui();
 
 	_convert_signal_button = false;
-	_cur_signal_type = _default_signal_type[_settings_client.gui.default_signal_type];
+	_program_signal_button = false;
+	_cur_signal_type   = _default_signal_type[_settings_client.gui.default_signal_type];
+	_cur_signal_button =
+		_cur_signal_type == SIGTYPE_PROG ? 4 :
+		_cur_signal_type == SIGTYPE_PBS ? 5 :
+		_cur_signal_type == SIGTYPE_PBS_ONEWAY ? 6 : _cur_signal_type;
 	ResetSignalVariant();
 }
 

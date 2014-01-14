@@ -63,6 +63,7 @@
 #include "subsidy_func.h"
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
+#include "programmable_signals.h"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -303,6 +304,9 @@ static void ShutdownGame()
 
 	LinkGraphSchedule::Clear();
 	PoolBase::Clean(PT_ALL);
+
+	FreeSignalPrograms();
+	FreeSignalDependencies();
 
 	/* No NewGRFs were loaded when it was still bootstrapping. */
 	if (_game_mode != GM_BOOTSTRAP) ResetNewGRFData();

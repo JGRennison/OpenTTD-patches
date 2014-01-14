@@ -329,6 +329,10 @@ enum Commands {
 
 	CMD_OPEN_CLOSE_AIRPORT,           ///< open/close an airport to incoming aircraft
 
+	CMD_INSERT_SIGNAL_INSTRUCTION,    ///< insert a signal instruction
+	CMD_MODIFY_SIGNAL_INSTRUCTION,    ///< modifies a signal instruction
+	CMD_REMOVE_SIGNAL_INSTRUCTION,    ///< removes a signal instruction
+
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
 

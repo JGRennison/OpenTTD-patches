@@ -327,6 +327,12 @@
     <ClCompile Include="..\src\signal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\programmable_signals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\programmable_signals_gui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\signs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -973,6 +979,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\signal_type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\programmable_signals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\signs_base.h">
@@ -1834,6 +1843,9 @@
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\saveload\waypoint_sl.cpp">
+      <Filter>Save/Load handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\saveload\signal_sl.cpp">
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
     <ClInclude Include="..\src\table\airport_defaults.h">

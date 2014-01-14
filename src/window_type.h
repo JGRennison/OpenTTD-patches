@@ -681,6 +681,11 @@ enum WindowClass {
 	 */
 	WC_SAVE_PRESET,
 
+	/**
+	 * Programmable signals window
+	 */
+	WC_SIGNAL_PROGRAM,
+
 	WC_INVALID = 0xFFFF, ///< Invalid window.
 };
 

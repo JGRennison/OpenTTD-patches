@@ -285,12 +285,6 @@ static inline TrackBits GetDepotReservationTrackBits(TileIndex t)
 	return HasDepotReservation(t) ? TrackToTrackBits(GetRailDepotTrack(t)) : TRACK_BIT_NONE;
 }
 
-
-static inline bool IsPbsSignal(SignalType s)
-{
-	return s == SIGTYPE_PBS || s == SIGTYPE_PBS_ONEWAY;
-}
-
 static inline SignalType GetSignalType(TileIndex t, Track track)
 {
 	assert(GetRailTileType(t) == RAIL_TILE_SIGNALS);
@@ -308,12 +302,22 @@ static inline void SetSignalType(TileIndex t, Track track, SignalType s)
 
 static inline bool IsPresignalEntry(TileIndex t, Track track)
 {
-	return GetSignalType(t, track) == SIGTYPE_ENTRY || GetSignalType(t, track) == SIGTYPE_COMBO;
+	return IsEntrySignal(GetSignalType(t, track));
 }
 
 static inline bool IsPresignalExit(TileIndex t, Track track)
 {
-	return GetSignalType(t, track) == SIGTYPE_EXIT || GetSignalType(t, track) == SIGTYPE_COMBO;
+	return IsExitSignal(GetSignalType(t, track));
+}
+
+static inline bool IsPresignalCombo(TileIndex t, Track track)
+{
+	return IsComboSignal(GetSignalType(t, track));
+}
+
+static inline bool IsPresignalProgrammable(TileIndex t, Track track)
+{
+	return IsProgrammableSignal(GetSignalType(t, track));
 }
 
 /** One-way signals can't be passed the 'wrong' way. */
