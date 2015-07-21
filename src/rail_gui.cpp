@@ -34,6 +34,7 @@
 #include "vehicle_func.h"
 #include "zoom_func.h"
 #include "rail_gui.h"
+#include "tracerestrict.h"
 
 #include "station_map.h"
 #include "tunnelbridge_map.h"
@@ -49,6 +50,7 @@ static DiagDirection _build_depot_direction; ///< Currently selected depot direc
 static byte _waypoint_count = 1;             ///< Number of waypoint types
 static byte _cur_waypoint_type;              ///< Currently selected waypoint type
 static bool _convert_signal_button;          ///< convert signal button in the signal GUI pressed
+static bool _trace_restrict_button;          ///< trace restrict button in the signal GUI pressed
 static SignalVariant _cur_signal_variant;    ///< set the signal variant (for signal GUI)
 static SignalType _cur_signal_type;          ///< set the signal type (for signal GUI)
 
@@ -224,6 +226,10 @@ static void GenericPlaceSignals(TileIndex tile)
 
 	if (_remove_button_clicked) {
 		DoCommandP(tile, track, 0, CMD_REMOVE_SIGNALS | CMD_MSG(STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM), CcPlaySound1E);
+	} else if (_trace_restrict_button) {
+		if (IsPlainRailTile(tile) && HasTrack(tile, track) && HasSignalOnTrack(tile, track)) {
+			ShowTraceRestrictProgramWindow(tile, track);
+		}
 	} else {
 		const Window *w = FindWindowById(WC_BUILD_SIGNAL, 0);
 
@@ -1518,6 +1524,7 @@ public:
 	~BuildSignalWindow()
 	{
 		_convert_signal_button = false;
+		_trace_restrict_button = false;
 	}
 
 	virtual void OnInit()
@@ -1602,6 +1609,12 @@ public:
 
 			case WID_BS_CONVERT:
 				_convert_signal_button = !_convert_signal_button;
+				if (_convert_signal_button) _trace_restrict_button = false;
+				break;
+
+			case WID_BS_TRACE_RESTRICT:
+				_trace_restrict_button = !_trace_restrict_button;
+				if (_trace_restrict_button) _convert_signal_button = false;
 				break;
 
 			case WID_BS_DRAG_SIGNALS_DENSITY_DECREASE:
@@ -1635,6 +1648,7 @@ public:
 		this->LowerWidget((_cur_signal_variant == SIG_ELECTRIC ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + _cur_signal_type);
 
 		this->SetWidgetLoweredState(WID_BS_CONVERT, _convert_signal_button);
+		this->SetWidgetLoweredState(WID_BS_TRACE_RESTRICT, _trace_restrict_button);
 
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_DECREASE, _settings_client.gui.drag_signals_density == 1);
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, _settings_client.gui.drag_signals_density == 20);
@@ -1656,6 +1670,7 @@ static const NWidgetPart _nested_signal_builder_widgets[] = {
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PBS), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PBS_OWAY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP), EndContainer(), SetFill(1, 1),
 			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_CONVERT), SetDataTip(SPR_IMG_SIGNAL_CONVERT, STR_BUILD_SIGNAL_CONVERT_TOOLTIP), SetFill(1, 1),
+			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_TRACE_RESTRICT), SetDataTip(SPR_IMG_SETTINGS, STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP), SetFill(1, 1),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_NORM), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP), EndContainer(), SetFill(1, 1),
@@ -1674,6 +1689,7 @@ static const NWidgetPart _nested_signal_builder_widgets[] = {
 				EndContainer(),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 2), SetFill(1, 0),
 			EndContainer(),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN), EndContainer(), SetFill(1, 1),
 		EndContainer(),
 	EndContainer(),
 };
@@ -1974,6 +1990,7 @@ void InitializeRailGUI()
 	SetDefaultRailGui();
 
 	_convert_signal_button = false;
+	_trace_restrict_button = false;
 	_cur_signal_type = _default_signal_type[_settings_client.gui.default_signal_type];
 	ResetSignalVariant();
 }

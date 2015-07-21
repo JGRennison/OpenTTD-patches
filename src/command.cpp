@@ -198,6 +198,8 @@ CommandProc CmdSetTimetableStart;
 
 CommandProc CmdOpenCloseAirport;
 
+CommandProc CmdProgramSignalTraceRestrict;
+
 #define DEF_CMD(proc, flags, type) {proc, #proc, (CommandFlags)flags, type}
 
 /**
@@ -354,6 +356,8 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdSetTimetableStart,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_TIMETABLE_START
 
 	DEF_CMD(CmdOpenCloseAirport,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_OPEN_CLOSE_AIRPORT
+
+	DEF_CMD(CmdProgramSignalTraceRestrict,                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_PROGRAM_TRACERESTRICT_SIGNAL
 };
 
 /*!

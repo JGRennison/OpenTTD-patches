@@ -33,6 +33,7 @@
 #include "strings_func.h"
 #include "company_gui.h"
 #include "object_map.h"
+#include "tracerestrict.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -1452,6 +1453,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 		SetPresentSignals(tile, GetPresentSignals(tile) & ~SignalOnTrack(track));
 		Company::Get(GetTileOwner(tile))->infrastructure.signal += CountBits(GetPresentSignals(tile));
 		DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
+		TraceRestrictNotifySignalRemoval(tile, track);
 
 		/* removed last signal from tile? */
 		if (GetPresentSignals(tile) == 0) {

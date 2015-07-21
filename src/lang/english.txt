@@ -2370,6 +2370,54 @@ STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Dragging
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Decrease dragging signal density
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Increase dragging signal density
 
+# Tracerestrict GUI
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_EQUALS                :is
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_NOT_EQUALS            :is not
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_THAN             :<
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_EQUALS           :<=
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_THAN             :>
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_EQUALS           :>=
+STR_TRACE_RESTRICT_CONDITIONAL_IF                               :If
+STR_TRACE_RESTRICT_CONDITIONAL_ELIF                             :Else if
+STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :Or if
+STR_TRACE_RESTRICT_CONDITIONAL_ELSE                             :Else
+STR_TRACE_RESTRICT_CONDITIONAL_ENDIF                            :End if
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH                        :train length
+STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
+STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
+STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
+STR_TRACE_RESTRICT_START                                        :Start
+STR_TRACE_RESTRICT_END                                          :End
+STR_TRACE_RESTRICT_PF_DENY                                      :Deny
+STR_TRACE_RESTRICT_PF_ALLOW                                     :Allow
+STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Allow (cancel previous Deny)
+STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
+STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
+STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
+STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}Type
+STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}Comparison operator
+STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}Value
+STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}Go to signal
+STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Insert
+STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove
+STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Insert an instruction
+STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Remove the selected instruction
+STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routefinding restriction
+STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Can't insert instruction
+STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Can't modify instruction
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Can't remove instruction
+STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Value too large, maximum is {COMMA}
+STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No trace restrict program exists
+STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset too large
+STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :Can't change conditionality
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :Can't remove an 'end if'
+STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :Validation failed: condstack non-empty at exit
+STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :Validation failed: else/endif without opening if
+STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :Validation failed: duplicate else
+STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :Validation failed: else if without opening if
+
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Select Rail Bridge
 STR_SELECT_ROAD_BRIDGE_CAPTION                                  :{WHITE}Select Road Bridge
