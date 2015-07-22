@@ -170,6 +170,10 @@ void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& o
 						result = TestCondition(CeilDiv(v->gcache.cached_total_length, TILE_SIZE), condop, condvalue);
 						break;
 
+					case TRIT_COND_MAX_SPEED:
+						result = TestCondition(v->GetDisplayMaxSpeed(), condop, condvalue);
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -260,6 +264,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_NONE:
 		case TRVT_INT:
 		case TRVT_DENY:
+		case TRVT_SPEED:
 			SetTraceRestrictValue(item, 0);
 			break;
 

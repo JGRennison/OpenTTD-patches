@@ -80,6 +80,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_ENDIF               = 8,    ///< This is an endif block or an else block
 	TRIT_COND_UNDEFINED           = 9,    ///< This condition has no type defined (evaluate as false)
 	TRIT_COND_TRAIN_LENGTH        = 10,   ///< Test train length
+	TRIT_COND_MAX_SPEED           = 11,   ///< Test train max speed
 	/* space up to 31 */
 };
 
@@ -197,6 +198,7 @@ enum TraceRestrictValueType {
 	TRVT_SPECIAL                  = 1, ///< special handling of value field
 	TRVT_INT                      = 2, ///< takes an integer value
 	TRVT_DENY                     = 3, ///< takes a value 0 = deny, 1 = allow (cancel previous deny)
+	TRVT_SPEED                    = 4, ///< takes an integer speed value
 };
 
 struct TraceRestrictTypePropertySet {
@@ -217,7 +219,20 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 		out.value_type = TRVT_NONE;
 	} else if (IsTraceRestrictConditional(item)) {
 		out.cond_type = TRCOT_ALL;
-		out.value_type = TRVT_INT;
+
+		switch (GetTraceRestrictType(item)) {
+			case TRIT_COND_TRAIN_LENGTH:
+				out.value_type = TRVT_INT;
+				break;
+
+			case TRIT_COND_MAX_SPEED:
+				out.value_type = TRVT_SPEED;
+				break;
+
+			default:
+				NOT_REACHED();
+				break;
+		}
 	} else {
 		out.cond_type = TRCOT_NONE;
 		if (GetTraceRestrictType(item) == TRIT_PF_PENALTY) {

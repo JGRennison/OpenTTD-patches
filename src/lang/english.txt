@@ -2383,8 +2383,10 @@ STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :Or if
 STR_TRACE_RESTRICT_CONDITIONAL_ELSE                             :Else
 STR_TRACE_RESTRICT_CONDITIONAL_ENDIF                            :End if
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH                        :train length
+STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :max speed
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
 STR_TRACE_RESTRICT_WHITE                                        :{WHITE}

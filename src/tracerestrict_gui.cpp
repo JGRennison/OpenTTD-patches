@@ -27,6 +27,9 @@
 #include "error.h"
 #include "table/sprites.h"
 
+extern uint ConvertSpeedToDisplaySpeed(uint speed);
+extern uint ConvertDisplaySpeedToSpeed(uint speed);
+
 enum TraceRestrictWindowWidgets {
 	TR_WIDGET_CAPTION,
 	TR_WIDGET_INSTRUCTION_LIST,
@@ -148,11 +151,13 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 
 	static const StringID str_cond[] = {
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH,
+		STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
 	static const uint val_cond[] = {
 		TRIT_COND_TRAIN_LENGTH,
+		TRIT_COND_MAX_SPEED,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -217,11 +222,49 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 	return NULL;
 }
 
+static bool IsIntegerValueType(TraceRestrictValueType type)
+{
+	switch (type) {
+		case TRVT_INT:
+		case TRVT_SPEED:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_display)
+{
+	switch (type) {
+		case TRVT_INT:
+			return in;
+
+		case TRVT_SPEED:
+			return to_display
+					? ConvertSpeedToDisplaySpeed(in) * 10 / 16
+					: ConvertDisplaySpeedToSpeed(in) * 16 / 10;
+
+		default:
+			NOT_REACHED();
+			return 0;
+	}
+}
+
 static const StringID _program_cond_type[] = {
 	/* 0          */          STR_TRACE_RESTRICT_CONDITIONAL_IF,
 	/* TRCF_ELSE  */          STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
 	/* TRCF_OR    */          STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
 };
+
+static void DrawInstructionStringConditionalIntegerCommon(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties)
+{
+	assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
+	SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+	SetDParam(1, GetTypeString(GetTraceRestrictType(item)));
+	SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties.cond_type), GetTraceRestrictCondOp(item)));
+	SetDParam(3, GetTraceRestrictValue(item));
+}
 
 /**
  * Draws an instruction in the programming GUI
@@ -251,12 +294,10 @@ static void DrawInstructionString(TraceRestrictItem item, int y, bool selected, 
 			SetDParam(1, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 		} else if (properties.value_type == TRVT_INT) {
 			instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
-
-			assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
-			SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
-			SetDParam(1, GetTypeString(GetTraceRestrictType(item)));
-			SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties.cond_type), GetTraceRestrictCondOp(item)));
-			SetDParam(3, GetTraceRestrictValue(item));
+			DrawInstructionStringConditionalIntegerCommon(item, properties);
+		} else if (properties.value_type == TRVT_SPEED) {
+			instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED;
+			DrawInstructionStringConditionalIntegerCommon(item, properties);
 		} else {
 			NOT_REACHED();
 		}
@@ -383,9 +424,10 @@ public:
 
 			case TR_WIDGET_VALUE_INT: {
 				TraceRestrictItem item = this->GetSelected();
-				if (GetTraceRestrictTypeProperties(item).value_type == TRVT_INT) {
-					SetDParam(0, GetTraceRestrictValue(item));
-					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 6, this, CS_NUMERAL, QSF_NONE); // 5 digit num, + terminating null
+				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+				if (IsIntegerValueType(type)) {
+					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
+					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
 				}
 				break;
 			}
@@ -426,13 +468,14 @@ public:
 		}
 
 		TraceRestrictItem item = GetSelected();
-		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_INT) {
+		TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+		if (!IsIntegerValueType(type)) {
 			return;
 		}
 
-		uint value = atoi(str);
+		uint value = ConvertIntegerValue(type, atoi(str), false);
 		if (value >= (1 << TRIFA_VALUE_COUNT)) {
-			SetDParam(0, (1 << TRIFA_VALUE_COUNT) - 1);
+			SetDParam(0, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true));
 			ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
 			return;
 		}
@@ -619,10 +662,10 @@ public:
 		switch (widget) {
 			case TR_WIDGET_VALUE_INT: {
 				SetDParam(0, 0);
-
 				TraceRestrictItem item = this->GetSelected();
-				if (GetTraceRestrictTypeProperties(item).value_type == TRVT_INT) {
-					SetDParam(0, GetTraceRestrictValue(item));
+				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+				if (IsIntegerValueType(type)) {
+					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
 				}
 				break;
 			}
@@ -846,7 +889,7 @@ private:
 					}
 				}
 
-				if (properties.value_type == TRVT_INT) {
+				if (IsIntegerValueType(properties.value_type)) {
 					right_sel->SetDisplayedPlane(DPR_VALUE_INT);
 					this->EnableWidget(TR_WIDGET_VALUE_INT);
 				} else if (properties.value_type == TRVT_DENY) {
