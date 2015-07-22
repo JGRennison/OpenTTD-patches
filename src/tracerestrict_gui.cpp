@@ -18,6 +18,7 @@
 #include "viewport_func.h"
 #include "textbuf_gui.h"
 #include "company_func.h"
+#include "tilehighlight_func.h"
 #include "widgets/dropdown_func.h"
 #include "gui.h"
 #include "gfx_func.h"
@@ -34,6 +35,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_SEL_TOP_LEFT,
 	TR_WIDGET_SEL_TOP_MIDDLE,
 	TR_WIDGET_SEL_TOP_RIGHT,
+	TR_WIDGET_SEL_SHARE,
 
 	TR_WIDGET_TYPE,
 	TR_WIDGET_COMPARATOR,
@@ -47,6 +49,10 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_GOTO_SIGNAL,
 	TR_WIDGET_INSERT,
 	TR_WIDGET_REMOVE,
+	TR_WIDGET_RESET,
+	TR_WIDGET_COPY,
+	TR_WIDGET_SHARE,
+	TR_WIDGET_UNSHARE,
 };
 
 enum PanelWidgets {
@@ -62,6 +68,10 @@ enum PanelWidgets {
 	DPR_VALUE_INT = 0,
 	DPR_VALUE_DROPDOWN,
 	DPR_BLANK,
+
+	// Share
+	DPS_SHARE = 0,
+	DPS_UNSHARE,
 };
 
 /// value_array *must* be at least as long as string_array,
@@ -293,6 +303,7 @@ class TraceRestrictWindow: public Window {
 	Scrollbar *vscroll;
 	std::map<int, const TraceRestrictDropDownListSet *> drop_down_list_mapping;
 	TraceRestrictItem expecting_inserted_item;
+	int current_placement_widget;
 
 public:
 	TraceRestrictWindow(WindowDesc *desc, TileIndex tile, Track track)
@@ -302,6 +313,7 @@ public:
 		this->track = track;
 		this->selected_instruction = -1;
 		this->expecting_inserted_item = static_cast<TraceRestrictItem>(0);
+		this->current_placement_widget = -1;
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(TR_WIDGET_SCROLLBAR);
@@ -389,6 +401,21 @@ public:
 			case TR_WIDGET_GOTO_SIGNAL:
 				ScrollMainWindowToTile(this->tile);
 				break;
+
+			case TR_WIDGET_RESET: {
+				TraceRestrictProgMgmtDoCommandP(tile, track, TRDCT_PROG_RESET, STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL);
+				break;
+			}
+
+			case TR_WIDGET_COPY:
+			case TR_WIDGET_SHARE:
+				SelectSignalAction(widget);
+				break;
+
+			case TR_WIDGET_UNSHARE: {
+				TraceRestrictProgMgmtDoCommandP(tile, track, TRDCT_PROG_UNSHARE, STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM);
+				break;
+			}
 		}
 	}
 
@@ -455,6 +482,72 @@ public:
 				break;
 			}
 		}
+	}
+
+	virtual void OnPlaceObject(Point pt, TileIndex source_tile)
+	{
+		int widget = this->current_placement_widget;
+		this->current_placement_widget = -1;
+
+		this->RaiseButtons();
+		ResetObjectToPlace();
+
+		if (widget < 0) {
+			return;
+		}
+
+		int error_message = (widget == TR_WIDGET_COPY) ? STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM : STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM;
+
+		if (!IsPlainRailTile(source_tile)) {
+			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+			return;
+		}
+
+		TrackBits trackbits = TrackStatusToTrackBits(GetTileTrackStatus(source_tile, TRANSPORT_RAIL, 0));
+		if (trackbits & TRACK_BIT_VERT) { // N-S direction
+			trackbits = (_tile_fract_coords.x <= _tile_fract_coords.y) ? TRACK_BIT_RIGHT : TRACK_BIT_LEFT;
+		}
+
+		if (trackbits & TRACK_BIT_HORZ) { // E-W direction
+			trackbits = (_tile_fract_coords.x + _tile_fract_coords.y <= 15) ? TRACK_BIT_UPPER : TRACK_BIT_LOWER;
+		}
+		Track source_track = FindFirstTrack(trackbits);
+		if(source_track == INVALID_TRACK) {
+			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+			return;
+		}
+
+		if (!HasTrack(source_tile, source_track)) {
+			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+			return;
+		}
+
+		if (!HasSignalOnTrack(source_tile, source_track)) {
+			ShowErrorMessage(error_message, STR_ERROR_THERE_ARE_NO_SIGNALS, WL_INFO);
+			return;
+		}
+
+		switch (widget) {
+			case TR_WIDGET_COPY:
+				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRDCT_PROG_COPY,
+						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM);
+				break;
+
+			case TR_WIDGET_SHARE:
+				TraceRestrictProgMgmtWithSourceDoCommandP(this->tile, this->track, TRDCT_PROG_SHARE,
+						source_tile, source_track, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
+				break;
+
+			default:
+				NOT_REACHED();
+				break;
+		}
+	}
+
+	virtual void OnPlaceObjectAbort()
+	{
+		this->RaiseButtons();
+		this->current_placement_widget = -1;
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
@@ -531,7 +624,18 @@ public:
 				if (GetTraceRestrictTypeProperties(item).value_type == TRVT_INT) {
 					SetDParam(0, GetTraceRestrictValue(item));
 				}
-			} break;
+				break;
+			}
+
+			case TR_WIDGET_CAPTION: {
+				const TraceRestrictProgram *prog = this->GetProgram();
+				if (prog) {
+					SetDParam(0, prog->refcount);
+				} else {
+					SetDParam(0, 1);
+				}
+				break;
+			}
 		}
 	}
 
@@ -646,6 +750,7 @@ private:
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT);
 		NWidgetStacked *middle_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_MIDDLE);
 		NWidgetStacked *right_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_RIGHT);
+		NWidgetStacked *share_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_SHARE);
 
 		this->DisableWidget(TR_WIDGET_TYPE);
 		this->DisableWidget(TR_WIDGET_COMPARATOR);
@@ -654,6 +759,10 @@ private:
 
 		this->DisableWidget(TR_WIDGET_INSERT);
 		this->DisableWidget(TR_WIDGET_REMOVE);
+		this->DisableWidget(TR_WIDGET_RESET);
+		this->DisableWidget(TR_WIDGET_COPY);
+		this->DisableWidget(TR_WIDGET_SHARE);
+		this->DisableWidget(TR_WIDGET_UNSHARE);
 
 		this->DisableWidget(TR_WIDGET_BLANK_L);
 		this->DisableWidget(TR_WIDGET_BLANK_M);
@@ -662,14 +771,40 @@ private:
 		left_sel->SetDisplayedPlane(DPL_BLANK);
 		middle_sel->SetDisplayedPlane(DPM_BLANK);
 		right_sel->SetDisplayedPlane(DPR_BLANK);
+		share_sel->SetDisplayedPlane(DPS_SHARE);
 
-		// Don't allow modifications if don't own, or have selected invalid instruction
-		if (this->GetOwner() != _local_company || this->selected_instruction < 1) {
+		const TraceRestrictProgram *prog = this->GetProgram();
+
+		this->GetWidget<NWidgetCore>(TR_WIDGET_CAPTION)->widget_data =
+				(prog && prog->refcount > 1) ? STR_TRACE_RESTRICT_CAPTION_SHARED : STR_TRACE_RESTRICT_CAPTION;
+
+		// Don't allow modifications if don't own
+		if (this->GetOwner() != _local_company) {
 			this->SetDirty();
 			return;
 		}
 
-		TraceRestrictItem item = this->GetSelected();
+		if (prog && prog->refcount > 1) {
+			// program is shared, show and enable unshare button, and reset button
+			share_sel->SetDisplayedPlane(DPS_UNSHARE);
+			this->EnableWidget(TR_WIDGET_UNSHARE);
+			this->EnableWidget(TR_WIDGET_RESET);
+		} else if (this->GetItemCount(prog) > 2) {
+			// program is non-empty and not shared, enable reset button
+			this->EnableWidget(TR_WIDGET_RESET);
+		} else {
+			// program is empty and not shared, show copy and share buttons
+			this->EnableWidget(TR_WIDGET_COPY);
+			this->EnableWidget(TR_WIDGET_SHARE);
+		}
+
+		// haven't selected instruction
+		if (this->selected_instruction < 1) {
+			this->SetDirty();
+			return;
+		}
+
+		TraceRestrictItem item = this->GetItem(prog, this->selected_instruction);
 		if (item != 0) {
 			if (GetTraceRestrictType(item) == TRIT_NULL) {
 				switch (GetTraceRestrictValue(item)) {
@@ -736,6 +871,19 @@ private:
 		int selected = GetDropDownListIndexByValue(list_set, value, missing_ok);
 		ShowDropDownMenu(this, list_set->string_array, selected, button, disabled_mask, hidden_mask, width);
 	}
+
+	void SelectSignalAction(int widget)
+	{
+		this->ToggleWidgetLoweredState(widget);
+		this->SetWidgetDirty(widget);
+		if (this->IsWidgetLowered(widget)) {
+			SetObjectToPlaceWnd(ANIMCURSOR_BUILDSIGNALS, PAL_NONE, HT_RECT, this);
+			this->current_placement_widget = widget;
+		} else {
+			ResetObjectToPlace();
+			this->current_placement_widget = -1;
+		}
+	}
 };
 
 static const NWidgetPart _nested_program_widgets[] = {
@@ -785,8 +933,18 @@ static const NWidgetPart _nested_program_widgets[] = {
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_INSERT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_TRACE_RESTRICT_INSERT, STR_TRACE_RESTRICT_INSERT_TOOLTIP), SetResize(1, 0),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_REMOVE), SetMinimalSize(186, 12), SetFill(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_REMOVE), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_TRACE_RESTRICT_REMOVE, STR_TRACE_RESTRICT_REMOVE_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_RESET), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_RESET, STR_TRACE_RESTRICT_RESET_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_COPY), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_COPY, STR_TRACE_RESTRICT_COPY_TOOLTIP), SetResize(1, 0),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_SHARE),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_SHARE), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_SHARE, STR_TRACE_RESTRICT_SHARE_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_UNSHARE), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_UNSHARE, STR_TRACE_RESTRICT_UNSHARE_TOOLTIP), SetResize(1, 0),
+				EndContainer(),
 		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),

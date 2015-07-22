@@ -269,15 +269,30 @@ static inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIn
 	}
 }
 
+// do not re-order
 enum TraceRestrictDoCommandType {
 	TRDCT_INSERT_ITEM             = 0,
 	TRDCT_MODIFY_ITEM             = 1,
 	TRDCT_REMOVE_ITEM             = 2,
+
+	TRDCT_PROG_COPY               = 3,
+	TRDCT_PROG_SHARE              = 4,
+	TRDCT_PROG_UNSHARE            = 5,
+	TRDCT_PROG_RESET              = 6,
 };
 
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32 offset, uint32 value, StringID error_msg);
 
+void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
+		TileIndex source_tile, Track source_track, StringID error_msg);
+
+inline void TraceRestrictProgMgmtDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, StringID error_msg)
+{
+	TraceRestrictProgMgmtWithSourceDoCommandP(tile, track, type, static_cast<TileIndex>(0), static_cast<Track>(0), error_msg);
+}
+
 CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
+CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
 
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
 

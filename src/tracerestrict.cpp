@@ -19,7 +19,40 @@
 #include "pathfinder/yapf/yapf_cache.h"
 #include <vector>
 
-/** Initialize theprogram pool */
+/** Trace Restrict Data Storage Model Notes:
+ *
+ * Signals may have 0, 1 or 2 trace restrict programs attached to them,
+ * up to one for each track. Two-way signals share the same program.
+ *
+ * The mapping between signals and programs is defined in terms of
+ * TraceRestrictRefId to TraceRestrictProgramID,
+ * where TraceRestrictRefId is formed of the tile index and track,
+ * and TraceRestrictProgramID is an index into the program pool.
+ *
+ * If one or more mappings exist for a given signal tile, bit 12 of M3 will be set to 1.
+ * This is updated whenever mappings are added/removed for that tile. This is to avoid
+ * needing to do a mapping lookup for the common case where there is no trace restrict
+ * program mapping for the given tile.
+ *
+ * Programs in the program pool are refcounted based on the number of mappings which exist.
+ * When this falls to 0, the program is deleted from the pool.
+ * If a program has a refcount greater than 1, it is a shared program.
+ *
+ * In all cases, an empty program is evaluated the same as the absence of a program.
+ * Therefore it is not necessary to store mappings to empty unshared programs.
+ * Any editing action which would otherwise result in a mapping to an empty program
+ * which has no other references, instead removes the mapping.
+ * This is not done for shared programs as this would delete the shared aspect whenever
+ * the program became empty.
+ *
+ * Empty programs with a refcount of 1 may still exist due to the edge case where:
+ * 1: There is an empty program with refcount 2
+ * 2: One of the two mappings is deleted
+ * Finding the other mapping would entail a linear search of the mappings, and there is little
+ * to be gained by doing so.
+ */
+
+/** Initialize the program pool */
 TraceRestrictProgramPool _tracerestrictprogram_pool("TraceRestrictProgram");
 INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
 
@@ -353,33 +386,49 @@ void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommand
 	DoCommandP(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
 }
 
-/**
- * The main command for editing a signal tracerestrict program.
- * @param tile The tile which contains the signal.
- * @param flags Internal command handler stuff.
- * @param p1 Bitstuffed items
- * @param p2 Item, for insert and modify operations
- * @return the cost of this operation (which is free), or an error
- */
-CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
 {
-	Track track = static_cast<Track>(GB(p1, 0, 3));
-	TraceRestrictDoCommandType type = static_cast<TraceRestrictDoCommandType>(GB(p1, 3, 5));
-	uint32 offset = GB(p1, 8, 16);
-	TraceRestrictItem item = static_cast<TraceRestrictItem>(p2);
-
-	// Check tile ownership
-	CommandCost ret = CheckTileOwnership(tile);
-	if (ret.Failed()) {
-		return ret;
-	}
-
 	// Check that there actually is a signal here
 	if (!IsPlainRailTile(tile) || !HasTrack(tile, track)) {
 		return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 	}
 	if (!HasSignalOnTrack(tile, track)) {
 		return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
+	}
+
+	// Check tile ownership, do this afterwards to avoid tripping up on house/industry tiles
+	CommandCost ret = CheckTileOwnership(tile);
+	if (ret.Failed()) {
+		return ret;
+	}
+
+	return CommandCost();
+}
+
+/**
+ * The main command for editing a signal tracerestrict program.
+ * @param tile The tile which contains the signal.
+ * @param flags Internal command handler stuff.
+ * Below apply for instruction modification actions only
+ * @param p1 Bitstuffed items
+ * @param p2 Item, for insert and modify operations
+ * @return the cost of this operation (which is free), or an error
+ */
+CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TraceRestrictDoCommandType type = static_cast<TraceRestrictDoCommandType>(GB(p1, 3, 5));
+
+	if (type >= TRDCT_PROG_COPY) {
+		return CmdProgramSignalTraceRestrictProgMgmt(tile, flags, p1, p2, text);
+	}
+
+	Track track = static_cast<Track>(GB(p1, 0, 3));
+	uint32 offset = GB(p1, 8, 16);
+	TraceRestrictItem item = static_cast<TraceRestrictItem>(p2);
+
+	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
+	if (ret.Failed()) {
+		return ret;
 	}
 
 	bool can_make_new = (type == TRDCT_INSERT_ITEM) && (flags & DC_EXEC);
@@ -505,6 +554,123 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		// update windows
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 	}
+
+	return CommandCost();
+}
+
+void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
+		TileIndex source_tile, Track source_track, StringID error_msg)
+{
+	uint32 p1 = 0;
+	SB(p1, 0, 3, track);
+	SB(p1, 3, 5, type);
+	SB(p1, 8, 3, source_track);
+	DoCommandP(tile, p1, source_tile, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
+}
+
+/**
+ * Sub command for copy/share/unshare operations on signal tracerestrict programs.
+ * @param tile The tile which contains the signal.
+ * @param flags Internal command handler stuff.
+ * @param p1 Bitstuffed items
+ * @param p2 Source tile, for share/copy operations
+ * @return the cost of this operation (which is free), or an error
+ */
+CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TraceRestrictDoCommandType type = static_cast<TraceRestrictDoCommandType>(GB(p1, 3, 5));
+	Track track = static_cast<Track>(GB(p1, 0, 3));
+	Track source_track = static_cast<Track>(GB(p1, 8, 3));
+	TileIndex source_tile = static_cast<TileIndex>(p2);
+
+	TraceRestrictRefId self = MakeTraceRestrictRefId(tile, track);
+	TraceRestrictRefId source = MakeTraceRestrictRefId(source_tile, source_track);
+
+	assert(type >= TRDCT_PROG_COPY);
+
+	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
+	if (ret.Failed()) {
+		return ret;
+	}
+
+	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_COPY) {
+		if (self == source) {
+			return_cmd_error(STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET);
+		}
+
+		ret = TraceRestrictCheckTileIsUsable(source_tile, source_track);
+		if (ret.Failed()) {
+			return ret;
+		}
+	}
+
+	if (!(flags & DC_EXEC)) {
+		return CommandCost();
+	}
+
+	switch (type) {
+		case TRDCT_PROG_COPY: {
+			TraceRestrictRemoveProgramMapping(self);
+			TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
+			if (!prog) {
+				// allocation failed
+				return CMD_ERROR;
+			}
+
+			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
+			if (source_prog) {
+				prog->items = source_prog->items; // copy
+			}
+			break;
+		}
+
+		case TRDCT_PROG_SHARE: {
+			TraceRestrictRemoveProgramMapping(self);
+			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, true);
+			if (!source_prog) {
+				// allocation failed
+				return CMD_ERROR;
+			}
+
+			TraceRestrictCreateProgramMapping(self, source_prog);
+			break;
+		}
+
+		case TRDCT_PROG_UNSHARE: {
+			std::vector<TraceRestrictItem> items;
+			TraceRestrictProgram *prog = GetTraceRestrictProgram(self, false);
+			if (prog) {
+				// copy program into temporary
+				items = prog->items;
+			}
+			// remove old program
+			TraceRestrictRemoveProgramMapping(self);
+
+			if (items.size()) {
+				// if prog is non-empty, create new program and move temporary in
+				TraceRestrictProgram *new_prog = GetTraceRestrictProgram(self, true);
+				if (!new_prog) {
+					// allocation failed
+					return CMD_ERROR;
+				}
+
+				new_prog->items.swap(items);
+			}
+			break;
+		}
+
+		case TRDCT_PROG_RESET: {
+			TraceRestrictRemoveProgramMapping(self);
+			break;
+		}
+
+		default:
+			NOT_REACHED();
+			break;
+	}
+
+	// update windows
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 
 	return CommandCost();
 }
