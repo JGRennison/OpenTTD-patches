@@ -16,6 +16,7 @@
 #include "company_func.h"
 #include "viewport_func.h"
 #include "window_func.h"
+#include "order_base.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include <vector>
 
@@ -131,6 +132,45 @@ static bool TestCondition(uint16 value, TraceRestrictCondOp condop, uint16 condv
 	}
 }
 
+/// Test order condition
+/// order may be NULL
+static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
+{
+	bool result = false;
+
+	if (order) {
+		DestinationID condvalue = GetTraceRestrictValue(item);
+		switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
+			case TROCAF_STATION:
+				result = order->IsType(OT_GOTO_STATION) && order->GetDestination() == condvalue;
+				break;
+
+			case TROCAF_WAYPOINT:
+				result = order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination() == condvalue;
+				break;
+
+			case OT_GOTO_DEPOT:
+				result = order->IsType(OT_GOTO_DEPOT) && order->GetDestination() == condvalue;
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+	}
+
+	switch (GetTraceRestrictCondOp(item)) {
+		case TRCO_IS:
+			return result;
+
+		case TRCO_ISNOT:
+			return !result;
+
+		default:
+			NOT_REACHED();
+			return false;
+	}
+}
+
 /// Execute program on train and store results in out
 void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& out) const
 {
@@ -172,6 +212,10 @@ void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& o
 
 					case TRIT_COND_MAX_SPEED:
 						result = TestCondition(v->GetDisplayMaxSpeed(), condop, condvalue);
+						break;
+
+					case TRIT_COND_CURRENT_ORDER:
+						result = TestOrderCondition(&(v->current_order), item);
 						break;
 
 					default:
@@ -266,6 +310,12 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_DENY:
 		case TRVT_SPEED:
 			SetTraceRestrictValue(item, 0);
+			SetTraceRestrictAuxField(item, 0);
+			break;
+
+		case TRVT_ORDER:
+			SetTraceRestrictValue(item, INVALID_STATION);
+			SetTraceRestrictAuxField(item, TROCAF_STATION);
 			break;
 
 		default:
@@ -678,4 +728,23 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 
 	return CommandCost();
+}
+
+void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16 index)
+{
+	TraceRestrictProgram *prog;
+
+	FOR_ALL_TRACE_RESTRICT_PROGRAMS(prog) {
+		for (size_t i = 0; i < prog->items.size(); i++) {
+			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
+			if (GetTraceRestrictType(item) == TRIT_COND_CURRENT_ORDER) {
+				if (GetTraceRestrictAuxField(item) == type && GetTraceRestrictValue(item) == index) {
+					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
+				}
+			}
+		}
+	}
+
+	// update windows
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }

@@ -23,7 +23,11 @@
 #include "gui.h"
 #include "gfx_func.h"
 #include "rail_map.h"
+#include "depot_map.h"
 #include "tile_cmd.h"
+#include "station_base.h"
+#include "waypoint_base.h"
+#include "depot_base.h"
 #include "error.h"
 #include "table/sprites.h"
 
@@ -44,6 +48,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_COMPARATOR,
 	TR_WIDGET_VALUE_INT,
 	TR_WIDGET_VALUE_DROPDOWN,
+	TR_WIDGET_VALUE_DEST,
 
 	TR_WIDGET_BLANK_L,
 	TR_WIDGET_BLANK_M,
@@ -70,6 +75,7 @@ enum PanelWidgets {
 	// Right
 	DPR_VALUE_INT = 0,
 	DPR_VALUE_DROPDOWN,
+	DPR_VALUE_DEST,
 	DPR_BLANK,
 
 	// Share
@@ -152,12 +158,14 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 	static const StringID str_cond[] = {
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH,
 		STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED,
+		STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
 	static const uint val_cond[] = {
 		TRIT_COND_TRAIN_LENGTH,
 		TRIT_COND_MAX_SPEED,
+		TRIT_COND_CURRENT_ORDER,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -257,12 +265,17 @@ static const StringID _program_cond_type[] = {
 	/* TRCF_OR    */          STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
 };
 
-static void DrawInstructionStringConditionalIntegerCommon(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties)
+static void DrawInstructionStringConditionalCommon(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties)
 {
 	assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
 	SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 	SetDParam(1, GetTypeString(GetTraceRestrictType(item)));
 	SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties.cond_type), GetTraceRestrictCondOp(item)));
+}
+
+static void DrawInstructionStringConditionalIntegerCommon(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties)
+{
+	DrawInstructionStringConditionalCommon(item, properties);
 	SetDParam(3, GetTraceRestrictValue(item));
 }
 
@@ -292,14 +305,55 @@ static void DrawInstructionString(TraceRestrictItem item, int y, bool selected, 
 			instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED;
 			SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 			SetDParam(1, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
-		} else if (properties.value_type == TRVT_INT) {
-			instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
-			DrawInstructionStringConditionalIntegerCommon(item, properties);
-		} else if (properties.value_type == TRVT_SPEED) {
-			instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED;
-			DrawInstructionStringConditionalIntegerCommon(item, properties);
 		} else {
-			NOT_REACHED();
+			switch (properties.value_type) {
+				case TRVT_INT:
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
+					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					break;
+
+				case TRVT_SPEED:
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED;
+					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					break;
+
+				case TRVT_ORDER: {
+					switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
+						case TROCAF_STATION:
+							if (GetTraceRestrictValue(item) != INVALID_STATION) {
+								instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION;
+								DrawInstructionStringConditionalIntegerCommon(item, properties);
+							} else {
+								// this is an invalid station, use a seperate string
+								instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED;
+								DrawInstructionStringConditionalCommon(item, properties);
+								SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+							}
+							break;
+
+						case TROCAF_WAYPOINT:
+							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT;
+							DrawInstructionStringConditionalIntegerCommon(item, properties);
+							break;
+
+						case TROCAF_DEPOT:
+							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT;
+							DrawInstructionStringConditionalCommon(item, properties);
+							SetDParam(3, VEH_TRAIN);
+							SetDParam(4, GetTraceRestrictValue(item));
+							break;
+
+						default:
+							NOT_REACHED();
+							break;
+					}
+					break;
+				}
+
+				default:
+					NOT_REACHED();
+					break;
+			}
 		}
 	} else {
 		switch (GetTraceRestrictType(item)) {
@@ -368,6 +422,35 @@ public:
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST: {
 				int sel = this->GetInstructionFromPt(pt.y);
+
+				if (_ctrl_pressed) {
+					// scroll to target (for stations, waypoints, depots)
+
+					if (sel == -1) return;
+
+					TraceRestrictItem item = this->GetItem(this->GetProgram(), sel);
+					if (GetTraceRestrictTypeProperties(item).value_type == TRVT_ORDER) {
+						switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
+							case TROCAF_STATION:
+							case TROCAF_WAYPOINT: {
+								BaseStation *st = BaseStation::GetIfValid(GetTraceRestrictValue(item));
+								if (st) {
+									ScrollMainWindowToTile(st->xy);
+								}
+								break;
+							}
+
+							case TROCAF_DEPOT: {
+								Depot *depot = Depot::GetIfValid(GetTraceRestrictValue(item));
+								if (depot) {
+									ScrollMainWindowToTile(depot->xy);
+								}
+								break;
+							}
+						}
+					}
+					return;
+				}
 
 				this->DeleteChildWindows();
 				HideDropDownMenu(this);
@@ -440,6 +523,11 @@ public:
 				break;
 			}
 
+			case TR_WIDGET_VALUE_DEST: {
+				SetObjectToPlaceAction(widget, ANIMCURSOR_PICKSTATION);
+				break;
+			}
+
 			case TR_WIDGET_GOTO_SIGNAL:
 				ScrollMainWindowToTile(this->tile);
 				break;
@@ -451,7 +539,7 @@ public:
 
 			case TR_WIDGET_COPY:
 			case TR_WIDGET_SHARE:
-				SelectSignalAction(widget);
+				SetObjectToPlaceAction(widget, ANIMCURSOR_BUILDSIGNALS);
 				break;
 
 			case TR_WIDGET_UNSHARE: {
@@ -527,7 +615,7 @@ public:
 		}
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex source_tile)
+	virtual void OnPlaceObject(Point pt, TileIndex tile)
 	{
 		int widget = this->current_placement_widget;
 		this->current_placement_widget = -1;
@@ -539,8 +627,27 @@ public:
 			return;
 		}
 
-		int error_message = (widget == TR_WIDGET_COPY) ? STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM : STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM;
+		switch (widget) {
+			case TR_WIDGET_COPY:
+				OnPlaceObjectSignal(pt, tile, widget, STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM);
+				break;
 
+			case TR_WIDGET_SHARE:
+				OnPlaceObjectSignal(pt, tile, widget, STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM);
+				break;
+
+			case TR_WIDGET_VALUE_DEST:
+				OnPlaceObjectDestination(pt, tile, widget, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				break;
+
+			default:
+				NOT_REACHED();
+				break;
+		}
+	}
+
+	void OnPlaceObjectSignal(Point pt, TileIndex source_tile, int widget, int error_message)
+	{
 		if (!IsPlainRailTile(source_tile)) {
 			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
 			return;
@@ -585,6 +692,38 @@ public:
 				NOT_REACHED();
 				break;
 		}
+	}
+
+	void OnPlaceObjectDestination(Point pt, TileIndex tile, int widget, int error_message)
+	{
+		TraceRestrictItem item = GetSelected();
+		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_ORDER) return;
+
+		if (IsDepotTypeTile(tile, TRANSPORT_RAIL)) {
+			SetTraceRestrictValue(item, GetDepotIndex(tile));
+			SetTraceRestrictAuxField(item, TROCAF_DEPOT);
+		} else if (IsRailWaypointTile(tile)) {
+			SetTraceRestrictValue(item, GetStationIndex(tile));
+			SetTraceRestrictAuxField(item, TROCAF_WAYPOINT);
+		} else if (IsTileType(tile, MP_STATION)) {
+			StationID st_index = GetStationIndex(tile);
+			const Station *st = Station::Get(st_index);
+			if (st->facilities & FACIL_TRAIN) {
+				SetTraceRestrictValue(item, st_index);
+				SetTraceRestrictAuxField(item, TROCAF_STATION);
+			} else {
+				return;
+			}
+		} else {
+			return;
+		}
+
+		if (!IsTileOwner(tile, _local_company)) {
+			ShowErrorMessage(error_message, STR_ERROR_AREA_IS_OWNED_BY_ANOTHER, WL_INFO);
+			return;
+		}
+
+		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
 	virtual void OnPlaceObjectAbort()
@@ -789,6 +928,7 @@ private:
 		this->RaiseWidget(TR_WIDGET_COMPARATOR);
 		this->RaiseWidget(TR_WIDGET_VALUE_INT);
 		this->RaiseWidget(TR_WIDGET_VALUE_DROPDOWN);
+		this->RaiseWidget(TR_WIDGET_VALUE_DEST);
 
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT);
 		NWidgetStacked *middle_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_MIDDLE);
@@ -799,6 +939,7 @@ private:
 		this->DisableWidget(TR_WIDGET_COMPARATOR);
 		this->DisableWidget(TR_WIDGET_VALUE_INT);
 		this->DisableWidget(TR_WIDGET_VALUE_DROPDOWN);
+		this->DisableWidget(TR_WIDGET_VALUE_DEST);
 
 		this->DisableWidget(TR_WIDGET_INSERT);
 		this->DisableWidget(TR_WIDGET_REMOVE);
@@ -892,11 +1033,23 @@ private:
 				if (IsIntegerValueType(properties.value_type)) {
 					right_sel->SetDisplayedPlane(DPR_VALUE_INT);
 					this->EnableWidget(TR_WIDGET_VALUE_INT);
-				} else if (properties.value_type == TRVT_DENY) {
-					right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
-					this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-					this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-							GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_PF_ALLOW : STR_TRACE_RESTRICT_PF_DENY;
+				} else {
+					switch (properties.value_type) {
+						case TRVT_DENY:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_PF_ALLOW : STR_TRACE_RESTRICT_PF_DENY;
+							break;
+
+						case TRVT_ORDER:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DEST);
+							this->EnableWidget(TR_WIDGET_VALUE_DEST);
+							break;
+
+						default:
+							break;
+					}
 				}
 
 				this->EnableWidget(TR_WIDGET_INSERT);
@@ -915,12 +1068,12 @@ private:
 		ShowDropDownMenu(this, list_set->string_array, selected, button, disabled_mask, hidden_mask, width);
 	}
 
-	void SelectSignalAction(int widget)
+	void SetObjectToPlaceAction(int widget, CursorID cursor)
 	{
 		this->ToggleWidgetLoweredState(widget);
 		this->SetWidgetDirty(widget);
 		if (this->IsWidgetLowered(widget)) {
-			SetObjectToPlaceWnd(ANIMCURSOR_BUILDSIGNALS, PAL_NONE, HT_RECT, this);
+			SetObjectToPlaceWnd(cursor, PAL_NONE, HT_RECT, this);
 			this->current_placement_widget = widget;
 		} else {
 			ResetObjectToPlace();
@@ -940,7 +1093,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 
 	// Program display
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_GREY, TR_WIDGET_INSTRUCTION_LIST), SetMinimalSize(372, 62), SetDataTip(0x0, STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP), SetResize(1, 1), EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY, TR_WIDGET_INSTRUCTION_LIST), SetMinimalSize(372, 62), SetDataTip(0x0, STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP), SetResize(1, 1), EndContainer(),
 		NWidget(NWID_VSCROLLBAR, COLOUR_GREY, TR_WIDGET_SCROLLBAR),
 	EndContainer(),
 
@@ -964,6 +1117,8 @@ static const NWidgetPart _nested_program_widgets[] = {
 														SetDataTip(STR_BLACK_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_VALUE_DROPDOWN), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DEST), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_SELECT_TARGET, STR_TRACE_RESTRICT_SELECT_TARGET), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_R), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),

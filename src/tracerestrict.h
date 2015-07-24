@@ -59,10 +59,11 @@ enum TraceRestrictItemFlagAllocation {
 
 	/* 3 bits reserved for future use */
 
-	TRIFA_COND_FLAGS_COUNT        = 2,
+	TRIFA_COND_FLAGS_COUNT        = 3,
 	TRIFA_COND_FLAGS_OFFSET       = 8,
 
-	/* 3 bits reserved for future use */
+	TRIFA_AUX_FIELD_COUNT         = 2,
+	TRIFA_AUX_FIELD_OFFSET        = 11,
 
 	TRIFA_COND_OP_COUNT           = 3,
 	TRIFA_COND_OP_OFFSET          = 13,
@@ -81,6 +82,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_UNDEFINED           = 9,    ///< This condition has no type defined (evaluate as false)
 	TRIT_COND_TRAIN_LENGTH        = 10,   ///< Test train length
 	TRIT_COND_MAX_SPEED           = 11,   ///< Test train max speed
+	TRIT_COND_CURRENT_ORDER       = 12,   ///< Test train current order (station, waypoint or depot)
 	/* space up to 31 */
 };
 
@@ -88,6 +90,7 @@ enum TraceRestrictItemType {
 enum TraceRestrictCondFlags {
 	TRCF_ELSE                     = 1 << 0,
 	TRCF_OR                       = 1 << 1,
+	/* 1 bit spare */
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictCondFlags)
 
@@ -104,6 +107,13 @@ enum TraceRestrictCondOp {
 	TRCO_LTE                      = 3,
 	TRCO_GT                       = 4,
 	TRCO_GTE                      = 5,
+	/* space up to 7 */
+};
+
+enum TraceRestrictOrderCondAuxField {
+	TROCAF_STATION                = 0,
+	TROCAF_WAYPOINT               = 1,
+	TROCAF_DEPOT                  = 2,
 	/* space up to 7 */
 };
 
@@ -155,6 +165,11 @@ static inline TraceRestrictCondOp GetTraceRestrictCondOp(TraceRestrictItem item)
 	return static_cast<TraceRestrictCondOp>(GB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT));
 }
 
+static inline uint8 GetTraceRestrictAuxField(TraceRestrictItem item)
+{
+	return GB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT);
+}
+
 static inline uint16 GetTraceRestrictValue(TraceRestrictItem item)
 {
 	return static_cast<uint16>(GB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT));
@@ -168,6 +183,11 @@ static inline void SetTraceRestrictType(TraceRestrictItem &item, TraceRestrictIt
 static inline void SetTraceRestrictCondOp(TraceRestrictItem &item, TraceRestrictCondOp condop)
 {
 	SB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT, condop);
+}
+
+static inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8 data)
+{
+	SB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT, data);
 }
 
 void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type);
@@ -199,6 +219,7 @@ enum TraceRestrictValueType {
 	TRVT_INT                      = 2, ///< takes an integer value
 	TRVT_DENY                     = 3, ///< takes a value 0 = deny, 1 = allow (cancel previous deny)
 	TRVT_SPEED                    = 4, ///< takes an integer speed value
+	TRVT_ORDER                    = 5, ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
 };
 
 struct TraceRestrictTypePropertySet {
@@ -227,6 +248,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_MAX_SPEED:
 				out.value_type = TRVT_SPEED;
+				break;
+
+			case TRIT_COND_CURRENT_ORDER:
+				out.value_type = TRVT_ORDER;
+				out.cond_type = TRCOT_BINARY;
 				break;
 
 			default:
@@ -310,5 +336,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
 
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
+
+void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16 index);
 
 #endif /* TRACERESTRICT_H */
