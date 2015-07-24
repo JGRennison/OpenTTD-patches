@@ -2386,6 +2386,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH                        :train length
 STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :max speed
 STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :current order
 STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :next order
+STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :last visited station
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} then

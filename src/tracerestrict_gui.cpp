@@ -160,6 +160,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED,
 		STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER,
 		STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER,
+		STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -168,6 +169,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		TRIT_COND_MAX_SPEED,
 		TRIT_COND_CURRENT_ORDER,
 		TRIT_COND_NEXT_ORDER,
+		TRIT_COND_LAST_STATION,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -599,6 +601,10 @@ public:
 
 			case TR_WIDGET_TYPE: {
 				SetTraceRestrictTypeAndNormalise(item, static_cast<TraceRestrictItemType>(value));
+				if (GetTraceRestrictType(item) == TRIT_COND_LAST_STATION && GetTraceRestrictAuxField(item) != TROCAF_STATION) {
+					// if changing type from another order type to last visited station, reset value if not currently a station
+					SetTraceRestrictValueDefault(item, TRVT_ORDER);
+				}
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				break;
 			}
@@ -701,10 +707,14 @@ public:
 		TraceRestrictItem item = GetSelected();
 		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_ORDER) return;
 
+		bool stations_only = (GetTraceRestrictType(item) == TRIT_COND_LAST_STATION);
+
 		if (IsDepotTypeTile(tile, TRANSPORT_RAIL)) {
+			if (stations_only) return;
 			SetTraceRestrictValue(item, GetDepotIndex(tile));
 			SetTraceRestrictAuxField(item, TROCAF_DEPOT);
 		} else if (IsRailWaypointTile(tile)) {
+			if (stations_only) return;
 			SetTraceRestrictValue(item, GetStationIndex(tile));
 			SetTraceRestrictAuxField(item, TROCAF_WAYPOINT);
 		} else if (IsTileType(tile, MP_STATION)) {

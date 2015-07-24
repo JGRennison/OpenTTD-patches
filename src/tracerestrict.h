@@ -84,6 +84,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_MAX_SPEED           = 11,   ///< Test train max speed
 	TRIT_COND_CURRENT_ORDER       = 12,   ///< Test train current order (station, waypoint or depot)
 	TRIT_COND_NEXT_ORDER          = 13,   ///< Test train next order (station, waypoint or depot)
+	TRIT_COND_LAST_STATION        = 14,   ///< Test train last visited station
 	/* space up to 31 */
 };
 
@@ -191,8 +192,6 @@ static inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8 data)
 	SB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT, data);
 }
 
-void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type);
-
 static inline void SetTraceRestrictValue(TraceRestrictItem &item, uint16 value)
 {
 	SB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT, value);
@@ -222,6 +221,9 @@ enum TraceRestrictValueType {
 	TRVT_SPEED                    = 4, ///< takes an integer speed value
 	TRVT_ORDER                    = 5, ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
 };
+
+void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueType value_type);
+void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type);
 
 struct TraceRestrictTypePropertySet {
 	TraceRestrictConditionOpType cond_type;
@@ -253,6 +255,7 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_CURRENT_ORDER:
 			case TRIT_COND_NEXT_ORDER:
+			case TRIT_COND_LAST_STATION:
 				out.value_type = TRVT_ORDER;
 				out.cond_type = TRCOT_BINARY;
 				break;

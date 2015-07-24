@@ -132,6 +132,21 @@ static bool TestCondition(uint16 value, TraceRestrictCondOp condop, uint16 condv
 	}
 }
 
+static bool TestBinaryConditionCommon(TraceRestrictItem item, bool input)
+{
+	switch (GetTraceRestrictCondOp(item)) {
+		case TRCO_IS:
+			return input;
+
+		case TRCO_ISNOT:
+			return !input;
+
+		default:
+			NOT_REACHED();
+			return false;
+	}
+}
+
 /// Test order condition
 /// order may be NULL
 static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
@@ -157,18 +172,15 @@ static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
 				NOT_REACHED();
 		}
 	}
+	return TestBinaryConditionCommon(item, result);
+}
 
-	switch (GetTraceRestrictCondOp(item)) {
-		case TRCO_IS:
-			return result;
+/// Test station condition
+static bool TestStationCondition(StationID station, TraceRestrictItem item)
+{
+	bool result = (GetTraceRestrictAuxField(item) == TROCAF_STATION) && (station == GetTraceRestrictValue(item));
+	return TestBinaryConditionCommon(item, result);
 
-		case TRCO_ISNOT:
-			return !result;
-
-		default:
-			NOT_REACHED();
-			return false;
-	}
 }
 
 /// Execute program on train and store results in out
@@ -231,6 +243,10 @@ void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& o
 						}
 						break;
 					}
+
+					case TRIT_COND_LAST_STATION:
+						result = TestStationCondition(v->last_station_visited, item);
+						break;
 
 					default:
 						NOT_REACHED();
@@ -752,7 +768,8 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 		for (size_t i = 0; i < prog->items.size(); i++) {
 			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
 			if (GetTraceRestrictType(item) == TRIT_COND_CURRENT_ORDER ||
-					GetTraceRestrictType(item) == TRIT_COND_NEXT_ORDER) {
+					GetTraceRestrictType(item) == TRIT_COND_NEXT_ORDER ||
+					GetTraceRestrictType(item) == TRIT_COND_LAST_STATION) {
 				if (GetTraceRestrictAuxField(item) == type && GetTraceRestrictValue(item) == index) {
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
 				}
