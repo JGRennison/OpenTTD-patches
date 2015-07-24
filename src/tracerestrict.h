@@ -83,6 +83,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_TRAIN_LENGTH        = 10,   ///< Test train length
 	TRIT_COND_MAX_SPEED           = 11,   ///< Test train max speed
 	TRIT_COND_CURRENT_ORDER       = 12,   ///< Test train current order (station, waypoint or depot)
+	TRIT_COND_NEXT_ORDER          = 13,   ///< Test train next order (station, waypoint or depot)
 	/* space up to 31 */
 };
 
@@ -251,6 +252,7 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 				break;
 
 			case TRIT_COND_CURRENT_ORDER:
+			case TRIT_COND_NEXT_ORDER:
 				out.value_type = TRVT_ORDER;
 				out.cond_type = TRCOT_BINARY;
 				break;

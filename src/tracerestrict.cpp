@@ -218,6 +218,20 @@ void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& o
 						result = TestOrderCondition(&(v->current_order), item);
 						break;
 
+					case TRIT_COND_NEXT_ORDER: {
+						if (v->orders.list == NULL) break;
+						if (v->orders.list->GetNumOrders() == 0) break;
+
+						const Order *current_order = v->GetOrder(v->cur_real_order_index);
+						for (const Order *order = v->orders.list->GetNext(current_order); order != current_order; order = v->orders.list->GetNext(order)) {
+							if (order->IsGotoOrder()) {
+								result = TestOrderCondition(order, item);
+								break;
+							}
+						}
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -737,7 +751,8 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 	FOR_ALL_TRACE_RESTRICT_PROGRAMS(prog) {
 		for (size_t i = 0; i < prog->items.size(); i++) {
 			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
-			if (GetTraceRestrictType(item) == TRIT_COND_CURRENT_ORDER) {
+			if (GetTraceRestrictType(item) == TRIT_COND_CURRENT_ORDER ||
+					GetTraceRestrictType(item) == TRIT_COND_NEXT_ORDER) {
 				if (GetTraceRestrictAuxField(item) == type && GetTraceRestrictValue(item) == index) {
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
 				}
