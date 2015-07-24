@@ -17,6 +17,7 @@
 #include "viewport_func.h"
 #include "window_func.h"
 #include "order_base.h"
+#include "cargotype.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include <vector>
 
@@ -248,6 +249,18 @@ void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& o
 						result = TestStationCondition(v->last_station_visited, item);
 						break;
 
+					case TRIT_COND_CARGO: {
+						bool have_cargo = false;
+						for (const Vehicle *v_iter = v; v_iter != NULL; v_iter = v_iter->Next()) {
+							if (v_iter->cargo_type == GetTraceRestrictValue(item) && v_iter->cargo_cap > 0) {
+								have_cargo = true;
+								break;
+							}
+						}
+						result = TestBinaryConditionCommon(item, have_cargo);
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -346,6 +359,12 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_ORDER:
 			SetTraceRestrictValue(item, INVALID_STATION);
 			SetTraceRestrictAuxField(item, TROCAF_STATION);
+			break;
+
+		case TRVT_CARGO_ID:
+			assert(_sorted_standard_cargo_specs_size > 0);
+			SetTraceRestrictValue(item, _sorted_cargo_specs[0]->Index());
+			SetTraceRestrictAuxField(item, 0);
 			break;
 
 		default:

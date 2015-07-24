@@ -85,6 +85,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_CURRENT_ORDER       = 12,   ///< Test train current order (station, waypoint or depot)
 	TRIT_COND_NEXT_ORDER          = 13,   ///< Test train next order (station, waypoint or depot)
 	TRIT_COND_LAST_STATION        = 14,   ///< Test train last visited station
+	TRIT_COND_CARGO               = 15,   ///< Test if train can carry cargo type
 	/* space up to 31 */
 };
 
@@ -226,6 +227,7 @@ enum TraceRestrictValueType {
 	TRVT_DENY                     = 3, ///< takes a value 0 = deny, 1 = allow (cancel previous deny)
 	TRVT_SPEED                    = 4, ///< takes an integer speed value
 	TRVT_ORDER                    = 5, ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
+	TRVT_CARGO_ID                 = 6, ///< takes a CargoID
 };
 
 void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueType value_type);
@@ -263,6 +265,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			case TRIT_COND_NEXT_ORDER:
 			case TRIT_COND_LAST_STATION:
 				out.value_type = TRVT_ORDER;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_CARGO:
+				out.value_type = TRVT_CARGO_ID;
 				out.cond_type = TRCOT_BINARY;
 				break;
 

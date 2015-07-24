@@ -29,6 +29,7 @@
 #include "waypoint_base.h"
 #include "depot_base.h"
 #include "error.h"
+#include "cargotype.h"
 #include "table/sprites.h"
 
 extern uint ConvertSpeedToDisplaySpeed(uint speed);
@@ -177,6 +178,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER,
 		STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER,
 		STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION,
+		STR_TRACE_RESTRICT_VARIABLE_CARGO,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -186,6 +188,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		TRIT_COND_CURRENT_ORDER,
 		TRIT_COND_NEXT_ORDER,
 		TRIT_COND_LAST_STATION,
+		TRIT_COND_CARGO,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -195,12 +198,49 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 	return IsTraceRestrictTypeConditional(type) ? &set_cond : &set_action;
 }
 
+static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
+{
+	static StringID cargo_list_str[NUM_CARGO + 1];
+	static uint cargo_list_id[NUM_CARGO];
+	static const TraceRestrictDropDownListSet cargo_list = {
+		cargo_list_str, cargo_list_id,
+	};
+
+	for (size_t i = 0; i < _sorted_standard_cargo_specs_size; ++i) {
+		const CargoSpec *cs = _sorted_cargo_specs[i];
+		cargo_list_str[i] = cs->name;
+		cargo_list_id[i] = cs->Index();
+	}
+	cargo_list_str[_sorted_standard_cargo_specs_size] = INVALID_STRING_ID;
+
+	return &cargo_list;
+}
+
+static const StringID _cargo_cond_ops_str[] = {
+	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS,
+	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS,
+	INVALID_STRING_ID,
+};
+static const uint _cargo_cond_ops_val[] = {
+	TRCO_IS,
+	TRCO_ISNOT,
+};
+static const TraceRestrictDropDownListSet _cargo_cond_ops = {
+	_cargo_cond_ops_str, _cargo_cond_ops_val,
+};
+
+static StringID GetCargoStringByID(CargoID cargo)
+{
+	const CargoSpec *cs = CargoSpec::Get(cargo);
+	return cs->IsValid() ? cs->name : STR_NEWGRF_INVALID_CARGO;
+}
+
 static StringID GetTypeString(TraceRestrictItemType type)
 {
 	return GetDropDownStringByValue(GetTypeDropDownListSet(type), type);
 }
 
-static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestrictConditionOpType type)
+static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestrictTypePropertySet properties)
 {
 	static const StringID str_long[] = {
 		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_EQUALS,
@@ -236,7 +276,9 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 		str_short, val_short,
 	};
 
-	switch (type) {
+	if (properties.value_type == TRVT_CARGO_ID) return &_cargo_cond_ops;
+
+	switch (properties.cond_type) {
 		case TRCOT_NONE:
 			return NULL;
 
@@ -315,7 +357,7 @@ static void DrawInstructionStringConditionalCommon(TraceRestrictItem item, const
 	assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
 	SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 	SetDParam(1, GetTypeString(GetTraceRestrictType(item)));
-	SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties.cond_type), GetTraceRestrictCondOp(item)));
+	SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
 }
 
 static void DrawInstructionStringConditionalIntegerCommon(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties)
@@ -394,6 +436,14 @@ static void DrawInstructionString(TraceRestrictItem item, int y, bool selected, 
 					}
 					break;
 				}
+
+				case TRVT_CARGO_ID:
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_CARGO;
+					assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					SetDParam(1, GetDropDownStringByValue(&_cargo_cond_ops, GetTraceRestrictCondOp(item)));
+					SetDParam(2, GetCargoStringByID(GetTraceRestrictValue(item)));
+					break;
 
 				default:
 					NOT_REACHED();
@@ -582,7 +632,7 @@ public:
 
 			case TR_WIDGET_COMPARATOR: {
 				TraceRestrictItem item = this->GetSelected();
-				const TraceRestrictDropDownListSet *list_set = GetCondOpDropDownListSet(GetTraceRestrictTypeProperties(item).cond_type);
+				const TraceRestrictDropDownListSet *list_set = GetCondOpDropDownListSet(GetTraceRestrictTypeProperties(item));
 				if (list_set) {
 					this->ShowDropDownListWithValue(list_set, GetTraceRestrictCondOp(item), false, TR_WIDGET_COMPARATOR, 0, 0, 0);
 				}
@@ -601,8 +651,17 @@ public:
 
 			case TR_WIDGET_VALUE_DROPDOWN: {
 				TraceRestrictItem item = this->GetSelected();
-				if (GetTraceRestrictTypeProperties(item).value_type == TRVT_DENY) {
-					this->ShowDropDownListWithValue(&_deny_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+				switch (GetTraceRestrictTypeProperties(item).value_type) {
+					case TRVT_DENY:
+						this->ShowDropDownListWithValue(&_deny_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
+					case TRVT_CARGO_ID:
+						this->ShowDropDownListWithValue(GetSortedCargoTypeDropDownListSet(), GetTraceRestrictValue(item), true, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0); // current cargo is permitted to not be in list
+						break;
+
+					default:
+						break;
 				}
 				break;
 			}
@@ -1185,7 +1244,7 @@ private:
 					middle_sel->SetDisplayedPlane(DPM_COMPARATOR);
 					this->EnableWidget(TR_WIDGET_COMPARATOR);
 
-					const TraceRestrictDropDownListSet *list_set = GetCondOpDropDownListSet(properties.cond_type);
+					const TraceRestrictDropDownListSet *list_set = GetCondOpDropDownListSet(properties);
 
 					if (list_set) {
 						this->GetWidget<NWidgetCore>(TR_WIDGET_COMPARATOR)->widget_data =
@@ -1208,6 +1267,13 @@ private:
 						case TRVT_ORDER:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DEST);
 							this->EnableWidget(TR_WIDGET_VALUE_DEST);
+							break;
+
+						case TRVT_CARGO_ID:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetCargoStringByID(GetTraceRestrictValue(item));
 							break;
 
 						default:
