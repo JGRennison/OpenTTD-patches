@@ -90,6 +90,7 @@ enum TraceRestrictItemType {
 
 /* no flags set indicates end if for TRIT_COND_ENDIF, if otherwise */
 enum TraceRestrictCondFlags {
+	TRCF_DEFAULT                  = 0,
 	TRCF_ELSE                     = 1 << 0,
 	TRCF_OR                       = 1 << 1,
 	/* 1 bit spare */
@@ -185,6 +186,11 @@ static inline void SetTraceRestrictType(TraceRestrictItem &item, TraceRestrictIt
 static inline void SetTraceRestrictCondOp(TraceRestrictItem &item, TraceRestrictCondOp condop)
 {
 	SB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT, condop);
+}
+
+static inline void SetTraceRestrictCondFlags(TraceRestrictItem &item, TraceRestrictCondFlags condflags)
+{
+	SB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT, condflags);
 }
 
 static inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8 data)

@@ -2409,6 +2409,7 @@ STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefin
 STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}Type
 STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}Comparison operator
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}Value
+STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}Condition type
 STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}Go to signal
 STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Insert
 STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove

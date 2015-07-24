@@ -39,17 +39,21 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_INSTRUCTION_LIST,
 	TR_WIDGET_SCROLLBAR,
 
+	TR_WIDGET_SEL_TOP_LEFT_2,
 	TR_WIDGET_SEL_TOP_LEFT,
 	TR_WIDGET_SEL_TOP_MIDDLE,
 	TR_WIDGET_SEL_TOP_RIGHT,
 	TR_WIDGET_SEL_SHARE,
 
-	TR_WIDGET_TYPE,
+	TR_WIDGET_TYPE_COND,
+	TR_WIDGET_TYPE_NONCOND,
+	TR_WIDGET_CONDFLAGS,
 	TR_WIDGET_COMPARATOR,
 	TR_WIDGET_VALUE_INT,
 	TR_WIDGET_VALUE_DROPDOWN,
 	TR_WIDGET_VALUE_DEST,
 
+	TR_WIDGET_BLANK_L2,
 	TR_WIDGET_BLANK_L,
 	TR_WIDGET_BLANK_M,
 	TR_WIDGET_BLANK_R,
@@ -64,6 +68,11 @@ enum TraceRestrictWindowWidgets {
 };
 
 enum PanelWidgets {
+	// Left 2
+	DPL2_TYPE = 0,
+	DPL2_CONDFLAGS,
+	DPL2_BLANK,
+
 	// Left
 	DPL_TYPE = 0,
 	DPL_BLANK,
@@ -93,14 +102,21 @@ struct TraceRestrictDropDownListSet {
 
 static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_IF,
+	STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
+	STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
 	STR_TRACE_RESTRICT_PF_DENY,
 	STR_TRACE_RESTRICT_PF_PENALTY,
 	INVALID_STRING_ID
 };
+static const uint _program_insert_else_flag = 0x100;
+static const uint32 _program_insert_else_hide_mask = 4;
+static const uint32 _program_insert_else_if_hide_mask = 2;
 static const uint _program_insert_val[] = {
-	TRIT_COND_UNDEFINED,
-	TRIT_PF_DENY,
-	TRIT_PF_PENALTY,
+	TRIT_COND_UNDEFINED,                               /// if block
+	TRIT_COND_UNDEFINED | _program_insert_else_flag,   /// elif block
+	TRIT_COND_ENDIF | _program_insert_else_flag,       /// else block
+	TRIT_PF_DENY,                                      /// deny
+	TRIT_PF_PENALTY,                                   /// penalty
 };
 
 static const TraceRestrictDropDownListSet _program_insert = {
@@ -267,6 +283,31 @@ static const StringID _program_cond_type[] = {
 	/* 0          */          STR_TRACE_RESTRICT_CONDITIONAL_IF,
 	/* TRCF_ELSE  */          STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
 	/* TRCF_OR    */          STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
+};
+
+enum CondFlagsDropDownType {
+	CFDDT_ELSE = 0,           ///< This is an else block
+	CFDDT_ELIF = TRCF_ELSE,   ///< This is an else-if block
+	CFDDT_ORIF = TRCF_OR,     ///< This is an or-if block
+};
+
+static const uint32 _condflags_dropdown_else_hide_mask = 1;
+static const uint32 _condflags_dropdown_else_if_hide_mask = 6;
+static const StringID _condflags_dropdown_str[] = {
+	/* CFDDT_ELSE  */          STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
+	/* CFDDT_ELIF  */          STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
+	/* CFDDT_ORIF  */          STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
+	INVALID_STRING_ID,
+};
+
+static const uint _condflags_dropdown_val[] = {
+	CFDDT_ELSE,
+	CFDDT_ELIF,
+	CFDDT_ORIF,
+};
+
+static const TraceRestrictDropDownListSet _condflags_dropdown = {
+	_condflags_dropdown_str, _condflags_dropdown_val,
 };
 
 static void DrawInstructionStringConditionalCommon(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties)
@@ -476,7 +517,21 @@ public:
 				if (this->GetOwner() != _local_company || this->selected_instruction < 1) {
 					return;
 				}
-				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, 0, 0, 0);
+
+				uint32 disabled = 0;
+				TraceRestrictItem item = this->GetSelected();
+				if (GetTraceRestrictType(item) == TRIT_COND_ENDIF ||
+						(IsTraceRestrictConditional(item) && GetTraceRestrictCondFlags(item) != 0)) {
+					// this is either: an else/or if, an else, or an end if
+					// try to include else if, else in insertion list
+					if (!ElseInsertionDryRun(false)) disabled |= _program_insert_else_hide_mask;
+					if (!ElseIfInsertionDryRun(false)) disabled |= _program_insert_else_if_hide_mask;
+				} else {
+					// can't insert else/end if here
+					disabled |= _program_insert_else_hide_mask | _program_insert_else_if_hide_mask;
+				}
+
+				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, 0, 0);
 				break;
 			}
 
@@ -490,12 +545,37 @@ public:
 				break;
 			}
 
-			case TR_WIDGET_TYPE: {
+			case TR_WIDGET_CONDFLAGS: {
+				TraceRestrictItem item = this->GetSelected();
+				if (this->GetOwner() != _local_company || item == 0) {
+					return;
+				}
+
+				CondFlagsDropDownType type;
+				if (GetTraceRestrictType(item) == TRIT_COND_ENDIF) {
+					if (GetTraceRestrictCondFlags(item) == 0) return; // end if
+					type = CFDDT_ELSE;
+				} else if (IsTraceRestrictConditional(item) && GetTraceRestrictCondFlags(item) != 0) {
+					type = static_cast<CondFlagsDropDownType>(GetTraceRestrictCondFlags(item));
+				} else {
+					return;
+				}
+
+				uint32 disabled = 0;
+				if (!ElseInsertionDryRun(true)) disabled |= _condflags_dropdown_else_hide_mask;
+				if (!ElseIfInsertionDryRun(true)) disabled |= _condflags_dropdown_else_if_hide_mask;
+
+				this->ShowDropDownListWithValue(&_condflags_dropdown, type, false, TR_WIDGET_CONDFLAGS, disabled, 0, 0);
+				break;
+			}
+
+			case TR_WIDGET_TYPE_COND:
+			case TR_WIDGET_TYPE_NONCOND: {
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictItemType type = GetTraceRestrictType(item);
 
 				if (type != TRIT_NULL) {
-					this->ShowDropDownListWithValue(GetTypeDropDownListSet(type), type, false, TR_WIDGET_TYPE, 0, 0, 0);
+					this->ShowDropDownListWithValue(GetTypeDropDownListSet(type), type, false, widget, 0, 0, 0);
 				}
 				break;
 			}
@@ -593,13 +673,40 @@ public:
 		switch (widget) {
 			case TR_WIDGET_INSERT: {
 				TraceRestrictItem insert_item = 0;
+
+				bool have_else = false;
+				if (value & _program_insert_else_flag) {
+					value &= ~_program_insert_else_flag;
+					have_else = true;
+				}
 				SetTraceRestrictTypeAndNormalise(insert_item, static_cast<TraceRestrictItemType>(value));
+				if (have_else) SetTraceRestrictCondFlags(insert_item, TRCF_ELSE); // this needs to happen after calling SetTraceRestrictTypeAndNormalise
+
 				this->expecting_inserted_item = insert_item;
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_INSERT_ITEM, this->selected_instruction - 1, insert_item, STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM);
 				break;
 			}
 
-			case TR_WIDGET_TYPE: {
+			case TR_WIDGET_CONDFLAGS: {
+				CondFlagsDropDownType cond_type = static_cast<CondFlagsDropDownType>(value);
+				if (cond_type == CFDDT_ELSE) {
+					SetTraceRestrictTypeAndNormalise(item, TRIT_COND_ENDIF);
+					SetTraceRestrictCondFlags(item, TRCF_ELSE);
+				} else {
+					if (GetTraceRestrictType(item) == TRIT_COND_ENDIF) {
+						// item is currently an else, convert to else/or if
+						SetTraceRestrictTypeAndNormalise(item, TRIT_COND_UNDEFINED);
+					}
+
+					SetTraceRestrictCondFlags(item, static_cast<TraceRestrictCondFlags>(cond_type));
+				}
+
+				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				break;
+			}
+
+			case TR_WIDGET_TYPE_COND:
+			case TR_WIDGET_TYPE_NONCOND: {
 				SetTraceRestrictTypeAndNormalise(item, static_cast<TraceRestrictItemType>(value));
 				if (GetTraceRestrictType(item) == TRIT_COND_LAST_STATION && GetTraceRestrictAuxField(item) != TROCAF_STATION) {
 					// if changing type from another order type to last visited station, reset value if not currently a station
@@ -936,18 +1043,23 @@ private:
 	{
 		this->RaiseWidget(TR_WIDGET_INSERT);
 		this->RaiseWidget(TR_WIDGET_REMOVE);
-		this->RaiseWidget(TR_WIDGET_TYPE);
+		this->RaiseWidget(TR_WIDGET_TYPE_COND);
+		this->RaiseWidget(TR_WIDGET_TYPE_NONCOND);
+		this->RaiseWidget(TR_WIDGET_CONDFLAGS);
 		this->RaiseWidget(TR_WIDGET_COMPARATOR);
 		this->RaiseWidget(TR_WIDGET_VALUE_INT);
 		this->RaiseWidget(TR_WIDGET_VALUE_DROPDOWN);
 		this->RaiseWidget(TR_WIDGET_VALUE_DEST);
 
+		NWidgetStacked *left_2_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_2);
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT);
 		NWidgetStacked *middle_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_MIDDLE);
 		NWidgetStacked *right_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_RIGHT);
 		NWidgetStacked *share_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_SHARE);
 
-		this->DisableWidget(TR_WIDGET_TYPE);
+		this->DisableWidget(TR_WIDGET_TYPE_COND);
+		this->DisableWidget(TR_WIDGET_TYPE_NONCOND);
+		this->DisableWidget(TR_WIDGET_CONDFLAGS);
 		this->DisableWidget(TR_WIDGET_COMPARATOR);
 		this->DisableWidget(TR_WIDGET_VALUE_INT);
 		this->DisableWidget(TR_WIDGET_VALUE_DROPDOWN);
@@ -960,10 +1072,12 @@ private:
 		this->DisableWidget(TR_WIDGET_SHARE);
 		this->DisableWidget(TR_WIDGET_UNSHARE);
 
+		this->DisableWidget(TR_WIDGET_BLANK_L2);
 		this->DisableWidget(TR_WIDGET_BLANK_L);
 		this->DisableWidget(TR_WIDGET_BLANK_M);
 		this->DisableWidget(TR_WIDGET_BLANK_R);
 
+		left_2_sel->SetDisplayedPlane(DPL2_BLANK);
 		left_sel->SetDisplayedPlane(DPL_BLANK);
 		middle_sel->SetDisplayedPlane(DPM_BLANK);
 		right_sel->SetDisplayedPlane(DPR_BLANK);
@@ -1018,16 +1132,53 @@ private:
 			} else if (GetTraceRestrictType(item) == TRIT_COND_ENDIF) {
 				this->EnableWidget(TR_WIDGET_INSERT);
 				if (GetTraceRestrictCondFlags(item) != 0) {
-					// this is not an end if, enable removing
+					// this is not an end if, it must be an else, enable removing
 					this->EnableWidget(TR_WIDGET_REMOVE);
+
+					// setup condflags dropdown to show else
+					left_2_sel->SetDisplayedPlane(DPL2_CONDFLAGS);
+					this->EnableWidget(TR_WIDGET_CONDFLAGS);
+					this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->widget_data = STR_TRACE_RESTRICT_CONDITIONAL_ELSE;
 				}
 			} else {
 				TraceRestrictTypePropertySet properties = GetTraceRestrictTypeProperties(item);
 
-				left_sel->SetDisplayedPlane(DPL_TYPE);
-				this->EnableWidget(TR_WIDGET_TYPE);
+				int type_widget;
+				if (IsTraceRestrictConditional(item)) {
+					// note that else and end if items are not handled here, they are handled above
 
-				this->GetWidget<NWidgetCore>(TR_WIDGET_TYPE)->widget_data =
+					left_2_sel->SetDisplayedPlane(DPL2_CONDFLAGS);
+					left_sel->SetDisplayedPlane(DPL_TYPE);
+					type_widget = TR_WIDGET_TYPE_COND;
+
+					// setup condflags dropdown box
+					left_2_sel->SetDisplayedPlane(DPL2_CONDFLAGS);
+					switch (GetTraceRestrictCondFlags(item)) {
+						case TRCF_DEFAULT:                            // opening if, leave disabled
+							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->widget_data = STR_TRACE_RESTRICT_CONDITIONAL_IF;
+							break;
+
+						case TRCF_ELSE:                               // else-if
+							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->widget_data = STR_TRACE_RESTRICT_CONDITIONAL_ELIF;
+							this->EnableWidget(TR_WIDGET_CONDFLAGS);
+							break;
+
+						case TRCF_OR:                                 // or-if
+							this->GetWidget<NWidgetCore>(TR_WIDGET_CONDFLAGS)->widget_data = STR_TRACE_RESTRICT_CONDITIONAL_ORIF;
+							this->EnableWidget(TR_WIDGET_CONDFLAGS);
+							break;
+
+						default:
+							NOT_REACHED();
+							break;
+					}
+				} else {
+					left_2_sel->SetDisplayedPlane(DPL2_TYPE);
+					type_widget = TR_WIDGET_TYPE_NONCOND;
+				}
+				this->EnableWidget(type_widget);
+
+				this->GetWidget<NWidgetCore>(type_widget)->widget_data =
 						GetTypeString(GetTraceRestrictType(item));
 
 				if (properties.cond_type == TRCOT_BINARY || properties.cond_type == TRCOT_ALL) {
@@ -1092,6 +1243,44 @@ private:
 			this->current_placement_widget = -1;
 		}
 	}
+
+	/// This used for testing whether else or else-if blocks could be inserted, or replace the selection
+	bool GenericElseInsertionDryRun(TraceRestrictItem item, bool replace)
+	{
+		if (this->selected_instruction < 1) return false;
+		uint offset = this->selected_instruction - 1;
+
+		const TraceRestrictProgram *prog = this->GetProgram();
+		if (!prog) return false;
+
+		std::vector<TraceRestrictItem> items = prog->items; // copy
+
+		if (offset >= (items.size() + (replace ? 0 : 1))) return false; // off the end of the program
+
+		if (replace) {
+			items[offset] = item;
+		} else {
+			items.insert(items.begin() + offset, item);
+		}
+
+		return TraceRestrictProgram::Validate(items).Succeeded();
+	}
+
+	bool ElseInsertionDryRun(bool replace)
+	{
+		TraceRestrictItem item = 0;
+		SetTraceRestrictType(item, TRIT_COND_ENDIF);
+		SetTraceRestrictCondFlags(item, TRCF_ELSE);
+		return GenericElseInsertionDryRun(item, replace);
+	}
+
+	bool ElseIfInsertionDryRun(bool replace)
+	{
+		TraceRestrictItem item = 0;
+		SetTraceRestrictType(item, TRIT_COND_UNDEFINED);
+		SetTraceRestrictCondFlags(item, TRCF_ELSE);
+		return GenericElseInsertionDryRun(item, replace);
+	}
 };
 
 static const NWidgetPart _nested_program_widgets[] = {
@@ -1112,8 +1301,16 @@ static const NWidgetPart _nested_program_widgets[] = {
 	// Button Bar
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_LEFT_2),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_TYPE_NONCOND), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_TYPE_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_CONDFLAGS), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_L2), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
+			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_LEFT),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_TYPE), SetMinimalSize(124, 12), SetFill(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_TYPE_COND), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_TYPE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_L), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
