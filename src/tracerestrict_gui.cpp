@@ -7,7 +7,10 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file tracerestrict_gui.cpp GUI related to signal tracerestrict */
+/** @file tracerestrict_gui.cpp GUI code for Trace Restrict
+ *
+ * This is largely based on the programmable signals patch's GUI
+ * */
 
 #include "stdafx.h"
 #include "tracerestrict.h"
@@ -35,6 +38,7 @@
 extern uint ConvertSpeedToDisplaySpeed(uint speed);
 extern uint ConvertDisplaySpeedToSpeed(uint speed);
 
+/** Widget IDs */
 enum TraceRestrictWindowWidgets {
 	TR_WIDGET_CAPTION,
 	TR_WIDGET_INSTRUCTION_LIST,
@@ -68,6 +72,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_UNSHARE,
 };
 
+/** Selection mappings for NWID_SELECTION selectors */
 enum PanelWidgets {
 	// Left 2
 	DPL2_TYPE = 0,
@@ -93,9 +98,13 @@ enum PanelWidgets {
 	DPS_UNSHARE,
 };
 
-/// value_array *must* be at least as long as string_array,
-/// where the length of string_array is defined as the offset
-/// of the first INVALID_STRING_ID
+/**
+ * drop down list string array, and corresponding integer values
+ *
+ * value_array *must* be at least as long as string_array,
+ * where the length of string_array is defined as the offset
+ * of the first INVALID_STRING_ID
+ */
 struct TraceRestrictDropDownListSet {
 	const StringID *string_array;
 	const uint *value_array;
@@ -109,17 +118,18 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_PF_PENALTY,
 	INVALID_STRING_ID
 };
-static const uint _program_insert_else_flag = 0x100;
-static const uint32 _program_insert_else_hide_mask = 4;
-static const uint32 _program_insert_else_if_hide_mask = 2;
+static const uint _program_insert_else_flag = 0x100;           ///< flag to indicate that TRCF_ELSE should be set
+static const uint32 _program_insert_else_hide_mask = 4;        ///< disable bitmask for else
+static const uint32 _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
 static const uint _program_insert_val[] = {
-	TRIT_COND_UNDEFINED,                               /// if block
-	TRIT_COND_UNDEFINED | _program_insert_else_flag,   /// elif block
-	TRIT_COND_ENDIF | _program_insert_else_flag,       /// else block
-	TRIT_PF_DENY,                                      /// deny
-	TRIT_PF_PENALTY,                                   /// penalty
+	TRIT_COND_UNDEFINED,                               // if block
+	TRIT_COND_UNDEFINED | _program_insert_else_flag,   // elif block
+	TRIT_COND_ENDIF | _program_insert_else_flag,       // else block
+	TRIT_PF_DENY,                                      // deny
+	TRIT_PF_PENALTY,                                   // penalty
 };
 
+/** insert drop down list strings and values */
 static const TraceRestrictDropDownListSet _program_insert = {
 	_program_insert_str, _program_insert_val,
 };
@@ -134,10 +144,15 @@ static const uint _deny_value_val[] = {
 	1,
 };
 
+/** value drop down list for deny types strings and values */
 static const TraceRestrictDropDownListSet _deny_value = {
 	_deny_value_str, _deny_value_val,
 };
 
+/**
+ * Get index of @p value in @p list_set
+ * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
+ */
 static int GetDropDownListIndexByValue(const TraceRestrictDropDownListSet *list_set, uint value, bool missing_ok)
 {
 	const StringID *string_array = list_set->string_array;
@@ -152,11 +167,18 @@ static int GetDropDownListIndexByValue(const TraceRestrictDropDownListSet *list_
 	return -1;
 }
 
+/**
+ * Get StringID correspoding to @p value, in @list_set
+ * @p value must be present
+ */
 static StringID GetDropDownStringByValue(const TraceRestrictDropDownListSet *list_set, uint value)
 {
 	return list_set->string_array[GetDropDownListIndexByValue(list_set, value, false)];
 }
 
+/**
+ * Return the appropriate type dropdown TraceRestrictDropDownListSet for the given item type @p type
+ */
 static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictItemType type)
 {
 	static const StringID str_action[] = {
@@ -198,6 +220,9 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 	return IsTraceRestrictTypeConditional(type) ? &set_cond : &set_action;
 }
 
+/**
+ * Get a TraceRestrictDropDownListSet of the sorted cargo list
+ */
 static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
 {
 	static StringID cargo_list_str[NUM_CARGO + 1];
@@ -225,21 +250,31 @@ static const uint _cargo_cond_ops_val[] = {
 	TRCO_IS,
 	TRCO_ISNOT,
 };
+/** cargo conditional operators dropdown list set */
 static const TraceRestrictDropDownListSet _cargo_cond_ops = {
 	_cargo_cond_ops_str, _cargo_cond_ops_val,
 };
 
+/**
+ * Get the StringID for a given CargoID @p cargo, or STR_NEWGRF_INVALID_CARGO
+ */
 static StringID GetCargoStringByID(CargoID cargo)
 {
 	const CargoSpec *cs = CargoSpec::Get(cargo);
 	return cs->IsValid() ? cs->name : STR_NEWGRF_INVALID_CARGO;
 }
 
+/**
+ * Get the StringID for a given item type @p type
+ */
 static StringID GetTypeString(TraceRestrictItemType type)
 {
 	return GetDropDownStringByValue(GetTypeDropDownListSet(type), type);
 }
 
+/**
+ * Get the conditional operator field drop down list set for a given type property set @p properties
+ */
 static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestrictTypePropertySet properties)
 {
 	static const StringID str_long[] = {
@@ -292,6 +327,9 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 	return NULL;
 }
 
+/**
+ * Return true if item type field @p type is an integer value type
+ */
 static bool IsIntegerValueType(TraceRestrictValueType type)
 {
 	switch (type) {
@@ -304,6 +342,9 @@ static bool IsIntegerValueType(TraceRestrictValueType type)
 	}
 }
 
+/**
+ * Convert integer values between internal units and display units
+ */
 static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_display)
 {
 	switch (type) {
@@ -321,37 +362,40 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 	}
 }
 
+/** String values for TraceRestrictCondFlags, value gives offset into array */
 static const StringID _program_cond_type[] = {
-	/* 0          */          STR_TRACE_RESTRICT_CONDITIONAL_IF,
-	/* TRCF_ELSE  */          STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
-	/* TRCF_OR    */          STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
+	STR_TRACE_RESTRICT_CONDITIONAL_IF,                      // TRCF_DEFAULT
+	STR_TRACE_RESTRICT_CONDITIONAL_ELIF,                    // TRCF_ELSE
+	STR_TRACE_RESTRICT_CONDITIONAL_ORIF,                    // TRCF_OR
 };
 
+/** condition flags field drop down value types */
 enum CondFlagsDropDownType {
 	CFDDT_ELSE = 0,           ///< This is an else block
 	CFDDT_ELIF = TRCF_ELSE,   ///< This is an else-if block
 	CFDDT_ORIF = TRCF_OR,     ///< This is an or-if block
 };
 
-static const uint32 _condflags_dropdown_else_hide_mask = 1;
-static const uint32 _condflags_dropdown_else_if_hide_mask = 6;
+static const uint32 _condflags_dropdown_else_hide_mask = 1;     ///< disable bitmask for CFDDT_ELSE
+static const uint32 _condflags_dropdown_else_if_hide_mask = 6;  ///< disable bitmask for CFDDT_ELIF and CFDDT_ORIF
+
 static const StringID _condflags_dropdown_str[] = {
-	/* CFDDT_ELSE  */          STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
-	/* CFDDT_ELIF  */          STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
-	/* CFDDT_ORIF  */          STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
+	STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
+	STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
+	STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
 	INVALID_STRING_ID,
 };
-
 static const uint _condflags_dropdown_val[] = {
 	CFDDT_ELSE,
 	CFDDT_ELIF,
 	CFDDT_ORIF,
 };
-
+/** condition flags dropdown list set */
 static const TraceRestrictDropDownListSet _condflags_dropdown = {
 	_condflags_dropdown_str, _condflags_dropdown_val,
 };
 
+/** Common function for drawing an ordinary conditional instruction */
 static void DrawInstructionStringConditionalCommon(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties)
 {
 	assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
@@ -360,6 +404,7 @@ static void DrawInstructionStringConditionalCommon(TraceRestrictItem item, const
 	SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
 }
 
+/** Common function for drawing an integer conditional instruction */
 static void DrawInstructionStringConditionalIntegerCommon(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties)
 {
 	DrawInstructionStringConditionalCommon(item, properties);
@@ -486,14 +531,15 @@ static void DrawInstructionString(TraceRestrictItem item, int y, bool selected, 
 	DrawString(left + indent * 16, right, y, instruction_string, selected ? TC_WHITE : TC_BLACK);
 }
 
+/** Main GUI window class */
 class TraceRestrictWindow: public Window {
-	TileIndex tile;
-	Track track;
-	int selected_instruction; // NB: this is offset by one due to the display of the "start" item
-	Scrollbar *vscroll;
-	std::map<int, const TraceRestrictDropDownListSet *> drop_down_list_mapping;
-	TraceRestrictItem expecting_inserted_item;
-	int current_placement_widget;
+	TileIndex tile;                                                             ///< tile this window is for
+	Track track;                                                                ///< track this window is for
+	int selected_instruction;                                                   ///< selected instruction index, this is offset by one due to the display of the "start" item
+	Scrollbar *vscroll;                                                         ///< scrollbar widget
+	std::map<int, const TraceRestrictDropDownListSet *> drop_down_list_mapping; ///< mapping of widget IDs to drop down list sets
+	TraceRestrictItem expecting_inserted_item;                                  ///< set to instruction when performing an instruction insertion, used to handle selection update on insertion
+	int current_placement_widget;                                               ///< which widget has a SetObjectToPlaceWnd, if any
 
 public:
 	TraceRestrictWindow(WindowDesc *desc, TileIndex tile, Track track)
@@ -516,7 +562,7 @@ public:
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST: {
-				int sel = this->GetInstructionFromPt(pt.y);
+				int sel = this->GetItemIndexFromPt(pt.y);
 
 				if (_ctrl_pressed) {
 					// scroll to target (for stations, waypoints, depots)
@@ -820,6 +866,9 @@ public:
 		}
 	}
 
+	/**
+	 * Common OnPlaceObject handler for program management actions which involve clicking on a signal
+	 */
 	void OnPlaceObjectSignal(Point pt, TileIndex source_tile, int widget, int error_message)
 	{
 		if (!IsPlainRailTile(source_tile)) {
@@ -868,6 +917,9 @@ public:
 		}
 	}
 
+	/**
+	 * Common OnPlaceObject handler for instruction value modification actions which involve selecting an order target
+	 */
 	void OnPlaceObjectDestination(Point pt, TileIndex tile, int widget, int error_message)
 	{
 		TraceRestrictItem item = GetSelected();
@@ -967,12 +1019,12 @@ public:
 		}
 	}
 
-	virtual void OnInvalidateData(int data, bool gui_scope) {
+	virtual void OnInvalidateData(int data, bool gui_scope)
+	{
 		if (gui_scope) {
 			this->ReloadProgramme();
 		}
 	}
-
 
 	virtual void SetStringParameters(int widget) const
 	{
@@ -1000,7 +1052,10 @@ public:
 	}
 
 private:
-	TraceRestrictItem MakeSpecialItem(TraceRestictNullTypeSpecialValue value) const
+	/**
+	 * Helper function to make start and end instructions (these are not stored in the actual program)
+	 */
+	TraceRestrictItem MakeSpecialItem(TraceRestrictNullTypeSpecialValue value) const
 	{
 		TraceRestrictItem item = 0;
 		SetTraceRestrictType(item, TRIT_NULL);
@@ -1008,6 +1063,9 @@ private:
 		return item;
 	}
 
+	/**
+	 * Get item count of program, including start and end markers
+	 */
 	int GetItemCount(const TraceRestrictProgram *prog) const
 	{
 		if (prog) {
@@ -1017,13 +1075,21 @@ private:
 		}
 	}
 
-	/// This may return NULL if no program currently exists
+	/**
+	 * Get current program
+	 * This may return NULL if no program currently exists
+	 */
 	const TraceRestrictProgram *GetProgram() const
 	{
 		return GetTraceRestrictProgram(MakeTraceRestrictRefId(tile, track), false);
 	}
 
-	/// prog may be NULL
+	/**
+	 * Get instruction at @p index in program @p prog
+	 * This correctly handles start/end markers, offsets, etc.
+	 * This returns a 0 instruction if out of bounds
+	 * @p prog may be NULL
+	 */
 	TraceRestrictItem GetItem(const TraceRestrictProgram *prog, int index) const
 	{
 		if (index < 0) {
@@ -1056,17 +1122,26 @@ private:
 		}
 	}
 
+	/**
+	 * Get selected instruction, or a zero instruction
+	 */
 	TraceRestrictItem GetSelected() const
 	{
 		return this->GetItem(this->GetProgram(), this->selected_instruction);
 	}
 
+	/**
+	 * Get owner of the signal tile this window is pointing at
+	 */
 	Owner GetOwner()
 	{
-		return GetTileOwner(tile);
+		return GetTileOwner(this->tile);
 	}
 
-	int GetInstructionFromPt(int y)
+	/**
+	 * Return item index from point in instruction list widget
+	 */
+	int GetItemIndexFromPt(int y)
 	{
 		NWidgetBase *nwid = this->GetWidget<NWidgetBase>(TR_WIDGET_INSTRUCTION_LIST);
 		int sel = (y - nwid->pos_y - WD_FRAMERECT_TOP) / nwid->resize_y; // Selected line
@@ -1078,6 +1153,9 @@ private:
 		return (sel < this->GetItemCount(this->GetProgram()) && sel >= 0) ? sel : -1;
 	}
 
+	/**
+	 * Reload details of program, and adjust length/selection position as necessary
+	 */
 	void ReloadProgramme()
 	{
 		const TraceRestrictProgram *prog = this->GetProgram();
@@ -1098,6 +1176,9 @@ private:
 		this->UpdateButtonState();
 	}
 
+	/**
+	 * Update button states, text values, etc.
+	 */
 	void UpdateButtonState()
 	{
 		this->RaiseWidget(TR_WIDGET_INSERT);
@@ -1289,6 +1370,10 @@ private:
 		this->SetDirty();
 	}
 
+	/**
+	 * Show a drop down list using @p list_set, setting the pre-selected item to the one corresponding to @p value
+	 * This asserts if @p value is not in @p list_set, and @p missing_ok is false
+	 */
 	void ShowDropDownListWithValue(const TraceRestrictDropDownListSet *list_set, uint value, bool missing_ok,
 			int button, uint32 disabled_mask, uint32 hidden_mask, uint width)
 	{
@@ -1297,6 +1382,9 @@ private:
 		ShowDropDownMenu(this, list_set->string_array, selected, button, disabled_mask, hidden_mask, width);
 	}
 
+	/**
+	 * Helper function to set or unset a SetObjectToPlaceWnd, for the given widget and cursor type
+	 */
 	void SetObjectToPlaceAction(int widget, CursorID cursor)
 	{
 		this->ToggleWidgetLoweredState(widget);
@@ -1310,7 +1398,11 @@ private:
 		}
 	}
 
-	/// This used for testing whether else or else-if blocks could be inserted, or replace the selection
+	/**
+	 * This used for testing whether else or else-if blocks could be inserted, or replace the selection
+	 * If @p replace is true, replace selection with @p item, else insert @p item before selection
+	 * Returns true if resulting instruction list passes validation
+	 */
 	bool GenericElseInsertionDryRun(TraceRestrictItem item, bool replace)
 	{
 		if (this->selected_instruction < 1) return false;
@@ -1332,6 +1424,9 @@ private:
 		return TraceRestrictProgram::Validate(items).Succeeded();
 	}
 
+	/**
+	 * Run GenericElseInsertionDryRun with an else instruction
+	 */
 	bool ElseInsertionDryRun(bool replace)
 	{
 		TraceRestrictItem item = 0;
@@ -1340,6 +1435,9 @@ private:
 		return GenericElseInsertionDryRun(item, replace);
 	}
 
+	/**
+	 * Run GenericElseInsertionDryRun with an elif instruction
+	 */
 	bool ElseIfInsertionDryRun(bool replace)
 	{
 		TraceRestrictItem item = 0;
@@ -1430,6 +1528,9 @@ static WindowDesc _program_desc(
 	_nested_program_widgets, lengthof(_nested_program_widgets)
 );
 
+/**
+ * Show or create program window for given @p tile and @p track
+ */
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track)
 {
 	if (BringWindowToFrontById(WC_TRACE_RESTRICT, MakeTraceRestrictRefId(tile, track)) != NULL) {

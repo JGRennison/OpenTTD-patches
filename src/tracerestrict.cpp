@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file tracerestrict.h Header file for Trace Restriction. */
+/** @file tracerestrict.cpp Main file for Trace Restrict */
 
 #include "stdafx.h"
 #include "tracerestrict.h"
@@ -21,7 +21,9 @@
 #include "pathfinder/yapf/yapf_cache.h"
 #include <vector>
 
-/** Trace Restrict Data Storage Model Notes:
+/** @file
+ *
+ * Trace Restrict Data Storage Model Notes:
  *
  * Signals may have 0, 1 or 2 trace restrict programs attached to them,
  * up to one for each track. Two-way signals share the same program.
@@ -54,7 +56,6 @@
  * to be gained by doing so.
  */
 
-/** Initialize the program pool */
 TraceRestrictProgramPool _tracerestrictprogram_pool("TraceRestrictProgram");
 INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
 
@@ -65,12 +66,20 @@ INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
  */
 TraceRestrictMapping _tracerestrictprogram_mapping;
 
-/// This should be used when all pools have been or are immediately about to be also cleared
-/// Calling this at other times will leave dangling refcounts
+/**
+ * This should be used when all pools have been or are immediately about to be also cleared
+ * Calling this at other times will leave dangling refcounts
+ */
 void ClearTraceRestrictMapping() {
 	_tracerestrictprogram_mapping.clear();
 }
 
+/**
+ * Flags used for the program execution condition stack
+ * Each 'if' pushes onto the stack
+ * Each 'end if' pops from the stack
+ * Elif/orif/else may modify the stack top
+ */
 enum TraceRestrictCondStackFlags {
 	TRCSF_DONE_IF         = 1<<0,       ///< The if/elif/else is "done", future elif/else branches will not be executed
 	TRCSF_SEEN_ELSE       = 1<<1,       ///< An else branch has been seen already, error if another is seen afterwards
@@ -79,6 +88,9 @@ enum TraceRestrictCondStackFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictCondStackFlags)
 
+/**
+ * Helper function to handle condition stack manipulatoin
+ */
 static void HandleCondition(std::vector<TraceRestrictCondStackFlags> &condstack, TraceRestrictCondFlags condflags, bool value)
 {
 	if (condflags & TRCF_OR) {
@@ -111,7 +123,10 @@ static void HandleCondition(std::vector<TraceRestrictCondStackFlags> &condstack,
 	}
 }
 
-/// Test value op condvalue
+/**
+ * Integer condition testing
+ * Test value op condvalue
+ */
 static bool TestCondition(uint16 value, TraceRestrictCondOp condop, uint16 condvalue)
 {
 	switch (condop) {
@@ -133,6 +148,9 @@ static bool TestCondition(uint16 value, TraceRestrictCondOp condop, uint16 condv
 	}
 }
 
+/**
+ * Binary condition testing helper function
+ */
 static bool TestBinaryConditionCommon(TraceRestrictItem item, bool input)
 {
 	switch (GetTraceRestrictCondOp(item)) {
@@ -148,8 +166,10 @@ static bool TestBinaryConditionCommon(TraceRestrictItem item, bool input)
 	}
 }
 
-/// Test order condition
-/// order may be NULL
+/**
+ * Test order condition
+ * @p order may be NULL
+ */
 static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
 {
 	bool result = false;
@@ -176,7 +196,9 @@ static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
 	return TestBinaryConditionCommon(item, result);
 }
 
-/// Test station condition
+/**
+ * Test station condition
+ */
 static bool TestStationCondition(StationID station, TraceRestrictItem item)
 {
 	bool result = (GetTraceRestrictAuxField(item) == TROCAF_STATION) && (station == GetTraceRestrictValue(item));
@@ -184,7 +206,11 @@ static bool TestStationCondition(StationID station, TraceRestrictItem item)
 
 }
 
-/// Execute program on train and store results in out
+/**
+ * Execute program on train and store results in out
+ * @p v may not be NULL
+ * @p out should be zero-initialised
+ */
 void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& out) const
 {
 	// static to avoid needing to re-alloc/resize on each execution
@@ -288,6 +314,9 @@ void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& o
 	assert(condstack.empty());
 }
 
+/**
+ * Decrement ref count, only use when removing a mapping
+ */
 void TraceRestrictProgram::DecrementRefCount() {
 	assert(this->refcount > 0);
 	this->refcount--;
@@ -296,10 +325,13 @@ void TraceRestrictProgram::DecrementRefCount() {
 	}
 }
 
-/// returns successful result if program seems OK
-/// This only validates that conditional nesting is correct, at present
+/**
+ * Validate a instruction list
+ * Returns successful result if program seems OK
+ * This only validates that conditional nesting is correct, at present
+ */
 CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> &items) {
-		// static to avoid needing to re-alloc/resize on each execution
+	// static to avoid needing to re-alloc/resize on each execution
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
 
@@ -345,6 +377,9 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 	return CommandCost();
 }
 
+/**
+ * Set the value and aux field of @p item, as per the value type in @p value_type
+ */
 void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueType value_type)
 {
 	switch (value_type) {
@@ -373,9 +408,9 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 	}
 }
 
-/// Set the type field of a TraceRestrictItem, and
-/// reset any other fields which are no longer valid/meaningful
-/// to sensible defaults
+/**
+ * Set the type field of a TraceRestrictItem, and resets any other fields which are no longer valid/meaningful to sensible defaults
+ */
 void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type)
 {
 	if (item != 0) {
@@ -395,6 +430,10 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItem
 	}
 }
 
+/**
+ * Sets the "signal has a trace restrict mapping" bit
+ * This looks for mappings with that tile index
+ */
 void SetIsSignalRestrictedBit(TileIndex t)
 {
 	// First mapping for this tile, or later
@@ -407,6 +446,10 @@ void SetIsSignalRestrictedBit(TileIndex t)
 	SetRestrictedSignal(t, lower_bound != upper_bound);
 }
 
+/**
+ * Create a new program mapping to an existing program
+ * If a mapping already exists, it is removed
+ */
 void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProgram *prog)
 {
 	std::pair<TraceRestrictMapping::iterator, bool> insert_result =
@@ -427,6 +470,9 @@ void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProg
 	YapfNotifyTrackLayoutChange(tile, track);
 }
 
+/**
+ * Remove a program mapping
+ */
 void TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 {
 	TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.find(ref);
@@ -443,9 +489,10 @@ void TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 	}
 }
 
-/// Gets the trace restrict program for the tile/track ref ID identified by @p ref.
-/// An empty program will be constructed if none exists, and @p create_new is true
-/// unless the pool is full
+/**
+ * Gets the signal program for the tile ref @p ref
+ * An empty program will be constructed if none exists, and @p create_new is true, unless the pool is full
+ */
 TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool create_new)
 {
 	// Optimise for lookup, creating doesn't have to be that fast
@@ -471,8 +518,10 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 	}
 }
 
-/// Notify that a signal is being removed
-/// Remove any trace restrict items associated with it
+/**
+ * Notify that a signal is being removed
+ * Remove any trace restrict mappings associated with it
+ */
 void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 {
 	TraceRestrictRefId ref = MakeTraceRestrictRefId(tile, track);
@@ -480,6 +529,9 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 	DeleteWindowById(WC_TRACE_RESTRICT, ref);
 }
 
+/**
+ * Helper function to perform parameter bit-packing and call DoCommandP, for instruction modification actions
+ */
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32 offset, uint32 value, StringID error_msg)
 {
 	uint32 p1 = 0;
@@ -490,6 +542,9 @@ void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommand
 	DoCommandP(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
 }
 
+/**
+ * Check whether a tile/tracl pair contains a usable signal
+ */
 static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
 {
 	// Check that there actually is a signal here
@@ -662,6 +717,9 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	return CommandCost();
 }
 
+/**
+ * Helper function to perform parameter bit-packing and call DoCommandP, for program management actions
+ */
 void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
 		TileIndex source_tile, Track source_track, StringID error_msg)
 {
@@ -779,6 +837,10 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 	return CommandCost();
 }
 
+/**
+ * This is called when a station, waypoint or depot is about to be deleted
+ * Scan program pool and change any references to it to the invalid station ID, to avoid dangling references
+ */
 void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16 index)
 {
 	TraceRestrictProgram *prog;
