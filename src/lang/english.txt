@@ -2390,6 +2390,7 @@ STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :current order
 STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :next order
 STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :last visited station
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :cargo
+STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} then
@@ -2397,6 +2398,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING} {STRING} {STRING} {WAYPOINT} then
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRING} {STRING} {DEPOT} then
 STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} train {STRING} cargo: {STRING} then
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} train {STRING} entering from {STRING} tile edge then
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} train {STRING} entering from {STRING} of signal then
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
@@ -2407,6 +2410,12 @@ STR_TRACE_RESTRICT_PF_DENY                                      :Deny
 STR_TRACE_RESTRICT_PF_ALLOW                                     :Allow
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Allow (cancel previous Deny)
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
+STR_TRACE_RESTRICT_DIRECTION_FRONT                              :front
+STR_TRACE_RESTRICT_DIRECTION_BACK                               :back
+STR_TRACE_RESTRICT_DIRECTION_NE                                 :north-east
+STR_TRACE_RESTRICT_DIRECTION_SE                                 :south-east
+STR_TRACE_RESTRICT_DIRECTION_SW                                 :south-west
+STR_TRACE_RESTRICT_DIRECTION_NW                                 :north-west
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals

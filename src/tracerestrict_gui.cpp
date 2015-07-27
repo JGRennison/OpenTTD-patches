@@ -149,6 +149,29 @@ static const TraceRestrictDropDownListSet _deny_value = {
 	_deny_value_str, _deny_value_val,
 };
 
+static const StringID _direction_value_str[] = {
+	STR_TRACE_RESTRICT_DIRECTION_FRONT,
+	STR_TRACE_RESTRICT_DIRECTION_BACK,
+	STR_TRACE_RESTRICT_DIRECTION_NE,
+	STR_TRACE_RESTRICT_DIRECTION_SE,
+	STR_TRACE_RESTRICT_DIRECTION_SW,
+	STR_TRACE_RESTRICT_DIRECTION_NW,
+	INVALID_STRING_ID
+};
+static const uint _direction_value_val[] = {
+	TRDTSV_FRONT,
+	TRDTSV_BACK,
+	TRNTSV_NE,
+	TRNTSV_SE,
+	TRNTSV_SW,
+	TRNTSV_NW,
+};
+
+/** value drop down list for direction type strings and values */
+static const TraceRestrictDropDownListSet _direction_value = {
+	_direction_value_str, _direction_value_val,
+};
+
 /**
  * Get index of @p value in @p list_set
  * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
@@ -201,6 +224,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER,
 		STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION,
 		STR_TRACE_RESTRICT_VARIABLE_CARGO,
+		STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -211,6 +235,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		TRIT_COND_NEXT_ORDER,
 		TRIT_COND_LAST_STATION,
 		TRIT_COND_CARGO,
+		TRIT_COND_ENTRY_DIRECTION,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -490,6 +515,17 @@ static void DrawInstructionString(TraceRestrictItem item, int y, bool selected, 
 					SetDParam(2, GetCargoStringByID(GetTraceRestrictValue(item)));
 					break;
 
+				case TRVT_DIRECTION:
+					if (GetTraceRestrictValue(item) >= TRDTSV_FRONT) {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE;
+					} else {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION;
+					}
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+					SetDParam(2, GetDropDownStringByValue(&_direction_value, GetTraceRestrictValue(item)));
+					break;
+
 				default:
 					NOT_REACHED();
 					break;
@@ -704,6 +740,10 @@ public:
 
 					case TRVT_CARGO_ID:
 						this->ShowDropDownListWithValue(GetSortedCargoTypeDropDownListSet(), GetTraceRestrictValue(item), true, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0); // current cargo is permitted to not be in list
+						break;
+
+					case TRVT_DIRECTION:
+						this->ShowDropDownListWithValue(&_direction_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
 					default:
@@ -1355,6 +1395,13 @@ private:
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
 									GetCargoStringByID(GetTraceRestrictValue(item));
+							break;
+
+						case TRVT_DIRECTION:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetDropDownStringByValue(&_direction_value, GetTraceRestrictValue(item));
 							break;
 
 						default:

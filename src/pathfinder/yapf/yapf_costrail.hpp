@@ -194,7 +194,7 @@ private:
 	{
 		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
 		if (prog) {
-			prog->Execute(Yapf().GetVehicle(), out);
+			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir), out);
 			if (out.flags & TRPRF_DENY) {
 				n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
 				return true;

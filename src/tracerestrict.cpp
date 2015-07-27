@@ -211,7 +211,7 @@ static bool TestStationCondition(StationID station, TraceRestrictItem item)
  * @p v may not be NULL
  * @p out should be zero-initialised
  */
-void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& out) const
+void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult& out) const
 {
 	// static to avoid needing to re-alloc/resize on each execution
 	static std::vector<TraceRestrictCondStackFlags> condstack;
@@ -284,6 +284,32 @@ void TraceRestrictProgram::Execute(const Train* v, TraceRestrictProgramResult& o
 							}
 						}
 						result = TestBinaryConditionCommon(item, have_cargo);
+						break;
+					}
+
+					case TRIT_COND_ENTRY_DIRECTION: {
+						bool direction_match;
+						switch (GetTraceRestrictValue(item)) {
+							case TRNTSV_NE:
+							case TRNTSV_SE:
+							case TRNTSV_SW:
+							case TRNTSV_NW:
+								direction_match = (static_cast<DiagDirection>(GetTraceRestrictValue(item)) == TrackdirToExitdir(ReverseTrackdir(input.trackdir)));
+								break;
+
+							case TRDTSV_FRONT:
+								direction_match = IsTileType(input.tile, MP_RAILWAY) && HasSignalOnTrackdir(input.tile, input.trackdir);
+								break;
+
+							case TRDTSV_BACK:
+								direction_match = IsTileType(input.tile, MP_RAILWAY) && !HasSignalOnTrackdir(input.tile, input.trackdir);
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						result = TestBinaryConditionCommon(item, direction_match);
 						break;
 					}
 
@@ -399,6 +425,11 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_CARGO_ID:
 			assert(_sorted_standard_cargo_specs_size > 0);
 			SetTraceRestrictValue(item, _sorted_cargo_specs[0]->Index());
+			SetTraceRestrictAuxField(item, 0);
+			break;
+
+		case TRVT_DIRECTION:
+			SetTraceRestrictValue(item, TRDTSV_FRONT);
 			SetTraceRestrictAuxField(item, 0);
 			break;
 

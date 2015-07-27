@@ -105,6 +105,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_NEXT_ORDER          = 13,   ///< Test train next order (station, waypoint or depot)
 	TRIT_COND_LAST_STATION        = 14,   ///< Test train last visited station
 	TRIT_COND_CARGO               = 15,   ///< Test if train can carry cargo type
+	TRIT_COND_ENTRY_DIRECTION     = 16,   ///< Test which side of signal/signal tile is being entered from
 	/* space up to 31 */
 };
 
@@ -126,6 +127,18 @@ enum TraceRestrictNullTypeSpecialValue {
 	TRNTSV_NULL                   = 0,       ///< null, what you get when you zero-init a TraceRestrictItemvalue
 	TRNTSV_START                  = 1,       ///< start tag, generated within GUI
 	TRNTSV_END                    = 2,       ///< end tag, generated within GUI
+};
+
+/**
+ * Enumeration of TraceRestrictItemvalue type field when value type is TRVT_DIRECTION
+ */
+enum TraceRestrictDirectionTypeSpecialValue {
+	TRNTSV_NE                     = 0,       ///< DIAGDIR_NE: entering at NE tile edge
+	TRNTSV_SE                     = 1,       ///< DIAGDIR_SE: entering at SE tile edge
+	TRNTSV_SW                     = 2,       ///< DIAGDIR_SW: entering at SW tile edge
+	TRNTSV_NW                     = 3,       ///< DIAGDIR_NW: entering at NW tile edge
+	TRDTSV_FRONT                  = 4,       ///< entering at front face of signal
+	TRDTSV_BACK                   = 5,       ///< entering at rear face of signal
 };
 
 /**
@@ -160,6 +173,17 @@ enum TraceRestrictProgramResultFlags {
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
 /**
+ * Execution input of a TraceRestrictProgram
+ */
+struct TraceRestrictProgramInput {
+	TileIndex tile;                          ///< Tile of restrict signal, for direction testing
+	Trackdir trackdir;                       ///< Track direction on tile of restrict signal, for direction testing
+
+	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_)
+			: tile(tile_), trackdir(trackdir_) { }
+};
+
+/**
  * Execution result of a TraceRestrictProgram
  */
 struct TraceRestrictProgramResult {
@@ -181,7 +205,7 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 	TraceRestrictProgram()
 			: refcount(0) { }
 
-	void Execute(const Train *v, TraceRestrictProgramResult &out) const;
+	void Execute(const Train *v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult &out) const;
 
 	/**
 	 * Increment ref count, only use when creating a mapping
@@ -292,6 +316,7 @@ enum TraceRestrictValueType {
 	TRVT_SPEED                    = 4, ///< takes an integer speed value
 	TRVT_ORDER                    = 5, ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
 	TRVT_CARGO_ID                 = 6, ///< takes a CargoID
+	TRVT_DIRECTION                = 7, ///< takes a TraceRestrictDirectionTypeSpecialValue
 };
 
 /**
@@ -340,6 +365,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_CARGO:
 				out.value_type = TRVT_CARGO_ID;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_ENTRY_DIRECTION:
+				out.value_type = TRVT_DIRECTION;
 				out.cond_type = TRCOT_BINARY;
 				break;
 
