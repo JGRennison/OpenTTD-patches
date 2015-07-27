@@ -1109,7 +1109,7 @@ private:
 	int GetItemCount(const TraceRestrictProgram *prog) const
 	{
 		if (prog) {
-			return 2 + prog->items.size();
+			return 2 + prog->GetInstructionCount();
 		} else {
 			return 2;
 		}
@@ -1141,17 +1141,17 @@ private:
 		}
 
 		if (prog) {
-			const std::vector<TraceRestrictItem> &items = prog->items;
+			size_t instruction_count = prog->GetInstructionCount();
 
-			if (static_cast<size_t>(index) == items.size() + 1) {
+			if (static_cast<size_t>(index) == instruction_count + 1) {
 				return MakeSpecialItem(TRNTSV_END);
 			}
 
-			if (static_cast<size_t>(index) > items.size() + 1) {
+			if (static_cast<size_t>(index) > instruction_count + 1) {
 				return 0;
 			}
 
-			return items[index - 1];
+			return prog->items[prog->InstructionOffsetToArrayOffset(index - 1)];
 		} else {
 			// No program defined, this is equivalent to an empty program
 			if (index == 1) {
@@ -1460,12 +1460,13 @@ private:
 
 		std::vector<TraceRestrictItem> items = prog->items; // copy
 
-		if (offset >= (items.size() + (replace ? 0 : 1))) return false; // off the end of the program
+		if (offset >= (TraceRestrictProgram::GetInstructionCount(items) + (replace ? 0 : 1))) return false; // off the end of the program
 
+		uint array_offset = TraceRestrictProgram::InstructionOffsetToArrayOffset(items, offset);
 		if (replace) {
-			items[offset] = item;
+			items[array_offset] = item;
 		} else {
-			items.insert(items.begin() + offset, item);
+			items.insert(items.begin() + array_offset, item);
 		}
 
 		return TraceRestrictProgram::Validate(items).Succeeded();

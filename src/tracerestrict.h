@@ -216,6 +216,46 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 
 	static CommandCost Validate(const std::vector<TraceRestrictItem> &items);
 
+	static size_t InstructionOffsetToArrayOffset(const std::vector<TraceRestrictItem> &items, size_t offset);
+
+	static size_t ArrayOffsetToInstructionOffset(const std::vector<TraceRestrictItem> &items, size_t offset);
+
+	/** Call InstructionOffsetToArrayOffset on current program instruction list */
+	size_t InstructionOffsetToArrayOffset(size_t offset) const
+	{
+		return TraceRestrictProgram::InstructionOffsetToArrayOffset(this->items, offset);
+	}
+
+	/** Call ArrayOffsetToInstructionOffset on current program instruction list */
+	size_t ArrayOffsetToInstructionOffset(size_t offset) const
+	{
+		return TraceRestrictProgram::ArrayOffsetToInstructionOffset(this->items, offset);
+	}
+
+	/** Get number of instructions in @p items */
+	static size_t GetInstructionCount(const std::vector<TraceRestrictItem> &items)
+	{
+		return ArrayOffsetToInstructionOffset(items, items.size());
+	}
+
+	/** Call GetInstructionCount on current program instruction list */
+	size_t GetInstructionCount() const
+	{
+		return TraceRestrictProgram::GetInstructionCount(this->items);
+	}
+
+	/** Get an iterator to the instruction at a given @p instruction_offset in @p items */
+	static std::vector<TraceRestrictItem>::iterator InstructionAt(std::vector<TraceRestrictItem> &items, size_t instruction_offset)
+	{
+		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
+	}
+
+	/** Get a const_iterator to the instruction at a given @p instruction_offset in @p items */
+	static std::vector<TraceRestrictItem>::const_iterator InstructionAt(const std::vector<TraceRestrictItem> &items, size_t instruction_offset)
+	{
+		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
+	}
+
 	/**
 	 * Call validation function on current program instruction list
 	 */
@@ -292,6 +332,12 @@ static inline bool IsTraceRestrictTypeConditional(TraceRestrictItemType type)
 static inline bool IsTraceRestrictConditional(TraceRestrictItem item)
 {
 	return IsTraceRestrictTypeConditional(GetTraceRestrictType(item));
+}
+
+/** Is TraceRestrictItem a double-item type? */
+static inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
+{
+	return false;
 }
 
 /**
@@ -432,14 +478,15 @@ static inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIn
  * Enumeration for command action type field, indicates what command to do
  */
 enum TraceRestrictDoCommandType {
-	TRDCT_INSERT_ITEM             = 0,       ///< insert new instruction before offset field as given value
-	TRDCT_MODIFY_ITEM             = 1,       ///< modify instruction at offset field to given value
-	TRDCT_REMOVE_ITEM             = 2,       ///< remove instruction at offset field
+	TRDCT_INSERT_ITEM,                       ///< insert new instruction before offset field as given value
+	TRDCT_MODIFY_ITEM,                       ///< modify instruction at offset field to given value
+	TRDCT_MODIFY_DUAL_ITEM,                  ///< modify second item of dual-part instruction at offset field to given value
+	TRDCT_REMOVE_ITEM,                       ///< remove instruction at offset field
 
-	TRDCT_PROG_COPY               = 3,       ///< copy program operation. Do not re-order this with respect to other values
-	TRDCT_PROG_SHARE              = 4,       ///< share program operation
-	TRDCT_PROG_UNSHARE            = 5,       ///< unshare program (copy as a new program)
-	TRDCT_PROG_RESET              = 6,       ///< reset program state of signal
+	TRDCT_PROG_COPY,                         ///< copy program operation. Do not re-order this with respect to other values
+	TRDCT_PROG_SHARE,                        ///< share program operation
+	TRDCT_PROG_UNSHARE,                      ///< unshare program (copy as a new program)
+	TRDCT_PROG_RESET,                        ///< reset program state of signal
 };
 
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32 offset, uint32 value, StringID error_msg);
