@@ -4482,6 +4482,22 @@
 				RelativePath=".\..\src\thread\thread_win32.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\..\src\tracerestrict.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tracerestrict.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tracerestrict_gui.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\saveload\tracerestrict_sl.cpp"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\..\media\openttd.ico"
