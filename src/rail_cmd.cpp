@@ -2770,6 +2770,12 @@ static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
 			}
 
 			td->str = signal_type[secondary_signal][primary_signal];
+
+			if (IsRestrictedSignal(tile)) {
+				SetDParamX(td->dparam, 0, td->str);
+				SetDParamX(td->dparam, 1, rti->strings.name);
+				td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
+			}
 			break;
 		}
 

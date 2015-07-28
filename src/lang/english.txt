@@ -2712,6 +2712,8 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} track 
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} track with path and one-way path signals
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} train depot
 
+STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :{STRING1} (restricted)
+
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Road
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Road with street lights
 STR_LAI_ROAD_DESCRIPTION_TREE_LINED_ROAD                        :Tree-lined road
