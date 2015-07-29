@@ -52,14 +52,15 @@ public:
 			case WID_TT_BRIDGES:
 			case WID_TT_STRUCTURES:
 			case WID_TT_CATENARY:
-			case WID_TT_LOADING: {
+			case WID_TT_LOADING:
+			case WIT_TT_TUNNELS: {
 				uint i = widget - WID_TT_BEGIN;
 				if (HasBit(_transparency_lock, i)) DrawSprite(SPR_LOCK, PAL_NONE, r.left + 1, r.top + 1);
 				break;
 			}
 			case WID_TT_BUTTONS:
 				for (uint i = WID_TT_BEGIN; i < WID_TT_END; i++) {
-					if (i == WID_TT_LOADING) continue; // Do not draw button for invisible loading indicators.
+					if (i == WID_TT_LOADING || i == WIT_TT_TUNNELS) continue; // Do not draw button for invisible loading indicators.
 
 					const NWidgetBase *wi = this->GetWidget<NWidgetBase>(i);
 					DrawFrameRect(wi->pos_x + 1, r.top + 2, wi->pos_x + wi->current_x - 2, r.bottom - 2, COLOUR_PALE_GREEN,
@@ -141,6 +142,7 @@ static const NWidgetPart _nested_transparency_widgets[] = {
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_TT_STRUCTURES), SetMinimalSize(22, 22), SetFill(0, 1), SetDataTip(SPR_IMG_TRANSMITTER, STR_TRANSPARENT_STRUCTURES_TOOLTIP),
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_TT_CATENARY), SetMinimalSize(22, 22), SetFill(0, 1), SetDataTip(SPR_BUILD_X_ELRAIL, STR_TRANSPARENT_CATENARY_TOOLTIP),
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_TT_LOADING), SetMinimalSize(22, 22), SetFill(0, 1), SetDataTip(SPR_IMG_TRAINLIST, STR_TRANSPARENT_LOADING_TOOLTIP),
+		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WIT_TT_TUNNELS), SetMinimalSize(22, 22), SetFill(0, 1), SetDataTip(SPR_IMG_ROAD_TUNNEL, STR_TRANSPARENT_TUNNELS_TOOLTIP),
 		NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetFill(1, 1), EndContainer(),
 	EndContainer(),
 	/* Panel with 'invisibility' buttons. */
