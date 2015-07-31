@@ -138,6 +138,25 @@ void SlXvCheckSpecialSavegameVersions()
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 1;
 	}
+
+	if (_sl_version == 220) { /* SL_SPRING_2013_v2_0_102 */
+		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.0.102 savegame version %d as version 187", _sl_version);
+
+		_sl_version = 187;
+		_sl_xv_feature_versions[XSLFI_RIFF_HEADER_60_BIT] = 1;
+		_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 1;
+		_sl_xv_feature_versions[XSLFI_MIGHT_USE_PAX_SIGNALS] = 1;
+
+		_sl_xv_feature_versions[XSLFI_TIMETABLES_START_TICKS] = 1;
+		_sl_xv_feature_versions[XSLFI_VEHICLE_REPAIR_COST] = 1;
+		_sl_xv_feature_versions[XLSFI_IMPROVED_BREAKDOWNS] = 1;
+		_sl_xv_feature_versions[XSLFI_INFRA_SHARING] = 1;
+		_sl_xv_feature_versions[XSLFI_AUTO_TIMETABLE] = 1;
+
+		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 1;
+
+		_sl_xv_discardable_chunk_ids.push_back('SNOW');
+	}
 }
 
 /**

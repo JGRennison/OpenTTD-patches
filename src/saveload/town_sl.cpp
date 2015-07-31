@@ -137,6 +137,7 @@ static const SaveLoad _town_desc[] = {
 	SLE_CONDVAR(Town, have_ratings,          SLE_UINT16,               104, SL_MAX_VERSION),
 	SLE_CONDARR(Town, ratings,               SLE_INT16, 8,               0, 103),
 	SLE_CONDARR(Town, ratings,               SLE_INT16, MAX_COMPANIES, 104, SL_MAX_VERSION),
+	SLE_CONDNULL_X(MAX_COMPANIES, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 	/* failed bribe attempts are stored since savegame format 4 */
 	SLE_CONDARR(Town, unwanted,              SLE_INT8,  8,               4, 103),
 	SLE_CONDARR(Town, unwanted,              SLE_INT8,  MAX_COMPANIES, 104, SL_MAX_VERSION),
@@ -217,6 +218,15 @@ static const SaveLoad _town_received_desc[] = {
 	SLE_END()
 };
 
+static const SaveLoad _town_received_desc_spp[] = {
+	SLE_CONDVAR(TransportedCargoStat<uint16>, old_max, SLE_FILE_U32 | SLE_VAR_U16, 165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16>, new_max, SLE_FILE_U32 | SLE_VAR_U16, 165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16>, old_act, SLE_FILE_U32 | SLE_VAR_U16, 165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16>, new_act, SLE_FILE_U32 | SLE_VAR_U16, 165, SL_MAX_VERSION),
+
+	SLE_END()
+};
+
 static void Save_HIDS()
 {
 	Save_NewGRFMapping(_house_mngr);
@@ -247,8 +257,14 @@ static void RealSave_Town(Town *t)
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
 		SlObject(&t->supplied[i], _town_supplied_desc);
 	}
-	for (int i = TE_BEGIN; i < NUM_TE; i++) {
-		SlObject(&t->received[i], _town_received_desc);
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		for (int i = TE_BEGIN; i < NUM_TE; i++) {
+			SlObject(&t->received[i], _town_received_desc_spp);
+		}
+	} else {
+		for (int i = TE_BEGIN; i < NUM_TE; i++) {
+			SlObject(&t->received[i], _town_received_desc);
+		}
 	}
 
 	if (IsSavegameVersionBefore(166)) return;
@@ -281,8 +297,14 @@ static void Load_TOWN()
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			SlObject(&t->supplied[i], _town_supplied_desc);
 		}
-		for (int i = TE_BEGIN; i < TE_END; i++) {
-			SlObject(&t->received[i], _town_received_desc);
+		if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+			for (int i = TE_BEGIN; i < NUM_TE; i++) {
+				SlObject(&t->received[i], _town_received_desc_spp);
+			}
+		} else {
+			for (int i = TE_BEGIN; i < NUM_TE; i++) {
+				SlObject(&t->received[i], _town_received_desc);
+			}
 		}
 
 		if (t->townnamegrfid == 0 && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_LAST + 1) && GB(t->townnametype, 11, 5) != 15) {

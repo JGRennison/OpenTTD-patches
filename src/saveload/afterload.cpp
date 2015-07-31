@@ -584,12 +584,23 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionBefore(194)) {
+	if (IsSavegameVersionBefore(194) && SlXvIsFeatureMissing(XSLFI_HEIGHT_8_BIT)) {
 		_settings_game.construction.max_heightlevel = 15;
 
 		/* In old savegame versions, the heightlevel was coded in bits 0..3 of the type field */
 		for (TileIndex t = 0; t < map_size; t++) {
 			_m[t].height = GB(_m[t].type, 0, 4);
+			SB(_m[t].type, 0, 2, GB(_me[t].m6, 0, 2));
+			SB(_me[t].m6, 0, 2, 0);
+			if (MayHaveBridgeAbove(t)) {
+				SB(_m[t].type, 2, 2, GB(_me[t].m6, 6, 2));
+				SB(_me[t].m6, 6, 2, 0);
+			} else {
+				SB(_m[t].type, 2, 2, 0);
+			}
+		}
+	} else if (SlXvIsFeaturePresent(XSLFI_HEIGHT_8_BIT)) {
+		for (TileIndex t = 0; t < map_size; t++) {
 			SB(_m[t].type, 0, 2, GB(_me[t].m6, 0, 2));
 			SB(_me[t].m6, 0, 2, 0);
 			if (MayHaveBridgeAbove(t)) {
@@ -2940,6 +2951,15 @@ bool AfterLoadGame()
 				o->type = _m[t].m5;
 				_m[t].m5 = 0; // zero upper bits of (now bigger) ObjectID
 			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		// re-arrange vehicle_flags
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, GB(v->vehicle_flags, 6, 1));
+			SB(v->vehicle_flags, VF_STOP_LOADING, 4, GB(v->vehicle_flags, 7, 4));
 		}
 	}
 

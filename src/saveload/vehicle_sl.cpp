@@ -726,9 +726,15 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 
 		 SLE_CONDVAR(Vehicle, current_order_time,    SLE_UINT32,                  67, SL_MAX_VERSION),
 		SLE_CONDVAR_X(Vehicle, current_loading_time, SLE_UINT32,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE)),
+		SLE_CONDNULL_X(4, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 		 SLE_CONDVAR(Vehicle, lateness_counter,      SLE_INT32,                   67, SL_MAX_VERSION),
 
 		SLE_CONDNULL(10,                                                           2, 143), // old reserved space
+
+		SLE_CONDNULL_X((8 + 8 + 2 + 2 + 4 + 4 + 1 + 1) * 30, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
+		SLE_CONDNULL_X(1, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
+		SLE_CONDNULL_X(1, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
+		SLE_CONDNULL_X(2, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 
 		     SLE_END()
 	};
@@ -813,6 +819,8 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 
 		     SLE_VAR(Vehicle, subtype,               SLE_UINT8),
 
+		SLE_CONDNULL_X(5, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
+
 		 SLE_CONDVAR(Vehicle, tile,                  SLE_FILE_U16 | SLE_VAR_U32,   0,   5),
 		 SLE_CONDVAR(Vehicle, tile,                  SLE_UINT32,                   6, SL_MAX_VERSION),
 
@@ -872,6 +880,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(DisasterVehicle, image_override,            SLE_UINT32,                 191, SL_MAX_VERSION),
 		 SLE_CONDVAR(DisasterVehicle, big_ufo_destroyer_target,  SLE_FILE_U16 | SLE_VAR_U32,   0, 190),
 		 SLE_CONDVAR(DisasterVehicle, big_ufo_destroyer_target,  SLE_UINT32,                 191, SL_MAX_VERSION),
+		 SLE_CONDNULL_X(2, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 		 SLE_CONDVAR(DisasterVehicle, flags,                     SLE_UINT8,                  194, SL_MAX_VERSION),
 
 		SLE_CONDNULL(16,                                                           2, 143), // old reserved space
