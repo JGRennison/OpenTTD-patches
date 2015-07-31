@@ -16,6 +16,8 @@
 #include "../strings_type.h"
 #include "extended_ver_sl.h"
 
+#include <stdarg.h>
+
 /** Save or load result codes. */
 enum SaveOrLoadResult {
 	SL_OK     = 0, ///< completed successfully
@@ -570,8 +572,10 @@ void SlGlobList(const SaveLoadGlobVarList *sldg);
 void SlArray(void *array, size_t length, VarType conv);
 void SlObject(void *object, const SaveLoad *sld);
 bool SlObjectMember(void *object, const SaveLoad *sld);
-void NORETURN SlError(StringID string, const char *extra_msg = NULL);
-void NORETURN SlErrorCorrupt(const char *msg);
+void NORETURN SlError(StringID string, const char *extra_msg = NULL, bool already_malloced = false);
+void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced = false);
+void CDECL NORETURN SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);
+void CDECL NORETURN SlErrorCorruptFmt(const char *msg, ...) WARN_FORMAT(1, 2);
 
 bool SaveloadCrashWithMissingNewGRFs();
 

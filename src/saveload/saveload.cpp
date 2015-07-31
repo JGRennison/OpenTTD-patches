@@ -534,17 +534,22 @@ static void SlNullPointers()
  * @note This function does never return as it throws an exception to
  *       break out of all the saveload code.
  */
-void NORETURN SlError(StringID string, const char *extra_msg)
+void NORETURN SlError(StringID string, const char *extra_msg, bool already_malloced)
 {
+	char *str = NULL;
+	if (extra_msg != NULL) {
+		str = already_malloced ? const_cast<char *>(extra_msg) : stredup(extra_msg);
+	}
+
 	/* Distinguish between loading into _load_check_data vs. normal save/load. */
 	if (_sl.action == SLA_LOAD_CHECK) {
 		_load_check_data.error = string;
 		free(_load_check_data.error_data);
-		_load_check_data.error_data = (extra_msg == NULL) ? NULL : stredup(extra_msg);
+		_load_check_data.error_data = str;
 	} else {
 		_sl.error_str = string;
 		free(_sl.extra_msg);
-		_sl.extra_msg = (extra_msg == NULL) ? NULL : stredup(extra_msg);
+		_sl.extra_msg = str;
 	}
 
 	/* We have to NULL all pointers here; we might be in a state where
@@ -556,15 +561,39 @@ void NORETURN SlError(StringID string, const char *extra_msg)
 }
 
 /**
+ * As SlError, except that it takes a format string and additional parameters
+ */
+void CDECL NORETURN SlErrorFmt(StringID string, const char *msg, ...)
+{
+	va_list va;
+	va_start(va, msg);
+	char *str = str_vfmt(msg, va);
+	va_end(va);
+	SlError(string, str, true);
+}
+
+/**
  * Error handler for corrupt savegames. Sets everything up to show the
  * error message and to clean up the mess of a partial savegame load.
  * @param msg Location the corruption has been spotted.
  * @note This function does never return as it throws an exception to
  *       break out of all the saveload code.
  */
-void NORETURN SlErrorCorrupt(const char *msg)
+void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced)
 {
-	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, msg);
+	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, msg, already_malloced);
+}
+
+/**
+ * As SlErrorCorruptFmt, except that it takes a format string and additional parameters
+ */
+void CDECL NORETURN SlErrorCorruptFmt(const char *msg, ...)
+{
+	va_list va;
+	va_start(va, msg);
+	char *str = str_vfmt(msg, va);
+	va_end(va);
+	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, str, true);
 }
 
 
