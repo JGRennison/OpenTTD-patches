@@ -508,6 +508,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\departures.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\depot.cpp"
 				>
 			</File>
@@ -997,6 +1001,18 @@
 			</File>
 			<File
 				RelativePath=".\..\src\video\dedicated_v.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\departures_func.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\departures_gui.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\departures_type.h"
 				>
 			</File>
 			<File
@@ -2069,6 +2085,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\date_gui.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\departures_gui.cpp"
 				>
 			</File>
 			<File

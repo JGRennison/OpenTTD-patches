@@ -139,8 +139,8 @@ struct StatusBarWindow : Window {
 		switch (widget) {
 			case WID_S_LEFT:
 				/* Draw the date */
-				SetDParam(0, _date);
-				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, STR_WHITE_DATE_LONG, TC_FROMSTRING, SA_HOR_CENTER);
+				SetDParam(0, ((DateTicks)_date * DAY_TICKS) + _date_fract);
+				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, STR_WHITE_DATE_WALLCLOCK_LONG, TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 
 			case WID_S_RIGHT: {
@@ -221,6 +221,10 @@ struct StatusBarWindow : Window {
 	{
 		if (_pause_mode != PM_UNPAUSED) return;
 
+		if (_settings_client.gui.time_in_minutes) {
+			this->SetWidgetDirty(WID_S_LEFT);
+		}
+
 		if (this->ticker_scroll < TICKER_STOP) { // Scrolling text
 			this->ticker_scroll += COUNTER_STEP;
 			this->SetWidgetDirty(WID_S_MIDDLE);
@@ -237,7 +241,7 @@ struct StatusBarWindow : Window {
 
 static const NWidgetPart _nested_main_status_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_GREY, WID_S_LEFT), SetMinimalSize(140, 12), EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY, WID_S_LEFT), SetMinimalSize(160, 12), EndContainer(),
 		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_S_MIDDLE), SetMinimalSize(40, 12), SetDataTip(0x0, STR_STATUSBAR_TOOLTIP_SHOW_LAST_NEWS), SetResize(1, 0),
 		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_S_RIGHT), SetMinimalSize(140, 12),
 	EndContainer(),

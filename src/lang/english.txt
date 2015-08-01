@@ -1400,6 +1400,20 @@ STR_CONFIG_SETTING_LOADING_INDICATORS                           :Use loading ind
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Select whether loading indicators are displayed above loading or unloading vehicles
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Show timetable in ticks rather than days: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Show travel times in time tables in game ticks instead of days
+STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Show time in minutes rather than days: {STRING2}
+STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :Select whether to use hours and minutes instead of days
+STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :Ticks per minute: {STRING2}
+STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :The number of game ticks per minute
+STR_CONFIG_SETTING_DATE_WITH_TIME                               :Show date with time in status bar: {STRING2}
+STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :Show the real game date in the status bar as well as the time
+STR_CONFIG_SETTING_CLOCK_OFFSET                                 :Clock offset in minutes: {STRING2}
+STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :The number of minutes the game clock is offset by
+STR_CONFIG_SETTING_DATE_WITH_TIME_NONE                          :None
+STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :Year
+STR_CONFIG_SETTING_DATE_WITH_TIME_YM                            :Month and year
+STR_CONFIG_SETTING_DATE_WITH_TIME_YMD                           :Full date
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :Enter timetable start times as text (requires time to be in minutes): {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :Select whether timetable start times may be entered as text if time is being shown in minutes
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Show arrival and departure in timetables: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Display anticipated arrival and departure times in timetables
 STR_CONFIG_SETTING_QUICKGOTO                                    :Quick creation of vehicle orders: {STRING2}
@@ -1675,6 +1689,8 @@ STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Interfa
 STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}General
 STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Viewports
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Construction
+STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Departure boards
+STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Wall clock
 STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}News / Advisors
 STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Company
 STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Accounting
@@ -3148,6 +3164,9 @@ STR_STATION_VIEW_GROUP_V_D_S                                    :Via-Destination
 STR_STATION_VIEW_GROUP_D_S_V                                    :Destination-Source-Via
 STR_STATION_VIEW_GROUP_D_V_S                                    :Destination-Via-Source
 
+STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}Departures
+STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Show list of scheduled departures
+
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :Appalling
 STR_CARGO_RATING_VERY_POOR                                      :Very Poor
@@ -3168,9 +3187,101 @@ STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Show all
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Show all ships which have this station on their schedule
 
 STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Rename station/loading area
-
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Close airport
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Prevent aircraft from landing on this airport
+
+# Departures window
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Live Travel Information
+STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Live Travel Information
+STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
+STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}via
+STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Show timetabled departures
+STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Show timetabled arrivals
+STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
+STR_DEPARTURES_EMPTY                                            :{ORANGE}No vehicles are currently timetabled for this station.
+STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}No timetable information has been requested.
+STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} via {STATION}{STRING}
+STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} via
+STR_DEPARTURES_VIA                                              :{ORANGE}via {STATION}{STRING}
+STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
+STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
+STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
+STR_DEPARTURES_CALLING_AT                                       :{TINY_FONT}{ORANGE}Calling at:
+STR_DEPARTURES_CALLING_AT_LARGE                                 :{ORANGE}Calling at:
+STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
+STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STATION}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STATION}
+STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{RAW_STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{RAW_STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{TINY_FONT}{ORANGE}{RAW_STRING}. This service continues to {STATION}.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE             :{ORANGE}{RAW_STRING}. This service continues to {STATION}.
+
+STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
+STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
+STR_DEPARTURES_TYPE_BUS                                         :{ORANGE}{BUS}
+STR_DEPARTURES_TYPE_BUS_SILVER                                  :{SILVER}{BUS}
+STR_DEPARTURES_TYPE_LORRY                                       :{ORANGE}{LORRY}
+STR_DEPARTURES_TYPE_LORRY_SILVER                                :{SILVER}{LORRY}
+STR_DEPARTURES_TYPE_PLANE                                       :{ORANGE}{PLANE}
+STR_DEPARTURES_TYPE_PLANE_SILVER                                :{SILVER}{PLANE}
+STR_DEPARTURES_TYPE_SHIP                                        :{ORANGE}{SHIP}
+STR_DEPARTURES_TYPE_SHIP_SILVER                                 :{SILVER}{SHIP}
+
+STR_DEPARTURES_STATION_NONE                                     :
+STR_DEPARTURES_STATION_PORT                                     :{ORANGE} {SHIP}
+STR_DEPARTURES_STATION_AIRPORT                                  :{ORANGE} {PLANE}
+STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP} {PLANE}
+
+############ possible statuses start
+STR_DEPARTURES_ON_TIME                                          :{GREEN}On time
+STR_DEPARTURES_ARRIVED                                          :{GREEN}Arrived
+STR_DEPARTURES_DELAYED                                          :{YELLOW}Delayed
+STR_DEPARTURES_EXPECTED                                         :{YELLOW}Expt {DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_CANCELLED                                        :{RED}Cancelled
+
+############ config settings
+STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Departure boards
+STR_CONFIG_MAX_DEPARTURES                                       :Show at most {STRING2} departures at each station
+STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :The maximum number of departures to show on a departure board
+STR_CONFIG_MAX_DEPARTURE_TIME                                   :Show departures at most {STRING2} days in advance
+STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :How far in advance to show departures, in days
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :Calculate departures every {STRING2} ticks
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :How frequently to refresh a list of departures, in ticks
+STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :Show vehicle name with departures: {STRING2}
+STR_CONFIG_DEPARTURE_VEHICLE_NAME_HELPTEXT                      :Whether to show vehicle names next to their departures
+STR_CONFIG_DEPARTURE_GROUP_NAME                                 :Show group name with departures: {STRING2}
+STR_CONFIG_DEPARTURE_GROUP_NAME_HELPTEXT                        :Whether to show names of groups that a vehicle belongs to next to its departures
+STR_CONFIG_DEPARTURE_COMPANY_NAME                               :Show company name with departures: {STRING2}
+STR_CONFIG_DEPARTURE_COMPANY_NAME_HELPTEXT                      :Whether to show a company's name next to its vehicles' departures
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :Show vehicle type icon with departures: {STRING2}
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :Whether to show a vehicle's type as an icon next to its departures
+STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :Show vehicle type icon in silver: {STRING2}
+STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :Whether to show vehicle type icons in silver
+STR_CONFIG_DEPARTURE_LARGER_FONT                                :Use larger font for stations called at on departure boards: {STRING2}
+STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :Whether to use a larger font for lists of stations called at
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Show icons for destinations that are docks or airports: {STRING2}
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Whether to show icons next to destinations that are docks or airports
+STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Show arrival and departure times on the same line: {STRING2}
+STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Whether to show both arrival and departure times next to departures
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Only show departures for vehicles that can carry passengers: {STRING2}
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Whether to only show departures of vehicles that can carry passengers
+STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Don't show termini that can be reached sooner on a later vehicle: {STRING2}
+STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Whether to show termini that can be reached sooner on another vehicle that departs later
+STR_CONFIG_DEPARTURE_CONDITIONALS                               :Handle conditional order jumps by: {STRING2}
+STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :How conditional orders should be dealt with when calculating departures
+STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :giving up
+STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :assuming they will be taken
+STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :assuming they will not be taken
+STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Show all stations called at regardless of loading/unloading: {STRING2}
+STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Whether stations that a vehicle only loads from will be shown in the calling at list
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Merge identical departures: {STRING2}
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Whether identical departures should be merged into a single departure
 
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
@@ -3909,6 +4020,7 @@ STR_TIMETABLE_STAY_FOR                                          :and stay for {S
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :and travel for {STRING1}
 STR_TIMETABLE_DAYS                                              :{COMMA}{NBSP}day{P "" s}
 STR_TIMETABLE_TICKS                                             :{COMMA}{NBSP}tick{P "" s}
+STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}minute{P "" s}
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}This timetable will take {STRING1} to complete
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}This timetable will take at least {STRING1} to complete (not all timetabled)
@@ -3955,6 +4067,8 @@ STR_DATE_SET_DATE_TOOLTIP                                       :{BLACK}Use the 
 STR_DATE_DAY_TOOLTIP                                            :{BLACK}Select day
 STR_DATE_MONTH_TOOLTIP                                          :{BLACK}Select month
 STR_DATE_YEAR_TOOLTIP                                           :{BLACK}Select year
+STR_DATE_MINUTES_DAY_TOOLTIP                                    :{BLACK}Select minute
+STR_DATE_MINUTES_MONTH_TOOLTIP                                  :{BLACK}Select hour
 
 
 # AI debug window
@@ -4858,6 +4972,11 @@ STR_FORMAT_DATE_SHORT                                           :{STRING} {NUM}
 STR_FORMAT_DATE_LONG                                            :{STRING} {STRING} {NUM}
 STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:RAW_STRING}-{0:RAW_STRING}
 
+STR_FORMAT_DATE_MINUTES                                         :{0:RAW_STRING}:{1:RAW_STRING}
+STR_FORMAT_DATE_MINUTES_WITH_Y                                  :{0:RAW_STRING}:{1:RAW_STRING} / {2:NUM}
+STR_FORMAT_DATE_MINUTES_WITH_YM                                 :{0:RAW_STRING}:{1:RAW_STRING} / {2:DATE_SHORT}
+STR_FORMAT_DATE_MINUTES_WITH_YMD                                :{0:RAW_STRING}:{1:RAW_STRING} / {2:DATE_LONG}
+
 STR_FORMAT_BUOY_NAME                                            :{TOWN} Buoy
 STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} Buoy #{COMMA}
 STR_FORMAT_COMPANY_NUM                                          :(Company {COMMA})
@@ -4922,6 +5041,10 @@ STR_JUST_DATE_TINY                                              :{DATE_TINY}
 STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
+STR_JUST_DATE_WALLCLOCK_TINY                                    :{DATE_WALLCLOCK_TINY}
+STR_JUST_DATE_WALLCLOCK_SHORT                                   :{DATE_WALLCLOCK_SHORT}
+STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK_LONG}
+STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{RAW_STRING}
@@ -4938,6 +5061,8 @@ STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLA
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
+STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
+STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
 STR_TINY_GROUP                                                  :{TINY_FONT}{GROUP}

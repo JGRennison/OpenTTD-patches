@@ -22,6 +22,7 @@
 #include "company_base.h"
 #include "window_func.h"
 #include "waypoint_base.h"
+#include "departures_gui.h"
 
 #include "widgets/waypoint_widget.h"
 
@@ -105,6 +106,10 @@ public:
 			case WID_W_SHOW_VEHICLES: // show list of vehicles having this waypoint in their orders
 				ShowVehicleListWindow(this->wp->owner, this->vt, this->wp->index);
 				break;
+
+			case WID_W_DEPARTURES: // show departure times of vehicles
+				ShowWaypointDepartures((StationID)this->wp->index);
+				break;
 		}
 	}
 
@@ -161,6 +166,7 @@ static const NWidgetPart _nested_waypoint_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_CENTER_VIEW), SetMinimalSize(100, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUTTON_LOCATION, STR_BUOY_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_RENAME), SetMinimalSize(100, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUTTON_RENAME, STR_BUOY_VIEW_CHANGE_BUOY_NAME),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_DEPARTURES), SetMinimalSize(100, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_STATION_VIEW_DEPARTURES_BUTTON, STR_STATION_VIEW_DEPARTURES_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_SHOW_VEHICLES), SetMinimalSize(15, 12), SetDataTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),

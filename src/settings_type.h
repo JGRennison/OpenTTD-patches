@@ -112,11 +112,32 @@ struct GUISettings {
 	uint8  scrollwheel_scrolling;            ///< scrolling using the scroll wheel?
 	uint8  scrollwheel_multiplier;           ///< how much 'wheel' per incoming event from the OS?
 	bool   timetable_arrival_departure;      ///< show arrivals and departures in vehicle timetables
+	uint8  max_departures;                   ///< maximum number of departures to show per station
+	uint16 max_departure_time;               ///< maximum time in advance to show departures
+	uint16 departure_calc_frequency;         ///< how often to calculate departures (in ticks)
+	bool   departure_show_vehicle;           ///< whether to show vehicle names with departures
+	bool   departure_show_group;             ///< whether to show group names with departures
+	bool   departure_show_company;           ///< whether to show company names with departures
+	bool   departure_show_vehicle_type;      ///< whether to show vehicle type icons with departures
+	bool   departure_show_vehicle_color;     ///< whether to show vehicle type icons in silver instead of orange
+	bool   departure_larger_font;            ///< whether to show the calling at list in a larger font
+	bool   departure_destination_type;       ///< whether to show destination types for ports and airports
+	bool   departure_show_both;              ///< whether to show departure and arrival times on the same line
+	bool   departure_only_passengers;        ///< whether to only show passenger services
+	bool   departure_smart_terminus;         ///< whether to only show passenger services
+	uint8  departure_conditionals;           ///< how to handle conditional orders
+	bool   departure_show_all_stops;         ///< whether to show stops regardless of loading/unloading done at them
+	bool   departure_merge_identical;        ///< whether to merge identical departures
 	bool   left_mouse_btn_scrolling;         ///< left mouse button scroll
 	bool   pause_on_newgame;                 ///< whether to start new games paused or not
 	bool   enable_signal_gui;                ///< show the signal GUI when the signal button is pressed
 	Year   coloured_news_year;               ///< when does newspaper become coloured?
 	bool   timetable_in_ticks;               ///< whether to show the timetable in ticks rather than days
+	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
+	bool   timetable_start_text_entry;       ///< whether to enter timetable start times as text (hhmm format)
+	uint8  ticks_per_minute;                 ///< how many ticks per minute
+	uint8  date_with_time;                   ///< whether to show the month and year with the time
+	uint16 clock_offset;                     ///< clock offset in minutes
 	bool   quick_goto;                       ///< Allow quick access to 'goto button' in vehicle orders window
 	bool   auto_euro;                        ///< automatically switch to euro in 2002
 	byte   drag_signals_density;             ///< many signals density

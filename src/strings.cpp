@@ -404,6 +404,29 @@ static char *FormatBytes(char *buff, int64 number, const char *last)
 	return buff;
 }
 
+static char *FormatWallClockString(char *buff, DateTicks ticks, const char *last, bool show_date, uint case_index)
+{
+	Minutes minutes = ticks / _settings_client.gui.ticks_per_minute + _settings_client.gui.clock_offset;
+	char hour[3], minute[3];
+	seprintf(hour,   lastof(hour),   "%02i", MINUTES_HOUR(minutes)  );
+	seprintf(minute, lastof(minute), "%02i", MINUTES_MINUTE(minutes));
+	if (show_date) {
+		int64 args[3] = { (int64)hour, (int64)minute, (int64)ticks / DAY_TICKS };
+		if (_settings_client.gui.date_with_time == 1) {
+			YearMonthDay ymd;
+			ConvertDateToYMD(args[2], &ymd);
+			args[2] = ymd.year;
+		}
+
+		StringParameters tmp_params(args);
+		return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_MINUTES + _settings_client.gui.date_with_time), &tmp_params, last, case_index);
+	} else {
+		int64 args[2] = { (int64)hour, (int64)minute };
+		StringParameters tmp_params(args);
+		return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_MINUTES), &tmp_params, last, case_index);
+	}
+}
+
 static char *FormatYmdString(char *buff, Date date, const char *last, uint case_index)
 {
 	YearMonthDay ymd;
@@ -1200,6 +1223,42 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				buff = FormatYmdString(buff, args->GetInt32(SCC_DATE_LONG), last, next_substr_case_index);
 				next_substr_case_index = 0;
 				break;
+
+			case SCC_DATE_WALLCLOCK_LONG: { // {DATE_WALLCLOCK_LONG}
+				if (_settings_client.gui.time_in_minutes) {
+					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG), last, _settings_client.gui.date_with_time, next_substr_case_index);
+				} else {
+					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG) / DAY_TICKS, last, next_substr_case_index);
+				}
+				break;
+			}
+
+			case SCC_DATE_WALLCLOCK_SHORT: { // {DATE_WALLCLOCK_SHORT}
+				if (_settings_client.gui.time_in_minutes) {
+					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT), last, _settings_client.gui.date_with_time, next_substr_case_index);
+				} else {
+					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT) / DAY_TICKS, last, next_substr_case_index);
+				}
+				break;
+			}
+
+			case SCC_DATE_WALLCLOCK_TINY: { // {DATE_WALLCLOCK_TINY}
+				if (_settings_client.gui.time_in_minutes) {
+					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY), last, false, next_substr_case_index);
+				} else {
+					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY) / DAY_TICKS, STR_FORMAT_DATE_TINY, last);
+				}
+				break;
+			}
+
+			case SCC_DATE_WALLCLOCK_ISO: { // {DATE_WALLCLOCK_ISO}
+				if (_settings_client.gui.time_in_minutes) {
+					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO), last, false, next_substr_case_index);
+				} else {
+					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO) / DAY_TICKS, STR_FORMAT_DATE_ISO, last);
+				}
+				break;
+			}
 
 			case SCC_DATE_ISO: // {DATE_ISO}
 				buff = FormatTinyOrISODate(buff, args->GetInt32(), STR_FORMAT_DATE_ISO, last);

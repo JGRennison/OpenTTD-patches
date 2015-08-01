@@ -18,6 +18,7 @@ currency.cpp
 date.cpp
 debug.cpp
 dedicated.cpp
+departures.cpp
 depot.cpp
 disaster_vehicle.cpp
 driver.cpp
@@ -171,6 +172,9 @@ date_gui.h
 date_type.h
 debug.h
 video/dedicated_v.h
+departures_func.h
+departures_gui.h
+departures_type.h
 depot_base.h
 depot_func.h
 depot_map.h
@@ -456,6 +460,7 @@ cheat_gui.cpp
 company_gui.cpp
 console_gui.cpp
 date_gui.cpp
+departures_gui.cpp
 depot_gui.cpp
 dock_gui.cpp
 engine_gui.cpp
