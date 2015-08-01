@@ -1556,6 +1556,7 @@ static SettingEntry _settings_economy_towns[] = {
 	SettingEntry("economy.town_growth_rate"),
 	SettingEntry("economy.larger_towns"),
 	SettingEntry("economy.initial_city_size"),
+	SettingEntry("economy.town_cargo_factor"),
 };
 /** Towns sub-page */
 static SettingsPage _settings_economy_towns_page = {_settings_economy_towns, lengthof(_settings_economy_towns)};

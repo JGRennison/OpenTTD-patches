@@ -437,6 +437,61 @@ static void MakeTownHouseBigger(TileIndex tile)
 }
 
 /**
+ * Generate cargo for a town (house).
+ *
+ * The amount of cargo should be and will be greater than zero.
+ *
+ * @param t current town
+ * @param ct type of cargo to generate, usually CT_PASSENGERS or CT_MAIL
+ * @param amount how many units of cargo
+ * @param stations available stations for this house
+ */
+static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &stations)
+{
+	// custom cargo generation factor
+	int cf = _settings_game.economy.town_cargo_factor;
+
+	// when the economy flunctuates, everyone wants to stay at home
+	if (EconomyIsInRecession()) {
+		amount = (amount + 1) >> 1;
+	}
+
+	// apply custom factor?
+	if (cf < 0) {
+		// approx (amount / 2^cf)
+		// adjust with a constant offset of {(2 ^ cf) - 1} (i.e. add cf * 1-bits) before dividing to ensure that it doesn't become zero
+		// this skews the curve a little so that isn't entirely exponential, but will still decrease
+		amount = (amount + ((1 << -cf) - 1)) >> -cf;
+	}
+
+	else if (cf > 0) {
+		// approx (amount * 2^cf)
+		// XXX: overflow?
+		amount = amount << cf;
+	}
+
+	// with the adjustments above, this should never happen
+	assert(amount > 0);
+
+	// calculate for town stats
+	const CargoSpec *cs = CargoSpec::Get(ct);
+	switch (cs->town_effect) {
+		case TE_PASSENGERS:
+			t->supplied[CT_PASSENGERS].new_max += amount;
+			t->supplied[CT_PASSENGERS].new_act += MoveGoodsToStation(CT_PASSENGERS, amount, ST_TOWN, t->index, stations.GetStations());
+			break;
+
+		case TE_MAIL:
+			t->supplied[CT_MAIL].new_max += amount;
+			t->supplied[CT_MAIL].new_act += MoveGoodsToStation(CT_MAIL, amount, ST_TOWN, t->index, stations.GetStations());
+			break;
+
+		default:
+			break;
+	}
+}
+
+/**
  * Tile callback function.
  *
  * Periodic tic handler for houses and town
@@ -483,27 +538,20 @@ static void TileLoop_Town(TileIndex tile)
 			uint amt = GB(callback, 0, 8);
 			if (amt == 0) continue;
 
-			uint moved = MoveGoodsToStation(cargo, amt, ST_TOWN, t->index, stations.GetStations());
-
-			const CargoSpec *cs = CargoSpec::Get(cargo);
-			t->supplied[cs->Index()].new_max += amt;
-			t->supplied[cs->Index()].new_act += moved;
+			// XXX: no economy flunctuation for GRF cargos?
+			TownGenerateCargo(t, cargo, amt, stations);
 		}
 	} else {
 		if (GB(r, 0, 8) < hs->population) {
 			uint amt = GB(r, 0, 8) / 8 + 1;
 
-			if (EconomyIsInRecession()) amt = (amt + 1) >> 1;
-			t->supplied[CT_PASSENGERS].new_max += amt;
-			t->supplied[CT_PASSENGERS].new_act += MoveGoodsToStation(CT_PASSENGERS, amt, ST_TOWN, t->index, stations.GetStations());
+			TownGenerateCargo(t, CT_PASSENGERS, amt, stations);
 		}
 
 		if (GB(r, 8, 8) < hs->mail_generation) {
 			uint amt = GB(r, 8, 8) / 8 + 1;
 
-			if (EconomyIsInRecession()) amt = (amt + 1) >> 1;
-			t->supplied[CT_MAIL].new_max += amt;
-			t->supplied[CT_MAIL].new_act += MoveGoodsToStation(CT_MAIL, amt, ST_TOWN, t->index, stations.GetStations());
+			TownGenerateCargo(t, CT_MAIL, amt, stations);
 		}
 	}
 
