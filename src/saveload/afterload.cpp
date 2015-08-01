@@ -2968,6 +2968,23 @@ bool AfterLoadGame()
 #endif
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS) && WALLCLOCK_NETWORK_COMPATIBLE) {
+		// savegame timetable start is in ticks, but we want it in days, fix it up
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			if (v->timetable_start != 0) {
+				v->timetable_start /= DAY_TICKS;
+			}
+		}
+	} else if (SlXvIsFeatureMissing(XSLFI_TIMETABLES_START_TICKS) && (!WALLCLOCK_NETWORK_COMPATIBLE)) {
+		// savegame timetable start is in days, but we want it in ticks, fix it up
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			if (v->timetable_start != 0) {
+				v->timetable_start *= DAY_TICKS;
+			}
+		}
+	}
 
 	/* Station acceptance is some kind of cache */
 	if (IsSavegameVersionBefore(127)) {

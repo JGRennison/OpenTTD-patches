@@ -32,6 +32,7 @@
 #include "../debug.h"
 #include "saveload.h"
 #include "extended_ver_sl.h"
+#include "../timetable.h"
 
 #include <vector>
 
@@ -45,6 +46,8 @@ std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version os SLXI chunk
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
+	{ XSLFI_DEPARTURE_BOARDS, XSCF_IGNORABLE_UNKNOWN, 1, 1, "departure_boards", NULL, NULL, NULL },
+	{ XSLFI_TIMETABLES_START_TICKS, XSCF_NULL, WALLCLOCK_NETWORK_COMPATIBLE ? 0 : 1, 1, "timetable_start_ticks", NULL, NULL, NULL },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 
