@@ -121,4 +121,98 @@ static inline TrackBits GetTunnelBridgeReservationTrackBits(TileIndex t)
 	return HasTunnelBridgeReservation(t) ? DiagDirToDiagTrackBits(GetTunnelBridgeDirection(t)) : TRACK_BIT_NONE;
 }
 
+/**
+ * Declare tunnel/bridge with signal simulation.
+ * @param t the tunnel/bridge tile.
+ */
+static inline void SetBitTunnelBridgeSignal(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	SetBit(_m[t].m5, 5);
+}
+
+/**
+ * Remove tunnel/bridge with signal simulation.
+ * @param t the tunnel/bridge tile.
+ */
+static inline void ClrBitTunnelBridgeSignal(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	ClrBit(_m[t].m5, 5);
+}
+
+/**
+ * Declare tunnel/bridge exit.
+ * @param t the tunnel/bridge tile.
+ */
+static inline void SetBitTunnelBridgeExit(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	SetBit(_m[t].m5, 6);
+}
+
+/**
+ * Remove tunnel/bridge exit declaration.
+ * @param t the tunnel/bridge tile.
+ */
+static inline void ClrBitTunnelBridgeExit(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	ClrBit(_m[t].m5, 6);
+}
+
+/**
+ * Is this a tunnel/bridge pair with signal simulation?
+ * On tunnel/bridge pair minimal one of the two bits is set.
+ * @param t the tile that might be a tunnel/bridge.
+ * @return true if and only if this tile is a tunnel/bridge with signal simulation.
+ */
+static inline bool HasWormholeSignals(TileIndex t)
+{
+	return IsTileType(t, MP_TUNNELBRIDGE) && (HasBit(_m[t].m5, 5) || HasBit(_m[t].m5, 6)) ;
+}
+
+/**
+ * Is this a tunnel/bridge with sign on green?
+ * @param t the tile that might be a tunnel/bridge with sign set green.
+ * @pre IsTileType(t, MP_TUNNELBRIDGE)
+ * @return true if and only if this tile is a tunnel/bridge entrance.
+ */
+static inline bool IsTunnelBridgeWithSignGreen(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	return HasBit(_m[t].m5, 5) && !HasBit(_m[t].m5, 6);
+}
+
+static inline bool IsTunnelBridgeWithSignRed(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	return HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
+}
+
+/**
+ * Is this a tunnel/bridge entrance tile with signal?
+ * Tunnel bridge signal simulation has allways bit 5 on at entrance.
+ * @param t the tile that might be a tunnel/bridge.
+ * @return true if and only if this tile is a tunnel/bridge entrance.
+ */
+static inline bool IsTunnelBridgeEntrance(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	return HasBit(_m[t].m5, 5) ;
+}
+
+/**
+ * Is this a tunnel/bridge exit?
+ * @param t the tile that might be a tunnel/bridge.
+ * @return true if and only if this tile is a tunnel/bridge exit.
+ */
+static inline bool IsTunnelBridgeExit(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	return !HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
+}
+
+
+
 #endif /* TUNNELBRIDGE_MAP_H */

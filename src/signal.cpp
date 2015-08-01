@@ -197,6 +197,14 @@ static Vehicle *TrainOnTileEnum(Vehicle *v, void *)
 	return v;
 }
 
+/** Check whether there is a train only on ramp. */
+static Vehicle *TrainInWormholeTileEnum(Vehicle *v, void *data)
+{
+	/* Only look for front engine or last wagon. */
+	if (v->type != VEH_TRAIN || (v->Previous() != NULL && v->Next() != NULL)) return NULL;
+	if (*(TileIndex *)data != TileVirtXY(v->x_pos, v->y_pos)) return NULL;
+	return v;
+}
 
 /**
  * Perform some operations before adding data into Todo set
@@ -376,17 +384,39 @@ static SigFlags ExploreSegment(Owner owner)
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) continue;
 				DiagDirection dir = GetTunnelBridgeDirection(tile);
 
-				if (enterdir == INVALID_DIAGDIR) { // incoming from the wormhole
-					if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
-					enterdir = dir;
-					exitdir = ReverseDiagDir(dir);
-					tile += TileOffsByDiagDir(exitdir); // just skip to next tile
-				} else { // NOT incoming from the wormhole!
-					if (ReverseDiagDir(enterdir) != dir) continue;
-					if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
-					tile = GetOtherTunnelBridgeEnd(tile); // just skip to exit tile
-					enterdir = INVALID_DIAGDIR;
-					exitdir = INVALID_DIAGDIR;
+				if (HasWormholeSignals(tile)) {
+					if (enterdir == INVALID_DIAGDIR) { // incoming from the wormhole
+						if (!(flags & SF_TRAIN) && IsTunnelBridgeExit(tile)) { // tunnel entrence is ignored
+							if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), &tile, &TrainInWormholeTileEnum)) flags |= SF_TRAIN;
+							if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, &tile, &TrainInWormholeTileEnum)) flags |= SF_TRAIN;
+						}
+						enterdir = dir;
+						exitdir = ReverseDiagDir(dir);
+						tile += TileOffsByDiagDir(exitdir); // just skip to next tile
+					} else { // NOT incoming from the wormhole!
+						if (ReverseDiagDir(enterdir) != dir) continue;
+						if (!(flags & SF_TRAIN)) {
+							if (HasVehicleOnPos(tile, &tile, &TrainInWormholeTileEnum)) flags |= SF_TRAIN;
+							if (!(flags & SF_TRAIN) && IsTunnelBridgeExit(tile)) {
+								if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), &tile, &TrainInWormholeTileEnum)) flags |= SF_TRAIN;
+							} 
+						}
+						continue;
+					}
+				} else {
+					if (enterdir == INVALID_DIAGDIR) { // incoming from the wormhole
+						if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+						enterdir = dir;
+						exitdir = ReverseDiagDir(dir);
+						tile += TileOffsByDiagDir(exitdir); // just skip to next tile
+					} else { // NOT incoming from the wormhole!
+						if (ReverseDiagDir(enterdir) != dir) continue;
+						if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+						tile = GetOtherTunnelBridgeEnd(tile); // just skip to exit tile
+						enterdir = INVALID_DIAGDIR;
+						exitdir = INVALID_DIAGDIR;
+					}
+
 				}
 				}
 				break;
@@ -494,7 +524,9 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 				assert(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL);
 				assert(dir == INVALID_DIAGDIR || dir == ReverseDiagDir(GetTunnelBridgeDirection(tile)));
 				_tbdset.Add(tile, INVALID_DIAGDIR);  // we can safely start from wormhole centre
-				_tbdset.Add(GetOtherTunnelBridgeEnd(tile), INVALID_DIAGDIR);
+				if (!HasWormholeSignals(tile)) {  // Don't worry with other side of tunnel.
+					_tbdset.Add(GetOtherTunnelBridgeEnd(tile), INVALID_DIAGDIR);
+				}
 				break;
 
 			case MP_RAILWAY:
