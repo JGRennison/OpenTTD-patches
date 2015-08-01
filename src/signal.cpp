@@ -399,7 +399,7 @@ static SigFlags ExploreSegment(Owner owner)
 							if (HasVehicleOnPos(tile, &tile, &TrainInWormholeTileEnum)) flags |= SF_TRAIN;
 							if (!(flags & SF_TRAIN) && IsTunnelBridgeExit(tile)) {
 								if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), &tile, &TrainInWormholeTileEnum)) flags |= SF_TRAIN;
-							} 
+							}
 						}
 						continue;
 					}

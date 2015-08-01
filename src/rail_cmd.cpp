@@ -1035,7 +1035,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			if (p2 != 12) cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
 		}
 		if (flags & DC_EXEC) {
-			if (p2 == 0 && HasWormholeSignals(tile)){ // Toggle signal if already signals present.
+			if (p2 == 0 && HasWormholeSignals(tile)) { // Toggle signal if already signals present.
 				if (IsTunnelBridgeEntrance (tile)) {
 					ClrBitTunnelBridgeSignal(tile);
 					ClrBitTunnelBridgeExit(tile_exit);
@@ -1046,7 +1046,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					ClrBitTunnelBridgeExit(tile);
 					SetBitTunnelBridgeExit(tile_exit);
 					SetBitTunnelBridgeSignal(tile);
-				}			
+				}
 			} else{
 				/* Create one direction tunnel/bridge if required. */
 				if (p2 == 0) {
@@ -1063,7 +1063,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 						SetBitTunnelBridgeSignal(tile_exit);
 						SetBitTunnelBridgeExit(tile);
 					}
-				}			
+				}
 			}
 			MarkTileDirtyByTile(tile);
 			MarkTileDirtyByTile(tile_exit);
@@ -1388,20 +1388,20 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 
 			/* Collect cost. */
 			if (!test_only) {
-			/* Be user-friendly and try placing signals as much as possible */
-			if (ret.Succeeded()) {
-				had_success = true;
-				if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-					if ((!autofill && GetTunnelBridgeDirection(tile) == TrackdirToExitdir(trackdir)) ||
-							(autofill && GetTunnelBridgeDirection(tile) != TrackdirToExitdir(trackdir))) {
+				/* Be user-friendly and try placing signals as much as possible */
+				if (ret.Succeeded()) {
+					had_success = true;
+					if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+						if ((!autofill && GetTunnelBridgeDirection(tile) == TrackdirToExitdir(trackdir)) ||
+								(autofill && GetTunnelBridgeDirection(tile) != TrackdirToExitdir(trackdir))) {
+							total_cost.AddCost(ret);
+						}
+					} else {
 						total_cost.AddCost(ret);
 					}
+					last_used_ctr = last_suitable_ctr;
+					last_suitable_tile = INVALID_TILE;
 				} else {
-					total_cost.AddCost(ret);
-				}
-				last_used_ctr = last_suitable_ctr;
-				last_suitable_tile = INVALID_TILE;
-			} else {
 					/* The "No railway" error is the least important one. */
 					if (ret.GetErrorMessage() != STR_ERROR_THERE_IS_NO_RAILROAD_TRACK ||
 							last_error.GetErrorMessage() == INVALID_STRING_ID) {
@@ -1482,7 +1482,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 		cost *= ((GetTunnelBridgeLength(tile, end) + 4) >> 2);
 
 		CommandCost ret = EnsureNoTrainOnTrack(GetOtherTunnelBridgeEnd(tile), track);
-		//if (ret.Failed()) return ret;
+		if (ret.Failed()) return ret;
 	} else {
 		if (!ValParamTrackOrientation(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
 			return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
@@ -1491,11 +1491,13 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 		}
 		CommandCost ret = EnsureNoTrainOnTrack(tile, track);
-		//if (ret.Failed()) return ret;
+		if (ret.Failed()) return ret;
 	}
 
 	/* Only water can remove signals from anyone */
 	if (_current_company != OWNER_WATER) {
+		CommandCost ret = CheckTileOwnership(tile);
+		if (ret.Failed()) return ret;
 	}
 
 	/* Do it? */

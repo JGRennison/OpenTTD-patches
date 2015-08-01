@@ -1858,7 +1858,7 @@ void ReverseTrainDirection(Train *v)
 	/* We are inside tunnel/bidge with signals, reversing will close the entrance. */
 	if (HasWormholeSignals(v->tile)) {
 		/* Flip signal on tunnel entrance tile red. */
-		SetBitTunnelBridgeExit(v->tile); 
+		SetBitTunnelBridgeExit(v->tile);
 		MarkTileDirtyByTile(v->tile);
 		/* Clear counters. */
 		v->wait_counter = 0;
@@ -3156,7 +3156,7 @@ static Vehicle *FindSpaceBetweenTrainsEnum(Vehicle *v, void *data)
 static bool IsToCloseBehindTrain(Vehicle *v, TileIndex tile, bool check_endtile)
 {
 	Train *t = (Train *)v;
-	
+
 	if (t->force_proceed != 0) return false;
 
 	if (HasVehicleOnPos(t->tile, v, &FindSpaceBetweenTrainsEnum)) {
@@ -3186,7 +3186,7 @@ static bool IsToCloseBehindTrain(Vehicle *v, TileIndex tile, bool check_endtile)
 static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 {
 	if (t->force_proceed != 0) return false;
-	
+
 	/* When not exit reverse train. */
 	if (!IsTunnelBridgeExit(tile)) {
 		t->cur_speed = 0;
@@ -3199,7 +3199,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 		return true;
 	}
 
-	return false; 
+	return false;
 }
 
 static void HandleSignalBehindTrain(Train *v, uint signal_number)
@@ -3422,7 +3422,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							goto invalid_rail;
 						}
 						/* Flip signal on tunnel entrance tile red. */
-						SetBitTunnelBridgeExit(gp.new_tile); 
+						SetBitTunnelBridgeExit(gp.new_tile);
 						MarkTileDirtyByTile(gp.new_tile);
 					}
 				}
