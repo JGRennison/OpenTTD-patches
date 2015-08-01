@@ -28,16 +28,15 @@ class Blitter_32bppSimple : public Blitter_32bppBase {
 public:
 	/* virtual */ void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom);
 	/* virtual */ void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal);
-	/* virtual */ Sprite *Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator);
+	/* virtual */ Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator);
 
 	/* virtual */ const char *GetName() { return "32bpp-simple"; }
 };
 
 /** Factory for the simple 32 bpp blitter. */
-class FBlitter_32bppSimple: public BlitterFactory<FBlitter_32bppSimple> {
+class FBlitter_32bppSimple : public BlitterFactory {
 public:
-	/* virtual */ const char *GetName() { return "32bpp-simple"; }
-	/* virtual */ const char *GetDescription() { return "32bpp Simple Blitter (no palette animation)"; }
+	FBlitter_32bppSimple() : BlitterFactory("32bpp-simple", "32bpp Simple Blitter (no palette animation)") {}
 	/* virtual */ Blitter *CreateInstance() { return new Blitter_32bppSimple(); }
 };
 

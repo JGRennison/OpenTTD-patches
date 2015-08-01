@@ -29,6 +29,8 @@
 #include "table/strings.h"
 #include "../table/sprites.h"
 
+#include "../safeguards.h"
+
 
 /** Whether the user accepted to enter external websites during this session. */
 static bool _accepted_external_search = false;
@@ -295,11 +297,14 @@ class NetworkContentListWindow : public Window, ContentCallback {
 	bool auto_select;            ///< Automatically select all content when the meta-data becomes available
 	StringFilter string_filter;  ///< Filter for content list
 	QueryString filter_editbox;  ///< Filter editbox;
+	Dimension checkbox_size;     ///< Size of checkbox/"blot" sprite
 
 	const ContentInfo *selected; ///< The selected content info
 	int list_pos;                ///< Our position in the list
 	uint filesize_sum;           ///< The sum of all selected file sizes
 	Scrollbar *vscroll;          ///< Cache of the vertical scrollbar
+
+	static char content_type_strs[CONTENT_TYPE_END][64]; ///< Cached strings for all content types.
 
 	/** Search external websites for content */
 	void OpenExternalSearch()
@@ -398,11 +403,7 @@ class NetworkContentListWindow : public Window, ContentCallback {
 	{
 		int r = 0;
 		if ((*a)->type != (*b)->type) {
-			char a_str[64];
-			char b_str[64];
-			GetString(a_str, STR_CONTENT_TYPE_BASE_GRAPHICS + (*a)->type - CONTENT_TYPE_BASE_GRAPHICS, lastof(a_str));
-			GetString(b_str, STR_CONTENT_TYPE_BASE_GRAPHICS + (*b)->type - CONTENT_TYPE_BASE_GRAPHICS, lastof(b_str));
-			r = strnatcmp(a_str, b_str);
+			r = strnatcmp(content_type_strs[(*a)->type], content_type_strs[(*b)->type]);
 		}
 		if (r == 0) r = NameSorter(a, b);
 		return r;
@@ -466,6 +467,7 @@ class NetworkContentListWindow : public Window, ContentCallback {
 		this->vscroll->ScrollTowards(this->list_pos);
 	}
 
+	friend void BuildContentTypeStringList();
 public:
 	/**
 	 * Create the content list window.
@@ -479,6 +481,8 @@ public:
 			selected(NULL),
 			list_pos(0)
 	{
+		this->checkbox_size = maxdim(maxdim(GetSpriteSize(SPR_BOX_EMPTY), GetSpriteSize(SPR_BOX_CHECKED)), GetSpriteSize(SPR_BLOT));
+
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NCL_SCROLLBAR);
 		this->FinishInitNested(WN_NETWORK_WINDOW_CONTENT_LIST);
@@ -514,6 +518,10 @@ public:
 				*size = maxdim(*size, GetStringBoundingBox(STR_CONTENT_FILTER_TITLE));
 				break;
 
+			case WID_NCL_CHECKBOX:
+				size->width = this->checkbox_size.width + WD_MATRIX_RIGHT + WD_MATRIX_LEFT;
+				break;
+
 			case WID_NCL_TYPE: {
 				Dimension d = *size;
 				for (int i = CONTENT_TYPE_BEGIN; i < CONTENT_TYPE_END; i++) {
@@ -524,7 +532,7 @@ public:
 			}
 
 			case WID_NCL_MATRIX:
-				resize->height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+				resize->height = max(this->checkbox_size.height, (uint)FONT_HEIGHT_NORMAL) + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
 				size->height = 10 * resize->height;
 				break;
 		}
@@ -575,9 +583,11 @@ public:
 		const NWidgetBase *nwi_name = this->GetWidget<NWidgetBase>(WID_NCL_NAME);
 		const NWidgetBase *nwi_type = this->GetWidget<NWidgetBase>(WID_NCL_TYPE);
 
+		int line_height = max(this->checkbox_size.height, (uint)FONT_HEIGHT_NORMAL);
 
 		/* Fill the matrix with the information */
-		int sprite_y_offset = WD_MATRIX_TOP + (FONT_HEIGHT_NORMAL - 10) / 2;
+		int sprite_y_offset = WD_MATRIX_TOP + (line_height - this->checkbox_size.height) / 2 - 1;
+		int text_y_offset = WD_MATRIX_TOP + (line_height - FONT_HEIGHT_NORMAL) / 2;
 		uint y = r.top;
 		int cnt = 0;
 		for (ConstContentIterator iter = this->content.Get(this->vscroll->GetPosition()); iter != this->content.End() && cnt < this->vscroll->GetCapacity(); iter++, cnt++) {
@@ -598,9 +608,9 @@ public:
 			DrawSprite(sprite, pal, nwi_checkbox->pos_x + (pal == PAL_NONE ? 2 : 3), y + sprite_y_offset + (pal == PAL_NONE ? 1 : 0));
 
 			StringID str = STR_CONTENT_TYPE_BASE_GRAPHICS + ci->type - CONTENT_TYPE_BASE_GRAPHICS;
-			DrawString(nwi_type->pos_x, nwi_type->pos_x + nwi_type->current_x - 1, y + WD_MATRIX_TOP, str, TC_BLACK, SA_HOR_CENTER);
+			DrawString(nwi_type->pos_x, nwi_type->pos_x + nwi_type->current_x - 1, y + text_y_offset, str, TC_BLACK, SA_HOR_CENTER);
 
-			DrawString(nwi_name->pos_x + WD_FRAMERECT_LEFT, nwi_name->pos_x + nwi_name->current_x - WD_FRAMERECT_RIGHT, y + WD_MATRIX_TOP, ci->name, TC_BLACK);
+			DrawString(nwi_name->pos_x + WD_FRAMERECT_LEFT, nwi_name->pos_x + nwi_name->current_x - WD_FRAMERECT_RIGHT, y + text_y_offset, ci->name, TC_BLACK);
 			y += this->resize.step_height;
 		}
 	}
@@ -750,7 +760,7 @@ public:
 			case WID_NCL_NAME:
 				if (this->content.SortType() == widget - WID_NCL_CHECKBOX) {
 					this->content.ToggleSortOrder();
-					this->list_pos = this->content.Length() - this->list_pos - 1;
+					if (this->content.Length() > 0) this->list_pos = this->content.Length() - this->list_pos - 1;
 				} else {
 					this->content.SetSortType(widget - WID_NCL_CHECKBOX);
 					this->content.ForceResort();
@@ -800,7 +810,7 @@ public:
 		}
 	}
 
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode)
+	virtual EventState OnKeyPress(WChar key, uint16 keycode)
 	{
 		switch (keycode) {
 			case WKC_UP:
@@ -844,7 +854,10 @@ public:
 				return ES_NOT_HANDLED;
 		}
 
-		if (_network_content_client.Length() == 0) return ES_HANDLED;
+		if (this->content.Length() == 0) {
+			this->list_pos = 0; // above stuff may result in "-1".
+			return ES_HANDLED;
+		}
 
 		this->selected = *this->content.Get(this->list_pos);
 
@@ -953,6 +966,18 @@ NetworkContentListWindow::GUIContentList::SortFunction * const NetworkContentLis
 NetworkContentListWindow::GUIContentList::FilterFunction * const NetworkContentListWindow::filter_funcs[] = {
 	&TagNameFilter,
 };
+
+char NetworkContentListWindow::content_type_strs[CONTENT_TYPE_END][64];
+
+/**
+ * Build array of all strings corresponding to the content types.
+ */
+void BuildContentTypeStringList()
+{
+	for (int i = CONTENT_TYPE_BEGIN; i < CONTENT_TYPE_END; i++) {
+		GetString(NetworkContentListWindow::content_type_strs[i], STR_CONTENT_TYPE_BASE_GRAPHICS + i - CONTENT_TYPE_BASE_GRAPHICS, lastof(NetworkContentListWindow::content_type_strs[i]));
+	}
+}
 
 /** The widgets for the content list. */
 static const NWidgetPart _nested_network_content_list_widgets[] = {

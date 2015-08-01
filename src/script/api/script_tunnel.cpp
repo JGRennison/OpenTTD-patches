@@ -15,6 +15,8 @@
 #include "../script_instance.hpp"
 #include "../../tunnel_map.h"
 
+#include "../../safeguards.h"
+
 /* static */ bool ScriptTunnel::IsTunnelTile(TileIndex tile)
 {
 	if (!::IsValidTile(tile)) return false;
@@ -82,6 +84,7 @@ static void _DoCommandReturnBuildTunnel1(class ScriptInstance *instance)
 	EnforcePrecondition(false, ::IsValidTile(start));
 	EnforcePrecondition(false, vehicle_type == ScriptVehicle::VT_RAIL || vehicle_type == ScriptVehicle::VT_ROAD);
 	EnforcePrecondition(false, vehicle_type != ScriptVehicle::VT_RAIL || ScriptRail::IsRailTypeAvailable(ScriptRail::GetCurrentRailType()));
+	EnforcePrecondition(false, vehicle_type != ScriptVehicle::VT_ROAD || ScriptRoad::IsRoadTypeAvailable(ScriptRoad::GetCurrentRoadType()));
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY || vehicle_type == ScriptVehicle::VT_ROAD);
 
 	uint type = 0;

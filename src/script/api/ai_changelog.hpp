@@ -15,17 +15,74 @@
  * functions may still be available if you return an older API version
  * in GetAPIVersion() in info.nut.
  *
- * \b 1.4.0
+ * \b 1.6.0
  *
- * 1.4.0 is not yet released. The following changes are not set in stone yet.
+ * 1.6.0 is not yet released. The following changes are not set in stone yet.
+ *
+ * \b 1.5.0
  *
  * API additions:
- * \li AIStation::HasRating
+ * \li AIList::SwapList
+ * \li AIStation::GetCargoPlanned
+ * \li AIStation::GetCargoPlannedFrom
+ * \li AIStation::GetCargoPlannedFromVia
+ * \li AIStation::GetCargoPlannedVia
+ * \li AIStation::GetCargoWaitingFromVia
+ * \li AIStationList_CargoPlannedByFrom
+ * \li AIStationList_CargoPlannedByVia
+ * \li AIStationList_CargoPlannedFromByVia
+ * \li AIStationList_CargoPlannedViaByFrom
+ * \li AIStationList_CargoWaitingByFrom
+ * \li AIStationList_CargoWaitingByVia
+ * \li AIStationList_CargoWaitingFromByVia
+ * \li AIStationList_CargoWaitingViaByFrom
+ *
+ * \b 1.4.4
+ *
+ * No changes
+ *
+ * \b 1.4.3
+ *
+ * No changes
+ *
+ * \b 1.4.2
+ *
+ * No changes
+ *
+ * \b 1.4.1
+ *
+ * No changes
+ *
+ * \b 1.4.0
+ *
+ * API additions:
+ * \li AICargo::GetDistributionType
+ * \li AIDate::DATE_INVALID
+ * \li AIDate::IsValidDate
+ * \li AIStation::HasCargoRating
+ * \li AIStation::GetCargoWaitingFrom
+ * \li AIStation::GetCargoWaitingVia
  * \li AITile::GetTerrainType
+ * \li AITown::FoundTown
+ * \li AITown::GetFundBuildingsDuration
+ * \li AITown::TOWN_GROWTH_NONE
  *
  * Other changes:
- * \li AIStation::GetRating does return -1 for cargo-station combinations that
+ * \li AIStation::GetCargoRating does return -1 for cargo-station combinations that
  *     do not have a rating yet instead of returning 69.
+ *
+ * \b 1.3.3
+ *
+ * No changes
+ *
+ * \b 1.3.2
+ *
+ * No changes
+ *
+ * \b 1.3.1
+ *
+ * API additions:
+ * \li AITile::GetTerrainType
  *
  * \b 1.3.0
  *
@@ -75,10 +132,10 @@
  * \li AIOrder::SetOrderRefit
  * \li AIRail::GetMaintenanceCostFactor
  * \li AIRoad::GetMaintenanceCostFactor
+ * \li AITile::GetTownAuthority
  * \li AITown::GetCargoGoal
  * \li AITown::GetGrowthRate
  * \li AITown::GetLastMonthReceived
- * \li AITown::GetTownAuthority
  * \li AITownEffectList (to walk over all available town effects)
  * \li AIVehicle::ERR_VEHICLE_TOO_LONG in case vehicle length limit is reached
  * \li AIVehicle::GetMaximumOrderDistance
@@ -98,7 +155,7 @@
  * Other changes:
  * \li AITown::GetLastMonthProduction no longer has prerequisites based on town
  *     effects.
- * \li AITown::GetLastMonthTransported no longer has prerequisites based on
+ * \li AITown::GetLastMonthTransported resp. AITown::GetLastMonthSupplied no longer has prerequisites based on
  *     town effects.
  * \li AITown::GetLastMonthTransportedPercentage no longer has prerequisites
  *     based on town effects.

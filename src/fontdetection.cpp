@@ -35,6 +35,8 @@ extern FT_Library _library;
 #include <shlobj.h> /* SHGetFolderPath */
 #include "os/windows/win32.h"
 
+#include "safeguards.h"
+
 /**
  * Get the short DOS 8.3 format for paths.
  * FreeType doesn't support Unicode filenames and Windows' fopen (as used
@@ -42,26 +44,19 @@ extern FT_Library _library;
  * filename into something that isn't UTF-8 but represents the Unicode file
  * name. This is the short DOS 8.3 format. This does not contain any
  * characters that fopen doesn't support.
- * @param long_path the path in UTF-8.
+ * @param long_path the path in system encoding.
  * @return the short path in ANSI (ASCII).
  */
-char *GetShortPath(const char *long_path)
+const char *GetShortPath(const TCHAR *long_path)
 {
 	static char short_path[MAX_PATH];
 #ifdef UNICODE
-	/* The non-unicode GetShortPath doesn't support UTF-8...,
-	 * so convert the path to wide chars, then get the short
-	 * path and convert it back again. */
-	wchar_t long_path_w[MAX_PATH];
-	MultiByteToWideChar(CP_UTF8, 0, long_path, -1, long_path_w, MAX_PATH);
-
-	wchar_t short_path_w[MAX_PATH];
-	GetShortPathNameW(long_path_w, short_path_w, MAX_PATH);
-
-	WideCharToMultiByte(CP_ACP, 0, short_path_w, -1, short_path, MAX_PATH, NULL, NULL);
+	WCHAR short_path_w[MAX_PATH];
+	GetShortPathName(long_path, short_path_w, lengthof(short_path_w));
+	WideCharToMultiByte(CP_ACP, 0, short_path_w, -1, short_path, lengthof(short_path), NULL, NULL);
 #else
 	/* Technically not needed, but do it for consistency. */
-	GetShortPathNameA(long_path, short_path, MAX_PATH);
+	GetShortPathName(long_path, short_path, lengthof(short_path));
 #endif
 	return short_path;
 }
@@ -82,9 +77,10 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 	HKEY hKey;
 	LONG ret;
 	TCHAR vbuffer[MAX_PATH], dbuffer[256];
-	TCHAR *font_namep;
-	char *font_path;
+	TCHAR *pathbuf;
+	const char *font_path;
 	uint index;
+	size_t path_len;
 
 	/* On windows NT (2000, NT3.5, XP, etc.) the fonts are stored in the
 	 * "Windows NT" key, on Windows 9x in the Windows key. To save us having
@@ -97,15 +93,8 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 		return err;
 	}
 
-	/* For Unicode we need some conversion between widechar and
-	 * normal char to match the data returned by RegEnumValue,
-	 * otherwise just use parameter */
-#if defined(UNICODE)
-	font_namep = MallocT<TCHAR>(MAX_PATH);
-	MB_TO_WIDE_BUFFER(font_name, font_namep, MAX_PATH * sizeof(TCHAR));
-#else
-	font_namep = const_cast<char *>(font_name); // only cast because in unicode pointer is not const
-#endif
+	/* Convert font name to file system encoding. */
+	TCHAR *font_namep = _tcsdup(OTTD2FS(font_name));
 
 	for (index = 0;; index++) {
 		TCHAR *s;
@@ -142,23 +131,13 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 	/* Some fonts are contained in .ttc files, TrueType Collection fonts. These
 	 * contain multiple fonts inside this single file. GetFontData however
 	 * returns the whole file, so we need to check each font inside to get the
-	 * proper font.
-	 * Also note that FreeType does not support UNICODE filenames! */
-#if defined(UNICODE)
-	/* We need a cast here back from wide because FreeType doesn't support
-	 * widechar filenames. Just use the buffer we allocated before for the
-	 * font_name search */
-	font_path = (char*)font_namep;
-	WIDE_TO_MB_BUFFER(vbuffer, font_path, MAX_PATH * sizeof(TCHAR));
-#else
-	font_path = vbuffer;
-#endif
+	 * proper font. */
+	path_len = _tcslen(vbuffer) + _tcslen(dbuffer) + 2; // '\' and terminating nul.
+	pathbuf = AllocaM(TCHAR, path_len);
+	_sntprintf(pathbuf, path_len, _T("%s\\%s"), vbuffer, dbuffer);
 
-	ttd_strlcat(font_path, "\\", MAX_PATH * sizeof(TCHAR));
-	ttd_strlcat(font_path, WIDE_TO_MB(dbuffer), MAX_PATH * sizeof(TCHAR));
-
-	/* Convert the path into something that FreeType understands */
-	font_path = GetShortPath(font_path);
+	/* Convert the path into something that FreeType understands. */
+	font_path = GetShortPath(pathbuf);
 
 	index = 0;
 	do {
@@ -175,9 +154,7 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 
 folder_error:
 registry_no_font_found:
-#if defined(UNICODE)
 	free(font_namep);
-#endif
 	RegCloseKey(hKey);
 	return err;
 }
@@ -338,11 +315,7 @@ static int CALLBACK EnumFontCallback(const ENUMLOGFONTEX *logfont, const NEWTEXT
 	}
 
 	char font_name[MAX_PATH];
-#if defined(UNICODE)
-	WIDE_TO_MB_BUFFER((const TCHAR*)logfont->elfFullName, font_name, lengthof(font_name));
-#else
-	strecpy(font_name, (const TCHAR*)logfont->elfFullName, lastof(font_name));
-#endif
+	convert_from_fs((const TCHAR *)logfont->elfFullName, font_name, lengthof(font_name));
 
 	/* Add english name after font name */
 	const char *english_name = GetEnglishFontName(logfont);
@@ -402,6 +375,8 @@ bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, i
 
 #include "os/macosx/macos.h"
 
+#include "safeguards.h"
+
 FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 {
 	FT_Error err = FT_Err_Cannot_Open_Resource;
@@ -421,7 +396,7 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 	} else
 #endif
 	{
-#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5) && !__LP64__
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5) && !defined(__LP64__)
 		/* This type was introduced with the 10.5 SDK. */
 #if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_5)
 	#define ATSFSSpec FSSpec
@@ -446,10 +421,7 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 
 bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, int winlangid, MissingGlyphSearcher *callback)
 {
-	const char *str;
 	bool result = false;
-
-	callback->FindMissingGlyphs(&str);
 
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
 	if (MacOSVersionIsAtLeast(10, 5, 0)) {
@@ -462,11 +434,6 @@ bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, i
 		} else if (strcmp(language_isocode, "zh_CN") == 0) {
 			/* Simplified Chinese */
 			strecpy(lang, "zh-Hans", lastof(lang));
-		} else if (strncmp(language_isocode, "ur", 2) == 0) {
-			/* The urdu alphabet is variant of persian. As OS X has no default
-			 * font that advertises an urdu language code, search for persian
-			 * support instead. */
-			strecpy(lang, "fa", lastof(lang));
 		} else {
 			/* Just copy the first part of the isocode. */
 			strecpy(lang, language_isocode, lastof(lang));
@@ -474,150 +441,102 @@ bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, i
 			if (sep != NULL) *sep = '\0';
 		}
 
-		CFStringRef lang_code;
-		lang_code = CFStringCreateWithCString(kCFAllocatorDefault, lang, kCFStringEncodingUTF8);
+		/* Create a font descriptor matching the wanted language and latin (english) glyphs. */
+		CFStringRef lang_codes[2];
+		lang_codes[0] = CFStringCreateWithCString(kCFAllocatorDefault, lang, kCFStringEncodingUTF8);
+		lang_codes[1] = CFSTR("en");
+		CFArrayRef lang_arr = CFArrayCreate(kCFAllocatorDefault, (const void **)lang_codes, lengthof(lang_codes), &kCFTypeArrayCallBacks);
+		CFDictionaryRef lang_attribs = CFDictionaryCreate(kCFAllocatorDefault, (const void**)&kCTFontLanguagesAttribute, (const void **)&lang_arr, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+		CTFontDescriptorRef lang_desc = CTFontDescriptorCreateWithAttributes(lang_attribs);
+		CFRelease(lang_arr);
+		CFRelease(lang_attribs);
+		CFRelease(lang_codes[0]);
 
+		/* Get array of all font descriptors for the wanted language. */
+		CFSetRef mandatory_attribs = CFSetCreate(kCFAllocatorDefault, (const void **)&kCTFontLanguagesAttribute, 1, &kCFTypeSetCallBacks);
+		CFArrayRef descs = CTFontDescriptorCreateMatchingFontDescriptors(lang_desc, mandatory_attribs);
+		CFRelease(mandatory_attribs);
+		CFRelease(lang_desc);
+
+		for (CFIndex i = 0; descs != NULL && i < CFArrayGetCount(descs); i++) {
+			CTFontDescriptorRef font = (CTFontDescriptorRef)CFArrayGetValueAtIndex(descs, i);
+
+			/* Get font traits. */
+			CFDictionaryRef traits = (CFDictionaryRef)CTFontDescriptorCopyAttribute(font, kCTFontTraitsAttribute);
+			CTFontSymbolicTraits symbolic_traits;
+			CFNumberGetValue((CFNumberRef)CFDictionaryGetValue(traits, kCTFontSymbolicTrait), kCFNumberIntType, &symbolic_traits);
+			CFRelease(traits);
+
+			/* Skip symbol fonts and vertical fonts. */
+			if ((symbolic_traits & kCTFontClassMaskTrait) == (CTFontStylisticClass)kCTFontSymbolicClass || (symbolic_traits & kCTFontVerticalTrait)) continue;
+			/* Skip bold fonts (especially Arial Bold, which looks worse than regular Arial). */
+			if (symbolic_traits & kCTFontBoldTrait) continue;
+			/* Select monospaced fonts if asked for. */
+			if (((symbolic_traits & kCTFontMonoSpaceTrait) == kCTFontMonoSpaceTrait) != callback->Monospace()) continue;
+
+			/* Get font name. */
+			char name[128];
+			CFStringRef font_name = (CFStringRef)CTFontDescriptorCopyAttribute(font, kCTFontDisplayNameAttribute);
+			CFStringGetCString(font_name, name, lengthof(name), kCFStringEncodingUTF8);
+			CFRelease(font_name);
+
+			/* There are some special fonts starting with an '.' and the last
+			 * resort font that aren't usable. Skip them. */
+			if (name[0] == '.' || strncmp(name, "LastResort", 10) == 0) continue;
+
+			/* Save result. */
+			callback->SetFontNames(settings, name);
+			if (!callback->FindMissingGlyphs(NULL)) {
+				DEBUG(freetype, 2, "CT-Font for %s: %s", language_isocode, name);
+				result = true;
+				break;
+			}
+		}
+		if (descs != NULL) CFRelease(descs);
+	} else
+#endif
+	{
 		/* Create a font iterator and iterate over all fonts that
 		 * are available to the application. */
 		ATSFontIterator itr;
 		ATSFontRef font;
-		ATSFontIteratorCreate(kATSFontContextLocal, NULL, NULL, kATSOptionFlagsUnRestrictedScope, &itr);
+		ATSFontIteratorCreate(kATSFontContextLocal, NULL, NULL, kATSOptionFlagsDefaultScope, &itr);
 		while (!result && ATSFontIteratorNext(itr, &font) == noErr) {
-			/* Get CoreText font handle. */
-			CTFontRef font_ref = CTFontCreateWithPlatformFont(font, 0.0, NULL, NULL);
-			CFArrayRef langs = CTFontCopySupportedLanguages(font_ref);
-			if (langs != NULL) {
-				/* Font has a list of supported languages. */
-				for (CFIndex i = 0; i < CFArrayGetCount(langs); i++) {
-					CFStringRef lang = (CFStringRef)CFArrayGetValueAtIndex(langs, i);
-					if (CFStringCompare(lang, lang_code, kCFCompareAnchored) == kCFCompareEqualTo) {
-						/* Lang code is supported by font, get full font name. */
-						CFStringRef font_name = CTFontCopyFullName(font_ref);
-						char name[128];
-						CFStringGetCString(font_name, name, lengthof(name), kCFStringEncodingUTF8);
-						CFRelease(font_name);
-						/* Skip some inappropriate or ugly looking fonts that have better alternatives. */
-						if (strncmp(name, "Courier", 7) == 0 || strncmp(name, "Apple Symbols", 13) == 0 ||
-								strncmp(name, ".Aqua", 5) == 0 || strncmp(name, "LastResort", 10) == 0 ||
-								strncmp(name, "GB18030 Bitmap", 14) == 0) continue;
+			/* Get font name. */
+			char name[128];
+			CFStringRef font_name;
+			ATSFontGetName(font, kATSOptionFlagsDefault, &font_name);
+			CFStringGetCString(font_name, name, lengthof(name), kCFStringEncodingUTF8);
 
-						/* Save result. */
-						callback->SetFontNames(settings, name);
-						DEBUG(freetype, 2, "CT-Font for %s: %s", language_isocode, name);
-						result = true;
-						break;
-					}
-				}
-				CFRelease(langs);
+			bool monospace = IsMonospaceFont(font_name);
+			CFRelease(font_name);
+
+			/* Select monospaced fonts if asked for. */
+			if (monospace != callback->Monospace()) continue;
+
+			/* We only want the base font and not bold or italic variants. */
+			if (strstr(name, "Italic") != NULL || strstr(name, "Bold")) continue;
+
+			/* Skip some inappropriate or ugly looking fonts that have better alternatives. */
+			if (name[0] == '.' || strncmp(name, "Apple Symbols", 13) == 0 || strncmp(name, "LastResort", 10) == 0) continue;
+
+			/* Save result. */
+			callback->SetFontNames(settings, name);
+			if (!callback->FindMissingGlyphs(NULL)) {
+				DEBUG(freetype, 2, "ATS-Font for %s: %s", language_isocode, name);
+				result = true;
+				break;
 			}
-			CFRelease(font_ref);
 		}
 		ATSFontIteratorRelease(&itr);
-		CFRelease(lang_code);
-	} else
-#endif
-	{
-#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5) && !__LP64__
-		/* Determine fallback font using ATSUI. This uses a string sample with
-		 * missing characters. This is not failure-proof, but a better way like
-		 * using the isocode as in the CoreText code path is not available.
-		 * ATSUI was deprecated with 10.6 and is only partially available in
-		 * 64-bit mode. */
-
-		/* Remove all control characters in the range from SCC_CONTROL_START to
-		 * SCC_CONTROL_END as well as all ASCII < 0x20 from the string as it will
-		 * mess with the automatic font detection */
-		char buff[256]; // This length is enough to find a suitable replacement font
-		strecpy(buff, str, lastof(buff));
-		str_validate(buff, lastof(buff), SVS_ALLOW_NEWLINE);
-
-		/* Extract a UniChar representation of the sample string. */
-		CFStringRef cf_str = CFStringCreateWithCString(kCFAllocatorDefault, buff, kCFStringEncodingUTF8);
-		if (cf_str == NULL) {
-			/* Something went wrong. Corrupt/invalid sample string? */
-			return false;
-		}
-		CFIndex str_len = CFStringGetLength(cf_str);
-		UniChar string[str_len];
-		CFStringGetCharacters(cf_str, CFRangeMake(0, str_len), string);
-
-		/* Create a default text style with the default font. */
-		ATSUStyle style;
-		ATSUCreateStyle(&style);
-
-		/* Create a text layout object from the sample string using the text style. */
-		UniCharCount run_len = kATSUToTextEnd;
-		ATSUTextLayout text_layout;
-		ATSUCreateTextLayoutWithTextPtr(string, kATSUFromTextBeginning, kATSUToTextEnd, str_len, 1, &run_len, &style, &text_layout);
-
-		/* Try to match a font for the sample text. ATSUMatchFontsToText stops after
-		 * it finds the first continuous character run not renderable with the currently
-		 * selected font starting at offset. The matching needs to be repeated until
-		 * the end of the string is reached to make sure the fallback font matches for
-		 * all characters in the string and not only the first run. */
-		UniCharArrayOffset offset = kATSUFromTextBeginning;
-		OSStatus os_err;
-		do {
-			ATSUFontID font;
-			UniCharCount run_len;
-			os_err = ATSUMatchFontsToText(text_layout, offset, kATSUToTextEnd, &font, &offset, &run_len);
-			if (os_err == kATSUFontsMatched) {
-				/* Found a better fallback font. Update the text layout
-				 * object with the new font. */
-				ATSUAttributeTag tag = kATSUFontTag;
-				ByteCount size = sizeof(font);
-				ATSUAttributeValuePtr val = &font;
-				ATSUSetAttributes(style, 1, &tag, &size, &val);
-				offset += run_len;
-			}
-			/* Exit if the end of the string is reached or some other error occurred. */
-		} while (os_err == kATSUFontsMatched && offset < (UniCharArrayOffset)str_len);
-
-		if (os_err == noErr || os_err == kATSUFontsMatched) {
-			/* ATSUMatchFontsToText exited normally. Extract font
-			 * out of the text layout object. */
-			ATSUFontID font;
-			ByteCount act_len;
-			ATSUGetAttribute(style, kATSUFontTag, sizeof(font), &font, &act_len);
-
-			/* Get unique font name. The result is not a c-string, we have
-			 * to leave space for a \0 and terminate it ourselves. */
-			char name[128];
-			ATSUFindFontName(font, kFontUniqueName, kFontNoPlatformCode, kFontNoScriptCode, kFontNoLanguageCode, 127, name, &act_len, NULL);
-			name[act_len > 127 ? 127 : act_len] = '\0';
-
-			/* Save Result. */
-			callback->SetFontNames(settings, name);
-			DEBUG(freetype, 2, "ATSUI-Font for %s: %s", language_isocode, name);
-			result = true;
-		}
-
-		ATSUDisposeTextLayout(text_layout);
-		ATSUDisposeStyle(style);
-		CFRelease(cf_str);
-#endif
 	}
 
-	if (result && strncmp(settings->medium.font, "Geeza Pro", 9) == 0) {
-		/* The font 'Geeza Pro' is often found for arabic characters, but
-		 * it has the 'tiny' problem of not having any latin characters.
-		 * 'Arial Unicode MS' on the other hand has arabic and latin glyphs,
-		 * but seems to 'forget' to inform the OS about this fact. Manually
-		 * substitute the latter for the former if it is loadable. */
-		bool ft_init = _library != NULL;
-		FT_Face face;
-		/* Init FreeType if needed. */
-		if ((ft_init || FT_Init_FreeType(&_library) == FT_Err_Ok) && GetFontByFaceName("Arial Unicode MS", &face) == FT_Err_Ok) {
-			FT_Done_Face(face);
-			callback->SetFontNames(settings, "Arial Unicode MS");
-			DEBUG(freetype, 1, "Replacing font 'Geeza Pro' with 'Arial Unicode MS'");
-		}
-		if (!ft_init) {
-			/* Uninit FreeType if we did the init. */
-			FT_Done_FreeType(_library);
-			_library = NULL;
-		}
-	 }
+	if (!result) {
+		/* For some OS versions, the font 'Arial Unicode MS' does not report all languages it
+		 * supports. If we didn't find any other font, just try it, maybe we get lucky. */
+		callback->SetFontNames(settings, "Arial Unicode MS");
+		result = !callback->FindMissingGlyphs(NULL);
+	}
 
 	callback->FindMissingGlyphs(NULL);
 	return result;
@@ -626,6 +545,8 @@ bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, i
 #elif defined(WITH_FONTCONFIG) /* end ifdef __APPLE__ */
 
 #include <fontconfig/fontconfig.h>
+
+#include "safeguards.h"
 
 /* ========================================================================================
  * FontConfig (unix) support
@@ -645,7 +566,7 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 		char *font_family;
 
 		/* Split & strip the font's style */
-		font_family = strdup(font_name);
+		font_family = stredup(font_name);
 		font_style = strchr(font_family, ',');
 		if (font_style != NULL) {
 			font_style[0] = '\0';

@@ -22,7 +22,7 @@
 
 template <typename T>
 struct BuildingCounts {
-	T id_count[HOUSE_MAX];
+	T id_count[NUM_HOUSES];
 	T class_count[HOUSE_CLASS_MAX];
 };
 
@@ -35,7 +35,8 @@ static const uint INVALID_TOWN = 0xFFFF;
 
 static const uint TOWN_GROWTH_WINTER = 0xFFFFFFFE; ///< The town only needs this cargo in the winter (any amount)
 static const uint TOWN_GROWTH_DESERT = 0xFFFFFFFF; ///< The town needs the cargo for growth when on desert (any amount)
-static const uint16 TOWN_GROW_RATE_CUSTOM = 0x8000; ///< If this mask is applied to Town::grow_counter, the grow_counter will not be calculated by the system (but assumed to be set by scripts)
+static const uint16 TOWN_GROW_RATE_CUSTOM      = 0x8000; ///< If this mask is applied to Town::growth_rate, the grow_counter will not be calculated by the system (but assumed to be set by scripts)
+static const uint16 TOWN_GROW_RATE_CUSTOM_NONE = 0xFFFF; ///< Special value for Town::growth_rate to disable town growth.
 
 typedef Pool<Town, TownID, 64, 64000> TownPool;
 extern TownPool _town_pool;
@@ -60,13 +61,9 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	uint32 townnamegrfid;
 	uint16 townnametype;
 	uint32 townnameparts;
-	char *name;
+	char *name;                    ///< Custom town name. If NULL, the town was not renamed and uses the generated name.
 
-	/* Makes sure we don't build certain house types twice.
-	 * bit 0 = Building funds received
-	 * bit 1 = CHURCH
-	 * bit 2 = STADIUM */
-	byte flags;
+	byte flags;                    ///< See #TownFlags.
 
 	uint16 noise_reached;          ///< level of noise that all the airports are generating
 
@@ -94,7 +91,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	uint16 time_until_rebuild;     ///< time until we rebuild a house
 
-	uint16 grow_counter;           ///< counter to count when to grow
+	uint16 grow_counter;           ///< counter to count when to grow, value is smaller than or equal to growth_rate
 	uint16 growth_rate;            ///< town growth rate
 
 	byte fund_buildings_months;    ///< fund buildings program in action?
@@ -165,7 +162,7 @@ enum TownRatingCheckType {
  * And there are 5 more bits available on flags...
  */
 enum TownFlags {
-	TOWN_IS_FUNDED      = 0,   ///< Town has received some funds for
+	TOWN_IS_GROWING     = 0,   ///< Conditions for town growth are met. Grow according to Town::growth_rate.
 	TOWN_HAS_CHURCH     = 1,   ///< There can be only one church by town.
 	TOWN_HAS_STADIUM    = 2,   ///< There can be only one stadium by town.
 };

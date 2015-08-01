@@ -26,16 +26,17 @@
 #ifndef STRING_FUNC_H
 #define STRING_FUNC_H
 
+#include <stdarg.h>
+
 #include "core/bitmath_func.hpp"
 #include "string_type.h"
 
-void ttd_strlcat(char *dst, const char *src, size_t size);
-void ttd_strlcpy(char *dst, const char *src, size_t size);
-
 char *strecat(char *dst, const char *src, const char *last);
 char *strecpy(char *dst, const char *src, const char *last);
+char *stredup(const char *src, const char *last = NULL);
 
 int CDECL seprintf(char *str, const char *last, const char *format, ...) WARN_FORMAT(3, 4);
+int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap);
 
 char *CDECL str_fmt(const char *str, ...) WARN_FORMAT(1, 2);
 
@@ -89,7 +90,6 @@ static inline WChar Utf8Consume(const char **s)
 	*s += Utf8Decode(&c, *s);
 	return c;
 }
-
 
 /**
  * Return the length of a UTF-8 encoded character.
@@ -147,7 +147,59 @@ static inline char *Utf8PrevChar(char *s)
 	return ret;
 }
 
+static inline const char *Utf8PrevChar(const char *s)
+{
+	const char *ret = s;
+	while (IsUtf8Part(*--ret)) {}
+	return ret;
+}
+
 size_t Utf8StringLength(const char *s);
+
+/**
+ * Is the given character a lead surrogate code point?
+ * @param c The character to test.
+ * @return True if the character is a lead surrogate code point.
+ */
+static inline bool Utf16IsLeadSurrogate(uint c)
+{
+	return c >= 0xD800 && c <= 0xDBFF;
+}
+
+/**
+ * Is the given character a lead surrogate code point?
+ * @param c The character to test.
+ * @return True if the character is a lead surrogate code point.
+ */
+static inline bool Utf16IsTrailSurrogate(uint c)
+{
+	return c >= 0xDC00 && c <= 0xDFFF;
+}
+
+/**
+ * Convert an UTF-16 surrogate pair to the corresponding Unicode character.
+ * @param lead Lead surrogate code point.
+ * @param trail Trail surrogate code point.
+ * @return Decoded Unicode character.
+ */
+static inline WChar Utf16DecodeSurrogate(uint lead, uint trail)
+{
+	return 0x10000 + (((lead - 0xD800) << 10) | (trail - 0xDC00));
+}
+
+/**
+ * Decode an UTF-16 character.
+ * @param c Pointer to one or two UTF-16 code points.
+ * @return Decoded Unicode character.
+ */
+static inline WChar Utf16DecodeChar(const uint16 *c)
+{
+	if (Utf16IsLeadSurrogate(c[0])) {
+		return Utf16DecodeSurrogate(c[0], c[1]);
+	} else {
+		return *c;
+	}
+}
 
 /**
  * Is the given character a text direction character.
@@ -196,14 +248,6 @@ static inline bool IsWhitespace(WChar c)
 #if defined(__NetBSD__) || defined(__FreeBSD__)
 #include <sys/param.h>
 #endif
-
-/* strndup is a GNU extension */
-#if defined(_GNU_SOURCE) || (defined(__NetBSD_Version__) && 400000000 <= __NetBSD_Version__) || (defined(__FreeBSD_version) && 701101 <= __FreeBSD_version) || (defined(__DARWIN_C_LEVEL) && __DARWIN_C_LEVEL >= 200809L)
-#	undef DEFINE_STRNDUP
-#else
-#	define DEFINE_STRNDUP
-char *strndup(const char *s, size_t len);
-#endif /* strndup is available */
 
 /* strcasestr is available for _GNU_SOURCE, BSD and some Apple */
 #if defined(_GNU_SOURCE) || (defined(__BSD_VISIBLE) && __BSD_VISIBLE) || (defined(__APPLE__) && (!defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE))) || defined(_NETBSD_SOURCE)

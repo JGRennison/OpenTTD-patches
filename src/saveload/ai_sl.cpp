@@ -20,6 +20,8 @@
 #include "../network/network.h"
 #include "../ai/ai_instance.hpp"
 
+#include "../safeguards.h"
+
 static char _ai_saveload_name[64];
 static int  _ai_saveload_version;
 static char _ai_saveload_settings[1024];
@@ -39,7 +41,7 @@ static void SaveReal_AIPL(int *index_ptr)
 	AIConfig *config = AIConfig::GetConfig(index);
 
 	if (config->HasScript()) {
-		ttd_strlcpy(_ai_saveload_name, config->GetName(), lengthof(_ai_saveload_name));
+		strecpy(_ai_saveload_name, config->GetName(), lastof(_ai_saveload_name));
 		_ai_saveload_version = config->GetVersion();
 	} else {
 		/* No AI is configured for this so store an empty string as name. */
@@ -49,7 +51,7 @@ static void SaveReal_AIPL(int *index_ptr)
 
 	_ai_saveload_is_random = config->IsRandom();
 	_ai_saveload_settings[0] = '\0';
-	config->SettingsToString(_ai_saveload_settings, lengthof(_ai_saveload_settings));
+	config->SettingsToString(_ai_saveload_settings, lastof(_ai_saveload_settings));
 
 	SlObject(NULL, _ai_company);
 	/* If the AI was active, store his data too */

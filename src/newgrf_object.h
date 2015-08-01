@@ -37,7 +37,8 @@ enum ObjectFlags {
 	OBJECT_FLAG_NOT_ON_LAND        = 1 <<  9, ///< Object can not be on land, implicitly sets #OBJECT_FLAG_BUILT_ON_WATER.
 	OBJECT_FLAG_DRAW_WATER         = 1 << 10, ///< Object wants to be drawn on water.
 	OBJECT_FLAG_ALLOW_UNDER_BRIDGE = 1 << 11, ///< Object can built under a bridge.
-	OBJECT_FLAG_ANIM_RANDOM_BITS   = 1 << 12, ///< Object wants random bits in "next animation frame" callback
+	OBJECT_FLAG_ANIM_RANDOM_BITS   = 1 << 12, ///< Object wants random bits in "next animation frame" callback.
+	OBJECT_FLAG_SCALE_BY_WATER     = 1 << 13, ///< Object count is roughly scaled by water amount at edges.
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectFlags)
 
@@ -46,13 +47,16 @@ void ResetObjects();
 /** Class IDs for objects. */
 enum ObjectClassID {
 	OBJECT_CLASS_BEGIN   =    0, ///< The lowest valid value
-	OBJECT_CLASS_MAX     =   32, ///< Maximum number of classes.
+	OBJECT_CLASS_MAX     = 0xFF, ///< Maximum number of classes.
 	INVALID_OBJECT_CLASS = 0xFF, ///< Class for the less fortunate.
 };
 /** Allow incrementing of ObjectClassID variables */
 DECLARE_POSTFIX_INCREMENT(ObjectClassID)
 
-/** An object that isn't use for transport, industries or houses. */
+/** An object that isn't use for transport, industries or houses.
+ * @note If you change this struct, adopt the initialization of
+ * default objects in table/object_land.h
+ */
 struct ObjectSpec {
 	/* 2 because of the "normal" and "buy" sprite stacks. */
 	GRFFilePropsBase<2> grf_prop; ///< Properties related the the grf file
@@ -70,6 +74,7 @@ struct ObjectSpec {
 	uint16 callback_mask;         ///< Bitmask of requested/allowed callbacks.
 	uint8 height;                 ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
 	uint8 views;                  ///< The number of views.
+	uint8 generate_amount;        ///< Number of objects which are attempted to be generated per 256^2 map during world generation.
 	bool enabled;                 ///< Is this spec enabled?
 
 	/**
@@ -85,6 +90,7 @@ struct ObjectSpec {
 	Money GetClearCost() const { return GetPrice(PR_CLEAR_OBJECT, this->clear_cost_multiplier, this->grf_prop.grffile, 0); }
 
 	bool IsEverAvailable() const;
+	bool WasEverAvailable() const;
 	bool IsAvailable() const;
 	uint Index() const;
 
@@ -98,7 +104,7 @@ struct ObjectScopeResolver : public ScopeResolver {
 	TileIndex tile;     ///< The tile related to the object.
 	uint8 view;         ///< The view of the object.
 
-	ObjectScopeResolver(ResolverObject *ro, Object *obj, TileIndex tile, uint8 view = 0);
+	ObjectScopeResolver(ResolverObject &ro, Object *obj, TileIndex tile, uint8 view = 0);
 
 	/* virtual */ uint32 GetRandomBits() const;
 	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
@@ -133,7 +139,7 @@ private:
 	TownScopeResolver *GetTown();
 };
 
-/** Struct containing information relating to station classes. */
+/** Struct containing information relating to object classes. */
 typedef NewGRFClass<ObjectSpec, ObjectClassID, OBJECT_CLASS_MAX> ObjectClass;
 
 /** Mapping of purchase for objects. */

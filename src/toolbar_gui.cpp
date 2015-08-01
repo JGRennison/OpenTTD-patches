@@ -44,6 +44,9 @@
 #include "engine_base.h"
 #include "highscore.h"
 #include "game/game.hpp"
+#include "goal_base.h"
+#include "story_base.h"
+#include "toolbar_gui.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -51,6 +54,11 @@
 #include "network/network_gui.h"
 #include "network/network_func.h"
 
+#include "safeguards.h"
+
+
+/** Width of the toolbar, shared by statusbar. */
+uint _toolbar_width = 0;
 
 RailType _last_built_railtype;
 RoadType _last_built_roadtype;
@@ -183,7 +191,7 @@ static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count
 {
 	DropDownList *list = new DropDownList();
 	for (int i = 0; i < count; i++) {
-		list->push_back(new DropDownListStringItem(string + i, i, false));
+		*list->Append() = new DropDownListStringItem(string + i, i, false);
 	}
 	PopupMainToolbMenu(w, widget, list, 0);
 }
@@ -192,30 +200,43 @@ static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count
 static const int CTMN_CLIENT_LIST = -1; ///< Show the client list
 static const int CTMN_NEW_COMPANY = -2; ///< Create a new company
 static const int CTMN_SPECTATE    = -3; ///< Become spectator
+static const int CTMN_SPECTATOR   = -4; ///< Show a company window as spectator
 
 /**
  * Pop up a generic company list menu.
+ * @param w The toolbar window.
+ * @param widget The button widget id.
+ * @param grey A bitbask of which items to mark as disabled.
+ * @param include_spectator If true, a spectator option is included in the list.
  */
-static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0)
+static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0, bool include_spectator = false)
 {
 	DropDownList *list = new DropDownList();
 
 #ifdef ENABLE_NETWORK
-	if (widget == WID_TN_COMPANIES && _networking) {
-		/* Add the client list button for the companies menu */
-		list->push_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST, false));
+	if (_networking) {
+		if (widget == WID_TN_COMPANIES) {
+			/* Add the client list button for the companies menu */
+			*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST, false);
+		}
 
-		if (_local_company == COMPANY_SPECTATOR) {
-			list->push_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached()));
-		} else {
-			list->push_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, NetworkMaxSpectatorsReached()));
+		if (include_spectator) {
+			if (widget == WID_TN_COMPANIES) {
+				if (_local_company == COMPANY_SPECTATOR) {
+					*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached());
+				} else {
+					*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, NetworkMaxSpectatorsReached());
+				}
+			} else {
+				*list->Append() = new DropDownListStringItem(STR_NETWORK_TOOLBAR_LIST_SPECTATOR, CTMN_SPECTATOR, false);
+			}
 		}
 	}
 #endif /* ENABLE_NETWORK */
 
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		if (!Company::IsValidID(c)) continue;
-		list->push_back(new DropDownListCompanyItem(c, false, HasBit(grey, c)));
+		*list->Append() = new DropDownListCompanyItem(c, false, HasBit(grey, c));
 	}
 
 	PopupMainToolbMenu(w, widget, list, _local_company == COMPANY_SPECTATOR ? CTMN_CLIENT_LIST : (int)_local_company);
@@ -289,24 +310,24 @@ enum OptionMenuEntries {
 static CallBackFunction ToolbarOptionsClick(Window *w)
 {
 	DropDownList *list = new DropDownList();
-	list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_GAME_OPTIONS,             OME_GAMEOPTIONS, false));
-	list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_CONFIG_SETTINGS,          OME_SETTINGS, false));
+	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_GAME_OPTIONS,             OME_GAMEOPTIONS, false);
+	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE,     OME_SETTINGS, false);
 	/* Changes to the per-AI settings don't get send from the server to the clients. Clients get
 	 * the settings once they join but never update it. As such don't show the window at all
 	 * to network clients. */
-	if (!_networking || _network_server) list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_SCRIPT_SETTINGS, OME_SCRIPT_SETTINGS, false));
-	list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_NEWGRF_SETTINGS,          OME_NEWGRFSETTINGS, false));
-	list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS,     OME_TRANSPARENCIES, false));
-	list->push_back(new DropDownListItem(-1, false));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED,    OME_SHOW_TOWNNAMES, false, HasBit(_display_opt, DO_SHOW_TOWN_NAMES)));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED, OME_SHOW_STATIONNAMES, false, HasBit(_display_opt, DO_SHOW_STATION_NAMES)));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED,     OME_SHOW_WAYPOINTNAMES, false, HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_SIGNS_DISPLAYED,         OME_SHOW_SIGNS, false, HasBit(_display_opt, DO_SHOW_SIGNS)));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS,   OME_SHOW_COMPETITOR_SIGNS, false, HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS)));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_ANIMATION,          OME_FULL_ANIMATION, false, HasBit(_display_opt, DO_FULL_ANIMATION)));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false, HasBit(_display_opt, DO_FULL_DETAIL)));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false, IsTransparencySet(TO_HOUSES)));
-	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false, IsTransparencySet(TO_SIGNS)));
+	if (!_networking || _network_server) *list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_SCRIPT_SETTINGS, OME_SCRIPT_SETTINGS, false);
+	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_NEWGRF_SETTINGS,          OME_NEWGRFSETTINGS, false);
+	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS,     OME_TRANSPARENCIES, false);
+	*list->Append() = new DropDownListItem(-1, false);
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED,    OME_SHOW_TOWNNAMES, false, HasBit(_display_opt, DO_SHOW_TOWN_NAMES));
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED, OME_SHOW_STATIONNAMES, false, HasBit(_display_opt, DO_SHOW_STATION_NAMES));
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED,     OME_SHOW_WAYPOINTNAMES, false, HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES));
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_SIGNS_DISPLAYED,         OME_SHOW_SIGNS, false, HasBit(_display_opt, DO_SHOW_SIGNS));
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS,   OME_SHOW_COMPETITOR_SIGNS, false, HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS));
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_ANIMATION,          OME_FULL_ANIMATION, false, HasBit(_display_opt, DO_FULL_ANIMATION));
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false, HasBit(_display_opt, DO_FULL_DETAIL));
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false, IsTransparencySet(TO_HOUSES));
+	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false, IsTransparencySet(TO_SIGNS));
 
 	ShowDropDownList(w, list, 0, WID_TN_SETTINGS, 140, true, true);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
@@ -336,7 +357,7 @@ static CallBackFunction MenuClickSettings(int index)
 			ToggleBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS);
 			InvalidateWindowClassesData(WC_SIGN_LIST, -1);
 			break;
-		case OME_FULL_ANIMATION:       ToggleBit(_display_opt, DO_FULL_ANIMATION);      break;
+		case OME_FULL_ANIMATION:       ToggleBit(_display_opt, DO_FULL_ANIMATION); CheckBlitter(); break;
 		case OME_FULL_DETAILS:         ToggleBit(_display_opt, DO_FULL_DETAIL);         break;
 		case OME_TRANSPARENTBUILDINGS: ToggleTransparency(TO_HOUSES);                   break;
 		case OME_SHOW_STATIONSIGNS:    ToggleTransparency(TO_SIGNS);                    break;
@@ -435,10 +456,10 @@ enum MapMenuEntries {
 static CallBackFunction ToolbarMapClick(Window *w)
 {
 	DropDownList *list = new DropDownList();
-	list->push_back(new DropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
-	list->push_back(new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEW_PORT,         MME_SHOW_EXTRAVIEWPORTS,    false));
-	list->push_back(new DropDownListStringItem(STR_MAP_MENU_LINGRAPH_LEGEND,         MME_SHOW_LINKGRAPH,         false));
-	list->push_back(new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
+	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false);
+	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEW_PORT,         MME_SHOW_EXTRAVIEWPORTS,    false);
+	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_LINGRAPH_LEGEND,         MME_SHOW_LINKGRAPH,         false);
+	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false);
 	PopupMainToolbMenu(w, WID_TN_SMALL_MAP, list, 0);
 	return CBF_NONE;
 }
@@ -446,11 +467,11 @@ static CallBackFunction ToolbarMapClick(Window *w)
 static CallBackFunction ToolbarScenMapTownDir(Window *w)
 {
 	DropDownList *list = new DropDownList();
-	list->push_back(new DropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
-	list->push_back(new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEW_PORT,         MME_SHOW_EXTRAVIEWPORTS,    false));
-	list->push_back(new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
-	list->push_back(new DropDownListStringItem(STR_TOWN_MENU_TOWN_DIRECTORY,         MME_SHOW_TOWNDIRECTORY,     false));
-	list->push_back(new DropDownListStringItem(STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, MME_SHOW_INDUSTRYDIRECTORY, false));
+	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false);
+	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEW_PORT,         MME_SHOW_EXTRAVIEWPORTS,    false);
+	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false);
+	*list->Append() = new DropDownListStringItem(STR_TOWN_MENU_TOWN_DIRECTORY,         MME_SHOW_TOWNDIRECTORY,     false);
+	*list->Append() = new DropDownListStringItem(STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, MME_SHOW_INDUSTRYDIRECTORY, false);
 	PopupMainToolbMenu(w, WID_TE_SMALL_MAP, list, 0);
 	return CBF_NONE;
 }
@@ -565,7 +586,7 @@ static CallBackFunction MenuClickFinances(int index)
 
 static CallBackFunction ToolbarCompaniesClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_COMPANIES);
+	PopupMainCompanyToolbMenu(w, WID_TN_COMPANIES, 0, true);
 	return CBF_NONE;
 }
 
@@ -611,7 +632,7 @@ static CallBackFunction MenuClickCompany(int index)
 
 static CallBackFunction ToolbarStoryClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_STORY);
+	PopupMainCompanyToolbMenu(w, WID_TN_STORY, 0, true);
 	return CBF_NONE;
 }
 
@@ -623,7 +644,7 @@ static CallBackFunction ToolbarStoryClick(Window *w)
  */
 static CallBackFunction MenuClickStory(int index)
 {
-	ShowStoryBook((CompanyID)index);
+	ShowStoryBook(index == CTMN_SPECTATOR ? INVALID_COMPANY : (CompanyID)index);
 	return CBF_NONE;
 }
 
@@ -631,7 +652,7 @@ static CallBackFunction MenuClickStory(int index)
 
 static CallBackFunction ToolbarGoalClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_GOAL);
+	PopupMainCompanyToolbMenu(w, WID_TN_GOAL, 0, true);
 	return CBF_NONE;
 }
 
@@ -643,7 +664,7 @@ static CallBackFunction ToolbarGoalClick(Window *w)
  */
 static CallBackFunction MenuClickGoal(int index)
 {
-	ShowGoalsList((CompanyID)index);
+	ShowGoalsList(index == CTMN_SPECTATOR ? INVALID_COMPANY : (CompanyID)index);
 	return CBF_NONE;
 }
 
@@ -870,7 +891,7 @@ static CallBackFunction ToolbarBuildRoadClick(Window *w)
 	DropDownList *list = new DropDownList();
 
 	/* Road is always visible and available. */
-	list->push_back(new DropDownListStringItem(STR_ROAD_MENU_ROAD_CONSTRUCTION, ROADTYPE_ROAD, false));
+	*list->Append() = new DropDownListStringItem(STR_ROAD_MENU_ROAD_CONSTRUCTION, ROADTYPE_ROAD, false);
 
 	/* Tram is only visible when there will be a tram, and available when that has been introduced. */
 	Engine *e;
@@ -878,7 +899,7 @@ static CallBackFunction ToolbarBuildRoadClick(Window *w)
 		if (!HasBit(e->info.climates, _settings_game.game_creation.landscape)) continue;
 		if (!HasBit(e->info.misc_flags, EF_ROAD_TRAM)) continue;
 
-		list->push_back(new DropDownListStringItem(STR_ROAD_MENU_TRAM_CONSTRUCTION, ROADTYPE_TRAM, !HasBit(c->avail_roadtypes, ROADTYPE_TRAM)));
+		*list->Append() = new DropDownListStringItem(STR_ROAD_MENU_TRAM_CONSTRUCTION, ROADTYPE_TRAM, !HasBit(c->avail_roadtypes, ROADTYPE_TRAM));
 		break;
 	}
 	ShowDropDownList(w, list, _last_built_roadtype, WID_TN_ROADS, 140, true, true);
@@ -1049,14 +1070,14 @@ static void MenuClickLargeWorldScreenshot(ScreenshotType t)
 {
 	ViewPort vp;
 	SetupScreenshotViewport(t, &vp);
-	if (vp.width * vp.height > 8192 * 8192) {
+	if ((uint64)vp.width * (uint64)vp.height > 8192 * 8192) {
 		/* Ask for confirmation */
 		SetDParam(0, vp.width);
 		SetDParam(1, vp.height);
 		_confirmed_screenshot_type = t;
 		ShowQuery(STR_WARNING_SCREENSHOT_SIZE_CAPTION, STR_WARNING_SCREENSHOT_SIZE_MESSAGE, NULL, ScreenshotConfirmCallback);
 	} else {
-		/* Less than 4M pixels, just do it */
+		/* Less than 64M pixels, just do it */
 		MakeScreenshot(t, NULL);
 	}
 }
@@ -1093,6 +1114,19 @@ void ToggleDirtyBlocks()
 		_draw_dirty_blocks = !_draw_dirty_blocks;
 		MarkWholeScreenDirty();
 	}
+}
+
+/**
+ * Set the starting year for a scenario.
+ * @param year New starting year.
+ */
+void SetStartingYear(Year year)
+{
+	_settings_game.game_creation.starting_year = Clamp(year, MIN_YEAR, MAX_YEAR);
+	Date new_date = ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
+	/* If you open a savegame as scenario there may already be link graphs.*/
+	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
+	SetDate(new_date, 0);
 }
 
 /**
@@ -1154,8 +1188,7 @@ static CallBackFunction ToolbarScenDateBackward(Window *w)
 		w->HandleButtonClick(WID_TE_DATE_BACKWARD);
 		w->SetDirty();
 
-		_settings_game.game_creation.starting_year = Clamp(_settings_game.game_creation.starting_year - 1, MIN_YEAR, MAX_YEAR);
-		SetDate(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
+		SetStartingYear(_settings_game.game_creation.starting_year - 1);
 	}
 	_left_button_clicked = false;
 	return CBF_NONE;
@@ -1168,8 +1201,7 @@ static CallBackFunction ToolbarScenDateForward(Window *w)
 		w->HandleButtonClick(WID_TE_DATE_FORWARD);
 		w->SetDirty();
 
-		_settings_game.game_creation.starting_year = Clamp(_settings_game.game_creation.starting_year + 1, MIN_YEAR, MAX_YEAR);
-		SetDate(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
+		SetStartingYear(_settings_game.game_creation.starting_year + 1);
 	}
 	_left_button_clicked = false;
 	return CBF_NONE;
@@ -1322,7 +1354,7 @@ public:
 				child_wid->current_x = child_wid->smallest_x;
 			}
 		}
-		w->window_desc->default_width = nbuttons * this->smallest_x;
+		_toolbar_width = nbuttons * this->smallest_x;
 	}
 
 	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl)
@@ -1433,7 +1465,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 	/* virtual */ const byte *GetButtonArrangement(uint &width, uint &arrangable_count, uint &button_count, uint &spacer_count) const
 	{
 		static const uint SMALLEST_ARRANGEMENT = 14;
-		static const uint BIGGEST_ARRANGEMENT  = 19;
+		static const uint BIGGEST_ARRANGEMENT  = 20;
 		static const byte arrange14[] = {
 			0,  1, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29,
 			2,  3,  4,  5,  6,  7,  8,  9, 12, 14, 26, 27, 28, 29,
@@ -1458,6 +1490,10 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			0,  1,  2,  4,  5,  6, 15, 16, 17, 18, 21, 22, 23, 24, 25, 26, 19, 20, 29,
 			0,  1,  3,  4,  7,  8,  9, 12, 14, 27, 21, 22, 23, 24, 25, 28, 19, 20, 29,
 		};
+		static const byte arrange20[] = {
+			0,  1,  2,  4,  5,  6, 15, 16, 17, 18, 21, 22, 23, 24, 25, 26, 11, 19, 20, 29,
+			0,  1,  3,  4,  7,  8,  9, 12, 14, 27, 21, 22, 23, 24, 25, 10, 28, 19, 20, 29,
+		};
 		static const byte arrange_all[] = {
 			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
 		};
@@ -1471,7 +1507,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 		}
 
 		/* Introduce the split toolbar */
-		static const byte * const arrangements[] = { arrange14, arrange15, arrange16, arrange17, arrange18, arrange19 };
+		static const byte * const arrangements[] = { arrange14, arrange15, arrange16, arrange17, arrange18, arrange19, arrange20 };
 
 		button_count = arrangable_count = full_buttons;
 		spacer_count = this->spacers;
@@ -1494,7 +1530,7 @@ class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 
 			assert(i < lengthof(this->panel_widths));
 			this->panel_widths[i++] = child_wid->current_x;
-			w->window_desc->default_width += child_wid->current_x;
+			_toolbar_width += child_wid->current_x;
 		}
 	}
 
@@ -1634,6 +1670,11 @@ struct MainToolbarWindow : Window {
 		DoZoomInOutWindow(ZOOM_NONE, this);
 	}
 
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
+	}
+
 	virtual void OnPaint()
 	{
 		/* If spectator, disable all construction buttons
@@ -1641,7 +1682,10 @@ struct MainToolbarWindow : Window {
 		 * Since enabled state is the default, just disable when needed */
 		this->SetWidgetsDisabledState(_local_company == COMPANY_SPECTATOR, WID_TN_RAILS, WID_TN_ROADS, WID_TN_WATER, WID_TN_AIR, WID_TN_LANDSCAPE, WIDGET_LIST_END);
 		/* disable company list drop downs, if there are no companies */
-		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFTS, WID_TN_STORY, WID_TN_GOAL, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFTS, WIDGET_LIST_END);
+
+		this->SetWidgetDisabledState(WID_TN_GOAL, Goal::GetNumItems() == 0);
+		this->SetWidgetDisabledState(WID_TN_STORY, StoryPage::GetNumItems() == 0);
 
 		this->SetWidgetDisabledState(WID_TN_RAILS, !CanBuildVehicleInfrastructure(VEH_TRAIN));
 		this->SetWidgetDisabledState(WID_TN_AIR, !CanBuildVehicleInfrastructure(VEH_AIRCRAFT));
@@ -1865,7 +1909,7 @@ static const NWidgetPart _nested_toolbar_normal_widgets[] = {
 };
 
 static WindowDesc _toolb_normal_desc(
-	WDP_MANUAL, NULL, 640, 22,
+	WDP_MANUAL, NULL, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS,
 	_nested_toolbar_normal_widgets, lengthof(_nested_toolbar_normal_widgets),
@@ -1944,6 +1988,11 @@ struct ScenarioEditorToolbarWindow : Window {
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
+	}
+
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	virtual void OnPaint()
@@ -2097,8 +2146,7 @@ struct ScenarioEditorToolbarWindow : Window {
 			/* An empty string means revert to the default */
 			value = DEF_START_YEAR;
 		}
-		_settings_game.game_creation.starting_year = Clamp(value, MIN_YEAR, MAX_YEAR);
-		SetDate(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
+		SetStartingYear(value);
 
 		this->SetDirty();
 	}
@@ -2177,7 +2225,7 @@ static const NWidgetPart _nested_toolb_scen_widgets[] = {
 };
 
 static WindowDesc _toolb_scen_desc(
-	WDP_MANUAL, NULL, 640, 22,
+	WDP_MANUAL, NULL, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS,
 	_nested_toolb_scen_widgets, lengthof(_nested_toolb_scen_widgets),

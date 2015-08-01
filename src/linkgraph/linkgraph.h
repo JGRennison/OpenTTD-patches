@@ -27,7 +27,7 @@ class LinkGraph;
  * Type of the pool for link graph components. Each station can be in at up to
  * 32 link graphs. So we allow for plenty of them to be created.
  */
-typedef Pool<LinkGraph, LinkGraphID, 32, 0xFFFFFF> LinkGraphPool;
+typedef Pool<LinkGraph, LinkGraphID, 32, 0xFFFF> LinkGraphPool;
 /** The actual pool with link graphs. */
 extern LinkGraphPool _link_graph_pool;
 
@@ -49,8 +49,9 @@ public:
 		uint supply;             ///< Supply at the station.
 		uint demand;             ///< Acceptance at the station.
 		StationID station;       ///< Station ID.
+		TileIndex xy;            ///< Location of the station referred to by the node.
 		Date last_update;        ///< When the supply was last updated.
-		void Init(StationID st = INVALID_STATION, uint demand = 0);
+		void Init(TileIndex xy = INVALID_TILE, StationID st = INVALID_STATION, uint demand = 0);
 	};
 
 	/**
@@ -60,12 +61,12 @@ public:
 	 * the column as next_edge.
 	 */
 	struct BaseEdge {
-		uint distance;    ///< Length of the link.
-		uint capacity;    ///< Capacity of the link.
-		uint usage;       ///< Usage of the link.
-		Date last_update; ///< When the link was last updated.
-		NodeID next_edge; ///< Destination of next valid edge starting at the same source node.
-		void Init(uint distance = 0);
+		uint capacity;                 ///< Capacity of the link.
+		uint usage;                    ///< Usage of the link.
+		Date last_unrestricted_update; ///< When the unrestricted part of the link was last updated.
+		Date last_restricted_update;   ///< When the restricted part of the link was last updated.
+		NodeID next_edge;              ///< Destination of next valid edge starting at the same source node.
+		void Init();
 	};
 
 	/**
@@ -98,16 +99,22 @@ public:
 		uint Usage() const { return this->edge.usage; }
 
 		/**
-		 * Get edge's distance.
-		 * @return Distance.
-		 */
-		uint Distance() const { return this->edge.distance; }
-
-		/**
-		 * Get edge's last update.
+		 * Get the date of the last update to the edge's unrestricted capacity.
 		 * @return Last update.
 		 */
-		Date LastUpdate() const { return this->edge.last_update; }
+		Date LastUnrestrictedUpdate() const { return this->edge.last_unrestricted_update; }
+
+		/**
+		 * Get the date of the last update to the edge's restricted capacity.
+		 * @return Last update.
+		 */
+		Date LastRestrictedUpdate() const { return this->edge.last_restricted_update; }
+
+		/**
+		 * Get the date of the last update to any part of the edge's capacity.
+		 * @return Last update.
+		 */
+		Date LastUpdate() const { return max(this->edge.last_unrestricted_update, this->edge.last_restricted_update); }
 	};
 
 	/**
@@ -156,6 +163,12 @@ public:
 		 * @return Last update.
 		 */
 		Date LastUpdate() const { return this->node.last_update; }
+
+		/**
+		 * Get the location of the station associated with the node.
+		 * @return Location of the station.
+		 */
+		TileIndex XY() const { return this->node.xy; }
 	};
 
 	/**
@@ -284,7 +297,9 @@ public:
 		 * @param edge Edge to be wrapped.
 		 */
 		Edge(BaseEdge &edge) : EdgeWrapper<BaseEdge>(edge) {}
-		void Update(uint capacity, uint usage);
+		void Update(uint capacity, uint usage, EdgeUpdateMode mode);
+		void Restrict() { this->edge.last_unrestricted_update = INVALID_DATE; }
+		void Release() { this->edge.last_restricted_update = INVALID_DATE; }
 	};
 
 	/**
@@ -398,6 +413,15 @@ public:
 		}
 
 		/**
+		 * Update the node's location on the map.
+		 * @param xy New location.
+		 */
+		void UpdateLocation(TileIndex xy)
+		{
+			this->node.xy = xy;
+		}
+
+		/**
 		 * Set the node's demand.
 		 * @param demand New demand for the node.
 		 */
@@ -406,8 +430,8 @@ public:
 			this->node.demand = demand;
 		}
 
-		void AddEdge(NodeID to, uint capacity, uint usage = 0);
-		void UpdateEdge(NodeID to, uint capacity, uint usage = 0);
+		void AddEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMode mode);
+		void UpdateEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMode mode);
 		void RemoveEdge(NodeID to);
 	};
 
@@ -415,7 +439,7 @@ public:
 	typedef SmallMatrix<BaseEdge> EdgeMatrix;
 
 	/** Minimum effective distance for timeout calculation. */
-	static const uint MIN_TIMEOUT_DISTANCE = 48;
+	static const uint MIN_TIMEOUT_DISTANCE = 32;
 
 	/** Minimum number of days between subsequent compressions of a LG. */
 	static const uint COMPRESSION_INTERVAL = 256;

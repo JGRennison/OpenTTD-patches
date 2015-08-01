@@ -17,6 +17,8 @@
 #include "../../strings_func.h"
 #include "table/strings.h"
 
+#include "../../safeguards.h"
+
 /* static */ bool ScriptBaseStation::IsValidBaseStation(StationID station_id)
 {
 	const BaseStation *st = ::BaseStation::GetIfValid(station_id);
@@ -52,9 +54,9 @@
 	return ::BaseStation::Get(station_id)->xy;
 }
 
-/* static */ int32 ScriptBaseStation::GetConstructionDate(StationID station_id)
+/* static */ ScriptDate::Date ScriptBaseStation::GetConstructionDate(StationID station_id)
 {
-	if (!IsValidBaseStation(station_id)) return -1;
+	if (!IsValidBaseStation(station_id)) return ScriptDate::DATE_INVALID;
 
-	return ::BaseStation::Get(station_id)->build_date;
+	return (ScriptDate::Date)::BaseStation::Get(station_id)->build_date;
 }

@@ -37,6 +37,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 typedef GUIList<const Town*> GUITownList;
 
 static const NWidgetPart _nested_town_authority_widgets[] = {
@@ -388,7 +390,7 @@ public:
 			DrawString(cargo_text_left, cargo_text_right, y += FONT_HEIGHT_NORMAL, string);
 		}
 
-		if (HasBit(this->town->flags, TOWN_IS_FUNDED)) {
+		if (HasBit(this->town->flags, TOWN_IS_GROWING)) {
 			SetDParam(0, ((this->town->growth_rate & (~TOWN_GROW_RATE_CUSTOM)) * TOWN_GROWTH_TICKS + DAY_TICKS) / DAY_TICKS);
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, this->town->fund_buildings_months == 0 ? STR_TOWN_VIEW_TOWN_GROWS_EVERY : STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED);
 		} else {
@@ -404,7 +406,7 @@ public:
 
 		if (this->town->text != NULL) {
 			SetDParamStr(0, this->town->text);
-			DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
+			DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y += FONT_HEIGHT_NORMAL, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
 		}
 	}
 
@@ -482,7 +484,7 @@ public:
 
 		if (this->town->text != NULL) {
 			SetDParamStr(0, this->town->text);
-			aimed_height += GetStringHeight(STR_JUST_RAW_STRING, width);
+			aimed_height += GetStringHeight(STR_JUST_RAW_STRING, width - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT);
 		}
 
 		return aimed_height;
@@ -692,7 +694,7 @@ private:
 		uint32 a_population = (*a)->cache.population;
 		uint32 b_population = (*b)->cache.population;
 		if (a_population == b_population) return TownDirectoryWindow::TownNameSorter(a, b);
-		return (a_population > b_population) ? -1 : 1;
+		return (a_population < b_population) ? -1 : 1;
 	}
 
 	/** Sort by town rating */
@@ -706,7 +708,7 @@ private:
 				int16 a_rating = (*a)->ratings[_local_company];
 				int16 b_rating = (*b)->ratings[_local_company];
 				if (a_rating == b_rating) return TownDirectoryWindow::TownNameSorter(a, b);
-				return (a_rating > b_rating) ? -1 : 1;
+				return (a_rating < b_rating) ? -1 : 1;
 			}
 			return before;
 		}
@@ -795,7 +797,7 @@ public:
 		switch (widget) {
 			case WID_TD_SORT_ORDER: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
-				d.width += padding.width + WD_SORTBUTTON_ARROW_WIDTH * 2; // Doubled since the string is centred and it also looks better.
+				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
 				*size = maxdim(*size, d);
 				break;
@@ -958,7 +960,7 @@ void CcFoundTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 {
 	if (result.Failed()) return;
 
-	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT, tile);
+	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT_OTHER, tile);
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 }
 
@@ -1111,7 +1113,8 @@ public:
 		bool success = DoCommandP(tile, this->town_size | this->city << 2 | this->town_layout << 3 | random << 6,
 				townnameparts, CMD_FOUND_TOWN | CMD_MSG(errstr), cc, name);
 
-		if (success) this->RandomTownName();
+		/* Rerandomise name, if success and no cost-estimation. */
+		if (success && !_shift_pressed) this->RandomTownName();
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)

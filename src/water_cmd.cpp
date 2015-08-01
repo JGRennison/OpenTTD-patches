@@ -42,6 +42,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Describes from which directions a specific slope can be flooded (if the tile is floodable at all).
  */
@@ -107,10 +109,9 @@ CommandCost CmdBuildShipDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 		return_cmd_error(STR_ERROR_MUST_BE_BUILT_ON_WATER);
 	}
 
-	if ((MayHaveBridgeAbove(tile) && IsBridgeAbove(tile)) ||
-		(MayHaveBridgeAbove(tile2) && IsBridgeAbove(tile2))) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(tile) || IsBridgeAbove(tile2)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
-	if (GetTileSlope(tile) != SLOPE_FLAT || GetTileSlope(tile2) != SLOPE_FLAT) {
+	if (!IsTileFlat(tile) || !IsTileFlat(tile2)) {
 		/* Prevent depots on rapids */
 		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 	}
@@ -262,34 +263,30 @@ static CommandCost DoBuildLock(TileIndex tile, DiagDirection dir, DoCommandFlag 
 	cost.AddCost(ret);
 
 	/* lower tile */
-	WaterClass wc_lower = IsWaterTile(tile - delta) ? GetWaterClass(tile - delta) : WATER_CLASS_CANAL;
-
 	if (!IsWaterTile(tile - delta)) {
 		ret = DoCommand(tile - delta, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 		cost.AddCost(_price[PR_BUILD_CANAL]);
 	}
-	if (GetTileSlope(tile - delta) != SLOPE_FLAT) {
+	if (!IsTileFlat(tile - delta)) {
 		return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 	}
+	WaterClass wc_lower = IsWaterTile(tile - delta) ? GetWaterClass(tile - delta) : WATER_CLASS_CANAL;
 
 	/* upper tile */
-	WaterClass wc_upper = IsWaterTile(tile + delta) ? GetWaterClass(tile + delta) : WATER_CLASS_CANAL;
-
 	if (!IsWaterTile(tile + delta)) {
 		ret = DoCommand(tile + delta, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 		cost.AddCost(_price[PR_BUILD_CANAL]);
 	}
-	if (GetTileSlope(tile + delta) != SLOPE_FLAT) {
+	if (!IsTileFlat(tile + delta)) {
 		return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 	}
+	WaterClass wc_upper = IsWaterTile(tile + delta) ? GetWaterClass(tile + delta) : WATER_CLASS_CANAL;
 
-	if ((MayHaveBridgeAbove(tile) && IsBridgeAbove(tile)) ||
-	    (MayHaveBridgeAbove(tile - delta) && IsBridgeAbove(tile - delta)) ||
-	    (MayHaveBridgeAbove(tile + delta) && IsBridgeAbove(tile + delta))) {
+	if (IsBridgeAbove(tile) || IsBridgeAbove(tile - delta) || IsBridgeAbove(tile + delta)) {
 		return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 	}
 
@@ -590,7 +587,7 @@ bool IsWateredTile(TileIndex tile, Direction from)
 
 				return IsTileOnWater(tile);
 			}
-			return (IsDock(tile) && GetTileSlope(tile) == SLOPE_FLAT) || IsBuoy(tile);
+			return (IsDock(tile) && IsTileFlat(tile)) || IsBuoy(tile);
 
 		case MP_INDUSTRY: {
 			/* Do not draw waterborders inside of industries.
@@ -1165,6 +1162,9 @@ void TileLoop_Water(TileIndex tile)
 				/* do not try to flood water tiles - increases performance a lot */
 				if (IsTileType(dest, MP_WATER)) continue;
 
+				/* TREE_GROUND_SHORE is the sign of a previous flood. */
+				if (IsTileType(dest, MP_TREES) && GetTreeGround(dest) == TREE_GROUND_SHORE) continue;
+
 				int z_dest;
 				Slope slope_dest = GetFoundationSlope(dest, &z_dest) & ~SLOPE_HALFTILE_MASK & ~SLOPE_STEEP;
 				if (z_dest > 0) continue;
@@ -1240,7 +1240,7 @@ static TrackStatus GetTileTrackStatus_Water(TileIndex tile, TransportType mode, 
 	if (mode != TRANSPORT_WATER) return 0;
 
 	switch (GetWaterTileType(tile)) {
-		case WATER_TILE_CLEAR: ts = (GetTileSlope(tile) == SLOPE_FLAT) ? TRACK_BIT_ALL : TRACK_BIT_NONE; break;
+		case WATER_TILE_CLEAR: ts = IsTileFlat(tile) ? TRACK_BIT_ALL : TRACK_BIT_NONE; break;
 		case WATER_TILE_COAST: ts = (TrackBits)coast_tracks[GetTileSlope(tile) & 0xF]; break;
 		case WATER_TILE_LOCK:  ts = DiagDirToDiagTrackBits(GetLockDirection(tile)); break;
 		case WATER_TILE_DEPOT: ts = AxisToTrackBits(GetShipDepotAxis(tile)); break;

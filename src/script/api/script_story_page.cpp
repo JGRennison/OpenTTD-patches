@@ -22,6 +22,8 @@
 #include "../../string_func.h"
 #include "../../tile_map.h"
 
+#include "../../safeguards.h"
+
 /* static */ bool ScriptStoryPage::IsValidStoryPage(StoryPageID story_page_id)
 {
 	return ::StoryPage::IsValidID(story_page_id);
@@ -95,8 +97,21 @@
 			story_page_element_id,
 			type == ::SPET_GOAL ? reference : 0,
 			CMD_UPDATE_STORY_PAGE_ELEMENT,
-			type == ::SPET_TEXT || type == ::SPET_LOCATION ? text->GetEncodedText() : NULL,
-			&ScriptInstance::DoCommandReturnStoryPageElementID);
+			type == ::SPET_TEXT || type == ::SPET_LOCATION ? text->GetEncodedText() : NULL);
+}
+
+/* static */ uint32 ScriptStoryPage::GetPageSortValue(StoryPageID story_page_id)
+{
+	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
+
+	return StoryPage::Get(story_page_id)->sort_value;
+}
+
+/* static */ uint32 ScriptStoryPage::GetPageElementSortValue(StoryPageElementID story_page_element_id)
+{
+	EnforcePrecondition(false, IsValidStoryPageElement(story_page_element_id));
+
+	return StoryPageElement::Get(story_page_element_id)->sort_value;
 }
 
 /* static */ bool ScriptStoryPage::SetTitle(StoryPageID story_page_id, Text *title)
@@ -108,6 +123,33 @@
 
 	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_SET_STORY_PAGE_TITLE, title != NULL? title->GetEncodedText() : NULL);
 }
+
+/* static */ ScriptCompany::CompanyID ScriptStoryPage::GetCompany(StoryPageID story_page_id)
+{
+	EnforcePrecondition(ScriptCompany::COMPANY_INVALID, IsValidStoryPage(story_page_id));
+
+	CompanyID c = StoryPage::Get(story_page_id)->company;
+	ScriptCompany::CompanyID company = c == INVALID_COMPANY ? ScriptCompany::COMPANY_INVALID : (ScriptCompany::CompanyID)c;
+
+	return company;
+}
+
+/* static */ ScriptDate::Date ScriptStoryPage::GetDate(StoryPageID story_page_id)
+{
+	EnforcePrecondition(ScriptDate::DATE_INVALID, IsValidStoryPage(story_page_id));
+	EnforcePrecondition(ScriptDate::DATE_INVALID, ScriptObject::GetCompany() == OWNER_DEITY);
+
+	return (ScriptDate::Date)StoryPage::Get(story_page_id)->date;
+}
+
+/* static */ bool ScriptStoryPage::SetDate(StoryPageID story_page_id, ScriptDate::Date date)
+{
+	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
+	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+
+	return ScriptObject::DoCommand(0, story_page_id, date, CMD_SET_STORY_PAGE_DATE, NULL);
+}
+
 
 /* static */ bool ScriptStoryPage::Show(StoryPageID story_page_id)
 {
@@ -123,5 +165,13 @@
 	EnforcePrecondition(false, IsValidStoryPage(story_page_id));
 
 	return ScriptObject::DoCommand(0, story_page_id, 0, CMD_REMOVE_STORY_PAGE);
+}
+
+/* static */ bool ScriptStoryPage::RemoveElement(StoryPageElementID story_page_element_id)
+{
+	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforcePrecondition(false, IsValidStoryPageElement(story_page_element_id));
+
+	return ScriptObject::DoCommand(0, story_page_element_id, 0, CMD_REMOVE_STORY_PAGE_ELEMENT);
 }
 

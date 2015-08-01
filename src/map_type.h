@@ -17,20 +17,23 @@
  * Look at docs/landscape.html for the exact meaning of the members.
  */
 struct Tile {
-	byte   type_height; ///< The type (bits 4..7) and height of the northern corner
-	byte   m1;          ///< Primarily used for ownership information
+	byte   type;        ///< The type (bits 4..7), bridges (2..3), rainforest/desert (0..1)
+	byte   height;      ///< The height of the northern corner.
 	uint16 m2;          ///< Primarily used for indices to towns, industries and stations
+	byte   m1;          ///< Primarily used for ownership information
 	byte   m3;          ///< General purpose
 	byte   m4;          ///< General purpose
 	byte   m5;          ///< General purpose
-	byte   m6;          ///< Primarily used for bridges and rainforest/desert
 };
+
+assert_compile(sizeof(Tile) == 8);
 
 /**
  * Data that is stored per tile. Also used Tile for this.
  * Look at docs/landscape.html for the exact meaning of the members.
  */
 struct TileExtended {
+	byte m6; ///< General purpose
 	byte m7; ///< Primarily used for newgrf support
 };
 
@@ -59,9 +62,9 @@ struct TileIndexDiffC {
 
 /** Minimal and maximal map width and height */
 static const uint MIN_MAP_SIZE_BITS = 6;                      ///< Minimal size of map is equal to 2 ^ MIN_MAP_SIZE_BITS
-static const uint MAX_MAP_SIZE_BITS = 11;                     ///< Maximal size of map is equal to 2 ^ MAX_MAP_SIZE_BITS
+static const uint MAX_MAP_SIZE_BITS = 12;                     ///< Maximal size of map is equal to 2 ^ MAX_MAP_SIZE_BITS
 static const uint MIN_MAP_SIZE      = 1 << MIN_MAP_SIZE_BITS; ///< Minimal map size = 64
-static const uint MAX_MAP_SIZE      = 1 << MAX_MAP_SIZE_BITS; ///< Maximal map size = 2048
+static const uint MAX_MAP_SIZE      = 1 << MAX_MAP_SIZE_BITS; ///< Maximal map size = 4096
 
 /**
  * Approximation of the length of a straight track, relative to a diagonal

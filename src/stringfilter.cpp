@@ -15,6 +15,8 @@
 #include "stringfilter_type.h"
 #include "gfx_func.h"
 
+#include "safeguards.h"
+
 static const WChar STATE_WHITESPACE = ' ';
 static const WChar STATE_WORD = 'w';
 static const WChar STATE_QUOTE1 = '\'';
@@ -32,7 +34,7 @@ void StringFilter::SetFilterTerm(const char *str)
 
 	assert(str != NULL);
 
-	char *dest = (char *)malloc(strlen(str) + 1);
+	char *dest = MallocT<char>(strlen(str) + 1);
 	this->filter_buffer = dest;
 
 	WChar state = STATE_WHITESPACE;

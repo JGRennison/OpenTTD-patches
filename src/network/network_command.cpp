@@ -19,6 +19,8 @@
 #include "../company_func.h"
 #include "../settings_type.h"
 
+#include "../safeguards.h"
+
 /** Table with all the callbacks we'll use for conversion*/
 static CommandCallback * const _callback_table[] = {
 	/* 0x00 */ NULL,
@@ -235,7 +237,7 @@ void NetworkFreeLocalCommandQueue()
  * @param cp    The command that has to be distributed.
  * @param owner The client that owns the command,
  */
-static void DistributeCommandPacket(CommandPacket cp, const NetworkClientSocket *owner)
+static void DistributeCommandPacket(CommandPacket &cp, const NetworkClientSocket *owner)
 {
 	CommandCallback *callback = cp.callback;
 	cp.frame = _frame_counter_max + 1;

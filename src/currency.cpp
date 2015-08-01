@@ -20,6 +20,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 	/*   exchange rate    prefix                         symbol_pos
 	 *   |  separator        |           postfix             |
 	 *   |   |   Euro year   |              |                | name
@@ -54,7 +56,7 @@ static const CurrencySpec origin_currency_specs[CURRENCY_END] = {
 	{   60, "", 2009,      "",             NBSP "Sk",        1, STR_GAME_OPTIONS_CURRENCY_SKK    }, ///< slovak koruna
 	{    4, "", CF_NOEURO, "R$" NBSP,      "",               0, STR_GAME_OPTIONS_CURRENCY_BRL    }, ///< brazil real
 	{   31, "", 2011,      "",             NBSP "EEK",       1, STR_GAME_OPTIONS_CURRENCY_EEK    }, ///< estonian krooni
-	{    4, "", 2014,      "",             NBSP "Lt",        1, STR_GAME_OPTIONS_CURRENCY_LTL    }, ///< lithuanian litas
+	{    4, "", 2015,      "",             NBSP "Lt",        1, STR_GAME_OPTIONS_CURRENCY_LTL    }, ///< lithuanian litas
 	{ 1850, "", CF_NOEURO, "\xE2\x82\xA9", "",               0, STR_GAME_OPTIONS_CURRENCY_KRW    }, ///< south korean won
 	{   13, "", CF_NOEURO, "R" NBSP,       "",               0, STR_GAME_OPTIONS_CURRENCY_ZAR    }, ///< south african rand
 	{    1, "", CF_NOEURO, "",             "",               2, STR_GAME_OPTIONS_CURRENCY_CUSTOM }, ///< custom currency (add further languages below)
@@ -144,14 +146,14 @@ void CheckSwitchToEuro()
  * Will fill _currency_specs array with
  * default values from origin_currency_specs
  * Called only from newgrf.cpp and settings.cpp.
- * @param preserve_custom will not reset custom currency (the latest one on the list)
- *        if ever it is flagged to true. In which case, the total size of the memory to move
- *        will be one currency spec less, thus preserving the custom currency from been
- *        overwritten.
+ * @param preserve_custom will not reset custom currency
  */
 void ResetCurrencies(bool preserve_custom)
 {
-	memcpy(&_currency_specs, &origin_currency_specs, sizeof(origin_currency_specs) - (preserve_custom ? sizeof(_custom_currency) : 0));
+	for (uint i = 0; i < CURRENCY_END; i++) {
+		if (preserve_custom && i == CURRENCY_CUSTOM) continue;
+		_currency_specs[i] = origin_currency_specs[i];
+	}
 }
 
 /**

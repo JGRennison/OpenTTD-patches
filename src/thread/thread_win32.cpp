@@ -17,6 +17,8 @@
 #include <windows.h>
 #include <process.h>
 
+#include "../safeguards.h"
+
 /**
  * Win32 thread version for ThreadObject.
  */
@@ -108,9 +110,10 @@ class ThreadMutex_Win32 : public ThreadMutex {
 private:
 	CRITICAL_SECTION critical_section; ///< The critical section we would enter.
 	HANDLE event;                      ///< Event for signalling.
+	uint recursive_count;     ///< Recursive lock count.
 
 public:
-	ThreadMutex_Win32()
+	ThreadMutex_Win32() : recursive_count(0)
 	{
 		InitializeCriticalSection(&this->critical_section);
 		this->event = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -122,18 +125,24 @@ public:
 		CloseHandle(this->event);
 	}
 
-	/* virtual */ void BeginCritical()
+	/* virtual */ void BeginCritical(bool allow_recursive = false)
 	{
+		/* windows mutex is recursive by itself */
 		EnterCriticalSection(&this->critical_section);
+		this->recursive_count++;
+		if (!allow_recursive && this->recursive_count != 1) NOT_REACHED();
 	}
 
-	/* virtual */ void EndCritical()
+	/* virtual */ void EndCritical(bool allow_recursive = false)
 	{
+		if (!allow_recursive && this->recursive_count != 1) NOT_REACHED();
+		this->recursive_count--;
 		LeaveCriticalSection(&this->critical_section);
 	}
 
 	/* virtual */ void WaitForSignal()
 	{
+		assert(this->recursive_count == 1); // Do we need to call Begin/EndCritical multiple times otherwise?
 		this->EndCritical();
 		WaitForSingleObject(this->event, INFINITE);
 		this->BeginCritical();

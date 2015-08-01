@@ -59,7 +59,12 @@ static const NIVariable _niv_vehicles[] = {
 	NIV(0x48, "vehicle type info"),
 	NIV(0x49, "year of construction"),
 	NIV(0x4A, "current rail type info"),
+	NIV(0x4B, "long date of last service"),
+	NIV(0x4C, "current max speed"),
+	NIV(0x4D, "position in articulated vehicle"),
 	NIV(0x60, "count vehicle id occurrences"),
+	// 0x61 not useful, since it requires register 0x10F
+	NIV(0x62, "Curvature/position difference to other vehicle"),
 	NIV_END()
 };
 
@@ -74,7 +79,7 @@ class NIHVehicle : public NIHelper {
 	/* virtual */ uint Resolve(uint index, uint var, uint param, bool *avail) const
 	{
 		Vehicle *v = Vehicle::Get(index);
-		VehicleResolverObject ro(v->engine_type, v);
+		VehicleResolverObject ro(v->engine_type, v, VehicleResolverObject::WO_CACHED);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, avail);
 	}
 };
@@ -92,8 +97,8 @@ static const NIFeature _nif_vehicle = {
 #define NICS(cb_id, bit) NIC(cb_id, StationSpec, callback_mask, bit)
 static const NICallback _nic_stations[] = {
 	NICS(CBID_STATION_AVAILABILITY,     CBM_STATION_AVAIL),
-	NICS(CBID_STATION_SPRITE_LAYOUT,    CBM_NO_BIT),
-	NICS(CBID_STATION_TILE_LAYOUT,      CBM_STATION_SPRITE_LAYOUT),
+	NICS(CBID_STATION_SPRITE_LAYOUT,    CBM_STATION_SPRITE_LAYOUT),
+	NICS(CBID_STATION_TILE_LAYOUT,      CBM_NO_BIT),
 	NICS(CBID_STATION_ANIM_START_STOP,  CBM_NO_BIT),
 	NICS(CBID_STATION_ANIM_NEXT_FRAME,  CBM_STATION_ANIMATION_NEXT_FRAME),
 	NICS(CBID_STATION_ANIMATION_SPEED,  CBM_STATION_ANIMATION_SPEED),
@@ -407,6 +412,8 @@ static const NIVariable _niv_railtypes[] = {
 	NIV(0x40, "terrain type"),
 	NIV(0x41, "enhanced tunnels"),
 	NIV(0x42, "level crossing status"),
+	NIV(0x43, "construction date"),
+	NIV(0x44, "town zone"),
 	NIV_END()
 };
 
@@ -422,7 +429,7 @@ class NIHRailType : public NIHelper {
 	{
 		/* There is no unique GRFFile for the tile. Multiple GRFs can define different parts of the railtype.
 		 * However, currently the NewGRF Debug GUI does not display variables depending on the GRF (like 0x7F) anyway. */
-		RailTypeResolverObject ro(index, TCX_NORMAL, NULL);
+		RailTypeResolverObject ro(NULL, index, TCX_NORMAL, RTSG_END);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, avail);
 	}
 };

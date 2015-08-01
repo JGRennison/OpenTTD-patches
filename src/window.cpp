@@ -35,6 +35,9 @@
 #include "statusbar_gui.h"
 #include "error.h"
 #include "game/game.hpp"
+#include "video/video_driver.hpp"
+
+#include "safeguards.h"
 
 /** Values for _settings_client.gui.auto_scrolling */
 enum ViewportAutoscrolling {
@@ -84,12 +87,10 @@ static SmallVector<WindowDesc*, 16> *_window_descs = NULL;
 char *_windows_file;
 
 /** Window description constructor. */
-WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_width, int16 def_height,
+WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
 			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys) :
 	default_pos(def_pos),
-	default_width(def_width),
-	default_height(def_height),
 	cls(window_class),
 	parent_cls(parent_class),
 	ini_key(ini_key),
@@ -99,7 +100,9 @@ WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_wi
 	hotkeys(hotkeys),
 	pref_sticky(false),
 	pref_width(0),
-	pref_height(0)
+	pref_height(0),
+	default_width_trad(def_width_trad),
+	default_height_trad(def_height_trad)
 {
 	if (_window_descs == NULL) _window_descs = new SmallVector<WindowDesc*, 16>();
 	*_window_descs->Append() = this;
@@ -108,6 +111,26 @@ WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_wi
 WindowDesc::~WindowDesc()
 {
 	_window_descs->Erase(_window_descs->Find(this));
+}
+
+/**
+ * Determine default width of window.
+ * This is either a stored user preferred size, or the build-in default.
+ * @return Width in pixels.
+ */
+int16 WindowDesc::GetDefaultWidth() const
+{
+	return this->pref_width != 0 ? this->pref_width : ScaleGUITrad(this->default_width_trad);
+}
+
+/**
+ * Determine default height of window.
+ * This is either a stored user preferred size, or the build-in default.
+ * @return Height in pixels.
+ */
+int16 WindowDesc::GetDefaultHeight() const
+{
+	return this->pref_height != 0 ? this->pref_height : ScaleGUITrad(this->default_height_trad);
 }
 
 /**
@@ -267,13 +290,9 @@ void Window::OnDropdownClose(Point pt, int widget, int index, bool instant_close
 	}
 
 	/* Raise the dropdown button */
-	if (this->nested_array != NULL) {
-		NWidgetCore *nwi2 = this->GetWidget<NWidgetCore>(widget);
-		if ((nwi2->type & WWT_MASK) == NWID_BUTTON_DROPDOWN) {
-			nwi2->disp_flags &= ~ND_DROPDOWN_ACTIVE;
-		} else {
-			this->RaiseWidget(widget);
-		}
+	NWidgetCore *nwi2 = this->GetWidget<NWidgetCore>(widget);
+	if ((nwi2->type & WWT_MASK) == NWID_BUTTON_DROPDOWN) {
+		nwi2->disp_flags &= ~ND_DROPDOWN_ACTIVE;
 	} else {
 		this->RaiseWidget(widget);
 	}
@@ -322,6 +341,89 @@ QueryString *Window::GetQueryString(uint widnum)
 	return query != this->querystrings.End() ? query->second : NULL;
 }
 
+/**
+ * Get the current input text if an edit box has the focus.
+ * @return The currently focused input text or NULL if no input focused.
+ */
+/* virtual */ const char *Window::GetFocusedText() const
+{
+	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) {
+		return this->GetQueryString(this->nested_focus->index)->GetText();
+	}
+
+	return NULL;
+}
+
+/**
+ * Get the string at the caret if an edit box has the focus.
+ * @return The text at the caret or NULL if no edit box is focused.
+ */
+/* virtual */ const char *Window::GetCaret() const
+{
+	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) {
+		return this->GetQueryString(this->nested_focus->index)->GetCaret();
+	}
+
+	return NULL;
+}
+
+/**
+ * Get the range of the currently marked input text.
+ * @param[out] length Length of the marked text.
+ * @return Pointer to the start of the marked text or NULL if no text is marked.
+ */
+/* virtual */ const char *Window::GetMarkedText(size_t *length) const
+{
+	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) {
+		return this->GetQueryString(this->nested_focus->index)->GetMarkedText(length);
+	}
+
+	return NULL;
+}
+
+/**
+ * Get the current caret position if an edit box has the focus.
+ * @return Top-left location of the caret, relative to the window.
+ */
+/* virtual */ Point Window::GetCaretPosition() const
+{
+	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) {
+		return this->GetQueryString(this->nested_focus->index)->GetCaretPosition(this, this->nested_focus->index);
+	}
+
+	Point pt = {0, 0};
+	return pt;
+}
+
+/**
+ * Get the bounding rectangle for a text range if an edit box has the focus.
+ * @param from Start of the string range.
+ * @param to End of the string range.
+ * @return Rectangle encompassing the string range, relative to the window.
+ */
+/* virtual */ Rect Window::GetTextBoundingRect(const char *from, const char *to) const
+{
+	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) {
+		return this->GetQueryString(this->nested_focus->index)->GetBoundingRect(this, this->nested_focus->index, from, to);
+	}
+
+	Rect r = {0, 0, 0, 0};
+	return r;
+}
+
+/**
+ * Get the character that is rendered at a position by the focused edit box.
+ * @param pt The position to test.
+ * @return Pointer to the character at the position or NULL if no character is at the position.
+ */
+/* virtual */ const char *Window::GetTextCharacterAtPosition(const Point &pt) const
+{
+	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) {
+		return this->GetQueryString(this->nested_focus->index)->GetCharAtPosition(this, this->nested_focus->index, pt);
+	}
+
+	return NULL;
+}
 
 /**
  * Set the window that has the focus
@@ -350,7 +452,7 @@ void SetFocusedWindow(Window *w)
  * has a edit box as focused widget, or if a console is focused.
  * @return returns true if an edit box is in global focus or if the focused window is a console, else false
  */
-static bool EditBoxInGlobalFocus()
+bool EditBoxInGlobalFocus()
 {
 	if (_focused_window == NULL) return false;
 
@@ -366,6 +468,8 @@ static bool EditBoxInGlobalFocus()
 void Window::UnfocusFocusedWidget()
 {
 	if (this->nested_focus != NULL) {
+		if (this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
+
 		/* Repaint the widget that lost focus. A focused edit box may else leave the caret on the screen. */
 		this->nested_focus->SetDirty(this);
 		this->nested_focus = NULL;
@@ -388,9 +492,18 @@ bool Window::SetFocusedWidget(int widget_index)
 
 		/* Repaint the widget that lost focus. A focused edit box may else leave the caret on the screen. */
 		this->nested_focus->SetDirty(this);
+		if (this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 	this->nested_focus = this->GetWidget<NWidgetCore>(widget_index);
 	return true;
+}
+
+/**
+ * Called when window looses focus
+ */
+void Window::OnFocusLost()
+{
+	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
 }
 
 /**
@@ -528,7 +641,6 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 			widget_type != WWT_CLOSEBOX) {          // Don't change focused window if 'X' (close button) was clicked
 		focused_widget_changed = true;
 		SetFocusedWindow(w);
-		w->OnFocus();
 	}
 
 	if (nw == NULL) return; // exit if clicked outside of widgets
@@ -660,7 +772,7 @@ static void DispatchRightClickEvent(Window *w, int x, int y)
 		if (w->OnRightClick(pt, wid->index)) return;
 	}
 
-	if (_settings_client.gui.hover_delay == 0 && wid->tool_tip != 0) GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
+	if (_settings_client.gui.hover_delay_ms == 0 && wid->tool_tip != 0) GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
 }
 
 /**
@@ -804,7 +916,7 @@ static void DrawOverlappedWindow(Window *w, int left, int top, int right, int bo
 	dp->left = left - w->left;
 	dp->top = top - w->top;
 	dp->pitch = _screen.pitch;
-	dp->dst_ptr = BlitterFactoryBase::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
+	dp->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
 	dp->zoom = ZOOM_LVL_NORMAL;
 	w->OnPaint();
 }
@@ -953,7 +1065,10 @@ Window::~Window()
 	if (_last_scroll_window == this) _last_scroll_window = NULL;
 
 	/* Make sure we don't try to access this window as the focused window when it doesn't exist anymore. */
-	if (_focused_window == this) _focused_window = NULL;
+	if (_focused_window == this) {
+		this->OnFocusLost();
+		_focused_window = NULL;
+	}
 
 	this->DeleteChildWindows();
 
@@ -964,7 +1079,16 @@ Window::~Window()
 	free(this->nested_array); // Contents is released through deletion of #nested_root.
 	delete this->nested_root;
 
-	this->window_class = WC_INVALID;
+	/*
+	 * Make fairly sure that this is written, and not "optimized" away.
+	 * The delete operator is overwritten to not delete it; the deletion
+	 * happens at a later moment in time after the window has been
+	 * removed from the list of windows to prevent issues with items
+	 * being removed during the iteration as not one but more windows
+	 * may be removed by a single call to ~Window by means of the
+	 * DeleteChildWindows function.
+	 */
+	const_cast<volatile WindowClass &>(this->window_class) = WC_INVALID;
 }
 
 /**
@@ -1172,6 +1296,7 @@ static uint GetWindowZPriority(const Window *w)
 		case WC_CONFIRM_POPUP_QUERY:
 		case WC_MODAL_PROGRESS:
 		case WC_NETWORK_STATUS_WINDOW:
+		case WC_SAVE_PRESET:
 			++z_priority;
 
 		case WC_GENERATE_LANDSCAPE:
@@ -2378,7 +2503,7 @@ static bool MaybeBringWindowToFront(Window *w)
  * @return #ES_HANDLED if the key press has been handled and no other
  *         window should receive the event.
  */
-EventState Window::HandleEditBoxKey(int wid, uint16 key, uint16 keycode)
+EventState Window::HandleEditBoxKey(int wid, WChar key, uint16 keycode)
 {
 	QueryString *query = this->GetQueryString(wid);
 	if (query == NULL) return ES_NOT_HANDLED;
@@ -2429,9 +2554,14 @@ EventState Window::HandleEditBoxKey(int wid, uint16 key, uint16 keycode)
 			break;
 
 		case QueryString::ACTION_CLEAR:
-			query->text.DeleteAll();
-			this->SetWidgetDirty(wid);
-			this->OnEditboxChanged(wid);
+			if (query->text.bytes <= 1) {
+				/* If already empty, unfocus instead */
+				this->UnfocusFocusedWidget();
+			} else {
+				query->text.DeleteAll();
+				this->SetWidgetDirty(wid);
+				this->OnEditboxChanged(wid);
+			}
 			break;
 
 		default:
@@ -2443,17 +2573,14 @@ EventState Window::HandleEditBoxKey(int wid, uint16 key, uint16 keycode)
 
 /**
  * Handle keyboard input.
- * @param raw_key Lower 8 bits contain the ASCII character, the higher 16 bits the keycode
+ * @param keycode Virtual keycode of the key.
+ * @param key Unicode character of the key.
  */
-void HandleKeypress(uint32 raw_key)
+void HandleKeypress(uint keycode, WChar key)
 {
 	/* World generation is multithreaded and messes with companies.
 	 * But there is no company related window open anyway, so _current_company is not used. */
 	assert(HasModalProgress() || IsLocalCompany());
-
-	/* Setup event */
-	uint16 key     = GB(raw_key,  0, 16);
-	uint16 keycode = GB(raw_key, 16, 16);
 
 	/*
 	 * The Unicode standard defines an area called the private use area. Code points in this
@@ -2513,6 +2640,35 @@ void HandleCtrlChanged()
 	FOR_ALL_WINDOWS_FROM_FRONT(w) {
 		if (w->OnCTRLStateChange() == ES_HANDLED) return;
 	}
+}
+
+/**
+ * Insert a text string at the cursor position into the edit box widget.
+ * @param wid Edit box widget.
+ * @param str Text string to insert.
+ */
+/* virtual */ void Window::InsertTextString(int wid, const char *str, bool marked, const char *caret, const char *insert_location, const char *replacement_end)
+{
+	QueryString *query = this->GetQueryString(wid);
+	if (query == NULL) return;
+
+	if (query->text.InsertString(str, marked, caret, insert_location, replacement_end) || marked) {
+		this->SetWidgetDirty(wid);
+		this->OnEditboxChanged(wid);
+	}
+}
+
+/**
+ * Handle text input.
+ * @param str Text string to input.
+ * @param marked Is the input a marked composition string from an IME?
+ * @param caret Move the caret to this point in the insertion string.
+ */
+void HandleTextInput(const char *str, bool marked, const char *caret, const char *insert_location, const char *replacement_end)
+{
+	if (!EditBoxInGlobalFocus()) return;
+
+	_focused_window->InsertTextString(_focused_window->window_class == WC_CONSOLE ? 0 : _focused_window->nested_focus->index, str, marked, caret, insert_location, replacement_end);
 }
 
 /**
@@ -2752,7 +2908,7 @@ void HandleMouseEvents()
 	static uint32 hover_time = 0;
 	static Point hover_pos = {0, 0};
 
-	if (_settings_client.gui.hover_delay > 0) {
+	if (_settings_client.gui.hover_delay_ms > 0) {
 		if (!_cursor.in_window || click != MC_NONE || mousewheel != 0 || _left_button_down || _right_button_down ||
 				hover_pos.x == 0 || abs(_cursor.pos.x - hover_pos.x) >= MAX_OFFSET_HOVER  ||
 				hover_pos.y == 0 || abs(_cursor.pos.y - hover_pos.y) >= MAX_OFFSET_HOVER) {
@@ -2760,7 +2916,7 @@ void HandleMouseEvents()
 			hover_time = _realtime_tick;
 			_mouse_hovering = false;
 		} else {
-			if (hover_time != 0 && _realtime_tick > hover_time + _settings_client.gui.hover_delay * 1000) {
+			if (hover_time != 0 && _realtime_tick > hover_time + _settings_client.gui.hover_delay_ms) {
 				click = MC_HOVER;
 				_input_events_this_tick++;
 				_mouse_hovering = true;
@@ -2777,7 +2933,7 @@ void HandleMouseEvents()
 
 	if (click == MC_LEFT && _newgrf_debug_sprite_picker.mode == SPM_WAIT_CLICK) {
 		/* Mark whole screen dirty, and wait for the next realtime tick, when drawing is finished. */
-		Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 		_newgrf_debug_sprite_picker.clicked_pixel = blitter->MoveTo(_screen.dst_ptr, _cursor.pos.x, _cursor.pos.y);
 		_newgrf_debug_sprite_picker.click_time = _realtime_tick;
 		_newgrf_debug_sprite_picker.sprites.Clear();
@@ -3137,6 +3293,9 @@ void ReInitAllWindows()
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
 	NWidgetScrollbar::InvalidateDimensionCache();
 
+	extern void InitDepotWindowBlockSizes();
+	InitDepotWindowBlockSizes();
+
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		w->ReInit();
@@ -3249,25 +3408,16 @@ void RelocateAllWindows(int neww, int newh)
 
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		int left, top;
-
-		if (w->window_class == WC_MAIN_WINDOW) {
-			ViewPort *vp = w->viewport;
-			vp->width = w->width = neww;
-			vp->height = w->height = newh;
-			vp->virtual_width = ScaleByZoom(neww, vp->zoom);
-			vp->virtual_height = ScaleByZoom(newh, vp->zoom);
-			continue; // don't modify top,left
-		}
-
 		/* XXX - this probably needs something more sane. For example specifying
 		 * in a 'backup'-desc that the window should always be centered. */
 		switch (w->window_class) {
+			case WC_MAIN_WINDOW:
 			case WC_BOOTSTRAP:
 				ResizeWindow(w, neww, newh);
 				continue;
 
 			case WC_MAIN_TOOLBAR:
-				ResizeWindow(w, min(neww, w->window_desc->default_width) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
 
 				top = w->top;
 				left = PositionMainToolbar(w); // changes toolbar orientation
@@ -3279,14 +3429,15 @@ void RelocateAllWindows(int neww, int newh)
 				break;
 
 			case WC_STATUS_BAR:
-				ResizeWindow(w, min(neww, w->window_desc->default_width) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
 
 				top = newh - w->height;
 				left = PositionStatusbar(w);
 				break;
 
 			case WC_SEND_NETWORK_MSG:
-				ResizeWindow(w, Clamp(neww, 320, 640) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
+
 				top = newh - w->height - FindWindowById(WC_STATUS_BAR, 0)->height;
 				left = PositionNetworkChatWindow(w);
 				break;

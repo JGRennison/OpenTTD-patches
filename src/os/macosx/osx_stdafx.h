@@ -12,27 +12,48 @@
 #ifndef MACOS_STDAFX_H
 #define MACOS_STDAFX_H
 
+
+/* It would seem that to ensure backward compability we have to ensure that we have defined MAC_OS_X_VERSION_10_x everywhere */
+#ifndef MAC_OS_X_VERSION_10_3
+#define MAC_OS_X_VERSION_10_3 1030
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_4
+#define MAC_OS_X_VERSION_10_4 1040
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_5
+#define MAC_OS_X_VERSION_10_5 1050
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_6
+#define MAC_OS_X_VERSION_10_6 1060
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_7
+#define MAC_OS_X_VERSION_10_7 1070
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_8
+#define MAC_OS_X_VERSION_10_8 1080
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_9
+#define MAC_OS_X_VERSION_10_9 1090
+#endif
+
+
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>
 
-/* We need to include this first as that "depends" on the compiler's setting
- * of __LP64__. So before we define __LP64__ so it can be used. */
-#include <sys/cdefs.h>
-#include <unistd.h>
-
 /* Some gcc versions include assert.h via this header. As this would interfere
  * with our own assert redefinition, include this header first. */
-#if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
+#if !defined(__clang__) && defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
 #	include <debug/debug.h>
 #endif
 
-/* __LP64__ only exists in 10.5 and higher */
-#if defined(__APPLE__) && !defined(__LP64__)
-#	define __LP64__ 0
-#endif
-
 /* Check for mismatching 'architectures' */
-#if !defined(STRGEN) && !defined(SETTINGSGEN) && ((__LP64__ && !defined(_SQ64)) || (!__LP64__ && defined(_SQ64)))
+#if !defined(STRGEN) && !defined(SETTINGSGEN) && ((defined(__LP64__) && !defined(_SQ64)) || (!defined(__LP64__) && defined(_SQ64)))
 #	error "Compiling 64 bits without _SQ64 set! (or vice versa)"
 #endif
 
@@ -68,7 +89,7 @@
 
 /* NSInteger and NSUInteger are part of 10.5 and higher. */
 #ifndef NSInteger
-#if __LP64__
+#ifdef __LP64__
 typedef long NSInteger;
 typedef unsigned long NSUInteger;
 #else
@@ -76,6 +97,14 @@ typedef int NSInteger;
 typedef unsigned int NSUInteger;
 #endif /* __LP64__ */
 #endif /* NSInteger */
+
+#ifndef CGFLOAT_DEFINED
+#ifdef __LP64__
+typedef double CGFloat;
+#else
+typedef float CGFloat;
+#endif /* __LP64__ */
+#endif /* CGFLOAT_DEFINED */
 
 /* OS X SDK versions >= 10.5 have a non-const iconv. */
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5

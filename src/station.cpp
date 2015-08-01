@@ -29,9 +29,14 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /** The pool of stations. */
 StationPool _station_pool("Station");
 INSTANTIATE_POOL_METHODS(Station)
+
+typedef StationIDStack::SmallStackPool StationIDStackPool;
+template<> StationIDStackPool StationIDStack::_pool = StationIDStackPool();
 
 BaseStation::~BaseStation()
 {
@@ -40,13 +45,10 @@ BaseStation::~BaseStation()
 
 	if (CleaningPool()) return;
 
-	Owner owner = this->owner;
-	if (!Company::IsValidID(owner)) owner = _local_company;
-	if (!Company::IsValidID(owner)) return; // Spectators
-	DeleteWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    owner, this->index).Pack());
-	DeleteWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     owner, this->index).Pack());
-	DeleteWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     owner, this->index).Pack());
-	DeleteWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, owner, this->index).Pack());
+	DeleteWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    this->owner, this->index).Pack());
+	DeleteWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     this->owner, this->index).Pack());
+	DeleteWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     this->owner, this->index).Pack());
+	DeleteWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, this->owner, this->index).Pack());
 
 	this->sign.MarkDirty();
 }
@@ -95,15 +97,16 @@ Station::~Station()
 		if (lg == NULL) continue;
 
 		for (NodeID node = 0; node < lg->Size(); ++node) {
+			Station *st = Station::Get((*lg)[node].Station());
+			st->goods[c].flows.erase(this->index);
 			if ((*lg)[node][this->goods[c].node].LastUpdate() != INVALID_DATE) {
-				Station *st = Station::Get((*lg)[node].Station());
 				st->goods[c].flows.DeleteFlows(this->index);
 				RerouteCargo(st, c, this->index, st->index);
 			}
 		}
 		lg->RemoveNode(this->goods[c].node);
 		if (lg->Size() == 0) {
-			LinkGraphSchedule::Instance()->Unqueue(lg);
+			LinkGraphSchedule::instance.Unqueue(lg);
 			delete lg;
 		}
 	}

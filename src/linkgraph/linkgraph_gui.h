@@ -23,11 +23,12 @@
  * Properties of a link between two stations.
  */
 struct LinkProperties {
-	LinkProperties() : capacity(0), usage(0), planned(0) {}
+	LinkProperties() : capacity(0), usage(0), planned(0), shared(false) {}
 
 	uint capacity; ///< Capacity of the link.
 	uint usage;    ///< Actual usage of the link.
 	uint planned;  ///< Planned usage of the link.
+	bool shared;   ///< If this is a shared link to be drawn dashed.
 };
 
 /**
@@ -50,8 +51,7 @@ public:
 	 * @param company_mask Bitmask of companies to be shown.
 	 * @param scale Desired thickness of lines and size of station dots.
 	 */
-	LinkGraphOverlay(const Window *w, uint wid, uint32 cargo_mask = 0xFFFFFFFF,
-			uint32 company_mask = 1 << _local_company, uint scale = 1) :
+	LinkGraphOverlay(const Window *w, uint wid, uint32 cargo_mask, uint32 company_mask, uint scale) :
 			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale)
 	{}
 
@@ -86,7 +86,7 @@ protected:
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
 	void GetWidgetDpi(DrawPixelInfo *dpi) const;
 
-	static void AddStats(uint new_cap, uint new_usg, uint new_flow, LinkProperties &cargo);
+	static void AddStats(uint new_cap, uint new_usg, uint new_flow, bool new_shared, LinkProperties &cargo);
 	static void DrawVertex(int x, int y, int size, int colour, int border_colour);
 };
 
@@ -100,6 +100,7 @@ public:
 	LinkGraphLegendWindow(WindowDesc *desc, int window_number);
 	void SetOverlay(LinkGraphOverlay *overlay);
 
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize);
 	virtual void DrawWidget(const Rect &r, int widget) const;
 	virtual void OnClick(Point pt, int widget, int click_count);
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true);

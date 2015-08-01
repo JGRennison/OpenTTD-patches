@@ -21,7 +21,7 @@ class Path;
 typedef std::list<Path *> PathList;
 
 /** Type of the pool for link graph jobs. */
-typedef Pool<LinkGraphJob, LinkGraphJobID, 32, 0xFFFFFF> LinkGraphJobPool;
+typedef Pool<LinkGraphJob, LinkGraphJobID, 32, 0xFFFF> LinkGraphJobPool;
 /** The actual pool with link graph jobs. */
 extern LinkGraphJobPool _link_graph_job_pool;
 
@@ -45,7 +45,7 @@ private:
 	 */
 	struct NodeAnnotation {
 		uint undelivered_supply; ///< Amount of supply that hasn't been distributed yet.
-		PathList paths;          ///< Paths through this node.
+		PathList paths;          ///< Paths through this node, sorted so that those with flow == 0 are in the back.
 		FlowStatMap flows;       ///< Planned flows to other nodes.
 		void Init(uint supply);
 	};
@@ -60,9 +60,13 @@ protected:
 	const LinkGraph link_graph;       ///< Link graph to by analyzed. Is copied when job is started and mustn't be modified later.
 	const LinkGraphSettings settings; ///< Copy of _settings_game.linkgraph at spawn time.
 	ThreadObject *thread;             ///< Thread the job is running in or NULL if it's running in the main thread.
-	const Date join_date;             ///< Date when the job is to be joined.
+	Date join_date;                   ///< Date when the job is to be joined.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
 	EdgeAnnotationMatrix edges;       ///< Extra edge data necessary for link graph calculation.
+
+	void EraseFlows(NodeID from);
+	void JoinThread();
+	void SpawnThread();
 
 public:
 
@@ -234,7 +238,8 @@ public:
 		const FlowStatMap &Flows() const { return this->node_anno.flows; }
 
 		/**
-		 * Get the paths this node is part of.
+		 * Get the paths this node is part of. Paths are always expected to be
+		 * sorted so that those with flow == 0 are in the back of the list.
 		 * @return Paths.
 		 */
 		PathList &Paths() { return this->node_anno.paths; }
@@ -280,6 +285,12 @@ public:
 	 * @return Join date.
 	 */
 	inline Date JoinDate() const { return join_date; }
+
+	/**
+	 * Change the join date on date cheating.
+	 * @param interval Number of days to add.
+	 */
+	inline void ShiftJoinDate(int interval) { this->join_date += interval; }
 
 	/**
 	 * Get the link graph settings for this component.
@@ -332,6 +343,8 @@ public:
  */
 class Path {
 public:
+	static Path *invalid_path;
+
 	Path(NodeID n, bool source = false);
 
 	/** Get the node this leg passes. */

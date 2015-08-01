@@ -67,6 +67,8 @@
 
 #include "table/elrail_data.h"
 
+#include "safeguards.h"
+
 /**
  * Get the tile location group of a tile.
  * @param t The tile to get the tile location group of.
@@ -405,7 +407,7 @@ static void DrawCatenaryRailway(const TileInfo *ti)
 		 * Remove those (simply by ANDing with allowed, since these markers are never allowed) */
 		if ((PPPallowed[i] & PPPpreferred[i]) != 0) PPPallowed[i] &= PPPpreferred[i];
 
-		if (MayHaveBridgeAbove(ti->tile) && IsBridgeAbove(ti->tile)) {
+		if (IsBridgeAbove(ti->tile)) {
 			Track bridgetrack = GetBridgeAxis(ti->tile) == AXIS_X ? TRACK_X : TRACK_Y;
 			int height = GetBridgeHeight(GetNorthernBridgeEnd(ti->tile));
 
@@ -444,7 +446,7 @@ static void DrawCatenaryRailway(const TileInfo *ti)
 	if (IsTunnelTile(ti->tile)) return;
 
 	/* Don't draw a wire under a low bridge */
-	if (MayHaveBridgeAbove(ti->tile) && IsBridgeAbove(ti->tile) && !IsTransparencySet(TO_BRIDGES)) {
+	if (IsBridgeAbove(ti->tile) && !IsTransparencySet(TO_BRIDGES)) {
 		int height = GetBridgeHeight(GetNorthernBridgeEnd(ti->tile));
 
 		if (height <= GetTileMaxZ(ti->tile) + 1) return;
@@ -627,7 +629,7 @@ bool SettingsDisableElrail(int32 p1)
 	FOR_ALL_TRAINS(t) {
 		/* power and acceleration is cached only for front engines */
 		if (t->IsFrontEngine()) {
-			t->ConsistChanged(true);
+			t->ConsistChanged(CCF_TRACK);
 		}
 	}
 

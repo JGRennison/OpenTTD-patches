@@ -19,9 +19,12 @@
 #include "game/game.hpp"
 #include "command_func.h"
 #include "company_base.h"
+#include "story_base.h"
 #include "string_func.h"
 #include "gui.h"
 #include "network/network.h"
+
+#include "safeguards.h"
 
 
 GoalID _new_goal_id;
@@ -72,6 +75,13 @@ CommandCost CmdCreateGoal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 			if (!Company::IsValidID(p2)) return CMD_ERROR;
 			break;
 
+		case GT_STORY_PAGE: {
+			if (!StoryPage::IsValidID(p2)) return CMD_ERROR;
+			CompanyByte story_company = StoryPage::Get(p2)->company;
+			if (company == INVALID_COMPANY ? story_company != INVALID_COMPANY : story_company != INVALID_COMPANY && story_company != company) return CMD_ERROR;
+			break;
+		}
+
 		default: return CMD_ERROR;
 	}
 
@@ -80,11 +90,16 @@ CommandCost CmdCreateGoal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		g->type = type;
 		g->dst = p2;
 		g->company = company;
-		g->text = strdup(text);
+		g->text = stredup(text);
 		g->progress = NULL;
 		g->completed = false;
 
-		InvalidateWindowData(WC_GOALS_LIST, 0);
+		if (g->company == INVALID_COMPANY) {
+			InvalidateWindowClassesData(WC_GOALS_LIST);
+		} else {
+			InvalidateWindowData(WC_GOALS_LIST, g->company);
+		}
+		if (Goal::GetNumItems() == 1) InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
 
 		_new_goal_id = g->index;
 	}
@@ -108,9 +123,15 @@ CommandCost CmdRemoveGoal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 	if (flags & DC_EXEC) {
 		Goal *g = Goal::Get(p1);
+		CompanyID c = g->company;
 		delete g;
 
-		InvalidateWindowData(WC_GOALS_LIST, 0);
+		if (c == INVALID_COMPANY) {
+			InvalidateWindowClassesData(WC_GOALS_LIST);
+		} else {
+			InvalidateWindowData(WC_GOALS_LIST, c);
+		}
+		if (Goal::GetNumItems() == 0) InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
 	}
 
 	return CommandCost();
@@ -134,9 +155,13 @@ CommandCost CmdSetGoalText(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	if (flags & DC_EXEC) {
 		Goal *g = Goal::Get(p1);
 		free(g->text);
-		g->text = strdup(text);
+		g->text = stredup(text);
 
-		InvalidateWindowData(WC_GOALS_LIST, 0);
+		if (g->company == INVALID_COMPANY) {
+			InvalidateWindowClassesData(WC_GOALS_LIST);
+		} else {
+			InvalidateWindowData(WC_GOALS_LIST, g->company);
+		}
 	}
 
 	return CommandCost();
@@ -162,10 +187,14 @@ CommandCost CmdSetGoalProgress(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		if (StrEmpty(text)) {
 			g->progress = NULL;
 		} else {
-			g->progress = strdup(text);
+			g->progress = stredup(text);
 		}
 
-		InvalidateWindowData(WC_GOALS_LIST, 0);
+		if (g->company == INVALID_COMPANY) {
+			InvalidateWindowClassesData(WC_GOALS_LIST);
+		} else {
+			InvalidateWindowData(WC_GOALS_LIST, g->company);
+		}
 	}
 
 	return CommandCost();
@@ -189,7 +218,11 @@ CommandCost CmdSetGoalCompleted(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		Goal *g = Goal::Get(p1);
 		g->completed = p2 == 1;
 
-		InvalidateWindowData(WC_GOALS_LIST, 0);
+		if (g->company == INVALID_COMPANY) {
+			InvalidateWindowClassesData(WC_GOALS_LIST);
+		} else {
+			InvalidateWindowData(WC_GOALS_LIST, g->company);
+		}
 	}
 
 	return CommandCost();

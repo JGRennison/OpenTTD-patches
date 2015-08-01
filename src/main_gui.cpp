@@ -45,6 +45,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static int _rename_id = 1;
 static int _rename_what = -1;
 
@@ -253,11 +255,17 @@ struct MainWindow : Window
 
 	virtual void OnTick()
 	{
-		if (--refresh == 0) {
-			this->viewport->overlay->RebuildCache();
-			this->GetWidget<NWidgetBase>(WID_M_VIEWPORT)->SetDirty(this);
-			this->refresh = LINKGRAPH_REFRESH_PERIOD;
+		if (--this->refresh > 0) return;
+
+		this->refresh = LINKGRAPH_REFRESH_PERIOD;
+
+		if (this->viewport->overlay->GetCargoMask() == 0 ||
+				this->viewport->overlay->GetCompanyMask() == 0) {
+			return;
 		}
+
+		this->viewport->overlay->RebuildCache();
+		this->GetWidget<NWidgetBase>(WID_M_VIEWPORT)->SetDirty(this);
 	}
 
 	virtual void OnPaint()

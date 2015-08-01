@@ -16,6 +16,8 @@
 #include <os2.h>
 #include <process.h>
 
+#include "../safeguards.h"
+
 /**
  * OS/2 version for ThreadObject.
  */
@@ -36,7 +38,7 @@ public:
 		param(param),
 		self_destruct(self_destruct)
 	{
-		thread = _beginthread(stThreadProc, NULL, 32768, this);
+		thread = _beginthread(stThreadProc, NULL, 1048576, this);
 	}
 
 	/* virtual */ bool Exit()
@@ -95,9 +97,10 @@ class ThreadMutex_OS2 : public ThreadMutex {
 private:
 	HMTX mutex; ///< The mutex.
 	HEV event;  ///< Event for waiting.
+	uint recursive_count;     ///< Recursive lock count.
 
 public:
-	ThreadMutex_OS2()
+	ThreadMutex_OS2() : recursive_count(0)
 	{
 		DosCreateMutexSem(NULL, &mutex, 0, FALSE);
 		DosCreateEventSem(NULL, &event, 0, FALSE);
@@ -109,18 +112,24 @@ public:
 		DosCloseEventSem(event);
 	}
 
-	/* virtual */ void BeginCritical()
+	/* virtual */ void BeginCritical(bool allow_recursive = false)
 	{
+		/* os2 mutex is recursive by itself */
 		DosRequestMutexSem(mutex, (unsigned long) SEM_INDEFINITE_WAIT);
+		this->recursive_count++;
+		if (!allow_recursive && this->recursive_count != 1) NOT_REACHED();
 	}
 
-	/* virtual */ void EndCritical()
+	/* virtual */ void EndCritical(bool allow_recursive = false)
 	{
+		if (!allow_recursive && this->recursive_count != 1) NOT_REACHED();
+		this->recursive_count--;
 		DosReleaseMutexSem(mutex);
 	}
 
 	/* virtual */ void WaitForSignal()
 	{
+		assert(this->recursive_count == 1); // Do we need to call Begin/EndCritical multiple times otherwise?
 		this->EndCritical();
 		DosWaitEventSem(event, SEM_INDEFINITE_WAIT);
 		this->BeginCritical();

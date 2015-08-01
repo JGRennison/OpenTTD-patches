@@ -99,6 +99,9 @@ static void WINAPI CheckForConsoleInput()
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
 	for (;;) {
 		ReadFile(hStdin, _win_console_thread_buffer, lengthof(_win_console_thread_buffer), &nb, NULL);
+		if (nb >= lengthof(_win_console_thread_buffer)) nb = lengthof(_win_console_thread_buffer) - 1;
+		_win_console_thread_buffer[nb] = '\0';
+
 		/* Signal input waiting that input is read and wait for it being handled
 		 * SignalObjectAndWait() should be used here, but it's unsupported in Win98< */
 		SetEvent(_hInputReady);
@@ -131,6 +134,8 @@ static void CloseWindowsConsoleThread()
 
 #endif
 
+#include "../safeguards.h"
+
 
 static void *_dedicated_video_mem;
 
@@ -144,14 +149,14 @@ static FVideoDriver_Dedicated iFVideoDriver_Dedicated;
 
 const char *VideoDriver_Dedicated::Start(const char * const *parm)
 {
-	int bpp = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
+	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 	_dedicated_video_mem = (bpp == 0) ? NULL : MallocT<byte>(_cur_resolution.width * _cur_resolution.height * (bpp / 8));
 
 	_screen.width  = _screen.pitch = _cur_resolution.width;
 	_screen.height = _cur_resolution.height;
 	_screen.dst_ptr = _dedicated_video_mem;
 	ScreenSizeChanged();
-	BlitterFactoryBase::GetCurrentBlitter()->PostResize();
+	BlitterFactory::GetCurrentBlitter()->PostResize();
 
 #if defined(WINCE)
 	/* WinCE doesn't support console stuff */
@@ -243,9 +248,7 @@ static void DedicatedHandleKeyInput()
 	SetEvent(_hWaitForInputHandling);
 #endif
 
-	/* strtok() does not 'forget' \r\n if the string starts with it,
-	 * so we have to manually remove that! */
-	strtok(input_line, "\r\n");
+	/* Remove trailing \r or \n */
 	for (char *c = input_line; *c != '\0'; c++) {
 		if (*c == '\n' || *c == '\r' || c == lastof(input_line)) {
 			*c = '\0';
@@ -316,7 +319,15 @@ void VideoDriver_Dedicated::MainLoop()
 		}
 
 		/* Don't sleep when fast forwarding (for desync debugging) */
-		if (!_ddc_fastforward) CSleep(1);
+		if (!_ddc_fastforward) {
+			/* Sleep longer on a dedicated server, if the game is paused and no clients connected.
+			 * That can allow the CPU to better use deep sleep states. */
+			if (_pause_mode != 0 && !HasClients()) {
+				CSleep(100);
+			} else {
+				CSleep(1);
+			}
+		}
 	}
 }
 

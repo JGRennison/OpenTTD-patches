@@ -21,10 +21,13 @@
 #include "settings_type.h"
 #include "console_func.h"
 #include "rev.h"
+#include "video/video_driver.hpp"
 
 #include "widgets/console_widget.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 static const uint ICON_HISTORY_SIZE       = 20;
 static const uint ICON_LINE_SPACING       =  2;
@@ -184,6 +187,7 @@ struct IConsoleWindow : Window
 	~IConsoleWindow()
 	{
 		_iconsole_mode = ICONSOLE_CLOSED;
+		VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 
 	/**
@@ -215,6 +219,9 @@ struct IConsoleWindow : Window
 			delta = 0;
 		}
 
+		/* If we have a marked area, draw a background highlight. */
+		if (_iconsole_cmdline.marklength != 0) GfxFillRect(this->line_offset + delta + _iconsole_cmdline.markxoffs, this->height - this->line_height, this->line_offset + delta + _iconsole_cmdline.markxoffs + _iconsole_cmdline.marklength, this->height - 1, PC_DARK_RED);
+
 		DrawString(this->line_offset + delta, right, this->height - this->line_height, _iconsole_cmdline.buf, (TextColour)CC_COMMAND, SA_LEFT | SA_FORCE);
 
 		if (_focused_window == this && _iconsole_cmdline.caret) {
@@ -236,7 +243,7 @@ struct IConsoleWindow : Window
 		if (_iconsole_cmdline.HandleCaret()) this->SetDirty();
 	}
 
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode)
+	virtual EventState OnKeyPress(WChar key, uint16 keycode)
 	{
 		if (_focused_window != this) return ES_NOT_HANDLED;
 
@@ -307,9 +314,69 @@ struct IConsoleWindow : Window
 		return ES_HANDLED;
 	}
 
+	virtual void InsertTextString(int wid, const char *str, bool marked, const char *caret, const char *insert_location, const char *replacement_end)
+	{
+		if (_iconsole_cmdline.InsertString(str, marked, caret, insert_location, replacement_end)) {
+			IConsoleWindow::scroll = 0;
+			IConsoleResetHistoryPos();
+			this->SetDirty();
+		}
+	}
+
+	virtual const char *GetFocusedText() const
+	{
+		return _iconsole_cmdline.buf;
+	}
+
+	virtual const char *GetCaret() const
+	{
+		return _iconsole_cmdline.buf + _iconsole_cmdline.caretpos;
+	}
+
+	virtual const char *GetMarkedText(size_t *length) const
+	{
+		if (_iconsole_cmdline.markend == 0) return NULL;
+
+		*length = _iconsole_cmdline.markend - _iconsole_cmdline.markpos;
+		return _iconsole_cmdline.buf + _iconsole_cmdline.markpos;
+	}
+
+	virtual Point GetCaretPosition() const
+	{
+		int delta = min(this->width - this->line_offset - _iconsole_cmdline.pixels - ICON_RIGHT_BORDERWIDTH, 0);
+		Point pt = {this->line_offset + delta + _iconsole_cmdline.caretxoffs, this->height - this->line_height};
+
+		return pt;
+	}
+
+	virtual Rect GetTextBoundingRect(const char *from, const char *to) const
+	{
+		int delta = min(this->width - this->line_offset - _iconsole_cmdline.pixels - ICON_RIGHT_BORDERWIDTH, 0);
+
+		Point p1 = GetCharPosInString(_iconsole_cmdline.buf, from, FS_NORMAL);
+		Point p2 = from != to ? GetCharPosInString(_iconsole_cmdline.buf, from) : p1;
+
+		Rect r = {this->line_offset + delta + p1.x, this->height - this->line_height, this->line_offset + delta + p2.x, this->height};
+		return r;
+	}
+
+	virtual const char *GetTextCharacterAtPosition(const Point &pt) const
+	{
+		int delta = min(this->width - this->line_offset - _iconsole_cmdline.pixels - ICON_RIGHT_BORDERWIDTH, 0);
+
+		if (!IsInsideMM(pt.y, this->height - this->line_height, this->height)) return NULL;
+
+		return GetCharAtPosition(_iconsole_cmdline.buf, pt.x - delta);
+	}
+
 	virtual void OnMouseWheel(int wheel)
 	{
 		this->Scroll(-wheel);
+	}
+
+	virtual void OnFocusLost()
+	{
+		VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 };
 
@@ -398,7 +465,7 @@ static const char *IConsoleHistoryAdd(const char *cmd)
 	if (_iconsole_history[0] == NULL || strcmp(_iconsole_history[0], cmd) != 0) {
 		free(_iconsole_history[ICON_HISTORY_SIZE - 1]);
 		memmove(&_iconsole_history[1], &_iconsole_history[0], sizeof(_iconsole_history[0]) * (ICON_HISTORY_SIZE - 1));
-		_iconsole_history[0] = strdup(cmd);
+		_iconsole_history[0] = stredup(cmd);
 	}
 
 	/* Reset the history position */

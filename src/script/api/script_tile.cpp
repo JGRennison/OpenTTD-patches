@@ -20,6 +20,8 @@
 #include "../../town.h"
 #include "../../landscape.h"
 
+#include "../../safeguards.h"
+
 /* static */ bool ScriptTile::IsBuildable(TileIndex tile)
 {
 	if (!::IsValidTile(tile)) return false;
@@ -43,10 +45,11 @@
 
 /* static */ bool ScriptTile::IsBuildableRectangle(TileIndex tile, uint width, uint height)
 {
-	uint tx, ty;
+	/* Check whether we can extract valid X and Y */
+	if (!::IsValidTile(tile)) return false;
 
-	tx = ScriptMap::GetTileX(tile);
-	ty = ScriptMap::GetTileY(tile);
+	uint tx = ScriptMap::GetTileX(tile);
+	uint ty = ScriptMap::GetTileY(tile);
 
 	for (uint x = tx; x < width + tx; x++) {
 		for (uint y = ty; y < height + ty; y++) {

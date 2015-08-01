@@ -46,6 +46,7 @@ enum GRFBugs {
 	GBUG_VEH_REFIT,         ///< Articulated vehicles carry different cargoes resp. are differently refittable than specified in purchase list
 	GBUG_VEH_POWERED_WAGON, ///< Powered wagon changed poweredness state when not inside a depot
 	GBUG_UNKNOWN_CB_RESULT, ///< A callback returned an unknown/invalid result
+	GBUG_VEH_CAPACITY,      ///< Capacity of vehicle changes when not refitting or arranging
 };
 
 /** Status of post-gameload GRF compatibility check */
@@ -175,6 +176,8 @@ struct GRFConfig : ZeroedMemoryAllocator {
 	bool has_param_defaults;                       ///< NOSAVE: did this newgrf specify any defaults for it's parameters
 
 	struct GRFConfig *next;                        ///< NOSAVE: Next item in the linked list
+
+	void CopyParams(const GRFConfig &src);
 
 	bool IsOpenTTDBaseGRF() const;
 

@@ -25,6 +25,8 @@
 #include "table/strings.h"
 #include "table/tree_land.h"
 
+#include "safeguards.h"
+
 void PlaceTreesRandomly();
 
 /** Tree Sprites with their palettes */
@@ -98,11 +100,6 @@ public:
 			size->width = 0;
 			size->height = 0;
 		}
-	}
-
-	virtual void OnPaint()
-	{
-		this->DrawWidgets();
 	}
 
 	virtual void DrawWidget(const Rect &r, int widget) const

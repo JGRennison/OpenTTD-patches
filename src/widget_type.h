@@ -181,9 +181,9 @@ public:
 	NWidgetBase *prev;    ///< Pointer to previous widget in container. Managed by parent container widget.
 
 	uint8 padding_top;    ///< Paddings added to the top of the widget. Managed by parent container widget.
-	uint8 padding_right;  ///< Paddings added to the right of the widget. Managed by parent container widget.
+	uint8 padding_right;  ///< Paddings added to the right of the widget. Managed by parent container widget. (parent container may swap this with padding_left for RTL)
 	uint8 padding_bottom; ///< Paddings added to the bottom of the widget. Managed by parent container widget.
-	uint8 padding_left;   ///< Paddings added to the left of the widget. Managed by parent container widget.
+	uint8 padding_left;   ///< Paddings added to the left of the widget. Managed by parent container widget. (parent container may swap this with padding_right for RTL)
 
 protected:
 	inline void StoreSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height);
@@ -769,7 +769,7 @@ private:
  */
 class NWidgetLeaf : public NWidgetCore {
 public:
-	NWidgetLeaf(WidgetType tp, Colours colour, int index, uint16 data, StringID tip);
+	NWidgetLeaf(WidgetType tp, Colours colour, int index, uint32 data, StringID tip);
 
 	/* virtual */ void SetupSmallestSize(Window *w, bool init_array);
 	/* virtual */ void Draw(const Window *w);
@@ -777,6 +777,8 @@ public:
 	bool ButtonHit(const Point &pt);
 
 	static void InvalidateDimensionCache();
+
+	static Dimension dropdown_dimension;  ///< Cached size of a dropdown widget.
 private:
 	static Dimension shadebox_dimension;  ///< Cached size of a shadebox widget.
 	static Dimension debugbox_dimension;  ///< Cached size of a debugbox widget.
@@ -854,7 +856,7 @@ static inline uint ComputeMaxSize(uint base, uint max_space, uint step)
  * @ingroup NestedWidgetParts
  */
 struct NWidgetPartDataTip {
-	uint16 data;      ///< Data value of the widget.
+	uint32 data;      ///< Data value of the widget.
 	StringID tooltip; ///< Tooltip of the widget.
 };
 
@@ -1009,7 +1011,7 @@ static inline NWidgetPart EndContainer()
  * @param tip  Tooltip of the widget.
  * @ingroup NestedWidgetParts
  */
-static inline NWidgetPart SetDataTip(uint16 data, StringID tip)
+static inline NWidgetPart SetDataTip(uint32 data, StringID tip)
 {
 	NWidgetPart part;
 

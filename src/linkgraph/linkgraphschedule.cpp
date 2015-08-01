@@ -16,39 +16,14 @@
 #include "mcf.h"
 #include "flowmapper.h"
 
-/**
- * Spawn a thread if possible and run the link graph job in the thread. If
- * that's not possible run the job right now in the current thread.
- * @param job Job to be executed.
- */
-void LinkGraphSchedule::SpawnThread(LinkGraphJob *job)
-{
-	if (!ThreadObject::New(&(LinkGraphSchedule::Run), job, &job->thread)) {
-		job->thread = NULL;
-		/* Of course this will hang a bit.
-		 * On the other hand, if you want to play games which make this hang noticably
-		 * on a platform without threads then you'll probably get other problems first.
-		 * OK:
-		 * If someone comes and tells me that this hangs for him/her, I'll implement a
-		 * smaller grained "Step" method for all handlers and add some more ticks where
-		 * "Step" is called. No problem in principle.
-		 */
-		LinkGraphSchedule::Run(job);
-	}
-}
+#include "../safeguards.h"
 
 /**
- * Join the calling thread with the given job's thread if threading is enabled.
- * @param job Job whose execution thread is to be joined.
+ * Static instance of LinkGraphSchedule.
+ * Note: This instance is created on task start.
+ *       Lazy creation on first usage results in a data race between the CDist threads.
  */
-void LinkGraphSchedule::JoinThread(LinkGraphJob *job)
-{
-	if (job->thread != NULL) {
-		job->thread->Join();
-		delete job->thread;
-		job->thread = NULL;
-	}
-}
+/* static */ LinkGraphSchedule LinkGraphSchedule::instance;
 
 /**
  * Start the next job in the schedule.
@@ -57,11 +32,17 @@ void LinkGraphSchedule::SpawnNext()
 {
 	if (this->schedule.empty()) return;
 	LinkGraph *next = this->schedule.front();
+	LinkGraph *first = next;
+	while (next->Size() < 2) {
+		this->schedule.splice(this->schedule.end(), this->schedule, this->schedule.begin());
+		next = this->schedule.front();
+		if (next == first) return;
+	}
 	assert(next == LinkGraph::Get(next->index));
 	this->schedule.pop_front();
 	if (LinkGraphJob::CanAllocateItem()) {
 		LinkGraphJob *job = new LinkGraphJob(*next);
-		this->SpawnThread(job);
+		job->SpawnThread();
 		this->running.push_back(job);
 	} else {
 		NOT_REACHED();
@@ -78,8 +59,7 @@ void LinkGraphSchedule::JoinNext()
 	if (!next->IsFinished()) return;
 	this->running.pop_front();
 	LinkGraphID id = next->LinkGraphIndex();
-	this->JoinThread(next);
-	delete next;
+	delete next; // implicitly joins the thread
 	if (LinkGraph::IsValidID(id)) {
 		LinkGraph *lg = LinkGraph::Get(id);
 		this->Unqueue(lg); // Unqueue to avoid double-queueing recycled IDs.
@@ -95,9 +75,8 @@ void LinkGraphSchedule::JoinNext()
 /* static */ void LinkGraphSchedule::Run(void *j)
 {
 	LinkGraphJob *job = (LinkGraphJob *)j;
-	LinkGraphSchedule *schedule = LinkGraphSchedule::Instance();
-	for (uint i = 0; i < lengthof(schedule->handlers); ++i) {
-		schedule->handlers[i]->Run(*job);
+	for (uint i = 0; i < lengthof(instance.handlers); ++i) {
+		instance.handlers[i]->Run(*job);
 	}
 }
 
@@ -108,7 +87,7 @@ void LinkGraphSchedule::JoinNext()
 void LinkGraphSchedule::SpawnAll()
 {
 	for (JobList::iterator i = this->running.begin(); i != this->running.end(); ++i) {
-		this->SpawnThread(*i);
+		(*i)->SpawnThread();
 	}
 }
 
@@ -117,12 +96,24 @@ void LinkGraphSchedule::SpawnAll()
  */
 /* static */ void LinkGraphSchedule::Clear()
 {
-	LinkGraphSchedule *inst = LinkGraphSchedule::Instance();
-	for (JobList::iterator i(inst->running.begin()); i != inst->running.end(); ++i) {
-		inst->JoinThread(*i);
+	for (JobList::iterator i(instance.running.begin()); i != instance.running.end(); ++i) {
+		(*i)->JoinThread();
 	}
-	inst->running.clear();
-	inst->schedule.clear();
+	instance.running.clear();
+	instance.schedule.clear();
+}
+
+/**
+ * Shift all dates (join dates and edge annotations) of link graphs and link
+ * graph jobs by the number of days given.
+ * @param interval Number of days to be added or subtracted.
+ */
+void LinkGraphSchedule::ShiftDates(int interval)
+{
+	LinkGraph *lg;
+	FOR_ALL_LINK_GRAPHS(lg) lg->ShiftDates(interval);
+	LinkGraphJob *lgj;
+	FOR_ALL_LINK_GRAPH_JOBS(lgj) lgj->ShiftJoinDate(interval);
 }
 
 /**
@@ -133,9 +124,9 @@ LinkGraphSchedule::LinkGraphSchedule()
 	this->handlers[0] = new InitHandler;
 	this->handlers[1] = new DemandHandler;
 	this->handlers[2] = new MCFHandler<MCF1stPass>;
-	this->handlers[3] = new FlowMapper;
+	this->handlers[3] = new FlowMapper(false);
 	this->handlers[4] = new MCFHandler<MCF2ndPass>;
-	this->handlers[5] = new FlowMapper;
+	this->handlers[5] = new FlowMapper(true);
 }
 
 /**
@@ -150,15 +141,6 @@ LinkGraphSchedule::~LinkGraphSchedule()
 }
 
 /**
- * Retrieve the link graph schedule or create it if necessary.
- */
-/* static */ LinkGraphSchedule *LinkGraphSchedule::Instance()
-{
-	static LinkGraphSchedule inst;
-	return &inst;
-}
-
-/**
  * Spawn or join a link graph job or compress a link graph if any link graph is
  * due to do so.
  */
@@ -167,9 +149,9 @@ void OnTick_LinkGraph()
 	if (_date_fract != LinkGraphSchedule::SPAWN_JOIN_TICK) return;
 	Date offset = _date % _settings_game.linkgraph.recalc_interval;
 	if (offset == 0) {
-		LinkGraphSchedule::Instance()->SpawnNext();
+		LinkGraphSchedule::instance.SpawnNext();
 	} else if (offset == _settings_game.linkgraph.recalc_interval / 2) {
-		LinkGraphSchedule::Instance()->JoinNext();
+		LinkGraphSchedule::instance.JoinNext();
 	}
 }
 

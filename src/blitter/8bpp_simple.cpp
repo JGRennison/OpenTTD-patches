@@ -13,6 +13,8 @@
 #include "../zoom_func.h"
 #include "8bpp_simple.hpp"
 
+#include "../safeguards.h"
+
 /** Instantiation of the simple 8bpp blitter factory. */
 static FBlitter_8bppSimple iFBlitter_8bppSimple;
 
@@ -37,11 +39,16 @@ void Blitter_8bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoom
 
 			switch (mode) {
 				case BM_COLOUR_REMAP:
+				case BM_CRASH_REMAP:
 					colour = bp->remap[*src];
 					break;
 
 				case BM_TRANSPARENT:
 					if (*src != 0) colour = bp->remap[*dst];
+					break;
+
+				case BM_BLACK_REMAP:
+					colour = 0;
 					break;
 
 				default:
@@ -55,10 +62,10 @@ void Blitter_8bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoom
 	}
 }
 
-Sprite *Blitter_8bppSimple::Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
+Sprite *Blitter_8bppSimple::Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
 {
 	Sprite *dest_sprite;
-	dest_sprite = (Sprite *)allocator(sizeof(*dest_sprite) + sprite->height * sprite->width);
+	dest_sprite = (Sprite *)allocator(sizeof(*dest_sprite) + (size_t)sprite->height * (size_t)sprite->width);
 
 	dest_sprite->height = sprite->height;
 	dest_sprite->width  = sprite->width;

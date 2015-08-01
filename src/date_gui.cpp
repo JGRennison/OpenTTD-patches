@@ -20,6 +20,8 @@
 #include "widgets/dropdown_type.h"
 #include "widgets/date_widget.h"
 
+#include "safeguards.h"
+
 
 /** Window to select a date graphically by using dropdowns */
 struct SetDateWindow : Window {
@@ -73,14 +75,14 @@ struct SetDateWindow : Window {
 
 			case WID_SD_DAY:
 				for (uint i = 0; i < 31; i++) {
-					list->push_back(new DropDownListStringItem(STR_ORDINAL_NUMBER_1ST + i, i + 1, false));
+					*list->Append() = new DropDownListStringItem(STR_DAY_NUMBER_1ST + i, i + 1, false);
 				}
 				selected = this->date.day;
 				break;
 
 			case WID_SD_MONTH:
 				for (uint i = 0; i < 12; i++) {
-					list->push_back(new DropDownListStringItem(STR_MONTH_JAN + i, i, false));
+					*list->Append() = new DropDownListStringItem(STR_MONTH_JAN + i, i, false);
 				}
 				selected = this->date.month;
 				break;
@@ -89,7 +91,7 @@ struct SetDateWindow : Window {
 				for (Year i = this->min_year; i <= this->max_year; i++) {
 					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
 					item->SetParam(0, i);
-					list->push_back(item);
+					*list->Append() = item;
 				}
 				selected = this->date.year;
 				break;
@@ -106,7 +108,7 @@ struct SetDateWindow : Window {
 
 			case WID_SD_DAY:
 				for (uint i = 0; i < 31; i++) {
-					d = maxdim(d, GetStringBoundingBox(STR_ORDINAL_NUMBER_1ST + i));
+					d = maxdim(d, GetStringBoundingBox(STR_DAY_NUMBER_1ST + i));
 				}
 				break;
 
@@ -130,7 +132,7 @@ struct SetDateWindow : Window {
 	virtual void SetStringParameters(int widget) const
 	{
 		switch (widget) {
-			case WID_SD_DAY:   SetDParam(0, this->date.day - 1 + STR_ORDINAL_NUMBER_1ST); break;
+			case WID_SD_DAY:   SetDParam(0, this->date.day - 1 + STR_DAY_NUMBER_1ST); break;
 			case WID_SD_MONTH: SetDParam(0, this->date.month + STR_MONTH_JAN); break;
 			case WID_SD_YEAR:  SetDParam(0, this->date.year); break;
 		}

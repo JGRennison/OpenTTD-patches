@@ -14,6 +14,7 @@
 #include "core/alloc_func.hpp"
 #include "core/math_func.hpp"
 #include "string_func.h"
+#include "string_base.h"
 
 #include "table/control_codes.h"
 
@@ -31,6 +32,11 @@
 #include "gfx_func.h"
 #endif /* WITH_ICU */
 
+/* The function vsnprintf is used internally to perform the required formatting
+ * tasks. As such this one must be allowed, and makes sure it's terminated. */
+#include "safeguards.h"
+#undef vsnprintf
+
 /**
  * Safer implementation of vsnprintf; same as vsnprintf except:
  * - last instead of size, i.e. replace sizeof with lastof.
@@ -41,62 +47,12 @@
  * @param ap     the list of arguments for the format
  * @return the number of added characters
  */
-static int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap)
+int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap)
 {
 	ptrdiff_t diff = last - str;
 	if (diff < 0) return 0;
 	return min((int)diff, vsnprintf(str, diff + 1, format, ap));
 }
-
-/**
- * Appends characters from one string to another.
- *
- * Appends the source string to the destination string with respect of the
- * terminating null-character and the maximum size of the destination
- * buffer.
- *
- * @note usage ttd_strlcat(dst, src, lengthof(dst));
- * @note lengthof() applies only to fixed size arrays
- *
- * @param dst The buffer containing the target string
- * @param src The buffer containing the string to append
- * @param size The maximum size of the destination buffer
- */
-void ttd_strlcat(char *dst, const char *src, size_t size)
-{
-	assert(size > 0);
-	while (size > 0 && *dst != '\0') {
-		size--;
-		dst++;
-	}
-
-	ttd_strlcpy(dst, src, size);
-}
-
-
-/**
- * Copies characters from one buffer to another.
- *
- * Copies the source string to the destination buffer with respect of the
- * terminating null-character and the maximum size of the destination
- * buffer.
- *
- * @note usage ttd_strlcpy(dst, src, lengthof(dst));
- * @note lengthof() applies only to fixed size arrays
- *
- * @param dst The destination buffer
- * @param src The buffer containing the string to copy
- * @param size The maximum size of the destination buffer
- */
-void ttd_strlcpy(char *dst, const char *src, size_t size)
-{
-	assert(size > 0);
-	while (--size > 0 && *src != '\0') {
-		*dst++ = *src++;
-	}
-	*dst = '\0';
-}
-
 
 /**
  * Appends characters from one string to another.
@@ -158,6 +114,21 @@ char *strecpy(char *dst, const char *src, const char *last)
 #endif /* STRGEN || SETTINGSGEN */
 	}
 	return dst;
+}
+
+/**
+ * Create a duplicate of the given string.
+ * @param s    The string to duplicate.
+ * @param last The last character that is safe to duplicate. If NULL, the whole string is duplicated.
+ * @note The maximum length of the resulting string might therefore be last - s + 1.
+ * @return The duplicate of the string.
+ */
+char *stredup(const char *s, const char *last)
+{
+	size_t len = last == NULL ? strlen(s) : ttd_strnlen(s, last - s + 1);
+	char *tmp = CallocT<char>(len + 1);
+	memcpy(tmp, s, len);
+	return tmp;
 }
 
 /**
@@ -378,20 +349,6 @@ bool IsValidChar(WChar key, CharSetFilter afilter)
 }
 
 #ifdef WIN32
-/* Since version 3.14, MinGW Runtime has snprintf() and vsnprintf() conform to C99 but it's not the case for older versions */
-#if (__MINGW32_MAJOR_VERSION < 3) || ((__MINGW32_MAJOR_VERSION == 3) && (__MINGW32_MINOR_VERSION < 14))
-int CDECL snprintf(char *str, size_t size, const char *format, ...)
-{
-	va_list ap;
-	int ret;
-
-	va_start(ap, format);
-	ret = vsnprintf(str, size, format, ap);
-	va_end(ap);
-	return ret;
-}
-#endif /* MinGW Runtime < 3.14 */
-
 #ifdef _MSC_VER
 /**
  * Almost POSIX compliant implementation of \c vsnprintf for VC compiler.
@@ -571,16 +528,6 @@ size_t Utf8TrimString(char *s, size_t maxlen)
 	return length;
 }
 
-#ifdef DEFINE_STRNDUP
-char *strndup(const char *s, size_t len)
-{
-	len = ttd_strnlen(s, len);
-	char *tmp = CallocT<char>(len + 1);
-	memcpy(tmp, s, len);
-	return tmp;
-}
-#endif /* DEFINE_STRNDUP */
-
 #ifdef DEFINE_STRCASESTR
 char *strcasestr(const char *haystack, const char *needle)
 {
@@ -607,7 +554,7 @@ char *strcasestr(const char *haystack, const char *needle)
  */
 static const char *SkipGarbage(const char *str)
 {
-	while (*str != '\0' && (*str < 'A' || IsInsideMM(*str, '[', '`' + 1) || IsInsideMM(*str, '{', '~' + 1))) str++;
+	while (*str != '\0' && (*str < '0' || IsInsideMM(*str, ';', '@' + 1) || IsInsideMM(*str, '[', '`' + 1) || IsInsideMM(*str, '{', '~' + 1))) str++;
 	return str;
 }
 
@@ -650,3 +597,271 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 	/* Do a normal comparison if ICU is missing or if we cannot create a collator. */
 	return strcasecmp(s1, s2);
 }
+
+#ifdef WITH_ICU
+
+#include <unicode/utext.h>
+#include <unicode/brkiter.h>
+
+/** String iterator using ICU as a backend. */
+class IcuStringIterator : public StringIterator
+{
+	icu::BreakIterator *char_itr; ///< ICU iterator for characters.
+	icu::BreakIterator *word_itr; ///< ICU iterator for words.
+
+	SmallVector<UChar, 32> utf16_str;      ///< UTF-16 copy of the string.
+	SmallVector<size_t, 32> utf16_to_utf8; ///< Mapping from UTF-16 code point position to index in the UTF-8 source string.
+
+public:
+	IcuStringIterator() : char_itr(NULL), word_itr(NULL)
+	{
+		UErrorCode status = U_ZERO_ERROR;
+		this->char_itr = icu::BreakIterator::createCharacterInstance(icu::Locale(_current_language != NULL ? _current_language->isocode : "en"), status);
+		this->word_itr = icu::BreakIterator::createWordInstance(icu::Locale(_current_language != NULL ? _current_language->isocode : "en"), status);
+
+		*this->utf16_str.Append() = '\0';
+		*this->utf16_to_utf8.Append() = 0;
+	}
+
+	virtual ~IcuStringIterator()
+	{
+		delete this->char_itr;
+		delete this->word_itr;
+	}
+
+	virtual void SetString(const char *s)
+	{
+		const char *string_base = s;
+
+		/* Unfortunately current ICU versions only provide rudimentary support
+		 * for word break iterators (especially for CJK languages) in combination
+		 * with UTF-8 input. As a work around we have to convert the input to
+		 * UTF-16 and create a mapping back to UTF-8 character indices. */
+		this->utf16_str.Clear();
+		this->utf16_to_utf8.Clear();
+
+		while (*s != '\0') {
+			size_t idx = s - string_base;
+
+			WChar c = Utf8Consume(&s);
+			if (c < 0x10000) {
+				*this->utf16_str.Append() = (UChar)c;
+			} else {
+				/* Make a surrogate pair. */
+				*this->utf16_str.Append() = (UChar)(0xD800 + ((c - 0x10000) >> 10));
+				*this->utf16_str.Append() = (UChar)(0xDC00 + ((c - 0x10000) & 0x3FF));
+				*this->utf16_to_utf8.Append() = idx;
+			}
+			*this->utf16_to_utf8.Append() = idx;
+		}
+		*this->utf16_str.Append() = '\0';
+		*this->utf16_to_utf8.Append() = s - string_base;
+
+		UText text = UTEXT_INITIALIZER;
+		UErrorCode status = U_ZERO_ERROR;
+		utext_openUChars(&text, this->utf16_str.Begin(), this->utf16_str.Length() - 1, &status);
+		this->char_itr->setText(&text, status);
+		this->word_itr->setText(&text, status);
+		this->char_itr->first();
+		this->word_itr->first();
+	}
+
+	virtual size_t SetCurPosition(size_t pos)
+	{
+		/* Convert incoming position to an UTF-16 string index. */
+		uint utf16_pos = 0;
+		for (uint i = 0; i < this->utf16_to_utf8.Length(); i++) {
+			if (this->utf16_to_utf8[i] == pos) {
+				utf16_pos = i;
+				break;
+			}
+		}
+
+		/* isBoundary has the documented side-effect of setting the current
+		 * position to the first valid boundary equal to or greater than
+		 * the passed value. */
+		this->char_itr->isBoundary(utf16_pos);
+		return this->utf16_to_utf8[this->char_itr->current()];
+	}
+
+	virtual size_t Next(IterType what)
+	{
+		int32_t pos;
+		switch (what) {
+			case ITER_CHARACTER:
+				pos = this->char_itr->next();
+				break;
+
+			case ITER_WORD:
+				pos = this->word_itr->following(this->char_itr->current());
+				/* The ICU word iterator considers both the start and the end of a word a valid
+				 * break point, but we only want word starts. Move to the next location in
+				 * case the new position points to whitespace. */
+				while (pos != icu::BreakIterator::DONE &&
+						IsWhitespace(Utf16DecodeChar((const uint16 *)&this->utf16_str[pos]))) {
+					int32_t new_pos = this->word_itr->next();
+					/* Don't set it to DONE if it was valid before. Otherwise we'll return END
+					 * even though the iterator wasn't at the end of the string before. */
+					if (new_pos == icu::BreakIterator::DONE) break;
+					pos = new_pos;
+				}
+
+				this->char_itr->isBoundary(pos);
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+
+		return pos == icu::BreakIterator::DONE ? END : this->utf16_to_utf8[pos];
+	}
+
+	virtual size_t Prev(IterType what)
+	{
+		int32_t pos;
+		switch (what) {
+			case ITER_CHARACTER:
+				pos = this->char_itr->previous();
+				break;
+
+			case ITER_WORD:
+				pos = this->word_itr->preceding(this->char_itr->current());
+				/* The ICU word iterator considers both the start and the end of a word a valid
+				 * break point, but we only want word starts. Move to the previous location in
+				 * case the new position points to whitespace. */
+				while (pos != icu::BreakIterator::DONE &&
+						IsWhitespace(Utf16DecodeChar((const uint16 *)&this->utf16_str[pos]))) {
+					int32_t new_pos = this->word_itr->previous();
+					/* Don't set it to DONE if it was valid before. Otherwise we'll return END
+					 * even though the iterator wasn't at the start of the string before. */
+					if (new_pos == icu::BreakIterator::DONE) break;
+					pos = new_pos;
+				}
+
+				this->char_itr->isBoundary(pos);
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+
+		return pos == icu::BreakIterator::DONE ? END : this->utf16_to_utf8[pos];
+	}
+};
+
+/* static */ StringIterator *StringIterator::Create()
+{
+	return new IcuStringIterator();
+}
+
+#else
+
+/** Fallback simple string iterator. */
+class DefaultStringIterator : public StringIterator
+{
+	const char *string; ///< Current string.
+	size_t len;         ///< String length.
+	size_t cur_pos;     ///< Current iteration position.
+
+public:
+	DefaultStringIterator() : string(NULL), len(0), cur_pos(0)
+	{
+	}
+
+	virtual void SetString(const char *s)
+	{
+		this->string = s;
+		this->len = strlen(s);
+		this->cur_pos = 0;
+	}
+
+	virtual size_t SetCurPosition(size_t pos)
+	{
+		assert(this->string != NULL && pos <= this->len);
+		/* Sanitize in case we get a position inside an UTF-8 sequence. */
+		while (pos > 0 && IsUtf8Part(this->string[pos])) pos--;
+		return this->cur_pos = pos;
+	}
+
+	virtual size_t Next(IterType what)
+	{
+		assert(this->string != NULL);
+
+		/* Already at the end? */
+		if (this->cur_pos >= this->len) return END;
+
+		switch (what) {
+			case ITER_CHARACTER: {
+				WChar c;
+				this->cur_pos += Utf8Decode(&c, this->string + this->cur_pos);
+				return this->cur_pos;
+			}
+
+			case ITER_WORD: {
+				WChar c;
+				/* Consume current word. */
+				size_t offs = Utf8Decode(&c, this->string + this->cur_pos);
+				while (this->cur_pos < this->len && !IsWhitespace(c)) {
+					this->cur_pos += offs;
+					offs = Utf8Decode(&c, this->string + this->cur_pos);
+				}
+				/* Consume whitespace to the next word. */
+				while (this->cur_pos < this->len && IsWhitespace(c)) {
+					this->cur_pos += offs;
+					offs = Utf8Decode(&c, this->string + this->cur_pos);
+				}
+
+				return this->cur_pos;
+			}
+
+			default:
+				NOT_REACHED();
+		}
+
+		return END;
+	}
+
+	virtual size_t Prev(IterType what)
+	{
+		assert(this->string != NULL);
+
+		/* Already at the beginning? */
+		if (this->cur_pos == 0) return END;
+
+		switch (what) {
+			case ITER_CHARACTER:
+				return this->cur_pos = Utf8PrevChar(this->string + this->cur_pos) - this->string;
+
+			case ITER_WORD: {
+				const char *s = this->string + this->cur_pos;
+				WChar c;
+				/* Consume preceding whitespace. */
+				do {
+					s = Utf8PrevChar(s);
+					Utf8Decode(&c, s);
+				} while (s > this->string && IsWhitespace(c));
+				/* Consume preceding word. */
+				while (s > this->string && !IsWhitespace(c)) {
+					s = Utf8PrevChar(s);
+					Utf8Decode(&c, s);
+				}
+				/* Move caret back to the beginning of the word. */
+				if (IsWhitespace(c)) Utf8Consume(&s);
+
+				return this->cur_pos = s - this->string;
+			}
+
+			default:
+				NOT_REACHED();
+		}
+
+		return END;
+	}
+};
+
+/* static */ StringIterator *StringIterator::Create()
+{
+	return new DefaultStringIterator();
+}
+
+#endif

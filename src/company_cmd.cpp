@@ -34,8 +34,14 @@
 #include "vehicle_func.h"
 #include "smallmap_gui.h"
 #include "game/game.hpp"
+#include "goal_base.h"
+#include "story_base.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
+
+void ClearEnginesHiddenFlagOfCompany(CompanyID cid);
 
 CompanyByte _local_company;   ///< Company controlled by the human player at this client. Can also be #COMPANY_SPECTATOR.
 CompanyByte _current_company; ///< Company currently doing an action.
@@ -554,6 +560,7 @@ Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY)
 	RandomCompanyManagerFaceBits(c->face, (GenderEthnicity)Random(), false, false); // create a random company manager face
 
 	SetDefaultCompanySettings(c->index);
+	ClearEnginesHiddenFlagOfCompany(c->index);
 
 	GeneratePresidentName(c);
 
@@ -851,59 +858,21 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				MarkWholeScreenDirty();
 			}
 
-			if (_network_server) {
-				if (ci != NULL) {
-					/* ci is only NULL when replaying.
-					 * When replaying no client is actually in need of an update. */
-					ci->client_playas = c->index;
-					NetworkUpdateClientInfo(ci->client_id);
-				}
-
-				if (Company::IsValidID(c->index)) {
-					_network_company_states[c->index].months_empty = 0;
-					_network_company_states[c->index].password[0] = '\0';
-					NetworkServerUpdateCompanyPassworded(c->index, false);
-
-					/* XXX - When a client joins, we automatically set its name to the
-					 * client's name (for some reason). As it stands now only the server
-					 * knows the client's name, so it needs to send out a "broadcast" to
-					 * do this. To achieve this we send a network command. However, it
-					 * uses _local_company to execute the command as.  To prevent abuse
-					 * (eg. only yourself can change your name/company), we 'cheat' by
-					 * impersonation _local_company as the server. Not the best solution;
-					 * but it works.
-					 * TODO: Perhaps this could be improved by when the client is ready
-					 * with joining to let it send itself the command, and not the server?
-					 * For example in network_client.c:534? */
-					if (ci != NULL) {
-						/* ci is only NULL when replaying.
-						 * When replaying, the command to rename the president will
-						 * automatically be ran, so this is not even needed to get
-						 * the exact same state. */
-						NetworkSendCommand(0, 0, 0, CMD_RENAME_PRESIDENT, NULL, ci->client_name, c->index);
-					}
-				}
-
-				/* Announce new company on network. */
-				NetworkAdminCompanyInfo(c, true);
-
-				if (ci != NULL) {
-					/* ci is only NULL when replaying.
-					 * When replaying, the message that someone started a new company
-					 * is not interesting at all. */
-					NetworkServerSendChat(NETWORK_ACTION_COMPANY_NEW, DESTTYPE_BROADCAST, 0, "", ci->client_id, c->index + 1);
-				}
-			}
+			NetworkServerNewCompany(c, ci);
 #endif /* ENABLE_NETWORK */
 			break;
 		}
 
-		case 1: // Make a new AI company
+		case 1: { // Make a new AI company
 			if (!(flags & DC_EXEC)) return CommandCost();
 
 			if (company_id != INVALID_COMPANY && (company_id >= MAX_COMPANIES || Company::IsValidID(company_id))) return CMD_ERROR;
-			DoStartupNewCompany(true, company_id);
+			Company *c = DoStartupNewCompany(true, company_id);
+#ifdef ENABLE_NETWORK
+			if (c != NULL) NetworkServerNewCompany(c, NULL);
+#endif /* ENABLE_NETWORK */
 			break;
+		}
 
 		case 2: { // Delete a company
 			CompanyRemoveReason reason = (CompanyRemoveReason)GB(p2, 0, 2);
@@ -934,6 +903,8 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			AI::BroadcastNewEvent(new ScriptEventCompanyBankrupt(c_index));
 			Game::NewEvent(new ScriptEventCompanyBankrupt(c_index));
 			CompanyAdminRemove(c_index, (CompanyRemoveReason)reason);
+
+			if (StoryPage::GetNumItems() == 0 || Goal::GetNumItems() == 0) InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
 			break;
 		}
 
@@ -1108,7 +1079,7 @@ CommandCost CmdRenameCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	if (flags & DC_EXEC) {
 		Company *c = Company::Get(_current_company);
 		free(c->name);
-		c->name = reset ? NULL : strdup(text);
+		c->name = reset ? NULL : stredup(text);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
 	}
@@ -1157,12 +1128,12 @@ CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		if (reset) {
 			c->president_name = NULL;
 		} else {
-			c->president_name = strdup(text);
+			c->president_name = stredup(text);
 
 			if (c->name_1 == STR_SV_UNNAMED && c->name == NULL) {
 				char buf[80];
 
-				snprintf(buf, lengthof(buf), "%s Transport", text);
+				seprintf(buf, lastof(buf), "%s Transport", text);
 				DoCommand(0, 0, 0, DC_EXEC, CMD_RENAME_COMPANY, buf);
 			}
 		}

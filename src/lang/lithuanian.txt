@@ -290,30 +290,30 @@ STR_CARGO_SINGULAR_FIZZY_DRINK.ko                               :gaiviųjų gėr
 
 # Quantity of cargo
 STR_QUANTITY_NOTHING                                            :
-STR_QUANTITY_PASSENGERS                                         :{COMMA} keleiv{P is iai ių}
+STR_QUANTITY_PASSENGERS                                         :{COMMA}{NBSP} keleiv{P is iai ių}
 STR_QUANTITY_COAL                                               :{WEIGHT_LONG} anglies
-STR_QUANTITY_MAIL                                               :{COMMA} pašto maiš{P as ai ų}
+STR_QUANTITY_MAIL                                               :{COMMA}{NBSP}pašto maiš{P as ai ų}
 STR_QUANTITY_OIL                                                :{VOLUME_LONG} naftos
-STR_QUANTITY_LIVESTOCK                                          :{COMMA} galvij{P as ai ų}
-STR_QUANTITY_GOODS                                              :{COMMA} prekių dėž{P ė ės ių}
+STR_QUANTITY_LIVESTOCK                                          :{COMMA}{NBSP}galvij{P as ai ų}
+STR_QUANTITY_GOODS                                              :{COMMA}{NBSP}prekių dėž{P ė ės ių}
 STR_QUANTITY_GRAIN                                              :{WEIGHT_LONG} grūdų
 STR_QUANTITY_WOOD                                               :{WEIGHT_LONG} medienos
 STR_QUANTITY_IRON_ORE                                           :{WEIGHT_LONG} geležies rūdos
 STR_QUANTITY_STEEL                                              :{WEIGHT_LONG} plieno
-STR_QUANTITY_VALUABLES                                          :{COMMA} maiš{P as ai ų} brangenybių
+STR_QUANTITY_VALUABLES                                          :{COMMA}{NBSP}maiš{P as ai ų} brangenybių
 STR_QUANTITY_COPPER_ORE                                         :{WEIGHT_LONG} vario rūdos
 STR_QUANTITY_MAIZE                                              :{WEIGHT_LONG} kukurūzų
 STR_QUANTITY_FRUIT                                              :{WEIGHT_LONG} vaisių
-STR_QUANTITY_DIAMONDS                                           :{COMMA} dėž{P ė ės ių} deimantų
+STR_QUANTITY_DIAMONDS                                           :{COMMA}{NBSP}dėž{P ė ės ių} deimantų
 STR_QUANTITY_FOOD                                               :{WEIGHT_LONG} maisto
 STR_QUANTITY_PAPER                                              :{WEIGHT_LONG} popieriaus
-STR_QUANTITY_GOLD                                               :{COMMA} aukso kapš{P as ai ų}
+STR_QUANTITY_GOLD                                               :{COMMA}{NBSP}aukso kapš{P as ai ų}
 STR_QUANTITY_WATER                                              :{VOLUME_LONG} vandens
 STR_QUANTITY_WHEAT                                              :{WEIGHT_LONG} kviečių
 STR_QUANTITY_RUBBER                                             :{VOLUME_LONG} kaučiuko
 STR_QUANTITY_SUGAR                                              :{WEIGHT_LONG} cukraus
-STR_QUANTITY_TOYS                                               :{COMMA} žaislų
-STR_QUANTITY_SWEETS                                             :{COMMA} saldumynų krepšel{P is iai ių}
+STR_QUANTITY_TOYS                                               :{COMMA}{NBSP}žaislų
+STR_QUANTITY_SWEETS                                             :{COMMA}{NBSP}saldumynų krepšel{P is iai ių}
 STR_QUANTITY_COLA                                               :{VOLUME_LONG} kolos
 STR_QUANTITY_CANDYFLOSS                                         :{WEIGHT_LONG} cukraus vatos
 STR_QUANTITY_BUBBLES                                            :{COMMA} burbul{P as ai ų}
@@ -360,12 +360,12 @@ STR_ABBREV_NONE                                                 :{TINY_FONT}-
 STR_ABBREV_ALL                                                  :{TINY_FONT}VISI
 
 # 'Mode' of transport for cargoes
-STR_PASSENGERS                                                  :{COMMA} keleiv{P is iai ių}
-STR_BAGS                                                        :{COMMA} maiš{P as ai ų}
-STR_TONS                                                        :{COMMA} ton{P a os ų}
-STR_LITERS                                                      :{COMMA} litr{P as ai ų}
-STR_ITEMS                                                       :{COMMA} vienet{P as ai ų}
-STR_CRATES                                                      :{COMMA} dėž{P ė ės ių}
+STR_PASSENGERS                                                  :{COMMA}{NBSP}keleiv{P is iai ių}
+STR_BAGS                                                        :{COMMA}{NBSP}maiš{P as ai ų}
+STR_TONS                                                        :{COMMA}{NBSP}ton{P a os ų}
+STR_LITERS                                                      :{COMMA}{NBSP}litr{P as ai ų}
+STR_ITEMS                                                       :{COMMA}{NBSP}vienet{P as ai ų}
+STR_CRATES                                                      :{COMMA}{NBSP}dėž{P ė ės ių}
 
 # Colours, do not shuffle
 STR_COLOUR_DARK_BLUE                                            :Tamsiai mėlyna
@@ -386,30 +386,37 @@ STR_COLOUR_GREY                                                 :Pilka
 STR_COLOUR_WHITE                                                :Balta
 
 # Units used in OpenTTD
-STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
-STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/h
-STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
+STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mph
+STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km/h
+STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 
-STR_UNITS_POWER_IMPERIAL                                        :{COMMA}AG
-STR_UNITS_POWER_METRIC                                          :{COMMA}AG
-STR_UNITS_POWER_SI                                              :{COMMA}kW
+STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}AG
+STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}AG
+STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
-STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
-STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
+STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
+STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
+STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
 
-STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA} ton{P a os ų}
-STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA} kg
+STR_UNITS_WEIGHT_LONG_IMPERIAL                                  :{COMMA}{NBSP}ton{P a os ų}
+STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA}{NBSP}ton{P a os ų}
+STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA}{NBSP}kg
 
-STR_UNITS_VOLUME_SHORT_METRIC                                   :{COMMA}l
-STR_UNITS_VOLUME_SHORT_SI                                       :{COMMA}m³
+STR_UNITS_VOLUME_SHORT_IMPERIAL                                 :{COMMA}{NBSP}gal
+STR_UNITS_VOLUME_SHORT_METRIC                                   :{COMMA}{NBSP}l
+STR_UNITS_VOLUME_SHORT_SI                                       :{COMMA}{NBSP}m³
 
-STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA} litr{P as ai ų}
-STR_UNITS_VOLUME_LONG_SI                                        :{COMMA} m³
+STR_UNITS_VOLUME_LONG_IMPERIAL                                  :{COMMA}{NBSP}galon{P as ai ų}
+STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA}{NBSP}litr{P as ai ų}
+STR_UNITS_VOLUME_LONG_SI                                        :{COMMA}{NBSP}m³
 
-STR_UNITS_FORCE_SI                                              :{COMMA} kN
+STR_UNITS_FORCE_IMPERIAL                                        :{COMMA}{NBSP}lbf
+STR_UNITS_FORCE_METRIC                                          :{COMMA}{NBSP}kgf
+STR_UNITS_FORCE_SI                                              :{COMMA}{NBSP}kN
 
-STR_UNITS_HEIGHT_IMPERIAL                                       :{COMMA} ft
-STR_UNITS_HEIGHT_SI                                             :{COMMA} m
+STR_UNITS_HEIGHT_IMPERIAL                                       :{COMMA}{NBSP}ft
+STR_UNITS_HEIGHT_METRIC                                         :{COMMA}{NBSP}m
+STR_UNITS_HEIGHT_SI                                             :{COMMA}{NBSP}m
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Raktažodis:
@@ -420,21 +427,32 @@ STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}Pasirink
 STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Rikiavimo tvarka (didėjančiai/mažėjančiai)
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Rikiavimo raktas
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Filtravimo raktas
-STR_BUTTON_SORT_BY                                              :{BLACK}Rikiuoti
+STR_BUTTON_SORT_BY                                              :{BLACK}Rikiuoti pagal
 STR_BUTTON_LOCATION                                             :{BLACK}Vieta
 STR_BUTTON_RENAME                                               :{BLACK}Pervadinti
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Užverti langą
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Lango antraštė — tempkite ją, jei norite perkelti langą į kitą ekrano vietą
 STR_TOOLTIP_SHADE                                               :{BLACK}Sumažinti langą — rodyti tik lango antraštę
-STR_TOOLTIP_DEBUG                                               :{BLACK}Rodyti papildomą NewGRF derinimo informaciją
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Pakeisti lango dydį į numatytą. Ctrl+Click išsaugo į numatytą dydį
+STR_TOOLTIP_DEBUG                                               :{BLACK}Rodyti papildomą plėtinio derinimo informaciją
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Pakeisti lango dydį į numatytąjį. Spragtelėjus laikant nuspautą Ctrl klavišą, dabartinis lango dydis bus išsaugotas kaip numatytasis
 STR_TOOLTIP_STICKY                                              :{BLACK}Uždrausti komandai „Užverti visus langus“ užverti šį langą (komanda „Užverti visus langus“ iškviečiama „Delete“ klavišu)
 STR_TOOLTIP_RESIZE                                              :{BLACK}Tempkite už šios vietos, jei norite pakeisti lango matmenis
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Pakeisti lango matmenis
 STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Stačioji slankjuostė — paslenka sąrašą aukštyn ar žemyn
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Gulščioji slakjuostė — paslenka sąrašą kairėn ar dešinėn
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Nugriauti pastatus, bėgius ar kitus objektus pasirinktame žemės plote. Velkant laikant nuspaudus Ctrl klavišą, plotas bus žymimas įstrižai. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodytos numatomos išlaidos
+
+# Show engines button
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN                           :{BLACK}Rodyti paslėptus
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE                    :{BLACK}Rodyti paslėptus
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP                            :{BLACK}Rodyti paslėptus
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT                        :{BLACK}Rodyti paslėptus
+
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP                   :{BLACK}Įjungus šį mygtuką, sąraše bus rodomos ir paslėptos transporto priemonės
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE_TOOLTIP            :{BLACK}Įjungus šį mygtuką, sąraše bus rodomos ir paslėptos transporto priemonės
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP_TOOLTIP                    :{BLACK}Įjungus šį mygtuką, sąraše bus rodomos ir paslėptos transporto priemonės
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Įjungus šį mygtuką, sąraše bus rodomos ir paslėptos transporto priemonės
 
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Numatytas
@@ -447,49 +465,51 @@ STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :~!@#$%^&*()_+|Q
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Atstumas: {NUM}
-STR_MEASURE_AREA                                                :{BLACK}Sritis: {NUM} x {NUM}
+STR_MEASURE_AREA                                                :{BLACK}Plotas: {NUM} x {NUM}
 STR_MEASURE_LENGTH_HEIGHTDIFF                                   :{BLACK}Atstumas: {NUM}{}Aukščių skirtumas: {HEIGHT}
-STR_MEASURE_AREA_HEIGHTDIFF                                     :{BLACK}Sritis: {NUM} x {NUM}{}Aukščių skirtumas: {HEIGHT}
+STR_MEASURE_AREA_HEIGHTDIFF                                     :{BLACK}Plotas: {NUM} x {NUM}{}Aukščių skirtumas: {HEIGHT}
 
 
 # These are used in buttons
-STR_SORT_BY_CAPTION_NAME                                        :{BLACK}Vardą
+STR_SORT_BY_CAPTION_NAME                                        :{BLACK}vardą
 STR_SORT_BY_CAPTION_DATE                                        :{BLACK}Datą
 # These are used in dropdowns
-STR_SORT_BY_NAME                                                :Pavadinimą
-STR_SORT_BY_PRODUCTION                                          :Produkciją
-STR_SORT_BY_TYPE                                                :Tipą
-STR_SORT_BY_TRANSPORTED                                         :Pervežimus
-STR_SORT_BY_NUMBER                                              :Kiekį
-STR_SORT_BY_PROFIT_LAST_YEAR                                    :Pernai metų pelną
-STR_SORT_BY_PROFIT_THIS_YEAR                                    :Šių metų pelną
-STR_SORT_BY_AGE                                                 :Amžių
-STR_SORT_BY_RELIABILITY                                         :Patikimumą
-STR_SORT_BY_TOTAL_CAPACITY_PER_CARGOTYPE                        :Bendrą produkcijos pervežimą
-STR_SORT_BY_MAX_SPEED                                           :Maksimalų greitį
-STR_SORT_BY_MODEL                                               :Modelį
-STR_SORT_BY_VALUE                                               :Vertę
+STR_SORT_BY_NAME                                                :pavadinimą
+STR_SORT_BY_PRODUCTION                                          :produkciją
+STR_SORT_BY_TYPE                                                :tipą
+STR_SORT_BY_TRANSPORTED                                         :pervežimus
+STR_SORT_BY_NUMBER                                              :kiekį
+STR_SORT_BY_PROFIT_LAST_YEAR                                    :pernykštį pelną
+STR_SORT_BY_PROFIT_THIS_YEAR                                    :šiųmetį pelną
+STR_SORT_BY_AGE                                                 :amžių
+STR_SORT_BY_RELIABILITY                                         :patikimumą
+STR_SORT_BY_TOTAL_CAPACITY_PER_CARGOTYPE                        :bendrą talpą
+STR_SORT_BY_MAX_SPEED                                           :didžiausią greitį
+STR_SORT_BY_MODEL                                               :modelį
+STR_SORT_BY_VALUE                                               :vertę
 STR_SORT_BY_LENGTH                                              :Ilgį
-STR_SORT_BY_LIFE_TIME                                           :Likusį naudojimo laiką
-STR_SORT_BY_TIMETABLE_DELAY                                     :Tvarkaraščio užtrukimą
-STR_SORT_BY_FACILITY                                            :Stoties tipą
-STR_SORT_BY_RATING_MAX                                          :Didžiausias krovinio reitingas
-STR_SORT_BY_RATING_MIN                                          :Mažiausias krovinio reitingas
-STR_SORT_BY_ENGINE_ID                                           :VariklioID (numatytasis)
-STR_SORT_BY_COST                                                :Kainą
-STR_SORT_BY_POWER                                               :Galią
-STR_SORT_BY_TRACTIVE_EFFORT                                     :Traukos jėgą
-STR_SORT_BY_INTRO_DATE                                          :Atsiradimo datą
-STR_SORT_BY_RUNNING_COST                                        :Eksplotacijos išlaidas
-STR_SORT_BY_POWER_VS_RUNNING_COST                               :Galią/Eksplotacijos išlaidas
-STR_SORT_BY_CARGO_CAPACITY                                      :Vagono talpą
-STR_SORT_BY_RANGE                                               :Atstumas
-STR_SORT_BY_POPULATION                                          :Populiaciją
-STR_SORT_BY_RATING                                              :Reitingas
+STR_SORT_BY_LIFE_TIME                                           :likusį naudojimo laiką
+STR_SORT_BY_TIMETABLE_DELAY                                     :tvarkaraščio vėlavimą
+STR_SORT_BY_FACILITY                                            :stoties tipą
+STR_SORT_BY_WAITING_TOTAL                                       :visą laukiantį krovinį
+STR_SORT_BY_WAITING_AVAILABLE                                   :prieinamą laukiantį krovinį
+STR_SORT_BY_RATING_MAX                                          :didžiausią krovinio reitingą
+STR_SORT_BY_RATING_MIN                                          :mažiausią krovinio reitingą
+STR_SORT_BY_ENGINE_ID                                           :variklio ID (numatytasis)
+STR_SORT_BY_COST                                                :kainą
+STR_SORT_BY_POWER                                               :galią
+STR_SORT_BY_TRACTIVE_EFFORT                                     :traukos jėgą
+STR_SORT_BY_INTRO_DATE                                          :atsiradimo datą
+STR_SORT_BY_RUNNING_COST                                        :eksploatacijos išlaidas
+STR_SORT_BY_POWER_VS_RUNNING_COST                               :galią/eksplotacijos išlaidas
+STR_SORT_BY_CARGO_CAPACITY                                      :vagono talpą
+STR_SORT_BY_RANGE                                               :atstumą
+STR_SORT_BY_POPULATION                                          :populiaciją
+STR_SORT_BY_RATING                                              :reitingą
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pristabdyti žaidimą
-STR_TOOLBAR_TOOLTIP_FORWARD                                     :{BLACK}Pagreitinti laiko tekmę
+STR_TOOLBAR_TOOLTIP_FORWARD                                     :{BLACK}Pagreitinti žaidimą
 STR_TOOLBAR_TOOLTIP_OPTIONS                                     :{BLACK}Parinktys
 STR_TOOLBAR_TOOLTIP_SAVE_GAME_ABANDON_GAME                      :{BLACK}Išsaugoti/nutraukti žaidimą arba užverti programą
 STR_TOOLBAR_TOOLTIP_DISPLAY_MAP                                 :{BLACK}Rodyti žemėlapį, papildomą peržiūros langą arba ženklų sąrašą
@@ -498,6 +518,8 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_SUBSIDIES                           :{BLACK}Rodyti s
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}Rodyti stotelių sąrašą
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}Rodyti kompanijos finansinę informaciją
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}Rodyti bendrąją kompanijos informaciją
+STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Rodyti scenarijų knygą
+STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Rodyti tikslų sąrašą
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Rodyti diagramas
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Rodyti kompanijų įvertinimus
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Rodyti pramonės įmonių sąrašą arba finansuoti naują įmonę
@@ -544,20 +566,20 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Išeiti
 ############ range for SE file menu starts
 
 ############ range for settings menu starts
-STR_SETTINGS_MENU_GAME_OPTIONS                                  :Žaidimo nustatymai
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :Sudėtingesni nustatymai
-STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :DI / Žaidimo nustatymai
-STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Papild. grafikos nustatymai (NewGRF)
-STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Permatomumo nustatymai
-STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Rodyti miestų pavadinimus
-STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Rodyti stotelių pavadinimus
-STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Rodyti tarpines stoteles
-STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Rodyti ženklus
-STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Rodomi konkurentų ženklai ir pavadinimai
+STR_SETTINGS_MENU_GAME_OPTIONS                                  :Pagrindinės nuostatos
+STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Išplėstinės nuostatos
+STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Dirbtinio intelekto nuostatos
+STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Plėtinių nuostatos
+STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Skaidrumo nuostatos
+STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Miestų pavadinimai
+STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Stotelių pavadinimai
+STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Tarpinės stotelės
+STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :Ženklai
+STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :Varžovų ženklai ir pavadinimai
 STR_SETTINGS_MENU_FULL_ANIMATION                                :Visa animacija
 STR_SETTINGS_MENU_FULL_DETAIL                                   :Visos smulkmenos
-STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS                         :Permatomi pastatai
-STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :Permatomi stočių ženklai
+STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS                         :Skaidrūs pastatai
+STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :Skaidrūs ženklai
 ############ range ends here
 
 ############ range for file menu starts
@@ -571,7 +593,7 @@ STR_FILE_MENU_EXIT                                              :Išeiti
 # map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :Žemėlapis
 STR_MAP_MENU_EXTRA_VIEW_PORT                                    :Papildomas peržiūros langas
-STR_MAP_MENU_LINGRAPH_LEGEND                                    :Krovinių Tiekimo Legenda
+STR_MAP_MENU_LINGRAPH_LEGEND                                    :Krovinių srautų legenda
 STR_MAP_MENU_SIGN_LIST                                          :Ženklų sąrašas
 
 ############ range for town menu starts
@@ -649,12 +671,12 @@ STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Ekrano nuotrauk
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Nepriartintas ekrano vaizdas
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Fotografuoti viso ekrano vaizdą
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Apie „OpenTTD“
-STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Animacinių objektų išdėstytuvas
+STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Spruklių lygiuoklė
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Rodyti/slėpti apvadus
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :Perjungti paveiktų blokų spalvinimą
 ############ range ends here
 
-############ range for days starts (also used for the place in the highscore window)
+############ range for ordinal numbers used for the place in the highscore window
 STR_ORDINAL_NUMBER_1ST                                          :1
 STR_ORDINAL_NUMBER_2ND                                          :2
 STR_ORDINAL_NUMBER_3RD                                          :3
@@ -670,22 +692,40 @@ STR_ORDINAL_NUMBER_12TH                                         :12
 STR_ORDINAL_NUMBER_13TH                                         :13
 STR_ORDINAL_NUMBER_14TH                                         :14
 STR_ORDINAL_NUMBER_15TH                                         :15
-STR_ORDINAL_NUMBER_16TH                                         :16
-STR_ORDINAL_NUMBER_17TH                                         :17
-STR_ORDINAL_NUMBER_18TH                                         :18
-STR_ORDINAL_NUMBER_19TH                                         :19
-STR_ORDINAL_NUMBER_20TH                                         :20
-STR_ORDINAL_NUMBER_21ST                                         :21
-STR_ORDINAL_NUMBER_22ND                                         :22
-STR_ORDINAL_NUMBER_23RD                                         :23
-STR_ORDINAL_NUMBER_24TH                                         :24
-STR_ORDINAL_NUMBER_25TH                                         :25
-STR_ORDINAL_NUMBER_26TH                                         :26
-STR_ORDINAL_NUMBER_27TH                                         :27
-STR_ORDINAL_NUMBER_28TH                                         :28
-STR_ORDINAL_NUMBER_29TH                                         :29
-STR_ORDINAL_NUMBER_30TH                                         :30
-STR_ORDINAL_NUMBER_31ST                                         :31
+############ range for ordinal numbers ends
+
+############ range for days starts
+STR_DAY_NUMBER_1ST                                              :1
+STR_DAY_NUMBER_2ND                                              :2
+STR_DAY_NUMBER_3RD                                              :3
+STR_DAY_NUMBER_4TH                                              :4
+STR_DAY_NUMBER_5TH                                              :5
+STR_DAY_NUMBER_6TH                                              :6
+STR_DAY_NUMBER_7TH                                              :7
+STR_DAY_NUMBER_8TH                                              :8
+STR_DAY_NUMBER_9TH                                              :9
+STR_DAY_NUMBER_10TH                                             :10
+STR_DAY_NUMBER_11TH                                             :11
+STR_DAY_NUMBER_12TH                                             :12
+STR_DAY_NUMBER_13TH                                             :13
+STR_DAY_NUMBER_14TH                                             :14
+STR_DAY_NUMBER_15TH                                             :15
+STR_DAY_NUMBER_16TH                                             :16
+STR_DAY_NUMBER_17TH                                             :17
+STR_DAY_NUMBER_18TH                                             :18
+STR_DAY_NUMBER_19TH                                             :19
+STR_DAY_NUMBER_20TH                                             :20
+STR_DAY_NUMBER_21ST                                             :21
+STR_DAY_NUMBER_22ND                                             :22
+STR_DAY_NUMBER_23RD                                             :23
+STR_DAY_NUMBER_24TH                                             :24
+STR_DAY_NUMBER_25TH                                             :25
+STR_DAY_NUMBER_26TH                                             :26
+STR_DAY_NUMBER_27TH                                             :27
+STR_DAY_NUMBER_28TH                                             :28
+STR_DAY_NUMBER_29TH                                             :29
+STR_DAY_NUMBER_30TH                                             :30
+STR_DAY_NUMBER_31ST                                             :31
 ############ range for days ends
 
 ############ range for months starts
@@ -727,7 +767,7 @@ STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COM
 STR_GRAPH_OPERATING_PROFIT_CAPTION                              :{WHITE}Įprastinės veiklos pelno diagrama
 STR_GRAPH_INCOME_CAPTION                                        :{WHITE}Pajamų diagrama
 STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}Prekių vienetų pervežta
-STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}Kompanijos pajėgumo reitingas (maksimalus=1000)
+STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}Kompanijos pajėgumo reitingas (didžiausias=1000)
 STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Kompanijos vertė
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Krovinių pervežimo tarifai
@@ -853,25 +893,35 @@ STR_HIGHSCORE_COMPANY_ACHIEVES_STATUS                           :{BIG_FONT}{BLAC
 STR_HIGHSCORE_PRESIDENT_OF_COMPANY_ACHIEVES_STATUS              :{BIG_FONT}{WHITE}{PRESIDENT_NAME} iš {COMPANY} pasiekė „{STRING}“ statusą!
 
 # Smallmap window
-STR_SMALLMAP_CAPTION                                            :{WHITE}Žemėlapis - {STRING}
+STR_SMALLMAP_CAPTION                                            :{WHITE}{STRING.ko} žemėlapis
 
-STR_SMALLMAP_TYPE_CONTOURS                                      :Kontūrai
+STR_SMALLMAP_TYPE_CONTOURS                                      :Izohipsės
+STR_SMALLMAP_TYPE_CONTOURS.ko                                   :Izohipsių
 STR_SMALLMAP_TYPE_VEHICLES                                      :Transporto priemonės
+STR_SMALLMAP_TYPE_VEHICLES.kas                                  :Transporto priemonės
+STR_SMALLMAP_TYPE_VEHICLES.ko                                   :Transporto priemonių
 STR_SMALLMAP_TYPE_INDUSTRIES                                    :Pramonės įmonės
-STR_SMALLMAP_TYPE_ROUTEMAP                                      :Krovinių Tiekimas
-STR_SMALLMAP_TYPE_ROUTES                                        :Keliai
+STR_SMALLMAP_TYPE_INDUSTRIES.kas                                :Pramonės įmonės
+STR_SMALLMAP_TYPE_INDUSTRIES.ko                                 :Pramonės įmonių
+STR_SMALLMAP_TYPE_ROUTEMAP                                      :Krovinių srautai
+STR_SMALLMAP_TYPE_ROUTEMAP.ko                                   :Krovinių srautų
+STR_SMALLMAP_TYPE_ROUTES                                        :Transporto keliai
+STR_SMALLMAP_TYPE_ROUTES.ko                                     :Transporto kelių
 STR_SMALLMAP_TYPE_VEGETATION                                    :Augalija
-STR_SMALLMAP_TYPE_OWNERS                                        :Savininkai
-STR_SMALLMAP_TOOLTIP_SHOW_LAND_CONTOURS_ON_MAP                  :{BLACK}Rodyti žemės kontūrus žemėlapyje
-STR_SMALLMAP_TOOLTIP_SHOW_VEHICLES_ON_MAP                       :{BLACK}Rodyti transporto priemones žemėlapyje
-STR_SMALLMAP_TOOLTIP_SHOW_INDUSTRIES_ON_MAP                     :{BLACK}Rodyti gamyklas žemėlapyje
-STR_SMALLMAP_TOOLTIP_SHOW_LINK_STATS_ON_MAP                     :{BLACK}Rodyti krovinių tiekimą žemėlapyje
-STR_SMALLMAP_TOOLTIP_SHOW_TRANSPORT_ROUTES_ON                   :{BLACK}Rodyti transporto kelius žemėlapyje
-STR_SMALLMAP_TOOLTIP_SHOW_VEGETATION_ON_MAP                     :{BLACK}Rodyti augmeniją žemėlapyje
-STR_SMALLMAP_TOOLTIP_SHOW_LAND_OWNERS_ON_MAP                    :{BLACK}Rodyti žemės savininkus žemėlapyje
-STR_SMALLMAP_TOOLTIP_INDUSTRY_SELECTION                         :{BLACK}Paspaudus ant gamyklos tipo bus perjungiamas to tipo gamyklų rodymas. Ctrl+Paspaudimas neberodys visų išskyrus pasirinktą. Ctrl+Paspaudimas dar kartą rodys visas.
-STR_SMALLMAP_TOOLTIP_COMPANY_SELECTION                          :{BLACK}Paspaudus ant įmonės perjungs įmonės turto rodymą. Ctrl+Paspaudimas panaikins visas įmones išskyrus pasirinktą. Ctrl+Paspaudimas dar kartą sugrąžins visas įmones.
-STR_SMALLMAP_TOOLTIP_CARGO_SELECTION                            :{BLACK}Spauskite ant krovinio, kad rodytų jo savybes. Ctrl+Click išjungia visus krovinius, išskyrus pasirinktus. Ctrl+Click pakartojus - įjungia juos
+STR_SMALLMAP_TYPE_VEGETATION.kas                                :Augalija
+STR_SMALLMAP_TYPE_VEGETATION.ko                                 :Augalijos
+STR_SMALLMAP_TYPE_OWNERS                                        :Nuosavybė
+STR_SMALLMAP_TYPE_OWNERS.ko                                     :Nuosavybės
+STR_SMALLMAP_TOOLTIP_SHOW_LAND_CONTOURS_ON_MAP                  :{BLACK}Rodyti izohipsių (vienodo aukščio linijų) žemėlapį
+STR_SMALLMAP_TOOLTIP_SHOW_VEHICLES_ON_MAP                       :{BLACK}Rodyti transporto priemonių žemėlapį
+STR_SMALLMAP_TOOLTIP_SHOW_INDUSTRIES_ON_MAP                     :{BLACK}Rodyti pramonės įmonių žemėlapį
+STR_SMALLMAP_TOOLTIP_SHOW_LINK_STATS_ON_MAP                     :{BLACK}Rodyti krovinių srautų žemėlapį
+STR_SMALLMAP_TOOLTIP_SHOW_TRANSPORT_ROUTES_ON                   :{BLACK}Rodyti transporto kelių žemėlapį
+STR_SMALLMAP_TOOLTIP_SHOW_VEGETATION_ON_MAP                     :{BLACK}Rodyti augmenijos žemėlapį
+STR_SMALLMAP_TOOLTIP_SHOW_LAND_OWNERS_ON_MAP                    :{BLACK}Rodyti nuosavybės žemėlapį
+STR_SMALLMAP_TOOLTIP_INDUSTRY_SELECTION                         :{BLACK}Spragtelėjus bus įjungiamas arba išjungiamas pasirinkto tipo pramonės įmonės atvaizdavimas žemėlapyje. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus atvaizduojamos/neatvaizduojamos visos kitos pramonės įmonės.
+STR_SMALLMAP_TOOLTIP_COMPANY_SELECTION                          :{BLACK}Spragtelėjus bus įjungiamas arba išjungiamas pasirinktos kompanijos nuosavybės atvaizdavimas žemėlapyje. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus atvaizduojama/neatvaizduojama visų kitų kompanijų nuosavybė.
+STR_SMALLMAP_TOOLTIP_CARGO_SELECTION                            :{BLACK}Spragtelėjus bus įjungiamas arba išjungiamas pasirinkto krovinio srautų atvaizdavimas žemėlapyje. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus atvaizduojami/neatvaizduojami visų kitų krovinių srautai.
 
 STR_SMALLMAP_LEGENDA_ROADS                                      :{TINY_FONT}{BLACK}Keliai
 STR_SMALLMAP_LEGENDA_RAILROADS                                  :{TINY_FONT}{BLACK}Geležinkeliai
@@ -883,14 +933,14 @@ STR_SMALLMAP_LEGENDA_ROAD_VEHICLES                              :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_SHIPS                                      :{TINY_FONT}{BLACK}Laivai
 STR_SMALLMAP_LEGENDA_AIRCRAFT                                   :{TINY_FONT}{BLACK}Lėktuvai
 STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES                           :{TINY_FONT}{BLACK}Keliai
-STR_SMALLMAP_LEGENDA_FOREST                                     :{TINY_FONT}{BLACK}Miškas
-STR_SMALLMAP_LEGENDA_RAILROAD_STATION                           :{TINY_FONT}{BLACK}Geležinkelio stotis
-STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY                          :{TINY_FONT}{BLACK}Sunkvežimių pakrovimo aikštelė
-STR_SMALLMAP_LEGENDA_BUS_STATION                                :{TINY_FONT}{BLACK}Autobusų stotis
-STR_SMALLMAP_LEGENDA_AIRPORT_HELIPORT                           :{TINY_FONT}{BLACK}Oro uostas/Sraigtasparnių aikštelė
-STR_SMALLMAP_LEGENDA_DOCK                                       :{TINY_FONT}{BLACK}Prieplauka
-STR_SMALLMAP_LEGENDA_ROUGH_LAND                                 :{TINY_FONT}{BLACK}Kalnuotas kraštas
-STR_SMALLMAP_LEGENDA_GRASS_LAND                                 :{TINY_FONT}{BLACK}Ganykla
+STR_SMALLMAP_LEGENDA_FOREST                                     :{TINY_FONT}{BLACK}Miškai
+STR_SMALLMAP_LEGENDA_RAILROAD_STATION                           :{TINY_FONT}{BLACK}Geležinkelio stotys
+STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY                          :{TINY_FONT}{BLACK}Sunkvežimių krovos aikštelės
+STR_SMALLMAP_LEGENDA_BUS_STATION                                :{TINY_FONT}{BLACK}Autobusų stotys
+STR_SMALLMAP_LEGENDA_AIRPORT_HELIPORT                           :{TINY_FONT}{BLACK}Oro uostai/sraigtasparnių aikštelės
+STR_SMALLMAP_LEGENDA_DOCK                                       :{TINY_FONT}{BLACK}Prieplaukos
+STR_SMALLMAP_LEGENDA_ROUGH_LAND                                 :{TINY_FONT}{BLACK}Kalnuoti kraštai
+STR_SMALLMAP_LEGENDA_GRASS_LAND                                 :{TINY_FONT}{BLACK}Ganyklos
 STR_SMALLMAP_LEGENDA_BARE_LAND                                  :{TINY_FONT}{BLACK}Lygumos
 STR_SMALLMAP_LEGENDA_FIELDS                                     :{TINY_FONT}{BLACK}Laukai
 STR_SMALLMAP_LEGENDA_TREES                                      :{TINY_FONT}{BLACK}Medžiai
@@ -899,25 +949,25 @@ STR_SMALLMAP_LEGENDA_WATER                                      :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_NO_OWNER                                   :{TINY_FONT}{BLACK}Nėra savininko
 STR_SMALLMAP_LEGENDA_TOWNS                                      :{TINY_FONT}{BLACK}Miestai
 STR_SMALLMAP_LEGENDA_INDUSTRIES                                 :{TINY_FONT}{BLACK}Pramonės įmonės
-STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLACK}Dykuma
-STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Sniegas
+STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLACK}Dykumos
+STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Snieguoti kraštai
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Rodyti/slėpti miestų pavadinimus žemėlapyje
-STR_SMALLMAP_CENTER                                             :{BLACK}Centruoti mažą žemėlapį į šitą vietą
+STR_SMALLMAP_CENTER                                             :{BLACK}Centruoti žemėlapį esamoje vietoje
 STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STRING} ({NUM})
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
 STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHITE}{TOWN}
-STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}Išjungti visas
-STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}Įjungti visas
-STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}Sniego aukštis
-STR_SMALLMAP_TOOLTIP_DISABLE_ALL_INDUSTRIES                     :{BLACK}Žemėlapyje nerodyti industrijų
-STR_SMALLMAP_TOOLTIP_ENABLE_ALL_INDUSTRIES                      :{BLACK}Žemėlapyje rodyti visas industrijas
-STR_SMALLMAP_TOOLTIP_SHOW_HEIGHT                                :{BLACK}Rodyti arba slėpti heightmap
-STR_SMALLMAP_TOOLTIP_DISABLE_ALL_COMPANIES                      :{BLACK}Nerodyti įmonės turto žemėlapyje
-STR_SMALLMAP_TOOLTIP_ENABLE_ALL_COMPANIES                       :{BLACK}Rodyti visą įmonės turtą žemėlapyje
-STR_SMALLMAP_TOOLTIP_DISABLE_ALL_CARGOS                         :{BLACK}Nerodyti krovinių žemėlapyje
-STR_SMALLMAP_TOOLTIP_ENABLE_ALL_CARGOS                          :{BLACK}Rodyti visus krovinius žemėlapyje
+STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}Nerodyti nieko
+STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}Rodyti viską
+STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}Rodyti izohipses
+STR_SMALLMAP_TOOLTIP_DISABLE_ALL_INDUSTRIES                     :{BLACK}Nerodyti nei vienos pramonės įmonės
+STR_SMALLMAP_TOOLTIP_ENABLE_ALL_INDUSTRIES                      :{BLACK}Rodyti visas pramonės įmones
+STR_SMALLMAP_TOOLTIP_SHOW_HEIGHT                                :{BLACK}Rodyti/slėpti izohipses
+STR_SMALLMAP_TOOLTIP_DISABLE_ALL_COMPANIES                      :{BLACK}Nerodyti nei vienos kompanijos nuosavybės
+STR_SMALLMAP_TOOLTIP_ENABLE_ALL_COMPANIES                       :{BLACK}Rodyti visų kompanijų nuosavybę
+STR_SMALLMAP_TOOLTIP_DISABLE_ALL_CARGOS                         :{BLACK}Nerodyti jokių krovinių srautų
+STR_SMALLMAP_TOOLTIP_ENABLE_ALL_CARGOS                          :{BLACK}Rodyti visų krovinių srautus
 
 # Status bar messages
 STR_STATUSBAR_TOOLTIP_SHOW_LAST_NEWS                            :{BLACK}Parodyti paskutinę žinutę ar spaudos pranešimą
@@ -994,13 +1044,12 @@ STR_NEWS_ROAD_VEHICLE_IS_WAITING                                :{WHITE}{VEHICLE
 STR_NEWS_SHIP_IS_WAITING                                        :{WHITE}{VEHICLE} laukia doke
 STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE} laukia angare
 
-# Start of order review system
-# DON'T ADD OR REMOVE LINES HERE
+# Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE} turi per mažai užduočių tvarkaraštyje
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} turi blogas užduotis
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} turi pasikartojančias užduotis
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} turi neteisingą stotelę užduotyse
-# end of order system
+STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE} turi į maršrutą įtrauktą oro uostą su per trumpu taku
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} paseno
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} labai paseno
@@ -1042,7 +1091,7 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Įkelti 
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Įkelti esamą padėtį į pagrindinį langą
 
 # Game options window
-STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Žaidimo nustatymai
+STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Pagrindinės nuostatos
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Valiuta
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Valiutos pasirinkimas
 
@@ -1083,14 +1132,10 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijos Laris 
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Irano Rialas (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Automobiliai
+STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Automobilių eismas
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Pasirinkite, kuria kelio puse važiuoja automobiliai
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Eismas kaire puse
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Eismas dešine puse
+STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Kaire puse
+STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Dešine puse
 
 STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Miestų pavadinimai
 STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Pasirink miestų pavadinimų tipą
@@ -1122,24 +1167,30 @@ STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalonų
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Automatinis išsaugojimas
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Pasirink, kaip dažnai išsaugoti žaidimą
 
+############ start of autosave dropdown
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :Išjungta
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Kiekvieną mėnesį
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :Kas 3 mėnesius
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :Kas 6 mėnesius
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Kas 12 mėnesių
+############ end of autosave dropdown
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}Kalba
 STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}Pasirinkite aplinkos kalbą
 
 STR_GAME_OPTIONS_FULLSCREEN                                     :{BLACK}Per visą ekraną
-STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Pažymėkite šį langelį, jeigu norite OpenTTD žaisti visu ekranu
+STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Pažymėkite šį langelį, jeigu norite OpenTTD žaisti visame ekrane
 
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Ekrano raiška
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Pasirinkite ekrano raišką
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Kita
 
-STR_GAME_OPTIONS_SCREENSHOT_FORMAT                              :{BLACK}Ekrano vaizdo kopijos tipas
-STR_GAME_OPTIONS_SCREENSHOT_FORMAT_TOOLTIP                      :{BLACK}Pasirinkite ekrano vaizdo kopijos formatą
+STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Sąsajos elementų dydis
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Pasirinkite vartotojo sąsajos elementų santykinį dydį
+
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalus
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dvigubas
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Trigubas
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Bazinis grafikos rinkinys
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Pasirinkti naudojimui bazinę grafikos rinkinį
@@ -1155,6 +1206,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Pasirink
 STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM} sugadint{P a ų os} bylos
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Papildoma informacija apie bazinę muziką
 
+STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Nepavyko gauti palaikomų ekrano raiškų sąrašo
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}Viso ekrano nustatymas nepavyko
 
 # Custom currency window
@@ -1183,11 +1235,11 @@ STR_CURRENCY_PREVIEW                                            :{LTBLUE}Perži�
 STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 svarų (£) jūsų valiuta
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Keisti pasirinktos valiutos nustatymus
 
-STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Maksimalus priešininkų skaičius: {ORANGE}{COMMA}
+STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Didžiausias priešininkų skaičius: {ORANGE}{COMMA}
 
 STR_NONE                                                        :Nėra
 STR_FUNDING_ONLY                                                :Tik finansavimas
-STR_MINIMAL                                                     :Minimalus
+STR_MINIMAL                                                     :Mažiausias
 STR_NUM_VERY_LOW                                                :Labai mažas
 STR_NUM_LOW                                                     :Žemas
 STR_NUM_NORMAL                                                  :Vidutinis
@@ -1233,6 +1285,7 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :Tik lygumos
 STR_TERRAIN_TYPE_FLAT                                           :Lygumos
 STR_TERRAIN_TYPE_HILLY                                          :Kalvos
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Kalnai
+STR_TERRAIN_TYPE_ALPINIST                                       :Statūs kalnai
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Atlaidus
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantiškas
@@ -1240,8 +1293,8 @@ STR_CITY_APPROVAL_HOSTILE                                       :Priešiškas
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Nerasta tinkamų DI... {}Galite parsisiųsti keletą DI naudonat 'Turinio internete' sistemą
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}Sudėtingesni nustatymai
+# Settings tree window
+STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Išplėstinės nuostatos
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtras:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Išskleisti viską
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Suskleisti viską
@@ -1254,7 +1307,8 @@ STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :žaidimo (įra�
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :kompanijos (įrašoma pradedant naują žaidimą)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :kompanijos (įrašoma kiekvieną kartą išsaugant žaidimą. Galioja tik šiuo metu aktyviai kompanijai)
 
-STR_CONFIG_SETTING_RESTRICT_LABEL                               :{BLACK}Rodyti:
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategorija:
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Tipas:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Rodyti tik tam tikros rūšies nuostatas
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :Pagrindines nuostatas
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Sudėtingesnes nuostatas
@@ -1269,6 +1323,10 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :Žaidimo (įra�
 STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Žaidimo (įrašoma kiekvieną kartą išsaugant žaidimą. Galioja tik aktyviam žaidimui)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Kompanijos (įrašoma pradedant naują žaidimą)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Kompanijos (įrašoma kiekvieną kartą išsaugant žaidimą. Galioja tik šiuo metu aktyviai kompanijai)
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Rodyti visus paeiškos rezultatus nustatant{}{SILVER}kategoriją{BLACK}į {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Rodyti visus paeiškos rezultatus nustatant{}{SILVER}tipą {BLACK}į {WHITE}„Visos nuostatos“
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Rodyti visus paieškos rezultatus nustatant{}{SILVER}kategoriją {BLACK}į {WHITE}{STRING} {BLACK}bei {SILVER}tipą {BLACK}į {WHITE}„Visos nuostatos“
+STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Nėra -
 
 STR_CONFIG_SETTING_OFF                                          :Ne
 STR_CONFIG_SETTING_ON                                           :Taip
@@ -1309,8 +1367,9 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Įgalinti atsit
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Miestų gyventojų požiūris į triukšmą ir aplinkos darkymą: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Nustatyti miestų požiūrį į statybas, triukšmą ir kraštovaizdžio keitimą. Nuo to priklauso kompanijos reitingas bei leidimasstatyti įvairius objektus
 
-STR_CONFIG_SETTING_BUILDONSLOPES                                :Leisti statybas pakrantėse ir ant šlaitų: {STRING}
-STR_CONFIG_SETTING_BUILDONSLOPES_HELPTEXT                       :Leisti statyti bėgius, stoteles bei kitus objektus ant šlaitų. Priešingu atveju ant šlaito bus galima tiesti tik bėgius ir tik šlaito kryptimi
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Didžiausias žemėlapio aukštis: {STRING}
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Didžiausias galimas kalnų žemėlapyje aukštis
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Negalima nustatyti tokio kalnų aukščio, nes žemėlapyje jau yra bent vienas aukštesnis kalnas
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Leisti keisti reljefą po pastatais, bėgiais, ir t.t.. (autoslope): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Leisti keisti reljefą po pastatais ir bėgiais, jų nepašalinant
 STR_CONFIG_SETTING_CATCHMENT                                    :Aptarnaujamos teritorijos dydis priklauso nuo stotelė tipo: {STRING}
@@ -1335,16 +1394,12 @@ STR_CONFIG_SETTING_FORBID_90_DEG                                :Drausti traukin
 STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :90° posūkis susidaro, kai horizontalus bėgių elementas yra sujungiamas su gretimame langelyje esančiu vertikaliu elementu. Ši nuostata taip pat galioja ir laivams
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :Leisti sujungti stoteles, kurios nėra šalia: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :Leisti praplėsti stotelę naujomis krovos aikštelėmis jas statant ne šalia jau esančiųjų, bet tolėliau. Statant reikia laikyti nuspaustą Ctrl klavišą
-STR_CONFIG_SETTING_IMPROVEDLOAD                                 :Naudoti patobulintą krovimo algoritmą: {STRING}
-STR_CONFIG_SETTING_IMPROVEDLOAD_HELPTEXT                        :Transporto priemonės, laukiančios stotelėje, bus aptarnaujamos paeiliui: tik prikrovus vieną transporto priemonę bus pradedama krauti kita transporto priemonė
-STR_CONFIG_SETTING_GRADUAL_LOADING                              :Pakrauti transporto priemones palaipsniui: {STRING}
-STR_CONFIG_SETTING_GRADUAL_LOADING_HELPTEXT                     :Transporto priemonę pakrauti, atsižvelgiant į įvairius krovos parametrus, palaipsniui, vietoj to, kad transporto priemonė būtų pakrauta vienu ypu, atsižvegiant tik į krovinio kiekį
 STR_CONFIG_SETTING_INFLATION                                    :Infliacija: {STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :Įjungti/išjungti infliaciją (išlaidos augs truputį greičiau už atlygius)
-STR_CONFIG_SETTING_SELECTGOODS                                  :Pristatyti krovinį stotelei tiktai tuomet, kai yra poreikis: {STRING}
-STR_CONFIG_SETTING_SELECTGOODS_HELPTEXT                         :Pramonės įmonės tieks stotelei tik tuos krovinius, kuriuos mėgins paimti į stotelę atvykstančios transporto priemonės. Tokiu būdu bus išvengta prastų stotelės krovos reitingų tiems kroviniams, kurių žaidėjas net neketino gabenti iš pasirinktos stotelės
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :Didžiausias tilto ilgis: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :Didžiausias galimas tilto ilgis
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :Didžiausias tilto aukštis: {STRING}
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT_HELPTEXT                   :Didžiausias aukštis, kuriame dar galima statyti tiltus
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :Didžiausias tunelio ilgis: {STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :Didžiausias galimas tunelio ilgis
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :Pirminių pramonės įmonių statybos būdas: {STRING}
@@ -1370,8 +1425,6 @@ STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Numatytoji trau
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :ties artimuoju kraštu
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :viduryje
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :ties tolimuoju kraštu
-STR_CONFIG_SETTING_ROAD_VEHICLE_QUEUEING                        :Automobilių vilkstinė (su kvantavimo efektu): {STRING}
-STR_CONFIG_SETTING_ROAD_VEHICLE_QUEUEING_HELPTEXT               :Jei kelyje pasitaikys kliūtis (ar tiesiog krovos aikštelė bus užimta), automobiliai nebandys grūstis, o stos į tvarkingą eilę
 STR_CONFIG_SETTING_AUTOSCROLL                                   :Slinkti vaizdą pelei esant prie krašto: {STRING}
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :Pelės žymikliui priartėjus prie pagrindinio ar papildomo peržiūros langų krašto, vaizdas jame gali būti slenkamas.
 STR_CONFIG_SETTING_AUTOSCROLL_DISABLED                          :Neslinkti
@@ -1402,10 +1455,6 @@ STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Leisti pravaži
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Leidžia statyti pravažiuojamojo tipo stoteles miestams priklausiančiuose keliuose
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Leisti pravažiuojamąsias stoteles priešininko keliuose: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Leidžia statyti pravažiuojamojo tipo stoteles kitiems priešininkams priklausiančiuose keliuose
-STR_CONFIG_SETTING_ADJACENT_STATIONS                            :Leisti statyti susiliečiančias stoteles: {STRING}
-STR_CONFIG_SETTING_ADJACENT_STATIONS_HELPTEXT                   :Leisti skirtingas stoteles liestis viena su kita
-STR_CONFIG_SETTING_DYNAMIC_ENGINES                              :Leisti kelis NewGRF transporto pr. rinkinius vienu metu: {STRING}
-STR_CONFIG_SETTING_DYNAMIC_ENGINES_HELPTEXT                     :Suderinamumo pasirinktis seniems NewGRFs. Neišjunkite, nebent žinote, ką tiksliai darote!
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Neįmanoma pakeisti nuostatos kai yra tr. priemonių.
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Infrastruktūros priežiūra reikalauja išlaidų: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Infrastruktūros (kelių, geležinkelių, stotelių, angarą ir kitų objektų) priežiūra kainuoja. Kaštai auga proporcingai kompanijos dydžiui, taigi didesnėms kompanijoms infrastruktūros priežiūra kainuos daugiau, nei mažesnėms
@@ -1430,41 +1479,55 @@ STR_CONFIG_SETTING_AUTORENEW_MONTHS                             :Atnaujinti tran
 STR_CONFIG_SETTING_AUTORENEW_MONTHS_HELPTEXT                    :Atitinkamas gyvenimas, kai transporto priemonės turėtų būti atnaujinamos
 STR_CONFIG_SETTING_AUTORENEW_MONTHS_VALUE_BEFORE                :{COMMA} mėnesi{P 0 u ais ų} mažesnis
 STR_CONFIG_SETTING_AUTORENEW_MONTHS_VALUE_AFTER                 :{COMMA} mėnesi{P 0 u ais ų} didesnis
-STR_CONFIG_SETTING_AUTORENEW_MONEY                              :Minimali suma reikalinga automatiniam atnaujinimui: {STRING}
-STR_CONFIG_SETTING_AUTORENEW_MONEY_HELPTEXT                     :Minimalus būtinas banko sąskaitos likutis automatiniam transporto priemonės atnaujinimui vykdyti
+STR_CONFIG_SETTING_AUTORENEW_MONEY                              :Mažiausia suma, reikalinga automatiniam atnaujinimui: {STRING}
+STR_CONFIG_SETTING_AUTORENEW_MONEY_HELPTEXT                     :Mažiausias būtinas banko sąskaitos likutis automatiniam transporto priemonės atnaujinimui vykdyti
 STR_CONFIG_SETTING_ERRMSG_DURATION                              :Klaidos pranešimo rodymo trukmė: {STRING}
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Klaidos pranešimų rodymo trukmė, po kurios pranešimas langas bus automatiškai užvertas. Atkreipkite dėmesį, kai kai kurie kritiniai pranešimai automatiškai nėra užveriami
 STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} sekund{P ė ės žių}
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Rodyti paaiškinimus: {STRING}
-STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Delsos laikas prieš parodant paaiškinimą, kai pelės žymeklis yra užvedamas virš kurio nors vartotojo sąsajos elemento. Paaiškinimas taip pat gali būti susietas ir su dešiniuoju pelės klavišu
-STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :atvedus žymeklį po {COMMA} sekund{P ės žių žių}
+STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Delsos laikas prieš parodant paaiškinimą, kai pelės žymeklis yra užvedamas virš kurio nors vartotojo sąsajos elemento. Paaiškinimas taip pat gali būti susietas ir su dešiniuoju pelės klavišu, jei delsos laikas nustatomas į 0 milisekundžių
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :atvedus žymeklį po {COMMA} milisekund{P ės žių žių}
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :spragtelėjus dešinįjį pelės klavišą
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Rodyti miestų gyventojų skaičių šalia pavadinimo: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Rodyti miestų gyventojų skaičių žemėlapio pažymėtoje vietoje
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Grafikų linijų storis: {STRING}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Grafikų linijų storis. Plonesnė linija yra tikslesnė, tačiau storesnę lengviau pastebėti bei atskirti jos spalvą
 
-STR_CONFIG_SETTING_LAND_GENERATOR                               :Sausumos kūrimas: {STRING}
-STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Standartinis
+STR_CONFIG_SETTING_LANDSCAPE                                    :Kraštovaizdis: {STRING}
+STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Skirtingi kraštovaizdžio tipai pasižymi skirtingomis tiek gamtinėmis (medžių, kalvų, jūrų, upių kiekis), tiek pramoninėmis (pramonės įmonės, miestų augimo greitis, transporto priemonės) savybėmis
+STR_CONFIG_SETTING_LAND_GENERATOR                               :Žemėlapio generatorius: {STRING}
+STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Originalus generatorius reikalauja bazinio grafinių failų rinkinio ir yra gana primityvus. TerraGenesis, and composes fixed landscape shapes. TerraGenesis žemėlapio generavimui naudoja Perlin'o triukšmą, beigi leidžia keisti daugiau įvairesnių parametrų.
+STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :originalus
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Kraštovaizdžio stilius: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :(tik TerraGenesis) Žemės paviršiaus kalvotumas
+STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Pramonės įmonių tankis: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Pramonės įmonių kiekis sugeneruotame žemėlapyje
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Didžiausias naftos perdirbimo įmonės atstumas nuo žemėlapio kraštų: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Naftos perdirbimo gamyklos statomos tik žemėlapio pakraščiuose, netoli kranto
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Sniego linijos aukštis: {STRING}
-STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Paviršiaus nelygumas (tik TerraGenesis) : {STRING}
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Aukštis, virš kurio žemės paviršius padengiamas sniegu. Tai taip pat turi įtakos pramonės įmonių kūrimui ir mietų augimui.
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Paviršiaus lygumas (tik TerraGenesis) : {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(tik TerraGenesis) Kuo lygesnis kraštovaizdis, tuo generuojamos kalvos bus žemesnės ir tuo jų bus mažiau.
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Labai lygus
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Lygus
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Kalnuotas
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Labai kalnuotas
+STR_CONFIG_SETTING_VARIETY                                      :Kraštovaizdžio įvairovė: {STRING}
+STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(Tik TerraGenesis) Tame pačiame žemėlapyje gali būti tiek kalvotų, tiek lygių regionų. Kuo didesnė įvairovė, tuo daugiau skirtingų regionų bus sugeneruota.
+STR_CONFIG_SETTING_RIVER_AMOUNT                                 :Upių kiekis: {STRING}
+STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Upių kiekis sugeneruotame kraštovaizdyje
 STR_CONFIG_SETTING_TREE_PLACER                                  :Medžių sodinimo algoritmas: {STRING}
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Pasirinkite medžių sodinimo algoritmą. „Originalus“ paskirsto juos tolygiai, „Naujasis“ sodina grupėmis.
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Jokio
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Originalas
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Naujasis
+STR_CONFIG_SETTING_ROAD_SIDE                                    :Automobilių eismas: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Eismo pusė
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Aukščių žemėlapio pasukimas: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Prieš laikrodžio rodyklę
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Pagal laikrodžio rodyklę
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :Aukštis skiriamas „lygiaus scenarijaus“ žemėlapiui: {STRING}
-STR_CONFIG_SETTING_ENABLE_FREEFORM_EDGES                        :Leisti keisti reljefą žemėlapio kraštuose: {STRING}
-STR_CONFIG_SETTING_ENABLE_FREEFORM_EDGES_HELPTEXT               :Jeigu išjungta, žemėlapio kraštai visada bus vandenynas
 STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}Vienas ar daugiau blokų šiauriniame krašte yra ne tušti
 STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}Viena ar daugiau plokštumų nėra ant vandens
 
@@ -1515,16 +1578,14 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Išjungta
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Left-click scrolling: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Slinkti žemėlapį velkant jį nuspaudus kairįjį pelės klavišą. Naudinga, jei žaidžiama kompiuteriuose su lietimui jautriais ekranais
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Automatinis saugojimas: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Laiko tarpsnis tarp automatinių žaidimo išsaugojimų
+
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Išsaugant žaidimą, pavadinimuose naudoti {STRING} datos formatą
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Datos formatas išsaugoto žaidimo failo pavadinime
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :ilgąjį (31 Gruo 2008)
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_SHORT              :trumpąjį (31-12-2008)
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-12-31)
-
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE                       :Įprastinė paletė taikoma NewGRF, nenurodžius paletės: {STRING}
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_HELPTEXT              :Numatytoji spalvų paletė tiems NewGRF objektams, kurie nenurodo, kokios konkrečiai paletės jiems reikia
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_DOS                   :DOS paletė
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_WIN                   :Windows paletė
 
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME                            :Automatinė pauzė paleidžiant naują žaidimą: {STRING}
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME_HELPTEXT                   :Pradėjus naują žaidimą, laiko tėkmė bus pristabdyta, taip suteikiant progą atidžiau išstudijuoti žemėlapį
@@ -1576,13 +1637,13 @@ STR_CONFIG_SETTING_SOUND_AMBIENT_HELPTEXT                       :Skleisti aplink
 STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING                  :Drausti infrastruktūros plėtimą kai nėra tam tinkamų transporto priemonių: {STRING}
 STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING_HELPTEXT         :Kai įjungta, infrastruktūra yra galima, jeigu ten taip pat yra galimų automobilių. Tam kad užkirstų kelią, laiko ir pinigų švaistimo nereikalingai infrastruktūrai
 STR_CONFIG_SETTING_MAX_TRAINS                                   :Didžiausias traukinių skaičius vienam žaidėjui: {STRING}
-STR_CONFIG_SETTING_MAX_TRAINS_HELPTEXT                          :Maksimalus skaičius traukinių, kuriuos kompanija gali turėti
+STR_CONFIG_SETTING_MAX_TRAINS_HELPTEXT                          :Didžiausias skaičius traukinių, kuriuos kompanija gali turėti
 STR_CONFIG_SETTING_MAX_ROAD_VEHICLES                            :Didžiausias automobilių skaičius vienam žaidėjui: {STRING}
-STR_CONFIG_SETTING_MAX_ROAD_VEHICLES_HELPTEXT                   :Maksimalus skaičius kelių transporto priemonių, kuriuos kompanija gali turėti
+STR_CONFIG_SETTING_MAX_ROAD_VEHICLES_HELPTEXT                   :Didžiausias skaičius automobilių, kuriuos kompanija gali turėti
 STR_CONFIG_SETTING_MAX_AIRCRAFT                                 :Didžiausias lėktuvų skaičius vienam žaidėjui: {STRING}
-STR_CONFIG_SETTING_MAX_AIRCRAFT_HELPTEXT                        :Maksimalus skaičius lėktuvų, kuriuos kompanija gali turėti
+STR_CONFIG_SETTING_MAX_AIRCRAFT_HELPTEXT                        :Didžiausias skaičius lėktuvų, kuriuos kompanija gali turėti
 STR_CONFIG_SETTING_MAX_SHIPS                                    :Didžiausias laivų skaičius vienam žaidėjui: {STRING}
-STR_CONFIG_SETTING_MAX_SHIPS_HELPTEXT                           :Maksimalus skaičius laivų, kuriuos kompanija gali turėti
+STR_CONFIG_SETTING_MAX_SHIPS_HELPTEXT                           :Didžiausias skaičius laivų, kuriuos kompanija gali turėti
 
 STR_CONFIG_SETTING_AI_BUILDS_TRAINS                             :Uždrausti kompiuteriui traukinius: {STRING}
 STR_CONFIG_SETTING_AI_BUILDS_TRAINS_HELPTEXT                    :Įjungus šį nustatymą, statyti traukinius kompiuterio žaidėjui bus neįmanoma
@@ -1602,13 +1663,13 @@ STR_CONFIG_SETTING_AI_PROFILE_HARD                              :Sunkus
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :Leisti DI Interneto režime: {STRING}
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :Leisti DI kompiuterio žaidėjus dalyvauti Interneto režime
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :#opkodai prieš skriptus yra nevykdomi: {STRING}
-STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Maksimalus skaičius skaičiavimų žingsnių, kuriuos scenarijus vykdo viename ėjime
+STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Didžiausias skaičius skaičiavimų žingsnių, kuriuos scenarijus vykdo viename ėjime
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Techninės apžiūros intervalas procentais: {STRING}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Įjungus šią nuostatą, techninė apžiūra bus vykdoma vos tik patikimumas nukris iki tam tikros procentinės vertės. Priešingu atveju techninė apžiūra bus vykdoma kas nustatytą dienų skaičių
 STR_CONFIG_SETTING_SERVINT_TRAINS                               :Traukinių techninės apžiūros intervalas: {STRING}
 STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :Numatytoji naujo traukinio techninės apžiūros intervalo reikšmė
-STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA} dien{P a os ų}/%
+STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA}{NBSP}dien{P a os ų}/%
 STR_CONFIG_SETTING_SERVINT_DISABLED                             :Išjungta
 STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES                        :Automobilių techninės apžiūros intervalas: {STRING}
 STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES_HELPTEXT               :Numatytoji naujo automobilio techninės apžiūros intervalo reikšmė
@@ -1619,7 +1680,7 @@ STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :Numatytoji nauj
 STR_CONFIG_SETTING_NOSERVICE                                    :Atjungti techninę apžiūrą, jei gedimai nenaudojami: {STRING}
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :Jeigu įjungta, tada automobiliams nebus atliekama techninė apžiūra, jeigu jie negalės sugesti
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Aktyvinti vagonų greičio apribojimą: {STRING}
-STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Įjungus šią nuostatą, vagonų maksimalus leistinas greitis įtakos maksimalų viso traukinio greitį
+STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Įgalinus šią nuostatą, vagonų didžiausias leistinas greitis įtakos viso traukinio greitį
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Uždrausti elektrinius bėgius: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Įjungiant šį nustatymą išjungia elektrifikuotų bėgių reikalavimą padaryti elektrinius variklius veikti ant jų
 
@@ -1662,7 +1723,7 @@ STR_CONFIG_SETTING_COLOURED_NEWS_YEAR                           :Spalvotos nauji
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR_HELPTEXT                  :Metai, kai laikraščių antraštės tampa spalvotos. Iki tol jos būna monochominės
 STR_CONFIG_SETTING_STARTING_YEAR                                :Žaidimo pradžia: {STRING}
 STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :Tolygi ekonomika (daug, bet nežymių pokyčių): {STRING}
-STR_CONFIG_SETTING_SMOOTH_ECONOMY_HELPTEXT                      :Jeigu įjungta, pramonės gamybos pajėgumas kis dažniau ir mažesniais žingsniais. Šis nustatymas dažniausiai neturi efekto, jeigu pramonės tipai yra numatyti NewGRF
+STR_CONFIG_SETTING_SMOOTH_ECONOMY_HELPTEXT                      :Įgalinus nuostatą pramonės įmonių gamybos pajėgumai kis dažniau ir mažesniais žingsniais. Ši nuostata greičiausiai neturės jokios įtakos, jei pramonės įmonė yra aprašyta papildomame plėtinyjeipai yra numatyti NewGRF
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Leisti pirkti kitų kompanijų akcijas: {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Leisti pirkti bei parduoti kitų kompanijų akcijas. Akcijos yra platinamos tik įmonei sulaukus tam tikro amžiaus
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Grynojo pelno dalis, mokama tiekėjų sistemoms: {STRING}
@@ -1700,7 +1761,7 @@ STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Miestams leidž
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Įjungus šį nustatymą miestams bus galima statyti pervažas
 STR_CONFIG_SETTING_NOISE_LEVEL                                  :Leisti miestams kontroliuoti oro uostų triukšmo lygį: {STRING}
 STR_CONFIG_SETTING_NOISE_LEVEL_HELPTEXT                         :Išjungus šį nustatymą, gali būti tik du oro uostai kiekviename mieste. Įjungus šį nustatymą, oro uostų skaičius mieste yra ribojamas pagal miesto triukšmo lygio palankumo, kurį nurodo gyventojų skaičius, oro uosto dydis bei atstumas
-STR_CONFIG_SETTING_TOWN_FOUNDING                                :Naujų miestų kurimas žaidime: {STRING}
+STR_CONFIG_SETTING_TOWN_FOUNDING                                :Naujų miestų kūrimas žaidime: {STRING}
 STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Įjungiant šį nustatymą, žaidėjai gali įkurti naujus miestus žaidime
 STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Uždrausta
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Leista
@@ -1720,7 +1781,7 @@ STR_CONFIG_SETTING_SNAP_RADIUS                                  :Langų traukos 
 STR_CONFIG_SETTING_SNAP_RADIUS_HELPTEXT                         :Atstumas tarp langelių. Prieš tai pajudintas langelis automatiškai sulygiuojamas su šalia esančiu langeliu
 STR_CONFIG_SETTING_SNAP_RADIUS_VALUE                            :{COMMA} piksel{P 0 is iai ių}
 STR_CONFIG_SETTING_SNAP_RADIUS_DISABLED                         :Išjungta
-STR_CONFIG_SETTING_SOFT_LIMIT                                   :Didž. skaičius langų (nelipnių): {STRING}
+STR_CONFIG_SETTING_SOFT_LIMIT                                   :Didžiausias nelipnių langų skaičius: {STRING}
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Skaičius nelipnių atidarytų langelių. Prieš tai seni atidaryti langeliai automatiškai užsidarys, kad paliktų daugiau vietos ekrane naujiems langeliams
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
 STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Išjungta
@@ -1747,12 +1808,12 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 iš {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Nenaudojamas
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Pradinis miestų dydžio daugiklis: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Vidutinis miestų dydis santykiu su normaliais miestais žaidimo pradžioje
-STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD                        :Panaikinti beprasmius kelio elementus kelių statybos metu: {STRING}
-STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD_HELPTEXT               :Panaikinti aklavietes po finansuojamų kelių rekonstrukcijos
 
-STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Pasiskirstymo grafiką atnaujinti kas {STRING} dienų
-STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Užtrukti {STRING} dienų pasiskirstymo grafikui perskaičiuoti
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :pasirinktinai
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Pasiskirstymo grafą atnaujinti kas {STRING}{NBSP}dien{P 0:2 ą as ų}
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Laiko trukmė tarp grafo mazgų perskaičiavimo operacijų. Kiekviena operacija perskaičiuoja tik vieną mazgą, o ne visą grafą; tad jei šioje nuostatoje nurodytą, kad, pavyzdžiui, grafas bus atnaujinamas kas 4-ias dienas, tai nereiškia, kad jis visas bus atnaujintas, o atnaujinti bus tik kai kurie mazgai. Kuo trumpesnė trukmė tarp perskaičiavimų, tuo daugiau grafo perskaičiavimas sueikvos procesoriaus išteklių, tačiau pats grafas geriau atspindės realią situaciją. Kita vertus, ilgesnė trukmė mažiau apkraus procesorių, tačiau gali tekti ilgėliau palaukti, kol nauji maršrutai bus įtraukti į grafą.
+STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Pasiskirstymo grafo perskaičiavimas užtruks {STRING}{NBSP}dien{P 0:2 ą as ų}
+STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :Laiko trukmė skirta pilnam krovinių paskirstymo grafui perskaičiuoti. Nustačius per mažą reikšmę, žaidimas gali trumpam pakibti, kol bus baigti skaičiavimai. Kita vertus, kuo ilgesnė ši trukmė, tuo vėliau į grafą bus įtraukti maršrutų pakeitimai.
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :originalus
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimetriškas
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC.kas                  :{G=vyr}asimetriškas
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC.ko                   :{G=vyr}asimetriško
@@ -1769,32 +1830,82 @@ STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC.ka                    :{G=vyr}simetri�
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC.kuo                   :{G=vyr}simetrišku
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC.kur                   :{G=vyr}simetriškame
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC.kreip                 :{G=vyr}simetriškas
+STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :Keleivių paskirstymas: {STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :„Simetriškas“ reiškia, jog iš stoties A į stotį B keliaus apytiksliai toks pat keleivių srautas, kaip ir iš B į A. „Asimetriško“ režimo atveju, srautai pirmyn ir atgal gali skirtis. „Originalus“ reiškia, kad srautai nebus reguliuojami ir veiks kaip ir originaliame TTD žaidime.
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :Pasiskirstymo režimas paštui: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Pasiskirstymo režimas ŠARVUOTAI krovinių klasei: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Pasiskirstymo režimas kitoms krovinių klasėms: {STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :„Simetriškas“ reiškia, jog iš stoties A į stotį B bus išsiųsta apytiksliai tiek pat pašto maišų, kaip ir iš B į A. „Asimetriško“ režimo atveju, pašto srautai pirmyn ir atgal gali skirtis. „Originalus“ reiškia, kad pašto srautai nebus reguliuojami ir veiks kaip ir originaliame TTD žaidime.
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Pasiskirstymo režimas „šarvuotoms“ krovinių rūšims: {STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :„Šarvuotų“ krovinių rūšiai priskiriamos brangenybės (vidutinio klimato juostoje), deimantai (subtropinio klimato juostoje) ir auksas (subarktinio klimato juostoje), bet tai dar gali priklausyti ir nuo aktyvių plėtinių. „Simetriškas“ reiškia, jog iš stoties A į stotį B bus vežamas apytiksliai toks pat krovinių srautas, kaip ir iš B į A. „Asimetriško“ režimo atveju, srautai pirmyn ir atgal gali skirtis. „Originalus“ reiškia, kad srautai nebus reguliuojami ir veiks kaip ir originaliame TTD žaidime. Žaidžiant subarktinio klimato juostoje, rekomenduojama pasirinkti asimetrišką krovinių paskirstymo algoritmą, nes bankai, priėmę auksą, atgal nieko nesiųs. Kitose klimato juostose galima pasirinkti ir asimetrišką algoritmą, nes kroviniai gali keliauti į abi maršruto puses.
+STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Pasiskirstymo režimas kitoms krovinių rūšims: {STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :„Simetriškas“ reiškia, jog iš stoties A į stotį B bus vežamas apytiksliai toks pat krovinių srautas, kaip ir iš B į A. „Asimetriško“ režimo atveju, srautai pirmyn ir atgal gali skirtis. „Originalus“ reiškia, kad srautai nebus reguliuojami ir veiks kaip ir originaliame TTD žaidime. Rekomenduojama pasirinkti arba asimetrinį, arba originalų algoritmą.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Pasiskirstymo tikslumas: {STRING}
-STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :Nustatant šį parametrą žemiau nei 100%, simetrinis pasiskirstymas panašėja į asimetrinį pasiskirstymą. Jei krovinio į stotį bus atvežama mažiau, nei tam tikra nustatyta riba, jis bus priverstinai išsiųstas atgal. Jei bus nustatyta 0% riba, simetrinis pasiskirstymas taps asimetriniu.
+STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Kuo didesnė ši vertė, tuo tiksliau bus apskaičiuojamas krovinių pasiskirstymo grafas, tačiau žaidimas gali sulėtėti. Pasirinktus didesnę reikšmę, grafas bus netikslus ir kroviniai gali būti paskirstomi neoptimaliai.
+STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Įtakos nuo atstumo tarp stotelių daugiklis: {STRING}
+STR_CONFIG_SETTING_DEMAND_DISTANCE_HELPTEXT                     :Šį daugiklį prilyginus nuliui, „Cargodist“ posistemė nekreips dėmesio, kaip toli nuo pradinės stotelės A yra krovinio paskirties stotelė B. Kuo daugiklis bus didesnis, tuo labiau „Cargodist“ pirmenybę teiks artimesnėms stotelėms.
+STR_CONFIG_SETTING_DEMAND_SIZE                                  :Grįžtančių krovinių daugiklis simetriškam režimui: {STRING}
+STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :Nustačius šį parametrą žemiau nei 100%, simetrinis pasiskirstymas panašėja į asimetrinį pasiskirstymą. Jei krovinio į stotį bus atvežama mažiau, nei tam tikra nustatyta riba, jis bus priverstinai išsiųstas atgal. Jei bus nustatyta 0% riba, simetrinis pasiskirstymas taps asimetriniu.
+STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :Tolimesni maršrutai nebus planuojami kol trumpesniųjų apkrova nepasieks bent: {STRING}
+STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :Dažnai tarp dviejų stotelių yra ne vienas galimas maršrutas. „Cargodist“ posistemė pirmiausia stengsis krovinius nukreipti trumpiausiu įmanomu maršrutu, o kai šis bus pilnai apkrautas, imtis tolimesniųjų. Maršruto apkrova yra apytiksliai įvertinama atsižvelgiant į maršruto pajėgumus ir planuojamus krovinių srautus. Kai tik „Cargodist“ posistemė pilnai apkraus visus galimus maršrutus, ji vėl ims didinti apkrovas visiems maršrutams, pradėdama nuo pačių talpiausiųjų, taip faktiškai juos perkraudama. Tačiau, vėlgi, „Cargodist“ algoritmas yra apytikslis, todėl įmanoma, kad trumpesni maršrutai jau bus perkrauti dar pilnai neišnaudojus tolimesniųjų. Šia nuostata nustatomas slenkstis, ties kuriuo trumpesnis maršrutas jau laikomas optimaliai apkrautu ir kroviniai pradedami skirstyti tolimesniais maršrutais. Rekomenduojama nustatyti mažiau, nei 100%, kad būtų išvengta perkrovų dėl netikslaus „Cargodist“ veikimo.
 
-STR_CONFIG_SETTING_GUI                                          :{ORANGE}Vaizdas
-STR_CONFIG_SETTING_CONSTRUCTION                                 :{ORANGE}Konstrukcijos
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Tr. priemonės
-STR_CONFIG_SETTING_STATIONS                                     :{ORANGE}Stotelės
-STR_CONFIG_SETTING_ECONOMY                                      :{ORANGE}Ekonomika
-STR_CONFIG_SETTING_LINKGRAPH                                    :{ORANGE}Krovinių pasiskirstymas
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Konkurentai
-STR_CONFIG_SETTING_DISPLAY_OPTIONS                              :{ORANGE}Vaizdo nustatymai
-STR_CONFIG_SETTING_INTERACTION                                  :{ORANGE}Sąveika
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :Greičio vienetai: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Vienetai, kuriais matuojamas greitis
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :imperiniai (mph)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :metriniai (km/h)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
+
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Galios vienetai: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Vienetai, kuriais matuojama galia
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_IMPERIAL            :imperiniai (ag)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_METRIC              :metriniai (ag)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_SI                  :SI (kW)
+
+STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT                    :Svorio vienetai: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_HELPTEXT           :Vienetai, kuriais matuojamas svoris
+STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_IMPERIAL           :imperiniai (mažoji tona, ton)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_METRIC             :metriniai (t)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_SI                 :SI (kg)
+
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME                    :Tūrio vienetai: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_HELPTEXT           :Vienetai, kuriais matuojamas tūris
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_IMPERIAL           :imperiniai (gal)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_METRIC             :metriniai (l)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_SI                 :SI (m³)
+
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE                     :Traukos jėgos vienetai: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_HELPTEXT            :Vienetai, kuriais matuojama traukos jėga
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_IMPERIAL            :imperiniai (lbf)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :metriniai (kgf)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
+
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Aukščio vienetai: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Vienetai, kuriais matuojamas aukštis
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :imperiniai (ft)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :metriniai (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+
+STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Lokalizavimas
+STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafika
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Garsai
-STR_CONFIG_SETTING_NEWS                                         :{ORANGE}Naujienos ir žinutės
-STR_CONFIG_SETTING_CONSTRUCTION_SIGNALS                         :{ORANGE}Signalai
-STR_CONFIG_SETTING_STATIONS_CARGOHANDLING                       :{ORANGE}Krovinų valdymas
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Kompiuterio žaidėjai
-STR_CONFIG_SETTING_VEHICLES_AUTORENEW                           :{ORANGE}Automatiškai atnaujinti
-STR_CONFIG_SETTING_VEHICLES_SERVICING                           :{ORANGE}Techninė apžiūra
+STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Vaizdas
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Bendros nuostatos
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Papildomi peržiūros langai
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Konstrukcijos
+STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Žinios ir patarėjai
+STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Kompanija
+STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Apskaita
+STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Transporto priemonės
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Fizika
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Maršrutas
-STR_CONFIG_SETTING_VEHICLES_TRAINS                              :{ORANGE}Traukiniai
-STR_CONFIG_SETTING_ECONOMY_TOWNS                                :{ORANGE}Miestai
-STR_CONFIG_SETTING_ECONOMY_INDUSTRIES                           :{ORANGE}Gamyklos
+STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Ribos
+STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Katastrofos ir incidentai
+STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Žemėlapio kūrimas
+STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Aplinka
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Valdžia
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Miestai
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Gamyklos
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Krovinių pasiskirstymas
+STR_CONFIG_SETTING_AI                                           :{ORANGE}Konkurentai
+STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Kompiuterio žaidėjai
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :Originalus
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
@@ -1816,11 +1927,11 @@ STR_CONFIG_ERROR                                                :{WHITE}Klaida n
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... klaida masyve '{STRING}'
 STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... netinkama reikšmė '{STRING}' kintamąjam '{STRING}'
 STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :{WHITE}... nustatymo eilutės gale netinkami simboliai '{STRING}'
-STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... ignoruojamas NewGRF '{STRING}': GRF ID dublikatas '{STRING}'
-STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... ignoruojamas klaidingas NewGRF '{STRING}': {STRING}
+STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... plėtinys '{STRING}' ignoruojamas: GRF ID dublikatas '{STRING}'
+STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... ignoruojamas klaidingas plėtinys '{STRING}': {STRING}
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :nerastas
 STR_CONFIG_ERROR_INVALID_GRF_UNSAFE                             :nesaugus statiniam naudojimui
-STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :sisteminis NewGRF
+STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :sisteminis plėtinys
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :nesuderinamas su šia OpenTTD versija
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :nežinomas
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... netinkamas suspaudimo lygis '{STRING}'
@@ -1834,40 +1945,40 @@ STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Nepavyko
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
-STR_INTRO_NEW_GAME                                              :{BLACK}Naujas žaidimas
+STR_INTRO_NEW_GAME                                              :{BLACK}Pradėtį naują žaidimą
 STR_INTRO_LOAD_GAME                                             :{BLACK}Įkelti žaidimą
-STR_INTRO_PLAY_SCENARIO                                         :{BLACK}Išbandyti scenarijų (žaisti)
-STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Žaisti papildomame žemėlapyje
-STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Scenarijaus redaktorius
-STR_INTRO_MULTIPLAYER                                           :{BLACK}Žaidimas tinkle
+STR_INTRO_PLAY_SCENARIO                                         :{BLACK}Žaisti scenarijų
+STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Žaisti teminį žemėlapį
+STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Redaguoti scenarijų
+STR_INTRO_MULTIPLAYER                                           :{BLACK}Žaisti tinkle
 
-STR_INTRO_GAME_OPTIONS                                          :{BLACK}Žaidimo nustatymai
+STR_INTRO_GAME_OPTIONS                                          :{BLACK}Pagrindinės nuostatos
 STR_INTRO_HIGHSCORE                                             :{BLACK}Nugalėtojų lentelė
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}Sudėtingesni nustatymai
-STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Papild. grafikos nustatymai
-STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Patikrinti interneto turinį
-STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}DI / Žaidimo nustatymai
+STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Išplėstinės nuostatos
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Plėtiniai
+STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Interneto turinys
+STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Dirbtinio intelekto nuostatos
 STR_INTRO_QUIT                                                  :{BLACK}Išeiti
 
-STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Pradėti naują žaidimą. Ctrl+Paspaudimas praleidžia žemėlapio nustatymus
+STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Pradėti naują žaidimą. Spragtelėjus laikant nuspaustą Ctrl klavišą, naujas žemėlapis bus sugeneruotas nedelsiant ir nieko nebeklausiant
 STR_INTRO_TOOLTIP_LOAD_GAME                                     :{BLACK}Įkelti išsaugotą žaidimą
-STR_INTRO_TOOLTIP_PLAY_HEIGHTMAP                                :{BLACK}Pradėti žaidimą naudojant papildomą žemėlapį ir žemtvarką
+STR_INTRO_TOOLTIP_PLAY_HEIGHTMAP                                :{BLACK}Pradėti žaidimą, sugeneruojant naują teminį žemėlapį
 STR_INTRO_TOOLTIP_PLAY_SCENARIO                                 :{BLACK}Pradėti naują žaidimą pasirenkant scenarijų
-STR_INTRO_TOOLTIP_SCENARIO_EDITOR                               :{BLACK}Sukurk savo žaidimo žemėlapį/scenarijų
-STR_INTRO_TOOLTIP_MULTIPLAYER                                   :{BLACK}Pradėti keletos žaidėjų žaidimą
+STR_INTRO_TOOLTIP_SCENARIO_EDITOR                               :{BLACK}Paleisti scenarijaus redaktorių
+STR_INTRO_TOOLTIP_MULTIPLAYER                                   :{BLACK}Pradėti keleto žaidėjų žaidimą
 
-STR_INTRO_TOOLTIP_TEMPERATE                                     :{BLACK}Pasirink vidutinį klimato tipą
-STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE                          :{BLACK}Pasirink sub-arktinį klimato tipą
-STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}Pasirink sub-tropinį klimato tipą
-STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Pasirink žemėlapio tipą 'žaislų šalis'
+STR_INTRO_TOOLTIP_TEMPERATE                                     :{BLACK}Vidutinio klimato žemėlapis
+STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE                          :{BLACK}Subarktinio klimato žemėlapis
+STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}Subtropinio klimato žemėlapis
+STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Žaislinis žemėlapis
 
-STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Rodyti žaidimo nustatymus
+STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Rodyti pagrindines žaidimo nuostatas
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Rodyti nugalėtojų lentelę
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}Rodyti sudėtingesnius nustatymus
-STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Atvaizduoti NewGRF nustatymus
-STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Patikrinti dėl naujų ir atnaujintą turinį atsisiuntimui
-STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Rodyti DI ir žaidimo nustatymus
-STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Išeiti iš 'OpenTTD'
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Rodyti išplėstines nuostatas
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Rodyti parsisiųstus plėtinius ir jų nuostatas
+STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Tikrinti, ar nėra naujų plėtinių arba atnaujinimų jau atsisiųstiems plėtiniams
+STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Rodyti dirbtinio intelekto nuostatas
+STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Išeiti iš „OpenTTD“ žaidimo
 
 STR_INTRO_TRANSLATION                                           :{BLACK}Šiam vertimui trūksta {NUM} eilu{P tės čių čių}. Padėkite išversti OpenTTD užsiregistruodami vertėju. Daugiau informacijos rasite faile readme.txt
 
@@ -1903,6 +2014,8 @@ STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Žaidia
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magiškas buldozeris (pašalina gamyklas ir nepajudinamus objektus): {ORANGE}{STRING}
 STR_CHEAT_CROSSINGTUNNELS                                       :{LTBLUE}Tuneliai gali susikirsti: {ORANGE}{STRING}
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}Reaktyviniai lėktuvai neduš (dažnai) mažuose oro uostuose: {ORANGE} {STRING}
+STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}Didžiausias kalnų aukštis: {ORANGE}{NUM}
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Keisti didžiausią leistiną kalnų aukštį
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Normalus klimatas
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Sub-arktinis klimatas
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Sub-tropinis klimatas
@@ -1951,6 +2064,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :Krovininis tram
 STR_FACE_CAPTION                                                :{WHITE}Veido pasirinkimas
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}Nutraukia veido pasirinkimą
 STR_FACE_OK_TOOLTIP                                             :{BLACK}Užbaigia veido pasirinkimą
+STR_FACE_RANDOM                                                 :{BLACK}Atsitiktinai
 
 STR_FACE_MALE_BUTTON                                            :{BLACK}Vyras
 STR_FACE_MALE_TOOLTIP                                           :{BLACK}Pasirink vyro veidą
@@ -2017,7 +2131,7 @@ STR_NETWORK_SERVER_LIST_GAME_NAME                               :{BLACK}Vardas
 STR_NETWORK_SERVER_LIST_GAME_NAME_TOOLTIP                       :{BLACK}Žaidimo pavadinimas
 STR_NETWORK_SERVER_LIST_GENERAL_ONLINE                          :{BLACK}{COMMA}/{COMMA} - {COMMA}/{COMMA}
 STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION                         :{BLACK}Žaidejai
-STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION_TOOLTIP                 :{BLACK}Žaidžia / maksimaliai žaidėjų
+STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION_TOOLTIP                 :{BLACK}Klientų tinkle / Didžiausias leistinas skaičius
 STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x{COMMA}
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION                        :{BLACK}Žemėlapio dydis
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP                :{BLACK}Žaidimo žemėlapio dydis{}Pragtelėjus rušiuojama pagal dydį
@@ -2044,7 +2158,7 @@ STR_NETWORK_SERVER_LIST_PASSWORD                                :{SILVER}Apsaugo
 STR_NETWORK_SERVER_LIST_SERVER_OFFLINE                          :{SILVER}SERVERIS IŠJUNGTAS
 STR_NETWORK_SERVER_LIST_SERVER_FULL                             :{SILVER}SERVERIS PILNAS
 STR_NETWORK_SERVER_LIST_VERSION_MISMATCH                        :{SILVER}VERSIJŲ NESUTAPIMAS
-STR_NETWORK_SERVER_LIST_GRF_MISMATCH                            :{SILVER}PAPILD. GRAFIKOS NEATITIKIMAS
+STR_NETWORK_SERVER_LIST_GRF_MISMATCH                            :{SILVER}NEATITINKA PLĖTINYS
 
 STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Jungtis
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Atnaujinti serverį
@@ -2071,8 +2185,8 @@ STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Apsaugok
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Ne
 STR_NETWORK_START_SERVER_ADVERTISED                             :Taip
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P as ai ų}
-STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Maksimalus klientų skaičius:
-STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Pasirinkite maksimalų klientų skaičių. Nebūtinai visos jungtys turi buti užpildytos
+STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Didžiausias klientų skaičius:
+STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Pasirinkite didžiausią klientų skaičių. Nebūtinai visos jungtys turi būti užpildytos
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} kompanij{P a os ų}
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Daugiausia kompanijų:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Riboti serverį iki tam tikro skaičiaus kompanijų
@@ -2190,6 +2304,7 @@ STR_NETWORK_CLIENT                                              :Žaidėjas
 STR_NETWORK_SPECTATORS                                          :Stebėtojai
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Įveskite kiekį pinigų, kurį norite gauti
+STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Stebėtojas
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Neišsaugotas įvestas slaptažodis
@@ -2222,7 +2337,7 @@ STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Įveskit
 STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Nerastas tinklo įrenginys arba sukompiliuota be ENABLE_NETWORK
 STR_NETWORK_ERROR_NOSERVER                                      :{WHITE}Nerado nei vieno žaidimo tinkle
 STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}Serveris neatsakė į užklausą
-STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Nepavyko prisijungti dėl Papild. grafikos neatitikimo
+STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Nepavyko prisijungti dėl netinkamo plėtinio
 STR_NETWORK_ERROR_DESYNC                                        :{WHITE}Žaidimo tinkle sinchronizacija nepavyko
 STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}Nutruko ryšys
 STR_NETWORK_ERROR_SAVEGAMEERROR                                 :{WHITE}Negali atverti išsaugoto žaidimo
@@ -2248,7 +2363,7 @@ STR_NETWORK_ERROR_CLIENT_DESYNC                                 :sinchronizacijo
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :negali užkrauti žemėlapio
 STR_NETWORK_ERROR_CLIENT_CONNECTION_LOST                        :prarastas ryšys
 STR_NETWORK_ERROR_CLIENT_PROTOCOL_ERROR                         :protokolo klaida
-STR_NETWORK_ERROR_CLIENT_NEWGRF_MISMATCH                        :Papild. grafikos neatitikimas
+STR_NETWORK_ERROR_CLIENT_NEWGRF_MISMATCH                        :Neatitinka plėtinys
 STR_NETWORK_ERROR_CLIENT_NOT_AUTHORIZED                         :Neautorizuota
 STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :gautas neteisingas arba nelauktas paketas
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :bloga versija
@@ -2339,11 +2454,11 @@ STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... atsi
 
 # Order of these is important!
 STR_CONTENT_TYPE_BASE_GRAPHICS                                  :Bazinė grafika
-STR_CONTENT_TYPE_NEWGRF                                         :NewGRF
+STR_CONTENT_TYPE_NEWGRF                                         :Plėtiniai
 STR_CONTENT_TYPE_AI                                             :AI
 STR_CONTENT_TYPE_AI_LIBRARY                                     :DI biblioteka
 STR_CONTENT_TYPE_SCENARIO                                       :Scenarijus
-STR_CONTENT_TYPE_HEIGHTMAP                                      :Aukščio žemėlapis
+STR_CONTENT_TYPE_HEIGHTMAP                                      :Teminis žemėlapis
 STR_CONTENT_TYPE_BASE_SOUNDS                                    :Baziniai garsai
 STR_CONTENT_TYPE_BASE_MUSIC                                     :Bazinė muzika
 STR_CONTENT_TYPE_GAME_SCRIPT                                    :Žaidimo skriptas
@@ -2369,27 +2484,27 @@ STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Taip, pa
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Ne, išeiti iš OpenTTD
 
 # Transparency settings window
-STR_TRANSPARENCY_CAPTION                                        :{WHITE}Permatomumo nustatymai
-STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}Nustatyti stočių ženklų permatomumą. Ctrl+Click to užrakinti.
-STR_TRANSPARENT_TREES_TOOLTIP                                   :{BLACK}Nustatyti medžių permatomumą . Ctrl+Click to užrakinti.
-STR_TRANSPARENT_HOUSES_TOOLTIP                                  :{BLACK}Nustatyti namų permatomumą . Ctrl+Click užrakinti.
-STR_TRANSPARENT_INDUSTRIES_TOOLTIP                              :{BLACK}Nustatyti pramoninių pastatų permatomumą . Ctrl+Click užrakinti
-STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Perjungti statomų pastatų, tokių kaip stotys, garažai ir kontrolės punktai, permatomumą. Ctrl+Click užrakinti.
-STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Nustatyti tiltų permatomumą. Ctrl+Click užrakinti
-STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Perjungti pastatų, tokių kaip švyturiai ir antenos, permatomumą.Ctrl+Click užrakinti
-STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Perjungti laidų permatomumą . Ctrl+Click užrakinti.
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Perjungti krovimo indikatorių permatomumą. Ctrl+Click užrakinti
-STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Nustatyti objektus nematomais vietoje permatomų
+STR_TRANSPARENCY_CAPTION                                        :{WHITE}Skaidrumo nuostatos
+STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}Perjungti ženklų skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_TREES_TOOLTIP                                   :{BLACK}Perjungti medžių skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_HOUSES_TOOLTIP                                  :{BLACK}Perjungti namų skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_INDUSTRIES_TOOLTIP                              :{BLACK}Perjungti pramonės įmonių skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Perjungti stotelių, garažų ir panašių pastatų skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Perjungti tiltų skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Perjungti švyturių, siųstuvų ir panašių statinių skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Perjungti laidų skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Perjungti krovos indikatorių skaidrumą. Spragtelėjus laikant nuspaustą Ctrl klavišą, nuostata bus užrakinta
+STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Pasirinkti tarp skaidrių ir nematomų objektų
 
 # Linkgraph legend window
-STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}Krovinių Tiekimo Legenda
+STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}Krovinių srautai
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}Visi
-STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Nieko
-STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Pasirinkite vaizduojamas kompanijas
+STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Joks
+STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Pasirinkite kompanijas, kurių krovinių srautus norite matyti
 
 # Linkgraph legend window and linkgraph legend in smallmap
-STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}nenaudotas
-STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}prisotintas
+STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}nenaudojamas
+STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}optimalus
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}perkrautas
 
 # Base for station construction window(s)
@@ -2452,7 +2567,7 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Statyti 
 STR_STATION_BUILD_STATION_CLASS_TOOLTIP                         :{BLACK}Pasirinkti stoties klasę rodymui
 STR_STATION_BUILD_STATION_TYPE_TOOLTIP                          :{BLACK}Pasirinkti stoties statymo tipą
 
-STR_STATION_CLASS_DFLT                                          :Numatytoji stotis
+STR_STATION_CLASS_DFLT                                          :Numatytoji stotelė
 STR_STATION_CLASS_WAYP                                          :Keliarodžiai
 
 # Signal window
@@ -2690,10 +2805,11 @@ STR_LAND_AREA_INFORMATION_STATION_TYPE                          :{BLACK}Stotelė
 STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Oro uosto klasė: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Oro uosto pavadinimas: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Oro uosto žemės plotelio pavadinimas: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
+STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}Plėtinys: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Krovinys priimtas: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Geležinkelių greičio limitas: {LTBLUE}{VELOCITY}
+STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Kelio greičio limitas: {LTBLUE}{VELOCITY}
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Akmenys
@@ -2742,7 +2858,7 @@ STR_LAI_TREE_NAME_TREES                                         :Medžiai
 STR_LAI_TREE_NAME_RAINFOREST                                    :Atogrąžų miškas
 STR_LAI_TREE_NAME_CACTUS_PLANTS                                 :Kaktusiniai augalai
 
-STR_LAI_STATION_DESCRIPTION_RAILROAD_STATION                    :Geležinkelio stotis
+STR_LAI_STATION_DESCRIPTION_RAILROAD_STATION                    :Geležinkelio stotelė
 STR_LAI_STATION_DESCRIPTION_AIRCRAFT_HANGAR                     :Lėktuvo angaras
 STR_LAI_STATION_DESCRIPTION_AIRPORT                             :Oro uostas
 STR_LAI_STATION_DESCRIPTION_TRUCK_LOADING_AREA                  :Sunkvežimių pakrovimo aikštelė
@@ -2790,16 +2906,16 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Kompanijos žem
 STR_ABOUT_OPENTTD                                               :{WHITE}Apie OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Pradinės versijos teisės priklauso {COPYRIGHT} 1995 Chris Sawyer, Visos teisės saugomos
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versija {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2013 OpenTTD komanda
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 OpenTTD komanda
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Išsaugoti žaidimą
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Įkelti žaidimą
 STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Išsaugoti scenarijų
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Įkelti scenarijų
-STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Atverti aukščių žemėlapį
-STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Išsaugoti aukščių žemėlapį
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Spausti čia perėjimui į numatytąją saugojimo/įkrovimo direktoriją
+STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Įkelti teminį žemėlapį
+STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Išsaugoti teminį žemėlapį
+STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Šokti į numatytąjį saugojimo/įkėlimo katalogą
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} laisva
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Diskų, katalogų ir išsaugotu žaidimų sąrašas
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Pasirinktas žaidimas
@@ -2807,14 +2923,15 @@ STR_SAVELOAD_DELETE_BUTTON                                      :{BLACK}Šalinti
 STR_SAVELOAD_DELETE_TOOLTIP                                     :{BLACK}Ištrinti pasirinktą žaidimą
 STR_SAVELOAD_SAVE_BUTTON                                        :{BLACK}Išsaugoti
 STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}Išsaugoti žaidimą pasirinktu vardu
-STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Užkrauti
-STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Užkrauti pasirinktą žaidimą
+STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Įkelti
+STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Įkelti pasirinktą žaidimą
+STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Įkrauti pasirinktą žemėlapį
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Žaidimo ypatybės
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Nėra informacijos
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
-STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
+STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}Plėtiniai: {WHITE}{STRING}
 
-STR_SAVELOAD_OSKTITLE                                           :{BLACK}Įveskite Išsaugomo žaidimo vardą
+STR_SAVELOAD_OSKTITLE                                           :{BLACK}Įveskite išsaugomo žaidimo vardą
 
 # World generation
 STR_MAPGEN_WORLD_GENERATION_CAPTION                             :{WHITE}Pasaulio kūrimas
@@ -2822,42 +2939,41 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Žemėla
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Pasirinkite žemėlapio dydį langeliais. Prieinamų langelių skaičius bus šiek tiek mažesnis.
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Miestų kiekis:
-STR_MAPGEN_DATE                                                 :{BLACK}Data:
-STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Industrijų kiekis:
-STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Sniego linija:
+STR_MAPGEN_DATE                                                 :{BLACK}Pradžios data:
+STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Pramonės įmonių kiekis:
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Didžiausias leistinas aukštis:
+STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Padidinti didžiausią leistiną aukštį vienetu
+STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Sumažinti didžiausią leistiną aukštį vienetu
+STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Sniego linijos aukštis:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Paaukštinti sniego liniją
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Pažeminti sniego liniją
-STR_MAPGEN_RANDOM_SEED                                          :{BLACK}Atsitiktinė pradžia:
-STR_MAPGEN_RANDOM_SEED_HELP                                     :{BLACK}Paspauskite, jeigu norite įvesti atsitiktinę skaičių seką naudojamą pasaulio kūrimui
-STR_MAPGEN_RANDOM                                               :{BLACK}Atsitiktinai
-STR_MAPGEN_RANDOM_HELP                                          :{BLACK}Parenką naują atsitiktinę skaičių seką naudojamą pasaulio kūrimui
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Pasaulio kūrimas:
+STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generavimo algoritmas:
 STR_MAPGEN_TREE_PLACER                                          :{BLACK}Medžių algoritmas:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Vietovės tipas:
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Jūros lygis:
-STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Upių:
+STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Upių kiekis:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Jautrumas:
 STR_MAPGEN_VARIETY                                              :{BLACK}Įvairovės paskirstymas:
 STR_MAPGEN_GENERATE                                             :{WHITE}Sukurti
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Žemėlapio kraštai:
-STR_MAPGEN_NORTHWEST                                            :{BLACK}Šiaurės-vakarai
-STR_MAPGEN_NORTHEAST                                            :{BLACK}Šiaurės-rytai
+STR_MAPGEN_NORTHWEST                                            :{BLACK}Šiaurės vakarai
+STR_MAPGEN_NORTHEAST                                            :{BLACK}Šiaurės rytai
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Pietryčiai
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}Pietvakariai
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Laisva forma
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Vanduo
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Atsitiktinis
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Atsitiktinai
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Pasirinktinai
+STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Atsitiktiniai
+STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Pasirinktiniai
 
-STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Zemelapio rotacija:
-STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Žemėlapio vardas:
+STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Žemėlapio pasukimas:
+STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Žemėlapio pavadinimas:
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Dydis:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_RANDOM_SEED_OSKTITLE                                 :{BLACK}Įveskite atsitiktinį skaičių
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Keisti didžiausią leistiną aukštį
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Pakeisti sniego linijos aukštį
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Keisti pradžios metus
 
@@ -2890,95 +3006,110 @@ STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}Skriptas
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}Ruošiamas žaidimas
 
 # NewGRF settings
-STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}Papild. grafikos nustatymai (NewGRF)
-STR_NEWGRF_SETTINGS_INFO_TITLE                                  :{WHITE}Išsami NewGRF informacija
-STR_NEWGRF_SETTINGS_ACTIVE_LIST                                 :{WHITE}Aktyvios NewGRF bylos
-STR_NEWGRF_SETTINGS_INACTIVE_LIST                               :{WHITE}Neaktyvios NewGRF bylos
-STR_NEWGRF_SETTINGS_SELECT_PRESET                               :{ORANGE}Pasirinkti nustatymus:
-STR_NEWGRF_FILTER_TITLE                                         :{ORANGE}Įrašo filtravimas:
-STR_NEWGRF_SETTINGS_PRESET_LIST_TOOLTIP                         :{BLACK}Užkrauti parinktą nustatymą
-STR_NEWGRF_SETTINGS_PRESET_SAVE                                 :{BLACK}Išsaugoti nustatymą
-STR_NEWGRF_SETTINGS_PRESET_SAVE_TOOLTIP                         :{BLACK}Išsaugoti esamą sąrašą kaip nuostatą
-STR_NEWGRF_SETTINGS_PRESET_SAVE_QUERY                           :{BLACK}Įvesti vardą nuostatai
-STR_NEWGRF_SETTINGS_PRESET_DELETE                               :{BLACK}Ištrinti nustatymus
-STR_NEWGRF_SETTINGS_PRESET_DELETE_TOOLTIP                       :{BLACK}Ištrinti dabar pasirinktas nuostatas
+STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}Plėtinių nuostatos
+STR_NEWGRF_SETTINGS_INFO_TITLE                                  :{WHITE}Išsami plėtinio informacija
+STR_NEWGRF_SETTINGS_ACTIVE_LIST                                 :{WHITE}Aktyvūs plėtiniai
+STR_NEWGRF_SETTINGS_INACTIVE_LIST                               :{WHITE}Neaktyvūs plėtiniai
+STR_NEWGRF_SETTINGS_SELECT_PRESET                               :{ORANGE}Rinkinys:
+STR_NEWGRF_FILTER_TITLE                                         :{ORANGE}Filtras:
+STR_NEWGRF_SETTINGS_PRESET_LIST_TOOLTIP                         :{BLACK}Įkelti pasirinktą plėtinių rinkinį
+STR_NEWGRF_SETTINGS_PRESET_SAVE                                 :{BLACK}Išsaugoti rinkinį
+STR_NEWGRF_SETTINGS_PRESET_SAVE_TOOLTIP                         :{BLACK}Išsaugoti esamą sąrašą kaip plėtinių rinkinį
+STR_NEWGRF_SETTINGS_PRESET_SAVE_QUERY                           :{BLACK}Įvesti rinkinio pavadinimą
+STR_NEWGRF_SETTINGS_PRESET_DELETE                               :{BLACK}Ištrinti rinkinį
+STR_NEWGRF_SETTINGS_PRESET_DELETE_TOOLTIP                       :{BLACK}Ištrinti pasirinktą plėtinių rinkinį
 STR_NEWGRF_SETTINGS_ADD                                         :{BLACK}Pridėti
-STR_NEWGRF_SETTINGS_ADD_FILE_TOOLTIP                            :{BLACK}Įtraukti pažymėtus Papild. grafikos failus į jūsų nustatymus
+STR_NEWGRF_SETTINGS_ADD_FILE_TOOLTIP                            :{BLACK}Įtraukti pasirinktą plėtinį į aktyvių plėtinių sąrašą
 STR_NEWGRF_SETTINGS_RESCAN_FILES                                :{BLACK}Nuskaityti dar kartą failus
-STR_NEWGRF_SETTINGS_RESCAN_FILES_TOOLTIP                        :{BLACK}Atnaujinti prieinamų Papild. grafikos failų sąrašą
+STR_NEWGRF_SETTINGS_RESCAN_FILES_TOOLTIP                        :{BLACK}Atnaujinti galimų plėtinių sąrašą
 STR_NEWGRF_SETTINGS_REMOVE                                      :{BLACK}Pašalinti
-STR_NEWGRF_SETTINGS_REMOVE_TOOLTIP                              :{BLACK}Pašalinti pažymėtą Papild. grafikos failą iš sąrašo
+STR_NEWGRF_SETTINGS_REMOVE_TOOLTIP                              :{BLACK}Pašalinti pasirinktą plėtinį iš sąrašo
 STR_NEWGRF_SETTINGS_MOVEUP                                      :{BLACK}Aukštyn
-STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}Perkelti pažymėtus Papild. grafikos failus sąraše aukštyn
+STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}Paslinkti pasirinktą plėtinį sąrašu aukštyn
 STR_NEWGRF_SETTINGS_MOVEDOWN                                    :{BLACK}Žemyn
-STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}Perkelti pažymėtus Papild. grafikos failus sąraše žemyn
-STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK}Įdiegtų papild. grafikos failų sąrašas.
+STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}Paslinkti pasirinktą plėtinį sąrašu žemyn
+STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}Atnaujinti
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP                             :{BLACK}Atnaujinti plėtinius, jei yra įdiegta naujesnė versija
+STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK}Aktyvių plėtinių sąrašas
 
-STR_NEWGRF_SETTINGS_SET_PARAMETERS                              :{BLACK}Nustatyti parametrus
-STR_NEWGRF_SETTINGS_SHOW_PARAMETERS                             :{BLACK}Rodyti parametrus
-STR_NEWGRF_SETTINGS_TOGGLE_PALETTE                              :{BLACK}Kaitalioti paletę
-STR_NEWGRF_SETTINGS_TOGGLE_PALETTE_TOOLTIP                      :{BLACK}Kaitalioja parinkto NewGRF paletę.{}Darykite jei pajungta grafika nuspalvinta rožine spalva
-STR_NEWGRF_SETTINGS_APPLY_CHANGES                               :{BLACK}Pritaikyti pakeitimus
+STR_NEWGRF_SETTINGS_SET_PARAMETERS                              :{BLACK}Plėtinio nuostatos
+STR_NEWGRF_SETTINGS_SHOW_PARAMETERS                             :{BLACK}Rodyti nuostatas
+STR_NEWGRF_SETTINGS_TOGGLE_PALETTE                              :{BLACK}Perjungti spalvų paletę
+STR_NEWGRF_SETTINGS_TOGGLE_PALETTE_TOOLTIP                      :{BLACK}Perjunkite spalvų paletę, jei pasirinkto plėtinio objektai žaidime yra nuspalvinti rožine spalva
+STR_NEWGRF_SETTINGS_APPLY_CHANGES                               :{BLACK}Taikyti pokyčius
 
 STR_NEWGRF_SETTINGS_FIND_MISSING_CONTENT_BUTTON                 :{BLACK}Rasti ieškomą turinį tinkle
 STR_NEWGRF_SETTINGS_FIND_MISSING_CONTENT_TOOLTIP                :{BLACK}Patikrinti ar trūkstamas turinys gali būti rastas internete
 
-STR_NEWGRF_SETTINGS_FILENAME                                    :{BLACK}Failo vardas: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_FILENAME                                    :{BLACK}Failo pavadinimas: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_GRF_ID                                      :{BLACK}GRF ID: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Versija: {SILVER}{NUM}
 STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Anksčiausia suderinama versija: {SILVER}{NUM}
-STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}MD5suma: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}MD5 suma: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PALETTE                                     :{BLACK}Paletė: {SILVER}{STRING}
-STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Parametrai: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Nuostatos: {SILVER}{STRING}
 
 STR_NEWGRF_SETTINGS_NO_INFO                                     :{BLACK}Informacijos nėra
 STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}Atitinkamas failas nerastas
 STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Išjungta
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Nesuderinamas su šia OpenTTD versija
 
+# NewGRF save preset window
+STR_SAVE_PRESET_CAPTION                                         :{WHITE}Išsaugoti rinkinį
+STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Visų rinkinių sąrašas
+STR_SAVE_PRESET_TITLE                                           :{BLACK}Įveskite rinkinio pavadinimą
+STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Šiuo metu pasirinktas rinkinio pavadinimas
+STR_SAVE_PRESET_CANCEL                                          :{BLACK}Atšaukti
+STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Nieko nedaryti ir grįžti atgal
+STR_SAVE_PRESET_SAVE                                            :{BLACK}Išsaugoti
+STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Išsaugoti rinkinį pasiriktu pavadinimu
+
 # NewGRF parameters window
-STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Pakeisti NewGRF parametrus
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Uždaryti
+STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Plėtinio nuostatos
+STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Užverti
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Atstatyti
-STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Nustayti pradines reikšmes visiems parametrams
-STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parametras {NUM}
+STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Atstatyti pradines reikšmes visoms nuostatoms
+STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Nuostata {NUM}
 STR_NEWGRF_PARAMETERS_SETTING                                   :{STRING}: {ORANGE}{STRING}
-STR_NEWGRF_PARAMETERS_NUM_PARAM                                 :{LTBLUE}Parametrų skaičius: {ORANGE}{NUM}
+STR_NEWGRF_PARAMETERS_NUM_PARAM                                 :{LTBLUE}Nuostatų skaičius: {ORANGE}{NUM}
 
 # NewGRF inspect window
 STR_NEWGRF_INSPECT_CAPTION                                      :{WHITE}Apžiūrėti - {STRING}
-STR_NEWGRF_INSPECT_PARENT_BUTTON                                :{BLACK}Tėvas
-STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}Apžiūrėti objektą iš tėvo apimties
+STR_NEWGRF_INSPECT_PARENT_BUTTON                                :{BLACK}Viršobjektis
+STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}Apžiūrėti objektą iš viršobjekčio srities
 
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING} ties {HEX}
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :Objektas
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Geležinkėlio tipas
+STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Bėgio tipas
 
-STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF kintamojo 60+x parametras (šešioliktainėje sist.)
+STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Plėtinio kintamojo 60+x parametras (šešioliktainėje sistemoje)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Išdėstymo animacinis objektas {COMMA} ({STRING})
-STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Kitas animacinis objektas
-STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Pereiti prie kito animacinio objekto praleidžiant visus pseudo/spalvinimo/šriftų objektus peršokant į pradžią pabaigoje
-STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Pereiti prie animacinio objekto
-STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Pereiti prie nurodyto animacinio objekto. Jeigu objektas nėra įprastas animacinis objektas, pereiti prie kito įprasto
-STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Buvęs animacinis objektas
-STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Pereiti prie buvusio animacinio objekto praleidžiant visus pseudo/spalvinimo/šriftų objektus peršokant į pabaigą pradžioje
-STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Atvaizdavimas dabartinio pasirinkto sprite. Suderinamumas yra ignoruojamas, rengiant šį sprite
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Perkelti sprite aplink, keičiant X ir Y atsvaras
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X atsvara: {NUM}, Y atsvara: {NUM}
-STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Pasirinkti sprite
-STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Pasirinkite sprite iš bet kurios vietos ekrane
+STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Lygiuojamas spruklys {COMMA} ({STRING})
+STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Tolesnis spruklys
+STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Įkelti tolesnį spruklį
+STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Nurodyti spruklį
+STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Įkelti nurodytą spruklį. Jei nurodytas spruklys nėa normalus, įkelti tolesnį normalų
+STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Ankstesnis spruklys
+STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Įkelti ankstesnį spruklį
+STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Pasirinkto spruklio atvaizdas, nekreipiant dėmesio į lygiavimą
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Paslinkti spruklį, keičiant X ir Y poslinkius
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Atkurti
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Atkurti numatytuosius santykinius poslinkius
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X poslinkis: {NUM}, Y poslinkis: {NUM} (Absoliutus)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X poslinkis: {NUM}, Y poslinkis: {NUM} (Santykinis)
+STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Pasirinkti spruklį
+STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Pasirinkti spruklį iš bet kurios vietos ekrane
 
-STR_SPRITE_ALIGNER_GOTO_CAPTION                                 :{WHITE}Eiti į sprite
+STR_SPRITE_ALIGNER_GOTO_CAPTION                                 :{WHITE}Įkelti spruklį
 
 # NewGRF (self) generated warnings/errors
 STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Įspėjimas: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Klaida: {SILVER}{STRING}
-STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatalinė klaida: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Ištiko nepataisoma NewGRF klaida: {}{STRING}
-STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} neveiks su TTDPatch versija nurodyta pagal OpenTTD.
+STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Lemtingoji klaida: {SILVER}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Įvyko lemtingoji plėtinio klaida: {}{STRING}
+STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} neveiks su TTDPatch versija nurodyta pagal OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} skirtas {STRING} TTD versijai.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} yra pritaikytas naudojimui su {STRING}
 STR_NEWGRF_ERROR_INVALID_PARAMETER                              :Neteisingas parametras {1:STRING}: parametras {STRING} ({NUM})
@@ -2986,9 +3117,9 @@ STR_NEWGRF_ERROR_LOAD_BEFORE                                    :{1:STRING} turi
 STR_NEWGRF_ERROR_LOAD_AFTER                                     :{1:STRING} turi būti įkeltas po {STRING}
 STR_NEWGRF_ERROR_OTTD_VERSION_NUMBER                            :{1:STRING} reikalauja OpenTTD versijos {STRING} arba naujesnės
 STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE                          :GRF failas, kurį turėjo išversti
-STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :Įkelta per daug NewGRF
-STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :Įkėlimas {1:STRING} kaip statinio NewGRF su {STRING} gali sukelti desinchronizacijas
-STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :Netikėtas spruklys (spruklys {3:NUM})
+STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :Įkelta per daug plėtinių
+STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :Plėtinio {1:STRING} įkėlimas su {STRING} gali išderinti žaidimą
+STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :Netikėtas spruklys ({3:NUM})
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :Nežinoma veiksmo 0 savybė {4:HEX} (spruklys {3:NUM})
 STR_NEWGRF_ERROR_INVALID_ID                                     :Bandymas panaudoti neteisingą ID (spruklys {3:NUM})
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} turi sugadintą spruklį. Visi sugadinti sprukliai bus rodomi kaip raudoni klaustukai (?)
@@ -2997,7 +3128,7 @@ STR_NEWGRF_ERROR_READ_BOUNDS                                    :Skaitymas už p
 STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Šiuo metu naudojamam grafikos rinkiniui trūksta keleto spruklių.{}Atnaujinkite pagrindinį grafikos rinkinį
 STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Šiuo metu naudojamam pagrindinės grafikos rinkiniui trūsta keleto spruklių. {}Atnaujinkite pagrindinės grafikos rinkinį. {} Kadangi žaidžiate {YELLOW} negalutinę, vis dar kuriamą OpenTTD versiją, {WHITE}, jums, ko gero, reikėtų įdiegti atitinkamą{YELLOW}naujausią, negalutinį pagrindinės grafikos rinkinį.{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Pageidautas GRF resursas yra neprieinamas (spruklys {3:NUM})
-STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} buvo išjungta: {STRING}
+STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} buvo išjungtas {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Neteisingas/nežinomas spruklio išdėstymo formatas (spruklys {3:NUM})
 
 # NewGRF related 'general' warnings
@@ -3006,27 +3137,28 @@ STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Jūs no
 
 STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Negalima pridėti failo: pasikartojantis GRF ID
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Atitinkamas failas nerastas (panaudotas suderinamas grafikos failas)
-STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Neįmanoma pridėti failo: pasiektas NewGRF failų limitas
+STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Neįmanoma pridėti failo: pasiektas plėtinių failų limitas
 
 STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Suderinami grafikos failai panaudoti vietoj trūkstamų
 STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Trūkstami grafikos failai nenaudojami
 STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Trūksta GRF failų
-STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Paleidimas gali užlaužti OpenTTD. Neraportuokite šios rūšies gedimų!{}Ar norite paleisti toliau?
+STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Paleidimas gali išderinti ar užstrigdinti OpenTTD. Nepildykite klaidų pranešimų dėl šių problemų.{}Ar norite paleisti žaidimą?
 
 # NewGRF status
-STR_NEWGRF_LIST_NONE                                            :Niekas
-STR_NEWGRF_LIST_ALL_FOUND                                       :Visos bylos rastos
-STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}Rastos tinkamos bylos
-STR_NEWGRF_LIST_MISSING                                         :{RED}Trūkstamos bylos
+STR_NEWGRF_LIST_NONE                                            :Nėra
+STR_NEWGRF_LIST_ALL_FOUND                                       :Visi failai rasti
+STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}Rasti suderinami failai
+STR_NEWGRF_LIST_MISSING                                         :{RED}Trūkstami failai
 
 # NewGRF 'it's broken' warnings
-STR_NEWGRF_BROKEN                                               :{WHITE}NewGRF elgesys '{0:STRING}' gali desinchronizuoti ir/arba nutraukti žaidimą
-STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Tai pakeitė varomo vagono būseną '{1:ENGINE}' kai ji nėra depe.
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Tai pakeitė transporto priemonės '{1:ENGINE}' ilgį kai ji nėra depe
-STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Traukinys '{VEHICLE}' priklausantis '{COMPANY}' yra netinkamo ilgio. Tai tikriausiai nutiko dėl netinkamo NewGRF. Žaidimas gali būti išsinchronizuotas arba išjungtas
+STR_NEWGRF_BROKEN                                               :{WHITE}Plėtinys '{0:STRING}' gali išderinti ar net nutraukti žaidimą.
+STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Transporto priemonės '{1:ENGINE}' būsena pasikeitė jai nesant garaže/depe/angare
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Transporto priemonės '{1:ENGINE}' ilgis pasikeitė jai nesant garaže/depe/angare
+STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Transporto priemonės '{1:ENGINE}' talpa pasikeitė jai nesant garaže/depe/angare
+STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Traukinys '{VEHICLE}' priklausantis '{COMPANY}' yra netinkamo ilgio. Tai tikriausiai nutiko dėl netinkamo plėtinio. Žaidimas gali būti išderintas ar net išjungtas
 
-STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{0:STRING}' teikia neteisingą informaciją
-STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}'{1:ENGINE}' variklio krovinio/pertvarkymo informacija skiriasi nuo pirkinių sąrašo po pastatymo. Tai gali sukelti neteisingus automatiško atnaujinimo arba pertvarkymo rezultatus
+STR_NEWGRF_BUGGY                                                :{WHITE}Plėtinys '{0:STRING}' teikia neteisingą informaciją
+STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Transporto priemonės '{1:ENGINE}' talpa skiriasi nuo nurodytos galimų priemonių sąraše. Automatinis atnaujinimas gali tinkamai neveikti
 STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' sukėle begalinį ciklą produkcijos atgaliniame kvietime
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Kvietimas {1:HEX} grąžino nežinomą/klaidingą atsakymą {2:HEX}
 
@@ -3034,14 +3166,17 @@ STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Kvietima
 STR_NEWGRF_INVALID_CARGO                                        :<netinkamas krovinys>
 STR_NEWGRF_INVALID_CARGO_ABBREV                                 :??
 STR_NEWGRF_INVALID_CARGO_QUANTITY                               :{COMMA} vnt. <netinkamo krovinio>
-STR_NEWGRF_INVALID_ENGINE                                       :<netinkamas variklis>
-STR_NEWGRF_INVALID_INDUSTRYTYPE                                 :<netinkama industrija>
+STR_NEWGRF_INVALID_ENGINE                                       :<netinkamas transporto priemonės tipas>
+STR_NEWGRF_INVALID_INDUSTRYTYPE                                 :<netinkama pramonės įmonė>
+
+# Placeholders for other invalid stuff, e.g. vehicles that have gone (Game Script).
+STR_INVALID_VEHICLE                                             :<neteisinga transporto priemonė>
 
 # NewGRF scanning window
-STR_NEWGRF_SCAN_CAPTION                                         :{WHITE}Tikrinami NewGRF
-STR_NEWGRF_SCAN_MESSAGE                                         :{BLACK}Nuskaitomi NewGRF. Tai gali užtrukti, priklausomai nuo kiekio...
-STR_NEWGRF_SCAN_STATUS                                          :{BLACK}Nuskaitomi {NUM} NewGRF{P "" "" ""} iš paskaičiuotų {NUM} NewGRF{P "" "" ""}
-STR_NEWGRF_SCAN_ARCHIVES                                        :Ieškoma archyvų
+STR_NEWGRF_SCAN_CAPTION                                         :{WHITE}Tikrinami plėtiniai
+STR_NEWGRF_SCAN_MESSAGE                                         :{BLACK}Nuskaitomi plėtiniai. Tai gali užtrukti, priklausomai nuo kiekio...
+STR_NEWGRF_SCAN_STATUS                                          :{BLACK}Nuskaityti {NUM} plėtin{P ys iai ių} iš {NUM}
+STR_NEWGRF_SCAN_ARCHIVES                                        :Ieškoma archyvuose
 
 # Sign list window
 STR_SIGN_LIST_CAPTION                                           :{WHITE}Ženklų sąrašas - {COMMA} ženkl{P as ai ų}
@@ -3057,9 +3192,9 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Įrašyk
 
 # Town directory window
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Miestai
-STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Nieko -
+STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}Nėra
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Miestų pavadinimai - spragtelėjus ant vardo, miestas rodomas ekrano centre. Ctrl+Paspaudimas atidaro naują langą su miesto vaizdu
+STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Spragtelėjus ant pavadinimo, miestas bus parodytas ekrano centre. Spragtelėjus laikant nuspaudus „Ctrl“ klavišą, bus atvertas papildomas peržiūros langas į pasirinktą miestą
 STR_TOWN_POPULATION                                             :{BLACK}Pasaulio populiacija: {COMMA}
 
 # Town view window
@@ -3074,8 +3209,8 @@ STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} pristatyta
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (vis dar reikia)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{GREEN} (pristatyta)
-STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}Miestas auga kas {ORANGE}{COMMA}{BLACK} dien{P ą as ų}
-STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}Miestas auga kas {ORANGE}{COMMA}{BLACK} dien{P ą as ų} (paremtas)
+STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}Miestas auga kas {ORANGE}{COMMA}{BLACK}{NBSP}dien{P ą as ų}
+STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}Miestas auga kas {ORANGE}{COMMA}{BLACK}{NBSP}dien{P ą as ų} (paremtas)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}Miestas {RED}ne{BLACK}didėja
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}Triukšmo limitas mieste: {ORANGE}{COMMA}{BLACK}  daugiausia: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Rodyti miestą ekrano centre. Ctrl+Paspaudimas atidaro naują langą su miesto vaizdu
@@ -3135,7 +3270,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Informacija
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Perspėjimas
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Klaida
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Atšaukti
 STR_GOAL_QUESTION_BUTTON_OK                                     :Gerai
 STR_GOAL_QUESTION_BUTTON_NO                                     :Ne
@@ -3154,6 +3289,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Pradėti iš na
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Atidėti
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Pasiduoti
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Uždaryti
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subsidijos
@@ -3166,6 +3302,7 @@ STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Paspausk
 
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY} Scenarijaus knyga
+STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Globali scenarijų knyga
 STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 STR_STORY_BOOK_GENERIC_PAGE_ITEM                                :Puslapis {NUM}
 STR_STORY_BOOK_SEL_PAGE_TOOLTIP                                 :{BLACK}Peršokti į konkretų puslapį pasirenkant jį iš sąrašo.
@@ -3173,6 +3310,7 @@ STR_STORY_BOOK_PREV_PAGE                                        :{BLACK}Buvęs
 STR_STORY_BOOK_PREV_PAGE_TOOLTIP                                :{BLACK}Į ankstesnį puslapį
 STR_STORY_BOOK_NEXT_PAGE                                        :{BLACK}Kitas
 STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}Į kitą puslapį
+STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Klaidinga tikslo nuoroda
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Stotelių pavadinimai - paspausk ant stotelės pavadinimo, kad pamatytum ją ekrano centre. Ctrl+Paspaudimas atidaro naują langą su stotelės vaizdu
@@ -3187,7 +3325,6 @@ STR_STATION_LIST_NO_WAITING_CARGO                               :{BLACK}Jokių k
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
-STR_STATION_VIEW_WAITING_TITLE                                  :{BLACK}Laukia: {WHITE}{STRING}
 STR_STATION_VIEW_WAITING_CARGO                                  :{WHITE}{CARGO_LONG}
 STR_STATION_VIEW_EN_ROUTE_FROM                                  :{YELLOW}({CARGO_SHORT} pakeliui iš „{STATION}“)
 STR_STATION_VIEW_RESERVED                                       :{YELLOW}({CARGO_SHORT} rezervuota krovai)
@@ -3218,8 +3355,14 @@ STR_STATION_VIEW_VIA_ANY                                        :{RED}{CARGO_SHO
 STR_STATION_VIEW_FROM_HERE                                      :{GREEN}{CARGO_SHORT} iš šios stoties
 STR_STATION_VIEW_VIA_HERE                                       :{GREEN}{CARGO_SHORT} stoja šioje stotyje
 STR_STATION_VIEW_TO_HERE                                        :{GREEN}{CARGO_SHORT} į šią stotį
+STR_STATION_VIEW_NONSTOP                                        :{YELLOW}{CARGO_SHORT} tiesiogiai
 
-STR_STATION_VIEW_GROUP_D_V_S                                    :Nuvykimo taškas per Išvykimo tašką
+STR_STATION_VIEW_GROUP_S_V_D                                    :iš-per-į
+STR_STATION_VIEW_GROUP_S_D_V                                    :iš-į-per
+STR_STATION_VIEW_GROUP_V_S_D                                    :per-į-iš
+STR_STATION_VIEW_GROUP_V_D_S                                    :per-iš-į
+STR_STATION_VIEW_GROUP_D_S_V                                    :į-iš-per
+STR_STATION_VIEW_GROUP_D_V_S                                    :į-per-iš
 
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :Pasibaisėtinas
@@ -3235,10 +3378,10 @@ STR_CARGO_RATING_OUTSTANDING                                    :Nuostabus
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centruoti stotį pagrindiniame ekrane. Ctrl+Click atidaro naują peržiūros langą su vaizdu į šią stotį
 STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Pakeisti stoties pavadinimą
 
-STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Rodyti visus traukinius, į kurių užduotis yra įtraukta ši stotis
-STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Rodyti visus automobilius, į kurių užduotis yra įtraukta ši stotis
-STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Rodyti visus lėktuvus, į kurių užduotis yra įtraukta ši stotis
-STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Rodyti visus laivus, į kurių užduotis yra įtraukta ši stotis
+STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Rodyti visus traukinius, į kurių užduotis yra įtraukta ši stotelė
+STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Rodyti visus automobilius, į kurių užduotis yra įtraukta ši stotelė
+STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Rodyti visus lėktuvus, į kurių užduotis yra įtraukta ši stotelė
+STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Rodyti visus laivus, į kurių užduotis yra įtraukta ši stotelė
 
 STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Pervardinti stotį
 
@@ -3276,12 +3419,12 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Iš viso:
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Sąskaitos balansas
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Paskola
-STR_FINANCES_MAX_LOAN                                           :{WHITE}Maksimali paskola: {BLACK}{CURRENCY_LONG}
+STR_FINANCES_MAX_LOAN                                           :{WHITE}Didžiausia paskola: {BLACK}{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
-STR_FINANCES_BORROW_BUTTON                                      :{BLACK}Skolintis{CURRENCY_LONG}
-STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}Skolintis daugiau. Ctrl+Paspaudimas pasiskolina daugiausiai kiek galima
-STR_FINANCES_REPAY_BUTTON                                       :{BLACK}Gražinti{CURRENCY_LONG}
-STR_FINANCES_REPAY_TOOLTIP                                      :{BLACK}Grąžinti paskolos dalį. Ctrl+Paspaudimas grąžina daugiausiai kiek gali
+STR_FINANCES_BORROW_BUTTON                                      :{BLACK}Skolintis {CURRENCY_LONG}
+STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}Skolintis daugiau. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus pasiskolinta didžiausia įmanoma suma
+STR_FINANCES_REPAY_BUTTON                                       :{BLACK}Grąžinti {CURRENCY_LONG}
+STR_FINANCES_REPAY_TOOLTIP                                      :{BLACK}Grąžinti paskolos dalį. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus grąžinta didžiausia įmanoma suma
 STR_FINANCES_INFRASTRUCTURE_BUTTON                              :{BLACK}Infrastruktūra
 
 # Company view
@@ -3431,21 +3574,24 @@ STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Pašalin
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Pervadinti pasirinktą grupę
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Paspauskite čia, kad apsaugoti grupę nuo bendro auto-pakeitimo
 
+STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Pašalinti grupę
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Ar tikrai norite pašalinti šią grupę ir visus jos palikuonis?
+
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Įkelti bendras transporto priemones
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Iškelti visas transporto priemones
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Pervadinti grupę
 
 # Build vehicle window
-STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nauji Traukiniai
-STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nauji Elektriniai Traukiniai
-STR_BUY_VEHICLE_TRAIN_MONORAIL_CAPTION                          :Nauji Vienbegiai Traukiniai
-STR_BUY_VEHICLE_TRAIN_MAGLEV_CAPTION                            :Nauji „Maglev“ traukiniai
+STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nauji lokomotyvai
+STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nauji elektriniai lokomotyvai
+STR_BUY_VEHICLE_TRAIN_MONORAIL_CAPTION                          :Nauji vienbėgiai lokomotyvai
+STR_BUY_VEHICLE_TRAIN_MAGLEV_CAPTION                            :Nauji „Maglev“ lokomotyvai
 
-STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :Traukiniai
+STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :Nauji lokomotyvai
 STR_BUY_VEHICLE_ROAD_VEHICLE_CAPTION                            :Nauji automobiliai
 STR_BUY_VEHICLE_SHIP_CAPTION                                    :Nauji laivai
-STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Naujas lėktuvas
+STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Nauji lėktuvai
 
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}Kaina: {GOLD}{CURRENCY_LONG}{BLACK} Svoris: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}Greitis: {GOLD}{VELOCITY}{BLACK} Galia: {GOLD}{POWER}
@@ -3468,35 +3614,50 @@ STR_PURCHASE_INFO_ALL_BUT                                       :visiems krovini
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Didž. traukos jėga: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Nuotolis: {GOLD}{COMMA} langeliai
 
-STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Transporto priemoniu pasirinkimo sarasas - paspausk ant priemones, kad gautum daugiau informacijos
-STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Automobiliu pasirinkimo sarasas - paspausk ant automobilio jei nori detalesnes informacijos
-STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}Laivu sarasas - paspausk ant laivo, jei nori detalesnes informacijos
-STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Lektuvu sarasas - paspausk ant lektuvo, jei nori daugiau informacijos
+STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Lokomotyvų ir vagonų sąrašas. Spragtelėjus bus parodyta platesnė informacija. Spragtelėjus laikant nuspaustą Ctrl klavišą, lokomotyvas ar vagonas bus slepiamas/rodomas sąraše
+STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Automobilių sąrašas. Spragtelėjus bus parodyta platesnė informacija. Spragtelėjus laikant nuspaustą Ctrl klavišą, automobilis bus slepiamas/rodomas sąraše
+STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}Laivų sąrašas. Spragtelėjus bus parodyta platesnė informacija. Spragtelėjus laikant nuspaustą Ctrl klavišą, laivas bus slepiamas/rodomas sąraše
+STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Lėktuvų sąrašas. Spragtelėjus bus parodyta platesnė informacija. Spragtelėjus laikant nuspaustą Ctrl klavišą, lėktuvas bus slepiamas/rodomas sąraše
 
-STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}Pirkti transporto priemonę
-STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Pirkti transporto priemonę
-STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Pirkti Laivą
-STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Pirkti lėktuvą
+STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}Pirkti
+STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Pirkti
+STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Pirkti
+STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Pirkti
 
-STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Pirkti pažymetą traukinį. Shift+Click parodys kainą neperkant
-STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Įsigyti pažymetą transporto priemonę
-STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Pirkti pažymetą laivą. Shift+Click parodys kainą neperkant
-STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Pirkti pažymėtą lėktuvą. Shift+Click parodys kainą neperkant
+STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Pirkti pažymėtą lokomotyvą ir/ar vagonus. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodyta pirkinio kaina nieko realiai nenuperkant
+STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Pirkti pažymėtą automobilį. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodyta pirkinio kaina nieko realiai nenuperkant
+STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Pirkti pažymėtą laivą. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodyta pirkinio kaina nieko realiai nenuperkant
+STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Pirkti pažymėtą lėktuvą. Spragtelėjus laikant nuspaustą Shift klavišą, bus parodyta pirkinio kaina nieko realiai nenuperkant
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Pervardinti
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Pervardinti
 STR_BUY_VEHICLE_SHIP_RENAME_BUTTON                              :{BLACK}Pervardinti
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_BUTTON                          :{BLACK}Pervardinti
 
-STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}Pervardinti traukinio tipa
-STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Pervardinti automobiliu tipa
-STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Pakeisti laivo tipa
-STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Pakeisti lėktuvo vardą
+STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}Pervardinti pažymėtą lokomotyvą ar vagoną
+STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Pervardinti pažymėtą automobilį
+STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Pervardinti pažymėtą laivą
+STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Pervardinti pažymėtą lėktuvą
 
-STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Pervardinti traukinio tipa
-STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Pervardinti automobilių tipą
-STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}Pakeisti laivo vardą
-STR_QUERY_RENAME_AIRCRAFT_TYPE_CAPTION                          :{WHITE}Pakeisti lėktuvo vardą
+STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON                        :{BLACK}Slėpti
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_TOGGLE_BUTTON                 :{BLACK}Slėpti
+STR_BUY_VEHICLE_SHIP_HIDE_TOGGLE_BUTTON                         :{BLACK}Slėpti
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_TOGGLE_BUTTON                     :{BLACK}Slėpti
+
+STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON                        :{BLACK}Rodyti
+STR_BUY_VEHICLE_ROAD_VEHICLE_SHOW_TOGGLE_BUTTON                 :{BLACK}Rodyti
+STR_BUY_VEHICLE_SHIP_SHOW_TOGGLE_BUTTON                         :{BLACK}Rodyti
+STR_BUY_VEHICLE_AIRCRAFT_SHOW_TOGGLE_BUTTON                     :{BLACK}Rodyti
+
+STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP                  :{BLACK}Slėpti arba rodyti pažymėtą lokomotyvą
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_SHOW_TOGGLE_TOOLTIP           :{BLACK}Slėpti arba rodyti pažymėtą automobilį
+STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}Slėpti arba rodyti pažymėtą laivą
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}Slėpti arba rodyti pažymėtą lėktuvą
+
+STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Pervardinti lokomotyvą ar vagoną
+STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Pervardinti automobilį
+STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}Pervardinti laivą
+STR_QUERY_RENAME_AIRCRAFT_TYPE_CAPTION                          :{WHITE}Pervardinti lėktuvą
 
 # Depot window
 STR_DEPOT_CAPTION                                               :{WHITE}{DEPOT}
@@ -3635,6 +3796,11 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE.ka                             :Automobilį
 STR_REPLACE_VEHICLE_SHIP                                        :Laivas
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Lėktuvas
 
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}Naudojamos transporto priemonės
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :BLACK}Stulpelis su informacija apie transporto priemones, kurias šiuo metu naudojate
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}Galimos transporto priemonės
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK}Stulpelis su informacija apie transporto priemones, kuriomis galite pakeisti jau turimas
+
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Pasirink tr. priemonės tipą, kurią reikės keisti
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Pasirink tr. priemonės tipą, kuria bus keičiamos pasirinktos tr. priemonės
 
@@ -3759,7 +3925,7 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Talpa: {
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Pervesti už tiekėjų sistemas: {LTBLUE}{CURRENCY_LONG}
 
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Techninė apžiūra kas: {LTBLUE}{COMMA}dien{P ą as ų}{BLACK}   Paskutinė apžiūra:{LTBLUE}{DATE_LONG}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Techninė apžiūra kas: {LTBLUE}{COMMA}{NBSP}dien{P ą as ų}{BLACK}   Paskutinė apžiūra:{LTBLUE}{DATE_LONG}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Siųsti techninei apžiūrai patikimumui nukritus iki: {LTBLUE}{COMMA}%{BLACK}   Paskutinė apžiūra: {LTBLUE}{DATE_LONG}
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Padidinti techninės apžiūros intervalą 10 dienų (arba procentų). Spragtelėjus laikant nuspaustą Ctrl klavišą, intervalas bus padidintas 5 dienomis (arba procentais)
 STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Sumažinti techninės apžiūros intervalą 10 dienų (arba procentų). Spragtelėjus laikant nuspaustą Ctrl klavišą, intervalas bus sumažintas 5 dienomis (arba procentais)
@@ -3769,9 +3935,9 @@ STR_VEHICLE_DETAILS_DEFAULT                                     :Numatytasis
 STR_VEHICLE_DETAILS_DAYS                                        :Dienos
 STR_VEHICLE_DETAILS_PERCENT                                     :Procentai
 
-STR_QUERY_RENAME_TRAIN_CAPTION                                  :{WHITE}Pervadinti traukinį
-STR_QUERY_RENAME_ROAD_VEHICLE_CAPTION                           :{WHITE}Pervadinti automobilį
-STR_QUERY_RENAME_SHIP_CAPTION                                   :{WHITE}Pervadinti laivą
+STR_QUERY_RENAME_TRAIN_CAPTION                                  :{WHITE}Pervardinti traukinį
+STR_QUERY_RENAME_ROAD_VEHICLE_CAPTION                           :{WHITE}Pervardinti automobilį
+STR_QUERY_RENAME_SHIP_CAPTION                                   :{WHITE}Pervardinti laivą
 STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}Pervardinti lėktuvą
 
 # Extra buttons for train details windows
@@ -4001,16 +4167,20 @@ STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Kelionė (nėra
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Vykti ne didesniu, nei {2:VELOCITY} greičiu (kelionės trukmė nenustatyta)
 STR_TIMETABLE_TRAVEL_FOR                                        :Keliauti {STRING.ka}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Vykti {STRING} ne didesniu, nei {VELOCITY} greičiu
+STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Vykti ({STRING.ka}, neįtraukiant į tvarkaraštį)
+STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Vykti ({STRING.ka}, neįtraukiant į tvarkaraštį) ne greičiau, nei {VELOCITY}
+STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(stovėti {STRING.ka}, neįtraukti į tvarkaraštį)
+STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(vykti {STRING.ka}, neįtraukiant į tvarkaraštį)
 STR_TIMETABLE_STAY_FOR                                          :ir pasilikti {STRING.ka}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :ir keliauti {STRING.ka}
-STR_TIMETABLE_DAYS                                              :{G=mot}{COMMA} dien{P a os ų}
+STR_TIMETABLE_DAYS                                              :{G=mot}{COMMA}{NBSP}dien{P a os ų}
 STR_TIMETABLE_DAYS.kas                                          :{COMMA} dien{P a os ų}
 STR_TIMETABLE_DAYS.ko                                           :{COMMA} dien{P os as ų}
 STR_TIMETABLE_DAYS.kam                                          :{COMMA} dien{P ai oms ų}
 STR_TIMETABLE_DAYS.ka                                           :{COMMA} dien{P ą as ų}
 STR_TIMETABLE_DAYS.kuo                                          :{COMMA} dien{P a omis ų}
 STR_TIMETABLE_DAYS.kur                                          :{COMMA} dien{P oje ose ų}
-STR_TIMETABLE_TICKS                                             :{COMMA} žym{P a os ų}
+STR_TIMETABLE_TICKS                                             :{COMMA}{NBSP}impuls{P as ai ų}
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Maršruto trukmė yra {STRING}
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Maršruto trukmė yra mažiausiai {STRING}, nes nustatytos ne visų užduočių trukmės
@@ -4031,7 +4201,7 @@ STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}Trukmės
 STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Atšaukti pažymėtos užduoties trukmės ribojimus
 
 STR_TIMETABLE_CHANGE_SPEED                                      :{BLACK}Pakeisti greičio ribą
-STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}Pakeisti pažymėtos užduoties maksimalaus greičio ribą
+STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}Pakeisti pažymėtos užduoties didžiausio greičio ribą
 
 STR_TIMETABLE_CLEAR_SPEED                                       :{BLACK}Greičio neriboti
 STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}Neriboti pažymėtos užduoties greičio
@@ -4067,7 +4237,7 @@ STR_AI_DEBUG_SETTINGS                                           :{BLACK}Nustatym
 STR_AI_DEBUG_SETTINGS_TOOLTIP                                   :{BLACK}Keisti skripto nustatymus
 STR_AI_DEBUG_RELOAD                                             :{BLACK}Perkrauti AI
 STR_AI_DEBUG_RELOAD_TOOLTIP                                     :{BLACK}Išbraukti DI, perkrauti skritpą, ir perkrauti DI
-STR_AI_DEBUG_BREAK_STR_ON_OFF_TOOLTIP                           :{BLACK}Įjungti/išjungti laužymą, kai DI registro žinutė sutinka su lūžio žinute
+STR_AI_DEBUG_BREAK_STR_ON_OFF_TOOLTIP                           :{BLACK}Įjungti/išjungti stabdymą, jei DI žurnalo žinutė sutampa su stabdos žinute
 STR_AI_DEBUG_BREAK_ON_LABEL                                     :{BLACK}Lūžis ant:
 STR_AI_DEBUG_BREAK_STR_OSKTITLE                                 :{BLACK}Lūžis ant
 STR_AI_DEBUG_BREAK_STR_TOOLTIP                                  :{BLACK}Kai DI registro žinutė sutampa su šia eilute, žaidimas pristabdomas
@@ -4136,6 +4306,8 @@ STR_AI_SETTINGS_START_DELAY                                     :Dienų skaičiu
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} aprašymas {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} pasikeitimai {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} licencija {STRING}
+STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Skaidyti tekstą
+STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Skaidyti tekstą taip, kad jis visas tilpų lange
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Peržiūrėti SKAITYKMANE
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Pasikeitimai
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licencija
@@ -4195,8 +4367,8 @@ STR_ERROR_BMPMAP_IMAGE_TYPE                                     :{WHITE}... nepa
 
 STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :{WHITE}... paveikslėlis yra per didelis
 
-STR_WARNING_HEIGHTMAP_SCALE_CAPTION                             :{WHITE}Skales ispejimas
-STR_WARNING_HEIGHTMAP_SCALE_MESSAGE                             :{YELLOW}Perdaryti pagrindini zemelapi per daug nerekomenduojama. Testi generavima?
+STR_WARNING_HEIGHTMAP_SCALE_CAPTION                             :{WHITE}Mastelio įspėjimas
+STR_WARNING_HEIGHTMAP_SCALE_MESSAGE                             :{YELLOW}Per daug keisti pradinio žemėlapio dydį nerekomenduojama. Tęsti generavimą?
 
 # Soundset messages
 STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Rasta tik fiktyvi garsų biblioteka. Jeigu norite garsų žaidime, įdiekite garsų rinkinį naudojant parsisiuntimų sistemą.
@@ -4246,6 +4418,7 @@ STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Kasinėj
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}Jau siekia jūros lygį
 STR_ERROR_TOO_HIGH                                              :{WHITE}Per aukštai
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... jau plokščia
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Tiltas bus per aukštai.
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Kompanijos vardo pakeisti negalima...
@@ -4254,7 +4427,7 @@ STR_ERROR_CAN_T_CHANGE_PRESIDENT                                :{WHITE}Direktor
 STR_ERROR_MAXIMUM_PERMITTED_LOAN                                :{WHITE}... daugiausia pasiskolinti galima {CURRENCY_LONG}
 STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY                           :{WHITE}Daugiau skolintis negalima...
 STR_ERROR_LOAN_ALREADY_REPAYED                                  :{WHITE}... visa paskola gražinta
-STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}... {CURRENCY_LONG} reikia
+STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}...reikia turėti {CURRENCY_LONG}
 STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Skolos grąžinti negalima...
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Negalima dovanoti iš banko pasiskolintų pinigų...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Neįmanoma pirkti kompanijos...
@@ -4272,9 +4445,9 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... per 
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... per arti kito miesto
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... per daug miestų
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... daugiau nera vietos zemelapyje
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Miestas nestatys kelių. Jūs galite įjungti kelių statybą per Sudėtingesni nustatymai>Ekonomika>Miestai.
+STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Miestas nestatys kelių. Jūs galite įjungti kelių statybą per „Išplėstinės nuostatos>Aplinka>Miestai“.
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Vyksta kelio darbai
-STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Negalima panaikinti šio miesto...{}Mieste yra stotis arba depas, arba miestui priklausantis vienas iš laukelių negali būti ištrintas.
+STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Negalima panaikinti šio miesto...{}Mieste yra stotelė arba depas, arba miestui priklausantis vienas iš laukelių negali būti pašalintas
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... nėra tinkamos vietos statulai šio miesto centre
 
 # Industry related errors
@@ -4296,6 +4469,9 @@ STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... miš
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... gali būti statoma tik aukščiau sniego linijos
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... gali būti statoma tik žemiau sniego linijos
 
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}Nėra tinkamos vietos '{STRING.kam}' pramonės įmonėms
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Pakeisti generavimo parametrus geresniam žemėlapiui sukurti
+
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Geležinkelio stoties čia statyti negalima...
 STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}Čia autobusų stotelės statyti negalima...
@@ -4306,7 +4482,7 @@ STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :{WHITE}Neįmano
 STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Negalima cia statyti oro uosto...
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Ribojasi su daugiau nei viena stotele/pakrovimo aikštele
-STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... stotis per daug išsiplėtusi
+STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... stotelė per daug išsiplėtusi
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Per daug stotelių
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Perdaug traukinių stoties dalių
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Per daug autobusų stotelių
@@ -4432,6 +4608,7 @@ STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Pirmiau 
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Negalima pradeti ir baigti tuo paciu metu
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Tilto pirminės atramos turi būti tame pačiame aukštyje
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}Tiltas per žemas reljefui
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}Tiltas per aukštas šiam kraštovaizdžiui.
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Pradžia ir pabaiga turi būti vienoje linijoje
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... abu tilto galai turi būti ant žemės
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... tiltas per ilgas
@@ -4458,6 +4635,7 @@ STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... jis 
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Neįmanoma sukurti grupę...
 STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Neįmanoma ištrinti šią grupę...
 STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Neįmanoma pervadinti grupę...
+STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Nepavyksta nustatyti viršgrupės...
 STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}Neįmanoma ištrinti visas tr. priemones iš šios grupės...
 STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}Neįmanoma įtraukti tr. priemonę į šią grupę...
 STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}Negalima pridėti bendrų transporto priemonių į grupę...
@@ -4513,6 +4691,11 @@ STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Aptarnav
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... automobilis sunaikintas
 
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Nebus įmanoma įsigyti jokių transporto priemonių
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Pakeiskite plėtinių nuostatas
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}Kol kas negalima įsigyti jokių transporto priemonių
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Pradėkite žaidimą vėliau, nei {DATE_SHORT}, arba įdiekite plėtinių, kurie leistų įsigyti transporto priemonių šiame ankstyvame laikotarpyje
+
 # Specific vehicle errors
 STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}Neįmanoma priversti traukinio važiuoti nesaugiai...
 STR_ERROR_CAN_T_REVERSE_DIRECTION_TRAIN                         :{WHITE}Traukinio vaziavimo krypties pakeisti negalima...
@@ -4531,7 +4714,7 @@ STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :{WHITE}Sios uzd
 STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :{WHITE}Negalima perkelti šio užsakymo...
 STR_ERROR_CAN_T_SKIP_ORDER                                      :{WHITE}Negalima praleisti šio užsakymo...
 STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :{WHITE}Negalima praleisti pažymėto užsakymo...
-STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}... transporto priemonė negali vykti į visas stotis
+STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}... transporto priemonė negali vykti į visas stoteles
 STR_ERROR_CAN_T_ADD_ORDER                                       :{WHITE}... automobilis negali nukakti iki tos stotelės
 STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :{WHITE}... automobilis dalinantis šį grafiką negali nukakti iki tos stotelės
 
@@ -4942,33 +5125,33 @@ STR_SV_STNAME_FALLBACK                                          :{STRING} Stotel
 
 ##id 0x8000
 # Vehicle names
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KIRBY_PAUL_TANK_STEAM        :Kirby Paul Tank (Garai)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MJS_250_DIESEL               :MJS 250 (Dyzelis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KIRBY_PAUL_TANK_STEAM        :Kirby Paul Tank (garinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MJS_250_DIESEL               :MJS 250 (dyzelinis)
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_PLODDYPHUT_CHOO_CHOO         :Ploddyphut Choo-Choo
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_POWERNAUT_CHOO_CHOO          :Powernaut Choo-Choo
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MIGHTYMOVER_CHOO_CHOO        :Mightymover Choo-Choo
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MIGHTYMOVER_CHOO_CHOO        :MightyMover Choo-Choo
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_PLODDYPHUT_DIESEL            :Ploddyphut Dyzelis
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_POWERNAUT_DIESEL             :Powernaut Dyzelis
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_WILLS_2_8_0_STEAM            :Wills 2-8-0 (Garai)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_CHANEY_JUBILEE_STEAM         :Chaney 'Jubilee' (Garai)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_GINZU_A4_STEAM               :Ginzu 'A4' (Garai)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_8P_STEAM                  :SH '8P' (Garai)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MANLEY_MOREL_DMU_DIESEL      :Manley-Morel DMU (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_DASH_DIESEL                  :'Dash' (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_HENDRY_25_DIESEL          :SH/Hendry '25' (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_UU_37_DIESEL                 :UU '37' (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_FLOSS_47_DIESEL              :Floss '47' (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_CS_4000_DIESEL               :CS 4000 (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_CS_2400_DIESEL               :CS 2400 (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_CENTENNIAL_DIESEL            :Centennial (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KELLING_3100_DIESEL          :Kelling 3100 (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_TURNER_TURBO_DIESEL          :Turner Turbo (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MJS_1000_DIESEL              :MJS 1000 (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_125_DIESEL                :SH '125' (Dyzelis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_30_ELECTRIC               :SH '30' (Elektrinis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_40_ELECTRIC               :SH '40' (Elektrinis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_T_I_M_ELECTRIC               :'T.I.M.' (Elektrinis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_ASIASTAR_ELECTRIC            :'AsiaStar' (Elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_WILLS_2_8_0_STEAM            :Wills 2-8-0 (garinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_CHANEY_JUBILEE_STEAM         :Chaney Jubilee (garinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_GINZU_A4_STEAM               :Ginzu A4 (garinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_8P_STEAM                  :SH 8P (garinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MANLEY_MOREL_DMU_DIESEL      :Manley-Morel DMU (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_DASH_DIESEL                  :Dash (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_HENDRY_25_DIESEL          :SH/Hendry 25 (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_UU_37_DIESEL                 :UU 37 (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_FLOSS_47_DIESEL              :Floss 47 (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_CS_4000_DIESEL               :CS 4000 (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_CS_2400_DIESEL               :CS 2400 (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_CENTENNIAL_DIESEL            :Centennial (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KELLING_3100_DIESEL          :Kelling 3100 (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_TURNER_TURBO_DIESEL          :Turner Turbo (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MJS_1000_DIESEL              :MJS 1000 (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_125_DIESEL                :SH 125 (dyzelinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_30_ELECTRIC               :SH 30 (elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_SH_40_ELECTRIC               :SH 40 (elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_T_I_M_ELECTRIC               :T.I.M. (elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_ASIASTAR_ELECTRIC            :AsiaStar (elektrinis)
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_PASSENGER_CAR                 :Keleivinis vagonas
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_MAIL_VAN                      :Pašto vagonas
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_COAL_CAR                      :Anglies vagonas
@@ -4996,8 +5179,8 @@ STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_TOY_VAN                       :Žaislų vagona
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_BATTERY_TRUCK                 :Baterijų vagonas
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_FIZZY_DRINK_TRUCK             :Putojančių gėrimų vagonas
 STR_VEHICLE_NAME_TRAIN_WAGON_RAIL_PLASTIC_TRUCK                 :Plastmasės vagonas
-STR_VEHICLE_NAME_TRAIN_ENGINE_MONORAIL_X2001_ELECTRIC           :'X2001' (Elektrinis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_MONORAIL_MILLENNIUM_Z1_ELECTRIC   :'Millennium Z1' (Elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_MONORAIL_X2001_ELECTRIC           :X2001 (elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_MONORAIL_MILLENNIUM_Z1_ELECTRIC   :Millennium Z1 (elektrinis)
 STR_VEHICLE_NAME_TRAIN_ENGINE_MONORAIL_WIZZOWOW_Z99             :Wizzowow Z99
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_PASSENGER_CAR             :Keleivinis vagonas
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_MAIL_VAN                  :Pašto vagonas
@@ -5026,10 +5209,10 @@ STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_TOY_VAN                   :Žaislų vagona
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_BATTERY_TRUCK             :Baterijų vagonas
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_FIZZY_DRINK_TRUCK         :Putojančių gėrimų vagonas
 STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_PLASTIC_TRUCK             :Plastmasės vagonas
-STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_LEV1_LEVIATHAN_ELECTRIC    :Lev1 'Leviathan' (Elektrinis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_LEV2_CYCLOPS_ELECTRIC      :Lev2 'Cyclops' (Elektrinis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_LEV3_PEGASUS_ELECTRIC      :Lev3 'Pegasus' (Elektrinis)
-STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_LEV4_CHIMAERA_ELECTRIC     :Lev4 'Chimaera' (Elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_LEV1_LEVIATHAN_ELECTRIC    :Lev1 Leviathan (elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_LEV2_CYCLOPS_ELECTRIC      :Lev2 Cyclops (elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_LEV3_PEGASUS_ELECTRIC      :Lev3 Pegasus (elektrinis)
+STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_LEV4_CHIMAERA_ELECTRIC     :Lev4 Chimaera (elektrinis)
 STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_WIZZOWOW_ROCKETEER         :Wizzowow Rocketeer
 STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_PASSENGER_CAR               :Keleivinis vagonas
 STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_MAIL_VAN                    :Pašto vagonas
@@ -5155,7 +5338,7 @@ STR_VEHICLE_NAME_SHIP_CHUGGER_CHUG_PASSENGER                    :Chugger-Chug ke
 STR_VEHICLE_NAME_SHIP_SHIVERSHAKE_PASSENGER_FERRY               :Shivershake keleivių keltas
 STR_VEHICLE_NAME_SHIP_YATE_CARGO_SHIP                           :Yate krovininis laivas
 STR_VEHICLE_NAME_SHIP_BAKEWELL_CARGO_SHIP                       :Bakewell krovininis laivas
-STR_VEHICLE_NAME_SHIP_MIGHTYMOVER_CARGO_SHIP                    :Mightymover krovininis laivas
+STR_VEHICLE_NAME_SHIP_MIGHTYMOVER_CARGO_SHIP                    :MightyMover krovininis laivas
 STR_VEHICLE_NAME_SHIP_POWERNAUT_CARGO_SHIP                      :Powernaut krovininis laivas
 STR_VEHICLE_NAME_AIRCRAFT_SAMPSON_U52                           :Sampson U52
 STR_VEHICLE_NAME_AIRCRAFT_COLEMAN_COUNT                         :Coleman Count
@@ -5228,7 +5411,7 @@ STR_FORMAT_DEPOT_NAME_SHIP                                      :{TOWN} Laivų d
 STR_FORMAT_DEPOT_NAME_SHIP_SERIAL                               :{TOWN} Laivų dokas #{COMMA}
 STR_FORMAT_DEPOT_NAME_AIRCRAFT                                  :{STATION} Angaras
 
-STR_UNKNOWN_STATION                                             :Nežinoma stotis
+STR_UNKNOWN_STATION                                             :Nežinoma stotelė
 STR_DEFAULT_SIGN_NAME                                           :Ženklas
 STR_COMPANY_SOMEONE                                             :kažkas
 
@@ -5255,6 +5438,7 @@ STR_COMPANY_NAME                                                :{COMPANY}
 STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMPANY_NUM}
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
+STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} (paslėptas)
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}
@@ -5278,6 +5462,7 @@ STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
+STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}
 
 # Slightly 'raw' stringcodes with colour or size
 STR_BLACK_COMMA                                                 :{BLACK}{COMMA}
@@ -5289,8 +5474,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
@@ -5301,9 +5484,7 @@ STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
-STR_GREEN_STRING                                                :{GREEN}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
-STR_RED_STRING                                                  :{RED}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
 STR_WHITE_STRING                                                :{WHITE}{STRING}
 STR_ORANGE_STRING1_WHITE                                        :{ORANGE}{STRING}{WHITE}

@@ -191,6 +191,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Faxxa bi
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Faxxa biex tiskrolja - iskrolja l-lista lejn ix-xellug jew lemin
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Waqqa bini, etc.., Ctrl tagħzel zona dijagonali. Shift taqleb bejn bini/turija ta' stima ta' l-ispiza
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Default
 STR_BUTTON_CANCEL                                               :{BLACK}Ikkanċella
@@ -306,7 +309,10 @@ STR_FILE_MENU_SEPARATOR                                         :
 ############ range for about menu starts
 ############ range ends here
 
-############ range for days starts (also used for the place in the highscore window)
+############ range for ordinal numbers used for the place in the highscore window
+############ range for ordinal numbers ends
+
+############ range for days starts
 ############ range for days ends
 
 ############ range for months starts
@@ -374,9 +380,7 @@ STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {C
 
 
 
-# Start of order review system
-# DON'T ADD OR REMOVE LINES HERE
-# end of order system
+# Order review system / warnings
 
 STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} mitluf
 
@@ -393,19 +397,18 @@ STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE
 ############ end of currency region
 
 
-############ start of measuring units region
-############ end of measuring units region
-
-
 
 ############ start of townname region
 ############ end of townname region
 
 
+############ start of autosave dropdown
+############ end of autosave dropdown
 
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
+
 
 
 
@@ -430,7 +433,7 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 
 
 
-# Advanced settings window
+# Settings tree window
 
 
 
@@ -470,6 +473,12 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_NO_ACTIONS               :L-ebda azzjoni
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :L-azzjonijiet kollha
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Uza l-lista avvanzata tal-vetturi: {STRING}
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Ippermetti l-uzu tal-listi avvanzati tal-vetturi biex tghaqqad il-vetturi fi gruppi
+
+
+
+
+
+
 
 
 
@@ -702,6 +711,8 @@ STR_NEWGRF_SETTINGS_RESCAN_FILES_TOOLTIP                        :{BLACK}Aġġorn
 
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Ma jaqblux ma din il-verzjoni ta' OpenTTD
 
+# NewGRF save preset window
+
 # NewGRF parameters window
 
 # NewGRF inspect window
@@ -726,6 +737,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_ENGINE                                       :<magna invalida>
 STR_NEWGRF_INVALID_INDUSTRYTYPE                                 :<industrija invalida>
+
+# Placeholders for other invalid stuff, e.g. vehicles that have gone (Game Script).
 
 # NewGRF scanning window
 
@@ -752,7 +765,8 @@ STR_GOALS_TEXT                                                  :{ORANGE}{STRING
 
 # Goal question window
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
+############ End of Goal Question button list
 
 # Subsidies window
 
@@ -823,7 +837,11 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 
 
 
+
 # Build vehicle window
+
+
+
 
 
 
@@ -861,6 +879,7 @@ STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} 
 
 
 # Autoreplace window
+
 
 
 
@@ -1031,6 +1050,7 @@ STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}L-istam
 
 # Industry related errors
 
+
 # Station construction related errors
 
 
@@ -1090,6 +1110,7 @@ STR_ERROR_SHIP_NOT_AVAILABLE                                    :{WHITE}Dan il-v
 STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :{WHITE}Dan l-ajruplan mhux disponibbli
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Hemm wisq vetturi fil-logħba
+
 
 
 # Specific vehicle errors
@@ -1203,7 +1224,7 @@ STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KIRBY_PAUL_TANK_STEAM        :Kirby Paul Tank
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MJS_250_DIESEL               :MJS 250 (Diesel)
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_PLODDYPHUT_CHOO_CHOO         :Ploddyphut Choo-Choo
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_POWERNAUT_CHOO_CHOO          :Powernaut Choo-Choo
-STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MIGHTYMOVER_CHOO_CHOO        :Mightymover Choo-Choo
+STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MIGHTYMOVER_CHOO_CHOO        :MightyMover Choo-Choo
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_PLODDYPHUT_DIESEL            :Ploddyphut Diesel
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_POWERNAUT_DIESEL             :Powernaut Diesel
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_WILLS_2_8_0_STEAM            :Wills 2-8-0 (Fwar)
@@ -1260,7 +1281,7 @@ STR_VEHICLE_NAME_SHIP_CHUGGER_CHUG_PASSENGER                    :Vapur tal-passi
 STR_VEHICLE_NAME_SHIP_SHIVERSHAKE_PASSENGER_FERRY               :Vapur tal-passiġġieri Shivershake
 STR_VEHICLE_NAME_SHIP_YATE_CARGO_SHIP                           :Vapur tal-merkanzija Yate
 STR_VEHICLE_NAME_SHIP_BAKEWELL_CARGO_SHIP                       :Vapur tal-merkanzija Bakewell
-STR_VEHICLE_NAME_SHIP_MIGHTYMOVER_CARGO_SHIP                    :Vapur tal-merkanzija Mightymover
+STR_VEHICLE_NAME_SHIP_MIGHTYMOVER_CARGO_SHIP                    :Vapur tal-merkanzija MightyMover
 STR_VEHICLE_NAME_SHIP_POWERNAUT_CARGO_SHIP                      :Vapur tal-merkanzija Powernaut
 STR_VEHICLE_NAME_AIRCRAFT_SAMPSON_U52                           :Sampson U52
 STR_VEHICLE_NAME_AIRCRAFT_COLEMAN_COUNT                         :Coleman Count
@@ -1374,8 +1395,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
@@ -1386,9 +1405,7 @@ STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
-STR_GREEN_STRING                                                :{GREEN}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
-STR_RED_STRING                                                  :{RED}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
 STR_WHITE_STRING                                                :{WHITE}{STRING}
 STR_ORANGE_STRING1_WHITE                                        :{ORANGE}{STRING}{WHITE}

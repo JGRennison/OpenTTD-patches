@@ -56,7 +56,7 @@ static const SpriteID SPR_LARGE_SMALL_WINDOW = 682;
 
 /** Extra graphic spritenumbers */
 static const SpriteID SPR_OPENTTD_BASE   = 4896;
-static const uint16 OPENTTD_SPRITE_COUNT = 174;
+static const uint16 OPENTTD_SPRITE_COUNT = 175;
 
 /* Halftile-selection sprites */
 static const SpriteID SPR_HALFTILE_SELECTION_FLAT = SPR_OPENTTD_BASE;
@@ -84,6 +84,8 @@ static const SpriteID SPR_HOUSE_ICON         = SPR_OPENTTD_BASE + 49;
 static const SpriteID SPR_SHARED_ORDERS_ICON = SPR_OPENTTD_BASE + 50;
 static const SpriteID SPR_PIN_UP             = SPR_OPENTTD_BASE + 51;  // pin icon
 static const SpriteID SPR_PIN_DOWN           = SPR_OPENTTD_BASE + 52;
+
+static const SpriteID SPR_CLOSEBOX           = 143;
 
 static const SpriteID SPR_CIRCLE_FOLDED      = SPR_OPENTTD_BASE + 147; // (+) icon
 static const SpriteID SPR_CIRCLE_UNFOLDED    = SPR_OPENTTD_BASE + 148; // (-) icon
@@ -158,6 +160,8 @@ static const SpriteID SPR_IMG_DELETE_LEFT            = SPR_OPENTTD_BASE + 166;
 static const SpriteID SPR_IMG_DELETE_RIGHT           = SPR_OPENTTD_BASE + 167;
 
 static const SpriteID SPR_WINDOW_DEFSIZE             = SPR_OPENTTD_BASE + 168;
+
+static const SpriteID SPR_IMG_CARGOFLOW              = SPR_OPENTTD_BASE + 174;
 
 static const SpriteID SPR_SIGNALS_BASE  = SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
 static const uint16 PRESIGNAL_SPRITE_COUNT                   =  48;
@@ -288,8 +292,12 @@ static const uint16 RAILTYPE_TUNNEL_BASE_COUNT = 16;
 static const SpriteID SPR_EMPTY_BOUNDING_BOX = SPR_RAILTYPE_TUNNEL_BASE + RAILTYPE_TUNNEL_BASE_COUNT;
 static const uint16 EMPTY_BOUNDING_BOX_SPRITE_COUNT = 1;
 
+/* Black palette sprite, needed for painting (fictive) tiles outside map */
+static const SpriteID SPR_PALETTE_BASE = SPR_EMPTY_BOUNDING_BOX + EMPTY_BOUNDING_BOX_SPRITE_COUNT;
+static const uint16 PALETTE_SPRITE_COUNT = 1;
+
 /* From where can we start putting NewGRFs? */
-static const SpriteID SPR_NEWGRFS_BASE = SPR_EMPTY_BOUNDING_BOX + EMPTY_BOUNDING_BOX_SPRITE_COUNT;
+static const SpriteID SPR_NEWGRFS_BASE = SPR_PALETTE_BASE + PALETTE_SPRITE_COUNT;
 
 /* Manager face sprites */
 static const SpriteID SPR_GRADIENT = 874; // background gradient behind manager face
@@ -991,10 +999,10 @@ static const SpriteID SPR_CNST1_TOWNHOUSE_06_V1               = 1444;
 static const SpriteID SPR_CNST2_TOWNHOUSE_06_V1               = 1445;
 static const SpriteID SPR_BUILD_TOWNHOUSE_06_V1               = 1446; // 1st variation
 static const SpriteID SPR_GRND_TOWNHOUSE_06_V1                = 1447;
-static const SpriteID SPR_GRND_STADIUM_N                      = 1479; //stadium ground at north
-static const SpriteID SPR_GRND_STADIUM_E                      = 1480; //stadium ground at east
-static const SpriteID SPR_GRND_STADIUM_W                      = 1481; //stadium ground at west
-static const SpriteID SPR_GRND_STADIUM_S                      = 1482; //stadium ground at south
+static const SpriteID SPR_GRND_STADIUM_N                      = 1479; // stadium ground at north
+static const SpriteID SPR_GRND_STADIUM_E                      = 1480; // stadium ground at east
+static const SpriteID SPR_GRND_STADIUM_W                      = 1481; // stadium ground at west
+static const SpriteID SPR_GRND_STADIUM_S                      = 1482; // stadium ground at south
 static const SpriteID SPR_CNST1_TOWNHOUSE_06_V2               = 1501; // used as ground, but is stage1
 static const SpriteID SPR_CNST1_TOWNHOUSE_06_V2_P             = 1502; // pipes extensions for previous
 static const SpriteID SPR_CNST2_TOWNHOUSE_06_V2_G             = 1503; // Ground of cnst stage 2
@@ -1473,10 +1481,14 @@ static const CursorID ANIMCURSOR_BUILDSIGNALS = ANIMCURSOR_FLAG | 4; ///< 1292 -
  * bits used for the recolouring process. For transparency, it must be 0x322.</li></ul>
  */
 enum SpriteSetup {
+	/* These bits are applied to sprite ID */
 	TRANSPARENT_BIT = 31,       ///< toggles transparency in the sprite
 	RECOLOUR_BIT = 30,          ///< toggles recolouring in the sprite
 	CUSTOM_BIT = 29,
 	OPAQUE_BIT = 28,
+
+	/* This bit is applied to palette ID */
+	PALETTE_TEXT_RECOLOUR = 31, ///< Set if palette is actually a magic text recolour
 
 	PALETTE_WIDTH = 24,         ///< number of bits of the sprite containing the recolour palette
 	SPRITE_WIDTH = 24,          ///< number of bits for the sprite number
@@ -1559,5 +1571,7 @@ static const PaletteID PALETTE_CRASH               = 804;  ///< Recolour sprite 
 /* Two recolourings only used by the church */
 static const PaletteID PALETTE_CHURCH_RED          = 1438; ///< Recolour sprite for reddish churches
 static const PaletteID PALETTE_CHURCH_CREAM        = 1439; ///< Recolour sprite for white churches
+
+static const PaletteID PALETTE_ALL_BLACK           = SPR_PALETTE_BASE; ///< Exchange any color by black, needed for painting fictive tiles outside map
 
 #endif /* SPRITES_H */

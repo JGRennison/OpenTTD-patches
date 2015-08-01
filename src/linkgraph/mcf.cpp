@@ -5,6 +5,8 @@
 #include "mcf.h"
 #include <set>
 
+#include "../safeguards.h"
+
 typedef std::map<NodeID, Path *> PathViaMap;
 
 /**
@@ -146,15 +148,14 @@ public:
 	 */
 	void SetNode(NodeID source, NodeID node)
 	{
-		static const FlowStat::SharesMap empty;
 		const FlowStatMap &flows = this->job[node].Flows();
 		FlowStatMap::const_iterator it = flows.find(this->job[source].Station());
 		if (it != flows.end()) {
 			this->it = it->second.GetShares()->begin();
 			this->end = it->second.GetShares()->end();
 		} else {
-			this->it = empty.begin();
-			this->end = empty.end();
+			this->it = FlowStat::empty_sharesmap.begin();
+			this->end = FlowStat::empty_sharesmap.end();
 		}
 	}
 
@@ -257,7 +258,6 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 		for (NodeID to = iter.Next(); to != INVALID_NODE; to = iter.Next()) {
 			if (to == from) continue; // Not a real edge but a consumption sign.
 			Edge edge = this->job[from][to];
-			assert(edge.Distance() < UINT_MAX);
 			uint capacity = edge.Capacity();
 			if (this->max_saturation != UINT_MAX) {
 				capacity *= this->max_saturation;
@@ -265,7 +265,7 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 				if (capacity == 0) capacity = 1;
 			}
 			/* punish in-between stops a little */
-			uint distance = edge.Distance() + 1;
+			uint distance = DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;
 			Tannotation *dest = static_cast<Tannotation *>(paths[to]);
 			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), distance)) {
 				annos.erase(dest);
@@ -310,7 +310,7 @@ void MultiCommodityFlow::CleanupPaths(NodeID source_id, PathVector &paths)
  * @param path End of the path the flow should be pushed on.
  * @param accuracy Accuracy of the calculation.
  * @param max_saturation If < UINT_MAX only push flow up to the given
- * 	                     saturation, otherwise the path can be "overloaded".
+ *                       saturation, otherwise the path can be "overloaded".
  */
 uint MultiCommodityFlow::PushFlow(Edge &edge, Path *path, uint accuracy,
 		uint max_saturation)
@@ -351,7 +351,17 @@ void MCF1stPass::EliminateCycle(PathVector &path, Path *cycle_begin, uint flow)
 	do {
 		NodeID prev = cycle_begin->GetNode();
 		cycle_begin->ReduceFlow(flow);
-		cycle_begin = path[cycle_begin->GetNode()];
+		if (cycle_begin->GetFlow() == 0) {
+			PathList &node_paths = this->job[cycle_begin->GetParent()->GetNode()].Paths();
+			for (PathList::iterator i = node_paths.begin(); i != node_paths.end(); ++i) {
+				if (*i == cycle_begin) {
+					node_paths.erase(i);
+					node_paths.push_back(cycle_begin);
+					break;
+				}
+			}
+		}
+		cycle_begin = path[prev];
 		Edge edge = this->job[prev][cycle_begin->GetNode()];
 		edge.RemoveFlow(flow);
 	} while (cycle_begin != cycle_end);
@@ -368,29 +378,38 @@ void MCF1stPass::EliminateCycle(PathVector &path, Path *cycle_begin, uint flow)
  */
 bool MCF1stPass::EliminateCycles(PathVector &path, NodeID origin_id, NodeID next_id)
 {
-	static Path *invalid_path = new Path(INVALID_NODE, true);
 	Path *at_next_pos = path[next_id];
 
 	/* this node has already been searched */
-	if (at_next_pos == invalid_path) return false;
+	if (at_next_pos == Path::invalid_path) return false;
 
 	if (at_next_pos == NULL) {
 		/* Summarize paths; add up the paths with the same source and next hop
 		 * in one path each. */
 		PathList &paths = this->job[next_id].Paths();
 		PathViaMap next_hops;
-		for (PathList::iterator i = paths.begin(); i != paths.end(); ++i) {
+		for (PathList::iterator i = paths.begin(); i != paths.end();) {
 			Path *new_child = *i;
+			uint new_flow = new_child->GetFlow();
+			if (new_flow == 0) break;
 			if (new_child->GetOrigin() == origin_id) {
 				PathViaMap::iterator via_it = next_hops.find(new_child->GetNode());
 				if (via_it == next_hops.end()) {
 					next_hops[new_child->GetNode()] = new_child;
+					++i;
 				} else {
 					Path *child = via_it->second;
-					uint new_flow = new_child->GetFlow();
 					child->AddFlow(new_flow);
 					new_child->ReduceFlow(new_flow);
+
+					/* We might hit end() with with the ++ here and skip the
+					 * newly push_back'ed path. That's good as the flow of that
+					 * path is 0 anyway. */
+					paths.erase(i++);
+					paths.push_back(new_child);
 				}
+			} else {
+				++i;
 			}
 		}
 		bool found = false;
@@ -410,7 +429,7 @@ bool MCF1stPass::EliminateCycles(PathVector &path, NodeID origin_id, NodeID next
 		 * could be found in this branch, thus it has to be searched again next
 		 * time we spot it.
 		 */
-		path[next_id] = found ? NULL : invalid_path;
+		path[next_id] = found ? NULL : Path::invalid_path;
 		return found;
 	}
 

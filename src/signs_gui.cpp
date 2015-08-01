@@ -33,6 +33,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 struct SignList {
 	/**
 	 * A GUIList contains signs and uses a StringFilter for filtering.
@@ -158,7 +160,6 @@ struct SignListWindow : Window, SignList {
 
 		/* Initialize the text edit widget */
 		this->querystrings[WID_SIL_FILTER_TEXT] = &this->filter_editbox;
-		this->filter_editbox.ok_button = WID_SIL_FILTER_ENTER_BTN;
 		this->filter_editbox.cancel_button = QueryString::ACTION_CLEAR;
 
 		/* Initialize the filtering variables */
@@ -198,7 +199,7 @@ struct SignListWindow : Window, SignList {
 				uint y = r.top + WD_FRAMERECT_TOP; // Offset from top of widget.
 				/* No signs? */
 				if (this->vscroll->GetCount() == 0) {
-					DrawString(r.left + WD_FRAMETEXT_LEFT, r.right, y, STR_STATION_LIST_NONE);
+					DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, y, STR_STATION_LIST_NONE);
 					return;
 				}
 
@@ -541,7 +542,7 @@ static const NWidgetPart _nested_query_sign_edit_widgets[] = {
 };
 
 static WindowDesc _query_sign_edit_desc(
-	WDP_AUTO, "query_sign", 0, 0,
+	WDP_CENTER, "query_sign", 0, 0,
 	WC_QUERY_STRING, WC_NONE,
 	WDF_CONSTRUCTION,
 	_nested_query_sign_edit_widgets, lengthof(_nested_query_sign_edit_widgets)

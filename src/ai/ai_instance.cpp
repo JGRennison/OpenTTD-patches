@@ -82,6 +82,8 @@
 #include "../company_base.h"
 #include "../company_func.h"
 
+#include "../safeguards.h"
+
 AIInstance::AIInstance() :
 	ScriptInstance("AI")
 {}
@@ -169,6 +171,17 @@ void AIInstance::RegisterAPI()
 	SQAISignList_Register(this->engine);
 	SQAIStation_Register(this->engine);
 	SQAIStationList_Register(this->engine);
+	SQAIStationList_Cargo_Register(this->engine);
+	SQAIStationList_CargoPlanned_Register(this->engine);
+	SQAIStationList_CargoPlannedByFrom_Register(this->engine);
+	SQAIStationList_CargoPlannedByVia_Register(this->engine);
+	SQAIStationList_CargoPlannedFromByVia_Register(this->engine);
+	SQAIStationList_CargoPlannedViaByFrom_Register(this->engine);
+	SQAIStationList_CargoWaiting_Register(this->engine);
+	SQAIStationList_CargoWaitingByFrom_Register(this->engine);
+	SQAIStationList_CargoWaitingByVia_Register(this->engine);
+	SQAIStationList_CargoWaitingFromByVia_Register(this->engine);
+	SQAIStationList_CargoWaitingViaByFrom_Register(this->engine);
 	SQAIStationList_Vehicle_Register(this->engine);
 	SQAISubsidy_Register(this->engine);
 	SQAISubsidyList_Register(this->engine);

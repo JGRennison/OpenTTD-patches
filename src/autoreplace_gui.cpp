@@ -28,8 +28,8 @@
 
 #include "widgets/autoreplace_widget.h"
 
+#include "safeguards.h"
 
-uint GetEngineListHeight(VehicleType type);
 void DrawEngineList(VehicleType type, int x, int r, int y, const GUIEngineList *eng_list, uint16 min, uint16 max, EngineID selected_id, bool show_count, GroupID selected_group);
 
 static int CDECL EngineNumberSorter(const EngineID *a, const EngineID *b)
@@ -84,6 +84,9 @@ class ReplaceVehicleWindow : public Window {
 	bool reset_sel_engine;        ///< Also reset #sel_engine while updating left and/or right (#update_left and/or #update_right) and no valid engine selected.
 	GroupID sel_group;            ///< Group selected to replace.
 	int details_height;           ///< Minimal needed height of the details panels (found so far).
+	byte sort_criteria;           ///< Criteria of sorting vehicles.
+	bool descending_sort_order;   ///< Order of sorting vehicles.
+	bool show_hidden_engines;     ///< Whether to show the hidden engines.
 	RailType sel_railtype;        ///< Type of rail tracks selected.
 	Scrollbar *vscroll[2];
 
@@ -124,6 +127,7 @@ class ReplaceVehicleWindow : public Window {
 
 		const Engine *e;
 		FOR_ALL_ENGINES_OF_TYPE(e, type) {
+			if (!draw_left && !this->show_hidden_engines && e->IsHidden(_local_company)) continue;
 			EngineID eid = e->index;
 			if (type == VEH_TRAIN && !this->GenerateReplaceRailList(eid, draw_left, this->replace_engines)) continue; // special rules for trains
 
@@ -140,7 +144,12 @@ class ReplaceVehicleWindow : public Window {
 			if (eid == this->sel_engine[side]) selected_engine = eid; // The selected engine is still in the list
 		}
 		this->sel_engine[side] = selected_engine; // update which engine we selected (the same or none, if it's not in the list anymore)
-		EngList_Sort(list, &EngineNumberSorter);
+		if (draw_left) {
+			EngList_Sort(list, &EngineNumberSorter);
+		} else {
+			_engine_sort_direction = this->descending_sort_order;
+			EngList_Sort(list, _engine_sort_functions[this->window_number][this->sort_criteria]);
+		}
 	}
 
 	/** Generate the lists */
@@ -164,10 +173,21 @@ class ReplaceVehicleWindow : public Window {
 				this->engines[1].Clear();
 				this->sel_engine[1] = INVALID_ENGINE;
 			} else {
+				if (this->reset_sel_engine && this->sel_engine[0] != INVALID_ENGINE) {
+					/* Select the current replacement for sel_engine[0]. */
+					const Company *c = Company::Get(_local_company);
+					this->sel_engine[1] = EngineReplacementForCompany(c, this->sel_engine[0], this->sel_group);
+				}
+				/* Regenerate the list on the right. Note: This resets sel_engine[1] to INVALID_ENGINE, if it is no longer available. */
 				this->GenerateReplaceVehList(false);
 				this->vscroll[1]->SetCount(this->engines[1].Length());
-				if (this->reset_sel_engine && this->sel_engine[1] == INVALID_ENGINE && this->engines[1].Length() != 0) {
-					this->sel_engine[1] = this->engines[1][0];
+				if (this->reset_sel_engine && this->sel_engine[1] != INVALID_ENGINE) {
+					int position = 0;
+					for (EngineID *it = this->engines[1].Begin(); it != this->engines[1].End(); ++it) {
+						if (*it == this->sel_engine[1]) break;
+						++position;
+					}
+					this->vscroll[1]->ScrollTowards(position);
 				}
 			}
 		}
@@ -216,12 +236,20 @@ public:
 		this->details_height   = ((vehicletype == VEH_TRAIN) ? 10 : 9) * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 		this->sel_engine[0] = INVALID_ENGINE;
 		this->sel_engine[1] = INVALID_ENGINE;
+		this->show_hidden_engines = _engine_sort_show_hidden_engines[vehicletype];
 
 		this->CreateNestedTree();
 		this->vscroll[0] = this->GetScrollbar(WID_RV_LEFT_SCROLLBAR);
 		this->vscroll[1] = this->GetScrollbar(WID_RV_RIGHT_SCROLLBAR);
+
+		NWidgetCore *widget = this->GetWidget<NWidgetCore>(WID_RV_SHOW_HIDDEN_ENGINES);
+		widget->widget_data = STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN + vehicletype;
+		widget->tool_tip    = STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + vehicletype;
+		widget->SetLowered(this->show_hidden_engines);
 		this->FinishInitNested(vehicletype);
 
+		this->sort_criteria = _engine_sort_last_criteria[vehicletype];
+		this->descending_sort_order = _engine_sort_last_order[vehicletype];
 		this->owner = _local_company;
 		this->sel_group = id_g;
 	}
@@ -229,6 +257,14 @@ public:
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		switch (widget) {
+			case WID_RV_SORT_ASCENDING_DESCENDING: {
+				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
+				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
+				d.height += padding.height;
+				*size = maxdim(*size, d);
+				break;
+			}
+
 			case WID_RV_LEFT_MATRIX:
 			case WID_RV_RIGHT_MATRIX:
 				resize->height = GetEngineListHeight((VehicleType)this->window_number);
@@ -265,10 +301,8 @@ public:
 			}
 
 			case WID_RV_INFO_TAB: {
-				SetDParam(0, STR_REPLACE_NOT_REPLACING);
-				Dimension d = GetStringBoundingBox(STR_BLACK_STRING);
-				SetDParam(0, STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED);
-				d = maxdim(d, GetStringBoundingBox(STR_BLACK_STRING));
+				Dimension d = GetStringBoundingBox(STR_REPLACE_NOT_REPLACING);
+				d = maxdim(d, GetStringBoundingBox(STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED));
 				d.width += WD_FRAMETEXT_LEFT +  WD_FRAMETEXT_RIGHT;
 				d.height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 				*size = maxdim(*size, d);
@@ -323,6 +357,10 @@ public:
 				}
 				break;
 
+			case WID_RV_SORT_DROPDOWN:
+				SetDParam(0, _engine_sort_listing[this->window_number][this->sort_criteria]);
+				break;
+
 			case WID_RV_TRAIN_WAGONREMOVE_TOGGLE: {
 				const Company *c = Company::Get(_local_company);
 				SetDParam(0, c->settings.renew_keep_length ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
@@ -338,22 +376,27 @@ public:
 	virtual void DrawWidget(const Rect &r, int widget) const
 	{
 		switch (widget) {
+			case WID_RV_SORT_ASCENDING_DESCENDING:
+				this->DrawSortButtonState(WID_RV_SORT_ASCENDING_DESCENDING, this->descending_sort_order ? SBS_DOWN : SBS_UP);
+				break;
+
 			case WID_RV_INFO_TAB: {
 				const Company *c = Company::Get(_local_company);
+				StringID str;
 				if (this->sel_engine[0] != INVALID_ENGINE) {
 					if (!EngineHasReplacementForCompany(c, this->sel_engine[0], this->sel_group)) {
-						SetDParam(0, STR_REPLACE_NOT_REPLACING);
+						str = STR_REPLACE_NOT_REPLACING;
 					} else {
 						bool when_old = false;
 						EngineID e = EngineReplacementForCompany(c, this->sel_engine[0], this->sel_group, &when_old);
-						SetDParam(0, when_old ? STR_REPLACE_REPLACING_WHEN_OLD : STR_ENGINE_NAME);
-						SetDParam(1, e);
+						str = when_old ? STR_REPLACE_REPLACING_WHEN_OLD : STR_ENGINE_NAME;
+						SetDParam(0, e);
 					}
 				} else {
-					SetDParam(0, STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED);
+					str = STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED;
 				}
 
-				DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMERECT_TOP, STR_BLACK_STRING, TC_FROMSTRING, SA_HOR_CENTER);
+				DrawString(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMERECT_TOP, str, TC_BLACK, SA_HOR_CENTER);
 				break;
 			}
 
@@ -381,16 +424,12 @@ public:
 		 *    Either engines list is empty
 		 * or The selected replacement engine has a replacement (to prevent loops). */
 		this->SetWidgetDisabledState(WID_RV_START_REPLACE,
-										this->sel_engine[0] == INVALID_ENGINE ||
-										this->sel_engine[1] == INVALID_ENGINE ||
-										EngineReplacementForCompany(c, this->sel_engine[1], this->sel_group) != INVALID_ENGINE);
+				this->sel_engine[0] == INVALID_ENGINE || this->sel_engine[1] == INVALID_ENGINE || EngineReplacementForCompany(c, this->sel_engine[1], this->sel_group) != INVALID_ENGINE);
 
 		/* Disable the "Stop Replacing" button if:
 		 *   The left engines list (existing vehicle) is empty
 		 *   or The selected vehicle has no replacement set up */
-		this->SetWidgetDisabledState(WID_RV_STOP_REPLACE,
-										this->sel_engine[0] == INVALID_ENGINE ||
-										!EngineHasReplacementForCompany(c, this->sel_engine[0], this->sel_group));
+		this->SetWidgetDisabledState(WID_RV_STOP_REPLACE, this->sel_engine[0] == INVALID_ENGINE || !EngineHasReplacementForCompany(c, this->sel_engine[0], this->sel_group));
 
 		if (this->window_number == VEH_TRAIN) {
 			/* sets the colour of that art thing */
@@ -425,6 +464,25 @@ public:
 	virtual void OnClick(Point pt, int widget, int click_count)
 	{
 		switch (widget) {
+			case WID_RV_SORT_ASCENDING_DESCENDING:
+				this->descending_sort_order ^= true;
+				_engine_sort_last_order[this->window_number] = this->descending_sort_order;
+				this->engines[1].ForceRebuild();
+				this->SetDirty();
+				break;
+
+			case WID_RV_SHOW_HIDDEN_ENGINES:
+				this->show_hidden_engines ^= true;
+				_engine_sort_show_hidden_engines[this->window_number] = this->show_hidden_engines;
+				this->engines[1].ForceRebuild();
+				this->SetWidgetLoweredState(widget, this->show_hidden_engines);
+				this->SetDirty();
+				break;
+
+			case WID_RV_SORT_DROPDOWN:
+				DisplayVehicleSortDropDown(this, static_cast<VehicleType>(this->window_number), this->sort_criteria, WID_RV_SORT_DROPDOWN);
+				break;
+
 			case WID_RV_TRAIN_ENGINEWAGON_TOGGLE:
 				this->replace_engines  = !(this->replace_engines);
 				this->engines[0].ForceRebuild();
@@ -484,6 +542,15 @@ public:
 	virtual void OnDropdownSelect(int widget, int index)
 	{
 		switch (widget) {
+			case WID_RV_SORT_DROPDOWN:
+				if (this->sort_criteria != index) {
+					this->sort_criteria = index;
+					_engine_sort_last_criteria[this->window_number] = this->sort_criteria;
+					this->engines[1].ForceRebuild();
+					this->SetDirty();
+				}
+				break;
+
 			case WID_RV_TRAIN_RAILTYPE_DROPDOWN: {
 				RailType temp = (RailType)index;
 				if (temp == sel_railtype) return; // we didn't select a new one. No need to change anything
@@ -536,6 +603,27 @@ static const NWidgetPart _nested_replace_rail_vehicle_widgets[] = {
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+		NWidget(WWT_PANEL, COLOUR_GREY),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_VEHICLES_IN_USE, STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+		EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES, STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+		EndContainer(),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+		NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_RV_SORT_ASCENDING_DESCENDING), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 1),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_RV_SORT_DROPDOWN), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_RV_SHOW_HIDDEN_ENGINES), SetDataTip(STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN, STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
+			EndContainer(),
+		EndContainer(),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 		NWidget(WWT_MATRIX, COLOUR_GREY, WID_RV_LEFT_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_REPLACE_HELP_LEFT_ARRAY), SetResize(1, 1), SetScrollbar(WID_RV_LEFT_SCROLLBAR),
 		NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_RV_LEFT_SCROLLBAR),
 		NWidget(WWT_MATRIX, COLOUR_GREY, WID_RV_RIGHT_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_REPLACE_HELP_RIGHT_ARRAY), SetResize(1, 1), SetScrollbar(WID_RV_RIGHT_SCROLLBAR),
@@ -575,6 +663,27 @@ static const NWidgetPart _nested_replace_vehicle_widgets[] = {
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+		NWidget(WWT_PANEL, COLOUR_GREY),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_VEHICLES_IN_USE, STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+		EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES, STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+		EndContainer(),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
+		NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), EndContainer(),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_RV_SORT_ASCENDING_DESCENDING), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_RV_SORT_DROPDOWN), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_RV_SHOW_HIDDEN_ENGINES), SetDataTip(STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN, STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
+			EndContainer(),
+		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 		NWidget(WWT_MATRIX, COLOUR_GREY, WID_RV_LEFT_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_REPLACE_HELP_LEFT_ARRAY), SetResize(1, 1), SetScrollbar(WID_RV_LEFT_SCROLLBAR),

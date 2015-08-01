@@ -13,6 +13,7 @@
 #define SMALLMAP_GUI_H
 
 #include "industry_type.h"
+#include "company_base.h"
 #include "window_gui.h"
 #include "strings_func.h"
 #include "blitter/factory.hpp"
@@ -62,6 +63,7 @@ protected:
 
 	static SmallMapType map_type; ///< Currently displayed legends.
 	static bool show_towns;       ///< Display town names in the smallmap.
+	static int max_heightlevel;   ///< Currently used/cached maximum heightlevel.
 
 	static const uint LEGEND_BLOB_WIDTH = 8;              ///< Width of the coloured blob in front of a line text in the #WID_SM_LEGEND widget.
 	static const uint INDUSTRY_MIN_NUMBER_OF_COLUMNS = 2; ///< Minimal number of columns in the #WID_SM_LEGEND widget for the #SMT_INDUSTRY legend.
@@ -135,6 +137,17 @@ protected:
 				this->GetNumberRowsLegend(num_columns) * FONT_HEIGHT_SMALL;
 	}
 
+	/**
+	 * Get a bitmask for company links to be displayed. Usually this will be
+	 * the _local_company. Spectators get to see all companies' links.
+	 * @return Company mask.
+	 */
+	inline uint32 GetOverlayCompanyMask() const
+	{
+		return Company::IsValidID(_local_company) ? 1U << _local_company : 0xffffffff;
+	}
+
+	void RebuildColourIndexIfNecessary();
 	uint GetNumberRowsLegend(uint columns) const;
 	void SelectLegendItem(int click_pos, LegendAndColour *legend, int end_legend_item, int begin_legend_item = 0);
 	void SwitchMapType(SmallMapType map_type);

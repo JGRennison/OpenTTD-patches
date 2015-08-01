@@ -13,6 +13,7 @@
 #define SCRIPT_COMPANY_HPP
 
 #include "script_text.hpp"
+#include "../../economy_type.h"
 
 /**
  * Class that handles all company related functions.
@@ -42,6 +43,27 @@ public:
 		GENDER_MALE,         ///< A male person.
 		GENDER_FEMALE,       ///< A female person.
 		GENDER_INVALID = -1, ///< An invalid gender.
+	};
+
+	/**
+	 * Types of expenses.
+	 * @api -ai
+	 */
+	enum ExpensesType {
+		EXPENSES_CONSTRUCTION = ::EXPENSES_CONSTRUCTION, ///< Construction costs.
+		EXPENSES_NEW_VEHICLES = ::EXPENSES_NEW_VEHICLES, ///< New vehicles.
+		EXPENSES_TRAIN_RUN    = ::EXPENSES_TRAIN_RUN,    ///< Running costs trains.
+		EXPENSES_ROADVEH_RUN  = ::EXPENSES_ROADVEH_RUN,  ///< Running costs road vehicles.
+		EXPENSES_AIRCRAFT_RUN = ::EXPENSES_AIRCRAFT_RUN, ///< Running costs aircrafts.
+		EXPENSES_SHIP_RUN     = ::EXPENSES_SHIP_RUN,     ///< Running costs ships.
+		EXPENSES_PROPERTY     = ::EXPENSES_PROPERTY,     ///< Property costs.
+		EXPENSES_TRAIN_INC    = ::EXPENSES_TRAIN_INC,    ///< Income from trains.
+		EXPENSES_ROADVEH_INC  = ::EXPENSES_ROADVEH_INC,  ///< Income from road vehicles.
+		EXPENSES_AIRCRAFT_INC = ::EXPENSES_AIRCRAFT_INC, ///< Income from aircrafts.
+		EXPENSES_SHIP_INC     = ::EXPENSES_SHIP_INC,     ///< Income from ships.
+		EXPENSES_LOAN_INT     = ::EXPENSES_LOAN_INT,     ///< Interest payments over the loan.
+		EXPENSES_OTHER        = ::EXPENSES_OTHER,        ///< Other expenses.
+		EXPENSES_INVALID      = ::INVALID_EXPENSES,      ///< Invalid expense type.
 	};
 
 	/**
@@ -123,7 +145,7 @@ public:
 	 * @game @pre Valid ScriptCompanyMode active in scope.
 	 * @return True if the loan could be set to your requested amount.
 	 */
-	static bool SetLoanAmount(int32 loan);
+	static bool SetLoanAmount(Money loan);
 
 	/**
 	 * Sets the minimum amount to loan, i.e. the given amount of loan rounded up.
@@ -133,7 +155,7 @@ public:
 	 * @game @pre Valid ScriptCompanyMode active in scope.
 	 * @return True if we could allocate a minimum of 'loan' loan.
 	 */
-	static bool SetMinimumLoanAmount(int32 loan);
+	static bool SetMinimumLoanAmount(Money loan);
 
 	/**
 	 * Gets the amount your company have loaned.
@@ -163,6 +185,22 @@ public:
 	 * @return The actual bank balance.
 	 */
 	static Money GetBankBalance(CompanyID company);
+
+	/**
+	 * Changes the bank balance by a delta value. This method does not affect the loan but instead
+	 * allows a GS to give or take money from a company.
+	 * @param company The company to change the bank balance of.
+	 * @param delta Amount of money to give or take from the bank balance. A positive value adds money to the bank balance.
+	 * @param expenses_type The account in the finances window that will register the cost.
+	 * @return True, if the bank balance was changed.
+	 * @game @pre No ScriptCompanyMode active in scope.
+	 * @pre ResolveCompanyID(company) != COMPANY_INVALID.
+	 * @pre delta >= -2**31
+	 * @pre delta <   2**31
+	 * @note You need to create your own news message to inform about costs/gifts that you create using this command.
+	 * @api -ai
+	 */
+	static bool ChangeBankBalance(CompanyID company, Money delta, ExpensesType expenses_type);
 
 	/**
 	 * Get the income of the company in the given quarter.
@@ -279,9 +317,11 @@ public:
 	 * Set the minimum money needed to autorenew an engine for your company.
 	 * @param money The new minimum required money for autorenew to work.
 	 * @return True if autorenew money has been modified.
+	 * @pre money >= 0
+	 * @pre money <  2**32
 	 * @api -game
 	 */
-	static bool SetAutoRenewMoney(uint32 money);
+	static bool SetAutoRenewMoney(Money money);
 
 	/**
 	 * Return the minimum money needed to autorenew an engine for a company.
@@ -289,7 +329,7 @@ public:
 	 * @pre ResolveCompanyID(company) != COMPANY_INVALID.
 	 * @return The minimum required money for autorenew to work.
 	 */
-	static uint32 GetAutoRenewMoney(CompanyID company);
+	static Money GetAutoRenewMoney(CompanyID company);
 };
 
 DECLARE_POSTFIX_INCREMENT(ScriptCompany::CompanyID)

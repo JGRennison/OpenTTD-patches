@@ -23,6 +23,8 @@
 #include "transport_type.h"
 #include "group_type.h"
 #include "base_consist.h"
+#include <list>
+#include <map>
 
 /** Vehicle status bits in #Vehicle::vehstatus. */
 enum VehStatus {
@@ -56,6 +58,7 @@ enum NewGRFCacheValidValues {
 	NCVV_POSITION_SAME_ID_LENGTH   = 1, ///< This bit will be set if the NewGRF var 41 currently stored is valid.
 	NCVV_CONSIST_CARGO_INFORMATION = 2, ///< This bit will be set if the NewGRF var 42 currently stored is valid.
 	NCVV_COMPANY_INFORMATION       = 3, ///< This bit will be set if the NewGRF var 43 currently stored is valid.
+	NCVV_POSITION_IN_VEHICLE       = 4, ///< This bit will be set if the NewGRF var 4D currently stored is valid.
 	NCVV_END,                           ///< End of the bits.
 };
 
@@ -66,6 +69,7 @@ struct NewGRFCache {
 	uint32 position_same_id_length;   ///< Cache for NewGRF var 41.
 	uint32 consist_cargo_information; ///< Cache for NewGRF var 42. (Note: The cargotype is untranslated in the cache because the accessing GRF is yet unknown.)
 	uint32 company_information;       ///< Cache for NewGRF var 43.
+	uint32 position_in_vehicle;       ///< Cache for NewGRF var 4D.
 	uint8  cache_valid;               ///< Bitset that indicates which cache values are valid.
 };
 
@@ -83,9 +87,20 @@ enum VisualEffect {
 	VE_TYPE_ELECTRIC       = 3, ///< Electric sparks
 
 	VE_DISABLE_EFFECT      = 6, ///< Flag to disable visual effect
+	VE_ADVANCED_EFFECT     = VE_DISABLE_EFFECT, ///< Flag for advanced effects
 	VE_DISABLE_WAGON_POWER = 7, ///< Flag to disable wagon power
 
 	VE_DEFAULT = 0xFF,          ///< Default value to indicate that visual effect should be based on engine class
+};
+
+/** Models for spawning visual effects. */
+enum VisualEffectSpawnModel {
+	VESM_NONE              = 0, ///< No visual effect
+	VESM_STEAM,                 ///< Steam model
+	VESM_DIESEL,                ///< Diesel model
+	VESM_ELECTRIC,              ///< Electric model
+
+	VESM_END
 };
 
 /**
@@ -124,15 +139,30 @@ extern void FixOldVehicles();
 
 struct GRFFile;
 
+/**
+ * Simulated cargo type and capacity for prediction of future links.
+ */
+struct RefitDesc {
+	CargoID cargo;    ///< Cargo type the vehicle will be carrying.
+	uint16 capacity;  ///< Capacity the vehicle will have.
+	uint16 remaining; ///< Capacity remaining from before the previous refit.
+	RefitDesc(CargoID cargo, uint16 capacity, uint16 remaining) :
+			cargo(cargo), capacity(capacity), remaining(remaining) {}
+};
+
 /** %Vehicle data structure. */
 struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle, BaseConsist {
 private:
+	typedef std::list<RefitDesc> RefitList;
+	typedef std::map<CargoID, uint> CapacitiesMap;
+
 	Vehicle *next;                      ///< pointer to the next vehicle in the chain
 	Vehicle *previous;                  ///< NOSAVE: pointer to the previous vehicle in the chain
 	Vehicle *first;                     ///< NOSAVE: pointer to the first vehicle in the chain
 
 	Vehicle *next_shared;               ///< pointer to the next vehicle that shares the order
 	Vehicle *previous_shared;           ///< NOSAVE: pointer to the previous vehicle in the shared order chain
+
 public:
 	friend const SaveLoad *GetVehicleDescription(VehicleType vt); ///< So we can use private/protected variables in the saveload code
 	friend void FixOldVehicles();
@@ -608,14 +638,12 @@ public:
 	 * Get the next station the vehicle will stop at.
 	 * @return ID of the next station the vehicle will stop at or INVALID_STATION.
 	 */
-	inline StationID GetNextStoppingStation() const
+	inline StationIDStack GetNextStoppingStation() const
 	{
 		return (this->orders.list == NULL) ? INVALID_STATION : this->orders.list->GetNextStoppingStation(this);
 	}
 
 	void ResetRefitCaps();
-
-	void RefreshNextHopsStats();
 
 	/**
 	 * Copy certain configurations and statistics of a vehicle after successful autoreplace/renew
@@ -667,6 +695,11 @@ public:
 
 	void UpdateVisualEffect(bool allow_power_change = true);
 	void ShowVisualEffect() const;
+
+	void UpdatePosition();
+	void UpdateViewport(bool dirty);
+	void UpdatePositionAndViewport();
+	void MarkAllViewportsDirty() const;
 
 	inline uint16 GetServiceInterval() const { return this->service_interval; }
 
@@ -1039,14 +1072,12 @@ struct SpecializedVehicle : public Vehicle {
 	 */
 	inline void UpdateViewport(bool force_update, bool update_delta)
 	{
-		extern void VehicleUpdateViewport(Vehicle *v, bool dirty);
-
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);
 		SpriteID old_image = this->cur_image;
 		this->cur_image = ((T *)this)->T::GetImage(this->direction, EIT_ON_MAP);
-		if (force_update || this->cur_image != old_image) VehicleUpdateViewport(this, true);
+		if (force_update || this->cur_image != old_image) this->Vehicle::UpdateViewport(true);
 	}
 };
 
@@ -1056,28 +1087,6 @@ struct SpecializedVehicle : public Vehicle {
  * @param var  The variable used to iterate over.
  */
 #define FOR_ALL_VEHICLES_OF_TYPE(name, var) FOR_ALL_ITEMS_FROM(name, vehicle_index, var, 0) if (var->type == name::EXPECTED_TYPE)
-
-/**
- * Disasters, like submarines, skyrangers and their shadows, belong to this class.
- */
-struct DisasterVehicle FINAL : public SpecializedVehicle<DisasterVehicle, VEH_DISASTER> {
-	SpriteID image_override;            ///< Override for the default disaster vehicle sprite.
-	VehicleID big_ufo_destroyer_target; ///< The big UFO that this destroyer is supposed to bomb.
-
-	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
-	DisasterVehicle() : SpecializedVehicleBase() {}
-	/** We want to 'destruct' the right class. */
-	virtual ~DisasterVehicle() {}
-
-	void UpdateDeltaXY(Direction direction);
-	bool Tick();
-};
-
-/**
- * Iterate over disaster vehicles.
- * @param var The variable used to iterate over.
- */
-#define FOR_ALL_DISASTERVEHICLES(var) FOR_ALL_VEHICLES_OF_TYPE(DisasterVehicle, var)
 
 /** Generates sequence of free UnitID numbers */
 struct FreeUnitIDGenerator {

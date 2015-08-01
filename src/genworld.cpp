@@ -33,6 +33,9 @@
 #include "error.h"
 #include "game/game.hpp"
 #include "game/game_instance.hpp"
+#include "string_func.h"
+
+#include "safeguards.h"
 
 
 void GenerateClearTile();
@@ -98,12 +101,14 @@ static void _GenerateWorld(void *)
 	try {
 		_generating_world = true;
 		_modal_progress_work_mutex->BeginCritical();
-		if (_network_dedicated) DEBUG(net, 0, "Generating map, please wait...");
+		if (_network_dedicated) DEBUG(net, 1, "Generating map, please wait...");
 		/* Set the Random() seed to generation_seed so we produce the same map with the same seed */
 		if (_settings_game.game_creation.generation_seed == GENERATE_NEW_SEED) _settings_game.game_creation.generation_seed = _settings_newgame.game_creation.generation_seed = InteractiveRandom();
 		_random.SetSeed(_settings_game.game_creation.generation_seed);
 		SetGeneratingWorldProgress(GWP_MAP_INIT, 2);
 		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
+
+		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 
 		IncreaseGeneratingWorldProgress(GWP_MAP_INIT);
 		/* Must start economy early because of the costs. */
@@ -141,8 +146,6 @@ static void _GenerateWorld(void *)
 			}
 		}
 
-		ClearStorageChanges(true);
-
 		/* These are probably pointless when inside the scenario editor. */
 		SetGeneratingWorldProgress(GWP_GAME_INIT, 3);
 		StartupCompanies();
@@ -179,6 +182,8 @@ static void _GenerateWorld(void *)
 			}
 		}
 
+		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
+
 		ResetObjectToPlace();
 		_cur_company.Trash();
 		_current_company = _local_company = _gw.lc;
@@ -193,15 +198,16 @@ static void _GenerateWorld(void *)
 
 		ShowNewGRFError();
 
-		if (_network_dedicated) DEBUG(net, 0, "Map generated, starting game");
+		if (_network_dedicated) DEBUG(net, 1, "Map generated, starting game");
 		DEBUG(desync, 1, "new_map: %08x", _settings_game.game_creation.generation_seed);
 
 		if (_debug_desync_level > 0) {
 			char name[MAX_PATH];
-			snprintf(name, lengthof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, _date);
+			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, _date);
 			SaveOrLoad(name, SL_SAVE, AUTOSAVE_DIR, false);
 		}
 	} catch (...) {
+		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP, true);
 		if (_cur_company.IsValid()) _cur_company.Restore();
 		_generating_world = false;
 		_modal_progress_work_mutex->EndCritical();
@@ -325,7 +331,7 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 		_gw.thread = NULL;
 	}
 
-	if (!_video_driver->HasGUI() || !ThreadObject::New(&_GenerateWorld, NULL, &_gw.thread)) {
+	if (!VideoDriver::GetInstance()->HasGUI() || !ThreadObject::New(&_GenerateWorld, NULL, &_gw.thread)) {
 		DEBUG(misc, 1, "Cannot create genworld thread, reverting to single-threaded mode");
 		_gw.threaded = false;
 		_modal_progress_work_mutex->EndCritical();

@@ -23,9 +23,8 @@
  */
 static inline int ScaleByZoom(int value, ZoomLevel zoom)
 {
-	if (zoom == ZOOM_LVL_NORMAL) return value;
-	int izoom = zoom - ZOOM_LVL_NORMAL;
-	return (zoom > ZOOM_LVL_NORMAL) ? value << izoom : (value + (1 << -izoom) - 1) >> -izoom;
+	assert(zoom >= 0);
+	return value << zoom;
 }
 
 /**
@@ -37,9 +36,8 @@ static inline int ScaleByZoom(int value, ZoomLevel zoom)
  */
 static inline int UnScaleByZoom(int value, ZoomLevel zoom)
 {
-	if (zoom == ZOOM_LVL_NORMAL) return value;
-	int izoom = zoom - ZOOM_LVL_NORMAL;
-	return (zoom > ZOOM_LVL_NORMAL) ? (value + (1 << izoom) - 1) >> izoom : value << -izoom;
+	assert(zoom >= 0);
+	return (value + (1 << zoom) - 1) >> zoom;
 }
 
 /**
@@ -50,9 +48,8 @@ static inline int UnScaleByZoom(int value, ZoomLevel zoom)
  */
 static inline int ScaleByZoomLower(int value, ZoomLevel zoom)
 {
-	if (zoom == ZOOM_LVL_NORMAL) return value;
-	int izoom = zoom - ZOOM_LVL_NORMAL;
-	return (zoom > ZOOM_LVL_NORMAL) ? value << izoom : value >> -izoom;
+	assert(zoom >= 0);
+	return value << zoom;
 }
 
 /**
@@ -63,9 +60,28 @@ static inline int ScaleByZoomLower(int value, ZoomLevel zoom)
  */
 static inline int UnScaleByZoomLower(int value, ZoomLevel zoom)
 {
-	if (zoom == ZOOM_LVL_NORMAL) return value;
-	int izoom = zoom - ZOOM_LVL_NORMAL;
-	return (zoom > ZOOM_LVL_NORMAL) ? value >> izoom : value << -izoom;
+	assert(zoom >= 0);
+	return value >> zoom;
+}
+
+/**
+ * Short-hand to apply GUI zoom level.
+ * @param value Pixel amount at #ZOOM_LVL_BEGIN (full zoom in).
+ * @return value Pixel amount at #ZOOM_LVL_GUI.
+ */
+static inline int UnScaleGUI(int value)
+{
+	return UnScaleByZoom(value, ZOOM_LVL_GUI);
+}
+
+/**
+ * Scale traditional pixel dimensions to GUI zoom level.
+ * @param value Pixel amount at 1x zoom level.
+ * @return value Pixel amount at #ZOOM_LVL_GUI.
+ */
+static inline int ScaleGUITrad(int value)
+{
+	return UnScaleGUI(value * ZOOM_LVL_BASE);
 }
 
 #endif /* ZOOM_FUNC_H */

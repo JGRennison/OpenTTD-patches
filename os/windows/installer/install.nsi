@@ -1,9 +1,9 @@
 # Version numbers to update
 !define APPV_MAJOR 1
-!define APPV_MINOR 3
+!define APPV_MINOR 6
 !define APPV_MAINT 0
-!define APPV_BUILD 5
-!define APPV_EXTRA ""
+!define APPV_BUILD 0
+!define APPV_EXTRA "-beta1"
 
 !define APPNAME "OpenTTD"   ; Define application name
 !define APPVERSION "${APPV_MAJOR}.${APPV_MINOR}.${APPV_MAINT}${APPV_EXTRA}"  ; Define application version
@@ -545,15 +545,22 @@ FunctionEnd
 ;-------------------------------------------------------------------------------
 ; Determine windows version, returns "win9x" if Win9x/Me/2000/XP SP2- or "winnt" for the rest on the stack
 Function GetWindowsVersion
+	GetVersion::WindowsPlatformArchitecture
+	Pop $R0
+	IntCmp $R0 64 WinNT 0
 	ClearErrors
 	StrCpy $R0 "win9x"
 	${If} ${IsNT}
 		${If} ${IsWinXP}
 		${AndIf} ${AtLeastServicePack} 3
 		${OrIf} ${AtLeastWin2003}
-			StrCpy $R0 "winnt"
+			GoTo WinNT
 		${EndIf}
 	${EndIf}
+	GoTo Done
+WinNT:
+	StrCpy $R0 "winnt"
+Done:
 	Push $R0
 FunctionEnd
 

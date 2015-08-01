@@ -446,7 +446,7 @@ enum WindowClass {
 	/**
 	 * Generate landscape (newgame); %Window numbers:
 	 *   - GLWM_SCENARIO = #CreateScenarioWidgets
-	 *   - #GenenerateLandscapeWindowMode = #GenerateLandscapeWidgets
+	 *   - #GenerateLandscapeWindowMode = #GenerateLandscapeWidgets
 	 */
 	WC_GENERATE_LANDSCAPE,
 
@@ -670,10 +670,16 @@ enum WindowClass {
 	WC_SPRITE_ALIGNER,
 
 	/**
-	 * Linkgraph legend; Window numbers:
+	 * Linkgraph legend; %Window numbers:
 	 *   - 0 = #LinkGraphWidgets
 	 */
 	WC_LINKGRAPH_LEGEND,
+
+	/**
+	 * Save preset; %Window numbers:
+	 *   - 0 = #SavePresetWidgets
+	 */
+	WC_SAVE_PRESET,
 
 	WC_INVALID = 0xFFFF, ///< Invalid window.
 };
