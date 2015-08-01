@@ -111,6 +111,7 @@ struct SettingDescBase {
 struct SettingDesc {
 	SettingDescBase desc;   ///< Settings structure (going to configuration file)
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
+	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if NULL save/load from PATS chunk as normal
 
 	bool IsEditable(bool do_command = false) const;
 	SettingType GetType() const;

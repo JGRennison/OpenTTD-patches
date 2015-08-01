@@ -927,10 +927,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgisk lari (
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iransk rial (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Vägfordon
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Välj sida av vägen som fordonen kör på
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Kör på vänster sida
@@ -1683,7 +1679,7 @@ STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE} Fysik
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Planering av resrutt
 STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE} Begränsningar
 STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE} Katastrofer / Olyckor
-STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Världs generation
+STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Världsgenerering
 STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Miljö
 STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Mydigheter
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Städer
@@ -2879,7 +2875,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Tidigare
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fortsätt till föregående normala spriteobjekt, ignorera eventuella pseudo/recolour/font spriteobjekt och börja om från slutet efter första spriteobjektet
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representation av det valda objektet. Justeringen ignoreras när objektet ritas.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flytta runt objektet, ändrar X och Y offsets
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X offset: {NUM}, Y offset: {NUM}
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Återställ relativ
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Återställ den nuvarande relativa offsetten
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offsett: {NUM}, Y offsett: {NUM} (Absolut)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X offsett: {NUM}, Y offsett: {NUM} (Relativ)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Välj objekt
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Välj ett objekt på bildskärmen
 
@@ -3052,7 +3051,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Information
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Varning
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Fel
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Avbryt
 STR_GOAL_QUESTION_BUTTON_OK                                     :Okej
 STR_GOAL_QUESTION_BUTTON_NO                                     :Nej
@@ -3071,6 +3070,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Starta om
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Skjut upp
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Ge upp
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Stäng
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subventioner

@@ -910,10 +910,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Kartvela Lario 
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Irana Rialo (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Stratveturiloj
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Elektu stratflankon kie veturu veturiloj
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Veturu maldekstre
@@ -967,6 +963,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Ekrana m
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Elektu uzotan ekranan montrograndon
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :alia
 
+STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfacgrandeco
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normala
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Duobla grandeco
@@ -2430,7 +2427,6 @@ STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Sekvanta
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Iru al bildeto
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Antaŭa bildeto
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Movu ĉirkaŭ la bildeton, ŝanĝante la X kaj Y distancojn
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X distanco: {NUM}, Y distanco: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Elektu bildeto
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Elektu bildeton ie el la ekrano
 
@@ -2566,7 +2562,8 @@ STR_GOALS_TEXT                                                  :{ORANGE}{STRING
 
 # Goal question window
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subvencioj

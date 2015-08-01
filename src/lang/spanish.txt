@@ -615,8 +615,8 @@ STR_PERFORMANCE_DETAIL_SELECT_COMPANY_TOOLTIP                   :{BLACK}Mostrar 
 ############ Those following lines need to be in this order!!
 STR_PERFORMANCE_DETAIL_VEHICLES                                 :{BLACK}Vehículos:
 STR_PERFORMANCE_DETAIL_STATIONS                                 :{BLACK}Estaciones:
-STR_PERFORMANCE_DETAIL_MIN_PROFIT                               :{BLACK}Beneficio Min.:
-STR_PERFORMANCE_DETAIL_MIN_INCOME                               :{BLACK}Ingreso Min.:
+STR_PERFORMANCE_DETAIL_MIN_PROFIT                               :{BLACK}Beneficio Mín.:
+STR_PERFORMANCE_DETAIL_MIN_INCOME                               :{BLACK}Ingreso Mín.:
 STR_PERFORMANCE_DETAIL_MAX_INCOME                               :{BLACK}Ingreso Máx.:
 STR_PERFORMANCE_DETAIL_DELIVERED                                :{BLACK}Entregado:
 STR_PERFORMANCE_DETAIL_CARGO                                    :{BLACK}Carga:
@@ -927,10 +927,6 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Personalizada..
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Georgiano (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iraní (IRR)
 ############ end of currency region
-
-
-############ start of measuring units region
-############ end of measuring units region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Vehículos de carretera
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Selecciona el lado de la carretera por donde se debe conducir
@@ -2830,7 +2826,7 @@ STR_NEWGRF_SETTINGS_FIND_MISSING_CONTENT_TOOLTIP                :{BLACK}Comproba
 STR_NEWGRF_SETTINGS_FILENAME                                    :{BLACK}Fichero: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_GRF_ID                                      :{BLACK}GRF ID: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Versión: {SILVER}{NUM}
-STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Min. versión compatible: {SILVER}{NUM}
+STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Mín. versión compatible: {SILVER}{NUM}
 STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}MD5sum: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PALETTE                                     :{BLACK}Paleta: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Parámetros: {SILVER}{STRING}
@@ -2880,7 +2876,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Sprite a
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Saltar al sprite anterior (ignorando pseudosprites, sprites recoloreados y sprites de fuente) y pasar del primer al último sprite
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representación del sprite seleccionado. Su alineamiento es ignorado al dibujarlo
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Mover el sprite, cambiando los ajustes X e Y
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}Ajuste X: {NUM}, Ajuste Y: {NUM}
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Reiniciar coordenadas relativas
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Reinicia las coordenadas relativas actuales
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Coordenada X: {NUM}, Coordenada Y: {NUM} (Absoluta)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}Coordenada X: {NUM}, Coordenada Y: {NUM} (Relativa)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Seleccionar sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Seleccionar un sprite de cualquier parte de la pantalla
 
@@ -2957,7 +2956,7 @@ STR_INVALID_VEHICLE                                             :<vehículo inv�
 
 # NewGRF scanning window
 STR_NEWGRF_SCAN_CAPTION                                         :{WHITE}Comprobando NewGRFs
-STR_NEWGRF_SCAN_MESSAGE                                         :{BLACK}Comprobando NewGRFs. Dependiendo de la cantidad ésto puede llevar un tiempo...
+STR_NEWGRF_SCAN_MESSAGE                                         :{BLACK}Comprobando NewGRFs. Dependiendo de la cantidad, esto puede llevar un tiempo...
 STR_NEWGRF_SCAN_STATUS                                          :{BLACK}{NUM} NewGRF{P "" s} comprobados de un total aproximado de {NUM} NewGRF{P "" s}
 STR_NEWGRF_SCAN_ARCHIVES                                        :Comprobando archivos
 
@@ -3053,7 +3052,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Información
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Advertencia
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Error
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Cancelar
 STR_GOAL_QUESTION_BUTTON_OK                                     :Ok
 STR_GOAL_QUESTION_BUTTON_NO                                     :No
@@ -3072,6 +3071,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Reiniciar
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Posponer
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Rendirse
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Cerrar
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subvenciones
@@ -3180,7 +3180,7 @@ STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Cambiar 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Editar nombre del punto de ruta
 
 # Finances window
-STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} Finanzas {BLACK}{COMPANY_NUM}
+STR_FINANCES_CAPTION                                            :{WHITE}Finanzas de {COMPANY} {BLACK}{COMPANY_NUM}
 STR_FINANCES_EXPENDITURE_INCOME_TITLE                           :{WHITE}Gastos/Ingresos
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
 STR_FINANCES_SECTION_CONSTRUCTION                               :{GOLD}Construcción
@@ -3489,10 +3489,10 @@ STR_DEPOT_CLONE_ROAD_VEHICLE                                    :{BLACK}Clonar v
 STR_DEPOT_CLONE_SHIP                                            :{BLACK}Clonar barco
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Clonar aeronave
 
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Esto comprará una copia del tren incluyendo todos sus vagones. Pulse este botón y después en el tren dentro o fuera del depósito. Ctrl+Click compartirá las ordenes. Shift+Click muestra el precio estimado sin realizar la compra
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Esto comprará una copia del vehículo de carretera. Pulse este botón y después en el vehículo dentro o fuera del depósito. Ctrl+Click compartirá las ordenes. Shift+Click muestra una estimación del precio sin realizar la compra
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Esto comprará una copia del barco. Pulse este botón y después el barco dentro o fuera del muelle. Ctrl+Click compartirá las ordenes. Shift+Click muestra una estimación del precio sin realizar la compra
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Esto comprará una copia de la aeronave. Pulse este botón y después en la aeronave dentro o fuera del hangar. Ctrl+Click compartirá las ordenes. Shift+Click muestra una estimación del precio sin realizar la compra
+STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Esto comprará una copia del tren incluyendo todos sus vagones. Pulse este botón y después en el tren dentro o fuera del depósito. Ctrl+Click compartirá las órdenes. Shift+Click muestra el precio estimado sin realizar la compra
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Esto comprará una copia del vehículo de carretera. Pulse este botón y después en el vehículo dentro o fuera del depósito. Ctrl+Click compartirá las órdenes. Shift+Click muestra una estimación del precio sin realizar la compra
+STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Esto comprará una copia del barco. Pulse este botón y después el barco dentro o fuera del muelle. Ctrl+Click compartirá las órdenes. Shift+Click muestra una estimación del precio sin realizar la compra
+STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Esto comprará una copia de la aeronave. Pulse este botón y después en la aeronave dentro o fuera del hangar. Ctrl+Click compartirá las órdenes. Shift+Click muestra una estimación del precio sin realizar la compra
 
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centrar vista en posición del depósito de trenes. Ctrl+Click abre un punto de vista en dicha posición
 STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}Centrar vista en posición del depósito de vehículos. Ctrl+Click abre un punto de vista en dicha posición
@@ -3528,10 +3528,10 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :{G=f}locomotora
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Coste: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidad: {VELOCITY}  Potencia: {POWER}{}Coste Operativo: {CURRENCY_LONG}/año{}Capacidad: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Coste: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidad: {VELOCITY}  Potencia: {POWER}  F.T. Máxima: {6:FORCE}{}Coste de operación: {4:CURRENCY_LONG}/año{}Capacidad: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Coste: {CURRENCY_LONG} Velocidad Max.: {VELOCITY}{}Capacidad: {CARGO_LONG}, {CARGO_LONG}{}Coste Mantenimiento: {CURRENCY_LONG}/año
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Coste: {CURRENCY_LONG} Velocidad Max.: {VELOCITY}{}Capacidad: {CARGO_LONG}{}Coste Mantenimiento: {CURRENCY_LONG}/año
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Coste: {CURRENCY_LONG} Velocidad Max.: {VELOCITY} Alcance: {COMMA} casillas{}Capacidad: {CARGO_LONG}, {CARGO_LONG}{}Coste de Operación: {CURRENCY_LONG}/año
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Coste: {CURRENCY_LONG} Velocidad Max.: {VELOCITY} Alcance: {COMMA} casillas{}Capacidad: {CARGO_LONG}{}Coste de Operación: {CURRENCY_LONG}/año
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Coste: {CURRENCY_LONG} Velocidad Máx.: {VELOCITY}{}Capacidad: {CARGO_LONG}, {CARGO_LONG}{}Coste Mantenimiento: {CURRENCY_LONG}/año
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Coste: {CURRENCY_LONG} Velocidad Máx.: {VELOCITY}{}Capacidad: {CARGO_LONG}{}Coste Mantenimiento: {CURRENCY_LONG}/año
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Coste: {CURRENCY_LONG} Velocidad Máx.: {VELOCITY} Alcance: {COMMA} casillas{}Capacidad: {CARGO_LONG}, {CARGO_LONG}{}Coste de Operación: {CURRENCY_LONG}/año
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Coste: {CURRENCY_LONG} Velocidad Máx.: {VELOCITY} Alcance: {COMMA} casillas{}Capacidad: {CARGO_LONG}{}Coste de Operación: {CURRENCY_LONG}/año
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Reemplazar {STRING} - {STRING}
@@ -3654,9 +3654,9 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} año{P 
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} año{P "" s} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Velocidad Máx.: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Velocidad Max.: {LTBLUE}{VELOCITY} {BLACK}Alcance: {LTBLUE}{COMMA} casillas
-STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potencia: {LTBLUE}{POWER}{BLACK} Velocidad Max.: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potencia: {LTBLUE}{POWER}{BLACK} Velocidad Max.: {LTBLUE}{VELOCITY} {BLACK}F.T. Max.: {LTBLUE}{FORCE}
+STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Velocidad Máx.: {LTBLUE}{VELOCITY} {BLACK}Alcance: {LTBLUE}{COMMA} casillas
+STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potencia: {LTBLUE}{POWER}{BLACK} Velocidad Máx.: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potencia: {LTBLUE}{POWER}{BLACK} Velocidad Máx.: {LTBLUE}{VELOCITY} {BLACK}F.T. Máx.: {LTBLUE}{FORCE}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Beneficios este año: {LTBLUE}{CURRENCY_LONG} (último año: {CURRENCY_LONG})
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Fiabilidad: {LTBLUE}{COMMA}%  {BLACK}Averías desde el último mantenimiento: {LTBLUE}{COMMA}
@@ -4171,7 +4171,7 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... dema
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... demasiado cercano a otro municipio
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... demasiados municipios
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... no hay más espacio en el mapa
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}El municipio no construirá carreteras. Puedes activar la función de construcción de carreteras en Opciones Avanzadas->Ambiente->Municipios
+STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}El municipio no construirá carreteras. Puedes activar la función de construcción de carreteras en Configuración->Ambiente->Municipios
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Trabajos de carretera en progreso
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}No se puede borrar este municipio...{}Quedan estaciones o depósitos relacionados con él, o una propiedad suya no puede ser retirada
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... no existe un lugar apropiado para una estatua en el centro de este municipio
