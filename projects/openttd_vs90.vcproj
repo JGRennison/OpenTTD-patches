@@ -2783,6 +2783,14 @@
 				RelativePath=".\..\src\saveload\signal_sl.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\..\src\saveload\extended_ver_sl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\saveload\extended_ver_sl.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Tables"
