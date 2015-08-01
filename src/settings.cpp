@@ -2293,7 +2293,7 @@ static void LoadSettingsPatx(const SettingDesc *sd, void *object)
 
 	static const SaveLoad _settings_patx_desc[] = {
 		SLE_VAR(SettingsPatxLoad, flags,          SLE_UINT32),
-		SLE_STR(SettingsPatxLoad, name,           SLE_STRB, 255),
+		SLE_STR(SettingsPatxLoad, name,           SLE_STRB, 256),
 		SLE_VAR(SettingsPatxLoad, setting_length, SLE_UINT32),
 		SLE_END()
 	};

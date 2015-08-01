@@ -108,7 +108,10 @@ void SlXvSetCurrentState()
 	SlXvResetState();
 	_sl_is_ext_version = true;
 
-	// TODO: set versions for currently enabled features here
+	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
+	for (; info->index != XSLFI_NULL; ++info) {
+		_sl_xv_feature_versions[info->index] = info->save_version;
+	}
 }
 
 /**
