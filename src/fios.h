@@ -92,9 +92,11 @@ enum FileSlots {
 	/** First slot usable for (New)GRFs used during the game. */
 	FIRST_GRF_SLOT =  2,
 	/** Last slot usable for (New)GRFs used during the game. */
-	LAST_GRF_SLOT  = 63,
+	LAST_GRF_SLOT  = 255,
 	/** Maximum number of slots. */
-	MAX_FILE_SLOTS = 64
+	MAX_FILE_SLOTS = 256,
+	/** Maximum number of slots for network game */
+	MAX_FILE_SLOTS_IN_NETWORK = 63
 };
 
 /** Mode of the file dialogue window. */
