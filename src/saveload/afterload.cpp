@@ -2819,8 +2819,7 @@ bool AfterLoadGame()
 	}
 
 	/* Set some breakdown-related variables to the correct values. */
-	if (IsSavegameVersionBefore(SL_IB)) {
-
+	if (SlXvIsFeatureMissing(XLSFI_IMPROVED_BREAKDOWNS)) {
 		Vehicle *v;
 		FOR_ALL_VEHICLES(v) {
 			switch(v->type) {
@@ -2835,17 +2834,22 @@ bool AfterLoadGame()
 						v->reliability = min(v->First()->reliability, e->reliability);
 					}
 				}
+				/* FALL THROUGH */
 				case VEH_ROAD:
 					v->breakdown_chance = 128;
 					break;
+
 				case VEH_SHIP:
 					v->breakdown_chance = 64;
 					break;
+
 				case VEH_AIRCRAFT:
 					v->breakdown_chance = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
 					v->breakdown_severity = 40;
 					break;
-				default: break;
+
+				default:
+					break;
 			}
 		}
 	}

@@ -21,6 +21,7 @@
  */
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
+	XLSFI_IMPROVED_BREAKDOWNS,                    ///< Improved breakdowns patch
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
