@@ -1723,11 +1723,13 @@ void UpdateLevelCrossing(TileIndex tile, bool sound)
 
 	Axis axis = GetCrossingRoadAxis(tile);
 
-	for (TileIndex t = tile; !is_forced && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
-		is_forced |= CheckLevelCrossing(t);
-	}
-	for (TileIndex t = tile; !is_forced && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
-		is_forced |= CheckLevelCrossing(t);
+	if (_settings_game.vehicle.adjacent_crossings) {
+		for (TileIndex t = tile; !is_forced && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
+			is_forced |= CheckLevelCrossing(t);
+		}
+		for (TileIndex t = tile; !is_forced && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
+			is_forced |= CheckLevelCrossing(t);
+		}
 	}
 
 	for (TileIndex t = tile; IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {

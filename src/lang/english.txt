@@ -1703,6 +1703,9 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Allow trains to
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Change setting value
 
+STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Close adjacent level crossings: {STRING2}
+STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Closes all adjacent level crossings on parallel tracks whenever one or more is occupied
+
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Error with the configuration file...
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... error in array '{RAW_STRING}'
