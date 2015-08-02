@@ -479,6 +479,26 @@ static inline bool HasOnewaySignalBlockingTrackdir(TileIndex tile, Trackdir td)
 			!HasSignalOnTrackdir(tile, td) && IsOnewaySignal(tile, TrackdirToTrack(td));
 }
 
+/**
+ * Does signal tile have "one or more trace restrict mappings present" bit set
+ * @param tile the tile to check
+ */
+static inline bool IsRestrictedSignal(TileIndex tile)
+{
+	assert(GetRailTileType(tile) == RAIL_TILE_SIGNALS);
+	return (bool) GB(_m[tile].m2, 12, 1);
+}
+
+/**
+ * Set signal tile "one or more trace restrict mappings present" bit
+ * @param tile the tile to set
+ */
+static inline void SetRestrictedSignal(TileIndex tile, bool is_restricted)
+{
+	assert(GetRailTileType(tile) == RAIL_TILE_SIGNALS);
+	SB(_m[tile].m2, 12, 1, is_restricted);
+}
+
 
 RailType GetTileRailType(TileIndex tile);
 

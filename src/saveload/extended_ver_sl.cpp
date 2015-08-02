@@ -45,6 +45,7 @@ std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version os SLXI chunk
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
+	{ XSLFI_TRACE_RESTRICT, XSCF_NULL, 1, 1, "tracerestrict", NULL, NULL, "TRRM,TRRP" },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 
@@ -121,7 +122,12 @@ void SlXvCheckSpecialSavegameVersions()
 {
 	extern uint16 _sl_version;
 
-	// TODO: check for savegame versions
+	if (_sl_version == 2000) {
+		DEBUG(sl, 1, "Loading a trace restrict patch savegame version %d as version 194", _sl_version);
+		_sl_version = 194;
+		_sl_is_faked_ext = true;
+		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 1;
+	}
 }
 
 /**

@@ -329,6 +329,8 @@ enum Commands {
 
 	CMD_OPEN_CLOSE_AIRPORT,           ///< open/close an airport to incoming aircraft
 
+	CMD_PROGRAM_TRACERESTRICT_SIGNAL, ///< modify a signal tracerestrict program
+
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
 

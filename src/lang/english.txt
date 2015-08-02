@@ -2370,6 +2370,93 @@ STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Dragging
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Decrease dragging signal density
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Increase dragging signal density
 
+# Tracerestrict GUI
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_EQUALS                :is
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_NOT_EQUALS            :is not
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_THAN             :<
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_EQUALS           :<=
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_THAN             :>
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_EQUALS           :>=
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS          :can carry
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS      :can't carry
+STR_TRACE_RESTRICT_CONDITIONAL_IF                               :If
+STR_TRACE_RESTRICT_CONDITIONAL_ELIF                             :Else if
+STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :Or if
+STR_TRACE_RESTRICT_CONDITIONAL_ELSE                             :Else
+STR_TRACE_RESTRICT_CONDITIONAL_ENDIF                            :End if
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH                        :train length
+STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :max speed
+STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :current order
+STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :next order
+STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :last visited station
+STR_TRACE_RESTRICT_VARIABLE_CARGO                               :cargo
+STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
+STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} then
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING} {STRING} {STRING} {STATION} then
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING} {STRING} {STRING} {WAYPOINT} then
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRING} {STRING} {DEPOT} then
+STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} train {STRING} cargo: {STRING} then
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} train {STRING} entering from {STRING} tile edge then
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} train {STRING} entering from {STRING} of signal then
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
+STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
+STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
+STR_TRACE_RESTRICT_START                                        :Start
+STR_TRACE_RESTRICT_END                                          :End
+STR_TRACE_RESTRICT_PF_DENY                                      :Deny
+STR_TRACE_RESTRICT_PF_ALLOW                                     :Allow
+STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Allow (cancel previous Deny)
+STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
+STR_TRACE_RESTRICT_DIRECTION_FRONT                              :front
+STR_TRACE_RESTRICT_DIRECTION_BACK                               :back
+STR_TRACE_RESTRICT_DIRECTION_NE                                 :north-east
+STR_TRACE_RESTRICT_DIRECTION_SE                                 :south-east
+STR_TRACE_RESTRICT_DIRECTION_SW                                 :south-west
+STR_TRACE_RESTRICT_DIRECTION_NW                                 :north-west
+STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
+STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
+STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
+STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}Type
+STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}Comparison operator
+STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}Value
+STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}Condition type
+STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}Go to signal
+STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Insert
+STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove
+STR_TRACE_RESTRICT_RESET                                        :{BLACK}Reset
+STR_TRACE_RESTRICT_COPY                                         :{BLACK}Copy
+STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Share
+STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Unshare
+STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Select Target
+STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Insert an instruction
+STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Remove the selected instruction
+STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}Reset the current signal (without affecting shared programs)
+STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Copy program from another signal
+STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Share program with another signal
+STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Stop sharing program with other signals, create a copy of the program
+STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routefinding restriction
+STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Click an instruction to select it{}Ctrl+Click to scroll to the instruction's target (if any)
+STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Can't insert instruction
+STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Can't modify instruction
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Can't remove instruction
+STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Value too large, maximum is {COMMA}
+STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No trace restrict program exists
+STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset too large
+STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :Can't change conditionality
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :Can't remove an 'end if'
+STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :Validation failed: condstack non-empty at exit
+STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :Validation failed: else/endif without opening if
+STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :Validation failed: duplicate else
+STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :Validation failed: else if without opening if
+STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :Source and target signals are the same
+STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Can't reset signal
+STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Can't copy program
+STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}Can't share program
+STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}Can't unshare program
+
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Select Rail Bridge
 STR_SELECT_ROAD_BRIDGE_CAPTION                                  :{WHITE}Select Road Bridge
@@ -2624,6 +2711,8 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} track 
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} track with combo- and one-way path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} track with path and one-way path signals
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} train depot
+
+STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :{STRING1} (restricted)
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Road
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Road with street lights

@@ -17,6 +17,7 @@
 #include "core/pool_func.hpp"
 #include "vehicle_gui.h"
 #include "vehiclelist.h"
+#include "tracerestrict.h"
 
 #include "safeguards.h"
 
@@ -41,6 +42,8 @@ Depot::~Depot()
 
 	/* Clear the depot from all order-lists */
 	RemoveOrderFromAllVehicles(OT_GOTO_DEPOT, this->index);
+
+	TraceRestrictRemoveDestinationID(TROCAF_DEPOT, this->index);
 
 	/* Delete the depot-window */
 	DeleteWindowById(WC_VEHICLE_DEPOT, this->xy);

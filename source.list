@@ -1195,3 +1195,8 @@ thread/thread.h
 #else
 	thread/thread_none.cpp
 #end
+
+tracerestrict.h
+tracerestrict.cpp
+tracerestrict_gui.cpp
+saveload/tracerestrict_sl.cpp
