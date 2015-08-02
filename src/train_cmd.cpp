@@ -1676,19 +1676,31 @@ static bool TrainApproachingCrossing(TileIndex tile)
 	return HasVehicleOnPos(tile_from, &tile, &TrainApproachingCrossingEnum);
 }
 
+/** Check if the crossing should be closed
+ *  @return train on crossing || train approaching crossing || reserved
+ */
+static inline bool CheckLevelCrossing(TileIndex tile)
+{
+	return HasCrossingReservation(tile) || HasVehicleOnPos(tile, NULL, &TrainOnTileEnum) || TrainApproachingCrossing(tile);
+}
 
 /**
  * Sets correct crossing state
  * @param tile tile to update
  * @param sound should we play sound?
+ * @param force_state force close the crossing due to an adjacent tile
  * @pre tile is a rail-road crossing
  */
-void UpdateLevelCrossing(TileIndex tile, bool sound)
+static void UpdateLevelCrossingTile(TileIndex tile, bool sound, bool force_state = false)
 {
 	assert(IsLevelCrossingTile(tile));
+	bool new_state;
 
-	/* train on crossing || train approaching crossing || reserved */
-	bool new_state = HasVehicleOnPos(tile, NULL, &TrainOnTileEnum) || TrainApproachingCrossing(tile) || HasCrossingReservation(tile);
+	if (force_state) {
+		new_state = force_state;
+	} else {
+		new_state = CheckLevelCrossing(tile);
+	}
 
 	if (new_state != IsCrossingBarred(tile)) {
 		if (new_state && sound) {
@@ -1696,6 +1708,33 @@ void UpdateLevelCrossing(TileIndex tile, bool sound)
 		}
 		SetCrossingBarred(tile, new_state);
 		MarkTileDirtyByTile(tile);
+	}
+}
+
+/**
+ * Cycles the adjacent crossings and sets their state
+ * @param tile tile to update
+ * @param sound should we play sound?
+ */
+void UpdateLevelCrossing(TileIndex tile, bool sound)
+{
+	bool is_forced = false;
+	if (!IsLevelCrossingTile(tile)) return;
+
+	Axis axis = GetCrossingRoadAxis(tile);
+
+	for (TileIndex t = tile; !is_forced && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
+		is_forced |= CheckLevelCrossing(t);
+	}
+	for (TileIndex t = tile; !is_forced && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
+		is_forced |= CheckLevelCrossing(t);
+	}
+
+	for (TileIndex t = tile; IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
+		UpdateLevelCrossingTile(t, sound, is_forced);
+	}
+	for (TileIndex t = tile; IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
+		UpdateLevelCrossingTile(t, sound, is_forced);
 	}
 }
 
@@ -1708,9 +1747,8 @@ void UpdateLevelCrossing(TileIndex tile, bool sound)
 static inline void MaybeBarCrossingWithSound(TileIndex tile)
 {
 	if (!IsCrossingBarred(tile)) {
-		BarCrossing(tile);
-		if (_settings_client.sound.ambient) SndPlayTileFx(SND_0E_LEVEL_CROSSING, tile);
-		MarkTileDirtyByTile(tile);
+		SetCrossingReservation(tile, true);
+		UpdateLevelCrossing(tile, true);
 	}
 }
 
