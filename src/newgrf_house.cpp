@@ -597,7 +597,7 @@ bool NewHouseTileLoop(TileIndex tile)
 	}
 
 	SetHouseProcessingTime(tile, hs->processing_time);
-	MarkTileDirtyByTile(tile);
+	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 	return true;
 }
 
@@ -632,7 +632,7 @@ static void DoTriggerHouse(TileIndex tile, HouseTrigger trigger, byte base_rando
 		case HOUSE_TRIGGER_TILE_LOOP_TOP:
 			if (!first) {
 				/* The top tile is marked dirty by the usual TileLoop */
-				MarkTileDirtyByTile(tile);
+				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 				break;
 			}
 			/* Random value of first tile already set. */

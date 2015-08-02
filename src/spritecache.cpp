@@ -853,6 +853,102 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator)
 	}
 }
 
+/**
+ * Reads a sprite and finds its most representative colour.
+ * @param sprite Sprite to read.
+ * @param palette_id Palette for remapping colours.
+ * @return if blitter supports 32bpp, average Colour.data else a palette index.
+ */
+uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
+{
+	if (!SpriteExists(sprite_id)) return 0;
+
+	SpriteCache *sc = GetSpriteCache(sprite_id);
+	if (sc->type != ST_NORMAL) return 0;
+
+	const byte * const remap = (palette_id == PAL_NONE ? NULL : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1);
+
+	uint8 file_slot = sc->file_slot;
+	size_t file_pos = sc->file_pos;
+
+	SpriteLoader::Sprite sprites[ZOOM_LVL_COUNT];
+	SpriteLoader::Sprite *sprite = &sprites[ZOOM_LVL_SHIFT];
+	sprites[ZOOM_LVL_NORMAL].type = ST_NORMAL;
+	SpriteLoaderGrf sprite_loader(sc->container_ver);
+	uint8 sprite_avail;
+	const uint8 screen_depth = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+
+	/* Try to read the 32bpp sprite first. */
+	if (screen_depth == 32) {
+		sprite_avail = sprite_loader.LoadSprite(sprites, file_slot, file_pos, ST_NORMAL, true);
+		if (sprite_avail & ZOOM_LVL_BASE) {
+			/* Return the average colour. */
+			uint32 r = 0, g = 0, b = 0, cnt = 0;
+			SpriteLoader::CommonPixel *pixel = sprite->data;
+			for (uint x = sprite->width * sprite->height; x != 0; x--) {
+				if (pixel->a) {
+					if (remap && pixel->m) {
+						const Colour c = _cur_palette.palette[remap[pixel->m]];
+						if (c.a) {
+							r += c.r;
+							g += c.g;
+							b += c.b;
+							cnt++;
+						}
+					} else {
+						r += pixel->r;
+						g += pixel->g;
+						b += pixel->b;
+						cnt++;
+					}
+				}
+				pixel++;
+			}
+			return cnt ? Colour(r / cnt, g / cnt, b / cnt).data : 0;
+		}
+	}
+
+	/* No 32bpp, try 8bpp. */
+	sprite_avail = sprite_loader.LoadSprite(sprites, file_slot, file_pos, ST_NORMAL, false);
+	if (sprite_avail & ZOOM_LVL_BASE) {
+		SpriteLoader::CommonPixel *pixel = sprite->data;
+		if (screen_depth == 32) {
+			/* Return the average colour. */
+			uint32 r = 0, g = 0, b = 0, cnt = 0;
+			for (uint x = sprite->width * sprite->height; x != 0; x--) {
+				if (pixel->a) {
+					const uint col_index = remap ? remap[pixel->m] : pixel->m;
+					const Colour c = _cur_palette.palette[col_index];
+					r += c.r;
+					g += c.g;
+					b += c.b;
+					cnt++;
+				}
+				pixel++;
+			}
+			return cnt ? Colour(r / cnt, g / cnt, b / cnt).data : 0;
+		} else {
+			/* Return the most used indexed colour. */
+			int cnt[256];
+			memset(cnt, 0, sizeof(cnt));
+			for (uint x = sprite->width * sprite->height; x != 0; x--) {
+				cnt[remap ? remap[pixel->m] : pixel->m]++;
+				pixel++;
+			}
+			int cnt_max = -1;
+			uint32 rk = 0;
+			for (uint x = 1; x < lengthof(cnt); x++) {
+				if (cnt[x] > cnt_max) {
+					rk = x;
+					cnt_max = cnt[x];
+				}
+			}
+			return rk;
+		}
+	}
+
+	return 0;
+}
 
 static void GfxInitSpriteCache()
 {

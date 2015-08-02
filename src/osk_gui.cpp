@@ -206,7 +206,7 @@ struct OskWindow : public Window {
 		this->parent->SetWidgetDirty(this->text_btn);
 	}
 
-	virtual void OnFocusLost()
+	virtual void OnFocusLost(Window *newly_focused_window)
 	{
 		VideoDriver::GetInstance()->EditBoxLostFocus();
 		delete this;

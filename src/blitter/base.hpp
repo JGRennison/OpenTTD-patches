@@ -101,6 +101,26 @@ public:
 	virtual void SetPixel(void *video, int x, int y, uint8 colour) = 0;
 
 	/**
+	 * Draw a sequence of pixels on the video-buffer.
+	 * @param video The destination pointer (video-buffer).
+	 * @param x The x position within video-buffer.
+	 * @param y The y position within video-buffer.
+	 * @param colours A 8bpp colour mapping buffer.
+	 * @param width The length of the line.
+	 */
+	virtual void SetLine(void *video, int x, int y, uint8 *colours, uint width) = 0;
+
+	/**
+	 * Draw a sequence of pixels on the video-buffer (no LookupColourInPalette).
+	 * @param video The destination pointer (video-buffer).
+	 * @param x The x position within video-buffer.
+	 * @param y The y position within video-buffer.
+	 * @param colours A 32bpp colour buffer.
+	 * @param width The length of the line.
+	 */
+	virtual void SetLine32(void *video, int x, int y, uint32 *colours, uint width) { NOT_REACHED(); };
+
+	/**
 	 * Make a single horizontal line in a single colour on the video-buffer.
 	 * @param video The destination pointer (video-buffer).
 	 * @param width The length of the line.

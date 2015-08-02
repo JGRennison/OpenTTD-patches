@@ -35,6 +35,11 @@ void Blitter_8bppBase::SetPixel(void *video, int x, int y, uint8 colour)
 	*((uint8 *)video + x + y * _screen.pitch) = colour;
 }
 
+void Blitter_8bppBase::SetLine(void *video, int x, int y, uint8 *colours, uint width)
+{
+	memcpy((uint8 *)video + x + y * _screen.pitch, colours, width * sizeof(uint8));
+}
+
 void Blitter_8bppBase::DrawRect(void *video, int width, int height, uint8 colour)
 {
 	do {

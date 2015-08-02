@@ -317,6 +317,50 @@ void Blitter_32bppAnim::SetPixel(void *video, int x, int y, uint8 colour)
 	this->anim_buf[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + y * this->anim_buf_width] = colour | (DEFAULT_BRIGHTNESS << 8);
 }
 
+void Blitter_32bppAnim::SetLine(void *video, int x, int y, uint8 *colours, uint width)
+{
+	Colour *dst = (Colour *)video + x + y * _screen.pitch;
+
+	if (_screen_disable_anim) {
+		do {
+			*dst = LookupColourInPalette(*colours);
+			dst++;
+			colours++;
+		} while (--width);
+	} else {
+		uint16 *dstanim = (uint16 *)(&this->anim_buf[(uint32 *)video - (uint32 *)_screen.dst_ptr + x + y * _screen.pitch]);
+		do {
+			*dstanim = *colours | (DEFAULT_BRIGHTNESS << 8);
+			*dst = LookupColourInPalette(*colours);
+			dst++;
+			dstanim++;
+			colours++;
+		} while (--width);
+	}
+}
+
+void Blitter_32bppAnim::SetLine32(void *video, int x, int y, uint32 *colours, uint width)
+{
+	Colour *dst = (Colour *)video + x + y * _screen.pitch;
+
+	if (_screen_disable_anim) {
+		do {
+			*dst = *colours;
+			dst++;
+			colours++;
+		} while (--width);
+	} else {
+		uint16 *dstanim = (uint16 *)(&this->anim_buf[(uint32 *)video - (uint32 *)_screen.dst_ptr + x + y * _screen.pitch]);
+		do {
+			*dstanim = 0;
+			*dst = *colours;
+			dst++;
+			dstanim++;
+			colours++;
+		} while (--width);
+	}
+}
+
 void Blitter_32bppAnim::DrawRect(void *video, int width, int height, uint8 colour)
 {
 	if (_screen_disable_anim) {

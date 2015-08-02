@@ -23,6 +23,7 @@ public:
 	/* virtual */ Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator);
 	/* virtual */ void *MoveTo(void *video, int x, int y) { return NULL; };
 	/* virtual */ void SetPixel(void *video, int x, int y, uint8 colour) {};
+	/* virtual */ void SetLine(void *video, int x, int y, uint8 *colours, uint width) {};
 	/* virtual */ void DrawRect(void *video, int width, int height, uint8 colour) {};
 	/* virtual */ void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash) {};
 	/* virtual */ void CopyFromBuffer(void *video, const void *src, int width, int height) {};

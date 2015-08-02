@@ -72,7 +72,7 @@ int _scrollbar_start_pos;
 int _scrollbar_size;
 byte _scroller_click_timeout = 0;
 
-bool _scrolling_viewport;  ///< A viewport is being scrolled with the mouse.
+Window *_scrolling_viewport; ///< A viewport is being scrolled with the mouse.
 bool _mouse_hovering;      ///< The mouse is hovering over the same point.
 
 SpecialMouseMode _special_mouse_mode; ///< Mode of the mouse.
@@ -423,8 +423,8 @@ void SetFocusedWindow(Window *w)
 	_focused_window = w;
 
 	/* So we can inform it that it lost focus */
-	if (old_focused != NULL) old_focused->OnFocusLost();
-	if (_focused_window != NULL) _focused_window->OnFocus();
+	if (old_focused != NULL) old_focused->OnFocusLost(w);
+	if (_focused_window != NULL) _focused_window->OnFocus(old_focused);
 }
 
 /**
@@ -481,7 +481,7 @@ bool Window::SetFocusedWidget(int widget_index)
 /**
  * Called when window looses focus
  */
-void Window::OnFocusLost()
+void Window::OnFocusLost(Window *newly_focused_window)
 {
 	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
 }
@@ -1046,7 +1046,7 @@ Window::~Window()
 
 	/* Make sure we don't try to access this window as the focused window when it doesn't exist anymore. */
 	if (_focused_window == this) {
-		this->OnFocusLost();
+		this->OnFocusLost(NULL);
 		_focused_window = NULL;
 	}
 
@@ -1376,6 +1376,7 @@ static void BringWindowToFront(Window *w)
 {
 	RemoveWindowFromZOrdering(w);
 	AddWindowToZOrdering(w);
+	SetFocusedWindow(w);
 
 	w->SetDirty();
 }
@@ -1416,8 +1417,9 @@ void Window::InitializeData(WindowNumber window_number)
 
 	/* Give focus to the opened window unless a text box
 	 * of focused window has focus (so we don't interrupt typing). But if the new
-	 * window has a text box, then take focus anyway. */
-	if (!EditBoxInGlobalFocus() || this->nested_root->GetWidgetOfType(WWT_EDITBOX) != NULL) SetFocusedWindow(this);
+	 * window has a text box, then take focus anyway.
+	 * Do not give the focus while scrolling a viewport (like when the News pops up) */
+	if (_scrolling_viewport == NULL && this->window_class != WC_TOOLTIPS && this->window_class != WC_NEWS_WINDOW && this->window_class != WC_OSK && (!EditBoxInGlobalFocus() || this->nested_root->GetWidgetOfType(WWT_EDITBOX) != NULL)) SetFocusedWindow(this);
 
 	/* Insert the window into the correct location in the z-ordering. */
 	AddWindowToZOrdering(this);
@@ -1800,7 +1802,7 @@ void InitWindowSystem()
 	_focused_window = NULL;
 	_mouseover_last_w = NULL;
 	_last_scroll_window = NULL;
-	_scrolling_viewport = false;
+	_scrolling_viewport = NULL;
 	_mouse_hovering = false;
 
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
@@ -2280,8 +2282,8 @@ static void StartWindowDrag(Window *w)
 	_drag_delta.x = w->left - _cursor.pos.x;
 	_drag_delta.y = w->top  - _cursor.pos.y;
 
-	BringWindowToFront(w);
 	DeleteWindowById(WC_DROPDOWN_MENU, 0);
+	BringWindowToFront(w);
 }
 
 /**
@@ -2298,8 +2300,8 @@ static void StartWindowSizing(Window *w, bool to_left)
 	_drag_delta.x = _cursor.pos.x;
 	_drag_delta.y = _cursor.pos.y;
 
-	BringWindowToFront(w);
 	DeleteWindowById(WC_DROPDOWN_MENU, 0);
+	BringWindowToFront(w);
 }
 
 /**
@@ -2360,7 +2362,7 @@ static EventState HandleViewportScroll()
 {
 	bool scrollwheel_scrolling = _settings_client.gui.scrollwheel_scrolling == 1 && (_cursor.v_wheel != 0 || _cursor.h_wheel != 0);
 
-	if (!_scrolling_viewport) return ES_NOT_HANDLED;
+	if (_scrolling_viewport == NULL) return ES_NOT_HANDLED;
 
 	/* When we don't have a last scroll window we are starting to scroll.
 	 * When the last scroll window and this are not the same we went
@@ -2369,7 +2371,7 @@ static EventState HandleViewportScroll()
 
 	if (_last_scroll_window == NULL || !(_right_button_down || scrollwheel_scrolling || (_settings_client.gui.left_mouse_btn_scrolling && _left_button_down))) {
 		_cursor.fix_at = false;
-		_scrolling_viewport = false;
+		_scrolling_viewport = NULL;
 		_last_scroll_window = NULL;
 		return ES_NOT_HANDLED;
 	}
@@ -2540,6 +2542,22 @@ EventState Window::HandleEditBoxKey(int wid, WChar key, uint16 keycode)
 	}
 
 	return ES_HANDLED;
+}
+
+/**
+ * Focus a window by its class and window number (if it is open).
+ * @param cls Window class.
+ * @param number Number of the window within the window class.
+ * @return True if a window answered to the criteria.
+ */
+bool FocusWindowById(WindowClass cls, WindowNumber number)
+{
+	Window *w = FindWindowById(cls, number);
+	if (w) {
+		MaybeBringWindowToFront(w);
+		return true;
+	}
+	return false;
 }
 
 /**
@@ -2794,19 +2812,21 @@ static void MouseLoop(MouseClick click, int mousewheel)
 		if (scrollwheel_scrolling) click = MC_RIGHT; // we are using the scrollwheel in a viewport, so we emulate right mouse button
 		switch (click) {
 			case MC_DOUBLE_LEFT:
+				if (HandleViewportDoubleClicked(w, x, y)) break;
+				/* FALL THROUGH */
 			case MC_LEFT:
 				DEBUG(misc, 2, "Cursor: 0x%X (%d)", _cursor.sprite, _cursor.sprite);
 				if (!HandleViewportClicked(vp, x, y) &&
 						!(w->flags & WF_DISABLE_VP_SCROLL) &&
 						_settings_client.gui.left_mouse_btn_scrolling) {
-					_scrolling_viewport = true;
+					_scrolling_viewport = w;
 					_cursor.fix_at = false;
 				}
 				break;
 
 			case MC_RIGHT:
 				if (!(w->flags & WF_DISABLE_VP_SCROLL)) {
-					_scrolling_viewport = true;
+					_scrolling_viewport = w;
 					_cursor.fix_at = true;
 
 					/* clear 2D scrolling caches before we start a 2D scroll */

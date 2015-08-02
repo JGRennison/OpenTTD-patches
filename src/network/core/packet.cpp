@@ -15,6 +15,7 @@
 
 #include "../../stdafx.h"
 #include "../../string_func.h"
+#include "../../command_type.h"
 
 #include "packet.h"
 
@@ -32,7 +33,7 @@ Packet::Packet(NetworkSocketHandler *cs)
 	this->next   = NULL;
 	this->pos    = 0; // We start reading from here
 	this->size   = 0;
-	this->buffer = MallocT<byte>(SEND_MTU);
+	this->buffer = MallocT<byte>(SHRT_MAX);
 }
 
 /**
@@ -47,7 +48,7 @@ Packet::Packet(PacketType type)
 	/* Skip the size so we can write that in before sending the packet */
 	this->pos                  = 0;
 	this->size                 = sizeof(PacketSize);
-	this->buffer               = MallocT<byte>(SEND_MTU);
+	this->buffer               = MallocT<byte>(SHRT_MAX);
 	this->buffer[this->size++] = type;
 }
 
@@ -99,7 +100,7 @@ void Packet::Send_bool(bool data)
  */
 void Packet::Send_uint8(uint8 data)
 {
-	assert(this->size < SEND_MTU - sizeof(data));
+	assert(this->size < SHRT_MAX - sizeof(data));
 	this->buffer[this->size++] = data;
 }
 
@@ -109,7 +110,7 @@ void Packet::Send_uint8(uint8 data)
  */
 void Packet::Send_uint16(uint16 data)
 {
-	assert(this->size < SEND_MTU - sizeof(data));
+	assert(this->size < SHRT_MAX - sizeof(data));
 	this->buffer[this->size++] = GB(data, 0, 8);
 	this->buffer[this->size++] = GB(data, 8, 8);
 }
@@ -120,7 +121,7 @@ void Packet::Send_uint16(uint16 data)
  */
 void Packet::Send_uint32(uint32 data)
 {
-	assert(this->size < SEND_MTU - sizeof(data));
+	assert(this->size < SHRT_MAX - sizeof(data));
 	this->buffer[this->size++] = GB(data,  0, 8);
 	this->buffer[this->size++] = GB(data,  8, 8);
 	this->buffer[this->size++] = GB(data, 16, 8);
@@ -133,7 +134,7 @@ void Packet::Send_uint32(uint32 data)
  */
 void Packet::Send_uint64(uint64 data)
 {
-	assert(this->size < SEND_MTU - sizeof(data));
+	assert(this->size < SHRT_MAX - sizeof(data));
 	this->buffer[this->size++] = GB(data,  0, 8);
 	this->buffer[this->size++] = GB(data,  8, 8);
 	this->buffer[this->size++] = GB(data, 16, 8);
@@ -153,8 +154,20 @@ void Packet::Send_string(const char *data)
 {
 	assert(data != NULL);
 	/* The <= *is* valid due to the fact that we are comparing sizes and not the index. */
-	assert(this->size + strlen(data) + 1 <= SEND_MTU);
+	assert(this->size + strlen(data) + 1 <= SHRT_MAX);
 	while ((this->buffer[this->size++] = *data++) != '\0') {}
+}
+
+/**
+ * Sends a binary data over the network.
+ * @param data The data to send
+ */
+void Packet::Send_binary(const char *data, const size_t size)
+{
+	assert(data != NULL);
+	assert(size < MAX_CMD_TEXT_LENGTH);
+	memcpy(&this->buffer[this->size], data, size);
+	this->size += (PacketSize) size;
 }
 
 
@@ -309,6 +322,20 @@ void Packet::Recv_string(char *buffer, size_t size, StringValidationSettings set
 	this->pos = pos;
 
 	str_validate(bufp, last, settings);
+}
+
+/**
+ * Reads binary data.
+ * @param buffer The buffer to put the data into.
+ * @param size   The size of the buffer.
+ */
+void Packet::Recv_binary(char *buffer, size_t size)
+{
+	/* Don't allow reading from a closed socket */
+	if (cs->HasClientQuit()) return;
+
+	memcpy(buffer, &this->buffer[this->pos], size);
+	this->pos += (PacketSize) size;
 }
 
 #endif /* ENABLE_NETWORK */

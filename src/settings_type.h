@@ -111,6 +111,16 @@ struct GUISettings {
 	uint8  right_mouse_btn_emulation;        ///< should we emulate right mouse clicking?
 	uint8  scrollwheel_scrolling;            ///< scrolling using the scroll wheel?
 	uint8  scrollwheel_multiplier;           ///< how much 'wheel' per incoming event from the OS?
+	bool   viewport_map_scan_surroundings;   ///< look for the most important tile in surroundings
+	bool   show_slopes_on_viewport_map;      ///< use slope orientation to render the ground
+	uint32 default_viewport_map_mode;        ///< the mode to use by default when a viewport is in map mode, 0=owner, 1=industry, 2=vegetation
+	uint32 action_when_viewport_map_is_dblclicked; ///< what to do when a doubleclick occurs on the viewport map
+	uint32 show_scrolling_viewport_on_map;   ///< when a no map viewport is scrolled, its location is marked on the other map viewports
+	bool   show_bridges_on_map;              ///< bridges are rendered on a viewport in map mode
+	bool   show_tunnels_on_map;              ///< tunnels are rendered on a viewport in map mode
+	uint32 show_vehicle_route;               ///< show a vehicle's route when its orders/timetable window is focused
+	uint32 dash_level_of_route_lines;        ///< the dash level passed to GfxDrawLine() (plain if 0)
+	bool   use_owner_colour_for_tunnelbridge;///< bridges and tunnels are rendered with their owner's colour
 	bool   timetable_arrival_departure;      ///< show arrivals and departures in vehicle timetables
 	bool   left_mouse_btn_scrolling;         ///< left mouse button scroll
 	bool   pause_on_newgame;                 ///< whether to start new games paused or not
@@ -136,6 +146,7 @@ struct GUISettings {
 	byte   missing_strings_threshold;        ///< the number of missing strings before showing the warning
 	uint8  graph_line_thickness;             ///< the thickness of the lines in the various graph guis
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
+	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.

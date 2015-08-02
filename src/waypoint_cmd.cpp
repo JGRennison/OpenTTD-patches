@@ -266,7 +266,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 			MakeRailWaypoint(tile, wp->owner, wp->index, axis, layout_ptr[i], GetRailType(tile));
 			SetCustomStationSpecIndex(tile, map_spec_index);
 			SetRailStationReservation(tile, reserved);
-			MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 
 			DeallocateSpecFromStation(wp, old_specindex);
 			YapfNotifyTrackLayoutChange(tile, AxisToTrack(axis));

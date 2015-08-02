@@ -1256,7 +1256,6 @@ uint SettingsContainer::GetMaxHelpHeight(int maxw)
 	return biggest;
 }
 
-
 /**
  * Draw a row in the settings panel.
  *
@@ -1478,6 +1477,9 @@ static SettingsContainer &GetSettingsTree()
 			graphics->Add(new SettingEntry("gui.zoom_max"));
 			graphics->Add(new SettingEntry("gui.smallmap_land_colour"));
 			graphics->Add(new SettingEntry("gui.graph_line_thickness"));
+			graphics->Add(new SettingEntry("gui.show_vehicle_route_steps"));
+			graphics->Add(new SettingEntry("gui.show_vehicle_route"));
+			graphics->Add(new SettingEntry("gui.dash_level_of_route_lines"));
 		}
 
 		SettingsPage *sound = main->Add(new SettingsPage(STR_CONFIG_SETTING_SOUND));
@@ -1505,6 +1507,18 @@ static SettingsContainer &GetSettingsTree()
 
 			SettingsPage *viewports = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_VIEWPORTS));
 			{
+				SettingsPage *viewport_map = interface->Add(new SettingsPage(STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS));
+				{
+					viewport_map->Add(new SettingEntry("gui.default_viewport_map_mode"));
+					viewport_map->Add(new SettingEntry("gui.action_when_viewport_map_is_dblclicked"));
+					viewport_map->Add(new SettingEntry("gui.viewport_map_scan_surroundings"));
+					viewport_map->Add(new SettingEntry("gui.show_scrolling_viewport_on_map"));
+					viewport_map->Add(new SettingEntry("gui.show_slopes_on_viewport_map"));
+					viewport_map->Add(new SettingEntry("gui.show_bridges_on_map"));
+					viewport_map->Add(new SettingEntry("gui.show_tunnels_on_map"));
+					viewport_map->Add(new SettingEntry("gui.use_owner_colour_for_tunnelbridge"));
+				}
+
 				viewports->Add(new SettingEntry("gui.auto_scrolling"));
 				viewports->Add(new SettingEntry("gui.reverse_scroll"));
 				viewports->Add(new SettingEntry("gui.smooth_scroll"));

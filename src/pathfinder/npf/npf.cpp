@@ -281,14 +281,14 @@ static void NPFMarkTile(TileIndex tile)
 			/* DEBUG: mark visited tiles by mowing the grass under them ;-) */
 			if (!IsRailDepot(tile)) {
 				SetRailGroundType(tile, RAIL_GROUND_BARREN);
-				MarkTileDirtyByTile(tile);
+				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 			}
 			break;
 
 		case MP_ROAD:
 			if (!IsRoadDepot(tile)) {
 				SetRoadside(tile, ROADSIDE_BARREN);
-				MarkTileDirtyByTile(tile);
+				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 			}
 			break;
 

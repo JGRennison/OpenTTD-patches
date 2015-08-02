@@ -400,6 +400,7 @@ STR_MAP_MENU_MAP_OF_WORLD                                       :Map of world
 STR_MAP_MENU_EXTRA_VIEW_PORT                                    :Extra viewport
 STR_MAP_MENU_LINGRAPH_LEGEND                                    :Cargo Flow Legend
 STR_MAP_MENU_SIGN_LIST                                          :Sign list
+STR_MAP_MENU_PLAN_LIST                                          :Plan list
 
 ############ range for town menu starts
 STR_TOWN_MENU_TOWN_DIRECTORY                                    :Town directory
@@ -1367,6 +1368,32 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DISABLED                      :Disabled
 STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Double click
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Single click (when focussed)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Single click (immediately)
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :Show the vehicle's route steps: {STRING2}
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :Scan surroundings (better for high zoom out levels): {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Show slopes: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Show bridges: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :Show tunnels: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :Show scrolling viewport: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :No
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :Contour
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :Blend with some white (32bpp only)
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :Blend + contour
+STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :Use owner's colour for bridges and tunnels: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :Default mode: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_VEGETATION         :Vegetation
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_OWNER              :Owner
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_INDUSTRY           :Industry
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :Function of double-click: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :Do nothing
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :Zoom in directly to 1X
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Open an extra viewport
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Show the vehicle's route: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_NO           :No
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_SIMPLE       :Simple
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Drawing style of vehicle's route: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :dashed lines of {COMMA} pixel{P "" s}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :plain lines
 
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Right-click emulation: {STRING2}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Select the method to emulate right mouse-button clicks
@@ -1594,6 +1621,10 @@ STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :Normal
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X                              :2x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_16X                             :16x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_32X                             :32x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Town growth speed: {STRING2}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Speed of town growth
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :None
@@ -1691,6 +1722,7 @@ STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industr
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Cargo distribution
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Competitors
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computer players
+STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Map mode
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
@@ -3288,6 +3320,14 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centre t
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Production level: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}The industry has announced imminent closure!
 
+# Industry tooltip
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP                           :{BLACK}{STRING}
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_TOOLTIP                   :{BLACK}{STRING}{}{CARGO_LONG} ({COMMA}%)
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_TOOLTIP_TOOLTIP           :{BLACK}{STRING}{}{CARGO_LONG} ({COMMA}%){}{BLACK}{CARGO_LONG} ({COMMA}%)
+
+# Town tooltip
+STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+
 ############ range for requires starts
 STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Requires: {YELLOW}{STRING}{RAW_STRING}
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Requires: {YELLOW}{STRING}{RAW_STRING}, {STRING}{RAW_STRING}
@@ -4037,6 +4077,22 @@ STR_TEXTFILE_VIEW_README                                        :{BLACK}View rea
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Changelog
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licence
 
+# Plans window
+STR_PLANS_CAPTION                                               :{WHITE}Plans
+STR_PLANS_NEW_PLAN                                              :{BLACK}New
+STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}Create a new plan
+STR_PLANS_ADD_LINES                                             :{BLACK}Add lines
+STR_PLANS_ADDING_LINES                                          :{BLACK}Adding...
+STR_PLANS_HIDE_ALL                                              :{BLACK}Hide all
+STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}Set the visibility of all the plans and all their lines to false
+STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}Make private
+STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}Make public
+STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}Toggle the visibility of a plan (private is yellow, public is blue). A public plan will be displayed in the plan window of the other companies but only its owner can add lines to it.
+STR_PLANS_DELETE                                                :{BLACK}Delete
+STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Delete the selected item in the list
+STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} line{P "" s} ({DATE_SHORT})
+STR_PLANS_LIST_ITEM_LINE                                        : -- Line #{NUM}: {NUM} segment{P "" s}
+STR_PLANS_LIST_TOOLTIP                                          :{BLACK}Double click any item in the list to (un)fold the related plan
 
 # Vehicle loading indicators
 STR_PERCENT_UP_SMALL                                            :{TINY_FONT}{WHITE}{NUM}%{UP_ARROW}
@@ -4460,6 +4516,11 @@ STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :{WHITE}Can't pl
 STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :{WHITE}Can't change sign name...
 STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}Can't delete sign...
 
+# Plan related errors
+STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... too many plans
+STR_ERROR_TOO_MANY_NODES                                        :{WHITE}... too many nodes in plan line
+STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}No more space for lines
+
 # Translatable comment for OpenTTD's desktop shortcut
 STR_DESKTOP_SHORTCUT_COMMENT                                    :A simulation game based on Transport Tycoon Deluxe
 
@@ -4879,6 +4940,12 @@ STR_SAVEGAME_NAME_DEFAULT                                       :{COMPANY}, {STR
 STR_SAVEGAME_NAME_SPECTATOR                                     :Spectator, {1:STRING1}
 
 # Viewport strings
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP                            :{BROWN}{NUM} {STRING}
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION                    :{BLACK}ST
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT                   :{GRAY}WP
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT                   :{GRAY}IM
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT                      :{RED}DE
+
 STR_VIEWPORT_TOWN_POP                                           :{WHITE}{TOWN} ({COMMA})
 STR_VIEWPORT_TOWN                                               :{WHITE}{TOWN}
 STR_VIEWPORT_TOWN_TINY_BLACK                                    :{TINY_FONT}{BLACK}{TOWN}

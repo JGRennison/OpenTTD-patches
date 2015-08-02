@@ -17,6 +17,17 @@
 
 class LinkGraphOverlay;
 
+enum ViewportMapType {
+	VPMT_BEGIN = 0,      
+	VPMT_VEGETATION = 0,
+	VPMT_OWNER,
+	VPMT_INDUSTRY,
+	VPMT_END,
+
+	VPMT_MIN = VPMT_VEGETATION,
+	VPMT_MAX = VPMT_INDUSTRY,
+};
+
 /**
  * Data structure for viewport, display of a part of the world
  */
@@ -31,7 +42,9 @@ struct ViewPort {
 	int virtual_width;   ///< width << zoom
 	int virtual_height;  ///< height << zoom
 
-	ZoomLevel zoom; ///< The zoom level of the viewport.
+	ZoomLevel zoom;      ///< The zoom level of the viewport.
+	ViewportMapType map_type;  ///< Rendering type
+
 	LinkGraphOverlay *overlay;
 };
 
@@ -104,6 +117,7 @@ enum ViewportDragDropSelectionProcess {
 	DDSP_CREATE_RIVER,         ///< Create rivers
 	DDSP_PLANT_TREES,          ///< Plant trees
 	DDSP_BUILD_BRIDGE,         ///< Bridge placement
+	DDSP_DRAW_PLANLINE,        ///< Draw a line for a plan
 
 	/* Rail specific actions */
 	DDSP_PLACE_RAIL,           ///< Rail placement

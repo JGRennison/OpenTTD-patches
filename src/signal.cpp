@@ -446,7 +446,7 @@ static void UpdateSignalsAroundSegment(SigFlags flags)
 				_globset.Add(tile, exitdir); // do not check for full global set, first update all signals
 			}
 			SetSignalStateByTrackdir(tile, trackdir, newstate);
-			MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 		}
 	}
 

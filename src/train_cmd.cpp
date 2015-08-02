@@ -1691,7 +1691,7 @@ void UpdateLevelCrossing(TileIndex tile, bool sound)
 			if (_settings_client.sound.ambient) SndPlayTileFx(SND_0E_LEVEL_CROSSING, tile);
 		}
 		SetCrossingBarred(tile, new_state);
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 	}
 }
 
@@ -1706,7 +1706,7 @@ static inline void MaybeBarCrossingWithSound(TileIndex tile)
 	if (!IsCrossingBarred(tile)) {
 		BarCrossing(tile);
 		if (_settings_client.sound.ambient) SndPlayTileFx(SND_0E_LEVEL_CROSSING, tile);
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 	}
 }
 
@@ -2170,7 +2170,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	}
 
 	SetDepotReservation(v->tile, true);
-	if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile);
+	if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile, ZOOM_LVL_DRAW_MAP);
 
 	VehicleServiceInDepot(v);
 	SetWindowClassesDirty(WC_TRAINS_LIST);
@@ -2212,8 +2212,8 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 				SetTunnelBridgeReservation(end, false);
 
 				if (_settings_client.gui.show_track_reservation) {
-					MarkTileDirtyByTile(tile);
-					MarkTileDirtyByTile(end);
+					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+					MarkTileDirtyByTile(end, ZOOM_LVL_DRAW_MAP);
 				}
 			}
 		}
@@ -2278,7 +2278,7 @@ void FreeTrainTrackReservation(const Train *v, TileIndex origin, Trackdir orig_t
 				} else {
 					/* Turn the signal back to red. */
 					SetSignalStateByTrackdir(tile, td, SIGNAL_STATE_RED);
-					MarkTileDirtyByTile(tile);
+					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 				}
 			} else if (HasSignalOnTrackdir(tile, ReverseTrackdir(td)) && IsOnewaySignal(tile, TrackdirToTrack(td))) {
 				break;
@@ -2553,7 +2553,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		if (res_dest.okay) {
 			/* Got a valid reservation that ends at a safe target, quick exit. */
 			if (got_reservation != NULL) *got_reservation = true;
-			if (changed_signal) MarkTileDirtyByTile(tile);
+			if (changed_signal) MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 			TryReserveRailTrack(v->tile, TrackdirToTrack(v->GetVehicleTrackdir()));
 			return best_track;
 		}
@@ -2612,7 +2612,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 			best_track = FindFirstTrack(res);
 			TryReserveRailTrack(v->tile, TrackdirToTrack(v->GetVehicleTrackdir()));
 			if (got_reservation != NULL) *got_reservation = true;
-			if (changed_signal) MarkTileDirtyByTile(tile);
+			if (changed_signal) MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 		} else {
 			FreeTrainTrackReservation(v);
 			if (mark_stuck) MarkTrainAsStuck(v);
@@ -2660,7 +2660,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 
 	TryReserveRailTrack(v->tile, TrackdirToTrack(v->GetVehicleTrackdir()));
 
-	if (changed_signal) MarkTileDirtyByTile(tile);
+	if (changed_signal) MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 
 	return best_track;
 }
@@ -2713,7 +2713,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 	/* If we are in a depot, tentatively reserve the depot. */
 	if (v->track == TRACK_BIT_DEPOT) {
 		SetDepotReservation(v->tile, true);
-		if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile);
+		if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile, ZOOM_LVL_DRAW_MAP);
 	}
 
 	DiagDirection exitdir = TrackdirToExitdir(origin.trackdir);

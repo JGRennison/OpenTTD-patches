@@ -330,7 +330,7 @@ static void AnimateTile_Town(TileIndex tile)
 		DeleteAnimatedTile(tile);
 	}
 
-	MarkTileDirtyByTile(tile);
+	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 }
 
 /**
@@ -440,7 +440,7 @@ static void MakeSingleHouseBigger(TileIndex tile)
 		ChangePopulation(Town::GetByTile(tile), HouseSpec::Get(GetHouseType(tile))->population);
 		ResetHouseAge(tile);
 	}
-	MarkTileDirtyByTile(tile);
+	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 }
 
 /**

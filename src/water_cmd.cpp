@@ -1128,7 +1128,7 @@ static void DoDryUp(TileIndex tile)
 
 		case MP_TREES:
 			SetTreeGroundDensity(tile, TREE_GROUND_GRASS, 3);
-			MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 			break;
 
 		case MP_WATER:

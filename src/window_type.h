@@ -681,6 +681,11 @@ enum WindowClass {
 	 */
 	WC_SAVE_PRESET,
 
+	/**
+	 * Plans window.
+	 */
+	WC_PLANS,
+
 	WC_INVALID = 0xFFFF, ///< Invalid window.
 };
 

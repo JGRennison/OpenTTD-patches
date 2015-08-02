@@ -57,4 +57,6 @@ bool LoadNextSprite(int load_index, byte file_index, uint file_sprite_id, byte c
 bool SkipSpriteData(byte type, uint16 num);
 void DupSprite(SpriteID old_spr, SpriteID new_spr);
 
+uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id);
+
 #endif /* SPRITECACHE_H */

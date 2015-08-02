@@ -374,7 +374,7 @@ struct IConsoleWindow : Window
 		this->Scroll(-wheel);
 	}
 
-	virtual void OnFocusLost()
+	virtual void OnFocusLost(Window *newly_focused_window)
 	{
 		VideoDriver::GetInstance()->EditBoxLostFocus();
 	}

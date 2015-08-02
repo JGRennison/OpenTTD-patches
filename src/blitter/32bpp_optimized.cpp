@@ -280,8 +280,8 @@ Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, Alloc
 		zoom_max = ZOOM_LVL_NORMAL;
 	} else {
 		zoom_min = _settings_client.gui.zoom_min;
-		zoom_max = _settings_client.gui.zoom_max;
-		if (zoom_max == zoom_min) zoom_max = ZOOM_LVL_MAX;
+		zoom_max = (ZoomLevel) min(_settings_client.gui.zoom_max, ZOOM_LVL_DRAW_SPR);
+		if (zoom_max == zoom_min) zoom_max = ZOOM_LVL_DRAW_SPR;
 	}
 
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {

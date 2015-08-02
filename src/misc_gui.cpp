@@ -643,6 +643,7 @@ struct TooltipsWindow : public Window
 	byte paramcount;                  ///< Number of string parameters in #string_id.
 	uint64 params[5];                 ///< The string parameters.
 	TooltipCloseCondition close_cond; ///< Condition for closing the window.
+	char buffer[DRAW_STRING_BUFFER];  ///< Text to draw
 
 	TooltipsWindow(Window *parent, StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_tooltip) : Window(&_tool_tips_desc)
 	{
@@ -653,6 +654,7 @@ struct TooltipsWindow : public Window
 		memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
 		this->paramcount = paramcount;
 		this->close_cond = close_tooltip;
+		if (this->paramcount == 0) GetString(this->buffer, str, lastof(this->buffer)); // Get the text while params are available
 
 		this->InitNested();
 
@@ -698,10 +700,14 @@ struct TooltipsWindow : public Window
 		GfxFillRect(r.left, r.top, r.right, r.bottom, PC_BLACK);
 		GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_LIGHT_YELLOW);
 
-		for (uint arg = 0; arg < this->paramcount; arg++) {
-			SetDParam(arg, this->params[arg]);
+		if (this->paramcount == 0) {
+			DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM, this->buffer, TC_FROMSTRING, SA_CENTER);
+		} else {
+			for (uint arg = 0; arg < this->paramcount; arg++) {
+				SetDParam(arg, this->params[arg]);
+			}
+			DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM, this->string_id, TC_FROMSTRING, SA_CENTER);
 		}
-		DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM, this->string_id, TC_FROMSTRING, SA_CENTER);
 	}
 
 	virtual void OnMouseLoop()

@@ -63,6 +63,7 @@
 #include "subsidy_func.h"
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
+#include "smallmap_gui.h"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -1178,6 +1179,8 @@ void SwitchToMode(SwitchMode new_mode)
 
 		default: NOT_REACHED();
 	}
+
+	SmallMapWindow::RebuildColourIndexIfNecessary();
 }
 
 

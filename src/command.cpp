@@ -198,6 +198,12 @@ CommandProc CmdSetTimetableStart;
 
 CommandProc CmdOpenCloseAirport;
 
+CommandProc CmdAddPlan;
+CommandProc CmdAddPlanLine;
+CommandProc CmdRemovePlan;
+CommandProc CmdRemovePlanLine;
+CommandProc CmdChangePlanVisibility;
+
 #define DEF_CMD(proc, flags, type) {proc, #proc, (CommandFlags)flags, type}
 
 /**
@@ -354,6 +360,12 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdSetTimetableStart,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_TIMETABLE_START
 
 	DEF_CMD(CmdOpenCloseAirport,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_OPEN_CLOSE_AIRPORT
+
+	DEF_CMD(CmdAddPlan,                                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN
+	DEF_CMD(CmdAddPlanLine,                                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN_LINE
+	DEF_CMD(CmdRemovePlan,                                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN
+	DEF_CMD(CmdRemovePlanLine,                                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN_LINE
+	DEF_CMD(CmdChangePlanVisibility,                           0, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_VISIBILITY
 };
 
 /*!
@@ -542,9 +554,10 @@ bool DoCommandP(const CommandContainer *container, bool my_cmd)
  * @param callback A callback function to call after the command is finished
  * @param text The text to pass
  * @param my_cmd indicator if the command is from a company or server (to display error messages for a user)
+ * @param binary_length The quantity of binary data in text
  * @return \c true if the command succeeded, else \c false.
  */
-bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd)
+bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, uint32 binary_length)
 {
 	/* Cost estimation is generally only done when the
 	 * local user presses shift while doing somthing.
@@ -574,7 +587,7 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
 	if (!(cmd & CMD_NETWORK_COMMAND) && GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = CLIENT_ID_SERVER;
 #endif
 
-	CommandCost res = DoCommandPInternal(tile, p1, p2, cmd, callback, text, my_cmd, estimate_only);
+	CommandCost res = DoCommandPInternal(tile, p1, p2, cmd, callback, text, my_cmd, estimate_only, binary_length);
 	if (res.Failed()) {
 		/* Only show the error when it's for us. */
 		StringID error_part1 = GB(cmd, 16, 16);
@@ -620,7 +633,7 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
  * @param estimate_only whether to give only the estimate or also execute the command
  * @return the command cost of this function.
  */
-CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only)
+CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length)
 {
 	/* Prevent recursion; it gives a mess over the network */
 	assert(_docommand_recursive == 0);
@@ -699,7 +712,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 	 * send it to the command-queue and abort execution
 	 */
 	if (_networking && !_generating_world && !(cmd & CMD_NETWORK_COMMAND)) {
-		NetworkSendCommand(tile, p1, p2, cmd & ~CMD_FLAGS_MASK, callback, text, _current_company);
+		NetworkSendCommand(tile, p1, p2, cmd & ~CMD_FLAGS_MASK, callback, text, _current_company, binary_length);
 		cur_company.Restore();
 
 		/* Don't return anything special here; no error, no costs.

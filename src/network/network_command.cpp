@@ -51,6 +51,7 @@ static CommandCallback * const _callback_table[] = {
 	/* 0x19 */ CcStartStopVehicle,
 	/* 0x1A */ CcGame,
 	/* 0x1B */ CcAddVehicleNewGroup,
+	/* 0x1C */ CcAddPlan,
 };
 
 /**
@@ -136,8 +137,9 @@ static CommandQueue _local_execution_queue;
  * @param callback A callback function to call after the command is finished
  * @param text The text to pass
  * @param company The company that wants to send the command
+ * @param binary_length The quantity of binary data in text
  */
-void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company)
+void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, uint32 binary_length)
 {
 	assert((cmd & CMD_FLAGS_MASK) == 0);
 
@@ -149,7 +151,12 @@ void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, Comman
 	c.cmd      = cmd;
 	c.callback = callback;
 
-	strecpy(c.text, (text != NULL) ? text : "", lastof(c.text));
+	c.binary_length = binary_length;
+	if (binary_length == 0) {
+		strecpy(c.text, (text != NULL) ? text : "", lastof(c.text));
+	} else {
+		memcpy(c.text, text, binary_length);
+	}
 
 	if (_network_server) {
 		/* If we are the server, we queue the command in our 'special' queue.
@@ -310,7 +317,13 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 	cp->p1      = p->Recv_uint32();
 	cp->p2      = p->Recv_uint32();
 	cp->tile    = p->Recv_uint32();
-	p->Recv_string(cp->text, lengthof(cp->text), (!_network_server && GetCommandFlags(cp->cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK);
+	cp->binary_length = p->Recv_uint32();
+	if (cp->binary_length == 0) {
+		p->Recv_string(cp->text, lengthof(cp->text), (!_network_server && GetCommandFlags(cp->cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK);
+	} else {
+		if ((p->pos + (PacketSize) cp->binary_length + /* callback index */ 1) > p->size) return "invalid binary data length";
+		p->Recv_binary(cp->text, cp->binary_length);
+	}
 
 	byte callback = p->Recv_uint8();
 	if (callback >= lengthof(_callback_table))  return "invalid callback";
@@ -331,7 +344,12 @@ void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
 	p->Send_uint32(cp->p1);
 	p->Send_uint32(cp->p2);
 	p->Send_uint32(cp->tile);
-	p->Send_string(cp->text);
+	p->Send_uint32(cp->binary_length);
+	if (cp->binary_length == 0) {
+		p->Send_string(cp->text);
+	} else {
+		p->Send_binary(cp->text, cp->binary_length);
+	}
 
 	byte callback = 0;
 	while (callback < lengthof(_callback_table) && _callback_table[callback] != cp->callback) {
