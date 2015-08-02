@@ -224,24 +224,25 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte
 		SetDParam(0, v->engine_type);
 		SetDParam(1, v->value);
 
-		if ( show_speed && (speed = GetVehicleProperty(v, PROP_TRAIN_SPEED, rvi->max_speed))) {
+		if (show_speed && (speed = GetVehicleProperty(v, PROP_TRAIN_SPEED, rvi->max_speed))) {
 			SetDParam(2, speed); // StringID++
 			DrawString(left, right, y, STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED);
-		} else
-		DrawString(left, right, y, STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE);
+		} else {
+			DrawString(left, right, y, STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE);
+		}
 	} else {
-		switch ( line_number ) {
+		switch (line_number) {
 			case 0:
-		SetDParam(0, v->engine_type);
-		SetDParam(1, v->build_year);
-		SetDParam(2, v->value);
+				SetDParam(0, v->engine_type);
+				SetDParam(1, v->build_year);
+				SetDParam(2, v->value);
 
-				if ( show_speed && (speed = GetVehicleProperty(v, PROP_TRAIN_SPEED, rvi->max_speed))) {
+				if (show_speed && (speed = GetVehicleProperty(v, PROP_TRAIN_SPEED, rvi->max_speed))) {
 					SetDParam(3, speed); // StringID++
-					DrawString( left, right, y, STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED, TC_FROMSTRING, SA_LEFT);
-				} else
-		DrawString(left, right, y, STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE);
-
+					DrawString(left, right, y, STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED, TC_FROMSTRING, SA_LEFT);
+				} else {
+					DrawString(left, right, y, STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE);
+				}
 				break;
 
 			case 1:
@@ -251,27 +252,31 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte
 				break;
 
 			case 2:
-				if ( v->breakdown_ctr == 1 ) {
-					if ( _settings_game.vehicle.improved_breakdowns ) {
-						SetDParam( 0, STR_VEHICLE_STATUS_BROKEN_DOWN_VEL );
-						SetDParam( 1, STR_BREAKDOWN_TYPE_CRITICAL + v->breakdown_type );
-						if ( v->breakdown_type == BREAKDOWN_LOW_SPEED ) {
-							SetDParam( 2, min( v->First( )->GetCurrentMaxSpeed( ), v->breakdown_severity ) );
-						} else if ( v->breakdown_type == BREAKDOWN_LOW_POWER ) {
-							SetDParam( 2, v->breakdown_severity * 100 / 256 );
-	}
-					} else
+				if (v->breakdown_ctr == 1) {
+					if (_settings_game.vehicle.improved_breakdowns) {
+						SetDParam(0, STR_VEHICLE_STATUS_BROKEN_DOWN_VEL);
+						SetDParam(1, STR_BREAKDOWN_TYPE_CRITICAL + v->breakdown_type);
+						if (v->breakdown_type == BREAKDOWN_LOW_SPEED) {
+							SetDParam(2, min( v->First()->GetCurrentMaxSpeed(), v->breakdown_severity));
+						} else if (v->breakdown_type == BREAKDOWN_LOW_POWER) {
+							SetDParam(2, v->breakdown_severity * 100 / 256 );
+						}
+					} else {
 						SetDParam( 0, STR_VEHICLE_STATUS_BROKEN_DOWN );
+					}
 				} else {
-					if ( HasBit( v->flags, VRF_NEED_REPAIR ) ) {
-						SetDParam( 0, STR_NEED_REPAIR );
-						SetDParam( 1, v->vcache.cached_max_speed );
-					} else
-						SetDParam( 0, STR_RUNNING );
-}
-				DrawString( left, right, y, STR_CURRENT_STATUS);
+					if (HasBit(v->flags, VRF_NEED_REPAIR)) {
+						SetDParam(0, STR_NEED_REPAIR);
+						SetDParam(1, v->vcache.cached_max_speed);
+					} else {
+						SetDParam(0, STR_RUNNING);
+					}
+				}
+				DrawString(left, right, y, STR_CURRENT_STATUS);
 				break;
-			default: NOT_REACHED();
+
+			default:
+				NOT_REACHED();
 		}
 	}
 }
@@ -483,8 +488,9 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 				if (det_tab != 1 || line_number >= (Train::From(v)->IsWagon() ? 0 : 2)) {
 					line_number = 0;
 					 i++;
-				} else
+				} else {
 					line_number++;
+				}
 				vscroll_pos--;
 			}
 		}

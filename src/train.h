@@ -37,10 +37,10 @@ enum VehicleRailFlags {
 	VRF_BREAKDOWN_POWER               = 11,///< used to mark a train in which the power of one (or more) of the engines is reduced because of a breakdown
 	VRF_BREAKDOWN_SPEED               = 12,///< used to mark a train that has a reduced maximum speed because of a breakdown
 	VRF_BREAKDOWN_STOPPED             = 13,///< used to mark a train that is stopped because of a breakdown
-	/* Bitmask of all flags that indicate a broken train (braking is not included) */
-	VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED),
 	VRF_NEED_REPAIR                   = 14,///< used to mark a train that has a reduced maximum speed because of a critical breakdown
-	VRF_TO_HEAVY                      = 15,
+	VRF_TOO_HEAVY                     = 15,
+
+	VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED), ///< Bitmask of all flags that indicate a broken train (braking is not included)
 };
 
 /** Modes for ignoring signals. */
@@ -204,7 +204,7 @@ protected: // These functions should not be called outside acceleration code.
 		}
 		return speed;
 	}
-	
+
 	/**
 	 * Allows to know the power value that this vehicle will use.
 	 * @return Power value from the engine in HP, or zero if the vehicle is not powered.

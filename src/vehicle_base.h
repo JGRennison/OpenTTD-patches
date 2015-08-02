@@ -194,7 +194,7 @@ public:
 	Vehicle **hash_tile_current;        ///< NOSAVE: Cache of the current hash chain.
 
 	byte breakdown_severity;            ///< severity of the breakdown. Note that lower means more severe
-	byte breakdown_type;       ///< Type of breakdown
+	byte breakdown_type;                ///< Type of breakdown
 	SpriteID colourmap;                 ///< NOSAVE: cached colour mapping
 
 	/* Related to age and service time */

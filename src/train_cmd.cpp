@@ -237,9 +237,9 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 				if (speed != 0) max_speed = min(speed, max_speed);
 			}
 
-			if(u->IsEngine() || u-> IsMultiheaded()) {
+			if (u->IsEngine() || u-> IsMultiheaded()) {
 				this->tcache.cached_num_engines++;
-		}
+			}
 		}
 
 		uint16 new_cap = e_u->DetermineCapacity(u);
@@ -467,7 +467,7 @@ int Train::GetCurrentMaxSpeed() const
 	}
 
 	max_speed = min(max_speed, this->current_order.GetMaxSpeed());
-	if ( HasBit(this->flags, VRF_BREAKDOWN_SPEED) ) {
+	if (HasBit(this->flags, VRF_BREAKDOWN_SPEED)) {
 		max_speed = min(max_speed, this->GetBreakdownSpeed());
 	}
 
@@ -2870,7 +2870,7 @@ static bool HandlePossibleBreakdowns(Train *v)
 	for (Train *u = v; u != NULL; u = u->Next()) {
 		if (u->breakdown_ctr != 0 && (u->IsEngine() || u->IsMultiheaded())) {
 			if (u->breakdown_ctr <= 2) {
-				if ( u->HandleBreakdown() ) return true;
+				if (u->HandleBreakdown()) return true;
 				/* We check the order of v (the first vehicle) instead of u here! */
 			} else if (!v->current_order.IsType(OT_LOADING)) {
 				u->breakdown_ctr--;
@@ -3755,7 +3755,7 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 {
 	/* First, handle broken down train */
 
-	if(HasBit(v->flags, VRF_BREAKDOWN_BRAKING)) {
+	if (HasBit(v->flags, VRF_BREAKDOWN_BRAKING)) {
 		v->vehstatus |= VS_TRAIN_SLOWING;
 	} else {
 		v->vehstatus &= ~VS_TRAIN_SLOWING;
@@ -3811,7 +3811,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	}
 
 	/* train is broken down? */
-	if ( HandlePossibleBreakdowns(v) ) return true;
+	if (HandlePossibleBreakdowns(v)) return true;
 
 	if (HasBit(v->flags, VRF_REVERSING) && v->cur_speed == 0) {
 		ReverseTrainDirection(v);

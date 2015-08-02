@@ -917,13 +917,13 @@ void CallVehicleTicks()
 			default: break;
 
 			case VEH_TRAIN:
-				if (HasBit(Train::From(v)->flags, VRF_TO_HEAVY)) {
+				if (HasBit(Train::From(v)->flags, VRF_TOO_HEAVY)) {
 					_current_company = v->owner;
 					if (IsLocalCompany()) {
 						SetDParam(0, v->index);
 						SetDParam(1, STR_ERROR_TRAIN_TOO_HEAVY);
 						AddVehicleNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, v->index);
-						ClrBit(Train::From(v)->flags,VRF_TO_HEAVY);
+						ClrBit(Train::From(v)->flags, VRF_TOO_HEAVY);
 					}
 					_current_company = OWNER_NONE;
 				}

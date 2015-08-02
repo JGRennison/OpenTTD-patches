@@ -1216,8 +1216,8 @@ static void HandleAircraftSmoke(Aircraft *v, bool mode)
 	if (!(v->vehstatus & VS_AIRCRAFT_BROKEN)) return;
 
 	/* breakdown-related speed limits are lifted when we are on the ground */
-        if(v->state != FLYING && v->state != LANDING && v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) {
 	/* Stop smoking when landed */
+	if (v->state != FLYING && v->state != LANDING && v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) {
 		v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
 		v->breakdown_ctr = 0;
 		return;

@@ -77,13 +77,17 @@ static const uint MAX_LENGTH_VEHICLE_NAME_CHARS = 32; ///< The maximum length of
 /** The length of a vehicle in tile units. */
 static const uint VEHICLE_LENGTH = 8;
 
-/* The different types of breakdowns */
+/**
+ * The different types of breakdowns
+ *
+ * Aircraft have totally different breakdowns, so we use aliases to make things clearer
+ */
 enum BreakdownType {
 	BREAKDOWN_CRITICAL  = 0, ///< Old style breakdown (black smoke)
 	BREAKDOWN_EM_STOP   = 1, ///< Emergency stop
 	BREAKDOWN_LOW_SPEED = 2, ///< Lower max speed
 	BREAKDOWN_LOW_POWER = 3, ///< Power reduction
-	/* Aircraft have totally different breakdowns, so we use aliases to make things clearer */
+
 	BREAKDOWN_AIRCRAFT_SPEED      = BREAKDOWN_CRITICAL,  ///< Lower speed until the next airport
 	BREAKDOWN_AIRCRAFT_DEPOT      = BREAKDOWN_EM_STOP,   ///< We have to visit a depot at the next airport
 	BREAKDOWN_AIRCRAFT_EM_LANDING = BREAKDOWN_LOW_SPEED, ///< Emergency landing at the closest airport (with hangar!) we can find

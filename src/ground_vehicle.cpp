@@ -251,7 +251,7 @@ int GroundVehicle<T, Type>::GetAcceleration()
 				!(this->current_order.IsType(OT_LOADING)) &&
 				!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
 				this->cur_speed < 3 && accel < 5) {
-				SetBit(Train::From(this)->flags, VRF_TO_HEAVY);
+				SetBit(Train::From(this)->flags, VRF_TOO_HEAVY);
 			}
 		}
 

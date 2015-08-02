@@ -2610,28 +2610,29 @@ public:
 		StringID str;
 		if (v->vehstatus & VS_CRASHED) {
 			str = STR_VEHICLE_STATUS_CRASHED;
-		} else if ( v->breakdown_ctr == 1 || ( v->type == VEH_TRAIN && Train::From( v )->flags & VRF_IS_BROKEN ) ) {
-			if ( _settings_game.vehicle.improved_breakdowns ) {
+		} else if (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN)) {
+			if (_settings_game.vehicle.improved_breakdowns) {
 				str = STR_VEHICLE_STATUS_BROKEN_DOWN_VEL;
-				SetDParam( 2, v->GetDisplaySpeed( ) );
-			} else
+				SetDParam(2, v->GetDisplaySpeed());
+			} else {
 				str = STR_VEHICLE_STATUS_BROKEN_DOWN;
+			}
 
-			if ( v->type == VEH_AIRCRAFT ) {
-				SetDParam( 0, _aircraft_breakdown_strings[v->breakdown_type] );
-				if ( v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED ) {
-					SetDParam( 1, v->breakdown_severity << 3 );
+			if (v->type == VEH_AIRCRAFT) {
+				SetDParam(0, _aircraft_breakdown_strings[v->breakdown_type]);
+				if (v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) {
+					SetDParam(1, v->breakdown_severity << 3);
 				} else {
-					SetDParam( 1, v->current_order.GetDestination( ) );
+					SetDParam(1, v->current_order.GetDestination());
 				}
 			} else {
-				const Vehicle *w = ( v->type == VEH_TRAIN ) ? GetMostSeverelyBrokenEngine( Train::From( v ) ) : v;
-				SetDParam( 0, STR_BREAKDOWN_TYPE_CRITICAL + w->breakdown_type );
+				const Vehicle *w = (v->type == VEH_TRAIN) ? GetMostSeverelyBrokenEngine(Train::From(v)) : v;
+				SetDParam(0, STR_BREAKDOWN_TYPE_CRITICAL + w->breakdown_type);
 
-				if ( w->breakdown_type == BREAKDOWN_LOW_SPEED ) {
-					SetDParam( 1, min( w->First()->GetDisplayMaxSpeed( ), w->breakdown_severity >> ( v->type == VEH_TRAIN ? 0 : 1 ) ) );
-				} else if ( w->breakdown_type == BREAKDOWN_LOW_POWER ) {
-					SetDParam( 1, w->breakdown_severity * 100 / 256 );
+				if (w->breakdown_type == BREAKDOWN_LOW_SPEED) {
+					SetDParam(1, min( w->First()->GetDisplayMaxSpeed(), w->breakdown_severity >> ((v->type == VEH_TRAIN) ? 0 : 1)));
+				} else if (w->breakdown_type == BREAKDOWN_LOW_POWER) {
+					SetDParam(1, w->breakdown_severity * 100 / 256);
 				}
 			}
 		} else if (v->vehstatus & VS_STOPPED) {
