@@ -22,6 +22,7 @@ enum TerraformToolbarWidgets {
 	WID_TT_DEMOLISH,                          ///< Demolish aka dynamite button.
 	WID_TT_BUY_LAND,                          ///< Buy land button.
 	WID_TT_PLANT_TREES,                       ///< Plant trees button (note: opens separate window, no place-push-button).
+	WID_TT_MEASUREMENT_TOOL,                  ///< Ruler tool button
 	WID_TT_PLACE_SIGN,                        ///< Place sign button.
 	WID_TT_PLACE_OBJECT,                      ///< Place object button.
 };

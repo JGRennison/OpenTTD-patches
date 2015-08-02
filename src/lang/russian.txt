@@ -399,6 +399,7 @@ STR_MEASURE_LENGTH                                              :{BLACK}Длин
 STR_MEASURE_AREA                                                :{BLACK}Площадь: {NUM} x {NUM}
 STR_MEASURE_LENGTH_HEIGHTDIFF                                   :{BLACK}Длина: {NUM}{}Разница высот: {HEIGHT}
 STR_MEASURE_AREA_HEIGHTDIFF                                     :{BLACK}Площадь: {NUM} x {NUM}{}Разница высот: {HEIGHT}
+STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}Расстояние «Манхэттэн»: {NUM}{}Расстояние по прямой: {NUM}{}Расстояние от ближайшего края: {NUM}{}Высота над уровнем моря: {HEIGHT}{}Разница высот: {HEIGHT}
 
 
 # These are used in buttons
@@ -2655,6 +2656,7 @@ STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}Опус
 STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}Поднять угол земли. Перетаскивание поднимает первый выбранный угол и выравнивает выбранную область до новой высоты угла. Ctrl выбирает область по диагонали. При нажатом Shift - оценка стоимости строительства.
 STR_LANDSCAPING_LEVEL_LAND_TOOLTIP                              :{BLACK}Выровнять землю до высоты первого выбранного угла. Ctrl выбирает область по диагонали. При нажатом Shift - оценка стоимости выравнивания.
 STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Покупка земли. При нажатом Shift - оценка стоимости покупки.
+STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Виртуальная линейка для измерения расстояний и высот
 
 # Object construction window
 STR_OBJECT_BUILD_CAPTION                                        :{WHITE}Выбор объекта
