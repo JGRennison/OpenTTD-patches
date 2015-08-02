@@ -1836,6 +1836,12 @@
     <ClCompile Include="..\src\saveload\waypoint_sl.cpp">
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
+    <ClInclude Include="..\src\saveload\extended_ver_sl.h">
+      <Filter>Save/Load handlers</Filter>
+    </ClInclude>
+    <ClCompile Include="..\src\saveload\extended_ver_sl.cpp">
+      <Filter>Save/Load handlers</Filter>
+    </ClCompile>
     <ClInclude Include="..\src\table\airport_defaults.h">
       <Filter>Tables</Filter>
     </ClInclude>
@@ -1921,6 +1927,9 @@
       <Filter>Tables</Filter>
     </ClInclude>
     <ClInclude Include="..\src\table\strgen_tables.h">
+      <Filter>Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\table\string_colours.h">
       <Filter>Tables</Filter>
     </ClInclude>
     <ClInclude Include="..\src\..\objs\langs\table\strings.h">

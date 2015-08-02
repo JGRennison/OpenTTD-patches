@@ -633,6 +633,8 @@ saveload/subsidy_sl.cpp
 saveload/town_sl.cpp
 saveload/vehicle_sl.cpp
 saveload/waypoint_sl.cpp
+saveload/extended_ver_sl.h
+saveload/extended_ver_sl.cpp
 
 # Tables
 table/airport_defaults.h
@@ -664,6 +666,7 @@ table/roadveh_movement.h
 table/sprites.h
 table/station_land.h
 table/strgen_tables.h
+table/string_colours.h
 ../objs/langs/table/strings.h
 table/town_land.h
 table/townname.h
