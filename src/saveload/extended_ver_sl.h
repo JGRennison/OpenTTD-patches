@@ -23,6 +23,7 @@ enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
 	XSLFI_TRACE_RESTRICT,                         ///< Trace restrict
 	XSLFI_PROG_SIGS,                              ///< programmable signals patch
+	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };

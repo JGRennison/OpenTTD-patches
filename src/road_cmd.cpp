@@ -1638,6 +1638,14 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 
 					trackdirbits = TrackBitsToTrackdirBits(AxisToTrackBits(axis));
 					if (IsCrossingBarred(tile)) red_signals = trackdirbits;
+					if (IsLevelCrossingTile(TileAddByDiagDir(tile, AxisToDiagDir(axis))) &&
+							IsCrossingBarred(TileAddByDiagDir(tile, AxisToDiagDir(axis)))) {
+						red_signals &= (TrackdirBits)0x0102; // magic value. I think TRACKBIT_X_SW and TRACKBIT_X_NE should be swapped
+					}
+					if (IsLevelCrossingTile(TileAddByDiagDir(tile, ReverseDiagDir(AxisToDiagDir(axis)))) &&
+							IsCrossingBarred(TileAddByDiagDir(tile, ReverseDiagDir(AxisToDiagDir(axis))))) {
+						red_signals &= (TrackdirBits)0x0201; // inverse of above magic value
+					}
 					break;
 				}
 
