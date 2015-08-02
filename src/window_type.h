@@ -668,6 +668,7 @@ enum WindowClass {
 	 *   - 0 = #SpriteAlignerWidgets
 	 */
 	WC_SPRITE_ALIGNER,
+	WC_ZONING_TOOLBAR,
 
 	/**
 	 * Linkgraph legend; %Window numbers:

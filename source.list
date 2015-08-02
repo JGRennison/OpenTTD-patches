@@ -399,6 +399,7 @@ window_gui.h
 window_type.h
 zoom_func.h
 zoom_type.h
+zoning.h
 #if WIN32
 #else
 music/bemidi.h
@@ -503,6 +504,7 @@ tree_gui.cpp
 vehicle_gui.cpp
 viewport_gui.cpp
 waypoint_gui.cpp
+zoning_gui.cpp
 
 # Widgets
 widgets/airport_widget.h
@@ -590,6 +592,7 @@ vehicle_cmd.cpp
 void_cmd.cpp
 water_cmd.cpp
 waypoint_cmd.cpp
+zoning_cmd.cpp
 
 # Save/Load handlers
 saveload/afterload.cpp

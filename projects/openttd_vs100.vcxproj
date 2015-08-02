@@ -660,6 +660,7 @@
     <ClInclude Include="..\src\window_type.h" />
     <ClInclude Include="..\src\zoom_func.h" />
     <ClInclude Include="..\src\zoom_type.h" />
+    <ClInclude Include="..\src\zoning.h" />
     <ClCompile Include="..\src\core\alloc_func.cpp" />
     <ClInclude Include="..\src\core\alloc_func.hpp" />
     <ClInclude Include="..\src\core\alloc_type.hpp" />
@@ -745,6 +746,7 @@
     <ClCompile Include="..\src\vehicle_gui.cpp" />
     <ClCompile Include="..\src\viewport_gui.cpp" />
     <ClCompile Include="..\src\waypoint_gui.cpp" />
+    <ClCompile Include="..\src\zoning_gui.cpp" />
     <ClInclude Include="..\src\widgets\airport_widget.h" />
     <ClInclude Include="..\src\widgets\ai_widget.h" />
     <ClInclude Include="..\src\widgets\autoreplace_widget.h" />
@@ -828,6 +830,7 @@
     <ClCompile Include="..\src\void_cmd.cpp" />
     <ClCompile Include="..\src\water_cmd.cpp" />
     <ClCompile Include="..\src\waypoint_cmd.cpp" />
+    <ClCompile Include="..\src\zoning_cmd.cpp" />
     <ClCompile Include="..\src\saveload\afterload.cpp" />
     <ClCompile Include="..\src\saveload\ai_sl.cpp" />
     <ClCompile Include="..\src\saveload\airport_sl.cpp" />

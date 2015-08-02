@@ -1342,6 +1342,16 @@ static const SpriteID SPR_SELECT_SUB_TROPICAL_PUSHED = 4887;
 static const SpriteID SPR_SELECT_TOYLAND             = 4888;
 static const SpriteID SPR_SELECT_TOYLAND_PUSHED      = 4889;
 
+/* zoning stuff; dunno where else to put it */
+
+static const SpriteID SPR_INNER_HIGHLIGHT_BASE      = 11000;
+static const SpriteID SPR_PALETTE_ZONING_RED        = SPR_INNER_HIGHLIGHT_BASE + 19;
+static const SpriteID SPR_PALETTE_ZONING_GREEN      = SPR_INNER_HIGHLIGHT_BASE + 20;
+static const SpriteID SPR_PALETTE_ZONING_BLACK      = SPR_INNER_HIGHLIGHT_BASE + 21;
+static const SpriteID SPR_PALETTE_ZONING_LIGHT_BLUE = SPR_INNER_HIGHLIGHT_BASE + 22;
+static const SpriteID SPR_PALETTE_ZONING_ORANGE     = SPR_INNER_HIGHLIGHT_BASE + 23;
+static const SpriteID SPR_PALETTE_ZONING_WHITE      = SPR_INNER_HIGHLIGHT_BASE + 24;
+
 /** Cursor sprite numbers */
 
 /* Terraform
@@ -1573,5 +1583,7 @@ static const PaletteID PALETTE_CHURCH_RED          = 1438; ///< Recolour sprite 
 static const PaletteID PALETTE_CHURCH_CREAM        = 1439; ///< Recolour sprite for white churches
 
 static const PaletteID PALETTE_ALL_BLACK           = SPR_PALETTE_BASE; ///< Exchange any color by black, needed for painting fictive tiles outside map
+
+static const SpriteID INVALID_SPRITE_ID = UINT_MAX;
 
 #endif /* SPRITES_H */
