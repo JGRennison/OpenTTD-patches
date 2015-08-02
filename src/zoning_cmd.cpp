@@ -52,19 +52,20 @@ void DrawZoningSprites(SpriteID image, SpriteID colour, const TileInfo *ti)
  *        the area to search by
  * @param Owner owner
  *        the owner of the stations which we need to match again
+  * @param StationFacility facility_mask
+ *        one or more facilities in the mask must be present for a station to be used
  * @return true if a station is found
  */
-bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner)
+bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner, StationFacility facility_mask)
 {
-	// TODO: Actually do owner check.
-
 	int catchment = _settings_game.station.station_spread + (_settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED);
 
 	StationFinder morestations(TileArea(TileXY(TileX(area.tile) - (catchment / 2), TileY(area.tile) - (catchment / 2)),
 			TileX(area.tile) + area.w + catchment, TileY(area.tile) + area.h + catchment));
 
 	for (Station * const *st_iter = morestations.GetStations()->Begin(); st_iter != morestations.GetStations()->End(); ++st_iter) {
-		Station *st = *st_iter;
+		const Station *st = *st_iter;
+		if (st->owner != owner || !(st->facilities & facility_mask)) continue;
 		Rect rect = st->GetCatchmentRect();
 		return TileArea(TileXY(rect.left, rect.top), TileXY(rect.right, rect.bottom)).Intersects(area);
 	}
@@ -79,19 +80,20 @@ bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner)
  *        the tile to search by
  * @param Owner owner
  *        the owner of the stations
+ * @param StationFacility facility_mask
+ *        one or more facilities in the mask must be present for a station to be used
  * @return true if a station is found
  */
-bool IsTileWithinAcceptanceZoneOfStation(TileIndex tile, Owner owner)
+bool IsTileWithinAcceptanceZoneOfStation(TileIndex tile, Owner owner, StationFacility facility_mask)
 {
-	// TODO: Actually do owner check.
-
 	int catchment = _settings_game.station.station_spread + (_settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED);
 
 	StationFinder morestations(TileArea(TileXY(TileX(tile) - (catchment / 2), TileY(tile) - (catchment / 2)),
 			catchment, catchment));
 
 	for (Station * const *st_iter = morestations.GetStations()->Begin(); st_iter != morestations.GetStations()->End(); ++st_iter) {
-		Station *st = *st_iter;
+		const Station *st = *st_iter;
+		if (st->owner != owner || !(st->facilities & facility_mask)) continue;
 		Rect rect = st->GetCatchmentRect();
 		if ((uint)rect.left <= TileX(tile) && TileX(tile) <= (uint)rect.right
 				&& (uint)rect.top <= TileY(tile) && TileY(tile) <= (uint)rect.bottom) {
@@ -185,8 +187,6 @@ SpriteID TileZoneCheckOpinionEvaluation(TileIndex tile, Owner owner)
  */
 SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner)
 {
-	// TODO: Actually check owner.
-
 	// Never on a station.
 	if (IsTileType(tile, MP_STATION)) {
 		return ZONING_INVALID_SPRITE_ID;
@@ -195,12 +195,15 @@ SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner)
 	// For provided goods
 	StationFinder stations(TileArea(tile, 1, 1));
 
-	if (stations.GetStations()->Length() > 0) {
-		return SPR_ZONING_INNER_HIGHLIGHT_BLACK;
+	for (Station * const *st_iter = stations.GetStations()->Begin(); st_iter != stations.GetStations()->End(); ++st_iter) {
+		const Station *st = *st_iter;
+		if (st->owner == owner) {
+			return SPR_ZONING_INNER_HIGHLIGHT_BLACK;
+		}
 	}
 
 	// For accepted goods
-	if (IsTileWithinAcceptanceZoneOfStation(tile, owner)) {
+	if (IsTileWithinAcceptanceZoneOfStation(tile, owner, ~FACIL_NONE)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
 	}
 
@@ -217,8 +220,6 @@ SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner)
  */
 SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 {
-	// TODO: Actually use owner.
-
 	if (!IsTileType(tile, MP_HOUSE)) {
 		return ZONING_INVALID_SPRITE_ID;
 	}
@@ -238,17 +239,17 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 
 	StationFinder stations(TileArea(tile, 1, 1));
 
-	if (stations.GetStations()->Length() > 0) {
-		return ZONING_INVALID_SPRITE_ID;
+	for (Station * const *st_iter = stations.GetStations()->Begin(); st_iter != stations.GetStations()->End(); ++st_iter) {
+		const Station *st = *st_iter;
+		if (st->owner == owner) {
+			return ZONING_INVALID_SPRITE_ID;
+		}
 	}
 
 	// For accepted goods
-	if (IsTileWithinAcceptanceZoneOfStation(tile, owner)) {
+	if (IsTileWithinAcceptanceZoneOfStation(tile, owner, ~FACIL_NONE)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
 	}
-
-	// TODO: Check for stations that does not accept mail/passengers,
-	// which is currently only truck stops.
 
 	return SPR_ZONING_INNER_HIGHLIGHT_RED;
 }
@@ -263,23 +264,21 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
  */
 SpriteID TileZoneCheckUnservedIndustriesEvaluation(TileIndex tile, Owner owner)
 {
-	// TODO: Actually use owner.
-
 	if (IsTileType(tile, MP_INDUSTRY)) {
 		Industry *ind = Industry::GetByTile(tile);
 		StationFinder stations(ind->location);
 
-		if (stations.GetStations()->Length() > 0) {
-			return ZONING_INVALID_SPRITE_ID;
+		for (Station * const *st_iter = stations.GetStations()->Begin(); st_iter != stations.GetStations()->End(); ++st_iter) {
+			const Station *st = *st_iter;
+			if (st->owner == owner && st->facilities & (~FACIL_BUS_STOP)) {
+				return ZONING_INVALID_SPRITE_ID;
+			}
 		}
 
 		// For accepted goods
-		if (IsAreaWithinAcceptanceZoneOfStation(ind->location, owner)) {
+		if (IsAreaWithinAcceptanceZoneOfStation(ind->location, owner, ~FACIL_BUS_STOP)) {
 			return SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
 		}
-
-		// TODO: Check for stations that only accepts mail/passengers,
-		// which is currently only bus stops.
 
 		return SPR_ZONING_INNER_HIGHLIGHT_RED;
 	}
