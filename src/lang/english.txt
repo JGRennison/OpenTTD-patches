@@ -4982,7 +4982,5 @@ STR_ZONING_NO_ZONING                                            :Nothing
 STR_ZONING_AUTHORITY                                            :Authority
 STR_ZONING_CAN_BUILD                                            :Where I can't build
 STR_ZONING_STA_CATCH                                            :Station catchment
-STR_ZONING_IND_CATCH                                            :Industry catchment
-STR_ZONING_BUL_CATCH                                            :City catchment
 STR_ZONING_BUL_UNSER                                            :Unserved buildings
 STR_ZONING_IND_UNSER                                            :Unserved industries

@@ -1,39 +1,48 @@
+/* $Id$ */
+
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /** @file zoning.h */
 
-#ifndef ZONING_H_
-#define ZONING_H_
+#ifndef ZONING_H
+#define ZONING_H
 
-#include "openttd.h"
 #include "tile_cmd.h"
+#include "company_type.h"
 
-enum EvaluationMode {
-	CHECKNOTHING = 0,
-	CHECKOPINION = 1,  ///< Check the local authority's opinion.
-	CHECKBUILD = 2,    ///< Check wither or not the player can build.
-	CHECKSTACATCH = 3, ///< Check catchment area for stations
-	CHECKINDCATCH = 4, ///< Check catchment area for industries
-	CHECKBULCATCH = 5, ///< Check catchment area for buildings
-	CHECKBULUNSER = 6, ///< Check for unserved buildings
-	CHECKINDUNSER = 7, ///< Check for unserved industries
+/**
+ * Zoning evaluation modes
+ */
+enum ZoningEvaluationMode {
+	ZEM_NOTHING = 0,   ///< No zoning action selected
+	ZEM_AUTHORITY,     ///< Check the local authority's opinion.
+	ZEM_CAN_BUILD,     ///< Check wither or not the player can build.
+	ZEM_STA_CATCH,     ///< Check catchment area for stations
+	ZEM_BUL_UNSER,     ///< Check for unserved buildings
+	ZEM_IND_UNSER,     ///< Check for unserved industries
 };
 
+/**
+ * Global Zoning state structure
+ */
 struct Zoning {
-	EvaluationMode inner;
-	EvaluationMode outer;
-	int inner_val;
-	int outer_val;
+	ZoningEvaluationMode inner;
+	ZoningEvaluationMode outer;
 };
 
-VARDEF Zoning _zoning;
+extern Zoning _zoning;
 
-SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, EvaluationMode ev_mode);
+SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, ZoningEvaluationMode ev_mode);
 
-int TileZoningEvaluation(TileIndex tile, Owner owner, EvaluationMode ev_mode);
+int TileZoningEvaluation(TileIndex tile, Owner owner, ZoningEvaluationMode ev_mode);
 
 void DrawTileZoning(const TileInfo *ti);
 
 void ShowZoningToolbar();
 
-EvaluationMode GetEvaluationModeFromInt(int ev_mode);
-
-#endif /*ZONING_H_*/
+#endif /* ZONING_H */
