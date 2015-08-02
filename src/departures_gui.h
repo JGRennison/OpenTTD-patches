@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: departures_gui.h $ */
 
 /*
  * This file is part of OpenTTD.
@@ -7,18 +7,16 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file timetable.h Functions related to time tabling. */
+/** @file departures_gui.h */
 
-#ifndef TIMETABLE_H
-#define TIMETABLE_H
+#ifndef DEPARTURES_GUI_H
+#define DEPARTURES_GUI_H
 
-#include "date_type.h"
-#include "vehicle_type.h"
+#include "departures_type.h"
+#include "station_base.h"
+#include "widgets/departures_widget.h"
 
-#define WALLCLOCK_NETWORK_COMPATIBLE 0 ///< Whether wallclock should preserve network compatibility. If so, then timetable start dates cannot be set exactly using minutes.
+void ShowStationDepartures(StationID station);
+void ShowWaypointDepartures(StationID waypoint);
 
-void ShowTimetableWindow(const Vehicle *v);
-void UpdateVehicleTimetable(Vehicle *v, bool travelling);
-void SetTimetableParams(int param1, int param2, Ticks ticks);
-
-#endif /* TIMETABLE_H */
+#endif /* DEPARTURES_GUI_H */

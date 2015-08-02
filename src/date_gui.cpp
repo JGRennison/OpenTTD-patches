@@ -16,6 +16,7 @@
 #include "window_gui.h"
 #include "date_gui.h"
 #include "core/geometry_func.hpp"
+#include "settings_type.h"
 
 #include "widgets/dropdown_type.h"
 #include "widgets/date_widget.h"
@@ -65,7 +66,7 @@ struct SetDateWindow : Window {
 	 * Helper function to construct the dropdown.
 	 * @param widget the dropdown widget to create the dropdown for
 	 */
-	void ShowDateDropDown(int widget)
+	virtual void ShowDateDropDown(int widget)
 	{
 		int selected;
 		DropDownList *list = new DropDownList();
@@ -146,9 +147,8 @@ struct SetDateWindow : Window {
 			case WID_SD_YEAR:
 				ShowDateDropDown(widget);
 				break;
-
 			case WID_SD_SET_DATE:
-				if (this->callback != NULL) this->callback(this, ConvertYMDToDate(this->date.year, this->date.month, this->date.day));
+				if (this->callback != NULL) this->callback(this, ConvertYMDToDate(this->date.year, this->date.month, this->date.day) * DAY_TICKS);
 				delete this;
 				break;
 		}
@@ -169,6 +169,122 @@ struct SetDateWindow : Window {
 				this->date.year = index;
 				break;
 		}
+		this->SetDirty();
+	}
+};
+
+struct SetMinutesWindow : SetDateWindow
+{
+	Minutes minutes;
+
+	/** Constructor. */
+	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, DateTicks initial_date, Year min_year, Year max_year, SetDateCallback *callback) :
+		SetDateWindow(desc, window_number, parent, initial_date, min_year, max_year, callback),
+		minutes(initial_date / _settings_client.gui.ticks_per_minute)
+	{
+	}
+
+	/**
+	 * Helper function to construct the dropdown.
+	 * @param widget the dropdown widget to create the dropdown for
+	 */
+	virtual void ShowDateDropDown(int widget)
+	{
+		int selected;
+		DropDownList *list = new DropDownList();
+
+		switch (widget) {
+			default: NOT_REACHED();
+
+			case WID_SD_DAY:
+				for (uint i = 0; i < 60; i++) {
+					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
+					item->SetParam(0, i);
+					*list->Append() = item;
+				}
+				selected = MINUTES_MINUTE(minutes);
+				break;
+
+			case WID_SD_MONTH:
+				for (uint i = 0; i < 24; i++) {
+					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
+					item->SetParam(0, i);
+					*list->Append() = item;
+				}
+				selected = MINUTES_HOUR(minutes);
+
+				break;
+		}
+
+		ShowDropDownList(this, list, selected, widget);
+	}
+
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	{
+		Dimension d = {0, 0};
+		switch (widget) {
+			default: return;
+
+			case WID_SD_DAY:
+				for (uint i = 0; i < 60; i++) {
+					SetDParam(0, i);
+					d = maxdim(d, GetStringBoundingBox(STR_JUST_INT));
+				}
+				break;
+
+			case WID_SD_MONTH:
+				for (uint i = 0; i < 24; i++) {
+					SetDParam(0, i);
+					d = maxdim(d, GetStringBoundingBox(STR_JUST_INT));
+				}
+				break;
+		}
+
+		d.width += padding.width;
+		d.height += padding.height;
+		*size = d;
+	}
+
+	virtual void SetStringParameters(int widget) const
+	{
+		switch (widget) {
+			case WID_SD_DAY:   SetDParam(0, MINUTES_MINUTE(minutes)); break;
+			case WID_SD_MONTH: SetDParam(0, MINUTES_HOUR(minutes)); break;
+		}
+	}
+
+	virtual void OnClick(Point pt, int widget, int click_count)
+	{
+		switch (widget) {
+			case WID_SD_DAY:
+			case WID_SD_MONTH:
+			case WID_SD_YEAR:
+				ShowDateDropDown(widget);
+				break;
+
+			case WID_SD_SET_DATE:
+				if (this->callback != NULL) this->callback(this->parent, ((DateTicks)minutes - _settings_client.gui.clock_offset) * _settings_client.gui.ticks_per_minute);
+				delete this;
+				break;
+		}
+	}
+
+	virtual void OnDropdownSelect(int widget, int index)
+	{
+		Minutes current = 0;
+		switch (widget) {
+			case WID_SD_DAY:
+				current = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), MINUTES_HOUR(minutes), index);
+				break;
+
+			case WID_SD_MONTH:
+				current = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), index, MINUTES_MINUTE(minutes));
+				break;
+		}
+
+		if (current < (CURRENT_MINUTE - 60)) current += 60 * 24;
+		minutes = current;
+
 		this->SetDirty();
 	}
 };
@@ -195,12 +311,39 @@ static const NWidgetPart _nested_set_date_widgets[] = {
 	EndContainer()
 };
 
+static const NWidgetPart _nested_set_minutes_widgets[] = {
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_DATE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+	EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_BROWN),
+		NWidget(NWID_VERTICAL), SetPIP(6, 6, 6),
+			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(6, 6, 6),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SD_MONTH), SetFill(1, 0), SetDataTip(STR_JUST_INT, STR_DATE_MINUTES_MONTH_TOOLTIP),
+				NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_SD_DAY), SetFill(1, 0), SetDataTip(STR_JUST_INT, STR_DATE_MINUTES_DAY_TOOLTIP),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(NWID_SPACER), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_SD_SET_DATE), SetMinimalSize(100, 12), SetDataTip(STR_DATE_SET_DATE, STR_DATE_SET_DATE_TOOLTIP),
+				NWidget(NWID_SPACER), SetFill(1, 0),
+			EndContainer(),
+		EndContainer(),
+	EndContainer()
+};
+
 /** Description of the date setting window. */
 static WindowDesc _set_date_desc(
 	WDP_CENTER, NULL, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,
 	_nested_set_date_widgets, lengthof(_nested_set_date_widgets)
+);
+
+static WindowDesc _set_minutes_desc(
+	WDP_CENTER, NULL, 0, 0,
+	WC_SET_DATE, WC_NONE,
+	0,
+	_nested_set_minutes_widgets, lengthof(_nested_set_minutes_widgets)
 );
 
 /**
@@ -212,8 +355,13 @@ static WindowDesc _set_date_desc(
  * @param max_year the maximum year (inclusive) to show in the year dropdown
  * @param callback the callback to call once a date has been selected
  */
-void ShowSetDateWindow(Window *parent, int window_number, Date initial_date, Year min_year, Year max_year, SetDateCallback *callback)
+void ShowSetDateWindow(Window *parent, int window_number, DateTicks initial_date, Year min_year, Year max_year, SetDateCallback *callback)
 {
 	DeleteWindowByClass(WC_SET_DATE);
-	new SetDateWindow(&_set_date_desc, window_number, parent, initial_date, min_year, max_year, callback);
+
+	if (!_settings_client.gui.time_in_minutes) {
+		new SetDateWindow(&_set_date_desc, window_number, parent, initial_date / DAY_TICKS, min_year, max_year, callback);
+	} else {
+		new SetMinutesWindow(&_set_minutes_desc, window_number, parent, initial_date + (_settings_client.gui.clock_offset * _settings_client.gui.ticks_per_minute), min_year, max_year, callback);
+	}
 }

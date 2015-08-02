@@ -14,6 +14,7 @@
 
 #include "order_type.h"
 #include "date_type.h"
+#include "timetable.h"
 
 /** Various front vehicle properties that are preserved when autoreplacing, using order-backup or switching front engines within a consist. */
 struct BaseConsist {
@@ -22,7 +23,11 @@ struct BaseConsist {
 	/* Used for timetabling. */
 	uint32 current_order_time;          ///< How many ticks have passed since this order started.
 	int32 lateness_counter;             ///< How many ticks late (or early if negative) this vehicle is.
+#if WALLCLOCK_NETWORK_COMPATIBLE
 	Date timetable_start;               ///< When the vehicle is supposed to start the timetable.
+#else
+	DateTicks timetable_start;          ///< When the vehicle is supposed to start the timetable.
+#endif
 
 	uint16 service_interval;            ///< The interval for (automatic) servicing; either in days or %.
 

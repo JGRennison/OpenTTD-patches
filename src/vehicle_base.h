@@ -22,6 +22,7 @@
 #include "order_func.h"
 #include "transport_type.h"
 #include "group_type.h"
+#include "timetable.h"
 #include "base_consist.h"
 #include <list>
 #include <map>
