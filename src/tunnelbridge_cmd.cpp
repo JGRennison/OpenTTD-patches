@@ -30,6 +30,7 @@
 #include "date_func.h"
 #include "clear_func.h"
 #include "vehicle_func.h"
+#include "vehicle_gui.h"
 #include "sound_func.h"
 #include "tunnelbridge.h"
 #include "cheat_type.h"
@@ -1125,6 +1126,103 @@ static void DrawBridgeTramBits(int x, int y, int z, int offset, bool overlay, bo
 	}
 }
 
+/* Draws a signal on tunnel / bridge entrance tile. */
+static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
+{
+	bool side = (_settings_game.vehicle.road_side != 0) &&_settings_game.construction.train_signal_side;
+
+	static const Point SignalPositions[2][4] = {
+		{   /*  X         X         Y         Y     Signals on the left side */
+			{13,  3}, { 2, 13}, { 3,  4}, {13, 14}
+		}, {/*  X         X         Y         Y     Signals on the right side */
+			{14, 13}, { 3,  3}, {13,  2}, { 3, 13}
+		}
+	};
+
+	uint position;
+	DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
+
+	switch (dir) {
+		default: NOT_REACHED();
+		case DIAGDIR_NE: position = 0; break;
+		case DIAGDIR_SE: position = 2; break;
+		case DIAGDIR_SW: position = 1; break;
+		case DIAGDIR_NW: position = 3; break;
+	}
+
+	uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side][position].x;
+	uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side][position].y;
+	uint z = ti->z;
+
+	if (ti->tileh != SLOPE_FLAT && IsBridge(ti->tile)) z += 8; // sloped bridge head
+	SignalVariant variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
+
+	SpriteID sprite;
+	if (variant == SIG_ELECTRIC) {
+		/* Normal electric signals are picked from original sprites. */
+		sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + IsTunnelBridgeWithSignGreen(ti->tile));
+	} else {
+		/* All other signals are picked from add on sprites. */
+		sprite = SPR_SIGNALS_BASE + ((SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1) + IsTunnelBridgeWithSignGreen(ti->tile));
+	}
+
+	AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+}
+
+/* Draws a signal on tunnel / bridge entrance tile. */
+static void DrawBrigeSignalOnMiddelPart(const TileInfo *ti, TileIndex bridge_start_tile, uint z)
+{
+
+	uint bridge_signal_position = 0;
+	int m2_position = 0;
+
+	uint bridge_section = GetTunnelBridgeLength(ti->tile, bridge_start_tile) + 1;
+
+	while (bridge_signal_position <= bridge_section) {
+		bridge_signal_position += _settings_game.construction.simulated_wormhole_signals;
+		if (bridge_signal_position == bridge_section) {
+			bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
+
+			static const Point SignalPositions[2][4] = {
+				{   /*  X         X         Y         Y     Signals on the left side */
+					{11,  3}, { 4, 13}, { 3,  4}, {11, 13}
+				}, {/*  X         X         Y         Y     Signals on the right side */
+					{11, 13}, { 4,  3}, {13,  4}, { 3, 11}
+				}
+			};
+
+			uint position;
+
+			switch (GetTunnelBridgeDirection(bridge_start_tile)) {
+				default: NOT_REACHED();
+				case DIAGDIR_NE: position = 0; break;
+				case DIAGDIR_SE: position = 2; break;
+				case DIAGDIR_SW: position = 1; break;
+				case DIAGDIR_NW: position = 3; break;
+			}
+
+			uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side][position].x;
+			uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side][position].y;
+			z += 5;
+
+			SignalVariant variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
+
+			SpriteID sprite;
+
+			if (variant == SIG_ELECTRIC) {
+				/* Normal electric signals are picked from original sprites. */
+				sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + !HasBit(_m[bridge_start_tile].m2, m2_position));
+			} else {
+				/* All other signals are picked from add on sprites. */
+				sprite = SPR_SIGNALS_BASE + ((SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1) + !HasBit(_m[bridge_start_tile].m2, m2_position));
+			}
+
+			AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+		}
+		m2_position++;
+	}
+}
+
 /**
  * Draws a tunnel of bridge tile.
  * For tunnels, this is rather simple, as you only need to draw the entrance.
@@ -1239,6 +1337,9 @@ static void DrawTile_TunnelBridge(TileInfo *ti)
 		AddSortableSpriteToDraw(SPR_EMPTY_BOUNDING_BOX, PAL_NONE, ti->x,              ti->y,              BB_data[6], BB_data[7], TILE_HEIGHT, ti->z);
 		AddSortableSpriteToDraw(SPR_EMPTY_BOUNDING_BOX, PAL_NONE, ti->x + BB_data[4], ti->y + BB_data[5], BB_data[6], BB_data[7], TILE_HEIGHT, ti->z);
 
+		/* Draw signals for tunnel. */
+		if (IsTunnelBridgeEntrance(ti->tile)) DrawTunnelBridgeRampSignal(ti);
+
 		DrawBridgeMiddle(ti);
 	} else { // IsBridge(ti->tile)
 		const PalSpriteID *psid;
@@ -1345,6 +1446,9 @@ static void DrawTile_TunnelBridge(TileInfo *ti)
 				DrawCatenary(ti);
 			}
 		}
+
+		/* Draw signals for bridge. */
+		if (HasWormholeSignals(ti->tile)) DrawTunnelBridgeRampSignal(ti);
 
 		DrawBridgeMiddle(ti);
 	}
@@ -1494,6 +1598,9 @@ void DrawBridgeMiddle(const TileInfo *ti)
 		if (HasCatenaryDrawn(GetRailType(rampsouth))) {
 			DrawCatenaryOnBridge(ti);
 		}
+		if (HasWormholeSignals(rampsouth)) {
+			IsTunnelBridgeExit(rampsouth) ? DrawBrigeSignalOnMiddelPart(ti, rampnorth, z): DrawBrigeSignalOnMiddelPart(ti, rampsouth, z);
+		}
 	}
 
 	/* draw roof, the component of the bridge which is logically between the vehicle and the camera */
@@ -1582,9 +1689,9 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	TransportType tt = GetTunnelBridgeTransportType(tile);
 
 	if (IsTunnel(tile)) {
-		td->str = (tt == TRANSPORT_RAIL) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD : STR_LAI_TUNNEL_DESCRIPTION_ROAD;
+		td->str = (tt == TRANSPORT_RAIL) ? HasWormholeSignals(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD : STR_LAI_TUNNEL_DESCRIPTION_ROAD;
 	} else { // IsBridge(tile)
-		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
+		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : HasWormholeSignals(tile) ? STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
 	}
 	td->owner[0] = GetTileOwner(tile);
 
@@ -1651,6 +1758,26 @@ static void TileLoop_TunnelBridge(TileIndex tile)
 		default:
 			break;
 	}
+}
+
+static bool ClickTile_TunnelBridge(TileIndex tile)
+{
+	/* Show vehicles found in tunnel. */
+	if (IsTunnelTile(tile)) {
+		int count = 0;
+		const Train *t;
+		TileIndex tile_end = GetOtherTunnelBridgeEnd(tile);
+		FOR_ALL_TRAINS(t) {
+			if (!t->IsFrontEngine()) continue;
+			if (tile == t->tile || tile_end == t->tile) {
+				ShowVehicleViewWindow(t);
+				count++;
+			}
+			if (count > 19) break;  // no more than 20 windows open
+		}
+		if (count > 0) return true;
+	}
+	return false;
 }
 
 static TrackStatus GetTileTrackStatus_TunnelBridge(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side)
@@ -1905,7 +2032,7 @@ extern const TileTypeProcs _tile_type_tunnelbridge_procs = {
 	NULL,                            // add_accepted_cargo_proc
 	GetTileDesc_TunnelBridge,        // get_tile_desc_proc
 	GetTileTrackStatus_TunnelBridge, // get_tile_track_status_proc
-	NULL,                            // click_tile_proc
+	ClickTile_TunnelBridge,          // click_tile_proc
 	NULL,                            // animate_tile_proc
 	TileLoop_TunnelBridge,           // tile_loop_proc
 	ChangeTileOwner_TunnelBridge,    // change_tile_owner_proc

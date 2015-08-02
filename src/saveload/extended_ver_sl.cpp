@@ -52,6 +52,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_DEPARTURE_BOARDS,       XSCF_IGNORABLE_UNKNOWN, 1,                                    1, "departure_boards",      NULL, NULL, NULL        },
 	{ XSLFI_TIMETABLES_START_TICKS, XSCF_NULL,              WALLCLOCK_NETWORK_COMPATIBLE ? 0 : 1, 1, "timetable_start_ticks", NULL, NULL, NULL        },
 	{ XSLFI_TOWN_CARGO_ADJ,         XSCF_IGNORABLE_UNKNOWN, 1,                                    1, "town_cargo_adj",        NULL, NULL, NULL        },
+	{ XSLFI_SIG_TUNNEL_BRIDGE,      XSCF_NULL,              1,                                    1, "signal_tunnel_bridge",  NULL, NULL, NULL        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 
