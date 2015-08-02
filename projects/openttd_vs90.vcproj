@@ -1923,6 +1923,10 @@
 				RelativePath=".\..\src\zoom_type.h"
 				>
 			</File>
+			<File
+				RelativePath=".\..\src\zoning.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Core Source Code"
@@ -2271,6 +2275,10 @@
 				RelativePath=".\..\src\waypoint_gui.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\..\src\zoning_gui.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Widgets"
@@ -2609,6 +2617,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\waypoint_cmd.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\zoning_cmd.cpp"
 				>
 			</File>
 		</Filter>

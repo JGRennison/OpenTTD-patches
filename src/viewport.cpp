@@ -80,6 +80,7 @@
 #include "waypoint_func.h"
 #include "window_func.h"
 #include "tilehighlight_func.h"
+#include "zoning.h"
 #include "window_gui.h"
 #include "linkgraph/linkgraph_gui.h"
 #include "viewport_sprite_sorter.h"
@@ -1200,7 +1201,10 @@ static void ViewportAddLandscape()
 				_vd.last_foundation_child[1] = NULL;
 
 				_tile_type_procs[tile_type]->draw_tile_proc(&tile_info);
-				if (tile_info.tile != INVALID_TILE) DrawTileSelection(&tile_info);
+				if (tile_info.tile != INVALID_TILE) {
+					DrawTileSelection(&tile_info);
+					DrawTileZoning(&tile_info);
+				}
 			}
 		}
 	}

@@ -376,6 +376,7 @@ STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Settings
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI/Game script settings
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF settings
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Transparency options
+STR_SETTINGS_MENU_ZONING                                        :Zoning
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Town names displayed
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Station names displayed
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Waypoint names displayed
@@ -5144,3 +5145,18 @@ STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+
+######## Zoning toolbar
+
+STR_ZONING_TOOLBAR                                              :{WHITE}Zoning toolbar
+STR_ZONING_OUTER                                                :{BLACK}Outer tile borders:
+STR_ZONING_INNER                                                :{BLACK}Inner tile borders:
+STR_ZONING_OUTER_INFO                                           :{BLACK}Select which type of zoning you want on the outer border of a tile.
+STR_ZONING_INNER_INFO                                           :{BLACK}Select which type of zoning you want on the inner border of a tile.
+
+STR_ZONING_NO_ZONING                                            :Nothing
+STR_ZONING_AUTHORITY                                            :Authority
+STR_ZONING_CAN_BUILD                                            :Where I can't build
+STR_ZONING_STA_CATCH                                            :Station catchment
+STR_ZONING_BUL_UNSER                                            :Unserved buildings
+STR_ZONING_IND_UNSER                                            :Unserved industries

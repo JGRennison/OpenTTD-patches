@@ -1218,6 +1218,9 @@
     <ClInclude Include="..\src\zoom_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\zoning.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClCompile Include="..\src\core\alloc_func.cpp">
       <Filter>Core Source Code</Filter>
     </ClCompile>
@@ -1473,6 +1476,9 @@
     <ClCompile Include="..\src\waypoint_gui.cpp">
       <Filter>GUI Source Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\zoning_gui.cpp">
+      <Filter>GUI Source Code</Filter>
+    </ClCompile>
     <ClInclude Include="..\src\widgets\airport_widget.h">
       <Filter>Widgets</Filter>
     </ClInclude>
@@ -1720,6 +1726,9 @@
       <Filter>Command handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\waypoint_cmd.cpp">
+      <Filter>Command handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\zoning_cmd.cpp">
       <Filter>Command handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\saveload\afterload.cpp">
