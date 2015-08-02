@@ -63,13 +63,9 @@ bool SlXvFeatureTest::IsFeaturePresent(uint16 savegame_version, uint16 savegame_
 {
 	bool savegame_version_ok = savegame_version >= savegame_version_from && savegame_version <= savegame_version_to;
 
-	SlXvFeatureIndex feature = static_cast<SlXvFeatureIndex>(GB(this->value, 0, 16));
-	if (feature == XSLFI_NULL) return savegame_version_ok;
+	if (this->feature == XSLFI_NULL) return savegame_version_ok;
 
-	uint16 min_version = GB(this->value, 16, 16);
-	uint16 max_version = GB(this->value, 32, 16);
-	SlXvFeatureTestOperator op = static_cast<SlXvFeatureTestOperator>(GB(this->value, 48, 16));
-	bool feature_ok = SlXvIsFeaturePresent(feature, min_version, max_version);
+	bool feature_ok = SlXvIsFeaturePresent(this->feature, this->min_version, this->max_version);
 
 	switch (op) {
 		case XSLFTO_OR:
