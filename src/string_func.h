@@ -39,6 +39,7 @@ int CDECL seprintf(char *str, const char *last, const char *format, ...) WARN_FO
 int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap);
 
 char *CDECL str_fmt(const char *str, ...) WARN_FORMAT(1, 2);
+char *str_vfmt(const char *str, va_list ap);
 
 void str_validate(char *str, const char *last, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 void ValidateString(const char *str);
