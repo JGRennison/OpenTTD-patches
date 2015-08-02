@@ -33,6 +33,14 @@ enum VehicleRailFlags {
 	VRF_TOGGLE_REVERSE                = 7, ///< Used for vehicle var 0xFE bit 8 (toggled each time the train is reversed, accurate for first vehicle only).
 	VRF_TRAIN_STUCK                   = 8, ///< Train can't get a path reservation.
 	VRF_LEAVING_STATION               = 9, ///< Train is just leaving a station.
+	VRF_BREAKDOWN_BRAKING             = 10,///< used to mark a train that is braking because it is broken down
+	VRF_BREAKDOWN_POWER               = 11,///< used to mark a train in which the power of one (or more) of the engines is reduced because of a breakdown
+	VRF_BREAKDOWN_SPEED               = 12,///< used to mark a train that has a reduced maximum speed because of a breakdown
+	VRF_BREAKDOWN_STOPPED             = 13,///< used to mark a train that is stopped because of a breakdown
+	/* Bitmask of all flags that indicate a broken train (braking is not included) */
+	VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED),
+	VRF_NEED_REPAIR                   = 14,///< used to mark a train that has a reduced maximum speed because of a critical breakdown
+	VRF_TO_HEAVY                      = 15,
 };
 
 /** Modes for ignoring signals. */
@@ -65,7 +73,7 @@ void FreeTrainTrackReservation(const Train *v, TileIndex origin = INVALID_TILE, 
 bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false);
 
 int GetTrainStopLocation(StationID station_id, TileIndex tile, const Train *v, int *station_ahead, int *station_length);
-
+void CheckBreakdownFlags(Train *v);
 void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
 /** Variables that are cached to improve performance and such */
@@ -75,6 +83,7 @@ struct TrainCache {
 
 	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
 	bool cached_tilt;           ///< train can tilt; feature provides a bonus in curves
+	uint8 cached_num_engines;   ///< total number of engines, including rear ends of multiheaded engines
 
 	byte user_def_data;         ///< Cached property 0x25. Can be set by Callback 0x36.
 
@@ -177,7 +186,25 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	}
 
 protected: // These functions should not be called outside acceleration code.
+	/**
+	 * Gets the speed a broken down train (low speed breakdown) is limited to.
+	 * @note This value is not cached, because changing cached_max_speed would have unwanted consequences (e.g. in the GUI).
+	 * @param v The front engine of the vehicle.
+	 * @return The speed the train is limited to.
+	 */
+	inline uint16 GetBreakdownSpeed() const
+	{
+		assert(this->IsFrontEngine());
+		uint16 speed = UINT16_MAX;
 
+		for (const Train *w = this; w != NULL; w = w->Next()) {
+			if (w->breakdown_ctr == 1 && w->breakdown_type == BREAKDOWN_LOW_SPEED) {
+				speed = min(speed, w->breakdown_severity);
+			}
+		}
+		return speed;
+	}
+	
 	/**
 	 * Allows to know the power value that this vehicle will use.
 	 * @return Power value from the engine in HP, or zero if the vehicle is not powered.
@@ -264,7 +291,7 @@ protected: // These functions should not be called outside acceleration code.
 	 */
 	inline AccelStatus GetAccelerationStatus() const
 	{
-		return (this->vehstatus & VS_STOPPED) || HasBit(this->flags, VRF_REVERSING) || HasBit(this->flags, VRF_TRAIN_STUCK) ? AS_BRAKE : AS_ACCEL;
+		return (this->vehstatus & VS_STOPPED) || HasBit(this->flags, VRF_REVERSING) || HasBit(this->flags, VRF_TRAIN_STUCK ) || HasBit(this->flags, VRF_BREAKDOWN_BRAKING) ? AS_BRAKE : AS_ACCEL;
 	}
 
 	/**

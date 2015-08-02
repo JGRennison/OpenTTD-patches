@@ -121,6 +121,34 @@ void CheckTrainsLengths()
 }
 
 /**
+ * Checks the breakdown flags (VehicleRailFlags 9-12) and sets the correct value in the first vehicle of the consist.
+ * This function is generally only called to check if a flag may be cleared.
+ * @param v the front engine
+ * @param flags bitmask of the flags to check.
+ */
+void CheckBreakdownFlags(Train *v)
+{
+	assert(v->IsFrontEngine());
+	/* clear the flags we're gonna check first, we'll set them again later (if applicable ) */
+	CLRBITS(v->flags, (1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
+
+	for (const Train *w = v; w != NULL; w = w->Next()) {
+		if (v->IsEngine() || w->IsMultiheaded()) {
+			if (w->breakdown_ctr == 2) {
+				SetBit(v->flags, VRF_BREAKDOWN_BRAKING);
+			} else if (w->breakdown_ctr == 1) {
+				switch (w->breakdown_type) {
+					case BREAKDOWN_CRITICAL:
+					case BREAKDOWN_EM_STOP:   SetBit(v->flags, VRF_BREAKDOWN_STOPPED); break;
+					case BREAKDOWN_LOW_SPEED: SetBit(v->flags, VRF_BREAKDOWN_SPEED);   break;
+					case BREAKDOWN_LOW_POWER: SetBit(v->flags, VRF_BREAKDOWN_POWER);   break;
+				}
+			}
+		}
+	}
+}
+
+/**
  * Recalculates the cached stuff of a train. Should be called each time a vehicle is added
  * to/removed from the chain, and when the game is loaded.
  * Note: this needs to be called too for 'wagon chains' (in the depot, without an engine)
@@ -136,6 +164,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 	EngineID first_engine = this->IsFrontEngine() ? this->engine_type : INVALID_ENGINE;
 	this->gcache.cached_total_length = 0;
 	this->compatible_railtypes = RAILTYPES_NONE;
+	this->tcache.cached_num_engines = 0;
 
 	bool train_can_tilt = true;
 
@@ -204,8 +233,13 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			/* max speed is the minimum of the speed limits of all vehicles in the consist */
 			if ((rvi_u->railveh_type != RAILVEH_WAGON || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
 				uint16 speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u->max_speed);
+				if (HasBit(u->flags, VRF_NEED_REPAIR)) speed = u->vcache.cached_max_speed;
 				if (speed != 0) max_speed = min(speed, max_speed);
 			}
+
+			if(u->IsEngine() || u-> IsMultiheaded()) {
+				this->tcache.cached_num_engines++;
+		}
 		}
 
 		uint16 new_cap = e_u->DetermineCapacity(u);
@@ -433,6 +467,10 @@ int Train::GetCurrentMaxSpeed() const
 	}
 
 	max_speed = min(max_speed, this->current_order.GetMaxSpeed());
+	if ( HasBit(this->flags, VRF_BREAKDOWN_SPEED) ) {
+		max_speed = min(max_speed, this->GetBreakdownSpeed());
+	}
+
 	return min(max_speed, this->gcache.cached_max_track_speed);
 }
 
@@ -445,6 +483,9 @@ void Train::UpdateAcceleration()
 	uint weight = this->gcache.cached_weight;
 	assert(weight != 0);
 	this->acceleration = Clamp(power / weight * 4, 1, 255);
+
+	/* for non-realistic acceleration, breakdown chance is 128, corrected by the multiengine factor of 3/(n+2) */
+	this->breakdown_chance = min(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
 }
 
 /**
@@ -703,6 +744,8 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->refit_cap = v->refit_cap;
 	u->railtype = v->railtype;
 	u->engine_type = v->engine_type;
+	u->reliability = v->reliability;
+	u->reliability_spd_dec = v->reliability_spd_dec;
 	u->build_year = v->build_year;
 	u->cur_image = SPR_IMG_QUERY;
 	u->random_bits = VehicleRandomBits();
@@ -1931,7 +1974,7 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 		}
 	} else {
 		/* turn the whole train around */
-		if ((v->vehstatus & VS_CRASHED) || v->breakdown_ctr != 0) return CMD_ERROR;
+		if ((v->vehstatus & VS_CRASHED) || HasBit(v->flags, VRF_BREAKDOWN_STOPPED)) return CMD_ERROR;
 
 		if (flags & DC_EXEC) {
 			/* Properly leave the station if we are loading and won't be loading anymore */
@@ -2817,6 +2860,25 @@ int Train::UpdateSpeed()
 			return this->DoUpdateSpeed(this->GetAcceleration(), this->GetAccelerationStatus() == AS_BRAKE ? 0 : 2, this->GetCurrentMaxSpeed());
 	}
 }
+/**
+ * Handle all breakdown related stuff for a train consist.
+ * @param v The front engine.
+ */
+static bool HandlePossibleBreakdowns(Train *v)
+{
+	assert(v->IsFrontEngine());
+	for (Train *u = v; u != NULL; u = u->Next()) {
+		if (u->breakdown_ctr != 0 && (u->IsEngine() || u->IsMultiheaded())) {
+			if (u->breakdown_ctr <= 2) {
+				if ( u->HandleBreakdown() ) return true;
+				/* We check the order of v (the first vehicle) instead of u here! */
+			} else if (!v->current_order.IsType(OT_LOADING)) {
+				u->breakdown_ctr--;
+			}
+		}
+	}
+	return false;
+}
 
 /**
  * Trains enters a station, send out a news item if it is the first train, and start loading.
@@ -3693,12 +3755,8 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 {
 	/* First, handle broken down train */
 
-	int t = v->breakdown_ctr;
-	if (t > 1) {
+	if(HasBit(v->flags, VRF_BREAKDOWN_BRAKING)) {
 		v->vehstatus |= VS_TRAIN_SLOWING;
-
-		uint16 break_speed = _breakdown_speeds[GB(~t, 4, 4)];
-		if (break_speed < v->cur_speed) v->cur_speed = break_speed;
 	} else {
 		v->vehstatus &= ~VS_TRAIN_SLOWING;
 	}
@@ -3753,7 +3811,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	}
 
 	/* train is broken down? */
-	if (v->HandleBreakdown()) return true;
+	if ( HandlePossibleBreakdowns(v) ) return true;
 
 	if (HasBit(v->flags, VRF_REVERSING) && v->cur_speed == 0) {
 		ReverseTrainDirection(v);
@@ -3986,7 +4044,6 @@ void Train::OnNewDay()
 	if ((++this->day_counter & 7) == 0) DecreaseVehicleValue(this);
 
 	if (this->IsFrontEngine()) {
-		CheckVehicleBreakdown(this);
 
 		CheckIfTrainNeedsService(this);
 
@@ -4010,6 +4067,9 @@ void Train::OnNewDay()
 			SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 			SetWindowClassesDirty(WC_TRAINS_LIST);
 		}
+	}
+	if(IsEngine() || IsMultiheaded()) {
+		CheckVehicleBreakdown(this);
 	}
 }
 

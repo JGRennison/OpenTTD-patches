@@ -91,8 +91,11 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 
 	void PowerChanged();
 	void CargoChanged();
-	int GetAcceleration() const;
 	bool IsChainInDepot() const;
+
+	void CalculatePower(uint32& power, uint32& max_te, bool breakdowns) const;
+
+	int GetAcceleration();
 
 	/**
 	 * Common code executed for crashed ground vehicles
@@ -369,7 +372,22 @@ protected:
 
 		/* When we are going faster than the maximum speed, reduce the speed
 		 * somewhat gradually. But never lower than the maximum speed. */
-		int tempmax = max_speed;
+		int tempmax = ((this->breakdown_ctr == 1) ? this->cur_speed : max_speed);
+
+		if (this->breakdown_ctr == 1) {
+			if (this->breakdown_type == BREAKDOWN_LOW_POWER) {
+				if((this->tick_counter & 0x7) == 0) {
+					if(this->cur_speed > (this->breakdown_severity * max_speed) >> 8) {
+						tempmax = this->cur_speed - (this->cur_speed / 10) - 1;
+					} else {
+						tempmax = (this->breakdown_severity * max_speed) >> 8;
+					}
+				}
+			}
+			if(this->breakdown_type == BREAKDOWN_LOW_SPEED)
+				tempmax = min(max_speed, this->breakdown_severity);
+		}
+
 		if (this->cur_speed > max_speed) {
 			tempmax = max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
 		}

@@ -362,6 +362,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 		uint dist = Delta(v->x_pos, u->x_pos) + Delta(v->y_pos, u->y_pos);
 
 		if (dist < TILE_SIZE && !(u->vehstatus & VS_HIDDEN) && u->breakdown_ctr == 0) {
+			u->breakdown_type = BREAKDOWN_CRITICAL;
 			u->breakdown_ctr = 3;
 			u->breakdown_delay = 140;
 		}
@@ -547,6 +548,7 @@ static bool DisasterTick_Big_Ufo(DisasterVehicle *v)
 				if (Delta(target->x_pos, v->x_pos) + Delta(target->y_pos, v->y_pos) <= 12 * (int)TILE_SIZE) {
 					target->breakdown_ctr = 5;
 					target->breakdown_delay = 0xF0;
+					target->breakdown_type = BREAKDOWN_CRITICAL;
 				}
 			}
 		}

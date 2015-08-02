@@ -262,8 +262,10 @@
  *  192   26700
  *  193   26802
  *  194   26881   1.5.x
+ *
+ *  250   Improved Breakdowns
  */
-extern const uint16 SAVEGAME_VERSION = 194; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 250; ///< Current savegame version of OpenTTD.
 
 SavegameType _savegame_type; ///< type of savegame we are loading
 

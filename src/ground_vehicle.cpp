@@ -30,12 +30,9 @@ void GroundVehicle<T, Type>::PowerChanged()
 	uint32 number_of_parts = 0;
 	uint16 max_track_speed = v->GetDisplayMaxSpeed();
 
-	for (const T *u = v; u != NULL; u = u->Next()) {
-		uint32 current_power = u->GetPower() + u->GetPoweredPartPower(u);
-		total_power += current_power;
+	this->CalculatePower(total_power, max_te, false);
 
-		/* Only powered parts add tractive effort. */
-		if (current_power > 0) max_te += u->GetWeight() * u->GetTractiveEffort();
+	for (const T *u = v; u != NULL; u = u->Next()) {
 		number_of_parts++;
 
 		/* Get minimum max speed for this track. */
@@ -58,8 +55,6 @@ void GroundVehicle<T, Type>::PowerChanged()
 
 	this->gcache.cached_air_drag = air_drag + 3 * air_drag * number_of_parts / 20;
 
-	max_te *= 10000; // Tractive effort in (tonnes * 1000 * 10 =) N.
-	max_te /= 256;   // Tractive effort is a [0-255] coefficient.
 	if (this->gcache.cached_power != total_power || this->gcache.cached_max_te != max_te) {
 		/* Stop the vehicle if it has no power. */
 		if (total_power == 0) this->vehstatus |= VS_STOPPED;
@@ -71,6 +66,30 @@ void GroundVehicle<T, Type>::PowerChanged()
 	}
 
 	this->gcache.cached_max_track_speed = max_track_speed;
+}
+
+template <class T, VehicleType Type>
+void GroundVehicle<T, Type>::CalculatePower(uint32& total_power, uint32& max_te, bool breakdowns) const {
+
+	total_power = 0;
+	max_te = 0;
+
+	const T *v = T::From(this);
+
+	for (const T *u = v; u != NULL; u = u->Next()) {
+		uint32 current_power = u->GetPower() + u->GetPoweredPartPower(u);
+		total_power += current_power;
+
+		/* Only powered parts add tractive effort. */
+		if (current_power > 0) max_te += u->GetWeight() * u->GetTractiveEffort();
+
+		if (breakdowns && u->breakdown_ctr == 1 && u->breakdown_type == BREAKDOWN_LOW_POWER) {
+			total_power = total_power * u->breakdown_severity / 256;
+                }
+	}
+
+	max_te *= 10000; // Tractive effort in (tonnes * 1000 * 10 =) N.
+	max_te /= 256;   // Tractive effort is a [0-255] coefficient.
 }
 
 /**
@@ -104,7 +123,7 @@ void GroundVehicle<T, Type>::CargoChanged()
  * @return Current acceleration of the vehicle.
  */
 template <class T, VehicleType Type>
-int GroundVehicle<T, Type>::GetAcceleration() const
+int GroundVehicle<T, Type>::GetAcceleration()
 {
 	/* Templated class used for function calls for performance reasons. */
 	const T *v = T::From(this);
@@ -119,6 +138,7 @@ int GroundVehicle<T, Type>::GetAcceleration() const
 	 * and km/h to m/s conversion below result in a maxium of
 	 * about 1.1E11, way more than 4.3E9 of int32. */
 	int64 power = this->gcache.cached_power * 746ll;
+	uint32 max_te = this->gcache.cached_max_te; // [N]
 
 	/* This is constructed from:
 	 *  - axle resistance:  U16 power * 10 for 128 vehicles.
@@ -150,7 +170,16 @@ int GroundVehicle<T, Type>::GetAcceleration() const
 	/* This value allows to know if the vehicle is accelerating or braking. */
 	AccelStatus mode = v->GetAccelerationStatus();
 
-	const int max_te = this->gcache.cached_max_te; // [N]
+	/* handle breakdown power reduction */
+	//TODO
+	if(  Type == VEH_TRAIN  && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
+		/* We'd like to cache this, but changing cached_power has too many unwanted side-effects */
+		uint32 power_temp;
+		this->CalculatePower(power_temp, max_te, true);
+		power = power_temp * 74611;
+	}
+
+
 	/* Constructued from power, with need to multiply by 18 and assuming
 	 * low speed, it needs to be a 64 bit integer too. */
 	int64 force;
@@ -158,7 +187,7 @@ int GroundVehicle<T, Type>::GetAcceleration() const
 		if (!maglev) {
 			/* Conversion factor from km/h to m/s is 5/18 to get [N] in the end. */
 			force = power * 18 / (speed * 5);
-			if (mode == AS_ACCEL && force > max_te) force = max_te;
+			if (mode == AS_ACCEL && force > (int)max_te) force = max_te;
 		} else {
 			force = power / 25;
 		}
@@ -166,6 +195,34 @@ int GroundVehicle<T, Type>::GetAcceleration() const
 		/* "Kickoff" acceleration. */
 		force = (mode == AS_ACCEL && !maglev) ? min(max_te, power) : power;
 		force = max(force, (mass * 8) + resistance);
+	}
+
+	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
+	if ( Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER) && power == 0) {
+		force = 0;
+	}
+
+	/* Calculate the breakdown chance */
+	if (_settings_game.vehicle.improved_breakdowns) {
+		assert(this->gcache.cached_max_track_speed > 0);
+		/** First, calculate (resistance / force * current speed / max speed) << 16.
+		 * This yields a number x on a 0-1 scale, but shifted 16 bits to the left.
+		 * We then calculate 64 + 128x, clamped to 0-255, but still shifted 16 bits to the left.
+		 * Then we apply a correction for multiengine trains, and in the end we shift it 16 bits to the right to get a 0-255 number.
+		 * @note A seperate correction for multiheaded engines is done in CheckVehicleBreakdown. We can't do that here because it would affect the whole consist.
+		 */
+		uint64 breakdown_factor = (uint64)abs(resistance) * (uint64)(this->cur_speed << 16);
+		breakdown_factor /= (max(force, (int64)100) * this->gcache.cached_max_track_speed);
+		breakdown_factor = min((64 << 16) + (breakdown_factor * 128), 255 << 16);
+		if ( Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
+			/* For multiengine trains, breakdown chance is multiplied by 3 / (num_engines + 2) */
+			breakdown_factor *= 3;
+			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
+		}
+		/* breakdown_chance is at least 5 (5 / 128 = ~4% of the normal chance) */
+		this->breakdown_chance = max(breakdown_factor >> 16, (uint64)5);
+	} else {
+		this->breakdown_chance = 128;
 	}
 
 	if (mode == AS_ACCEL) {
@@ -178,7 +235,27 @@ int GroundVehicle<T, Type>::GetAcceleration() const
 		 * a hill will never speed up enough to (eventually) get back to the
 		 * same (maximum) speed. */
 		int accel = ClampToI32((force - resistance) / (mass * 4));
-		return force < resistance ? min(-1, accel) : max(1, accel);
+		accel = force < resistance ? min(-1, accel) : max(1, accel);
+		if (this->type == VEH_TRAIN ) {
+			if(_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
+				HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
+				/* We need to apply the power reducation for non-realistic acceleration here */
+				uint32 power;
+				CalculatePower(power, max_te, true);
+				accel = accel * power / this->gcache.cached_power;
+				accel -= this->acceleration >> 1;
+			}
+
+
+			if ( this->IsFrontEngine() && !(this->current_order_time & 0x1FF) &&
+				!(this->current_order.IsType(OT_LOADING)) &&
+				!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
+				this->cur_speed < 3 && accel < 5) {
+				SetBit(Train::From(this)->flags, VRF_TO_HEAVY);
+			}
+		}
+
+		return accel;
 	} else {
 		return ClampToI32(min(-force - resistance, -10000) / mass);
 	}
