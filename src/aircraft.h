@@ -57,6 +57,7 @@ void UpdateAircraftCache(Aircraft *v, bool update_range = false);
 void AircraftLeaveHangar(Aircraft *v, Direction exit_dir);
 void AircraftNextAirportPos_and_Order(Aircraft *v);
 void SetAircraftPosition(Aircraft *v, int x, int y, int z);
+void FindBreakdownDestination(Aircraft *v);
 
 void GetAircraftFlightLevelBounds(const Vehicle *v, int *min, int *max);
 template <class T>

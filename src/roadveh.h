@@ -163,6 +163,11 @@ protected: // These functions should not be called outside acceleration code.
 		if (!this->IsArticulatedPart()) {
 			/* Road vehicle weight is in units of 1/4 t. */
 			weight += GetVehicleProperty(this, PROP_ROADVEH_WEIGHT, RoadVehInfo(this->engine_type)->weight) / 4;
+
+			/*
+			 * TODO: DIRTY HACK: at least 1 for realistic accelerate
+			 */
+			if (weight == 0) weight = 1;
 		}
 
 		return weight;

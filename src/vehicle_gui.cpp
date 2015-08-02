@@ -37,6 +37,7 @@
 #include "engine_func.h"
 #include "station_base.h"
 #include "tilehighlight_func.h"
+#include "train.h"
 #include "zoom_func.h"
 
 #include "safeguards.h"
@@ -288,6 +289,31 @@ byte GetBestFittingSubType(Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_t
 	}
 
 	return ret_refit_cyc;
+}
+
+/**
+ * Get the engine that suffers from the most severe breakdown.
+ * This means the engine with the lowest breakdown_type.
+ * If the breakdown types of 2 engines are equal, the one with the lowest breakdown_severity (most severe) is picked.
+ * @param v The front engine of the train.
+ * @return The most severly broken engine.
+ */
+const Vehicle *GetMostSeverelyBrokenEngine(const Train *v)
+{
+	assert(v->IsFrontEngine());
+	const Vehicle *w = v;
+	byte most_severe_type = 255;
+	for (const Vehicle *u = v; u != NULL; u = u->Next()) {
+		if (u->breakdown_ctr == 1) {
+			if (u->breakdown_type < most_severe_type) {
+				most_severe_type = u->breakdown_type;
+				w = u;
+			} else if (u->breakdown_type == most_severe_type && u->breakdown_severity < w->breakdown_severity) {
+				w = u;
+			}
+		}
+	}
+	return w;
 }
 
 /** Option to refit a vehicle chain */
@@ -2079,8 +2105,25 @@ struct VehicleDetailsWindow : Window {
 				y += FONT_HEIGHT_NORMAL;
 
 				/* Draw breakdown & reliability */
-				SetDParam(0, ToPercent16(v->reliability));
-				SetDParam(1, v->breakdowns_since_last_service);
+				byte total_engines = 0;
+				if (v->type == VEH_TRAIN) {
+					/* we want to draw the average reliability and total number of breakdowns */
+					uint32 total_reliability = 0;
+					uint16 total_breakdowns  = 0;
+					for (const Vehicle *w = v; w != NULL; w = w->Next()) {
+						if (Train::From(w)->IsEngine() || Train::From(w)->IsMultiheaded()) {
+							total_reliability += w->reliability;
+							total_breakdowns += w->breakdowns_since_last_service;
+						}
+					}
+					total_engines = Train::From(v)->tcache.cached_num_engines;
+					assert(total_engines > 0);
+					SetDParam(0, ToPercent16(total_reliability / total_engines));
+					SetDParam(1, total_breakdowns);
+				} else {
+					SetDParam(0, ToPercent16(v->reliability));
+					SetDParam(1, v->breakdowns_since_last_service);
+				}
 				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS);
 				break;
 			}
@@ -2394,6 +2437,13 @@ void StartStopVehicle(const Vehicle *v, bool texteffect)
 	DoCommandP(v->tile, v->index, 0, _vehicle_command_translation_table[VCT_CMD_START_STOP][v->type], texteffect ? CcStartStopVehicle : NULL);
 }
 
+/** Strings for aircraft breakdown types */
+static const StringID _aircraft_breakdown_strings[] = {
+	STR_BREAKDOWN_TYPE_LOW_SPEED,
+	STR_BREAKDOWN_TYPE_DEPOT,
+	STR_BREAKDOWN_TYPE_LANDING,
+};
+
 /** Checks whether the vehicle may be refitted at the moment.*/
 static bool IsVehicleRefitable(const Vehicle *v)
 {
@@ -2560,8 +2610,31 @@ public:
 		StringID str;
 		if (v->vehstatus & VS_CRASHED) {
 			str = STR_VEHICLE_STATUS_CRASHED;
-		} else if (v->type != VEH_AIRCRAFT && v->breakdown_ctr == 1) { // check for aircraft necessary?
-			str = STR_VEHICLE_STATUS_BROKEN_DOWN;
+		} else if (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN)) {
+			if (_settings_game.vehicle.improved_breakdowns) {
+				str = STR_VEHICLE_STATUS_BROKEN_DOWN_VEL;
+				SetDParam(2, v->GetDisplaySpeed());
+			} else {
+				str = STR_VEHICLE_STATUS_BROKEN_DOWN;
+			}
+
+			if (v->type == VEH_AIRCRAFT) {
+				SetDParam(0, _aircraft_breakdown_strings[v->breakdown_type]);
+				if (v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) {
+					SetDParam(1, v->breakdown_severity << 3);
+				} else {
+					SetDParam(1, v->current_order.GetDestination());
+				}
+			} else {
+				const Vehicle *w = (v->type == VEH_TRAIN) ? GetMostSeverelyBrokenEngine(Train::From(v)) : v;
+				SetDParam(0, STR_BREAKDOWN_TYPE_CRITICAL + w->breakdown_type);
+
+				if (w->breakdown_type == BREAKDOWN_LOW_SPEED) {
+					SetDParam(1, min( w->First()->GetDisplayMaxSpeed(), w->breakdown_severity >> ((v->type == VEH_TRAIN) ? 0 : 1)));
+				} else if (w->breakdown_type == BREAKDOWN_LOW_POWER) {
+					SetDParam(1, w->breakdown_severity * 100 / 256);
+				}
+			}
 		} else if (v->vehstatus & VS_STOPPED) {
 			if (v->type == VEH_TRAIN) {
 				if (v->cur_speed == 0) {
