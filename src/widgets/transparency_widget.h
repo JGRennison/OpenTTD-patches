@@ -25,6 +25,7 @@ enum TransparencyToolbarWidgets {
 	WID_TT_STRUCTURES,               ///< Object structure transparency toggle button.
 	WID_TT_CATENARY,                 ///< Catenary transparency toggle button.
 	WID_TT_LOADING,                  ///< Loading indicators transparency toggle button.
+	WIT_TT_TUNNELS,                  ///< Vehicles in tunnels toggle button.
 	WID_TT_END,                      ///< End of toggle buttons.
 
 	/* Panel with buttons for invisibility */
