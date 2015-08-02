@@ -732,6 +732,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\programmable_signals.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\programmable_signals_gui.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\signs.cpp"
 				>
 			</File>
@@ -1597,6 +1605,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\signal_type.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\programmable_signals.h"
 				>
 			</File>
 			<File
@@ -2765,6 +2777,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\saveload\waypoint_sl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\saveload\signal_sl.cpp"
 				>
 			</File>
 			<File

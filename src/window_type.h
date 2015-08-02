@@ -687,6 +687,11 @@ enum WindowClass {
 	 */
 	WC_TRACE_RESTRICT,
 
+	/**
+	 * Programmable signals window
+	 */
+	WC_SIGNAL_PROGRAM,
+
 	WC_INVALID = 0xFFFF, ///< Invalid window.
 };
 

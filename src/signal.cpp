@@ -17,9 +17,22 @@
 #include "viewport_func.h"
 #include "train.h"
 #include "company_base.h"
+#include "gui.h"
+#include "table/strings.h"
+#include "programmable_signals.h"
+#include "error.h"
 
 #include "safeguards.h"
 
+/// List of signals dependent upon this one
+typedef SmallVector<SignalReference, 4>     SignalDependencyList;
+
+/// Map of dependencies. The key identifies the signal,
+/// the value is a list of all of the signals which depend upon that signal.
+typedef std::map<SignalReference, SignalDependencyList> SignalDependencyMap;
+
+static SignalDependencyMap _signal_dependencies;
+static void MarkDependencidesForUpdate(SignalReference sig);
 
 /** these are the maximums used for updating signal blocks */
 static const uint SIG_TBU_SIZE    =  64; ///< number of signals entering to block
@@ -188,6 +201,7 @@ static SmallSet<Trackdir, SIG_TBU_SIZE> _tbuset("_tbuset");         ///< set of 
 static SmallSet<DiagDirection, SIG_TBD_SIZE> _tbdset("_tbdset");    ///< set of open nodes in current signal block
 static SmallSet<DiagDirection, SIG_GLOB_SIZE> _globset("_globset"); ///< set of places to be updated in following runs
 
+static uint _num_signals_evaluated; ///< Number of programmable signals evaluated
 
 /** Check whether there is a train on rail, not in a depot */
 static Vehicle *TrainOnTileEnum(Vehicle *v, void *)
@@ -247,18 +261,25 @@ static inline bool MaybeAddToTodoSet(TileIndex t1, DiagDirection d1, TileIndex t
 
 /** Current signal block state flags */
 enum SigFlags {
-	SF_NONE   = 0,
-	SF_TRAIN  = 1 << 0, ///< train found in segment
-	SF_EXIT   = 1 << 1, ///< exitsignal found
-	SF_EXIT2  = 1 << 2, ///< two or more exits found
-	SF_GREEN  = 1 << 3, ///< green exitsignal found
-	SF_GREEN2 = 1 << 4, ///< two or more green exits found
-	SF_FULL   = 1 << 5, ///< some of buffers was full, do not continue
-	SF_PBS    = 1 << 6, ///< pbs signal found
+	SF_NONE    = 0,
+	SF_TRAIN   = 1 << 0, ///< train found in segment
+	SF_FULL    = 1 << 1, ///< some of buffers was full, do not continue
+	SF_PBS     = 1 << 2, ///< pbs signal found
 };
 
 DECLARE_ENUM_AS_BIT_SET(SigFlags)
 
+struct SigInfo {
+	inline SigInfo()
+	{
+		flags = SF_NONE;
+		num_exits = 0;
+		num_green = 0;
+	}
+	SigFlags flags;
+	uint num_exits;
+	uint num_green;
+};
 
 /**
  * Search signal block
@@ -266,9 +287,9 @@ DECLARE_ENUM_AS_BIT_SET(SigFlags)
  * @param owner owner whose signals we are updating
  * @return SigFlags
  */
-static SigFlags ExploreSegment(Owner owner)
+static SigInfo ExploreSegment(Owner owner)
 {
-	SigFlags flags = SF_NONE;
+	SigInfo info;
 
 	TileIndex tile;
 	DiagDirection enterdir;
@@ -283,13 +304,13 @@ static SigFlags ExploreSegment(Owner owner)
 
 				if (IsRailDepot(tile)) {
 					if (enterdir == INVALID_DIAGDIR) { // from 'inside' - train just entered or left the depot
-						if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						exitdir = GetRailDepotDirection(tile);
 						tile += TileOffsByDiagDir(exitdir);
 						enterdir = ReverseDiagDir(exitdir);
 						break;
 					} else if (enterdir == GetRailDepotDirection(tile)) { // entered a depot
-						if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						continue;
 					} else {
 						continue;
@@ -303,10 +324,10 @@ static SigFlags ExploreSegment(Owner owner)
 				if (tracks == TRACK_BIT_HORZ || tracks == TRACK_BIT_VERT) { // there is exactly one incidating track, no need to check
 					tracks = tracks_masked;
 					/* If no train detected yet, and there is not no train -> there is a train -> set the flag */
-					if (!(flags & SF_TRAIN) && EnsureNoTrainOnTrackBits(tile, tracks).Failed()) flags |= SF_TRAIN;
+					if (!(info.flags & SF_TRAIN) && EnsureNoTrainOnTrackBits(tile, tracks).Failed()) info.flags |= SF_TRAIN;
 				} else {
 					if (tracks_masked == TRACK_BIT_NONE) continue; // no incidating track
-					if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+					if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 				}
 
 				if (HasSignals(tile)) { // there is exactly one track - not zero, because there is exit from this tile
@@ -320,20 +341,19 @@ static SigFlags ExploreSegment(Owner owner)
 						 * (if it is a presignal EXIT and it changes, it will be added to 'to-be-done' set later) */
 						if (HasSignalOnTrackdir(tile, reversedir)) {
 							if (IsPbsSignal(sig)) {
-								flags |= SF_PBS;
+								info.flags |= SF_PBS;
 							} else if (!_tbuset.Add(tile, reversedir)) {
-								return flags | SF_FULL;
+								info.flags |= SF_FULL;
+								return info;
 							}
 						}
-						if (HasSignalOnTrackdir(tile, trackdir) && !IsOnewaySignal(tile, track)) flags |= SF_PBS;
+						if (HasSignalOnTrackdir(tile, trackdir) && !IsOnewaySignal(tile, track)) info.flags |= SF_PBS;
 
-						/* if it is a presignal EXIT in OUR direction and we haven't found 2 green exits yes, do special check */
-						if (!(flags & SF_GREEN2) && IsPresignalExit(tile, track) && HasSignalOnTrackdir(tile, trackdir)) { // found presignal exit
-							if (flags & SF_EXIT) flags |= SF_EXIT2; // found two (or more) exits
-							flags |= SF_EXIT; // found at least one exit - allow for compiler optimizations
+						/* if it is a presignal EXIT in OUR direction, count it */
+						if (IsPresignalExit(tile, track) && HasSignalOnTrackdir(tile, trackdir)) { // found presignal exit
+							info.num_exits++;
 							if (GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_GREEN) { // found green presignal exit
-								if (flags & SF_GREEN) flags |= SF_GREEN2;
-								flags |= SF_GREEN;
+								info.num_green++;
 							}
 						}
 
@@ -345,7 +365,10 @@ static SigFlags ExploreSegment(Owner owner)
 					if (dir != enterdir && (tracks & _enterdir_to_trackbits[dir])) { // any track incidating?
 						TileIndex newtile = tile + TileOffsByDiagDir(dir);  // new tile to check
 						DiagDirection newdir = ReverseDiagDir(dir); // direction we are entering from
-						if (!MaybeAddToTodoSet(newtile, newdir, tile, dir)) return flags | SF_FULL;
+						if (!MaybeAddToTodoSet(newtile, newdir, tile, dir)) {
+							info.flags |= SF_FULL;
+							return info;
+						}
 					}
 				}
 
@@ -358,7 +381,7 @@ static SigFlags ExploreSegment(Owner owner)
 				if (DiagDirToAxis(enterdir) != GetRailStationAxis(tile)) continue; // different axis
 				if (IsStationTileBlocked(tile)) continue; // 'eye-candy' station tile
 
-				if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+				if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
@@ -367,7 +390,7 @@ static SigFlags ExploreSegment(Owner owner)
 				if (GetTileOwner(tile) != owner) continue;
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) continue; // different axis
 
-				if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+				if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
@@ -377,13 +400,13 @@ static SigFlags ExploreSegment(Owner owner)
 				DiagDirection dir = GetTunnelBridgeDirection(tile);
 
 				if (enterdir == INVALID_DIAGDIR) { // incoming from the wormhole
-					if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+					if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 					enterdir = dir;
 					exitdir = ReverseDiagDir(dir);
 					tile += TileOffsByDiagDir(exitdir); // just skip to next tile
 				} else { // NOT incoming from the wormhole!
 					if (ReverseDiagDir(enterdir) != dir) continue;
-					if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
+					if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 					tile = GetOtherTunnelBridgeEnd(tile); // just skip to exit tile
 					enterdir = INVALID_DIAGDIR;
 					exitdir = INVALID_DIAGDIR;
@@ -395,10 +418,12 @@ static SigFlags ExploreSegment(Owner owner)
 				continue; // continue the while() loop
 		}
 
-		if (!MaybeAddToTodoSet(tile, enterdir, oldtile, exitdir)) return flags | SF_FULL;
+		if (!MaybeAddToTodoSet(tile, enterdir, oldtile, exitdir)) {
+			info.flags |= SF_FULL;
+		}
 	}
 
-	return flags;
+	return info;
 }
 
 
@@ -407,43 +432,67 @@ static SigFlags ExploreSegment(Owner owner)
  *
  * @param flags info about segment
  */
-static void UpdateSignalsAroundSegment(SigFlags flags)
+static void UpdateSignalsAroundSegment(SigInfo info)
 {
 	TileIndex tile;
 	Trackdir trackdir;
+	Track track;
 
 	while (_tbuset.Get(&tile, &trackdir)) {
 		assert(HasSignalOnTrackdir(tile, trackdir));
 
-		SignalType sig = GetSignalType(tile, TrackdirToTrack(trackdir));
+		track = TrackdirToTrack(trackdir);
+		SignalType sig = GetSignalType(tile, track);
 		SignalState newstate = SIGNAL_STATE_GREEN;
 
 		/* determine whether the new state is red */
-		if (flags & SF_TRAIN) {
+		if (info.flags & SF_TRAIN) {
 			/* train in the segment */
+			newstate = SIGNAL_STATE_RED;
+		} else if (sig == SIGTYPE_PROG &&
+				_num_signals_evaluated > _settings_game.construction.maximum_signal_evaluations) {
+			/* too many cascades */
 			newstate = SIGNAL_STATE_RED;
 		} else {
 			/* is it a bidir combo? - then do not count its other signal direction as exit */
-			if (sig == SIGTYPE_COMBO && HasSignalOnTrackdir(tile, ReverseTrackdir(trackdir))) {
-				/* at least one more exit */
-				if ((flags & SF_EXIT2) &&
-						/* no green exit */
-						(!(flags & SF_GREEN) ||
-						/* only one green exit, and it is this one - so all other exits are red */
-						(!(flags & SF_GREEN2) && GetSignalStateByTrackdir(tile, ReverseTrackdir(trackdir)) == SIGNAL_STATE_GREEN))) {
-					newstate = SIGNAL_STATE_RED;
+			if (IsComboSignal(sig) && HasSignalOnTrackdir(tile, ReverseTrackdir(trackdir))) {
+				// Don't count ourselves
+				uint exits = info.num_exits - 1;
+				uint green = info.num_green;
+				if (GetSignalStateByTrackdir(tile, ReverseTrackdir(trackdir)) == SIGNAL_STATE_GREEN)
+					green--;
+
+				if (sig == SIGTYPE_PROG) { /* Programmable */
+					_num_signals_evaluated++;
+
+					if (!RunSignalProgram(SignalReference(tile, track), exits, green))
+						newstate = SIGNAL_STATE_RED;
+				} else { /* traditional combo */
+					if (!green && exits)
+						newstate = SIGNAL_STATE_RED;
 				}
 			} else { // entry, at least one exit, no green exit
-				if (IsPresignalEntry(tile, TrackdirToTrack(trackdir)) && (flags & SF_EXIT) && !(flags & SF_GREEN)) newstate = SIGNAL_STATE_RED;
+				if (IsEntrySignal(sig)) {
+					if (sig == SIGTYPE_PROG) {
+						_num_signals_evaluated++;
+						if (!RunSignalProgram(SignalReference(tile, track), info.num_exits, info.num_green))
+							newstate = SIGNAL_STATE_RED;
+					} else { /* traditional combo */
+						if (!info.num_green && info.num_exits) newstate = SIGNAL_STATE_RED;
+					}
+				}
 			}
 		}
 
 		/* only when the state changes */
 		if (newstate != GetSignalStateByTrackdir(tile, trackdir)) {
-			if (IsPresignalExit(tile, TrackdirToTrack(trackdir))) {
+			if (IsExitSignal(sig)) {
 				/* for pre-signal exits, add block to the global set */
 				DiagDirection exitdir = TrackdirToExitdir(ReverseTrackdir(trackdir));
 				_globset.Add(tile, exitdir); // do not check for full global set, first update all signals
+
+				// Progsig dependencies
+				MarkDependencidesForUpdate(SignalReference(tile, track));
 			}
 			SetSignalStateByTrackdir(tile, trackdir, newstate);
 			MarkTileDirtyByTile(tile);
@@ -475,6 +524,7 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 
 	bool first = true;  // first block?
 	SigSegState state = SIGSEG_FREE; // value to return
+	_num_signals_evaluated = 0;
 
 	TileIndex tile;
 	DiagDirection dir;
@@ -529,25 +579,29 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 		assert(!_tbdset.Overflowed()); // it really shouldn't overflow by these one or two items
 		assert(!_tbdset.IsEmpty()); // it wouldn't hurt anyone, but shouldn't happen too
 
-		SigFlags flags = ExploreSegment(owner);
+		SigInfo info = ExploreSegment(owner);
 
 		if (first) {
 			first = false;
 			/* SIGSEG_FREE is set by default */
-			if (flags & SF_PBS) {
+			if (info.flags & SF_PBS) {
 				state = SIGSEG_PBS;
-			} else if ((flags & SF_TRAIN) || ((flags & SF_EXIT) && !(flags & SF_GREEN)) || (flags & SF_FULL)) {
+			} else if ((info.flags & SF_TRAIN) || ((info.num_exits) && !(info.num_green)) || (info.flags & SF_FULL)) {
 				state = SIGSEG_FULL;
 			}
 		}
 
 		/* do not do anything when some buffer was full */
-		if (flags & SF_FULL) {
+		if (info.flags & SF_FULL) {
 			ResetSets(); // free all sets
 			break;
 		}
 
-		UpdateSignalsAroundSegment(flags);
+		if (_num_signals_evaluated > _settings_game.construction.maximum_signal_evaluations) {
+			ShowErrorMessage(STR_ERROR_SIGNAL_CHANGES, STR_EMPTY, WL_INFO);
+		}
+
+		UpdateSignalsAroundSegment(info);
 	}
 
 	return state;
@@ -659,4 +713,90 @@ void SetSignalsOnBothDir(TileIndex tile, Track track, Owner owner)
 
 	AddTrackToSignalBuffer(tile, track, owner);
 	UpdateSignalsInBuffer(owner);
+}
+
+void AddSignalDependency(SignalReference on, SignalReference dep)
+{
+	assert(GetTileOwner(on.tile) == GetTileOwner(dep.tile));
+	SignalDependencyList &dependencies = _signal_dependencies[on];
+	(*dependencies.Append()) = dep;
+}
+
+void RemoveSignalDependency(SignalReference on, SignalReference dep)
+{
+	SignalDependencyList &dependencies = _signal_dependencies[on];
+	SignalReference *ob = dependencies.Find(dep);
+
+	// Destroying both signals in same command
+	if(ob == dependencies.End())
+		return;
+
+	dependencies.Erase(ob);
+	if (dependencies.Length() == 0)
+		_signal_dependencies.erase(on);
+}
+
+void FreeSignalDependencies()
+{
+	_signal_dependencies.clear();
+}
+
+static void MarkDependencidesForUpdate(SignalReference on)
+{
+	SignalDependencyMap::iterator f = _signal_dependencies.find(on);
+	if (f == _signal_dependencies.end()) return;
+
+	SignalDependencyList &dependencies = f->second;
+	for (SignalReference *i = dependencies.Begin(), *e = dependencies.End();
+			i != e; ++i) {
+		assert(GetTileOwner(i->tile) == GetTileOwner(on.tile));
+
+		Trackdir td = TrackToTrackdir(i->track);
+		_globset.Add(i->tile, TrackdirToExitdir(td));
+		_globset.Add(i->tile, TrackdirToExitdir(ReverseTrackdir(td)));
+	}
+}
+
+void CheckRemoveSignalsFromTile(TileIndex tile)
+{
+	if (!HasSignals(tile)) return;
+
+	TrackBits tb = GetTrackBits(tile);
+	Track tr;
+	while ((tr = RemoveFirstTrack(&tb)) != INVALID_TRACK) {
+		if (HasSignalOnTrack(tile, tr)) CheckRemoveSignal(tile, tr);
+	}
+}
+
+static void NotifyRemovingDependentSignal(SignalReference on, SignalReference by)
+{
+    SignalType t = GetSignalType(by.tile, by.track);
+    if (IsProgrammableSignal(t)) {
+        RemoveProgramDependencies(by, on);
+    } else DEBUG(misc, 0, "Removing dependency held by non-programmable signal (Unexpected)");
+}
+
+void CheckRemoveSignal(TileIndex tile, Track track)
+{
+	if (!HasSignalOnTrack(tile, track)) return;
+	SignalReference thisRef(tile, track);
+
+	SignalType t = GetSignalType(tile, track);
+	if (IsProgrammableSignal(t)) {
+		FreeSignalProgram(thisRef);
+	}
+
+	SignalDependencyMap::iterator i = _signal_dependencies.find(SignalReference(tile, track)),
+			e = _signal_dependencies.end();
+
+	if (i != e) {
+		SignalDependencyList &dependencies = i->second;
+
+		for (SignalReference *ir = dependencies.Begin(), *er = dependencies.End(); ir != er; ++ir) {
+			assert(GetTileOwner(ir->tile) == GetTileOwner(tile));
+			NotifyRemovingDependentSignal(thisRef, *ir);
+		}
+
+		_signal_dependencies.erase(i);
+	}
 }

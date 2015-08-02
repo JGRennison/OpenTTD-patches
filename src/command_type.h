@@ -331,6 +331,10 @@ enum Commands {
 
 	CMD_PROGRAM_TRACERESTRICT_SIGNAL, ///< modify a signal tracerestrict program
 
+	CMD_INSERT_SIGNAL_INSTRUCTION,    ///< insert a signal instruction
+	CMD_MODIFY_SIGNAL_INSTRUCTION,    ///< modifies a signal instruction
+	CMD_REMOVE_SIGNAL_INSTRUCTION,    ///< removes a signal instruction
+
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
 

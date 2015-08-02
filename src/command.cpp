@@ -200,6 +200,10 @@ CommandProc CmdOpenCloseAirport;
 
 CommandProc CmdProgramSignalTraceRestrict;
 
+CommandProc CmdInsertSignalInstruction;
+CommandProc CmdModifySignalInstruction;
+CommandProc CmdRemoveSignalInstruction;
+
 #define DEF_CMD(proc, flags, type) {proc, #proc, (CommandFlags)flags, type}
 
 /**
@@ -358,6 +362,10 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdOpenCloseAirport,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_OPEN_CLOSE_AIRPORT
 
 	DEF_CMD(CmdProgramSignalTraceRestrict,                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_PROGRAM_TRACERESTRICT_SIGNAL
+
+	DEF_CMD(CmdInsertSignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_INSERT_SIGNAL_INSTRUCTION
+	DEF_CMD(CmdModifySignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_MODIFY_SIGNAL_INSTRUCTION
+	DEF_CMD(CmdRemoveSignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_SIGNAL_INSTRUCTION
 };
 
 /*!

@@ -76,6 +76,8 @@ screenshot.cpp
 #end
 settings.cpp
 signal.cpp
+programmable_signals.cpp
+programmable_signals_gui.cpp
 signs.cpp
 sound.cpp
 sprite.cpp
@@ -321,6 +323,7 @@ settings_type.h
 ship.h
 signal_func.h
 signal_type.h
+programmable_signals.h
 signs_base.h
 signs_func.h
 signs_type.h
@@ -633,6 +636,7 @@ saveload/subsidy_sl.cpp
 saveload/town_sl.cpp
 saveload/vehicle_sl.cpp
 saveload/waypoint_sl.cpp
+saveload/signal_sl.cpp
 saveload/extended_ver_sl.h
 saveload/extended_ver_sl.cpp
 
