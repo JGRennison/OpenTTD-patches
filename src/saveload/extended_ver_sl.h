@@ -26,6 +26,7 @@ enum SlXvFeatureIndex {
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_DEPARTURE_BOARDS,                       ///< Departure boards patch, in ticks mode
 	XSLFI_TIMETABLES_START_TICKS,                 ///< Timetable start time is in ticks, instead of days (from departure boards patch)
+	XSLFI_TOWN_CARGO_ADJ,                         ///< Town cargo adjustment patch
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
