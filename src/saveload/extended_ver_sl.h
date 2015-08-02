@@ -41,20 +41,17 @@ enum SlXvFeatureTestOperator {
  */
 struct SlXvFeatureTest {
 	private:
-	uint64 value;
+	uint16 min_version;
+	uint16 max_version;
+	SlXvFeatureIndex feature;
+	SlXvFeatureTestOperator op;
 
 	public:
 	SlXvFeatureTest()
-			: value(0) { }
+			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR) { }
 
-	SlXvFeatureTest(SlXvFeatureTestOperator op, SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF)
-	{
-		this->value = 0;
-		SB(this->value, 0, 16, feature);
-		SB(this->value, 16, 16, min_version);
-		SB(this->value, 32, 16, max_version);
-		SB(this->value, 48, 16, op);
-	}
+	SlXvFeatureTest(SlXvFeatureTestOperator op_, SlXvFeatureIndex feature_, uint16 min_version_ = 1, uint16 max_version_ = 0xFFFF)
+			: min_version(min_version_), max_version(max_version_), feature(feature_), op(op_) { }
 
 	bool IsFeaturePresent(uint16 savegame_version, uint16 savegame_version_from, uint16 savegame_version_to) const;
 };
