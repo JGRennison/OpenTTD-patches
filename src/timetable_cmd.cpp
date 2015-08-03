@@ -143,6 +143,9 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
 				break;
 
+			case OT_GOTO_DEPOT:
+				break;
+
 			case OT_CONDITIONAL:
 				break;
 
