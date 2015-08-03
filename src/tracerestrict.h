@@ -106,6 +106,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_LAST_STATION        = 14,   ///< Test train last visited station
 	TRIT_COND_CARGO               = 15,   ///< Test if train can carry cargo type
 	TRIT_COND_ENTRY_DIRECTION     = 16,   ///< Test which side of signal/signal tile is being entered from
+	TRIT_COND_PBS_ENTRY_SIGNAL    = 17,   ///< Test tile and PBS-state of previous signal
 	/* space up to 31 */
 };
 
@@ -176,11 +177,15 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
  * Execution input of a TraceRestrictProgram
  */
 struct TraceRestrictProgramInput {
-	TileIndex tile;                          ///< Tile of restrict signal, for direction testing
-	Trackdir trackdir;                       ///< Track direction on tile of restrict signal, for direction testing
+	typedef TileIndex PreviousSignalProc(const Train *v, const void *ptr);
 
-	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_)
-			: tile(tile_), trackdir(trackdir_) { }
+	TileIndex tile;                               ///< Tile of restrict signal, for direction testing
+	Trackdir trackdir;                            ///< Track direction on tile of restrict signal, for direction testing
+	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be NULL
+	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
+
+	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
+			: tile(tile_), trackdir(trackdir_), previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_) { }
 };
 
 /**
@@ -215,6 +220,46 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 	void DecrementRefCount();
 
 	static CommandCost Validate(const std::vector<TraceRestrictItem> &items);
+
+	static size_t InstructionOffsetToArrayOffset(const std::vector<TraceRestrictItem> &items, size_t offset);
+
+	static size_t ArrayOffsetToInstructionOffset(const std::vector<TraceRestrictItem> &items, size_t offset);
+
+	/** Call InstructionOffsetToArrayOffset on current program instruction list */
+	size_t InstructionOffsetToArrayOffset(size_t offset) const
+	{
+		return TraceRestrictProgram::InstructionOffsetToArrayOffset(this->items, offset);
+	}
+
+	/** Call ArrayOffsetToInstructionOffset on current program instruction list */
+	size_t ArrayOffsetToInstructionOffset(size_t offset) const
+	{
+		return TraceRestrictProgram::ArrayOffsetToInstructionOffset(this->items, offset);
+	}
+
+	/** Get number of instructions in @p items */
+	static size_t GetInstructionCount(const std::vector<TraceRestrictItem> &items)
+	{
+		return ArrayOffsetToInstructionOffset(items, items.size());
+	}
+
+	/** Call GetInstructionCount on current program instruction list */
+	size_t GetInstructionCount() const
+	{
+		return TraceRestrictProgram::GetInstructionCount(this->items);
+	}
+
+	/** Get an iterator to the instruction at a given @p instruction_offset in @p items */
+	static std::vector<TraceRestrictItem>::iterator InstructionAt(std::vector<TraceRestrictItem> &items, size_t instruction_offset)
+	{
+		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
+	}
+
+	/** Get a const_iterator to the instruction at a given @p instruction_offset in @p items */
+	static std::vector<TraceRestrictItem>::const_iterator InstructionAt(const std::vector<TraceRestrictItem> &items, size_t instruction_offset)
+	{
+		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
+	}
 
 	/**
 	 * Call validation function on current program instruction list
@@ -294,6 +339,12 @@ static inline bool IsTraceRestrictConditional(TraceRestrictItem item)
 	return IsTraceRestrictTypeConditional(GetTraceRestrictType(item));
 }
 
+/** Is TraceRestrictItem a double-item type? */
+static inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
+{
+	return GetTraceRestrictType(item) == TRIT_COND_PBS_ENTRY_SIGNAL;
+}
+
 /**
  * Categorisation of what is allowed in the TraceRestrictItem condition op field
  * see TraceRestrictTypePropertySet
@@ -317,6 +368,7 @@ enum TraceRestrictValueType {
 	TRVT_ORDER                    = 5, ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
 	TRVT_CARGO_ID                 = 6, ///< takes a CargoID
 	TRVT_DIRECTION                = 7, ///< takes a TraceRestrictDirectionTypeSpecialValue
+	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
 };
 
 /**
@@ -370,6 +422,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_ENTRY_DIRECTION:
 				out.value_type = TRVT_DIRECTION;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_PBS_ENTRY_SIGNAL:
+				out.value_type = TRVT_TILE_INDEX;
 				out.cond_type = TRCOT_BINARY;
 				break;
 
@@ -432,14 +489,15 @@ static inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIn
  * Enumeration for command action type field, indicates what command to do
  */
 enum TraceRestrictDoCommandType {
-	TRDCT_INSERT_ITEM             = 0,       ///< insert new instruction before offset field as given value
-	TRDCT_MODIFY_ITEM             = 1,       ///< modify instruction at offset field to given value
-	TRDCT_REMOVE_ITEM             = 2,       ///< remove instruction at offset field
+	TRDCT_INSERT_ITEM,                       ///< insert new instruction before offset field as given value
+	TRDCT_MODIFY_ITEM,                       ///< modify instruction at offset field to given value
+	TRDCT_MODIFY_DUAL_ITEM,                  ///< modify second item of dual-part instruction at offset field to given value
+	TRDCT_REMOVE_ITEM,                       ///< remove instruction at offset field
 
-	TRDCT_PROG_COPY               = 3,       ///< copy program operation. Do not re-order this with respect to other values
-	TRDCT_PROG_SHARE              = 4,       ///< share program operation
-	TRDCT_PROG_UNSHARE            = 5,       ///< unshare program (copy as a new program)
-	TRDCT_PROG_RESET              = 6,       ///< reset program state of signal
+	TRDCT_PROG_COPY,                         ///< copy program operation. Do not re-order this with respect to other values
+	TRDCT_PROG_SHARE,                        ///< share program operation
+	TRDCT_PROG_UNSHARE,                      ///< unshare program (copy as a new program)
+	TRDCT_PROG_RESET,                        ///< reset program state of signal
 };
 
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32 offset, uint32 value, StringID error_msg);
