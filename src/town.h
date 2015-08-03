@@ -188,6 +188,7 @@ void UpdateTownCargoBitmap();
 CommandCost CheckIfAuthorityAllowsNewStation(TileIndex tile, DoCommandFlag flags);
 Town *ClosestTownFromTile(TileIndex tile, uint threshold);
 void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags);
+HouseZonesBits TryGetTownRadiusGroup(const Town *t, TileIndex tile);
 HouseZonesBits GetTownRadiusGroup(const Town *t, TileIndex tile);
 void SetTownRatingTestMode(bool mode);
 uint GetMaskOfTownActions(int *nump, CompanyID cid, const Town *t);

@@ -143,4 +143,9 @@ static inline HouseID GetTranslatedHouseID(HouseID hid)
 	return hs->grf_prop.override == INVALID_HOUSE_ID ? hid : hs->grf_prop.override;
 }
 
+StringID GetHouseName(HouseID house, TileIndex tile = INVALID_TILE);
+void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom);
+void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &produced);
+void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &acceptance, uint32 *always_accepted = NULL);
+
 #endif /* HOUSE_H */

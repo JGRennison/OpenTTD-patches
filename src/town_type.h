@@ -13,9 +13,12 @@
 #define TOWN_TYPE_H
 
 #include "core/enum_type.hpp"
+#include "core/smallvec_type.hpp"
 
 typedef uint16 TownID;
 struct Town;
+
+typedef SmallVector<TownID, 8> TownList;
 
 /** Supported initial town sizes */
 enum TownSize {

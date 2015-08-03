@@ -32,6 +32,10 @@
 #include "core/geometry_func.hpp"
 #include "genworld.h"
 #include "widgets/dropdown_func.h"
+#include "newgrf_config.h"
+#include "newgrf_house.h"
+#include "date_func.h"
+#include "core/random_func.hpp"
 
 #include "widgets/town_widget.h"
 
@@ -1196,4 +1200,677 @@ void ShowFoundTownWindow()
 {
 	if (_game_mode != GM_EDITOR && !Company::IsValidID(_local_company)) return;
 	AllocateWindowDescFront<FoundTownWindow>(&_found_town_desc, 0);
+}
+
+class GUIHouseList : public SmallVector<HouseID, 32> {
+protected:
+	SmallVector<uint16, 4> house_sets; ///< list of house sets, each item points the first house of the set in the houses array
+
+	static int CDECL HouseSorter(const HouseID *a, const HouseID *b)
+	{
+		const HouseSpec *a_hs = HouseSpec::Get(*a);
+		const GRFFile *a_set = a_hs->grf_prop.grffile;
+		const HouseSpec *b_hs = HouseSpec::Get(*b);
+		const GRFFile *b_set = b_hs->grf_prop.grffile;
+
+		int ret = (a_set != NULL) - (b_set != NULL);
+		if (ret == 0) {
+			if (a_set != NULL) {
+				assert_compile(sizeof(a_set->grfid) <= sizeof(int));
+				ret = a_set->grfid - b_set->grfid;
+				if (ret == 0) ret = a_hs->grf_prop.local_id - b_hs->grf_prop.local_id;
+			} else {
+				ret = *a - *b;
+			}
+		}
+		return ret;
+	}
+
+public:
+	GUIHouseList()
+	{
+		*this->house_sets.Append() = 0; // terminator
+	}
+
+	inline HouseID GetHouseAtOffset(uint house_set, uint house_offset) const
+	{
+		return *this->Get(this->house_sets[house_set] + house_offset);
+	}
+
+	uint NumHouseSets() const
+	{
+		return this->house_sets.Length() - 1; // last item is a terminator
+	}
+
+	uint NumHousesInHouseSet(uint house_set) const
+	{
+		assert(house_set < this->NumHouseSets());
+		/* There is a terminator on the list of house sets. It's equal to the number
+		 * of all houses. We can safely use "house_set + 1" even for the last
+		 * house set. */
+		return this->house_sets[house_set + 1] - this->house_sets[house_set];
+	}
+
+	int FindHouseSet(HouseID house) const
+	{
+		const GRFFile *house_set = HouseSpec::Get(house)->grf_prop.grffile;
+		for (uint i = 0; i < this->NumHouseSets(); i++) {
+			if (HouseSpec::Get(this->GetHouseAtOffset(i, 0))->grf_prop.grffile == house_set) return i;
+		}
+		return -1;
+	}
+
+	int FindHouseOffset(uint house_set, HouseID house) const
+	{
+		assert(house_set < this->NumHouseSets());
+		uint count = this->NumHousesInHouseSet(house_set);
+		for (uint i = 0; i < count; i++) {
+			if (this->GetHouseAtOffset(house_set, i) == house) return i;
+		}
+		return -1;
+	}
+
+	const char *GetNameOfHouseSet(uint house_set) const
+	{
+		assert(house_set < this->NumHouseSets());
+		const GRFFile *gf = HouseSpec::Get(this->GetHouseAtOffset(house_set, 0))->grf_prop.grffile;
+		if (gf != NULL) return GetGRFConfig(gf->grfid)->GetName();
+
+		static char name[DRAW_STRING_BUFFER];
+		GetString(name, STR_BASIC_HOUSE_SET_NAME, lastof(name));
+		return name;
+	}
+
+	/**
+	 * Notify the sortlist that the rebuild is done
+	 *
+	 * @note This forces a resort
+	 */
+	void Build()
+	{
+		/* collect items */
+		this->Clear();
+		for (HouseID house = 0; house < NUM_HOUSES; house++) {
+			const HouseSpec *hs = HouseSpec::Get(house);
+			/* is the house enabled? */
+			if (!hs->enabled) continue;
+			/* is the house overriden? */
+			if (hs->grf_prop.override != INVALID_HOUSE_ID) continue;
+			/* is the house allownd in current landscape? */
+			HouseZones landscapes = (HouseZones)(HZ_TEMP << _settings_game.game_creation.landscape);
+			if (_settings_game.game_creation.landscape == LT_ARCTIC) landscapes |= HZ_SUBARTC_ABOVE;
+			if (!(hs->building_availability & landscapes)) continue;
+			/* is the house allowed at any of house zones at all? */
+			if (!(hs->building_availability & HZ_ZONALL)) continue;
+			/* is there any year in which the house is allowed? */
+			if (hs->min_year > hs->max_year) continue;
+
+			/* add the house */
+			*this->Append() = house;
+		}
+
+		/* arrange items */
+		QSortT(this->Begin(), this->Length(), HouseSorter);
+
+		/* list house sets */
+		this->house_sets.Clear();
+		const GRFFile *last_set;
+		for (uint i = 0; i < this->Length(); i++) {
+			const HouseSpec *hs = HouseSpec::Get((*this)[i]);
+			/* add house set */
+			if (this->house_sets.Length() == 0 || last_set != hs->grf_prop.grffile) {
+				last_set = hs->grf_prop.grffile;
+				*this->house_sets.Append() = i;
+			}
+		}
+		/* put a terminator on the list to make counting easier */
+		*this->house_sets.Append() = this->Length();
+	}
+};
+
+static HouseID _cur_house = INVALID_HOUSE_ID; ///< house selected in the house picker window
+
+/** The window used for building houses. */
+class HousePickerWindow : public PickerWindowBase {
+protected:
+	GUIHouseList house_list; ///< list of houses and house sets
+	uint house_offset;       ///< index of selected house
+	uint house_set;          ///< index of selected house set
+	uint line_height;        ///< height of a single line in the list of house sets
+
+	void RestoreSelectedHouseIndex()
+	{
+		this->house_set = 0;
+		this->house_offset = 0;
+
+		if (this->house_list.Length() == 0) { // no houses at all?
+			_cur_house = INVALID_HOUSE_ID;
+			return;
+		}
+
+		if (_cur_house != INVALID_HOUSE_ID) {
+			int house_set = this->house_list.FindHouseSet(_cur_house);
+			if (house_set >= 0) {
+				this->house_set = house_set;
+				int house_offset = this->house_list.FindHouseOffset(house_set, _cur_house);
+				if (house_offset >= 0) {
+					this->house_offset = house_offset;
+					return;
+				}
+			}
+		}
+		_cur_house = this->house_list.GetHouseAtOffset(this->house_set, this->house_offset);
+	}
+
+	/**
+	 * Select another house.
+	 * @param new_house_set index of the house set
+	 * @param new_house_offset offset of the house
+	 */
+	void SelectOtherHouse(uint new_house_set, uint new_house_offset)
+	{
+		assert(new_house_set < this->house_list.NumHouseSets());
+		assert(new_house_offset < this->house_list.NumHousesInHouseSet(new_house_set));
+
+		_cur_house = this->house_list.GetHouseAtOffset(new_house_set, new_house_offset);
+		this->house_set = new_house_set;
+		this->house_offset = new_house_offset;
+
+		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_HP_HOUSE_SELECT_MATRIX);
+		matrix->SetCount(this->house_list.NumHousesInHouseSet(this->house_set));
+		matrix->SetClicked(this->house_offset);
+		this->UpdateSelectSize();
+		this->SetDirty();
+	}
+
+	void UpdateSelectSize()
+	{
+		uint w = 1, h = 1;
+		if (_cur_house != INVALID_HOUSE_ID) {
+			const HouseSpec *hs = HouseSpec::Get(_cur_house);
+			if (hs->building_flags & BUILDING_2_TILES_X) w++;
+			if (hs->building_flags & BUILDING_2_TILES_Y) h++;
+		}
+		SetTileSelectSize(w, h);
+	}
+
+public:
+	HousePickerWindow(WindowDesc *desc, Window *w) : PickerWindowBase(desc, w)
+	{
+		this->CreateNestedTree();
+		/* there is no shade box but we will shade the window if there is no house to show */
+		this->shade_select = this->GetWidget<NWidgetStacked>(WID_HP_MAIN_PANEL_SEL);
+		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_HP_HOUSE_SELECT_MATRIX);
+		matrix->SetScrollbar(this->GetScrollbar(WID_HP_HOUSE_SELECT_SCROLL));
+		this->FinishInitNested(0);
+
+		if (_cur_house != INVALID_HOUSE_ID) matrix->SetClicked(this->house_offset); // set clicked item again to make it visible
+	}
+
+	~HousePickerWindow()
+	{
+		DeleteWindowById(WC_SELECT_TOWN, 0);
+	}
+
+	virtual void OnInit()
+	{
+		this->house_list.Build();
+		this->RestoreSelectedHouseIndex();
+		this->UpdateSelectSize();
+
+		/* if we have exactly one set of houses and it's not the default one then display it's name in the title bar */
+		this->GetWidget<NWidgetCore>(WID_HP_CAPTION)->widget_data =
+				(this->house_list.NumHouseSets() == 1 && HouseSpec::Get(this->house_list[0])->grf_prop.grffile != NULL) ?
+				STR_HOUSE_BUILD_CUSTOM_CAPTION : STR_HOUSE_BUILD_CAPTION;
+
+		/* hide widgets if we have no houses to show */
+		this->SetShaded(this->house_list.Length() == 0);
+
+		if (this->house_list.Length() != 0) {
+			/* show the list of house sets if we have at least 2 items to show */
+			this->GetWidget<NWidgetStacked>(WID_HP_HOUSE_SETS_SEL)->SetDisplayedPlane(this->house_list.NumHouseSets() > 1 ? 0 : SZSP_NONE);
+			/* set number of items in the list of house sets */
+			this->GetWidget<NWidgetCore>(WID_HP_HOUSE_SETS)->widget_data = (this->house_list.NumHouseSets() << MAT_ROW_START) | (1 << MAT_COL_START);
+			/* show the landscape info only in arctic climate (above/below snowline) */
+			this->GetWidget<NWidgetStacked>(WID_HP_HOUSE_LANDSCAPE_SEL)->SetDisplayedPlane(_settings_game.game_creation.landscape == LT_ARCTIC ? 0 : SZSP_NONE);
+			/* update the matrix of houses */
+			NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_HP_HOUSE_SELECT_MATRIX);
+			matrix->SetCount(this->house_list.NumHousesInHouseSet(this->house_set));
+			matrix->SetClicked(this->house_offset);
+		}
+	}
+
+	virtual void SetStringParameters(int widget) const
+	{
+		switch (widget) {
+			case WID_HP_CAPTION:
+				if (this->house_list.NumHouseSets() == 1) SetDParamStr(0, this->house_list.GetNameOfHouseSet(0));
+				break;
+
+			case WID_HP_HOUSE_NAME:
+				SetDParam(0, GetHouseName(_cur_house));
+				break;
+
+			case WID_HP_HISTORICAL_BUILDING:
+				SetDParam(0, HouseSpec::Get(_cur_house)->extra_flags & BUILDING_IS_HISTORICAL ? STR_HOUSE_BUILD_HISTORICAL_BUILDING : STR_EMPTY);
+				break;
+
+			case WID_HP_HOUSE_POPULATION:
+				SetDParam(0, HouseSpec::Get(_cur_house)->population);
+				break;
+
+			case WID_HP_HOUSE_ZONES: {
+				HouseZones zones = (HouseZones)(HouseSpec::Get(_cur_house)->building_availability & HZ_ZONALL);
+				for (int i = 0; i < HZB_END; i++) {
+					/* colour: gold(enabled)/grey(disabled)  */
+					SetDParam(2 * i, HasBit(zones, HZB_END - i - 1) ? STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED : STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED);
+					/* digit: 1(center)/2/3/4/5(edge) */
+					SetDParam(2 * i + 1, i + 1);
+				}
+				break;
+			}
+
+			case WID_HP_HOUSE_LANDSCAPE: {
+				StringID info = STR_HOUSE_BUILD_LANDSCAPE_ABOVE_OR_BELOW_SNOWLINE;
+				switch (HouseSpec::Get(_cur_house)->building_availability & (HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW)) {
+					case HZ_SUBARTC_ABOVE: info = STR_HOUSE_BUILD_LANDSCAPE_ONLY_ABOVE_SNOWLINE; break;
+					case HZ_SUBARTC_BELOW: info = STR_HOUSE_BUILD_LANDSCAPE_ONLY_BELOW_SNOWLINE; break;
+					default: break;
+				}
+				SetDParam(0, info);
+				break;
+			}
+
+			case WID_HP_HOUSE_YEARS: {
+				const HouseSpec *hs = HouseSpec::Get(_cur_house);
+				SetDParam(0, hs->min_year <= _cur_year ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
+				SetDParam(1, hs->min_year);
+				SetDParam(2, hs->max_year >= _cur_year ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
+				SetDParam(3, hs->max_year);
+				break;
+			}
+
+			case WID_HP_HOUSE_ACCEPTANCE: {
+				static char buff[DRAW_STRING_BUFFER] = "";
+				char *str = buff;
+				CargoArray cargo;
+				uint32 dummy = 0;
+				AddAcceptedHouseCargo(_cur_house, INVALID_TILE, cargo, &dummy);
+				for (uint i = 0; i < NUM_CARGO; i++) {
+					if (cargo[i] == 0) continue;
+					/* If the accepted value is less than 8, show it in 1/8:ths */
+					SetDParam(0, cargo[i] < 8 ? STR_HOUSE_BUILD_CARGO_VALUE_EIGHTS : STR_HOUSE_BUILD_CARGO_VALUE_JUST_NAME);
+					SetDParam(1, cargo[i]);
+					SetDParam(2, CargoSpec::Get(i)->name);
+					str = GetString(str, str == buff ? STR_HOUSE_BUILD_CARGO_FIRST : STR_HOUSE_BUILD_CARGO_SEPARATED, lastof(buff));
+				}
+				if (str == buff) GetString(buff, STR_JUST_NOTHING, lastof(buff));
+				SetDParamStr(0, buff);
+				break;
+			}
+
+			case WID_HP_HOUSE_SUPPLY: {
+				CargoArray cargo;
+				AddProducedHouseCargo(_cur_house, INVALID_TILE, cargo);
+				uint32 cargo_mask = 0;
+				for (uint i = 0; i < NUM_CARGO; i++) if (cargo[i] != 0) SetBit(cargo_mask, i);
+				SetDParam(0, cargo_mask);
+				break;
+			}
+
+			default: break;
+		}
+	}
+
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	{
+		switch (widget) {
+			case WID_HP_HOUSE_SETS: {
+				uint max_w = 0;
+				for (uint i = 0; i < this->house_list.NumHouseSets(); i++) {
+					max_w = max(max_w, GetStringBoundingBox(this->house_list.GetNameOfHouseSet(i)).width);
+				}
+				size->width = max(size->width, max_w + padding.width);
+				this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+				size->height = this->house_list.NumHouseSets() * this->line_height;
+				break;
+			}
+
+			case WID_HP_HOUSE_NAME:
+				size->width = 120; // we do not want this window to get too wide, better clip
+				break;
+
+			case WID_HP_HISTORICAL_BUILDING:
+				size->width = max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HISTORICAL_BUILDING).width + padding.width);
+				break;
+
+			case WID_HP_HOUSE_POPULATION:
+				SetDParam(0, 0);
+				/* max popultion is 255 - 3 digits */
+				size->width = max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_POPULATION).width + 3 * GetDigitWidth() + padding.width);
+				break;
+
+			case WID_HP_HOUSE_ZONES: {
+				for (int i = 0; i < HZB_END; i++) {
+					SetDParam(2 * i, STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED); // colour
+					SetDParam(2 * i + 1, i + 1); // digit: 1(center)/2/3/4/5(edge)
+				}
+				size->width = max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_ZONES).width + padding.width);
+				break;
+			}
+
+			case WID_HP_HOUSE_LANDSCAPE: {
+				SetDParam(0, STR_HOUSE_BUILD_LANDSCAPE_ABOVE_OR_BELOW_SNOWLINE);
+				Dimension dim = GetStringBoundingBox(STR_HOUSE_BUILD_LANDSCAPE);
+				SetDParam(0, STR_HOUSE_BUILD_LANDSCAPE_ONLY_ABOVE_SNOWLINE);
+				dim = maxdim(dim, GetStringBoundingBox(STR_HOUSE_BUILD_LANDSCAPE));
+				SetDParam(0, STR_HOUSE_BUILD_LANDSCAPE_ONLY_BELOW_SNOWLINE);
+				dim = maxdim(dim, GetStringBoundingBox(STR_HOUSE_BUILD_LANDSCAPE));
+				dim.width += padding.width;
+				dim.height += padding.height;
+				*size = maxdim(*size, dim);
+				break;
+			}
+
+			case WID_HP_HOUSE_YEARS: {
+				SetDParam(0, STR_HOUSE_BUILD_YEARS_GOOD_YEAR);
+				SetDParam(1, 0);
+				SetDParam(2, STR_HOUSE_BUILD_YEARS_GOOD_YEAR);
+				SetDParam(3, 0);
+				Dimension dim = GetStringBoundingBox(STR_HOUSE_BUILD_YEARS);
+				dim.width += 14 * GetDigitWidth() + padding.width; // space for about 16 digits (14 + two zeros) should be enough, don't make the window too wide
+				dim.height += padding.height;
+				*size = maxdim(*size, dim);
+				break;
+			}
+
+			case WID_HP_HOUSE_SELECT_MATRIX:
+				resize->height = 1; // don't snap to rows of this matrix
+				break;
+
+			/* these texts can be long, better clip */
+			case WID_HP_HOUSE_ACCEPTANCE:
+			case WID_HP_HOUSE_SUPPLY:
+				size->width = 0;
+				break;
+
+			default: break;
+		}
+	}
+
+	virtual void DrawWidget(const Rect &r, int widget) const
+	{
+		switch (GB(widget, 0, 16)) {
+			case WID_HP_HOUSE_SETS: {
+				int y = r.top + WD_MATRIX_TOP;
+				for (uint i = 0; i < this->house_list.NumHouseSets(); i++) {
+					SetDParamStr(0, this->house_list.GetNameOfHouseSet(i));
+					DrawString(r.left + WD_MATRIX_LEFT, r.right - WD_MATRIX_RIGHT, y, STR_JUST_RAW_STRING, i == this->house_set ? TC_WHITE : TC_BLACK);
+					y += this->line_height;
+				}
+				break;
+			}
+
+			case WID_HP_HOUSE_PREVIEW:
+				DrawHouseImage(_cur_house, r.left, r.top, r.right, r.bottom);
+				break;
+
+			case WID_HP_HOUSE_SELECT: {
+				HouseID house = this->house_list.GetHouseAtOffset(this->house_set, GB(widget, 16, 16));
+				int lowered = (house == _cur_house) ? 1 : 0;
+				DrawHouseImage(house,
+						r.left  + WD_MATRIX_LEFT  + lowered, r.top    + WD_MATRIX_TOP    + lowered,
+						r.right - WD_MATRIX_RIGHT + lowered, r.bottom - WD_MATRIX_BOTTOM + lowered);
+				const HouseSpec *hs = HouseSpec::Get(house);
+				/* disabled? */
+				if (_cur_year < hs->min_year || _cur_year > hs->max_year) {
+					GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
+				}
+				break;
+			}
+		}
+	}
+
+	virtual void OnClick(Point pt, int widget, int click_count)
+	{
+		switch (GB(widget, 0, 16)) {
+			case WID_HP_HOUSE_SETS: {
+				uint index = (uint)(pt.y - this->GetWidget<NWidgetBase>(widget)->pos_y) / this->line_height;
+				if (index < this->house_list.NumHouseSets() && index != this->house_set) this->SelectOtherHouse(index, 0);
+				break;
+			}
+
+			case WID_HP_HOUSE_SELECT:
+				this->SelectOtherHouse(this->house_set, GB(widget, 16, 16));
+				break;
+		}
+	}
+};
+
+static const NWidgetPart _nested_house_picker_widgets[] = {
+	/* TOP */
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
+		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_HP_CAPTION), SetDataTip(STR_HOUSE_BUILD_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
+	EndContainer(),
+	NWidget(NWID_SELECTION, COLOUR_DARK_GREEN, WID_HP_MAIN_PANEL_SEL),
+		NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetScrollbar(WID_HP_HOUSE_SELECT_SCROLL),
+			/* MIDDLE */
+			NWidget(NWID_HORIZONTAL), SetPIP(5, 0, 0),
+				/* LEFT */
+				NWidget(NWID_VERTICAL), SetPIP(5, 2, 2),
+					/* LIST OF HOUSE SETS */
+					NWidget(NWID_SELECTION, COLOUR_DARK_GREEN, WID_HP_HOUSE_SETS_SEL),
+						NWidget(NWID_HORIZONTAL),
+							NWidget(WWT_MATRIX, COLOUR_GREY, WID_HP_HOUSE_SETS), SetMinimalSize(0, 60), SetFill(1, 0), SetResize(0, 0),
+									SetMatrixDataTip(1, 1, STR_HOUSE_BUILD_HOUSESET_LIST_TOOLTIP),
+						EndContainer(),
+					EndContainer(),
+					/* HOUSE PICTURE AND LABEL */
+					NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_HP_HOUSE_PREVIEW), SetFill(1, 1), SetResize(0, 1), SetMinimalSize(2 * TILE_PIXELS, 142),
+					NWidget(WWT_LABEL, COLOUR_DARK_GREEN, WID_HP_HOUSE_NAME), SetDataTip(STR_HOUSE_BUILD_HOUSE_NAME, STR_NULL), SetMinimalSize(120, 0),
+					NWidget(WWT_LABEL, COLOUR_DARK_GREEN, WID_HP_HISTORICAL_BUILDING), SetDataTip(STR_JUST_STRING, STR_NULL),
+					/* HOUSE INFOS (SHORT TEXTS) */
+					NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_HP_HOUSE_POPULATION), SetDataTip(STR_HOUSE_BUILD_HOUSE_POPULATION, STR_NULL), SetPadding(5, 0, 0, 0),
+					NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_HP_HOUSE_ZONES), SetDataTip(STR_HOUSE_BUILD_HOUSE_ZONES, STR_NULL),
+					NWidget(NWID_SELECTION, COLOUR_DARK_GREEN, WID_HP_HOUSE_LANDSCAPE_SEL),
+						NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_HP_HOUSE_LANDSCAPE), SetDataTip(STR_HOUSE_BUILD_LANDSCAPE, STR_NULL),
+					EndContainer(),
+					NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_HP_HOUSE_YEARS), SetDataTip(STR_HOUSE_BUILD_YEARS, STR_NULL),
+				EndContainer(),
+				/* RIGHT: MATRIX OF HOUSES */
+				NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_HP_HOUSE_SELECT_MATRIX), SetPIP(0, 2, 0), SetPadding(2, 2, 2, 2), SetScrollbar(WID_HP_HOUSE_SELECT_SCROLL),
+					NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_HP_HOUSE_SELECT), SetMinimalSize(64, 64), SetFill(0, 0), SetResize(0, 0),
+							SetDataTip(0x0, STR_HOUSE_BUILD_SELECT_HOUSE_TOOLTIP), SetScrollbar(WID_HP_HOUSE_SELECT_SCROLL),
+					EndContainer(),
+				EndContainer(),
+				NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_HP_HOUSE_SELECT_SCROLL),
+			EndContainer(),
+			/* BOTTOM */
+			NWidget(NWID_HORIZONTAL), SetPIP(5, 2, 0),
+				/* HOUSE INFOS (LONG TEXTS) */
+				NWidget(NWID_VERTICAL), SetPIP(0, 2, 5),
+					NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_HP_HOUSE_ACCEPTANCE), SetDataTip(STR_HOUSE_BUILD_ACCEPTED_CARGO, STR_NULL), SetFill(1, 0), SetResize(1, 0),
+					NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_HP_HOUSE_SUPPLY), SetDataTip(STR_HOUSE_BUILD_SUPPLIED_CARGO, STR_NULL), SetFill(1, 0), SetResize(1, 0),
+				EndContainer(),
+				/* RESIZE BOX */
+				NWidget(NWID_VERTICAL),
+					NWidget(NWID_SPACER), SetFill(0, 1),
+					NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
+				EndContainer(),
+			EndContainer(),
+		EndContainer(),
+	EndContainer(),
+};
+
+static WindowDesc _house_picker_desc(
+	WDP_AUTO, "build_house", 0, 0,
+	WC_BUILD_HOUSE, WC_BUILD_TOOLBAR,
+	WDF_CONSTRUCTION,
+	_nested_house_picker_widgets, lengthof(_nested_house_picker_widgets)
+);
+
+/**
+ * Show our house picker.
+ * @param parent The toolbar window we're associated with.
+ */
+void ShowBuildHousePicker(Window *parent)
+{
+	new HousePickerWindow(&_house_picker_desc, parent);
+}
+
+
+/**
+ * Window for selecting towns to build a house in.
+ */
+struct SelectTownWindow : Window {
+	TownList towns;       ///< list of towns
+	CommandContainer cmd; ///< command to build the house (CMD_BUILD_HOUSE)
+	Scrollbar *vscroll;   ///< scrollbar for the town list
+
+	SelectTownWindow(WindowDesc *desc, const TownList &towns, const CommandContainer &cmd) : Window(desc), towns(towns), cmd(cmd)
+	{
+		this->CreateNestedTree();
+		this->vscroll = this->GetScrollbar(WID_ST_SCROLLBAR);
+		this->vscroll->SetCount(this->towns.Length());
+		this->FinishInitNested();
+	}
+
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	{
+		if (widget != WID_ST_PANEL) return;
+
+		/* Determine the widest string */
+		Dimension d = { 0, 0 };
+		for (uint i = 0; i < this->towns.Length(); i++) {
+			SetDParam(0, this->towns[i]);
+			d = maxdim(d, GetStringBoundingBox(STR_SELECT_TOWN_LIST_ITEM));
+		}
+
+		resize->height = d.height;
+		d.height *= 5;
+		d.width += WD_FRAMERECT_RIGHT + WD_FRAMERECT_LEFT;
+		d.height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+		*size = d;
+	}
+
+	virtual void DrawWidget(const Rect &r, int widget) const
+	{
+		if (widget != WID_ST_PANEL) return;
+
+		uint y = r.top + WD_FRAMERECT_TOP;
+		uint end = min(this->vscroll->GetCount(), this->vscroll->GetPosition() + this->vscroll->GetCapacity());
+		for (uint i = this->vscroll->GetPosition(); i < end; i++) {
+			SetDParam(0, this->towns[i]);
+			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SELECT_TOWN_LIST_ITEM);
+			y += this->resize.step_height;
+		}
+	}
+
+	virtual void OnClick(Point pt, int widget, int click_count)
+	{
+		if (widget != WID_ST_PANEL) return;
+
+		uint pos = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_ST_PANEL, WD_FRAMERECT_TOP);
+		if (pos >= this->towns.Length()) return;
+
+		/* Place a house */
+		SB(this->cmd.p1, 16, 16, this->towns[pos]);
+		DoCommandP(&this->cmd);
+
+		/* Close the window */
+		delete this;
+	}
+
+	virtual void OnResize()
+	{
+		this->vscroll->SetCapacityFromWidget(this, WID_ST_PANEL, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
+	}
+};
+
+static const NWidgetPart _nested_select_town_widgets[] = {
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
+		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_ST_CAPTION), SetDataTip(STR_SELECT_TOWN_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_ST_PANEL), SetResize(1, 0), SetScrollbar(WID_ST_SCROLLBAR), EndContainer(),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_ST_SCROLLBAR),
+			NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
+		EndContainer(),
+	EndContainer(),
+};
+
+static WindowDesc _select_town_desc(
+	WDP_AUTO, "select_town", 100, 0,
+	WC_SELECT_TOWN, WC_NONE,
+	WDF_CONSTRUCTION,
+	_nested_select_town_widgets, lengthof(_nested_select_town_widgets)
+);
+
+static void ShowSelectTownWindow(const TownList &towns, const CommandContainer &cmd)
+{
+	DeleteWindowByClass(WC_SELECT_TOWN);
+	new SelectTownWindow(&_select_town_desc, towns, cmd);
+}
+
+
+void PlaceProc_House(TileIndex tile)
+{
+	if (_town_pool.items == 0) {
+		ShowErrorMessage(STR_ERROR_CAN_T_BUILD_HOUSE_HERE, STR_ERROR_MUST_FOUND_TOWN_FIRST, WL_INFO);
+		return;
+	}
+
+	DeleteWindowById(WC_SELECT_TOWN, 0);
+
+	if (_cur_house == INVALID_HOUSE_ID) return;
+
+	/* build a list of towns to join to */
+	TownList towns;
+	HouseZones house_zones = HouseSpec::Get(_cur_house)->building_availability & HZ_ZONALL;
+	uint best_dist = UINT_MAX;
+	int best_zone = (int)HZB_BEGIN - 1;
+	const Town *t;
+	FOR_ALL_TOWNS(t) {
+		HouseZonesBits town_zone = TryGetTownRadiusGroup(t, tile);
+		if (HasBit(house_zones, town_zone)) {
+			/* If CTRL is NOT pressed keep only single town on the list, the best one.
+			 * Otherwise add all towns to the list so they can be shown to the player. */
+			if (!_ctrl_pressed) {
+				if ((int)town_zone < best_zone) continue;
+				uint dist = DistanceSquare(tile, t->xy);
+				if (dist >= best_dist) continue;
+				best_dist = dist;
+				best_zone = town_zone;
+				towns.Clear();
+			}
+			*towns.Append() = t->index;
+		}
+	}
+
+	if (towns.Length() == 0) {
+		ShowErrorMessage(STR_ERROR_CAN_T_BUILD_HOUSE_HERE, STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE, WL_INFO);
+		return;
+	}
+
+	CommandContainer cmd = {
+		tile,
+		_cur_house, // p1 - house type and town index (town not yet set)
+		InteractiveRandom(), // p2 - random bits for the house
+		CMD_BUILD_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE_HERE),
+		CcPlaySound1E,
+		""
+	};
+
+	if (!_ctrl_pressed) {
+		SB(cmd.p1, 16, 16, towns[0]); // set the town, it's alone on the list
+		DoCommandP(&cmd);
+	} else {
+		if (!_settings_client.gui.persistent_buildingtools) DeleteWindowById(WC_BUILD_HOUSE, 0);
+		ShowSelectTownWindow(towns, cmd);
+	}
 }
