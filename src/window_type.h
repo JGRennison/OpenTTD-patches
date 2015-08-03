@@ -237,6 +237,12 @@ enum WindowClass {
 	WC_SELECT_STATION,
 
 	/**
+	 * Select town (when placing a house); %Window numbers:
+	 *   - 0 = #SelectTownWidgets
+	 */
+	WC_SELECT_TOWN,
+
+	/**
 	 * News window; %Window numbers:
 	 *   - 0 = #NewsWidgets
 	 */
@@ -369,6 +375,12 @@ enum WindowClass {
 	 *   - 0 = #BuildObjectWidgets
 	 */
 	WC_BUILD_OBJECT,
+
+	/**
+	 * Build house; %Window numbers:
+	 *  - 0 = #BuildHouseWidgets
+	*/
+	WC_BUILD_HOUSE,
 
 	/**
 	 * Build vehicle; %Window numbers:

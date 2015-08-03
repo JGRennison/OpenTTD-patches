@@ -32,6 +32,7 @@
 #include "hotkeys.h"
 #include "engine_base.h"
 #include "terraform_gui.h"
+#include "town_gui.h"
 #include "zoom_func.h"
 
 #include "widgets/terraform_widget.h"
@@ -485,6 +486,9 @@ static const NWidgetPart _nested_scen_edit_land_gen_widgets[] = {
 			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_ETT_PLACE_OBJECT), SetMinimalSize(23, 22),
 										SetFill(0, 1), SetDataTip(SPR_IMG_TRANSMITTER, STR_SCENEDIT_TOOLBAR_PLACE_OBJECT),
 			NWidget(NWID_SPACER), SetFill(1, 0),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_ETT_PLACE_HOUSE), SetMinimalSize(23, 22),
+										SetFill(0, 1), SetDataTip(SPR_IMG_TOWN, STR_SCENEDIT_TOOLBAR_PLACE_HOUSE),
+			NWidget(NWID_SPACER), SetFill(1, 0),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetFill(1, 0),
@@ -629,6 +633,13 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				ShowBuildObjectPicker();
 				break;
 
+				case WID_ETT_PLACE_HOUSE: // Place house button
+				if (HandlePlacePushButton(this, WID_ETT_PLACE_HOUSE, SPR_CURSOR_TOWN, HT_RECT)) {
+					ShowBuildHousePicker(this);
+					this->last_user_action = widget;
+				}
+				break;
+
 			case WID_ETT_INCREASE_SIZE:
 			case WID_ETT_DECREASE_SIZE: { // Increase/Decrease terraform size
 				int size = (widget == WID_ETT_INCREASE_SIZE) ? 1 : -1;
@@ -694,6 +705,10 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CREATE_DESERT);
 				break;
 
+			case WID_ETT_PLACE_HOUSE: // Place house button
+				PlaceProc_House(tile);
+				break;
+
 			default: NOT_REACHED();
 		}
 	}
@@ -725,6 +740,8 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		this->RaiseButtons();
 		this->SetDirty();
 		DeleteWindowById(WC_BUILD_OBJECT, 0);
+		DeleteWindowById(WC_BUILD_HOUSE, 0);
+		DeleteWindowById(WC_SELECT_STATION, 0);
 	}
 
 	static HotkeyList hotkeys;
@@ -751,6 +768,7 @@ static Hotkey terraform_editor_hotkeys[] = {
 	Hotkey('R', "rocky", WID_ETT_PLACE_ROCKS),
 	Hotkey('T', "desert", WID_ETT_PLACE_DESERT),
 	Hotkey('O', "object", WID_ETT_PLACE_OBJECT),
+	Hotkey('H', "house", WID_ETT_PLACE_HOUSE),
 	HOTKEY_LIST_END
 };
 

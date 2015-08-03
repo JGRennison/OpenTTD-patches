@@ -36,20 +36,43 @@ struct HouseScopeResolver : public ScopeResolver {
 	/* virtual */ void SetTriggers(int triggers) const;
 };
 
+/**
+ * Fake scope resolver for nonexistent houses.
+ *
+ * The purpose of this class is to provide a house resolver for a given house type
+ * but not an actual house instatntion. We need this when e.g. drawing houses in
+ * GUI to keep backward compatibility with GRFs that were created before this
+ * functionality. When querying house sprites, certain GRF may read various house
+ * variables e.g. the town zone where the building is located or the XY coordinates.
+ * Since the building doesn't exists we have no real values that we can return.
+ * Instead of failing, this resolver will return fake values.
+ */
+struct FakeHouseScopeResolver : public ScopeResolver {
+	HouseID house_id; ///< Type of house being queried.
+
+	FakeHouseScopeResolver(ResolverObject &ro, HouseID house_id)
+		: ScopeResolver(ro), house_id(house_id)
+	{ }
+
+	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
+};
+
 /** Resolver object to be used for houses (feature 07 spritegroups). */
 struct HouseResolverObject : public ResolverObject {
-	HouseScopeResolver house_scope;
-	TownScopeResolver  town_scope;
+	ScopeResolver *house_scope;
+	ScopeResolver *town_scope;
 
-	HouseResolverObject(HouseID house_id, TileIndex tile, Town *town,
+	HouseResolverObject(HouseID house_id, TileIndex tile = INVALID_TILE, Town *town = NULL,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0,
 			bool not_yet_constructed = false, uint8 initial_random_bits = 0, uint32 watched_cargo_triggers = 0);
+
+	/* virtual */ ~HouseResolverObject();
 
 	/* virtual */ ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0)
 	{
 		switch (scope) {
-			case VSG_SCOPE_SELF:   return &this->house_scope;
-			case VSG_SCOPE_PARENT: return &this->town_scope;
+			case VSG_SCOPE_SELF:   return this->house_scope;
+			case VSG_SCOPE_PARENT: return this->town_scope;
 			default: return ResolverObject::GetScope(scope, relative);
 		}
 	}
@@ -80,13 +103,15 @@ void IncreaseBuildingCount(Town *t, HouseID house_id);
 void DecreaseBuildingCount(Town *t, HouseID house_id);
 
 void DrawNewHouseTile(TileInfo *ti, HouseID house_id);
+void DrawNewHouseTileInGUI(int x, int y, HouseID house_id, bool ground);
 void AnimateNewHouseTile(TileIndex tile);
 void AnimateNewHouseConstruction(TileIndex tile);
 
-uint16 GetHouseCallback(CallbackID callback, uint32 param1, uint32 param2, HouseID house_id, Town *town, TileIndex tile,
+uint16 GetHouseCallback(CallbackID callback, uint32 param1, uint32 param2, HouseID house_id, Town *town = NULL, TileIndex tile = INVALID_TILE,
 		bool not_yet_constructed = false, uint8 initial_random_bits = 0, uint32 watched_cargo_triggers = 0);
 void WatchedCargoCallback(TileIndex tile, uint32 trigger_cargoes);
 
+bool HouseAllowsConstruction(HouseID house_id, TileIndex tile, Town *t, byte random_bits);
 bool CanDeleteHouse(TileIndex tile);
 
 bool NewHouseTileLoop(TileIndex tile);
