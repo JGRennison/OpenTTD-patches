@@ -2131,10 +2131,12 @@ static bool CheckTrainStayInDepot(Train *v)
 		return true;
 	}
 
-	if (v->current_order.IsWaitTimetabled())
+	if (v->current_order.IsWaitTimetabled()) {
 		v->HandleWaiting(false);
-	if (v->current_order.IsType(OT_WAITING))
+	}
+	if (v->current_order.IsType(OT_WAITING)) {
 		return true;
+	}
 
 	SigSegState seg_state;
 
