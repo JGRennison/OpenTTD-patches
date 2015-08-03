@@ -21,6 +21,7 @@
  */
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
+	XSLFI_TT_WAIT_IN_DEPOT,                       ///< Timetabling waiting time in depot patch
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
