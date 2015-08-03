@@ -217,6 +217,9 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
 
+	bool have_previous_signal = false;
+	TileIndex previous_signal_tile = INVALID_TILE;
+
 	size_t size = this->items.size();
 	for (size_t i = 0; i < size; i++) {
 		TraceRestrictItem item = this->items[i];
@@ -313,6 +316,22 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_PBS_ENTRY_SIGNAL: {
+						// TRVT_TILE_INDEX value type uses the next slot
+						i++;
+						uint32_t signal_tile = this->items[i];
+						if (!have_previous_signal) {
+							if (input.previous_signal_callback) {
+								previous_signal_tile = input.previous_signal_callback(v, input.previous_signal_ptr);
+							}
+							have_previous_signal = true;
+						}
+						bool match = (signal_tile != INVALID_TILE)
+								&& (previous_signal_tile == signal_tile);
+						result = TestBinaryConditionCommon(item, match);
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -395,12 +414,49 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				}
 				HandleCondition(condstack, condflags, true);
 			}
+		} else {
+			// check multi-word instructions
+			if (IsTraceRestrictDoubleItem(item)) {
+				i++;
+				if (i >= size) {
+					return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE); // instruction ran off end
+				}
+			}
 		}
 	}
 	if(!condstack.empty()) {
 		return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK);
 	}
 	return CommandCost();
+}
+
+/**
+ * Convert an instruction index into an item array index
+ */
+size_t TraceRestrictProgram::InstructionOffsetToArrayOffset(const std::vector<TraceRestrictItem> &items, size_t offset)
+{
+	size_t output_offset = 0;
+	size_t size = items.size();
+	for (size_t i = 0; i < offset && output_offset < size; i++, output_offset++) {
+		if (IsTraceRestrictDoubleItem(items[output_offset])) {
+			output_offset++;
+		}
+	}
+	return output_offset;
+}
+
+/**
+ * Convert an item array index into an instruction index
+ */
+size_t TraceRestrictProgram::ArrayOffsetToInstructionOffset(const std::vector<TraceRestrictItem> &items, size_t offset)
+{
+	size_t output_offset = 0;
+	for (size_t i = 0; i < offset; i++, output_offset++) {
+		if (IsTraceRestrictDoubleItem(items[i])) {
+			i++;
+		}
+	}
+	return output_offset;
 }
 
 /**
@@ -413,6 +469,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_INT:
 		case TRVT_DENY:
 		case TRVT_SPEED:
+		case TRVT_TILE_INDEX:
 			SetTraceRestrictValue(item, 0);
 			SetTraceRestrictAuxField(item, 0);
 			break;
@@ -596,6 +653,21 @@ static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
 }
 
 /**
+ * Returns an appropriate default value for the second item of a dual-item instruction
+ * @p item is the first item of the instruction
+ */
+static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
+{
+	switch (GetTraceRestrictType(item)) {
+		case TRIT_COND_PBS_ENTRY_SIGNAL:
+			return INVALID_TILE;
+
+		default:
+			NOT_REACHED();
+	}
+}
+
+/**
  * The main command for editing a signal tracerestrict program.
  * @param tile The tile which contains the signal.
  * @param flags Internal command handler stuff.
@@ -641,28 +713,46 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 
 	switch (type) {
 		case TRDCT_INSERT_ITEM:
-			items.insert(items.begin() + offset, item);
+			items.insert(TraceRestrictProgram::InstructionAt(items, offset), item);
 			if (IsTraceRestrictConditional(item) &&
 					GetTraceRestrictCondFlags(item) == 0 &&
 					GetTraceRestrictType(item) != TRIT_COND_ENDIF) {
 				// this is an opening if block, insert a corresponding end if
 				TraceRestrictItem endif_item = 0;
 				SetTraceRestrictType(endif_item, TRIT_COND_ENDIF);
-				items.insert(items.begin() + offset + 1, endif_item);
+				items.insert(TraceRestrictProgram::InstructionAt(items, offset) + 1, endif_item);
+			} else if (IsTraceRestrictDoubleItem(item)) {
+				items.insert(TraceRestrictProgram::InstructionAt(items, offset) + 1, GetDualInstructionInitialValue(item));
 			}
 			break;
 
 		case TRDCT_MODIFY_ITEM: {
-			TraceRestrictItem old_item = items[offset];
-			if (IsTraceRestrictConditional(old_item) != IsTraceRestrictConditional(item)) {
+			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::InstructionAt(items, offset);
+			if (IsTraceRestrictConditional(*old_item) != IsTraceRestrictConditional(item)) {
 				return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY);
 			}
-			items[offset] = item;
+			bool old_is_dual = IsTraceRestrictDoubleItem(*old_item);
+			bool new_is_dual = IsTraceRestrictDoubleItem(item);
+			*old_item = item;
+			if (old_is_dual && !new_is_dual) {
+				items.erase(old_item + 1);
+			} else if (!old_is_dual && new_is_dual) {
+				items.insert(old_item + 1, GetDualInstructionInitialValue(item));
+			}
+			break;
+		}
+
+		case TRDCT_MODIFY_DUAL_ITEM: {
+			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::InstructionAt(items, offset);
+			if (!IsTraceRestrictDoubleItem(*old_item)) {
+				return CMD_ERROR;
+			}
+			*(old_item + 1) = p2;
 			break;
 		}
 
 		case TRDCT_REMOVE_ITEM: {
-			TraceRestrictItem old_item = items[offset];
+			TraceRestrictItem old_item = *TraceRestrictProgram::InstructionAt(items, offset);
 			if (IsTraceRestrictConditional(old_item)) {
 				bool remove_whole_block = false;
 				if (GetTraceRestrictCondFlags(old_item) == 0) {
@@ -676,7 +766,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 				}
 
 				uint32 recursion_depth = 1;
-				std::vector<TraceRestrictItem>::iterator remove_start = items.begin() + offset;
+				std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
 				std::vector<TraceRestrictItem>::iterator remove_end = remove_start + 1;
 
 				// iterate until matching end block found
@@ -709,12 +799,22 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 								break;
 							}
 						}
+					} else if (IsTraceRestrictDoubleItem(current_item)) {
+						// this is a double-item, jump over the next item as well
+						++remove_end;
 					}
 				}
 				if (recursion_depth != 0) return CMD_ERROR; // ran off the end
 				items.erase(remove_start, remove_end);
 			} else {
-				items.erase(items.begin() + offset);
+				std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
+				std::vector<TraceRestrictItem>::iterator remove_end = remove_start + 1;
+
+				if (IsTraceRestrictDoubleItem(old_item)) {
+					// this is a double-item, remove the next item as well
+					++remove_end;
+				}
+				items.erase(remove_start, remove_end);
 			}
 			break;
 		}
