@@ -78,6 +78,7 @@ public:
 	void MakeDummy();
 	void MakeConditional(VehicleOrderID order);
 	void MakeImplicit(StationID destination);
+	void MakeWaiting();
 
 	/**
 	 * Is this a 'goto' order with a real destination?

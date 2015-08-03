@@ -1481,6 +1481,13 @@ static void AircraftEventHandler_InHangar(Aircraft *v, const AirportFTAClass *ap
 		return;
 	}
 
+	if (v->current_order.IsWaitTimetabled()) {
+		v->HandleWaiting(false);
+	}
+	if (v->current_order.IsType(OT_WAITING)) {
+		return;
+	}
+
 	/* if we were sent to the depot, stay there */
 	if (v->current_order.IsType(OT_GOTO_DEPOT) && (v->vehstatus & VS_STOPPED)) {
 		v->current_order.Free();
