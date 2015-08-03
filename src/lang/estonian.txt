@@ -152,7 +152,7 @@ STR_CARGO_SINGULAR_FIZZY_DRINK                                  :Kihisevad joogi
 
 # Quantity of cargo
 STR_QUANTITY_NOTHING                                            :
-STR_QUANTITY_PASSENGERS                                         :{COMMA} reisija{P "" t}
+STR_QUANTITY_PASSENGERS                                         :{COMMA}{NBSP}reisija{P "" s}
 STR_QUANTITY_COAL                                               :{WEIGHT_LONG} kivisütt
 STR_QUANTITY_MAIL                                               :{COMMA} postipakk{P "" i}
 STR_QUANTITY_OIL                                                :{VOLUME_LONG} naftat
@@ -305,6 +305,17 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Kerimisr
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Kerimisriba - kerib listi üles/alla
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Ruudul asuvate hoonete jms. lammutamine. Ctrl valib ala diagonaalselt. Shift valib ehitamise/hinna kuvamise režiimi
 
+# Show engines button
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN                           :{BLACK}Näita peidetud
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE                    :{BLACK}Näita peidetud
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP                            :{BLACK}Näita peidetud
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT                        :{BLACK}Näita peidetud
+
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP                   :{BLACK}Selle nupu lubamisega kuvatakse ka peidetud rongid
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE_TOOLTIP            :{BLACK}Selle nupu lubamisega kuvatakse ka peidetud sõidukid
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP_TOOLTIP                    :{BLACK}Selle nupu lubamisega kuvatakse ka peidetud laevad
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Selle nupu lubamisega kuvatakse ka peidetud lennukid
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Esialgne
 STR_BUTTON_CANCEL                                               :{BLACK}Tühista
@@ -418,7 +429,7 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Välju
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Mängu seadistus
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :Põhjalik seadistus
+STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Seaded
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Tehismõistuse / Mängu skriptide seaded
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF-i seadistus
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Läbipaistvuse seadistus
@@ -973,10 +984,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruusia lari (G
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iraani rial (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Sõidukid
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Vali, kummal pool teed mootorsõidukid liiklevad
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vasakpoolne liiklus
@@ -1029,6 +1036,13 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Märgi s
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Ekraanilahutus
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Ekraanilahutuse valimine
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :muu
+
+STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Liidese suurus
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Vali kasutatav liideseelementide suurus
+
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Tavaline
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Topeltsuurus
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Ruudu suurus
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Alusgraafika kogu
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Valib kasutatava alusgraafika kogu
@@ -1123,6 +1137,7 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :Väga tasane
 STR_TERRAIN_TYPE_FLAT                                           :Tasane
 STR_TERRAIN_TYPE_HILLY                                          :Künklik
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Mägine
+STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Soodustav
 STR_CITY_APPROVAL_TOLERANT                                      :Salliv
@@ -1130,8 +1145,8 @@ STR_CITY_APPROVAL_HOSTILE                                       :Vaenulik
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Sobiv tehismõistus puudub...{}Tehismõistuseid võib laadida Internetisisu laadimise aknast.
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}Põhjalik seadistus
+# Settings tree window
+STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Seaded
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtri tekst:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Ava kõik
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Sulge kõik
@@ -1147,9 +1162,9 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Ettevõtte sead
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Rühm:
 STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Liik:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Piirab varem tehtud filtridega alljärgnevat loendit
-STR_CONFIG_SETTING_RESTRICT_BASIC                               :Põhilised seaded
-STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Täpsemad seaded
-STR_CONFIG_SETTING_RESTRICT_ALL                                 :Eksperdi seaded / kõik seaded
+STR_CONFIG_SETTING_RESTRICT_BASIC                               :Põhilised (kuva vaid tähtsad seaded)
+STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Edasijõudnud (enim seadeid)
+STR_CONFIG_SETTING_RESTRICT_ALL                                 :Ekspert (kuva kõik seaded, isegi veidrad)
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT             :Seaded mis erinevad vaikeväärtustest
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW                 :Seaded mis erinevad sinu valitud uue mängu seadetest
 
@@ -1204,6 +1219,9 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Lülita sisse/v
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Linnavalitusese suhtumine pinnase restruktureerimisse: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Vali kui suurt mõju tekitavad müra ning keskkonna muudatused ettevõtte mainele ja edasistele ehitustoimingutele antud piirkonnas
 
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maksimaalne mägede kõrgus: {STRING}
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Sätesta kaardi maksimaalne lubatud mägede kõrgus
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Kaardi maksimaalset kõrgust pole sellisele kõrgusele võimalik sätestada. Vähemalt üks mägi on antud kõrgusest suurem.
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Maastikukujundus majade, rööbaste jms. all (autoslope): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Lase maja- ja rööpaalust maad kujundada ilma neid eemaldamata
 STR_CONFIG_SETTING_CATCHMENT                                    :Reaalsemad veekogud: {STRING}
@@ -1232,6 +1250,8 @@ STR_CONFIG_SETTING_INFLATION                                    :Inflatsioon: {S
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :Tekitab majandusinflatsiooni, kus hinnad tõusevad pisut kiiremini kui maksed
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :Maksimaalne silla pikkus: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :Maksimaalne pikkus ehitatud sildadele
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :Maksimaalne silla kõrgus: {STRING}
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT_HELPTEXT                   :Maksimaalne sildade ehitamise kõrgus
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :Maksimaalne tunneli pikkus: {STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :Maksimaalne pikkus ehitatud tunnelitele
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :Toorainetööstuse rajamise viis: {STRING}
@@ -1328,6 +1348,7 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Graafikutes kas
 STR_CONFIG_SETTING_LANDSCAPE                                    :Maastik: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Igal maastikul on oma kaubatüübid ja nõuded linnade kasvamiseks. Täpsemaid muudatusi saab teha NewGRFi ja mänguskriptide abil.
 STR_CONFIG_SETTING_LAND_GENERATOR                               :Maatekituse meetod: {STRING}
+STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Originaalne generaator sõltub alusgraafikast ja tekitab kindlaksmääratud maastikuvorme. TerraGenesis on Perlini müral põhinev generaator, mida saab täpsemalt seadistada
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Algupärane
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Maapinna tüüp: {STRING}
@@ -1337,15 +1358,24 @@ STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Määrab, kui p
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Maksimaalne kaugus kaardi servast naftatöötlustehase jaoks: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Naftatöötlemistehased ehitatakse ainult kaardi piirile, see on rannikul saartega mängitaval kaardil.
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Lumepiiri kõrgus: {STRING}
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Määra, millisel kõrgusel algab sub-arktiline maastik. Lumi mõjutab ka tööstuste loomist ja linna kasvamise tingimusi
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Maastiku järskus (ainult TerraGenesis) : {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(TerraGenesis only) Vali mägede tihedus: Laugetel maastikel on vähem, laiema ulatusega mägesid. Mägistel maastikel on palju mägesid, mis võivad näha välja samasugused
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Väga lauge
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Lauge
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Järsk
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Väga järsk
+STR_CONFIG_SETTING_VARIETY                                      :Iseärasuste jaotus: {STRING}
+STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(TerraGenesis only) Määra, kas kaardil on nii mägiseid kui laugeid alasid. Kuna see muudab kaarti ainult laugemaks, peaksid teised sätted olema seadistatud mägisteks
+STR_CONFIG_SETTING_RIVER_AMOUNT                                 :Jõgede hulk: {STRING}
+STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Vali kui palju jõgesid luua
 STR_CONFIG_SETTING_TREE_PLACER                                  :Puuasetusalgoritm: {STRING}
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Vali puude jaotuvus kaardil: 'Algupärane' paigutab puud vormitult hajutatuna, 'Täiustatud' paigutab need gruppidena
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Pole
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Algupärane
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Täiustatud
+STR_CONFIG_SETTING_ROAD_SIDE                                    :Sõidukid: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Vali liikluse suund
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Kõrgustekaardi pööramine: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Vastu-päevapidi
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Päevapidi
@@ -1643,7 +1673,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :Kui jaamast A l
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :Posti jaotuse viis: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :Kui jaamast A viiakse jaama B umbes sama hulk posti, kui jaamast B jaama A, siis jaotus on «sümeetriline». Kui mõlemas suunas viiakse ükskõik, kui palju posti, siis jaotus on «asümeetriline». Kui posti liikumist ei jaotata, siis jaotus on «väljas».
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :SOOMUSTATUD kaubarühma jaotuse viis: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Parasvöötmes on SOOMUSTATUD kaubarühm väärisasjad, lähistroopikas teemantid, ning lähisartikas kuld. Neid saab lisada NewGRF-iga. Kui jaamast A viiakse jaama B umbes sama hulk kaupa, kui jaamast B jaama A, siis jaotus on «sümeetriline». Kui mõlemas suunas viiakse ükskõik, kui palju kaupa, siis jaotus on «asümeetriline». Kui posti liikumist ei jaotata, siis jaotus on «väljas». Lähisartikas valida asümeetriline või väljas, sest pankadest kulda tagasi ei tule. Parasvöötmes ja lähistroopikas on võimalik valida ka sümeetriline, sest pangad saadavad lähtepanka väärisasju tagasi.
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Parasvöötmes on SOOMUSTATUD kaubarühm väärisasjad, lähistroopikas teemandid, ning lähisartikas kuld. Neid saab lisada NewGRF-iga. Kui jaamast A viiakse jaama B umbes sama hulk kaupa, kui jaamast B jaama A, siis jaotus on «sümeetriline». Kui mõlemas suunas viiakse ükskõik, kui palju kaupa, siis jaotus on «asümeetriline». Kui posti liikumist ei jaotata, siis jaotus on «väljas». Lähisartikas valida asümeetriline või väljas, sest pankadest kulda tagasi ei tule. Parasvöötmes ja lähistroopikas on võimalik valida ka sümeetriline, sest pangad saadavad lähtepanka väärisasju tagasi.
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Teiste kaubarühmade jaotuse viis: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :Kui jaamast A viiakse jaama B umbes sama hulk kaupa, kui jaamast B jaama A, siis jaotus on «sümeetriline». Kui mõlemas suunas viiakse ükskõik, kui palju kaupa, siis jaotus on «asümeetriline». Kui posti liikumist ei jaotata, siis jaotus on «väljas». Tavaliselt on head valikud «asümeetriline» ja «väljas».
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Jaotuse täpsus: {STRING}
@@ -1692,11 +1722,23 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Meetermõõdust
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI-süsteem (m)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Kohandused
+STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Graafika
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Heliefektid
 STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Liides
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Üldine
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Vaateavad
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Ehitus
+STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Uudised / Nõunikud
+STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Ettevõte
+STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Raamatupidamine
 STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Sõidukid
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Füüsika
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Marsruutimine
+STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Piirangud
+STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Katastroofid / Õnnetused
+STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Maailma tekitamine
+STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Keskkond
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Linnavõimud
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Linnad
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Tööstused
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Kaubajaotus
@@ -1750,7 +1792,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Mitmikm�
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Liidese seadistus
 STR_INTRO_HIGHSCORE                                             :{BLACK}Punktitabel
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}Põhjalik seadistus
+STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Seaded
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-i seadistus
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Aineste allalaadimine
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Arvuti seadistus
@@ -1770,7 +1812,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Vali 'm�
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Ava liidese seadistamine
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Ava punktitabel
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}Ava põhjalik seadistamine
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Ava seaded
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Ava NewGRF-i seadistamine
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Otsi allalaadimiseks uusi ja uuendatud aineseid
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Ava arvuti seadistamine
@@ -1810,6 +1852,8 @@ STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Mängim
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Võlubuldooser (eemaldab tööstused, paiksed objektid): {ORANGE}{STRING}
 STR_CHEAT_CROSSINGTUNNELS                                       :{LTBLUE}Tunnelid võivad üksteist läbida: {ORANGE}{STRING}
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}Reaktiivlennukid ei kuku (tihti) väikestel lennuväljadel alla: {ORANGE} {STRING}
+STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}Muuda maksimaalset kaardi kõrgust {ORANGE}{NUM}
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Muuda kaardi maksimaalset mägede kõrgust
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Parasvöötme maastik
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Arktiline maastik
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Troopiline maastik
@@ -2701,7 +2745,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ettevõtte maa
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD lisainfo
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Algne autorikaitse {COPYRIGHT} 1995 Chris Sawyer, kõik õigused kaitstud
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD osa {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2014 OpenTTD meeskond
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 OpenTTD meeskond
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Mängu salvestamine
@@ -2720,6 +2764,7 @@ STR_SAVELOAD_SAVE_BUTTON                                        :{BLACK}Salvesta
 STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}Salvesta mäng valitud nimega
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Jätka
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Jätka valitud mängu
+STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Laadi valitud kõrguskaart
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Mängust
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Andmed puuduvad
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -2735,6 +2780,9 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Linnade sagedus:
 STR_MAPGEN_DATE                                                 :{BLACK}Algus:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Tööstuste sagedus:
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Maksimaalne kaardi kõrgus:
+STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Tõsta maksimaalset kaardi mägede kõrgust ühe võrra
+STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Langeta maksimaalset kaardi mägede kõrgust ühe võrra
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Lumepiiri kõrgus:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Lumepiiri liigutamine ühe võrra üles
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Lumepiiri liigutamine ühe võrra alla
@@ -2764,6 +2812,7 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Kõrguse
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Suurus:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Muuda maksimaalset kaardi kõrgust
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Muuda lumepiiri kõrgust
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Muuda algusaastat
 
@@ -2818,6 +2867,7 @@ STR_NEWGRF_SETTINGS_MOVEUP                                      :{BLACK}Liiguta 
 STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}NewGRF-faili liigutamine loendis üles.
 STR_NEWGRF_SETTINGS_MOVEDOWN                                    :{BLACK}Liiguta alla
 STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}NewGRF-faili liigutamine loendis alla
+STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}Uuenda
 STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP                             :{BLACK}Uuenda NewGRF faile mille uuema versiooni oled installinud
 STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK}Nimekiri installitud NewGRF failidest
 
@@ -2844,6 +2894,14 @@ STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Väljas
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Mitteühilduv selle OpenTTD versiooniga
 
 # NewGRF save preset window
+STR_SAVE_PRESET_CAPTION                                         :{WHITE}Salvesta eelseadistus
+STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Võimalike eeltöötluste nimekiri, vali üks et see kopeerida allpool asuvasse salvestuse nimesse
+STR_SAVE_PRESET_TITLE                                           :{BLACK}Sisesta eelseadistuse nimi
+STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Hetkel eelseadistusele valitud nimi
+STR_SAVE_PRESET_CANCEL                                          :{BLACK}Tühista
+STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ära muuda eelseadistust
+STR_SAVE_PRESET_SAVE                                            :{BLACK}Salvesta
+STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Salvesta eelseadistus praegusele valitud nimele
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Muuda NewGRF parameetreid
@@ -2875,7 +2933,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Eelmine 
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Proceed to the previous normal sprite, skipping any pseudo/recolour/font sprites and wrapping around at the begin
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representation of the currently selected sprite. The alignment is ignored when drawing this sprite
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Liiguta spraiti , muutes X ja Y tasakaalu
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X tasakaal: {NUM}, Y tasakaal: {NUM}
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Lähtesta suhteline
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Lähtesta praegused suhtelised kõrvalekalded
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X kõrvalekalle: {NUM}, Y kõrvalekalle: {NUM} (Absoluutne)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X kõrvalekalle: {NUM}, Y kõrvalekalle: {NUM} (Suhteline)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Korja sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Korja sprite ükskõik kust ekraanil
 
@@ -3048,7 +3109,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Teave
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Hoiatus
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Viga
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Tühista
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Ei
@@ -3067,6 +3128,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Alusta uuesti
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Lükka edasi
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Anna alla
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Sulge
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Toetused
@@ -3351,6 +3413,8 @@ STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Eemalda 
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Valitud rühma nime vahetamine
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Klõpsa, et seda rühma üldise automaatse asenduse eest kaitsta
 
+STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Kustuta Grupp
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Kas oled kindel, et tahad kustutada selle grupi ja kõik järglased?
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Kõik jagatud sõidukid
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Eemalda kõik sõidukid
@@ -3413,6 +3477,21 @@ STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}Muuda ra
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Muuda mootorsõiduki tüübinime
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Laeva tüübinime muutmine
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Lennuki tüübinime muutmine
+
+STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON                        :{BLACK}Peida
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_TOGGLE_BUTTON                 :{BLACK}Peida
+STR_BUY_VEHICLE_SHIP_HIDE_TOGGLE_BUTTON                         :{BLACK}Peida
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_TOGGLE_BUTTON                     :{BLACK}Peida
+
+STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON                        :{BLACK}Näita
+STR_BUY_VEHICLE_ROAD_VEHICLE_SHOW_TOGGLE_BUTTON                 :{BLACK}Näita
+STR_BUY_VEHICLE_SHIP_SHOW_TOGGLE_BUTTON                         :{BLACK}Näita
+STR_BUY_VEHICLE_AIRCRAFT_SHOW_TOGGLE_BUTTON                     :{BLACK}Näita
+
+STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP                  :{BLACK}Sätesta rongitüübi peitmine/kuvamine
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_SHOW_TOGGLE_TOOLTIP           :{BLACK}Sätesta sõidukitüübi peitmine/kuvamine
+STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}Sätesta laevatüübi peitmine/kuvamine
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}Sätesta lennukitüübi peitmine/kuvamine
 
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Vaheta rongivaguni tüübinime
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Vaheta mootorsõiduki tüübinime
@@ -3496,7 +3575,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Sa oled
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Teade veovahendite tootjalt
-STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Me töötasime välja uue {STRING}{P "" i}. Kas te oleksite huvitatud selle ainuõiguslikust katsetamisest järgneva aasta jooksul, et me saaksime jälgida kuidas see toimib?
+STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Me töötasime välja uue {STRING}. Kas te oleksite huvitatud selle ainuõiguslikust katsetamisest järgneva aasta jooksul, et me saaksime jälgida kuidas see toimib?
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :raudteevedur
 STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :mootorsõiduk
 STR_ENGINE_PREVIEW_AIRCRAFT                                     :lennuk
@@ -3517,6 +3596,11 @@ STR_REPLACE_VEHICLE_TRAIN                                       :Rong
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Sõiduk
 STR_REPLACE_VEHICLE_SHIP                                        :Laev
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Õhusõiduk
+
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}Kasutuses sõidukid
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :{BLACK}Tulp sõidukitega, mida omad
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}Saadaval sõidukid
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK}Tulp sõidukitega, mida on võimalik vahetada
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Vali asendatav veduritüüp
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Vali uus vedur, millega sa soovid vasakult valitud vedurit asendada.
@@ -4117,6 +4201,7 @@ STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Kaevanda
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}Juba jõutud meretasemeni
 STR_ERROR_TOO_HIGH                                              :{WHITE}Liiga kõrge
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... juba tasane
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Selle kohal olev sild oleks hiljem liiga kõrge
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Ei saa ettevõtte nime muuta...
@@ -4166,6 +4251,9 @@ STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... saab
 STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... metsa saab istutada ainult lumepiirist kõrgemale
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... saab ehitada ainult ülespoole lumepiiri
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... saab ehitada ainult allapoole lumepiiri
+
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE} '{STRING}' tööstuste jaoks polnud sobivaid asukohti
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Muuda kaardigeneratsiooni parameetreid, et saada parem kaart
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Siia ei saa raudteejaama ehitada...
@@ -4303,6 +4391,7 @@ STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Sild tul
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Ei saa alata ja lõppeda samas kohas
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Sillaotsad pole samal kõrgusel
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}Sild on maastiku suhtes liiga madal
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}Sild on selle maastiku jaoks liiga kõrge
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Algus ja lõpp peavad samal joonel olema
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... mõlemad sillaotsad peavad olema maal
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}.. sild on liiga pik
@@ -4867,6 +4956,7 @@ STR_COMPANY_NAME                                                :{COMPANY}
 STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMPANY_NUM}
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
+STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} (peidetud)
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}
@@ -4902,8 +4992,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

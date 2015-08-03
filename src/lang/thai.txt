@@ -248,6 +248,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}แถ�
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}แถบเลื่อน - ใช้เลื่อนรายการ ซ้าย/ขวา
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}ทำลายสิ่งก่อสร้าง และสิ่งต่างๆ ในพื้นที่ช่องหนึ่ง. กด Ctrl เพื่อเลือกพื้นที่แบบทะแยง. กด Shift เพื่อสลับระหว่างสิ่งปลูกสร้างและแสดงมูลค่า
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}ค่าปกติ
 STR_BUTTON_CANCEL                                               :{BLACK}ยกเลิก
@@ -361,7 +364,6 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :ออก
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :ตัวเลือกเกม
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :กำหนดค่าขั้นสูง
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :กำหนดค่าสคริปต์ AI/Game
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :กำหนดค่า NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :แถบเมนูตั้งค่าวัตถุโปร่งใส
@@ -915,10 +917,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgian Lari (
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranian Rial (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}ยานยนต์
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}เลือกฝั่งถนนในการขับยานพาหนะ
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :ขับชิดซ้าย
@@ -971,6 +969,8 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}ทำ�
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}ความละเอียดของหน้าจอ
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}เลือกความละเอียดของหน้าจอที่จะใช้
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :อื่นๆ
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}ตั้งค่า Graphic พื้นฐาน
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}เลือกและตั้งค่าฐานกราฟิกที่จะใช้
@@ -1071,8 +1071,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :ไม่เป
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}ไม่มี AI ที่เหมาะสมปรากฎ...{}คุณสามารถดาวน์โหลด AI จากระบบ 'Online Content'
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}การตั้งค่าขั้นสูง
+# Settings tree window
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}เติม string:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}ขยายทั้งหมด
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}ยุบลงทั้งหมด
@@ -1677,7 +1676,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}เล�
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}ตัวเลือกเกม
 STR_INTRO_HIGHSCORE                                             :{BLACK}ตารางคะแนนสูงสุด
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}การตั้งค่าขั้นสูง
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}การตั้งค่า NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}ตรวจสอบเนื้อหาออนไลน์
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}ตั้งค่า AI/Game Script
@@ -1697,7 +1695,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}เล�
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}แสดงตัวเลือกเกม
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}แสดงตารางคะแนนสูงสุด
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}แสดงการกำหนดค่าขั้นสูง
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}แสดงการกำหนดค่า NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}ตรวจสอบเนื้อหาใหม่และการปรับปรุงสำหรับดาวโหลด
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}แสดงการตั้งค่า AI/Game script
@@ -2626,7 +2623,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :บริษั
 STR_ABOUT_OPENTTD                                               :{WHITE}เกี่ยวกับ OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}ลิขสิทธิ์เดิม {COPYRIGHT} ค.ศ.1995 ของ Chris Sawyer, สงวนลิขสิทธิ์
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD รุ่นที่ {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}ลิขสิทธิ์ OpenTTD {COPYRIGHT}2002-2014 ของ The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}ลิขสิทธิ์ OpenTTD {COPYRIGHT}2002-2015 ของ The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}บันทึกเกม
@@ -2799,7 +2796,6 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}sprite �
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}เคลื่อนไปยัง sprite ปกติอันก่อนหน้า โดยข้าม pseudo/recolour/font และวกกลับเมื่อถึงจุดเริ่มต้น
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}แสดง sprite ที่เลือกใหม่อีกครั้ง
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}ย้าย sprite wxiv[q, แก้ไขแกน X และ Y สำหรับความคลาดเคลื่อน
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X คลาดเคลื่อน: {NUM}, Y คลาดเคลื่อน: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}หยิบ sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}หยิบ sprite จากที่ใดก็ตามในหน้าจอ
 
@@ -2971,7 +2967,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :ข้อมู
 STR_GOAL_QUESTION_CAPTION_WARNING                               :คำเตือน
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :ข้อผิดพลาด
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :ยกเลิก
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :ไม่
@@ -2990,6 +2986,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :เริ่ม
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :เลื่อนออกไป
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :ยอมจำนน
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :ปิด
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}เงินอุดหนุน
@@ -3337,6 +3334,9 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}เป�
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}เปลี่ยนชื่อชนิดของเรือ
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}เปลี่ยนชื่อชนิดของเครื่องบิน
 
+
+
+
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}เปลี่ยนชื่อชนิดของรถไฟ
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}เปลี่ยนชื่อชนิดของรถ
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}เปลี่ยนชื่อชนิดของเรือ
@@ -3440,6 +3440,7 @@ STR_REPLACE_VEHICLE_TRAIN                                       :รถไฟ
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :ยานพาหนะทางบก
 STR_REPLACE_VEHICLE_SHIP                                        :ยานพาหนะทางน้ำ
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :อากาศยาน
+
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}เลือกประเภทของรถจักรที่จะแทนที่
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}เลือกประเภทของพาหนะที่จะแทนที่ทางซ้ายมือ
@@ -4085,6 +4086,7 @@ STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... ส�
 STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... สามารถปลูกป่าได้ที่ระดับเหนือกว่าระดับหิมะเท่านั้น
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... สามารถสร้างได้ที่ระดับเหนือกว่าระดับหิมะเท่านั้น
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... สามารถสร้างได้ที่ระดับต่ำกว่าระดับหิมะเท่านั้น
+
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}บริเวณนี้ไม่สามารถสร้างสถานีรถไฟได้
@@ -4820,8 +4822,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE} {CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

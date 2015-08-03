@@ -18,6 +18,7 @@
 #include "strings_func.h"
 #include "zoom_type.h"
 #include "gfx_layout.h"
+#include "zoom_func.h"
 
 #include "table/sprites.h"
 #include "table/control_codes.h"
@@ -80,6 +81,7 @@ public:
 	virtual void ClearFontCache();
 	virtual const Sprite *GetGlyph(GlyphID key);
 	virtual uint GetGlyphWidth(GlyphID key);
+	virtual int GetHeight() const;
 	virtual bool GetDrawGlyphShadow();
 	virtual GlyphID MapCharToGlyph(WChar key) { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
 	virtual const void *GetFontTable(uint32 tag, size_t &length) { length = 0; return NULL; }
@@ -141,8 +143,8 @@ void SpriteFontCache::InitializeUnicodeGlyphMap()
 		byte key = _default_unicode_map[i].key;
 		if (key == CLRA) {
 			/* Clear the glyph. This happens if the glyph at this code point
-				* is non-standard and should be accessed by an SCC_xxx enum
-				* entry only. */
+			 * is non-standard and should be accessed by an SCC_xxx enum
+			 * entry only. */
 			this->SetUnicodeGlyph(_default_unicode_map[i].code, 0);
 		} else {
 			SpriteID sprite = base + key - ASCII_LETTERSTART;
@@ -181,7 +183,12 @@ uint SpriteFontCache::GetGlyphWidth(GlyphID key)
 {
 	SpriteID sprite = this->GetUnicodeGlyph(key);
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
-	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + (this->fs != FS_NORMAL) : 0;
+	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + ScaleGUITrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
+}
+
+int SpriteFontCache::GetHeight() const
+{
+	return ScaleGUITrad(this->height);
 }
 
 bool SpriteFontCache::GetDrawGlyphShadow()
@@ -189,7 +196,7 @@ bool SpriteFontCache::GetDrawGlyphShadow()
 	return false;
 }
 
-/*static */ FontCache *FontCache::caches[FS_END] = { new SpriteFontCache(FS_NORMAL), new SpriteFontCache(FS_SMALL), new SpriteFontCache(FS_LARGE), new SpriteFontCache(FS_MONO) };
+/* static */ FontCache *FontCache::caches[FS_END] = { new SpriteFontCache(FS_NORMAL), new SpriteFontCache(FS_SMALL), new SpriteFontCache(FS_LARGE), new SpriteFontCache(FS_MONO) };
 
 #ifdef WITH_FREETYPE
 #include <ft2build.h>
@@ -529,8 +536,8 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 	aa = (slot->bitmap.pixel_mode == FT_PIXEL_MODE_GRAY);
 
 	/* Add 1 pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel */
-	int width  = max(1, slot->bitmap.width + (this->fs == FS_NORMAL));
-	int height = max(1, slot->bitmap.rows  + (this->fs == FS_NORMAL));
+	uint width  = max(1U, (uint)slot->bitmap.width + (this->fs == FS_NORMAL));
+	uint height = max(1U, (uint)slot->bitmap.rows  + (this->fs == FS_NORMAL));
 
 	/* Limit glyph size to prevent overflows later on. */
 	if (width > 256 || height > 256) usererror("Font glyph is too large");
@@ -546,8 +553,8 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 
 	/* Draw shadow for medium size */
 	if (this->fs == FS_NORMAL && !aa) {
-		for (int y = 0; y < slot->bitmap.rows; y++) {
-			for (int x = 0; x < slot->bitmap.width; x++) {
+		for (uint y = 0; y < (uint)slot->bitmap.rows; y++) {
+			for (uint x = 0; x < (uint)slot->bitmap.width; x++) {
 				if (aa ? (slot->bitmap.buffer[x + y * slot->bitmap.pitch] > 0) : HasBit(slot->bitmap.buffer[(x / 8) + y * slot->bitmap.pitch], 7 - (x % 8))) {
 					sprite.data[1 + x + (1 + y) * sprite.width].m = SHADOW_COLOUR;
 					sprite.data[1 + x + (1 + y) * sprite.width].a = aa ? slot->bitmap.buffer[x + y * slot->bitmap.pitch] : 0xFF;
@@ -556,8 +563,8 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 		}
 	}
 
-	for (int y = 0; y < slot->bitmap.rows; y++) {
-		for (int x = 0; x < slot->bitmap.width; x++) {
+	for (uint y = 0; y < (uint)slot->bitmap.rows; y++) {
+		for (uint x = 0; x < (uint)slot->bitmap.width; x++) {
 			if (aa ? (slot->bitmap.buffer[x + y * slot->bitmap.pitch] > 0) : HasBit(slot->bitmap.buffer[(x / 8) + y * slot->bitmap.pitch], 7 - (x % 8))) {
 				sprite.data[x + y * sprite.width].m = FACE_COLOUR;
 				sprite.data[x + y * sprite.width].a = aa ? slot->bitmap.buffer[x + y * slot->bitmap.pitch] : 0xFF;

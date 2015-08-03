@@ -2696,13 +2696,13 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, By
 						for (uint j = 0; j < SNOW_LINE_DAYS; j++) {
 							table[i][j] = buf->ReadByte();
 							if (_cur.grffile->grf_version >= 8) {
-								if (table[i][j] != 0xFF) table[i][j] = table[i][j] * (1 + MAX_TILE_HEIGHT) / 256;
+								if (table[i][j] != 0xFF) table[i][j] = table[i][j] * (1 + _settings_game.construction.max_heightlevel) / 256;
 							} else {
 								if (table[i][j] >= 128) {
 									/* no snow */
 									table[i][j] = 0xFF;
 								} else {
-									table[i][j] = table[i][j] * (1 + MAX_TILE_HEIGHT) / 128;
+									table[i][j] = table[i][j] * (1 + _settings_game.construction.max_heightlevel) / 128;
 								}
 							}
 						}
@@ -3471,6 +3471,15 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 							} else if (itt[k].gfx == 0xFF) {
 								itt[k].ti.x = (int8)GB(itt[k].ti.x, 0, 8);
 								itt[k].ti.y = (int8)GB(itt[k].ti.y, 0, 8);
+
+								/* When there were only 256x256 maps, TileIndex was a uint16 and
+								 * itt[k].ti was just a TileIndexDiff that was added to it.
+								 * As such negative "x" values were shifted into the "y" position.
+								 *   x = -1, y = 1 -> x = 255, y = 0
+								 * Since GRF version 8 the position is interpreted as pair of independent int8.
+								 * For GRF version < 8 we need to emulate the old shifting behaviour.
+								 */
+								if (_cur.grffile->grf_version < 8 && itt[k].ti.x < 0) itt[k].ti.y += 1;
 							}
 						}
 
@@ -5594,6 +5603,7 @@ static const Action5Type _action5_types[] = {
 	/* 0x15 */ { A5BLOCK_ALLOW_OFFSET, SPR_OPENTTD_BASE,             1, OPENTTD_SPRITE_COUNT,                        "OpenTTD GUI graphics"     },
 	/* 0x16 */ { A5BLOCK_ALLOW_OFFSET, SPR_AIRPORT_PREVIEW_BASE,     1, SPR_AIRPORT_PREVIEW_COUNT,                   "Airport preview graphics" },
 	/* 0x17 */ { A5BLOCK_ALLOW_OFFSET, SPR_RAILTYPE_TUNNEL_BASE,     1, RAILTYPE_TUNNEL_BASE_COUNT,                  "Railtype tunnel base"     },
+	/* 0x18 */ { A5BLOCK_ALLOW_OFFSET, SPR_PALETTE_BASE,             1, PALETTE_SPRITE_COUNT,                        "Palette"                  },
 };
 
 /* Action 0x05 */
@@ -5826,7 +5836,7 @@ bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile)
 
 		case 0x20: { // snow line height
 			byte snowline = GetSnowLine();
-			if (_settings_game.game_creation.landscape == LT_ARCTIC && snowline <= MAX_TILE_HEIGHT) {
+			if (_settings_game.game_creation.landscape == LT_ARCTIC && snowline <= _settings_game.construction.max_heightlevel) {
 				*value = Clamp(snowline * (grffile->grf_version >= 8 ? 1 : TILE_HEIGHT), 0, 0xFE);
 			} else {
 				/* No snow */
@@ -6094,7 +6104,7 @@ static void SkipIf(ByteReader *buf)
 
 			case 0x0A: // GRFID is not nor will be active
 				/* This is the only condtype that doesn't get ignored if the GRFID is not found */
-				result = c == NULL || c->flags == GCS_DISABLED || c->status == GCS_NOT_FOUND;
+				result = c == NULL || c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND;
 				break;
 
 			default: grfmsg(1, "SkipIf: Unsupported GRF condition type %02X. Ignoring", condtype); return;
@@ -6483,7 +6493,7 @@ static uint32 GetPatchVariable(uint8 param)
 
 		/* The maximum height of the map. */
 		case 0x14:
-			return MAX_TILE_HEIGHT;
+			return _settings_game.construction.max_heightlevel;
 
 		/* Extra foundations base sprite */
 		case 0x15:
@@ -9091,8 +9101,6 @@ static void FinalisePriceBaseMultipliers()
 	}
 }
 
-void InitDepotWindowBlockSizes();
-
 extern void InitGRFTownGeneratorNames();
 
 /** Finish loading NewGRFs and execute needed post-processing */
@@ -9120,9 +9128,6 @@ static void AfterLoadGRFs()
 
 	/* Set the actually used Canal properties */
 	FinaliseCanals();
-
-	/* Set the block size in the depot windows based on vehicle sprite sizes */
-	InitDepotWindowBlockSizes();
 
 	/* Add all new houses to the house array. */
 	FinaliseHouseArray();

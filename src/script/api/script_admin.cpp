@@ -37,12 +37,9 @@
 		}
 
 		case OT_STRING: {
-			const SQChar *res;
-			sq_getstring(vm, index, &res);
+			const SQChar *buf;
+			sq_getstring(vm, index, &buf);
 
-			/* @bug if a string longer than 512 characters is given to SQ2OTTD, the
-			 *  internal buffer overflows. */
-			const char *buf = SQ2OTTD(res);
 			size_t len = strlen(buf) + 1;
 			if (len >= 255) {
 				ScriptLog::Error("Maximum string length is 254 chars. No data sent.");
@@ -129,10 +126,10 @@
 
 /* static */ SQInteger ScriptAdmin::Send(HSQUIRRELVM vm)
 {
-	if (sq_gettop(vm) - 1 != 1) return sq_throwerror(vm, _SC("wrong number of parameters"));
+	if (sq_gettop(vm) - 1 != 1) return sq_throwerror(vm, "wrong number of parameters");
 
 	if (sq_gettype(vm, 2) != OT_TABLE) {
-		return sq_throwerror(vm, _SC("ScriptAdmin::Send requires a table as first parameter. No data sent."));
+		return sq_throwerror(vm, "ScriptAdmin::Send requires a table as first parameter. No data sent.");
 	}
 
 	std::string json;

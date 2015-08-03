@@ -213,6 +213,9 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_AP_BTN_DONTHILIGHT,                    "WID_AP_BTN_DONTHILIGHT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_AP_BTN_DOHILIGHT,                      "WID_AP_BTN_DOHILIGHT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RV_CAPTION,                            "WID_RV_CAPTION");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RV_SORT_ASCENDING_DESCENDING,          "WID_RV_SORT_ASCENDING_DESCENDING");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RV_SHOW_HIDDEN_ENGINES,                "WID_RV_SHOW_HIDDEN_ENGINES");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RV_SORT_DROPDOWN,                      "WID_RV_SORT_DROPDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RV_LEFT_MATRIX,                        "WID_RV_LEFT_MATRIX");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RV_LEFT_SCROLLBAR,                     "WID_RV_LEFT_SCROLLBAR");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RV_RIGHT_MATRIX,                       "WID_RV_RIGHT_MATRIX");
@@ -237,13 +240,15 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BBS_BRIDGE_LIST,                       "WID_BBS_BRIDGE_LIST");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BBS_SCROLLBAR,                         "WID_BBS_SCROLLBAR");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_CAPTION,                            "WID_BV_CAPTION");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_SORT_ASSENDING_DESCENDING,          "WID_BV_SORT_ASSENDING_DESCENDING");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_SORT_ASCENDING_DESCENDING,          "WID_BV_SORT_ASCENDING_DESCENDING");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_SORT_DROPDOWN,                      "WID_BV_SORT_DROPDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_CARGO_FILTER_DROPDOWN,              "WID_BV_CARGO_FILTER_DROPDOWN");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_SHOW_HIDDEN_ENGINES,                "WID_BV_SHOW_HIDDEN_ENGINES");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_LIST,                               "WID_BV_LIST");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_SCROLLBAR,                          "WID_BV_SCROLLBAR");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_PANEL,                              "WID_BV_PANEL");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_BUILD,                              "WID_BV_BUILD");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_SHOW_HIDE,                          "WID_BV_SHOW_HIDE");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_BUILD_SEL,                          "WID_BV_BUILD_SEL");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_BV_RENAME,                             "WID_BV_RENAME");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_C_PANEL,                               "WID_C_PANEL");
@@ -456,6 +461,9 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_TOWN_PULLDOWN,                      "WID_GL_TOWN_PULLDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_INDUSTRY_PULLDOWN,                  "WID_GL_INDUSTRY_PULLDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_GENERATE_BUTTON,                    "WID_GL_GENERATE_BUTTON");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_MAX_HEIGHTLEVEL_DOWN,               "WID_GL_MAX_HEIGHTLEVEL_DOWN");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_MAX_HEIGHTLEVEL_TEXT,               "WID_GL_MAX_HEIGHTLEVEL_TEXT");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_MAX_HEIGHTLEVEL_UP,                 "WID_GL_MAX_HEIGHTLEVEL_UP");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_START_DATE_DOWN,                    "WID_GL_START_DATE_DOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_START_DATE_TEXT,                    "WID_GL_START_DATE_TEXT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_START_DATE_UP,                      "WID_GL_START_DATE_UP");
@@ -766,10 +774,12 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_RIGHT,                              "WID_SA_RIGHT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_DOWN,                               "WID_SA_DOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_SPRITE,                             "WID_SA_SPRITE");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_OFFSETS,                            "WID_SA_OFFSETS");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_OFFSETS_ABS,                        "WID_SA_OFFSETS_ABS");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_OFFSETS_REL,                        "WID_SA_OFFSETS_REL");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_PICKER,                             "WID_SA_PICKER");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_LIST,                               "WID_SA_LIST");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_SCROLLBAR,                          "WID_SA_SCROLLBAR");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_SA_RESET_REL,                          "WID_SA_RESET_REL");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_NP_SHOW_NUMPAR,                        "WID_NP_SHOW_NUMPAR");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_NP_NUMPAR_DEC,                         "WID_NP_NUMPAR_DEC");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_NP_NUMPAR_INC,                         "WID_NP_NUMPAR_INC");
@@ -996,6 +1006,7 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_LANG_DROPDOWN,                      "WID_GO_LANG_DROPDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_RESOLUTION_DROPDOWN,                "WID_GO_RESOLUTION_DROPDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_FULLSCREEN_BUTTON,                  "WID_GO_FULLSCREEN_BUTTON");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_GUI_ZOOM_DROPDOWN,                  "WID_GO_GUI_ZOOM_DROPDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_BASE_GRF_DROPDOWN,                  "WID_GO_BASE_GRF_DROPDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_BASE_GRF_STATUS,                    "WID_GO_BASE_GRF_STATUS");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_BASE_GRF_TEXTFILE,                  "WID_GO_BASE_GRF_TEXTFILE");

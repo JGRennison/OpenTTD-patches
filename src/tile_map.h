@@ -31,8 +31,10 @@
 static inline uint TileHeight(TileIndex tile)
 {
 	assert(tile < MapSize());
-	return GB(_m[tile].type_height, 0, 4);
+	return _m[tile].height;
 }
+
+uint TileHeightOutsideMap(int x, int y);
 
 /**
  * Sets the height of a tile.
@@ -48,7 +50,7 @@ static inline void SetTileHeight(TileIndex tile, uint height)
 {
 	assert(tile < MapSize());
 	assert(height <= MAX_TILE_HEIGHT);
-	SB(_m[tile].type_height, 0, 4, height);
+	_m[tile].height = height;
 }
 
 /**
@@ -65,6 +67,19 @@ static inline uint TilePixelHeight(TileIndex tile)
 }
 
 /**
+ * Returns the tile height for a coordinate outside map.  Such a height is
+ * needed for painting the area outside map using completely black tiles.
+ * The idea is descending to heightlevel 0 as fast as possible.
+ * @param x The X-coordinate (same unit as TileX).
+ * @param y The Y-coordinate (same unit as TileY).
+ * @return The height in pixels in the same unit as TilePixelHeight.
+ */
+static inline uint TilePixelHeightOutsideMap(int x, int y)
+{
+	return TileHeightOutsideMap(x, y) * TILE_HEIGHT;
+}
+
+/**
  * Get the tiletype of a given tile.
  *
  * @param tile The tile to get the TileType
@@ -74,7 +89,7 @@ static inline uint TilePixelHeight(TileIndex tile)
 static inline TileType GetTileType(TileIndex tile)
 {
 	assert(tile < MapSize());
-	return (TileType)GB(_m[tile].type_height, 4, 4);
+	return (TileType)GB(_m[tile].type, 4, 4);
 }
 
 /**
@@ -113,7 +128,7 @@ static inline void SetTileType(TileIndex tile, TileType type)
 	 * edges of the map. If _settings_game.construction.freeform_edges is true,
 	 * the upper edges of the map are also VOID tiles. */
 	assert(IsInnerTile(tile) == (type != MP_VOID));
-	SB(_m[tile].type_height, 4, 4, type);
+	SB(_m[tile].type, 4, 4, type);
 }
 
 /**
@@ -204,7 +219,7 @@ static inline void SetTropicZone(TileIndex tile, TropicZone type)
 {
 	assert(tile < MapSize());
 	assert(!IsTileType(tile, MP_VOID) || type == TROPICZONE_NORMAL);
-	SB(_m[tile].m6, 0, 2, type);
+	SB(_m[tile].type, 0, 2, type);
 }
 
 /**
@@ -216,7 +231,7 @@ static inline void SetTropicZone(TileIndex tile, TropicZone type)
 static inline TropicZone GetTropicZone(TileIndex tile)
 {
 	assert(tile < MapSize());
-	return (TropicZone)GB(_m[tile].m6, 0, 2);
+	return (TropicZone)GB(_m[tile].type, 0, 2);
 }
 
 /**
@@ -262,6 +277,8 @@ static inline Slope GetTilePixelSlope(TileIndex tile, int *h)
 	return s;
 }
 
+Slope GetTilePixelSlopeOutsideMap(int x, int y, int *h);
+
 /**
  * Get bottom height of the tile
  * @param tile Tile to compute height of
@@ -272,6 +289,8 @@ static inline int GetTilePixelZ(TileIndex tile)
 	return GetTileZ(tile) * TILE_HEIGHT;
 }
 
+int GetTilePixelZOutsideMap(int x, int y);
+
 /**
  * Get top height of the tile
  * @param t Tile to compute height of
@@ -281,6 +300,8 @@ static inline int GetTileMaxPixelZ(TileIndex tile)
 {
 	return GetTileMaxZ(tile) * TILE_HEIGHT;
 }
+
+int GetTileMaxPixelZOutsideMap(int x, int y);
 
 
 /**

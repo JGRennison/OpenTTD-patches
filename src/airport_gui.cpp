@@ -82,6 +82,18 @@ struct BuildAirToolbarWindow : Window {
 		if (_settings_client.gui.link_terraform_toolbar) DeleteWindowById(WC_SCEN_LAND_GEN, 0, false);
 	}
 
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	{
+		if (!gui_scope) return;
+
+		if (!CanBuildVehicleInfrastructure(VEH_AIRCRAFT)) delete this;
+	}
+
 	virtual void OnClick(Point pt, int widget, int click_count)
 	{
 		switch (widget) {
@@ -228,8 +240,27 @@ public:
 		this->SetWidgetLoweredState(WID_AP_BTN_DOHILIGHT, _settings_client.gui.station_show_coverage);
 		this->OnInvalidateData();
 
-		this->vscroll->SetCount(AirportClass::Get(_selected_airport_class)->GetSpecCount());
-		this->SelectFirstAvailableAirport(true);
+		/* Ensure airport class is valid (changing NewGRFs). */
+		_selected_airport_class = Clamp(_selected_airport_class, APC_BEGIN, (AirportClassID)(AirportClass::GetClassCount() - 1));
+		const AirportClass *ac = AirportClass::Get(_selected_airport_class);
+		this->vscroll->SetCount(ac->GetSpecCount());
+
+		/* Ensure the airport index is valid for this class (changing NewGRFs). */
+		_selected_airport_index = Clamp(_selected_airport_index, -1, ac->GetSpecCount() - 1);
+
+		/* Only when no valid airport was selected, we want to select the first airport. */
+		bool selectFirstAirport = true;
+		if (_selected_airport_index != -1) {
+			const AirportSpec *as = ac->GetSpec(_selected_airport_index);
+			if (as->IsAvailable()) {
+				/* Ensure the airport layout is valid. */
+				_selected_airport_layout = Clamp(_selected_airport_layout, 0, as->num_table - 1);
+				selectFirstAirport = false;
+				this->UpdateSelectSize();
+			}
+		}
+
+		if (selectFirstAirport) this->SelectFirstAvailableAirport(true);
 	}
 
 	virtual ~BuildAirportWindow()
@@ -394,7 +425,7 @@ public:
 		 * Never make the window smaller to avoid oscillating if the size change affects the acceptance.
 		 * (This is the case, if making the window bigger moves the mouse into the window.) */
 		if (top > bottom) {
-			ResizeWindow(this, 0, top - bottom);
+			ResizeWindow(this, 0, top - bottom, false);
 		}
 	}
 

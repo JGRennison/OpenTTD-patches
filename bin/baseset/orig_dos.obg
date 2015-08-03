@@ -25,6 +25,7 @@ description.es_ES = Gráficos originales de Transport Tycoon Deluxe versión DOS
 description.et_EE = Algse Transport Tycoon Deluxe DOSi versiooni graafika.
 description.fi_FI = Alkuperäiset Transport Tycoon Deluxen DOS-version grafiikat.
 description.fr_FR = Graphiques originaux de Transport Tycoon Deluxe (version DOS).
+description.ga_IE = Grafaicí bunaidhTransport Tycoon Deluxe, eagrán DOS.
 description.gd_GB = Grafaigeachd aig an deasachadh DOS tùsail aig Transport Tycoon Deluxe.
 description.gl_ES = Graficos da edición orixinal de Transport Tycoon Deluxe para DOS.
 description.hr_HR = Originalna grafika za Transport Tycoon Deluxe DOS izdanje.
@@ -34,6 +35,7 @@ description.is_IS = Upprunalega grafíkin úr Transport Tycoon Deluxe DOS útgá
 description.it_IT = Grafica originale di Transport Tycoon Deluxe, edizione DOS.
 description.ja_JP = Transport Tycoon Deluxe オリジナル版 グラフィック (DOS)
 description.ko_KR = 오리지널 트랜스포트 타이쿤 디럭스 도스 에디션의 그래픽입니다.
+description.la_VA = Graphica ex editione originale Transport Tycoon Deluxe DOS.
 description.lb_LU = Original Transport Tycoon Deluxe DOS Editioun Grafik.
 description.lt_LT = Originali Transport Tycoon Deluxe DOS leidimo grafika.
 description.nb_NO = Original grafikk fra Transport Tycoon Deluxe for DOS.
@@ -70,7 +72,7 @@ TRGI.GRF     = da6a6c9dcc451eec88d79211437b76a8
 TRGC.GRF     = ed446637e034104c5559b32c18afe78d
 TRGH.GRF     = ee6616fb0e6ef6b24892c58c93d86fc9
 TRGT.GRF     = e30e8a398ae86c03dc534a8ac7dfb3b6
-OPENTTD.GRF  = 75a93cea2ed455c2fd5dcbda39e53538
+OPENTTD.GRF  = 505d96061556d3bb5cec6234096ec5bc
 
 [origin]
 default      = You can find it on your Transport Tycoon Deluxe CD-ROM.

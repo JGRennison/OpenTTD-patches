@@ -171,7 +171,7 @@ char *ScriptEventAdminPort::ReadString(HSQUIRRELVM vm, char *p)
 	}
 
 	*p = '\0';
-	sq_pushstring(vm, OTTD2SQ(value), -1);
+	sq_pushstring(vm, value, -1);
 	*p++ = '"';
 
 	return p;
@@ -259,10 +259,10 @@ char *ScriptEventAdminPort::ReadValue(HSQUIRRELVM vm, char *p)
 			sq_newarray(vm, 0);
 
 			/* Empty array? */
-			char *p2 = p+1;
+			char *p2 = p + 1;
 			SKIP_EMPTY(p2);
 			if (*p2 == ']') {
-				p = p2+1;
+				p = p2 + 1;
 				break;
 			}
 

@@ -42,12 +42,12 @@
 
 #include "table/strings.h"
 
+#include <bitset>
+
 #include "safeguards.h"
 
 bool _ignore_restrictions;
-uint64 _displayed_industries; ///< Communication from the industry chain window to the smallmap window about what industries to display.
-
-assert_compile(NUM_INDUSTRYTYPES <= 64); // Make sure all industry types fit in _displayed_industries.
+std::bitset<NUM_INDUSTRYTYPES> _displayed_industries; ///< Communication from the industry chain window to the smallmap window about what industries to display.
 
 /** Cargo suffix type (for which window is it requested) */
 enum CargoSuffixType {
@@ -229,7 +229,7 @@ class BuildIndustryWindow : public Window {
 		 * The tests performed after the enabled allow to load the industries
 		 * In the same way they are inserted by grf (if any)
 		 */
-		for (uint8 i = 0; i < NUM_INDUSTRYTYPES; i++) {
+		for (uint i = 0; i < NUM_INDUSTRYTYPES; i++) {
 			IndustryType ind = _sorted_industry_types[i];
 			const IndustrySpec *indsp = GetIndustrySpec(ind);
 			if (indsp->enabled) {
@@ -1283,7 +1283,7 @@ public:
 		switch (widget) {
 			case WID_ID_DROPDOWN_ORDER: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
-				d.width += padding.width + WD_SORTBUTTON_ARROW_WIDTH * 2; // Doubled since the string is centred and it also looks better.
+				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
 				*size = maxdim(*size, d);
 				break;
@@ -2002,7 +2002,7 @@ struct CargoesRow {
 					if (!hs->enabled) continue;
 
 					for (uint j = 0; j < lengthof(hs->accepts_cargo); j++) {
-						if (cargo_fld->u.cargo.vertical_cargoes[i] == hs->accepts_cargo[j]) {
+						if (hs->cargo_acceptance[j] > 0 && cargo_fld->u.cargo.vertical_cargoes[i] == hs->accepts_cargo[j]) {
 							cargo_fld->ConnectCargo(cargo_fld->u.cargo.vertical_cargoes[i], false);
 							goto next_cargo;
 						}
@@ -2194,7 +2194,7 @@ struct IndustryCargoesWindow : public Window {
 				if (!hs->enabled || !(hs->building_availability & climate_mask)) continue;
 
 				for (uint j = 0; j < lengthof(hs->accepts_cargo); j++) {
-					if (cargoes[i] == hs->accepts_cargo[j]) return true;
+					if (hs->cargo_acceptance[j] > 0 && cargoes[i] == hs->accepts_cargo[j]) return true;
 				}
 			}
 		}
@@ -2295,7 +2295,8 @@ struct IndustryCargoesWindow : public Window {
 	{
 		this->GetWidget<NWidgetCore>(WID_IC_CAPTION)->widget_data = STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION;
 		this->ind_cargo = it;
-		_displayed_industries = 1ULL << it;
+		_displayed_industries.reset();
+		_displayed_industries.set(it);
 
 		this->fields.Clear();
 		CargoesRow *row = this->fields.Append();
@@ -2339,12 +2340,12 @@ struct IndustryCargoesWindow : public Window {
 
 			if (HasCommonValidCargo(central_sp->accepts_cargo, lengthof(central_sp->accepts_cargo), indsp->produced_cargo, lengthof(indsp->produced_cargo))) {
 				this->PlaceIndustry(1 + supp_count * num_indrows / num_supp, 0, it);
-				SetBit(_displayed_industries, it);
+				_displayed_industries.set(it);
 				supp_count++;
 			}
 			if (HasCommonValidCargo(central_sp->produced_cargo, lengthof(central_sp->produced_cargo), indsp->accepts_cargo, lengthof(indsp->accepts_cargo))) {
 				this->PlaceIndustry(1 + cust_count * num_indrows / num_cust, 4, it);
-				SetBit(_displayed_industries, it);
+				_displayed_industries.set(it);
 				cust_count++;
 			}
 		}
@@ -2373,7 +2374,7 @@ struct IndustryCargoesWindow : public Window {
 	{
 		this->GetWidget<NWidgetCore>(WID_IC_CAPTION)->widget_data = STR_INDUSTRY_CARGOES_CARGO_CAPTION;
 		this->ind_cargo = cid + NUM_INDUSTRYTYPES;
-		_displayed_industries = 0;
+		_displayed_industries.reset();
 
 		this->fields.Clear();
 		CargoesRow *row = this->fields.Append();
@@ -2408,12 +2409,12 @@ struct IndustryCargoesWindow : public Window {
 
 			if (HasCommonValidCargo(&cid, 1, indsp->produced_cargo, lengthof(indsp->produced_cargo))) {
 				this->PlaceIndustry(1 + supp_count * num_indrows / num_supp, 0, it);
-				SetBit(_displayed_industries, it);
+				_displayed_industries.set(it);
 				supp_count++;
 			}
 			if (HasCommonValidCargo(&cid, 1, indsp->accepts_cargo, lengthof(indsp->accepts_cargo))) {
 				this->PlaceIndustry(1 + cust_count * num_indrows / num_cust, 2, it);
-				SetBit(_displayed_industries, it);
+				_displayed_industries.set(it);
 				cust_count++;
 			}
 		}
@@ -2604,7 +2605,7 @@ struct IndustryCargoesWindow : public Window {
 
 			case WID_IC_IND_DROPDOWN: {
 				DropDownList *lst = new DropDownList;
-				for (uint8 i = 0; i < NUM_INDUSTRYTYPES; i++) {
+				for (uint i = 0; i < NUM_INDUSTRYTYPES; i++) {
 					IndustryType ind = _sorted_industry_types[i];
 					const IndustrySpec *indsp = GetIndustrySpec(ind);
 					if (!indsp->enabled) continue;
@@ -2691,7 +2692,7 @@ const int IndustryCargoesWindow::VERT_TEXT_PADDING = 5; ///< Vertical padding ar
 static void ShowIndustryCargoesWindow(IndustryType id)
 {
 	if (id >= NUM_INDUSTRYTYPES) {
-		for (uint8 i = 0; i < NUM_INDUSTRYTYPES; i++) {
+		for (uint i = 0; i < NUM_INDUSTRYTYPES; i++) {
 			const IndustrySpec *indsp = GetIndustrySpec(_sorted_industry_types[i]);
 			if (indsp->enabled) {
 				id = _sorted_industry_types[i];

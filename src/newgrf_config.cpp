@@ -715,7 +715,7 @@ static int CDECL GRFSorter(GRFConfig * const *p1, GRFConfig * const *p2)
 	const GRFConfig *c1 = *p1;
 	const GRFConfig *c2 = *p2;
 
-	return strcasecmp(c1->GetName(), c2->GetName());
+	return strnatcmp(c1->GetName(), c2->GetName());
 }
 
 /**
@@ -735,8 +735,8 @@ void DoScanNewGRFFiles(void *callback)
 	DEBUG(grf, 1, "Scan complete, found %d files", num);
 	if (num != 0 && _all_grfs != NULL) {
 		/* Sort the linked list using quicksort.
-		* For that we first have to make an array, then sort and
-		* then remake the linked list. */
+		 * For that we first have to make an array, then sort and
+		 * then remake the linked list. */
 		GRFConfig **to_sort = MallocT<GRFConfig*>(num);
 
 		uint i = 0;

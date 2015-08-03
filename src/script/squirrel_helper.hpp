@@ -88,8 +88,8 @@ namespace SQConvert {
 	template <> inline int Return<int64>       (HSQUIRRELVM vm, int64 res)       { sq_pushinteger(vm, res); return 1; }
 	template <> inline int Return<Money>       (HSQUIRRELVM vm, Money res)       { sq_pushinteger(vm, res); return 1; }
 	template <> inline int Return<bool>        (HSQUIRRELVM vm, bool res)        { sq_pushbool   (vm, res); return 1; }
-	template <> inline int Return<char *>      (HSQUIRRELVM vm, char *res)       { if (res == NULL) sq_pushnull(vm); else { sq_pushstring(vm, OTTD2SQ(res), -1); free(res); } return 1; }
-	template <> inline int Return<const char *>(HSQUIRRELVM vm, const char *res) { if (res == NULL) sq_pushnull(vm); else { sq_pushstring(vm, OTTD2SQ(res), -1); } return 1; }
+	template <> inline int Return<char *>      (HSQUIRRELVM vm, char *res)       { if (res == NULL) sq_pushnull(vm); else { sq_pushstring(vm, res, -1); free(res); } return 1; }
+	template <> inline int Return<const char *>(HSQUIRRELVM vm, const char *res) { if (res == NULL) sq_pushnull(vm); else { sq_pushstring(vm, res, -1); } return 1; }
 	template <> inline int Return<void *>      (HSQUIRRELVM vm, void *res)       { sq_pushuserpointer(vm, res); return 1; }
 	template <> inline int Return<HSQOBJECT>   (HSQUIRRELVM vm, HSQOBJECT res)   { sq_pushobject(vm, res); return 1; }
 
@@ -115,7 +115,7 @@ namespace SQConvert {
 
 		const SQChar *tmp;
 		sq_getstring(vm, -1, &tmp);
-		char *tmp_str = stredup(SQ2OTTD(tmp));
+		char *tmp_str = stredup(tmp);
 		sq_poptop(vm);
 		*ptr->Append() = (void *)tmp_str;
 		str_validate(tmp_str, tmp_str + strlen(tmp_str));
@@ -125,7 +125,7 @@ namespace SQConvert {
 	template <> inline Array      *GetParam(ForceType<Array *>,      HSQUIRRELVM vm, int index, SQAutoFreePointers *ptr)
 	{
 		/* Sanity check of the size. */
-		if (sq_getsize(vm, index) > UINT16_MAX) throw sq_throwerror(vm, _SC("an array used as parameter to a function is too large"));
+		if (sq_getsize(vm, index) > UINT16_MAX) throw sq_throwerror(vm, "an array used as parameter to a function is too large");
 
 		SQObject obj;
 		sq_getstackobj(vm, index, &obj);
@@ -140,7 +140,7 @@ namespace SQConvert {
 				*data.Append() = (int32)tmp;
 			} else {
 				sq_pop(vm, 4);
-				throw sq_throwerror(vm, _SC("a member of an array used as parameter to a function is not numeric"));
+				throw sq_throwerror(vm, "a member of an array used as parameter to a function is not numeric");
 			}
 
 			sq_pop(vm, 2);
@@ -749,17 +749,17 @@ namespace SQConvert {
 		/* Protect against calls to a non-static method in a static way */
 		sq_pushroottable(vm);
 		const char *className = GetClassName<Tcls, Ttype>();
-		sq_pushstring(vm, OTTD2SQ(className), -1);
+		sq_pushstring(vm, className, -1);
 		sq_get(vm, -2);
 		sq_pushobject(vm, instance);
-		if (sq_instanceof(vm) != SQTrue) return sq_throwerror(vm, _SC("class method is non-static"));
+		if (sq_instanceof(vm) != SQTrue) return sq_throwerror(vm, "class method is non-static");
 		sq_pop(vm, 3);
 
 		/* Get the 'real' instance of this class */
 		sq_getinstanceup(vm, 1, &real_instance, 0);
 		/* Get the real function pointer */
 		sq_getuserdata(vm, nparam, &ptr, 0);
-		if (real_instance == NULL) return sq_throwerror(vm, _SC("couldn't detect real instance of class for non-static call"));
+		if (real_instance == NULL) return sq_throwerror(vm, "couldn't detect real instance of class for non-static call");
 		/* Remove the userdata from the stack */
 		sq_pop(vm, 1);
 
@@ -791,17 +791,17 @@ namespace SQConvert {
 		/* Protect against calls to a non-static method in a static way */
 		sq_pushroottable(vm);
 		const char *className = GetClassName<Tcls, Ttype>();
-		sq_pushstring(vm, OTTD2SQ(className), -1);
+		sq_pushstring(vm, className, -1);
 		sq_get(vm, -2);
 		sq_pushobject(vm, instance);
-		if (sq_instanceof(vm) != SQTrue) return sq_throwerror(vm, _SC("class method is non-static"));
+		if (sq_instanceof(vm) != SQTrue) return sq_throwerror(vm, "class method is non-static");
 		sq_pop(vm, 3);
 
 		/* Get the 'real' instance of this class */
 		sq_getinstanceup(vm, 1, &real_instance, 0);
 		/* Get the real function pointer */
 		sq_getuserdata(vm, nparam, &ptr, 0);
-		if (real_instance == NULL) return sq_throwerror(vm, _SC("couldn't detect real instance of class for non-static call"));
+		if (real_instance == NULL) return sq_throwerror(vm, "couldn't detect real instance of class for non-static call");
 		/* Remove the userdata from the stack */
 		sq_pop(vm, 1);
 

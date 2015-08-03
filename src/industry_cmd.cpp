@@ -40,6 +40,7 @@
 #include "core/backup_type.hpp"
 #include "object_base.h"
 #include "game/game.hpp"
+#include "error.h"
 
 #include "table/strings.h"
 #include "table/industry_land.h"
@@ -1389,7 +1390,7 @@ static CommandCost CheckIfIndustryTilesAreFree(TileIndex tile, const IndustryTil
 		} else {
 			CommandCost ret = EnsureNoVehicleOnGround(cur_tile);
 			if (ret.Failed()) return ret;
-			if (MayHaveBridgeAbove(cur_tile) && IsBridgeAbove(cur_tile)) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
+			if (IsBridgeAbove(cur_tile)) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 
 			const IndustryTileSpec *its = GetIndustryTileSpec(gfx);
 
@@ -2739,6 +2740,26 @@ void InitializeIndustries()
 	_industry_sound_tile = 0;
 
 	_industry_builder.Reset();
+}
+
+/** Verify whether the generated industries are complete, and warn the user if not. */
+void CheckIndustries()
+{
+	int count = 0;
+	for (IndustryType it = 0; it < NUM_INDUSTRYTYPES; it++) {
+		if (Industry::GetIndustryTypeCount(it) > 0) continue; // Types of existing industries can be skipped.
+
+		bool force_at_least_one;
+		uint32 chance = GetScaledIndustryGenerationProbability(it, &force_at_least_one);
+		if (chance == 0 || !force_at_least_one) continue; // Types that are not available can be skipped.
+
+		const IndustrySpec *is = GetIndustrySpec(it);
+		SetDParam(0, is->name);
+		ShowErrorMessage(STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES, STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION, WL_WARNING);
+
+		count++;
+		if (count >= 3) break; // Don't swamp the user with errors.
+	}
 }
 
 /**

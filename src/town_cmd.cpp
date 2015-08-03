@@ -171,7 +171,7 @@ Money HouseSpec::GetRemovalCost() const
 	return (_price[PR_CLEAR_HOUSE] * this->removal_cost) >> 8;
 }
 
-// Local
+/* Local */
 static int _grow_town_result;
 
 /* Describe the possible states */
@@ -377,7 +377,8 @@ void Town::UpdateVirtCoord()
 	SetDParam(0, this->index);
 	SetDParam(1, this->cache.population);
 	this->cache.sign.UpdatePosition(pt.x, pt.y - 24 * ZOOM_LVL_BASE,
-		_settings_client.gui.population_in_label ? STR_VIEWPORT_TOWN_POP : STR_VIEWPORT_TOWN);
+		_settings_client.gui.population_in_label ? STR_VIEWPORT_TOWN_POP : STR_VIEWPORT_TOWN,
+		STR_VIEWPORT_TOWN);
 
 	SetWindowDirty(WC_TOWN_VIEW, this->index);
 }
@@ -868,7 +869,7 @@ static bool IsRoadAllowedHere(Town *t, TileIndex tile, DiagDirection dir)
 	if (DistanceFromEdge(tile) == 0) return false;
 
 	/* Prevent towns from building roads under bridges along the bridge. Looks silly. */
-	if (MayHaveBridgeAbove(tile) && IsBridgeAbove(tile) && GetBridgeAxis(tile) == DiagDirToAxis(dir)) return false;
+	if (IsBridgeAbove(tile) && GetBridgeAxis(tile) == DiagDirToAxis(dir)) return false;
 
 	/* Check if there already is a road at this point? */
 	if (GetTownRoadBits(tile) == ROAD_NONE) {
@@ -1297,12 +1298,55 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 }
 
 /**
+ * Checks whether a road can be followed or is a dead end, that can not be extended to the next tile.
+ * This only checks trivial but often cases.
+ * @param tile Start tile for road.
+ * @param dir Direction for road to follow or build.
+ * @return true If road is or can be connected in the specified direction.
+ */
+static bool CanFollowRoad(TileIndex tile, DiagDirection dir)
+{
+	TileIndex target_tile = tile + TileOffsByDiagDir(dir);
+	if (!IsValidTile(target_tile)) return false;
+	if (HasTileWaterGround(target_tile)) return false;
+
+	RoadBits target_rb = GetTownRoadBits(target_tile);
+	if (_settings_game.economy.allow_town_roads || _generating_world) {
+		/* Check whether a road connection exists or can be build. */
+		switch (GetTileType(target_tile)) {
+			case MP_ROAD:
+				return target_rb != ROAD_NONE;
+
+			case MP_STATION:
+				return IsDriveThroughStopTile(target_tile);
+
+			case MP_TUNNELBRIDGE:
+				return GetTunnelBridgeTransportType(target_tile) == TRANSPORT_ROAD;
+
+			case MP_HOUSE:
+			case MP_INDUSTRY:
+			case MP_OBJECT:
+				return false;
+
+			default:
+				/* Checked for void and water earlier */
+				return true;
+		}
+	} else {
+		/* Check whether a road connection already exists,
+		 * and it leads somewhere else. */
+		RoadBits back_rb = DiagDirToRoadBits(ReverseDiagDir(dir));
+		return (target_rb & back_rb) != 0 && (target_rb & ~back_rb) != 0;
+	}
+}
+
+/**
  * Returns "growth" if a house was built, or no if the build failed.
  * @param t town to inquiry
  * @param tile to inquiry
- * @return something other than zero(0)if town expansion was possible
+ * @return true if town expansion was possible
  */
-static int GrowTownAtRoad(Town *t, TileIndex tile)
+static bool GrowTownAtRoad(Town *t, TileIndex tile)
 {
 	/* Special case.
 	 * @see GrowTownInTile Check the else if
@@ -1339,7 +1383,7 @@ static int GrowTownAtRoad(Town *t, TileIndex tile)
 		 * and return if no more road blocks available */
 		if (IsValidDiagDirection(target_dir)) cur_rb &= ~DiagDirToRoadBits(ReverseDiagDir(target_dir));
 		if (cur_rb == ROAD_NONE) {
-			return _grow_town_result;
+			return _grow_town_result == GROWTH_SUCCEED;
 		}
 
 		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
@@ -1348,14 +1392,22 @@ static int GrowTownAtRoad(Town *t, TileIndex tile)
 		} else {
 			/* Select a random bit from the blockmask, walk a step
 			 * and continue the search from there. */
-			do target_dir = RandomDiagDir(); while (!(cur_rb & DiagDirToRoadBits(target_dir)));
+			do {
+				if (cur_rb == ROAD_NONE) return false;
+				RoadBits target_bits;
+				do {
+					target_dir = RandomDiagDir();
+					target_bits = DiagDirToRoadBits(target_dir);
+				} while (!(cur_rb & target_bits));
+				cur_rb &= ~target_bits;
+			} while (!CanFollowRoad(tile, target_dir));
 		}
 		tile = TileAddByDiagDir(tile, target_dir);
 
 		if (IsTileType(tile, MP_ROAD) && !IsRoadDepot(tile) && HasTileRoadType(tile, ROADTYPE_ROAD)) {
 			/* Don't allow building over roads of other cities */
 			if (IsRoadOwner(tile, ROADTYPE_ROAD, OWNER_TOWN) && Town::GetByTile(tile) != t) {
-				_grow_town_result = GROWTH_SUCCEED;
+				return false;
 			} else if (IsRoadOwner(tile, ROADTYPE_ROAD, OWNER_NONE) && _game_mode == GM_EDITOR) {
 				/* If we are in the SE, and this road-piece has no town owner yet, it just found an
 				 * owner :) (happy happy happy road now) */
@@ -1367,7 +1419,7 @@ static int GrowTownAtRoad(Town *t, TileIndex tile)
 		/* Max number of times is checked. */
 	} while (--_grow_town_result >= 0);
 
-	return (_grow_town_result == -2);
+	return _grow_town_result == GROWTH_SUCCEED - 1;
 }
 
 /**
@@ -1389,7 +1441,7 @@ static RoadBits GenRandomRoadBits()
 /**
  * Grow the town
  * @param t town to grow
- * @return true iff a house was built
+ * @return true iff something (house, road, bridge, ...) was built
  */
 static bool GrowTown(Town *t)
 {
@@ -1418,9 +1470,9 @@ static bool GrowTown(Town *t)
 	const TileIndexDiffC *ptr;
 	for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
 		if (GetTownRoadBits(tile) != ROAD_NONE) {
-			int r = GrowTownAtRoad(t, tile);
+			bool success = GrowTownAtRoad(t, tile);
 			cur_company.Restore();
-			return r != 0;
+			return success;
 		}
 		tile = TILE_ADD(tile, ToTileIndexDiff(*ptr));
 	}
@@ -2018,7 +2070,7 @@ static inline bool CanBuildHouseHere(TileIndex tile, TownID town, bool noslope)
 	if ((noslope && slope != SLOPE_FLAT) || IsSteepSlope(slope)) return false;
 
 	/* building under a bridge? */
-	if (MayHaveBridgeAbove(tile) && IsBridgeAbove(tile)) return false;
+	if (IsBridgeAbove(tile)) return false;
 
 	/* do not try to build over house owned by another town */
 	if (IsTileType(tile, MP_HOUSE) && GetTownIndex(tile) != town) return false;
@@ -2790,7 +2842,7 @@ static bool SearchTileForStatue(TileIndex tile, void *user_data)
 	/* Statues can be build on slopes, just like houses. Only the steep slopes is a no go. */
 	if (IsSteepSlope(GetTileSlope(tile))) return false;
 	/* Don't build statues under bridges. */
-	if (MayHaveBridgeAbove(tile) && IsBridgeAbove(tile)) return false;
+	if (IsBridgeAbove(tile)) return false;
 
 	/* A clear-able open space is always preferred. */
 	if ((IsTileType(tile, MP_CLEAR) || IsTileType(tile, MP_TREES)) && TryClearTile(tile)) {
@@ -3115,9 +3167,7 @@ static void UpdateTownGrowRate(Town *t)
 	if (t->larger_town) m /= 2;
 
 	t->growth_rate = m / (t->cache.num_houses / 50 + 1);
-	if (m <= t->grow_counter) {
-		t->grow_counter = m;
-	}
+	t->grow_counter = min(t->growth_rate, t->grow_counter);
 
 	SetBit(t->flags, TOWN_IS_GROWING);
 	SetWindowDirty(WC_TOWN_VIEW, t->index);

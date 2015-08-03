@@ -438,12 +438,20 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 		return s;
 	}
 
-	if (sprite_type == ST_NORMAL) {
-		if (!ResizeSprites(sprite, sprite_avail, file_slot, sc->id)) {
-			if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't resize the fallback sprite. What should I do?");
-			return (void*)GetRawSprite(SPR_IMG_QUERY, ST_NORMAL, allocator);
-		}
+	if (!ResizeSprites(sprite, sprite_avail, file_slot, sc->id)) {
+		if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't resize the fallback sprite. What should I do?");
+		return (void*)GetRawSprite(SPR_IMG_QUERY, ST_NORMAL, allocator);
 	}
+
+	if (sprite->type == ST_FONT && ZOOM_LVL_GUI != ZOOM_LVL_NORMAL) {
+		/* Make ZOOM_LVL_GUI be ZOOM_LVL_NORMAL */
+		sprite[ZOOM_LVL_NORMAL].width  = sprite[ZOOM_LVL_GUI].width;
+		sprite[ZOOM_LVL_NORMAL].height = sprite[ZOOM_LVL_GUI].height;
+		sprite[ZOOM_LVL_NORMAL].x_offs = sprite[ZOOM_LVL_GUI].x_offs;
+		sprite[ZOOM_LVL_NORMAL].y_offs = sprite[ZOOM_LVL_GUI].y_offs;
+		sprite[ZOOM_LVL_NORMAL].data   = sprite[ZOOM_LVL_GUI].data;
+	}
+
 	return BlitterFactory::GetCurrentBlitter()->Encode(sprite, allocator);
 }
 

@@ -21,6 +21,14 @@
 
 #include "table/strings.h"
 
+#if defined(WITH_ZLIB)
+#include <zlib.h>
+#endif
+
+#if defined(WITH_LZMA)
+#include <lzma.h>
+#endif
+
 #include "safeguards.h"
 
 /** Widgets for the textfile window. */
@@ -193,6 +201,117 @@ void TextfileWindow::SetupScrollbars()
 #endif /* WITH_FREETYPE */
 }
 
+#if defined(WITH_ZLIB)
+
+/**
+ * Do an in-memory gunzip operation. This works on a raw deflate stream,
+ * or a file with gzip or zlib header.
+ * @param bufp  A pointer to a buffer containing the input data. This
+ *              buffer will be freed and replaced by a buffer containing
+ *              the uncompressed data.
+ * @param sizep A pointer to the buffer size. Before the call, the value
+ *              pointed to should contain the size of the input buffer.
+ *              After the call, it contains the size of the uncompressed
+ *              data.
+ *
+ * When decompressing fails, *bufp is set to NULL and *sizep to 0. The
+ * compressed buffer passed in is still freed in this case.
+ */
+static void Gunzip(byte **bufp, size_t *sizep)
+{
+	static const int BLOCKSIZE  = 8192;
+	byte             *buf       = NULL;
+	size_t           alloc_size = 0;
+	z_stream         z;
+	int              res;
+
+	memset(&z, 0, sizeof(z));
+	z.next_in = *bufp;
+	z.avail_in = *sizep;
+
+	/* window size = 15, add 32 to enable gzip or zlib header processing */
+	res = inflateInit2(&z, 15 + 32);
+	/* Z_BUF_ERROR just means we need more space */
+	while (res == Z_OK || (res == Z_BUF_ERROR && z.avail_out == 0)) {
+		/* When we get here, we're either just starting, or
+		 * inflate is out of output space - allocate more */
+		alloc_size += BLOCKSIZE;
+		z.avail_out += BLOCKSIZE;
+		buf = ReallocT(buf, alloc_size);
+		z.next_out = buf + alloc_size - z.avail_out;
+		res = inflate(&z, Z_FINISH);
+	}
+
+	free(*bufp);
+	inflateEnd(&z);
+
+	if (res == Z_STREAM_END) {
+		*bufp = buf;
+		*sizep = alloc_size - z.avail_out;
+	} else {
+		/* Something went wrong */
+		*bufp = NULL;
+		*sizep = 0;
+		free(buf);
+	}
+}
+#endif
+
+#if defined(WITH_LZMA)
+
+/**
+ * Do an in-memory xunzip operation. This works on a .xz or (legacy)
+ * .lzma file.
+ * @param bufp  A pointer to a buffer containing the input data. This
+ *              buffer will be freed and replaced by a buffer containing
+ *              the uncompressed data.
+ * @param sizep A pointer to the buffer size. Before the call, the value
+ *              pointed to should contain the size of the input buffer.
+ *              After the call, it contains the size of the uncompressed
+ *              data.
+ *
+ * When decompressing fails, *bufp is set to NULL and *sizep to 0. The
+ * compressed buffer passed in is still freed in this case.
+ */
+static void Xunzip(byte **bufp, size_t *sizep)
+{
+	static const int BLOCKSIZE  = 8192;
+	byte             *buf       = NULL;
+	size_t           alloc_size = 0;
+	lzma_stream      z = LZMA_STREAM_INIT;
+	int              res;
+
+	z.next_in = *bufp;
+	z.avail_in = *sizep;
+
+	res = lzma_auto_decoder(&z, UINT64_MAX, LZMA_CONCATENATED);
+	/* Z_BUF_ERROR just means we need more space */
+	while (res == LZMA_OK || (res == LZMA_BUF_ERROR && z.avail_out == 0)) {
+		/* When we get here, we're either just starting, or
+		 * inflate is out of output space - allocate more */
+		alloc_size += BLOCKSIZE;
+		z.avail_out += BLOCKSIZE;
+		buf = ReallocT(buf, alloc_size);
+		z.next_out = buf + alloc_size - z.avail_out;
+		res = lzma_code(&z, LZMA_FINISH);
+	}
+
+	free(*bufp);
+	lzma_end(&z);
+
+	if (res == LZMA_STREAM_END) {
+		*bufp = buf;
+		*sizep = alloc_size - z.avail_out;
+	} else {
+		/* Something went wrong */
+		*bufp = NULL;
+		*sizep = 0;
+		free(buf);
+	}
+}
+#endif
+
+
 /**
  * Loads the textfile text from file and setup #lines.
  */
@@ -207,12 +326,31 @@ void TextfileWindow::SetupScrollbars()
 	FILE *handle = FioFOpenFile(textfile, "rb", dir, &filesize);
 	if (handle == NULL) return;
 
-	this->text = ReallocT(this->text, filesize + 1);
+	this->text = ReallocT(this->text, filesize);
 	size_t read = fread(this->text, 1, filesize, handle);
 	fclose(handle);
 
 	if (read != filesize) return;
 
+#if defined(WITH_ZLIB) || defined(WITH_LZMA)
+	const char *suffix = strrchr(textfile, '.');
+	if (suffix == NULL) return;
+#endif
+
+#if defined(WITH_ZLIB)
+	/* In-place gunzip */
+	if (strcmp(suffix, ".gz") == 0) Gunzip((byte**)&this->text, &filesize);
+#endif
+
+#if defined(WITH_LZMA)
+	/* In-place xunzip */
+	if (strcmp(suffix, ".xz") == 0) Xunzip((byte**)&this->text, &filesize);
+#endif
+
+	if (!this->text) return;
+
+	/* Add space for trailing \0 */
+	this->text = ReallocT(this->text, filesize + 1);
 	this->text[filesize] = '\0';
 
 	/* Replace tabs and line feeds with a space since str_validate removes those. */
@@ -264,12 +402,25 @@ const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filenam
 	char *slash = strrchr(file_path, PATHSEPCHAR);
 	if (slash == NULL) return NULL;
 
-	seprintf(slash + 1, lastof(file_path), "%s_%s.txt", prefix, GetCurrentLanguageIsoCode());
-	if (FioCheckFileExists(file_path, dir)) return file_path;
+	static const char * const exts[] = {
+		"txt",
+#if defined(WITH_ZLIB)
+		"txt.gz",
+#endif
+#if defined(WITH_LZMA)
+		"txt.xz",
+#endif
+	};
 
-	seprintf(slash + 1, lastof(file_path), "%s_%.2s.txt", prefix, GetCurrentLanguageIsoCode());
-	if (FioCheckFileExists(file_path, dir)) return file_path;
+	for (size_t i = 0; i < lengthof(exts); i++) {
+		seprintf(slash + 1, lastof(file_path), "%s_%s.%s", prefix, GetCurrentLanguageIsoCode(), exts[i]);
+		if (FioCheckFileExists(file_path, dir)) return file_path;
 
-	seprintf(slash + 1, lastof(file_path), "%s.txt", prefix);
-	return FioCheckFileExists(file_path, dir) ? file_path : NULL;
+		seprintf(slash + 1, lastof(file_path), "%s_%.2s.%s", prefix, GetCurrentLanguageIsoCode(), exts[i]);
+		if (FioCheckFileExists(file_path, dir)) return file_path;
+
+		seprintf(slash + 1, lastof(file_path), "%s.%s", prefix, exts[i]);
+		if (FioCheckFileExists(file_path, dir)) return file_path;
+	}
+	return NULL;
 }

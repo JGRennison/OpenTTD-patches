@@ -83,7 +83,7 @@ struct GUISettings {
 	uint8  stop_location;                    ///< what is the default stop location of trains?
 	uint8  auto_scrolling;                   ///< scroll when moving mouse to the edge (see #ViewportAutoscrolling)
 	byte   errmsg_duration;                  ///< duration of error message
-	byte   hover_delay;                      ///< time required to activate a hover event, in seconds
+	uint16 hover_delay_ms;                   ///< time required to activate a hover event, in milliseconds
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
 	bool   reverse_scroll;                   ///< right-Click-Scrolling scrolls in the opposite direction
@@ -144,7 +144,7 @@ struct GUISettings {
 	uint8  station_gui_sort_by;              ///< sort cargo entries in the station gui by station name or amount
 	uint8  station_gui_sort_order;           ///< the sort order of entries in the station gui - ascending or descending
 #ifdef ENABLE_NETWORK
-	uint16 network_chat_box_width;           ///< width of the chat box in pixels
+	uint16 network_chat_box_width_pct;       ///< width of the chat box in percent
 	uint8  network_chat_box_height;          ///< height of the chat box in lines
 	uint16 network_chat_timeout;             ///< timeout of chat messages in seconds
 #endif
@@ -278,7 +278,7 @@ struct GameCreationSettings {
 	uint8  map_y;                            ///< Y size of map
 	byte   land_generator;                   ///< the landscape generator
 	byte   oil_refinery_limit;               ///< distance oil refineries allowed from map edge
-	byte   snow_line_height;                 ///< a number 0-15 that configured snow line height
+	byte   snow_line_height;                 ///< the configured snow line height
 	byte   tgen_smoothness;                  ///< how rough is the terrain from 0-3
 	byte   tree_placer;                      ///< the tree placer algorithm
 	byte   heightmap_rotation;               ///< rotation director for the heightmap
@@ -296,9 +296,11 @@ struct GameCreationSettings {
 
 /** Settings related to construction in-game */
 struct ConstructionSettings {
+	uint8  max_heightlevel;                  ///< maximum allowed heightlevel
 	bool   build_on_slopes;                  ///< allow building on slopes
 	bool   autoslope;                        ///< allow terraforming under things
 	uint16 max_bridge_length;                ///< maximum length of bridges
+	byte   max_bridge_height;                ///< maximum height of bridges
 	uint16 max_tunnel_length;                ///< maximum length of tunnels
 	byte   train_signal_side;                ///< show signals on left / driving / right side
 	bool   extra_dynamite;                   ///< extra dynamite

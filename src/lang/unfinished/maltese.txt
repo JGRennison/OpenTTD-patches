@@ -191,6 +191,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Faxxa bi
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Faxxa biex tiskrolja - iskrolja l-lista lejn ix-xellug jew lemin
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Waqqa bini, etc.., Ctrl tagħzel zona dijagonali. Shift taqleb bejn bini/turija ta' stima ta' l-ispiza
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Default
 STR_BUTTON_CANCEL                                               :{BLACK}Ikkanċella
@@ -394,10 +397,6 @@ STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE
 ############ end of currency region
 
 
-############ start of measuring units region
-############ end of measuring units region
-
-
 
 ############ start of townname region
 ############ end of townname region
@@ -409,6 +408,8 @@ STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
+
+
 
 
 
@@ -432,7 +433,7 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 
 
 
-# Advanced settings window
+# Settings tree window
 
 
 
@@ -764,7 +765,8 @@ STR_GOALS_TEXT                                                  :{ORANGE}{STRING
 
 # Goal question window
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
+############ End of Goal Question button list
 
 # Subsidies window
 
@@ -846,6 +848,9 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 
 
 
+
+
+
 # Depot window
 STR_DEPOT_CAPTION                                               :{WHITE}{DEPOT}
 
@@ -874,6 +879,7 @@ STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} 
 
 
 # Autoreplace window
+
 
 
 
@@ -1043,6 +1049,7 @@ STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}L-istam
 # Town related errors
 
 # Industry related errors
+
 
 # Station construction related errors
 
@@ -1388,8 +1395,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

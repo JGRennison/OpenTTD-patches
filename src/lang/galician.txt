@@ -249,6 +249,17 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Barra de
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Barra de desprazamento - despraza a lista a esquerda/dereita
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Demoler edificios, etc. nun cadrado de terreo. Ctrl selecciona a área en diagonal. Shift alterna construir/amosar custo estimado
 
+# Show engines button
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN                           :{BLACK}Amosar os agochados
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE                    :{BLACK}Amosar os agochados
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP                            :{BLACK}Amosar os agochados
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT                        :{BLACK}Amosar os agochados
+
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP                   :{BLACK}Habilitando este botón, os trens agochados serán tamén amosados
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE_TOOLTIP            :{BLACK}Habilitando este botón, os vehículos rodados ocultos serán tamén amosados
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP_TOOLTIP                    :{BLACK}Habilitando este botón, os barcos agochados serán tamén amosados
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Habilitando este botón, as aeronaves agochadas serán amosadas
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Por defecto
 STR_BUTTON_CANCEL                                               :{BLACK}Cancelar
@@ -362,7 +373,7 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Saír
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opcións do xogo
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :Configuración avanzada
+STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Opcións
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Configuración da IA/scripts
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Configuración NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opcións de transparencia
@@ -916,10 +927,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari xeorxiano 
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Real iraniano (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Vehículos de estrada
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Selecciona o lado da estrada polo que circularán os vehículos
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Conducir pola esquerda
@@ -973,6 +980,12 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Resoluci
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Selecciona a resolución de pantalla a empregar
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :outra
 
+STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Tamaño da interface
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Seleciona o tamaño de elementos da interface a usar
+
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dobre tamaño
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Conxunto básico de gráficos
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selecciona o conxunto de gráficos básico a empregar
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} arquivo{P "" s} inexistente{P "" s}/erróneo{P "" s}
@@ -987,6 +1000,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Seleccio
 STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM} arquivo{P "" s} corrupto{P "" s}
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Información adicional sobre o conxunto de música base
 
+STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Erro ao obter a lista de resolucións soportadas
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}O modo de pantalla completa fallou
 
 # Custom currency window
@@ -1065,6 +1079,7 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :Moi chan
 STR_TERRAIN_TYPE_FLAT                                           :Chan
 STR_TERRAIN_TYPE_HILLY                                          :Accidentado
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Montañoso
+STR_TERRAIN_TYPE_ALPINIST                                       :Alpinista
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Permisiva
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerante
@@ -1072,8 +1087,8 @@ STR_CITY_APPROVAL_HOSTILE                                       :Hostil
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Non hai IA adecuada dispoñíbel...{}Podes descargar varias IAs a través do sistema de contidos online
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}Configuración avanzada
+# Settings tree window
+STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Opcións
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtrar texto:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Expandir todos
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Minimizar todos
@@ -1140,6 +1155,9 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Activa os desas
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Actitude das autoridades locáis cara a restruturacións de áreas: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Escolle ata que punto o ruido e danos medioambientais producidos polas compañias afectan á súa valoración municipal e ás próximas actividades construtivas na súa área
 
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Altura máxima do mapa: {STRING}
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Establecer a altura máxima permitida para os montes do mapa
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Non podes establecer a altura máxima do mapa a este valor. Canda menos un monte do mapa é maior
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Permitir modificacións do terreo baixo edificios, vías, etc. (autopendente): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Permite modificar o terreo baixo edificacións e vías sen retiralos
 STR_CONFIG_SETTING_CATCHMENT                                    :Permitir áreas de captación máis realistas: {STRING}
@@ -1168,6 +1186,8 @@ STR_CONFIG_SETTING_INFLATION                                    :Inflación: {ST
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :Activa a inflación na economía, onde os custos medran sensibelmente máis rápido ca os pagos
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :Luz máxima das pontes: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :A máxima lonxitude das pontes
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :Altura máxima de pontes: {STRING}
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT_HELPTEXT                   :Altura máxima para pontes construídas
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :Lonxitude máxima de túnel: {STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :A máxima lonxitude dos túneis
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :Método de construción manual de industrias primarias: {STRING}
@@ -1268,14 +1288,22 @@ STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Distancia máxi
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :As refinarías de petróleo só se constrúen preto do borde do mapa, isto é na costa para mapas de illas
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Cota de neve: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Desigualdade do terreo (só TerraGenesis) : {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(só TerraGenesis) Escolle a frequencia de montes: Suaviza as paisaxes tendo menos montes e máis espallados. Paisaxes escarpadas teñen moitos outos, que poderían semellar repetitivos
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Moi suave
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Suave
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Escabroso
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Moi escabroso
+STR_CONFIG_SETTING_VARIETY                                      :Distribución da variedade: {STRING}
+STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(só TerraGenesis) Controla se o mapa contén áreas montañosas ou chás. Como isto só fai o mapa máis chán, outras opcións deberan ser establecidas a montañosas
+STR_CONFIG_SETTING_RIVER_AMOUNT                                 :Cantidade de ríos: {STRING}
+STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Escolle cantos ríos xerar
 STR_CONFIG_SETTING_TREE_PLACER                                  :Algoritmo de colocación de árbores: {STRING}
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Escolle a distribución das árbores no mapa: 'Orixinal' pranta ábores uniformemente espalladas, 'Mellorado' as pranta en grupos
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Ningún
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Orixinal
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Mellorado
+STR_CONFIG_SETTING_ROAD_SIDE                                    :Vehículos rodados: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Escolle o senso de circulación
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Rotación do mapa de alturas: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Antihorario
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Horario
@@ -1330,6 +1358,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Apagado
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Desprazamento con click esquerdo: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Habilitar o desprazamento do mapa arrastrándoo co botón esquerdo do rato. Isto é especialmente útil se se emprega unha pantalla táctil para desprazarse
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autogravado: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecciona o intervalo entre gravados automáticos das partidas
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Empregar o formato de data {STRING} para os nomes das partidas gravadas
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Formato da data nos nomes das partidas gravadas
@@ -1666,7 +1696,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Multixog
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Opcións da partida
 STR_INTRO_HIGHSCORE                                             :{BLACK}Táboa das máximas puntuacións
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}Configuración avanzada
+STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Opcións
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Configuración NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Comprobar contido online
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Configuración dos scripts de IA
@@ -1686,7 +1716,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Seleccio
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Mostra-las opcións da partida
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Mostrar táboa das máximas puntuacións
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}Mostrar a configuración avanzada
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Opcións de visualización
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Mostra-la configuración de NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Buscar contidos novos e actualizados para descargar
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Motra-la configuración dos scripts de IA
@@ -1726,6 +1756,8 @@ STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Xogando
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Escavadora máxica (elimina industrias, obxectos non eliminables): {ORANGE}{STRING}
 STR_CHEAT_CROSSINGTUNNELS                                       :{LTBLUE}Os túneis poden cruzarse entre eles: {ORANGE}{STRING}
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}Os avións jet non se estrelarán (frecuentemente) nos aeroportos pequenos: {ORANGE} {STRING}
+STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}Trocar a altura máxima do mapa: {ORANGE}{NUM}
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Trocar a altura máxima dos montes do mapa
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Paisaxe temperada
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Paisaxe subártica
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Paisaxe subtropical
@@ -2614,7 +2646,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terreo propieda
 STR_ABOUT_OPENTTD                                               :{WHITE}Acerca de OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyright orixinal {COPYRIGHT} 1995 Chris Sawyer, Tódolos dereitos reservados
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versión {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2014 O equipo de OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 O equipo de OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Gravar partida
@@ -2648,6 +2680,9 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Nº de cidades:
 STR_MAPGEN_DATE                                                 :{BLACK}Data:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Nº de industrias:
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Altura máxima do mapa:
+STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Aumenta a altura máxima dos montes do mapa en un
+STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Diminiuir a altura máxima dos montes do mapa en un
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Cota de neve:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Subir a cota de neve unha altura
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Baixar a cota de neve unha altura
@@ -2677,6 +2712,7 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nome do 
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Tamaño:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Cambiar altura máxima do mapa
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Cambiar a altura da cota de neve
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Cambia-lo ano de inicio
 
@@ -2731,6 +2767,8 @@ STR_NEWGRF_SETTINGS_MOVEUP                                      :{BLACK}Subir
 STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}Move-lo arquivo NewGRF seleccionado arriba na lista
 STR_NEWGRF_SETTINGS_MOVEDOWN                                    :{BLACK}Baixar
 STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}Move-lo arquivo NewGRF seleccionado abaixo na lista
+STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}Actualizar
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP                             :{BLACK}Actualizar arquivos NewGRF para os cales tes unha versión máis nova instalada
 STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK}Unha lista dos arquivos NewGRF instalados.
 
 STR_NEWGRF_SETTINGS_SET_PARAMETERS                              :{BLACK}Establecer parámetros
@@ -2756,6 +2794,14 @@ STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Desactivad
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Incompatible con esta versión de OpenTTD
 
 # NewGRF save preset window
+STR_SAVE_PRESET_CAPTION                                         :{WHITE}Grava os preaxustes
+STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista de preaxustes dispoñibles, selecciona unha para copiala no nome de gravación de embaixo
+STR_SAVE_PRESET_TITLE                                           :{BLACK}Engade un nome para o preestablecido
+STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nome seleccionado actualmente para o preestablecido a gravar
+STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancelar
+STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Non troques o preestablecido
+STR_SAVE_PRESET_SAVE                                            :{BLACK}Gravar
+STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Gravar o establecido ao nome seleccionado actualmente
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Cambiar os parámetros de NewGRF
@@ -2787,7 +2833,6 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Sprite a
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Ir ao sprite anterior, ignorando pseudosprites, sprites recoloreados e sprites de fonte, e volvendo a empezar ao chegar ao inicio
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representación do sprite seleccionado. A aliñación ignórase ao debuxar este sprite
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Move-lo sprite, cambiando os valores de X e Y
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}Desp. X: {NUM}, Desp. Y: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Seleccionar sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Seleccionar un sprite en calquera parte da pantalla
 
@@ -2892,7 +2937,7 @@ STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Poboaci�
 STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Pasaxeiros último mes: {ORANGE}{COMMA}{BLACK}  máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Correo último mes: {ORANGE}{COMMA}{BLACK}  máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Carga necesaria para o crecemento da cidade:
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} necesario{P "" s}
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} necesario
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} necesarios en inverno
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} entregados
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (todavía requeridos)
@@ -2958,7 +3003,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Información
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Aviso
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Erro
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Cancelar
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Non
@@ -2977,6 +3022,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Reiniciar
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Pospoñer
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Renderse
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Pechar
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subvencións
@@ -3321,6 +3367,21 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Renomea-
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Renomear tipo de barco
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Renomea-lo tipo de avión
 
+STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON                        :{BLACK}Agochar
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_TOGGLE_BUTTON                 :{BLACK}Agochar
+STR_BUY_VEHICLE_SHIP_HIDE_TOGGLE_BUTTON                         :{BLACK}Agochar
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_TOGGLE_BUTTON                     :{BLACK}Agochar
+
+STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON                        :{BLACK}Visualización
+STR_BUY_VEHICLE_ROAD_VEHICLE_SHOW_TOGGLE_BUTTON                 :{BLACK}Visualización
+STR_BUY_VEHICLE_SHIP_SHOW_TOGGLE_BUTTON                         :{BLACK}Visualización
+STR_BUY_VEHICLE_AIRCRAFT_SHOW_TOGGLE_BUTTON                     :{BLACK}Visualización
+
+STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP                  :{BLACK}Trocar agochar/amosar tipo de tren
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_SHOW_TOGGLE_TOOLTIP           :{BLACK}Trocar agochar/amosar tipo de vehículo rodado
+STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}Trocar agochar/amosar tipo de barco
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}Tocar agochar/amosar o tipo de aeronave
+
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Renomea-lo tipo de vehículo de ferrocarril
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Renomea-lo tipo de vehículo de estrada
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}Renomear tipo de barco
@@ -3424,6 +3485,11 @@ STR_REPLACE_VEHICLE_TRAIN                                       :Tren
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Vehículo de estrada
 STR_REPLACE_VEHICLE_SHIP                                        :Barco
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aeronave
+
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}Vehículos en uso
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :{BLACK}Columna con vehículos que ti posúes
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}Vehículos dispoñibles
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK}Columna con vehículos dispoñibles para reemprazar
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Selecciona o tipo de máquina a substituír
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Selecciona o tipo da nova máquina que queres usar en lugar do tipo de máquina seleccionado á esquerda
@@ -4018,6 +4084,7 @@ STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}A excava
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... xa está ao nivel do mar
 STR_ERROR_TOO_HIGH                                              :{WHITE}... demasiado alto
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... xa é plana
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Despois a ponte sobre él será demasiado alta.
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Non se pode cambia-lo nome da compañía...
@@ -4067,6 +4134,9 @@ STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... só 
 STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... o bosque só se pode plantar sobre a cota de neve
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... só se pode construír sobre a cota de neve
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... só se pode construír baixo a cota de neve
+
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}Non habían lugares axeitados para industrias '{STRING}'
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Cambia os parámetros de xeración de mapas para obter un mapa mellor
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Non se pode construír a estación de ferrocarril aí...
@@ -4204,6 +4274,7 @@ STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Debes de
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Non pode empezar e rematar na mesma posición
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Os estribos da ponte non están o mesmo nivel
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}A ponte é demasiado baixa para o terreo
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}A ponte é demasiado alta para este terreo.
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}O inicio e o final deben estar aliñados
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... ambos extremos da ponte deben estar en terra
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... ponte demasiado longa
@@ -4765,6 +4836,7 @@ STR_COMPANY_NAME                                                :{COMPANY}
 STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMPANY_NUM}
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
+STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} (agochado)
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}
@@ -4800,8 +4872,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

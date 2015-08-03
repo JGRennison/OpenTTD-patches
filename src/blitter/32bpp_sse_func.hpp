@@ -159,7 +159,7 @@ static inline __m128i AdjustBrightnessOfTwoPixels(__m128i from, uint32 brightnes
 	__m128i briAB = _mm_cvtsi32_si128(brightness);
 	briAB = _mm_shuffle_epi8(briAB, BRIGHTNESS_LOW_CONTROL_MASK); // DEFAULT_BRIGHTNESS in 0, 0x00 in 2.
 	colAB = _mm_mullo_epi16(colAB, briAB);
-	__m128i colAB_ob = _mm_srli_epi16(colAB, 8+7);
+	__m128i colAB_ob = _mm_srli_epi16(colAB, 8 + 7);
 	colAB = _mm_srli_epi16(colAB, 7);
 
 	/* Sum overbright.
@@ -394,6 +394,17 @@ bmcr_alpha_blend_single:
 					src++;
 				}
 				break;
+
+			case BM_BLACK_REMAP:
+				for (uint x = (uint) bp->width; x > 0; x--) {
+					if (src->a != 0) {
+						*dst = Colour(0, 0, 0);
+					}
+					src_mv++;
+					dst++;
+					src++;
+				}
+				break;
 		}
 
 next_line:
@@ -447,6 +458,7 @@ bm_normal:
 			}
 		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT, RM_NONE, BT_NONE, true>(bp, zoom); return;
 		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP, RM_NONE, BT_NONE, true>(bp, zoom); return;
+		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP, RM_NONE, BT_NONE, true>(bp, zoom); return;
 	}
 }
 #endif /* FULL_ANIMATION */

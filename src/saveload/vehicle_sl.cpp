@@ -19,6 +19,7 @@
 #include "../effectvehicle_base.h"
 #include "../company_base.h"
 #include "../company_func.h"
+#include "../disaster_vehicle.h"
 
 #include "saveload.h"
 
@@ -199,7 +200,8 @@ void UpdateOldAircraft()
 			if (a->subtype == AIR_HELICOPTER) a->Next()->Next()->cur_speed = 32;
 
 			/* set new position x,y,z */
-			SetAircraftPosition(a, gp.x, gp.y, GetAircraftFlyingAltitude(a));
+			GetAircraftFlightLevelBounds(a, &a->z_pos, NULL);
+			SetAircraftPosition(a, gp.x, gp.y, GetAircraftFlightLevel(a));
 		}
 	}
 }
@@ -459,8 +461,8 @@ void AfterLoadVehicles(bool part_of_load)
 
 		v->UpdateDeltaXY(v->direction);
 		v->coord.left = INVALID_COORD;
-		VehicleUpdatePosition(v);
-		VehicleUpdateViewport(v, false);
+		v->UpdatePosition();
+		v->UpdateViewport(false);
 	}
 }
 
@@ -843,6 +845,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(DisasterVehicle, image_override,            SLE_UINT32,                 191, SL_MAX_VERSION),
 		 SLE_CONDVAR(DisasterVehicle, big_ufo_destroyer_target,  SLE_FILE_U16 | SLE_VAR_U32,   0, 190),
 		 SLE_CONDVAR(DisasterVehicle, big_ufo_destroyer_target,  SLE_UINT32,                 191, SL_MAX_VERSION),
+		 SLE_CONDVAR(DisasterVehicle, flags,                     SLE_UINT8,                  194, SL_MAX_VERSION),
 
 		SLE_CONDNULL(16,                                                           2, 143), // old reserved space
 

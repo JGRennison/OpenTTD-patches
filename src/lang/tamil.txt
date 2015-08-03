@@ -95,9 +95,9 @@ STR_CARGO_SINGULAR_FIZZY_DRINK                                  :குளிர
 
 # Quantity of cargo
 STR_QUANTITY_NOTHING                                            :
-STR_QUANTITY_PASSENGERS                                         :{COMMA} பயணி{P "" கள்}
+STR_QUANTITY_PASSENGERS                                         :{COMMA}{NBSP} பயணி{P "" கள்}
 STR_QUANTITY_COAL                                               :{WEIGHT_LONG} நிலக்கரி
-STR_QUANTITY_MAIL                                               :{COMMA} அஞ்சல் பை{P "" கள்}
+STR_QUANTITY_MAIL                                               :{COMMA}{NBSP} அஞ்சல் பை{P "" கள்}
 STR_QUANTITY_OIL                                                :{VOLUME_LONG} எண்ணெய்
 STR_QUANTITY_LIVESTOCK                                          :{COMMA} கால்நடை{P "" கள்}
 STR_QUANTITY_GOODS                                              :{COMMA} சரக்குப் பெட்டி{P "" கள்}
@@ -169,8 +169,8 @@ STR_PASSENGERS                                                  :{COMMA} பய�
 STR_BAGS                                                        :{COMMA} பை{P "" கள்}
 STR_TONS                                                        :{COMMA} டன்{P "" கள்}
 STR_LITERS                                                      :{COMMA} லிட்டர்{P "" கள்}
-STR_ITEMS                                                       :{COMMA} பொருட்கள்{P "" s}
-STR_CRATES                                                      :{COMMA} பெட்டி{P "" கள்}
+STR_ITEMS                                                       :{COMMA}{NBSP}பொருள்{P "" "பொருட்கள்"}
+STR_CRATES                                                      :{COMMA}{NBSP}பெட்டி{P "" கள்}
 
 # Colours, do not shuffle
 STR_COLOUR_DARK_BLUE                                            :கருநீலம்
@@ -191,37 +191,37 @@ STR_COLOUR_GREY                                                 :சாம்ப
 STR_COLOUR_WHITE                                                :வெள்ளை
 
 # Units used in OpenTTD
-STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
-STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/h
-STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
+STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mph
+STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km/h
+STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 
-STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hp
-STR_UNITS_POWER_METRIC                                          :{COMMA}hp
-STR_UNITS_POWER_SI                                              :{COMMA}kW
+STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}hp
+STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}hp
+STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
-STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}டன்
-STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
-STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
+STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}டன்
+STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}டன்
+STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}கி.கி.
 
-STR_UNITS_WEIGHT_LONG_IMPERIAL                                  :{COMMA} டன்{P "" கள்}
-STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA} டன்{P "" கள்}
-STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA} கிலோ
+STR_UNITS_WEIGHT_LONG_IMPERIAL                                  :{COMMA}{NBSP}டன்{P "" கள்}
+STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA}{NBSP}டன்{P "" கள்}
+STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA}{NBSP}கி.கி.
 
-STR_UNITS_VOLUME_SHORT_IMPERIAL                                 :{COMMA}கேலன்
-STR_UNITS_VOLUME_SHORT_METRIC                                   :{COMMA}l
-STR_UNITS_VOLUME_SHORT_SI                                       :{COMMA}m³
+STR_UNITS_VOLUME_SHORT_IMPERIAL                                 :{COMMA}{NBSP}கேலன்
+STR_UNITS_VOLUME_SHORT_METRIC                                   :{COMMA}{NBSP}லி
+STR_UNITS_VOLUME_SHORT_SI                                       :{COMMA}{NBSP}மீ³
 
-STR_UNITS_VOLUME_LONG_IMPERIAL                                  :{COMMA} கேலன்{P "" கள்}
-STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA} லிட்டர்{P "" கள்}
-STR_UNITS_VOLUME_LONG_SI                                        :{COMMA} m³
+STR_UNITS_VOLUME_LONG_IMPERIAL                                  :{COMMA}{NBSP}கேலன்{P "" கள்}
+STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA}{NBSP}லிட்டர்{P "" கள்}
+STR_UNITS_VOLUME_LONG_SI                                        :{COMMA}{NBSP}மீ³
 
-STR_UNITS_FORCE_IMPERIAL                                        :{COMMA} lbf
-STR_UNITS_FORCE_METRIC                                          :{COMMA} kgf
-STR_UNITS_FORCE_SI                                              :{COMMA} kN
+STR_UNITS_FORCE_IMPERIAL                                        :{COMMA}{NBSP}lbf
+STR_UNITS_FORCE_METRIC                                          :{COMMA}{NBSP}kgf
+STR_UNITS_FORCE_SI                                              :{COMMA}{NBSP}kN
 
-STR_UNITS_HEIGHT_IMPERIAL                                       :{COMMA} அடி
-STR_UNITS_HEIGHT_METRIC                                         :{COMMA} மீ
-STR_UNITS_HEIGHT_SI                                             :{COMMA} m
+STR_UNITS_HEIGHT_IMPERIAL                                       :{COMMA}{NBSP}அடி
+STR_UNITS_HEIGHT_METRIC                                         :{COMMA}{NBSP}மீ
+STR_UNITS_HEIGHT_SI                                             :{COMMA}{NBSP}மீ
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}வடிகட்டி தொடர்:
@@ -246,6 +246,13 @@ STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Toggle l
 STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Scroll bar - scrolls list up/down
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Scroll bar - scrolls list left/right
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}சதுர நிலப்பகுதியில் கட்டிடம் போன்றவற்றை இடிக்க. Ctrl தேர்வுசெய்திட. Shift உத்தேச செலவை/கட்டிடத்தை காட்டிட
+
+# Show engines button
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN                           :{BLACK}மறைந்திருப்பதை காட்டு
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE                    :{BLACK}மறைந்திருப்பதை காட்டு
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP                            :{BLACK}மறைந்திருப்பதை காட்டு
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT                        :{BLACK}மறைந்திருப்பதை காட்டு
+
 
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Default
@@ -360,7 +367,7 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :வெளிய
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :விளையாட்டு விருப்ப பேரம்
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :அமைப்புகள்
+STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :அமைப்புகள்
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI / ஆட்ட அமைப்புகள்
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF அமைப்புகள்
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :ஒளி அமைப்புகள்
@@ -386,6 +393,7 @@ STR_FILE_MENU_EXIT                                              :வெளிய
 # map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :உலகப் படம்
 STR_MAP_MENU_EXTRA_VIEW_PORT                                    :கூடுதல் பார்வைபடம்
+STR_MAP_MENU_LINGRAPH_LEGEND                                    :சரக்கு செல்லும் வழிப் படம்
 STR_MAP_MENU_SIGN_LIST                                          :குறிகளின் பட்டியல்
 
 ############ range for town menu starts
@@ -885,10 +893,6 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :தென் �
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :புதிதாக...
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}சாலை வாகனங்கள்
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}வாகனங்கள் சாலையின் எந்தப்பக்கத்தில் செல்ல வேண்டும்
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :இடப்பக்கம் ஒட்டு
@@ -939,6 +943,11 @@ STR_GAME_OPTIONS_FULLSCREEN                                     :{BLACK}மு�
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}திரையின் அளவு
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}திரை அளவினைத் தேர்ந்தெடுக்கவும்
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :மற்றவை
+
+
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :சராசரி
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :இரண்டு மடங்கு
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :நான்கு மடங்கு
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}அடிப்படை அசைவூட்டம்
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}பயன்படுத்தப்போகும் அடிப்படை அசைவூட்டத்தினை தேர்ந்தெடுக்கவும்
@@ -1031,14 +1040,15 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :மிகவு
 STR_TERRAIN_TYPE_FLAT                                           :சமமான
 STR_TERRAIN_TYPE_HILLY                                          :உயர்ந்து
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :மலைகளாக
+STR_TERRAIN_TYPE_ALPINIST                                       :அல்பைனிசிட்டு
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :அனுமதிதரும்
 STR_CITY_APPROVAL_TOLERANT                                      :பொறுத்துக்கொள்ளும்
 STR_CITY_APPROVAL_HOSTILE                                       :அனுமதிக்காது
 
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}சிறப்பு அமைப்புகள்
+# Settings tree window
+STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}அமைப்புகள்
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}வடிகட்டி:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}அனைத்தையும் விரிவாக்கு
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}அனைத்தையும் மூடு
@@ -1053,7 +1063,7 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :நிறுவ
 
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}பகுப்பு:
 STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}வகை:
-STR_CONFIG_SETTING_RESTRICT_BASIC                               :அடிப்படை அமைப்புகள்
+STR_CONFIG_SETTING_RESTRICT_BASIC                               :அடிப்படை அமைப்புகளை மட்டுமே காட்டு
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :சிறப்பு அமைப்புகள்
 STR_CONFIG_SETTING_RESTRICT_ALL                                 :அதிக / அனைத்து அமைப்புகள்
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT             :முதலில் இருந்த மதிப்பினை மாற்றம் செய்யப்பட்ட அமைப்புகள்
@@ -1102,6 +1112,8 @@ STR_CONFIG_SETTING_TRAIN_REVERSING                              :நிலைய
 STR_CONFIG_SETTING_DISASTERS                                    :பேரழிவுகள்: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL                                :நகர மறு அமைப்பின் மீது நகராட்சியின் நிலை: {STRING}
 
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :அதிகபட்ச வரைபட உயரம்: {STRING}
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :இந்த வரைபடத்திலுள்ள மலைகளின் அதிகபட்ச உயரத்தினை அமை
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :நகரத்தின் சாலைகள், பாலங்கள் மற்றும் சுரங்கங்களை நீக்க அனுமதிக்கவும்: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :நகராட்சியின் கட்டடங்கள் நீக்குவதை எளிதாக்கவும்
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :இரயில்களின் அதிகபட்ச நீளம்: {STRING}
@@ -1120,6 +1132,8 @@ STR_CONFIG_SETTING_INFLATION                                    :விலைவ
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :பண வீக்கத்தினை செயல்படுத்து, இதனால் செலவுகள் வளர்ச்சி வரவுகளின் வளர்ச்சியைவிட அதிகமாகும்
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :அதிகபட்ச பால நீளம்: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :கட்டப்படும் பாலங்களின் அதிகபட்ச நீளம்
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :பாலத்தின் அதிகபட்ச உயரம்: {STRING}
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT_HELPTEXT                   :பாலம் கட்டுவதற்கான அதிகபட்ச உயரம்
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :அதிகபட்ச சுரங்க நீளம்: {STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :கட்டப்படும் சுரங்கங்களின் அதிகபட்ச நீளம்
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :மனித அடிப்படை தொழிற்சாலை கட்டுமான வழி: {STRING}
@@ -1180,7 +1194,7 @@ STR_CONFIG_SETTING_AUTORENEW_MONEY                              :காலாவ
 STR_CONFIG_SETTING_ERRMSG_DURATION                              :பிழை செய்திக்கான கால அளவு: {STRING}
 STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} விநாடி{P 0 "" கள்}
 STR_CONFIG_SETTING_HOVER_DELAY                                  :tooltips இனை காட்டு: {STRING}
-STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :காட்டவும் {COMMA} விநாடி{P 0 "" கள்}
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :{COMMA} விநாடி{P 0 "" கள்} காட்டவும்
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :வலது சொடுக்கு
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :நகரத்தின் மக்கள்த் தொகையினை அதன் பெயருடன் காட்டு: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :நகரத்தின் மக்கள்தொகையினை வரைபடத்தில் காட்டவும்
@@ -1299,7 +1313,7 @@ STR_CONFIG_SETTING_AI_PROFILE_HARD                              :கடுமை
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :பழுதுபார்த்தல்கள் இடையே உள்ள காலத்தினை சதவிகிதத்தில் காட்டவும்: {STRING}
 STR_CONFIG_SETTING_SERVINT_TRAINS                               :இரயிகளின் பழுதுபார்த்தல் இடைவேளி: {STRING}
-STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA} நாள்{P "நாள்" நாட்கள்}/%
+STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA}{NBSP}நாள்{P "நாள்" நாட்கள்}/%
 STR_CONFIG_SETTING_SERVINT_DISABLED                             :செயலிழக்க செய்யப்பட்டது
 STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES                        :சாலை வாகனங்களின் பழுதுபார்த்தல் இடைவேளி: {STRING}
 STR_CONFIG_SETTING_SERVINT_AIRCRAFT                             :விமாங்களின் பழுதுபார்த்தல் இடைவேளி: {STRING}
@@ -1482,7 +1496,7 @@ STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}சி�
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}ஆட்டத்தின் அமைப்புகள்
 STR_INTRO_HIGHSCORE                                             :{BLACK}புள்ளிகள் பட்டியல்
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}அமைப்புகள்
+STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}அமைப்புகள்
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF அமைப்புகள்
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}கோப்புகளை இணையதளத்தில் தேடு
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI / ஆட்டம் அமைப்புகள்
@@ -1498,7 +1512,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}'பொ�
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}ஆட்டம் அமைப்புகளைக் காட்டு
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}புள்ளிகள் பட்டியலினைக் காட்டவும்
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}சிறப்பு அமைப்புகளைக் காட்டு
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}திரை அமைப்புகள்
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF அமைப்புகளைக் காட்டு
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}AI/வரிவடிவங்கள் அமைப்புகளைக் காட்டு
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK} 'OpenTTD'ஐ விட்டு வெளியேறு
@@ -1534,6 +1548,8 @@ STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}இந�
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}அதிசய நிலச்சமனி (தொழிற்சாலைகள் மற்றும் பொருட்களை நீக்குவதற்கு): {ORANGE}{STRING}
 STR_CHEAT_CROSSINGTUNNELS                                       :{LTBLUE}சுரங்கங்கள் ஒன்றுக்கொன்று குறுக்கிடலாம்: {ORANGE}{STRING}
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}சிறிய விமான நிலையங்களில் ஜெட்விமானங்கள் நொறுங்காது: {ORANGE}{STRING}
+STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}வரைபடத்திலுள்ள மலைகளின் அதிகபட்ச உயரத்தினை மாற்று: {ORANGE}{NUM}
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}வரைபடத்திலுள்ள மலைகளின் அதிகபட்ச உயரத்தினை மாற்று
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :மிதமான நிலவெளி
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :வட துருவ நிலவெளி
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :மிதவெப்பமண்டல நிலவெளி
@@ -2349,7 +2365,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :நிறுவ
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD-ஐ பற்றி
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}அசல் உரிமைகள் {COPYRIGHT} 1995 கிறிஸ் சாயர், எல்லா உரிமைகளும் பதிவுசெய்யப்பட்டது
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD பதிப்பு {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2014 OpenTTD குழுமம்
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD குழுமம்
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ஆட்டத்தை பதிவு செய்
@@ -2380,6 +2396,9 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}நகரங்களின் எண்ணிக்கை:
 STR_MAPGEN_DATE                                                 :{BLACK}தேதி:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}தொழிற்சாலைகளின் எண்ணிக்கை:
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}அதிகபட்ச வரைபட உயரம்:
+STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}வரைபடத்திலுள்ள மலைகளின் அதிகபட்ச உயரத்தினை ஒரு அலகு உயர்த்து
+STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}வரைபடத்திலுள்ள மலைகளின் அதிகபட்ச உயரத்தினை ஒரு அலகு குறை
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}பனிக் கோடின் உயரம்:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}பனி கோடின் உயரத்தை ஒரு அடி உயர்த்து
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}பனி கோடின் உயரத்தை ஒரு அடி இறக்கு
@@ -2408,6 +2427,7 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}உய�
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}அளவு:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}வரைபடத்தின் அதிகபட்ச உயரத்தினை மாற்று
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}பனிக் கோடின் உயரத்தினை மாற்று
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}தொடங்கும் வருடத்தினை மாற்று
 
@@ -2509,7 +2529,6 @@ STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}ஸ்�
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}அடுத்த ஸ்பிரைட்டு
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}ஸ்பிரைட்டுயிற்கு செல்லவும்
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}முந்தைய ஸ்பிரைட்டு
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X offset: {NUM}, Y offset: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}ஸ்பிரைட்டினைத் தேர்ந்தெடுக்கவும்
 
 STR_SPRITE_ALIGNER_GOTO_CAPTION                                 :{WHITE}ஸ்பிரைட்டிற்கு செல்லவும்
@@ -2600,8 +2619,8 @@ STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} சேர்க்கப்பட்டவை
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (இன்னும் தேவை)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{GREEN} (சேர்க்கப்பட்டது)
-STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}நகரம் ஒவ்வொரு {ORANGE}{COMMA}{BLACK} நாட்களுக்கும் வளர்கிறது
-STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}நகரம் ஒவ்வொரு {ORANGE}{COMMA}{BLACK} நாட்களுக்கும் வளர்கிறது (நிதியதவியால்)
+STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}நகரம் ஒவ்வொரு {ORANGE}{COMMA}{BLACK}{NBSP}நாட்களுக்கும் வளர்கிறது
+STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}நகரம் ஒவ்வொரு {ORANGE}{COMMA}{BLACK}{NBSP}நாட்களுக்கும் வளர்கிறது (நிதியதவியால்)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}நகரம் {RED}வளருவதில்லை{BLACK}
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}நகரத்தில் ஒலி இரைச்சல் அளவு: {ORANGE}{COMMA}{BLACK}  அதிகம்: {ORANGE}{COMMA}
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}நகராட்சி
@@ -2655,7 +2674,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :தகவல்
 STR_GOAL_QUESTION_CAPTION_WARNING                               :எச்சரிக்கை
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :பிழை
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :இரத்து செய்
 STR_GOAL_QUESTION_BUTTON_OK                                     :சரி
 STR_GOAL_QUESTION_BUTTON_NO                                     :இல்லை
@@ -2674,6 +2693,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :மீண்ட
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :தள்ளிவை
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :சரணடை
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :மூடு
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}மானியங்கள்
@@ -3001,6 +3021,9 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}சா�
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}கப்பல் வகையின் பெயரினை மாற்றவும்
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}விமான வகையின் பெயரினை மாற்றவும்
 
+
+
+
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}இரயில் வாகன வகையின் பெயரினை மாற்றவும்
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}சாலை வாகன வகையின் பெயரினை மாற்றவும்
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}கப்பல் வகையின் பெயரினை மாற்றவும்
@@ -3094,6 +3117,7 @@ STR_REPLACE_VEHICLE_TRAIN                                       :இரயில
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :சாலை வாகனம்
 STR_REPLACE_VEHICLE_SHIP                                        :கப்பல்
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :விமானம்
+
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}மாற்றியமைக்க பொறி வகையினை தேர்ந்தெடுக்க
 
@@ -3208,7 +3232,7 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}கொ�
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}இடமாற்றம் வரவுகள்: {LTBLUE}{CURRENCY_LONG}
 
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}பராமரிப்புகளுக்கிடையேயான காலம்: {LTBLUE}{COMMA}நாட்கள்{BLACK}   கடைசி பராமரிப்பு: {LTBLUE}{DATE_LONG}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}பராமரிப்புகளுக்கிடையேயான காலம்: {LTBLUE}{COMMA}{NBSP}நாட்கள்{BLACK}   கடைசி பராமரிப்பு: {LTBLUE}{DATE_LONG}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}பராமரிப்புகளுக்கிடையேயான காலம்: {LTBLUE}{COMMA}%{BLACK}   கடைசி பராமரிப்பு: {LTBLUE}{DATE_LONG}
 
 STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}பழுதுபார்த்தல் இடைவேளி வகையினை மாற்றவும்
@@ -3428,8 +3452,8 @@ STR_TIMETABLE_TRAVEL_FOR                                        :{STRING} கா
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :{STRING} காலத்திற்கு பயணி, அதிகபட்ச வேகம் {VELOCITY}
 STR_TIMETABLE_STAY_FOR                                          :மற்றும் {STRING} இற்கு நிற்கவும்
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :மற்றும் {STRING} இற்கு பயணிக்கவும்
-STR_TIMETABLE_DAYS                                              :{COMMA} நாள்{P "" கள்}
-STR_TIMETABLE_TICKS                                             :{COMMA} நொடி{P "" கள்}
+STR_TIMETABLE_DAYS                                              :{COMMA}{NBSP}நாள்{P "" "நாட்கள்"}
+STR_TIMETABLE_TICKS                                             :{COMMA}{NBSP}நொடி{P "" கள்}
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}இந்த கால அட்டவணை முடிய {STRING} காலமாகும்
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}இந்த கால அட்டவணை முடிய குரைந்தபட்சம் {STRING} காலமாவது ஆகும்.(ஏனெனில் அனைத்தும் கால அட்டவணைபடவில்லை)
@@ -3708,6 +3732,7 @@ STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... ப�
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... பனி-கோடின் மேலே மட்டுமே கட்ட முடியும்
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... பனி-கோடின் கீழே மட்டுமே கட்ட முடியும்
 
+
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}இங்கே இரயில் நிலையம் கட்ட முடியாது...
 STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}பேருந்து நிலையத்தினை கட்ட இயலாது...
@@ -3844,6 +3869,7 @@ STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}மு�
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}ஆரம்பித்த இடத்திலிருந்தே முடியக் கூடாது
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}பாலத்தின் முனைகள் ஒரே உயரத்தில் இல்லை
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}பாலம் மிகவும் உயரம் மிகவும் குறைவாக உள்ளது
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}இந்த நிலப்பரப்பிற்கு இப்பாலம் அதிகமான உயரத்திலுள்ளது.
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}ஆரம்பம் மற்றும் முடிவு ஒரே கோடில் இருக்க வேண்டும்
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... பாலத்தின் முடிவுகள் இரண்டும் நிலத்திலேயே இருக்க வேண்டும்
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... பாலம் மிக நீளமாக உள்ளது
@@ -4407,6 +4433,7 @@ STR_COMPANY_NAME                                                :{COMPANY}
 STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMPANY_NUM}
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
+STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} (மறைக்கப்பட்டுள்ளது)
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}
@@ -4442,8 +4469,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

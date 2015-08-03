@@ -436,6 +436,17 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Skrol - 
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Klizač - pomera spisak levo/desno
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Uklanja građevinu i dr. na kvadratu tla. Ctrl obeležava dijagonalno područje. Shift prebacuje između izgradnje i prikaza procene troškova
 
+# Show engines button
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN                           :{BLACK}Prikaži skriveni vozovi
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE                    :{BLACK}Prikaži skrivena drumska vozila
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP                            :{BLACK}Prikaži skrivene brodove
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT                        :{BLACK}Prikaži skrivene letilice
+
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP                   :{BLACK}Omogućavanje ovog podešavanja znači da će se i skriveni vozevi biti prikazani.
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE_TOOLTIP            :{BLACK}Omugućavanjem ovog dogmeta, sakrivena drumska vozila će takođe biti prikazan
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP_TOOLTIP                    :{BLACK}Omugućavanjem ovog dogmeta, sakriveni brod će takođe biti prikazan
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Omugućavanjem ovog dogmeta, sakriveni avion će takođe biti prikazan
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Prvobitno
 STR_BUTTON_CANCEL                                               :{BLACK}Otkaži
@@ -548,7 +559,7 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Izađi
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opcije
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :Detaljna podešavanja
+STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Podešavanja
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Podešavanja VI/Skripte partije
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF podešavanja
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opcije transparentnosti
@@ -1106,10 +1117,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijski Lari 
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranski Rijal (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Drumska vozila
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Izaberi stranu puta kojom će se kretati drumska vozila
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Levom stranom
@@ -1163,6 +1170,13 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Veličin
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Odaberite željenu veličinu ekrana
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :drugo
 
+STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Veličina interfejsa
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Izaberite većinu elementa koja će se koristiti
+
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalna veličina
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Uvećavajte veličinu dva puta
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Uvećavajte veličinu četiri puta
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Osnovni skup grafika
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Odaberite željeni skup osnovnih grafika
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} datotek{P a e a} nedostaj{P e u e}/neispravn{P a o o}
@@ -1177,6 +1191,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Odaberit
 STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM} oštećen{P a e ih} datotek{P a e a}
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Dodatni podaci o osnovnom skupu muzike
 
+STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Neuspešno dobijanje spiska podržanih rezolucija
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}Neuspešno prebacivanje u ceo ekran
 
 # Custom currency window
@@ -1255,6 +1270,7 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :Ravničarski
 STR_TERRAIN_TYPE_FLAT                                           :Brdski
 STR_TERRAIN_TYPE_HILLY                                          :Brdsko-planinski
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Planinski
+STR_TERRAIN_TYPE_ALPINIST                                       :Planinar
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Popustljiv
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantan
@@ -1262,8 +1278,8 @@ STR_CITY_APPROVAL_HOSTILE                                       :Neprijateljski
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Nisu dostupne odgovarajuće VI...{}Možete preuzeti nekoliko VI preko sistema za preuzimanje dodataka
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}Napredna Podešavanja
+# Settings tree window
+STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Podešavanja
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtriraj po:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Proširi sve
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Skupi sve
@@ -1330,6 +1346,9 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Uključuje i is
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Stav gradskog odbora u pogledu restrukturiranja zone: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Izbor koliko će buka i zagađenje koje proizvode kompanije uticati na njihov gradski rejting i dalje građevinske akcije u toj zoni
 
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maksimalna visina mape: {STRING}
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Namestite dozvoljen maksimum visine planina na ovoj mapi
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Ne mozete namestiti maksimalnu visinu mape ovoj vrednosti. Barem još jedna planina je veća
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Dozvoljena izmena nagiba ispod zgrada, koloseka, itd. (autoslope): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Dozvoli iskopavanja ispod građevina i pruge bez da se uklone
 STR_CONFIG_SETTING_CATCHMENT                                    :Realističnije veličine prihvatnih površina: {STRING}
@@ -1358,6 +1377,8 @@ STR_CONFIG_SETTING_INFLATION                                    :Inflacija: {STR
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :Omogućuje inflaciju tako da troškovi rastu malo brže od isplata
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :Najveća dužina mosta: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :Maksimalna dužina za podizanje mostova
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :Najveća visina mosta: {STRING}
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT_HELPTEXT                   :Maksimalna visina za dradjenje mostova
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :Najveća dužina tunela: {STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :Maksimalna dužina za iskopavanje tunela
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :Metod izgradnje finansiranih primarnih industrija: {STRING}
@@ -1463,6 +1484,8 @@ STR_CONFIG_SETTING_TREE_PLACER                                  :Posađivanje dr
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Nikakav
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Originalni
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Unapređen
+STR_CONFIG_SETTING_ROAD_SIDE                                    :Drumskih vozila: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Odaberite stranu saobraćaja
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Orijentacija elevacione karte: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Nalevo
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Nadesno
@@ -1797,7 +1820,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Partija 
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Opcije
 STR_INTRO_HIGHSCORE                                             :{BLACK}Tabela najboljih rezultata
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}Napredna Podešavanja
+STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Podešavanja
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF Podešavanja
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Spisak Dodataka na Mreži
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Podešavanja VI/Skripte Partije
@@ -1817,7 +1840,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Izbor 'z
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Prikazuje opcije igre
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Prikazuje tabelu najboljih rezultata
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}Prikazuje prozor sa detaljnim podešavanjima
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Prikaži podešavanje
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Prikazuje NewGRF podešavanja
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Pregled novih i ažureiranih dodatka za preuzimanje
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Prikazuje podešavanja za VI/Skriptu partije
@@ -1857,6 +1880,8 @@ STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Upravlj
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magični buldožer (uklanja fabrike, nepokretnosti): {ORANGE}{STRING}
 STR_CHEAT_CROSSINGTUNNELS                                       :{LTBLUE}Tuneli mogu da se ukrštaju: {ORANGE}{STRING}
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}Veliki avioni se neće (često) rušiti kod malih aerodorma: {ORANGE} {STRING}
+STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}Promenite maksimalnu visinu mape: {ORANGE}{NUM}
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Promenite maksimalnu visinu planina na mapi
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :Umereni klimatski pojas
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :Subpolarni klimatski pojas
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :Suptropski klimatski pojas
@@ -2452,8 +2477,8 @@ STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_BRIDGE                      :{BLACK}Izgradnj
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_BRIDGE                   :{BLACK}Izgradnja tramvajskog mosta. Shift prebacuje između izgradnje i prikaza procene troškova
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_TUNNEL                      :{BLACK}Izgradnja drumskog tunela. Shift prebacuje između izgradnje i prikaza procene troškova
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_TUNNEL                   :{BLACK}Izgradnja tramvajskog tunela. Shift prebacuje između izgradnje i prikaza procene troškova
-STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_ROAD           :{BLACK}Uklanjanje puteva (kada je uključeno)
-STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_TRAMWAYS       :{BLACK}Uklanjanje tramvajskih građevina (kada je uključeno)
+STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_ROAD           :{BLACK}Uključi građenje/rušenje drumskih puteva
+STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_TRAMWAYS       :{BLACK}Uključi građenje/rušenje tramvajskih građevina
 
 # Road depot construction window
 STR_BUILD_DEPOT_ROAD_ORIENTATION_CAPTION                        :{WHITE}Orijentacija drumskog depoa
@@ -2733,7 +2758,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Zemljište u po
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD-u
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Originalni kopirajt {COPYRIGHT} 1995 Chris Sawyer, Sva prava zadržana
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verzija {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2014 OpenTTD tim
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD tim
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Sačuvaj poziciju
@@ -2767,6 +2792,9 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Broj naselja:
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Broj fabrika:
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Maksimalna visina mape
+STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Povećaj maksimalnu visinu planina na mapi za jedan
+STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Smanji maksimalnu visinu planina na mapi za jedan
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Nivo snežnog pokrivača:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sužava snežni pokrivač naviše za jedan
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Proširuje snežni pojas naniže za jedan
@@ -2796,6 +2824,7 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Naziv el
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Veličina:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Promenite maksimalnu visinu mape
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Promena donjeg nivoa snežnog pojasa
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Promena početne godine
 
@@ -2850,6 +2879,7 @@ STR_NEWGRF_SETTINGS_MOVEUP                                      :{BLACK}Naviše
 STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}Pomera označenu NewGRF datoteku više na spisku
 STR_NEWGRF_SETTINGS_MOVEDOWN                                    :{BLACK}Naniže
 STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}Pomera označenu NewGRF datoteku niže na spisku
+STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}Ažuriraj
 STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK}Spisak instaliranih NewGRF datoteka.
 
 STR_NEWGRF_SETTINGS_SET_PARAMETERS                              :{BLACK}Postavi parametre
@@ -2906,7 +2936,6 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Prethodn
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Vraća se na prethodni normalan sprajt, preskačući sve pseudo/prebojavajuće/font sprajtove i prelazi na kraj posle početnog
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Prikaz trenutno odabranog sprajta. Poravnanje se ignoriše tokom iscrtavanja ovog sprajta
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Premeštanje sprajta po kordinatama, menjanjem X i Y pomeraja
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X pomeraj: {NUM}, Y pomeraj: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Odabiranje sprajta
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Odabiranje sprajta bilo gde sa ekrana
 
@@ -3077,7 +3106,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Obaveštenje
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Upozorenje
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Greška
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Otkaži
 STR_GOAL_QUESTION_BUTTON_OK                                     :U redu
 STR_GOAL_QUESTION_BUTTON_NO                                     :Ne
@@ -3096,6 +3125,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Restartuj
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Odloži
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Predaja
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Zatvori
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subvencije
@@ -3440,6 +3470,13 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Promenit
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Promenite naziv vrste broda
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Promenite naziv vrste letilice
 
+
+
+STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP                  :{BLACK}Uključi skrivanje/prikazivanje tip voza
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_SHOW_TOGGLE_TOOLTIP           :{BLACK}Uključi skrivanje/prikazivanje tip drumskog vozila
+STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}Uključi skrivanje/prikazivanje tip broda
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}Uključi skrivanje/prikazivanje tip letilice
+
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Promena naziva vrste šinskog vozila
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Naziv vrste drumskog vozila
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}Promena naziva vrste broda
@@ -3559,6 +3596,9 @@ STR_REPLACE_VEHICLE_SHIP.gen                                    :broda
 STR_REPLACE_VEHICLE_SHIP.aku                                    :brod
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :letelica
 STR_REPLACE_VEHICLE_AIRCRAFT.aku                                :letelicu
+
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}Upotrebljena vozila
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}Dostupna vozila
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Izaberite vrstu lokomotive za zamenu
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Izaberite novu vrstu lokomotive koju biste želeli da koristite umesto obeležene s leve strane
@@ -3818,7 +3858,7 @@ STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}Vrednost
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Unos vrednosti za poređenje
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Preskoči
-STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Preskače tekuću naredbu, i prelazi na sledeću. Ctrl+Klik preskače naredbe do obeležene
+STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Preskoči tekuću naredbu, i prelazi na sledeću. Ctrl+Klik preskače naredbe do obeležene
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Izbriši
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Uklanja obeleženu naredbu
@@ -4153,6 +4193,7 @@ STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Iskopava
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... teren je već na nivou mora
 STR_ERROR_TOO_HIGH                                              :{WHITE}... previsoko
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... već je ravno
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Posle toga most bi bio previše visok.
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Preduzeće se ne može preimenovati...
@@ -4202,6 +4243,8 @@ STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... mož
 STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... šuma može biti posađena samo iznad linije snega
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... može biti izgrađena samo iznad linije snega
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... može biti izgrađena samo ispod linije snega
+
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}Nije bilo odgovarajućih mesta za '{STRING}' fabrike
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Izgradnja železničke stanice ovde nije moguća...
@@ -4339,6 +4382,7 @@ STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Potrebno
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Ne može da se završava na istom mestu gde i počinje
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Krajevi mosta nisu na istom nivou
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}Most je nizak u odnosu na teren
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}Most je previše visok zaovaj teren
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Početak i kraj moraju biti u istoj liniji
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... oba kraja mosta moraju biti na čvrstom tlu
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... most je previše dugačak
@@ -4902,6 +4946,7 @@ STR_COMPANY_NAME                                                :{COMPANY}
 STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMPANY_NUM}
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
+STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} (sakriveno)
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}
@@ -4937,8 +4982,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

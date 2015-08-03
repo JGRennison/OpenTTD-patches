@@ -95,7 +95,7 @@ void MoveBuoysToWaypoints()
 			TILE_AREA_LOOP(t, train_st) {
 				if (!IsTileType(t, MP_STATION) || GetStationIndex(t) != index) continue;
 
-				SB(_m[t].m6, 3, 3, STATION_WAYPOINT);
+				SB(_me[t].m6, 3, 3, STATION_WAYPOINT);
 				wp->rect.BeforeAddTile(t, StationRect::ADD_FORCE);
 			}
 
@@ -541,7 +541,7 @@ static void Load_STNN()
 				for (uint32 j = 0; j < _num_flows; ++j) {
 					SlObject(&flow, _flow_desc);
 					if (fs == NULL || prev_source != flow.source) {
-						fs = &(st->goods[i].flows.insert(std::make_pair(flow.source, FlowStat(flow.via, flow.share))).first->second);
+						fs = &(st->goods[i].flows.insert(std::make_pair(flow.source, FlowStat(flow.via, flow.share, flow.restricted))).first->second);
 					} else {
 						fs->AppendShare(flow.via, flow.share, flow.restricted);
 					}

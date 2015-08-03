@@ -747,25 +747,11 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				SetTimer(hwnd, TID_POLLMOUSE, MOUSE_POLL_DELAY, (TIMERPROC)TrackMouseTimerProc);
 			}
 
-			if (_cursor.fix_at) {
-				int dx = x - _cursor.pos.x;
-				int dy = y - _cursor.pos.y;
-				if (dx != 0 || dy != 0) {
-					_cursor.delta.x = dx;
-					_cursor.delta.y = dy;
-
-					pt.x = _cursor.pos.x;
-					pt.y = _cursor.pos.y;
-
-					ClientToScreen(hwnd, &pt);
-					SetCursorPos(pt.x, pt.y);
-				}
-			} else {
-				_cursor.delta.x = x - _cursor.pos.x;
-				_cursor.delta.y = y - _cursor.pos.y;
-				_cursor.pos.x = x;
-				_cursor.pos.y = y;
-				_cursor.dirty = true;
+			if (_cursor.UpdateCursorPosition(x, y, true)) {
+				pt.x = _cursor.pos.x;
+				pt.y = _cursor.pos.y;
+				ClientToScreen(hwnd, &pt);
+				SetCursorPos(pt.x, pt.y);
 			}
 			MyShowCursor(false);
 			HandleMouseEvents();
@@ -1045,7 +1031,7 @@ static bool AllocateDibSection(int w, int h, bool force)
 {
 	BITMAPINFO *bi;
 	HDC dc;
-	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+	uint bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	w = max(w, 64);
 	h = max(h, 64);
@@ -1105,7 +1091,7 @@ static void FindResolutions()
 	DEVMODEA dm;
 
 	/* Check modes for the relevant fullscreen bpp */
-	int bpp = _support8bpp != S8BPP_HARDWARE ? 32 : BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+	uint bpp = _support8bpp != S8BPP_HARDWARE ? 32 : BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	/* XXX - EnumDisplaySettingsW crashes with unicows.dll on Windows95
 	 * Doesn't really matter since we don't pass a string anyways, but still

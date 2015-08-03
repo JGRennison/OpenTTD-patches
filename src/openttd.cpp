@@ -667,7 +667,7 @@ int openttd_main(int argc, char *argv[])
 			goto exit_noshutdown;
 		}
 		case 'G': scanner->generation_seed = atoi(mgo.opt); break;
-		case 'c': _config_file = stredup(mgo.opt); break;
+		case 'c': free(_config_file); _config_file = stredup(mgo.opt); break;
 		case 'x': scanner->save_config = false; break;
 		case 'h':
 			i = -2; // Force printing of help.
@@ -958,6 +958,7 @@ static void MakeNewGameDone()
 	if (_settings_client.gui.pause_on_newgame) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
 	CheckEngines();
+	CheckIndustries();
 	MarkWholeScreenDirty();
 }
 

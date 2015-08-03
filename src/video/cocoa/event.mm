@@ -290,6 +290,17 @@ static bool QZ_KeyEvent(unsigned short keycode, unsigned short unicode, BOOL dow
 				VideoDriver::GetInstance()->ToggleFullscreen(!_fullscreen);
 			}
 			break;
+
+		case QZ_v:
+			if (down && EditBoxInGlobalFocus() && (_current_mods & (NSCommandKeyMask | NSControlKeyMask))) {
+				HandleKeypress(WKC_CTRL | 'V', unicode);
+			}
+			break;
+		case QZ_u:
+			if (down && EditBoxInGlobalFocus() && (_current_mods & (NSCommandKeyMask | NSControlKeyMask))) {
+				HandleKeypress(WKC_CTRL | 'U', unicode);
+			}
+			break;
 	}
 
 	if (down) {
@@ -297,7 +308,8 @@ static bool QZ_KeyEvent(unsigned short keycode, unsigned short unicode, BOOL dow
 
 		static bool console = false;
 
-		if (pressed_key == WKC_BACKQUOTE && unicode == 0) {
+		/* The second backquote may have a character, which we don't want to interpret. */
+		if (pressed_key == WKC_BACKQUOTE && (console || unicode == 0)) {
 			if (!console) {
 				/* Backquote is a dead key, require a double press for hotkey behaviour (i.e. console). */
 				console = true;
@@ -310,7 +322,7 @@ static bool QZ_KeyEvent(unsigned short keycode, unsigned short unicode, BOOL dow
 		console = false;
 
 		/* Don't handle normal characters if an edit box has the focus. */
-		if (!EditBoxInGlobalFocus() || ((pressed_key & ~WKC_SPECIAL_KEYS) <= WKC_TAB) || IsInsideMM(pressed_key & ~WKC_SPECIAL_KEYS, WKC_F1, WKC_PAUSE + 1)) {
+		if (!EditBoxInGlobalFocus() || IsInsideMM(pressed_key & ~WKC_SPECIAL_KEYS, WKC_F1, WKC_PAUSE + 1)) {
 			HandleKeypress(pressed_key, unicode);
 		}
 		DEBUG(driver, 2, "cocoa_v: QZ_KeyEvent: %x (%x), down, mapping: %x", keycode, unicode, pressed_key);
@@ -350,22 +362,8 @@ static void QZ_DoUnsidedModifiers(unsigned int newMods)
 
 static void QZ_MouseMovedEvent(int x, int y)
 {
-	if (_cursor.fix_at) {
-		int dx = x - _cursor.pos.x;
-		int dy = y - _cursor.pos.y;
-
-		if (dx != 0 || dy != 0) {
-			_cursor.delta.x += dx;
-			_cursor.delta.y += dy;
-
-			QZ_WarpCursor(_cursor.pos.x, _cursor.pos.y);
-		}
-	} else {
-		_cursor.delta.x = x - _cursor.pos.x;
-		_cursor.delta.y = y - _cursor.pos.y;
-		_cursor.pos.x = x;
-		_cursor.pos.y = y;
-		_cursor.dirty = true;
+	if (_cursor.UpdateCursorPosition(x, y, false)) {
+		QZ_WarpCursor(_cursor.pos.x, _cursor.pos.y);
 	}
 	HandleMouseEvents();
 }
@@ -527,7 +525,7 @@ static bool QZ_PollEvent()
 			break;
 #endif
 
-		case NSKeyDown:
+		case NSKeyDown: {
 			/* Quit, hide and minimize */
 			switch ([ event keyCode ]) {
 				case QZ_q:
@@ -539,22 +537,20 @@ static bool QZ_PollEvent()
 					break;
 			}
 
+			chars = [ event characters ];
+			unsigned short unicode = [ chars length ] > 0 ? [ chars characterAtIndex:0 ] : 0;
 			if (EditBoxInGlobalFocus()) {
-				if (QZ_KeyEvent([ event keyCode ], 0, YES)) {
+				if (QZ_KeyEvent([ event keyCode ], unicode, YES)) {
 					[ _cocoa_subdriver->cocoaview interpretKeyEvents:[ NSArray arrayWithObject:event ] ];
 				}
 			} else {
-				chars = [ event characters ];
-				if ([ chars length ] == 0) {
-					QZ_KeyEvent([ event keyCode ], 0, YES);
-				} else {
-					QZ_KeyEvent([ event keyCode ], [ chars characterAtIndex:0 ], YES);
-					for (uint i = 1; i < [ chars length ]; i++) {
-						QZ_KeyEvent(0, [ chars characterAtIndex:i ], YES);
-					}
+				QZ_KeyEvent([ event keyCode ], unicode, YES);
+				for (uint i = 1; i < [ chars length ]; i++) {
+					QZ_KeyEvent(0, [ chars characterAtIndex:i ], YES);
 				}
 			}
 			break;
+		}
 
 		case NSKeyUp:
 			/* Quit, hide and minimize */

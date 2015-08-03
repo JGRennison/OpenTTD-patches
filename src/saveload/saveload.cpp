@@ -260,8 +260,10 @@
  *  190   26547
  *  191   26646
  *  192   26700
+ *  193   26802
+ *  194   26881   1.5.x
  */
-extern const uint16 SAVEGAME_VERSION = 192; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 194; ///< Current savegame version of OpenTTD.
 
 SavegameType _savegame_type; ///< type of savegame we are loading
 
@@ -1665,9 +1667,11 @@ static void SlLoadChunk(const ChunkHandler *ch)
 		case CH_ARRAY:
 			_sl.array_index = 0;
 			ch->load_proc();
+			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		case CH_SPARSE_ARRAY:
 			ch->load_proc();
+			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		default:
 			if ((m & 0xF) == CH_RIFF) {
@@ -2788,9 +2792,9 @@ SaveOrLoadResult SaveOrLoad(const char *filename, int mode, Subdirectory sb, boo
 			InitializeGame(256, 256, true, true); // set a mapsize of 256x256 for TTDPatch games or it might get confused
 
 			/* TTD/TTO savegames have no NewGRFs, TTDP savegame have them
-			* and if so a new NewGRF list will be made in LoadOldSaveGame.
-			* Note: this is done here because AfterLoadGame is also called
-			* for OTTD savegames which have their own NewGRF logic. */
+			 * and if so a new NewGRF list will be made in LoadOldSaveGame.
+			 * Note: this is done here because AfterLoadGame is also called
+			 * for OTTD savegames which have their own NewGRF logic. */
 			ClearGRFConfigList(&_grfconfig);
 			GamelogReset();
 			if (!LoadOldSaveGame(filename)) return SL_REINIT;

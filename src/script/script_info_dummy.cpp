@@ -9,8 +9,8 @@
 
 /** @file script_info_dummy.cpp Implementation of a dummy Script. */
 
-#include <squirrel.h>
 #include "../stdafx.h"
+#include <squirrel.h>
 
 #include "../string_func.h"
 #include "../strings_func.h"
@@ -41,12 +41,12 @@ void Script_CreateDummyInfo(HSQUIRRELVM vm, const char *type, const char *dir)
 	dp += seprintf(dp, lastof(dummy_script), "function CreateInstance() { return \"Dummy%s\"; }\n", type);
 	dp += seprintf(dp, lastof(dummy_script), "} RegisterDummy%s(Dummy%s());\n", type, type);
 
-	const SQChar *sq_dummy_script = OTTD2SQ(dummy_script);
+	const SQChar *sq_dummy_script = dummy_script;
 
 	sq_pushroottable(vm);
 
 	/* Load and run the script */
-	if (SQ_SUCCEEDED(sq_compilebuffer(vm, sq_dummy_script, scstrlen(sq_dummy_script), _SC("dummy"), SQTrue))) {
+	if (SQ_SUCCEEDED(sq_compilebuffer(vm, sq_dummy_script, strlen(sq_dummy_script), "dummy", SQTrue))) {
 		sq_push(vm, -2);
 		if (SQ_SUCCEEDED(sq_call(vm, 1, SQFalse, SQTrue))) {
 			sq_pop(vm, 1);
@@ -97,11 +97,11 @@ void Script_CreateDummy(HSQUIRRELVM vm, StringID string, const char *type)
 	/* 3) We translate the error message in the character format that Squirrel wants.
 	 *    We can use the fact that the wchar string printing also uses %s to print
 	 *    old style char strings, which is what was generated during the script generation. */
-	const SQChar *sq_dummy_script = OTTD2SQ(dummy_script);
+	const SQChar *sq_dummy_script = dummy_script;
 
 	/* And finally we load and run the script */
 	sq_pushroottable(vm);
-	if (SQ_SUCCEEDED(sq_compilebuffer(vm, sq_dummy_script, scstrlen(sq_dummy_script), _SC("dummy"), SQTrue))) {
+	if (SQ_SUCCEEDED(sq_compilebuffer(vm, sq_dummy_script, strlen(sq_dummy_script), "dummy", SQTrue))) {
 		sq_push(vm, -2);
 		if (SQ_SUCCEEDED(sq_call(vm, 1, SQFalse, SQTrue))) {
 			sq_pop(vm, 1);

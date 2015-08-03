@@ -240,6 +240,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Skriðu 
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Skriðu bjálki - drag listan til vinstru/høgru
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Ríva bygning niður etc. á einum fýrakanti av jørð. Ctrl velur økji á skrá. Shift skiftur millum at vísa Bygning og hvat tað kostar.
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Vanligt
 STR_BUTTON_CANCEL                                               :{BLACK}Angra
@@ -349,7 +352,6 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Gevst
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spæl møguleikar
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :Víðkaðir innstillingar
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI/Spæl script innstillingar
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF innstillingar
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Gjøgnumskygnis møguleikar
@@ -896,10 +898,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgiskur Lari
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranskur Rial
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Akfør
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Áset hvørja síðu á vegnum akfør skulu koyra á
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vinstrakoyring
@@ -952,6 +950,8 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Marka he
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skerm upploysn
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Vel hvørja skermupploysn tú vil brúka
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Base grafikk sett
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Vel ta base grafikk setti tú vil brúka
@@ -1052,8 +1052,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :Fíggjindaligir
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Einki hóskandi AI til taks...{}Tú kann heinta niður fleiri ymisk AI gjøgnum 'Online tilfar' kervi
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}Víðkaðir innstillingar
+# Settings tree window
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtur strongur:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Víðka alt
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Toga alt saman
@@ -1561,7 +1560,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Hópspæ
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Spæli møguleikar
 STR_INTRO_HIGHSCORE                                             :{BLACK}Hástigs yvirlit
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}Víðkaðir innstillingar
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF innstillingar
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Kanna online tilfar
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI/Spæli script innstillingar
@@ -1581,7 +1579,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Vel 'toy
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Vís spæli møguleikar
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Vís hástigs yvirlit
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}Vís víðkaðar innstillingar
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Vís NewGRF innstillingar
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Kanna um nýtt og betra tilfar er klárt at heinta niður
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Vís AI/Spæli script innstillingar
@@ -2430,7 +2427,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ogn hjá fyrit�
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upprunalig upphavsrættindi {COPYRIGHT} 1995 Chris Sawyer, Øll rættindi umbiðin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáva {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2014 OpenTTD toymi
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD toymi
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Goym spæl
@@ -2717,7 +2714,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Kunning
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Ávaring
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Villa
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Angra
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Nei
@@ -2736,6 +2733,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Endurbyrja
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Útset
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Gev teg upp
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Lat aftur
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Stuðulsflutningur
@@ -3049,6 +3047,9 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Navngev 
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Navngev slagi av skipi
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Navngev slagi av flogfari
 
+
+
+
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Navngev slagi av tok flutningstóli
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Navngev slagi av akfari
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}Navngev slagi av skipi
@@ -3152,6 +3153,7 @@ STR_REPLACE_VEHICLE_TRAIN                                       :Tok
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :{G=n}Akfar
 STR_REPLACE_VEHICLE_SHIP                                        :Skip
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :{G=n}Flogfar
+
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Vel slagi av motori at býta um
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Vel ta nýggja slagi av motori tú vil nýta ið staðin fyri tann tú valdi til vinstru
@@ -3711,6 +3713,7 @@ STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... kann
 STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... skógur kann einans plantast omanfyri kava-linjuna
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... kann einans byggjast omanfyri kava-linjuna
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... kann einans byggjast niðanfyri kava-linjuna
+
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Kann ikki byggja tok støð her...
@@ -4433,8 +4436,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

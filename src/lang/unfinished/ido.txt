@@ -224,6 +224,9 @@ STR_BUTTON_RENAME                                               :{BLACK}Rinomiza
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Klozas fenestro
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Baskulas granda/mikra fenestro grandeso
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_CANCEL                                               :{BLACK}Anular
 STR_BUTTON_OK                                                   :{BLACK}OK
@@ -461,10 +464,6 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludo Sel
 ############ end of currency region
 
 
-############ start of measuring units region
-############ end of measuring units region
-
-
 
 ############ start of townname region
 ############ end of townname region
@@ -476,6 +475,8 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludo Sel
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :altra
+
+
 
 
 
@@ -517,7 +518,7 @@ STR_SEA_LEVEL_CUSTOM_PERCENTAGE                                 :Kustumigita ({N
 
 
 
-# Advanced settings window
+# Settings tree window
 
 
 
@@ -775,7 +776,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_HEADQUARTERS                 :Stabeyo di komp
 
 # About OpenTTD window
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versiono {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2014 La kruo OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 La kruo OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Ludo Detali
@@ -864,7 +865,8 @@ STR_GOALS_TEXT                                                  :{ORANGE}{STRING
 
 # Goal question window
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
+############ End of Goal Question button list
 
 # Subsidies window
 
@@ -974,6 +976,9 @@ STR_GROUP_DEFAULT_AIRCRAFTS                                     :Negrupigita aer
 
 
 
+
+
+
 # Depot window
 STR_DEPOT_CAPTION                                               :{WHITE}{DEPOT}
 
@@ -1006,6 +1011,7 @@ STR_REPLACE_VEHICLE_TRAIN                                       :Treno
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Voy-vehilo
 STR_REPLACE_VEHICLE_SHIP                                        :Navo
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aeronavo
+
 
 
 
@@ -1183,6 +1189,7 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... tro 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... tro multa industrii
 
+
 # Station construction related errors
 
 
@@ -1346,8 +1353,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

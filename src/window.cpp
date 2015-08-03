@@ -87,12 +87,10 @@ static SmallVector<WindowDesc*, 16> *_window_descs = NULL;
 char *_windows_file;
 
 /** Window description constructor. */
-WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_width, int16 def_height,
+WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
 			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys) :
 	default_pos(def_pos),
-	default_width(def_width),
-	default_height(def_height),
 	cls(window_class),
 	parent_cls(parent_class),
 	ini_key(ini_key),
@@ -102,7 +100,9 @@ WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_wi
 	hotkeys(hotkeys),
 	pref_sticky(false),
 	pref_width(0),
-	pref_height(0)
+	pref_height(0),
+	default_width_trad(def_width_trad),
+	default_height_trad(def_height_trad)
 {
 	if (_window_descs == NULL) _window_descs = new SmallVector<WindowDesc*, 16>();
 	*_window_descs->Append() = this;
@@ -111,6 +111,26 @@ WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_wi
 WindowDesc::~WindowDesc()
 {
 	_window_descs->Erase(_window_descs->Find(this));
+}
+
+/**
+ * Determine default width of window.
+ * This is either a stored user preferred size, or the build-in default.
+ * @return Width in pixels.
+ */
+int16 WindowDesc::GetDefaultWidth() const
+{
+	return this->pref_width != 0 ? this->pref_width : ScaleGUITrad(this->default_width_trad);
+}
+
+/**
+ * Determine default height of window.
+ * This is either a stored user preferred size, or the build-in default.
+ * @return Height in pixels.
+ */
+int16 WindowDesc::GetDefaultHeight() const
+{
+	return this->pref_height != 0 ? this->pref_height : ScaleGUITrad(this->default_height_trad);
 }
 
 /**
@@ -752,7 +772,7 @@ static void DispatchRightClickEvent(Window *w, int x, int y)
 		if (w->OnRightClick(pt, wid->index)) return;
 	}
 
-	if (_settings_client.gui.hover_delay == 0 && wid->tool_tip != 0) GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
+	if (_settings_client.gui.hover_delay_ms == 0 && wid->tool_tip != 0) GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
 }
 
 /**
@@ -1059,7 +1079,16 @@ Window::~Window()
 	free(this->nested_array); // Contents is released through deletion of #nested_root.
 	delete this->nested_root;
 
-	this->window_class = WC_INVALID;
+	/*
+	 * Make fairly sure that this is written, and not "optimized" away.
+	 * The delete operator is overwritten to not delete it; the deletion
+	 * happens at a later moment in time after the window has been
+	 * removed from the list of windows to prevent issues with items
+	 * being removed during the iteration as not one but more windows
+	 * may be removed by a single call to ~Window by means of the
+	 * DeleteChildWindows function.
+	 */
+	const_cast<volatile WindowClass &>(this->window_class) = WC_INVALID;
 }
 
 /**
@@ -2879,7 +2908,7 @@ void HandleMouseEvents()
 	static uint32 hover_time = 0;
 	static Point hover_pos = {0, 0};
 
-	if (_settings_client.gui.hover_delay > 0) {
+	if (_settings_client.gui.hover_delay_ms > 0) {
 		if (!_cursor.in_window || click != MC_NONE || mousewheel != 0 || _left_button_down || _right_button_down ||
 				hover_pos.x == 0 || abs(_cursor.pos.x - hover_pos.x) >= MAX_OFFSET_HOVER  ||
 				hover_pos.y == 0 || abs(_cursor.pos.y - hover_pos.y) >= MAX_OFFSET_HOVER) {
@@ -2887,7 +2916,7 @@ void HandleMouseEvents()
 			hover_time = _realtime_tick;
 			_mouse_hovering = false;
 		} else {
-			if (hover_time != 0 && _realtime_tick > hover_time + _settings_client.gui.hover_delay * 1000) {
+			if (hover_time != 0 && _realtime_tick > hover_time + _settings_client.gui.hover_delay_ms) {
 				click = MC_HOVER;
 				_input_events_this_tick++;
 				_mouse_hovering = true;
@@ -3264,6 +3293,9 @@ void ReInitAllWindows()
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
 	NWidgetScrollbar::InvalidateDimensionCache();
 
+	extern void InitDepotWindowBlockSizes();
+	InitDepotWindowBlockSizes();
+
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		w->ReInit();
@@ -3385,7 +3417,7 @@ void RelocateAllWindows(int neww, int newh)
 				continue;
 
 			case WC_MAIN_TOOLBAR:
-				ResizeWindow(w, min(neww, w->window_desc->default_width) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
 
 				top = w->top;
 				left = PositionMainToolbar(w); // changes toolbar orientation
@@ -3397,14 +3429,15 @@ void RelocateAllWindows(int neww, int newh)
 				break;
 
 			case WC_STATUS_BAR:
-				ResizeWindow(w, min(neww, w->window_desc->default_width) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
 
 				top = newh - w->height;
 				left = PositionStatusbar(w);
 				break;
 
 			case WC_SEND_NETWORK_MSG:
-				ResizeWindow(w, Clamp(neww, 320, 640) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
+
 				top = newh - w->height - FindWindowById(WC_STATUS_BAR, 0)->height;
 				left = PositionNetworkChatWindow(w);
 				break;

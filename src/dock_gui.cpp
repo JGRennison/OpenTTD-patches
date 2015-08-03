@@ -26,6 +26,7 @@
 #include "company_base.h"
 #include "hotkeys.h"
 #include "gui.h"
+#include "zoom_func.h"
 
 #include "widgets/dock_widget.h"
 
@@ -115,11 +116,17 @@ struct BuildDocksToolbarWindow : Window {
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
 	{
 		if (!gui_scope) return;
-		this->SetWidgetsDisabledState(!CanBuildVehicleInfrastructure(VEH_SHIP),
+
+		bool can_build = CanBuildVehicleInfrastructure(VEH_SHIP);
+		this->SetWidgetsDisabledState(!can_build,
 			WID_DT_DEPOT,
 			WID_DT_STATION,
 			WID_DT_BUOY,
 			WIDGET_LIST_END);
+		if (!can_build) {
+			DeleteWindowById(WC_BUILD_STATION, TRANSPORT_WATER);
+			DeleteWindowById(WC_BUILD_DEPOT, TRANSPORT_WATER);
+		}
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)
@@ -498,14 +505,30 @@ public:
 		UpdateDocksDirection();
 	}
 
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	{
+		switch (widget) {
+			case WID_BDD_X:
+			case WID_BDD_Y:
+				size->width  = ScaleGUITrad(96) + 2;
+				size->height = ScaleGUITrad(64) + 2;
+				break;
+		}
+	}
+
 	virtual void OnPaint()
 	{
 		this->DrawWidgets();
 
-		DrawShipDepotSprite(this->GetWidget<NWidgetBase>(WID_BDD_X)->pos_x + 64, this->GetWidget<NWidgetBase>(WID_BDD_X)->pos_y + 18, AXIS_X, DEPOT_PART_NORTH);
-		DrawShipDepotSprite(this->GetWidget<NWidgetBase>(WID_BDD_X)->pos_x + 32, this->GetWidget<NWidgetBase>(WID_BDD_X)->pos_y + 34, AXIS_X, DEPOT_PART_SOUTH);
-		DrawShipDepotSprite(this->GetWidget<NWidgetBase>(WID_BDD_Y)->pos_x + 32, this->GetWidget<NWidgetBase>(WID_BDD_Y)->pos_y + 18, AXIS_Y, DEPOT_PART_NORTH);
-		DrawShipDepotSprite(this->GetWidget<NWidgetBase>(WID_BDD_Y)->pos_x + 64, this->GetWidget<NWidgetBase>(WID_BDD_Y)->pos_y + 34, AXIS_Y, DEPOT_PART_SOUTH);
+		int x1 = ScaleGUITrad(63) + 1;
+		int x2 = ScaleGUITrad(31) + 1;
+		int y1 = ScaleGUITrad(17) + 1;
+		int y2 = ScaleGUITrad(33) + 1;
+
+		DrawShipDepotSprite(this->GetWidget<NWidgetBase>(WID_BDD_X)->pos_x + x1, this->GetWidget<NWidgetBase>(WID_BDD_X)->pos_y + y1, AXIS_X, DEPOT_PART_NORTH);
+		DrawShipDepotSprite(this->GetWidget<NWidgetBase>(WID_BDD_X)->pos_x + x2, this->GetWidget<NWidgetBase>(WID_BDD_X)->pos_y + y2, AXIS_X, DEPOT_PART_SOUTH);
+		DrawShipDepotSprite(this->GetWidget<NWidgetBase>(WID_BDD_Y)->pos_x + x2, this->GetWidget<NWidgetBase>(WID_BDD_Y)->pos_y + y1, AXIS_Y, DEPOT_PART_NORTH);
+		DrawShipDepotSprite(this->GetWidget<NWidgetBase>(WID_BDD_Y)->pos_x + x1, this->GetWidget<NWidgetBase>(WID_BDD_Y)->pos_y + y2, AXIS_Y, DEPOT_PART_SOUTH);
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)

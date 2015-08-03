@@ -56,11 +56,6 @@ const SpriteGroup *GetWagonOverrideSpriteSet(EngineID engine, CargoID cargo, Eng
 {
 	const Engine *e = Engine::Get(engine);
 
-	/* XXX: This could turn out to be a timesink on profiles. We could
-	 * always just dedicate 65535 bytes for an [engine][train] trampoline
-	 * for O(1). Or O(logMlogN) and searching binary tree or smt. like
-	 * that. --pasky */
-
 	for (uint i = 0; i < e->overrides_count; i++) {
 		const WagonOverride *wo = &e->overrides[i];
 
@@ -545,9 +540,14 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			/* The cargo translation is specific to the accessing GRF, and thus cannot be cached. */
 			CargoID common_cargo_type = (v->grf_cache.consist_cargo_information >> 8) & 0xFF;
 
-			/* Unlike everywhere else the cargo translation table is only used since grf version 8, not 7.
-			 * Note: The grffile == NULL case only happens if this function is called for default vehicles.
-			 *       And this is only done by CheckCaches(). */
+			/* Note:
+			 *  - Unlike everywhere else the cargo translation table is only used since grf version 8, not 7.
+			 *  - For translating the cargo type we need to use the GRF which is resolving the variable, which
+			 *    is object->ro.grffile.
+			 *    In case of CBID_TRAIN_ALLOW_WAGON_ATTACH this is not the same as v->GetGRF().
+			 *  - The grffile == NULL case only happens if this function is called for default vehicles.
+			 *    And this is only done by CheckCaches().
+			 */
 			const GRFFile *grffile = object->ro.grffile;
 			uint8 common_bitnum = (common_cargo_type == CT_INVALID) ? 0xFF :
 				(grffile == NULL || grffile->grf_version < 8) ? CargoSpec::Get(common_cargo_type)->bitnum : grffile->cargo_map[common_cargo_type];
@@ -567,7 +567,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 			{
 				const Vehicle *w = v->Next();
-				uint16 altitude = v->z_pos - w->z_pos; // Aircraft height - shadow height
+				uint16 altitude = ClampToU16(v->z_pos - w->z_pos); // Aircraft height - shadow height
 				byte airporttype = ATP_TTDP_LARGE;
 
 				const Station *st = GetTargetAirportIfValid(Aircraft::From(v));
@@ -610,7 +610,12 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			 */
 			const CargoSpec *cs = CargoSpec::Get(v->cargo_type);
 
-			return (cs->classes << 16) | (cs->weight << 8) | v->GetGRF()->cargo_map[v->cargo_type];
+			/* Note:
+			 * For translating the cargo type we need to use the GRF which is resolving the variable, which
+			 * is object->ro.grffile.
+			 * In case of CBID_TRAIN_ALLOW_WAGON_ATTACH this is not the same as v->GetGRF().
+			 */
+			return (cs->classes << 16) | (cs->weight << 8) | object->ro.grffile->cargo_map[v->cargo_type];
 		}
 
 		case 0x48: return v->GetEngine()->flags; // Vehicle Type Info
@@ -660,7 +665,8 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 			/* Only allow callbacks that don't change properties to avoid circular dependencies. */
 			if (object->ro.callback == CBID_NO_CALLBACK || object->ro.callback == CBID_RANDOM_TRIGGER || object->ro.callback == CBID_TRAIN_ALLOW_WAGON_ATTACH ||
-					object->ro.callback == CBID_VEHICLE_START_STOP_CHECK || object->ro.callback == CBID_VEHICLE_32DAY_CALLBACK || object->ro.callback == CBID_VEHICLE_COLOUR_MAPPING) {
+					object->ro.callback == CBID_VEHICLE_START_STOP_CHECK || object->ro.callback == CBID_VEHICLE_32DAY_CALLBACK || object->ro.callback == CBID_VEHICLE_COLOUR_MAPPING ||
+					object->ro.callback == CBID_VEHICLE_SPAWN_VISUAL_EFFECT) {
 				Vehicle *u = v->Move((int32)GetRegister(0x10F));
 				if (u == NULL) return 0; // available, but zero
 
@@ -901,7 +907,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 				CargoID cargo_type = e->GetDefaultCargoType();
 				if (cargo_type != CT_INVALID) {
 					const CargoSpec *cs = CargoSpec::Get(cargo_type);
-					return (cs->classes << 16) | (cs->weight << 8) | e->GetGRF()->cargo_map[cargo_type];
+					return (cs->classes << 16) | (cs->weight << 8) | this->ro.grffile->cargo_map[cargo_type];
 				} else {
 					return 0x000000FF;
 				}

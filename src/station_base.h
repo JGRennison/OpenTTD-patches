@@ -37,6 +37,8 @@ class FlowStat {
 public:
 	typedef std::map<uint32, StationID> SharesMap;
 
+	static const SharesMap empty_sharesmap;
+
 	/**
 	 * Invalid constructor. This can't be called as a FlowStat must not be
 	 * empty. However, the constructor must be defined and reachable for
@@ -48,12 +50,13 @@ public:
 	 * Create a FlowStat with an initial entry.
 	 * @param st Station the initial entry refers to.
 	 * @param flow Amount of flow for the initial entry.
+	 * @param restricted If the flow to be added is restricted.
 	 */
-	inline FlowStat(StationID st, uint flow)
+	inline FlowStat(StationID st, uint flow, bool restricted = false)
 	{
 		assert(flow > 0);
 		this->shares[flow] = st;
-		this->unrestricted = flow;
+		this->unrestricted = restricted ? 0 : flow;
 	}
 
 	/**
@@ -148,6 +151,11 @@ private:
 /** Flow descriptions by origin stations. */
 class FlowStatMap : public std::map<StationID, FlowStat> {
 public:
+	uint GetFlow() const;
+	uint GetFlowVia(StationID via) const;
+	uint GetFlowFrom(StationID from) const;
+	uint GetFlowFromVia(StationID from, StationID via) const;
+
 	void AddFlow(StationID origin, StationID via, uint amount);
 	void PassOnFlow(StationID origin, StationID via, uint amount);
 	StationIDStack DeleteFlows(StationID via);
@@ -266,8 +274,6 @@ struct GoodsEntry {
 	{
 		return HasBit(this->status, GES_RATING);
 	}
-
-	uint GetSumFlowVia(StationID via) const;
 
 	/**
 	 * Get the best next hop for a cargo packet from station source.

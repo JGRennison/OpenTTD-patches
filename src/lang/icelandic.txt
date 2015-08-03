@@ -240,6 +240,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Skrunsl�
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Rennislá - rennir lista til vinstri/hægri
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Eyða byggingum o.s.frv. á lóðarreiti. Ctrl velur svæðið skáhalt. Haldið Shift inni til að sýna áætlaðan kostnað
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Sjálfgildi
 STR_BUTTON_CANCEL                                               :{BLACK}Hætta við
@@ -349,7 +352,6 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Hætta
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Stillingar
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :Ítarlegar stillingar
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Gervigreind/leikjaforskrift
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF stillingar
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Gegnsæisstillingar
@@ -896,10 +898,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari (Gel)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Íranskt ríal (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Aksturstefna
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Aksturstefna bifreiða
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vinstristefna
@@ -952,6 +950,8 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Smelltu 
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skjáupplausn
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Stilla skjáupplausn
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grunngrafík
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Nota grunngrafíkina
@@ -1052,8 +1052,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :Fjandsamleg
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Engin nothæf gervigreind í boði...{}Þú getur hlaðið niður mörgum gervigreindum í gegnum 'Ná í viðbætur af netinu' viðmótið
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}Ítarlegar stillingar
+# Settings tree window
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Sía:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Þenja út
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Draga saman
@@ -1603,7 +1602,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Fjölspi
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Stillingar
 STR_INTRO_HIGHSCORE                                             :{BLACK}Stigatafla
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}Ítarlegar stillingar
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF Stillingar
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Ná í viðbætur af netinu
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}GG/forskriftar stillingar
@@ -1623,7 +1621,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Leikfang
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Stilla OpenTTD
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Birta stigatöflu
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}Birta ítarlegar stillingar
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Sýna NewGRF stillingar
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Skoða viðbætur sem hægt er að ná í af netinu
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Birta stillingar fyrir gervigreind/forskrift
@@ -2539,7 +2536,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Land í eigu fy
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upphaflegur höfundarréttur {COPYRIGHT} 1995 Chris Sawyer, Öll réttindi áskilin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáfa {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2014 OpenTTD hópurinn
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 OpenTTD hópurinn
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Vista leik
@@ -2712,7 +2709,6 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Fyrri hr
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fara á fyrri venjulegu hreyfimynd, sleppir gervi/endurlitun/letur hreyfimyndum og fer aftast í listen þegar upphafi er náð.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Framsetning á valinni hreyfimynd. Samstillingu er sleppt við teikningu á þessari hreyfimynd.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Færðu hreyfimyndina, breytir X og Y hliðrun
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X hliðrun: {NUM}, Y hliðrun: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Veldu hreyfimynd
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Veldu hreyfimynd hvaðan sem er af skjánum
 
@@ -2878,7 +2874,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Upplýsingar
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Varúð
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Villa
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Hætta við
 STR_GOAL_QUESTION_BUTTON_OK                                     :Í lagi
 STR_GOAL_QUESTION_BUTTON_NO                                     :Nei
@@ -2897,6 +2893,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Byrja aftur
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Fresta
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Gefast upp
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Loka
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Samstarfssamningar
@@ -3212,6 +3209,9 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Endurnef
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Endurnefna skipategund
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Endurnefna tegund flugvélar
 
+
+
+
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Endurskíra lestargerð
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Endurnefna tegund bifreiðar
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}Endurnefna skipategund
@@ -3315,6 +3315,7 @@ STR_REPLACE_VEHICLE_TRAIN                                       :Lest
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Bifreið
 STR_REPLACE_VEHICLE_SHIP                                        :Skip
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Flugvél
+
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Veldu vagntegund til að skipta út
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Velja vagntegund sem þú myndir vilja nota í staðin fyrir vagntegundina sem valinn er vinstra megin
@@ -3957,6 +3958,7 @@ STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... getu
 STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... skógur getur aðeins verið gróðursettur yfir snjólínu
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... er aðeins hægt að byggja fyrir ofan snælínu
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... er aðeins hægt að byggja fyrir neðan snælínu
+
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Get ekki byggt lestarstöð hér...
@@ -4689,8 +4691,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

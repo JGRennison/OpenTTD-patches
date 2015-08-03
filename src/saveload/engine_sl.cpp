@@ -13,7 +13,7 @@
 #include "saveload_internal.h"
 #include "../engine_base.h"
 #include "../string_func.h"
-#include <map>
+#include <vector>
 
 #include "../safeguards.h"
 
@@ -40,6 +40,7 @@ static const SaveLoad _engine_desc[] = {
 	SLE_CONDNULL(1,                                                        0,  44),
 	 SLE_CONDVAR(Engine, company_avail,       SLE_FILE_U8  | SLE_VAR_U16,  0, 103),
 	 SLE_CONDVAR(Engine, company_avail,       SLE_UINT16,                104, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, company_hidden,      SLE_UINT16,                193, SL_MAX_VERSION),
 	 SLE_CONDSTR(Engine, name,                SLE_STR, 0,                 84, SL_MAX_VERSION),
 
 	SLE_CONDNULL(16,                                                       2, 143), // old reserved space
@@ -47,11 +48,42 @@ static const SaveLoad _engine_desc[] = {
 	SLE_END()
 };
 
-static std::map<EngineID, Engine> _temp_engine;
+static std::vector<Engine*> _temp_engine;
+
+/**
+ * Allocate an Engine structure, but not using the pools.
+ * The allocated Engine must be freed using FreeEngine;
+ * @return Allocated engine.
+ */
+static Engine* CallocEngine()
+{
+	uint8 *zero = CallocT<uint8>(sizeof(Engine));
+	Engine *engine = new (zero) Engine();
+	return engine;
+}
+
+/**
+ * Deallocate an Engine constructed by CallocEngine.
+ * @param e Engine to free.
+ */
+static void FreeEngine(Engine *e)
+{
+	if (e != NULL) {
+		e->~Engine();
+		free(e);
+	}
+}
 
 Engine *GetTempDataEngine(EngineID index)
 {
-	return &_temp_engine[index];
+	if (index < _temp_engine.size()) {
+		return _temp_engine[index];
+	} else if (index == _temp_engine.size()) {
+		_temp_engine.push_back(CallocEngine());
+		return _temp_engine[index];
+	} else {
+		NOT_REACHED();
+	}
 }
 
 static void Save_ENGN()
@@ -108,10 +140,14 @@ void CopyTempEngineData()
 		e->preview_company     = se->preview_company;
 		e->preview_wait        = se->preview_wait;
 		e->company_avail       = se->company_avail;
+		e->company_hidden      = se->company_hidden;
 		if (se->name != NULL) e->name = stredup(se->name);
 	}
 
 	/* Get rid of temporary data */
+	for (std::vector<Engine*>::iterator it = _temp_engine.begin(); it != _temp_engine.end(); ++it) {
+		FreeEngine(*it);
+	}
 	_temp_engine.clear();
 }
 

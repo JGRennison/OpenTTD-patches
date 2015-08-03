@@ -109,7 +109,7 @@ STR_CARGO_SINGULAR_FIZZY_DRINK.plural                           :משקאות מ
 
 # Quantity of cargo
 STR_QUANTITY_NOTHING                                            :
-STR_QUANTITY_PASSENGERS                                         :{P 0 "נוסע " ""}{COMMA}{P "" " נוסעים"}
+STR_QUANTITY_PASSENGERS                                         :{COMMA}{NBSP}נוסע{P "" ים}
 STR_QUANTITY_COAL                                               :{WEIGHT_LONG} של פחם
 STR_QUANTITY_MAIL                                               :{P 0 "שק " ""}{COMMA}{P "" " שקים"} של דואר
 STR_QUANTITY_OIL                                                :{VOLUME_LONG} של נפט
@@ -262,6 +262,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}כפתו
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}פס הגלילה - גלילה של רשימות ימינה\שמאלה
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}הסרת בניינים וכו' במשבצת קרקע. מקש Ctrl מסמן את האזור באופן אלכנסוני. מקש Shift מעביר בין בנייה לבין הצגה של הערכת העלות
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}בחירת מחדל
 STR_BUTTON_CANCEL                                               :{BLACK}ביטול
@@ -375,7 +378,6 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :יציאה
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :אפשרויות המשחק
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :הגדרות מתקדמות
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :הגדרות סקריפטים של משחק/שחקני מחשב
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :הגדרות GRF חדש
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :אפשרויות שקיפות
@@ -852,7 +854,7 @@ STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}מתיי
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}מתיישן מאוד {VEHICLE}
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD_AND                        :{WHITE}מתיישן מאוד, וזקוק להחלפה בדחיפות {VEHICLE}
 STR_NEWS_TRAIN_IS_STUCK                                         :אינה יכולה למצוא נתיב המשך {WHITE}{VEHICLE}
-STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} הל{P "ך" "כה"} לאיבוד
+STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} הל לאיבוד
 STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :ריווחי {WHITE}{VEHICLE} שנה שעברה הם {CURRENCY_LONG}
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE}אינ{G 0 "ו" "ה"} יכול{G 0 "" "ה"} להגיע אל היעד הבא כי הוא מחוץ לטווח
 
@@ -929,10 +931,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :לארי גאו
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :ריאל איראני (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}רכבי כביש
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}בחר את צד הכביש בו יסעו כלי הרכב
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :סע בצד שמאל
@@ -985,6 +983,8 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}סמן �
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}רזלוציית המסך
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}בחר את רזולוציית המסך
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :אחר
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}ערכת גרפיקה בסיסית
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}בחר בערכת גרפיקה בסיסית לשימוש
@@ -1086,8 +1086,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :עויין
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}אין בינות מלאכותיות מתאימות...{}באפשרותך להוריד בינות מלאכותיות בעזרת מערכת ה'תוכן המקוון'
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}הגדרות מתקדמות
+# Settings tree window
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}מחרוזת סינון:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}הרחב הכל
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}צמצם הכל
@@ -1103,9 +1102,9 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :הגדרת חב
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}קטגוריה:
 STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}סוג:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}מגביל את הרשימה להלן תוך שימוש בסינון שהוגדר מראש.
-STR_CONFIG_SETTING_RESTRICT_BASIC                               :הגדרות בסיסיות
-STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :הגדרות מתקדמות
-STR_CONFIG_SETTING_RESTRICT_ALL                                 :הגדרות מומחה / כל ההגדרות
+STR_CONFIG_SETTING_RESTRICT_BASIC                               :הגדרות בסיסיות (הצג רק הגדרות חשובות)
+STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :הגדרות מתקדמות (הצג את רוב ההגדרות)
+STR_CONFIG_SETTING_RESTRICT_ALL                                 :הגדרות מומחה (הצג את כל ההגדרות, כולל הגדרות משונות)
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT             :הגדרות בעלות ערך השונה מברירת המחדל
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW                 :הגדרות בעלות ערך השונה מזה אשר בהגדרות המשחק החדש שלך
 
@@ -1160,6 +1159,9 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :אפשר/מנע
 STR_CONFIG_SETTING_CITY_APPROVAL                                :יחס מועצת העיר כלפי שינוי מבנה אזורי: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :בחר באיזו מידה רעש ונזק סביבתי ע"י חברות משפיעים על הדירוג העירוני שלהן ופעולות בנייה עתידיות באזור
 
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :גובה מפה מקסימלי: {STRING}
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :קבע את הגובה המקסימלי להרים במפה
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}לא ניתן לקבוע את הגובה המקסימלי במפה לערך זה. קיים לפחות הר אחד גבוה יותר
 STR_CONFIG_SETTING_AUTOSLOPE                                    :אפשר יצירת מילוי עפר תחת מבנים, פסי רכבת וכו': {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :אפשר שינוי פני השטח מתחת לבניינים ולמסילות ללא הסרתם
 STR_CONFIG_SETTING_CATCHMENT                                    :אפשר לאזורי אגירת מים להיראות יותר ריאליסטיים: {STRING}
@@ -1273,8 +1275,8 @@ STR_CONFIG_SETTING_ERRMSG_DURATION                              :משך הצגת
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :פרק הזמן להצגת הודעות שגיאה בחלון אדום. יש לשים לב כי כמה הודעות שגיאה (קריטיות) אינן נסגרות אוטומטית אחרי פרק זמן זה, אלא יש לסגור אותן ידנית
 STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{P 0 "שנייה " ""}{COMMA}{P "" " שניות"}
 STR_CONFIG_SETTING_HOVER_DELAY                                  :הצג רמזים צצים: {STRING}
-STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :השהייה טרם הצגת רמזים צצים כאשר העכבר מרחף מעל חלק ממשק. לחלופין, ניתן לקשר רמזים צצים לכפתור העכבר הימני
-STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :רחף למשך {P 0 "שניה " ""}{COMMA}{P "" " שניות"}
+STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :השהייה טרם הצגת רמזים צצים כאשר העכבר מרחף מעל חלק ממשק. לחלופין, ניתן לקשר רמזים צצים לכפתור העכבר הימני כאשר מוגדר 0.
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :רחף למשך {P 0 "מילישניה " ""}{COMMA}{P "" " מילישניות"}
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :קליק ימני
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :הראה את אוכלוסיית העיר בתוך תוית השם של העיר: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :הצג את אוכלוסייתן של עיירות בתווית שלהן על גבי המפה
@@ -1522,7 +1524,7 @@ STR_CONFIG_SETTING_DRAG_SIGNALS_FIXED_DISTANCE_HELPTEXT         :בחר את ה�
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE                  :{STRING} :בנה רמזורים מכאניים לפני
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE_HELPTEXT         :קבע את השנה בה רמזורים חשמליים ישמשו במסילות. לפני שנה זו יהיו בשימוש רמזורים מכניים (פעולתם זהה, הם רק נראים אחרת)
 STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI                            :{STRING} :אפשר ממשק ויזואלי עבור רמזורים
-STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI_HELPTEXT                   :הצג חלון לבחירת סוג הרמזור להצבה, במקום רק מעבר בין האפשרויות ללא חלון באמצעות הקלקה על "בנה רמזורים" תוך לחיצה על מקש Ctrl
+STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI_HELPTEXT                   :הצג חלון לבחירת סוג הרמזור להצבה, במקום רק מעבר בין האפשרויות באמצעות Ctrl+לחיצה על רמזורים בנויים
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_TYPE                          :{STRING} :ברירת מחדל לבניית רמזורי רכבת
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_TYPE_HELPTEXT                 :סוג רמזור לשימוש בברירת מחדל
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_NORMAL                        :רמזורי בלוק
@@ -1607,7 +1609,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :"סימטרי" 
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :אופן החלוקה עבור דואר: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :"סימטרי" הכוונה שכמות הדואר מתחנה א' לתחנה ב' הוא פחות או יותר אותה כמות הדואר מתחנה ב' לתחנה א'. "אסימטרי" הכוונה שכמויות דואר שרירותיות יכולות להישלח לכל אחד מהכיוונים. "ידני" הכוונה שאין חלוקה אוטומטית עבור דואר.
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :אופן החלוקה עבור מחלקה משוריינת: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :מחלקה משוריינת מובילה חפצי ערך באקלים ממוזג, יהלומים באקלים טרופי וזהב באקלים קר. קבצי שדרוג גראפי עלולים לשנות חלוקה זו. "סימטרי" הכוונה שכמות המטען מתחנה א' לתחנה ב' הוא פחות או יותר אותה כמות המטען מתחנה ב' לתחנה א'. "אסימטרי" הכוונה שכמויות מטען שרירותיות יכולות להישלח לכל אחד מהכיוונים. "ידני" הכוונה שאין חלוקה אוטומטית עבור המטען. באקלים קר מומלץ לקבוע למצב אסימטרי או ידני כי בנקים לא שולחים זהב חזרה למכרות יהלומים. באקלים ממוטזג או טרופי ניתן לבחור גם במצב סימטרי כאשר בנקים ישלחו חפצי ערך חזרה למקור של אותם חפצי ערך.
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :מחלקה משוריינת מובילה חפצי ערך באקלים ממוזג, יהלומים באקלים טרופי וזהב באקלים קר. קבצי שדרוג גראפי עלולים לשנות חלוקה זו. "סימטרי" הכוונה שכמות המטען מתחנה א' לתחנה ב' הוא פחות או יותר אותה כמות המטען מתחנה ב' לתחנה א'. "אסימטרי" הכוונה שכמויות מטען שרירותיות יכולות להישלח לכל אחד מהכיוונים. "ידני" הכוונה שאין חלוקה אוטומטית עבור המטען. באקלים קר מומלץ לקבוע למצב אסימטרי או ידני כי בנקים לא שולחים זהב חזרה למכרות יהלומים. באקלים ממוזג או טרופי ניתן לבחור גם במצב סימטרי כאשר בנקים ישלחו חפצי ערך חזרה למקור של אותם חפצי ערך.
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :אופן החלוקה עבור מטענים אחרים: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"אסימטרי" הכוונה שכמויות מטען שרירותיות יכולות להישלח לכל אחד מהכיוונים. "ידני" הכוונה שאין חלוקה אוטומטית עבור המטען.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :דיוק החלוקה: {STRING}
@@ -1643,7 +1645,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :מטרי (קי�
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :בינלאומית (קילו ניוטון)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :יחידות גובה: {STRING}
-STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :כאשר מוצגים גבהים השתמש ביחידות שנבחרו.
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :כאשר מוצגים גבהים השתמש ביחידות שנבחרו
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :בריטית (רגל)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :מטרי (מטר)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (מטר)
@@ -1705,7 +1707,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}משחק
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}אפשרויות
 STR_INTRO_HIGHSCORE                                             :{BLACK}טבלת ניקוד מירבי
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}הגדרות מתקדמות
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}(NewGRF)הגדרות שדרוג גראפי
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK} בדוק תוכן מקוון
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}הגדרות סקריפטים של משחק/שחקני מחשב
@@ -1725,7 +1726,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}ארץ �
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}הצג הגדרות משחק
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}הצג טבלת ניקוד מירבי
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}הצג הגדרות מתקדמות
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}הצג הגדרות שדרוג גראפי
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK} חפש תוכן חדש/מעודכן להורדה
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK} הצג הגדרות סקריפטים של משחק/שחקני מחשב
@@ -1765,6 +1765,8 @@ STR_CHEAT_CHANGE_COMPANY                                        :{ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}טרקטור אימתני (הסרת מפעלים, רכיבים שאי אפשר להזיז): {ORANGE}{STRING}
 STR_CHEAT_CROSSINGTUNNELS                                       :{ORANGE}{STRING}{LTBLUE} :מנהרות יכולות לחצות זו את זו
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}מטוסי סילון לא יתרסקו (לעיתים קרובות) בשדות תעופה קטנים: {ORANGE}{STRING}
+STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}ערוך את הגובה המקסימלי במפה: {ORANGE}{NUM}
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :ערוך את הגובה המקסימלי של הרים במפה
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :אקלים ממוזג
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :אקלים קר
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :אקלים טרופי
@@ -2639,7 +2641,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :שטח בבעל
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD אודות
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}כל הזכויות שמורות , {COPYRIGHT}1995 כריס סויר - {NBSP}זכויות יוצרים מקוריות
 STR_ABOUT_VERSION                                               :{BLACK}{REV} גירסה , OpenTTD
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2014 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}שמור משחק
@@ -2674,6 +2676,9 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK} :מספר העיירות
 STR_MAPGEN_DATE                                                 :{BLACK} :תאריך
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK} :מספר התעשיות
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}גובה מפה מקסימלי:
+STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}הגדל את הגובה המקסימלי של הרים במפה ביחידה אחת
+STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}הקטן את הגובה המקסימלי במפה ביחידה אחת
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}גובה קו השלג
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}הגבה את קו השלג
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}הנמך את קו השלג
@@ -2703,6 +2708,7 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK} :שם �
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}גודל:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} על {NUM}
 
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}שינוי הגובה המקסימלי במפה
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}שנה את גובה קו השלג
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}שנה את שנת הפתיחה
 
@@ -2820,10 +2826,9 @@ STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}עבור
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}דלג לספרייט
 STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}עבור לספרייט הנתון. אם הוא אינו ספרייט רגיל, עבור לספרייט הרגיל הראשון שבא אחריו
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}הספרייט הקודם
-STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}עבור לספרייט הקודם, כאשר נדלג על כל הספרייטים המיוחדים ונחזור בסוף לתחילת הרשימה
+STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}עבור לספרייט הקודם, כאשר נדלג על כל הספרייטים המיוחדים ונחזור מתחילת הרשימה לסופה
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}הייצוג של הספרייט הנבחר. בעת ציור הספרייט, נתעלם מהיישור שלו
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}הזז את הספרייט, תוך שינוי מיקום על צירי ה-X וה-Y
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X היסט: {NUM}, Y היסט: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}בחר ספרייט
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}בחר ספרייט מנקודה כלשהיא במסך
 
@@ -2993,7 +2998,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :מידע
 STR_GOAL_QUESTION_CAPTION_WARNING                               :אזהרה
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :שגיאה
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :ביטול
 STR_GOAL_QUESTION_BUTTON_OK                                     :אישור
 STR_GOAL_QUESTION_BUTTON_NO                                     :לא
@@ -3012,6 +3017,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :אתחל
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :דחה
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :היכנע
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :סגור
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}סובסידיות
@@ -3028,7 +3034,7 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}מטרה �
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}שמות תחנות - לחץ על השם כדי להתמקד בתחנה. Ctrl+לחיצה פותח חלונית תצוגה חדשה על מיקום התחנה
 STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}לחץ והחזק מקש קונטרל כדי לבחור יותר מפריט אחד
-STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {P 0 "תחנה " ""}{COMMA}{P "" " תחנות"}
+STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {P 1 "תחנה " ""}{COMMA}{P "" " תחנות"}
 STR_STATION_LIST_STATION                                        :{YELLOW} {1:STATION_FEATURES}{0:STATION}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- כלום -
@@ -3346,6 +3352,11 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}שנה �
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}החלף שם סוג כלי השייט
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}החלף שם סוג כלי הטיס
 
+
+
+STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :הסתר/הצג סוג של כלי שיט
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}הסתר/הצג סוג של כלי טיס
+
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}שנה את שם סוג קרון הרכבת
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}שנה את שם סוג כלי הרכב
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}החלף שם סוג כלי השייט
@@ -3449,6 +3460,7 @@ STR_REPLACE_VEHICLE_TRAIN                                       :רכבת
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :רכב
 STR_REPLACE_VEHICLE_SHIP                                        :כלי שייט
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :כלי טייס
+
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}בחר את סוג המנוע/קטר שברצונך להחליף
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}בחר את הקטר/מנוע שברצונך לבנות במקום הקטר/מנוע הקיים
@@ -4087,6 +4099,7 @@ STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... יע
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... ניתן/ת לבנייה רק מעל לקו השלג
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... ניתן/ת לבנייה רק מתחת לקו השלג
 
+
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}לא ניתן לבנות תחנת רכבת כאן...
 STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}לא ניתן לבנות תחנת אוטובוס...
@@ -4223,6 +4236,7 @@ STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}יש ל�
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}לא ניתן להתחיל ולסיים באותה הנקודה
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}צדדי הגשר לא באותו הגובה
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}גשר נמוך מידי עבור השטח
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}גשר גבוה מדי עבור פני השטח.
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}התחלה וסיום חייבים להיות באותו הקו
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... קצות הגשר צריכים להיות על קרקע
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... גשר ארוך מידי
@@ -4780,6 +4794,7 @@ STR_COMPANY_NAME                                                :{COMPANY}
 STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMPANY_NUM}
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
+STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} (מוסתר)
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}
@@ -4815,8 +4830,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}

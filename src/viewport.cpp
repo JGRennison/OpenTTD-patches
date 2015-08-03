@@ -26,6 +26,42 @@
  * \endverbatim
  */
 
+/**
+ * @defgroup vp_column_row Rows and columns in the viewport
+ *
+ * Columns are vertical sections of the viewport that are half a tile wide.
+ * The origin, i.e. column 0, is through the northern and southern most tile.
+ * This means that the column of e.g. Tile(0, 0) and Tile(100, 100) are in
+ * column number 0. The negative columns are towards the left of the screen,
+ * or towards the west, whereas the positive ones are towards respectively
+ * the right and east.
+ * With half a tile wide is meant that the next column of tiles directly west
+ * or east of the centre line are respectively column -1 and 1. Their tile
+ * centers are only half a tile from the center of their adjoining tile when
+ * looking only at the X-coordinate.
+ *
+ * \verbatim
+ *        ╳        *
+ *       ╱ ╲       *
+ *      ╳ 0 ╳      *
+ *     ╱ ╲ ╱ ╲     *
+ *    ╳-1 ╳ 1 ╳    *
+ *   ╱ ╲ ╱ ╲ ╱ ╲   *
+ *  ╳-2 ╳ 0 ╳ 2 ╳  *
+ *   ╲ ╱ ╲ ╱ ╲ ╱   *
+ *    ╳-1 ╳ 1 ╳    *
+ *     ╲ ╱ ╲ ╱     *
+ *      ╳ 0 ╳      *
+ *       ╲ ╱       *
+ *        ╳        *
+ * \endverbatim
+ *
+ *
+ * Rows are horizontal sections of the viewport, also half a tile wide.
+ * This time the nothern most tile on the map defines 0 and
+ * everything south of that has a positive number.
+ */
+
 #include "stdafx.h"
 #include "landscape.h"
 #include "viewport_func.h"
@@ -47,13 +83,22 @@
 #include "window_gui.h"
 #include "linkgraph/linkgraph_gui.h"
 #include "viewport_sprite_sorter.h"
+#include "bridge_map.h"
+
+#include <map>
 
 #include "table/strings.h"
-#include "table/palettes.h"
+#include "table/string_colours.h"
 
 #include "safeguards.h"
 
 Point _tile_fract_coords;
+
+
+static const int MAX_TILE_EXTENT_LEFT   = ZOOM_LVL_BASE * TILE_PIXELS;                     ///< Maximum left   extent of tile relative to north corner.
+static const int MAX_TILE_EXTENT_RIGHT  = ZOOM_LVL_BASE * TILE_PIXELS;                     ///< Maximum right  extent of tile relative to north corner.
+static const int MAX_TILE_EXTENT_TOP    = ZOOM_LVL_BASE * MAX_BUILDING_PIXELS;             ///< Maximum top    extent of tile relative to north corner (not considering bridges).
+static const int MAX_TILE_EXTENT_BOTTOM = ZOOM_LVL_BASE * (TILE_PIXELS + 2 * TILE_HEIGHT); ///< Maximum bottom extent of tile relative to north corner (worst case: #SLOPE_STEEP_N).
 
 struct StringSpriteToDraw {
 	StringID string;
@@ -205,8 +250,8 @@ void InitializeWindowViewport(Window *w, int x, int y,
 	vp->overlay = NULL;
 
 	w->viewport = vp;
-	vp->virtual_left = 0;//pt.x;
-	vp->virtual_top = 0;//pt.y;
+	vp->virtual_left = 0; // pt.x;
+	vp->virtual_top = 0;  // pt.y;
 }
 
 static Point _vp_move_offs;
@@ -354,9 +399,10 @@ ViewPort *IsPtInWindowViewport(const Window *w, int x, int y)
  * @param vp  Viewport that contains the (\a x, \a y) screen coordinate
  * @param x   Screen x coordinate
  * @param y   Screen y coordinate
+ * @param clamp_to_map Clamp the coordinate outside of the map to the closest tile within the map.
  * @return Tile coordinate
  */
-static Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y)
+Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y, bool clamp_to_map)
 {
 	Point pt;
 	int a, b;
@@ -374,11 +420,15 @@ static Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y)
 	a = y - x;
 	b = y + x;
 
-	/* we need to move variables in to the valid range, as the
-	 * GetTileZoomCenterWindow() function can call here with invalid x and/or y,
-	 * when the user tries to zoom out along the sides of the map */
-	a = Clamp(a, -4 * (int)TILE_SIZE, (int)(MapMaxX() * TILE_SIZE) - 1);
-	b = Clamp(b, -4 * (int)TILE_SIZE, (int)(MapMaxY() * TILE_SIZE) - 1);
+	if (clamp_to_map) {
+		/* Bring the coordinates near to a valid range. This is mostly due to the
+		 * tiles on the north side of the map possibly being drawn too high due to
+		 * the extra height levels. So at the top we allow a number of extra tiles.
+		 * This number is based on the tile height and pixels. */
+		int extra_tiles = CeilDiv(_settings_game.construction.max_heightlevel * TILE_HEIGHT, TILE_PIXELS);
+		a = Clamp(a, -extra_tiles * TILE_SIZE, MapMaxX() * TILE_SIZE - 1);
+		b = Clamp(b, -extra_tiles * TILE_SIZE, MapMaxY() * TILE_SIZE - 1);
+	}
 
 	/* (a, b) is the X/Y-world coordinate that belongs to (x,y) if the landscape would be completely flat on height 0.
 	 * Now find the Z-world coordinate by fix point iteration.
@@ -395,8 +445,13 @@ static Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y)
 	for (int malus = 3; malus > 0; malus--) z = GetSlopePixelZ(Clamp(a + max(z, malus) - malus, min_coord, MapMaxX() * TILE_SIZE - 1), Clamp(b + max(z, malus) - malus, min_coord, MapMaxY() * TILE_SIZE - 1)) / 2;
 	for (int i = 0; i < 5; i++) z = GetSlopePixelZ(Clamp(a + z, min_coord, MapMaxX() * TILE_SIZE - 1), Clamp(b + z, min_coord, MapMaxY() * TILE_SIZE - 1)) / 2;
 
-	pt.x = Clamp(a + z, min_coord, MapMaxX() * TILE_SIZE - 1);
-	pt.y = Clamp(b + z, min_coord, MapMaxY() * TILE_SIZE - 1);
+	if (clamp_to_map) {
+		pt.x = Clamp(a + z, min_coord, MapMaxX() * TILE_SIZE - 1);
+		pt.y = Clamp(b + z, min_coord, MapMaxY() * TILE_SIZE - 1);
+	} else {
+		pt.x = a + z;
+		pt.y = b + z;
+	}
 
 	return pt;
 }
@@ -1022,91 +1077,133 @@ draw_inner:
 	}
 }
 
+/**
+ * Returns the y coordinate in the viewport coordinate system where the given
+ * tile is painted.
+ * @param tile Any tile.
+ * @return The viewport y coordinate where the tile is painted.
+ */
+static int GetViewportY(Point tile)
+{
+	/* Each increment in X or Y direction moves down by half a tile, i.e. TILE_PIXELS / 2. */
+	return (tile.y * (int)(TILE_PIXELS / 2) + tile.x * (int)(TILE_PIXELS / 2) - TilePixelHeightOutsideMap(tile.x, tile.y)) << ZOOM_LVL_SHIFT;
+}
+
+/**
+ * Add the landscape to the viewport, i.e. all ground tiles and buildings.
+ */
 static void ViewportAddLandscape()
 {
-	int x, y, width, height;
-	TileInfo ti;
-	bool direction;
+	assert(_vd.dpi.top <= _vd.dpi.top + _vd.dpi.height);
+	assert(_vd.dpi.left <= _vd.dpi.left + _vd.dpi.width);
 
-	_cur_ti = &ti;
+	Point upper_left = InverseRemapCoords(_vd.dpi.left, _vd.dpi.top);
+	Point upper_right = InverseRemapCoords(_vd.dpi.left + _vd.dpi.width, _vd.dpi.top);
 
-	/* Transform into tile coordinates and round to closest full tile */
-	x = ((_vd.dpi.top >> (1 + ZOOM_LVL_SHIFT)) - (_vd.dpi.left >> (2 + ZOOM_LVL_SHIFT))) & ~TILE_UNIT_MASK;
-	y = ((_vd.dpi.top >> (1 + ZOOM_LVL_SHIFT)) + (_vd.dpi.left >> (2 + ZOOM_LVL_SHIFT)) - TILE_SIZE) & ~TILE_UNIT_MASK;
+	/* Transformations between tile coordinates and viewport rows/columns: See vp_column_row
+	 *   column = y - x
+	 *   row    = x + y
+	 *   x      = (row - column) / 2
+	 *   y      = (row + column) / 2
+	 * Note: (row, columns) pairs are only valid, if they are both even or both odd.
+	 */
 
-	/* determine size of area */
-	{
-		Point pt = RemapCoords(x, y, 241);
-		width = (_vd.dpi.left + _vd.dpi.width - pt.x + 96 * ZOOM_LVL_BASE - 1) >> (6 + ZOOM_LVL_SHIFT);
-		height = (_vd.dpi.top + _vd.dpi.height - pt.y) >> (5 + ZOOM_LVL_SHIFT) << 1;
-	}
+	/* Columns overlap with neighbouring columns by a half tile.
+	 *  - Left column is column of upper_left (rounded down) and one column to the left.
+	 *  - Right column is column of upper_right (rounded up) and one column to the right.
+	 * Note: Integer-division does not round down for negative numbers, so ensure rounding with another increment/decrement.
+	 */
+	int left_column = (upper_left.y - upper_left.x) / (int)TILE_SIZE - 2;
+	int right_column = (upper_right.y - upper_right.x) / (int)TILE_SIZE + 2;
 
-	assert(width > 0);
-	assert(height > 0);
+	int potential_bridge_height = ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.max_bridge_height;
 
-	direction = false;
+	/* Rows overlap with neighbouring rows by a half tile.
+	 * The first row that could possibly be visible is the row above upper_left (if it is at height 0).
+	 * Due to integer-division not rounding down for negative numbers, we need another decrement.
+	 */
+	int row = (upper_left.x + upper_left.y) / (int)TILE_SIZE - 2;
+	bool last_row = false;
+	for (; !last_row; row++) {
+		last_row = true;
+		for (int column = left_column; column <= right_column; column++) {
+			/* Valid row/column? */
+			if ((row + column) % 2 != 0) continue;
 
-	do {
-		int width_cur = width;
-		uint x_cur = x;
-		uint y_cur = y;
+			Point tilecoord;
+			tilecoord.x = (row - column) / 2;
+			tilecoord.y = (row + column) / 2;
+			assert(column == tilecoord.y - tilecoord.x);
+			assert(row == tilecoord.y + tilecoord.x);
 
-		do {
-			TileType tt = MP_VOID;
+			TileType tile_type;
+			TileInfo tile_info;
+			_cur_ti = &tile_info;
+			tile_info.x = tilecoord.x * TILE_SIZE; // FIXME tile_info should use signed integers
+			tile_info.y = tilecoord.y * TILE_SIZE;
 
-			ti.x = x_cur;
-			ti.y = y_cur;
+			if (IsInsideBS(tilecoord.x, 0, MapSizeX()) && IsInsideBS(tilecoord.y, 0, MapSizeY())) {
+				/* This includes the south border at MapMaxX / MapMaxY. When terraforming we still draw tile selections there. */
+				tile_info.tile = TileXY(tilecoord.x, tilecoord.y);
+				tile_type = GetTileType(tile_info.tile);
+			} else {
+				tile_info.tile = INVALID_TILE;
+				tile_type = MP_VOID;
+			}
 
-			ti.z = 0;
+			if (tile_type != MP_VOID) {
+				/* We are inside the map => paint landscape. */
+				tile_info.tileh = GetTilePixelSlope(tile_info.tile, &tile_info.z);
+			} else {
+				/* We are outside the map => paint black. */
+				tile_info.tileh = GetTilePixelSlopeOutsideMap(tilecoord.x, tilecoord.y, &tile_info.z);
+			}
 
-			ti.tileh = SLOPE_FLAT;
-			ti.tile = INVALID_TILE;
+			int viewport_y = GetViewportY(tilecoord);
 
-			if (x_cur < MapMaxX() * TILE_SIZE &&
-					y_cur < MapMaxY() * TILE_SIZE) {
-				TileIndex tile = TileVirtXY(x_cur, y_cur);
+			if (viewport_y + MAX_TILE_EXTENT_BOTTOM < _vd.dpi.top) {
+				/* The tile in this column is not visible yet.
+				 * Tiles in other columns may be visible, but we need more rows in any case. */
+				last_row = false;
+				continue;
+			}
 
-				if (!_settings_game.construction.freeform_edges || (TileX(tile) != 0 && TileY(tile) != 0)) {
-					if (x_cur == ((int)MapMaxX() - 1) * TILE_SIZE || y_cur == ((int)MapMaxY() - 1) * TILE_SIZE) {
-						uint maxh = max<uint>(TileHeight(tile), 1);
-						for (uint h = 0; h < maxh; h++) {
-							AddTileSpriteToDraw(SPR_SHADOW_CELL, PAL_NONE, ti.x, ti.y, h * TILE_HEIGHT);
-						}
-					}
+			int min_visible_height = viewport_y - (_vd.dpi.top + _vd.dpi.height);
+			bool tile_visible = min_visible_height <= 0;
 
-					ti.tile = tile;
-					ti.tileh = GetTilePixelSlope(tile, &ti.z);
-					tt = GetTileType(tile);
+			if (tile_type != MP_VOID) {
+				/* Is tile with buildings visible? */
+				if (min_visible_height < MAX_TILE_EXTENT_TOP) tile_visible = true;
+
+				if (IsBridgeAbove(tile_info.tile)) {
+					/* Is the bridge visible? */
+					TileIndex bridge_tile = GetNorthernBridgeEnd(tile_info.tile);
+					int bridge_height = ZOOM_LVL_BASE * (GetBridgePixelHeight(bridge_tile) - TilePixelHeight(tile_info.tile));
+					if (min_visible_height < bridge_height + MAX_TILE_EXTENT_TOP) tile_visible = true;
 				}
+
+				/* Would a higher bridge on a more southern tile be visible?
+				 * If yes, we need to loop over more rows to possibly find one. */
+				if (min_visible_height < potential_bridge_height + MAX_TILE_EXTENT_TOP) last_row = false;
+			} else {
+				/* Outside of map. If we are on the north border of the map, there may still be a bridge visible,
+				 * so we need to loop over more rows to possibly find one. */
+				if ((tilecoord.x <= 0 || tilecoord.y <= 0) && min_visible_height < potential_bridge_height + MAX_TILE_EXTENT_TOP) last_row = false;
 			}
 
-			_vd.foundation_part = FOUNDATION_PART_NONE;
-			_vd.foundation[0] = -1;
-			_vd.foundation[1] = -1;
-			_vd.last_foundation_child[0] = NULL;
-			_vd.last_foundation_child[1] = NULL;
+			if (tile_visible) {
+				last_row = false;
+				_vd.foundation_part = FOUNDATION_PART_NONE;
+				_vd.foundation[0] = -1;
+				_vd.foundation[1] = -1;
+				_vd.last_foundation_child[0] = NULL;
+				_vd.last_foundation_child[1] = NULL;
 
-			_tile_type_procs[tt]->draw_tile_proc(&ti);
-
-			if ((x_cur == (int)MapMaxX() * TILE_SIZE && IsInsideMM(y_cur, 0, MapMaxY() * TILE_SIZE + 1)) ||
-					(y_cur == (int)MapMaxY() * TILE_SIZE && IsInsideMM(x_cur, 0, MapMaxX() * TILE_SIZE + 1))) {
-				TileIndex tile = TileVirtXY(x_cur, y_cur);
-				ti.tile = tile;
-				ti.tileh = GetTilePixelSlope(tile, &ti.z);
-				tt = GetTileType(tile);
+				_tile_type_procs[tile_type]->draw_tile_proc(&tile_info);
+				if (tile_info.tile != INVALID_TILE) DrawTileSelection(&tile_info);
 			}
-			if (ti.tile != INVALID_TILE) DrawTileSelection(&ti);
-
-			y_cur += 0x10;
-			x_cur -= 0x10;
-		} while (--width_cur);
-
-		if ((direction ^= 1) != 0) {
-			y += 0x10;
-		} else {
-			x += 0x10;
 		}
-	} while (--height);
+	}
 }
 
 /**
@@ -1212,8 +1309,9 @@ static void ViewportAddSigns(DrawPixelInfo *dpi)
  * @param center the (preferred) center of the viewport sign
  * @param top    the new top of the sign
  * @param str    the string to show in the sign
+ * @param str_small the string to show when zoomed out. STR_NULL means same as \a str
  */
-void ViewportSign::UpdatePosition(int center, int top, StringID str)
+void ViewportSign::UpdatePosition(int center, int top, StringID str, StringID str_small)
 {
 	if (this->width_normal != 0) this->MarkDirty();
 
@@ -1226,6 +1324,9 @@ void ViewportSign::UpdatePosition(int center, int top, StringID str)
 	this->center = center;
 
 	/* zoomed out version */
+	if (str_small != STR_NULL) {
+		GetString(buffer, str_small, lastof(buffer));
+	}
 	this->width_small = VPSM_LEFT + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + VPSM_RIGHT;
 
 	this->MarkDirty();
@@ -1561,8 +1662,97 @@ void Window::DrawViewport() const
 	dpi->top -= this->top;
 }
 
+/**
+ * Continue criteria for the SearchMapEdge function.
+ * @param iter       Value to check.
+ * @param iter_limit Maximum value for the iter
+ * @param sy         Screen y coordinate calculated for the tile at hand
+ * @param sy_limit   Limit to the screen y coordinate
+ * @return True when we should continue searching.
+ */
+typedef bool ContinueMapEdgeSearch(int iter, int iter_limit, int sy, int sy_limit);
+
+/** Continue criteria for searching a no-longer-visible tile in negative direction, starting at some tile. */
+static inline bool ContinueLowerMapEdgeSearch(int iter, int iter_limit, int sy, int sy_limit) { return iter > 0          && sy > sy_limit; }
+/** Continue criteria for searching a no-longer-visible tile in positive direction, starting at some tile. */
+static inline bool ContinueUpperMapEdgeSearch(int iter, int iter_limit, int sy, int sy_limit) { return iter < iter_limit && sy < sy_limit; }
+
+/**
+ * Searches, starting at the given tile, by applying the given offset to iter, for a no longer visible tile.
+ * The whole sense of this function is keeping the to-be-written code small, thus it is a little bit abstracted
+ * so the same function can be used for both the X and Y locations. As such a reference to one of the elements
+ * in curr_tile was needed.
+ * @param curr_tile  A tile
+ * @param iter       Reference to either the X or Y of curr_tile.
+ * @param iter_limit Upper search limit for the iter value.
+ * @param offset     Search in steps of this size
+ * @param sy_limit   Search limit to be passed to the criteria
+ * @param continue_criteria Search as long as this criteria is true
+ * @return The final value of iter.
+ */
+static int SearchMapEdge(Point &curr_tile, int &iter, int iter_limit, int offset, int sy_limit, ContinueMapEdgeSearch continue_criteria)
+{
+	int sy;
+	do {
+		iter = Clamp(iter + offset, 0, iter_limit);
+		sy = GetViewportY(curr_tile);
+	} while (continue_criteria(iter, iter_limit, sy, sy_limit));
+
+	return iter;
+}
+
+/**
+ * Determine the clamping of either the X or Y coordinate to the map.
+ * @param curr_tile   A tile
+ * @param iter        Reference to either the X or Y of curr_tile.
+ * @param iter_limit  Upper search limit for the iter value.
+ * @param start       Start value for the iteration.
+ * @param other_ref   Reference to the opposite axis in curr_tile than of iter.
+ * @param other_value Start value for of the opposite axis
+ * @param vp_value    Value of the viewport location in the opposite axis as for iter.
+ * @param other_limit Limit for the other value, so if iter is X, then other_limit is for Y.
+ * @param vp_top      Top of the viewport.
+ * @param vp_bottom   Bottom of the viewport.
+ * @return Clamped version of vp_value.
+ */
+static inline int ClampXYToMap(Point &curr_tile, int &iter, int iter_limit, int start, int &other_ref, int other_value, int vp_value, int other_limit, int vp_top, int vp_bottom)
+{
+	bool upper_edge = other_value < _settings_game.construction.max_heightlevel / 4;
+
+	/*
+	 * First get an estimate of the tiles relevant for us at that edge.  Relevant in the sense
+	 * "at least close to the visible area". Thus, we don't look at exactly each tile, inspecting
+	 * e.g. every tenth should be enough. After all, the desired screen limit is set such that
+	 * the bordermost tiles are painted in the middle of the screen when one hits the limit,
+	 * i.e. it is no harm if there is some small error in that calculation
+	 */
+
+	other_ref = upper_edge ? 0 : other_limit;
+	iter = start;
+	int min_iter = SearchMapEdge(curr_tile, iter, iter_limit, upper_edge ? -10 : +10, vp_top,    upper_edge ? ContinueLowerMapEdgeSearch : ContinueUpperMapEdgeSearch);
+	iter = start;
+	int max_iter = SearchMapEdge(curr_tile, iter, iter_limit, upper_edge ? +10 : -10, vp_bottom, upper_edge ? ContinueUpperMapEdgeSearch : ContinueLowerMapEdgeSearch);
+
+	max_iter = min(max_iter + _settings_game.construction.max_heightlevel / 4, iter_limit);
+	min_iter = min(min_iter, max_iter);
+
+	/* Now, calculate the highest heightlevel of these tiles. Again just as an estimate. */
+	int max_heightlevel_at_edge = 0;
+	for (iter = min_iter; iter <= max_iter; iter += 10) {
+		max_heightlevel_at_edge = max(max_heightlevel_at_edge, (int)TileHeight(TileXY(curr_tile.x, curr_tile.y)));
+	}
+
+	/* Based on that heightlevel, calculate the limit. For the upper edge a tile with height zero would
+	 * get a limit of zero, on the other side it depends on the number of tiles along the axis. */
+	return upper_edge ?
+			max(vp_value, -max_heightlevel_at_edge * (int)(TILE_HEIGHT * 2 * ZOOM_LVL_BASE)) :
+			min(vp_value, (other_limit * TILE_SIZE * 4 - max_heightlevel_at_edge * TILE_HEIGHT * 2) * ZOOM_LVL_BASE);
+}
+
 static inline void ClampViewportToMap(const ViewPort *vp, int &x, int &y)
 {
+	int original_y = y;
+
 	/* Centre of the viewport is hot spot */
 	x += vp->virtual_width / 2;
 	y += vp->virtual_height / 2;
@@ -1572,9 +1762,14 @@ static inline void ClampViewportToMap(const ViewPort *vp, int &x, int &y)
 	int vx = -x + y * 2;
 	int vy =  x + y * 2;
 
-	/* clamp to size of map */
-	vx = Clamp(vx, 0, MapMaxX() * TILE_SIZE * 4 * ZOOM_LVL_BASE);
-	vy = Clamp(vy, 0, MapMaxY() * TILE_SIZE * 4 * ZOOM_LVL_BASE);
+	/* Find out which tile corresponds to (vx,vy) if one assumes height zero.  The cast is necessary to prevent C++ from
+	 * converting the result to an uint, which gives an overflow instead of a negative result... */
+	int tx = vx / (int)(TILE_SIZE * 4 * ZOOM_LVL_BASE);
+	int ty = vy / (int)(TILE_SIZE * 4 * ZOOM_LVL_BASE);
+
+	Point curr_tile;
+	vx = ClampXYToMap(curr_tile, curr_tile.y, MapMaxY(), ty, curr_tile.x, tx, vx, MapMaxX(), original_y, original_y + vp->virtual_height);
+	vy = ClampXYToMap(curr_tile, curr_tile.x, MapMaxX(), tx, curr_tile.y, ty, vy, MapMaxY(), original_y, original_y + vp->virtual_height);
 
 	/* Convert map coordinates to viewport coordinates */
 	x = (-vx + vy) / 2;
@@ -1640,6 +1835,10 @@ void UpdateViewportPosition(Window *w)
  */
 static void MarkViewportDirty(const ViewPort *vp, int left, int top, int right, int bottom)
 {
+	/* Rounding wrt. zoom-out level */
+	right  += (1 << vp->zoom) - 1;
+	bottom += (1 << vp->zoom) - 1;
+
 	right -= vp->virtual_left;
 	if (right <= 0) return;
 
@@ -1664,10 +1863,10 @@ static void MarkViewportDirty(const ViewPort *vp, int left, int top, int right, 
 
 /**
  * Mark all viewports that display an area as dirty (in need of repaint).
- * @param left   Left edge of area to repaint
- * @param top    Top edge of area to repaint
- * @param right  Right edge of area to repaint
- * @param bottom Bottom edge of area to repaint
+ * @param left   Left   edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_NORMAL)
+ * @param top    Top    edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_NORMAL)
+ * @param right  Right  edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_NORMAL)
+ * @param bottom Bottom edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_NORMAL)
  * @ingroup dirty
  */
 void MarkAllViewportsDirty(int left, int top, int right, int bottom)
@@ -1699,17 +1898,33 @@ void ConstrainAllViewportsZoom()
 /**
  * Mark a tile given by its index dirty for repaint.
  * @param tile The tile to mark dirty.
+ * @param bridge_level_offset Height of bridge on tile to also mark dirty. (Height level relative to north corner.)
  * @ingroup dirty
  */
-void MarkTileDirtyByTile(TileIndex tile)
+void MarkTileDirtyByTile(TileIndex tile, int bridge_level_offset)
 {
-	Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, GetTilePixelZ(tile));
+	Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, TilePixelHeight(tile));
 	MarkAllViewportsDirty(
-		pt.x - 31  * ZOOM_LVL_BASE,
-		pt.y - 122 * ZOOM_LVL_BASE,
-		pt.x - 31  * ZOOM_LVL_BASE + 67  * ZOOM_LVL_BASE,
-		pt.y - 122 * ZOOM_LVL_BASE + 154 * ZOOM_LVL_BASE
-	);
+			pt.x - MAX_TILE_EXTENT_LEFT,
+			pt.y - MAX_TILE_EXTENT_TOP - ZOOM_LVL_BASE * TILE_HEIGHT * bridge_level_offset,
+			pt.x + MAX_TILE_EXTENT_RIGHT,
+			pt.y + MAX_TILE_EXTENT_BOTTOM);
+}
+
+/**
+ * Mark a (virtual) tile outside the map dirty for repaint.
+ * @param x Tile X position.
+ * @param y Tile Y position.
+ * @ingroup dirty
+ */
+void MarkTileDirtyByTileOutsideMap(int x, int y)
+{
+	Point pt = RemapCoords(x * TILE_SIZE, y * TILE_SIZE, TilePixelHeightOutsideMap(x, y));
+	MarkAllViewportsDirty(
+			pt.x - MAX_TILE_EXTENT_LEFT,
+			pt.y, // no buildings outside of map
+			pt.x + MAX_TILE_EXTENT_RIGHT,
+			pt.y + MAX_TILE_EXTENT_BOTTOM);
 }
 
 /**
@@ -1785,15 +2000,15 @@ static void SetSelectionTilesDirty()
 			/* the 'x' coordinate of 'top' and 'bot' is the same (and always in the same distance from tile middle),
 			 * tile height/slope affects only the 'y' on-screen coordinate! */
 
-			int l = top.x - (TILE_PIXELS - 2) * ZOOM_LVL_BASE; // 'x' coordinate of left side of dirty rectangle
-			int t = top.y;                     // 'y' coordinate of top side -//-
-			int r = top.x + (TILE_PIXELS - 2) * ZOOM_LVL_BASE; // right side of dirty rectangle
-			int b = bot.y;                     // bottom -//-
+			int l = top.x - TILE_PIXELS * ZOOM_LVL_BASE; // 'x' coordinate of left   side of the dirty rectangle
+			int t = top.y;                               // 'y' coordinate of top    side of the dirty rectangle
+			int r = top.x + TILE_PIXELS * ZOOM_LVL_BASE; // 'x' coordinate of right  side of the dirty rectangle
+			int b = bot.y;                               // 'y' coordinate of bottom side of the dirty rectangle
 
-			static const int OVERLAY_WIDTH = 4 * ZOOM_LVL_BASE; // part of selection sprites is drawn outside the selected area
+			static const int OVERLAY_WIDTH = 4 * ZOOM_LVL_BASE; // part of selection sprites is drawn outside the selected area (in particular: terraforming)
 
 			/* For halftile foundations on SLOPE_STEEP_S the sprite extents some more towards the top */
-			MarkAllViewportsDirty(l - OVERLAY_WIDTH, t - OVERLAY_WIDTH - TILE_HEIGHT * ZOOM_LVL_BASE, r + OVERLAY_WIDTH, b + OVERLAY_WIDTH * ZOOM_LVL_BASE);
+			MarkAllViewportsDirty(l - OVERLAY_WIDTH, t - OVERLAY_WIDTH - TILE_HEIGHT * ZOOM_LVL_BASE, r + OVERLAY_WIDTH, b + OVERLAY_WIDTH);
 
 			/* haven't we reached the topmost tile yet? */
 			if (top_x != x_start) {
@@ -2007,7 +2222,14 @@ void RebuildViewportOverlay(Window *w)
 bool ScrollWindowTo(int x, int y, int z, Window *w, bool instant)
 {
 	/* The slope cannot be acquired outside of the map, so make sure we are always within the map. */
-	if (z == -1) z = GetSlopePixelZ(Clamp(x, 0, MapSizeX() * TILE_SIZE - 1), Clamp(y, 0, MapSizeY() * TILE_SIZE - 1));
+	if (z == -1) {
+		if ( x >= 0 && x <= (int)MapSizeX() * (int)TILE_SIZE - 1
+				&& y >= 0 && y <= (int)MapSizeY() * (int)TILE_SIZE - 1) {
+			z = GetSlopePixelZ(x, y);
+		} else {
+			z = TileHeightOutsideMap(x / (int)TILE_SIZE, y / (int)TILE_SIZE);
+		}
+	}
 
 	Point pt = MapXYZToViewport(w->viewport, x, y, z);
 	w->viewport->follow_vehicle = INVALID_VEHICLE;
@@ -2919,6 +3141,13 @@ EventState VpHandlePlaceSizingDrag()
 	return ES_HANDLED;
 }
 
+/**
+ * Change the cursor and mouse click/drag handling to a mode for performing special operations like tile area selection, object placement, etc.
+ * @param icon New shape of the mouse cursor.
+ * @param pal Palette to use.
+ * @param mode Mode to perform.
+ * @param w %Window requesting the mode change.
+ */
 void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, HighLightStyle mode, Window *w)
 {
 	SetObjectToPlace(icon, pal, mode, w->window_class, w->window_number);
@@ -2926,6 +3155,14 @@ void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, HighLightStyle mode, Wind
 
 #include "table/animcursors.h"
 
+/**
+ * Change the cursor and mouse click/drag handling to a mode for performing special operations like tile area selection, object placement, etc.
+ * @param icon New shape of the mouse cursor.
+ * @param pal Palette to use.
+ * @param mode Mode to perform.
+ * @param window_class %Window class of the window requesting the mode change.
+ * @param window_num Number of the window in its class requesting the mode change.
+ */
 void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowClass window_class, WindowNumber window_num)
 {
 	if (_thd.window_class != WC_INVALID) {
@@ -2970,6 +3207,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 
 }
 
+/** Reset the cursor and mouse mode handling back to default (normal cursor, only clicking in windows). */
 void ResetObjectToPlace()
 {
 	SetObjectToPlace(SPR_CURSOR_MOUSE, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);

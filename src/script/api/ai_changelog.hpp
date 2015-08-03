@@ -15,12 +15,43 @@
  * functions may still be available if you return an older API version
  * in GetAPIVersion() in info.nut.
  *
+ * \b 1.6.0
+ *
+ * 1.6.0 is not yet released. The following changes are not set in stone yet.
+ *
  * \b 1.5.0
  *
- * 1.5.0 is not yet released. The following changes are not set in stone yet.
- *
  * API additions:
+ * \li AIList::SwapList
+ * \li AIStation::GetCargoPlanned
+ * \li AIStation::GetCargoPlannedFrom
+ * \li AIStation::GetCargoPlannedFromVia
+ * \li AIStation::GetCargoPlannedVia
  * \li AIStation::GetCargoWaitingFromVia
+ * \li AIStationList_CargoPlannedByFrom
+ * \li AIStationList_CargoPlannedByVia
+ * \li AIStationList_CargoPlannedFromByVia
+ * \li AIStationList_CargoPlannedViaByFrom
+ * \li AIStationList_CargoWaitingByFrom
+ * \li AIStationList_CargoWaitingByVia
+ * \li AIStationList_CargoWaitingFromByVia
+ * \li AIStationList_CargoWaitingViaByFrom
+ *
+ * \b 1.4.4
+ *
+ * No changes
+ *
+ * \b 1.4.3
+ *
+ * No changes
+ *
+ * \b 1.4.2
+ *
+ * No changes
+ *
+ * \b 1.4.1
+ *
+ * No changes
  *
  * \b 1.4.0
  *

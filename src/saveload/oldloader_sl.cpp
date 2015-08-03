@@ -27,6 +27,7 @@
 #include "../effectvehicle_base.h"
 #include "../engine_func.h"
 #include "../company_base.h"
+#include "../disaster_vehicle.h"
 #include "saveload_internal.h"
 #include "oldloader.h"
 
@@ -1494,10 +1495,10 @@ static bool LoadOldMapPart1(LoadgameState *ls, int num)
 		}
 		for (uint i = 0; i < OLD_MAP_SIZE / 4; i++) {
 			byte b = ReadByte(ls);
-			_m[i * 4 + 0].m6 = GB(b, 0, 2);
-			_m[i * 4 + 1].m6 = GB(b, 2, 2);
-			_m[i * 4 + 2].m6 = GB(b, 4, 2);
-			_m[i * 4 + 3].m6 = GB(b, 6, 2);
+			_me[i * 4 + 0].m6 = GB(b, 0, 2);
+			_me[i * 4 + 1].m6 = GB(b, 2, 2);
+			_me[i * 4 + 2].m6 = GB(b, 4, 2);
+			_me[i * 4 + 3].m6 = GB(b, 6, 2);
 		}
 	}
 
@@ -1509,7 +1510,7 @@ static bool LoadOldMapPart2(LoadgameState *ls, int num)
 	uint i;
 
 	for (i = 0; i < OLD_MAP_SIZE; i++) {
-		_m[i].type_height = ReadByte(ls);
+		_m[i].type = ReadByte(ls);
 	}
 	for (i = 0; i < OLD_MAP_SIZE; i++) {
 		_m[i].m5 = ReadByte(ls);

@@ -1068,6 +1068,12 @@ static bool ZoomMinMaxChanged(int32 p1)
 	extern void ConstrainAllViewportsZoom();
 	ConstrainAllViewportsZoom();
 	GfxClearSpriteCache();
+	if (_settings_client.gui.zoom_min > _gui_zoom) {
+		/* Restrict GUI zoom if it is no longer available. */
+		_gui_zoom = _settings_client.gui.zoom_min;
+		UpdateCursorSize();
+		LoadStringWidthTable();
+	}
 	return true;
 }
 
@@ -1141,7 +1147,7 @@ static bool InvalidateCompanyWindow(int32 p1)
 static void ValidateSettings()
 {
 	/* Do not allow a custom sea level with the original land generator. */
-	if (_settings_newgame.game_creation.land_generator == 0 &&
+	if (_settings_newgame.game_creation.land_generator == LG_ORIGINAL &&
 			_settings_newgame.difficulty.quantity_sea_lakes == CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY) {
 		_settings_newgame.difficulty.quantity_sea_lakes = CUSTOM_SEA_LEVEL_MIN_PERCENTAGE;
 	}
@@ -1271,9 +1277,37 @@ static bool ChangeDynamicEngines(int32 p1)
 	return true;
 }
 
+static bool ChangeMaxHeightLevel(int32 p1)
+{
+	if (_game_mode == GM_NORMAL) return false;
+	if (_game_mode != GM_EDITOR) return true;
+
+	/* Check if at least one mountain on the map is higher than the new value.
+	 * If yes, disallow the change. */
+	for (TileIndex t = 0; t < MapSize(); t++) {
+		if ((int32)TileHeight(t) > p1) {
+			ShowErrorMessage(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN, INVALID_STRING_ID, WL_ERROR);
+			/* Return old, unchanged value */
+			return false;
+		}
+	}
+
+	/* The smallmap uses an index from heightlevels to colours. Trigger rebuilding it. */
+	InvalidateWindowClassesData(WC_SMALLMAP, 2);
+
+	return true;
+}
+
 static bool StationCatchmentChanged(int32 p1)
 {
 	Station::RecomputeIndustriesNearForAll();
+	return true;
+}
+
+static bool MaxVehiclesChanged(int32 p1)
+{
+	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);
+	MarkWholeScreenDirty();
 	return true;
 }
 
