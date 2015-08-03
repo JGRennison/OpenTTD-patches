@@ -57,6 +57,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_VALUE_INT,
 	TR_WIDGET_VALUE_DROPDOWN,
 	TR_WIDGET_VALUE_DEST,
+	TR_WIDGET_VALUE_SIGNAL,
 
 	TR_WIDGET_BLANK_L2,
 	TR_WIDGET_BLANK_L,
@@ -91,6 +92,7 @@ enum PanelWidgets {
 	DPR_VALUE_INT = 0,
 	DPR_VALUE_DROPDOWN,
 	DPR_VALUE_DEST,
+	DPR_VALUE_SIGNAL,
 	DPR_BLANK,
 
 	// Share
@@ -225,6 +227,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION,
 		STR_TRACE_RESTRICT_VARIABLE_CARGO,
 		STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION,
+		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -236,6 +239,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		TRIT_COND_LAST_STATION,
 		TRIT_COND_CARGO,
 		TRIT_COND_ENTRY_DIRECTION,
+		TRIT_COND_PBS_ENTRY_SIGNAL,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -436,16 +440,26 @@ static void DrawInstructionStringConditionalIntegerCommon(TraceRestrictItem item
 	SetDParam(3, GetTraceRestrictValue(item));
 }
 
+/** Common function for drawing an integer conditional instruction with an invalid value */
+static void DrawInstructionStringConditionalInvalidValue(TraceRestrictItem item, const TraceRestrictTypePropertySet &properties, StringID &instruction_string, bool selected)
+{
+	instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED;
+	DrawInstructionStringConditionalCommon(item, properties);
+	SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+}
+
 /**
  * Draws an instruction in the programming GUI
- * @param instruction The instruction to draw
+ * @param prog The program (may be NULL)
+ * @param item The instruction to draw
+ * @param index The instruction index
  * @param y Y position for drawing
  * @param selected True, if the order is selected
  * @param indent How many levels the instruction is indented
  * @param left Left border for text drawing
  * @param right Right border for text drawing
  */
-static void DrawInstructionString(TraceRestrictItem item, int y, bool selected, int indent, int left, int right)
+static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictItem item, int index, int y, bool selected, int indent, int left, int right)
 {
 	StringID instruction_string = INVALID_STRING_ID;
 
@@ -482,9 +496,7 @@ static void DrawInstructionString(TraceRestrictItem item, int y, bool selected, 
 								DrawInstructionStringConditionalIntegerCommon(item, properties);
 							} else {
 								// this is an invalid station, use a seperate string
-								instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED;
-								DrawInstructionStringConditionalCommon(item, properties);
-								SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+								DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
 							}
 							break;
 
@@ -525,6 +537,23 @@ static void DrawInstructionString(TraceRestrictItem item, int y, bool selected, 
 					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
 					SetDParam(2, GetDropDownStringByValue(&_direction_value, GetTraceRestrictValue(item)));
 					break;
+
+				case TRVT_TILE_INDEX: {
+					assert(prog != NULL);
+					assert(GetTraceRestrictType(item) == TRIT_COND_PBS_ENTRY_SIGNAL);
+					TileIndex tile = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					if (tile == INVALID_TILE) {
+						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
+					} else {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX;
+						SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+						SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG);
+						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+						SetDParam(3, TileX(tile));
+						SetDParam(4, TileY(tile));
+					}
+					break;
+				}
 
 				default:
 					NOT_REACHED();
@@ -757,6 +786,11 @@ public:
 				break;
 			}
 
+			case TR_WIDGET_VALUE_SIGNAL: {
+				SetObjectToPlaceAction(widget, ANIMCURSOR_BUILDSIGNALS);
+				break;
+			}
+
 			case TR_WIDGET_GOTO_SIGNAL:
 				ScrollMainWindowToTile(this->tile);
 				break;
@@ -900,6 +934,10 @@ public:
 				OnPlaceObjectDestination(pt, tile, widget, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				break;
 
+			case TR_WIDGET_VALUE_SIGNAL:
+				OnPlaceObjectSignalTileValue(pt, tile, widget, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -996,6 +1034,32 @@ public:
 		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
+	/**
+	 * Common OnPlaceObject handler for instruction value modification actions which involve selecting a signal tile value
+	 */
+	void OnPlaceObjectSignalTileValue(Point pt, TileIndex tile, int widget, int error_message)
+	{
+		TraceRestrictItem item = GetSelected();
+		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_TILE_INDEX) return;
+
+		if (!IsPlainRailTile(tile)) {
+			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+			return;
+		}
+
+		if (GetPresentSignals(tile) == 0) {
+			ShowErrorMessage(error_message, STR_ERROR_THERE_ARE_NO_SIGNALS, WL_INFO);
+			return;
+		}
+
+		if (!IsTileOwner(tile, _local_company)) {
+			ShowErrorMessage(error_message, STR_ERROR_AREA_IS_OWNED_BY_ANOTHER, WL_INFO);
+			return;
+		}
+
+		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+	}
+
 	virtual void OnPlaceObjectAbort()
 	{
 		this->RaiseButtons();
@@ -1053,7 +1117,7 @@ public:
 			}
 
 			if (i >= scroll_position && this->vscroll->IsVisible(i)) {
-				DrawInstructionString(item, y, i == this->selected_instruction, this_indent, r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT);
+				DrawInstructionString(prog, item, i, y, i == this->selected_instruction, this_indent, r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT);
 				y += line_height;
 			}
 		}
@@ -1230,6 +1294,7 @@ private:
 		this->RaiseWidget(TR_WIDGET_VALUE_INT);
 		this->RaiseWidget(TR_WIDGET_VALUE_DROPDOWN);
 		this->RaiseWidget(TR_WIDGET_VALUE_DEST);
+		this->RaiseWidget(TR_WIDGET_VALUE_SIGNAL);
 
 		NWidgetStacked *left_2_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_2);
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT);
@@ -1244,6 +1309,7 @@ private:
 		this->DisableWidget(TR_WIDGET_VALUE_INT);
 		this->DisableWidget(TR_WIDGET_VALUE_DROPDOWN);
 		this->DisableWidget(TR_WIDGET_VALUE_DEST);
+		this->DisableWidget(TR_WIDGET_VALUE_SIGNAL);
 
 		this->DisableWidget(TR_WIDGET_INSERT);
 		this->DisableWidget(TR_WIDGET_REMOVE);
@@ -1404,6 +1470,11 @@ private:
 									GetDropDownStringByValue(&_direction_value, GetTraceRestrictValue(item));
 							break;
 
+						case TRVT_TILE_INDEX:
+							right_sel->SetDisplayedPlane(DPR_VALUE_SIGNAL);
+							this->EnableWidget(TR_WIDGET_VALUE_SIGNAL);
+							break;
+
 						default:
 							break;
 					}
@@ -1540,6 +1611,8 @@ static const NWidgetPart _nested_program_widgets[] = {
 														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DEST), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_TRACE_RESTRICT_SELECT_TARGET, STR_TRACE_RESTRICT_SELECT_TARGET), SetResize(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_SIGNAL), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_TRACE_RESTRICT_SELECT_SIGNAL, STR_TRACE_RESTRICT_SELECT_SIGNAL), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_R), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),

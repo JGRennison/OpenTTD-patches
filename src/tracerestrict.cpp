@@ -217,6 +217,9 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
 
+	bool have_previous_signal = false;
+	TileIndex previous_signal_tile = INVALID_TILE;
+
 	size_t size = this->items.size();
 	for (size_t i = 0; i < size; i++) {
 		TraceRestrictItem item = this->items[i];
@@ -310,6 +313,22 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								break;
 						}
 						result = TestBinaryConditionCommon(item, direction_match);
+						break;
+					}
+
+					case TRIT_COND_PBS_ENTRY_SIGNAL: {
+						// TRVT_TILE_INDEX value type uses the next slot
+						i++;
+						uint32_t signal_tile = this->items[i];
+						if (!have_previous_signal) {
+							if (input.previous_signal_callback) {
+								previous_signal_tile = input.previous_signal_callback(v, input.previous_signal_ptr);
+							}
+							have_previous_signal = true;
+						}
+						bool match = (signal_tile != INVALID_TILE)
+								&& (previous_signal_tile == signal_tile);
+						result = TestBinaryConditionCommon(item, match);
 						break;
 					}
 
@@ -450,6 +469,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_INT:
 		case TRVT_DENY:
 		case TRVT_SPEED:
+		case TRVT_TILE_INDEX:
 			SetTraceRestrictValue(item, 0);
 			SetTraceRestrictAuxField(item, 0);
 			break;
@@ -639,6 +659,9 @@ static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
 static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
 {
 	switch (GetTraceRestrictType(item)) {
+		case TRIT_COND_PBS_ENTRY_SIGNAL:
+			return INVALID_TILE;
+
 		default:
 			NOT_REACHED();
 	}

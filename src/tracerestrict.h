@@ -106,6 +106,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_LAST_STATION        = 14,   ///< Test train last visited station
 	TRIT_COND_CARGO               = 15,   ///< Test if train can carry cargo type
 	TRIT_COND_ENTRY_DIRECTION     = 16,   ///< Test which side of signal/signal tile is being entered from
+	TRIT_COND_PBS_ENTRY_SIGNAL    = 17,   ///< Test tile and PBS-state of previous signal
 	/* space up to 31 */
 };
 
@@ -176,11 +177,15 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
  * Execution input of a TraceRestrictProgram
  */
 struct TraceRestrictProgramInput {
-	TileIndex tile;                          ///< Tile of restrict signal, for direction testing
-	Trackdir trackdir;                       ///< Track direction on tile of restrict signal, for direction testing
+	typedef TileIndex PreviousSignalProc(const Train *v, const void *ptr);
 
-	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_)
-			: tile(tile_), trackdir(trackdir_) { }
+	TileIndex tile;                               ///< Tile of restrict signal, for direction testing
+	Trackdir trackdir;                            ///< Track direction on tile of restrict signal, for direction testing
+	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be NULL
+	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
+
+	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
+			: tile(tile_), trackdir(trackdir_), previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_) { }
 };
 
 /**
@@ -337,7 +342,7 @@ static inline bool IsTraceRestrictConditional(TraceRestrictItem item)
 /** Is TraceRestrictItem a double-item type? */
 static inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
 {
-	return false;
+	return GetTraceRestrictType(item) == TRIT_COND_PBS_ENTRY_SIGNAL;
 }
 
 /**
@@ -363,6 +368,7 @@ enum TraceRestrictValueType {
 	TRVT_ORDER                    = 5, ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
 	TRVT_CARGO_ID                 = 6, ///< takes a CargoID
 	TRVT_DIRECTION                = 7, ///< takes a TraceRestrictDirectionTypeSpecialValue
+	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
 };
 
 /**
@@ -416,6 +422,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_ENTRY_DIRECTION:
 				out.value_type = TRVT_DIRECTION;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_PBS_ENTRY_SIGNAL:
+				out.value_type = TRVT_TILE_INDEX;
 				out.cond_type = TRCOT_BINARY;
 				break;
 
