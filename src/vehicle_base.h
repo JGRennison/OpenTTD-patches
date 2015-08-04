@@ -50,7 +50,11 @@ enum VehicleFlags {
 	VF_PATHFINDER_LOST,         ///< Vehicle's pathfinder is lost.
 	VF_SERVINT_IS_CUSTOM,       ///< Service interval is custom.
 	VF_SERVINT_IS_PERCENT,      ///< Service interval is percent.
-	VF_AUTOMATE_TIMETABLE,      ///< Whether the vehicle should manage the timetable automatically.
+
+	// Additional flags not in trunk are added at the end to avoid clashing with any new
+	// flags which get added in future trunk, and to avoid re-ordering flags which are in trunk already,
+	// as this breaks savegame compatibility.
+	VF_AUTOMATE_TIMETABLE = 15, ///< Whether the vehicle should manage the timetable automatically.
 };
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */
