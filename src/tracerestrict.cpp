@@ -67,6 +67,23 @@ INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
 TraceRestrictMapping _tracerestrictprogram_mapping;
 
 /**
+ * Default value for pathfinder penalty instructions
+ */
+static const uint16 _tracerestrict_penalty_item_default_value = 500;
+
+/**
+ * List of pre-defined pathfinder penalty values
+ * This is indexed by TraceRestrictPathfinderPenaltyPresetIndex
+ */
+const uint16 _tracerestrict_pathfinder_penalty_preset_values[] = {
+	500,
+	2000,
+	8000,
+};
+
+assert_compile(lengthof(_tracerestrict_pathfinder_penalty_preset_values) == TRPPPI_END);
+
+/**
  * This should be used when all pools have been or are immediately about to be also cleared
  * Calling this at other times will leave dangling refcounts
  */
@@ -347,9 +364,25 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 							out.flags |= TRPRF_DENY;
 						}
 						break;
+
 					case TRIT_PF_PENALTY:
-						out.penalty += GetTraceRestrictValue(item);
+						switch (static_cast<TraceRestrictPathfinderPenaltyAuxField>(GetTraceRestrictAuxField(item))) {
+							case TRPPAF_VALUE:
+								out.penalty += GetTraceRestrictValue(item);
+								break;
+
+							case TRPPAF_PRESET: {
+								uint16 index = GetTraceRestrictValue(item);
+								assert(index < TRPPPI_END);
+								out.penalty += _tracerestrict_pathfinder_penalty_preset_values[index];
+								break;
+							}
+
+							default:
+								NOT_REACHED();
+						}
 						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -488,6 +521,11 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_DIRECTION:
 			SetTraceRestrictValue(item, TRDTSV_FRONT);
 			SetTraceRestrictAuxField(item, 0);
+			break;
+
+		case TRVT_PF_PENALTY:
+			SetTraceRestrictValue(item, TRPPPI_SMALL);
+			SetTraceRestrictAuxField(item, TRPPAF_PRESET);
 			break;
 
 		default:

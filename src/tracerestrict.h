@@ -34,6 +34,8 @@ typedef Pool<TraceRestrictProgram, TraceRestrictProgramID, 16, 256000> TraceRest
 /** The actual pool for trace restrict nodes. */
 extern TraceRestrictProgramPool _tracerestrictprogram_pool;
 
+extern const uint16 _tracerestrict_pathfinder_penalty_preset_values[];
+
 #define FOR_ALL_TRACE_RESTRICT_PROGRAMS_FROM(var, start) FOR_ALL_ITEMS_FROM(TraceRestrictProgram, tr_index, var, start)
 #define FOR_ALL_TRACE_RESTRICT_PROGRAMS(var) FOR_ALL_TRACE_RESTRICT_PROGRAMS_FROM(var, 0)
 
@@ -163,6 +165,26 @@ enum TraceRestrictOrderCondAuxField {
 	TROCAF_WAYPOINT               = 1,       ///< value field is a waypoint StationID
 	TROCAF_DEPOT                  = 2,       ///< value field is a depot DepotID
 	/* space up to 3 */
+};
+
+/**
+ * TraceRestrictItem auxiliary type field, for order type conditionals
+ */
+enum TraceRestrictPathfinderPenaltyAuxField {
+	TRPPAF_VALUE                  = 0,       ///< value field is a the pathfinder penalty to use
+	TRPPAF_PRESET                 = 1,       ///< value field is a pathfinder penalty prefix index: TraceRestrictPathfinderPenaltyPresetIndex
+	/* space up to 3 */
+};
+
+/**
+ * TraceRestrictItem pathfinder penalty preset index
+ * This may not be shortened, only lengthened, as preset indexes are stored in save games
+ */
+enum TraceRestrictPathfinderPenaltyPresetIndex {
+	TRPPPI_SMALL                  = 0,       ///< small preset value
+	TRPPPI_MEDIUM                 = 1,       ///< medium preset value
+	TRPPPI_LARGE                  = 2,       ///< large preset value
+	TRPPPI_END,                              ///< end value
 };
 
 /**
@@ -369,6 +391,7 @@ enum TraceRestrictValueType {
 	TRVT_CARGO_ID                 = 6, ///< takes a CargoID
 	TRVT_DIRECTION                = 7, ///< takes a TraceRestrictDirectionTypeSpecialValue
 	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
+	TRVT_PF_PENALTY               = 9, ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
 };
 
 /**
@@ -437,7 +460,7 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 	} else {
 		out.cond_type = TRCOT_NONE;
 		if (GetTraceRestrictType(item) == TRIT_PF_PENALTY) {
-			out.value_type = TRVT_INT;
+			out.value_type = TRVT_PF_PENALTY;
 		} else if (GetTraceRestrictType(item) == TRIT_PF_DENY) {
 			out.value_type = TRVT_DENY;
 		} else {
