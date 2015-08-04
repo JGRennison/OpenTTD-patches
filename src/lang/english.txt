@@ -1736,6 +1736,11 @@ STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Change s
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Close adjacent level crossings: {STRING2}
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Closes all adjacent level crossings on parallel tracks whenever one or more is occupied
 
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Pay for repairing vehicle: {STRING2}
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Pay for repairing vehicle
+STR_CONFIG_SETTING_REPAIR_COST                                  :Cost of repairing vehicle: 1/{STRING2} of total cost
+STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Cost of repairing vehicle
+
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Error with the configuration file...
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... error in array '{RAW_STRING}'

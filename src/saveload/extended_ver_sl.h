@@ -31,6 +31,7 @@ enum SlXvFeatureIndex {
 	XLSFI_IMPROVED_BREAKDOWNS,                    ///< Improved breakdowns patch
 	XSLFI_TT_WAIT_IN_DEPOT,                       ///< Timetabling waiting time in depot patch
 	XSLFI_AUTO_TIMETABLE,                         ///< Auto timetables and separation patch
+	XSLFI_VEHICLE_REPAIR_COST,                    ///< Vehicle repair costs patch
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };

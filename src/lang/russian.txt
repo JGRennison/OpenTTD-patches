@@ -5201,3 +5201,8 @@ STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Взымать плату за починку тс: {STRING}
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Если включено, в депо бужет взыматься плата за ремонт каждой поломки транспортного средства
+STR_CONFIG_SETTING_REPAIR_COST                                  :Стоимость ремонта: 1/{STRING} полной стоимости тс
+STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Стоимость ремонта одной поломки транспортного средства

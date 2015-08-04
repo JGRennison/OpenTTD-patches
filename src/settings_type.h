@@ -489,6 +489,8 @@ struct VehicleSettings {
 	uint8  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
 	bool   adjacent_crossings;               ///< enable closing of adjacent level crossings
 	bool   improved_breakdowns;              ///< different types, chances and serverities of breakdowns
+	bool   pay_for_repair;                   ///< pay for repairing vehicle
+	uint8  repair_cost;                      ///< cost of repairing vehicle
 };
 
 /** Settings related to the economy. */
