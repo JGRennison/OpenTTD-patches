@@ -1656,6 +1656,8 @@ static SettingsContainer &GetSettingsTree()
 
 			vehicles->Add(new SettingEntry("order.no_servicing_if_no_breakdowns"));
 			vehicles->Add(new SettingEntry("order.serviceathelipad"));
+			vehicles->Add(new SettingEntry("order.timetable_automated"));
+			vehicles->Add(new SettingEntry("order.timetable_separation"));
 			vehicles->Add(new SettingEntry("vehicle.adjacent_crossings"));
 		}
 

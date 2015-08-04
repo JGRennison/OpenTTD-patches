@@ -55,6 +55,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_SIG_TUNNEL_BRIDGE,      XSCF_NULL,              1,                                    1, "signal_tunnel_bridge",  NULL, NULL, NULL        },
 	{ XLSFI_IMPROVED_BREAKDOWNS,    XSCF_NULL,              1,                                    1, "improved_breakdowns",   NULL, NULL, NULL        },
 	{ XSLFI_TT_WAIT_IN_DEPOT,       XSCF_NULL,              1,                                    1, "tt_wait_in_depot",      NULL, NULL, NULL        },
+	{ XSLFI_AUTO_TIMETABLE,         XSCF_NULL,              1,                                    1, "auto_timetables",       NULL, NULL, NULL        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 

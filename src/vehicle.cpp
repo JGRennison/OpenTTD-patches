@@ -229,6 +229,11 @@ uint Vehicle::Crash(bool flooded)
 		v->MarkAllViewportsDirty();
 	}
 
+	if (_settings_game.order.timetable_separation) {
+		this->ClearSeparation();
+		ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+	}
+
 	/* Dirty some windows */
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(this->type), 0);
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -2373,6 +2378,11 @@ void Vehicle::HandleLoading(bool mode)
 		case OT_LOADING: {
 			uint wait_time = max(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
 
+			/* Save time just loading took since that is what goes into the timetable */
+			if (!HasBit(this->vehicle_flags, VF_LOADING_FINISHED)) {
+				this->current_loading_time = this->current_order_time;
+			}
+
 			/* Not the first call for this tick, or still loading */
 			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || this->current_order_time < wait_time) return;
 
@@ -2477,6 +2487,10 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 			if (flags & DC_EXEC) {
 				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
 				this->current_order.SetDepotActionType(halt_in_depot ? ODATF_SERVICE_ONLY : ODATFB_HALT);
+				if (_settings_game.order.timetable_separation) {
+					this->ClearSeparation();
+					ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+				}
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			}
 			return CommandCost();
@@ -2497,6 +2511,11 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 			if (this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN) {
 				this->current_order.SetDepotActionType(this->current_order.GetDepotActionType() == ODATFB_HALT ? ODATF_SERVICE_ONLY : ODATFB_HALT);
 			} else {
+				if (_settings_game.order.timetable_separation) {
+					this->ClearSeparation();
+					ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+				}
+
 				this->current_order.MakeDummy();
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			}
@@ -2841,6 +2860,55 @@ void Vehicle::SetNext(Vehicle *next)
 	}
 }
 
+void Vehicle::ClearSeparation()
+{
+	if (this->ahead_separation == NULL && this->behind_separation == NULL) return;
+
+	assert(this->ahead_separation != NULL);
+	assert(this->behind_separation != NULL);
+
+	this->ahead_separation->behind_separation = this->behind_separation;
+	this->behind_separation->ahead_separation = this->ahead_separation;
+
+	this->ahead_separation = NULL;
+	this->behind_separation = NULL;
+
+	SetWindowDirty(WC_VEHICLE_TIMETABLE, this->index);
+}
+
+void Vehicle::InitSeparation()
+{
+	assert(this->ahead_separation == NULL && this->behind_separation == NULL);
+	Vehicle *best_match = this;
+	int lowest_separation;
+	for (Vehicle *v_other = this->FirstShared(); v_other != NULL; v_other = v_other->NextShared()) {
+		if ((HasBit(v_other->vehicle_flags, VF_TIMETABLE_STARTED)) && v_other != this) {
+			if (best_match == this) {
+				best_match = v_other;
+				lowest_separation = 0; // TODO call SeparationBetween() here
+			} else {
+				int temp_sep = 0; // TODO call SeparationBetween() here
+				if (temp_sep < lowest_separation && temp_sep != -1) {
+					best_match = v_other;
+					lowest_separation = temp_sep;
+				}
+			}
+		}
+	}
+	this->AddToSeparationBehind(best_match);
+}
+
+void Vehicle::AddToSeparationBehind(Vehicle *v_other)
+{
+	if (v_other->ahead_separation == NULL) v_other->ahead_separation = v_other;
+	if (v_other->behind_separation == NULL) v_other->behind_separation = v_other;
+
+	this->ahead_separation = v_other;
+	v_other->behind_separation->ahead_separation = this;
+	this->behind_separation = v_other->behind_separation;
+	v_other->behind_separation = this;
+}
+
 /**
  * Adds this vehicle to a shared vehicle chain.
  * @param shared_chain a vehicle of the chain with shared vehicles.
@@ -2898,6 +2966,9 @@ void Vehicle::RemoveFromShared()
 
 	this->next_shared     = NULL;
 	this->previous_shared = NULL;
+
+	if (_settings_game.order.timetable_separation) this->ClearSeparation();
+	if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 
 void VehiclesYearlyLoop()

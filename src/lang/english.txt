@@ -1401,6 +1401,8 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Use groups in v
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Enable usage of the advanced vehicle lists for grouping vehicles
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Use loading indicators: {STRING2}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Select whether loading indicators are displayed above loading or unloading vehicles
+STR_CONFIG_SETTING_TIMETABLE_AUTOMATED                          :Automatically manage timetables: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_AUTOMATED_HELPTEXT                 :Whether to enable automatic timetables
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Show timetable in ticks rather than days: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Show travel times in time tables in game ticks instead of days
 STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Show time in minutes rather than days: {STRING2}
@@ -1417,6 +1419,8 @@ STR_CONFIG_SETTING_DATE_WITH_TIME_YM                            :Month and year
 STR_CONFIG_SETTING_DATE_WITH_TIME_YMD                           :Full date
 STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :Enter timetable start times as text (requires time to be in minutes): {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :Select whether timetable start times may be entered as text if time is being shown in minutes
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :Use timetable to ensure vehicle separation: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT                :Select whether to ensure separation of vehicles when using automatic timetables
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Show arrival and departure in timetables: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Display anticipated arrival and departure times in timetables
 STR_CONFIG_SETTING_QUICKGOTO                                    :Quick creation of vehicle orders: {STRING2}
@@ -4287,6 +4291,9 @@ STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}Reset th
 
 STR_TIMETABLE_AUTOFILL                                          :{BLACK}Autofill
 STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}Fill the timetable automatically with the values from the next journey (Ctrl+Click to try to keep waiting times)
+
+STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automate
+STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Manage the timetables automatically by updating the values for each journey
 
 STR_TIMETABLE_EXPECTED                                          :{BLACK}Expected
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Scheduled

@@ -51,6 +51,11 @@ enum VehicleFlags {
 	VF_PATHFINDER_LOST,         ///< Vehicle's pathfinder is lost.
 	VF_SERVINT_IS_CUSTOM,       ///< Service interval is custom.
 	VF_SERVINT_IS_PERCENT,      ///< Service interval is percent.
+
+	// Additional flags not in trunk are added at the end to avoid clashing with any new
+	// flags which get added in future trunk, and to avoid re-ordering flags which are in trunk already,
+	// as this breaks savegame compatibility.
+	VF_AUTOMATE_TIMETABLE = 15, ///< Whether the vehicle should manage the timetable automatically.
 };
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */
@@ -164,6 +169,9 @@ private:
 	Vehicle *next_shared;               ///< pointer to the next vehicle that shares the order
 	Vehicle *previous_shared;           ///< NOSAVE: pointer to the previous vehicle in the shared order chain
 
+	Vehicle *ahead_separation;
+	Vehicle *behind_separation;
+
 public:
 	friend const SaveLoad *GetVehicleDescription(VehicleType vt); ///< So we can use private/protected variables in the saveload code
 	friend void FixOldVehicles();
@@ -184,6 +192,13 @@ public:
 	Money value;                        ///< Value of the vehicle
 
 	CargoPayment *cargo_payment;        ///< The cargo payment we're currently in
+
+
+	/* Used for timetabling. */
+	uint32 current_order_time;          ///< How many ticks have passed since this order started.
+	uint32 current_loading_time;        ///< How long loading took. Less than current_order_time if vehicle is early.
+	int32 lateness_counter;             ///< How many ticks late (or early if negative) this vehicle is.
+	Date timetable_start;               ///< When the vehicle is supposed to start the timetable.
 
 	Rect coord;                         ///< NOSAVE: Graphical bounding box of the vehicle, i.e. what to redraw on moves.
 
@@ -601,6 +616,37 @@ public:
 	 */
 	inline Order *GetFirstOrder() const { return (this->orders.list == NULL) ? NULL : this->orders.list->GetFirstOrder(); }
 
+	/**
+	 * Get the vehicle ahead on track.
+	 * @return the vehicle ahead on track or NULL when there isn't one.
+	 */
+	inline Vehicle *AheadSeparation() const { return this->ahead_separation; }
+
+	/**
+	 * Get the vehicle behind on track.
+	 * @return the vehicle behind on track or NULL when there isn't one.
+	 */
+	inline Vehicle *BehindSeparation() const { return this->behind_separation; }
+
+	/**
+	 * Clears a vehicle's separation status, removing it from any chain.
+	 */
+	void ClearSeparation();
+
+	/**
+	 * Adds this vehicle to a shared vehicle separation chain.
+	 * @param v_other a vehicle of the separation chain
+	 * @pre !this->IsOrderListShared()
+	 */
+	void InitSeparation();
+
+	/**
+	 * Adds this vehicle behind another in a separation chain.
+	 * @param v_other a vehicle of the separation chain.
+	 * @pre !this->IsOrderListShared()
+	 */
+	void AddToSeparationBehind(Vehicle *v_other);
+
 	void AddToShared(Vehicle *shared_chain);
 	void RemoveFromShared();
 
@@ -668,6 +714,17 @@ public:
 
 		this->profit_this_year = src->profit_this_year;
 		this->profit_last_year = src->profit_last_year;
+
+		this->current_order_time = src->current_order_time;
+		this->current_loading_time = src->current_loading_time;
+		this->lateness_counter = src->lateness_counter;
+		this->timetable_start = src->timetable_start;
+
+		if (HasBit(src->vehicle_flags, VF_TIMETABLE_STARTED)) SetBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+		if (HasBit(src->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);
+		if (HasBit(src->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME)) SetBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+
+		this->service_interval = src->service_interval;
 	}
 
 

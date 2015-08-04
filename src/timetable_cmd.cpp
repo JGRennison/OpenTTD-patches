@@ -15,6 +15,7 @@
 #include "date_func.h"
 #include "window_func.h"
 #include "vehicle_base.h"
+#include "settings_type.h"
 #include "cmd_helper.h"
 #include "core/sort_func.hpp"
 #include "settings_type.h"
@@ -381,15 +382,179 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 }
 
 /**
+* Start or stop automatic management of timetables.
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index.
+ * @param p2 Various bitstuffed elements
+ * - p2 = (bit 0) - Set to 1 to enable, 0 to disable automation.
+ * - p2 = (bit 1) - Ctrl was pressed. Used when disabling to keep times.
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+
+CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (!_settings_game.order.timetable_automated) return CMD_ERROR;
+
+	VehicleID veh = GB(p1, 0, 16);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (flags & DC_EXEC) {
+		for (Vehicle *v2 = v->FirstShared(); v2 != NULL; v2 = v2->NextShared()) {
+			if (HasBit(p2, 0)) {
+				/* Automated timetable. Set flags and clear current times. */
+				SetBit(v2->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+				ClrBit(v2->vehicle_flags, VF_AUTOFILL_TIMETABLE);
+				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+				ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
+				v2->timetable_start = 0;
+				v2->lateness_counter = 0;
+				v2->current_loading_time = 0;
+				v2->ClearSeparation();
+			} else {
+				/* De-automate timetable. Clear flags. */
+				ClrBit(v2->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+				ClrBit(v2->vehicle_flags, VF_AUTOFILL_TIMETABLE);
+				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+				v2->ClearSeparation();
+				if (!HasBit(p2, 1)) {
+					/* Ctrl wasn't pressed, so clear all timetabled times. */
+					SetBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
+					v2->timetable_start = 0;
+					v2->lateness_counter = 0;
+					v2->current_loading_time = 0;
+					OrderList *orders = v2->orders.list;
+					if (orders != NULL) {
+						for (int i = 0; i < orders->GetNumOrders(); i++) {
+							ChangeTimetable(v2, i, 0, MTF_WAIT_TIME, true);
+							ChangeTimetable(v2, i, 0, MTF_TRAVEL_TIME, true);
+						}
+					}
+				}
+			}
+			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
+		}
+	}
+
+	return CommandCost();
+}
+
+int TimeToFinishOrder(Vehicle *v, int n)
+{
+	int left;
+	Order *order = v->GetOrder(n);
+	int wait_time   = order->GetWaitTime();
+	int travel_time = order->GetTravelTime();
+	assert(order != NULL);
+	if ((v->cur_real_order_index == n) && (v->last_station_visited == order->GetDestination())) {
+		if (wait_time == 0) return -1;
+		if (v->current_loading_time > 0) {
+			left = wait_time - v->current_order_time;
+		} else {
+			left = wait_time;
+		}
+		if (left < 0) left = 0;
+	} else {
+		left = travel_time;
+		if (v->cur_real_order_index == n) left -= v->current_order_time;
+		if (travel_time == 0 || wait_time == 0) return -1;
+		if (left < 0) left = 0;
+		left +=wait_time;
+	}
+	return left;
+}
+
+int SeparationBetween(Vehicle *v1, Vehicle *v2)
+{
+	if (v1 == v2) return -1;
+	int separation = 0;
+	int time;
+	int n = v1->cur_real_order_index;
+	while (n != v2->cur_real_order_index) {
+		time = TimeToFinishOrder(v1, n);
+		if (time == -1) return -1;
+		separation += time;
+		n++;
+		if (n >= v1->GetNumOrders()) n = 0;
+	}
+	int time1 = TimeToFinishOrder(v1, n);
+	int time2 = TimeToFinishOrder(v2, n);
+	if (time1 == -1 || time2 == -1) return -1;
+	time = time1 - time2;
+	if (time < 0) {
+		for (n = 0; n < v1->GetNumOrders(); n++) {
+			Order *order = v1->GetOrder(n);
+			int wait_time   = order->GetWaitTime();
+			int travel_time = order->GetTravelTime();
+			if (travel_time == 0 || wait_time == 0) return -1;
+			time += travel_time + wait_time;
+		}
+	}
+	separation += time;
+	assert(separation >= 0);
+	if (separation == 0) return -1;
+	return separation;
+}
+
+void UpdateSeparationOrder(Vehicle *v_start)
+{
+	/* First check if we have a vehicle ahead, and if not search for one. */
+	if (v_start->AheadSeparation() == NULL) {
+		v_start->InitSeparation();
+	}
+	if (v_start->AheadSeparation() == NULL) {
+		return;
+	}
+	/* Switch positions if necessary. */
+	int swaps = 0;
+	bool done = false;
+	while (!done) {
+		done = true;
+		int min_sep = SeparationBetween(v_start, v_start->AheadSeparation());
+		Vehicle *v = v_start;
+		do {
+			if (v != v_start) {
+				int tmp_sep = SeparationBetween(v_start, v);
+				if (tmp_sep < min_sep && tmp_sep != -1) {
+					swaps++;
+					if (swaps >= 50) {
+						return;
+					}
+					done = false;
+					v_start->ClearSeparation();
+					v_start->AddToSeparationBehind(v);
+					break;
+				}
+			}
+			int separation_ahead = SeparationBetween(v, v->AheadSeparation());
+			int separation_behind = SeparationBetween(v->BehindSeparation(), v);
+			v->lateness_counter = (separation_ahead - separation_behind) / 2;
+			if (separation_ahead == -1 || separation_behind == -1) v->lateness_counter = 0;
+			v = v->AheadSeparation();
+		} while (v != v_start);
+	}
+}
+
+
+/**
  * Update the timetable for the vehicle.
  * @param v The vehicle to update the timetable for.
  * @param travelling Whether we just travelled or waited at a station.
  */
 void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 {
+	if (!travelling) v->current_loading_time++; // +1 because this time is one tick behind
 	uint time_taken = v->current_order_time;
+	uint time_loading = v->current_loading_time;
 
 	v->current_order_time = 0;
+	v->current_loading_time = 0;
 
 	if (v->current_order.IsType(OT_IMPLICIT)) return; // no timetabling of auto orders
 
@@ -402,6 +567,18 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	}
 
 	bool just_started = false;
+
+	/* Start automated timetables at first opportunity */
+	if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED) && HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
+		if (_settings_game.order.timetable_separation) v->ClearSeparation();
+		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
+		v->lateness_counter = 0;
+		if (_settings_game.order.timetable_separation) UpdateSeparationOrder(v);
+		for (v = v->FirstShared(); v != NULL; v = v->NextShared()) {
+			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+		}
+		return;
+	}
 
 	/* This vehicle is arriving at the first destination in the timetable. */
 	if (v->cur_real_order_index == first_manual_order && travelling) {
@@ -472,12 +649,60 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	uint timetabled = travelling ? real_current_order->GetTimetabledTravel() :
 			real_current_order->GetTimetabledWait();
 
+	/* Update the timetable to gradually shift order times towards the actual travel times. */
+	if (timetabled != 0 && HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
+		int32 new_time;
+		if (travelling) {
+			new_time = time_taken;
+		} else {
+			new_time = time_loading;
+		}
+
+		/* Check for too large a difference from expected time, and if so don't average. */
+		if (!(new_time > (int32)timetabled * 2 || new_time < (int32)timetabled / 2)) {
+			int arrival_error = timetabled - new_time;
+			/* Compute running average, with sign conversion to avoid negative overflow. */
+			new_time = ((int32)timetabled * 4 + new_time + 2) / 5;
+			/* Use arrival_error to finetune order ticks. */
+			if (arrival_error < 0) new_time++;
+			if (arrival_error > 0) new_time--;
+		} else if (new_time > (int32)timetabled * 10 && travelling) {
+			/* Possible jam, clear time and restart timetable for all vehicles.
+			 * Otherwise we risk trains blocking 1-lane stations for long times. */
+			ChangeTimetable(v, v->cur_real_order_index, 0, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+			for (Vehicle *v2 = v->FirstShared(); v2 != NULL; v2 = v2->NextShared()) {
+				if (_settings_game.order.timetable_separation) v2->ClearSeparation();
+				ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
+				SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
+			}
+			return;
+		}
+
+		if (new_time < 1) new_time = 1;
+		if (new_time != (int32)timetabled)
+			ChangeTimetable(v, v->cur_real_order_index, new_time, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+	} else if (timetabled == 0 && HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
+		/* Add times for orders that are not yet timetabled, even while not autofilling */
+		if (travelling)
+			ChangeTimetable(v, v->cur_real_order_index, time_taken, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+		else
+			ChangeTimetable(v, v->cur_real_order_index, time_loading, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+	}
+
 	/* Vehicles will wait at stations if they arrive early even if they are not
 	 * timetabled to wait there, so make sure the lateness counter is updated
 	 * when this happens. */
 	if (timetabled == 0 && (travelling || v->lateness_counter >= 0)) return;
 
-	v->lateness_counter -= (timetabled - time_taken);
+	if (_settings_game.order.timetable_separation && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
+		v->current_order_time = time_taken;
+		v->current_loading_time = time_loading;
+		UpdateSeparationOrder(v);
+		v->current_order_time = 0;
+		v->current_loading_time = 0;
+	} else {
+		v->lateness_counter -= (timetabled - time_taken);
+	}
 
 	/* When we are more late than this timetabled bit takes we (somewhat expensively)
 	 * check how many ticks the (fully filled) timetable has. If a timetable cycle is

@@ -336,6 +336,7 @@ struct TimetableWindow : Window {
 			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders.list == NULL);
 			this->SetWidgetDisabledState(WID_VT_RESET_LATENESS, v->orders.list == NULL);
 			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders.list == NULL);
+			this->EnableWidget(WID_VT_AUTOMATE);
 		} else {
 			this->DisableWidget(WID_VT_START_DATE);
 			this->DisableWidget(WID_VT_CHANGE_TIME);
@@ -344,10 +345,17 @@ struct TimetableWindow : Window {
 			this->DisableWidget(WID_VT_CLEAR_SPEED);
 			this->DisableWidget(WID_VT_RESET_LATENESS);
 			this->DisableWidget(WID_VT_AUTOFILL);
+			this->DisableWidget(WID_VT_AUTOMATE);
 			this->DisableWidget(WID_VT_SHARED_ORDER_LIST);
 		}
 
 		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
+		this->SetWidgetLoweredState(WID_VT_AUTOMATE, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+		this->SetWidgetDisabledState(WID_VT_START_DATE, _settings_game.order.timetable_separation);
+		this->SetWidgetDisabledState(WID_VT_AUTOMATE, !_settings_game.order.timetable_automated);
+		this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+		this->SetWidgetDisabledState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+		this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 
 		this->DrawWidgets();
 	}
@@ -630,6 +638,14 @@ struct TimetableWindow : Window {
 				break;
 			}
 
+			case WID_VT_AUTOMATE: {
+				uint32 p2 = 0;
+				if (!HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) SetBit(p2, 0);
+				if (!_ctrl_pressed) SetBit(p2, 1);
+				DoCommandP(0, v->index, p2, CMD_AUTOMATE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				break;
+			}
+
 			case WID_VT_EXPECTED:
 				this->show_expected = !this->show_expected;
 				break;
@@ -697,6 +713,7 @@ struct TimetableWindow : Window {
 	void UpdateSelectionStates()
 	{
 		this->GetWidget<NWidgetStacked>(WID_VT_ARRIVAL_DEPARTURE_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : SZSP_NONE);
+		// this->GetWidget<NWidgetStacked>(TTV_AUTO_SELECTION)->SetDisplayedPlane(!_settings_game.order.timetable_automated ? 0 : 1);
 		this->GetWidget<NWidgetStacked>(WID_VT_EXPECTED_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : 1);
 	}
 };
@@ -734,6 +751,7 @@ static const NWidgetPart _nested_timetable_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_AUTOFILL), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_AUTOFILL, STR_TIMETABLE_AUTOFILL_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_AUTOMATE), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_AUTOMATE, STR_TIMETABLE_AUTOMATE_TOOLTIP),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VT_EXPECTED_SELECTION),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_EXPECTED), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_BLACK_STRING, STR_TIMETABLE_EXPECTED_TOOLTIP),
 					NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
@@ -742,6 +760,7 @@ static const NWidgetPart _nested_timetable_widgets[] = {
 		EndContainer(),
 		NWidget(NWID_VERTICAL, NC_EQUALSIZE),
 			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VT_SHARED_ORDER_LIST), SetFill(0, 1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+			NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY), SetFill(0, 1),
 		EndContainer(),
 	EndContainer(),
