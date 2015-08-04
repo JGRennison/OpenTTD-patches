@@ -2438,6 +2438,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
+STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :Add {STRING} pathfinder penalty
 STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
 STR_TRACE_RESTRICT_START                                        :Start
 STR_TRACE_RESTRICT_END                                          :End
@@ -2445,6 +2446,10 @@ STR_TRACE_RESTRICT_PF_DENY                                      :Deny
 STR_TRACE_RESTRICT_PF_ALLOW                                     :Allow
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Allow (cancel previous Deny)
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
+STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
+STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
+STR_TRACE_RESTRICT_PF_VALUE_LARGE                               :large
+STR_TRACE_RESTRICT_PF_VALUE_CUSTOM                              :custom
 STR_TRACE_RESTRICT_DIRECTION_FRONT                              :front
 STR_TRACE_RESTRICT_DIRECTION_BACK                               :back
 STR_TRACE_RESTRICT_DIRECTION_NE                                 :north-east
