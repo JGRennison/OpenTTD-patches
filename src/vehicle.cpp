@@ -2142,8 +2142,9 @@ void Vehicle::HandleLoading(bool mode)
 			uint wait_time = max(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
 
 			/* Save time just loading took since that is what goes into the timetable */
-			if (!HasBit(this->vehicle_flags, VF_LOADING_FINISHED))
-				this->current_loading_time = this->current_order_time;	
+			if (!HasBit(this->vehicle_flags, VF_LOADING_FINISHED)) {
+				this->current_loading_time = this->current_order_time;
+			}
 
 			/* Not the first call for this tick, or still loading */
 			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || this->current_order_time < wait_time) return;

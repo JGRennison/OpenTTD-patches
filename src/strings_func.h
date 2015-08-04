@@ -56,8 +56,7 @@ public:
 		offset(0),
 		num_param(size)
 	{
-        uint left = parent.GetDataLeft();
-		assert(size <= left);
+		assert(size <= parent.GetDataLeft());
 		if (parent.type == NULL) {
 			this->type = NULL;
 		} else {

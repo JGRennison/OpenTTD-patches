@@ -46,11 +46,11 @@ enum VehicleFlags {
 	VF_TIMETABLE_STARTED,       ///< Whether the vehicle has started running on the timetable yet.
 	VF_AUTOFILL_TIMETABLE,      ///< Whether the vehicle should fill in the timetable automatically.
 	VF_AUTOFILL_PRES_WAIT_TIME, ///< Whether non-destructive auto-fill should preserve waiting times
-	VF_AUTOMATE_TIMETABLE,	    ///< Whether the vehicle should manage the timetable automatically.
 	VF_STOP_LOADING,            ///< Don't load anymore during the next load cycle.
 	VF_PATHFINDER_LOST,         ///< Vehicle's pathfinder is lost.
 	VF_SERVINT_IS_CUSTOM,       ///< Service interval is custom.
 	VF_SERVINT_IS_PERCENT,      ///< Service interval is percent.
+	VF_AUTOMATE_TIMETABLE,      ///< Whether the vehicle should manage the timetable automatically.
 };
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */
@@ -191,7 +191,7 @@ public:
 
 	/* Used for timetabling. */
 	uint32 current_order_time;          ///< How many ticks have passed since this order started.
-	uint32 current_loading_time;	    ///< How long loading took. Less than current_order_time if vehicle is early.
+	uint32 current_loading_time;        ///< How long loading took. Less than current_order_time if vehicle is early.
 	int32 lateness_counter;             ///< How many ticks late (or early if negative) this vehicle is.
 	Date timetable_start;               ///< When the vehicle is supposed to start the timetable.
 

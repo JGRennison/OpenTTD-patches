@@ -373,7 +373,7 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 	if (!_settings_game.order.timetable_automated) return CMD_ERROR;
 
 	VehicleID veh = GB(p1, 0, 16);
-	
+
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
@@ -642,7 +642,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			}
 			return;
 		}
-		
+
 		if (new_time < 1) new_time = 1;
 		if (new_time != (int32)timetabled)
 			ChangeTimetable(v, v->cur_real_order_index, new_time, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);

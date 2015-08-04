@@ -1622,9 +1622,10 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 
 				/* Set automation bit if target has it. */
-				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE))
+				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
 					SetBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
-				
+				}
+
 				if (_settings_game.order.timetable_separation) dst->ClearSeparation();
 				if (_settings_game.order.timetable_separation) ClrBit(dst->vehicle_flags, VF_TIMETABLE_STARTED);
 
