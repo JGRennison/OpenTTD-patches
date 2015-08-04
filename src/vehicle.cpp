@@ -99,24 +99,28 @@ void VehicleServiceInDepot(Vehicle *v)
 
 	do {
 		v->date_of_last_service = _date;
-		if ( _settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service ) {
+		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
 			ExpensesType type = INVALID_EXPENSES;
 			_current_company = v->owner;
 			switch (v->type) {
-			    case VEH_AIRCRAFT:
-				type = EXPENSES_AIRCRAFT_RUN;
-				break;
-			    case VEH_TRAIN:
-				type = EXPENSES_TRAIN_RUN;
-				break;
-			    case VEH_SHIP:
-				type = EXPENSES_SHIP_RUN;
-				break;
-			    case VEH_ROAD:
-				type = EXPENSES_ROADVEH_RUN;
-				break;
-			    default:
-				NOT_REACHED();
+				case VEH_AIRCRAFT:
+					type = EXPENSES_AIRCRAFT_RUN;
+					break;
+
+				case VEH_TRAIN:
+					type = EXPENSES_TRAIN_RUN;
+					break;
+
+				case VEH_SHIP:
+					type = EXPENSES_SHIP_RUN;
+					break;
+
+				case VEH_ROAD:
+					type = EXPENSES_ROADVEH_RUN;
+					break;
+
+				default:
+					NOT_REACHED();
 			}
 			assert(type != INVALID_EXPENSES);
 			Money repair_cost = (v->breakdowns_since_last_service * v->repair_cost / _settings_game.vehicle.repair_cost) + 1;
