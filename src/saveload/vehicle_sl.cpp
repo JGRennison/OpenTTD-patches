@@ -369,7 +369,7 @@ void AfterLoadVehicles(bool part_of_load)
 			}
 		}
 
-		if (IsSavegameVersionBefore(SL_REPAIRCOST)) {
+		if (SlXvIsFeatureMissing(XSLFI_VEHICLE_REPAIR_COST)) {
 			/* repair cost is value for new vehicles and each week +/256 part for old */
 			FOR_ALL_VEHICLES(v) {
 				if (!v->IsPrimaryVehicle()) continue;
@@ -706,7 +706,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLEG_CONDVAR(         _cargo_loaded_at_xy,   SLE_UINT32,                  51,  67),
 		 SLE_CONDVAR(Vehicle, value,                 SLE_FILE_I32 | SLE_VAR_I64,   0,  64),
 		 SLE_CONDVAR(Vehicle, value,                 SLE_INT64,                   65, SL_MAX_VERSION),
-		 SLE_CONDVAR(Vehicle, repair_cost,           SLE_INT64,        SL_REPAIRCOST, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, repair_cost,          SLE_INT64,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEHICLE_REPAIR_COST)),
 
 		 SLE_CONDVAR(Vehicle, random_bits,           SLE_UINT8,                    2, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, waiting_triggers,      SLE_UINT8,                    2, SL_MAX_VERSION),
