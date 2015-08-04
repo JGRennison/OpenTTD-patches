@@ -138,6 +138,12 @@ struct CursorVars {
 	bool in_window;  ///< mouse inside this window, determines drawing logic
 
 	bool vehchain;   ///< vehicle chain is dragged
+
+	bool UpdateCursorPosition(int x, int y, bool queued_warp);
+
+private:
+	bool queued_warp;
+	Point last_position;
 };
 
 /** Data about how and where to blit pixels. */
@@ -231,7 +237,7 @@ enum Colours {
 };
 template <> struct EnumPropsT<Colours> : MakeEnumPropsT<Colours, byte, COLOUR_BEGIN, COLOUR_END, INVALID_COLOUR, 4> {};
 
-/** Colour of the strings, see _string_colourmap in table/palettes.h or docs/ottd-colourtext-palette.png */
+/** Colour of the strings, see _string_colourmap in table/string_colours.h or docs/ottd-colourtext-palette.png */
 enum TextColour {
 	TC_BEGIN       = 0x00,
 	TC_FROMSTRING  = 0x00,
