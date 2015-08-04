@@ -132,11 +132,9 @@ enum WidgetDrawDistances {
 	/* Dropdown widget. */
 	WD_DROPDOWN_HEIGHT     = 12, ///< Height of a drop down widget.
 	WD_DROPDOWNTEXT_LEFT   = 2,  ///< Left offset of the dropdown widget string.
-	WD_DROPDOWNTEXT_RIGHT  = 14, ///< Right offset of the dropdown widget string.
+	WD_DROPDOWNTEXT_RIGHT  = 2,  ///< Right offset of the dropdown widget string.
 	WD_DROPDOWNTEXT_TOP    = 1,  ///< Top offset of the dropdown widget string.
 	WD_DROPDOWNTEXT_BOTTOM = 1,  ///< Bottom offset of the dropdown widget string.
-
-	WD_SORTBUTTON_ARROW_WIDTH = 11, ///< Width of up/down arrow of sort button state.
 
 	WD_PAR_VSEP_NORMAL = 2,      ///< Normal amount of vertical space between two paragraphs of text.
 	WD_PAR_VSEP_WIDE   = 8,      ///< Large amount of vertical space between two paragraphs of text.
@@ -169,15 +167,13 @@ struct HotkeyList;
  */
 struct WindowDesc : ZeroedMemoryAllocator {
 
-	WindowDesc(WindowPosition default_pos, const char *ini_key, int16 def_width, int16 def_height,
+	WindowDesc(WindowPosition default_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
 			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys = NULL);
 
 	~WindowDesc();
 
 	WindowPosition default_pos;    ///< Preferred position of the window. @see WindowPosition()
-	int16 default_width;           ///< Preferred initial width of the window.
-	int16 default_height;          ///< Preferred initial height of the window.
 	WindowClass cls;               ///< Class of the window, @see WindowClass.
 	WindowClass parent_cls;        ///< Class of the parent window. @see WindowClass
 	const char *ini_key;           ///< Key to store window defaults in openttd.cfg. \c NULL if nothing shall be stored.
@@ -190,13 +186,16 @@ struct WindowDesc : ZeroedMemoryAllocator {
 	int16 pref_width;              ///< User-preferred width of the window. Zero if unset.
 	int16 pref_height;             ///< User-preferred height of the window. Zero if unset.
 
-	int16 GetDefaultWidth() const { return this->pref_width != 0 ? this->pref_width : this->default_width; }
-	int16 GetDefaultHeight() const { return this->pref_height != 0 ? this->pref_height : this->default_height; }
+	int16 GetDefaultWidth() const;
+	int16 GetDefaultHeight() const;
 
 	static void LoadFromConfig();
 	static void SaveToConfig();
 
 private:
+	int16 default_width_trad;      ///< Preferred initial width of the window (pixels at 1x zoom).
+	int16 default_height_trad;     ///< Preferred initial height of the window (pixels at 1x zoom).
+
 	/**
 	 * Dummy private copy constructor to prevent compilers from
 	 * copying the structure, which fails due to _window_descs.
@@ -273,7 +272,7 @@ struct Window : ZeroedMemoryAllocator {
 protected:
 	void InitializeData(WindowNumber window_number);
 	void InitializePositionSize(int x, int y, int min_width, int min_height);
-	void FindWindowPlacementAndResize(int def_width, int def_height);
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height);
 
 	SmallVector<int, 4> scheduled_invalidation_data;  ///< Data of scheduled OnInvalidateData() calls.
 
@@ -509,6 +508,7 @@ public:
 	void DrawWidgets() const;
 	void DrawViewport() const;
 	void DrawSortButtonState(int widget, SortButtonState state) const;
+	static int SortButtonWidth();
 
 	void DeleteChildWindows(WindowClass wc = WC_INVALID) const;
 
@@ -849,14 +849,17 @@ Window *FindWindowFromPt(int x, int y);
 
 /**
  * Open a new window.
+ * @tparam Wcls %Window class to use if the window does not exist.
  * @param desc The pointer to the WindowDesc to be created
  * @param window_number the window number of the new window
- * @return see Window pointer of the newly created window
+ * @param return_existing If set, also return the window if it already existed.
+ * @return %Window pointer of the newly created window, or the existing one if \a return_existing is set, or \c NULL.
  */
 template <typename Wcls>
-Wcls *AllocateWindowDescFront(WindowDesc *desc, int window_number)
+Wcls *AllocateWindowDescFront(WindowDesc *desc, int window_number, bool return_existing = false)
 {
-	if (BringWindowToFrontById(desc->cls, window_number)) return NULL;
+	Wcls *w = static_cast<Wcls *>(BringWindowToFrontById(desc->cls, window_number));
+	if (w != NULL) return return_existing ? w : NULL;
 	return new Wcls(desc, window_number);
 }
 

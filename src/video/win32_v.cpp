@@ -27,6 +27,8 @@
 #include <windows.h>
 #include <imm.h>
 
+#include "../safeguards.h"
+
 /* Missing define in MinGW headers. */
 #ifndef MAPVK_VK_TO_CHAR
 #define MAPVK_VK_TO_CHAR    (2)
@@ -50,7 +52,6 @@ static struct {
 bool _force_full_redraw;
 bool _window_maximize;
 uint _display_hz;
-uint _fullscreen_bpp;
 static Dimension _bck_resolution;
 #if !defined(WINCE) || _WIN32_WCE >= 0x400
 DWORD _imm_props;
@@ -62,6 +63,8 @@ static bool _draw_threaded;
 static ThreadObject *_draw_thread = NULL;
 /** Mutex to keep the access to the shared memory controlled. */
 static ThreadMutex *_draw_mutex = NULL;
+/** Event that is signaled when the drawing thread has finished initializing. */
+static HANDLE _draw_thread_initialized = NULL;
 /** Should we keep continue drawing? */
 static volatile bool _draw_continue;
 /** Local copy of the palette for use in the drawing thread. */
@@ -184,23 +187,14 @@ static void ClientSizeChanged(int w, int h)
 {
 	/* allocate new dib section of the new size */
 	if (AllocateDibSection(w, h)) {
-		if (_draw_mutex != NULL) _draw_mutex->BeginCritical();
 		/* mark all palette colours dirty */
 		_cur_palette.first_dirty = 0;
 		_cur_palette.count_dirty = 256;
 		_local_palette = _cur_palette;
 
-		BlitterFactoryBase::GetCurrentBlitter()->PostResize();
+		BlitterFactory::GetCurrentBlitter()->PostResize();
 
 		GameSizeChanged();
-
-		/* redraw screen */
-		if (_wnd.running) {
-			_screen.dst_ptr = _wnd.buffer_bits;
-			UpdateWindows();
-		}
-
-		if (_draw_mutex != NULL) _draw_mutex->EndCritical();
 	}
 }
 
@@ -214,7 +208,6 @@ int RedrawScreenDebug()
 	HBITMAP old_bmp;
 	HPALETTE old_palette;
 
-	_screen.dst_ptr = _wnd.buffer_bits;
 	UpdateWindows();
 
 	dc = GetDC(_wnd.main_wnd);
@@ -278,23 +271,21 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 	if (full_screen) {
 		DEVMODE settings;
 
-		/* Make sure we are always at least the screen-depth of the blitter */
-		if (_fullscreen_bpp < BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth()) _fullscreen_bpp = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
-
 		memset(&settings, 0, sizeof(settings));
 		settings.dmSize = sizeof(settings);
 		settings.dmFields =
-			(_fullscreen_bpp != 0 ? DM_BITSPERPEL : 0) |
+			DM_BITSPERPEL |
 			DM_PELSWIDTH |
 			DM_PELSHEIGHT |
 			(_display_hz != 0 ? DM_DISPLAYFREQUENCY : 0);
-		settings.dmBitsPerPel = _fullscreen_bpp;
+		settings.dmBitsPerPel = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 		settings.dmPelsWidth  = _wnd.width_org;
 		settings.dmPelsHeight = _wnd.height_org;
 		settings.dmDisplayFrequency = _display_hz;
 
 		/* Check for 8 bpp support. */
-		if (settings.dmBitsPerPel != 32 && ChangeDisplaySettings(&settings, CDS_FULLSCREEN | CDS_TEST) != DISP_CHANGE_SUCCESSFUL) {
+		if (settings.dmBitsPerPel == 8 &&
+				(_support8bpp != S8BPP_HARDWARE || ChangeDisplaySettings(&settings, CDS_FULLSCREEN | CDS_TEST) != DISP_CHANGE_SUCCESSFUL)) {
 			settings.dmBitsPerPel = 32;
 		}
 
@@ -360,7 +351,7 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 		}
 	}
 
-	BlitterFactoryBase::GetCurrentBlitter()->PostResize();
+	BlitterFactory::GetCurrentBlitter()->PostResize();
 
 	GameSizeChanged(); // invalidate all windows, force redraw
 	return true; // the request succeeded
@@ -374,7 +365,7 @@ static void PaintWindow(HDC dc)
 	HPALETTE old_palette = SelectPalette(dc, _wnd.gdi_palette, FALSE);
 
 	if (_cur_palette.count_dirty != 0) {
-		Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		switch (blitter->UsePaletteAnimation()) {
 			case Blitter::PALETTE_ANIMATION_VIDEO_BACKEND:
@@ -404,11 +395,7 @@ static void PaintWindowThread(void *)
 {
 	/* First tell the main thread we're started */
 	_draw_mutex->BeginCritical();
-	_draw_mutex->SendSignal();
-
-	/* Do our best to make sure the main thread is the one that
-	 * gets the signal, and not our wait below. */
-	Sleep(0);
+	SetEvent(_draw_thread_initialized);
 
 	/* Now wait for the first thing to draw! */
 	_draw_mutex->WaitForSignal();
@@ -758,29 +745,13 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			if (!_cursor.in_window) {
 				_cursor.in_window = true;
 				SetTimer(hwnd, TID_POLLMOUSE, MOUSE_POLL_DELAY, (TIMERPROC)TrackMouseTimerProc);
-
-				DrawMouseCursor();
 			}
 
-			if (_cursor.fix_at) {
-				int dx = x - _cursor.pos.x;
-				int dy = y - _cursor.pos.y;
-				if (dx != 0 || dy != 0) {
-					_cursor.delta.x = dx;
-					_cursor.delta.y = dy;
-
-					pt.x = _cursor.pos.x;
-					pt.y = _cursor.pos.y;
-
-					ClientToScreen(hwnd, &pt);
-					SetCursorPos(pt.x, pt.y);
-				}
-			} else {
-				_cursor.delta.x = x - _cursor.pos.x;
-				_cursor.delta.y = y - _cursor.pos.y;
-				_cursor.pos.x = x;
-				_cursor.pos.y = y;
-				_cursor.dirty = true;
+			if (_cursor.UpdateCursorPosition(x, y, true)) {
+				pt.x = _cursor.pos.x;
+				pt.y = _cursor.pos.y;
+				ClientToScreen(hwnd, &pt);
+				SetCursorPos(pt.x, pt.y);
 			}
 			MyShowCursor(false);
 			HandleMouseEvents();
@@ -852,7 +823,7 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		case WM_KEYDOWN: {
 			/* No matter the keyboard layout, we will map the '~' to the console. */
 			uint scancode = GB(lParam, 16, 8);
-			keycode = scancode == 41 ? WKC_BACKQUOTE : MapWindowsKey(wParam);
+			keycode = scancode == 41 ? (uint)WKC_BACKQUOTE : MapWindowsKey(wParam);
 
 			/* Silently drop all messages handled by WM_CHAR. */
 			MSG msg;
@@ -1017,7 +988,7 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				if (active && minimized) {
 					/* Restore the game window */
 					ShowWindow(hwnd, SW_RESTORE);
-					static_cast<VideoDriver_Win32 *>(_video_driver)->MakeWindow(true);
+					static_cast<VideoDriver_Win32 *>(VideoDriver::GetInstance())->MakeWindow(true);
 				} else if (!active && !minimized) {
 					/* Minimise the window and restore desktop */
 					ShowWindow(hwnd, SW_MINIMIZE);
@@ -1060,7 +1031,7 @@ static bool AllocateDibSection(int w, int h, bool force)
 {
 	BITMAPINFO *bi;
 	HDC dc;
-	int bpp = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
+	uint bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	w = max(w, 64);
 	h = max(h, 64);
@@ -1069,9 +1040,6 @@ static bool AllocateDibSection(int w, int h, bool force)
 
 	if (!force && w == _screen.width && h == _screen.height) return false;
 
-	_screen.width = w;
-	_screen.pitch = (bpp == 8) ? Align(w, 4) : w;
-	_screen.height = h;
 	bi = (BITMAPINFO*)alloca(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
 	memset(bi, 0, sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
 	bi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -1080,7 +1048,7 @@ static bool AllocateDibSection(int w, int h, bool force)
 	bi->bmiHeader.biHeight = -(_wnd.height = h);
 
 	bi->bmiHeader.biPlanes = 1;
-	bi->bmiHeader.biBitCount = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
+	bi->bmiHeader.biBitCount = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 	bi->bmiHeader.biCompression = BI_RGB;
 
 	if (_wnd.dib_sect) DeleteObject(_wnd.dib_sect);
@@ -1089,6 +1057,11 @@ static bool AllocateDibSection(int w, int h, bool force)
 	_wnd.dib_sect = CreateDIBSection(dc, bi, DIB_RGB_COLORS, (VOID**)&_wnd.buffer_bits, NULL, 0);
 	if (_wnd.dib_sect == NULL) usererror("CreateDIBSection failed");
 	ReleaseDC(0, dc);
+
+	_screen.width = w;
+	_screen.pitch = (bpp == 8) ? Align(w, 4) : w;
+	_screen.height = h;
+	_screen.dst_ptr = _wnd.buffer_bits;
 
 	return true;
 }
@@ -1117,11 +1090,14 @@ static void FindResolutions()
 	uint i;
 	DEVMODEA dm;
 
+	/* Check modes for the relevant fullscreen bpp */
+	uint bpp = _support8bpp != S8BPP_HARDWARE ? 32 : BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+
 	/* XXX - EnumDisplaySettingsW crashes with unicows.dll on Windows95
 	 * Doesn't really matter since we don't pass a string anyways, but still
 	 * a letdown */
 	for (i = 0; EnumDisplaySettingsA(NULL, i, &dm) != 0; i++) {
-		if (dm.dmBitsPerPel == BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth() &&
+		if (dm.dmBitsPerPel == bpp &&
 				dm.dmPelsWidth >= 640 && dm.dmPelsHeight >= 480) {
 			uint j;
 
@@ -1218,24 +1194,24 @@ void VideoDriver_Win32::MainLoop()
 		/* Initialise the mutex first, because that's the thing we *need*
 		 * directly in the newly created thread. */
 		_draw_mutex = ThreadMutex::New();
-		if (_draw_mutex == NULL) {
+		_draw_thread_initialized = CreateEvent(NULL, FALSE, FALSE, NULL);
+		if (_draw_mutex == NULL || _draw_thread_initialized == NULL) {
 			_draw_threaded = false;
 		} else {
-			_draw_mutex->BeginCritical();
 			_draw_continue = true;
-
 			_draw_threaded = ThreadObject::New(&PaintWindowThread, NULL, &_draw_thread);
 
 			/* Free the mutex if we won't be able to use it. */
 			if (!_draw_threaded) {
-				_draw_mutex->EndCritical();
 				delete _draw_mutex;
 				_draw_mutex = NULL;
+				CloseHandle(_draw_thread_initialized);
+				_draw_thread_initialized = NULL;
 			} else {
 				DEBUG(driver, 1, "Threaded drawing enabled");
-
-				/* Wait till the draw mutex has started itself. */
-				_draw_mutex->WaitForSignal();
+				/* Wait till the draw thread has started itself. */
+				WaitForSingleObject(_draw_thread_initialized, INFINITE);
+				_draw_mutex->BeginCritical();
 			}
 		}
 	}
@@ -1303,7 +1279,6 @@ void VideoDriver_Win32::MainLoop()
 
 			if (_force_full_redraw) MarkWholeScreenDirty();
 
-			_screen.dst_ptr = _wnd.buffer_bits;
 			UpdateWindows();
 			CheckPaletteAnim();
 		} else {
@@ -1317,7 +1292,6 @@ void VideoDriver_Win32::MainLoop()
 			Sleep(1);
 			if (_draw_threaded) _draw_mutex->BeginCritical();
 
-			_screen.dst_ptr = _wnd.buffer_bits;
 			NetworkDrawChatMessage();
 			DrawMouseCursor();
 		}
@@ -1331,6 +1305,7 @@ void VideoDriver_Win32::MainLoop()
 		_draw_mutex->EndCritical();
 		_draw_thread->Join();
 
+		CloseHandle(_draw_thread_initialized);
 		delete _draw_mutex;
 		delete _draw_thread;
 	}
@@ -1338,27 +1313,38 @@ void VideoDriver_Win32::MainLoop()
 
 bool VideoDriver_Win32::ChangeResolution(int w, int h)
 {
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
 	if (_window_maximize) ShowWindow(_wnd.main_wnd, SW_SHOWNORMAL);
 
 	_wnd.width = _wnd.width_org = w;
 	_wnd.height = _wnd.height_org = h;
 
-	return this->MakeWindow(_fullscreen); // _wnd.fullscreen screws up ingame resolution switching
+	bool ret = this->MakeWindow(_fullscreen); // _wnd.fullscreen screws up ingame resolution switching
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
+	return ret;
 }
 
 bool VideoDriver_Win32::ToggleFullscreen(bool full_screen)
 {
-	return this->MakeWindow(full_screen);
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
+	bool ret = this->MakeWindow(full_screen);
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
+	return ret;
 }
 
 bool VideoDriver_Win32::AfterBlitterChange()
 {
-	return AllocateDibSection(_screen.width, _screen.height, true) && this->MakeWindow(_fullscreen);
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
+	bool ret = AllocateDibSection(_screen.width, _screen.height, true) && this->MakeWindow(_fullscreen);
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
+	return ret;
 }
 
 void VideoDriver_Win32::EditBoxLostFocus()
 {
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
 	CancelIMEComposition(_wnd.main_wnd);
 	SetCompositionPos(_wnd.main_wnd);
 	SetCandidatePos(_wnd.main_wnd);
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
 }

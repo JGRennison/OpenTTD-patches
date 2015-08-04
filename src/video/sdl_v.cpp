@@ -26,6 +26,8 @@
 #include "sdl_v.h"
 #include <SDL.h>
 
+#include "../safeguards.h"
+
 static FVideoDriver_SDL iFVideoDriver_SDL;
 
 static SDL_Surface *_sdl_screen;
@@ -123,7 +125,7 @@ static void InitPalette()
 static void CheckPaletteAnim()
 {
 	if (_cur_palette.count_dirty != 0) {
-		Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		switch (blitter->UsePaletteAnimation()) {
 			case Blitter::PALETTE_ANIMATION_VIDEO_BACKEND:
@@ -270,7 +272,7 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 {
 	SDL_Surface *newscreen, *icon;
 	char caption[50];
-	int bpp = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
+	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 	bool want_hwpalette;
 
 	GetAvailableVideoMode(&w, &h);
@@ -280,7 +282,7 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 	if (bpp == 0) usererror("Can't use a blitter that blits 0 bpp for normal visuals");
 
 	char icon_path[MAX_PATH];
-	if (FioFindFullPath(icon_path, lengthof(icon_path), BASESET_DIR, "openttd.32.bmp") != NULL) {
+	if (FioFindFullPath(icon_path, lastof(icon_path), BASESET_DIR, "openttd.32.bmp") != NULL) {
 		/* Give the application an icon */
 		icon = SDL_CALL SDL_LoadBMP(icon_path);
 		if (icon != NULL) {
@@ -315,7 +317,7 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 		 * (which we can't force in 8bpp on 8bpp mode,
 		 * unfortunately).
 		 */
-		want_hwpalette = (bpp == 8 && _fullscreen);
+		want_hwpalette = bpp == 8 && _fullscreen && _support8bpp == S8BPP_HARDWARE;
 	} else {
 		/* User specified a value manually */
 		want_hwpalette = _use_hwpalette;
@@ -398,7 +400,7 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 	 * appropriate event to know this. */
 	if (_fullscreen) _cursor.in_window = true;
 
-	Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	blitter->PostResize();
 
 	InitPalette();
@@ -409,14 +411,14 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 			break;
 
 		case Blitter::PALETTE_ANIMATION_BLITTER:
-			if (_video_driver != NULL) blitter->PaletteAnimate(_local_palette);
+			if (VideoDriver::GetInstance() != NULL) blitter->PaletteAnimate(_local_palette);
 			break;
 
 		default:
 			NOT_REACHED();
 	}
 
-	snprintf(caption, sizeof(caption), "OpenTTD %s", _openttd_revision);
+	seprintf(caption, lastof(caption), "OpenTTD %s", _openttd_revision);
 	SDL_CALL SDL_WM_SetCaption(caption, caption);
 
 	GameSizeChanged();
@@ -543,20 +545,8 @@ int VideoDriver_SDL::PollEvent()
 
 	switch (ev.type) {
 		case SDL_MOUSEMOTION:
-			if (_cursor.fix_at) {
-				int dx = ev.motion.x - _cursor.pos.x;
-				int dy = ev.motion.y - _cursor.pos.y;
-				if (dx != 0 || dy != 0) {
-					_cursor.delta.x = dx;
-					_cursor.delta.y = dy;
-					SDL_CALL SDL_WarpMouse(_cursor.pos.x, _cursor.pos.y);
-				}
-			} else {
-				_cursor.delta.x = ev.motion.x - _cursor.pos.x;
-				_cursor.delta.y = ev.motion.y - _cursor.pos.y;
-				_cursor.pos.x = ev.motion.x;
-				_cursor.pos.y = ev.motion.y;
-				_cursor.dirty = true;
+			if (_cursor.UpdateCursorPosition(ev.motion.x, ev.motion.y, true)) {
+				SDL_CALL SDL_WarpMouse(_cursor.pos.x, _cursor.pos.y);
 			}
 			HandleMouseEvents();
 			break;
@@ -817,27 +807,34 @@ void VideoDriver_SDL::MainLoop()
 
 bool VideoDriver_SDL::ChangeResolution(int w, int h)
 {
-	if (_draw_mutex != NULL) _draw_mutex->BeginCritical();
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
 	bool ret = CreateMainSurface(w, h);
-	if (_draw_mutex != NULL) _draw_mutex->EndCritical();
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
 	return ret;
 }
 
 bool VideoDriver_SDL::ToggleFullscreen(bool fullscreen)
 {
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
 	_fullscreen = fullscreen;
 	GetVideoModes(); // get the list of available video modes
-	if (_num_resolutions == 0 || !CreateMainSurface(_cur_resolution.width, _cur_resolution.height)) {
+	bool ret = _num_resolutions != 0 && CreateMainSurface(_cur_resolution.width, _cur_resolution.height);
+
+	if (!ret) {
 		/* switching resolution failed, put back full_screen to original status */
 		_fullscreen ^= true;
-		return false;
 	}
-	return true;
+
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
+	return ret;
 }
 
 bool VideoDriver_SDL::AfterBlitterChange()
 {
-	return this->ChangeResolution(_screen.width, _screen.height);
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
+	bool ret = CreateMainSurface(_screen.width, _screen.height);
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
+	return ret;
 }
 
 #endif /* WITH_SDL */

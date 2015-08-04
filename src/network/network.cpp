@@ -38,6 +38,8 @@
 #include "../gfx_func.h"
 #include "../error.h"
 
+#include "../safeguards.h"
+
 #ifdef DEBUG_DUMP_COMMANDS
 #include "../fileio_func.h"
 /** When running the server till the wait point, run as fast as we can! */
@@ -95,6 +97,18 @@ byte _network_clients_connected = 0;
 
 /* Some externs / forwards */
 extern void StateGameLoop();
+
+/**
+ * Return whether there is any client connected or trying to connect at all.
+ * @return whether we have any client activity
+ */
+bool HasClients()
+{
+	NetworkClientSocket *cs;
+	FOR_ALL_CLIENT_SOCKETS(cs) return true;
+
+	return false;
+}
 
 /**
  * Basically a client is leaving us right now.
@@ -185,7 +199,7 @@ const char *GenerateCompanyPasswordHash(const char *password, const char *passwo
 	char salted_password[NETWORK_SERVER_ID_LENGTH];
 
 	memset(salted_password, 0, sizeof(salted_password));
-	snprintf(salted_password, sizeof(salted_password), "%s", password);
+	seprintf(salted_password, lastof(salted_password), "%s", password);
 	/* Add the game seed and the server's ID as the salt. */
 	for (uint i = 0; i < NETWORK_SERVER_ID_LENGTH - 1; i++) {
 		salted_password[i] ^= password_server_id[i] ^ (password_game_seed >> (i % 32));
@@ -199,8 +213,7 @@ const char *GenerateCompanyPasswordHash(const char *password, const char *passwo
 	checksum.Append(salted_password, sizeof(salted_password) - 1);
 	checksum.Finish(digest);
 
-	for (int di = 0; di < 16; di++) sprintf(hashed_password + di * 2, "%02x", digest[di]);
-	hashed_password[lengthof(hashed_password) - 1] = '\0';
+	for (int di = 0; di < 16; di++) seprintf(hashed_password + di * 2, lastof(hashed_password), "%02x", digest[di]);
 
 	return hashed_password;
 }
@@ -640,7 +653,7 @@ void NetworkRebuildHostList()
 	_network_host_list.Clear();
 
 	for (NetworkGameList *item = _network_game_list; item != NULL; item = item->next) {
-		if (item->manually) *_network_host_list.Append() = strdup(item->address.GetAddressAsString(false));
+		if (item->manually) *_network_host_list.Append() = stredup(item->address.GetAddressAsString(false));
 	}
 }
 
@@ -689,7 +702,7 @@ void NetworkClientConnectGame(NetworkAddress address, CompanyID join_as, const c
 static void NetworkInitGameInfo()
 {
 	if (StrEmpty(_settings_client.network.server_name)) {
-		snprintf(_settings_client.network.server_name, sizeof(_settings_client.network.server_name), "Unnamed Server");
+		seprintf(_settings_client.network.server_name, lastof(_settings_client.network.server_name), "Unnamed Server");
 	}
 
 	/* The server is a client too */
@@ -698,7 +711,7 @@ static void NetworkInitGameInfo()
 	/* There should be always space for the server. */
 	assert(NetworkClientInfo::CanAllocateItem());
 	NetworkClientInfo *ci = new NetworkClientInfo(CLIENT_ID_SERVER);
-	ci->client_playas = _network_dedicated ? COMPANY_SPECTATOR : _local_company;
+	ci->client_playas = _network_dedicated ? COMPANY_SPECTATOR : COMPANY_FIRST;
 
 	strecpy(ci->client_name, _settings_client.network.client_name, lastof(ci->client_name));
 }
@@ -713,12 +726,17 @@ bool NetworkServerStart()
 
 	NetworkDisconnect(false, false);
 	NetworkInitialize(false);
+	DEBUG(net, 1, "starting listeners for clients");
 	if (!ServerNetworkGameSocketHandler::Listen(_settings_client.network.server_port)) return false;
 
 	/* Only listen for admins when the password isn't empty. */
-	if (!StrEmpty(_settings_client.network.admin_password) && !ServerNetworkAdminSocketHandler::Listen(_settings_client.network.server_admin_port)) return false;
+	if (!StrEmpty(_settings_client.network.admin_password)) {
+		DEBUG(net, 1, "starting listeners for admins");
+		if (!ServerNetworkAdminSocketHandler::Listen(_settings_client.network.server_admin_port)) return false;
+	}
 
 	/* Try to start UDP-server */
+	DEBUG(net, 1, "starting listeners for incoming server queries");
 	_network_udp_server = _udp_server_socket->Listen();
 
 	_network_company_states = CallocT<NetworkCompanyState>(MAX_COMPANIES);
@@ -911,10 +929,16 @@ void NetworkGameLoop()
 				p += 2;
 			}
 
-			if (strncmp(p, "cmd: ", 5) == 0) {
+			if (strncmp(p, "cmd: ", 5) == 0
+#ifdef DEBUG_FAILED_DUMP_COMMANDS
+				|| strncmp(p, "cmdf: ", 6) == 0
+#endif
+				) {
+				p += 5;
+				if (*p == ' ') p++;
 				cp = CallocT<CommandPacket>(1);
 				int company;
-				int ret = sscanf(p + 5, "%x; %x; %x; %x; %x; %x; %x; \"%[^\"]\"", &next_date, &next_date_fract, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, cp->text);
+				int ret = sscanf(p, "%x; %x; %x; %x; %x; %x; %x; \"%[^\"]\"", &next_date, &next_date_fract, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, cp->text);
 				/* There are 8 pieces of data to read, however the last is a
 				 * string that might or might not exist. Ignore it if that
 				 * string misses because in 99% of the time it's not used. */
@@ -938,6 +962,10 @@ void NetworkGameLoop()
 			} else if (strncmp(p, "msg: ", 5) == 0 || strncmp(p, "client: ", 8) == 0 ||
 						strncmp(p, "load: ", 6) == 0 || strncmp(p, "save: ", 6) == 0) {
 				/* A message that is not very important to the log playback, but part of the log. */
+#ifndef DEBUG_FAILED_DUMP_COMMANDS
+			} else if (strncmp(p, "cmdf: ", 6) == 0) {
+				DEBUG(net, 0, "Skipping replay of failed command: %s", p + 6);
+#endif
 			} else {
 				/* Can't parse a line; what's wrong here? */
 				DEBUG(net, 0, "trying to parse: %s", p);
@@ -1009,18 +1037,18 @@ static void NetworkGenerateServerId()
 	char coding_string[NETWORK_NAME_LENGTH];
 	int di;
 
-	snprintf(coding_string, sizeof(coding_string), "%d%s", (uint)Random(), "OpenTTD Server ID");
+	seprintf(coding_string, lastof(coding_string), "%d%s", (uint)Random(), "OpenTTD Server ID");
 
 	/* Generate the MD5 hash */
 	checksum.Append((const uint8*)coding_string, strlen(coding_string));
 	checksum.Finish(digest);
 
 	for (di = 0; di < 16; ++di) {
-		sprintf(hex_output + di * 2, "%02x", digest[di]);
+		seprintf(hex_output + di * 2, lastof(hex_output), "%02x", digest[di]);
 	}
 
 	/* _settings_client.network.network_id is our id */
-	snprintf(_settings_client.network.network_id, sizeof(_settings_client.network.network_id), "%s", hex_output);
+	seprintf(_settings_client.network.network_id, lastof(_settings_client.network.network_id), "%s", hex_output);
 }
 
 void NetworkStartDebugLog(NetworkAddress address)

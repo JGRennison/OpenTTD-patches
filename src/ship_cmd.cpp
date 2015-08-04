@@ -36,6 +36,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Determine the effective #WaterClass for a ship travelling on a tile.
  * @param tile Tile of interest
@@ -57,6 +59,12 @@ WaterClass GetEffectiveWaterClass(TileIndex tile)
 
 static const uint16 _ship_sprites[] = {0x0E5D, 0x0E55, 0x0E65, 0x0E6D};
 
+template <>
+bool IsValidImageIndex<VEH_SHIP>(uint8 image_index)
+{
+	return image_index < lengthof(_ship_sprites);
+}
+
 static inline TrackBits GetTileShipTrackStatus(TileIndex tile)
 {
 	return TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_WATER, 0));
@@ -74,6 +82,7 @@ static SpriteID GetShipIcon(EngineID engine, EngineImageType image_type)
 		spritenum = e->original_image_index;
 	}
 
+	assert(IsValidImageIndex<VEH_SHIP>(spritenum));
 	return DIR_W + _ship_sprites[spritenum];
 }
 
@@ -81,7 +90,9 @@ void DrawShipEngine(int left, int right, int preferred_x, int y, EngineID engine
 {
 	SpriteID sprite = GetShipIcon(engine, image_type);
 	const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
-	preferred_x = Clamp(preferred_x, left - UnScaleByZoom(real_sprite->x_offs, ZOOM_LVL_GUI), right - UnScaleByZoom(real_sprite->width, ZOOM_LVL_GUI) - UnScaleByZoom(real_sprite->x_offs, ZOOM_LVL_GUI));
+	preferred_x = Clamp(preferred_x,
+			left - UnScaleGUI(real_sprite->x_offs),
+			right - UnScaleGUI(real_sprite->width) - UnScaleGUI(real_sprite->x_offs));
 	DrawSprite(sprite, pal, preferred_x, y);
 }
 
@@ -98,10 +109,10 @@ void GetShipSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, i
 {
 	const Sprite *spr = GetSprite(GetShipIcon(engine, image_type), ST_NORMAL);
 
-	width  = UnScaleByZoom(spr->width, ZOOM_LVL_GUI);
-	height = UnScaleByZoom(spr->height, ZOOM_LVL_GUI);
-	xoffs  = UnScaleByZoom(spr->x_offs, ZOOM_LVL_GUI);
-	yoffs  = UnScaleByZoom(spr->y_offs, ZOOM_LVL_GUI);
+	width  = UnScaleGUI(spr->width);
+	height = UnScaleGUI(spr->height);
+	xoffs  = UnScaleGUI(spr->x_offs);
+	yoffs  = UnScaleGUI(spr->y_offs);
 }
 
 SpriteID Ship::GetImage(Direction direction, EngineImageType image_type) const
@@ -115,6 +126,7 @@ SpriteID Ship::GetImage(Direction direction, EngineImageType image_type) const
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
+	assert(IsValidImageIndex<VEH_SHIP>(spritenum));
 	return _ship_sprites[spritenum] + direction;
 }
 
@@ -368,7 +380,7 @@ static bool ShipAccelerate(Vehicle *v)
 	byte t;
 
 	spd = min(v->cur_speed + 1, v->vcache.cached_max_speed);
-	spd = min(spd, v->current_order.max_speed * 2);
+	spd = min(spd, v->current_order.GetMaxSpeed() * 2);
 
 	/* updates statusbar only if speed have changed to save CPU time */
 	if (spd != v->cur_speed) {
@@ -615,8 +627,8 @@ static void ShipController(Ship *v)
 		if (!IsTileType(gp.new_tile, MP_TUNNELBRIDGE) || !HasBit(VehicleEnterTile(v, gp.new_tile, gp.x, gp.y), VETS_ENTERED_WORMHOLE)) {
 			v->x_pos = gp.x;
 			v->y_pos = gp.y;
-			VehicleUpdatePosition(v);
-			if ((v->vehstatus & VS_HIDDEN) == 0) VehicleUpdateViewport(v, true);
+			v->UpdatePosition();
+			if ((v->vehstatus & VS_HIDDEN) == 0) v->Vehicle::UpdateViewport(true);
 			return;
 		}
 	}
@@ -628,7 +640,7 @@ static void ShipController(Ship *v)
 	v->z_pos = GetSlopePixelZ(gp.x, gp.y);
 
 getout:
-	VehicleUpdatePosition(v);
+	v->UpdatePosition();
 	v->UpdateViewport(true, true);
 	return;
 
@@ -712,7 +724,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, u
 
 		v->InvalidateNewGRFCacheOfChain();
 
-		VehicleUpdatePosition(v);
+		v->UpdatePosition();
 	}
 
 	return CommandCost();

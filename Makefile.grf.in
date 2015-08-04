@@ -5,16 +5,13 @@
 # OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
 #
-# Building requires GRFCodec and NFORenum. Older versions of GRFCodec are
-#  known to miscompile the graphics.
+# Building requires GRFCodec.
 #
-# Recent nightlies (including sources) of both can be found at:
+# Recent versions (including sources) can be found at:
 #  http://www.openttd.org/download-grfcodec
-#  http://www.openttd.org/download-nforenum
 #
-# The mercurial repository of both can be found at:
+# The mercurial repository can be found at:
 #  http://hg.openttdcoop.org/grfcodec
-#  http://hg.openttdcoop.org/nforenum
 #
 
 
@@ -75,10 +72,10 @@ $(BIN_DIR)/%.obm: $(BASESET_DIR)/%.obm $(OBJS_DIR)/langfiles.tmp $(BASESET_DIR)/
 	$(Q) awk -v langfiles='$(OBJS_DIR)/langfiles.tmp' -f $(BASESET_DIR)/translations.awk $< >$@
 
 # Compile extra grf
-$(BIN_DIR)/openttd.grf: $(PNG_FILES) $(NFO_FILES) $(OBJS_DIR)/sprites
+$(BIN_DIR)/openttd.grf: $(PNG_FILES) $(NFO_FILES) $(OBJS_DIR)/sprites $(GRF_DIR)/assemble_nfo.awk
 	$(E) '$(STAGE) Assembling openttd.nfo'
 	$(Q)-cp $(PNG_FILES) $(OBJS_DIR)/sprites 2> /dev/null
-	$(Q) $(CC_BUILD) -nostdinc -I$(GRF_DIR) -C -E - < "$(GRF_DIR)/openttd.nfo" | sed -e '/^#/d' -e '/^$$/d' > $(OBJS_DIR)/sprites/openttd.nfo
+	$(Q) awk -f $(GRF_DIR)/assemble_nfo.awk $(GRF_DIR)/openttd.nfo > $(OBJS_DIR)/sprites/openttd.nfo
 	$(Q) $(NFORENUM) -s $(OBJS_DIR)/sprites/openttd.nfo
 	$(E) '$(STAGE) Compiling openttd.grf'
 	$(Q) $(GRFCODEC) -n -s -e -p1 $(OBJS_DIR)/openttd.grf

@@ -24,6 +24,8 @@
 SOCKET _debug_socket = INVALID_SOCKET;
 #endif /* ENABLE_NETWORK */
 
+#include "safeguards.h"
+
 int _debug_driver_level;
 int _debug_grf_level;
 int _debug_map_level;
@@ -111,7 +113,9 @@ static void debug_print(const char *dbg, const char *buf)
 	if (_debug_socket != INVALID_SOCKET) {
 		char buf2[1024 + 32];
 
-		snprintf(buf2, lengthof(buf2), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
+		seprintf(buf2, lastof(buf2), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
+		/* Sending out an error when this fails would be nice, however... the error
+		 * would have to be send over this failing socket which won't work. */
 		send(_debug_socket, buf2, (int)strlen(buf2), 0);
 		return;
 	}
@@ -159,7 +163,7 @@ void CDECL debug(const char *dbg, const char *format, ...)
 
 	va_list va;
 	va_start(va, format);
-	vsnprintf(buf, lengthof(buf), format, va);
+	vseprintf(buf, lastof(buf), format, va);
 	va_end(va);
 
 	debug_print(dbg, buf);
@@ -234,10 +238,10 @@ const char *GetDebugString()
 
 	memset(dbgstr, 0, sizeof(dbgstr));
 	i = debug_level;
-	snprintf(dbgstr, sizeof(dbgstr), "%s=%d", i->name, *i->level);
+	seprintf(dbgstr, lastof(dbgstr), "%s=%d", i->name, *i->level);
 
 	for (i++; i != endof(debug_level); i++) {
-		snprintf(dbgval, sizeof(dbgval), ", %s=%d", i->name, *i->level);
+		seprintf(dbgval, lastof(dbgval), ", %s=%d", i->name, *i->level);
 		strecat(dbgstr, dbgval, lastof(dbgstr));
 	}
 

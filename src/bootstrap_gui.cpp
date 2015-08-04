@@ -29,6 +29,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /** Widgets for the background window to prevent smearing. */
 static const struct NWidgetPart _background_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_DARK_BLUE, WID_BB_BACKGROUND), SetResize(1, 1),
@@ -215,7 +217,7 @@ bool HandleBootstrap()
 	if (BaseGraphics::GetUsedSet() != NULL) return true;
 
 	/* No user interface, bail out with an error. */
-	if (BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth() == 0) goto failure;
+	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 0) goto failure;
 
 	/* If there is no network or no freetype, then there is nothing we can do. Go straight to failure. */
 #if defined(ENABLE_NETWORK) && defined(WITH_FREETYPE) && (defined(WITH_FONTCONFIG) || defined(WIN32) || defined(__APPLE__))
@@ -244,7 +246,7 @@ bool HandleBootstrap()
 	new BootstrapAskForDownloadWindow();
 
 	/* Process the user events. */
-	_video_driver->MainLoop();
+	VideoDriver::GetInstance()->MainLoop();
 
 	/* _exit_game is used to get out of the video driver's main loop.
 	 * In case GM_BOOTSTRAP is still set we did not exit it via the

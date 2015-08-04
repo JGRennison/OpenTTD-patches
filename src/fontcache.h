@@ -44,7 +44,7 @@ public:
 	 * Get the height of the font.
 	 * @return The height of the font.
 	 */
-	inline int GetHeight() const { return this->height; }
+	virtual int GetHeight() const { return this->height; }
 
 	/**
 	 * Get the ascender value of the font.
@@ -120,6 +120,12 @@ public:
 	virtual const void *GetFontTable(uint32 tag, size_t &length) = 0;
 
 	/**
+	 * Get the name of this font.
+	 * @return The name of the font.
+	 */
+	virtual const char *GetFontName() = 0;
+
+	/**
 	 * Get the font cache of a given font size.
 	 * @param fs The font size to look up.
 	 * @return The font cache.
@@ -159,7 +165,8 @@ static inline void InitializeUnicodeGlyphMap()
 	}
 }
 
-static inline void ClearFontCache() {
+static inline void ClearFontCache()
+{
 	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
 		FontCache::Get(fs)->ClearFontCache();
 	}

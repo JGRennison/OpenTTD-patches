@@ -43,10 +43,7 @@
  * Used to load the desync debug logs, i.e. for reproducing a desync.
  * There's basically no need to ever enable this, unless you really know what
  * you are doing, i.e. debugging a desync.
- *
- * NOTE: Define DEBUG_DUMP_COMMANDS in network_func.h or globally, else it does not
- *       have enough effects. For example CmdCompanyCtrl needs it to be able
- *       to create companies when there are not clients on this server.
+ * See docs/desync.txt for details.
  */
 #ifdef DEBUG_DUMP_COMMANDS
 extern bool _ddc_fastforward;
@@ -154,8 +151,10 @@ bool IsNetworkCompatibleVersion(const char *version);
  * Everything we need to know about a command to be able to execute it.
  */
 struct CommandPacket : CommandContainer {
+	/** Make sure the pointer is NULL. */
+	CommandPacket() : next(NULL), company(INVALID_COMPANY), frame(0), my_cmd(false) {}
 	CommandPacket *next; ///< the next command packet (if in queue)
-	CompanyByte company; ///< company that is executing the command
+	CompanyID company;   ///< company that is executing the command
 	uint32 frame;        ///< the frame in which this packet is executed
 	bool my_cmd;         ///< did the command originate from "me"
 };
@@ -169,7 +168,7 @@ void NetworkError(StringID error_string);
 void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const char *name, const char *str = "", int64 data = 0);
 uint NetworkCalculateLag(const NetworkClientSocket *cs);
 StringID GetNetworkErrorMsg(NetworkErrorCode err);
-bool NetworkFindName(char new_name[NETWORK_CLIENT_NAME_LENGTH]);
+bool NetworkFindName(char *new_name, const char *last);
 const char *GenerateCompanyPasswordHash(const char *password, const char *password_server_id, uint32 password_game_seed);
 
 #endif /* ENABLE_NETWORK */

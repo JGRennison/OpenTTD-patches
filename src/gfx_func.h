@@ -52,6 +52,7 @@ void CreateConsole();
 
 extern byte _dirkeys;        ///< 1 = left, 2 = up, 4 = right, 8 = down
 extern bool _fullscreen;
+extern byte _support8bpp;
 extern CursorVars _cursor;
 extern bool _ctrl_pressed;   ///< Is Ctrl pressed?
 extern bool _shift_pressed;  ///< Is Shift pressed?
@@ -118,11 +119,12 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, 
 void DrawCharCentered(uint32 c, int x, int y, TextColour colour);
 
 void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
-void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1);
+void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
 void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
 
 Dimension GetStringBoundingBox(const char *str, FontSize start_fontsize = FS_NORMAL);
 Dimension GetStringBoundingBox(StringID strid);
+int GetStringHeight(const char *str, int maxw, FontSize fontsize = FS_NORMAL);
 int GetStringHeight(StringID str, int maxw);
 int GetStringLineCount(StringID str, int maxw);
 Dimension GetStringMultiLineBoundingBox(StringID str, const Dimension &suggestion);
@@ -136,6 +138,7 @@ void SetDirtyBlocks(int left, int top, int right, int bottom);
 void MarkWholeScreenDirty();
 
 void GfxInitPalettes();
+void CheckBlitter();
 
 bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int height);
 

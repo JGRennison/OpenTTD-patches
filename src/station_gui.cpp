@@ -19,6 +19,7 @@
 #include "cargotype.h"
 #include "station_gui.h"
 #include "strings_func.h"
+#include "string_func.h"
 #include "window_func.h"
 #include "viewport_func.h"
 #include "widgets/dropdown_func.h"
@@ -31,6 +32,7 @@
 #include "vehiclelist.h"
 #include "town.h"
 #include "linkgraph/linkgraph.h"
+#include "zoom_func.h"
 
 #include "widgets/station_widget.h"
 
@@ -38,6 +40,8 @@
 
 #include <set>
 #include <vector>
+
+#include "safeguards.h"
 
 /**
  * Calculates and draws the accepted or supplied cargo around the selected tile(s)
@@ -219,7 +223,9 @@ protected:
 			GetString(buf_cache, STR_STATION_NAME, lastof(buf_cache));
 		}
 
-		return strcmp(buf, buf_cache);
+		int r = strnatcmp(buf, buf_cache); // Sort by name (natural sorting).
+		if (r == 0) return (*a)->index - (*b)->index;
+		return r;
 	}
 
 	/** Sort stations by their type */
@@ -336,7 +342,7 @@ public:
 		switch (widget) {
 			case WID_STL_SORTBY: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
-				d.width += padding.width + WD_SORTBUTTON_ARROW_WIDTH * 2; // Doubled since the string is centred and it also looks better.
+				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
 				*size = maxdim(*size, d);
 				break;
@@ -800,15 +806,16 @@ static const NWidgetPart _nested_station_view_widgets[] = {
  */
 static void DrawCargoIcons(CargoID i, uint waiting, int left, int right, int y)
 {
-	uint num = min((waiting + 5) / 10, (right - left) / 10); // maximum is width / 10 icons so it won't overflow
+	int width = ScaleGUITrad(10);
+	uint num = min((waiting + (width / 2)) / width, (right - left) / width); // maximum is width / 10 icons so it won't overflow
 	if (num == 0) return;
 
 	SpriteID sprite = CargoSpec::Get(i)->GetCargoIcon();
 
-	int x = _current_text_dir == TD_RTL ? left : right - num * 10;
+	int x = _current_text_dir == TD_RTL ? left : right - num * width;
 	do {
 		DrawSprite(sprite, PAL_NONE, x, y);
-		x += 10;
+		x += width;
 	} while (--num);
 }
 
@@ -1182,7 +1189,7 @@ bool CargoSorter::SortStation(StationID st1, StationID st2) const
 	SetDParam(0, st2);
 	GetString(buf2, STR_STATION_NAME, lastof(buf2));
 
-	int res = strcmp(buf1, buf2);
+	int res = strnatcmp(buf1, buf2); // Sort by name (natural sorting).
 	if (res == 0) {
 		return this->SortId(st1, st2);
 	} else {
@@ -1299,17 +1306,15 @@ struct StationViewWindow : public Window {
 		this->SelectSortBy(_settings_client.gui.station_gui_sort_by);
 		this->sort_orders[0] = SO_ASCENDING;
 		this->SelectSortOrder((SortOrder)_settings_client.gui.station_gui_sort_order);
-		Owner owner = Station::Get(window_number)->owner;
-		if (owner != OWNER_NONE) this->owner = owner;
+		this->owner = Station::Get(window_number)->owner;
 	}
 
 	~StationViewWindow()
 	{
-		Owner owner = Station::Get(this->window_number)->owner;
-		DeleteWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    owner, this->window_number).Pack(), false);
-		DeleteWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     owner, this->window_number).Pack(), false);
-		DeleteWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     owner, this->window_number).Pack(), false);
-		DeleteWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, owner, this->window_number).Pack(), false);
+		DeleteWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    this->owner, this->window_number).Pack(), false);
+		DeleteWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     this->owner, this->window_number).Pack(), false);
+		DeleteWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     this->owner, this->window_number).Pack(), false);
+		DeleteWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, this->owner, this->window_number).Pack(), false);
 	}
 
 	/**
@@ -1796,7 +1801,7 @@ struct StationViewWindow : public Window {
 
 		uint32 cargo_mask = 0;
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
-			if (HasBit(st->goods[i].acceptance_pickup, GoodsEntry::GES_ACCEPTANCE)) SetBit(cargo_mask, i);
+			if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) SetBit(cargo_mask, i);
 		}
 		SetDParam(0, cargo_mask);
 		int bottom = DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, INT32_MAX, STR_STATION_VIEW_ACCEPTS_CARGO);
@@ -2234,7 +2239,7 @@ struct SelectStationWindow : Window {
 	TileArea area; ///< Location of new station
 	Scrollbar *vscroll;
 
-	SelectStationWindow(WindowDesc *desc, CommandContainer cmd, TileArea ta) :
+	SelectStationWindow(WindowDesc *desc, const CommandContainer &cmd, TileArea ta) :
 		Window(desc),
 		select_station_cmd(cmd),
 		area(ta)
@@ -2351,7 +2356,7 @@ static WindowDesc _select_station_desc(
  * @return whether we need to show the station selection window.
  */
 template <class T>
-static bool StationJoinerNeeded(CommandContainer cmd, TileArea ta)
+static bool StationJoinerNeeded(const CommandContainer &cmd, TileArea ta)
 {
 	/* Only show selection if distant join is enabled in the settings */
 	if (!_settings_game.station.distant_join_stations) return false;
@@ -2385,7 +2390,7 @@ static bool StationJoinerNeeded(CommandContainer cmd, TileArea ta)
  * @tparam the class to find stations for
  */
 template <class T>
-void ShowSelectBaseStationIfNeeded(CommandContainer cmd, TileArea ta)
+void ShowSelectBaseStationIfNeeded(const CommandContainer &cmd, TileArea ta)
 {
 	if (StationJoinerNeeded<T>(cmd, ta)) {
 		if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
@@ -2400,7 +2405,7 @@ void ShowSelectBaseStationIfNeeded(CommandContainer cmd, TileArea ta)
  * @param cmd Command to build the station.
  * @param ta Area to build the station in
  */
-void ShowSelectStationIfNeeded(CommandContainer cmd, TileArea ta)
+void ShowSelectStationIfNeeded(const CommandContainer &cmd, TileArea ta)
 {
 	ShowSelectBaseStationIfNeeded<Station>(cmd, ta);
 }
@@ -2410,7 +2415,7 @@ void ShowSelectStationIfNeeded(CommandContainer cmd, TileArea ta)
  * @param cmd Command to build the waypoint.
  * @param ta Area to build the waypoint in
  */
-void ShowSelectWaypointIfNeeded(CommandContainer cmd, TileArea ta)
+void ShowSelectWaypointIfNeeded(const CommandContainer &cmd, TileArea ta)
 {
 	ShowSelectBaseStationIfNeeded<Waypoint>(cmd, ta);
 }

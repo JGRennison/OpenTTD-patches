@@ -102,7 +102,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -156,7 +156,7 @@
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -204,7 +204,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -256,7 +256,7 @@
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -304,12 +304,14 @@
     <ClCompile Include="..\src\command.cpp" />
     <ClCompile Include="..\src\console.cpp" />
     <ClCompile Include="..\src\console_cmds.cpp" />
+    <ClCompile Include="..\src\cpu.cpp" />
     <ClCompile Include="..\src\crashlog.cpp" />
     <ClCompile Include="..\src\currency.cpp" />
     <ClCompile Include="..\src\date.cpp" />
     <ClCompile Include="..\src\debug.cpp" />
     <ClCompile Include="..\src\dedicated.cpp" />
     <ClCompile Include="..\src\depot.cpp" />
+    <ClCompile Include="..\src\disaster_vehicle.cpp" />
     <ClCompile Include="..\src\driver.cpp" />
     <ClCompile Include="..\src\economy.cpp" />
     <ClCompile Include="..\src\effectvehicle.cpp" />
@@ -339,6 +341,7 @@
     <ClCompile Include="..\src\linkgraph\linkgraphjob.cpp" />
     <ClCompile Include="..\src\linkgraph\linkgraphschedule.cpp" />
     <ClCompile Include="..\src\linkgraph\mcf.cpp" />
+    <ClCompile Include="..\src\linkgraph\refresh.cpp" />
     <ClCompile Include="..\src\map.cpp" />
     <ClCompile Include="..\src\misc.cpp" />
     <ClCompile Include="..\src\mixer.cpp" />
@@ -353,7 +356,6 @@
     <ClCompile Include="..\src\network\network_udp.cpp" />
     <ClCompile Include="..\src\openttd.cpp" />
     <ClCompile Include="..\src\order_backup.cpp" />
-    <ClCompile Include="..\src\os_timer.cpp" />
     <ClCompile Include="..\src\pbs.cpp" />
     <ClCompile Include="..\src\progress.cpp" />
     <ClCompile Include="..\src\rail.cpp" />
@@ -384,6 +386,7 @@
     <ClCompile Include="..\src\vehicle.cpp" />
     <ClCompile Include="..\src\vehiclelist.cpp" />
     <ClCompile Include="..\src\viewport.cpp" />
+    <ClCompile Include="..\src\viewport_sprite_sorter_sse4.cpp" />
     <ClCompile Include="..\src\waypoint.cpp" />
     <ClCompile Include="..\src\widget.cpp" />
     <ClCompile Include="..\src\window.cpp" />
@@ -421,6 +424,7 @@
     <ClInclude Include="..\src\console_gui.h" />
     <ClInclude Include="..\src\console_internal.h" />
     <ClInclude Include="..\src\console_type.h" />
+    <ClInclude Include="..\src\cpu.h" />
     <ClInclude Include="..\src\crashlog.h" />
     <ClInclude Include="..\src\currency.h" />
     <ClInclude Include="..\src\date_func.h" />
@@ -434,6 +438,7 @@
     <ClInclude Include="..\src\depot_type.h" />
     <ClInclude Include="..\src\direction_func.h" />
     <ClInclude Include="..\src\direction_type.h" />
+    <ClInclude Include="..\src\disaster_vehicle.h" />
     <ClInclude Include="..\src\music\dmusic.h" />
     <ClInclude Include="..\src\driver.h" />
     <ClInclude Include="..\src\economy_base.h" />
@@ -491,6 +496,7 @@
     <ClInclude Include="..\src\linkgraph\linkgraphjob_base.h" />
     <ClInclude Include="..\src\linkgraph\linkgraphschedule.h" />
     <ClInclude Include="..\src\linkgraph\mcf.h" />
+    <ClInclude Include="..\src\linkgraph\refresh.h" />
     <ClInclude Include="..\src\livery.h" />
     <ClInclude Include="..\src\map_func.h" />
     <ClInclude Include="..\src\map_type.h" />
@@ -564,6 +570,7 @@
     <ClInclude Include="..\src\road_type.h" />
     <ClInclude Include="..\src\roadstop_base.h" />
     <ClInclude Include="..\src\roadveh.h" />
+    <ClInclude Include="..\src\safeguards.h" />
     <ClInclude Include="..\src\screenshot.h" />
     <ClInclude Include="..\src\sdl.h" />
     <ClInclude Include="..\src\sound\sdl_s.h" />
@@ -638,6 +645,7 @@
     <ClInclude Include="..\src\vehicle_type.h" />
     <ClInclude Include="..\src\vehiclelist.h" />
     <ClInclude Include="..\src\viewport_func.h" />
+    <ClInclude Include="..\src\viewport_sprite_sorter.h" />
     <ClInclude Include="..\src\viewport_type.h" />
     <ClInclude Include="..\src\water.h" />
     <ClInclude Include="..\src\waypoint_base.h" />
@@ -676,6 +684,7 @@
     <ClInclude Include="..\src\core\random_func.hpp" />
     <ClInclude Include="..\src\core\smallmap_type.hpp" />
     <ClInclude Include="..\src\core\smallmatrix_type.hpp" />
+    <ClInclude Include="..\src\core\smallstack_type.hpp" />
     <ClInclude Include="..\src\core\smallvec_type.hpp" />
     <ClInclude Include="..\src\core\sort_func.hpp" />
     <ClInclude Include="..\src\core\string_compare_type.hpp" />
@@ -798,7 +807,6 @@
     <ClCompile Include="..\src\clear_cmd.cpp" />
     <ClCompile Include="..\src\company_cmd.cpp" />
     <ClCompile Include="..\src\depot_cmd.cpp" />
-    <ClCompile Include="..\src\disaster_cmd.cpp" />
     <ClCompile Include="..\src\group_cmd.cpp" />
     <ClCompile Include="..\src\industry_cmd.cpp" />
     <ClCompile Include="..\src\misc_cmd.cpp" />
@@ -861,6 +869,8 @@
     <ClCompile Include="..\src\saveload\town_sl.cpp" />
     <ClCompile Include="..\src\saveload\vehicle_sl.cpp" />
     <ClCompile Include="..\src\saveload\waypoint_sl.cpp" />
+    <ClInclude Include="..\src\saveload\extended_ver_sl.h" />
+    <ClCompile Include="..\src\saveload\extended_ver_sl.cpp" />
     <ClInclude Include="..\src\table\airport_defaults.h" />
     <ClInclude Include="..\src\table\airport_movement.h" />
     <ClInclude Include="..\src\table\airporttile_ids.h" />
@@ -875,6 +885,7 @@
     <ClInclude Include="..\src\table\elrail_data.h" />
     <ClInclude Include="..\src\table\engines.h" />
     <ClInclude Include="..\src\table\genland.h" />
+    <ClInclude Include="..\src\table\heightmap_colours.h" />
     <ClInclude Include="..\src\table\industry_land.h" />
     <ClInclude Include="..\src\table\landscape_sprite.h" />
     <ClInclude Include="..\src\table\newgrf_debug_data.h" />
@@ -889,6 +900,7 @@
     <ClInclude Include="..\src\table\sprites.h" />
     <ClInclude Include="..\src\table\station_land.h" />
     <ClInclude Include="..\src\table\strgen_tables.h" />
+    <ClInclude Include="..\src\table\string_colours.h" />
     <ClInclude Include="..\src\..\objs\langs\table\strings.h" />
     <ClInclude Include="..\src\table\town_land.h" />
     <ClInclude Include="..\src\table\townname.h" />
@@ -944,13 +956,8 @@
     <ClInclude Include="..\src\3rdparty\squirrel\squirrel\sqpcheader.h" />
     <ClInclude Include="..\src\3rdparty\squirrel\squirrel\sqstate.h" />
     <ClInclude Include="..\src\3rdparty\squirrel\include\sqstdaux.h" />
-    <ClInclude Include="..\src\3rdparty\squirrel\include\sqstdblob.h" />
-    <ClInclude Include="..\src\3rdparty\squirrel\sqstdlib\sqstdblobimpl.h" />
-    <ClInclude Include="..\src\3rdparty\squirrel\include\sqstdio.h" />
     <ClInclude Include="..\src\3rdparty\squirrel\include\sqstdmath.h" />
-    <ClInclude Include="..\src\3rdparty\squirrel\sqstdlib\sqstdstream.h" />
     <ClInclude Include="..\src\3rdparty\squirrel\include\sqstdstring.h" />
-    <ClInclude Include="..\src\3rdparty\squirrel\include\sqstdsystem.h" />
     <ClInclude Include="..\src\3rdparty\squirrel\squirrel\sqstring.h" />
     <ClInclude Include="..\src\3rdparty\squirrel\squirrel\sqtable.h" />
     <ClInclude Include="..\src\3rdparty\squirrel\include\squirrel.h" />
@@ -1030,6 +1037,8 @@
     <ClInclude Include="..\src\script\api\script_station.hpp" />
     <ClInclude Include="..\src\script\api\script_stationlist.hpp" />
     <ClInclude Include="..\src\script\api\script_story_page.hpp" />
+    <ClInclude Include="..\src\script\api\script_storypagelist.hpp" />
+    <ClInclude Include="..\src\script\api\script_storypageelementlist.hpp" />
     <ClInclude Include="..\src\script\api\script_subsidy.hpp" />
     <ClInclude Include="..\src\script\api\script_subsidylist.hpp" />
     <ClInclude Include="..\src\script\api\script_testmode.hpp" />
@@ -1092,6 +1101,8 @@
     <ClCompile Include="..\src\script\api\script_station.cpp" />
     <ClCompile Include="..\src\script\api\script_stationlist.cpp" />
     <ClCompile Include="..\src\script\api\script_story_page.cpp" />
+    <ClCompile Include="..\src\script\api\script_storypagelist.cpp" />
+    <ClCompile Include="..\src\script\api\script_storypageelementlist.cpp" />
     <ClCompile Include="..\src\script\api\script_subsidy.cpp" />
     <ClCompile Include="..\src\script\api\script_subsidylist.cpp" />
     <ClCompile Include="..\src\script\api\script_testmode.cpp" />
@@ -1109,12 +1120,22 @@
     <ClCompile Include="..\src\script\api\script_window.cpp" />
     <ClCompile Include="..\src\blitter\32bpp_anim.cpp" />
     <ClInclude Include="..\src\blitter\32bpp_anim.hpp" />
+    <ClCompile Include="..\src\blitter\32bpp_anim_sse4.cpp" />
+    <ClInclude Include="..\src\blitter\32bpp_anim_sse4.hpp" />
     <ClCompile Include="..\src\blitter\32bpp_base.cpp" />
     <ClInclude Include="..\src\blitter\32bpp_base.hpp" />
     <ClCompile Include="..\src\blitter\32bpp_optimized.cpp" />
     <ClInclude Include="..\src\blitter\32bpp_optimized.hpp" />
     <ClCompile Include="..\src\blitter\32bpp_simple.cpp" />
     <ClInclude Include="..\src\blitter\32bpp_simple.hpp" />
+    <ClInclude Include="..\src\blitter\32bpp_sse_func.hpp" />
+    <ClInclude Include="..\src\blitter\32bpp_sse_type.h" />
+    <ClCompile Include="..\src\blitter\32bpp_sse2.cpp" />
+    <ClInclude Include="..\src\blitter\32bpp_sse2.hpp" />
+    <ClCompile Include="..\src\blitter\32bpp_sse4.cpp" />
+    <ClInclude Include="..\src\blitter\32bpp_sse4.hpp" />
+    <ClCompile Include="..\src\blitter\32bpp_ssse3.cpp" />
+    <ClInclude Include="..\src\blitter\32bpp_ssse3.hpp" />
     <ClCompile Include="..\src\blitter\8bpp_base.cpp" />
     <ClInclude Include="..\src\blitter\8bpp_base.hpp" />
     <ClCompile Include="..\src\blitter\8bpp_optimized.cpp" />

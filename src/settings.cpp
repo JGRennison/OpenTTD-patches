@@ -64,12 +64,19 @@
 #include "roadveh.h"
 #include "fios.h"
 #include "strings_func.h"
+#include "string_func.h"
+#include "debug.h"
 
 #include "void_map.h"
 #include "station_base.h"
 
 #include "table/strings.h"
 #include "table/settings.h"
+
+#include <algorithm>
+#include <vector>
+
+#include "safeguards.h"
 
 ClientSettings _settings_client;
 GameSettings _settings_game;     ///< Game settings of a running game or the scenario editor.
@@ -484,7 +491,7 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 		const SettingDescBase *sdb = &sd->desc;
 		const SaveLoad        *sld = &sd->save;
 
-		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to, sld->ext_feature_test)) continue;
 
 		/* For settings.xx.yy load the settings from [xx] yy = ? */
 		s = strchr(sdb->name, '.');
@@ -524,13 +531,13 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 				switch (GetVarMemType(sld->conv)) {
 					case SLE_VAR_STRB:
 					case SLE_VAR_STRBQ:
-						if (p != NULL) ttd_strlcpy((char*)ptr, (const char*)p, sld->length);
+						if (p != NULL) strecpy((char*)ptr, (const char*)p, (char*)ptr + sld->length - 1);
 						break;
 
 					case SLE_VAR_STR:
 					case SLE_VAR_STRQ:
 						free(*(char**)ptr);
-						*(char**)ptr = p == NULL ? NULL : strdup((const char*)p);
+						*(char**)ptr = p == NULL ? NULL : stredup((const char*)p);
 						break;
 
 					case SLE_VAR_CHAR: if (p != NULL) *(char *)ptr = *(const char *)p; break;
@@ -583,7 +590,7 @@ static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 
 		/* If the setting is not saved to the configuration
 		 * file, just continue with the next setting */
-		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to, sld->ext_feature_test)) continue;
 		if (sld->conv & SLF_NOT_IN_CONFIG) continue;
 
 		/* XXX - wtf is this?? (group override?) */
@@ -685,7 +692,7 @@ static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 
 		/* The value is different, that means we have to write it to the ini */
 		free(item->value);
-		item->value = strdup(buf);
+		item->value = stredup(buf);
 	}
 }
 
@@ -707,7 +714,7 @@ static void IniLoadSettingList(IniFile *ini, const char *grpname, StringList *li
 	list->Clear();
 
 	for (const IniItem *item = group->item; item != NULL; item = item->next) {
-		if (item->name != NULL) *list->Append() = strdup(item->name);
+		if (item->name != NULL) *list->Append() = stredup(item->name);
 	}
 }
 
@@ -869,7 +876,7 @@ static bool UpdateConsists(int32 p1)
 	Train *t;
 	FOR_ALL_TRAINS(t) {
 		/* Update the consist of all trains so the maximum speed is set correctly. */
-		if (t->IsFrontEngine() || t->IsFreeWagon()) t->ConsistChanged(true);
+		if (t->IsFrontEngine() || t->IsFreeWagon()) t->ConsistChanged(CCF_TRACK);
 	}
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
 	return true;
@@ -1066,6 +1073,12 @@ static bool ZoomMinMaxChanged(int32 p1)
 	extern void ConstrainAllViewportsZoom();
 	ConstrainAllViewportsZoom();
 	GfxClearSpriteCache();
+	if (_settings_client.gui.zoom_min > _gui_zoom) {
+		/* Restrict GUI zoom if it is no longer available. */
+		_gui_zoom = _settings_client.gui.zoom_min;
+		UpdateCursorSize();
+		LoadStringWidthTable();
+	}
 	return true;
 }
 
@@ -1139,7 +1152,7 @@ static bool InvalidateCompanyWindow(int32 p1)
 static void ValidateSettings()
 {
 	/* Do not allow a custom sea level with the original land generator. */
-	if (_settings_newgame.game_creation.land_generator == 0 &&
+	if (_settings_newgame.game_creation.land_generator == LG_ORIGINAL &&
 			_settings_newgame.difficulty.quantity_sea_lakes == CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY) {
 		_settings_newgame.difficulty.quantity_sea_lakes = CUSTOM_SEA_LEVEL_MIN_PERCENTAGE;
 	}
@@ -1269,9 +1282,37 @@ static bool ChangeDynamicEngines(int32 p1)
 	return true;
 }
 
+static bool ChangeMaxHeightLevel(int32 p1)
+{
+	if (_game_mode == GM_NORMAL) return false;
+	if (_game_mode != GM_EDITOR) return true;
+
+	/* Check if at least one mountain on the map is higher than the new value.
+	 * If yes, disallow the change. */
+	for (TileIndex t = 0; t < MapSize(); t++) {
+		if ((int32)TileHeight(t) > p1) {
+			ShowErrorMessage(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN, INVALID_STRING_ID, WL_ERROR);
+			/* Return old, unchanged value */
+			return false;
+		}
+	}
+
+	/* The smallmap uses an index from heightlevels to colours. Trigger rebuilding it. */
+	InvalidateWindowClassesData(WC_SMALLMAP, 2);
+
+	return true;
+}
+
 static bool StationCatchmentChanged(int32 p1)
 {
 	Station::RecomputeIndustriesNearForAll();
+	return true;
+}
+
+static bool MaxVehiclesChanged(int32 p1)
+{
+	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);
+	MarkWholeScreenDirty();
 	return true;
 }
 
@@ -1345,7 +1386,7 @@ static void HandleOldDiffCustom(bool savegame)
 	for (uint i = 0; i < options_to_load; i++) {
 		const SettingDesc *sd = &_settings[i];
 		/* Skip deprecated options */
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		void *var = GetVariableAddress(savegame ? &_settings_game : &_settings_newgame, &sd->save);
 		Write_ValidateSetting(var, sd, (int32)((i == 4 ? 1000 : 1) * _old_diff_custom[i]));
 	}
@@ -1406,6 +1447,40 @@ static void GameLoadConfig(IniFile *ini, const char *grpname)
 }
 
 /**
+ * Convert a character to a hex nibble value, or \c -1 otherwise.
+ * @param c Character to convert.
+ * @return Hex value of the character, or \c -1 if not a hex digit.
+ */
+static int DecodeHexNibble(char c)
+{
+	if (c >= '0' && c <= '9') return c - '0';
+	if (c >= 'A' && c <= 'F') return c + 10 - 'A';
+	if (c >= 'a' && c <= 'f') return c + 10 - 'a';
+	return -1;
+}
+
+/**
+ * Parse a sequence of characters (supposedly hex digits) into a sequence of bytes.
+ * After the hex number should be a \c '|' character.
+ * @param pos First character to convert.
+ * @param dest [out] Output byte array to write the bytes.
+ * @param dest_size Number of bytes in \a dest.
+ * @return Whether reading was successful.
+ */
+static bool DecodeHexText(char *pos, uint8 *dest, size_t dest_size)
+{
+	while (dest_size > 0) {
+		int hi = DecodeHexNibble(pos[0]);
+		int lo = (hi >= 0) ? DecodeHexNibble(pos[1]) : -1;
+		if (lo < 0) return false;
+		*dest++ = (hi << 4) | lo;
+		pos += 2;
+		dest_size--;
+	}
+	return *pos == '|';
+}
+
+/**
  * Load a GRF configuration
  * @param ini       The configuration to read from.
  * @param grpname   Group name containing the configuration of the GRF.
@@ -1421,16 +1496,41 @@ static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_stati
 	if (group == NULL) return NULL;
 
 	for (item = group->item; item != NULL; item = item->next) {
-		GRFConfig *c = new GRFConfig(item->name);
+		GRFConfig *c = NULL;
+
+		uint8 grfid_buf[4], md5sum[16];
+		char *filename = item->name;
+		bool has_grfid = false;
+		bool has_md5sum = false;
+
+		/* Try reading "<grfid>|" and on success, "<md5sum>|". */
+		has_grfid = DecodeHexText(filename, grfid_buf, lengthof(grfid_buf));
+		if (has_grfid) {
+			filename += 1 + 2 * lengthof(grfid_buf);
+			has_md5sum = DecodeHexText(filename, md5sum, lengthof(md5sum));
+			if (has_md5sum) filename += 1 + 2 * lengthof(md5sum);
+
+			uint32 grfid = grfid_buf[0] | (grfid_buf[1] << 8) | (grfid_buf[2] << 16) | (grfid_buf[3] << 24);
+			if (has_md5sum) {
+				const GRFConfig *s = FindGRFConfig(grfid, FGCM_EXACT, md5sum);
+				if (s != NULL) c = new GRFConfig(*s);
+			}
+			if (c == NULL && !FioCheckFileExists(filename, NEWGRF_DIR)) {
+				const GRFConfig *s = FindGRFConfig(grfid, FGCM_NEWEST_VALID);
+				if (s != NULL) c = new GRFConfig(*s);
+			}
+		}
+		if (c == NULL) c = new GRFConfig(filename);
 
 		/* Parse parameters */
 		if (!StrEmpty(item->value)) {
-			c->num_params = ParseIntList(item->value, (int*)c->param, lengthof(c->param));
-			if (c->num_params == (byte)-1) {
-				SetDParamStr(0, item->name);
+			int count = ParseIntList(item->value, (int*)c->param, lengthof(c->param));
+			if (count < 0) {
+				SetDParamStr(0, filename);
 				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY, WL_CRITICAL);
-				c->num_params = 0;
+				count = 0;
 			}
+			c->num_params = count;
 		}
 
 		/* Check if item is valid */
@@ -1447,7 +1547,7 @@ static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_stati
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN);
 			}
 
-			SetDParamStr(0, item->name);
+			SetDParamStr(0, StrEmpty(filename) ? item->name : filename);
 			ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_GRF, WL_CRITICAL);
 			delete c;
 			continue;
@@ -1457,7 +1557,7 @@ static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_stati
 		bool duplicate = false;
 		for (const GRFConfig *gc = first; gc != NULL; gc = gc->next) {
 			if (gc->ident.grfid == c->ident.grfid) {
-				SetDParamStr(0, item->name);
+				SetDParamStr(0, c->filename);
 				SetDParamStr(1, gc->filename);
 				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_DUPLICATE_GRFID, WL_CRITICAL);
 				duplicate = true;
@@ -1491,7 +1591,7 @@ static void AISaveConfig(IniFile *ini, const char *grpname)
 		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
 		const char *name;
 		char value[1024];
-		config->SettingsToString(value, lengthof(value));
+		config->SettingsToString(value, lastof(value));
 
 		if (config->HasScript()) {
 			name = config->GetName();
@@ -1499,7 +1599,7 @@ static void AISaveConfig(IniFile *ini, const char *grpname)
 			name = "none";
 		}
 
-		IniItem *item = new IniItem(group, name, strlen(name));
+		IniItem *item = new IniItem(group, name);
 		item->SetValue(value);
 	}
 }
@@ -1514,7 +1614,7 @@ static void GameSaveConfig(IniFile *ini, const char *grpname)
 	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
 	const char *name;
 	char value[1024];
-	config->SettingsToString(value, lengthof(value));
+	config->SettingsToString(value, lastof(value));
 
 	if (config->HasScript()) {
 		name = config->GetName();
@@ -1522,7 +1622,7 @@ static void GameSaveConfig(IniFile *ini, const char *grpname)
 		name = "none";
 	}
 
-	IniItem *item = new IniItem(group, name, strlen(name));
+	IniItem *item = new IniItem(group, name);
 	item->SetValue(value);
 }
 
@@ -1535,7 +1635,7 @@ static void SaveVersionInConfig(IniFile *ini)
 	IniGroup *group = ini->GetGroup("version");
 
 	char version[9];
-	snprintf(version, lengthof(version), "%08X", _openttd_newgrf_version);
+	seprintf(version, lastof(version), "%08X", _openttd_newgrf_version);
 
 	const char * const versions[][2] = {
 		{ "version_string", _openttd_revision },
@@ -1555,10 +1655,15 @@ static void GRFSaveConfig(IniFile *ini, const char *grpname, const GRFConfig *li
 	const GRFConfig *c;
 
 	for (c = list; c != NULL; c = c->next) {
+		/* Hex grfid (4 bytes in nibbles), "|", hex md5sum (16 bytes in nibbles), "|", file system path. */
+		char key[4 * 2 + 1 + 16 * 2 + 1 + MAX_PATH];
 		char params[512];
 		GRFBuildParamList(params, c, lastof(params));
 
-		group->GetItem(c->filename, true)->SetValue(params);
+		char *pos = key + seprintf(key, lastof(key), "%08X|", BSWAP32(c->ident.grfid));
+		pos = md5sumToString(pos, lastof(key), c->ident.md5sum);
+		seprintf(pos, lastof(key), "|%s", c->filename);
+		group->GetItem(key, true)->SetValue(params);
 	}
 }
 
@@ -1657,7 +1762,7 @@ void GetGRFPresetList(GRFPresetList *list)
 	IniGroup *group;
 	for (group = ini->group; group != NULL; group = group->next) {
 		if (strncmp(group->name, "preset-", 7) == 0) {
-			*list->Append() = strdup(group->name + 7);
+			*list->Append() = stredup(group->name + 7);
 		}
 	}
 
@@ -1672,8 +1777,9 @@ void GetGRFPresetList(GRFPresetList *list)
  */
 GRFConfig *LoadGRFPresetFromConfig(const char *config_name)
 {
-	char *section = (char*)alloca(strlen(config_name) + 8);
-	sprintf(section, "preset-%s", config_name);
+	size_t len = strlen(config_name) + 8;
+	char *section = (char*)alloca(len);
+	seprintf(section, section + len - 1, "preset-%s", config_name);
 
 	IniFile *ini = IniLoadConfig();
 	GRFConfig *config = GRFLoadConfig(ini, section, false);
@@ -1690,8 +1796,9 @@ GRFConfig *LoadGRFPresetFromConfig(const char *config_name)
  */
 void SaveGRFPresetToConfig(const char *config_name, GRFConfig *config)
 {
-	char *section = (char*)alloca(strlen(config_name) + 8);
-	sprintf(section, "preset-%s", config_name);
+	size_t len = strlen(config_name) + 8;
+	char *section = (char*)alloca(len);
+	seprintf(section, section + len - 1, "preset-%s", config_name);
 
 	IniFile *ini = IniLoadConfig();
 	GRFSaveConfig(ini, section, config);
@@ -1705,8 +1812,9 @@ void SaveGRFPresetToConfig(const char *config_name, GRFConfig *config)
  */
 void DeleteGRFPresetFromConfig(const char *config_name)
 {
-	char *section = (char*)alloca(strlen(config_name) + 8);
-	sprintf(section, "preset-%s", config_name);
+	size_t len = strlen(config_name) + 8;
+	char *section = (char*)alloca(len);
+	seprintf(section, section + len - 1, "preset-%s", config_name);
 
 	IniFile *ini = IniLoadConfig();
 	ini->RemoveGroup(section);
@@ -1736,7 +1844,7 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	const SettingDesc *sd = GetSettingDescription(p1);
 
 	if (sd == NULL) return CMD_ERROR;
-	if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) return CMD_ERROR;
+	if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) return CMD_ERROR;
 
 	if (!sd->IsEditable(true)) return CMD_ERROR;
 
@@ -1924,10 +2032,10 @@ bool SetSettingValue(uint index, const char *value, bool force_newgame)
 	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) {
 		char **var = (char**)GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
 		free(*var);
-		*var = strcmp(value, "(null)") == 0 ? NULL : strdup(value);
+		*var = strcmp(value, "(null)") == 0 ? NULL : stredup(value);
 	} else {
 		char *var = (char*)GetVariableAddress(NULL, &sd->save);
-		ttd_strlcpy(var, value, sd->save.length);
+		strecpy(var, value, &var[sd->save.length - 1]);
 	}
 	if (sd->desc.proc != NULL) sd->desc.proc(0);
 
@@ -1947,13 +2055,13 @@ const SettingDesc *GetSettingFromName(const char *name, uint *i)
 
 	/* First check all full names */
 	for (*i = 0, sd = _settings; sd->save.cmd != SL_END; sd++, (*i)++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (strcmp(sd->desc.name, name) == 0) return sd;
 	}
 
 	/* Then check the shortcut variant of the name. */
 	for (*i = 0, sd = _settings; sd->save.cmd != SL_END; sd++, (*i)++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		const char *short_name = strchr(sd->desc.name, '.');
 		if (short_name != NULL) {
 			short_name++;
@@ -1964,7 +2072,7 @@ const SettingDesc *GetSettingFromName(const char *name, uint *i)
 	if (strncmp(name, "company.", 8) == 0) name += 8;
 	/* And finally the company-based settings */
 	for (*i = 0, sd = _company_settings; sd->save.cmd != SL_END; sd++, (*i)++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (strcmp(sd->desc.name, name) == 0) return sd;
 	}
 
@@ -2038,9 +2146,9 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'", name, (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
 	} else {
 		if (sd->desc.cmd == SDT_BOOLX) {
-			snprintf(value, sizeof(value), (*(const bool*)ptr != 0) ? "on" : "off");
+			seprintf(value, lastof(value), (*(const bool*)ptr != 0) ? "on" : "off");
 		} else {
-			snprintf(value, sizeof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
+			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
 		}
 
 		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s%d, max: %u)",
@@ -2058,17 +2166,17 @@ void IConsoleListSettings(const char *prefilter)
 	IConsolePrintF(CC_WARNING, "All settings with their current value:");
 
 	for (const SettingDesc *sd = _settings; sd->save.cmd != SL_END; sd++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (prefilter != NULL && strstr(sd->desc.name, prefilter) == NULL) continue;
 		char value[80];
 		const void *ptr = GetVariableAddress(&GetGameSettings(), &sd->save);
 
 		if (sd->desc.cmd == SDT_BOOLX) {
-			snprintf(value, lengthof(value), (*(const bool *)ptr != 0) ? "on" : "off");
+			seprintf(value, lastof(value), (*(const bool *)ptr != 0) ? "on" : "off");
 		} else if (sd->desc.cmd == SDT_STRING) {
-			snprintf(value, sizeof(value), "%s", (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
+			seprintf(value, lastof(value), "%s", (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
 		} else {
-			snprintf(value, lengthof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
+			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
 		}
 		IConsolePrintF(CC_DEFAULT, "%s = %s", sd->desc.name, value);
 	}
@@ -2077,7 +2185,7 @@ void IConsoleListSettings(const char *prefilter)
 }
 
 /**
- * Save and load handler for settings
+ * Save and load handler for settings, except for those which go in the PATX chunk
  * @param osd SettingDesc struct containing all information
  * @param object can be either NULL in which case we load global variables or
  * a pointer to a struct which is getting saved
@@ -2085,6 +2193,7 @@ void IConsoleListSettings(const char *prefilter)
 static void LoadSettings(const SettingDesc *osd, void *object)
 {
 	for (; osd->save.cmd != SL_END; osd++) {
+		if (osd->patx_name != NULL) continue;
 		const SaveLoad *sld = &osd->save;
 		void *ptr = GetVariableAddress(object, sld);
 
@@ -2094,7 +2203,7 @@ static void LoadSettings(const SettingDesc *osd, void *object)
 }
 
 /**
- * Save and load handler for settings
+ * Save and load handler for settings, except for those which go in the PATX chunk
  * @param sd SettingDesc struct containing all information
  * @param object can be either NULL in which case we load global variables or
  * a pointer to a struct which is getting saved
@@ -2106,13 +2215,192 @@ static void SaveSettings(const SettingDesc *sd, void *object)
 	const SettingDesc *i;
 	size_t length = 0;
 	for (i = sd; i->save.cmd != SL_END; i++) {
+		if (i->patx_name != NULL) continue;
 		length += SlCalcObjMemberLength(object, &i->save);
 	}
 	SlSetLength(length);
 
 	for (i = sd; i->save.cmd != SL_END; i++) {
+		if (i->patx_name != NULL) continue;
 		void *ptr = GetVariableAddress(object, &i->save);
 		SlObjectMember(ptr, &i->save);
+	}
+}
+
+/** @file
+ *
+ * The PATX chunk stores additional settings in an unordered format
+ * which is tolerant of extra, missing or reordered settings.
+ * Additional settings generally means those that aren't in trunk.
+ *
+ * The PATX chunk contents has the following format:
+ *
+ * uint32                               chunk flags
+ * uint32                               number of settings
+ *     For each of N settings:
+ *     uint32                           setting flags
+ *     SLE_STR                          setting name
+ *     uint32                           length of setting field
+ *         N bytes                      setting field
+ */
+
+/** Sorted list of PATX settings, generated by MakeSettingsPatxList */
+static std::vector<const SettingDesc *> _sorted_patx_settings;
+
+/**
+ * Prepare a sorted list of settings to be potentially be loaded out of the PATX chunk
+ * This is to enable efficient lookup of settings by name
+ * This is stored in _sorted_patx_settings
+ */
+static void MakeSettingsPatxList(const SettingDesc *sd)
+{
+	static const SettingDesc *previous = NULL;
+
+	if (sd == previous) return;
+
+	_sorted_patx_settings.clear();
+	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
+		if (desc->patx_name == NULL) continue;
+		_sorted_patx_settings.push_back(desc);
+	}
+
+	// this makes me miss lambdas :/
+	struct StringSorter {
+		bool operator()(const SettingDesc *a, const SettingDesc *b)
+		{
+			return strcmp(a->patx_name, b->patx_name) < 0;
+		}
+	};
+	std::sort(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), StringSorter());
+}
+
+/**
+ * Load handler for settings which go in the PATX chunk
+ * @param osd SettingDesc struct containing all information
+ * @param object can be either NULL in which case we load global variables or
+ * a pointer to a struct which is getting saved
+ */
+static void LoadSettingsPatx(const SettingDesc *sd, void *object)
+{
+	MakeSettingsPatxList(sd);
+
+	struct SettingsPatxLoad {
+		uint32 flags;
+		char name[256];
+		uint32 setting_length;
+	};
+	SettingsPatxLoad current_setting;
+
+	static const SaveLoad _settings_patx_desc[] = {
+		SLE_VAR(SettingsPatxLoad, flags,          SLE_UINT32),
+		SLE_STR(SettingsPatxLoad, name,           SLE_STRB, 256),
+		SLE_VAR(SettingsPatxLoad, setting_length, SLE_UINT32),
+		SLE_END()
+	};
+
+	uint32 flags = SlReadUint32();
+	// flags are not in use yet, reserve for future expansion
+	if (flags != 0) SlErrorCorruptFmt("PATX chunk: unknown chunk header flags: 0x%X", flags);
+
+	uint32 settings_count = SlReadUint32();
+	for (uint32 i = 0; i < settings_count; i++) {
+		SlObject(&current_setting, _settings_patx_desc);
+
+		// flags are not in use yet, reserve for future expansion
+		if (current_setting.flags != 0) SlErrorCorruptFmt("PATX chunk: unknown setting header flags: 0x%X", current_setting.flags);
+
+		// now try to find corresponding setting, this would be much easier with C++11 support...
+		bool exact_match = false;
+		struct StringSearcher {
+			bool &m_exact_match;
+
+			StringSearcher(bool &exact_match)
+					: m_exact_match(exact_match) { }
+
+			bool operator()(const SettingDesc *a, const char *b)
+			{
+				int result = strcmp(a->patx_name, b);
+				if (result == 0) m_exact_match = true;
+				return result < 0;
+			}
+		};
+		std::vector<const SettingDesc *>::iterator iter = std::lower_bound(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), current_setting.name, StringSearcher(exact_match));
+
+		if (exact_match) {
+			assert(iter != _sorted_patx_settings.end());
+			// found setting
+			const SaveLoad *sld = &((*iter)->save);
+			size_t read = SlGetBytesRead();
+			void *ptr = GetVariableAddress(object, sld);
+			SlObjectMember(ptr, sld);
+			if (SlGetBytesRead() != read + current_setting.setting_length) {
+				SlErrorCorruptFmt("PATX chunk: setting read length mismatch for setting: '%s'", current_setting.name);
+			}
+			if (IsNumericType(sld->conv)) Write_ValidateSetting(ptr, *iter, ReadValue(ptr, sld->conv));
+		} else {
+			DEBUG(sl, 1, "PATX chunk: Could not find setting: '%s', ignoring", current_setting.name);
+			SlSkipBytes(current_setting.setting_length);
+		}
+	}
+}
+
+/**
+ * Save handler for settings which go in the PATX chunk
+ * @param sd SettingDesc struct containing all information
+ * @param object can be either NULL in which case we load global variables or
+ * a pointer to a struct which is getting saved
+ */
+static void SaveSettingsPatx(const SettingDesc *sd, void *object)
+{
+	struct SettingsPatxSave {
+		uint32 flags;
+		const char *name;
+		uint32 setting_length;
+	};
+	SettingsPatxSave current_setting;
+
+	static const SaveLoad _settings_patx_desc[] = {
+		SLE_VAR(SettingsPatxSave, flags,          SLE_UINT32),
+		SLE_STR(SettingsPatxSave, name,           SLE_STR, 0),
+		SLE_VAR(SettingsPatxSave, setting_length, SLE_UINT32),
+		SLE_END()
+	};
+
+	struct SettingToAdd {
+		const SettingDesc *setting;
+		uint32 setting_length;
+	};
+	std::vector<SettingToAdd> settings_to_add;
+
+	size_t length = 8;
+	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
+		if (desc->patx_name == NULL) continue;
+		uint32 setting_length = SlCalcObjMemberLength(object, &desc->save);
+		if (!setting_length) continue;
+
+		current_setting.name = desc->patx_name;
+
+		// add length of setting header
+		length += SlCalcObjLength(&current_setting, _settings_patx_desc);
+
+		// add length of actual setting
+		length += setting_length;
+
+		settings_to_add.push_back({ desc, setting_length });
+	}
+	SlSetLength(length);
+
+	SlWriteUint32(0);                          // flags
+	SlWriteUint32(settings_to_add.size());     // settings count
+
+	for (size_t i = 0; i < settings_to_add.size(); i++) {
+		const SettingDesc *desc = settings_to_add[i].setting;
+		current_setting.flags = 0;
+		current_setting.name = desc->patx_name;
+		current_setting.setting_length = settings_to_add[i].setting_length;
+		SlObject(&current_setting, _settings_patx_desc);
+		void *ptr = GetVariableAddress(object, &desc->save);
+		SlObjectMember(ptr, &desc->save);
 	}
 }
 
@@ -2144,6 +2432,21 @@ static void Save_PATS()
 	SaveSettings(_settings, &_settings_game);
 }
 
+static void Load_PATX()
+{
+	LoadSettingsPatx(_settings, &_settings_game);
+}
+
+static void Check_PATX()
+{
+	LoadSettingsPatx(_settings, &_load_check_data.settings);
+}
+
+static void Save_PATX()
+{
+	SaveSettingsPatx(_settings, &_settings_game);
+}
+
 void CheckConfig()
 {
 	/*
@@ -2158,7 +2461,8 @@ void CheckConfig()
 
 extern const ChunkHandler _setting_chunk_handlers[] = {
 	{ 'OPTS', NULL,      Load_OPTS, NULL, NULL,       CH_RIFF},
-	{ 'PATS', Save_PATS, Load_PATS, NULL, Check_PATS, CH_RIFF | CH_LAST},
+	{ 'PATS', Save_PATS, Load_PATS, NULL, Check_PATS, CH_RIFF},
+	{ 'PATX', Save_PATX, Load_PATX, NULL, Check_PATX, CH_RIFF | CH_LAST},
 };
 
 static bool IsSignedVarMemType(VarType vt)

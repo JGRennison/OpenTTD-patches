@@ -15,6 +15,8 @@
 #include "newgrf_station.h"
 #include "pathfinder/follow_track.hpp"
 
+#include "safeguards.h"
+
 /**
  * Get the reserved trackbits for any tile, regardless of type.
  * @param t the tile
@@ -83,7 +85,11 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
-		MarkTileDirtyByTile(tile);
+		if (IsBridgeTile(tile)) {
+			MarkBridgeDirty(tile);
+		} else {
+			MarkTileDirtyByTile(tile);
+		}
 	}
 
 	switch (GetTileType(tile)) {
@@ -139,7 +145,11 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 	assert((GetTileTrackStatus(tile, TRANSPORT_RAIL, 0) & TrackToTrackBits(t)) != 0);
 
 	if (_settings_client.gui.show_track_reservation) {
-		MarkTileDirtyByTile(tile);
+		if (IsBridgeTile(tile)) {
+			MarkBridgeDirty(tile);
+		} else {
+			MarkTileDirtyByTile(tile);
+		}
 	}
 
 	switch (GetTileType(tile)) {

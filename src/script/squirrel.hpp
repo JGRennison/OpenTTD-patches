@@ -41,6 +41,11 @@ private:
 	 */
 	const char *GetAPIName() { return this->APIName; }
 
+	/** Perform all initialization steps to create the engine. */
+	void Initialize();
+	/** Perform all the cleanups for the engine. */
+	void Uninitialize();
+
 protected:
 	/**
 	 * The CompileError handler.
@@ -194,7 +199,7 @@ public:
 	/**
 	 * Convert a Squirrel-object to a string.
 	 */
-	static const char *ObjectToString(HSQOBJECT *ptr) { return SQ2OTTD(sq_objtostring(ptr)); }
+	static const char *ObjectToString(HSQOBJECT *ptr) { return sq_objtostring(ptr); }
 
 	/**
 	 * Convert a Squirrel-object to an integer.
@@ -225,7 +230,7 @@ public:
 	/**
 	 * Throw a Squirrel error that will be nicely displayed to the user.
 	 */
-	void ThrowError(const char *error) { sq_throwerror(this->vm, OTTD2SQ(error)); }
+	void ThrowError(const char *error) { sq_throwerror(this->vm, error); }
 
 	/**
 	 * Release a SQ object.
@@ -249,11 +254,6 @@ public:
 	bool HasScriptCrashed();
 
 	/**
-	 * Reset the crashed status.
-	 */
-	void ResetCrashed();
-
-	/**
 	 * Set the script status to crashed.
 	 */
 	void CrashOccurred();
@@ -267,6 +267,11 @@ public:
 	 * How many operations can we execute till suspension?
 	 */
 	SQInteger GetOpsTillSuspend();
+
+	/**
+	 * Completely reset the engine; start from scratch.
+	 */
+	void Reset();
 };
 
 #endif /* SQUIRREL_HPP */

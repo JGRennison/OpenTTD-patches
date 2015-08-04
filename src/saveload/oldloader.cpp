@@ -23,6 +23,8 @@
 
 #include <exception>
 
+#include "../safeguards.h"
+
 static const int TTO_HEADER_SIZE = 41;
 static const int TTD_HEADER_SIZE = 49;
 
@@ -244,16 +246,15 @@ static inline bool CheckOldSavegameType(FILE *f, char *temp, const char *last, u
 static SavegameType DetermineOldSavegameType(FILE *f, char *title, const char *last)
 {
 	assert_compile(TTD_HEADER_SIZE >= TTO_HEADER_SIZE);
-	char temp[TTD_HEADER_SIZE];
+	char temp[TTD_HEADER_SIZE] = "Unknown";
 
 	SavegameType type = SGT_TTO;
 
 	/* Can't fseek to 0 as in tar files that is not correct */
 	long pos = ftell(f);
-	if (!CheckOldSavegameType(f, temp, lastof(temp), TTO_HEADER_SIZE)) {
+	if (pos >= 0 && !CheckOldSavegameType(f, temp, lastof(temp), TTO_HEADER_SIZE)) {
 		type = SGT_TTD;
-		fseek(f, pos, SEEK_SET);
-		if (!CheckOldSavegameType(f, temp, lastof(temp), TTD_HEADER_SIZE)) {
+		if (fseek(f, pos, SEEK_SET) < 0 || !CheckOldSavegameType(f, temp, lastof(temp), TTD_HEADER_SIZE)) {
 			type = SGT_INVALID;
 		}
 	}

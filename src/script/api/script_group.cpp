@@ -19,6 +19,8 @@
 #include "../../settings_func.h"
 #include "table/strings.h"
 
+#include "../../safeguards.h"
+
 /* static */ bool ScriptGroup::IsValidGroup(GroupID group_id)
 {
 	const Group *g = ::Group::GetIfValid(group_id);
@@ -57,7 +59,7 @@
 	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_GROUP_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
-	return ScriptObject::DoCommand(0, group_id, 0, CMD_RENAME_GROUP, text);
+	return ScriptObject::DoCommand(0, group_id, 0, CMD_ALTER_GROUP, text);
 }
 
 /* static */ char *ScriptGroup::GetName(GroupID group_id)

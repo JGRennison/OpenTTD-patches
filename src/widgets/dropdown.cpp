@@ -18,6 +18,8 @@
 
 #include "dropdown_widget.h"
 
+#include "../safeguards.h"
+
 
 void DropDownListItem::Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
 {
@@ -48,12 +50,12 @@ void DropDownListStringItem::Draw(int left, int right, int top, int bottom, bool
  * @return true if \a first precedes \a second.
  * @warning All items in the list need to be derivates of DropDownListStringItem.
  */
-/* static */ bool DropDownListStringItem::NatSortFunc(const DropDownListItem *first, const DropDownListItem *second)
+/* static */ int DropDownListStringItem::NatSortFunc(const DropDownListItem * const *first, const DropDownListItem * const * second)
 {
 	char buffer1[512], buffer2[512];
-	GetString(buffer1, static_cast<const DropDownListStringItem*>(first)->String(), lastof(buffer1));
-	GetString(buffer2, static_cast<const DropDownListStringItem*>(second)->String(), lastof(buffer2));
-	return strnatcmp(buffer1, buffer2) < 0;
+	GetString(buffer1, static_cast<const DropDownListStringItem*>(*first)->String(), lastof(buffer1));
+	GetString(buffer2, static_cast<const DropDownListStringItem*>(*second)->String(), lastof(buffer2));
+	return strnatcmp(buffer1, buffer2);
 }
 
 StringID DropDownListParamStringItem::String() const
@@ -68,19 +70,6 @@ StringID DropDownListCharStringItem::String() const
 	return this->string;
 }
 
-/**
- * Delete all items of a drop down list and the list itself
- * @param list List to delete.
- */
-static void DeleteDropDownList(DropDownList *list)
-{
-	for (DropDownList::iterator it = list->begin(); it != list->end(); ++it) {
-		DropDownListItem *item = *it;
-		delete item;
-	}
-	delete list;
-}
-
 static const NWidgetPart _nested_dropdown_menu_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PANEL, COLOUR_END, WID_DM_ITEMS), SetMinimalSize(1, 1), SetScrollbar(WID_DM_SCROLL), EndContainer(),
@@ -93,7 +82,7 @@ static const NWidgetPart _nested_dropdown_menu_widgets[] = {
 static WindowDesc _dropdown_desc(
 	WDP_MANUAL, NULL, 0, 0,
 	WC_DROPDOWN_MENU, WC_NONE,
-	0,
+	WDF_NO_FOCUS,
 	_nested_dropdown_menu_widgets, lengthof(_nested_dropdown_menu_widgets)
 );
 
@@ -102,7 +91,7 @@ struct DropdownWindow : Window {
 	WindowClass parent_wnd_class; ///< Parent window class.
 	WindowNumber parent_wnd_num;  ///< Parent window number.
 	int parent_button;            ///< Parent widget number where the window is dropped from.
-	DropDownList *list;           ///< List with dropdown menu items.
+	const DropDownList *list;     ///< List with dropdown menu items.
 	int selected_index;           ///< Index of the selected item in the list.
 	byte click_delay;             ///< Timer to delay selection.
 	bool drag_mode;
@@ -124,9 +113,11 @@ struct DropdownWindow : Window {
 	 * @param scroll        Dropdown menu has a scrollbar.
 	 * @param widget        Widgets of the dropdown menu window.
 	 */
-	DropdownWindow(Window *parent, DropDownList *list, int selected, int button, bool instant_close, const Point &position, const Dimension &size, Colours wi_colour, bool scroll)
+	DropdownWindow(Window *parent, const DropDownList *list, int selected, int button, bool instant_close, const Point &position, const Dimension &size, Colours wi_colour, bool scroll)
 			: Window(&_dropdown_desc)
 	{
+		assert(list->Length() > 0);
+
 		this->position = position;
 
 		this->CreateNestedTree();
@@ -148,14 +139,14 @@ struct DropdownWindow : Window {
 
 		/* Total length of list */
 		int list_height = 0;
-		for (DropDownList::const_iterator it = list->begin(); it != list->end(); ++it) {
-			DropDownListItem *item = *it;
+		for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
+			const DropDownListItem *item = *it;
 			list_height += item->Height(items_width);
 		}
 
 		/* Capacity is the average number of items visible */
-		this->vscroll->SetCapacity(size.height * (uint16)list->size() / list_height);
-		this->vscroll->SetCount((uint16)list->size());
+		this->vscroll->SetCapacity(size.height * (uint16)list->Length() / list_height);
+		this->vscroll->SetCount((uint16)list->Length());
 
 		this->parent_wnd_class = parent->window_class;
 		this->parent_wnd_num   = parent->window_number;
@@ -181,7 +172,7 @@ struct DropdownWindow : Window {
 			pt.y -= w2->top;
 			w2->OnDropdownClose(pt, this->parent_button, this->selected_index, this->instant_close);
 		}
-		DeleteDropDownList(this->list);
+		delete this->list;
 	}
 
 	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
@@ -205,7 +196,7 @@ struct DropdownWindow : Window {
 
 		const DropDownList *list = this->list;
 
-		for (DropDownList::const_iterator it = list->begin(); it != list->end(); ++it) {
+		for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
 			/* Skip items that are scrolled up */
 			if (--pos >= 0) continue;
 
@@ -228,11 +219,11 @@ struct DropdownWindow : Window {
 	{
 		if (widget != WID_DM_ITEMS) return;
 
-		TextColour colour = (TextColour)this->GetWidget<NWidgetCore>(widget)->colour;
+		Colours colour = this->GetWidget<NWidgetCore>(widget)->colour;
 
 		int y = r.top + 2;
 		int pos = this->vscroll->GetPosition();
-		for (DropDownList::const_iterator it = this->list->begin(); it != this->list->end(); ++it) {
+		for (const DropDownListItem * const *it = this->list->Begin(); it != this->list->End(); ++it) {
 			const DropDownListItem *item = *it;
 			int item_height = item->Height(r.right - r.left + 1);
 
@@ -343,7 +334,7 @@ struct DropdownWindow : Window {
  * @param instant_close Set to true if releasing mouse button should close the
  *                      list regardless of where the cursor is.
  */
-void ShowDropDownListAt(Window *w, DropDownList *list, int selected, int button, Rect wi_rect, Colours wi_colour, bool auto_width, bool instant_close)
+void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int button, Rect wi_rect, Colours wi_colour, bool auto_width, bool instant_close)
 {
 	DeleteWindowById(WC_DROPDOWN_MENU, 0);
 
@@ -353,26 +344,17 @@ void ShowDropDownListAt(Window *w, DropDownList *list, int selected, int button,
 	/* The preferred width equals the calling widget */
 	uint width = wi_rect.right - wi_rect.left + 1;
 
+	/* Longest item in the list, if auto_width is enabled */
 	uint max_item_width = 0;
 
-	if (auto_width) {
-		/* Find the longest item in the list */
-		for (DropDownList::const_iterator it = list->begin(); it != list->end(); ++it) {
-			const DropDownListItem *item = *it;
-			max_item_width = max(max_item_width, item->Width() + 5);
-		}
-	}
-
 	/* Total length of list */
-	int list_height = 0;
+	int height = 0;
 
-	for (DropDownList::const_iterator it = list->begin(); it != list->end(); ++it) {
-		DropDownListItem *item = *it;
-		list_height += item->Height(width);
+	for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
+		const DropDownListItem *item = *it;
+		height += item->Height(width);
+		if (auto_width) max_item_width = max(max_item_width, item->Width() + 5);
 	}
-
-	/* Height of window visible */
-	int height = list_height;
 
 	/* Check if the status bar is visible, as we don't want to draw over it */
 	int screen_bottom = GetMainViewBottom();
@@ -386,7 +368,7 @@ void ShowDropDownListAt(Window *w, DropDownList *list, int selected, int button,
 		} else {
 			/* ... and lastly if it won't, enable the scroll bar and fit the
 			 * list in below the widget */
-			int avg_height = list_height / (int)list->size();
+			int avg_height = height / (int)list->Length();
 			int rows = (screen_bottom - 4 - top) / avg_height;
 			height = rows * avg_height;
 			scroll = true;
@@ -416,7 +398,7 @@ void ShowDropDownListAt(Window *w, DropDownList *list, int selected, int button,
  * @param instant_close Set to true if releasing mouse button should close the
  *                      list regardless of where the cursor is.
  */
-void ShowDropDownList(Window *w, DropDownList *list, int selected, int button, uint width, bool auto_width, bool instant_close)
+void ShowDropDownList(Window *w, const DropDownList *list, int selected, int button, uint width, bool auto_width, bool instant_close)
 {
 	/* Our parent's button widget is used to determine where to place the drop
 	 * down list window. */
@@ -453,8 +435,8 @@ void ShowDropDownList(Window *w, DropDownList *list, int selected, int button, u
  * @param strings       Menu list, end with #INVALID_STRING_ID
  * @param selected      Index of initial selected item.
  * @param button        Button widget number of the parent window \a w that wants the dropdown menu.
- * @param disabled_mask Bitmask for disabled items (items with their bit set are not copied to the dropdown list).
- * @param hidden_mask   Bitmask for hidden items (items with their bit set are displayed, but not selectable in the dropdown list).
+ * @param disabled_mask Bitmask for disabled items (items with their bit set are displayed, but not selectable in the dropdown list).
+ * @param hidden_mask   Bitmask for hidden items (items with their bit set are not copied to the dropdown list).
  * @param width         Width of the dropdown menu. If \c 0, use the width of parent widget \a button.
  */
 void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int button, uint32 disabled_mask, uint32 hidden_mask, uint width)
@@ -463,13 +445,13 @@ void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int butt
 
 	for (uint i = 0; strings[i] != INVALID_STRING_ID; i++) {
 		if (!HasBit(hidden_mask, i)) {
-			list->push_back(new DropDownListStringItem(strings[i], i, HasBit(disabled_mask, i)));
+			*list->Append() = new DropDownListStringItem(strings[i], i, HasBit(disabled_mask, i));
 		}
 	}
 
 	/* No entries in the list? */
-	if (list->size() == 0) {
-		DeleteDropDownList(list);
+	if (list->Length() == 0) {
+		delete list;
 		return;
 	}
 
@@ -488,6 +470,7 @@ int HideDropDownMenu(Window *pw)
 		if (w->window_class != WC_DROPDOWN_MENU) continue;
 
 		DropdownWindow *dw = dynamic_cast<DropdownWindow*>(w);
+		assert(dw != NULL);
 		if (pw->window_class == dw->parent_wnd_class &&
 				pw->window_number == dw->parent_wnd_num) {
 			int parent_button = dw->parent_button;

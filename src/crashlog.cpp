@@ -26,6 +26,7 @@
 #include "gfx_func.h"
 #include "network/network.h"
 #include "language.h"
+#include "fontcache.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -34,6 +35,8 @@
 #include "company_func.h"
 
 #include <time.h>
+
+#include "safeguards.h"
 
 /* static */ const char *CrashLog::message = NULL;
 /* static */ char *CrashLog::gamelog_buffer = NULL;
@@ -133,18 +136,30 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			" Sound driver: %s\n"
 			" Sound set:    %s (%u)\n"
 			" Video driver: %s\n\n",
-			BlitterFactoryBase::GetCurrentBlitter() == NULL ? "none" : BlitterFactoryBase::GetCurrentBlitter()->GetName(),
+			BlitterFactory::GetCurrentBlitter() == NULL ? "none" : BlitterFactory::GetCurrentBlitter()->GetName(),
 			BaseGraphics::GetUsedSet() == NULL ? "none" : BaseGraphics::GetUsedSet()->name,
 			BaseGraphics::GetUsedSet() == NULL ? UINT32_MAX : BaseGraphics::GetUsedSet()->version,
 			_current_language == NULL ? "none" : _current_language->file,
-			_music_driver == NULL ? "none" : _music_driver->GetName(),
+			MusicDriver::GetInstance() == NULL ? "none" : MusicDriver::GetInstance()->GetName(),
 			BaseMusic::GetUsedSet() == NULL ? "none" : BaseMusic::GetUsedSet()->name,
 			BaseMusic::GetUsedSet() == NULL ? UINT32_MAX : BaseMusic::GetUsedSet()->version,
 			_networking ? (_network_server ? "server" : "client") : "no",
-			_sound_driver == NULL ? "none" : _sound_driver->GetName(),
+			SoundDriver::GetInstance() == NULL ? "none" : SoundDriver::GetInstance()->GetName(),
 			BaseSounds::GetUsedSet() == NULL ? "none" : BaseSounds::GetUsedSet()->name,
 			BaseSounds::GetUsedSet() == NULL ? UINT32_MAX : BaseSounds::GetUsedSet()->version,
-			_video_driver == NULL ? "none" : _video_driver->GetName()
+			VideoDriver::GetInstance() == NULL ? "none" : VideoDriver::GetInstance()->GetName()
+	);
+
+	buffer += seprintf(buffer, last,
+			"Fonts:\n"
+			" Small:  %s\n"
+			" Medium: %s\n"
+			" Large:  %s\n"
+			" Mono:   %s\n\n",
+			FontCache::Get(FS_SMALL)->GetFontName(),
+			FontCache::Get(FS_NORMAL)->GetFontName(),
+			FontCache::Get(FS_LARGE)->GetFontName(),
+			FontCache::Get(FS_MONO)->GetFontName()
 	);
 
 	buffer += seprintf(buffer, last, "AI Configuration (local: %i):\n", (int)_local_company);
@@ -469,7 +484,7 @@ bool CrashLog::MakeCrashLog() const
  */
 /* static */ void CrashLog::AfterCrashLogCleanup()
 {
-	if (_music_driver != NULL) _music_driver->Stop();
-	if (_sound_driver != NULL) _sound_driver->Stop();
-	if (_video_driver != NULL) _video_driver->Stop();
+	if (MusicDriver::GetInstance() != NULL) MusicDriver::GetInstance()->Stop();
+	if (SoundDriver::GetInstance() != NULL) SoundDriver::GetInstance()->Stop();
+	if (VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
 }

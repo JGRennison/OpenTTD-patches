@@ -13,10 +13,20 @@
 #include "../core/pool_func.hpp"
 #include "../window_func.h"
 #include "linkgraphjob.h"
+#include "linkgraphschedule.h"
+
+#include "../safeguards.h"
 
 /* Initialize the link-graph-job-pool */
 LinkGraphJobPool _link_graph_job_pool("LinkGraphJob");
 INSTANTIATE_POOL_METHODS(LinkGraphJob)
+
+/**
+ * Static instance of an invalid path.
+ * Note: This instance is created on task start.
+ *       Lazy creation on first usage results in a data race between the CDist threads.
+ */
+/* static */ Path *Path::invalid_path = new Path(INVALID_NODE, true);
 
 /**
  * Create a link graph job from a link graph. The link graph will be copied so
@@ -35,11 +45,57 @@ LinkGraphJob::LinkGraphJob(const LinkGraph &orig) :
 }
 
 /**
+ * Erase all flows originating at a specific node.
+ * @param from Node to erase flows for.
+ */
+void LinkGraphJob::EraseFlows(NodeID from)
+{
+	for (NodeID node_id = 0; node_id < this->Size(); ++node_id) {
+		(*this)[node_id].Flows().erase(from);
+	}
+}
+
+/**
+ * Spawn a thread if possible and run the link graph job in the thread. If
+ * that's not possible run the job right now in the current thread.
+ */
+void LinkGraphJob::SpawnThread()
+{
+	if (!ThreadObject::New(&(LinkGraphSchedule::Run), this, &this->thread)) {
+		this->thread = NULL;
+		/* Of course this will hang a bit.
+		 * On the other hand, if you want to play games which make this hang noticably
+		 * on a platform without threads then you'll probably get other problems first.
+		 * OK:
+		 * If someone comes and tells me that this hangs for him/her, I'll implement a
+		 * smaller grained "Step" method for all handlers and add some more ticks where
+		 * "Step" is called. No problem in principle. */
+		LinkGraphSchedule::Run(this);
+	}
+}
+
+/**
+ * Join the calling thread with this job's thread if threading is enabled.
+ */
+void LinkGraphJob::JoinThread()
+{
+	if (this->thread != NULL) {
+		this->thread->Join();
+		delete this->thread;
+		this->thread = NULL;
+	}
+}
+
+/**
  * Join the link graph job and destroy it.
  */
 LinkGraphJob::~LinkGraphJob()
 {
-	assert(this->thread == NULL);
+	this->JoinThread();
+
+	/* Don't update stuff from other pools, when everything is being removed.
+	 * Accessing other pools may be invalid. */
+	if (CleaningPool()) return;
 
 	/* Link graph has been merged into another one. */
 	if (!LinkGraph::IsValidID(this->link_graph.index)) return;
@@ -48,14 +104,20 @@ LinkGraphJob::~LinkGraphJob()
 	for (NodeID node_id = 0; node_id < size; ++node_id) {
 		Node from = (*this)[node_id];
 
-		/* The station can have been deleted. */
+		/* The station can have been deleted. Remove all flows originating from it then. */
 		Station *st = Station::GetIfValid(from.Station());
-		if (st == NULL) continue;
+		if (st == NULL) {
+			this->EraseFlows(node_id);
+			continue;
+		}
 
 		/* Link graph merging and station deletion may change around IDs. Make
 		 * sure that everything is still consistent or ignore it otherwise. */
 		GoodsEntry &ge = st->goods[this->Cargo()];
-		if (ge.link_graph != this->link_graph.index || ge.node != node_id) continue;
+		if (ge.link_graph != this->link_graph.index || ge.node != node_id) {
+			this->EraseFlows(node_id);
+			continue;
+		}
 
 		LinkGraph *lg = LinkGraph::Get(ge.link_graph);
 		FlowStatMap &flows = from.Flows();
@@ -68,14 +130,21 @@ LinkGraphJob::~LinkGraphJob()
 					st2->goods[this->Cargo()].node != it->first ||
 					(*lg)[node_id][it->first].LastUpdate() == INVALID_DATE) {
 				/* Edge has been removed. Delete flows. */
-				flows.DeleteFlows(to);
+				StationIDStack erased = flows.DeleteFlows(to);
+				/* Delete old flows for source stations which have been deleted
+				 * from the new flows. This avoids flow cycles between old and
+				 * new flows. */
+				while (!erased.IsEmpty()) ge.flows.erase(erased.Pop());
+			} else if ((*lg)[node_id][it->first].LastUnrestrictedUpdate() == INVALID_DATE) {
+				/* Edge is fully restricted. */
+				flows.RestrictFlows(to);
 			}
 		}
 
 		/* Swap shares and invalidate ones that are completely deleted. Don't
 		 * really delete them as we could then end up with unroutable cargo
-		 * somewhere. Do delete them if automatic distribution has been turned
-		 * off for that cargo, though. */
+		 * somewhere. Do delete them and also reroute relevant cargo if
+		 * automatic distribution has been turned off for that cargo. */
 		for (FlowStatMap::iterator it(ge.flows.begin()); it != ge.flows.end();) {
 			FlowStatMap::iterator new_it = flows.find(it->first);
 			if (new_it == flows.end()) {
@@ -83,7 +152,13 @@ LinkGraphJob::~LinkGraphJob()
 					it->second.Invalidate();
 					++it;
 				} else {
+					FlowStat shares(INVALID_STATION, 1);
+					it->second.SwapShares(shares);
 					ge.flows.erase(it++);
+					for (FlowStat::SharesMap::const_iterator shares_it(shares.GetShares()->begin());
+							shares_it != shares.GetShares()->end(); ++shares_it) {
+						RerouteCargo(st, this->Cargo(), shares_it->second, st->index);
+					}
 				}
 			} else {
 				it->second.SwapShares(new_it->second);
@@ -181,7 +256,7 @@ uint Path::AddFlow(uint new_flow, LinkGraphJob &job, uint max_saturation)
 		}
 		new_flow = this->parent->AddFlow(new_flow, job, max_saturation);
 		if (this->flow == 0 && new_flow > 0) {
-			job[this->parent->node].Paths().push_back(this);
+			job[this->parent->node].Paths().push_front(this);
 		}
 		edge.AddFlow(new_flow);
 	}

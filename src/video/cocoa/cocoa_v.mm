@@ -225,6 +225,80 @@ static void setupApplication()
 	[ NSApp setDelegate:_ottd_main ];
 }
 
+
+static int CDECL ModeSorter(const OTTD_Point *p1, const OTTD_Point *p2)
+{
+	if (p1->x < p2->x) return -1;
+	if (p1->x > p2->x) return +1;
+	if (p1->y < p2->y) return -1;
+	if (p1->y > p2->y) return +1;
+	return 0;
+}
+
+uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_id, int device_depth)
+{
+	CFArrayRef mode_list  = CGDisplayAvailableModes(display_id);
+	CFIndex    num_modes = CFArrayGetCount(mode_list);
+
+	/* Build list of modes with the requested bpp */
+	uint count = 0;
+	for (CFIndex i = 0; i < num_modes && count < max_modes; i++) {
+		int intvalue, bpp;
+		uint16 width, height;
+
+		CFDictionaryRef onemode = (const __CFDictionary*)CFArrayGetValueAtIndex(mode_list, i);
+		CFNumberRef number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayBitsPerPixel);
+		CFNumberGetValue(number, kCFNumberSInt32Type, &bpp);
+
+		if (bpp != device_depth) continue;
+
+		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayWidth);
+		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
+		width = (uint16)intvalue;
+
+		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayHeight);
+		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
+		height = (uint16)intvalue;
+
+		/* Check if mode is already in the list */
+		bool hasMode = false;
+		for (uint i = 0; i < count; i++) {
+			if (modes[i].x == width &&  modes[i].y == height) {
+				hasMode = true;
+				break;
+			}
+		}
+
+		if (hasMode) continue;
+
+		/* Add mode to the list */
+		modes[count].x = width;
+		modes[count].y = height;
+		count++;
+	}
+
+	/* Sort list smallest to largest */
+	QSortT(modes, count, &ModeSorter);
+
+	return count;
+}
+
+/** Small function to test if the main display can display 8 bpp in fullscreen */
+bool QZ_CanDisplay8bpp()
+{
+	/* 8bpp modes are deprecated starting in 10.5. CoreGraphics will return them
+	 * as available in the display list, but many features (e.g. palette animation)
+	 * will be broken. */
+	if (MacOSVersionIsAtLeast(10, 5, 0)) return false;
+
+	OTTD_Point p;
+
+	/* We want to know if 8 bpp is possible in fullscreen and not anything about
+	 * resolutions. Because of this we want to fill a list of 1 resolution of 8 bpp
+	 * on display 0 (main) and return if we found one. */
+	return QZ_ListModes(&p, 1, 0, 8);
+}
+
 /**
  * Update the video modus.
  *
@@ -259,7 +333,7 @@ void QZ_GameSizeChanged()
 	_screen.dst_ptr = _cocoa_subdriver->GetPixelBuffer();
 	_fullscreen = _cocoa_subdriver->IsFullscreen();
 
-	BlitterFactoryBase::GetCurrentBlitter()->PostResize();
+	BlitterFactory::GetCurrentBlitter()->PostResize();
 
 	GameSizeChanged();
 }
@@ -321,18 +395,15 @@ static CocoaSubdriver *QZ_CreateSubdriver(int width, int height, int bpp, bool f
 	/* OSX 10.7 allows to toggle fullscreen mode differently */
 	if (MacOSVersionIsAtLeast(10, 7, 0)) {
 		ret = QZ_CreateWindowSubdriver(width, height, bpp);
-	} else {
+		if (ret != NULL && fullscreen) ret->ToggleFullscreen();
+	}
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9)
+	else {
 		ret = fullscreen ? QZ_CreateFullscreenSubdriver(width, height, bpp) : QZ_CreateWindowSubdriver(width, height, bpp);
 	}
+#endif /* (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9) */
 
-	if (ret != NULL) {
-			/* We cannot set any fullscreen mode on OSX 10.7 when not compiled against SDK 10.7 */
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-		if (fullscreen) { ret->ToggleFullscreen(); }
-#endif
-		return ret;
-	}
-
+	if (ret != NULL) return ret;
 	if (!fallback) return NULL;
 
 	/* Try again in 640x480 windowed */
@@ -340,7 +411,7 @@ static CocoaSubdriver *QZ_CreateSubdriver(int width, int height, int bpp, bool f
 	ret = QZ_CreateWindowSubdriver(640, 480, bpp);
 	if (ret != NULL) return ret;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9)
 	/* This Fullscreen mode crashes on OSX 10.7 */
 	if (!MacOSVersionIsAtLeast(10, 7, 0)) {
 		/* Try fullscreen too when in debug mode */
@@ -348,7 +419,7 @@ static CocoaSubdriver *QZ_CreateSubdriver(int width, int height, int bpp, bool f
 		ret = QZ_CreateFullscreenSubdriver(640, 480, bpp);
 		if (ret != NULL) return ret;
 	}
-#endif
+#endif /* defined(_DEBUG) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9) */
 
 	return NULL;
 }
@@ -390,7 +461,7 @@ const char *VideoDriver_Cocoa::Start(const char * const *parm)
 
 	int width  = _cur_resolution.width;
 	int height = _cur_resolution.height;
-	int bpp = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
+	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	_cocoa_subdriver = QZ_CreateSubdriver(width, height, bpp, _fullscreen, true);
 	if (_cocoa_subdriver == NULL) {
@@ -443,7 +514,7 @@ bool VideoDriver_Cocoa::ChangeResolution(int w, int h)
 {
 	assert(_cocoa_subdriver != NULL);
 
-	bool ret = _cocoa_subdriver->ChangeResolution(w, h, BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth());
+	bool ret = _cocoa_subdriver->ChangeResolution(w, h, BlitterFactory::GetCurrentBlitter()->GetScreenDepth());
 
 	QZ_GameSizeChanged();
 	QZ_UpdateVideoModes();
@@ -468,7 +539,7 @@ bool VideoDriver_Cocoa::ToggleFullscreen(bool full_screen)
 	if (full_screen != oldfs) {
 		int width  = _cocoa_subdriver->GetWidth();
 		int height = _cocoa_subdriver->GetHeight();
-		int bpp    = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
+		int bpp    = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 		delete _cocoa_subdriver;
 		_cocoa_subdriver = NULL;
@@ -502,12 +573,14 @@ bool VideoDriver_Cocoa::AfterBlitterChange()
 void VideoDriver_Cocoa::EditBoxLostFocus()
 {
 	if (_cocoa_subdriver != NULL) {
-		if ([ _cocoa_subdriver->cocoaview respondsToSelector:@selector(inputContext) ]) {
+		if ([ _cocoa_subdriver->cocoaview respondsToSelector:@selector(inputContext) ] && [ [ _cocoa_subdriver->cocoaview performSelector:@selector(inputContext) ] respondsToSelector:@selector(discardMarkedText) ]) {
 			[ [ _cocoa_subdriver->cocoaview performSelector:@selector(inputContext) ] performSelector:@selector(discardMarkedText) ];
 		} else {
 			[ [ NSInputManager currentInputManager ] markedTextAbandoned:_cocoa_subdriver->cocoaview ];
 		}
 	}
+	/* Clear any marked string from the current edit box. */
+	HandleTextInput(NULL, true);
 }
 
 /**
@@ -524,16 +597,16 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 	_cocoa_video_dialog = true;
 
 	bool wasstarted = _cocoa_video_started;
-	if (_video_driver == NULL) {
+	if (VideoDriver::GetInstance() == NULL) {
 		setupApplication(); // Setup application before showing dialog
-	} else if (!_cocoa_video_started && _video_driver->Start(NULL) != NULL) {
+	} else if (!_cocoa_video_started && VideoDriver::GetInstance()->Start(NULL) != NULL) {
 		fprintf(stderr, "%s: %s\n", title, message);
 		return;
 	}
 
 	NSRunAlertPanel([ NSString stringWithUTF8String:title ], [ NSString stringWithUTF8String:message ], [ NSString stringWithUTF8String:buttonLabel ], nil, nil);
 
-	if (!wasstarted && _video_driver != NULL) _video_driver->Stop();
+	if (!wasstarted && VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
 
 	_cocoa_video_dialog = false;
 }
@@ -548,8 +621,8 @@ void cocoaSetApplicationBundleDir()
 	char tmp[MAXPATHLEN];
 	CFURLRef url = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
 	if (CFURLGetFileSystemRepresentation(url, true, (unsigned char*)tmp, MAXPATHLEN)) {
-		AppendPathSeparator(tmp, lengthof(tmp));
-		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = strdup(tmp);
+		AppendPathSeparator(tmp, lastof(tmp));
+		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = stredup(tmp);
 	} else {
 		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = NULL;
 	}
@@ -1013,6 +1086,140 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 #endif
 {
 	return 0;
+}
+
+/** Delete single character left of the cursor. */
+- (void)deleteBackward:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_BACKSPACE, 0);
+}
+
+/** Delete word left of the cursor. */
+- (void)deleteWordBackward:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_BACKSPACE | WKC_CTRL, 0);
+}
+
+/** Delete single character right of the cursor. */
+- (void)deleteForward:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_DELETE, 0);
+}
+
+/** Delete word right of the cursor. */
+- (void)deleteWordForward:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_DELETE | WKC_CTRL, 0);
+}
+
+/** Move cursor one character left. */
+- (void)moveLeft:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_LEFT, 0);
+}
+
+/** Move cursor one word left. */
+- (void)moveWordLeft:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_LEFT | WKC_CTRL, 0);
+}
+
+/** Move cursor one character right. */
+- (void)moveRight:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_RIGHT, 0);
+}
+
+/** Move cursor one word right. */
+- (void)moveWordRight:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_RIGHT | WKC_CTRL, 0);
+}
+
+/** Move cursor one line up. */
+- (void)moveUp:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_UP, 0);
+}
+
+/** Move cursor one line down. */
+- (void)moveDown:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_DOWN, 0);
+}
+
+/** MScroll one line up. */
+- (void)moveUpAndModifySelection:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_UP | WKC_SHIFT, 0);
+}
+
+/** Scroll one line down. */
+- (void)moveDownAndModifySelection:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_DOWN | WKC_SHIFT, 0);
+}
+
+/** Move cursor to the start of the line. */
+- (void)moveToBeginningOfLine:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_HOME, 0);
+}
+
+/** Move cursor to the end of the line. */
+- (void)moveToEndOfLine:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_END, 0);
+}
+
+/** Scroll one page up. */
+- (void)scrollPageUp:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_PAGEUP, 0);
+}
+
+/** Scroll one page down. */
+- (void)scrollPageDown:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_PAGEDOWN, 0);
+}
+
+/** Move cursor (and selection) one page up. */
+- (void)pageUpAndModifySelection:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_PAGEUP | WKC_SHIFT, 0);
+}
+
+/** Move cursor (and selection) one page down. */
+- (void)pageDownAndModifySelection:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_PAGEDOWN | WKC_SHIFT, 0);
+}
+
+/** Scroll to the beginning of the document. */
+- (void)scrollToBeginningOfDocument:(id)sender
+{
+	/* For compatibility with OTTD on Win/Linux. */
+	[ self moveToBeginningOfLine:sender ];
+}
+
+/** Scroll to the end of the document. */
+- (void)scrollToEndOfDocument:(id)sender
+{
+	/* For compatibility with OTTD on Win/Linux. */
+	[ self moveToEndOfLine:sender ];
+}
+
+/** Return was pressed. */
+- (void)insertNewline:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_RETURN, '\r');
+}
+
+/** Escape was pressed. */
+- (void)cancelOperation:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_ESC, 0);
 }
 
 /** Invoke the selector if we implement it. */

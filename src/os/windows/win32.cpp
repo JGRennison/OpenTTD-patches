@@ -19,7 +19,7 @@
 #include <fcntl.h>
 #include <regstr.h>
 #include <shlobj.h> /* SHGetFolderPath */
-#include <Shellapi.h>
+#include <shellapi.h>
 #include "win32.h"
 #include "../../core/alloc_func.hpp"
 #include "../../openttd.h"
@@ -28,6 +28,11 @@
 #include "../../crashlog.h"
 #include <errno.h>
 #include <sys/stat.h>
+
+/* Due to TCHAR, strncat and strncpy have to remain (for a while). */
+#include "../../safeguards.h"
+#undef strncat
+#undef strncpy
 
 static bool _has_console;
 static bool _cursor_disable = true;
@@ -210,7 +215,7 @@ void FiosGetDrives()
 	FiosItem *fios = _fios_items.Append();
 	fios->type = FIOS_TYPE_DRIVE;
 	fios->mtime = 0;
-	snprintf(fios->name, lengthof(fios->name), PATHSEP "");
+	seprintf(fios->name, lastof(fios->name), PATHSEP "");
 	strecpy(fios->title, fios->name, lastof(fios->title));
 #else
 	TCHAR drives[256];
@@ -221,7 +226,7 @@ void FiosGetDrives()
 		FiosItem *fios = _fios_items.Append();
 		fios->type = FIOS_TYPE_DRIVE;
 		fios->mtime = 0;
-		snprintf(fios->name, lengthof(fios->name),  "%c:", s[0] & 0xFF);
+		seprintf(fios->name, lastof(fios->name),  "%c:", s[0] & 0xFF);
 		strecpy(fios->title, fios->name, lastof(fios->title));
 		while (*s++ != '\0') { /* Nothing */ }
 	}
@@ -433,7 +438,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	/* Convert the command line to UTF-8. We need a dedicated buffer
 	 * for this because argv[] points into this buffer and this needs to
 	 * be available between subsequent calls to FS2OTTD(). */
-	char *cmdline = strdup(FS2OTTD(GetCommandLine()));
+	char *cmdline = stredup(FS2OTTD(GetCommandLine()));
 
 #if defined(_DEBUG)
 	CreateConsole();
@@ -447,6 +452,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	SetRandomSeed(GetTickCount());
 
 	argc = ParseCommandLine(cmdline, argv, lengthof(argv));
+
+	/* Make sure our arguments contain only valid UTF-8 characters. */
+	for (int i = 0; i < argc; i++) ValidateString(argv[i]);
 
 	openttd_main(argc, argv);
 	free(cmdline);
@@ -493,20 +501,20 @@ void DetermineBasePaths(const char *exe)
 #ifdef WITH_PERSONAL_DIR
 	if (SUCCEEDED(OTTDSHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, path))) {
 		strecpy(tmp, FS2OTTD(path), lastof(tmp));
-		AppendPathSeparator(tmp, MAX_PATH);
-		ttd_strlcat(tmp, PERSONAL_DIR, MAX_PATH);
-		AppendPathSeparator(tmp, MAX_PATH);
-		_searchpaths[SP_PERSONAL_DIR] = strdup(tmp);
+		AppendPathSeparator(tmp, lastof(tmp));
+		strecat(tmp, PERSONAL_DIR, lastof(tmp));
+		AppendPathSeparator(tmp, lastof(tmp));
+		_searchpaths[SP_PERSONAL_DIR] = stredup(tmp);
 	} else {
 		_searchpaths[SP_PERSONAL_DIR] = NULL;
 	}
 
 	if (SUCCEEDED(OTTDSHGetFolderPath(NULL, CSIDL_COMMON_DOCUMENTS, NULL, SHGFP_TYPE_CURRENT, path))) {
 		strecpy(tmp, FS2OTTD(path), lastof(tmp));
-		AppendPathSeparator(tmp, MAX_PATH);
-		ttd_strlcat(tmp, PERSONAL_DIR, MAX_PATH);
-		AppendPathSeparator(tmp, MAX_PATH);
-		_searchpaths[SP_SHARED_DIR] = strdup(tmp);
+		AppendPathSeparator(tmp, lastof(tmp));
+		strecat(tmp, PERSONAL_DIR, lastof(tmp));
+		AppendPathSeparator(tmp, lastof(tmp));
+		_searchpaths[SP_SHARED_DIR] = stredup(tmp);
 	} else {
 		_searchpaths[SP_SHARED_DIR] = NULL;
 	}
@@ -517,8 +525,8 @@ void DetermineBasePaths(const char *exe)
 
 	/* Get the path to working directory of OpenTTD */
 	getcwd(tmp, lengthof(tmp));
-	AppendPathSeparator(tmp, MAX_PATH);
-	_searchpaths[SP_WORKING_DIR] = strdup(tmp);
+	AppendPathSeparator(tmp, lastof(tmp));
+	_searchpaths[SP_WORKING_DIR] = stredup(tmp);
 
 	if (!GetModuleFileName(NULL, path, lengthof(path))) {
 		DEBUG(misc, 0, "GetModuleFileName failed (%lu)\n", GetLastError());
@@ -533,7 +541,7 @@ void DetermineBasePaths(const char *exe)
 			strecpy(tmp, convert_from_fs(exec_dir, tmp, lengthof(tmp)), lastof(tmp));
 			char *s = strrchr(tmp, PATHSEPCHAR);
 			*(s + 1) = '\0';
-			_searchpaths[SP_BINARY_DIR] = strdup(tmp);
+			_searchpaths[SP_BINARY_DIR] = stredup(tmp);
 		}
 	}
 
@@ -542,7 +550,7 @@ void DetermineBasePaths(const char *exe)
 }
 
 
-bool GetClipboardContents(char *buffer, size_t buff_len)
+bool GetClipboardContents(char *buffer, const char *last)
 {
 	HGLOBAL cbuf;
 	const char *ptr;
@@ -552,7 +560,7 @@ bool GetClipboardContents(char *buffer, size_t buff_len)
 		cbuf = GetClipboardData(CF_UNICODETEXT);
 
 		ptr = (const char*)GlobalLock(cbuf);
-		int out_len = WideCharToMultiByte(CP_UTF8, 0, (LPCWSTR)ptr, -1, buffer, (int)buff_len, NULL, NULL);
+		int out_len = WideCharToMultiByte(CP_UTF8, 0, (LPCWSTR)ptr, -1, buffer, (last - buffer) + 1, NULL, NULL);
 		GlobalUnlock(cbuf);
 		CloseClipboard();
 
@@ -563,7 +571,7 @@ bool GetClipboardContents(char *buffer, size_t buff_len)
 		cbuf = GetClipboardData(CF_TEXT);
 
 		ptr = (const char*)GlobalLock(cbuf);
-		ttd_strlcpy(buffer, FS2OTTD(ptr), buff_len);
+		strecpy(buffer, FS2OTTD(ptr), last);
 
 		GlobalUnlock(cbuf);
 		CloseClipboard();

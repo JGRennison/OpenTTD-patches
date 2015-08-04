@@ -56,7 +56,7 @@ public:
 		offset(0),
 		num_param(size)
 	{
-		assert(size <= parent.num_param - parent.offset);
+		assert(size <= parent.GetDataLeft());
 		if (parent.type == NULL) {
 			this->type = NULL;
 		} else {
@@ -87,6 +87,12 @@ public:
 	uint64 *GetDataPointer() const
 	{
 		return &this->data[this->offset];
+	}
+
+	/** Return the amount of elements which can still be read. */
+	uint GetDataLeft() const
+	{
+		return this->num_param - this->offset;
 	}
 
 	/** Get a pointer to a specific element in the data array. */
@@ -124,7 +130,6 @@ public:
 };
 extern StringParameters _global_string_params;
 
-char *InlineString(char *buf, StringID string);
 char *GetString(char *buffr, StringID string, const char *last);
 char *GetStringWithArgs(char *buffr, StringID string, StringParameters *args, const char *last, uint case_index = 0, bool game_script = false);
 const char *GetStringPtr(StringID string);

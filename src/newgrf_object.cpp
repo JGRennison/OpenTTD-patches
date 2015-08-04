@@ -13,6 +13,7 @@
 #include "company_base.h"
 #include "company_func.h"
 #include "debug.h"
+#include "genworld.h"
 #include "newgrf_class_func.h"
 #include "newgrf_object.h"
 #include "newgrf_sound.h"
@@ -22,6 +23,8 @@
 #include "town.h"
 #include "water.h"
 #include "newgrf_animation_base.h"
+
+#include "safeguards.h"
 
 /** The override manager for our objects. */
 ObjectOverrideManager _object_mngr(NEW_OBJECT_OFFSET, NUM_OBJECTS, INVALID_OBJECT_TYPE);
@@ -58,7 +61,16 @@ ObjectSpec _object_specs[NUM_OBJECTS];
 bool ObjectSpec::IsEverAvailable() const
 {
 	return this->enabled && HasBit(this->climate, _settings_game.game_creation.landscape) &&
-			(this->flags & (_game_mode != GM_EDITOR ? OBJECT_FLAG_ONLY_IN_SCENEDIT : OBJECT_FLAG_ONLY_IN_GAME)) == 0;
+			(this->flags & ((_game_mode != GM_EDITOR && !_generating_world) ? OBJECT_FLAG_ONLY_IN_SCENEDIT : OBJECT_FLAG_ONLY_IN_GAME)) == 0;
+}
+
+/**
+ * Check whether the object was available at some point in the past or present in this game with the current game mode.
+ * @return true if it was ever or is available.
+ */
+bool ObjectSpec::WasEverAvailable() const
+{
+	return this->IsEverAvailable() && _date > this->introduction_date;
 }
 
 /**
@@ -67,7 +79,7 @@ bool ObjectSpec::IsEverAvailable() const
  */
 bool ObjectSpec::IsAvailable() const
 {
-	return this->IsEverAvailable() && _date > this->introduction_date &&
+	return this->WasEverAvailable() &&
 			(_date < this->end_of_life_date || this->end_of_life_date < this->introduction_date + 365);
 }
 
@@ -123,7 +135,7 @@ INSTANTIATE_NEWGRF_CLASS_METHODS(ObjectClass, ObjectSpec, ObjectClassID, OBJECT_
  * @param tile %Tile of the object.
  * @param view View of the object.
  */
-ObjectScopeResolver::ObjectScopeResolver(ResolverObject *ro, Object *obj, TileIndex tile, uint8 view)
+ObjectScopeResolver::ObjectScopeResolver(ResolverObject &ro, Object *obj, TileIndex tile, uint8 view)
 		: ScopeResolver(ro)
 {
 	this->obj = obj;
@@ -148,7 +160,8 @@ static uint32 GetObjectIDAtOffset(TileIndex tile, uint32 cur_grfid)
 		return 0xFFFF;
 	}
 
-	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+	const Object *o = Object::GetByTile(tile);
+	const ObjectSpec *spec = ObjectSpec::Get(o->type);
 
 	/* Default objects have no associated NewGRF file */
 	if (spec->grf_prop.grffile == NULL) {
@@ -156,7 +169,7 @@ static uint32 GetObjectIDAtOffset(TileIndex tile, uint32 cur_grfid)
 	}
 
 	if (spec->grf_prop.grffile->grfid == cur_grfid) { // same object, same grf ?
-		return spec->grf_prop.local_id;
+		return spec->grf_prop.local_id | o->view << 16;
 	}
 
 	return 0xFFFE; // Defined in another grf file
@@ -190,7 +203,7 @@ static uint32 GetClosestObject(TileIndex tile, ObjectType type, const Object *cu
 	uint32 best_dist = UINT32_MAX;
 	const Object *o;
 	FOR_ALL_OBJECTS(o) {
-		if (GetObjectType(o->location.tile) != type || o == current) continue;
+		if (o->type != type || o == current) continue;
 
 		best_dist = min(best_dist, DistanceManhattan(tile, o->location.tile));
 	}
@@ -316,7 +329,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 		case 0x48: return this->obj->view;
 
 		/* Get object ID at offset param */
-		case 0x60: return GetObjectIDAtOffset(GetNearbyTile(parameter, this->tile), this->ro->grffile->grfid);
+		case 0x60: return GetObjectIDAtOffset(GetNearbyTile(parameter, this->tile), this->ro.grffile->grfid);
 
 		/* Get random tile bits at offset param */
 		case 0x61: {
@@ -325,7 +338,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 		}
 
 		/* Land info of nearby tiles */
-		case 0x62: return GetNearbyObjectTileInformation(parameter, this->tile, this->obj == NULL ? INVALID_OBJECT : this->obj->index, this->ro->grffile->grf_version >= 8);
+		case 0x62: return GetNearbyObjectTileInformation(parameter, this->tile, this->obj == NULL ? INVALID_OBJECT : this->obj->index, this->ro.grffile->grf_version >= 8);
 
 		/* Animation counter of nearby tile */
 		case 0x63: {
@@ -334,7 +347,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 		}
 
 		/* Count of object, distance of closest instance */
-		case 0x64: return GetCountAndDistanceOfClosestInstance(parameter, this->ro->grffile->grfid, this->tile, this->obj);
+		case 0x64: return GetCountAndDistanceOfClosestInstance(parameter, this->ro.grffile->grfid, this->tile, this->obj);
 	}
 
 unhandled:
@@ -342,24 +355,6 @@ unhandled:
 
 	*available = false;
 	return UINT_MAX;
-}
-
-/**
- * Get the object's sprite group.
- * @param spec The specification to get the sprite group from.
- * @param o    The object to get he sprite group for.
- * @return The resolved sprite group.
- */
-static const SpriteGroup *GetObjectSpriteGroup(const ObjectSpec *spec, const Object *o)
-{
-	const SpriteGroup *group = NULL;
-
-	if (o == NULL) group = spec->grf_prop.spritegroup[CT_PURCHASE_OBJECT];
-	if (group != NULL) return group;
-
-	/* Fall back to the default set if the selected cargo type is not defined */
-	return spec->grf_prop.spritegroup[0];
-
 }
 
 /**
@@ -373,9 +368,11 @@ static const SpriteGroup *GetObjectSpriteGroup(const ObjectSpec *spec, const Obj
  */
 ObjectResolverObject::ObjectResolverObject(const ObjectSpec *spec, Object *obj, TileIndex tile, uint8 view,
 		CallbackID callback, uint32 param1, uint32 param2)
-	: ResolverObject(spec->grf_prop.grffile, callback, param1, param2), object_scope(this, obj, tile, view)
+	: ResolverObject(spec->grf_prop.grffile, callback, param1, param2), object_scope(*this, obj, tile, view)
 {
 	this->town_scope = NULL;
+	this->root_spritegroup = (obj == NULL && spec->grf_prop.spritegroup[CT_PURCHASE_OBJECT] != NULL) ?
+			spec->grf_prop.spritegroup[CT_PURCHASE_OBJECT] : spec->grf_prop.spritegroup[0];
 }
 
 ObjectResolverObject::~ObjectResolverObject()
@@ -398,7 +395,7 @@ TownScopeResolver *ObjectResolverObject::GetTown()
 			t = ClosestTownFromTile(this->object_scope.tile, UINT_MAX);
 		}
 		if (t == NULL) return NULL;
-		this->town_scope = new TownScopeResolver(this, t, this->object_scope.obj == NULL);
+		this->town_scope = new TownScopeResolver(*this, t, this->object_scope.obj == NULL);
 	}
 	return this->town_scope;
 }
@@ -417,10 +414,7 @@ TownScopeResolver *ObjectResolverObject::GetTown()
 uint16 GetObjectCallback(CallbackID callback, uint32 param1, uint32 param2, const ObjectSpec *spec, Object *o, TileIndex tile, uint8 view)
 {
 	ObjectResolverObject object(spec, o, tile, view, callback, param1, param2);
-	const SpriteGroup *group = SpriteGroup::Resolve(GetObjectSpriteGroup(spec, o), &object);
-	if (group == NULL) return CALLBACK_FAILED;
-
-	return group->GetCallbackResult();
+	return object.ResolveCallback();
 }
 
 /**
@@ -460,7 +454,7 @@ void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec)
 	Object *o = Object::GetByTile(ti->tile);
 	ObjectResolverObject object(spec, o, ti->tile);
 
-	const SpriteGroup *group = SpriteGroup::Resolve(GetObjectSpriteGroup(spec, o), &object);
+	const SpriteGroup *group = object.Resolve();
 	if (group == NULL || group->type != SGT_TILELAYOUT) return;
 
 	DrawTileLayout(ti, (const TileLayoutSpriteGroup *)group, spec);
@@ -476,7 +470,7 @@ void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec)
 void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8 view)
 {
 	ObjectResolverObject object(spec, NULL, INVALID_TILE, view);
-	const SpriteGroup *group = SpriteGroup::Resolve(GetObjectSpriteGroup(spec, NULL), &object);
+	const SpriteGroup *group = object.Resolve();
 	if (group == NULL || group->type != SGT_TILELAYOUT) return;
 
 	const DrawTileSprites *dts = ((const TileLayoutSpriteGroup *)group)->ProcessRegisters(NULL);

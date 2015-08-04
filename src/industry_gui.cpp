@@ -24,6 +24,7 @@
 #include "newgrf_industries.h"
 #include "newgrf_text.h"
 #include "newgrf_debug.h"
+#include "network/network.h"
 #include "strings_func.h"
 #include "company_func.h"
 #include "tilehighlight_func.h"
@@ -41,10 +42,12 @@
 
 #include "table/strings.h"
 
-bool _ignore_restrictions;
-uint64 _displayed_industries; ///< Communication from the industry chain window to the smallmap window about what industries to display.
+#include <bitset>
 
-assert_compile(NUM_INDUSTRYTYPES <= 64); // Make sure all industry types fit in _displayed_industries.
+#include "safeguards.h"
+
+bool _ignore_restrictions;
+std::bitset<NUM_INDUSTRYTYPES> _displayed_industries; ///< Communication from the industry chain window to the smallmap window about what industries to display.
 
 /** Cargo suffix type (for which window is it requested) */
 enum CargoSuffixType {
@@ -79,7 +82,7 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
 		if (callback > 0x400) {
 			ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_CARGO_SUFFIX, callback);
 		} else if (indspec->grf_prop.grffile->grf_version >= 8 || GB(callback, 0, 8) != 0xFF) {
-			StartTextRefStackUsage(6);
+			StartTextRefStackUsage(indspec->grf_prop.grffile, 6);
 			GetString(suffix, GetGRFStringID(indspec->grf_prop.grffile->grfid, 0xD000 + callback), suffix_last);
 			StopTextRefStackUsage();
 		}
@@ -117,12 +120,10 @@ static int CDECL IndustryTypeNameSorter(const IndustryType *a, const IndustryTyp
 	static char industry_name[2][64];
 
 	const IndustrySpec *indsp1 = GetIndustrySpec(*a);
-	SetDParam(0, indsp1->name);
-	GetString(industry_name[0], STR_JUST_STRING, lastof(industry_name[0]));
+	GetString(industry_name[0], indsp1->name, lastof(industry_name[0]));
 
 	const IndustrySpec *indsp2 = GetIndustrySpec(*b);
-	SetDParam(0, indsp2->name);
-	GetString(industry_name[1], STR_JUST_STRING, lastof(industry_name[1]));
+	GetString(industry_name[1], indsp2->name, lastof(industry_name[1]));
 
 	int r = strnatcmp(industry_name[0], industry_name[1]); // Sort by name (natural sorting).
 
@@ -228,7 +229,7 @@ class BuildIndustryWindow : public Window {
 		 * The tests performed after the enabled allow to load the industries
 		 * In the same way they are inserted by grf (if any)
 		 */
-		for (uint8 i = 0; i < NUM_INDUSTRYTYPES; i++) {
+		for (uint i = 0; i < NUM_INDUSTRYTYPES; i++) {
 			IndustryType ind = _sorted_industry_types[i];
 			const IndustrySpec *indsp = GetIndustrySpec(ind);
 			if (indsp->enabled) {
@@ -471,7 +472,7 @@ public:
 						} else {
 							str = GetGRFStringID(indsp->grf_prop.grffile->grfid, 0xD000 + callback_res);  // No. here's the new string
 							if (str != STR_UNDEFINED) {
-								StartTextRefStackUsage(6);
+								StartTextRefStackUsage(indsp->grf_prop.grffile, 6);
 								DrawStringMultiLine(left, right, y, bottom, str, TC_YELLOW);
 								StopTextRefStackUsage();
 							}
@@ -639,7 +640,8 @@ static inline bool IsProductionAlterable(const Industry *i)
 {
 	const IndustrySpec *is = GetIndustrySpec(i->type);
 	return ((_game_mode == GM_EDITOR || _cheats.setup_prod.value) &&
-			(is->production_rate[0] != 0 || is->production_rate[1] != 0 || is->IsRawIndustry()));
+			(is->production_rate[0] != 0 || is->production_rate[1] != 0 || is->IsRawIndustry()) &&
+			!_networking);
 }
 
 class IndustryViewWindow : public Window
@@ -800,7 +802,7 @@ public:
 					if (message != STR_NULL && message != STR_UNDEFINED) {
 						y += WD_PAR_VSEP_WIDE;
 
-						StartTextRefStackUsage(6);
+						StartTextRefStackUsage(ind->grf_prop.grffile, 6);
 						/* Use all the available space left from where we stand up to the
 						 * end of the window. We ALSO enlarge the window if needed, so we
 						 * can 'go' wild with the bottom of the window. */
@@ -1281,7 +1283,7 @@ public:
 		switch (widget) {
 			case WID_ID_DROPDOWN_ORDER: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
-				d.width += padding.width + WD_SORTBUTTON_ARROW_WIDTH * 2; // Doubled since the string is centred and it also looks better.
+				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
 				*size = maxdim(*size, d);
 				break;
@@ -1669,8 +1671,7 @@ struct CargoesField {
 				ypos += (normal_height - FONT_HEIGHT_NORMAL) / 2;
 				if (this->u.industry.ind_type < NUM_INDUSTRYTYPES) {
 					const IndustrySpec *indsp = GetIndustrySpec(this->u.industry.ind_type);
-					SetDParam(0, indsp->name);
-					DrawString(xpos, xpos2, ypos, STR_JUST_STRING, TC_WHITE, SA_HOR_CENTER);
+					DrawString(xpos, xpos2, ypos, indsp->name, TC_WHITE, SA_HOR_CENTER);
 
 					/* Draw the industry legend. */
 					int blob_left, blob_right;
@@ -1961,7 +1962,7 @@ struct CargoesRow {
 		assert(cargo_fld->type == CFT_CARGO && label_fld->type == CFT_EMPTY);
 		for (uint i = 0; i < cargo_fld->u.cargo.num_cargoes; i++) {
 			int col = cargo_fld->ConnectCargo(cargo_fld->u.cargo.vertical_cargoes[i], !accepting);
-			cargoes[col] = cargo_fld->u.cargo.vertical_cargoes[i];
+			if (col >= 0) cargoes[col] = cargo_fld->u.cargo.vertical_cargoes[i];
 		}
 		label_fld->MakeCargoLabel(cargoes, lengthof(cargoes), accepting);
 	}
@@ -1996,12 +1997,12 @@ struct CargoesRow {
 		} else {
 			/* Houses only display what is demanded. */
 			for (uint i = 0; i < cargo_fld->u.cargo.num_cargoes; i++) {
-				for (uint h = 0; h < HOUSE_MAX; h++) {
+				for (uint h = 0; h < NUM_HOUSES; h++) {
 					HouseSpec *hs = HouseSpec::Get(h);
 					if (!hs->enabled) continue;
 
 					for (uint j = 0; j < lengthof(hs->accepts_cargo); j++) {
-						if (cargo_fld->u.cargo.vertical_cargoes[i] == hs->accepts_cargo[j]) {
+						if (hs->cargo_acceptance[j] > 0 && cargo_fld->u.cargo.vertical_cargoes[i] == hs->accepts_cargo[j]) {
 							cargo_fld->ConnectCargo(cargo_fld->u.cargo.vertical_cargoes[i], false);
 							goto next_cargo;
 						}
@@ -2188,12 +2189,12 @@ struct IndustryCargoesWindow : public Window {
 		for (uint i = 0; i < length; i++) {
 			if (cargoes[i] == INVALID_CARGO) continue;
 
-			for (uint h = 0; h < HOUSE_MAX; h++) {
+			for (uint h = 0; h < NUM_HOUSES; h++) {
 				HouseSpec *hs = HouseSpec::Get(h);
 				if (!hs->enabled || !(hs->building_availability & climate_mask)) continue;
 
 				for (uint j = 0; j < lengthof(hs->accepts_cargo); j++) {
-					if (cargoes[i] == hs->accepts_cargo[j]) return true;
+					if (hs->cargo_acceptance[j] > 0 && cargoes[i] == hs->accepts_cargo[j]) return true;
 				}
 			}
 		}
@@ -2294,7 +2295,8 @@ struct IndustryCargoesWindow : public Window {
 	{
 		this->GetWidget<NWidgetCore>(WID_IC_CAPTION)->widget_data = STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION;
 		this->ind_cargo = it;
-		_displayed_industries = 1ULL << it;
+		_displayed_industries.reset();
+		_displayed_industries.set(it);
 
 		this->fields.Clear();
 		CargoesRow *row = this->fields.Append();
@@ -2338,12 +2340,12 @@ struct IndustryCargoesWindow : public Window {
 
 			if (HasCommonValidCargo(central_sp->accepts_cargo, lengthof(central_sp->accepts_cargo), indsp->produced_cargo, lengthof(indsp->produced_cargo))) {
 				this->PlaceIndustry(1 + supp_count * num_indrows / num_supp, 0, it);
-				SetBit(_displayed_industries, it);
+				_displayed_industries.set(it);
 				supp_count++;
 			}
 			if (HasCommonValidCargo(central_sp->produced_cargo, lengthof(central_sp->produced_cargo), indsp->accepts_cargo, lengthof(indsp->accepts_cargo))) {
 				this->PlaceIndustry(1 + cust_count * num_indrows / num_cust, 4, it);
-				SetBit(_displayed_industries, it);
+				_displayed_industries.set(it);
 				cust_count++;
 			}
 		}
@@ -2372,7 +2374,7 @@ struct IndustryCargoesWindow : public Window {
 	{
 		this->GetWidget<NWidgetCore>(WID_IC_CAPTION)->widget_data = STR_INDUSTRY_CARGOES_CARGO_CAPTION;
 		this->ind_cargo = cid + NUM_INDUSTRYTYPES;
-		_displayed_industries = 0;
+		_displayed_industries.reset();
 
 		this->fields.Clear();
 		CargoesRow *row = this->fields.Append();
@@ -2407,12 +2409,12 @@ struct IndustryCargoesWindow : public Window {
 
 			if (HasCommonValidCargo(&cid, 1, indsp->produced_cargo, lengthof(indsp->produced_cargo))) {
 				this->PlaceIndustry(1 + supp_count * num_indrows / num_supp, 0, it);
-				SetBit(_displayed_industries, it);
+				_displayed_industries.set(it);
 				supp_count++;
 			}
 			if (HasCommonValidCargo(&cid, 1, indsp->accepts_cargo, lengthof(indsp->accepts_cargo))) {
 				this->PlaceIndustry(1 + cust_count * num_indrows / num_cust, 2, it);
-				SetBit(_displayed_industries, it);
+				_displayed_industries.set(it);
 				cust_count++;
 			}
 		}
@@ -2590,9 +2592,9 @@ struct IndustryCargoesWindow : public Window {
 				DropDownList *lst = new DropDownList;
 				const CargoSpec *cs;
 				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
-					lst->push_back(new DropDownListStringItem(cs->name, cs->Index(), false));
+					*lst->Append() = new DropDownListStringItem(cs->name, cs->Index(), false);
 				}
-				if (lst->size() == 0) {
+				if (lst->Length() == 0) {
 					delete lst;
 					break;
 				}
@@ -2603,13 +2605,13 @@ struct IndustryCargoesWindow : public Window {
 
 			case WID_IC_IND_DROPDOWN: {
 				DropDownList *lst = new DropDownList;
-				for (uint8 i = 0; i < NUM_INDUSTRYTYPES; i++) {
+				for (uint i = 0; i < NUM_INDUSTRYTYPES; i++) {
 					IndustryType ind = _sorted_industry_types[i];
 					const IndustrySpec *indsp = GetIndustrySpec(ind);
 					if (!indsp->enabled) continue;
-					lst->push_back(new DropDownListStringItem(indsp->name, ind, false));
+					*lst->Append() = new DropDownListStringItem(indsp->name, ind, false);
 				}
-				if (lst->size() == 0) {
+				if (lst->Length() == 0) {
 					delete lst;
 					break;
 				}
@@ -2690,7 +2692,7 @@ const int IndustryCargoesWindow::VERT_TEXT_PADDING = 5; ///< Vertical padding ar
 static void ShowIndustryCargoesWindow(IndustryType id)
 {
 	if (id >= NUM_INDUSTRYTYPES) {
-		for (uint8 i = 0; i < NUM_INDUSTRYTYPES; i++) {
+		for (uint i = 0; i < NUM_INDUSTRYTYPES; i++) {
 			const IndustrySpec *indsp = GetIndustrySpec(_sorted_industry_types[i]);
 			if (indsp->enabled) {
 				id = _sorted_industry_types[i];

@@ -30,6 +30,8 @@
 #include "table/sprites.h"
 #include <math.h>
 
+#include "safeguards.h"
+
 /* Bitmasks of company and cargo indices that shouldn't be drawn. */
 static uint _legend_excluded_companies;
 static uint _legend_excluded_cargo;
@@ -200,6 +202,8 @@ protected:
 	 */
 	ValuesInterval GetValuesInterval(int num_hori_lines) const
 	{
+		assert(num_hori_lines > 0);
+
 		ValuesInterval current_interval;
 		current_interval.highest = INT64_MIN;
 		current_interval.lowest  = INT64_MAX;

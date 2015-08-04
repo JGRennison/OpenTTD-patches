@@ -27,6 +27,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static const uint ICON_HISTORY_SIZE       = 20;
 static const uint ICON_LINE_SPACING       =  2;
 static const uint ICON_RIGHT_BORDERWIDTH  = 10;
@@ -185,6 +187,7 @@ struct IConsoleWindow : Window
 	~IConsoleWindow()
 	{
 		_iconsole_mode = ICONSOLE_CLOSED;
+		VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 
 	/**
@@ -373,7 +376,7 @@ struct IConsoleWindow : Window
 
 	virtual void OnFocusLost()
 	{
-		_video_driver->EditBoxLostFocus();
+		VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 };
 
@@ -462,7 +465,7 @@ static const char *IConsoleHistoryAdd(const char *cmd)
 	if (_iconsole_history[0] == NULL || strcmp(_iconsole_history[0], cmd) != 0) {
 		free(_iconsole_history[ICON_HISTORY_SIZE - 1]);
 		memmove(&_iconsole_history[1], &_iconsole_history[0], sizeof(_iconsole_history[0]) * (ICON_HISTORY_SIZE - 1));
-		_iconsole_history[0] = strdup(cmd);
+		_iconsole_history[0] = stredup(cmd);
 	}
 
 	/* Reset the history position */

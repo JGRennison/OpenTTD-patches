@@ -18,10 +18,13 @@
 #include "strings_func.h"
 #include "zoom_type.h"
 #include "gfx_layout.h"
+#include "zoom_func.h"
 
 #include "table/sprites.h"
 #include "table/control_codes.h"
 #include "table/unicode.h"
+
+#include "safeguards.h"
 
 static const int ASCII_LETTERSTART = 32; ///< First printable ASCII letter.
 static const int MAX_FONT_SIZE     = 72; ///< Maximum font size.
@@ -75,12 +78,14 @@ public:
 	virtual SpriteID GetUnicodeGlyph(WChar key);
 	virtual void SetUnicodeGlyph(WChar key, SpriteID sprite);
 	virtual void InitializeUnicodeGlyphMap();
-	virtual void ClearFontCache() {}
+	virtual void ClearFontCache();
 	virtual const Sprite *GetGlyph(GlyphID key);
 	virtual uint GetGlyphWidth(GlyphID key);
+	virtual int GetHeight() const;
 	virtual bool GetDrawGlyphShadow();
 	virtual GlyphID MapCharToGlyph(WChar key) { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
 	virtual const void *GetFontTable(uint32 tag, size_t &length) { length = 0; return NULL; }
+	virtual const char *GetFontName() { return "sprite"; }
 };
 
 /**
@@ -138,8 +143,8 @@ void SpriteFontCache::InitializeUnicodeGlyphMap()
 		byte key = _default_unicode_map[i].key;
 		if (key == CLRA) {
 			/* Clear the glyph. This happens if the glyph at this code point
-				* is non-standard and should be accessed by an SCC_xxx enum
-				* entry only. */
+			 * is non-standard and should be accessed by an SCC_xxx enum
+			 * entry only. */
 			this->SetUnicodeGlyph(_default_unicode_map[i].code, 0);
 		} else {
 			SpriteID sprite = base + key - ASCII_LETTERSTART;
@@ -162,6 +167,11 @@ void SpriteFontCache::ClearGlyphToSpriteMap()
 	this->glyph_to_spriteid_map = NULL;
 }
 
+void SpriteFontCache::ClearFontCache()
+{
+	Layouter::ResetFontCache(this->fs);
+}
+
 const Sprite *SpriteFontCache::GetGlyph(GlyphID key)
 {
 	SpriteID sprite = this->GetUnicodeGlyph(key);
@@ -173,7 +183,12 @@ uint SpriteFontCache::GetGlyphWidth(GlyphID key)
 {
 	SpriteID sprite = this->GetUnicodeGlyph(key);
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
-	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + (this->fs != FS_NORMAL) : 0;
+	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + ScaleGUITrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
+}
+
+int SpriteFontCache::GetHeight() const
+{
+	return ScaleGUITrad(this->height);
 }
 
 bool SpriteFontCache::GetDrawGlyphShadow()
@@ -181,7 +196,7 @@ bool SpriteFontCache::GetDrawGlyphShadow()
 	return false;
 }
 
-/*static */ FontCache *FontCache::caches[FS_END] = { new SpriteFontCache(FS_NORMAL), new SpriteFontCache(FS_SMALL), new SpriteFontCache(FS_LARGE), new SpriteFontCache(FS_MONO) };
+/* static */ FontCache *FontCache::caches[FS_END] = { new SpriteFontCache(FS_NORMAL), new SpriteFontCache(FS_SMALL), new SpriteFontCache(FS_LARGE), new SpriteFontCache(FS_MONO) };
 
 #ifdef WITH_FREETYPE
 #include <ft2build.h>
@@ -234,6 +249,7 @@ public:
 	virtual bool GetDrawGlyphShadow();
 	virtual GlyphID MapCharToGlyph(WChar key);
 	virtual const void *GetFontTable(uint32 tag, size_t &length);
+	virtual const char *GetFontName() { return face->family_name; }
 };
 
 FT_Library _library = NULL;
@@ -267,23 +283,35 @@ FreeTypeFontCache::FreeTypeFontCache(FontSize fs, FT_Face face, int pixels) : Fo
 	}
 
 	FT_Error err = FT_Set_Pixel_Sizes(this->face, 0, pixels);
-	if (err == FT_Err_Invalid_Pixel_Size) {
+	if (err != FT_Err_Ok) {
 
 		/* Find nearest size to that requested */
 		FT_Bitmap_Size *bs = this->face->available_sizes;
 		int i = this->face->num_fixed_sizes;
-		int n = bs->height;
-		for (; --i; bs++) {
-			if (abs(pixels - bs->height) < abs(pixels - n)) n = bs->height;
-		}
+		if (i > 0) { // In pathetic cases one might get no fixed sizes at all.
+			int n = bs->height;
+			FT_Int chosen = 0;
+			for (; --i; bs++) {
+				if (abs(pixels - bs->height) >= abs(pixels - n)) continue;
+				n = bs->height;
+				chosen = this->face->num_fixed_sizes - i;
+			}
 
-		FT_Set_Pixel_Sizes(this->face, 0, n);
+			/* Don't use FT_Set_Pixel_Sizes here - it might give us another
+			 * error, even though the size is available (FS#5885). */
+			err = FT_Select_Size(this->face, chosen);
+		}
 	}
 
-	this->units_per_em = this->face->units_per_EM;
-	this->ascender     = this->face->size->metrics.ascender >> 6;
-	this->descender    = this->face->size->metrics.descender >> 6;
-	this->height       = this->ascender - this->descender;
+	if (err == FT_Err_Ok) {
+		this->units_per_em = this->face->units_per_EM;
+		this->ascender     = this->face->size->metrics.ascender >> 6;
+		this->descender    = this->face->size->metrics.descender >> 6;
+		this->height       = this->ascender - this->descender;
+	} else {
+		/* Both FT_Set_Pixel_Sizes and FT_Select_Size failed. */
+		DEBUG(freetype, 0, "Font size selection failed. Using FontCache defaults.");
+	}
 }
 
 /**
@@ -392,6 +420,8 @@ void FreeTypeFontCache::ClearFontCache()
 
 	free(this->glyph_to_sprite);
 	this->glyph_to_sprite = NULL;
+
+	Layouter::ResetFontCache(this->fs);
 }
 
 FreeTypeFontCache::GlyphEntry *FreeTypeFontCache::GetGlyphPtr(GlyphID key)
@@ -430,7 +460,7 @@ static void *AllocateFont(size_t size)
 static bool GetFontAAState(FontSize size)
 {
 	/* AA is only supported for 32 bpp */
-	if (BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth() != 32) return false;
+	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() != 32) return false;
 
 	switch (size) {
 		default: NOT_REACHED();
@@ -458,9 +488,34 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 	if (key == 0) {
 		GlyphID question_glyph = this->MapCharToGlyph('?');
 		if (question_glyph == 0) {
-			/* The font misses the '?' character. Use sprite font. */
-			SpriteID sprite = this->GetUnicodeGlyph(key);
-			Sprite *spr = (Sprite*)GetRawSprite(sprite, ST_FONT, AllocateFont);
+			/* The font misses the '?' character. Use built-in sprite.
+			 * Note: We cannot use the baseset as this also has to work in the bootstrap GUI. */
+#define CPSET { 0, 0, 0, 0, 1 }
+#define CP___ { 0, 0, 0, 0, 0 }
+			static SpriteLoader::CommonPixel builtin_questionmark_data[10 * 8] = {
+				CP___, CP___, CPSET, CPSET, CPSET, CPSET, CP___, CP___,
+				CP___, CPSET, CPSET, CP___, CP___, CPSET, CPSET, CP___,
+				CP___, CP___, CP___, CP___, CP___, CPSET, CPSET, CP___,
+				CP___, CP___, CP___, CP___, CPSET, CPSET, CP___, CP___,
+				CP___, CP___, CP___, CPSET, CPSET, CP___, CP___, CP___,
+				CP___, CP___, CP___, CPSET, CPSET, CP___, CP___, CP___,
+				CP___, CP___, CP___, CPSET, CPSET, CP___, CP___, CP___,
+				CP___, CP___, CP___, CP___, CP___, CP___, CP___, CP___,
+				CP___, CP___, CP___, CPSET, CPSET, CP___, CP___, CP___,
+				CP___, CP___, CP___, CPSET, CPSET, CP___, CP___, CP___,
+			};
+#undef CPSET
+#undef CP___
+			static const SpriteLoader::Sprite builtin_questionmark = {
+				10, // height
+				8,  // width
+				0,  // x_offs
+				0,  // y_offs
+				ST_FONT,
+				builtin_questionmark_data
+			};
+
+			Sprite *spr = BlitterFactory::GetCurrentBlitter()->Encode(&builtin_questionmark, AllocateFont);
 			assert(spr != NULL);
 			new_glyph.sprite = spr;
 			new_glyph.width  = spr->width + (this->fs != FS_NORMAL);
@@ -481,8 +536,8 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 	aa = (slot->bitmap.pixel_mode == FT_PIXEL_MODE_GRAY);
 
 	/* Add 1 pixel for the shadow on the medium font. Our sprite must be at least 1x1 pixel */
-	int width  = max(1, slot->bitmap.width + (this->fs == FS_NORMAL));
-	int height = max(1, slot->bitmap.rows  + (this->fs == FS_NORMAL));
+	uint width  = max(1U, (uint)slot->bitmap.width + (this->fs == FS_NORMAL));
+	uint height = max(1U, (uint)slot->bitmap.rows  + (this->fs == FS_NORMAL));
 
 	/* Limit glyph size to prevent overflows later on. */
 	if (width > 256 || height > 256) usererror("Font glyph is too large");
@@ -498,8 +553,8 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 
 	/* Draw shadow for medium size */
 	if (this->fs == FS_NORMAL && !aa) {
-		for (int y = 0; y < slot->bitmap.rows; y++) {
-			for (int x = 0; x < slot->bitmap.width; x++) {
+		for (uint y = 0; y < (uint)slot->bitmap.rows; y++) {
+			for (uint x = 0; x < (uint)slot->bitmap.width; x++) {
 				if (aa ? (slot->bitmap.buffer[x + y * slot->bitmap.pitch] > 0) : HasBit(slot->bitmap.buffer[(x / 8) + y * slot->bitmap.pitch], 7 - (x % 8))) {
 					sprite.data[1 + x + (1 + y) * sprite.width].m = SHADOW_COLOUR;
 					sprite.data[1 + x + (1 + y) * sprite.width].a = aa ? slot->bitmap.buffer[x + y * slot->bitmap.pitch] : 0xFF;
@@ -508,8 +563,8 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 		}
 	}
 
-	for (int y = 0; y < slot->bitmap.rows; y++) {
-		for (int x = 0; x < slot->bitmap.width; x++) {
+	for (uint y = 0; y < (uint)slot->bitmap.rows; y++) {
+		for (uint x = 0; x < (uint)slot->bitmap.width; x++) {
 			if (aa ? (slot->bitmap.buffer[x + y * slot->bitmap.pitch] > 0) : HasBit(slot->bitmap.buffer[(x / 8) + y * slot->bitmap.pitch], 7 - (x % 8))) {
 				sprite.data[x + y * sprite.width].m = FACE_COLOUR;
 				sprite.data[x + y * sprite.width].a = aa ? slot->bitmap.buffer[x + y * slot->bitmap.pitch] : 0xFF;
@@ -517,7 +572,7 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 		}
 	}
 
-	new_glyph.sprite = BlitterFactoryBase::GetCurrentBlitter()->Encode(&sprite, AllocateFont);
+	new_glyph.sprite = BlitterFactory::GetCurrentBlitter()->Encode(&sprite, AllocateFont);
 	new_glyph.width  = slot->advance.x >> 6;
 
 	this->SetGlyphPtr(key, &new_glyph);

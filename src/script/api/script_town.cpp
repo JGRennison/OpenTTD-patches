@@ -14,11 +14,14 @@
 #include "script_map.hpp"
 #include "script_error.hpp"
 #include "../../town.h"
+#include "../../townname_func.h"
 #include "../../string_func.h"
 #include "../../strings_func.h"
 #include "../../station_base.h"
 #include "../../landscape.h"
 #include "table/strings.h"
+
+#include "../../safeguards.h"
 
 /* static */ int32 ScriptTown::GetTownCount()
 {
@@ -36,6 +39,21 @@
 
 	::SetDParam(0, town_id);
 	return GetString(STR_TOWN_NAME);
+}
+
+/* static */ bool ScriptTown::SetName(TownID town_id, Text *name)
+{
+	CCountedPtr<Text> counter(name);
+
+	const char *text = NULL;
+	if (name != NULL) {
+		text = name->GetDecodedText();
+		EnforcePreconditionEncodedText(false, text);
+		EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_TOWN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
+	}
+	EnforcePrecondition(false, IsValidTown(town_id));
+
+	return ScriptObject::DoCommand(0, town_id, 0, CMD_RENAME_TOWN, text);
 }
 
 /* static */ bool ScriptTown::SetText(TownID town_id, Text *text)
@@ -138,21 +156,36 @@
 	}
 }
 
-/* static */ bool ScriptTown::SetGrowthRate(TownID town_id, uint16 days_between_town_growth)
+/* static */ bool ScriptTown::SetGrowthRate(TownID town_id, uint32 days_between_town_growth)
 {
-	days_between_town_growth = days_between_town_growth * DAY_TICKS / TOWN_GROWTH_TICKS;
-
 	EnforcePrecondition(false, IsValidTown(town_id));
-	EnforcePrecondition(false, (days_between_town_growth & TOWN_GROW_RATE_CUSTOM) == 0);
+
+	switch (days_between_town_growth) {
+		case TOWN_GROWTH_NORMAL:
+			days_between_town_growth = 0;
+			break;
+
+		case TOWN_GROWTH_NONE:
+			days_between_town_growth = TOWN_GROW_RATE_CUSTOM_NONE;
+			break;
+
+		default:
+			days_between_town_growth = days_between_town_growth * DAY_TICKS / TOWN_GROWTH_TICKS;
+			EnforcePrecondition(false, days_between_town_growth < TOWN_GROW_RATE_CUSTOM);
+			if (days_between_town_growth == 0) days_between_town_growth = 1; // as fast as possible
+			break;
+	}
 
 	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id, days_between_town_growth, CMD_TOWN_GROWTH_RATE);
 }
 
 /* static */ int32 ScriptTown::GetGrowthRate(TownID town_id)
 {
-	if (!IsValidTown(town_id)) return false;
+	if (!IsValidTown(town_id)) return -1;
 
 	const Town *t = ::Town::Get(town_id);
+
+	if (t->growth_rate == TOWN_GROW_RATE_CUSTOM_NONE) return TOWN_GROWTH_NONE;
 
 	return ((t->growth_rate & ~TOWN_GROW_RATE_CUSTOM) * TOWN_GROWTH_TICKS + DAY_TICKS) / DAY_TICKS;
 }
@@ -197,6 +230,13 @@
 	return ::Town::Get(town_id)->road_build_months;
 }
 
+/* static */ int ScriptTown::GetFundBuildingsDuration(TownID town_id)
+{
+	if (!IsValidTown(town_id)) return -1;
+
+	return ::Town::Get(town_id)->fund_buildings_months;
+}
+
 /* static */ ScriptCompany::CompanyID ScriptTown::GetExclusiveRightsCompany(TownID town_id)
 {
 	if (ScriptObject::GetCompany() == OWNER_DEITY) return ScriptCompany::COMPANY_INVALID;
@@ -236,6 +276,36 @@
 	EnforcePrecondition(false, houses > 0);
 
 	return ScriptObject::DoCommand(::Town::Get(town_id)->xy, town_id, houses, CMD_EXPAND_TOWN);
+}
+
+/* static */ bool ScriptTown::FoundTown(TileIndex tile, TownSize size, bool city, RoadLayout layout, Text *name)
+{
+	CCountedPtr<Text> counter(name);
+
+	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY || _settings_game.economy.found_town != TF_FORBIDDEN);
+	EnforcePrecondition(false, ::IsValidTile(tile));
+	EnforcePrecondition(false, size == TOWN_SIZE_SMALL || size == TOWN_SIZE_MEDIUM || size == TOWN_SIZE_LARGE)
+	EnforcePrecondition(false, size != TOWN_SIZE_LARGE || ScriptObject::GetCompany() == OWNER_DEITY);
+	if (ScriptObject::GetCompany() == OWNER_DEITY || _settings_game.economy.found_town == TF_CUSTOM_LAYOUT) {
+		EnforcePrecondition(false, layout == ROAD_LAYOUT_ORIGINAL || layout == ROAD_LAYOUT_BETTER_ROADS || layout == ROAD_LAYOUT_2x2 || layout == ROAD_LAYOUT_3x3);
+	} else {
+		/* The layout parameter is ignored for AIs when custom layouts is disabled. */
+		layout = (RoadLayout) (byte)_settings_game.economy.town_layout;
+	}
+
+	const char *text = NULL;
+	if (name != NULL) {
+		text = name->GetDecodedText();
+		EnforcePreconditionEncodedText(false, text);
+		EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_TOWN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
+	}
+	uint32 townnameparts;
+	if (!GenerateTownName(&townnameparts)) {
+		ScriptObject::SetLastError(ScriptError::ERR_NAME_IS_NOT_UNIQUE);
+		return false;
+	}
+
+	return ScriptObject::DoCommand(tile, size | (city ? 1 << 2 : 0) | layout << 3, townnameparts, CMD_FOUND_TOWN, text);
 }
 
 /* static */ ScriptTown::TownRating ScriptTown::GetRating(TownID town_id, ScriptCompany::CompanyID company_id)

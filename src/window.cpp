@@ -37,6 +37,8 @@
 #include "game/game.hpp"
 #include "video/video_driver.hpp"
 
+#include "safeguards.h"
+
 /** Values for _settings_client.gui.auto_scrolling */
 enum ViewportAutoscrolling {
 	VA_DISABLED,                  //!< Do not autoscroll when mouse is at edge of viewport.
@@ -85,12 +87,10 @@ static SmallVector<WindowDesc*, 16> *_window_descs = NULL;
 char *_windows_file;
 
 /** Window description constructor. */
-WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_width, int16 def_height,
+WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
 			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys) :
 	default_pos(def_pos),
-	default_width(def_width),
-	default_height(def_height),
 	cls(window_class),
 	parent_cls(parent_class),
 	ini_key(ini_key),
@@ -100,7 +100,9 @@ WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_wi
 	hotkeys(hotkeys),
 	pref_sticky(false),
 	pref_width(0),
-	pref_height(0)
+	pref_height(0),
+	default_width_trad(def_width_trad),
+	default_height_trad(def_height_trad)
 {
 	if (_window_descs == NULL) _window_descs = new SmallVector<WindowDesc*, 16>();
 	*_window_descs->Append() = this;
@@ -109,6 +111,26 @@ WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_wi
 WindowDesc::~WindowDesc()
 {
 	_window_descs->Erase(_window_descs->Find(this));
+}
+
+/**
+ * Determine default width of window.
+ * This is either a stored user preferred size, or the build-in default.
+ * @return Width in pixels.
+ */
+int16 WindowDesc::GetDefaultWidth() const
+{
+	return this->pref_width != 0 ? this->pref_width : ScaleGUITrad(this->default_width_trad);
+}
+
+/**
+ * Determine default height of window.
+ * This is either a stored user preferred size, or the build-in default.
+ * @return Height in pixels.
+ */
+int16 WindowDesc::GetDefaultHeight() const
+{
+	return this->pref_height != 0 ? this->pref_height : ScaleGUITrad(this->default_height_trad);
 }
 
 /**
@@ -268,13 +290,9 @@ void Window::OnDropdownClose(Point pt, int widget, int index, bool instant_close
 	}
 
 	/* Raise the dropdown button */
-	if (this->nested_array != NULL) {
-		NWidgetCore *nwi2 = this->GetWidget<NWidgetCore>(widget);
-		if ((nwi2->type & WWT_MASK) == NWID_BUTTON_DROPDOWN) {
-			nwi2->disp_flags &= ~ND_DROPDOWN_ACTIVE;
-		} else {
-			this->RaiseWidget(widget);
-		}
+	NWidgetCore *nwi2 = this->GetWidget<NWidgetCore>(widget);
+	if ((nwi2->type & WWT_MASK) == NWID_BUTTON_DROPDOWN) {
+		nwi2->disp_flags &= ~ND_DROPDOWN_ACTIVE;
 	} else {
 		this->RaiseWidget(widget);
 	}
@@ -450,7 +468,7 @@ bool EditBoxInGlobalFocus()
 void Window::UnfocusFocusedWidget()
 {
 	if (this->nested_focus != NULL) {
-		if (this->nested_focus->type == WWT_EDITBOX) _video_driver->EditBoxLostFocus();
+		if (this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
 
 		/* Repaint the widget that lost focus. A focused edit box may else leave the caret on the screen. */
 		this->nested_focus->SetDirty(this);
@@ -474,7 +492,7 @@ bool Window::SetFocusedWidget(int widget_index)
 
 		/* Repaint the widget that lost focus. A focused edit box may else leave the caret on the screen. */
 		this->nested_focus->SetDirty(this);
-		if (this->nested_focus->type == WWT_EDITBOX) _video_driver->EditBoxLostFocus();
+		if (this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 	this->nested_focus = this->GetWidget<NWidgetCore>(widget_index);
 	return true;
@@ -485,7 +503,7 @@ bool Window::SetFocusedWidget(int widget_index)
  */
 void Window::OnFocusLost()
 {
-	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) _video_driver->EditBoxLostFocus();
+	if (this->nested_focus != NULL && this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
 }
 
 /**
@@ -623,7 +641,6 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 			widget_type != WWT_CLOSEBOX) {          // Don't change focused window if 'X' (close button) was clicked
 		focused_widget_changed = true;
 		SetFocusedWindow(w);
-		w->OnFocus();
 	}
 
 	if (nw == NULL) return; // exit if clicked outside of widgets
@@ -755,7 +772,7 @@ static void DispatchRightClickEvent(Window *w, int x, int y)
 		if (w->OnRightClick(pt, wid->index)) return;
 	}
 
-	if (_settings_client.gui.hover_delay == 0 && wid->tool_tip != 0) GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
+	if (_settings_client.gui.hover_delay_ms == 0 && wid->tool_tip != 0) GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
 }
 
 /**
@@ -899,7 +916,7 @@ static void DrawOverlappedWindow(Window *w, int left, int top, int right, int bo
 	dp->left = left - w->left;
 	dp->top = top - w->top;
 	dp->pitch = _screen.pitch;
-	dp->dst_ptr = BlitterFactoryBase::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
+	dp->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
 	dp->zoom = ZOOM_LVL_NORMAL;
 	w->OnPaint();
 }
@@ -1062,7 +1079,16 @@ Window::~Window()
 	free(this->nested_array); // Contents is released through deletion of #nested_root.
 	delete this->nested_root;
 
-	this->window_class = WC_INVALID;
+	/*
+	 * Make fairly sure that this is written, and not "optimized" away.
+	 * The delete operator is overwritten to not delete it; the deletion
+	 * happens at a later moment in time after the window has been
+	 * removed from the list of windows to prevent issues with items
+	 * being removed during the iteration as not one but more windows
+	 * may be removed by a single call to ~Window by means of the
+	 * DeleteChildWindows function.
+	 */
+	const_cast<volatile WindowClass &>(this->window_class) = WC_INVALID;
 }
 
 /**
@@ -1270,6 +1296,7 @@ static uint GetWindowZPriority(const Window *w)
 		case WC_CONFIRM_POPUP_QUERY:
 		case WC_MODAL_PROGRESS:
 		case WC_NETWORK_STATUS_WINDOW:
+		case WC_SAVE_PRESET:
 			++z_priority;
 
 		case WC_GENERATE_LANDSCAPE:
@@ -2881,7 +2908,7 @@ void HandleMouseEvents()
 	static uint32 hover_time = 0;
 	static Point hover_pos = {0, 0};
 
-	if (_settings_client.gui.hover_delay > 0) {
+	if (_settings_client.gui.hover_delay_ms > 0) {
 		if (!_cursor.in_window || click != MC_NONE || mousewheel != 0 || _left_button_down || _right_button_down ||
 				hover_pos.x == 0 || abs(_cursor.pos.x - hover_pos.x) >= MAX_OFFSET_HOVER  ||
 				hover_pos.y == 0 || abs(_cursor.pos.y - hover_pos.y) >= MAX_OFFSET_HOVER) {
@@ -2889,7 +2916,7 @@ void HandleMouseEvents()
 			hover_time = _realtime_tick;
 			_mouse_hovering = false;
 		} else {
-			if (hover_time != 0 && _realtime_tick > hover_time + _settings_client.gui.hover_delay * 1000) {
+			if (hover_time != 0 && _realtime_tick > hover_time + _settings_client.gui.hover_delay_ms) {
 				click = MC_HOVER;
 				_input_events_this_tick++;
 				_mouse_hovering = true;
@@ -2906,7 +2933,7 @@ void HandleMouseEvents()
 
 	if (click == MC_LEFT && _newgrf_debug_sprite_picker.mode == SPM_WAIT_CLICK) {
 		/* Mark whole screen dirty, and wait for the next realtime tick, when drawing is finished. */
-		Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 		_newgrf_debug_sprite_picker.clicked_pixel = blitter->MoveTo(_screen.dst_ptr, _cursor.pos.x, _cursor.pos.y);
 		_newgrf_debug_sprite_picker.click_time = _realtime_tick;
 		_newgrf_debug_sprite_picker.sprites.Clear();
@@ -3266,6 +3293,9 @@ void ReInitAllWindows()
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
 	NWidgetScrollbar::InvalidateDimensionCache();
 
+	extern void InitDepotWindowBlockSizes();
+	InitDepotWindowBlockSizes();
+
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		w->ReInit();
@@ -3378,25 +3408,16 @@ void RelocateAllWindows(int neww, int newh)
 
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		int left, top;
-
-		if (w->window_class == WC_MAIN_WINDOW) {
-			ViewPort *vp = w->viewport;
-			vp->width = w->width = neww;
-			vp->height = w->height = newh;
-			vp->virtual_width = ScaleByZoom(neww, vp->zoom);
-			vp->virtual_height = ScaleByZoom(newh, vp->zoom);
-			continue; // don't modify top,left
-		}
-
 		/* XXX - this probably needs something more sane. For example specifying
 		 * in a 'backup'-desc that the window should always be centered. */
 		switch (w->window_class) {
+			case WC_MAIN_WINDOW:
 			case WC_BOOTSTRAP:
 				ResizeWindow(w, neww, newh);
 				continue;
 
 			case WC_MAIN_TOOLBAR:
-				ResizeWindow(w, min(neww, w->window_desc->default_width) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
 
 				top = w->top;
 				left = PositionMainToolbar(w); // changes toolbar orientation
@@ -3408,14 +3429,15 @@ void RelocateAllWindows(int neww, int newh)
 				break;
 
 			case WC_STATUS_BAR:
-				ResizeWindow(w, min(neww, w->window_desc->default_width) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
 
 				top = newh - w->height;
 				left = PositionStatusbar(w);
 				break;
 
 			case WC_SEND_NETWORK_MSG:
-				ResizeWindow(w, Clamp(neww, 320, 640) - w->width, 0, false);
+				ResizeWindow(w, min(neww, _toolbar_width) - w->width, 0, false);
+
 				top = newh - w->height - FindWindowById(WC_STATUS_BAR, 0)->height;
 				left = PositionNetworkChatWindow(w);
 				break;

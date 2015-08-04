@@ -35,8 +35,11 @@
 #include "road_func.h"
 #include "water.h"
 #include "station_func.h"
+#include "zoom_func.h"
 
 #include "widgets/company_widget.h"
+
+#include "safeguards.h"
 
 
 /** Company GUI constants. */
@@ -526,7 +529,7 @@ public:
 
 	uint Height(uint width) const
 	{
-		return max(FONT_HEIGHT_NORMAL, 14);
+		return max(FONT_HEIGHT_NORMAL, ScaleGUITrad(12) + 2);
 	}
 
 	bool Selectable() const
@@ -537,8 +540,15 @@ public:
 	void Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
 	{
 		bool rtl = _current_text_dir == TD_RTL;
-		DrawSprite(SPR_VEH_BUS_SIDE_VIEW, PALETTE_RECOLOUR_START + this->result, rtl ? right - 16 : left + 16, top + 7);
-		DrawString(rtl ? left + 2 : left + 32, rtl ? right - 32 : right - 2, top + max(0, 13 - FONT_HEIGHT_NORMAL), this->String(), sel ? TC_WHITE : TC_BLACK);
+		int height = bottom - top;
+		int icon_y_offset = height / 2;
+		int text_y_offset = (height - FONT_HEIGHT_NORMAL) / 2 + 1;
+		DrawSprite(SPR_VEH_BUS_SIDE_VIEW, PALETTE_RECOLOUR_START + this->result,
+				rtl ? right - 2 - ScaleGUITrad(14) : left + ScaleGUITrad(14) + 2,
+				top + icon_y_offset);
+		DrawString(rtl ? left + 2 : left + ScaleGUITrad(28) + 4,
+				rtl ? right - ScaleGUITrad(28) - 4 : right - 2,
+				top + text_y_offset, this->String(), sel ? TC_WHITE : TC_BLACK);
 	}
 };
 
@@ -574,7 +584,7 @@ private:
 
 		DropDownList *list = new DropDownList();
 		for (uint i = 0; i < lengthof(_colour_dropdown); i++) {
-			list->push_back(new DropDownListColourItem(i, HasBit(used_colours, i)));
+			*list->Append() = new DropDownListColourItem(i, HasBit(used_colours, i));
 		}
 
 		ShowDropDownList(this, list, widget == WID_SCL_PRI_COL_DROPDOWN ? livery->colour1 : livery->colour2, widget);
@@ -1099,7 +1109,7 @@ public:
 		this->GetWidget<NWidgetStacked>(WID_SCMF_SEL_LOADSAVE)->SetDisplayedPlane(advanced ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_SCMF_SEL_PARTS)->SetDisplayedPlane(advanced ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_SCMF_SEL_MALEFEMALE)->SetDisplayedPlane(advanced ? SZSP_NONE : 0);
-		this->GetWidget<NWidgetCore>(WID_SCMF_RANDOM_NEW_FACE)->widget_data = advanced ? STR_MAPGEN_RANDOM : STR_FACE_NEW_FACE_BUTTON;
+		this->GetWidget<NWidgetCore>(WID_SCMF_RANDOM_NEW_FACE)->widget_data = advanced ? STR_FACE_RANDOM : STR_FACE_NEW_FACE_BUTTON;
 
 		NWidgetCore *wi = this->GetWidget<NWidgetCore>(WID_SCMF_TOGGLE_LARGE_SMALL_BUTTON);
 		if (advanced) {
@@ -1135,6 +1145,13 @@ public:
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		switch (widget) {
+			case WID_SCMF_FACE: {
+				Dimension face_size = GetSpriteSize(SPR_GRADIENT);
+				size->width  = max(size->width,  face_size.width);
+				size->height = max(size->height, face_size.height);
+				break;
+			}
+
 			case WID_SCMF_HAS_MOUSTACHE_EARRING_TEXT:
 			case WID_SCMF_TIE_EARRING_TEXT: {
 				int offset = (widget - WID_SCMF_HAS_MOUSTACHE_EARRING_TEXT) * 2;
@@ -2013,7 +2030,7 @@ struct CompanyWindow : Window
 			NWidgetStacked *wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_BUTTONS);
 			if (plane != wi->shown_plane) {
 				wi->SetDisplayedPlane(plane);
-				this->SetDirty();
+				this->InvalidateData();
 				return;
 			}
 
@@ -2072,6 +2089,13 @@ struct CompanyWindow : Window
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		switch (widget) {
+			case WID_C_FACE: {
+				Dimension face_size = GetSpriteSize(SPR_GRADIENT);
+				size->width  = max(size->width,  face_size.width);
+				size->height = max(size->height, face_size.height);
+				break;
+			}
+
 			case WID_C_DESC_COLOUR_SCHEME_EXAMPLE: {
 				Point offset;
 				Dimension d = GetSpriteSize(SPR_VEH_BUS_SW_VIEW, &offset);

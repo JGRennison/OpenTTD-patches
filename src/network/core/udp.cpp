@@ -18,6 +18,8 @@
 #include "../../debug.h"
 #include "udp.h"
 
+#include "../../safeguards.h"
+
 /**
  * Create an UDP socket but don't listen yet.
  * @param bind the addresses to bind to.
@@ -96,7 +98,9 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 		if (broadcast) {
 			/* Enable broadcast */
 			unsigned long val = 1;
-			setsockopt(s->second, SOL_SOCKET, SO_BROADCAST, (char *) &val, sizeof(val));
+			if (setsockopt(s->second, SOL_SOCKET, SO_BROADCAST, (char *) &val, sizeof(val)) < 0) {
+				DEBUG(net, 1, "[udp] setting broadcast failed with: %i", GET_LAST_ERROR());
+			}
 		}
 #endif
 

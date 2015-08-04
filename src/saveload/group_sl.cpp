@@ -14,6 +14,8 @@
 
 #include "saveload.h"
 
+#include "../safeguards.h"
+
 static const SaveLoad _group_desc[] = {
 	 SLE_CONDVAR(Group, name,               SLE_NAME,                       0,  83),
 	 SLE_CONDSTR(Group, name,               SLE_STR | SLF_ALLOW_CONTROL, 0, 84, SL_MAX_VERSION),
@@ -21,6 +23,7 @@ static const SaveLoad _group_desc[] = {
 	     SLE_VAR(Group, owner,              SLE_UINT8),
 	     SLE_VAR(Group, vehicle_type,       SLE_UINT8),
 	     SLE_VAR(Group, replace_protection, SLE_BOOL),
+	 SLE_CONDVAR(Group, parent,             SLE_UINT16,                    189, SL_MAX_VERSION),
 	     SLE_END()
 };
 
@@ -42,6 +45,8 @@ static void Load_GRPS()
 	while ((index = SlIterateArray()) != -1) {
 		Group *g = new (index) Group();
 		SlObject(g, _group_desc);
+
+		if (IsSavegameVersionBefore(189)) g->parent = INVALID_GROUP;
 	}
 }
 

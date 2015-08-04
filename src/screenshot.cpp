@@ -28,6 +28,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static const char * const SCREENSHOT_NAME = "screenshot"; ///< Default filename of a saved screenshot.
 static const char * const HEIGHTMAP_NAME  = "heightmap";  ///< Default filename of a saved heightmap.
 
@@ -62,10 +64,8 @@ typedef bool ScreenshotHandlerProc(const char *name, ScreenshotCallback *callb, 
 
 /** Screenshot format information. */
 struct ScreenshotFormat {
-	const char *name;            ///< Name of the format.
 	const char *extension;       ///< File extension.
 	ScreenshotHandlerProc *proc; ///< Function for writing the screenshot.
-	bool supports_32bpp;         ///< Does this format support 32bpp images?
 };
 
 /*************************************************
@@ -571,10 +571,10 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 /** Available screenshot formats. */
 static const ScreenshotFormat _screenshot_formats[] = {
 #if defined(WITH_PNG)
-	{"PNG", "png", &MakePNGImage, true},
+	{"png", &MakePNGImage},
 #endif
-	{"BMP", "bmp", &MakeBMPImage, true},
-	{"PCX", "pcx", &MakePCXImage, false},
+	{"bmp", &MakeBMPImage},
+	{"pcx", &MakePCXImage},
 };
 
 /** Get filename extension of current screenshot file format. */
@@ -598,43 +598,12 @@ void InitializeScreenshotFormats()
 }
 
 /**
- * Give descriptive name of the screenshot format.
- * @param i Number of the screenshot format.
- * @return String constant describing the format.
- */
-const char *GetScreenshotFormatDesc(int i)
-{
-	return _screenshot_formats[i].name;
-}
-
-/**
- * Determine whether a certain screenshot format support 32bpp images.
- * @param i Number of the screenshot format.
- * @return true if 32bpp is supported.
- */
-bool GetScreenshotFormatSupports_32bpp(int i)
-{
-	return _screenshot_formats[i].supports_32bpp;
-}
-
-/**
- * Set the screenshot format to use.
- * @param i Number of the format.
- */
-void SetScreenshotFormat(uint i)
-{
-	assert(i < _num_screenshot_formats);
-	_cur_screenshot_format = i;
-	strecpy(_screenshot_format_name, _screenshot_formats[i].extension, lastof(_screenshot_format_name));
-}
-
-/**
  * Callback of the screenshot generator that dumps the current video buffer.
  * @see ScreenshotCallback
  */
 static void CurrentScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
-	Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	void *src = blitter->MoveTo(_screen.dst_ptr, 0, y);
 	blitter->CopyImageToBuffer(src, buf, _screen.width, n, pitch);
 }
@@ -716,12 +685,12 @@ static const char *MakeScreenshotName(const char *default_fn, const char *ext, b
 
 	/* Add extension to screenshot file */
 	size_t len = strlen(_screenshot_name);
-	snprintf(&_screenshot_name[len], lengthof(_screenshot_name) - len, ".%s", ext);
+	seprintf(&_screenshot_name[len], lastof(_screenshot_name), ".%s", ext);
 
 	const char *screenshot_dir = crashlog ? _personal_dir : FiosGetScreenshotDir();
 
 	for (uint serial = 1;; serial++) {
-		if (snprintf(_full_screenshot_name, lengthof(_full_screenshot_name), "%s%s", screenshot_dir, _screenshot_name) >= (int)lengthof(_full_screenshot_name)) {
+		if (seprintf(_full_screenshot_name, lastof(_full_screenshot_name), "%s%s", screenshot_dir, _screenshot_name) >= (int)lengthof(_full_screenshot_name)) {
 			/* We need more characters than MAX_PATH -> end with error */
 			_full_screenshot_name[0] = '\0';
 			break;
@@ -729,7 +698,7 @@ static const char *MakeScreenshotName(const char *default_fn, const char *ext, b
 		if (!generate) break; // allow overwriting of non-automatic filenames
 		if (!FileExists(_full_screenshot_name)) break;
 		/* If file exists try another one with same name, but just with a higher index */
-		snprintf(&_screenshot_name[len], lengthof(_screenshot_name) - len, "#%u.%s", serial, ext);
+		seprintf(&_screenshot_name[len], lastof(_screenshot_name) - len, "#%u.%s", serial, ext);
 	}
 
 	return _full_screenshot_name;
@@ -740,7 +709,7 @@ static bool MakeSmallScreenshot(bool crashlog)
 {
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension, crashlog), CurrentScreenCallback, NULL, _screen.width, _screen.height,
-			BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
+			BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
 }
 
 /**
@@ -796,7 +765,7 @@ static bool MakeLargeWorldScreenshot(ScreenshotType t)
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), LargeWorldCallback, &vp, vp.width, vp.height,
-			BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
+			BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
 }
 
 /**
@@ -814,7 +783,7 @@ static void HeightmapCallback(void *userdata, void *buffer, uint y, uint pitch, 
 	while (n > 0) {
 		TileIndex ti = TileXY(MapMaxX(), y);
 		for (uint x = MapMaxX(); true; x--) {
-			*buf = 16 * TileHeight(ti);
+			*buf = 256 * TileHeight(ti) / (1 + _settings_game.construction.max_heightlevel);
 			buf++;
 			if (x == 0) break;
 			ti = TILE_ADDXY(ti, -1, 0);

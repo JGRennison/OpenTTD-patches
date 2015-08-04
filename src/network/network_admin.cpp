@@ -25,6 +25,8 @@
 #include "../rev.h"
 #include "../game/game.hpp"
 
+#include "../safeguards.h"
+
 
 /* This file handles all the admin network commands. */
 
@@ -336,6 +338,11 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyInfo(const Company
 	p->Send_bool  (NetworkCompanyIsPassworded(c->index));
 	p->Send_uint32(c->inaugurated_year);
 	p->Send_bool  (c->is_ai);
+	p->Send_uint8 (CeilDiv(c->months_of_bankruptcy, 3)); // send as quarters_of_bankruptcy
+
+	for (size_t i = 0; i < lengthof(c->share_owners); i++) {
+		p->Send_uint8(c->share_owners[i]);
+	}
 
 	this->SendPacket(p);
 

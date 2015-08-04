@@ -16,7 +16,7 @@
 #include "../core/geometry_type.hpp"
 
 /** The base of all video drivers. */
-class VideoDriver: public Driver {
+class VideoDriver : public Driver {
 public:
 	/**
 	 * Mark a particular area dirty.
@@ -78,28 +78,15 @@ public:
 	 * An edit box lost the input focus. Abort character compositing if necessary.
 	 */
 	virtual void EditBoxLostFocus() {}
-};
-
-/** Base of the factory for the video drivers. */
-class VideoDriverFactoryBase: public DriverFactoryBase {
-};
-
-/**
- * Factory for the video drivers.
- * @tparam T The type of the video factory to register.
- */
-template <class T>
-class VideoDriverFactory: public VideoDriverFactoryBase {
-public:
-	VideoDriverFactory() { this->RegisterDriver(((T *)this)->GetName(), Driver::DT_VIDEO, ((T *)this)->priority); }
 
 	/**
-	 * Get the long, human readable, name for the Driver-class.
+	 * Get the currently active instance of the video driver.
 	 */
-	const char *GetName();
+	static VideoDriver *GetInstance() {
+		return static_cast<VideoDriver*>(*DriverFactoryBase::GetActiveDriver(Driver::DT_VIDEO));
+	}
 };
 
-extern VideoDriver *_video_driver;
 extern char *_ini_videodriver;
 extern int _num_resolutions;
 extern Dimension _resolutions[32];

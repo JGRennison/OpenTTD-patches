@@ -9,7 +9,6 @@
 
 /** @file extmidi.cpp Playing music via an external player. */
 
-#ifndef __MORPHOS__
 #include "../stdafx.h"
 #include "../debug.h"
 #include "../string_func.h"
@@ -25,6 +24,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include "../safeguards.h"
+
 #ifndef EXTERNAL_PLAYER
 /** The default external midi player. */
 #define EXTERNAL_PLAYER "timidity"
@@ -35,15 +36,15 @@ static FMusicDriver_ExtMidi iFMusicDriver_ExtMidi;
 
 const char *MusicDriver_ExtMidi::Start(const char * const * parm)
 {
-	if (strcmp(_video_driver->GetName(), "allegro") == 0 ||
-			strcmp(_sound_driver->GetName(), "allegro") == 0) {
+	if (strcmp(VideoDriver::GetInstance()->GetName(), "allegro") == 0 ||
+			strcmp(SoundDriver::GetInstance()->GetName(), "allegro") == 0) {
 		return "the extmidi driver does not work when Allegro is loaded.";
 	}
 
 	const char *command = GetDriverParam(parm, "cmd");
 	if (StrEmpty(command)) command = EXTERNAL_PLAYER;
 
-	this->command = strdup(command);
+	this->command = stredup(command);
 	this->song[0] = '\0';
 	this->pid = -1;
 	return NULL;
@@ -133,5 +134,3 @@ void MusicDriver_ExtMidi::DoStop()
 	waitpid(this->pid, NULL, 0);
 	this->pid = -1;
 }
-
-#endif /* __MORPHOS__ */

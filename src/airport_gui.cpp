@@ -31,6 +31,8 @@
 
 #include "widgets/airport_widget.h"
 
+#include "safeguards.h"
+
 
 static AirportClassID _selected_airport_class; ///< the currently visible airport class
 static int _selected_airport_index;            ///< the index of the selected airport in the current class or -1
@@ -44,7 +46,7 @@ void CcBuildAirport(const CommandCost &result, TileIndex tile, uint32 p1, uint32
 {
 	if (result.Failed()) return;
 
-	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT, tile);
+	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT_OTHER, tile);
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 }
 
@@ -78,6 +80,18 @@ struct BuildAirToolbarWindow : Window {
 	~BuildAirToolbarWindow()
 	{
 		if (_settings_client.gui.link_terraform_toolbar) DeleteWindowById(WC_SCEN_LAND_GEN, 0, false);
+	}
+
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	{
+		if (!gui_scope) return;
+
+		if (!CanBuildVehicleInfrastructure(VEH_AIRCRAFT)) delete this;
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)
@@ -205,7 +219,7 @@ class BuildAirportWindow : public PickerWindowBase {
 		DropDownList *list = new DropDownList();
 
 		for (uint i = 0; i < AirportClass::GetClassCount(); i++) {
-			list->push_back(new DropDownListStringItem(AirportClass::Get((AirportClassID)i)->name, i, false));
+			*list->Append() = new DropDownListStringItem(AirportClass::Get((AirportClassID)i)->name, i, false);
 		}
 
 		return list;
@@ -226,8 +240,27 @@ public:
 		this->SetWidgetLoweredState(WID_AP_BTN_DOHILIGHT, _settings_client.gui.station_show_coverage);
 		this->OnInvalidateData();
 
-		this->vscroll->SetCount(AirportClass::Get(_selected_airport_class)->GetSpecCount());
-		this->SelectFirstAvailableAirport(true);
+		/* Ensure airport class is valid (changing NewGRFs). */
+		_selected_airport_class = Clamp(_selected_airport_class, APC_BEGIN, (AirportClassID)(AirportClass::GetClassCount() - 1));
+		const AirportClass *ac = AirportClass::Get(_selected_airport_class);
+		this->vscroll->SetCount(ac->GetSpecCount());
+
+		/* Ensure the airport index is valid for this class (changing NewGRFs). */
+		_selected_airport_index = Clamp(_selected_airport_index, -1, ac->GetSpecCount() - 1);
+
+		/* Only when no valid airport was selected, we want to select the first airport. */
+		bool selectFirstAirport = true;
+		if (_selected_airport_index != -1) {
+			const AirportSpec *as = ac->GetSpec(_selected_airport_index);
+			if (as->IsAvailable()) {
+				/* Ensure the airport layout is valid. */
+				_selected_airport_layout = Clamp(_selected_airport_layout, 0, as->num_table - 1);
+				selectFirstAirport = false;
+				this->UpdateSelectSize();
+			}
+		}
+
+		if (selectFirstAirport) this->SelectFirstAvailableAirport(true);
 	}
 
 	virtual ~BuildAirportWindow()
@@ -392,7 +425,7 @@ public:
 		 * Never make the window smaller to avoid oscillating if the size change affects the acceptance.
 		 * (This is the case, if making the window bigger moves the mouse into the window.) */
 		if (top > bottom) {
-			ResizeWindow(this, 0, top - bottom);
+			ResizeWindow(this, 0, top - bottom, false);
 		}
 	}
 
@@ -524,6 +557,7 @@ static const NWidgetPart _nested_build_airport_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetFill(1, 0), SetPIP(2, 0, 2),
 		NWidget(WWT_LABEL, COLOUR_DARK_GREEN), SetDataTip(STR_STATION_BUILD_AIRPORT_CLASS_LABEL, STR_NULL), SetFill(1, 0),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_AP_CLASS_DROPDOWN), SetFill(1, 0), SetDataTip(STR_BLACK_STRING, STR_STATION_BUILD_AIRPORT_TOOLTIP),
+		NWidget(WWT_EMPTY, COLOUR_DARK_GREEN, WID_AP_AIRPORT_SPRITE), SetFill(1, 0),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_MATRIX, COLOUR_GREY, WID_AP_AIRPORT_LIST), SetFill(1, 0), SetMatrixDataTip(1, 5, STR_STATION_BUILD_AIRPORT_TOOLTIP), SetScrollbar(WID_AP_SCROLLBAR),
 			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_AP_SCROLLBAR),
@@ -533,7 +567,6 @@ static const NWidgetPart _nested_build_airport_widgets[] = {
 			NWidget(WWT_LABEL, COLOUR_GREY, WID_AP_LAYOUT_NUM), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BLACK_STRING, STR_NULL),
 			NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_AP_LAYOUT_INCREASE), SetMinimalSize(12, 0), SetDataTip(AWV_INCREASE, STR_NULL),
 		EndContainer(),
-		NWidget(WWT_EMPTY, COLOUR_DARK_GREEN, WID_AP_AIRPORT_SPRITE), SetFill(1, 0),
 		NWidget(WWT_EMPTY, COLOUR_DARK_GREEN, WID_AP_EXTRA_TEXT), SetFill(1, 0), SetMinimalSize(150, 0),
 	EndContainer(),
 	/* Bottom panel. */

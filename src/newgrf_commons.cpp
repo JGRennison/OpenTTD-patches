@@ -32,6 +32,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Constructor of generic class
  * @param offset end of original data for this entity. i.e: houses = 110
@@ -473,16 +475,16 @@ uint32 GetCompanyInfo(CompanyID owner, const Livery *l)
 /**
  * Get the error message from a shape/location/slope check callback result.
  * @param cb_res Callback result to translate. If bit 10 is set this is a standard error message, otherwise a NewGRF provided string.
- * @param grfid grfID to use to resolve a custom error message.
+ * @param grffile NewGRF to use to resolve a custom error message.
  * @param default_error Error message to use for the generic error.
  * @return CommandCost indicating success or the error message.
  */
-CommandCost GetErrorMessageFromLocationCallbackResult(uint16 cb_res, uint32 grfid, StringID default_error)
+CommandCost GetErrorMessageFromLocationCallbackResult(uint16 cb_res, const GRFFile *grffile, StringID default_error)
 {
 	CommandCost res;
 
 	if (cb_res < 0x400) {
-		res = CommandCost(GetGRFStringID(grfid, 0xD000 + cb_res));
+		res = CommandCost(GetGRFStringID(grffile->grfid, 0xD000 + cb_res));
 	} else {
 		switch (cb_res) {
 			case 0x400: return res; // No error.
@@ -501,7 +503,7 @@ CommandCost GetErrorMessageFromLocationCallbackResult(uint16 cb_res, uint32 grfi
 	}
 
 	/* Copy some parameters from the registers to the error message text ref. stack */
-	res.UseTextRefStack(4);
+	res.UseTextRefStack(grffile, 4);
 
 	return res;
 }

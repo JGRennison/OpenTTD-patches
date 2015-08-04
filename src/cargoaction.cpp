@@ -14,6 +14,8 @@
 #include "cargoaction.h"
 #include "station_base.h"
 
+#include "safeguards.h"
+
 /**
  * Decides if a packet needs to be split.
  * @param cp Packet to be either split or moved in one piece.
@@ -224,8 +226,7 @@ bool VehicleCargoReroute::operator()(CargoPacket *cp)
 	}
 	if (this->source != this->destination) {
 		this->source->RemoveFromMeta(cp_new, VehicleCargoList::MTA_TRANSFER, cp_new->Count());
-		this->source->AddToMeta(cp_new, VehicleCargoList::MTA_TRANSFER);
-		this->destination->action_counts[VehicleCargoList::MTA_TRANSFER] += cp_new->Count();
+		this->destination->AddToMeta(cp_new, VehicleCargoList::MTA_TRANSFER);
 	}
 
 	/* Legal, as front pushing doesn't invalidate iterators in std::list. */

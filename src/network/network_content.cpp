@@ -27,6 +27,8 @@
 #include <zlib.h>
 #endif
 
+#include "../safeguards.h"
+
 extern bool HasScenario(const ContentInfo *ci, bool md5sum);
 
 /** The client we use to connect to the server. */
@@ -388,7 +390,7 @@ static char *GetFullFilename(const ContentInfo *ci, bool compressed)
 	if (dir == NO_DIRECTORY) return NULL;
 
 	static char buf[MAX_PATH];
-	FioGetFullPath(buf, lengthof(buf), SP_AUTODOWNLOAD_DIR, dir, ci->filename);
+	FioGetFullPath(buf, lastof(buf), SP_AUTODOWNLOAD_DIR, dir, ci->filename);
 	strecat(buf, compressed ? ".tar.gz" : ".tar", lastof(buf));
 
 	return buf;
@@ -404,6 +406,8 @@ static bool GunzipFile(const ContentInfo *ci)
 #if defined(WITH_ZLIB)
 	bool ret = true;
 	FILE *ftmp = fopen(GetFullFilename(ci, true), "rb");
+	if (ftmp == NULL) return false;
+
 	gzFile fin = gzdopen(fileno(ftmp), "rb");
 	FILE *fout = fopen(GetFullFilename(ci, false), "wb");
 
@@ -703,7 +707,8 @@ ClientNetworkContentSocketHandler::ClientNetworkContentSocketHandler() :
 	http_response_index(-2),
 	curFile(NULL),
 	curInfo(NULL),
-	isConnecting(false)
+	isConnecting(false),
+	lastActivity(_realtime_tick)
 {
 }
 

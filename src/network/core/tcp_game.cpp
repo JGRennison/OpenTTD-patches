@@ -22,16 +22,16 @@
 
 #include "table/strings.h"
 
+#include "../../safeguards.h"
+
 /**
  * Create a new socket for the game connection.
  * @param s The socket to connect with.
  */
-NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s)
+NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s) : info(NULL), client_id(INVALID_CLIENT_ID),
+		last_frame(_frame_counter), last_frame_server(_frame_counter), last_packet(_realtime_tick)
 {
-	this->sock              = s;
-	this->last_frame        = _frame_counter;
-	this->last_frame_server = _frame_counter;
-	this->last_packet       = _realtime_tick;
+	this->sock = s;
 }
 
 /**

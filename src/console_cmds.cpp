@@ -40,6 +40,8 @@
 #include "game/game.hpp"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /* scriptfile handling */
 static bool _script_running; ///< Script is running (used to abort execution when #ConReturn is encountered).
 
@@ -1342,7 +1344,7 @@ DEF_CONSOLE_CMD(ConAlias)
 		IConsoleAliasRegister(argv[1], argv[2]);
 	} else {
 		free(alias->cmdline);
-		alias->cmdline = strdup(argv[2]);
+		alias->cmdline = stredup(argv[2]);
 	}
 	return true;
 }
@@ -1716,6 +1718,22 @@ struct ConsoleContentCallback : public ContentCallback {
 	}
 };
 
+/**
+ * Outputs content state information to console
+ * @param ci the content info
+ */
+static void OutputContentState(const ContentInfo *const ci)
+{
+	static const char * const types[] = { "Base graphics", "NewGRF", "AI", "AI library", "Scenario", "Heightmap", "Base sound", "Base music", "Game script", "GS library" };
+	assert_compile(lengthof(types) == CONTENT_TYPE_END - CONTENT_TYPE_BEGIN);
+	static const char * const states[] = { "Not selected", "Selected", "Dep Selected", "Installed", "Unknown" };
+	static const TextColour state_to_colour[] = { CC_COMMAND, CC_INFO, CC_INFO, CC_WHITE, CC_ERROR };
+
+	char buf[sizeof(ci->md5sum) * 2 + 1];
+	md5sumToString(buf, lastof(buf), ci->md5sum);
+	IConsolePrintF(state_to_colour[ci->state], "%d, %s, %s, %s, %08X, %s", ci->id, types[ci->type - 1], states[ci->state], ci->name, ci->unique_id, buf);
+}
+
 DEF_CONSOLE_CMD(ConContent)
 {
 	static ContentCallback *cb = NULL;
@@ -1725,12 +1743,12 @@ DEF_CONSOLE_CMD(ConContent)
 	}
 
 	if (argc <= 1) {
-		IConsoleHelp("Query, select and download content. Usage: 'content update|upgrade|select [all|id]|unselect [all|id]|state|download'");
+		IConsoleHelp("Query, select and download content. Usage: 'content update|upgrade|select [all|id]|unselect [all|id]|state [filter]|download'");
 		IConsoleHelp("  update: get a new list of downloadable content; must be run first");
 		IConsoleHelp("  upgrade: select all items that are upgrades");
-		IConsoleHelp("  select: select a specific item given by its id or 'all' to select all");
+		IConsoleHelp("  select: select a specific item given by its id or 'all' to select all. If no parameter is given, all selected content will be listed");
 		IConsoleHelp("  unselect: unselect a specific item given by its id or 'all' to unselect all");
-		IConsoleHelp("  state: show the download/select state of all downloadable content");
+		IConsoleHelp("  state: show the download/select state of all downloadable content. Optionally give a filter string");
 		IConsoleHelp("  download: download all content you've selected");
 		return true;
 	}
@@ -1747,10 +1765,13 @@ DEF_CONSOLE_CMD(ConContent)
 
 	if (strcasecmp(argv[1], "select") == 0) {
 		if (argc <= 2) {
-			IConsoleError("You must enter the id.");
-			return false;
-		}
-		if (strcasecmp(argv[2], "all") == 0) {
+			/* List selected content */
+			IConsolePrintF(CC_WHITE, "id, type, state, name");
+			for (ConstContentIterator iter = _network_content_client.Begin(); iter != _network_content_client.End(); iter++) {
+				if ((*iter)->state != ContentInfo::SELECTED && (*iter)->state != ContentInfo::AUTOSELECTED) continue;
+				OutputContentState(*iter);
+			}
+		} else if (strcasecmp(argv[2], "all") == 0) {
 			_network_content_client.SelectAll();
 		} else {
 			_network_content_client.Select((ContentID)atoi(argv[2]));
@@ -1774,15 +1795,8 @@ DEF_CONSOLE_CMD(ConContent)
 	if (strcasecmp(argv[1], "state") == 0) {
 		IConsolePrintF(CC_WHITE, "id, type, state, name");
 		for (ConstContentIterator iter = _network_content_client.Begin(); iter != _network_content_client.End(); iter++) {
-			static const char * const types[] = { "Base graphics", "NewGRF", "AI", "AI library", "Scenario", "Heightmap", "Base sound", "Base music", "Game script", "GS library" };
-			assert_compile(lengthof(types) == CONTENT_TYPE_END - CONTENT_TYPE_BEGIN);
-			static const char * const states[] = { "Not selected", "Selected", "Dep Selected", "Installed", "Unknown" };
-			static const TextColour state_to_colour[] = { CC_COMMAND, CC_INFO, CC_INFO, CC_WHITE, CC_ERROR };
-
-			const ContentInfo *ci = *iter;
-			char buf[sizeof(ci->md5sum) * 2 + 1];
-			md5sumToString(buf, lastof(buf), ci->md5sum);
-			IConsolePrintF(state_to_colour[ci->state], "%d, %s, %s, %s, %08X, %s", ci->id, types[ci->type - 1], states[ci->state], ci->name, ci->unique_id, buf);
+			if (argc > 2 && strcasestr((*iter)->name, argv[2]) == NULL) continue;
+			OutputContentState(*iter);
 		}
 		return true;
 	}

@@ -21,7 +21,7 @@ struct RailTypeScopeResolver : public ScopeResolver {
 	TileIndex tile;      ///< Tracktile. For track on a bridge this is the southern bridgehead.
 	TileContext context; ///< Are we resolving sprites for the upper halftile, or on a bridge?
 
-	RailTypeScopeResolver(ResolverObject *ro, TileIndex tile, TileContext context);
+	RailTypeScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context);
 
 	/* virtual */ uint32 GetRandomBits() const;
 	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
@@ -31,7 +31,7 @@ struct RailTypeScopeResolver : public ScopeResolver {
 struct RailTypeResolverObject : public ResolverObject {
 	RailTypeScopeResolver railtype_scope; ///< Resolver for the railtype scope.
 
-	RailTypeResolverObject(TileIndex tile, TileContext context, const GRFFile *grffile, uint32 param1 = 0, uint32 param2 = 0);
+	RailTypeResolverObject(const RailtypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1 = 0, uint32 param2 = 0);
 
 	/* virtual */ ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0)
 	{
@@ -44,7 +44,7 @@ struct RailTypeResolverObject : public ResolverObject {
 	/* virtual */ const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const;
 };
 
-SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context = TCX_NORMAL);
+SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context = TCX_NORMAL, uint *num_results = NULL);
 SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui = false);
 
 uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile);

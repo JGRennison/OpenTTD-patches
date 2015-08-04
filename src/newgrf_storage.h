@@ -13,29 +13,49 @@
 #define NEWGRF_STORAGE_H
 
 #include "core/pool_type.hpp"
+#include "tile_type.h"
 
 /**
- * Base class for all NewGRF storage arrays. Nothing fancy, only here
- * so we have a generalised class to use.
+ * Mode switches to the behaviour of persistent storage array.
  */
-struct BaseStorageArray {
-	virtual ~BaseStorageArray();
+enum PersistentStorageMode {
+	PSM_ENTER_GAMELOOP,   ///< Enter the gameloop, changes will be permanent.
+	PSM_LEAVE_GAMELOOP,   ///< Leave the gameloop, changes will be temporary.
+	PSM_ENTER_COMMAND,    ///< Enter command scope, changes will be permanent.
+	PSM_LEAVE_COMMAND,    ///< Leave command scope, revert to previous mode.
+	PSM_ENTER_TESTMODE,   ///< Enter command test mode, changes will be tempoary.
+	PSM_LEAVE_TESTMODE,   ///< Leave command test mode, revert to previous mode.
+};
+
+/**
+ * Base class for all persistent NewGRF storage arrays. Nothing fancy, only here
+ * so we have a generalised access to the virtual methods.
+ */
+struct BasePersistentStorageArray {
+	uint32 grfid;    ///< GRFID associated to this persistent storage. A value of zero means "default".
+	byte feature;    ///< NOSAVE: Used to identify in the owner of the array in debug output.
+	TileIndex tile;  ///< NOSAVE: Used to identify in the owner of the array in debug output.
+
+	virtual ~BasePersistentStorageArray();
+
+	static void SwitchMode(PersistentStorageMode mode, bool ignore_prev_mode = false);
+
+protected:
+	/**
+	 * Discard temporary changes.
+	 */
+	virtual void ClearChanges() = 0;
 
 	/**
-	 * Clear the changes made since the last #ClearChanges.
-	 * This can be done in two ways:
-	 *  - saving the changes permanently
-	 *  - reverting to the previous version
-	 * @param keep_changes do we save or revert the changes since the last #ClearChanges?
+	 * Check whether currently changes to the storage shall be persistent or
+	 * temporary till the next call to ClearChanges().
 	 */
-	virtual void ClearChanges(bool keep_changes) = 0;
+	static bool AreChangesPersistent() { return (gameloop || command) && !testmode; }
 
-	/**
-	 * Stores some value at a given position.
-	 * @param pos   the position to write at
-	 * @param value the value to write
-	 */
-	virtual void StoreValue(uint pos, int32 value) = 0;
+private:
+	static bool gameloop;
+	static bool command;
+	static bool testmode;
 };
 
 /**
@@ -45,7 +65,7 @@ struct BaseStorageArray {
  * @tparam SIZE the size of the array.
  */
 template <typename TYPE, uint SIZE>
-struct PersistentStorageArray : BaseStorageArray {
+struct PersistentStorageArray : BasePersistentStorageArray {
 	TYPE storage[SIZE]; ///< Memory to for the storage array
 	TYPE *prev_storage; ///< Memory to store "old" states so we can revert them on the performance of test cases for commands etc.
 
@@ -84,13 +104,15 @@ struct PersistentStorageArray : BaseStorageArray {
 		if (this->storage[pos] == value) return;
 
 		/* We do not have made a backup; lets do so */
-		if (this->prev_storage != NULL) {
+		if (AreChangesPersistent()) {
+			assert(this->prev_storage == NULL);
+		} else if (this->prev_storage == NULL) {
 			this->prev_storage = MallocT<TYPE>(SIZE);
 			memcpy(this->prev_storage, this->storage, sizeof(this->storage));
 
 			/* We only need to register ourselves when we made the backup
 			 * as that is the only time something will have changed */
-			AddChangedStorage(this);
+			AddChangedPersistentStorage(this);
 		}
 
 		this->storage[pos] = value;
@@ -109,18 +131,13 @@ struct PersistentStorageArray : BaseStorageArray {
 		return this->storage[pos];
 	}
 
-	/**
-	 * Clear the changes, or assign them permanently to the storage.
-	 * @param keep_changes Whether to assign or ditch the changes.
-	 */
-	void ClearChanges(bool keep_changes)
+	void ClearChanges()
 	{
-		assert(this->prev_storage != NULL);
-
-		if (!keep_changes) {
+		if (this->prev_storage != NULL) {
 			memcpy(this->storage, this->prev_storage, sizeof(this->storage));
+			free(this->prev_storage);
+			this->prev_storage = NULL;
 		}
-		free(this->prev_storage);
 	}
 };
 
@@ -132,13 +149,17 @@ struct PersistentStorageArray : BaseStorageArray {
  * @tparam SIZE the size of the array.
  */
 template <typename TYPE, uint SIZE>
-struct TemporaryStorageArray : BaseStorageArray {
+struct TemporaryStorageArray {
 	TYPE storage[SIZE]; ///< Memory to for the storage array
+	uint16 init[SIZE];  ///< Storage has been assigned, if this equals 'init_key'.
+	uint16 init_key;    ///< Magic key to 'init'.
 
 	/** Simply construct the array */
 	TemporaryStorageArray()
 	{
-		memset(this->storage, 0, sizeof(this->storage));
+		memset(this->storage, 0, sizeof(this->storage)); // not exactly needed, but makes code analysers happy
+		memset(this->init, 0, sizeof(this->init));
+		this->init_key = 1;
 	}
 
 	/**
@@ -152,7 +173,7 @@ struct TemporaryStorageArray : BaseStorageArray {
 		if (pos >= SIZE) return;
 
 		this->storage[pos] = value;
-		AddChangedStorage(this);
+		this->init[pos] = this->init_key;
 	}
 
 	/**
@@ -165,18 +186,27 @@ struct TemporaryStorageArray : BaseStorageArray {
 		/* Out of the scope of the array */
 		if (pos >= SIZE) return 0;
 
+		if (this->init[pos] != this->init_key) {
+			/* Unassigned since last call to ClearChanges */
+			return 0;
+		}
+
 		return this->storage[pos];
 	}
 
-	void ClearChanges(bool keep_changes)
+	void ClearChanges()
 	{
-		memset(this->storage, 0, sizeof(this->storage));
+		/* Increment init_key to invalidate all storage */
+		this->init_key++;
+		if (this->init_key == 0) {
+			/* When init_key wraps around, we need to reset everything */
+			memset(this->init, 0, sizeof(this->init));
+			this->init_key = 1;
+		}
 	}
 };
 
-void AddChangedStorage(BaseStorageArray *storage);
-void ClearStorageChanges(bool keep_changes);
-
+void AddChangedPersistentStorage(BasePersistentStorageArray *storage);
 
 typedef PersistentStorageArray<int32, 16> OldPersistentStorage;
 
@@ -189,22 +219,14 @@ extern PersistentStoragePool _persistent_storage_pool;
 
 /**
  * Class for pooled persistent storage of data.
- * On #ClearChanges that data is always zero-ed.
  */
 struct PersistentStorage : PersistentStorageArray<int32, 16>, PersistentStoragePool::PoolItem<&_persistent_storage_pool> {
-	uint32 grfid; ///< GRFID associated to this persistent storage. A value of zero means "default".
-
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
-	PersistentStorage(const uint32 new_grfid) : grfid(new_grfid)
+	PersistentStorage(const uint32 new_grfid, byte feature, TileIndex tile)
 	{
-		this->prev_storage = NULL;
-		memset(this->storage, 0, sizeof(this->storage));
-	}
-
-	/** Free the memory used by the persistent storage. */
-	~PersistentStorage()
-	{
-		free(this->prev_storage);
+		this->grfid = new_grfid;
+		this->feature = feature;
+		this->tile = tile;
 	}
 };
 

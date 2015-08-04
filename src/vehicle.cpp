@@ -50,8 +50,12 @@
 #include "tunnel_map.h"
 #include "depot_map.h"
 #include "gamelog.h"
+#include "linkgraph/linkgraph.h"
+#include "linkgraph/refresh.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 #define GEN_HASH(x, y) ((GB((y), 6 + ZOOM_LVL_SHIFT, 6) << 6) + GB((x), 7 + ZOOM_LVL_SHIFT, 6))
 
@@ -233,7 +237,7 @@ uint Vehicle::Crash(bool flooded)
 		/* We do not transfer reserver cargo back, so TotalCount() instead of StoredCount() */
 		if (IsCargoInClass(v->cargo_type, CC_PASSENGERS)) pass += v->cargo.TotalCount();
 		v->vehstatus |= VS_CRASHED;
-		MarkSingleVehicleDirty(v);
+		v->MarkAllViewportsDirty();
 	}
 
 	/* Dirty some windows */
@@ -261,6 +265,9 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 {
 	const Engine *e = Engine::Get(engine);
 	GRFConfig *grfconfig = GetGRFConfig(e->GetGRFID());
+
+	/* Missing GRF. Nothing useful can be done in this situation. */
+	if (grfconfig == NULL) return;
 
 	if (!HasBit(grfconfig->grf_bugs, bug_type)) {
 		SetBit(grfconfig->grf_bugs, bug_type);
@@ -833,7 +840,7 @@ Vehicle::~Vehicle()
 
 	/* sometimes, eg. for disaster vehicles, when company bankrupts, when removing crashed/flooded vehicles,
 	 * it may happen that vehicle chain is deleted when visible */
-	if (!(this->vehstatus & VS_HIDDEN)) MarkSingleVehicleDirty(this);
+	if (!(this->vehstatus & VS_HIDDEN)) this->MarkAllViewportsDirty();
 
 	Vehicle *v = this->Next();
 	this->SetNext(NULL);
@@ -1233,9 +1240,10 @@ bool Vehicle::HandleBreakdown()
 				this->cur_speed = 0;
 
 				if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
+					bool train_or_ship = this->type == VEH_TRAIN || this->type == VEH_SHIP;
 					SndPlayVehicleFx((_settings_game.game_creation.landscape != LT_TOYLAND) ?
-						(this->type == VEH_TRAIN ? SND_10_TRAIN_BREAKDOWN : SND_0F_VEHICLE_BREAKDOWN) :
-						(this->type == VEH_TRAIN ? SND_3A_COMEDY_BREAKDOWN_2 : SND_35_COMEDY_BREAKDOWN), this);
+						(train_or_ship ? SND_10_TRAIN_BREAKDOWN : SND_0F_VEHICLE_BREAKDOWN) :
+						(train_or_ship ? SND_3A_COMEDY_BREAKDOWN_2 : SND_35_COMEDY_BREAKDOWN), this);
 				}
 
 				if (!(this->vehstatus & VS_HIDDEN) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE)) {
@@ -1387,7 +1395,7 @@ void VehicleEnterDepot(Vehicle *v)
 			t->wait_counter = 0;
 			t->force_proceed = TFP_NONE;
 			ClrBit(t->flags, VRF_TOGGLE_REVERSE);
-			t->ConsistChanged(true);
+			t->ConsistChanged(CCF_ARRANGE);
 			break;
 		}
 
@@ -1433,21 +1441,19 @@ void VehicleEnterDepot(Vehicle *v)
 		SetWindowDirty(WC_VEHICLE_VIEW, v->index);
 
 		const Order *real_order = v->GetOrder(v->cur_real_order_index);
-		Order t = v->current_order;
-		v->current_order.MakeDummy();
 
 		/* Test whether we are heading for this depot. If not, do nothing.
 		 * Note: The target depot for nearest-/manual-depot-orders is only updated on junctions, but we want to accept every depot. */
-		if ((t.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) &&
+		if ((v->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) &&
 				real_order != NULL && !(real_order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) &&
-				(v->type == VEH_AIRCRAFT ? t.GetDestination() != GetStationIndex(v->tile) : v->dest_tile != v->tile)) {
+				(v->type == VEH_AIRCRAFT ? v->current_order.GetDestination() != GetStationIndex(v->tile) : v->dest_tile != v->tile)) {
 			/* We are heading for another depot, keep driving. */
 			return;
 		}
 
-		if (t.IsRefit()) {
+		if (v->current_order.IsRefit()) {
 			Backup<CompanyByte> cur_company(_current_company, v->owner, FILE_LINE);
-			CommandCost cost = DoCommand(v->tile, v->index, t.GetRefitCargo() | 0xFF << 8, DC_EXEC, GetCmdRefitVeh(v));
+			CommandCost cost = DoCommand(v->tile, v->index, v->current_order.GetRefitCargo() | 0xFF << 8, DC_EXEC, GetCmdRefitVeh(v));
 			cur_company.Restore();
 
 			if (cost.Failed()) {
@@ -1465,13 +1471,13 @@ void VehicleEnterDepot(Vehicle *v)
 			}
 		}
 
-		if (t.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) {
+		if (v->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) {
 			/* Part of orders */
 			v->DeleteUnreachedImplicitOrders();
 			UpdateVehicleTimetable(v, true);
 			v->IncrementImplicitOrderIndex();
 		}
-		if (t.GetDepotActionType() & ODATFB_HALT) {
+		if (v->current_order.GetDepotActionType() & ODATFB_HALT) {
 			/* Vehicles are always stopped on entering depots. Do not restart this one. */
 			_vehicles_to_autoreplace[v] = false;
 			/* Invalidate last_loading_station. As the link from the station
@@ -1484,6 +1490,7 @@ void VehicleEnterDepot(Vehicle *v)
 			}
 			AI::NewEvent(v->owner, new ScriptEventVehicleWaitingInDepot(v->index));
 		}
+		v->current_order.MakeDummy();
 	}
 }
 
@@ -1491,67 +1498,62 @@ void VehicleEnterDepot(Vehicle *v)
 /**
  * Update the position of the vehicle. This will update the hash that tells
  *  which vehicles are on a tile.
- * @param v The vehicle to update.
  */
-void VehicleUpdatePosition(Vehicle *v)
+void Vehicle::UpdatePosition()
 {
-	UpdateVehicleTileHash(v, false);
+	UpdateVehicleTileHash(this, false);
 }
 
 /**
  * Update the vehicle on the viewport, updating the right hash and setting the
  *  new coordinates.
- * @param v The vehicle to update.
  * @param dirty Mark the (new and old) coordinates of the vehicle as dirty.
  */
-void VehicleUpdateViewport(Vehicle *v, bool dirty)
+void Vehicle::UpdateViewport(bool dirty)
 {
-	int img = v->cur_image;
-	Point pt = RemapCoords(v->x_pos + v->x_offs, v->y_pos + v->y_offs, v->z_pos);
+	int img = this->cur_image;
+	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
 	const Sprite *spr = GetSprite(img, ST_NORMAL);
 
 	pt.x += spr->x_offs;
 	pt.y += spr->y_offs;
 
-	UpdateVehicleViewportHash(v, pt.x, pt.y);
+	UpdateVehicleViewportHash(this, pt.x, pt.y);
 
-	Rect old_coord = v->coord;
-	v->coord.left   = pt.x;
-	v->coord.top    = pt.y;
-	v->coord.right  = pt.x + spr->width + 2 * ZOOM_LVL_BASE;
-	v->coord.bottom = pt.y + spr->height + 2 * ZOOM_LVL_BASE;
+	Rect old_coord = this->coord;
+	this->coord.left   = pt.x;
+	this->coord.top    = pt.y;
+	this->coord.right  = pt.x + spr->width + 2 * ZOOM_LVL_BASE;
+	this->coord.bottom = pt.y + spr->height + 2 * ZOOM_LVL_BASE;
 
 	if (dirty) {
 		if (old_coord.left == INVALID_COORD) {
-			MarkSingleVehicleDirty(v);
+			this->MarkAllViewportsDirty();
 		} else {
-			MarkAllViewportsDirty(
-				min(old_coord.left,   v->coord.left),
-				min(old_coord.top,    v->coord.top),
-				max(old_coord.right,  v->coord.right) + 1 * ZOOM_LVL_BASE,
-				max(old_coord.bottom, v->coord.bottom) + 1 * ZOOM_LVL_BASE
-			);
+			::MarkAllViewportsDirty(
+					min(old_coord.left,   this->coord.left),
+					min(old_coord.top,    this->coord.top),
+					max(old_coord.right,  this->coord.right),
+					max(old_coord.bottom, this->coord.bottom));
 		}
 	}
 }
 
 /**
  * Update the position of the vehicle, and update the viewport.
- * @param v The vehicle to update.
  */
-void VehicleUpdatePositionAndViewport(Vehicle *v)
+void Vehicle::UpdatePositionAndViewport()
 {
-	VehicleUpdatePosition(v);
-	VehicleUpdateViewport(v, true);
+	this->UpdatePosition();
+	this->UpdateViewport(true);
 }
 
 /**
  * Marks viewports dirty where the vehicle's image is.
- * @param v vehicle to mark dirty
  */
-void MarkSingleVehicleDirty(const Vehicle *v)
+void Vehicle::MarkAllViewportsDirty() const
 {
-	MarkAllViewportsDirty(v->coord.left, v->coord.top, v->coord.right + 1 * ZOOM_LVL_BASE, v->coord.bottom + 1 * ZOOM_LVL_BASE);
+	::MarkAllViewportsDirty(this->coord.left, this->coord.top, this->coord.right, this->coord.bottom);
 }
 
 /**
@@ -1977,13 +1979,12 @@ void Vehicle::BeginLoading()
 
 	} else {
 		/* We weren't scheduled to stop here. Insert an implicit order
-		 * to show that we are stopping here, but only do that if the order
-		 * list isn't empty.
+		 * to show that we are stopping here.
 		 * While only groundvehicles have implicit orders, e.g. aircraft might still enter
 		 * the 'wrong' terminal when skipping orders etc. */
 		Order *in_list = this->GetOrder(this->cur_implicit_order_index);
-		if (this->IsGroundVehicle() && in_list != NULL &&
-				(!in_list->IsType(OT_IMPLICIT) ||
+		if (this->IsGroundVehicle() &&
+				(in_list == NULL || !in_list->IsType(OT_IMPLICIT) ||
 				in_list->GetDestination() != this->last_station_visited)) {
 			bool suppress_implicit_orders = HasBit(this->GetGroundVehicleFlags(), GVF_SUPPRESS_IMPLICIT_ORDERS);
 			/* Do not create consecutive duplicates of implicit orders */
@@ -1993,18 +1994,28 @@ void Vehicle::BeginLoading()
 					prev_order->GetDestination() != this->last_station_visited) {
 
 				/* Prefer deleting implicit orders instead of inserting new ones,
-				 * so test whether the right order follows later */
+				 * so test whether the right order follows later. In case of only
+				 * implicit orders treat the last order in the list like an
+				 * explicit one, except if the overall number of orders surpasses
+				 * IMPLICIT_ORDER_ONLY_CAP. */
 				int target_index = this->cur_implicit_order_index;
 				bool found = false;
-				while (target_index != this->cur_real_order_index) {
+				while (target_index != this->cur_real_order_index || this->GetNumManualOrders() == 0) {
 					const Order *order = this->GetOrder(target_index);
+					if (order == NULL) break; // No orders.
 					if (order->IsType(OT_IMPLICIT) && order->GetDestination() == this->last_station_visited) {
 						found = true;
 						break;
 					}
 					target_index++;
-					if (target_index >= this->orders.list->GetNumOrders()) target_index = 0;
-					assert(target_index != this->cur_implicit_order_index); // infinite loop?
+					if (target_index >= this->orders.list->GetNumOrders()) {
+						if (this->GetNumManualOrders() == 0 &&
+								this->GetNumOrders() < IMPLICIT_ORDER_ONLY_CAP) {
+							break;
+						}
+						target_index = 0;
+					}
+					if (target_index == this->cur_implicit_order_index) break; // Avoid infinite loop.
 				}
 
 				if (found) {
@@ -2034,7 +2045,9 @@ void Vehicle::BeginLoading()
 							assert(order != NULL);
 						}
 					}
-				} else if (!suppress_implicit_orders && this->orders.list->GetNumOrders() < MAX_VEH_ORDER_ID && Order::CanAllocateItem()) {
+				} else if (!suppress_implicit_orders &&
+						((this->orders.list == NULL ? OrderList::CanAllocateItem() : this->orders.list->GetNumOrders() < MAX_VEH_ORDER_ID)) &&
+						Order::CanAllocateItem()) {
 					/* Insert new implicit order */
 					Order *implicit_order = new Order();
 					implicit_order->MakeImplicit(this->last_station_visited);
@@ -2108,7 +2121,7 @@ void Vehicle::LeaveStation()
 			 * during the stop and that refit_cap == cargo_cap for each vehicle in
 			 * the consist. */
 			this->ResetRefitCaps();
-			this->RefreshNextHopsStats();
+			LinkRefresher::Run(this);
 
 			/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
 			this->last_loading_station = this->last_station_visited;
@@ -2135,6 +2148,8 @@ void Vehicle::LeaveStation()
 
 		SetBit(Train::From(this)->flags, VRF_LEAVING_STATION);
 	}
+
+	this->MarkDirty();
 }
 
 /**
@@ -2146,158 +2161,6 @@ void Vehicle::ResetRefitCaps()
 }
 
 /**
- * Simulated cargo type and capacity for prediction of future links.
- */
-struct RefitDesc {
-	CargoID cargo;    ///< Cargo type the vehicle will be carrying.
-	uint16 capacity;  ///< Capacity the vehicle will have.
-	uint16 remaining; ///< Capacity remaining from before the previous refit.
-	RefitDesc(CargoID cargo, uint16 capacity, uint16 remaining) :
-			cargo(cargo), capacity(capacity), remaining(remaining) {}
-};
-
-typedef std::list<RefitDesc> RefitList;
-typedef std::map<CargoID, uint> CapacitiesMap;
-
-/**
- * Predict a vehicle's course from its current state and refresh all links it
- * will visit.
- */
-void Vehicle::RefreshNextHopsStats()
-{
-	/* Assemble list of capacities and set last loading stations to 0. */
-	CapacitiesMap capacities;
-	RefitList refit_capacities;
-	for (Vehicle *v = this; v != NULL; v = v->Next()) {
-		refit_capacities.push_back(RefitDesc(v->cargo_type, v->cargo_cap, v->refit_cap));
-		if (v->refit_cap > 0) capacities[v->cargo_type] += v->refit_cap;
-	}
-
-	/* If orders were deleted while loading, we're done here.*/
-	if (this->orders.list == NULL) return;
-
-	const Order *first = this->GetOrder(this->cur_implicit_order_index);
-
-	/* Make sure the first order is a station order. */
-	first = this->orders.list->GetNextStoppingOrder(this, first, 0);
-	if (first == NULL) return;
-
-	const Order *cur = first;
-	const Order *next = first;
-	bool has_cargo = this->last_loading_station != INVALID_STATION;
-	bool was_refit = false;
-	uint hops = 0;
-
-	while (next != NULL) {
-
-		/* If the refit cargo is CT_AUTO_REFIT, we're optimistic and assume the
-		 * cargo will stay the same. The point of this method is to avoid
-		 * deadlocks due to vehicles waiting for cargo that isn't being routed,
-		 * yet. That situation will not occur if the vehicle is actually
-		 * carrying a different cargo in the end. */
-		if ((next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_GOTO_STATION)) &&
-				next->IsRefit() && !next->IsAutoRefit()) {
-			was_refit = true;
-			CargoID new_cid = next->GetRefitCargo();
-			RefitList::iterator refit_it = refit_capacities.begin();
-			for (Vehicle *v = this; v != NULL; v = v->Next()) {
-				const Engine *e = Engine::Get(v->engine_type);
-				if (!HasBit(e->info.refit_mask, new_cid)) {
-					++refit_it;
-					continue;
-				}
-
-				/* Back up the vehicle's cargo type */
-				CargoID temp_cid = v->cargo_type;
-				byte temp_subtype = v->cargo_subtype;
-				v->cargo_type = new_cid;
-				v->cargo_subtype = GetBestFittingSubType(v, v, new_cid);
-
-				uint16 mail_capacity = 0;
-				uint amount = e->DetermineCapacity(v, &mail_capacity);
-
-				/* Restore the original cargo type */
-				v->cargo_type = temp_cid;
-				v->cargo_subtype = temp_subtype;
-
-				/* Skip on next refit. */
-				if (new_cid != refit_it->cargo && refit_it->remaining > 0) {
-					capacities[refit_it->cargo] -= refit_it->remaining;
-					refit_it->remaining = 0;
-				} else if (amount < refit_it->remaining) {
-					capacities[refit_it->cargo] -= refit_it->remaining - amount;
-					refit_it->remaining = amount;
-				}
-				refit_it->capacity = amount;
-				refit_it->cargo = new_cid;
-
-				++refit_it;
-
-				/* Special case for aircraft with mail. */
-				if (v->type == VEH_AIRCRAFT) {
-					if (mail_capacity < refit_it->remaining) {
-						capacities[refit_it->cargo] -= refit_it->remaining - mail_capacity;
-						refit_it->remaining = mail_capacity;
-					}
-					refit_it->capacity = mail_capacity;
-					break; // aircraft have only one vehicle
-				}
-			}
-		}
-
-		/* Only reset the refit capacities if the "previous" next is a station,
-		 * meaning that either the vehicle was refit at the previous station or
-		 * it wasn't at all refit during the current hop. */
-		bool reset_refit = was_refit && (next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT));
-
-		/* Reassign next with the following stop. This can be a station or a
-		 * depot. Allow the order list to be walked twice so that we can
-		 * reassign "first" below without afterwards terminating early here. */
-		next = this->orders.list->GetNextStoppingOrder(this,
-				this->orders.list->GetNext(next), hops++ / 2);
-		if (next == NULL) break;
-
-		if (next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) {
-			if (reset_refit) {
-				/* Restore remaining capacities as vehicle might have been able to load now. */
-				for (RefitList::iterator it(refit_capacities.begin()); it != refit_capacities.end(); ++it) {
-					if (it->remaining == it->capacity) continue;
-					capacities[it->cargo] += it->capacity - it->remaining;
-					it->remaining = it->capacity;
-				}
-				reset_refit = false;
-				was_refit = false;
-			}
-
-			if (cur->IsType(OT_GOTO_STATION) || cur->IsType(OT_IMPLICIT)) {
-				has_cargo = cur->CanLeaveWithCargo(has_cargo);
-				if (has_cargo) {
-					StationID next_station = next->GetDestination();
-					Station *st = Station::GetIfValid(cur->GetDestination());
-					if (st != NULL && next_station != INVALID_STATION && next_station != st->index) {
-						for (CapacitiesMap::const_iterator i = capacities.begin(); i != capacities.end(); ++i) {
-							/* Refresh the link and give it a minimum capacity. */
-							if (i->second > 0) IncreaseStats(st, i->first, next_station, i->second, UINT_MAX);
-						}
-					}
-				}
-			}
-
-			/* "cur" is only assigned here if the stop is a station so that
-			 * whenever stats are to be increased two stations can be found.
-			 * However, "first" can be a depot stop. If that is the case
-			 * reassign it to make sure we end up with a station for the last
-			 * link. */
-			cur = next;
-			if (cur == first) break;
-			if (!first->IsType(OT_GOTO_STATION) && !first->IsType(OT_IMPLICIT)) {
-				first = cur;
-			}
-		}
-	}
-}
-
-/**
  * Handle the loading of the vehicle; when not it skips through dummy
  * orders and does nothing in all other cases.
  * @param mode is the non-first call for this vehicle in this tick?
@@ -2306,7 +2169,7 @@ void Vehicle::HandleLoading(bool mode)
 {
 	switch (this->current_order.GetType()) {
 		case OT_LOADING: {
-			uint wait_time = max(this->current_order.wait_time - this->lateness_counter, 0);
+			uint wait_time = max(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
 
 			/* Not the first call for this tick, or still loading */
 			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || this->current_order_time < wait_time) return;
@@ -2415,7 +2278,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 	if (flags & DC_EXEC) {
 		if (this->current_order.IsType(OT_LOADING)) this->LeaveStation();
 
-		if (this->IsGroundVehicle()) {
+		if (this->IsGroundVehicle() && this->GetNumManualOrders() > 0) {
 			uint16 &gv_flags = this->GetGroundVehicleFlags();
 			SetBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 		}
@@ -2511,6 +2374,61 @@ static const int8 _vehicle_smoke_pos[8] = {
 };
 
 /**
+ * Call CBID_VEHICLE_SPAWN_VISUAL_EFFECT and spawn requested effects.
+ * @param v Vehicle to create effects for.
+ */
+static void SpawnAdvancedVisualEffect(const Vehicle *v)
+{
+	uint16 callback = GetVehicleCallback(CBID_VEHICLE_SPAWN_VISUAL_EFFECT, 0, Random(), v->engine_type, v);
+	if (callback == CALLBACK_FAILED) return;
+
+	uint count = GB(callback, 0, 2);
+	bool auto_center = HasBit(callback, 13);
+	bool auto_rotate = !HasBit(callback, 14);
+
+	int8 l_center = 0;
+	if (auto_center) {
+		/* For road vehicles: Compute offset from vehicle position to vehicle center */
+		if (v->type == VEH_ROAD) l_center = -(int)(VEHICLE_LENGTH - RoadVehicle::From(v)->gcache.cached_veh_length) / 2;
+	} else {
+		/* For trains: Compute offset from vehicle position to sprite position */
+		if (v->type == VEH_TRAIN) l_center = (VEHICLE_LENGTH - Train::From(v)->gcache.cached_veh_length) / 2;
+	}
+
+	Direction l_dir = v->direction;
+	if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) l_dir = ReverseDir(l_dir);
+	Direction t_dir = ChangeDir(l_dir, DIRDIFF_90RIGHT);
+
+	int8 x_center = _vehicle_smoke_pos[l_dir] * l_center;
+	int8 y_center = _vehicle_smoke_pos[t_dir] * l_center;
+
+	for (uint i = 0; i < count; i++) {
+		uint32 reg = GetRegister(0x100 + i);
+		uint type = GB(reg,  0, 8);
+		int8 x    = GB(reg,  8, 8);
+		int8 y    = GB(reg, 16, 8);
+		int8 z    = GB(reg, 24, 8);
+
+		if (auto_rotate) {
+			int8 l = x;
+			int8 t = y;
+			x = _vehicle_smoke_pos[l_dir] * l + _vehicle_smoke_pos[t_dir] * t;
+			y = _vehicle_smoke_pos[t_dir] * l - _vehicle_smoke_pos[l_dir] * t;
+		}
+
+		if (type >= 0xF0) {
+			switch (type) {
+				case 0xF1: CreateEffectVehicleRel(v, x_center + x, y_center + y, z, EV_STEAM_SMOKE); break;
+				case 0xF2: CreateEffectVehicleRel(v, x_center + x, y_center + y, z, EV_DIESEL_SMOKE); break;
+				case 0xF3: CreateEffectVehicleRel(v, x_center + x, y_center + y, z, EV_ELECTRIC_SPARK); break;
+				case 0xFA: CreateEffectVehicleRel(v, x_center + x, y_center + y, z, EV_BREAKDOWN_SMOKE_AIRCRAFT); break;
+				default: break;
+			}
+		}
+	}
+}
+
+/**
  * Draw visual effects (smoke and/or sparks) for a vehicle chain.
  * @pre this->IsPrimaryVehicle()
  */
@@ -2530,7 +2448,9 @@ void Vehicle::ShowVisualEffect() const
 		return;
 	}
 
-	uint max_speed = this->vcache.cached_max_speed;
+	/* Use the speed as limited by underground and orders. */
+	uint max_speed = this->GetCurrentMaxSpeed();
+
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
 		/* For trains, do not show any smoke when:
@@ -2539,21 +2459,28 @@ void Vehicle::ShowVisualEffect() const
 		 */
 		if (HasBit(t->flags, VRF_REVERSING) ||
 				(IsRailStationTile(t->tile) && t->IsFrontEngine() && t->current_order.ShouldStopAtStation(t, GetStationIndex(t->tile)) &&
-				t->cur_speed >= t->Train::GetCurrentMaxSpeed())) {
+				t->cur_speed >= max_speed)) {
 			return;
 		}
-
-		max_speed = min(max_speed, t->gcache.cached_max_track_speed);
-		max_speed = min(max_speed, this->current_order.max_speed);
 	}
-	if (this->type == VEH_ROAD || this->type == VEH_SHIP) max_speed = min(max_speed, this->current_order.max_speed * 2);
 
 	const Vehicle *v = this;
 
 	do {
+		bool advanced = HasBit(v->vcache.cached_vis_effect, VE_ADVANCED_EFFECT);
 		int effect_offset = GB(v->vcache.cached_vis_effect, VE_OFFSET_START, VE_OFFSET_COUNT) - VE_OFFSET_CENTRE;
-		byte effect_type = GB(v->vcache.cached_vis_effect, VE_TYPE_START, VE_TYPE_COUNT);
-		bool disable_effect = HasBit(v->vcache.cached_vis_effect, VE_DISABLE_EFFECT);
+		VisualEffectSpawnModel effect_model = VESM_NONE;
+		if (advanced) {
+			effect_offset = VE_OFFSET_CENTRE;
+			effect_model = (VisualEffectSpawnModel)GB(v->vcache.cached_vis_effect, 0, VE_ADVANCED_EFFECT);
+			if (effect_model >= VESM_END) effect_model = VESM_NONE; // unknown spawning model
+		} else {
+			effect_model = (VisualEffectSpawnModel)GB(v->vcache.cached_vis_effect, VE_TYPE_START, VE_TYPE_COUNT);
+			assert(effect_model != (VisualEffectSpawnModel)VE_TYPE_DEFAULT); // should have been resolved by UpdateVisualEffect
+			assert_compile((uint)VESM_STEAM    == (uint)VE_TYPE_STEAM);
+			assert_compile((uint)VESM_DIESEL   == (uint)VE_TYPE_DIESEL);
+			assert_compile((uint)VESM_ELECTRIC == (uint)VE_TYPE_ELECTRIC);
+		}
 
 		/* Show no smoke when:
 		 * - Smoke has been disabled for this vehicle
@@ -2562,9 +2489,9 @@ void Vehicle::ShowVisualEffect() const
 		 * - The vehicle is on a depot tile
 		 * - The vehicle is on a tunnel tile
 		 * - The vehicle is a train engine that is currently unpowered */
-		if (disable_effect ||
+		if (effect_model == VESM_NONE ||
 				v->vehstatus & VS_HIDDEN ||
-				(MayHaveBridgeAbove(v->tile) && IsBridgeAbove(v->tile)) ||
+				IsBridgeAbove(v->tile) ||
 				IsDepotTile(v->tile) ||
 				IsTunnelTile(v->tile) ||
 				(v->type == VEH_TRAIN &&
@@ -2572,33 +2499,20 @@ void Vehicle::ShowVisualEffect() const
 			continue;
 		}
 
-		/* The effect offset is relative to a point 4 units behind the vehicle's
-		 * front (which is the center of an 8/8 vehicle). Shorter vehicles need a
-		 * correction factor. */
-		if (v->type == VEH_TRAIN) effect_offset += (VEHICLE_LENGTH - Train::From(v)->gcache.cached_veh_length) / 2;
-
-		int x = _vehicle_smoke_pos[v->direction] * effect_offset;
-		int y = _vehicle_smoke_pos[(v->direction + 2) % 8] * effect_offset;
-
-		if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) {
-			x = -x;
-			y = -y;
-		}
-
-		switch (effect_type) {
-			case VE_TYPE_STEAM:
+		EffectVehicleType evt = EV_END;
+		switch (effect_model) {
+			case VESM_STEAM:
 				/* Steam smoke - amount is gradually falling until vehicle reaches its maximum speed, after that it's normal.
 				 * Details: while vehicle's current speed is gradually increasing, steam plumes' density decreases by one third each
 				 * third of its maximum speed spectrum. Steam emission finally normalises at very close to vehicle's maximum speed.
 				 * REGULATION:
 				 * - instead of 1, 4 / 2^smoke_amount (max. 2) is used to provide sufficient regulation to steam puffs' amount. */
 				if (GB(v->tick_counter, 0, ((4 >> _settings_game.vehicle.smoke_amount) + ((this->cur_speed * 3) / max_speed))) == 0) {
-					CreateEffectVehicleRel(v, x, y, 10, EV_STEAM_SMOKE);
-					sound = true;
+					evt = EV_STEAM_SMOKE;
 				}
 				break;
 
-			case VE_TYPE_DIESEL: {
+			case VESM_DIESEL: {
 				/* Diesel smoke - thicker when vehicle is starting, gradually subsiding till it reaches its maximum speed
 				 * when smoke emission stops.
 				 * Details: Vehicle's (max.) speed spectrum is divided into 32 parts. When max. speed is reached, chance for smoke
@@ -2616,13 +2530,12 @@ void Vehicle::ShowVisualEffect() const
 				}
 				if (this->cur_speed < (max_speed >> (2 >> _settings_game.vehicle.smoke_amount)) &&
 						Chance16((64 - ((this->cur_speed << 5) / max_speed) + power_weight_effect), (512 >> _settings_game.vehicle.smoke_amount))) {
-					CreateEffectVehicleRel(v, x, y, 10, EV_DIESEL_SMOKE);
-					sound = true;
+					evt = EV_DIESEL_SMOKE;
 				}
 				break;
 			}
 
-			case VE_TYPE_ELECTRIC:
+			case VESM_ELECTRIC:
 				/* Electric train's spark - more often occurs when train is departing (more load)
 				 * Details: Electric locomotives are usually at least twice as powerful as their diesel counterparts, so spark
 				 * emissions are kept simple. Only when starting, creating huge force are sparks more likely to happen, but when
@@ -2631,13 +2544,34 @@ void Vehicle::ShowVisualEffect() const
 				 * - in Chance16 the last value is 360 / 2^smoke_amount (max. sparks when 90 = smoke_amount of 2). */
 				if (GB(v->tick_counter, 0, 2) == 0 &&
 						Chance16((6 - ((this->cur_speed << 2) / max_speed)), (360 >> _settings_game.vehicle.smoke_amount))) {
-					CreateEffectVehicleRel(v, x, y, 10, EV_ELECTRIC_SPARK);
-					sound = true;
+					evt = EV_ELECTRIC_SPARK;
 				}
 				break;
 
 			default:
-				break;
+				NOT_REACHED();
+		}
+
+		if (evt != EV_END && advanced) {
+			sound = true;
+			SpawnAdvancedVisualEffect(v);
+		} else if (evt != EV_END) {
+			sound = true;
+
+			/* The effect offset is relative to a point 4 units behind the vehicle's
+			 * front (which is the center of an 8/8 vehicle). Shorter vehicles need a
+			 * correction factor. */
+			if (v->type == VEH_TRAIN) effect_offset += (VEHICLE_LENGTH - Train::From(v)->gcache.cached_veh_length) / 2;
+
+			int x = _vehicle_smoke_pos[v->direction] * effect_offset;
+			int y = _vehicle_smoke_pos[(v->direction + 2) % 8] * effect_offset;
+
+			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) {
+				x = -x;
+				y = -y;
+			}
+
+			CreateEffectVehicleRel(v, x, y, 10, evt);
 		}
 	} while ((v = v->Next()) != NULL);
 

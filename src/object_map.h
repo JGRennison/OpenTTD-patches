@@ -15,16 +15,29 @@
 #include "water_map.h"
 #include "object_type.h"
 
+ObjectType GetObjectType(TileIndex t);
+
 /**
- * Gets the ObjectType of the given object tile
- * @param t the tile to get the type from.
+ * Check whether the object on a tile is of a specific type.
+ * @param t Tile to test.
+ * @param type Type to test.
  * @pre IsTileType(t, MP_OBJECT)
- * @return the type.
+ * @return True if type matches.
  */
-static inline ObjectType GetObjectType(TileIndex t)
+static inline bool IsObjectType(TileIndex t, ObjectType type)
 {
-	assert(IsTileType(t, MP_OBJECT));
-	return (ObjectType)_m[t].m5;
+	return GetObjectType(t) == type;
+}
+
+/**
+ * Check whether a tile is a object tile of a specific type.
+ * @param t Tile to test.
+ * @param type Type to test.
+ * @return True if type matches.
+ */
+static inline bool IsObjectTypeTile(TileIndex t, ObjectType type)
+{
+	return IsTileType(t, MP_OBJECT) && GetObjectType(t) == type;
 }
 
 /**
@@ -36,73 +49,7 @@ static inline ObjectType GetObjectType(TileIndex t)
 static inline ObjectID GetObjectIndex(TileIndex t)
 {
 	assert(IsTileType(t, MP_OBJECT));
-	return _m[t].m2;
-}
-
-/**
- * Does the given tile have a transmitter?
- * @param t the tile to inspect.
- * @return true if and only if the tile has a transmitter.
- */
-static inline bool IsTransmitterTile(TileIndex t)
-{
-	return IsTileType(t, MP_OBJECT) && GetObjectType(t) == OBJECT_TRANSMITTER;
-}
-
-/**
- * Is this object tile an 'owned land' tile?
- * @param t the tile to inspect.
- * @pre IsTileType(t, MP_OBJECT)
- * @return true if and only if the tile is an 'owned land' tile.
- */
-static inline bool IsOwnedLand(TileIndex t)
-{
-	assert(IsTileType(t, MP_OBJECT));
-	return GetObjectType(t) == OBJECT_OWNED_LAND;
-}
-
-/**
- * Is the given tile (pre-)owned by someone (the little flags)?
- * @param t the tile to inspect.
- * @return true if and only if the tile is an 'owned land' tile.
- */
-static inline bool IsOwnedLandTile(TileIndex t)
-{
-	return IsTileType(t, MP_OBJECT) && IsOwnedLand(t);
-}
-
-/**
- * Is this object tile a HQ tile?
- * @param t the tile to inspect.
- * @pre IsTileType(t, MP_OBJECT)
- * @return true if and only if the tile is a HQ tile.
- */
-static inline bool IsCompanyHQ(TileIndex t)
-{
-	assert(IsTileType(t, MP_OBJECT));
-	return _m[t].m5 == OBJECT_HQ;
-}
-
-/**
- * Is this object tile a statue?
- * @param t the tile to inspect.
- * @pre IsTileType(t, MP_OBJECT)
- * @return true if and only if the tile is a statue.
- */
-static inline bool IsStatue(TileIndex t)
-{
-	assert(IsTileType(t, MP_OBJECT));
-	return GetObjectType(t) == OBJECT_STATUE;
-}
-
-/**
- * Is the given tile a statue?
- * @param t the tile to inspect.
- * @return true if and only if the tile is a statue.
- */
-static inline bool IsStatueTile(TileIndex t)
-{
-	return IsTileType(t, MP_OBJECT) && IsStatue(t);
+	return _m[t].m2 | _m[t].m5 << 16;
 }
 
 /**
@@ -120,15 +67,13 @@ static inline byte GetObjectRandomBits(TileIndex t)
 
 /**
  * Make an Object tile.
- * @note do not use this function directly. Use one of the other Make* functions.
  * @param t      The tile to make and object tile.
- * @param u      The object type of the tile.
  * @param o      The new owner of the tile.
  * @param index  Index to the object.
  * @param wc     Water class for this object.
  * @param random Random data to store on the tile
  */
-static inline void MakeObject(TileIndex t, ObjectType u, Owner o, ObjectID index, WaterClass wc, byte random)
+static inline void MakeObject(TileIndex t, Owner o, ObjectID index, WaterClass wc, byte random)
 {
 	SetTileType(t, MP_OBJECT);
 	SetTileOwner(t, o);
@@ -136,8 +81,8 @@ static inline void MakeObject(TileIndex t, ObjectType u, Owner o, ObjectID index
 	_m[t].m2 = index;
 	_m[t].m3 = random;
 	_m[t].m4 = 0;
-	_m[t].m5 = u;
-	SB(_m[t].m6, 2, 4, 0);
+	_m[t].m5 = index >> 16;
+	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }
 

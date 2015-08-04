@@ -248,6 +248,17 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}スク�
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}スクロールバーです。リストを横にスクロールします
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}建物などを範囲指定して撤去します。Ctrlを押すと、範囲が斜めになります。Shiftを押しながら決定すると、費用を見積もります
 
+# Show engines button
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN                           :{BLACK}非表示を表示
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE                    :{BLACK}非表示を表示
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP                            :{BLACK}非表示を表示
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT                        :{BLACK}非表示を表示
+
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP                   :{BLACK}このボタンを押すと、非表示の列車も全て表示されます
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE_TOOLTIP            :{BLACK}このボタンを押すと、非表示の車両も全て表示されます
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP_TOOLTIP                    :{BLACK}このボタンを押すと、非表示の船舶も全て表示されます
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}このボタンを押すと、非表示の航空機も全て表示されます
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}デフォルト
 STR_BUTTON_CANCEL                                               :{BLACK}キャンセル
@@ -294,7 +305,7 @@ STR_SORT_BY_COST                                                :価格
 STR_SORT_BY_POWER                                               :出力
 STR_SORT_BY_TRACTIVE_EFFORT                                     :牽引力
 STR_SORT_BY_INTRO_DATE                                          :設計年
-STR_SORT_BY_RUNNING_COST                                        :運転費用
+STR_SORT_BY_RUNNING_COST                                        :運用費
 STR_SORT_BY_POWER_VS_RUNNING_COST                               :運転費当たりの出力
 STR_SORT_BY_CARGO_CAPACITY                                      :積載容量
 STR_SORT_BY_RANGE                                               :航続距離
@@ -361,7 +372,7 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :OpenTTDを終�
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :ゲームオプション設定
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :拡張設定
+STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :設定
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :AI/ゲームスクリプト設定
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRFの設定
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :透過表示設定
@@ -470,7 +481,7 @@ STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :バウンディ
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :ダーティーブロックの色付け切替
 ############ range ends here
 
-############ range for days starts (also used for the place in the highscore window)
+############ range for ordinal numbers used for the place in the highscore window
 STR_ORDINAL_NUMBER_1ST                                          :1
 STR_ORDINAL_NUMBER_2ND                                          :2
 STR_ORDINAL_NUMBER_3RD                                          :3
@@ -486,22 +497,40 @@ STR_ORDINAL_NUMBER_12TH                                         :12
 STR_ORDINAL_NUMBER_13TH                                         :13
 STR_ORDINAL_NUMBER_14TH                                         :14
 STR_ORDINAL_NUMBER_15TH                                         :15
-STR_ORDINAL_NUMBER_16TH                                         :16
-STR_ORDINAL_NUMBER_17TH                                         :17
-STR_ORDINAL_NUMBER_18TH                                         :18
-STR_ORDINAL_NUMBER_19TH                                         :19
-STR_ORDINAL_NUMBER_20TH                                         :20
-STR_ORDINAL_NUMBER_21ST                                         :21
-STR_ORDINAL_NUMBER_22ND                                         :22
-STR_ORDINAL_NUMBER_23RD                                         :23
-STR_ORDINAL_NUMBER_24TH                                         :24
-STR_ORDINAL_NUMBER_25TH                                         :25
-STR_ORDINAL_NUMBER_26TH                                         :26
-STR_ORDINAL_NUMBER_27TH                                         :27
-STR_ORDINAL_NUMBER_28TH                                         :28
-STR_ORDINAL_NUMBER_29TH                                         :29
-STR_ORDINAL_NUMBER_30TH                                         :30
-STR_ORDINAL_NUMBER_31ST                                         :31
+############ range for ordinal numbers ends
+
+############ range for days starts
+STR_DAY_NUMBER_1ST                                              :1
+STR_DAY_NUMBER_2ND                                              :2
+STR_DAY_NUMBER_3RD                                              :3
+STR_DAY_NUMBER_4TH                                              :4
+STR_DAY_NUMBER_5TH                                              :5
+STR_DAY_NUMBER_6TH                                              :6
+STR_DAY_NUMBER_7TH                                              :7
+STR_DAY_NUMBER_8TH                                              :8
+STR_DAY_NUMBER_9TH                                              :9
+STR_DAY_NUMBER_10TH                                             :10
+STR_DAY_NUMBER_11TH                                             :11
+STR_DAY_NUMBER_12TH                                             :12
+STR_DAY_NUMBER_13TH                                             :13
+STR_DAY_NUMBER_14TH                                             :14
+STR_DAY_NUMBER_15TH                                             :15
+STR_DAY_NUMBER_16TH                                             :16
+STR_DAY_NUMBER_17TH                                             :17
+STR_DAY_NUMBER_18TH                                             :18
+STR_DAY_NUMBER_19TH                                             :19
+STR_DAY_NUMBER_20TH                                             :20
+STR_DAY_NUMBER_21ST                                             :21
+STR_DAY_NUMBER_22ND                                             :22
+STR_DAY_NUMBER_23RD                                             :23
+STR_DAY_NUMBER_24TH                                             :24
+STR_DAY_NUMBER_25TH                                             :25
+STR_DAY_NUMBER_26TH                                             :26
+STR_DAY_NUMBER_27TH                                             :27
+STR_DAY_NUMBER_28TH                                             :28
+STR_DAY_NUMBER_29TH                                             :29
+STR_DAY_NUMBER_30TH                                             :30
+STR_DAY_NUMBER_31ST                                             :31
 ############ range for days ends
 
 ############ range for months starts
@@ -635,7 +664,7 @@ STR_MUSIC_TOOLTIP_SELECT_ALL_TRACKS_PROGRAM                     :{BLACK}プレ�
 STR_MUSIC_TOOLTIP_SELECT_OLD_STYLE_MUSIC                        :{BLACK}プレイリスト'旧スタイル'を選択します
 STR_MUSIC_TOOLTIP_SELECT_NEW_STYLE_MUSIC                        :{BLACK}プレイリスト'新スタイル'を選択します
 STR_MUSIC_TOOLTIP_SELECT_EZY_STREET_STYLE                       :{BLACK}プレイリスト'Ezyストリート'を選択します
-STR_MUSIC_TOOLTIP_SELECT_CUSTOM_1_USER_DEFINED                  :{BLACK}プレイリスト’カスタム1'を選択します
+STR_MUSIC_TOOLTIP_SELECT_CUSTOM_1_USER_DEFINED                  :{BLACK}プレイリスト'カスタム1'を選択します
 STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}プレイリスト'カスタム2'を選択します
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}プレイリストのシャッフルの有効/無効を切り替えます
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}曲選択のウィンドウを表示します
@@ -810,13 +839,12 @@ STR_NEWS_ROAD_VEHICLE_IS_WAITING                                :{WHITE}{VEHICLE
 STR_NEWS_SHIP_IS_WAITING                                        :{WHITE}{VEHICLE}は造船所に停泊しました
 STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE}は格納庫に駐機しました
 
-# Start of order review system
-# DON'T ADD OR REMOVE LINES HERE
+# Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE}に十分な指令がありません
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE}に無効な指令があります
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE}に重複した指令があります
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE}の指令に無効な停留施設があります
-# end of order system
+STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE}の命令中に滑走路が短すぎる空港が含まれています
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE}は老朽化が進んでいます
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE}はひどく老朽化しています
@@ -899,10 +927,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :グルジア �
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :イラン リアル(IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}自動車
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}車両の通行方向(右側/左側)を選択します
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :左側通行
@@ -935,14 +959,16 @@ STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :イタリア
 STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :カタラン
 ############ end of townname region
 
-STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}自動保存
+STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}オートセーブ
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}自動保存の間隔を選択します
 
+############ start of autosave dropdown
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :しない
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :毎月
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :3ヶ月毎
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :6ヶ月毎
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :12ヶ月毎
+############ end of autosave dropdown
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}言語
 STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}ゲームの言語を選択します
@@ -954,8 +980,12 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}画面�
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}ゲーム画面の解像度を選択します
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :その他
 
-STR_GAME_OPTIONS_SCREENSHOT_FORMAT                              :{BLACK}スクリーンショットフォーマット
-STR_GAME_OPTIONS_SCREENSHOT_FORMAT_TOOLTIP                      :{BLACK}スクリーンショットのファイルフォーマットを選択します
+STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}インターフェイスのサイズ
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}インターフェイス上の単位サイズを指定します
+
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :通常
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :2倍
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4倍
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}基本グラフィックセット
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}使用するグラフィックセットを選択します
@@ -971,6 +1001,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}使用�
 STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM}個の破損ファイルがあります
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}基本音楽セットについての追加情報
 
+STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}サポートされている解像度リストの回復に失敗しました
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}フルスクリーンモードでの実行に失敗しました
 
 # Custom currency window
@@ -1049,6 +1080,7 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :特に平地
 STR_TERRAIN_TYPE_FLAT                                           :平地
 STR_TERRAIN_TYPE_HILLY                                          :丘陵地
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :山岳地
+STR_TERRAIN_TYPE_ALPINIST                                       :山脈地帯
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :寛大
 STR_CITY_APPROVAL_TOLERANT                                      :寛容
@@ -1056,8 +1088,8 @@ STR_CITY_APPROVAL_HOSTILE                                       :対立
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}適切なAIがありません...{}AIは「オンライン項目を確認」からダウンロード可能です
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}拡張設定
+# Settings tree window
+STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}設定
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}フィルター設定:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}全てを開く
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}全てを折りたたむ
@@ -1070,21 +1102,26 @@ STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :ゲーム設定
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :会社設定(新規ゲームにのみ影響)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :会社設定(現在の会社のみに影響)
 
-STR_CONFIG_SETTING_RESTRICT_LABEL                               :{BLACK}表示:
-STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}設定のレベルでフィルタリングします。標準の設定と異なるもののみ表示することもできます
-STR_CONFIG_SETTING_RESTRICT_BASIC                               :基本設定
-STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :詳細設定
-STR_CONFIG_SETTING_RESTRICT_ALL                                 :拡張設定(全設定)
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}カテゴリ:
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}種類:
+STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}定義されたフィルタでリストをフィルタリングします。
+STR_CONFIG_SETTING_RESTRICT_BASIC                               :基本設定（重要な設定のみ表示）
+STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :詳細設定（より多くの設定を表示）
+STR_CONFIG_SETTING_RESTRICT_ALL                                 :拡張設定(変なものも含めて全設定を表示)
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT             :既定とは異なる設定
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW                 :新規ゲーム開始時とは異なる設定
 
 STR_CONFIG_SETTING_TYPE_DROPDOWN_HELPTEXT                       :{BLACK}設定のジャンルでフィルタリングします
 STR_CONFIG_SETTING_TYPE_DROPDOWN_ALL                            :全設定
-STR_CONFIG_SETTING_TYPE_DROPDOWN_CLIENT                         :クライアント設定(変更はセーブされません)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :ゲーム設定(ニューゲーム時に影響)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :ゲーム設定(今のゲームにのみ影響)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :会社設定(ニューゲーム時に影響)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :会社設定(今の会社だけに影響)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_CLIENT                         :クライアント設定(保存ゲーム内に記録無・全ゲームに影響)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :ゲーム設定(全保存ゲーム内に記録・ニューゲーム時に影響)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :ゲーム設定(保存ゲーム内に記録・今のゲームにのみ影響)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :会社設定(全保存ゲーム内に記録・ニューゲーム時に影響)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :会社設定(保存ゲーム内に記録・今の会社だけに影響)
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}設定による検索結果を全て表示{}{SILVER}カテゴリ{BLACK}別{WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}設定による検索結果を全て表示{}{SILVER}種類{BLACK}別{WHITE}All setting types
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}設定による検索結果を全て表示{}{SILVER}カテゴリ{BLACK}別{WHITE}{STRING} {BLACK}and {SILVER}Type {BLACK}to {WHITE}All setting types
+STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- なし -
 
 STR_CONFIG_SETTING_OFF                                          :無効
 STR_CONFIG_SETTING_ON                                           :有効
@@ -1125,8 +1162,9 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :設定を有効
 STR_CONFIG_SETTING_CITY_APPROVAL                                :地域の再編に対する町の姿勢: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :会社が街域で引き起こした騒音(主に空港)や環境破壊がどの程度、街での評価や同じ地域での更なる建設行為に影響するかを設定します
 
-STR_CONFIG_SETTING_BUILDONSLOPES                                :傾斜地/海岸での盛土: {STRING}
-STR_CONFIG_SETTING_BUILDONSLOPES_HELPTEXT                       :設定を有効にすると、路線や駅の建設をほとんどの斜面で行うことができます。無効にすると盛土が不要な、向きが一致する斜面か平地でしか路線の建設を行うことが出来ません
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :マップの最高高度: {STRING}
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :マップの最高地点の高さを設定します
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}マップの最高高さをこの値には設定出来ません。少なくとも1箇所以上この値より高い山があります。
 STR_CONFIG_SETTING_AUTOSLOPE                                    :建物/路線の自動地形追従: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :撤去を行わないで建物や路線がある土地の地形を変更することを可能にします。建物/路線は変更された地形に自動で追従します。
 STR_CONFIG_SETTING_CATCHMENT                                    :現実的な受入範囲: {STRING}
@@ -1151,16 +1189,12 @@ STR_CONFIG_SETTING_FORBID_90_DEG                                :列車/船舶�
 STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :直角方向への進路変更は(画面から見て)水平方向の線路と垂直方向の線路が隣接したタイルで繋がっていると起こります。(これ以外では、直前から見て左右45°方向までしか線路は繋がりません) この設定は船舶の同様な直角進路変更にも適用されます。
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :非隣接駅の統合許容: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :直接繋がっていない近隣の駅/停留所などを一つとして扱えるかを設定します。有効にした場合、新設する際にCtrl+クリックで統合先の選択が可能になります。
-STR_CONFIG_SETTING_IMPROVEDLOAD                                 :改良積載アルゴリズムを使用: {STRING}
-STR_CONFIG_SETTING_IMPROVEDLOAD_HELPTEXT                        :有効にすると、同時に同じ貨物を待機している運搬車両への積み込みは振り分けではなく編成順に行われるようになります。最初の編成に十分に積載されるまでは次の編成への積み込みは行われません。
-STR_CONFIG_SETTING_GRADUAL_LOADING                              :段階的な積載: {STRING}
-STR_CONFIG_SETTING_GRADUAL_LOADING_HELPTEXT                     :積み降ろしが運搬車両特有の係数によって車両毎、徐々に行われるようになります。設定を無効にすると、積み降ろしは全車一括で瞬間的に行われます。このときの所要時間は総積載量のみに左右されます。
 STR_CONFIG_SETTING_INFLATION                                    :インフレ: {STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :インフレを有効にします。経費の方が収入よりわずかに早く上昇していきます。
-STR_CONFIG_SETTING_SELECTGOODS                                  :必要貨物のみ集荷: {STRING}
-STR_CONFIG_SETTING_SELECTGOODS_HELPTEXT                         :到着した運搬車両が積み込もうとする貨物のみ停留施設に集荷されるようにします。搬送扱いのない貨物が停留施設で山積みになることでの悪評を防げます。
-STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :橋の最大長:{STRING}
-STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :橋の最大長を設定できます
+STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :橋梁の最大長:{STRING}
+STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :橋梁の最大長を設定できます
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :橋梁の高度: {STRING}
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT_HELPTEXT                   :橋梁の建設出来る高さを設定出来ます
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :トンネルの最大長：{STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :トンネルの最大長を設定できます
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :一次産業の開設法: {STRING}
@@ -1186,8 +1220,6 @@ STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :デフォルト
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :先端
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :中間
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :終端
-STR_CONFIG_SETTING_ROAD_VEHICLE_QUEUEING                        :車両の荷待ち停車(不確定性あり): {STRING}
-STR_CONFIG_SETTING_ROAD_VEHICLE_QUEUEING_HELPTEXT               :停車予定の停留施設が渋滞している場合、バスやトラックが追い越して一度周回した後戻るよりは渋滞の解消を待つほうを好むようになります
 STR_CONFIG_SETTING_AUTOSCROLL                                   :エッジスクロール: {STRING}
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :有効にすると、ウィンドウの端にカーソルを持っていくとスクロールするようになります
 STR_CONFIG_SETTING_AUTOSCROLL_DISABLED                          :しない
@@ -1218,10 +1250,6 @@ STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :街有道路で
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :路側型バス停/荷役所を街が所有する道路上に建設することを可能にします
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :他社の道路上での路側型バス停/荷役所設置: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :路側型バス停/荷役所を他社が所有する道路上に建設することを可能にします
-STR_CONFIG_SETTING_ADJACENT_STATIONS                            :停留施設同士の接合: {STRING}
-STR_CONFIG_SETTING_ADJACENT_STATIONS_HELPTEXT                   :異なる交通機関の停留施設を接合することを可能にします
-STR_CONFIG_SETTING_DYNAMIC_ENGINES                              :複数のNewGRFエンジンセットの有効化: {STRING}
-STR_CONFIG_SETTING_DYNAMIC_ENGINES_HELPTEXT                     :古いNewGRFとの互換性を保つためのオプションです。自分が何をしようとしているか判っていない限り、このオプションを無効にしないで下さい!
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}この設定の変更は既に輸送車両が存在する時には不可能です
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :インフラ補修: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :有効にすると、インフラ設備にも維持費が発生するようになります。維持費はネットワークのサイズに非線形で比例する為、小さい会社よりも大きい会社の方が影響が大きくなります
@@ -1252,7 +1280,7 @@ STR_CONFIG_SETTING_ERRMSG_DURATION                              :エラーメッ
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :赤地のエラーメッセージが表示されている時間を設定します。注: 致命的なエラーの場合はこの時間を経過しても自動では閉じません。
 STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA}秒
 STR_CONFIG_SETTING_HOVER_DELAY                                  :ツールチップ表示: {STRING}
-STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :カーソルをインターフェイス要素に乗せた場合にツールチップが表示されるまでの時間を決定します。この設定でツールチップを右クリックで表示するようにもできます
+STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :カーソルをインターフェイス要素に乗せた場合にツールチップが表示されるまでの時間を決定します。"0"に設定するとツールチップは右クリックで表示されるようになります
 STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :マウスオーバー {COMMA}秒後
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :右クリック
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :街名ラベルに人口を表示: {STRING}
@@ -1260,27 +1288,41 @@ STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :街の名前ラ
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :グラフ線の太さ: {STRING}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :グラフ画面での折れ線の太さを設定します。細い線では値を精密に読み取りやすくなり、太い線ではグラフ自体が見やすくなり、線色の見分けがつきやすくなります
 
+STR_CONFIG_SETTING_LANDSCAPE                                    :地形: {STRING}
+STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :地形は異なる貨物や街の成長要件の違いによって基本となるプレー法を左右します。但し、NewGRFやスクリプトにより条件が改良されることもあります
 STR_CONFIG_SETTING_LAND_GENERATOR                               :地形作成: {STRING}
+STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :オリジナルの地形ジェネレーターは基本グラフィックセットに依存し、ある程度固定された地形しか生成出来ません。TerraGenesisはパーリンノイズに基づいた地形ジェネレーターで、より細かい地形生成のパラメータを指定できます
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :オリジナル
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :地形種類: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :(TerraGenesisのみ) 地形における丘の度合い
+STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :産業の密度: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :どの程度の産業が開始時に生成され、ゲーム中にそのレベルを維持するようにするのかを設定します
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :石油精製所のマップ端からの距離: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :石油精製所はマップの外周付近にのみ建設されます。つまり、外周が海のマップでは海岸沿いに建設されるということです
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :雪線の位置: {STRING}
-STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :地形の起伏(TerraGenesis のみ): {STRING}
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :亜寒帯気候での雪線の高さを設定します。雪は産業と街の成長に影響があります
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :地形の起伏: {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(TerraGenesisのみ) 地形の起伏度を設定します。なだらかな地形では丘陵の数は減り、裾野が長くなります。起伏が多い地形では丘陵が多くなりますが、似たり寄ったりな地形の繰り返しに見えることがあります
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :特になだらか
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :なだらか
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :起伏
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :特に起伏
+STR_CONFIG_SETTING_VARIETY                                      :地形特徴の分布: {STRING}
+STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(TerraGenesisのみ) マップに山岳地と平地の両方が含まれるかを調整します。この設定を使ってもマップがより平坦になってしまう場合は、他の設定を「山岳」に切り替えください
+STR_CONFIG_SETTING_RIVER_AMOUNT                                 :川の数: {STRING}
+STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :どの位の川が生成されるかを設定します
 STR_CONFIG_SETTING_TREE_PLACER                                  :植林アルゴリズム: {STRING}
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :マップでの木の分布を設定します。「オリジナル」では全ての樹種がマップ全域に散布するように植えられます。「改良」ではある程度のまとまりで植えられます
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :なし
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :オリジナル
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :改良版
+STR_CONFIG_SETTING_ROAD_SIDE                                    :道路車両: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :左側/右側通行を設定します
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :ハイトマップの回転方向: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :反時計回り
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :時計回り
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :シナリオマップ生成時の平地高さ: {STRING}
-STR_CONFIG_SETTING_ENABLE_FREEFORM_EDGES                        :マップ外周タイルの地形変更: {STRING}
-STR_CONFIG_SETTING_ENABLE_FREEFORM_EDGES_HELPTEXT               :無効にすると、マップの外周は常に全て海になります
 STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}北端の1箇所以上のタイルが空き地ではありません
 STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}マップ端の1箇所以上のタイルが水域ではありません
 
@@ -1331,16 +1373,14 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :切
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :左ドラッグスクロール: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :有効にすると左ドラッグでマップのスクロールができるようになります。特にタッチスクリーンを利用しているときに便利です
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :オートセーブ: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :オートセーブの間隔を設定します
+
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :セーブ時の日付フォーマット: {STRING}
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :セーブデータ名にデフォルトで付けられる日付の表記法を指定します。注: 日本の場合、「短」と「ISO標準」に違いはありません
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :長 (2008年12月31日)
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_SHORT              :短 (2008-12-31)
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO標準 (2008-12-31)
-
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE                       :パレット指定のないNewGRFのデフォルトパレット: {STRING}
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_HELPTEXT              :NewGRFに指定されていない場合、使用するデフォルトパレットを設定します
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_DOS                   :DOSパレット
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_WIN                   :Windowsパレット
 
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME                            :新規ゲーム開始時に自動ポーズ: {STRING}
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME_HELPTEXT                   :有効にすると、新規ゲーム開始時に自動的に一時停止状態になります。事業を始める前にマップを精査するのに便利です
@@ -1563,8 +1603,6 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :{COMMA}分の1
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :変化なし
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :初期の都市サイズ乗数: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :ゲーム開始時に都市が普通の町に比べて平均して何倍の人口規模になるかを設定します
-STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD                        :街路補修時に道路整理: {STRING}
-STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD_HELPTEXT               :街路補修に出資した際に、先が建物に塞がれた交差点などを整理撤去するようなります
 
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :分配グラフの更新頻度: {STRING}日
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :リンクグラフを再計算する時間間隔を設定します。それぞれの再計算では、グラフの単一要素に関わる経路計画だけを計算します。つまり、グラフの一部が更新されるだけで、全体が設定した間隔で更新されるという訳ではありません。この間隔を短くすると再計算のためにCPUへの負荷が大きくなります。長くすると、新たなルートが貨物分配に組み込まれるのに時間がかかるようになります。
@@ -1578,16 +1616,16 @@ STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :旅客がどの
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :郵便物の行先分配法: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :郵便がどのように行き先別に分配されるかを設定します。「対称」ではAからBへ向かう郵便とほぼ同数が、BからAに向かうようになります。 「非対称」ではそれぞれの方向に向かう郵便数は独立に決められます。「無効」では行き先別分配をしなくなります
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :装甲車輸送品の行先分配法: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :装甲車輸送品とは貴重品(温帯)、金(亜寒帯)、ダイヤモンド(亜熱帯)のことです(NewGRFの導入状況よっては変わることがあります)。これらの品目ががどのように行き先別に分配されるかを設定します。「対称」ではAからBへ向かう輸送品とほぼ同数が、BからAに向かうようになります。 「非対称」ではそれぞれの方向に向かう輸送品数は独立に決められます。「無効」では行き先別分配をしなくなります。温帯では銀行同士で貴重品のやりとりがあるので「対称」を選択しても問題ありませんが、金やダイヤモンドが銀行から鉱山に送られるようなことはないので、亜寒帯・亜熱帯では「非対称」か「無効」にすることをお勧めします。
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :装甲車輸送品とは貴重品(温帯)、金(亜寒帯)、ダイヤモンド(亜熱帯)のことです(NewGRFの導入状況よっては変わることがあります)。これらの品目ががどのように行き先別に分配されるかを設定します。「対称」ではAからBへ向かう輸送品とほぼ同数が、BからAに向かうようになります。 「非対称」ではそれぞれの方向に向かう輸送品数は独立に決められます。「手動」では自動での行き先別分配をしなくなります。亜熱帯・温帯では銀行同士で貴重品のやりとりがあるので「対称」を選択しても問題ありませんが、金やダイヤモンドが銀行から鉱山に送られるようなことはないので、亜寒帯では「非対称」か「手動」にすることをお勧めします。
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :一般貨物の行先分配法: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :一般的な貨物がどのように行き先別に分配されるかを設定します。「対称」ではAからBへ向かう貨物とほぼ同数が、BからAに向かうようになります。 「非対称」ではそれぞれの方向に向かう貨物数は独立に決められます。「無効」では行き先別分配をしなくなります。一般的な貨物輸送は常に一方通行なので、「非対称」か「無効」にしておくことをお勧めします。
+STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :一般的な貨物がどのように行き先別に分配されるかを設定します。「非対称」ではそれぞれの方向に向かう貨物数はプログラムの任意に決められます。「無効」では行き先別分配をしなくなります。
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :分配精度: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :この値を高くすると、リンクグラフ演算の為CPUへの負荷が大きくなります。演算に時間がかかりすぎると、目に見えてタイムラグが起こる場合があります。しかし低い値に設定すると、分配が不正確になり、望まれる場所に貨物が送られなくなる場合があります
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :距離効果: {STRING}
 STR_CONFIG_SETTING_DEMAND_DISTANCE_HELPTEXT                     :0より大きい値に設定すると、ある貨物の生産先Aと受取可能先Bとの距離がAからBへ送られる貨物量に影響を及ぼすようになります。高い値を設定すればするほど、遠い施設に送られる貨物量は少なくなり、近場の施設に送られる量が大きくなります
 STR_CONFIG_SETTING_DEMAND_SIZE                                  :対称分配での戻り量: {STRING}
 STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :この値を100%未満に設定すると、対称分配の挙動が非対称分配に近くなります。値が小さいほど受け入れ量に対する送り返し量が小さくなります。0%に設定した場合、対称分配と非対称分配の挙動に違いはなくなります
-STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :最短経路を高収容力経路より優先: {STRING}
+STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :高収容力経路より速達経路を優先飽和: {STRING}
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :二つの停留施設間を結ぶ経路が複数存在することが往々にしてあります。そのような場合、貨物分配アルゴリズムは最初に最短となる経路を飽和するまで使用し、次いで2番目の最短経路を使用するというように埋めていきます。飽和したかどうかは、推定収容力、輸送計画によって判断されます。すべての経路を飽和してもまだ需要を満たせない場合、高容量な経路を優先しつつ、すべての経路に負荷を掛けます。しかしほとんどの場合、アルゴリズムは経路の輸送力を正確に見積もることができません。この設定では、高収容力の路線を使用し始める前にどの程度最短経路を飽和するかを設定します。収容力より需要が上回ると推定される時には、停留施設が混み合うのを避けるために100%未満に設定して下さい。
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :速度単位: {STRING}
@@ -1621,32 +1659,34 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :メートル法
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :国際単位系 (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :距離単位: {STRING}
-STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :ゲーム中の長さをいずれの単位系で表すか決定します
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :ゲーム中の高度をいずれの単位系で表すか決定します
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :ヤード・ポンド法 (フィート(ft))
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :メートル法 (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :国際単位系 (m)
 
-STR_CONFIG_SETTING_GUI                                          :{ORANGE}インターフェース
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}多国籍対応
-STR_CONFIG_SETTING_CONSTRUCTION                                 :{ORANGE}建設
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}輸送機器
-STR_CONFIG_SETTING_STATIONS                                     :{ORANGE}停留施設
-STR_CONFIG_SETTING_ECONOMY                                      :{ORANGE}経済
-STR_CONFIG_SETTING_LINKGRAPH                                    :{ORANGE}貨物配送先
-STR_CONFIG_SETTING_AI                                           :{ORANGE}競争会社
-STR_CONFIG_SETTING_DISPLAY_OPTIONS                              :{ORANGE}表示設定
-STR_CONFIG_SETTING_INTERACTION                                  :{ORANGE}インターフェース
+STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}グラフィック
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}効果音
-STR_CONFIG_SETTING_NEWS                                         :{ORANGE}ニュース/メッセージ
-STR_CONFIG_SETTING_CONSTRUCTION_SIGNALS                         :{ORANGE}信号
-STR_CONFIG_SETTING_STATIONS_CARGOHANDLING                       :{ORANGE}貨物取扱
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}コンピュータプレイヤー
-STR_CONFIG_SETTING_VEHICLES_AUTORENEW                           :{ORANGE}自動更新
-STR_CONFIG_SETTING_VEHICLES_SERVICING                           :{ORANGE}点検
+STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}インターフェース
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}一般
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}画面表示
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}建設
+STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}ニュース/アドバイス
+STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}会社
+STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}会計
+STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}輸送機器
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}物理モデル
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}経路構築
-STR_CONFIG_SETTING_VEHICLES_TRAINS                              :{ORANGE}列車
-STR_CONFIG_SETTING_ECONOMY_TOWNS                                :{ORANGE}街
-STR_CONFIG_SETTING_ECONOMY_INDUSTRIES                           :{ORANGE}産業
+STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}制限
+STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}災害/事故
+STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}マップ生成
+STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}環境
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}地方自治体
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}街
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}産業
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}貨物配送先
+STR_CONFIG_SETTING_AI                                           :{ORANGE}競争会社
+STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}コンピュータプレイヤー
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :オリジナル
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
@@ -1695,7 +1735,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}マル�
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}基本設定
 STR_INTRO_HIGHSCORE                                             :{BLACK}ハイスコア
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}拡張設定
+STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}設定
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRFの設定
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}オンラインコンテンツの確認
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}AI/ゲームスクリプトの設定
@@ -1715,7 +1755,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}地域�
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}ゲームの設定を表示します
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}ハイスコアを表示します
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}より細かいゲームの設定画面を表示します
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}設定を表示
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRFの有効/無効化、各パラメータの設定ができます
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}公式オンラインコンテンツのデータベースからデータの確認・追加・更新ができます
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}AI/ゲームスクリプトの設定を行います
@@ -1755,6 +1795,8 @@ STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}会社:
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}魔法のブルドーザー(産業拠点等、何でも撤去できる): {ORANGE}{STRING}
 STR_CHEAT_CROSSINGTUNNELS                                       :{LTBLUE}トンネルの平面交差を許容: {ORANGE}{STRING}
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}ジェット機の小型空港での墜落率を減少: {ORANGE}{STRING}
+STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}マップの最高高度を変更: {ORANGE}{NUM}
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}マップの最大高度
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :温帯
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :亜寒帯
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :亜熱帯
@@ -1803,6 +1845,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :貨物用路面
 STR_FACE_CAPTION                                                :{WHITE}顔の変更
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}顔の変更をキャンセルします
 STR_FACE_OK_TOOLTIP                                             :{BLACK}顔の変更を適用します
+STR_FACE_RANDOM                                                 :{BLACK}ランダム
 
 STR_FACE_MALE_BUTTON                                            :{BLACK}男性
 STR_FACE_MALE_TOOLTIP                                           :{BLACK}男性顔を表示します
@@ -1929,7 +1972,7 @@ STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}会社�
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}最大会社数:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}このサーバーでの最大会社数を指定します
 STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}観覧者数: {NUM}
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}最高傍観者数:
+STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}最高観覧者数:
 STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}このサーバーでの最大観覧者数を指定します
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}言語:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}このサーバーで使われる主言語を表示します
@@ -2042,6 +2085,7 @@ STR_NETWORK_CLIENT                                              :クライアン
 STR_NETWORK_SPECTATORS                                          :観覧者
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}送りたい金額を入力
+STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}観覧者
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}入力したパスワードを保存しない
@@ -2271,7 +2315,7 @@ STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}自動�
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}列車庫を建設します(列車の購入・整備施設になります)。Shiftを押しながら決定すると費用の見積が出ます
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}線路に通過点を設置します。Ctrlを押しながら決定すると通過点同士を結合できます。Shiftを押しながら決定すると費用の見積が出ます
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}駅を建設します。Ctrlを押しながら決定すると離れた駅等と結合可能です。Shiftを押しながら決定すると費用の見積が出ます
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}鉄道信号を建設します。Ctrlで腕木式と色灯式を切り替えられます。{}ドラックして決定するとその区間に一定間隔で信号が配置されます。このときCtrlを押しておくと、その先分岐に行き着くまで信号を配置していきます。{}Ctrl+クリックで信号種類を選ぶウィンドウが出ます(「信号のGUIを使用」設定オフ時のみ)。Shiftを押しながら決定すると費用の見積が出ます
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}鉄道信号を建設します。Ctrlで腕木式と色灯式を切り替えられます。{}ドラックして決定するとその区間に一定間隔で信号が配置されます。このときCtrlを押しておくと、その先分岐か信号に行き着くまで連続配置します。{}Ctrl+クリックで信号種類を選ぶウィンドウが出ます(「信号のGUIを使用」設定オフ時のみ)。Shiftを押しながら決定すると費用の見積が出ます
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_BRIDGE                  :{BLACK}鉄道橋を建設します。Shiftを押しながら決定すると費用の見積が出ます
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}鉄道トンネルを建設します。Shiftを押しながら決定すると費用の見積が出ます
 STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}線路・信号・駅・中継駅の建設/撤去を切り替えます。{}Ctrlを押したままにすると駅・通過点の撤去時に線路ごと撤去されます
@@ -2546,6 +2590,7 @@ STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: 
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}受入れ貨物: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}線路の制限速度: {LTBLUE}{VELOCITY}
+STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}道路の最高速度: {LTBLUE}{VELOCITY}
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :岩石
@@ -2642,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :社有地
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTDについて
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}オリジナル版権{COPYRIGHT} 1995 Chris Sawyer All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD バージョン {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2013 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ゲームを保存
@@ -2661,6 +2706,7 @@ STR_SAVELOAD_SAVE_BUTTON                                        :{BLACK}保存
 STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}指定したファイル名で現在のゲームを保存します
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}ロード
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}ロードするゲームを選びます
+STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}選択されたハイトマップをロード
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}ゲームの詳細
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}― 情報なし ―
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -2676,13 +2722,12 @@ STR_MAPGEN_BY                                                   :{BLACK}×
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}街数:
 STR_MAPGEN_DATE                                                 :{BLACK}日付:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}産業数:
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}マップ最高高度:
+STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}マップの最高高度を1ずつ増やします
+STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}マップの最高高度を1ずつ減らします
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}雪線の位置:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}雪線を上げる
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}雪線を下げる
-STR_MAPGEN_RANDOM_SEED                                          :{BLACK}乱数種(シード):
-STR_MAPGEN_RANDOM_SEED_HELP                                     :{BLACK}乱数種を入力するにはクリックします
-STR_MAPGEN_RANDOM                                               :{BLACK}ランダム
-STR_MAPGEN_RANDOM_HELP                                          :{BLACK}地形作成の乱数種を変更します
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}地形作成:
 STR_MAPGEN_TREE_PLACER                                          :{BLACK}植林アルゴリズム:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}地形種類:
@@ -2709,7 +2754,7 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}ハイ�
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}サイズ:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} × {NUM}
 
-STR_MAPGEN_RANDOM_SEED_OSKTITLE                                 :{BLACK}乱数種を入力
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}マップの最高高度を変更
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}雪線の位置を変更
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}開始年の変更
 
@@ -2725,13 +2770,13 @@ STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}平地�
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_QUERY_CAPT                      :{WHITE}平地高度を変更
 
 # Map generation progress
-STR_GENERATION_WORLD                                            :{WHITE}地形作成中
+STR_GENERATION_WORLD                                            :{WHITE}マップ生成中
 STR_GENERATION_ABORT                                            :{BLACK}キャンセル
-STR_GENERATION_ABORT_CAPTION                                    :{WHITE}地形作成を中止
-STR_GENERATION_ABORT_MESSAGE                                    :{YELLOW}地形作成をキャンセルしてもよろしいですか?
+STR_GENERATION_ABORT_CAPTION                                    :{WHITE}マップ生成を中止
+STR_GENERATION_ABORT_MESSAGE                                    :{YELLOW}マップ生成をキャンセルしてもよろしいですか?
 STR_GENERATION_PROGRESS                                         :{WHITE}{NUM}%完了
 STR_GENERATION_PROGRESS_NUM                                     :{BLACK}{NUM}/{NUM}
-STR_GENERATION_WORLD_GENERATION                                 :{BLACK}地形作成中
+STR_GENERATION_WORLD_GENERATION                                 :{BLACK}マップ生成
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}河川を生成中
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}植林中
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}灯台/電波塔配置中
@@ -2764,6 +2809,8 @@ STR_NEWGRF_SETTINGS_MOVEUP                                      :{BLACK}上へ
 STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}選択したNewGRFファイルを上へ移動します
 STR_NEWGRF_SETTINGS_MOVEDOWN                                    :{BLACK}下へ
 STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}選択したNewGRFファイルを下へ移動します
+STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}アップグレード
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP                             :{BLACK}より上位バージョンのNewGRFがインストールされている場合にアップグレードします
 STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK}インストールされたNewGRFファイルのリストです
 
 STR_NEWGRF_SETTINGS_SET_PARAMETERS                              :{BLACK}パラメータ設定
@@ -2788,6 +2835,16 @@ STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}一致す�
 STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}切
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}このバージョンのOpenTTDでは使用できません
 
+# NewGRF save preset window
+STR_SAVE_PRESET_CAPTION                                         :{WHITE}プリセットを保存
+STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}使用可能なプリセットの一覧です。選択すると下のセーブ名のプリセットに内容をコピーします
+STR_SAVE_PRESET_TITLE                                           :{BLACK}プリセット名を入力
+STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}現在選択している名前をプリセットの保存に使用します
+STR_SAVE_PRESET_CANCEL                                          :{BLACK}キャンセル
+STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}プリセットを変更しません
+STR_SAVE_PRESET_SAVE                                            :{BLACK}セーブ
+STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}現在選択している名前でプリセットを保存します
+
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRFパラメータの変更
 STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}閉じる
@@ -2811,14 +2868,13 @@ STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF�
 # Sprite aligner window
 STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}スプライト{COMMA} 配列 ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}次のスプライト
-STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}次のノーマルスプライトに進みます。疑似/リカラー/フォントスプライトはスキップし、終端まで行を送ります
+STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}次のノーマルスプライトに進みます。始端と終端は連続しているものとみなし、疑似/リカラー/フォントスプライトはスキップします
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}スプライトへ飛ぶ
 STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}所定のスプライトへ飛びます。指定のスプライトがノーマルスプライトでなければ、次のノーマルスプライトに進みます
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}前のスプライト
-STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}前のノーマルスプライトに戻ります。疑似/リカラー/フォントスプライトはスキップし、始端まで行を送ります
+STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}前のノーマルスプライトに戻ります。始端と終端は連続しているものとみなし、疑似/リカラー/フォントスプライトはスキップします
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}現在選択されているスプライトの代表絵を示します。この配列はスプライトを描画するときには無視されます
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}X・Yオフセットを変更し、スプライトを移動します
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}Xオフセット: {NUM}, Yオフセット: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}スプライトを選ぶ
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}画面内からスプライトを選びます
 
@@ -2875,6 +2931,7 @@ STR_NEWGRF_LIST_MISSING                                         :{RED}欠落フ�
 STR_NEWGRF_BROKEN                                               :{WHITE}NewGRF{0:STRING}の挙動によって同期エラーやクラッシュが引き起こされる可能性があります!
 STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}機関車の状態が車庫外で{1:ENGINE}に変更されました
 STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}列車の長さがに車庫外で{1:ENGINE}に変更されました
+STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}NewGRFにより車庫外や改装以外で'{1:ENGINE}'の積載量が変更されました
 STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}{1:COMPANY}が所有している{0:VEHICLE}という列車は不正な長さです。使用しているNewGRFが原因であるかもしれません。同期エラーやクラッシュが起こる可能性があります!
 
 STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF{0:STRING}の情報が誤っています
@@ -2888,6 +2945,9 @@ STR_NEWGRF_INVALID_CARGO_ABBREV                                 :??
 STR_NEWGRF_INVALID_CARGO_QUANTITY                               :<無効な貨物>{COMMA}ユニット
 STR_NEWGRF_INVALID_ENGINE                                       :<無効な輸送機器モデル>
 STR_NEWGRF_INVALID_INDUSTRYTYPE                                 :<無効な産業>
+
+# Placeholders for other invalid stuff, e.g. vehicles that have gone (Game Script).
+STR_INVALID_VEHICLE                                             :<無効な輸送機器>
 
 # NewGRF scanning window
 STR_NEWGRF_SCAN_CAPTION                                         :{WHITE}NewGRFをスキャンしています
@@ -2911,7 +2971,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}標識�
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}街一覧
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- なし-
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}町名 - メイン画面を町の場所に移動するには町名をクリックします
+STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}町名 - メイン画面を町の場所に移動するには町名をクリックします。Ctrl+クリックで新しいビューポートに表示します
 STR_TOWN_POPULATION                                             :{BLACK}地域人口: {COMMA}人
 
 # Town view window
@@ -2921,8 +2981,8 @@ STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}人口: 
 STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}旅客数(先月): {ORANGE}{COMMA}人{BLACK}　最大: {ORANGE}{COMMA}人
 STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}郵便袋(先月): {ORANGE}{COMMA}袋{BLACK}　最大: {ORANGE}{COMMA}袋
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}街の成長に必要な物資:
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} が必要です
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} が冬に必要です
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}が{RED}必要です
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}が{BLACK}冬に必要です
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} は配送されています
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG} {RED}(更なる配送が必要)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG} {GREEN}(需要充足)
@@ -2930,7 +2990,7 @@ STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}街は {
 STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}街は {ORANGE}{COMMA}{BLACK} 日毎に成長しています(資金提供)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}街は{RED}成長を止めています{BLACK}
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}騒音量: {ORANGE}{COMMA}{BLACK} (現状) / {ORANGE}{COMMA}{BLACK} (最大)
-STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}メイン画面を街の場所に移動します
+STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}メイン画面を街の場所に移動します。Ctrl+クリックで新しいビューポートに表示します。
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}地方自治体
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}地方自治体の情報を表示します
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}街名を変更します
@@ -2987,7 +3047,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :情報
 STR_GOAL_QUESTION_CAPTION_WARNING                               :警告
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :エラー
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :キャンセル
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :いいえ
@@ -3006,6 +3066,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :再起動
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :延期
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :あきらめる
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :閉じる
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}助成金
@@ -3026,9 +3087,10 @@ STR_STORY_BOOK_PREV_PAGE                                        :{BLACK}前ペ�
 STR_STORY_BOOK_PREV_PAGE_TOOLTIP                                :{BLACK}前のページに戻ります
 STR_STORY_BOOK_NEXT_PAGE                                        :{BLACK}次ページ
 STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}次のページに進みます
+STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}無効な目標参照
 
 # Station list window
-STR_STATION_LIST_TOOLTIP                                        :{BLACK}駅名 - メイン画面を駅の場所に移動するには駅名をクリックします
+STR_STATION_LIST_TOOLTIP                                        :{BLACK}駅名 - メイン画面を駅の場所に移動するには駅名をクリックします.Ctrl+クリック で 新しいビューポートに表示します
 STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}複数の施設を選択するにはCtrlを押しながら選択します
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA}箇所の停留施設
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
@@ -3040,7 +3102,6 @@ STR_STATION_LIST_NO_WAITING_CARGO                               :{BLACK}積込�
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
-STR_STATION_VIEW_WAITING_TITLE                                  :{BLACK}積込待ち: {WHITE}{STRING}
 STR_STATION_VIEW_WAITING_CARGO                                  :{WHITE}{CARGO_LONG}
 STR_STATION_VIEW_EN_ROUTE_FROM                                  :{YELLOW}(うち、{1:STATION}からの転送{0:CARGO_SHORT})
 STR_STATION_VIEW_RESERVED                                       :{YELLOW}({CARGO_SHORT}が積込予約済み)
@@ -3219,7 +3280,7 @@ STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}産業�
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}生産量(前月):
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK}({COMMA}%搬送済)
-STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}この産業の場所にメイン画面を移動します。Ctrl+クリックでこの産業の場所を新たなビューポートに表示します
+STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}メイン画面をこの産業の場所に移動します。Ctrl+クリックでこの産業の場所を新たなビューポートに表示します
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}生産量: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}この産業拠点は間もなく閉鎖されます!
 
@@ -3284,11 +3345,14 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :グループ化
 STR_GROUP_DEFAULT_SHIPS                                         :グループ化されていない船舶
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :グループ化されていない航空機
 
-STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}グループ - クリックするとこのグループに所属する全車両一覧を表示します
+STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}グループ - クリックするとこのグループに所属する全車両一覧を表示します。ドラック&ドロップで順序を並べ替えられます
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}新規のグループを作成します
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}選択したグループを削除します
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}選択したグループの名称を変更します
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}このグループ内の輸送機器を全体を対象とする自動交換の際も交換されないようにします
+
+STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}グループを削除
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}このグループとそれに所属する全てを削除してもよろしいですか?
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :共有輸送機器を追加
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :全輸送機器を削除
@@ -3327,10 +3391,10 @@ STR_PURCHASE_INFO_ALL_BUT                                       :{CARGO_LIST}を
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}最大牽引力: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}航続距離: {GOLD}{COMMA} タイル
 
-STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}列車リスト - 個々の情報を見るには列車をクリックします
-STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}車両リスト - 個々の情報を見るには車両をクリックします
-STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}船舶リスト - 個々の情報を見るには船舶をクリックします
-STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}航空機リスト - 個々の情報を見るには航空機をクリックします
+STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}列車リスト - 個々の情報を見るには列車をクリックします。Ctrl+クリックでその列車種の表示/非表示を切り替えます
+STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}車両リスト - 個々の情報を見るには車両をクリックします。Ctrl+クリックでその車両種の表示/非表示を切り替えます
+STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}船舶リスト - 個々の情報を見るには船舶をクリックします。Ctrl+クリックでその船舶機種の表示/非表示を切り替えます
+STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}航空機リスト - 個々の情報を見るには航空機をクリックします。Ctrl+クリックでその航空機種の表示/非表示を切り替えます
 
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}列車を購入
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}車両を購入
@@ -3351,6 +3415,21 @@ STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}列車�
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}車両の名称を変更
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}船舶の名称を変更
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}航空機の名称を変更
+
+STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON                        :{BLACK}非表示
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_TOGGLE_BUTTON                 :{BLACK}非表示
+STR_BUY_VEHICLE_SHIP_HIDE_TOGGLE_BUTTON                         :{BLACK}非表示
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_TOGGLE_BUTTON                     :{BLACK}非表示
+
+STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON                        :{BLACK}表示
+STR_BUY_VEHICLE_ROAD_VEHICLE_SHOW_TOGGLE_BUTTON                 :{BLACK}表示
+STR_BUY_VEHICLE_SHIP_SHOW_TOGGLE_BUTTON                         :{BLACK}表示
+STR_BUY_VEHICLE_AIRCRAFT_SHOW_TOGGLE_BUTTON                     :{BLACK}表示
+
+STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP                  :{BLACK}指定の列車機種の非表示/表示を切り替えます
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_SHOW_TOGGLE_TOOLTIP           :{BLACK}指定の車両機種の非表示/表示を切り替えます
+STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}指定の船舶機種の非表示/表示を切り替えます
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}指定の航空機種の非表示/表示を切り替えます
 
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}列車の機種名を変更
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}車両の機種名を変更
@@ -3405,13 +3484,13 @@ STR_DEPOT_CLONE_ROAD_VEHICLE                                    :{BLACK}道路�
 STR_DEPOT_CLONE_SHIP                                            :{BLACK}船舶を複製
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}航空機を複製
 
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}列車を複製します。このボタンを押してから列車庫内/外の列車をクリックして下さい。Ctrl+クリックすると、複製相手は元列車と指令を共有します。Shift+クリックで金額の概算が出ます
+STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}牽引車両も含め、当該の列車を複製します。このボタンを押してから列車庫内/外の列車をクリックして下さい。Ctrl+クリックすると、複製相手は元列車と指令を共有します。Shift+クリックで金額の概算が出ます
 STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}車両を複製します。このボタンを押してから車庫内/外の車両をクリックして下さい。Ctrl+クリックすると、複製相手は元車両と指令を共有します。Shift+クリックで金額の概算が出ます
 STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}船舶を複製します。このボタンを押してから造船所内/外の船舶をクリックして下さい。Ctrl+クリックすると、複製相手は元船舶と指令を共有します。Shift+クリックで金額の概算が出ます
 STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}航空機を複製します。このボタンを押してから格納庫内/外の航空機をクリックして下さい。Ctrl+クリックすると、複製相手は元航空機と指令を共有します。Shift+クリックで金額の概算が出ます
 
 STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}メイン画面を列車庫の場所に移動します。Ctrl+クリックで新規のビューポートに表示します
-STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}主の画面を車庫の場所に移動します。Ctrl+クリックで新規のビューポートに表示します
+STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}メイン画面を車庫の場所に移動します。Ctrl+クリックで新規のビューポートに表示します
 STR_DEPOT_SHIP_LOCATION_TOOLTIP                                 :{BLACK}メイン画面を造船所の場所に移動します。Ctrl+クリックで新規のビューポートに表示します
 STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}メイン画面を格納庫の場所に移動します。Ctrl+クリックで新規のビューポートに表示します
 
@@ -3455,6 +3534,11 @@ STR_REPLACE_VEHICLE_TRAIN                                       :列車
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :車両
 STR_REPLACE_VEHICLE_SHIP                                        :船舶
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :航空機
+
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}使用中の輸送機器
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :{BLACK}現在使用している輸送機器の一覧です
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}利用可能な輸送機器
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK}置換に使用可能な輸送機器の一覧です
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}置換対象を選択
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}左で選択した輸送機器を置き換える輸送機器を選択します
@@ -3810,6 +3894,10 @@ STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :該当区間を
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :最高速度{2:VELOCITY}で該当区間を運行 (ダイヤ設定無)
 STR_TIMETABLE_TRAVEL_FOR                                        :{STRING}で該当区間を運行
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :{STRING}で該当区間を運行(最高速度{VELOCITY})
+STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :運行({0:STRING}・ダイヤ設定無)
+STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :最高速度{1:VELOCITY}で運行({0:STRING}・ダイヤ設定無)
+STR_TIMETABLE_STAY_FOR_ESTIMATED                                :({STRING}停車・ダイヤ設定無)
+STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :({STRING}で運行・ダイヤ設定無)
 STR_TIMETABLE_STAY_FOR                                          :して{STRING}停車
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :して{STRING}運行
 STR_TIMETABLE_DAYS                                              :{COMMA}日
@@ -3939,6 +4027,8 @@ STR_AI_SETTINGS_START_DELAY                                     :AI企業の設�
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} {STRING}のReadme
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} {STRING}の変更履歴
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} {STRING}のライセンス
+STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}テキストのラップ
+STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}ウィンドウ内のテキストをラップするだけでスクロールなしで領域に合うようになります
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Readmeを見る
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}変更履歴を見る
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}ライセンス
@@ -4049,6 +4139,7 @@ STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}ここ�
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}すでに海水位です
 STR_ERROR_TOO_HIGH                                              :{WHITE}高すぎます
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}すでに平坦になっています
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}地形を変更すると上を走る橋梁を支えられなくなります
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}会社名を変更できません
@@ -4075,7 +4166,7 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}マッ�
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}他の街に近すぎます
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}街数の制限を超えています
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}マップに空きスペースがありません
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}この街は自動では道路を建設しません。詳細設定の「経済->街」で道路の建設を許可できます
+STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}この街は自動では道路を建設しません。「設定→環境→街」から道路の建設を許可できます
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}道路補修工事中です
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}街を削除できません{}この街名を参照する停留施設・車庫か、街が所有するタイルが除去できません
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}街の中心部に像を建てるのに適した場所がありません
@@ -4098,6 +4189,9 @@ STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}マッ�
 STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}雪線上のみに植林できます
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}降雪線より上にのみ建設できます
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}降雪線より下にのみ建設できます
+
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}産業「{STRING}」を建設するのに適切な土地がありません
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}よりよいマップを作成するため、生成パラメーターを変更します
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}ここには駅を建設できません
@@ -4235,6 +4329,7 @@ STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}先に�
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}開始点と終了点が同じです
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}橋端が同じ高さではありません
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}橋が低く、途中の起伏を越えられません
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}橋が地面から高すぎます
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}橋は直線である必要があります
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}橋の先端は両方地面である必要があります
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}橋が長すぎます
@@ -4261,6 +4356,7 @@ STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}すで�
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}グループを作成できません
 STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}グループを削除できません
 STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}グループ名を変更できません
+STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}親グループを設定できません
 STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}グループ内の全車両を移動できません
 STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}この車両をこのグループに追加できません
 STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}グループに共有車両を追加できません
@@ -4798,6 +4894,7 @@ STR_COMPANY_NAME                                                :{COMPANY}
 STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMPANY_NUM}
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
+STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} （非表示）
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}
@@ -4833,8 +4930,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
@@ -4845,9 +4940,7 @@ STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
-STR_GREEN_STRING                                                :{GREEN}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
-STR_RED_STRING                                                  :{RED}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
 STR_WHITE_STRING                                                :{WHITE}{STRING}
 STR_ORANGE_STRING1_WHITE                                        :{ORANGE}{STRING}{WHITE}
