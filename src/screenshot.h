@@ -26,8 +26,11 @@ enum ScreenshotType {
 	SC_HEIGHTMAP,   ///< Heightmap of the world.
 };
 
+class SmallMapWindow;
+
 void SetupScreenshotViewport(ScreenshotType t, struct ViewPort *vp);
 bool MakeHeightmapScreenshot(const char *filename);
+bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWindow *window);
 bool MakeScreenshot(ScreenshotType t, const char *name);
 
 extern char _screenshot_format_name[8];
