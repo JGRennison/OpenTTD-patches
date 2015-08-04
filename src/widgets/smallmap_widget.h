@@ -34,6 +34,7 @@ enum SmallMapWidgets {
 	WID_SM_ENABLE_ALL,     ///< Button to enable display of all legend entries.
 	WID_SM_DISABLE_ALL,    ///< Button to disable display of all legend entries.
 	WID_SM_SHOW_HEIGHT,    ///< Show heightmap toggle button.
+	WID_SM_SCREENSHOT,     ///< Button to take smallmap screenshots
 };
 
 #endif /* WIDGETS_SMALLMAP_WIDGET_H */

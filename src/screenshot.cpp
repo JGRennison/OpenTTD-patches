@@ -25,6 +25,7 @@
 #include "window_func.h"
 #include "tile_map.h"
 #include "landscape.h"
+#include "smallmap_gui.h"
 
 #include "table/strings.h"
 
@@ -811,6 +812,20 @@ bool MakeHeightmapScreenshot(const char *filename)
 }
 
 /**
+ * Show a a success or failure message indicating the result of a screenshot action
+ * @param ret  whether the screenshot action was successful
+ */
+static void ShowScreenshotResultMessage(bool ret)
+{
+	if (ret) {
+		SetDParamStr(0, _screenshot_name);
+		ShowErrorMessage(STR_MESSAGE_SCREENSHOT_SUCCESSFULLY, INVALID_STRING_ID, WL_WARNING);
+	} else {
+		ShowErrorMessage(STR_ERROR_SCREENSHOT_FAILED, INVALID_STRING_ID, WL_ERROR);
+	}
+}
+
+/**
  * Make an actual screenshot.
  * @param t    the type of screenshot to make.
  * @param name the name to give to the screenshot.
@@ -856,12 +871,37 @@ bool MakeScreenshot(ScreenshotType t, const char *name)
 			NOT_REACHED();
 	}
 
-	if (ret) {
-		SetDParamStr(0, _screenshot_name);
-		ShowErrorMessage(STR_MESSAGE_SCREENSHOT_SUCCESSFULLY, INVALID_STRING_ID, WL_WARNING);
-	} else {
-		ShowErrorMessage(STR_ERROR_SCREENSHOT_FAILED, INVALID_STRING_ID, WL_ERROR);
-	}
+	ShowScreenshotResultMessage(ret);
 
+	return ret;
+}
+
+/**
+ * Callback for generating a smallmap screenshot.
+ * @param userdata SmallMapWindow window pointer
+ * @param buf Videobuffer with same bitdepth as current blitter
+ * @param y First line to render
+ * @param pitch Pitch of the videobuffer
+ * @param n Number of lines to render
+ */
+static void SmallMapCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
+{
+	SmallMapWindow *window = static_cast<SmallMapWindow *>(userdata);
+	window->ScreenshotCallbackHandler(buf, y, pitch, n);
+}
+
+/**
+ * Make a screenshot of the smallmap
+ * @param width   the width of the screenshot
+ * @param height  the height of the screenshot
+ * @param window  a pointer to the smallmap window to use, the current mode and zoom status of the window is used for the screenshot
+ * @return true iff the screenshot was made successfully
+ */
+bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWindow *window)
+{
+	_screenshot_name[0] = '\0';
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	bool ret = sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), SmallMapCallback, window, width, height, BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
+	ShowScreenshotResultMessage(ret);
 	return ret;
 }
