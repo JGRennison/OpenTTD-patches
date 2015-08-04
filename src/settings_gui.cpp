@@ -1643,6 +1643,8 @@ static SettingEntry _settings_vehicles_autorenew[] = {
 static SettingsPage _settings_vehicles_autorenew_page = {_settings_vehicles_autorenew, lengthof(_settings_vehicles_autorenew)};
 
 static SettingEntry _settings_vehicles_servicing[] = {
+	SettingEntry("vehicle.pay_for_repair"),
+	SettingEntry("vehicle.repair_cost"),
 	SettingEntry("vehicle.servint_ispercent"),
 	SettingEntry("vehicle.servint_trains"),
 	SettingEntry("vehicle.servint_roadveh"),

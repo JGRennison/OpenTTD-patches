@@ -99,6 +99,33 @@ void VehicleServiceInDepot(Vehicle *v)
 
 	do {
 		v->date_of_last_service = _date;
+		if ( _settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service ) {
+			ExpensesType type = INVALID_EXPENSES;
+			_current_company = v->owner;
+			switch (v->type) {
+			    case VEH_AIRCRAFT:
+				type = EXPENSES_AIRCRAFT_RUN;
+				break;
+			    case VEH_TRAIN:
+				type = EXPENSES_TRAIN_RUN;
+				break;
+			    case VEH_SHIP:
+				type = EXPENSES_SHIP_RUN;
+				break;
+			    case VEH_ROAD:
+				type = EXPENSES_ROADVEH_RUN;
+				break;
+			    default:
+				NOT_REACHED();
+			}
+			assert(type != INVALID_EXPENSES);
+			Money repair_cost = (v->breakdowns_since_last_service * v->repair_cost / _settings_game.vehicle.repair_cost) + 1;
+			CommandCost cost(type, repair_cost);
+			v->First()->profit_this_year -= cost.GetCost() << 8;
+			SubtractMoneyFromCompany(cost);
+			ShowCostOrIncomeAnimation(v->x_pos, v->y_pos, v->z_pos, cost.GetCost());
+		}
+
 		v->breakdowns_since_last_service = 0;
 		v->reliability = v->GetEngine()->reliability;
 		/* Prevent vehicles from breaking down directly after exiting the depot. */
@@ -1118,6 +1145,9 @@ Vehicle *CheckClickOnVehicle(const ViewPort *vp, int x, int y)
 void DecreaseVehicleValue(Vehicle *v)
 {
 	v->value -= v->value >> 8;
+	if ( v->age > v->max_age ) { // double cost for each max_age days after max_age
+		v->repair_cost += v->repair_cost >> 8;
+	}
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 }
 
