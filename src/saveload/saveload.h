@@ -546,6 +546,9 @@ void NORETURN SlErrorCorrupt(const char *msg);
 
 bool SaveloadCrashWithMissingNewGRFs();
 
+/* Hack to change savegame version in only one place. Rmv and correct if trunk. */
+const int TIMESEP_SV = 190;
+
 extern char _savegame_format[8];
 extern bool _do_autosave;
 

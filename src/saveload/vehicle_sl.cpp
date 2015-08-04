@@ -692,6 +692,9 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Vehicle, random_bits,           SLE_UINT8,                    2, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, waiting_triggers,      SLE_UINT8,                    2, SL_MAX_VERSION),
 
+		 SLE_CONDREF(Vehicle, ahead_separation,	     REF_VEHICLE,         TIMESEP_SV, SL_MAX_VERSION),
+		 SLE_CONDREF(Vehicle, behind_separation,     REF_VEHICLE,	  TIMESEP_SV, SL_MAX_VERSION),
+
 		 SLE_CONDREF(Vehicle, next_shared,           REF_VEHICLE,                  2, SL_MAX_VERSION),
 		SLE_CONDNULL(2,                                                            2,  68),
 		SLE_CONDNULL(4,                                                           69, 100),
@@ -699,6 +702,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Vehicle, group_id,              SLE_UINT16,                  60, SL_MAX_VERSION),
 
 		 SLE_CONDVAR(Vehicle, current_order_time,    SLE_UINT32,                  67, SL_MAX_VERSION),
+		 SLE_CONDVAR(Vehicle, current_loading_time,  SLE_UINT32,			TIMESEP_SV, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, lateness_counter,      SLE_INT32,                   67, SL_MAX_VERSION),
 
 		SLE_CONDNULL(10,                                                           2, 143), // old reserved space
