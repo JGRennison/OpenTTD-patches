@@ -85,7 +85,11 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		if (IsBridgeTile(tile)) {
+			MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
+		} else {
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		}
 	}
 
 	switch (GetTileType(tile)) {
@@ -141,7 +145,11 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 	assert((GetTileTrackStatus(tile, TRANSPORT_RAIL, 0) & TrackToTrackBits(t)) != 0);
 
 	if (_settings_client.gui.show_track_reservation) {
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		if (IsBridgeTile(tile)) {
+			MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
+		} else {
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		}
 	}
 
 	switch (GetTileType(tile)) {

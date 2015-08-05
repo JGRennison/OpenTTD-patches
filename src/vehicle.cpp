@@ -1554,11 +1554,11 @@ void Vehicle::UpdateViewport(bool dirty)
 			this->MarkAllViewportsDirty();
 		} else {
 			::MarkAllViewportsDirty(
-				min(old_coord.left,   this->coord.left),
-				min(old_coord.top,    this->coord.top),
-				max(old_coord.right,  this->coord.right) + 1 * ZOOM_LVL_BASE,
-				max(old_coord.bottom, this->coord.bottom) + 1 * ZOOM_LVL_BASE,
-				this->type != VEH_EFFECT ? ZOOM_LVL_END : ZOOM_LVL_DRAW_MAP
+					min(old_coord.left,   this->coord.left),
+					min(old_coord.top,    this->coord.top),
+					max(old_coord.right,  this->coord.right),
+					max(old_coord.bottom, this->coord.bottom),
+					this->type != VEH_EFFECT ? ZOOM_LVL_END : ZOOM_LVL_DRAW_MAP
 			);
 		}
 	}
@@ -1578,7 +1578,7 @@ void Vehicle::UpdatePositionAndViewport()
  */
 void Vehicle::MarkAllViewportsDirty() const
 {
-	::MarkAllViewportsDirty(this->coord.left, this->coord.top, this->coord.right + 1 * ZOOM_LVL_BASE, this->coord.bottom + 1 * ZOOM_LVL_BASE);
+	::MarkAllViewportsDirty(this->coord.left, this->coord.top, this->coord.right, this->coord.bottom);
 }
 
 /**
@@ -2473,7 +2473,9 @@ void Vehicle::ShowVisualEffect() const
 		return;
 	}
 
-	uint max_speed = this->vcache.cached_max_speed;
+	/* Use the speed as limited by underground and orders. */
+	uint max_speed = this->GetCurrentMaxSpeed();
+
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
 		/* For trains, do not show any smoke when:
@@ -2482,14 +2484,10 @@ void Vehicle::ShowVisualEffect() const
 		 */
 		if (HasBit(t->flags, VRF_REVERSING) ||
 				(IsRailStationTile(t->tile) && t->IsFrontEngine() && t->current_order.ShouldStopAtStation(t, GetStationIndex(t->tile)) &&
-				t->cur_speed >= t->Train::GetCurrentMaxSpeed())) {
+				t->cur_speed >= max_speed)) {
 			return;
 		}
-
-		max_speed = min(max_speed, t->gcache.cached_max_track_speed);
-		max_speed = min(max_speed, this->current_order.GetMaxSpeed());
 	}
-	if (this->type == VEH_ROAD || this->type == VEH_SHIP) max_speed = min(max_speed, this->current_order.GetMaxSpeed() * 2);
 
 	const Vehicle *v = this;
 

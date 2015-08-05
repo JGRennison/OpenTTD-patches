@@ -26,6 +26,7 @@ void SetSelectionRed(bool);
 void DeleteWindowViewport(Window *w);
 void InitializeWindowViewport(Window *w, int x, int y, int width, int height, uint32 follow_flags, ZoomLevel zoom);
 ViewPort *IsPtInWindowViewport(const Window *w, int x, int y);
+Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y, bool clamp_to_map = true);
 Point GetTileBelowCursor();
 void UpdateViewportPosition(Window *w);
 
@@ -83,9 +84,8 @@ void UpdateAllVirtCoords();
 
 extern Point _tile_fract_coords;
 
-void MarkTileDirtyByTile(const TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
+void MarkTileDirtyByTile(const TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END, int bridge_level_offset = 0);
 
-int GetRowAtTile(int viewport_y, Point tile, bool bridge_correct);
 void MarkTileDirtyByTileOutsideMap(int x, int y);
 
 ViewportMapType ChangeRenderMode(const ViewPort *vp, bool down);

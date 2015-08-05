@@ -21,6 +21,7 @@
 #include "../querystring_gui.h"
 #include "../town.h"
 #include "../window_func.h"
+#include "../toolbar_gui.h"
 #include "../core/geometry_func.hpp"
 #include "network.h"
 #include "network_client.h"
@@ -120,7 +121,7 @@ void NetworkInitChatMessage()
 
 	_chatmsg_list        = ReallocT(_chatmsg_list, _settings_client.gui.network_chat_box_height);
 	_chatmsg_box.x       = 10;
-	_chatmsg_box.width   = _settings_client.gui.network_chat_box_width;
+	_chatmsg_box.width   = _settings_client.gui.network_chat_box_width_pct * _screen.width / 100;
 	NetworkReInitChatBoxSize();
 	_chatmessage_visible = false;
 
@@ -319,6 +320,11 @@ struct NetworkChatWindow : public Window {
 	~NetworkChatWindow()
 	{
 		InvalidateWindowData(WC_NEWS_WINDOW, 0, 0);
+	}
+
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	/**
@@ -536,7 +542,7 @@ static const NWidgetPart _nested_chat_window_widgets[] = {
 
 /** The description of the chat window. */
 static WindowDesc _chat_window_desc(
-	WDP_MANUAL, NULL, 640, 14, // x, y, width, height
+	WDP_MANUAL, NULL, 0, 0,
 	WC_SEND_NETWORK_MSG, WC_NONE,
 	0,
 	_nested_chat_window_widgets, lengthof(_nested_chat_window_widgets)

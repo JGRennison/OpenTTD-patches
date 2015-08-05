@@ -72,7 +72,7 @@ void DrawHillyLandTile(const TileInfo *ti)
 
 SpriteID GetSpriteIDForRocks(const Slope slope, const uint tile_hash)
 {
-	return (tile_hash & 1 ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + SlopeToSpriteOffset(slope);
+	return ((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (tile_hash & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + SlopeToSpriteOffset(slope);
 }
 
 SpriteID GetSpriteIDForFields(const Slope slope, const uint field_type)

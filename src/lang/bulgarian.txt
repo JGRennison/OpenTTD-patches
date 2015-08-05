@@ -918,10 +918,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Грузинс�
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Ирански Риал (ИРР)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Движение по пътищата
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Избор посоката на движение по пътищата
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :ляво
@@ -2815,7 +2811,6 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Пред
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Продължи към предишен нормален sprite, Пропускайки всички псевдо/прерисувани/текстови sprite и ги облечи в края
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Показване на избрания sprite. Подредбата се пренебрегва при рисуването му.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Преместване на sprite, променяйки X и Y координатите
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X координата: {NUM}, Y координата: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Избери sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Избери sprite от целия екран
 
@@ -2986,7 +2981,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Информа�
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Внимание
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Грешка
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Откажи
 STR_GOAL_QUESTION_BUTTON_OK                                     :Добре
 STR_GOAL_QUESTION_BUTTON_NO                                     :Не
@@ -3005,6 +3000,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Рестарт�
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Отложи
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Предай се
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Затвори
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Субсидии

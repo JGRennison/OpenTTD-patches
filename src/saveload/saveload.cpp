@@ -261,7 +261,7 @@
  *  191   26646
  *  192   26700
  *  193   26802
- *  194   26881
+ *  194   26881   1.5.x
  */
 extern const uint16 SAVEGAME_VERSION = 195; ///< Current savegame version of OpenTTD.
 
@@ -1669,9 +1669,11 @@ static void SlLoadChunk(const ChunkHandler *ch)
 		case CH_ARRAY:
 			_sl.array_index = 0;
 			ch->load_proc();
+			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		case CH_SPARSE_ARRAY:
 			ch->load_proc();
+			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		default:
 			if ((m & 0xF) == CH_RIFF) {
