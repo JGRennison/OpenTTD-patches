@@ -18,6 +18,9 @@
 #include "newgrf_storage.h"
 #include "cargotype.h"
 #include "tilematrix_type.hpp"
+#include "openttd.h"
+#include "table/strings.h"
+#include "company_func.h"
 #include <list>
 
 template <typename T>
@@ -75,6 +78,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	CompanyByte exclusivity;       ///< which company has exclusivity
 	uint8 exclusive_counter;       ///< months till the exclusivity expires
 	int16 ratings[MAX_COMPANIES];  ///< ratings of each company for this town
+	StringID town_label;           ///< Label dependent on _local_company rating.
 
 	TransportedCargoStat<uint32> supplied[NUM_CARGO]; ///< Cargo statistics about supplied cargo.
 	TransportedCargoStat<uint16> received[NUM_TE];    ///< Cargo statistics about received cargotypes.
@@ -112,6 +116,30 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	~Town();
 
 	void InitializeLayout(TownLayout layout);
+
+	void UpdateLabel();
+
+	/**
+	 * Returns the correct town label, based on rating.
+	 */
+	inline StringID Label() const{
+		if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
+			return STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING + this->town_label;
+		} else {
+			return _settings_client.gui.population_in_label ? STR_VIEWPORT_TOWN_POP : STR_VIEWPORT_TOWN;
+		}
+	}
+
+	/**
+	 * Returns the correct town small label, based on rating.
+	 */
+	inline StringID SmallLabel() const{
+		if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
+			return STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING + this->town_label;
+		} else {
+			return STR_VIEWPORT_TOWN_TINY_WHITE;
+		}
+	}
 
 	/**
 	 * Calculate the max town noise.
