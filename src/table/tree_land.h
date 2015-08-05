@@ -12,8 +12,11 @@
 #ifndef TREE_LAND_H
 #define TREE_LAND_H
 
+#include "../sprite.h"
+
 static const byte _tree_base_by_landscape[4] = {0, 12, 20, 32};
 static const byte _tree_count_by_landscape[4] = {12, 8, 12, 9};
+#define MAX_TREE_COUNT_BY_LANDSCAPE 12
 
 struct TreePos {
 	uint8 x;
@@ -225,6 +228,20 @@ static const PalSpriteID _tree_layout_sprite[164 + (79 - 48 + 1)][4] = {
 	{ { 0x716, PAL_NONE }, { 0x6f3, PAL_NONE }, { 0x716, PAL_NONE }, { 0x708, PAL_NONE } }, // 29
 	{ { 0x716, PAL_NONE }, { 0x716, PAL_NONE }, { 0x6f3, PAL_NONE }, { 0x6ec, PAL_NONE } }, // 30
 	{ { 0x716, PAL_NONE }, { 0x701, PAL_NONE }, { 0x6fa, PAL_NONE }, { 0x716, PAL_NONE } }, // 31
+};
+
+/** Tree Sprites with their palettes */
+static const PalSpriteID _tree_sprites[] = {
+	{ 1621, PAL_NONE }, { 1587, PAL_NONE }, { 1656, PAL_NONE }, { 1579, PAL_NONE },
+	{ 1607, PAL_NONE }, { 1593, PAL_NONE }, { 1614, PAL_NONE }, { 1586, PAL_NONE },
+	{ 1663, PAL_NONE }, { 1677, PAL_NONE }, { 1691, PAL_NONE }, { 1705, PAL_NONE },
+	{ 1711, PAL_NONE }, { 1746, PAL_NONE }, { 1753, PAL_NONE }, { 1732, PAL_NONE },
+	{ 1739, PAL_NONE }, { 1718, PAL_NONE }, { 1725, PAL_NONE }, { 1760, PAL_NONE },
+	{ 1838, PAL_NONE }, { 1844, PAL_NONE }, { 1866, PAL_NONE }, { 1871, PAL_NONE },
+	{ 1899, PAL_NONE }, { 1935, PAL_NONE }, { 1928, PAL_NONE }, { 1915, PAL_NONE },
+	{ 1887, PAL_NONE }, { 1908, PAL_NONE }, { 1824, PAL_NONE }, { 1943, PAL_NONE },
+	{ 1950, PAL_NONE }, { 1957, PALETTE_TO_GREEN }, { 1964, PALETTE_TO_RED },        { 1971, PAL_NONE },
+	{ 1978, PAL_NONE }, { 1985, PALETTE_TO_RED, },  { 1992, PALETTE_TO_PALE_GREEN }, { 1999, PALETTE_TO_YELLOW }, { 2006, PALETTE_TO_RED }
 };
 
 #endif /* TREE_LAND_H */

@@ -24,6 +24,26 @@ void Blitter_32bppBase::SetPixel(void *video, int x, int y, uint8 colour)
 	*((Colour *)video + x + y * _screen.pitch) = LookupColourInPalette(colour);
 }
 
+void Blitter_32bppBase::SetLine(void *video, int x, int y, uint8 *colours, uint width)
+{
+	Colour *dst = (Colour *)video + x + y * _screen.pitch;
+	do {
+		*dst = LookupColourInPalette(*colours);
+		dst++;
+		colours++;
+	} while (--width);
+}
+
+void Blitter_32bppBase::SetLine32(void *video, int x, int y, uint32 *colours, uint width)
+{
+	Colour *dst = (Colour *)video + x + y * _screen.pitch;
+	do {
+		*dst = *colours;
+		dst++;
+		colours++;
+	} while (--width);
+}
+
 void Blitter_32bppBase::DrawRect(void *video, int width, int height, uint8 colour)
 {
 	Colour colour32 = LookupColourInPalette(colour);

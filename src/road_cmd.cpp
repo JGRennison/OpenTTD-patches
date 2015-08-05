@@ -1534,7 +1534,7 @@ static void TileLoop_Road(TileIndex tile)
 						TileY(tile) * TILE_SIZE + 7,
 						0,
 						EV_BULLDOZER);
-					MarkTileDirtyByTile(tile);
+					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 					return;
 				}
 			}
@@ -1559,7 +1559,7 @@ static void TileLoop_Road(TileIndex tile)
 				cur_rs = ROADSIDE_BARREN;
 			}
 			SetRoadside(tile, cur_rs);
-			MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 		}
 	} else if (IncreaseRoadWorksCounter(tile)) {
 		TerminateRoadWorks(tile);
@@ -1574,7 +1574,7 @@ static void TileLoop_Road(TileIndex tile)
 			}
 		}
 
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 	}
 }
 

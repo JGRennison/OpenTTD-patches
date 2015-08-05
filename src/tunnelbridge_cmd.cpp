@@ -62,22 +62,22 @@ static const int BRIDGE_Z_START = 3;
  * @param direction Direction from \a begin to \a end.
  * @param bridge_height Bridge height level.
  */
-void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height)
+void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
 {
 	TileIndexDiff delta = TileOffsByDiagDir(direction);
 	for (TileIndex t = begin; t != end; t += delta) {
-		MarkTileDirtyByTile(t, bridge_height - TileHeight(t));
+		MarkTileDirtyByTile(t, mark_dirty_if_zoomlevel_is_below, bridge_height - TileHeight(t));
 	}
-	MarkTileDirtyByTile(end);
+	MarkTileDirtyByTile(end, mark_dirty_if_zoomlevel_is_below);
 }
 
 /**
  * Mark bridge tiles dirty.
  * @param tile Bridge head.
  */
-void MarkBridgeDirty(TileIndex tile)
+void MarkBridgeDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
 {
-	MarkBridgeDirty(tile, GetOtherTunnelBridgeEnd(tile), GetTunnelBridgeDirection(tile), GetBridgeHeight(tile));
+	MarkBridgeDirty(tile, GetOtherTunnelBridgeEnd(tile), GetTunnelBridgeDirection(tile), GetBridgeHeight(tile), mark_dirty_if_zoomlevel_is_below);
 }
 
 /** Reset the data been eventually changed by the grf loaded. */
@@ -949,7 +949,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 				if (height < minz) SetRoadside(c, ROADSIDE_PAVED);
 			}
 			ClearBridgeMiddle(c);
-			MarkTileDirtyByTile(c, height - TileHeight(c));
+			MarkTileDirtyByTile(c, ZOOM_LVL_DRAW_MAP, height - TileHeight(c));
 		}
 
 		if (rail) {

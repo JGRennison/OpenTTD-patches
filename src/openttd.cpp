@@ -65,6 +65,7 @@
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
 #include "programmable_signals.h"
+#include "smallmap_gui.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -1192,6 +1193,8 @@ void SwitchToMode(SwitchMode new_mode)
 
 		default: NOT_REACHED();
 	}
+
+	SmallMapWindow::RebuildColourIndexIfNecessary();
 }
 
 

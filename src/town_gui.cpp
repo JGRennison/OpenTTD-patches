@@ -1863,6 +1863,7 @@ void PlaceProc_House(TileIndex tile)
 		InteractiveRandom(), // p2 - random bits for the house
 		CMD_BUILD_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE_HERE),
 		CcPlaySound1E,
+		0,
 		""
 	};
 

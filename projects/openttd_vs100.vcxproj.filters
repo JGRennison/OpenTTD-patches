@@ -300,6 +300,9 @@
     <ClCompile Include="..\src\pbs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\plans.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\progress.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -906,6 +909,15 @@
     <ClInclude Include="..\src\pbs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\plans_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\plans_func.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\plans_type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\progress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -997,6 +1009,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\slope_type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\smallmap_colours.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\smallmap_gui.h">
@@ -1410,6 +1425,9 @@
     <ClCompile Include="..\src\osk_gui.cpp">
       <Filter>GUI Source Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\plans_gui.cpp">
+      <Filter>GUI Source Code</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\rail_gui.cpp">
       <Filter>GUI Source Code</Filter>
     </ClCompile>
@@ -1596,6 +1614,9 @@
     <ClInclude Include="..\src\widgets\osk_widget.h">
       <Filter>Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\widgets\plans_widget.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\widgets\rail_widget.h">
       <Filter>Widgets</Filter>
     </ClInclude>
@@ -1678,6 +1699,9 @@
       <Filter>Command handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\order_cmd.cpp">
+      <Filter>Command handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\plans_cmd.cpp">
       <Filter>Command handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\rail_cmd.cpp">
@@ -1815,6 +1839,9 @@
     <ClCompile Include="..\src\saveload\order_sl.cpp">
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\saveload\plans_sl.cpp">
+      <Filter>Save/Load handlers</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\saveload\saveload.cpp">
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
@@ -1894,6 +1921,9 @@
       <Filter>Tables</Filter>
     </ClInclude>
     <ClInclude Include="..\src\table\control_codes.h">
+      <Filter>Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\table\darklight_colours.h">
       <Filter>Tables</Filter>
     </ClInclude>
     <ClInclude Include="..\src\table\elrail_data.h">

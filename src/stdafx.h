@@ -525,4 +525,19 @@ static inline void free(const void *ptr)
 	#define OVERRIDE
 #endif
 
+/**
+ * Using _mm_prefetch() with gcc implies the compile flag -msse.
+ * This is not the case with __builtin_prefetch() so the latter can be used in normal .cpp files.
+ */
+#if defined(_MSC_VER)
+	#define INCLUDE_FOR_PREFETCH_NTA <xmmintrin.h>
+	#define PREFETCH_NTA(address) _mm_prefetch((const char *) (address), _MM_HINT_NTA);
+#elif defined(__GNUC__)
+	#define INCLUDE_FOR_PREFETCH_NTA "stdafx.h"
+	#define PREFETCH_NTA(address) __builtin_prefetch((const void *) (address), 0, 0);
+#else
+	#define INCLUDE_FOR_PREFETCH_NTA "stdafx.h"
+	#define PREFETCH_NTA(address)
+#endif
+
 #endif /* STDAFX_H */

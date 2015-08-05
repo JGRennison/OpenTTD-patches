@@ -13,11 +13,14 @@
 #define WIDGETS_DROPDOWN_FUNC_H
 
 #include "../window_gui.h"
+#include "dropdown_type.h"
 
 /* Show drop down menu containing a fixed list of strings */
-void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int button, uint32 disabled_mask, uint32 hidden_mask, uint width = 0);
+void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int button, uint32 disabled_mask, uint32 hidden_mask, uint width = 0, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
 /* Hide drop down menu of a parent window */
 int HideDropDownMenu(Window *pw);
+
+void GetParentWindowInfo(Window *w, WindowClass &parent_wc, WindowNumber &parent_wn);
 
 #endif /* WIDGETS_DROPDOWN_FUNC_H */

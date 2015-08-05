@@ -29,21 +29,6 @@
 
 void PlaceTreesRandomly();
 
-/** Tree Sprites with their palettes */
-const PalSpriteID tree_sprites[] = {
-	{ 1621, PAL_NONE }, { 1587, PAL_NONE }, { 1656, PAL_NONE }, { 1579, PAL_NONE },
-	{ 1607, PAL_NONE }, { 1593, PAL_NONE }, { 1614, PAL_NONE }, { 1586, PAL_NONE },
-	{ 1663, PAL_NONE }, { 1677, PAL_NONE }, { 1691, PAL_NONE }, { 1705, PAL_NONE },
-	{ 1711, PAL_NONE }, { 1746, PAL_NONE }, { 1753, PAL_NONE }, { 1732, PAL_NONE },
-	{ 1739, PAL_NONE }, { 1718, PAL_NONE }, { 1725, PAL_NONE }, { 1760, PAL_NONE },
-	{ 1838, PAL_NONE }, { 1844, PAL_NONE }, { 1866, PAL_NONE }, { 1871, PAL_NONE },
-	{ 1899, PAL_NONE }, { 1935, PAL_NONE }, { 1928, PAL_NONE }, { 1915, PAL_NONE },
-	{ 1887, PAL_NONE }, { 1908, PAL_NONE }, { 1824, PAL_NONE }, { 1943, PAL_NONE },
-	{ 1950, PAL_NONE }, { 1957, PALETTE_TO_GREEN }, { 1964, PALETTE_TO_RED },        { 1971, PAL_NONE },
-	{ 1978, PAL_NONE }, { 1985, PALETTE_TO_RED, },  { 1992, PALETTE_TO_PALE_GREEN }, { 1999, PALETTE_TO_YELLOW }, { 2006, PALETTE_TO_RED }
-};
-
-
 /**
  * The build trees window.
  */
@@ -75,8 +60,8 @@ public:
 		offset.y = 0;
 
 		for (int i = this->base; i < this->base + this->count; i++) {
-			if (i >= (int)lengthof(tree_sprites)) return size;
-			this_size = GetSpriteSize(tree_sprites[i].sprite, &offset);
+			if (i >= (int)lengthof(_tree_sprites)) return size;
+			this_size = GetSpriteSize(_tree_sprites[i].sprite, &offset);
 			size.width = max<int>(size.width, 2 * max<int>(this_size.width, -offset.x));
 			size.height = max<int>(size.height, max<int>(this_size.height, -offset.y));
 		}
@@ -108,7 +93,7 @@ public:
 
 		int i = this->base + widget - WID_BT_TYPE_11;
 		/* Trees "grow" in the centre on the bottom line of the buttons */
-		DrawSprite(tree_sprites[i].sprite, tree_sprites[i].pal, (r.left + r.right) / 2 + WD_FRAMERECT_LEFT, r.bottom - 7);
+		DrawSprite(_tree_sprites[i].sprite, _tree_sprites[i].pal, (r.left + r.right) / 2 + WD_FRAMERECT_LEFT, r.bottom - 7);
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)

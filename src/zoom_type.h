@@ -27,6 +27,10 @@ enum ZoomLevel {
 	ZOOM_LVL_OUT_8X,     ///< Zoomed 8 times out.
 	ZOOM_LVL_OUT_16X,    ///< Zoomed 16 times out.
 	ZOOM_LVL_OUT_32X,    ///< Zoomed 32 times out.
+	ZOOM_LVL_OUT_64X,    ///< Zoomed 64 times out.
+	ZOOM_LVL_OUT_128X,   ///< Zoomed 128 times out.
+	ZOOM_LVL_OUT_256X,   ///< Zoomed 256 times out.
+	ZOOM_LVL_OUT_512X,   ///< Zoomed 512 times out.
 	ZOOM_LVL_END,        ///< End for iteration.
 
 	ZOOM_LVL_COUNT = ZOOM_LVL_END - ZOOM_LVL_BEGIN, ///< Number of zoom levels.
@@ -44,8 +48,10 @@ enum ZoomLevel {
 
 	ZOOM_LVL_DETAIL   = ZOOM_LVL_OUT_8X, ///< All zoomlevels below or equal to this, will result in details on the screen, like road-work, ...
 
-	ZOOM_LVL_MIN      = ZOOM_LVL_NORMAL, ///< Minimum zoom level.
-	ZOOM_LVL_MAX      = ZOOM_LVL_OUT_32X, ///< Maximum zoom level.
+	ZOOM_LVL_MIN      = ZOOM_LVL_NORMAL,       ///< Minimum zoom level.
+	ZOOM_LVL_MAX      = ZOOM_LVL_OUT_512X,     ///< Maximum zoom level.
+	ZOOM_LVL_DRAW_MAP = ZOOM_LVL_OUT_64X,      ///< All zoomlevels above or equal to this are rendered with map style
+	ZOOM_LVL_DRAW_SPR = ZOOM_LVL_DRAW_MAP - 1, ///< All zoomlevels below or equal to this are rendered with sprites
 };
 DECLARE_POSTFIX_INCREMENT(ZoomLevel)
 

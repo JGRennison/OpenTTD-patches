@@ -163,7 +163,15 @@ static const SpriteID SPR_WINDOW_DEFSIZE             = SPR_OPENTTD_BASE + 168;
 
 static const SpriteID SPR_IMG_CARGOFLOW              = SPR_OPENTTD_BASE + 174;
 
-static const SpriteID SPR_SIGNALS_BASE  = SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
+/** Sprites for the route step marker. */
+static const SpriteID SPR_ROUTE_STEP_BASE          = SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
+static const SpriteID SPR_ROUTE_STEP_TOP           = SPR_ROUTE_STEP_BASE + 0;
+static const SpriteID SPR_ROUTE_STEP_MIDDLE        = SPR_ROUTE_STEP_BASE + 1;
+static const SpriteID SPR_ROUTE_STEP_BOTTOM        = SPR_ROUTE_STEP_BASE + 2;
+static const SpriteID SPR_ROUTE_STEP_BOTTOM_SHADOW = SPR_ROUTE_STEP_BASE + 3;
+static const SpriteID ROUTE_STEP_SPRITE_COUNT = 4;
+
+static const SpriteID SPR_SIGNALS_BASE  = SPR_ROUTE_STEP_BASE + ROUTE_STEP_SPRITE_COUNT;
 static const uint16 PRESIGNAL_SPRITE_COUNT                   =  48;
 static const uint16 PRESIGNAL_AND_SEMAPHORE_SPRITE_COUNT     = 112;
 static const uint16 PRESIGNAL_SEMAPHORE_AND_PBS_SPRITE_COUNT = 240;

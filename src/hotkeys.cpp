@@ -61,6 +61,8 @@ static const KeycodeNames _keycode_to_name[] = {
 	{"NUM_MINUS", WKC_NUM_MINUS},
 	{"=", WKC_EQUALS},
 	{"-", WKC_MINUS},
+	{"PAGE_UP", WKC_PAGEUP},
+	{"PAGE_DOWN", WKC_PAGEDOWN},
 };
 
 /**

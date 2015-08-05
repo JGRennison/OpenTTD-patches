@@ -307,7 +307,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 #endif
 
 	/* Try to perform the command. */
-	CommandCost res = ::DoCommandPInternal(tile, p1, p2, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : NULL, text, false, estimate_only);
+	CommandCost res = ::DoCommandPInternal(tile, p1, p2, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : NULL, text, false, estimate_only, 0);
 
 	/* We failed; set the error and bail out */
 	if (res.Failed()) {

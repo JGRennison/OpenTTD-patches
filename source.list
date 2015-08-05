@@ -66,6 +66,7 @@ network/network_udp.cpp
 openttd.cpp
 order_backup.cpp
 pbs.cpp
+plans.cpp
 progress.cpp
 rail.cpp
 rev.cpp
@@ -302,6 +303,9 @@ order_base.h
 order_func.h
 order_type.h
 pbs.h
+plans_base.h
+plans_func.h
+plans_type.h
 progress.h
 querystring_gui.h
 rail.h
@@ -333,6 +337,7 @@ signs_func.h
 signs_type.h
 slope_func.h
 slope_type.h
+smallmap_colours.h
 smallmap_gui.h
 sortlist_type.h
 sound_func.h
@@ -491,6 +496,7 @@ news_gui.cpp
 object_gui.cpp
 order_gui.cpp
 osk_gui.cpp
+plans_gui.cpp
 rail_gui.cpp
 road_gui.cpp
 roadveh_gui.cpp
@@ -555,6 +561,7 @@ widgets/news_widget.h
 widgets/object_widget.h
 widgets/order_widget.h
 widgets/osk_widget.h
+widgets/plans_widget.h
 widgets/rail_widget.h
 widgets/road_widget.h
 widgets/settings_widget.h
@@ -585,6 +592,7 @@ industry_cmd.cpp
 misc_cmd.cpp
 object_cmd.cpp
 order_cmd.cpp
+plans_cmd.cpp
 rail_cmd.cpp
 road_cmd.cpp
 roadveh_cmd.cpp
@@ -632,6 +640,7 @@ saveload/oldloader.cpp
 saveload/oldloader.h
 saveload/oldloader_sl.cpp
 saveload/order_sl.cpp
+saveload/plans_sl.cpp
 saveload/saveload.cpp
 saveload/saveload.h
 saveload/saveload_filter.h
@@ -661,6 +670,7 @@ table/build_industry.h
 table/cargo_const.h
 table/clear_land.h
 table/control_codes.h
+table/darklight_colours.h
 table/elrail_data.h
 table/engines.h
 table/genland.h

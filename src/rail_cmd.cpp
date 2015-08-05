@@ -1195,7 +1195,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			uint mask = GetPresentSignals(tile) & SignalOnTrack(track);
 			SetSignalStates(tile, (GetSignalStates(tile) & ~mask) | ((HasBit(GetRailReservationTrackBits(tile), track) && EnsureNoVehicleOnGround(tile).Succeeded() ? UINT_MAX : 0) & mask));
 		}
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 		AddTrackToSignalBuffer(tile, track, _current_company);
 		YapfNotifyTrackLayoutChange(tile, track);
 		if (v != NULL) {
@@ -1559,7 +1559,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 		YapfNotifyTrackLayoutChange(tile, track);
 		if (v != NULL) TryPathReserve(v, false);
 
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, cost);
@@ -1702,7 +1702,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				}
 
 				SetRailType(tile, totype);
-				MarkTileDirtyByTile(tile);
+				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 				/* update power of train on this tile */
 				FindVehicleOnPos(tile, &affected_trains, &UpdateTrainPowerProc);
 			}
@@ -1786,10 +1786,10 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					YapfNotifyTrackLayoutChange(endtile, track);
 
 					if (IsBridge(tile)) {
-						MarkBridgeDirty(tile);
+						MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
 					} else {
-						MarkTileDirtyByTile(tile);
-						MarkTileDirtyByTile(endtile);
+						MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+						MarkTileDirtyByTile(endtile, ZOOM_LVL_DRAW_MAP);
 					}
 				}
 

@@ -17,6 +17,7 @@
 #include "window_type.h"
 #include "tile_type.h"
 #include "station_type.h"
+#include "vehicle_base.h"
 
 static const int TILE_HEIGHT_STEP = 50; ///< One Z unit tile height difference is displayed as 50m.
 
@@ -29,7 +30,11 @@ Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y, bool clamp_to_map
 Point GetTileBelowCursor();
 void UpdateViewportPosition(Window *w);
 
-void MarkAllViewportsDirty(int left, int top, int right, int bottom);
+void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
+void MarkAllViewportMapsDirty(int left, int top, int right, int bottom);
+void MarkAllRouteStepsDirty(Window *vehicle_window);
+void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile);
+void MarkAllRoutePathsDirty(const Vehicle *veh);
 
 bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);
@@ -59,6 +64,7 @@ void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const Vie
 void StartSpriteCombine();
 void EndSpriteCombine();
 
+bool HandleViewportDoubleClicked(Window *w, int x, int y);
 bool HandleViewportClicked(const ViewPort *vp, int x, int y);
 void SetRedErrorSquare(TileIndex tile);
 void SetTileSelectSize(int w, int h);
@@ -78,10 +84,14 @@ void UpdateAllVirtCoords();
 
 extern Point _tile_fract_coords;
 
-void MarkTileDirtyByTile(TileIndex tile, int bridge_level_offset = 0);
+void MarkTileDirtyByTile(const TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END, int bridge_level_offset = 0);
 
 void MarkTileDirtyByTileOutsideMap(int x, int y);
 
+ViewportMapType ChangeRenderMode(const ViewPort *vp, bool down);
+
 Point GetViewportStationMiddle(const ViewPort *vp, const Station *st);
+
+void ShowTooltipForTile(Window *w, const TileIndex tile);
 
 #endif /* VIEWPORT_FUNC_H */

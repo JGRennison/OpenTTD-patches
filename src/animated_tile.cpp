@@ -37,7 +37,7 @@ void DeleteAnimatedTile(TileIndex tile)
 			 */
 			memmove(ti, ti + 1, (_animated_tile_list + _animated_tile_count - (ti + 1)) * sizeof(*ti));
 			_animated_tile_count--;
-			MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 			return;
 		}
 	}
@@ -50,7 +50,7 @@ void DeleteAnimatedTile(TileIndex tile)
  */
 void AddAnimatedTile(TileIndex tile)
 {
-	MarkTileDirtyByTile(tile);
+	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 
 	for (const TileIndex *ti = _animated_tile_list; ti < _animated_tile_list + _animated_tile_count; ti++) {
 		if (tile == *ti) return;

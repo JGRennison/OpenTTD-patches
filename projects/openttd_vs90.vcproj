@@ -700,6 +700,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\plans.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\progress.cpp"
 				>
 			</File>
@@ -1524,6 +1528,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\plans_base.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\plans_func.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\plans_type.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\progress.h"
 				>
 			</File>
@@ -1645,6 +1661,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\slope_type.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\smallmap_colours.h"
 				>
 			</File>
 			<File
@@ -2208,6 +2228,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\plans_gui.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\rail_gui.cpp"
 				>
 			</File>
@@ -2460,6 +2484,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\widgets\plans_widget.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\widgets\rail_widget.h"
 				>
 			</File>
@@ -2573,6 +2601,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\order_cmd.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\plans_cmd.cpp"
 				>
 			</File>
 			<File
@@ -2760,6 +2792,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\saveload\plans_sl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\saveload\saveload.cpp"
 				>
 			</File>
@@ -2869,6 +2905,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\table\control_codes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\table\darklight_colours.h"
 				>
 			</File>
 			<File

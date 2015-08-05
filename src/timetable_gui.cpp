@@ -24,6 +24,7 @@
 #include "date_gui.h"
 #include "vehicle_gui.h"
 #include "settings_type.h"
+#include "viewport_func.h"
 
 #include "widgets/timetable_widget.h"
 
@@ -177,6 +178,13 @@ struct TimetableWindow : Window {
 		this->FinishInitNested(window_number);
 
 		this->owner = this->vehicle->owner;
+	}
+
+	~TimetableWindow()
+	{
+		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
+			MarkAllRouteStepsDirty(this);
+		}
 	}
 
 	/**
@@ -715,6 +723,27 @@ struct TimetableWindow : Window {
 		this->GetWidget<NWidgetStacked>(WID_VT_ARRIVAL_DEPARTURE_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : SZSP_NONE);
 		// this->GetWidget<NWidgetStacked>(TTV_AUTO_SELECTION)->SetDisplayedPlane(!_settings_game.order.timetable_automated ? 0 : 1);
 		this->GetWidget<NWidgetStacked>(WID_VT_EXPECTED_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : 1);
+	}
+
+	virtual void OnFocus(Window *previously_focused_window)
+	{
+		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
+			MarkAllRoutePathsDirty(this->vehicle);
+			MarkAllRouteStepsDirty(this);
+		}
+	}
+
+	virtual void OnFocusLost(Window *newly_focused_window)
+	{
+		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
+			MarkAllRoutePathsDirty(this->vehicle);
+			MarkAllRouteStepsDirty(this);
+		}
+	}
+
+	const Vehicle *GetVehicle()
+	{
+		return this->vehicle;
 	}
 };
 

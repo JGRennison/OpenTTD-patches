@@ -1030,7 +1030,7 @@ void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigg
 					random_bits |= Random() & reseed;
 					SetStationTileRandomBits(tile, random_bits);
 
-					MarkTileDirtyByTile(tile);
+					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 				}
 			}
 		}

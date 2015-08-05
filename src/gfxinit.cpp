@@ -19,6 +19,12 @@
 #include "blitter/factory.hpp"
 #include "video/video_driver.hpp"
 #include "window_func.h"
+#include "zoom_func.h"
+#include "clear_map.h"
+#include "clear_func.h"
+#include "tree_map.h"
+#include "table/tree_land.h"
+#include "blitter/32bpp_base.hpp"
 
 /* The type of set we're replacing */
 #define SET_TYPE "graphics"
@@ -198,6 +204,9 @@ static void LoadSpriteTables()
 
 	LoadGrfFile("innerhighlight.grf", SPR_ZONING_INNER_HIGHLIGHT_BASE, i++);
 
+	/* Load route step graphics */
+	LoadGrfFile("route_step.grf", SPR_ROUTE_STEP_BASE, i++);
+
 	/* Initialize the unicode to sprite mapping table */
 	InitializeUnicodeGlyphMap();
 
@@ -313,6 +322,103 @@ void CheckBlitter()
 	ReInitAllWindows();
 }
 
+static void UpdateRouteStepSpriteSize()
+{
+	extern uint _vp_route_step_width;
+	extern uint _vp_route_step_height_top;
+	extern uint _vp_route_step_height_middle;
+	extern uint _vp_route_step_height_bottom;
+	extern SubSprite _vp_route_step_subsprite;
+
+	Dimension d = GetSpriteSize(SPR_ROUTE_STEP_TOP);
+	_vp_route_step_width = d.width;
+	_vp_route_step_height_top = d.height;
+
+	d = GetSpriteSize(SPR_ROUTE_STEP_MIDDLE);
+	_vp_route_step_height_middle = d.height;
+	assert(_vp_route_step_width == d.width);
+
+	d = GetSpriteSize(SPR_ROUTE_STEP_BOTTOM);
+	_vp_route_step_height_bottom = d.height;
+	assert(_vp_route_step_width == d.width);
+
+	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
+	_vp_route_step_subsprite.right = ScaleByZoom(_vp_route_step_width, ZOOM_LVL_GUI);
+	_vp_route_step_subsprite.bottom = ScaleByZoom(char_height, ZOOM_LVL_GUI);
+	_vp_route_step_subsprite.left = 0;
+	_vp_route_step_subsprite.top = 0;
+}
+
+/* multi can be density, field type, ... */
+static SpriteID GetSpriteIDForClearGround(const ClearGround cg, const Slope slope, const uint multi)
+{
+	switch (cg) {
+		case CLEAR_GRASS:
+			return GetSpriteIDForClearLand(slope, (byte) multi);
+		case CLEAR_ROUGH:
+			return GetSpriteIDForHillyLand(slope, multi);
+		case CLEAR_ROCKS:
+			return GetSpriteIDForRocks(slope, multi);
+		case CLEAR_FIELDS:
+			return GetSpriteIDForFields(slope, multi);
+		case CLEAR_SNOW:
+		case CLEAR_DESERT:
+			return GetSpriteIDForSnowDesert(slope, multi);
+		default: NOT_REACHED();
+	}
+}
+
+/** Once the sprites are loaded, we can determine main colours of ground/water/... */
+void GfxDetermineMainColours()
+{
+	/* Water. */
+	extern uint32 _vp_map_water_colour[5];
+	_vp_map_water_colour[0] = GetSpriteMainColour(SPR_FLAT_WATER_TILE, PAL_NONE);
+	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
+		_vp_map_water_colour[1] = Blitter_32bppBase::MakeTransparent(_vp_map_water_colour[0], 256, 192).data; // lighter
+		_vp_map_water_colour[2] = Blitter_32bppBase::MakeTransparent(_vp_map_water_colour[0], 192, 256).data; // darker
+		_vp_map_water_colour[3] = _vp_map_water_colour[2];
+		_vp_map_water_colour[4] = _vp_map_water_colour[1];
+	}
+
+	/* Clear ground. */
+	extern uint32 _vp_map_vegetation_clear_colours[16][6][8];
+	memset(_vp_map_vegetation_clear_colours, 0, sizeof(_vp_map_vegetation_clear_colours));
+	const struct {
+		byte min;
+		byte max;
+	} multi[6] = {
+		{ 0, 3 }, // CLEAR_GRASS, density
+		{ 0, 7 }, // CLEAR_ROUGH, "random" based on position
+		{ 0, 1 }, // CLEAR_ROCKS, tile hash parity
+		{ 0, 7 }, // CLEAR_FIELDS, some field types
+		{ 0, 3 }, // CLEAR_SNOW, density
+		{ 1, 3 }, // CLEAR_DESERT, density
+	};
+	for (uint s = 0; s <= SLOPE_ELEVATED; s++) {
+		for (uint cg = 0; cg < 6; cg++) {
+			for (uint m = multi[cg].min; m <= multi[cg].max; m++) {
+				_vp_map_vegetation_clear_colours[s][cg][m] = GetSpriteMainColour(GetSpriteIDForClearGround((ClearGround) cg, (Slope) s, m), PAL_NONE);
+			}
+		}
+	}
+
+	/* Trees. */
+	extern uint32 _vp_map_vegetation_tree_colours[5][MAX_TREE_COUNT_BY_LANDSCAPE];
+	const uint base  = _tree_base_by_landscape[_settings_game.game_creation.landscape];
+	const uint count = _tree_count_by_landscape[_settings_game.game_creation.landscape];
+	for (uint tg = 0; tg < 5; tg++) {
+		for (uint i = base; i < base + count; i++) {
+			_vp_map_vegetation_tree_colours[tg][i - base] = GetSpriteMainColour(_tree_sprites[i].sprite, _tree_sprites[i].pal);
+		}
+		const int diff = MAX_TREE_COUNT_BY_LANDSCAPE - count;
+		if (diff > 0) {
+			for (uint i = count; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++)
+				_vp_map_vegetation_tree_colours[tg][i] = _vp_map_vegetation_tree_colours[tg][i - count];
+		}
+	}
+}
+
 /** Initialise and load all the sprites. */
 void GfxLoadSprites()
 {
@@ -323,7 +429,9 @@ void GfxLoadSprites()
 	GfxInitSpriteMem();
 	LoadSpriteTables();
 	GfxInitPalettes();
+	GfxDetermineMainColours();
 
+	UpdateRouteStepSpriteSize();
 	UpdateCursorSize();
 }
 

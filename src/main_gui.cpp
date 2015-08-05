@@ -231,6 +231,8 @@ enum {
 	GHK_CHAT_ALL,
 	GHK_CHAT_COMPANY,
 	GHK_CHAT_SERVER,
+	GHK_CHANGE_MAP_MODE_PREV,
+	GHK_CHANGE_MAP_MODE_NEXT,
 };
 
 struct MainWindow : Window
@@ -249,6 +251,7 @@ struct MainWindow : Window
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_M_VIEWPORT);
 		nvp->InitializeViewport(this, TileXY(32, 32), ZOOM_LVL_VIEWPORT);
 
+		this->viewport->map_type = (ViewportMapType) _settings_client.gui.default_viewport_map_mode;
 		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, 0, 0, 3);
 		this->refresh = LINKGRAPH_DELAY;
 	}
@@ -423,6 +426,25 @@ struct MainWindow : Window
 				break;
 #endif
 
+			case GHK_CHANGE_MAP_MODE_PREV:
+				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
+					_focused_window->viewport->map_type = ChangeRenderMode(_focused_window->viewport, true);
+					_focused_window->SetDirty();
+				} else if (this->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
+					this->viewport->map_type = ChangeRenderMode(this->viewport, true);
+					this->SetDirty();
+				}
+				break;
+			case GHK_CHANGE_MAP_MODE_NEXT:
+				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
+					_focused_window->viewport->map_type = ChangeRenderMode(_focused_window->viewport, false);
+					_focused_window->SetDirty();
+				} else if (this->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
+					this->viewport->map_type = ChangeRenderMode(this->viewport, false);
+					this->SetDirty();
+				}
+				break;
+
 			default: return ES_NOT_HANDLED;
 		}
 		return ES_HANDLED;
@@ -439,7 +461,11 @@ struct MainWindow : Window
 
 	virtual void OnMouseWheel(int wheel)
 	{
-		if (_settings_client.gui.scrollwheel_scrolling == 0) {
+		if (_ctrl_pressed) {
+			/* Cycle through the drawing modes */
+			this->viewport->map_type = ChangeRenderMode(this->viewport, wheel < 0);
+			this->SetDirty();
+		} else if (_settings_client.gui.scrollwheel_scrolling == 0) {
 			ZoomInOrOutToCursorWindow(wheel < 0, this);
 		}
 	}
@@ -463,6 +489,16 @@ struct MainWindow : Window
 		if (!gui_scope) return;
 		/* Forward the message to the appropriate toolbar (ingame or scenario editor) */
 		InvalidateWindowData(WC_MAIN_TOOLBAR, 0, data, true);
+	}
+
+	virtual void OnMouseOver(Point pt, int widget)
+	{
+		if (pt.x != -1 && _game_mode != GM_MENU) {
+			/* Show tooltip with last month production or town name */
+			const Point p = GetTileBelowCursor();
+			const TileIndex tile = TileVirtXY(p.x, p.y);
+			if (tile < MapSize()) ShowTooltipForTile(this, tile);
+		}
 	}
 
 	static HotkeyList hotkeys;
@@ -517,6 +553,8 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(_ghk_chat_company_keys, "chat_company", GHK_CHAT_COMPANY),
 	Hotkey(_ghk_chat_server_keys, "chat_server", GHK_CHAT_SERVER),
 #endif
+	Hotkey(WKC_PAGEUP,   "previous_map_mode", GHK_CHANGE_MAP_MODE_PREV),
+	Hotkey(WKC_PAGEDOWN, "next_map_mode",     GHK_CHANGE_MAP_MODE_NEXT),
 	HOTKEY_LIST_END
 };
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);

@@ -524,7 +524,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 				MarkDependencidesForUpdate(SignalReference(tile, track));
 			}
 			SetSignalStateByTrackdir(tile, trackdir, newstate);
-			MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 		}
 	}
 

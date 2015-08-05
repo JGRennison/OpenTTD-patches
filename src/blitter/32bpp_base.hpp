@@ -23,6 +23,8 @@ public:
 	/* virtual */ uint8 GetScreenDepth() { return 32; }
 	/* virtual */ void *MoveTo(void *video, int x, int y);
 	/* virtual */ void SetPixel(void *video, int x, int y, uint8 colour);
+	/* virtual */ void SetLine(void *video, int x, int y, uint8 *colours, uint width);
+	/* virtual */ void SetLine32(void *video, int x, int y, uint32 *colours, uint width);
 	/* virtual */ void DrawRect(void *video, int width, int height, uint8 colour);
 	/* virtual */ void CopyFromBuffer(void *video, const void *src, int width, int height);
 	/* virtual */ void CopyToBuffer(const void *video, void *dst, int width, int height);

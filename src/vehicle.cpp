@@ -52,6 +52,7 @@
 #include "gamelog.h"
 #include "linkgraph/linkgraph.h"
 #include "linkgraph/refresh.h"
+#include "blitter/factory.hpp"
 
 #include "table/strings.h"
 
@@ -1158,6 +1159,62 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 	}
 }
 
+void ViewportMapDrawVehicles(DrawPixelInfo *dpi)
+{
+	/* The bounding rectangle */
+	const int l = dpi->left;
+	const int r = dpi->left + dpi->width;
+	const int t = dpi->top;
+	const int b = dpi->top + dpi->height;
+
+	/* The hash area to scan */
+	int xl, xu, yl, yu;
+
+	if (dpi->width + (70 * ZOOM_LVL_BASE) < (1 << (7 + 6 + ZOOM_LVL_SHIFT))) {
+		xl = GB(l - (70 * ZOOM_LVL_BASE), 7 + ZOOM_LVL_SHIFT, 6);
+		xu = GB(r,                        7 + ZOOM_LVL_SHIFT, 6);
+	} else {
+		/* scan whole hash row */
+		xl = 0;
+		xu = 0x3F;
+	}
+
+	if (dpi->height + (70 * ZOOM_LVL_BASE) < (1 << (6 + 6 + ZOOM_LVL_SHIFT))) {
+		yl = GB(t - (70 * ZOOM_LVL_BASE), 6 + ZOOM_LVL_SHIFT, 6) << 6;
+		yu = GB(b,                        6 + ZOOM_LVL_SHIFT, 6) << 6;
+	} else {
+		/* scan whole column */
+		yl = 0;
+		yu = 0x3F << 6;
+	}
+
+	const int w = UnScaleByZoom(dpi->width, dpi->zoom);
+	const int h = UnScaleByZoom(dpi->height, dpi->zoom);
+	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
+	for (int y = yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
+		for (int x = xl;; x = (x + 1) & 0x3F) {
+			const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
+
+			while (v != NULL) {
+				if (!(v->vehstatus & (VS_HIDDEN | VS_UNCLICKABLE)) && (v->type != VEH_EFFECT)) {
+					Point pt = RemapCoords(v->x_pos, v->y_pos, v->z_pos);
+					const int pixel_x = UnScaleByZoomLower(pt.x - dpi->left, dpi->zoom);
+					if (IsInsideMM(pixel_x, 0, w)) {
+						const int pixel_y = UnScaleByZoomLower(pt.y - dpi->top, dpi->zoom);
+						if (IsInsideMM(pixel_y, 0, h))
+							blitter->SetPixel(dpi->dst_ptr, pixel_x, pixel_y, PC_WHITE);
+					}
+				}
+				v = v->hash_viewport_next;
+			}
+
+			if (x == xu) break;
+		}
+
+		if (y == yu) break;
+	}
+}
+
 /**
  * Find the vehicle close to the clicked coordinates.
  * @param vp Viewport clicked in.
@@ -1620,7 +1677,7 @@ void VehicleEnterDepot(Vehicle *v)
 			SetWindowClassesDirty(WC_TRAINS_LIST);
 			/* Clear path reservation */
 			SetDepotReservation(t->tile, false);
-			if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(t->tile);
+			if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(t->tile, ZOOM_LVL_DRAW_MAP);
 
 			UpdateSignalsOnSegment(t->tile, INVALID_DIAGDIR, t->owner);
 			t->wait_counter = 0;
@@ -1774,7 +1831,9 @@ void Vehicle::UpdateViewport(bool dirty)
 					min(old_coord.left,   this->coord.left),
 					min(old_coord.top,    this->coord.top),
 					max(old_coord.right,  this->coord.right),
-					max(old_coord.bottom, this->coord.bottom));
+					max(old_coord.bottom, this->coord.bottom),
+					this->type != VEH_EFFECT ? ZOOM_LVL_END : ZOOM_LVL_DRAW_MAP
+			);
 		}
 	}
 }

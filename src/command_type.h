@@ -337,6 +337,12 @@ enum Commands {
 	CMD_MODIFY_SIGNAL_INSTRUCTION,    ///< modifies a signal instruction
 	CMD_REMOVE_SIGNAL_INSTRUCTION,    ///< removes a signal instruction
 
+	CMD_ADD_PLAN,
+	CMD_ADD_PLAN_LINE,
+	CMD_REMOVE_PLAN,
+	CMD_REMOVE_PLAN_LINE,
+	CMD_CHANGE_PLAN_VISIBILITY,
+
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
 
@@ -474,6 +480,8 @@ struct Command {
  */
 typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2);
 
+#define MAX_CMD_TEXT_LENGTH 32000
+
 /**
  * Structure for buffering the build command when selecting a station to join.
  */
@@ -483,7 +491,8 @@ struct CommandContainer {
 	uint32 p2;                       ///< parameter p2.
 	uint32 cmd;                      ///< command being executed.
 	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
-	char text[32 * MAX_CHAR_LENGTH]; ///< possible text sent for name changes etc, in bytes including '\0'.
+	uint32 binary_length;            ///< in case text contains binary data, this describes its length.
+	char text[MAX_CMD_TEXT_LENGTH];  ///< possible text sent for name changes etc, in bytes including '\0'.
 };
 
 #endif /* COMMAND_TYPE_H */

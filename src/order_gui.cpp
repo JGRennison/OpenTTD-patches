@@ -624,6 +624,8 @@ private:
 		order.SetDepotActionType(ODATFB_NEAREST_DEPOT);
 
 		DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
+		MarkAllRoutePathsDirty(this->vehicle);
+		MarkAllRouteStepsDirty(this);
 	}
 
 	/**
@@ -709,6 +711,8 @@ private:
 		/* When networking, move one order lower */
 		int selected = this->selected_order + (int)_networking;
 
+		MarkAllRoutePathsDirty(this->vehicle);
+		MarkAllRouteStepsDirty(this);
 		if (DoCommandP(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), CMD_DELETE_ORDER | CMD_MSG(STR_ERROR_CAN_T_DELETE_THIS_ORDER))) {
 			this->selected_order = selected >= this->vehicle->GetNumOrders() ? -1 : selected;
 			this->UpdateButtonState();
@@ -800,6 +804,13 @@ public:
 			if (station_orders < 2) this->OrderClick_Goto(OPOS_GOTO);
 		}
 		this->OnInvalidateData(VIWD_MODIFY_ORDERS);
+	}
+
+	~OrdersWindow()
+	{
+		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
+			MarkAllRouteStepsDirty(this);
+		}
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
@@ -1176,6 +1187,8 @@ public:
 						order.MakeConditional(order_id);
 
 						DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
+						MarkAllRoutePathsDirty(this->vehicle);
+						MarkAllRouteStepsDirty(this);
 					}
 					ResetObjectToPlace();
 					break;
@@ -1234,7 +1247,7 @@ public:
 				} else {
 					const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 					ShowDropDownMenu(this, _order_non_stop_drowdown, o->GetNonStopType(), WID_O_NON_STOP, 0,
-													o->IsType(OT_GOTO_STATION) ? 0 : (o->IsType(OT_GOTO_WAYPOINT) ? 3 : 12));
+							o->IsType(OT_GOTO_STATION) ? 0 : (o->IsType(OT_GOTO_WAYPOINT) ? 3 : 12), 0, DDSF_LOST_FOCUS);
 				}
 				break;
 
@@ -1254,7 +1267,7 @@ public:
 						case OPOS_SHARE:       sel =  3; break;
 						default: NOT_REACHED();
 					}
-					ShowDropDownMenu(this, this->vehicle->type == VEH_AIRCRAFT ? _order_goto_dropdown_aircraft : _order_goto_dropdown, sel, WID_O_GOTO, 0, 0);
+					ShowDropDownMenu(this, this->vehicle->type == VEH_AIRCRAFT ? _order_goto_dropdown_aircraft : _order_goto_dropdown, sel, WID_O_GOTO, 0, 0, 0, DDSF_LOST_FOCUS);
 				}
 				break;
 
@@ -1262,7 +1275,7 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_FullLoad(-1);
 				} else {
-					ShowDropDownMenu(this, _order_full_load_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetLoadType(), WID_O_FULL_LOAD, 0, 2);
+					ShowDropDownMenu(this, _order_full_load_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetLoadType(), WID_O_FULL_LOAD, 0, 2, 0, DDSF_LOST_FOCUS);
 				}
 				break;
 
@@ -1270,7 +1283,7 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_Unload(-1);
 				} else {
-					ShowDropDownMenu(this, _order_unload_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetUnloadType(), WID_O_UNLOAD, 0, 8);
+					ShowDropDownMenu(this, _order_unload_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetUnloadType(), WID_O_UNLOAD, 0, 8, 0, DDSF_LOST_FOCUS);
 				}
 				break;
 
@@ -1282,7 +1295,7 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_Service(-1);
 				} else {
-					ShowDropDownMenu(this, _order_depot_action_dropdown, DepotActionStringIndex(this->vehicle->GetOrder(this->OrderGetSel())), WID_O_SERVICE, 0, 0);
+					ShowDropDownMenu(this, _order_depot_action_dropdown, DepotActionStringIndex(this->vehicle->GetOrder(this->OrderGetSel())), WID_O_SERVICE, 0, 0, 0, DDSF_LOST_FOCUS);
 				}
 				break;
 
@@ -1290,7 +1303,7 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_Refit(0, true);
 				} else {
-					ShowDropDownMenu(this, _order_refit_action_dropdown, 0, WID_O_REFIT_DROPDOWN, 0, 0);
+					ShowDropDownMenu(this, _order_refit_action_dropdown, 0, WID_O_REFIT_DROPDOWN, 0, 0, 0, DDSF_LOST_FOCUS);
 				}
 				break;
 
@@ -1309,7 +1322,7 @@ public:
 
 			case WID_O_COND_COMPARATOR: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
-				ShowDropDownMenu(this, _order_conditional_condition, o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0, (o->GetConditionVariable() == OCV_REQUIRES_SERVICE) ? 0x3F : 0xC0);
+				ShowDropDownMenu(this, _order_conditional_condition, o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0, (o->GetConditionVariable() == OCV_REQUIRES_SERVICE) ? 0x3F : 0xC0, 0, DDSF_LOST_FOCUS);
 				break;
 			}
 
@@ -1455,6 +1468,8 @@ public:
 			if (cmd.IsType(OT_NOTHING)) return;
 
 			if (DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), cmd.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER))) {
+				MarkAllRoutePathsDirty(this->vehicle);
+				MarkAllRouteStepsDirty(this);
 				/* With quick goto the Go To button stays active */
 				if (!_settings_client.gui.quick_goto) ResetObjectToPlace();
 			}
@@ -1515,6 +1530,27 @@ public:
 	{
 		/* Update the scroll bar */
 		this->vscroll->SetCapacityFromWidget(this, WID_O_ORDER_LIST);
+	}
+
+	virtual void OnFocus(Window *previously_focused_window)
+	{
+		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
+			MarkAllRoutePathsDirty(this->vehicle);
+			MarkAllRouteStepsDirty(this);
+		}
+	}
+
+	virtual void OnFocusLost(Window *newly_focused_window)
+	{
+		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
+			MarkAllRoutePathsDirty(this->vehicle);
+			MarkAllRouteStepsDirty(this);
+		}
+	}
+
+	const Vehicle *GetVehicle()
+	{
+		return this->vehicle;
 	}
 
 	static HotkeyList hotkeys;

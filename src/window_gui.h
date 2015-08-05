@@ -587,10 +587,11 @@ public:
 
 	/**
 	 * Called when window gains focus
+	 * @param previously_focused_window The window that lost the focus.
 	 */
-	virtual void OnFocus() {}
+	virtual void OnFocus(Window *previously_focused_window) {}
 
-	virtual void OnFocusLost();
+	virtual void OnFocusLost(Window *newly_focused_window);
 
 	/**
 	 * A key has been pressed.
@@ -889,7 +890,7 @@ extern int _scrollbar_start_pos;
 extern int _scrollbar_size;
 extern byte _scroller_click_timeout;
 
-extern bool _scrolling_viewport;
+extern Window *_scrolling_viewport;
 extern bool _mouse_hovering;
 
 /** Mouse modes. */
