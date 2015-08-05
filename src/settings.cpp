@@ -64,12 +64,17 @@
 #include "roadveh.h"
 #include "fios.h"
 #include "strings_func.h"
+#include "string_func.h"
+#include "debug.h"
 
 #include "void_map.h"
 #include "station_base.h"
 
 #include "table/strings.h"
 #include "table/settings.h"
+
+#include <algorithm>
+#include <vector>
 
 #include "safeguards.h"
 
@@ -486,7 +491,7 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 		const SettingDescBase *sdb = &sd->desc;
 		const SaveLoad        *sld = &sd->save;
 
-		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to, sld->ext_feature_test)) continue;
 
 		/* For settings.xx.yy load the settings from [xx] yy = ? */
 		s = strchr(sdb->name, '.');
@@ -585,7 +590,7 @@ static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 
 		/* If the setting is not saved to the configuration
 		 * file, just continue with the next setting */
-		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to, sld->ext_feature_test)) continue;
 		if (sld->conv & SLF_NOT_IN_CONFIG) continue;
 
 		/* XXX - wtf is this?? (group override?) */
@@ -1381,7 +1386,7 @@ static void HandleOldDiffCustom(bool savegame)
 	for (uint i = 0; i < options_to_load; i++) {
 		const SettingDesc *sd = &_settings[i];
 		/* Skip deprecated options */
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		void *var = GetVariableAddress(savegame ? &_settings_game : &_settings_newgame, &sd->save);
 		Write_ValidateSetting(var, sd, (int32)((i == 4 ? 1000 : 1) * _old_diff_custom[i]));
 	}
@@ -1839,7 +1844,7 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	const SettingDesc *sd = GetSettingDescription(p1);
 
 	if (sd == NULL) return CMD_ERROR;
-	if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) return CMD_ERROR;
+	if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) return CMD_ERROR;
 
 	if (!sd->IsEditable(true)) return CMD_ERROR;
 
@@ -2050,13 +2055,13 @@ const SettingDesc *GetSettingFromName(const char *name, uint *i)
 
 	/* First check all full names */
 	for (*i = 0, sd = _settings; sd->save.cmd != SL_END; sd++, (*i)++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (strcmp(sd->desc.name, name) == 0) return sd;
 	}
 
 	/* Then check the shortcut variant of the name. */
 	for (*i = 0, sd = _settings; sd->save.cmd != SL_END; sd++, (*i)++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		const char *short_name = strchr(sd->desc.name, '.');
 		if (short_name != NULL) {
 			short_name++;
@@ -2067,7 +2072,7 @@ const SettingDesc *GetSettingFromName(const char *name, uint *i)
 	if (strncmp(name, "company.", 8) == 0) name += 8;
 	/* And finally the company-based settings */
 	for (*i = 0, sd = _company_settings; sd->save.cmd != SL_END; sd++, (*i)++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (strcmp(sd->desc.name, name) == 0) return sd;
 	}
 
@@ -2161,7 +2166,7 @@ void IConsoleListSettings(const char *prefilter)
 	IConsolePrintF(CC_WARNING, "All settings with their current value:");
 
 	for (const SettingDesc *sd = _settings; sd->save.cmd != SL_END; sd++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to)) continue;
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (prefilter != NULL && strstr(sd->desc.name, prefilter) == NULL) continue;
 		char value[80];
 		const void *ptr = GetVariableAddress(&GetGameSettings(), &sd->save);
@@ -2180,7 +2185,7 @@ void IConsoleListSettings(const char *prefilter)
 }
 
 /**
- * Save and load handler for settings
+ * Save and load handler for settings, except for those which go in the PATX chunk
  * @param osd SettingDesc struct containing all information
  * @param object can be either NULL in which case we load global variables or
  * a pointer to a struct which is getting saved
@@ -2188,6 +2193,7 @@ void IConsoleListSettings(const char *prefilter)
 static void LoadSettings(const SettingDesc *osd, void *object)
 {
 	for (; osd->save.cmd != SL_END; osd++) {
+		if (osd->patx_name != NULL) continue;
 		const SaveLoad *sld = &osd->save;
 		void *ptr = GetVariableAddress(object, sld);
 
@@ -2197,7 +2203,7 @@ static void LoadSettings(const SettingDesc *osd, void *object)
 }
 
 /**
- * Save and load handler for settings
+ * Save and load handler for settings, except for those which go in the PATX chunk
  * @param sd SettingDesc struct containing all information
  * @param object can be either NULL in which case we load global variables or
  * a pointer to a struct which is getting saved
@@ -2209,13 +2215,192 @@ static void SaveSettings(const SettingDesc *sd, void *object)
 	const SettingDesc *i;
 	size_t length = 0;
 	for (i = sd; i->save.cmd != SL_END; i++) {
+		if (i->patx_name != NULL) continue;
 		length += SlCalcObjMemberLength(object, &i->save);
 	}
 	SlSetLength(length);
 
 	for (i = sd; i->save.cmd != SL_END; i++) {
+		if (i->patx_name != NULL) continue;
 		void *ptr = GetVariableAddress(object, &i->save);
 		SlObjectMember(ptr, &i->save);
+	}
+}
+
+/** @file
+ *
+ * The PATX chunk stores additional settings in an unordered format
+ * which is tolerant of extra, missing or reordered settings.
+ * Additional settings generally means those that aren't in trunk.
+ *
+ * The PATX chunk contents has the following format:
+ *
+ * uint32                               chunk flags
+ * uint32                               number of settings
+ *     For each of N settings:
+ *     uint32                           setting flags
+ *     SLE_STR                          setting name
+ *     uint32                           length of setting field
+ *         N bytes                      setting field
+ */
+
+/** Sorted list of PATX settings, generated by MakeSettingsPatxList */
+static std::vector<const SettingDesc *> _sorted_patx_settings;
+
+/**
+ * Prepare a sorted list of settings to be potentially be loaded out of the PATX chunk
+ * This is to enable efficient lookup of settings by name
+ * This is stored in _sorted_patx_settings
+ */
+static void MakeSettingsPatxList(const SettingDesc *sd)
+{
+	static const SettingDesc *previous = NULL;
+
+	if (sd == previous) return;
+
+	_sorted_patx_settings.clear();
+	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
+		if (desc->patx_name == NULL) continue;
+		_sorted_patx_settings.push_back(desc);
+	}
+
+	// this makes me miss lambdas :/
+	struct StringSorter {
+		bool operator()(const SettingDesc *a, const SettingDesc *b)
+		{
+			return strcmp(a->patx_name, b->patx_name) < 0;
+		}
+	};
+	std::sort(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), StringSorter());
+}
+
+/**
+ * Load handler for settings which go in the PATX chunk
+ * @param osd SettingDesc struct containing all information
+ * @param object can be either NULL in which case we load global variables or
+ * a pointer to a struct which is getting saved
+ */
+static void LoadSettingsPatx(const SettingDesc *sd, void *object)
+{
+	MakeSettingsPatxList(sd);
+
+	struct SettingsPatxLoad {
+		uint32 flags;
+		char name[256];
+		uint32 setting_length;
+	};
+	SettingsPatxLoad current_setting;
+
+	static const SaveLoad _settings_patx_desc[] = {
+		SLE_VAR(SettingsPatxLoad, flags,          SLE_UINT32),
+		SLE_STR(SettingsPatxLoad, name,           SLE_STRB, 256),
+		SLE_VAR(SettingsPatxLoad, setting_length, SLE_UINT32),
+		SLE_END()
+	};
+
+	uint32 flags = SlReadUint32();
+	// flags are not in use yet, reserve for future expansion
+	if (flags != 0) SlErrorCorruptFmt("PATX chunk: unknown chunk header flags: 0x%X", flags);
+
+	uint32 settings_count = SlReadUint32();
+	for (uint32 i = 0; i < settings_count; i++) {
+		SlObject(&current_setting, _settings_patx_desc);
+
+		// flags are not in use yet, reserve for future expansion
+		if (current_setting.flags != 0) SlErrorCorruptFmt("PATX chunk: unknown setting header flags: 0x%X", current_setting.flags);
+
+		// now try to find corresponding setting, this would be much easier with C++11 support...
+		bool exact_match = false;
+		struct StringSearcher {
+			bool &m_exact_match;
+
+			StringSearcher(bool &exact_match)
+					: m_exact_match(exact_match) { }
+
+			bool operator()(const SettingDesc *a, const char *b)
+			{
+				int result = strcmp(a->patx_name, b);
+				if (result == 0) m_exact_match = true;
+				return result < 0;
+			}
+		};
+		std::vector<const SettingDesc *>::iterator iter = std::lower_bound(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), current_setting.name, StringSearcher(exact_match));
+
+		if (exact_match) {
+			assert(iter != _sorted_patx_settings.end());
+			// found setting
+			const SaveLoad *sld = &((*iter)->save);
+			size_t read = SlGetBytesRead();
+			void *ptr = GetVariableAddress(object, sld);
+			SlObjectMember(ptr, sld);
+			if (SlGetBytesRead() != read + current_setting.setting_length) {
+				SlErrorCorruptFmt("PATX chunk: setting read length mismatch for setting: '%s'", current_setting.name);
+			}
+			if (IsNumericType(sld->conv)) Write_ValidateSetting(ptr, *iter, ReadValue(ptr, sld->conv));
+		} else {
+			DEBUG(sl, 1, "PATX chunk: Could not find setting: '%s', ignoring", current_setting.name);
+			SlSkipBytes(current_setting.setting_length);
+		}
+	}
+}
+
+/**
+ * Save handler for settings which go in the PATX chunk
+ * @param sd SettingDesc struct containing all information
+ * @param object can be either NULL in which case we load global variables or
+ * a pointer to a struct which is getting saved
+ */
+static void SaveSettingsPatx(const SettingDesc *sd, void *object)
+{
+	struct SettingsPatxSave {
+		uint32 flags;
+		const char *name;
+		uint32 setting_length;
+	};
+	SettingsPatxSave current_setting;
+
+	static const SaveLoad _settings_patx_desc[] = {
+		SLE_VAR(SettingsPatxSave, flags,          SLE_UINT32),
+		SLE_STR(SettingsPatxSave, name,           SLE_STR, 0),
+		SLE_VAR(SettingsPatxSave, setting_length, SLE_UINT32),
+		SLE_END()
+	};
+
+	struct SettingToAdd {
+		const SettingDesc *setting;
+		uint32 setting_length;
+	};
+	std::vector<SettingToAdd> settings_to_add;
+
+	size_t length = 8;
+	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
+		if (desc->patx_name == NULL) continue;
+		uint32 setting_length = SlCalcObjMemberLength(object, &desc->save);
+		if (!setting_length) continue;
+
+		current_setting.name = desc->patx_name;
+
+		// add length of setting header
+		length += SlCalcObjLength(&current_setting, _settings_patx_desc);
+
+		// add length of actual setting
+		length += setting_length;
+
+		settings_to_add.push_back({ desc, setting_length });
+	}
+	SlSetLength(length);
+
+	SlWriteUint32(0);                          // flags
+	SlWriteUint32(settings_to_add.size());     // settings count
+
+	for (size_t i = 0; i < settings_to_add.size(); i++) {
+		const SettingDesc *desc = settings_to_add[i].setting;
+		current_setting.flags = 0;
+		current_setting.name = desc->patx_name;
+		current_setting.setting_length = settings_to_add[i].setting_length;
+		SlObject(&current_setting, _settings_patx_desc);
+		void *ptr = GetVariableAddress(object, &desc->save);
+		SlObjectMember(ptr, &desc->save);
 	}
 }
 
@@ -2247,6 +2432,21 @@ static void Save_PATS()
 	SaveSettings(_settings, &_settings_game);
 }
 
+static void Load_PATX()
+{
+	LoadSettingsPatx(_settings, &_settings_game);
+}
+
+static void Check_PATX()
+{
+	LoadSettingsPatx(_settings, &_load_check_data.settings);
+}
+
+static void Save_PATX()
+{
+	SaveSettingsPatx(_settings, &_settings_game);
+}
+
 void CheckConfig()
 {
 	/*
@@ -2261,7 +2461,8 @@ void CheckConfig()
 
 extern const ChunkHandler _setting_chunk_handlers[] = {
 	{ 'OPTS', NULL,      Load_OPTS, NULL, NULL,       CH_RIFF},
-	{ 'PATS', Save_PATS, Load_PATS, NULL, Check_PATS, CH_RIFF | CH_LAST},
+	{ 'PATS', Save_PATS, Load_PATS, NULL, Check_PATS, CH_RIFF},
+	{ 'PATX', Save_PATX, Load_PATX, NULL, Check_PATX, CH_RIFF | CH_LAST},
 };
 
 static bool IsSignedVarMemType(VarType vt)
