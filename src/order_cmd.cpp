@@ -26,6 +26,7 @@
 #include "station_base.h"
 #include "waypoint_base.h"
 #include "company_base.h"
+#include "infrastructure_func.h"
 #include "order_backup.h"
 #include "cheat_type.h"
 
@@ -750,7 +751,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			if (st == NULL) return CMD_ERROR;
 
 			if (st->owner != OWNER_NONE) {
-				CommandCost ret = CheckOwnership(st->owner);
+				CommandCost ret = CheckInfraUsageAllowed(v->type, st->owner);
 				if (ret.Failed()) return ret;
 			}
 
@@ -795,7 +796,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 					if (st == NULL) return CMD_ERROR;
 
-					CommandCost ret = CheckOwnership(st->owner);
+					CommandCost ret = CheckInfraUsageAllowed(v->type, st->owner);
 					if (ret.Failed()) return ret;
 
 					if (!CanVehicleUseStation(v, st) || !st->airport.HasHangar()) {
@@ -806,7 +807,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 					if (dp == NULL) return CMD_ERROR;
 
-					CommandCost ret = CheckOwnership(GetTileOwner(dp->xy));
+					CommandCost ret = CheckInfraUsageAllowed(v->type, GetTileOwner(dp->xy), dp->xy);
 					if (ret.Failed()) return ret;
 
 					switch (v->type) {
@@ -844,7 +845,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case VEH_TRAIN: {
 					if (!(wp->facilities & FACIL_TRAIN)) return_cmd_error(STR_ERROR_CAN_T_ADD_ORDER);
 
-					CommandCost ret = CheckOwnership(wp->owner);
+					CommandCost ret = CheckInfraUsageAllowed(v->type, wp->owner);
 					if (ret.Failed()) return ret;
 					break;
 				}
@@ -852,7 +853,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case VEH_SHIP:
 					if (!(wp->facilities & FACIL_DOCK)) return_cmd_error(STR_ERROR_CAN_T_ADD_ORDER);
 					if (wp->owner != OWNER_NONE) {
-						CommandCost ret = CheckOwnership(wp->owner);
+						CommandCost ret = CheckInfraUsageAllowed(v->type, wp->owner);
 						if (ret.Failed()) return ret;
 					}
 					break;

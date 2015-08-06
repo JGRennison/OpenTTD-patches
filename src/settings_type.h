@@ -526,6 +526,9 @@ struct EconomySettings {
 	TownFoundingByte found_town;             ///< town founding, @see TownFounding
 	bool   station_noise_level;              ///< build new airports when the town noise level is still within accepted limits
 	uint16 town_noise_population[3];         ///< population to base decision on noise evaluation (@see town_council_tolerance)
+	bool   infrastructure_sharing[4];        ///< enable infrastructure sharing for rail/road/water/air
+	uint   sharing_fee[4];                   ///< fees for infrastructure sharing for rail/road/water/air
+	bool   sharing_payment_in_debt;          ///< allow fee payment for companies with more loan than money (switch off to prevent MP exploits)
 	bool   allow_town_level_crossings;       ///< towns are allowed to build level crossings
 	int8   town_cargo_factor;                ///< power-of-two multiplier for town (passenger, mail) generation. May be negative.
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure

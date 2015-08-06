@@ -43,6 +43,7 @@
 #include "economy_base.h"
 #include "core/pool_func.hpp"
 #include "core/backup_type.hpp"
+#include "infrastructure_func.h"
 #include "cargo_type.h"
 #include "water.h"
 #include "game/game.hpp"
@@ -425,7 +426,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		}
 	}
 
-	{
+	/* Change ownership of vehicles */
+	if (new_owner != INVALID_OWNER) {
 		FreeUnitIDGenerator unitidgen[] = {
 			FreeUnitIDGenerator(VEH_TRAIN, new_owner), FreeUnitIDGenerator(VEH_ROAD,     new_owner),
 			FreeUnitIDGenerator(VEH_SHIP,  new_owner), FreeUnitIDGenerator(VEH_AIRCRAFT, new_owner)
@@ -483,6 +485,10 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		}
 
 		if (new_owner != INVALID_OWNER) GroupStatistics::UpdateAutoreplace(new_owner);
+	} else {
+	/* Depending on sharing settings, other companies could be affected too.
+	 * Let the infrastructure sharing code handle this. */
+	HandleSharingCompanyDeletion(old_owner);
 	}
 
 	/*  Change ownership of tiles */
@@ -497,22 +503,14 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			 * and signals were not propagated
 			 * Similar with crossings - it is needed to bar crossings that weren't before
 			 * because of different owner of crossing and approaching train */
-			tile = 0;
 
-			do {
-				if (IsTileType(tile, MP_RAILWAY) && IsTileOwner(tile, new_owner) && HasSignals(tile)) {
-					TrackBits tracks = GetTrackBits(tile);
-					do { // there may be two tracks with signals for TRACK_BIT_HORZ and TRACK_BIT_VERT
-						Track track = RemoveFirstTrack(&tracks);
-						if (HasSignalOnTrack(tile, track)) AddTrackToSignalBuffer(tile, track, new_owner);
-					} while (tracks != TRACK_BIT_NONE);
-				} else if (IsLevelCrossingTile(tile) && IsTileOwner(tile, new_owner)) {
-					UpdateLevelCrossing(tile);
+			UpdateAllBlockSignals(new_owner);
+		} else if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+			/* tracks are being removed while sharing is enabled.
+			 * Thus, update all signals and crossings. */
+			UpdateAllBlockSignals();
 				}
-			} while (++tile != MapSize());
-		}
-
-		/* update signals in buffer */
+		/* Update any signals in the buffer */
 		UpdateSignalsInBuffer();
 	}
 
@@ -1213,7 +1211,13 @@ void CargoPayment::PayFinalDelivery(const CargoPacket *cp, uint count)
 
 	/* Handle end of route payment */
 	Money profit = DeliverGoods(count, this->ct, this->current_station, cp->SourceStationXY(), cp->DaysInTransit(), this->owner, cp->SourceSubsidyType(), cp->SourceSubsidyID());
+#ifndef INFRASTRUCTURE_FUNC_H
 	this->route_profit += profit;
+#else
+	/* For Infrastructure patch. Handling transfers between other companies */
+	this->route_profit += profit - cp->FeederShare();
+#endif
+
 
 	/* The vehicle's profit is whatever route profit there is minus feeder shares. */
 	this->visual_profit += profit - cp->FeederShare(count);
@@ -1236,6 +1240,9 @@ Money CargoPayment::PayTransfer(const CargoPacket *cp, uint count)
 
 	profit = profit * _settings_game.economy.feeder_payment_share / 100;
 
+#ifdef INFRASTRUCTURE_FUNC_H
+	this->route_profit += profit;
+#endif
 	this->visual_transfer += profit; // accumulate transfer profits for whole vehicle
 	return profit; // account for the (virtual) profit already made for the cargo packet
 }

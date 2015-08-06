@@ -1790,6 +1790,19 @@ static SettingsContainer &GetSettingsTree()
 				npc->Add(new SettingEntry("ai.ai_disable_veh_ship"));
 			}
 
+			SettingsPage *sharing = ai->Add(new SettingsPage(STR_CONFIG_SETTING_SHARING));
+			{
+				sharing->Add(new SettingEntry("economy.infrastructure_sharing[0]"));
+				sharing->Add(new SettingEntry("economy.infrastructure_sharing[1]"));
+				sharing->Add(new SettingEntry("economy.infrastructure_sharing[2]"));
+				sharing->Add(new SettingEntry("economy.infrastructure_sharing[3]"));
+				sharing->Add(new SettingEntry("economy.sharing_fee[0]"));
+				sharing->Add(new SettingEntry("economy.sharing_fee[1]"));
+				sharing->Add(new SettingEntry("economy.sharing_fee[2]"));
+				sharing->Add(new SettingEntry("economy.sharing_fee[3]"));
+				sharing->Add(new SettingEntry("economy.sharing_payment_in_debt"));
+			}
+
 			ai->Add(new SettingEntry("economy.give_money"));
 			ai->Add(new SettingEntry("economy.allow_shares"));
 		}

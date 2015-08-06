@@ -58,6 +58,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_AUTO_TIMETABLE,         XSCF_NULL,              1,                                    1, "auto_timetables",       NULL, NULL, NULL        },
 	{ XSLFI_VEHICLE_REPAIR_COST,    XSCF_NULL,              1,                                    1, "vehicle_repair_cost",   NULL, NULL, NULL        },
 	{ XSLFI_ENH_VIEWPORT_PLANS,     XSCF_IGNORABLE_ALL,     1,                                    1, "enh_viewport_plans",    NULL, NULL, "PLAN,PLLN" },
+	{ XSLFI_INFRA_SHARING,          XSCF_NULL,              1,                                    1, "infra_sharing",         NULL, NULL, NULL        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 

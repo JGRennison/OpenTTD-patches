@@ -26,6 +26,7 @@
 #include "station_base.h"
 #include "waypoint_base.h"
 #include "core/geometry_func.hpp"
+#include "infrastructure_func.h"
 #include "hotkeys.h"
 #include "aircraft.h"
 #include "engine_func.h"
@@ -370,7 +371,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 	order.index = 0;
 
 	/* check depot first */
-	if (IsDepotTypeTile(tile, (TransportType)(uint)v->type) && IsTileOwner(tile, _local_company)) {
+	if (IsDepotTypeTile(tile, (TransportType)(uint)v->type) && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
 		order.MakeGoToDepot(v->type == VEH_AIRCRAFT ? GetStationIndex(tile) : GetDepotIndex(tile),
 				ODTFB_PART_OF_ORDERS,
 				(_settings_client.gui.new_nonstop && v->IsGroundVehicle()) ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
@@ -383,7 +384,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 	/* check rail waypoint */
 	if (IsRailWaypointTile(tile) &&
 			v->type == VEH_TRAIN &&
-			IsTileOwner(tile, _local_company)) {
+			IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, tile)) {
 		order.MakeGoToWaypoint(GetStationIndex(tile));
 		if (_settings_client.gui.new_nonstop != _ctrl_pressed) order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		return order;
@@ -399,7 +400,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 		StationID st_index = GetStationIndex(tile);
 		const Station *st = Station::Get(st_index);
 
-		if (st->owner == _local_company || st->owner == OWNER_NONE) {
+		if (IsInfraUsageAllowed(v->type, v->owner, st->owner)) {
 			byte facil;
 			(facil = FACIL_DOCK, v->type == VEH_SHIP) ||
 			(facil = FACIL_TRAIN, v->type == VEH_TRAIN) ||

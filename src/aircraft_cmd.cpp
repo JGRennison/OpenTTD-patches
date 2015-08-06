@@ -35,6 +35,7 @@
 #include "engine_base.h"
 #include "core/random_func.hpp"
 #include "core/backup_type.hpp"
+#include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "disaster_vehicle.h"
 
@@ -126,7 +127,7 @@ static StationID FindNearestHangar(const Aircraft *v)
 	const AircraftVehicleInfo *avi = AircraftVehInfo(v->engine_type);
 
 	FOR_ALL_STATIONS(st) {
-		if (st->owner != v->owner || !(st->facilities & FACIL_AIRPORT)) continue;
+		if (!IsInfraUsageAllowed(VEH_AIRCRAFT, v->owner, st->owner) || !(st->facilities & FACIL_AIRPORT)) continue;
 
 		const AirportFTAClass *afc = st->airport.GetFTA();
 		if (!st->airport.HasHangar() || (
@@ -1624,7 +1625,7 @@ static void AircraftEventHandler_Flying(Aircraft *v, const AirportFTAClass *apc)
 	Station *st = Station::Get(v->targetairport);
 
 	/* Runway busy, not allowed to use this airstation or closed, circle. */
-	if (CanVehicleUseStation(v, st) && (st->owner == OWNER_NONE || st->owner == v->owner) && !(st->airport.flags & AIRPORT_CLOSED_block)) {
+	if (CanVehicleUseStation(v, st) && IsInfraUsageAllowed(VEH_AIRCRAFT, v->owner, st->owner) && !(st->airport.flags & AIRPORT_CLOSED_block)) {
 		/* {32,FLYING,NOTHING_block,37}, {32,LANDING,N,33}, {32,HELILANDING,N,41},
 		 * if it is an airplane, look for LANDING, for helicopter HELILANDING
 		 * it is possible to choose from multiple landing runways, so loop until a free one is found */

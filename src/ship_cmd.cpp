@@ -31,6 +31,7 @@
 #include "pathfinder/opf/opf_ship.h"
 #include "engine_base.h"
 #include "company_base.h"
+#include "infrastructure_func.h"
 #include "tunnelbridge_map.h"
 #include "zoom_func.h"
 
@@ -144,7 +145,7 @@ static const Depot *FindClosestShipDepot(const Vehicle *v, uint max_distance)
 
 	FOR_ALL_DEPOTS(depot) {
 		TileIndex tile = depot->xy;
-		if (IsShipDepotTile(tile) && IsTileOwner(tile, v->owner)) {
+		if (IsShipDepotTile(tile) && IsInfraTileUsageAllowed(VEH_SHIP, v->owner, tile)) {
 			uint dist = DistanceManhattan(tile, v->tile);
 			if (dist < best_dist) {
 				best_dist = dist;

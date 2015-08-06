@@ -32,6 +32,7 @@
 #include "core/random_func.hpp"
 #include "company_base.h"
 #include "newgrf.h"
+#include "infrastructure_func.h"
 #include "order_backup.h"
 #include "zoom_func.h"
 #include "newgrf_debug.h"
@@ -2072,7 +2073,7 @@ CommandCost CmdForceTrainProceed(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 	if (!t->IsPrimaryVehicle()) return CMD_ERROR;
 
-	CommandCost ret = CheckOwnership(t->owner);
+	CommandCost ret = CheckVehicleControlAllowed(t);
 	if (ret.Failed()) return ret;
 
 
@@ -3012,7 +3013,7 @@ static void TrainEnterStation(Train *v, StationID station)
 /* Check if the vehicle is compatible with the specified tile */
 static inline bool CheckCompatibleRail(const Train *v, TileIndex tile)
 {
-	return IsTileOwner(tile, v->owner) &&
+	return IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, tile) &&
 			(!v->IsFrontEngine() || HasBit(v->compatible_railtypes, GetRailType(tile)));
 }
 
@@ -4323,6 +4324,9 @@ void Train::OnNewDay()
 			/* running costs */
 			CommandCost cost(EXPENSES_TRAIN_RUN, this->GetRunningCost() * this->running_ticks / (DAYS_IN_YEAR  * DAY_TICKS));
 
+			/* sharing fee */
+			PayDailyTrackSharingFee(this);
+
 			this->profit_this_year -= cost.GetCost();
 			this->running_ticks = 0;
 
@@ -4356,4 +4360,50 @@ Trackdir Train::GetVehicleTrackdir() const
 	}
 
 	return TrackDirectionToTrackdir(FindFirstTrack(this->track), this->direction);
+}
+
+/**
+ * Delete a train while it is visible.
+ * This happens when a company bankrupts when infrastructure sharing is enabled.
+ * @param v The train to delete.
+ */
+void DeleteVisibleTrain(Train *v)
+{
+	FreeTrainTrackReservation(v);
+	TileIndex crossing = TrainApproachingCrossingTile(v);
+
+	/* delete train from back to front */
+	Train *u;
+	Train *prev = v->Last();
+	do {
+		u = prev;
+		prev = u->Previous();
+		if (prev != NULL) prev->SetNext(NULL);
+
+		/* 'u' shouldn't be accessed after it has been deleted */
+		TileIndex tile = u->tile;
+		TrackBits trackbits = u->track;
+
+		delete u;
+
+		if (trackbits == TRACK_BIT_WORMHOLE) {
+			/* Vehicle is inside a wormhole, u->track contains no useful value then. */
+			trackbits = DiagDirToDiagTrackBits(GetTunnelBridgeDirection(tile));
+		}
+
+		Track track = TrackBitsToTrack(trackbits);
+		if (HasReservedTracks(tile, trackbits)) UnreserveRailTrack(tile, track);
+		if (IsLevelCrossingTile(tile)) UpdateLevelCrossing(tile);
+
+		/* Update signals */
+		if (IsTileType(tile, MP_TUNNELBRIDGE) || IsRailDepotTile(tile)) {
+			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+		} else {
+			AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
+		}
+	} while (prev != NULL);
+
+	if (crossing != INVALID_TILE) UpdateLevelCrossing(crossing);
+
+	UpdateSignalsInBuffer();
 }

@@ -14,6 +14,7 @@
 #include "../../viewport_func.h"
 #include "../../ship.h"
 #include "../../roadstop_base.h"
+#include "../../infrastructure_func.h"
 #include "../pathfinder_func.h"
 #include "../pathfinder_type.h"
 #include "../follow_track.hpp"
@@ -664,25 +665,31 @@ static void NPFSaveTargetData(AyStar *as, OpenListNode *current)
  */
 static bool CanEnterTileOwnerCheck(Owner owner, TileIndex tile, DiagDirection enterdir)
 {
-	if (IsTileType(tile, MP_RAILWAY) || // Rail tile (also rail depot)
-			HasStationTileRail(tile) ||     // Rail station tile/waypoint
-			IsRoadDepotTile(tile) ||        // Road depot tile
-			IsStandardRoadStopTile(tile)) { // Road station tile (but not drive-through stops)
-		return IsTileOwner(tile, owner);  // You need to own these tiles entirely to use them
-	}
-
 	switch (GetTileType(tile)) {
+		case MP_RAILWAY:
+			return IsInfraTileUsageAllowed(VEH_TRAIN, owner, tile); // Rail tile (also rail depot)
+
 		case MP_ROAD:
 			/* rail-road crossing : are we looking at the railway part? */
 			if (IsLevelCrossing(tile) &&
 					DiagDirToAxis(enterdir) != GetCrossingRoadAxis(tile)) {
-				return IsTileOwner(tile, owner); // Railway needs owner check, while the street is public
+				return IsInfraTileUsageAllowed(VEH_TRAIN, owner, tile); // Railway needs owner check, while the street is public
+			} else if (IsRoadDepot(tile)) { // Road depot tile
+				return IsInfraTileUsageAllowed(VEH_ROAD, owner, tile);
+			}
+			break;
+
+		case MP_STATION:
+			if (HasStationRail(tile)) { // Rail station tile/waypoint
+				return IsInfraTileUsageAllowed(VEH_TRAIN, owner, tile);
+			} else if (IsStandardRoadStopTile(tile)) { // Road station tile (but not drive-through stops)
+				return IsInfraTileUsageAllowed(VEH_ROAD, owner, tile);
 			}
 			break;
 
 		case MP_TUNNELBRIDGE:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
-				return IsTileOwner(tile, owner);
+				return IsInfraTileUsageAllowed(VEH_TRAIN, owner, tile);
 			}
 			break;
 

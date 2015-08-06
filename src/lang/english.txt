@@ -1457,6 +1457,7 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Rail type to se
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :First available
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :Last available
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Most used
+
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Show path reservations for tracks: {STRING2}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Give reserved tracks a different colour to assist in problems with trains refusing to enter path-based blocks
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Keep building tools active after usage: {STRING2}
@@ -1511,6 +1512,18 @@ STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :Allow AIs in mu
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :Allow AI computer players to participate in multiplayer games
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :#opcodes before scripts are suspended: {STRING2}
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Maximum number of computation steps that a script can take in one turn
+
+STR_CONFIG_SETTING_SHARING_RAIL                                 :Enable sharing of railways: {STRING2}
+STR_CONFIG_SETTING_SHARING_ROAD                                 :Enable sharing of road stops and depots: {STRING2}
+STR_CONFIG_SETTING_SHARING_WATER                                :Enable sharing of docks and ship depots: {STRING2}
+STR_CONFIG_SETTING_SHARING_AIR                                  :Enable sharing of airports: {STRING2}
+STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :Daily track toll for trains: {STRING2} per 1000 tonnes
+STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :Stopping fee for road vehicles: {STRING2} per day
+STR_CONFIG_SETTING_SHARING_FEE_WATER                            :Docking fee for ships: {STRING2} per day
+STR_CONFIG_SETTING_SHARING_FEE_AIR                              :Terminal fee for aircraft: {STRING2} per day
+STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Allow companies in debt to pay sharing fees: {STRING2}
+STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Can't change this setting, vehicles are using shared infrastructure.
+STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Can't change this setting, vehicles have orders to destinations of others.
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Service intervals are in percents: {STRING2}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Choose whether servicing of vehicles is triggered by the time passed since last service or by reliability dropping by a certain percentage of the maximum reliability
@@ -1749,6 +1762,7 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Cargo d
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Competitors
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computer players
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Map mode
+STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastructure sharing
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
@@ -3565,6 +3579,8 @@ STR_FINANCES_SECTION_AIRCRAFT_INCOME                            :{GOLD}Aircraft 
 STR_FINANCES_SECTION_SHIP_INCOME                                :{GOLD}Ship Income
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Loan Interest
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Other
+STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}Infrastructure Sharing Costs
+STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}Infrastructure Sharing Income
 STR_FINANCES_NEGATIVE_INCOME                                    :{BLACK}-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Total:

@@ -72,6 +72,8 @@ void CheckTrainsLengths();
 void FreeTrainTrackReservation(const Train *v, TileIndex origin = INVALID_TILE, Trackdir orig_td = INVALID_TRACKDIR);
 bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false);
 
+void DeleteVisibleTrain(Train *v);
+
 int GetTrainStopLocation(StationID station_id, TileIndex tile, const Train *v, int *station_ahead, int *station_length);
 void CheckBreakdownFlags(Train *v);
 void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);

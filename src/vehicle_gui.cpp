@@ -36,6 +36,7 @@
 #include "company_base.h"
 #include "engine_func.h"
 #include "station_base.h"
+#include "infrastructure_func.h"
 #include "tilehighlight_func.h"
 #include "train.h"
 #include "zoom_func.h"
@@ -2649,6 +2650,7 @@ public:
 	{
 		const Vehicle *v = Vehicle::Get(this->window_number);
 		bool is_localcompany = v->owner == _local_company;
+		bool can_control = IsVehicleControlAllowed(v, _local_company);
 		bool refitable_and_stopped_in_depot = IsVehicleRefitable(v);
 
 		this->SetWidgetDisabledState(WID_VV_GOTO_DEPOT, !is_localcompany);
@@ -2657,8 +2659,8 @@ public:
 
 		if (v->type == VEH_TRAIN) {
 			this->SetWidgetLoweredState(WID_VV_FORCE_PROCEED, Train::From(v)->force_proceed == TFP_SIGNAL);
-			this->SetWidgetDisabledState(WID_VV_FORCE_PROCEED, !is_localcompany);
-			this->SetWidgetDisabledState(WID_VV_TURN_AROUND, !is_localcompany);
+			this->SetWidgetDisabledState(WID_VV_FORCE_PROCEED, !can_control);
+			this->SetWidgetDisabledState(WID_VV_TURN_AROUND, !can_control);
 		}
 
 		this->DrawWidgets();

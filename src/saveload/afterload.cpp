@@ -50,6 +50,7 @@
 #include "../engine_func.h"
 #include "../rail_gui.h"
 #include "../core/backup_type.hpp"
+#include "../core/mem_func.hpp"
 #include "../smallmap_gui.h"
 #include "../news_func.h"
 #include "../order_backup.h"
@@ -2387,6 +2388,20 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(142)) {
 		Depot *d;
 		FOR_ALL_DEPOTS(d) d->build_date = _date;
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_INFRA_SHARING)) {
+		Company *c;
+		FOR_ALL_COMPANIES(c) {
+			/* yearly_expenses has 3*15 entries now, saveload code gave us 3*13.
+			 * Move the old data to the right place in the new array and clear the new data.
+			 * The move has to be done in reverse order (first 2, then 1). */
+			MemMoveT(&c->yearly_expenses[2][0], &c->yearly_expenses[1][11], 13);
+			MemMoveT(&c->yearly_expenses[1][0], &c->yearly_expenses[0][13], 13);
+			/* Clear the old location of just-moved data, so sharing income/expenses is set to 0 */
+			MemSetT(&c->yearly_expenses[0][13], 0, 2);
+			MemSetT(&c->yearly_expenses[1][13], 0, 2);
+		}
 	}
 
 	/* In old versions it was possible to remove an airport while a plane was

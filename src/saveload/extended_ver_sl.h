@@ -33,6 +33,7 @@ enum SlXvFeatureIndex {
 	XSLFI_AUTO_TIMETABLE,                         ///< Auto timetables and separation patch
 	XSLFI_VEHICLE_REPAIR_COST,                    ///< Vehicle repair costs patch
 	XSLFI_ENH_VIEWPORT_PLANS,                     ///< Enhanced viewport patch: plans
+	XSLFI_INFRA_SHARING,                          ///< Infrastructure sharing patch
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
