@@ -17,6 +17,7 @@
 #include "viewport_func.h"
 #include "train.h"
 #include "company_base.h"
+#include "infrastructure_func.h"
 
 
 /** these are the maximums used for updating signal blocks */
@@ -277,7 +278,7 @@ static SigFlags ExploreSegment(Owner owner)
 
 		switch (GetTileType(tile)) {
 			case MP_RAILWAY: {
-				if (GetTileOwner(tile) != owner) continue; // do not propagate signals on others' tiles (remove for tracksharing)
+				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 
 				if (IsRailDepot(tile)) {
 					if (enterdir == INVALID_DIAGDIR) { // from 'inside' - train just entered or left the depot
@@ -351,7 +352,7 @@ static SigFlags ExploreSegment(Owner owner)
 
 			case MP_STATION:
 				if (!HasStationRail(tile)) continue;
-				if (GetTileOwner(tile) != owner) continue;
+				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (DiagDirToAxis(enterdir) != GetRailStationAxis(tile)) continue; // different axis
 				if (IsStationTileBlocked(tile)) continue; // 'eye-candy' station tile
 
@@ -361,7 +362,7 @@ static SigFlags ExploreSegment(Owner owner)
 
 			case MP_ROAD:
 				if (!IsLevelCrossing(tile)) continue;
-				if (GetTileOwner(tile) != owner) continue;
+				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) continue; // different axis
 
 				if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
@@ -369,7 +370,7 @@ static SigFlags ExploreSegment(Owner owner)
 				break;
 
 			case MP_TUNNELBRIDGE: {
-				if (GetTileOwner(tile) != owner) continue;
+				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) continue;
 				DiagDirection dir = GetTunnelBridgeDirection(tile);
 
@@ -583,8 +584,9 @@ void AddTrackToSignalBuffer(TileIndex tile, Track track, Owner owner)
 		DIAGDIR_SW, DIAGDIR_NW, DIAGDIR_NW, DIAGDIR_SW, DIAGDIR_NW, DIAGDIR_NE
 	};
 
-	/* do not allow signal updates for two companies in one run */
-	assert(_globset.IsEmpty() || owner == _last_owner);
+	/* do not allow signal updates for two companies in one run,
+	 * if these companies are not part of the same signal block */
+	assert(_globset.IsEmpty() || IsOneSignalBlock(owner, _last_owner));
 
 	_last_owner = owner;
 
@@ -608,8 +610,9 @@ void AddTrackToSignalBuffer(TileIndex tile, Track track, Owner owner)
  */
 void AddSideToSignalBuffer(TileIndex tile, DiagDirection side, Owner owner)
 {
-	/* do not allow signal updates for two companies in one run */
-	assert(_globset.IsEmpty() || owner == _last_owner);
+	/* do not allow signal updates for two companies in one run,
+	 * if these companies are not part of the same signal block */
+	assert(_globset.IsEmpty() || IsOneSignalBlock(owner, _last_owner));
 
 	_last_owner = owner;
 

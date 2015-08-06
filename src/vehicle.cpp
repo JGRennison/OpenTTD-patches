@@ -41,6 +41,7 @@
 #include "roadstop_base.h"
 #include "core/random_func.hpp"
 #include "core/backup_type.hpp"
+#include "infrastructure_func.h"
 #include "order_backup.h"
 #include "sound_func.h"
 #include "effectvehicle_func.h"
@@ -1997,6 +1998,9 @@ void Vehicle::HandleLoading(bool mode)
 	switch (this->current_order.GetType()) {
 		case OT_LOADING: {
 			uint wait_time = max(this->current_order.wait_time - this->lateness_counter, 0);
+
+			/* Pay the loading fee for using someone else's station, if appropriate */
+			if (!mode && this->type != VEH_TRAIN) PayStationSharingFee(this, Station::Get(this->last_station_visited));
 
 			/* Not the first call for this tick, or still loading */
 			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || this->current_order_time < wait_time) return;

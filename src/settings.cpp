@@ -67,6 +67,7 @@
 
 #include "void_map.h"
 #include "station_base.h"
+#include "infrastructure_func.h"
 
 #include "table/strings.h"
 #include "table/settings.h"
@@ -1185,6 +1186,27 @@ static bool StationCatchmentChanged(int32 p1)
 	return true;
 }
 
+static bool CheckSharingRail(int32 p1)
+{
+	if (!CheckSharingChangePossible(VEH_TRAIN)) return false;
+	UpdateAllBlockSignals();
+	return true;
+}
+
+static bool CheckSharingRoad(int32 p1)
+{
+	return CheckSharingChangePossible(VEH_ROAD);
+}
+
+static bool CheckSharingWater(int32 p1)
+{
+	return CheckSharingChangePossible(VEH_SHIP);
+}
+
+static bool CheckSharingAir(int32 p1)
+{
+	return CheckSharingChangePossible(VEH_AIRCRAFT);
+}
 
 #ifdef ENABLE_NETWORK
 

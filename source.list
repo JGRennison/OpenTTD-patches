@@ -32,6 +32,7 @@ goal.cpp
 ground_vehicle.cpp
 heightmap.cpp
 highscore.cpp
+infrastructure.cpp
 hotkeys.cpp
 ini.cpp
 ini_load.cpp
@@ -190,6 +191,7 @@ house_type.h
 industry.h
 industry_type.h
 industrytype.h
+infrastructure_func.h
 ini_type.h
 landscape.h
 landscape_type.h

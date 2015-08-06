@@ -1276,6 +1276,18 @@ STR_CONFIG_SETTING_AI_BUILDS_SHIPS                              :{LTBLUE}Disable
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :{LTBLUE}Allow AIs in multiplayer: {ORANGE}{STRING1}
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :{LTBLUE}#opcodes before scripts are suspended: {ORANGE}{STRING1}
 
+STR_CONFIG_SETTING_SHARING_RAIL                                 :{LTBLUE}Enable sharing of railways: {ORANGE}{STRING1}
+STR_CONFIG_SETTING_SHARING_ROAD                                 :{LTBLUE}Enable sharing of road stops and depots: {ORANGE}{STRING1}
+STR_CONFIG_SETTING_SHARING_WATER                                :{LTBLUE}Enable sharing of docks and ship depots: {ORANGE}{STRING1}
+STR_CONFIG_SETTING_SHARING_AIR                                  :{LTBLUE}Enable sharing of airports: {ORANGE}{STRING1}
+STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :{LTBLUE}Daily track toll for trains: {ORANGE}{STRING1} per 1000 tonnes
+STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :{LTBLUE}Stopping fee for road vehicles: {ORANGE}{STRING1} per day
+STR_CONFIG_SETTING_SHARING_FEE_WATER                            :{LTBLUE}Docking fee for ships: {ORANGE}{STRING1} per day
+STR_CONFIG_SETTING_SHARING_FEE_AIR                              :{LTBLUE}Terminal fee for aircraft: {ORANGE}{STRING1} per day
+STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :{LTBLUE}Allow companies in debt to pay sharing fees: {ORANGE}{STRING1}
+STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :{WHITE}Can't change this setting, vehicles are using shared infrastructure.
+STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :{WHITE}Can't change this setting, vehicles have orders to destinations of others.
+
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :{LTBLUE}Service intervals are in percents: {ORANGE}{STRING1}
 STR_CONFIG_SETTING_SERVINT_TRAINS                               :{LTBLUE}Default service interval for trains: {ORANGE}{STRING1} day{P 0:1 "" s}/%
 STR_CONFIG_SETTING_SERVINT_TRAINS_DISABLED                      :{LTBLUE}Default service interval for trains: {ORANGE}disabled
@@ -1361,6 +1373,7 @@ STR_CONFIG_SETTING_INTERACTION                                  :{ORANGE}Interac
 STR_CONFIG_SETTING_CONSTRUCTION_SIGNALS                         :{ORANGE}Signals
 STR_CONFIG_SETTING_STATIONS_CARGOHANDLING                       :{ORANGE}Cargo handling
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computer players
+STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastructure sharing
 STR_CONFIG_SETTING_VEHICLES_AUTORENEW                           :{ORANGE}Autorenew
 STR_CONFIG_SETTING_VEHICLES_SERVICING                           :{ORANGE}Servicing
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Routing
@@ -2777,6 +2790,8 @@ STR_FINANCES_SECTION_AIRCRAFT_INCOME                            :{GOLD}Aircraft 
 STR_FINANCES_SECTION_SHIP_INCOME                                :{GOLD}Ship Income
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Loan Interest
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Other
+STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}Infrastructure Sharing Costs
+STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}Infrastructure Sharing Income
 STR_FINANCES_NEGATIVE_INCOME                                    :{BLACK}-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Total:

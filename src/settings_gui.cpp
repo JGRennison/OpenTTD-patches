@@ -1548,8 +1548,23 @@ static SettingEntry _settings_ai_npc[] = {
 /** Computer players sub-page */
 static SettingsPage _settings_ai_npc_page = {_settings_ai_npc, lengthof(_settings_ai_npc)};
 
+static SettingEntry _settings_sharing[] = {
+	SettingEntry("economy.infrastructure_sharing[0]"),
+	SettingEntry("economy.infrastructure_sharing[1]"),
+	SettingEntry("economy.infrastructure_sharing[2]"),
+	SettingEntry("economy.infrastructure_sharing[3]"),
+	SettingEntry("economy.sharing_fee[0]"),
+	SettingEntry("economy.sharing_fee[1]"),
+	SettingEntry("economy.sharing_fee[2]"),
+	SettingEntry("economy.sharing_fee[3]"),
+	SettingEntry("economy.sharing_payment_in_debt"),
+};
+/** Infrastructure sharing sub-page */
+static SettingsPage _settings_sharing_page = {_settings_sharing, lengthof(_settings_sharing)};
+
 static SettingEntry _settings_ai[] = {
 	SettingEntry(&_settings_ai_npc_page, STR_CONFIG_SETTING_AI_NPC),
+	SettingEntry(&_settings_sharing_page, STR_CONFIG_SETTING_SHARING),
 	SettingEntry("economy.give_money"),
 	SettingEntry("economy.allow_shares"),
 };
