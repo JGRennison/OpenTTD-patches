@@ -576,6 +576,8 @@ Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY)
 	AI::BroadcastNewEvent(new ScriptEventCompanyNew(c->index), c->index);
 	Game::NewEvent(new ScriptEventCompanyNew(c->index));
 
+	if (!is_ai) UpdateAllTownVirtCoords();
+
 	return c;
 }
 

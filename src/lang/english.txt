@@ -1289,7 +1289,7 @@ STR_CONFIG_SETTING_HOVER_DELAY                                  :Show tooltips: 
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Delay before tooltips are displayed when hovering the mouse over some interface element. Alternatively tooltips are bound to the right mouse button when this value is set to 0.
 STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Hover for {COMMA} millisecond{P 0 "" s}
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :Right click
-STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Show town population in the town name label: {STRING2}
+STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Show extra information in the town name label: {STRING2}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Display the population of towns in their label on the map
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Thickness of lines in graphs: {STRING2}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Width of the line in the graphs. A thin line is more precisely readable, a thicker line is easier to see and colours are easier to distinguish
@@ -5328,10 +5328,18 @@ STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT                   :{GRAY}WP
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT                   :{GRAY}IM
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT                      :{RED}DE
 
+STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING                          :{WHITE}{TOWN} {RED}({COMMA})
+STR_VIEWPORT_TOWN_POP_MEDIOCRE_RATING                           :{WHITE}{TOWN} {ORANGE}({COMMA})
+STR_VIEWPORT_TOWN_POP_GOOD_RATING                               :{WHITE}{TOWN} {YELLOW}({COMMA})
 STR_VIEWPORT_TOWN_POP                                           :{WHITE}{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_POP_EXCELLENT_RATING                          :{WHITE}{TOWN} {GREEN}({COMMA})
 STR_VIEWPORT_TOWN                                               :{WHITE}{TOWN}
 STR_VIEWPORT_TOWN_TINY_BLACK                                    :{TINY_FONT}{BLACK}{TOWN}
 STR_VIEWPORT_TOWN_TINY_WHITE                                    :{TINY_FONT}{WHITE}{TOWN}
+STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING                         :{TINY_FONT}{RED}{TOWN}
+STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORANGE}{TOWN}
+STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
+STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
 STR_VIEWPORT_SIGN_SMALL_BLACK                                   :{TINY_FONT}{BLACK}{SIGN}
 STR_VIEWPORT_SIGN_SMALL_WHITE                                   :{TINY_FONT}{WHITE}{SIGN}

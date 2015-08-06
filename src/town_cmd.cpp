@@ -163,6 +163,26 @@ void Town::InitializeLayout(TownLayout layout)
 }
 
 /**
+ * Updates the town label of the town after changes in rating. The colour scheme is:
+ * Red: Appalling and Very poor ratings.
+ * Orange: Poor and mediocre ratings.
+ * Yellow: Good rating.
+ * White: Very good rating (standard).
+ * Green: Excellent and outstanding ratings.
+ */
+void Town::UpdateLabel()
+{
+	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
+		int r = this->ratings[_local_company];
+		(this->town_label = 0, r <= RATING_VERYPOOR)  || // Appalling and Very Poor
+		(this->town_label++,   r <= RATING_MEDIOCRE)  || // Poor and Mediocre
+		(this->town_label++,   r <= RATING_GOOD)      || // Good
+		(this->town_label++,   r <= RATING_VERYGOOD)  || // Very Good
+		(this->town_label++,   true);                    // Excellent and Outstanding
+	}
+}
+
+/**
  * Get the cost for removing this house
  * @return the cost (inflation corrected etc)
  */
@@ -457,12 +477,11 @@ static bool IsCloseToTown(TileIndex tile, uint dist)
  */
 void Town::UpdateVirtCoord()
 {
+	this->UpdateLabel();
 	Point pt = RemapCoords2(TileX(this->xy) * TILE_SIZE, TileY(this->xy) * TILE_SIZE);
 	SetDParam(0, this->index);
 	SetDParam(1, this->cache.population);
-	this->cache.sign.UpdatePosition(pt.x, pt.y - 24 * ZOOM_LVL_BASE,
-		_settings_client.gui.population_in_label ? STR_VIEWPORT_TOWN_POP : STR_VIEWPORT_TOWN,
-		STR_VIEWPORT_TOWN);
+	this->cache.sign.UpdatePosition(pt.x, pt.y - 24 * ZOOM_LVL_BASE, this->Label(), STR_VIEWPORT_TOWN);
 
 	SetWindowDirty(WC_TOWN_VIEW, this->index);
 }
@@ -3161,6 +3180,7 @@ static CommandCost TownActionBribe(Town *t, DoCommandFlag flags)
 			 */
 			if (t->ratings[_current_company] > RATING_BRIBE_DOWN_TO) {
 				t->ratings[_current_company] = RATING_BRIBE_DOWN_TO;
+				t->UpdateVirtCoord();
 				SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
 			}
 		} else {
@@ -3293,6 +3313,7 @@ static void UpdateTownRating(Town *t)
 		t->ratings[i] = Clamp(t->ratings[i], RATING_MINIMUM, RATING_MAXIMUM);
 	}
 
+	t->UpdateVirtCoord();
 	SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
 }
 
@@ -3544,6 +3565,7 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 	} else {
 		SetBit(t->have_ratings, _current_company);
 		t->ratings[_current_company] = rating;
+		t->UpdateVirtCoord();
 		SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
 	}
 }
