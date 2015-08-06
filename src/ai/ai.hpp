@@ -14,6 +14,7 @@
 
 #include "../script/api/script_event_types.hpp"
 #include "../core/string_compare_type.hpp"
+#include "ai_scanner.hpp"
 #include <map>
 
 /** A list that maps AI names to their AIInfo object. */
@@ -25,7 +26,7 @@ typedef std::map<const char *, class ScriptInfo *, StringCompare> ScriptInfoList
 class AI {
 public:
 	/**
-	 * The default months AIs start after eachother.
+	 * The default months AIs start after each other.
 	 */
 	enum StartNext {
 		START_NEXT_EASY   = DAYS_IN_YEAR * 2,
@@ -67,13 +68,30 @@ public:
 	static void Stop(CompanyID company);
 
 	/**
-	 * Suspend an AI for the reminder of the current tick. If the AI is
-	 * in a state when it cannot be suspended, it will continue to run
-	 * until it can be suspended.
-	 * @param company The company for which the AI should be suspended.
+	 * Suspend the AI and then pause execution of the script. The script
+	 * will not be resumed from its suspended state until the script has
+	 * been unpaused.
+	 * @param company The company for which the AI should be paused.
 	 * @pre Company::IsValidAiID(company)
 	 */
-	static void Suspend(CompanyID company);
+	static void Pause(CompanyID company);
+
+	/**
+	 * Resume execution of the AI. This function will not actually execute
+	 * the script, but set a flag so that the script is executed my the usual
+	 * mechanism that executes the script.
+	 * @param company The company for which the AI should be unpaused.
+	 * @pre Company::IsValidAiID(company)
+	 */
+	static void Unpause(CompanyID company);
+
+	/**
+	 * Checks if the AI is paused.
+	 * @param company The company for which to check if the AI is paused.
+	 * @pre Company::IsValidAiID(company)
+	 * @return true if the AI is paused, otherwise false.
+	 */
+	static bool IsPaused(CompanyID company);
 
 	/**
 	 * Kill any and all AIs we manage.
@@ -140,6 +158,12 @@ public:
 	 * found it is removed from the config.
 	 */
 	static void Rescan();
+
+	/** Gets the ScriptScanner instance that is used to find AIs */
+	static AIScannerInfo *GetScannerInfo();
+	/** Gets the ScriptScanner instance that is used to find AI Libraries */
+	static AIScannerLibrary *GetScannerLibrary();
+
 #if defined(ENABLE_NETWORK)
 	/** Wrapper function for AIScanner::HasAI */
 	static bool HasAI(const struct ContentInfo *ci, bool md5sum);

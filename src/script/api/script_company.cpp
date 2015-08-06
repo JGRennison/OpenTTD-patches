@@ -12,6 +12,7 @@
 #include "../../stdafx.h"
 #include "script_company.hpp"
 #include "script_error.hpp"
+#include "script_companymode.hpp"
 #include "../../company_func.h"
 #include "../../company_base.h"
 #include "../../company_manager_face.h"
@@ -22,6 +23,8 @@
 #include "../../string_func.h"
 #include "../../settings_func.h"
 #include "table/strings.h"
+
+#include "../../safeguards.h"
 
 /* static */ ScriptCompany::CompanyID ScriptCompany::ResolveCompanyID(ScriptCompany::CompanyID company)
 {
@@ -43,8 +46,8 @@
 	CCountedPtr<Text> counter(name);
 
 	EnforcePrecondition(false, name != NULL);
-	const char *text = name->GetEncodedText();
-	EnforcePrecondition(false, !::StrEmpty(text));
+	const char *text = name->GetDecodedText();
+	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_COMPANY_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
 	return ScriptObject::DoCommand(0, 0, 0, CMD_RENAME_COMPANY, text);
@@ -64,8 +67,9 @@
 	CCountedPtr<Text> counter(name);
 
 	EnforcePrecondition(false, name != NULL);
-	const char *text = name->GetEncodedText();
-	EnforcePrecondition(false, !::StrEmpty(text));
+	const char *text = name->GetDecodedText();
+	EnforcePreconditionEncodedText(false, text);
+	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_PRESIDENT_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
 	return ScriptObject::DoCommand(0, 0, 0, CMD_RENAME_PRESIDENT, text);
 }
@@ -192,11 +196,11 @@
 	return LOAN_INTERVAL;
 }
 
-/* static */ bool ScriptCompany::SetLoanAmount(int32 loan)
+/* static */ bool ScriptCompany::SetLoanAmount(Money loan)
 {
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
 	EnforcePrecondition(false, loan >= 0);
-	EnforcePrecondition(false, (loan % GetLoanInterval()) == 0);
+	EnforcePrecondition(false, ((int64)loan % GetLoanInterval()) == 0);
 	EnforcePrecondition(false, loan <= GetMaxLoanAmount());
 	EnforcePrecondition(false, (loan - GetLoanAmount() + GetBankBalance(COMPANY_SELF)) >= 0);
 
@@ -207,12 +211,12 @@
 			(loan > GetLoanAmount()) ? CMD_INCREASE_LOAN : CMD_DECREASE_LOAN);
 }
 
-/* static */ bool ScriptCompany::SetMinimumLoanAmount(int32 loan)
+/* static */ bool ScriptCompany::SetMinimumLoanAmount(Money loan)
 {
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
 	EnforcePrecondition(false, loan >= 0);
 
-	int32 over_interval = loan % GetLoanInterval();
+	Money over_interval = (int64)loan % GetLoanInterval();
 	if (over_interval != 0) loan += GetLoanInterval() - over_interval;
 
 	EnforcePrecondition(false, loan <= GetMaxLoanAmount());
@@ -220,6 +224,19 @@
 	SetLoanAmount(loan);
 
 	return GetLoanAmount() == loan;
+}
+
+/* static */ bool ScriptCompany::ChangeBankBalance(CompanyID company, Money delta, ExpensesType expenses_type)
+{
+	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY);
+	EnforcePrecondition(false, expenses_type < (ExpensesType)::EXPENSES_END);
+	EnforcePrecondition(false, (int64)delta >= INT32_MIN);
+	EnforcePrecondition(false, (int64)delta <= INT32_MAX);
+
+	company = ResolveCompanyID(company);
+	EnforcePrecondition(false, company != COMPANY_INVALID);
+
+	return ScriptObject::DoCommand(0, (uint32)(delta), company | expenses_type << 8 , CMD_CHANGE_BANK_BALANCE);
 }
 
 /* static */ bool ScriptCompany::BuildCompanyHQ(TileIndex tile)
@@ -265,12 +282,14 @@
 	return ::Company::Get((CompanyID)company)->settings.engine_renew_months;
 }
 
-/* static */ bool ScriptCompany::SetAutoRenewMoney(uint32 money)
+/* static */ bool ScriptCompany::SetAutoRenewMoney(Money money)
 {
+	EnforcePrecondition(false, money >= 0);
+	EnforcePrecondition(false, (int64)money <= UINT32_MAX);
 	return ScriptObject::DoCommand(0, ::GetCompanySettingIndex("company.engine_renew_money"), money, CMD_CHANGE_COMPANY_SETTING);
 }
 
-/* static */ uint32 ScriptCompany::GetAutoRenewMoney(CompanyID company)
+/* static */ Money ScriptCompany::GetAutoRenewMoney(CompanyID company)
 {
 	company = ResolveCompanyID(company);
 	if (company == COMPANY_INVALID) return 0;

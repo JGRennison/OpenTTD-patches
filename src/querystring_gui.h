@@ -12,34 +12,32 @@
 #ifndef QUERYSTRING_GUI_H
 #define QUERYSTRING_GUI_H
 
+#include "textbuf_type.h"
 #include "textbuf_gui.h"
 #include "window_gui.h"
-
-/**
- * Return values for HandleEditBoxKey
- */
-enum HandleEditBoxResult
-{
-	HEBR_EDITING = 0, // Other key pressed.
-	HEBR_CONFIRM,     // Return or enter key pressed.
-	HEBR_CANCEL,      // Escape key pressed.
-	HEBR_NOT_FOCUSED, // Edit box widget not focused.
-};
 
 /**
  * Data stored about a string that can be modified in the GUI
  */
 struct QueryString {
+	/* Special actions when hitting ENTER or ESC. (only keyboard, not OSK) */
+	static const int ACTION_NOTHING  = -1; ///< Nothing.
+	static const int ACTION_DESELECT = -2; ///< Deselect editbox.
+	static const int ACTION_CLEAR    = -3; ///< Clear editbox.
+
 	StringID caption;
+	int ok_button;      ///< Widget button of parent window to simulate when pressing OK in OSK.
+	int cancel_button;  ///< Widget button of parent window to simulate when pressing CANCEL in OSK.
 	Textbuf text;
 	const char *orig;
-	CharSetFilter afilter;
 	bool handled;
 
 	/**
-	 * Make sure everything gets initialized properly.
+	 * Initialize string.
+	 * @param size Maximum size in bytes.
+	 * @param chars Maximum size in chars.
 	 */
-	QueryString() : orig(NULL)
+	QueryString(uint16 size, uint16 chars = UINT16_MAX) : ok_button(ACTION_NOTHING), cancel_button(ACTION_DESELECT), text(size, chars), orig(NULL)
 	{
 	}
 
@@ -51,48 +49,49 @@ struct QueryString {
 		free(this->orig);
 	}
 
-private:
-	bool HasEditBoxFocus(const Window *w, int wid) const;
 public:
-	void DrawEditBox(Window *w, int wid);
+	void DrawEditBox(const Window *w, int wid) const;
+	void ClickEditBox(Window *w, Point pt, int wid, int click_count, bool focus_changed);
 	void HandleEditBox(Window *w, int wid);
-	HandleEditBoxResult HandleEditBoxKey(Window *w, int wid, uint16 key, uint16 keycode, EventState &state);
-};
 
-struct QueryStringBaseWindow : public Window, public QueryString {
-	char *edit_str_buf;         ///< Buffer for string.
-	const uint16 edit_str_size; ///< Maximum length of string (in bytes), including terminating '\0'.
-	const uint16 max_chars;     ///< Maximum length of string (in characters), including terminating '\0'.
-
-	QueryStringBaseWindow(uint16 size, uint16 chars = UINT16_MAX) : Window(), edit_str_size(size), max_chars(chars == UINT16_MAX ? size : chars)
-	{
-		assert(size != 0);
-		this->edit_str_buf = CallocT<char>(size);
-	}
-
-	~QueryStringBaseWindow()
-	{
-		free(this->edit_str_buf);
-	}
-
-	void DrawEditBox(int wid);
-	void HandleEditBox(int wid);
-	HandleEditBoxResult HandleEditBoxKey(int wid, uint16 key, uint16 keycode, EventState &state);
+	Point GetCaretPosition(const Window *w, int wid) const;
+	Rect GetBoundingRect(const Window *w, int wid, const char *from, const char *to) const;
+	const char *GetCharAtPosition(const Window *w, int wid, const Point &pt) const;
 
 	/**
-	 * Callback for when the OSK window is opened.
-	 * @param wid The widget the OSK is opened of.
+	 * Get the current text.
+	 * @return Current text.
 	 */
-	virtual void OnOpenOSKWindow(int wid);
+	const char *GetText() const
+	{
+		return this->text.buf;
+	}
 
 	/**
-	 * Callback for when on input has been entered with the OSK.
-	 * @param wid The widget the OSK was attached to.
+	 * Get the position of the caret in the text buffer.
+	 * @return Pointer to the caret in the text buffer.
 	 */
-	virtual void OnOSKInput(int wid) {}
+	const char *GetCaret() const
+	{
+		return this->text.buf + this->text.caretpos;
+	}
+
+	/**
+	 * Get the currently marked text.
+	 * @param[out] length Length of the marked text.
+	 * @return Begining of the marked area or NULL if no text is marked.
+	 */
+	const char *GetMarkedText(size_t *length) const
+	{
+		if (this->text.markend == 0) return NULL;
+
+		*length = this->text.markend - this->text.markpos;
+		return this->text.buf + this->text.markpos;
+	}
 };
 
-void ShowOnScreenKeyboard(QueryStringBaseWindow *parent, int button, int cancel, int ok);
-void UpdateOSKOriginalText(const QueryStringBaseWindow *parent, int button);
+void ShowOnScreenKeyboard(Window *parent, int button);
+void UpdateOSKOriginalText(const Window *parent, int button);
+bool IsOSKOpenedFor(const Window *w, int button);
 
 #endif /* QUERYSTRING_GUI_H */

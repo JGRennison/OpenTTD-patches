@@ -14,115 +14,53 @@
 
 #include "core/smallvec_type.hpp"
 #include "gfx_type.h"
+#include "window_type.h"
+#include "string_type.h"
 
 /**
  * All data for a single hotkey. The name (for saving/loading a configfile),
  * a list of keycodes and a number to help identifying this hotkey.
  */
-template<class T>
 struct Hotkey {
-	typedef void (T::*hotkey_callback)(int);
+	Hotkey(uint16 default_keycode, const char *name, int num);
+	Hotkey(const uint16 *default_keycodes, const char *name, int num);
 
-	/**
-	 * A wrapper around the callback function. This wrapper is needed because
-	 * the size of a pointer to a member function depends on the class
-	 * definition. The possible solutions are to either wrap the callback
-	 * pointer in a class and dynamically allocate memory for it like we do
-	 * now or making all class definitions available in hotkeys.cpp.
-	 */
-	struct CallbackWrapper {
-		CallbackWrapper(hotkey_callback callback) :
-			callback(callback)
-		{}
-		hotkey_callback callback;
-	};
-
-	/**
-	 * Create a new Hotkey object with a single default keycode.
-	 * @param default_keycode The default keycode for this hotkey.
-	 * @param name The name of this hotkey.
-	 * @param num Number of this hotkey, should be unique within the hotkey list.
-	 * @param callback The function to call if the hotkey is pressed.
-	 */
-	Hotkey(uint16 default_keycode, const char *name, int num, hotkey_callback callback = NULL) :
-		name(name),
-		num(num)
-	{
-		if (callback == NULL) {
-			this->callback = NULL;
-		} else {
-			this->callback = new CallbackWrapper(callback);
-		}
-		if (default_keycode != 0) this->AddKeycode(default_keycode);
-	}
-
-	/**
-	 * Create a new Hotkey object with multiple default keycodes.
-	 * @param default_keycodes An array of default keycodes terminated with 0.
-	 * @param name The name of this hotkey.
-	 * @param num Number of this hotkey, should be unique within the hotkey list.
-	 * @param callback The function to call if the hotkey is pressed.
-	 */
-	Hotkey(const uint16 *default_keycodes, const char *name, int num, hotkey_callback callback = NULL) :
-		name(name),
-		num(num)
-	{
-		if (callback == NULL) {
-			this->callback = NULL;
-		} else {
-			this->callback = new CallbackWrapper(callback);
-		}
-
-		const uint16 *keycode = default_keycodes;
-		while (*keycode != 0) {
-			this->AddKeycode(*keycode);
-			keycode++;
-		}
-	}
-
-	~Hotkey()
-	{
-		delete this->callback;
-	}
-
-	/**
-	 * Add a keycode to this hotkey, from now that keycode will be matched
-	 * in addition to any previously added keycodes.
-	 * @param keycode The keycode to add.
-	 */
-	void AddKeycode(uint16 keycode)
-	{
-		this->keycodes.Include(keycode);
-	}
+	void AddKeycode(uint16 keycode);
 
 	const char *name;
 	int num;
 	SmallVector<uint16, 1> keycodes;
-	CallbackWrapper *callback;
 };
 
-#define HOTKEY_LIST_END(window_class) Hotkey<window_class>((uint16)0, NULL, -1)
+#define HOTKEY_LIST_END Hotkey((uint16)0, NULL, -1)
+
+struct IniFile;
 
 /**
- * Check if a keycode is bound to something.
- * @param list The list with hotkeys to check
- * @param keycode The keycode that was pressed
- * @param w The window-pointer to give to the callback function (if any).
- * @param global_only Limit the search to hotkeys defined as 'global'.
- * @return The number of the matching hotkey or -1.
+ * List of hotkeys for a window.
  */
-template<class T>
-int CheckHotkeyMatch(Hotkey<T> *list, uint16 keycode, T *w, bool global_only = false)
-{
-	while (list->num != -1) {
-		if (list->keycodes.Contains(keycode | WKC_GLOBAL_HOTKEY) || (!global_only && list->keycodes.Contains(keycode))) {
-			if (!global_only && list->callback != NULL) (w->*(list->callback->callback))(-1);
-			return list->num;
-		}
-		list++;
-	}
-	return -1;
-}
+struct HotkeyList {
+	typedef EventState (*GlobalHotkeyHandlerFunc)(int hotkey);
+
+	HotkeyList(const char *ini_group, Hotkey *items, GlobalHotkeyHandlerFunc global_hotkey_handler = NULL);
+	~HotkeyList();
+
+	void Load(IniFile *ini);
+	void Save(IniFile *ini) const;
+
+	int CheckMatch(uint16 keycode, bool global_only = false) const;
+
+	GlobalHotkeyHandlerFunc global_hotkey_handler;
+private:
+	const char *ini_group;
+	Hotkey *items;
+
+	/**
+	 * Dummy private copy constructor to prevent compilers from
+	 * copying the structure, which fails due to _hotkey_lists.
+	 */
+	HotkeyList(const HotkeyList &other);
+};
 
 bool IsQuitKey(uint16 keycode);
 
@@ -130,6 +68,6 @@ void LoadHotkeysFromConfig();
 void SaveHotkeysToConfig();
 
 
-void HandleGlobalHotkeys(uint16 key, uint16 keycode);
+void HandleGlobalHotkeys(WChar key, uint16 keycode);
 
 #endif /* HOTKEYS_H */

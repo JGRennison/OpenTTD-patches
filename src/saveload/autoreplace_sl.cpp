@@ -14,12 +14,15 @@
 
 #include "saveload.h"
 
+#include "../safeguards.h"
+
 static const SaveLoad _engine_renew_desc[] = {
 	    SLE_VAR(EngineRenew, from,     SLE_UINT16),
 	    SLE_VAR(EngineRenew, to,       SLE_UINT16),
 
 	    SLE_REF(EngineRenew, next,     REF_ENGINE_RENEWS),
 	SLE_CONDVAR(EngineRenew, group_id, SLE_UINT16, 60, SL_MAX_VERSION),
+	SLE_CONDVAR(EngineRenew, replace_when_old, SLE_BOOL, 175, SL_MAX_VERSION),
 	SLE_END()
 };
 

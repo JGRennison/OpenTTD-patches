@@ -13,6 +13,8 @@
 #include "../newgrf_storage.h"
 #include "saveload.h"
 
+#include "../safeguards.h"
+
 /** Description of the data to save and load in #PersistentStorage. */
 static const SaveLoad _storage_desc[] = {
 	 SLE_CONDVAR(PersistentStorage, grfid,    SLE_UINT32,                  6, SL_MAX_VERSION),
@@ -27,7 +29,7 @@ static void Load_PSAC()
 
 	while ((index = SlIterateArray()) != -1) {
 		assert(PersistentStorage::CanAllocateItem());
-		PersistentStorage *ps = new (index) PersistentStorage(0);
+		PersistentStorage *ps = new (index) PersistentStorage(0, 0, 0);
 		SlObject(ps, _storage_desc);
 	}
 }
@@ -39,6 +41,7 @@ static void Save_PSAC()
 
 	/* Write the industries */
 	FOR_ALL_STORAGES(ps) {
+		ps->ClearChanges();
 		SlSetArrayIndex(ps->index);
 		SlObject(ps, _storage_desc);
 	}

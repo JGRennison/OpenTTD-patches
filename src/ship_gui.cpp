@@ -21,6 +21,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Draws an image of a ship
  * @param v         Front vehicle
@@ -36,16 +38,17 @@ void DrawShipImage(const Vehicle *v, int left, int right, int y, VehicleID selec
 	SpriteID sprite = v->GetImage(rtl ? DIR_E : DIR_W, image_type);
 	const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
 
-	int width = UnScaleByZoom(real_sprite->width, ZOOM_LVL_GUI);
-	int x_offs = UnScaleByZoom(real_sprite->x_offs, ZOOM_LVL_GUI);
+	int width = UnScaleGUI(real_sprite->width);
+	int x_offs = UnScaleGUI(real_sprite->x_offs);
 	int x = rtl ? right - width - x_offs : left - x_offs;
 
-	DrawSprite(sprite, GetVehiclePalette(v), x, y + 10);
+	y += ScaleGUITrad(10);
+	DrawSprite(sprite, GetVehiclePalette(v), x, y);
 
 	if (v->index == selection) {
 		x += x_offs;
-		y += UnScaleByZoom(real_sprite->y_offs, ZOOM_LVL_GUI) + 10;
-		DrawFrameRect(x - 1, y - 1, x + width + 1, y + UnScaleByZoom(real_sprite->height, ZOOM_LVL_GUI) + 1, COLOUR_WHITE, FR_BORDERONLY);
+		y += UnScaleGUI(real_sprite->y_offs);
+		DrawFrameRect(x - 1, y - 1, x + width + 1, y + UnScaleGUI(real_sprite->height) + 1, COLOUR_WHITE, FR_BORDERONLY);
 	}
 }
 
@@ -62,7 +65,7 @@ void DrawShipDetails(const Vehicle *v, int left, int right, int y)
 	SetDParam(0, v->engine_type);
 	SetDParam(1, v->build_year);
 	SetDParam(2, v->value);
-	DrawString(left, right, y, STR_VEHICLE_INFO_BUILT_VALUE, TC_FROMSTRING, SA_LEFT | SA_STRIP);
+	DrawString(left, right, y, STR_VEHICLE_INFO_BUILT_VALUE);
 
 	SetDParam(0, v->cargo_type);
 	SetDParam(1, v->cargo_cap);
@@ -70,9 +73,9 @@ void DrawShipDetails(const Vehicle *v, int left, int right, int y)
 	DrawString(left, right, y + FONT_HEIGHT_NORMAL, STR_VEHICLE_INFO_CAPACITY);
 
 	StringID str = STR_VEHICLE_DETAILS_CARGO_EMPTY;
-	if (!v->cargo.Empty()) {
+	if (v->cargo.StoredCount() > 0) {
 		SetDParam(0, v->cargo_type);
-		SetDParam(1, v->cargo.Count());
+		SetDParam(1, v->cargo.StoredCount());
 		SetDParam(2, v->cargo.Source());
 		str = STR_VEHICLE_DETAILS_CARGO_FROM;
 	}

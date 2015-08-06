@@ -27,17 +27,23 @@ public:
 	 * @api -all
 	 */
 	virtual const char *GetEncodedText() = 0;
+
+	/**
+	 * Convert a #ScriptText into a decoded normal string.
+	 * @return A string (in a static buffer), or NULL.
+	 * @api -all
+	 */
+	const char *GetDecodedText();
 };
 
 /**
- * Interal used class to create a raw text in a Text object.
+ * Internally used class to create a raw text in a Text object.
  * @api -all
  */
 class RawText : public Text {
 public:
-	RawText(const char *text) :
-	  text(strdup(text)) {}
-	~RawText() { free(this->text); }
+	RawText(const char *text);
+	~RawText();
 
 	/* virtual */ const char *GetEncodedText() { return this->text; }
 private:
@@ -105,7 +111,7 @@ public:
 #else
 	/**
 	 * Set the parameter to a value.
-	 * @param parameter Which parameter t oset.
+	 * @param parameter Which parameter to set.
 	 * @param value The value of the parameter. Has to be string, integer or an instance of the class ScriptText.
 	 */
 	void SetParam(int parameter, Object value);
@@ -123,7 +129,7 @@ public:
 private:
 	StringID string;
 	char *params[SCRIPT_TEXT_MAX_PARAMETERS];
-	int parami[SCRIPT_TEXT_MAX_PARAMETERS];
+	int64 parami[SCRIPT_TEXT_MAX_PARAMETERS];
 	ScriptText *paramt[SCRIPT_TEXT_MAX_PARAMETERS];
 	int paramc;
 
@@ -132,9 +138,10 @@ private:
 	 *  instances, while writing in the same buffer.
 	 * @param p The current position in the buffer.
 	 * @param lastofp The last position valid in the buffer.
+	 * @param param_count The number of parameters that are in the string.
 	 * @return The new current position in the buffer.
 	 */
-	char *_GetEncodedText(char *p, char *lastofp);
+	char *_GetEncodedText(char *p, char *lastofp, int &param_count);
 
 	/**
 	 * Set a parameter, where the value is the first item on the stack.

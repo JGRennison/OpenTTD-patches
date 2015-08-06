@@ -18,6 +18,7 @@
 #endif
 #include "../debug.h"
 #include "../os/windows/win32.h"
+#include "../core/mem_func.hpp"
 #include "dmusic.h"
 
 #include <windows.h>
@@ -26,7 +27,12 @@
 #include <dmusicc.h>
 #include <dmusicf.h>
 
+#include "../safeguards.h"
+
 static FMusicDriver_DMusic iFMusicDriver_DMusic;
+
+/** the direct music object manages buffers and ports */
+static IDirectMusic *music = NULL;
 
 /** the performance object controls manipulation of the segments */
 static IDirectMusicPerformance *performance = NULL;
@@ -82,25 +88,78 @@ const char *MusicDriver_DMusic::Start(const char * const *parm)
 				IID_IDirectMusicPerformance,
 				(LPVOID*)&performance
 			))) {
-		proc.CoUninitialize();
 		return "Failed to create the performance object";
 	}
 
 	/* initialize it */
-	if (FAILED(performance->Init(NULL, NULL, NULL))) {
-		performance->Release();
-		performance = NULL;
-		proc.CoUninitialize();
+	if (FAILED(performance->Init(&music, NULL, NULL))) {
 		return "Failed to initialize performance object";
 	}
 
-	/* choose default Windows synth */
-	if (FAILED(performance->AddPort(NULL))) {
-		performance->CloseDown();
-		performance->Release();
-		performance = NULL;
-		proc.CoUninitialize();
+	int port = GetDriverParamInt(parm, "port", -1);
+
+#ifndef NO_DEBUG_MESSAGES
+	if (_debug_driver_level > 0) {
+		/* Print all valid output ports. */
+		char desc[DMUS_MAX_DESCRIPTION];
+
+		DMUS_PORTCAPS caps;
+		MemSetT(&caps, 0);
+		caps.dwSize = sizeof(DMUS_PORTCAPS);
+
+		DEBUG(driver, 1, "Detected DirectMusic ports:");
+		for (int i = 0; music->EnumPort(i, &caps) == S_OK; i++) {
+			if (caps.dwClass == DMUS_PC_OUTPUTCLASS) {
+				/* Description is UNICODE even for ANSI build. */
+				DEBUG(driver, 1, " %d: %s%s", i, convert_from_fs(caps.wszDescription, desc, lengthof(desc)), i == port ? " (selected)" : "");
+			}
+		}
+	}
+#endif
+
+	IDirectMusicPort *music_port = NULL; // NULL means 'use default port'.
+
+	if (port >= 0) {
+		/* Check if the passed port is a valid port. */
+		DMUS_PORTCAPS caps;
+		MemSetT(&caps, 0);
+		caps.dwSize = sizeof(DMUS_PORTCAPS);
+		if (FAILED(music->EnumPort(port, &caps))) return "Supplied port parameter is not a valid port";
+		if (caps.dwClass != DMUS_PC_OUTPUTCLASS) return "Supplied port parameter is not an output port";
+
+		/* Create new port. */
+		DMUS_PORTPARAMS params;
+		MemSetT(&params, 0);
+		params.dwSize          = sizeof(DMUS_PORTPARAMS);
+		params.dwValidParams   = DMUS_PORTPARAMS_CHANNELGROUPS;
+		params.dwChannelGroups = 1;
+
+		if (FAILED(music->CreatePort(caps.guidPort, &params, &music_port, NULL))) {
+			return "Failed to create port";
+		}
+
+		/* Activate port. */
+		if (FAILED(music_port->Activate(TRUE))) {
+			music_port->Release();
+			return "Failed to activate port";
+		}
+	}
+
+	/* Add port to performance. */
+	if (FAILED(performance->AddPort(music_port))) {
+		if (music_port != NULL) music_port->Release();
 		return "AddPort failed";
+	}
+
+	/* Assign a performance channel block to the performance if we added
+	 * a custom port to the performance. */
+	if (music_port != NULL) {
+		if (FAILED(performance->AssignPChannelBlock(0, music_port, 1))) {
+			music_port->Release();
+			return "Failed to assign PChannel block";
+		}
+		/* We don't need the port anymore. */
+		music_port->Release();
 	}
 
 	/* create the loader object; this will be used to load the MIDI file */
@@ -111,14 +170,16 @@ const char *MusicDriver_DMusic::Start(const char * const *parm)
 				IID_IDirectMusicLoader,
 				(LPVOID*)&loader
 			))) {
-		performance->CloseDown();
-		performance->Release();
-		performance = NULL;
-		proc.CoUninitialize();
 		return "Failed to create loader object";
 	}
 
 	return NULL;
+}
+
+
+MusicDriver_DMusic::~MusicDriver_DMusic()
+{
+	this->Stop();
 }
 
 
@@ -132,6 +193,11 @@ void MusicDriver_DMusic::Stop()
 		segment->SetParam(GUID_Unload, 0xFFFFFFFF, 0, 0, performance);
 		segment->Release();
 		segment = NULL;
+	}
+
+	if (music != NULL) {
+		music->Release();
+		music = NULL;
 	}
 
 	if (performance != NULL) {

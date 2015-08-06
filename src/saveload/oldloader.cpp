@@ -23,6 +23,8 @@
 
 #include <exception>
 
+#include "../safeguards.h"
+
 static const int TTO_HEADER_SIZE = 41;
 static const int TTD_HEADER_SIZE = 49;
 
@@ -78,7 +80,7 @@ byte ReadByte(LoadgameState *ls)
 	which means that we have a chunk, which starts with a length
 	byte. If that byte is negative, we have to repeat the next byte
 	that many times ( + 1). Else, we need to read that amount of bytes.
-	Works pretty good if you have many zero's behind eachother */
+	Works pretty well if you have many zeros behind each other */
 
 	if (ls->chunk_size == 0) {
 		/* Read new chunk */
@@ -235,7 +237,7 @@ static inline bool CheckOldSavegameType(FILE *f, char *temp, const char *last, u
 	}
 
 	bool ret = VerifyOldNameChecksum(temp, len);
-	temp[len - 2] = '\0'; // name is nul-terminated in savegame, but it's better to be sure
+	temp[len - 2] = '\0'; // name is null-terminated in savegame, but it's better to be sure
 	str_validate(temp, last);
 
 	return ret;
@@ -244,16 +246,15 @@ static inline bool CheckOldSavegameType(FILE *f, char *temp, const char *last, u
 static SavegameType DetermineOldSavegameType(FILE *f, char *title, const char *last)
 {
 	assert_compile(TTD_HEADER_SIZE >= TTO_HEADER_SIZE);
-	char temp[TTD_HEADER_SIZE];
+	char temp[TTD_HEADER_SIZE] = "Unknown";
 
 	SavegameType type = SGT_TTO;
 
 	/* Can't fseek to 0 as in tar files that is not correct */
 	long pos = ftell(f);
-	if (!CheckOldSavegameType(f, temp, lastof(temp), TTO_HEADER_SIZE)) {
+	if (pos >= 0 && !CheckOldSavegameType(f, temp, lastof(temp), TTO_HEADER_SIZE)) {
 		type = SGT_TTD;
-		fseek(f, pos, SEEK_SET);
-		if (!CheckOldSavegameType(f, temp, lastof(temp), TTD_HEADER_SIZE)) {
+		if (fseek(f, pos, SEEK_SET) < 0 || !CheckOldSavegameType(f, temp, lastof(temp), TTD_HEADER_SIZE)) {
 			type = SGT_INVALID;
 		}
 	}

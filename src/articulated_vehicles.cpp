@@ -19,6 +19,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 static const uint MAX_ARTICULATED_PARTS = 100; ///< Maximum of articulated parts per vehicle, i.e. when to abort calling the articulated vehicle callback.
 
 /**
@@ -68,7 +70,7 @@ bool IsArticulatedEngine(EngineID engine_type)
  * Count the number of articulated parts of an engine.
  * @param engine_type The engine to get the number of parts of.
  * @param purchase_window Whether we are in the scope of the purchase window or not, i.e. whether we cannot allocate vehicles.
- * @return The nmumber of parts.
+ * @return The number of parts.
  */
 uint CountArticulatedParts(EngineID engine_type, bool purchase_window)
 {
@@ -98,7 +100,7 @@ uint CountArticulatedParts(EngineID engine_type, bool purchase_window)
 
 /**
  * Returns the default (non-refitted) capacity of a specific EngineID.
- * @param engine the EngineID of iterest
+ * @param engine the EngineID of interest
  * @param cargo_type returns the default cargo type, if needed
  * @return capacity
  */
@@ -113,7 +115,7 @@ static inline uint16 GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo_t
 
 /**
  * Returns all cargoes a vehicle can carry.
- * @param engine the EngineID of iterest
+ * @param engine the EngineID of interest
  * @param include_initial_cargo_type if true the default cargo type of the vehicle is included; if false only the refit_mask
  * @return bit set of CargoIDs
  */
@@ -158,6 +160,41 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine)
 	}
 
 	return capacity;
+}
+
+/**
+ * Get the default cargoes and refits of an articulated vehicle.
+ * The refits are linked to a cargo rather than an articulated part to prevent a long list of parts.
+ * @param engine Model to investigate.
+ * @param[out] cargoes Total amount of units that can be transported, summed by cargo.
+ * @param[out] refits Whether a (possibly partial) refit for each cargo is possible.
+ */
+void GetArticulatedVehicleCargoesAndRefits(EngineID engine, CargoArray *cargoes, uint32 *refits)
+{
+	cargoes->Clear();
+	*refits = 0;
+
+	const Engine *e = Engine::Get(engine);
+
+	CargoID cargo_type;
+	uint16 cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
+	if (cargo_type < NUM_CARGO && cargo_capacity > 0) {
+		(*cargoes)[cargo_type] += cargo_capacity;
+		if (IsEngineRefittable(engine)) SetBit(*refits, cargo_type);
+	}
+
+	if (!e->IsGroundVehicle() || !HasBit(e->info.callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return;
+
+	for (uint i = 1; i < MAX_ARTICULATED_PARTS; i++) {
+		EngineID artic_engine = GetNextArticulatedPart(i, engine);
+		if (artic_engine == INVALID_ENGINE) break;
+
+		cargo_capacity = GetVehicleDefaultCapacity(artic_engine, &cargo_type);
+		if (cargo_type < NUM_CARGO && cargo_capacity > 0) {
+			(*cargoes)[cargo_type] += cargo_capacity;
+			if (IsEngineRefittable(artic_engine)) SetBit(*refits, cargo_type);
+		}
+	}
 }
 
 /**
@@ -355,6 +392,7 @@ void AddArticulatedParts(Vehicle *first)
 					t->cargo_type = front->cargo_type; // Needed for livery selection
 					t->cargo_cap = 0;
 				}
+				t->refit_cap = 0;
 
 				t->SetArticulatedPart();
 				break;
@@ -381,6 +419,7 @@ void AddArticulatedParts(Vehicle *first)
 					rv->cargo_type = front->cargo_type; // Needed for livery selection
 					rv->cargo_cap = 0;
 				}
+				rv->refit_cap = 0;
 
 				rv->SetArticulatedPart();
 				break;
@@ -406,6 +445,6 @@ void AddArticulatedParts(Vehicle *first)
 
 		if (flip_image) v->spritenum++;
 
-		VehicleUpdatePosition(v);
+		v->UpdatePosition();
 	}
 }

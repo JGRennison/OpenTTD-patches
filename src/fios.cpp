@@ -26,9 +26,12 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /* Variables to display file lists */
 SmallVector<FiosItem, 32> _fios_items;
 static char *_fios_path;
+static const char *_fios_path_last;
 SmallFiosItem _file_to_saveload;
 SortingBits _savegame_sort_order = SORT_BY_DATE | SORT_DESCENDING;
 
@@ -89,14 +92,12 @@ StringID FiosGetDescText(const char **path, uint64 *total_free)
  */
 const char *FiosBrowseTo(const FiosItem *item)
 {
-	char *path = _fios_path;
-
 	switch (item->type) {
 		case FIOS_TYPE_DRIVE:
 #if defined(WINCE)
-			snprintf(path, MAX_PATH, PATHSEP "");
+			seprintf(_fios_path, _fios_path_last, PATHSEP "");
 #elif defined(WIN32) || defined(__OS2__)
-			snprintf(path, MAX_PATH, "%c:" PATHSEP, item->title[0]);
+			seprintf(_fios_path, _fios_path_last, "%c:" PATHSEP, item->title[0]);
 #endif
 			/* FALL THROUGH */
 		case FIOS_TYPE_INVALID:
@@ -104,16 +105,16 @@ const char *FiosBrowseTo(const FiosItem *item)
 
 		case FIOS_TYPE_PARENT: {
 			/* Check for possible NULL ptr (not required for UNIXes, but AmigaOS-alikes) */
-			char *s = strrchr(path, PATHSEPCHAR);
-			if (s != NULL && s != path) {
+			char *s = strrchr(_fios_path, PATHSEPCHAR);
+			if (s != NULL && s != _fios_path) {
 				s[0] = '\0'; // Remove last path separator character, so we can go up one level.
 			}
-			s = strrchr(path, PATHSEPCHAR);
+			s = strrchr(_fios_path, PATHSEPCHAR);
 			if (s != NULL) {
 				s[1] = '\0'; // go up a directory
 #if defined(__MORPHOS__) || defined(__AMIGAOS__)
 			/* On MorphOS or AmigaOS paths look like: "Volume:directory/subdirectory" */
-			} else if ((s = strrchr(path, ':')) != NULL) {
+			} else if ((s = strrchr(_fios_path, ':')) != NULL) {
 				s[1] = '\0';
 #endif
 			}
@@ -121,12 +122,12 @@ const char *FiosBrowseTo(const FiosItem *item)
 		}
 
 		case FIOS_TYPE_DIR:
-			strcat(path, item->name);
-			strcat(path, PATHSEP);
+			strecat(_fios_path, item->name, _fios_path_last);
+			strecat(_fios_path, PATHSEP, _fios_path_last);
 			break;
 
 		case FIOS_TYPE_DIRECT:
-			snprintf(path, MAX_PATH, "%s", item->name);
+			seprintf(_fios_path, _fios_path_last, "%s", item->name);
 			break;
 
 		case FIOS_TYPE_FILE:
@@ -147,9 +148,9 @@ const char *FiosBrowseTo(const FiosItem *item)
  * @param path Directory path, may be \c NULL.
  * @param name Filename.
  * @param ext Filename extension (use \c "" for no extension).
- * @param size Size of \a buf.
+ * @param last Last element of buffer \a buf.
  */
-static void FiosMakeFilename(char *buf, const char *path, const char *name, const char *ext, size_t size)
+static void FiosMakeFilename(char *buf, const char *path, const char *name, const char *ext, const char *last)
 {
 	const char *period;
 
@@ -161,15 +162,15 @@ static void FiosMakeFilename(char *buf, const char *path, const char *name, cons
 		unsigned char sepchar = path[(strlen(path) - 1)];
 
 		if (sepchar != ':' && sepchar != '/') {
-			snprintf(buf, size, "%s" PATHSEP "%s%s", path, name, ext);
+			seprintf(buf, last, "%s" PATHSEP "%s%s", path, name, ext);
 		} else {
-			snprintf(buf, size, "%s%s%s", path, name, ext);
+			seprintf(buf, last, "%s%s%s", path, name, ext);
 		}
 	} else {
-		snprintf(buf, size, "%s%s", name, ext);
+		seprintf(buf, last, "%s%s", name, ext);
 	}
 #else
-	snprintf(buf, size, "%s" PATHSEP "%s%s", path, name, ext);
+	seprintf(buf, last, "%s" PATHSEP "%s%s", path, name, ext);
 #endif
 }
 
@@ -177,39 +178,40 @@ static void FiosMakeFilename(char *buf, const char *path, const char *name, cons
  * Make a save game or scenario filename from a name.
  * @param buf Destination buffer for saving the filename.
  * @param name Name of the file.
- * @param size Length of buffer \a buf.
+ * @param last Last element of buffer \a buf.
  */
-void FiosMakeSavegameName(char *buf, const char *name, size_t size)
+void FiosMakeSavegameName(char *buf, const char *name, const char *last)
 {
 	const char *extension = (_game_mode == GM_EDITOR) ? ".scn" : ".sav";
 
-	FiosMakeFilename(buf, _fios_path, name, extension, size);
+	FiosMakeFilename(buf, _fios_path, name, extension, last);
 }
 
 /**
  * Construct a filename for a height map.
  * @param buf Destination buffer.
  * @param name Filename.
- * @param size Size of \a buf.
+ * @param last Last element of buffer \a buf.
  */
-void FiosMakeHeightmapName(char *buf, const char *name, size_t size)
+void FiosMakeHeightmapName(char *buf, const char *name, const char *last)
 {
 	char ext[5];
 	ext[0] = '.';
 	strecpy(ext + 1, GetCurrentScreenshotExtension(), lastof(ext));
 
-	FiosMakeFilename(buf, _fios_path, name, ext, size);
+	FiosMakeFilename(buf, _fios_path, name, ext, last);
 }
 
 /**
  * Delete a file.
  * @param name Filename to delete.
+ * @return Whether the file deletion was successful.
  */
 bool FiosDelete(const char *name)
 {
 	char filename[512];
 
-	FiosMakeSavegameName(filename, name, lengthof(filename));
+	FiosMakeSavegameName(filename, name, lastof(filename));
 	return unlink(filename) == 0;
 }
 
@@ -324,7 +326,7 @@ static void FiosGetFileList(SaveLoadDialogMode mode, fios_getlist_callback_proc 
 				fios->type = FIOS_TYPE_DIR;
 				fios->mtime = 0;
 				strecpy(fios->name, d_name, lastof(fios->name));
-				snprintf(fios->title, lengthof(fios->title), "%s" PATHSEP " (Directory)", d_name);
+				seprintf(fios->title, lastof(fios->title), "%s" PATHSEP " (Directory)", d_name);
 				str_validate(fios->title, lastof(fios->title));
 			}
 		}
@@ -400,6 +402,10 @@ FiosType FiosGetSavegameListCallback(SaveLoadDialogMode mode, const char *file, 
 	 * .SS1 Transport Tycoon Deluxe preset game
 	 * .SV1 Transport Tycoon Deluxe (Patch) saved game
 	 * .SV2 Transport Tycoon Deluxe (Patch) saved 2-player game */
+
+	/* Don't crash if we supply no extension */
+	if (ext == NULL) return FIOS_TYPE_INVALID;
+
 	if (strcasecmp(ext, ".sav") == 0) {
 		GetFileTitle(file, title, last, SAVE_DIR);
 		return FIOS_TYPE_FILE;
@@ -424,13 +430,16 @@ FiosType FiosGetSavegameListCallback(SaveLoadDialogMode mode, const char *file, 
 void FiosGetSavegameList(SaveLoadDialogMode mode)
 {
 	static char *fios_save_path = NULL;
+	static char *fios_save_path_last = NULL;
 
 	if (fios_save_path == NULL) {
 		fios_save_path = MallocT<char>(MAX_PATH);
-		FioGetDirectory(fios_save_path, MAX_PATH, SAVE_DIR);
+		fios_save_path_last = fios_save_path + MAX_PATH - 1;
+		FioGetDirectory(fios_save_path, fios_save_path_last, SAVE_DIR);
 	}
 
 	_fios_path = fios_save_path;
+	_fios_path_last = fios_save_path_last;
 
 	FiosGetFileList(mode, &FiosGetSavegameListCallback, NO_DIRECTORY);
 }
@@ -475,17 +484,20 @@ static FiosType FiosGetScenarioListCallback(SaveLoadDialogMode mode, const char 
 void FiosGetScenarioList(SaveLoadDialogMode mode)
 {
 	static char *fios_scn_path = NULL;
+	static char *fios_scn_path_last = NULL;
 
 	/* Copy the default path on first run or on 'New Game' */
 	if (fios_scn_path == NULL) {
 		fios_scn_path = MallocT<char>(MAX_PATH);
-		FioGetDirectory(fios_scn_path, MAX_PATH, SCENARIO_DIR);
+		fios_scn_path_last = fios_scn_path + MAX_PATH - 1;
+		FioGetDirectory(fios_scn_path, fios_scn_path_last, SCENARIO_DIR);
 	}
 
 	_fios_path = fios_scn_path;
+	_fios_path_last = fios_scn_path_last;
 
 	char base_path[MAX_PATH];
-	FioGetDirectory(base_path, sizeof(base_path), SCENARIO_DIR);
+	FioGetDirectory(base_path, lastof(base_path), SCENARIO_DIR);
 
 	FiosGetFileList(mode, &FiosGetScenarioListCallback, (mode == SLD_LOAD_SCENARIO && strcmp(base_path, _fios_path) == 0) ? SCENARIO_DIR : NO_DIRECTORY);
 }
@@ -518,7 +530,7 @@ static FiosType FiosGetHeightmapListCallback(SaveLoadDialogMode mode, const char
 		Searchpath sp;
 		FOR_ALL_SEARCHPATHS(sp) {
 			char buf[MAX_PATH];
-			FioAppendDirectory(buf, sizeof(buf), sp, HEIGHTMAP_DIR);
+			FioAppendDirectory(buf, lastof(buf), sp, HEIGHTMAP_DIR);
 
 			if (strncmp(buf, it->second.tar_filename, strlen(buf)) == 0) {
 				match = true;
@@ -541,18 +553,37 @@ static FiosType FiosGetHeightmapListCallback(SaveLoadDialogMode mode, const char
 void FiosGetHeightmapList(SaveLoadDialogMode mode)
 {
 	static char *fios_hmap_path = NULL;
+	static char *fios_hmap_path_last = NULL;
 
 	if (fios_hmap_path == NULL) {
 		fios_hmap_path = MallocT<char>(MAX_PATH);
-		FioGetDirectory(fios_hmap_path, MAX_PATH, HEIGHTMAP_DIR);
+		fios_hmap_path_last = fios_hmap_path + MAX_PATH - 1;
+		FioGetDirectory(fios_hmap_path, fios_hmap_path_last, HEIGHTMAP_DIR);
 	}
 
 	_fios_path = fios_hmap_path;
+	_fios_path_last = fios_hmap_path_last;
 
 	char base_path[MAX_PATH];
-	FioGetDirectory(base_path, sizeof(base_path), HEIGHTMAP_DIR);
+	FioGetDirectory(base_path, lastof(base_path), HEIGHTMAP_DIR);
 
 	FiosGetFileList(mode, &FiosGetHeightmapListCallback, strcmp(base_path, _fios_path) == 0 ? HEIGHTMAP_DIR : NO_DIRECTORY);
+}
+
+/**
+ * Get the directory for screenshots.
+ * @return path to screenshots
+ */
+const char *FiosGetScreenshotDir()
+{
+	static char *fios_screenshot_path = NULL;
+
+	if (fios_screenshot_path == NULL) {
+		fios_screenshot_path = MallocT<char>(MAX_PATH);
+		FioGetDirectory(fios_screenshot_path, fios_screenshot_path + MAX_PATH - 1, SCREENSHOT_DIR);
+	}
+
+	return fios_screenshot_path;
 }
 
 #if defined(ENABLE_NETWORK)
@@ -561,8 +592,9 @@ void FiosGetHeightmapList(SaveLoadDialogMode mode)
 
 /** Basic data to distinguish a scenario. Used in the server list window */
 struct ScenarioIdentifier {
-	uint32 scenid;    ///< ID for the scenario (generated by content)
-	uint8 md5sum[16]; ///< MD5 checksum of file
+	uint32 scenid;           ///< ID for the scenario (generated by content).
+	uint8 md5sum[16];        ///< MD5 checksum of file.
+	char filename[MAX_PATH]; ///< filename of the file.
 
 	bool operator == (const ScenarioIdentifier &other) const
 	{
@@ -606,6 +638,7 @@ public:
 		int fret = fscanf(f, "%i", &id.scenid);
 		FioFCloseFile(f);
 		if (fret != 1) return false;
+		strecpy(id.filename, filename, lastof(id.filename));
 
 		Md5 checksum;
 		uint8 buffer[1024];
@@ -638,24 +671,34 @@ public:
 static ScenarioScanner _scanner;
 
 /**
- * Check whether we've got a given scenario based on its unique ID.
- * @param ci the content info to compare it to
- * @param md5sum whether to look at the md5sum or the id
- * @return true if we've got the scenario
+ * Find a given scenario based on its unique ID.
+ * @param ci The content info to compare it to.
+ * @param md5sum Whether to look at the md5sum or the id.
+ * @return The filename of the file, else \c NULL.
  */
-bool HasScenario(const ContentInfo *ci, bool md5sum)
+const char *FindScenario(const ContentInfo *ci, bool md5sum)
 {
 	_scanner.Scan(false);
 
 	for (ScenarioIdentifier *id = _scanner.Begin(); id != _scanner.End(); id++) {
-		if (md5sum ?
-				(memcmp(id->md5sum, ci->md5sum, sizeof(id->md5sum)) == 0) :
-				(id->scenid == ci->unique_id)) {
-			return true;
+		if (md5sum ? (memcmp(id->md5sum, ci->md5sum, sizeof(id->md5sum)) == 0)
+		           : (id->scenid == ci->unique_id)) {
+			return id->filename;
 		}
 	}
 
-	return false;
+	return NULL;
+}
+
+/**
+ * Check whether we've got a given scenario based on its unique ID.
+ * @param ci The content info to compare it to.
+ * @param md5sum Whether to look at the md5sum or the id.
+ * @return True iff we've got the scenario.
+ */
+bool HasScenario(const ContentInfo *ci, bool md5sum)
+{
+	return (FindScenario(ci, md5sum) != NULL);
 }
 
 /**

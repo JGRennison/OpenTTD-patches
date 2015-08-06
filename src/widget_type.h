@@ -49,20 +49,22 @@ enum WidgetType {
 
 	WWT_PANEL,      ///< Simple depressed panel
 	WWT_INSET,      ///< Pressed (inset) panel, most commonly used as combo box _text_ area
-	WWT_IMGBTN,     ///< Button with image
-	WWT_IMGBTN_2,   ///< Button with diff image when clicked
-	WWT_ARROWBTN,   ///< Button with an arrow
-	WWT_TEXTBTN,    ///< Button with text
-	WWT_TEXTBTN_2,  ///< Button with diff text when clicked
+	WWT_IMGBTN,     ///< (Toggle) Button with image
+	WWT_IMGBTN_2,   ///< (Toggle) Button with diff image when clicked
+	WWT_ARROWBTN,   ///< (Toggle) Button with an arrow
+	WWT_TEXTBTN,    ///< (Toggle) Button with text
+	WWT_TEXTBTN_2,  ///< (Toggle) Button with diff text when clicked
 	WWT_LABEL,      ///< Centered label
 	WWT_TEXT,       ///< Pure simple text
 	WWT_MATRIX,     ///< Grid of rows and columns. @see MatrixWidgetValues
 	WWT_FRAME,      ///< Frame
 	WWT_CAPTION,    ///< Window caption (window title between closebox and stickybox)
 
-	WWT_SHADEBOX,   ///< Shade box (at top-right of a window, between caption and stickybox)
-	WWT_STICKYBOX,  ///< Sticky box (normally at top-right of a window)
-	WWT_DEBUGBOX,   ///< NewGRF debug box (between shade box and caption)
+	WWT_DEBUGBOX,   ///< NewGRF debug box (at top-right of a window, between WWT_CAPTION and WWT_SHADEBOX)
+	WWT_SHADEBOX,   ///< Shade box (at top-right of a window, between WWT_DEBUGBOX and WWT_DEFSIZEBOX)
+	WWT_DEFSIZEBOX, ///< Default window size box (at top-right of a window, between WWT_SHADEBOX and WWT_STICKYBOX)
+	WWT_STICKYBOX,  ///< Sticky box (at top-right of a window, after WWT_DEFSIZEBOX)
+
 	WWT_RESIZEBOX,  ///< Resize box (normally at bottom-right of a window)
 	WWT_CLOSEBOX,   ///< Close box (at top-left of a window)
 	WWT_DROPDOWN,   ///< Drop down list
@@ -98,10 +100,11 @@ enum WidgetType {
 
 	WWB_PUSHBUTTON    = 1 << 7,
 
-	WWT_PUSHBTN       = WWT_PANEL    | WWB_PUSHBUTTON,
-	WWT_PUSHTXTBTN    = WWT_TEXTBTN  | WWB_PUSHBUTTON,
-	WWT_PUSHIMGBTN    = WWT_IMGBTN   | WWB_PUSHBUTTON,
-	WWT_PUSHARROWBTN  = WWT_ARROWBTN | WWB_PUSHBUTTON,
+	WWT_PUSHBTN       = WWT_PANEL    | WWB_PUSHBUTTON,    ///< Normal push-button (no toggle button) with custom drawing
+	WWT_PUSHTXTBTN    = WWT_TEXTBTN  | WWB_PUSHBUTTON,    ///< Normal push-button (no toggle button) with text caption
+	WWT_PUSHIMGBTN    = WWT_IMGBTN   | WWB_PUSHBUTTON,    ///< Normal push-button (no toggle button) with image caption
+	WWT_PUSHARROWBTN  = WWT_ARROWBTN | WWB_PUSHBUTTON,    ///< Normal push-button (no toggle button) with arrow caption
+	NWID_PUSHBUTTON_DROPDOWN = NWID_BUTTON_DROPDOWN | WWB_PUSHBUTTON,
 };
 
 /** Different forms of sizing nested widgets, using NWidgetBase::AssignSizePosition() */
@@ -178,9 +181,9 @@ public:
 	NWidgetBase *prev;    ///< Pointer to previous widget in container. Managed by parent container widget.
 
 	uint8 padding_top;    ///< Paddings added to the top of the widget. Managed by parent container widget.
-	uint8 padding_right;  ///< Paddings added to the right of the widget. Managed by parent container widget.
+	uint8 padding_right;  ///< Paddings added to the right of the widget. Managed by parent container widget. (parent container may swap this with padding_left for RTL)
 	uint8 padding_bottom; ///< Paddings added to the bottom of the widget. Managed by parent container widget.
-	uint8 padding_left;   ///< Paddings added to the left of the widget. Managed by parent container widget.
+	uint8 padding_left;   ///< Paddings added to the left of the widget. Managed by parent container widget. (parent container may swap this with padding_right for RTL)
 
 protected:
 	inline void StoreSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height);
@@ -280,10 +283,10 @@ DECLARE_ENUM_AS_BIT_SET(NWidgetDisplay)
  */
 class NWidgetCore : public NWidgetResizeBase {
 public:
-	NWidgetCore(WidgetType tp, Colours colour, uint fill_x, uint fill_y, uint16 widget_data, StringID tool_tip);
+	NWidgetCore(WidgetType tp, Colours colour, uint fill_x, uint fill_y, uint32 widget_data, StringID tool_tip);
 
 	void SetIndex(int index);
-	void SetDataTip(uint16 widget_data, StringID tool_tip);
+	void SetDataTip(uint32 widget_data, StringID tool_tip);
 
 	inline void SetLowered(bool lowered);
 	inline bool IsLowered() const;
@@ -299,7 +302,7 @@ public:
 	NWidgetDisplay disp_flags; ///< Flags that affect display and interaction with the widget.
 	Colours colour;            ///< Colour of this widget.
 	int index;                 ///< Index of the nested widget in the widget array of the window (\c -1 means 'not used').
-	uint16 widget_data;        ///< Data of the widget. @see Widget::data
+	uint32 widget_data;        ///< Data of the widget. @see Widget::data
 	StringID tool_tip;         ///< Tooltip of the widget. @see Widget::tootips
 	int scrollbar_index;       ///< Index of an attached scrollbar.
 	TextColour highlight_colour; ///< Colour of highlight.
@@ -307,7 +310,7 @@ public:
 
 /**
  * Highlight the widget or not.
- * @param higlighted Widget must be highlighted (blink).
+ * @param highlight_colour Widget must be highlighted (blink).
  */
 inline void NWidgetCore::SetHighlighted(TextColour highlight_colour)
 {
@@ -766,7 +769,7 @@ private:
  */
 class NWidgetLeaf : public NWidgetCore {
 public:
-	NWidgetLeaf(WidgetType tp, Colours colour, int index, uint16 data, StringID tip);
+	NWidgetLeaf(WidgetType tp, Colours colour, int index, uint32 data, StringID tip);
 
 	/* virtual */ void SetupSmallestSize(Window *w, bool init_array);
 	/* virtual */ void Draw(const Window *w);
@@ -774,9 +777,12 @@ public:
 	bool ButtonHit(const Point &pt);
 
 	static void InvalidateDimensionCache();
+
+	static Dimension dropdown_dimension;  ///< Cached size of a dropdown widget.
 private:
 	static Dimension shadebox_dimension;  ///< Cached size of a shadebox widget.
 	static Dimension debugbox_dimension;  ///< Cached size of a debugbox widget.
+	static Dimension defsizebox_dimension; ///< Cached size of a defsizebox widget.
 	static Dimension stickybox_dimension; ///< Cached size of a stickybox widget.
 	static Dimension resizebox_dimension; ///< Cached size of a resizebox widget.
 	static Dimension closebox_dimension;  ///< Cached size of a closebox widget.
@@ -829,7 +835,7 @@ static inline uint ComputeMaxSize(uint base, uint max_space, uint step)
  *   the child widgets (it has no meaning for the compiler but it makes the widget parts easier to read).
  *   Below the last child widget, use an #EndContainer part. This part should be aligned with the #NWidget part that started the container.
  *
- * - Stacked widgets #NWidgetStacked map each of their childs onto the same space. It behaves like a container, except there is no pre/inter/post space,
+ * - Stacked widgets #NWidgetStacked map each of their children onto the same space. It behaves like a container, except there is no pre/inter/post space,
  *   so the widget does not support #SetPIP. #SetPadding is allowed though.
  *   Like the other container widgets, below the last child widgets, a #EndContainer part should be used to denote the end of the stacked widget.
  *
@@ -850,7 +856,7 @@ static inline uint ComputeMaxSize(uint base, uint max_space, uint step)
  * @ingroup NestedWidgetParts
  */
 struct NWidgetPartDataTip {
-	uint16 data;      ///< Data value of the widget.
+	uint32 data;      ///< Data value of the widget.
 	StringID tooltip; ///< Tooltip of the widget.
 };
 
@@ -1005,7 +1011,7 @@ static inline NWidgetPart EndContainer()
  * @param tip  Tooltip of the widget.
  * @ingroup NestedWidgetParts
  */
-static inline NWidgetPart SetDataTip(uint16 data, StringID tip)
+static inline NWidgetPart SetDataTip(uint32 data, StringID tip)
 {
 	NWidgetPart part;
 
@@ -1014,6 +1020,18 @@ static inline NWidgetPart SetDataTip(uint16 data, StringID tip)
 	part.u.data_tip.tooltip = tip;
 
 	return part;
+}
+
+/**
+ * Widget part function for setting the data and tooltip of WWT_MATRIX widgets
+ * @param cols Number of columns. \c 0 means to use draw columns with width according to the resize step size.
+ * @param rows Number of rows. \c 0 means to use draw rows with height according to the resize step size.
+ * @param tip  Tooltip of the widget.
+ * @ingroup NestedWidgetParts
+ */
+static inline NWidgetPart SetMatrixDataTip(uint8 cols, uint8 rows, StringID tip)
+{
+	return SetDataTip((rows << MAT_ROW_START) | (cols << MAT_COL_START), tip);
 }
 
 /**
@@ -1070,7 +1088,7 @@ static inline NWidgetPart SetPIP(uint8 pre, uint8 inter, uint8 post)
 /**
  * Attach a scrollbar to a widget.
  * The scrollbar is controlled when using the mousewheel on the widget.
- * Multipe widgets can refer to the same scrollbar to make the mousewheel work in all of them.
+ * Multiple widgets can refer to the same scrollbar to make the mousewheel work in all of them.
  * @param index Widget index of the scrollbar.
  * @ingroup NestedWidgetParts
  */

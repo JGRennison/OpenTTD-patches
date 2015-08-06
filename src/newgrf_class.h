@@ -19,26 +19,49 @@
  */
 template <typename Tspec, typename Tid, Tid Tmax>
 struct NewGRFClass {
-	uint32 global_id; ///< Global ID for class, e.g. 'DFLT', 'WAYP', etc.
-	StringID name;    ///< Name of this class.
-	uint count;       ///< Number of stations in this class.
-	Tspec **spec;     ///< Array of station specifications.
+private:
+	uint count;       ///< Number of specs in this class.
+	uint ui_count;    ///< Number of specs in this class potentially available to the user.
+	Tspec **spec;     ///< Array of specifications.
 
-	/** The actual classes. */
+	/**
+	 * The actual classes.
+	 * @note We store pointers to membes of this array in various places outside this class (e.g. to 'name' for GRF string resolving).
+	 *       Thus this must be a static array, and cannot be a self-resizing SmallVector or similar.
+	 */
 	static NewGRFClass<Tspec, Tid, Tmax> classes[Tmax];
 
-	static void Reset();
+	void ResetClass();
+
 	/** Initialise the defaults. */
 	static void InsertDefaults();
 
-	static Tid Allocate(uint32 global_id);
-	static void SetName(Tid cls_id, StringID name);
-	static void Assign(Tspec *spec);
+public:
+	uint32 global_id; ///< Global ID for class, e.g. 'DFLT', 'WAYP', etc.
+	StringID name;    ///< Name of this class.
 
-	static StringID GetName(Tid cls_id);
-	static uint GetCount();
-	static uint GetCount(Tid cls_id);
-	static const Tspec *Get(Tid cls_id, uint index);
+	void Insert(Tspec *spec);
+
+	/** Get the number of allocated specs within the class. */
+	uint GetSpecCount() const { return this->count; }
+	/** Get the number of potentially user-available specs within the class. */
+	uint GetUISpecCount() const { return this->ui_count; }
+	int GetUIFromIndex(int index) const;
+	int GetIndexFromUI(int ui_index) const;
+
+	const Tspec *GetSpec(uint index) const;
+
+	/** Check whether the spec will be available to the user at some point in time. */
+	bool IsUIAvailable(uint index) const;
+
+	static void Reset();
+	static Tid Allocate(uint32 global_id);
+	static void Assign(Tspec *spec);
+	static uint GetClassCount();
+	static uint GetUIClassCount();
+	static Tid GetUIClass(uint index);
+	static NewGRFClass *Get(Tid cls_id);
+
 	static const Tspec *GetByGrf(uint32 grfid, byte local_id, int *index);
 };
 

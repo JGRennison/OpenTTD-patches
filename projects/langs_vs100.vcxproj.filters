@@ -13,6 +13,9 @@
     <CustomBuild Include="..\src\lang\arabic_egypt.txt">
       <Filter>Translations</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\src\lang\basque.txt">
+      <Filter>Translations</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\src\lang\belarusian.txt">
       <Filter>Translations</Filter>
     </CustomBuild>
@@ -49,10 +52,16 @@
     <CustomBuild Include="..\src\lang\estonian.txt">
       <Filter>Translations</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\src\lang\faroese.txt">
+      <Filter>Translations</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\src\lang\finnish.txt">
       <Filter>Translations</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\lang\french.txt">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\lang\gaelic.txt">
       <Filter>Translations</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\lang\galician.txt">
@@ -86,6 +95,9 @@
       <Filter>Translations</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\lang\korean.txt">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\lang\latin.txt">
       <Filter>Translations</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\lang\latvian.txt">
@@ -134,6 +146,12 @@
       <Filter>Translations</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\lang\swedish.txt">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\lang\tamil.txt">
+      <Filter>Translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\lang\thai.txt">
       <Filter>Translations</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\lang\traditional_chinese.txt">

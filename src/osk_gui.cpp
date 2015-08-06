@@ -16,11 +16,14 @@
 #include "window_func.h"
 #include "gfx_func.h"
 #include "querystring_gui.h"
+#include "video/video_driver.hpp"
 
 #include "widgets/osk_widget.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 char _keyboard_opt[2][OSK_KEYBOARD_ENTRIES * 4 + 1];
 static WChar _keyboard[2][OSK_KEYBOARD_ENTRIES];
@@ -36,31 +39,30 @@ struct OskWindow : public Window {
 	StringID caption;      ///< the caption for this window.
 	QueryString *qs;       ///< text-input
 	int text_btn;          ///< widget number of parent's text field
-	int ok_btn;            ///< widget number of parent's ok button (=0 when ok shouldn't be passed on)
-	int cancel_btn;        ///< widget number of parent's cancel button (=0 when cancel shouldn't be passed on; text will be reverted to original)
 	Textbuf *text;         ///< pointer to parent's textbuffer (to update caret position)
 	char *orig_str_buf;    ///< Original string.
 	bool shift;            ///< Is the shift effectively pressed?
 
-	OskWindow(const WindowDesc *desc, QueryStringBaseWindow *parent, int button, int cancel, int ok) : Window()
+	OskWindow(WindowDesc *desc, Window *parent, int button) : Window(desc)
 	{
 		this->parent = parent;
 		assert(parent != NULL);
 
 		NWidgetCore *par_wid = parent->GetWidget<NWidgetCore>(button);
 		assert(par_wid != NULL);
-		this->caption = (par_wid->widget_data != STR_NULL) ? par_wid->widget_data : parent->caption;
 
-		this->qs         = parent;
+		assert(parent->querystrings.Contains(button));
+		this->qs         = parent->querystrings.Find(button)->second;
+		this->caption = (par_wid->widget_data != STR_NULL) ? par_wid->widget_data : this->qs->caption;
 		this->text_btn   = button;
-		this->cancel_btn = cancel;
-		this->ok_btn     = ok;
-		this->text       = &parent->text;
+		this->text       = &this->qs->text;
+		this->querystrings[WID_OSK_TEXT] = this->qs;
 
 		/* make a copy in case we need to reset later */
-		this->orig_str_buf = strdup(this->qs->text.buf);
+		this->orig_str_buf = stredup(this->qs->text.buf);
 
-		this->InitNested(desc, 0);
+		this->InitNested(0);
+		this->SetFocusedWidget(WID_OSK_TEXT);
 
 		/* Not needed by default. */
 		this->DisableWidget(WID_OSK_SPECIAL);
@@ -84,11 +86,10 @@ struct OskWindow : public Window {
 
 		for (uint i = 0; i < OSK_KEYBOARD_ENTRIES; i++) {
 			this->SetWidgetDisabledState(WID_OSK_LETTERS + i,
-					!IsValidChar(_keyboard[this->shift][i], this->qs->afilter) || _keyboard[this->shift][i] == ' ');
+					!IsValidChar(_keyboard[this->shift][i], this->qs->text.afilter) || _keyboard[this->shift][i] == ' ');
 		}
-		this->SetWidgetDisabledState(WID_OSK_SPACE, !IsValidChar(' ', this->qs->afilter));
+		this->SetWidgetDisabledState(WID_OSK_SPACE, !IsValidChar(' ', this->qs->text.afilter));
 
-		this->LowerWidget(WID_OSK_TEXT);
 		this->SetWidgetLoweredState(WID_OSK_SHIFT, HasBit(_keystate, KEYS_SHIFT));
 		this->SetWidgetLoweredState(WID_OSK_CAPS, HasBit(_keystate, KEYS_CAPS));
 	}
@@ -109,37 +110,27 @@ struct OskWindow : public Window {
 			TC_BLACK);
 	}
 
-	virtual void OnPaint()
-	{
-		this->DrawWidgets();
-
-		this->qs->DrawEditBox(this, WID_OSK_TEXT);
-	}
-
 	virtual void OnClick(Point pt, int widget, int click_count)
 	{
 		/* clicked a letter */
 		if (widget >= WID_OSK_LETTERS) {
 			WChar c = _keyboard[this->shift][widget - WID_OSK_LETTERS];
 
-			if (!IsValidChar(c, this->qs->afilter)) return;
+			if (!IsValidChar(c, this->qs->text.afilter)) return;
 
-			if (InsertTextBufferChar(&this->qs->text, c)) this->InvalidateParent();
+			if (this->qs->text.InsertChar(c)) this->OnEditboxChanged(WID_OSK_TEXT);
 
 			if (HasBit(_keystate, KEYS_SHIFT)) {
 				ToggleBit(_keystate, KEYS_SHIFT);
-				this->GetWidget<NWidgetCore>(WID_OSK_SHIFT)->colour = HasBit(_keystate, KEYS_SHIFT) ? COLOUR_WHITE : COLOUR_GREY;
+				this->UpdateOskState();
 				this->SetDirty();
 			}
-			/* Return focus to the parent widget and window. */
-			this->parent->SetFocusedWidget(this->text_btn);
-			SetFocusedWindow(this->parent);
 			return;
 		}
 
 		switch (widget) {
 			case WID_OSK_BACKSPACE:
-				if (DeleteTextBufferChar(&this->qs->text, WKC_BACKSPACE)) this->InvalidateParent();
+				if (this->qs->text.DeleteChar(WKC_BACKSPACE)) this->OnEditboxChanged(WID_OSK_TEXT);
 				break;
 
 			case WID_OSK_SPECIAL:
@@ -163,22 +154,22 @@ struct OskWindow : public Window {
 				break;
 
 			case WID_OSK_SPACE:
-				if (InsertTextBufferChar(&this->qs->text, ' ')) this->InvalidateParent();
+				if (this->qs->text.InsertChar(' ')) this->OnEditboxChanged(WID_OSK_TEXT);
 				break;
 
 			case WID_OSK_LEFT:
-				if (MoveTextBufferPos(&this->qs->text, WKC_LEFT)) this->InvalidateParent();
+				if (this->qs->text.MovePos(WKC_LEFT)) this->InvalidateData();
 				break;
 
 			case WID_OSK_RIGHT:
-				if (MoveTextBufferPos(&this->qs->text, WKC_RIGHT)) this->InvalidateParent();
+				if (this->qs->text.MovePos(WKC_RIGHT)) this->InvalidateData();
 				break;
 
 			case WID_OSK_OK:
 				if (this->qs->orig == NULL || strcmp(this->qs->text.buf, this->qs->orig) != 0) {
 					/* pass information by simulating a button press on parent window */
-					if (this->ok_btn != 0) {
-						this->parent->OnClick(pt, this->ok_btn, 1);
+					if (this->qs->ok_button >= 0) {
+						this->parent->OnClick(pt, this->qs->ok_button, 1);
 						/* Window gets deleted when the parent window removes itself. */
 						return;
 					}
@@ -187,49 +178,38 @@ struct OskWindow : public Window {
 				break;
 
 			case WID_OSK_CANCEL:
-				if (this->cancel_btn != 0) { // pass a cancel event to the parent window
-					this->parent->OnClick(pt, this->cancel_btn, 1);
+				if (this->qs->cancel_button >= 0) { // pass a cancel event to the parent window
+					this->parent->OnClick(pt, this->qs->cancel_button, 1);
 					/* Window gets deleted when the parent window removes itself. */
 					return;
 				} else { // or reset to original string
-					strcpy(qs->text.buf, this->orig_str_buf);
-					UpdateTextBufferSize(&qs->text);
-					MoveTextBufferPos(&qs->text, WKC_END);
-					this->InvalidateParent();
+					qs->text.Assign(this->orig_str_buf);
+					qs->text.MovePos(WKC_END);
+					this->OnEditboxChanged(WID_OSK_TEXT);
 					delete this;
 				}
 				break;
 		}
-		/* Return focus to the parent widget and window. */
-		this->parent->SetFocusedWidget(this->text_btn);
-		SetFocusedWindow(this->parent);
 	}
 
-	void InvalidateParent()
+	virtual void OnEditboxChanged(int widget)
 	{
-		QueryStringBaseWindow *w = dynamic_cast<QueryStringBaseWindow*>(this->parent);
-		if (w != NULL) w->OnOSKInput(this->text_btn);
-
 		this->SetWidgetDirty(WID_OSK_TEXT);
-		if (this->parent != NULL) this->parent->SetWidgetDirty(this->text_btn);
-	}
-
-	virtual void OnMouseLoop()
-	{
-		this->qs->HandleEditBox(this, WID_OSK_TEXT);
-		/* make the caret of the parent window also blink */
+		this->parent->OnEditboxChanged(this->text_btn);
 		this->parent->SetWidgetDirty(this->text_btn);
 	}
 
-	/**
-	 * Some data on this window has become invalid.
-	 * @param data Information about the changed data.
-	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
-	 */
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
 	{
 		if (!gui_scope) return;
 		this->SetWidgetDirty(WID_OSK_TEXT);
+		this->parent->SetWidgetDirty(this->text_btn);
+	}
+
+	virtual void OnFocusLost()
+	{
+		VideoDriver::GetInstance()->EditBoxLostFocus();
+		delete this;
 	}
 };
 
@@ -363,10 +343,10 @@ static const NWidgetPart _nested_osk_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _osk_desc(
-	WDP_CENTER, 0, 0,
+static WindowDesc _osk_desc(
+	WDP_CENTER, "query_osk", 0, 0,
 	WC_OSK, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_nested_osk_widgets, lengthof(_nested_osk_widgets)
 );
 
@@ -428,17 +408,13 @@ void GetKeyboardLayout()
  * Show the on-screen keyboard (osk) associated with a given textbox
  * @param parent pointer to the Window where this keyboard originated from
  * @param button widget number of parent's textbox
- * @param cancel widget number of parent's cancel button (0 if cancel events
- *               should not be passed)
- * @param ok     widget number of parent's ok button  (0 if ok events should not
- *               be passed)
  */
-void ShowOnScreenKeyboard(QueryStringBaseWindow *parent, int button, int cancel, int ok)
+void ShowOnScreenKeyboard(Window *parent, int button)
 {
 	DeleteWindowById(WC_OSK, 0);
 
 	GetKeyboardLayout();
-	new OskWindow(&_osk_desc, parent, button, cancel, ok);
+	new OskWindow(&_osk_desc, parent, button);
 }
 
 /**
@@ -448,13 +424,25 @@ void ShowOnScreenKeyboard(QueryStringBaseWindow *parent, int button, int cancel,
  * @param parent window that just updated its orignal text
  * @param button widget number of parent's textbox to update
  */
-void UpdateOSKOriginalText(const QueryStringBaseWindow *parent, int button)
+void UpdateOSKOriginalText(const Window *parent, int button)
 {
 	OskWindow *osk = dynamic_cast<OskWindow *>(FindWindowById(WC_OSK, 0));
-	if (osk == NULL || osk->qs != parent || osk->text_btn != button) return;
+	if (osk == NULL || osk->parent != parent || osk->text_btn != button) return;
 
 	free(osk->orig_str_buf);
-	osk->orig_str_buf = strdup(osk->qs->text.buf);
+	osk->orig_str_buf = stredup(osk->qs->text.buf);
 
 	osk->SetDirty();
+}
+
+/**
+ * Check whether the OSK is opened for a specific editbox.
+ * @parent w Window to check for
+ * @param button Editbox of \a w to check for
+ * @return true if the OSK is oppened for \a button.
+ */
+bool IsOSKOpenedFor(const Window *w, int button)
+{
+	OskWindow *osk = dynamic_cast<OskWindow *>(FindWindowById(WC_OSK, 0));
+	return osk != NULL && osk->parent == w && osk->text_btn == button;
 }

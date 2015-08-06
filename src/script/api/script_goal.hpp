@@ -17,6 +17,11 @@
 
 /**
  * Class that handles some goal related functions.
+ *
+ * Goals are saved and loaded. Upon bankruptcy or company takeover, all company
+ * specific goals are removed for that company. You can also remove individual
+ * goals using #Remove.
+ *
  * @api game
  */
 class ScriptGoal : public ScriptObject {
@@ -39,6 +44,7 @@ public:
 		GT_INDUSTRY = ::GT_INDUSTRY, ///< Destination is an industry.
 		GT_TOWN     = ::GT_TOWN,     ///< Destination is a town.
 		GT_COMPANY  = ::GT_COMPANY,  ///< Destination is a company.
+		GT_STORY_PAGE = ::GT_STORY_PAGE ///< Destination is a story page.
 	};
 
 	/**
@@ -52,6 +58,9 @@ public:
 		QT_ERROR,       ///< Showing an error; title: Error.
 	};
 
+	/**
+	 * Types of buttons that can be in the question window.
+	 */
 	enum QuestionButton {
 		/* Note: these values represent part of the string list starting with STR_GOAL_QUESTION_BUTTON_CANCEL */
 		BUTTON_CANCEL    = (1 << 0),  ///< Cancel button.
@@ -86,11 +95,14 @@ public:
 	 * @param company The company to create the goal for, or ScriptCompany::COMPANY_INVALID for all.
 	 * @param goal The goal to add to the GUI (can be either a raw string, or a ScriptText object).
 	 * @param type The type of the goal.
-	 * @param destination The destination of the #type type.
+	 * @param destination The destination of the \a type type.
 	 * @return The new GoalID, or GOAL_INVALID if it failed.
 	 * @pre No ScriptCompanyMode may be in scope.
 	 * @pre goal != NULL && len(goal) != 0.
 	 * @pre company == COMPANY_INVALID || ResolveCompanyID(company) != COMPANY_INVALID.
+	 * @pre if type is GT_STORY_PAGE, the company of the goal and the company of the story page need to match:
+	 *       \li Global goals can only reference global story pages.
+	 *       \li Company specific goals can reference global story pages and story pages of the same company.
 	 */
 	static GoalID New(ScriptCompany::CompanyID company, Text *goal, GoalType type, uint32 destination);
 
@@ -102,6 +114,50 @@ public:
 	 * @pre IsValidGoal(goal_id).
 	 */
 	static bool Remove(GoalID goal_id);
+
+	/**
+	 * Update goal text of a goal.
+	 * @param goal_id The goal to update.
+	 * @param goal The new goal text (can be either a raw string, or a ScriptText object).
+	 * @return True if the action succeeded.
+	 * @pre No ScriptCompanyMode may be in scope.
+	 * @pre goal != NULL && len(goal) != 0.
+	 * @pre IsValidGoal(goal_id).
+	 */
+	static bool SetText(GoalID goal_id, Text *goal);
+
+	/**
+	 * Update the progress text of a goal. The progress text is a text that
+	 * is shown adjacent to the goal but in a separate column. Try to keep
+	 * the progress string short.
+	 * @param goal_id The goal to update.
+	 * @param progress The new progress text for the goal (can be either a raw string,
+	 * or a ScriptText object). To clear the progress string you can pass NULL or an
+	 * empty string.
+	 * @return True if the action succeeded.
+	 * @pre No ScriptCompanyMode may be in scope.
+	 * @pre IsValidGoal(goal_id).
+	 */
+	static bool SetProgress(GoalID goal_id, Text *progress);
+
+	/**
+	 * Update completed status of goal
+	 * @param goal_id The goal to update.
+	 * @param complete The new goal completed status.
+	 * @return True if the action succeeded.
+	 * @pre No ScriptCompanyMode may be in scope.
+	 * @pre IsValidGoal(goal_id).
+	 */
+	static bool SetCompleted(GoalID goal_id, bool complete);
+
+	/**
+	 * Checks if a given goal have been marked as completed.
+	 * @param goal_id The goal to check complete status.
+	 * @return True if the goal is completed, otherwise false.
+	 * @pre No ScriptCompanyMode may be in scope.
+	 * @pre IsValidGoal(goal_id).
+	 */
+	static bool IsCompleted(GoalID goal_id);
 
 	/**
 	 * Ask a question.

@@ -15,6 +15,8 @@
 #include "../../ship.h"
 #include "../../core/random_func.hpp"
 
+#include "../../safeguards.h"
+
 struct RememberData {
 	uint16 cur_length;
 	byte depth;
@@ -193,7 +195,8 @@ Track OPFShipChooseTrack(const Ship *v, TileIndex tile, DiagDirection enterdir, 
 	Track track;
 
 	/* Let's find out how far it would be if we would reverse first */
-	TrackBits b = TrackStatusToTrackBits(GetTileTrackStatus(tile2, TRANSPORT_WATER, 0)) & DiagdirReachesTracks(ReverseDiagDir(enterdir)) & v->state;
+	Trackdir trackdir = v->GetVehicleTrackdir();
+	TrackBits b = TrackStatusToTrackBits(GetTileTrackStatus(tile2, TRANSPORT_WATER, 0)) & DiagdirReachesTracks(ReverseDiagDir(enterdir)) & TrackdirBitsToTrackBits(TrackdirToTrackdirBits(trackdir));
 
 	uint distr = UINT_MAX; // distance if we reversed
 	if (b != 0) {

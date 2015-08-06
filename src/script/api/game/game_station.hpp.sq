@@ -48,6 +48,14 @@ void SQGSStation_Register(Squirrel *engine)
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetOwner,                   "GetOwner",                   2, ".i");
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetStationID,               "GetStationID",               2, ".i");
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoWaiting,            "GetCargoWaiting",            3, ".ii");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoWaitingFrom,        "GetCargoWaitingFrom",        4, ".iii");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoWaitingVia,         "GetCargoWaitingVia",         4, ".iii");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoWaitingFromVia,     "GetCargoWaitingFromVia",     5, ".iiii");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoPlanned,            "GetCargoPlanned",            3, ".ii");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoPlannedFrom,        "GetCargoPlannedFrom",        4, ".iii");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoPlannedVia,         "GetCargoPlannedVia",         4, ".iii");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoPlannedFromVia,     "GetCargoPlannedFromVia",     5, ".iiii");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::HasCargoRating,             "HasCargoRating",             3, ".ii");
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCargoRating,             "GetCargoRating",             3, ".ii");
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetCoverageRadius,          "GetCoverageRadius",          2, ".i");
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetStationCoverageRadius,   "GetStationCoverageRadius",   2, ".i");
@@ -57,6 +65,8 @@ void SQGSStation_Register(Squirrel *engine)
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::HasStationType,             "HasStationType",             3, ".ii");
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::HasRoadType,                "HasRoadType",                3, ".ii");
 	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::GetNearestTown,             "GetNearestTown",             2, ".i");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::IsAirportClosed,            "IsAirportClosed",            2, ".i");
+	SQGSStation.DefSQStaticMethod(engine, &ScriptStation::OpenCloseAirport,           "OpenCloseAirport",           2, ".i");
 
 	SQGSStation.PostRegister(engine);
 }

@@ -24,12 +24,15 @@
 #include "saveload/saveload.h"
 #include "window_func.h"
 #include "statusbar_gui.h"
+#include "toolbar_gui.h"
 #include "core/geometry_func.hpp"
 
 #include "widgets/statusbar_widget.h"
 
 #include "table/strings.h"
 #include "table/sprites.h"
+
+#include "safeguards.h"
 
 static bool DrawScrollingStatusText(const NewsItem *ni, int scroll_pos, int left, int right, int top, int bottom)
 {
@@ -83,20 +86,25 @@ struct StatusBarWindow : Window {
 	static const int REMINDER_STOP  =    0; ///< reminder disappears when counter reaches this value
 	static const int COUNTER_STEP   =    2; ///< this is subtracted from active counters every tick
 
-	StatusBarWindow(const WindowDesc *desc) : Window()
+	StatusBarWindow(WindowDesc *desc) : Window(desc)
 	{
 		this->ticker_scroll    =   TICKER_STOP;
 		this->reminder_timeout = REMINDER_STOP;
 
-		this->InitNested(desc);
+		this->InitNested();
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		PositionStatusbar(this);
 	}
 
-	virtual Point OnInitialPosition(const WindowDesc *desc, int16 sm_width, int16 sm_height, int window_number)
+	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
 	{
 		Point pt = { 0, _screen.height - sm_height };
 		return pt;
+	}
+
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
@@ -104,7 +112,7 @@ struct StatusBarWindow : Window {
 		Dimension d;
 		switch (widget) {
 			case WID_S_LEFT:
-				SetDParam(0, MAX_YEAR * DAYS_IN_YEAR);
+				SetDParamMaxValue(0, MAX_YEAR * DAYS_IN_YEAR);
 				d = GetStringBoundingBox(STR_WHITE_DATE_LONG);
 				break;
 
@@ -236,9 +244,9 @@ static const NWidgetPart _nested_main_status_widgets[] = {
 };
 
 static WindowDesc _main_status_desc(
-	WDP_MANUAL, 640, 12,
+	WDP_MANUAL, NULL, 0, 0,
 	WC_STATUS_BAR, WC_NONE,
-	WDF_UNCLICK_BUTTONS | WDF_NO_FOCUS,
+	WDF_NO_FOCUS,
 	_nested_main_status_widgets, lengthof(_nested_main_status_widgets)
 );
 
@@ -250,8 +258,6 @@ bool IsNewsTickerShown()
 	const StatusBarWindow *w = dynamic_cast<StatusBarWindow*>(FindWindowById(WC_STATUS_BAR, 0));
 	return w != NULL && w->ticker_scroll < StatusBarWindow::TICKER_STOP;
 }
-
-int16 *_preferred_statusbar_size = &_main_status_desc.default_width; ///< Pointer to the default size for the status toolbar.
 
 /**
  * Show our status bar.

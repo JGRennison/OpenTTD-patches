@@ -24,8 +24,11 @@
 #include "window_gui.h"
 #include "window_func.h"
 #include "tile_map.h"
+#include "landscape.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 static const char * const SCREENSHOT_NAME = "screenshot"; ///< Default filename of a saved screenshot.
 static const char * const HEIGHTMAP_NAME  = "heightmap";  ///< Default filename of a saved heightmap.
@@ -50,7 +53,7 @@ typedef void ScreenshotCallback(void *userdata, void *buf, uint y, uint pitch, u
  * Function signature for a screenshot generation routine for one of the available formats.
  * @param name        Filename, including extension.
  * @param callb       Callback function for generating lines of pixels.
- * @param userdata    User data, passed on to #callb.
+ * @param userdata    User data, passed on to \a callb.
  * @param w           Width of the image in pixels.
  * @param h           Height of the image in pixels.
  * @param pixelformat Bits per pixel (bpp), either 8 or 32.
@@ -61,10 +64,8 @@ typedef bool ScreenshotHandlerProc(const char *name, ScreenshotCallback *callb, 
 
 /** Screenshot format information. */
 struct ScreenshotFormat {
-	const char *name;            ///< Name of the format.
 	const char *extension;       ///< File extension.
 	ScreenshotHandlerProc *proc; ///< Function for writing the screenshot.
-	bool supports_32bpp;         ///< Does this format support 32bpp images?
 };
 
 /*************************************************
@@ -106,7 +107,7 @@ assert_compile(sizeof(RgbQuad) == 4);
  * Generic .BMP writer
  * @param name file name including extension
  * @param callb callback used for gathering rendered image
- * @param userdata parameters forwarded to #callb
+ * @param userdata parameters forwarded to \a callb
  * @param w width in pixels
  * @param h height in pixels
  * @param pixelformat bits per pixel
@@ -252,7 +253,7 @@ static void PNGAPI png_my_warning(png_structp png_ptr, png_const_charp message)
  * Generic .PNG file image writer.
  * @param name        Filename, including extension.
  * @param callb       Callback function for generating lines of pixels.
- * @param userdata    User data, passed on to #callb.
+ * @param userdata    User data, passed on to \a callb.
  * @param w           Width of the image in pixels.
  * @param h           Height of the image in pixels.
  * @param pixelformat Bits per pixel (bpp), either 8 or 32.
@@ -430,7 +431,7 @@ assert_compile(sizeof(PcxHeader) == 128);
  * Generic .PCX file image writer.
  * @param name        Filename, including extension.
  * @param callb       Callback function for generating lines of pixels.
- * @param userdata    User data, passed on to #callb.
+ * @param userdata    User data, passed on to \a callb.
  * @param w           Width of the image in pixels.
  * @param h           Height of the image in pixels.
  * @param pixelformat Bits per pixel (bpp), either 8 or 32.
@@ -570,10 +571,10 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 /** Available screenshot formats. */
 static const ScreenshotFormat _screenshot_formats[] = {
 #if defined(WITH_PNG)
-	{"PNG", "png", &MakePNGImage, true},
+	{"png", &MakePNGImage},
 #endif
-	{"BMP", "bmp", &MakeBMPImage, true},
-	{"PCX", "pcx", &MakePCXImage, false},
+	{"bmp", &MakeBMPImage},
+	{"pcx", &MakePCXImage},
 };
 
 /** Get filename extension of current screenshot file format. */
@@ -597,43 +598,12 @@ void InitializeScreenshotFormats()
 }
 
 /**
- * Give descriptive name of the screenshot format.
- * @param i Number of the screenshot format.
- * @return String constant describing the format.
- */
-const char *GetScreenshotFormatDesc(int i)
-{
-	return _screenshot_formats[i].name;
-}
-
-/**
- * Determine whether a certain screenshot format support 32bpp images.
- * @param i Number of the screenshot format.
- * @return true if 32bpp is supported.
- */
-bool GetScreenshotFormatSupports_32bpp(int i)
-{
-	return _screenshot_formats[i].supports_32bpp;
-}
-
-/**
- * Set the screenshot format to use.
- * @param i Number of the format.
- */
-void SetScreenshotFormat(uint i)
-{
-	assert(i < _num_screenshot_formats);
-	_cur_screenshot_format = i;
-	strecpy(_screenshot_format_name, _screenshot_formats[i].extension, lastof(_screenshot_format_name));
-}
-
-/**
  * Callback of the screenshot generator that dumps the current video buffer.
  * @see ScreenshotCallback
  */
 static void CurrentScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
-	Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	void *src = blitter->MoveTo(_screen.dst_ptr, 0, y);
 	blitter->CopyImageToBuffer(src, buf, _screen.width, n, pitch);
 }
@@ -698,9 +668,10 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
  * Construct a pathname for a screenshot file.
  * @param default_fn Default filename.
  * @param ext        Extension to use.
+ * @param crashlog   Create path for crash.png
  * @return Pathname for a screenshot file.
  */
-static const char *MakeScreenshotName(const char *default_fn, const char *ext)
+static const char *MakeScreenshotName(const char *default_fn, const char *ext, bool crashlog = false)
 {
 	bool generate = StrEmpty(_screenshot_name);
 
@@ -714,10 +685,12 @@ static const char *MakeScreenshotName(const char *default_fn, const char *ext)
 
 	/* Add extension to screenshot file */
 	size_t len = strlen(_screenshot_name);
-	snprintf(&_screenshot_name[len], lengthof(_screenshot_name) - len, ".%s", ext);
+	seprintf(&_screenshot_name[len], lastof(_screenshot_name), ".%s", ext);
+
+	const char *screenshot_dir = crashlog ? _personal_dir : FiosGetScreenshotDir();
 
 	for (uint serial = 1;; serial++) {
-		if (snprintf(_full_screenshot_name, lengthof(_full_screenshot_name), "%s%s", _personal_dir, _screenshot_name) >= (int)lengthof(_full_screenshot_name)) {
+		if (seprintf(_full_screenshot_name, lastof(_full_screenshot_name), "%s%s", screenshot_dir, _screenshot_name) >= (int)lengthof(_full_screenshot_name)) {
 			/* We need more characters than MAX_PATH -> end with error */
 			_full_screenshot_name[0] = '\0';
 			break;
@@ -725,65 +698,74 @@ static const char *MakeScreenshotName(const char *default_fn, const char *ext)
 		if (!generate) break; // allow overwriting of non-automatic filenames
 		if (!FileExists(_full_screenshot_name)) break;
 		/* If file exists try another one with same name, but just with a higher index */
-		snprintf(&_screenshot_name[len], lengthof(_screenshot_name) - len, "#%u.%s", serial, ext);
+		seprintf(&_screenshot_name[len], lastof(_screenshot_name) - len, "#%u.%s", serial, ext);
 	}
 
 	return _full_screenshot_name;
 }
 
 /** Make a screenshot of the current screen. */
-static bool MakeSmallScreenshot()
+static bool MakeSmallScreenshot(bool crashlog)
 {
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
-	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), CurrentScreenCallback, NULL, _screen.width, _screen.height,
-			BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension, crashlog), CurrentScreenCallback, NULL, _screen.width, _screen.height,
+			BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
 }
 
-/** Make a zoomed-in screenshot of the currently visible area. */
-static bool MakeZoomedInScreenshot(ZoomLevel zl)
+/**
+ * Configure a ViewPort for rendering (a part of) the map into a screenshot.
+ * @param t Screenshot type
+ * @param [out] vp Result viewport
+ */
+void SetupScreenshotViewport(ScreenshotType t, ViewPort *vp)
 {
-	Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
-	ViewPort vp;
+	/* Determine world coordinates of screenshot */
+	if (t == SC_WORLD) {
+		vp->zoom = ZOOM_LVL_WORLD_SCREENSHOT;
 
-	vp.zoom = zl;
-	vp.left = w->viewport->left;
-	vp.top = w->viewport->top;
-	vp.virtual_left = w->viewport->virtual_left;
-	vp.virtual_top = w->viewport->virtual_top;
-	vp.virtual_width = w->viewport->virtual_width;
-	vp.width = UnScaleByZoom(vp.virtual_width, vp.zoom);
-	vp.virtual_height = w->viewport->virtual_height;
-	vp.height = UnScaleByZoom(vp.virtual_height, vp.zoom);
+		TileIndex north_tile = _settings_game.construction.freeform_edges ? TileXY(1, 1) : TileXY(0, 0);
+		TileIndex south_tile = MapSize() - 1;
+
+		/* We need to account for a hill or high building at tile 0,0. */
+		int extra_height_top = TilePixelHeight(north_tile) + 150;
+		/* If there is a hill at the bottom don't create a large black area. */
+		int reclaim_height_bottom = TilePixelHeight(south_tile);
+
+		vp->virtual_left   = RemapCoords(TileX(south_tile) * TILE_SIZE, TileY(north_tile) * TILE_SIZE, 0).x;
+		vp->virtual_top    = RemapCoords(TileX(north_tile) * TILE_SIZE, TileY(north_tile) * TILE_SIZE, extra_height_top).y;
+		vp->virtual_width  = RemapCoords(TileX(north_tile) * TILE_SIZE, TileY(south_tile) * TILE_SIZE, 0).x                     - vp->virtual_left + 1;
+		vp->virtual_height = RemapCoords(TileX(south_tile) * TILE_SIZE, TileY(south_tile) * TILE_SIZE, reclaim_height_bottom).y - vp->virtual_top  + 1;
+	} else {
+		vp->zoom = (t == SC_ZOOMEDIN) ? _settings_client.gui.zoom_min : ZOOM_LVL_VIEWPORT;
+
+		Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+		vp->virtual_left   = w->viewport->virtual_left;
+		vp->virtual_top    = w->viewport->virtual_top;
+		vp->virtual_width  = w->viewport->virtual_width;
+		vp->virtual_height = w->viewport->virtual_height;
+	}
+
+	/* Compute pixel coordinates */
+	vp->left = 0;
+	vp->top = 0;
+	vp->width  = UnScaleByZoom(vp->virtual_width,  vp->zoom);
+	vp->height = UnScaleByZoom(vp->virtual_height, vp->zoom);
+	vp->overlay = NULL;
+}
+
+/**
+ * Make a screenshot of the map.
+ * @param t Screenshot type: World or viewport screenshot
+ * @return true on success
+ */
+static bool MakeLargeWorldScreenshot(ScreenshotType t)
+{
+	ViewPort vp;
+	SetupScreenshotViewport(t, &vp);
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), LargeWorldCallback, &vp, vp.width, vp.height,
-			BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
-}
-
-/** Make a screenshot of the whole map. */
-static bool MakeWorldScreenshot()
-{
-	ViewPort vp;
-	const ScreenshotFormat *sf;
-
-	/* We need to account for a hill or high building at tile 0,0. */
-	int extra_height_top = TilePixelHeight(0) + 150;
-	/* If there is a hill at the bottom don't create a large black area. */
-	int reclaim_height_bottom = TilePixelHeight(MapSize() - 1);
-
-	vp.zoom = ZOOM_LVL_WORLD_SCREENSHOT;
-	vp.left = 0;
-	vp.top = 0;
-	vp.virtual_left = -(int)MapMaxX() * TILE_PIXELS * ZOOM_LVL_BASE;
-	vp.virtual_top = -extra_height_top * ZOOM_LVL_BASE;
-	vp.virtual_width = (MapMaxX() + MapMaxY()) * TILE_PIXELS;
-	vp.width = vp.virtual_width;
-	vp.virtual_height = ((MapMaxX() + MapMaxY()) * TILE_PIXELS >> 1) + extra_height_top - reclaim_height_bottom;
-	vp.height = vp.virtual_height;
-
-	sf = _screenshot_formats + _cur_screenshot_format;
-	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), LargeWorldCallback, &vp, vp.width, vp.height,
-			BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
+			BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
 }
 
 /**
@@ -801,7 +783,7 @@ static void HeightmapCallback(void *userdata, void *buffer, uint y, uint pitch, 
 	while (n > 0) {
 		TileIndex ti = TileXY(MapMaxX(), y);
 		for (uint x = MapMaxX(); true; x--) {
-			*buf = 16 * TileHeight(ti);
+			*buf = 256 * TileHeight(ti) / (1 + _settings_game.construction.max_heightlevel);
 			buf++;
 			if (x == 0) break;
 			ti = TILE_ADDXY(ti, -1, 0);
@@ -832,7 +814,7 @@ bool MakeHeightmapScreenshot(const char *filename)
  * Make an actual screenshot.
  * @param t    the type of screenshot to make.
  * @param name the name to give to the screenshot.
- * @return true iff the screenshow was made successfully
+ * @return true iff the screenshot was made successfully
  */
 bool MakeScreenshot(ScreenshotType t, const char *name)
 {
@@ -851,20 +833,17 @@ bool MakeScreenshot(ScreenshotType t, const char *name)
 	bool ret;
 	switch (t) {
 		case SC_VIEWPORT:
-		case SC_RAW:
-			ret = MakeSmallScreenshot();
+			ret = MakeSmallScreenshot(false);
+			break;
+
+		case SC_CRASHLOG:
+			ret = MakeSmallScreenshot(true);
 			break;
 
 		case SC_ZOOMEDIN:
-			ret = MakeZoomedInScreenshot(_settings_client.gui.zoom_min);
-			break;
-
 		case SC_DEFAULTZOOM:
-			ret = MakeZoomedInScreenshot(ZOOM_LVL_VIEWPORT);
-			break;
-
 		case SC_WORLD:
-			ret = MakeWorldScreenshot();
+			ret = MakeLargeWorldScreenshot(t);
 			break;
 
 		case SC_HEIGHTMAP: {

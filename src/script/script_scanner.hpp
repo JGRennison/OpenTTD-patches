@@ -69,6 +69,14 @@ public:
 	 */
 	bool HasScript(const struct ContentInfo *ci, bool md5sum);
 
+	/**
+	 * Find a script of a #ContentInfo
+	 * @param ci The information to compare to.
+	 * @param md5sum Whether to check the MD5 checksum.
+	 * @return A filename of a file of the content, else \c NULL.
+	 */
+	const char *FindMainScript(const ContentInfo *ci, bool md5sum);
+
 	/* virtual */ bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename);
 
 	/**
@@ -93,7 +101,7 @@ protected:
 	/**
 	 * Get the script name how to store the script in memory.
 	 */
-	virtual void GetScriptName(ScriptInfo *info, char *name, int len) = 0;
+	virtual void GetScriptName(ScriptInfo *info, char *name, const char *last) = 0;
 
 	/**
 	 * Get the filename to scan for this type of script.
@@ -120,6 +128,10 @@ protected:
 	 */
 	void Reset();
 
+	/**
+	 * Reset the engine to ensure a clean environment for further steps.
+	 */
+	void ResetEngine();
 };
 
 #endif /* SCRIPT_SCANNER_HPP */

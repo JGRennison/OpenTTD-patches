@@ -22,7 +22,7 @@
 
 template <typename T>
 struct BuildingCounts {
-	T id_count[HOUSE_MAX];
+	T id_count[NUM_HOUSES];
 	T class_count[HOUSE_CLASS_MAX];
 };
 
@@ -35,31 +35,35 @@ static const uint INVALID_TOWN = 0xFFFF;
 
 static const uint TOWN_GROWTH_WINTER = 0xFFFFFFFE; ///< The town only needs this cargo in the winter (any amount)
 static const uint TOWN_GROWTH_DESERT = 0xFFFFFFFF; ///< The town needs the cargo for growth when on desert (any amount)
-static const uint16 TOWN_GROW_RATE_CUSTOM = 0x8000; ///< If this mask is applied to Town::grow_counter, the grow_counter will not be calculated by the system (but assumed to be set by scripts)
+static const uint16 TOWN_GROW_RATE_CUSTOM      = 0x8000; ///< If this mask is applied to Town::growth_rate, the grow_counter will not be calculated by the system (but assumed to be set by scripts)
+static const uint16 TOWN_GROW_RATE_CUSTOM_NONE = 0xFFFF; ///< Special value for Town::growth_rate to disable town growth.
 
 typedef Pool<Town, TownID, 64, 64000> TownPool;
 extern TownPool _town_pool;
+
+/** Data structure with cached data of towns. */
+struct TownCache {
+	uint32 num_houses;                        ///< Amount of houses
+	uint32 population;                        ///< Current population of people
+	ViewportSign sign;                        ///< Location of name sign, UpdateVirtCoord updates this
+	PartOfSubsidyByte part_of_subsidy;        ///< Is this town a source/destination of a subsidy?
+	uint32 squared_town_zone_radius[HZB_END]; ///< UpdateTownRadius updates this given the house count
+	BuildingCounts<uint16> building_counts;   ///< The number of each type of building in the town
+};
 
 /** Town data structure. */
 struct Town : TownPool::PoolItem<&_town_pool> {
 	TileIndex xy;                  ///< town center tile
 
-	uint32 num_houses;             ///< amount of houses
-	uint32 population;             ///< current population of people
+	TownCache cache; ///< Container for all cacheable data.
 
 	/* Town name */
 	uint32 townnamegrfid;
 	uint16 townnametype;
 	uint32 townnameparts;
-	char *name;
+	char *name;                    ///< Custom town name. If NULL, the town was not renamed and uses the generated name.
 
-	ViewportSign sign;             ///< NOSAVE: Location of name sign, UpdateVirtCoord updates this
-
-	/* Makes sure we don't build certain house types twice.
-	 * bit 0 = Building funds received
-	 * bit 1 = CHURCH
-	 * bit 2 = STADIUM */
-	byte flags;
+	byte flags;                    ///< See #TownFlags.
 
 	uint16 noise_reached;          ///< level of noise that all the airports are generating
 
@@ -87,7 +91,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	uint16 time_until_rebuild;     ///< time until we rebuild a house
 
-	uint16 grow_counter;           ///< counter to count when to grow
+	uint16 grow_counter;           ///< counter to count when to grow, value is smaller than or equal to growth_rate
 	uint16 growth_rate;            ///< town growth rate
 
 	byte fund_buildings_months;    ///< fund buildings program in action?
@@ -97,12 +101,6 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	TownLayoutByte layout;         ///< town specific road layout
 
 	std::list<PersistentStorage *> psa_list;
-
-	PartOfSubsidyByte part_of_subsidy; ///< NOSAVE: is this town a source/destination of a subsidy?
-
-	uint32 squared_town_zone_radius[HZB_END]; ///< NOSAVE: UpdateTownRadius updates this given the house count
-
-	BuildingCounts<uint16> building_counts; ///< NOSAVE: the number of each type of building in the town
 
 	/**
 	 * Creates a new town.
@@ -123,10 +121,10 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	 */
 	inline uint16 MaxTownNoise() const
 	{
-		if (this->population == 0) return 0; // no population? no noise
+		if (this->cache.population == 0) return 0; // no population? no noise
 
 		/* 3 is added (the noise of the lowest airport), so the  user can at least build a small airfield. */
-		return (this->population / _settings_game.economy.town_noise_population[_settings_game.difficulty.town_council_tolerance]) + 3;
+		return (this->cache.population / _settings_game.economy.town_noise_population[_settings_game.difficulty.town_council_tolerance]) + 3;
 	}
 
 	void UpdateVirtCoord();
@@ -164,7 +162,7 @@ enum TownRatingCheckType {
  * And there are 5 more bits available on flags...
  */
 enum TownFlags {
-	TOWN_IS_FUNDED      = 0,   ///< Town has received some funds for
+	TOWN_IS_GROWING     = 0,   ///< Conditions for town growth are met. Grow according to Town::growth_rate.
 	TOWN_HAS_CHURCH     = 1,   ///< There can be only one church by town.
 	TOWN_HAS_STADIUM    = 2,   ///< There can be only one stadium by town.
 };
@@ -208,7 +206,7 @@ enum TownActions {
 	TACT_BUILD_STATUE     = 0x10, ///< Build a statue.
 	TACT_FUND_BUILDINGS   = 0x20, ///< Fund new buildings.
 	TACT_BUY_RIGHTS       = 0x40, ///< Buy exclusive transport rights.
-	TACT_BRIBE            = 0x80, ///< Try to bribe the counsil.
+	TACT_BRIBE            = 0x80, ///< Try to bribe the council.
 
 	TACT_COUNT            = 8,    ///< Number of available town actions.
 

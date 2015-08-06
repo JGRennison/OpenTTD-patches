@@ -44,6 +44,7 @@ struct ScriptConfigItem {
 	int step_size;           ///< The step size in the gui.
 	ScriptConfigFlags flags; ///< Flags for the configuration setting.
 	LabelMapping *labels;    ///< Text labels for the integer values.
+	bool complete_labels;    ///< True if all values have a label.
 };
 
 typedef std::list<ScriptConfigItem> ScriptConfigItemList; ///< List of ScriptConfig items.
@@ -107,6 +108,16 @@ public:
 	};
 
 	/**
+	 * As long as the default of a setting has not been changed, the value of
+	 * the setting is not stored. This to allow changing the difficulty setting
+	 * without having to reset the script's config. However, when a setting may
+	 * not be changed in game, we must "anchor" this value to what the setting
+	 * would be at the time of starting. Otherwise changing the difficulty
+	 * setting would change the setting's value (which isn't allowed).
+	 */
+	void AnchorUnchangeableSettings();
+
+	/**
 	 * Get the value of a setting for this config. It might fallback to his
 	 *  'info' to find the default value (if not set or if not-custom difficulty
 	 *  level).
@@ -161,7 +172,7 @@ public:
 	 * Convert the custom settings to a string that can be stored in the config
 	 *  file or savegames.
 	 */
-	void SettingsToString(char *string, size_t size) const;
+	void SettingsToString(char *string, const char *last) const;
 
 	/**
 	 * Search a textfile file next to this script.

@@ -275,6 +275,12 @@ enum CallbackID {
 
 	/** Called to determine the cost factor for refitting a vehicle. */
 	CBID_VEHICLE_REFIT_COST              = 0x15E, // 15 bit callback
+
+	/** Called when industry is built to set initial production level. */
+	CBID_INDUSTRY_PROD_CHANGE_BUILD      = 0x15F, // 15 bit callback
+
+	/** Called to spawn visual effects for vehicles. */
+	CBID_VEHICLE_SPAWN_VISUAL_EFFECT     = 0x160, // 15 bit callback
 };
 
 /**
@@ -355,6 +361,7 @@ enum IndustryCallbackMask {
 	CBM_IND_DECIDE_COLOUR             = 11, ///< give a custom colour to newly build industries
 	CBM_IND_INPUT_CARGO_TYPES         = 12, ///< customize the cargoes the industry requires
 	CBM_IND_OUTPUT_CARGO_TYPES        = 13, ///< customize the cargoes the industry produces
+	CBM_IND_PROD_CHANGE_BUILD         = 14, ///< initialise production level on construction
 };
 
 /**

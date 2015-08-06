@@ -13,11 +13,37 @@
 #define NEWGRF_TOWN_H
 
 #include "town_type.h"
+#include "newgrf_spritegroup.h"
 
-/* Currently there is no direct town resolver; we only need to get town
- * variable results from inside stations, house tiles and industries,
- * and to check the town's persistent storage. */
-uint32 TownGetVariable(byte variable, uint32 parameter, bool *available, Town *t, const struct GRFFile *caller_grffile);
-void TownStorePSA(Town *t, const struct GRFFile *caller_grffile, uint pos, int32 value);
+/**
+ * Scope resolver for a town.
+ * @note Currently there is no direct town resolver; we only need to get town
+ *       variable results from inside stations, house tiles and industries,
+ *       and to check the town's persistent storage.
+ */
+struct TownScopeResolver : public ScopeResolver {
+	Town *t;       ///< %Town of the scope.
+	bool readonly; ///< When set, persistent storage of the town is read-only,
+
+	TownScopeResolver(ResolverObject &ro, Town *t, bool readonly);
+
+	virtual uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
+	virtual void StorePSA(uint reg, int32 value);
+};
+
+/** Resolver of town properties. */
+struct TownResolverObject : public ResolverObject {
+	TownScopeResolver town_scope; ///< Scope resolver specific for towns.
+
+	TownResolverObject(const struct GRFFile *grffile, Town *t, bool readonly);
+
+	/* virtual */ ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0)
+	{
+		switch (scope) {
+			case VSG_SCOPE_SELF: return &town_scope;
+			default: return ResolverObject::GetScope(scope, relative);
+		}
+	}
+};
 
 #endif /* NEWGRF_TOWN_H */

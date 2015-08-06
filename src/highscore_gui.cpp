@@ -25,13 +25,15 @@
 
 #include "widgets/highscore_widget.h"
 
+#include "safeguards.h"
+
 struct EndGameHighScoreBaseWindow : Window {
 	uint32 background_img;
 	int8 rank;
 
-	EndGameHighScoreBaseWindow(const WindowDesc *desc) : Window()
+	EndGameHighScoreBaseWindow(WindowDesc *desc) : Window(desc)
 	{
-		this->InitNested(desc);
+		this->InitNested();
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		ResizeWindow(this, _screen.width - this->width, _screen.height - this->height);
 	}
@@ -44,17 +46,20 @@ struct EndGameHighScoreBaseWindow : Window {
 
 		this->DrawWidgets();
 
-		Point pt = this->GetTopLeft640x480();
+		/* Standard background slices are 50 pixels high, but it's designed
+		 * for 480 pixels total. 96% of 500 is 480. */
+		Dimension dim = GetSpriteSize(this->background_img);
+		Point pt = this->GetTopLeft(dim.width, dim.height * 96 / 10);
 		/* Center Highscore/Endscreen background */
 		for (uint i = 0; i < 10; i++) { // the image is split into 10 50px high parts
-			DrawSprite(this->background_img + i, PAL_NONE, pt.x, pt.y + (i * 50));
+			DrawSprite(this->background_img + i, PAL_NONE, pt.x, pt.y + (i * dim.height));
 		}
 	}
 
 	/** Return the coordinate of the screen such that a window of 640x480 is centered at the screen. */
-	Point GetTopLeft640x480()
+	Point GetTopLeft(int x, int y)
 	{
-		Point pt = {max(0, (_screen.width  / 2) - (640 / 2)), max(0, (_screen.height / 2) - (480 / 2))};
+		Point pt = {max(0, (_screen.width / 2) - (x / 2)), max(0, (_screen.height / 2) - (y / 2))};
 		return pt;
 	}
 
@@ -63,7 +68,7 @@ struct EndGameHighScoreBaseWindow : Window {
 		delete this;
 	}
 
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode)
+	virtual EventState OnKeyPress(WChar key, uint16 keycode)
 	{
 		/* All keys are 'handled' by this window but we want to make
 		 * sure that 'quit' still works correctly. Not handling the
@@ -89,7 +94,7 @@ struct EndGameHighScoreBaseWindow : Window {
 
 /** End game window shown at the end of the game */
 struct EndGameWindow : EndGameHighScoreBaseWindow {
-	EndGameWindow(const WindowDesc *desc) : EndGameHighScoreBaseWindow(desc)
+	EndGameWindow(WindowDesc *desc) : EndGameHighScoreBaseWindow(desc)
 	{
 		/* Pause in single-player to have a look at the highscore at your own leisure */
 		if (!_networking) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
@@ -103,15 +108,15 @@ struct EndGameWindow : EndGameHighScoreBaseWindow {
 			}
 		}
 
-		/* In a network game show the endscores of the custom difficulty 'network' which is the last one
-		 * as well as generate a TOP5 of that game, and not an all-time top5. */
+		/* In a network game show the endscores of the custom difficulty 'network' which is
+		 * a TOP5 of that game, and not an all-time TOP5. */
 		if (_networking) {
-			this->window_number = lengthof(_highscore_table) - 1;
+			this->window_number = SP_MULTIPLAYER;
 			this->rank = SaveHighScoreValueNetwork();
 		} else {
 			/* in single player _local company is always valid */
 			const Company *c = Company::Get(_local_company);
-			this->window_number = _settings_game.difficulty.diff_level;
+			this->window_number = SP_CUSTOM;
 			this->rank = SaveHighScoreValue(c);
 		}
 
@@ -127,7 +132,7 @@ struct EndGameWindow : EndGameHighScoreBaseWindow {
 	virtual void OnPaint()
 	{
 		this->SetupHighScoreEndWindow();
-		Point pt = this->GetTopLeft640x480();
+		Point pt = this->GetTopLeft(640, 480);
 
 		const Company *c = Company::GetIfValid(_local_company);
 		if (c == NULL) return;
@@ -148,10 +153,13 @@ struct EndGameWindow : EndGameHighScoreBaseWindow {
 };
 
 struct HighScoreWindow : EndGameHighScoreBaseWindow {
-	HighScoreWindow(const WindowDesc *desc, int difficulty, int8 ranking) : EndGameHighScoreBaseWindow(desc)
+	bool game_paused_by_player; ///< True if the game was paused by the player when the highscore window was opened.
+
+	HighScoreWindow(WindowDesc *desc, int difficulty, int8 ranking) : EndGameHighScoreBaseWindow(desc)
 	{
 		/* pause game to show the chart */
-		if (!_networking) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+		this->game_paused_by_player = _pause_mode == PM_PAUSED_NORMAL;
+		if (!_networking && !this->game_paused_by_player) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
 		/* Close all always on-top windows to get a clean screen */
 		if (_game_mode != GM_MENU) HideVitalWindows();
@@ -166,7 +174,7 @@ struct HighScoreWindow : EndGameHighScoreBaseWindow {
 	{
 		if (_game_mode != GM_MENU) ShowVitalWindows();
 
-		if (!_networking) DoCommandP(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE); // unpause
+		if (!_networking && !this->game_paused_by_player) DoCommandP(0, PM_PAUSED_NORMAL, 0, CMD_PAUSE); // unpause
 	}
 
 	virtual void OnPaint()
@@ -174,10 +182,9 @@ struct HighScoreWindow : EndGameHighScoreBaseWindow {
 		const HighScore *hs = _highscore_table[this->window_number];
 
 		this->SetupHighScoreEndWindow();
-		Point pt = this->GetTopLeft640x480();
+		Point pt = this->GetTopLeft(640, 480);
 
 		SetDParam(0, ORIGINAL_END_YEAR);
-		SetDParam(1, this->window_number + STR_DIFFICULTY_LEVEL_EASY);
 		DrawStringMultiLine(pt.x + 70, pt.x + 570, pt.y, pt.y + 140, !_networking ? STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED : STR_HIGHSCORE_TOP_COMPANIES_NETWORK_GAME, TC_FROMSTRING, SA_CENTER);
 
 		/* Draw Highscore peepz */
@@ -188,7 +195,8 @@ struct HighScoreWindow : EndGameHighScoreBaseWindow {
 			if (hs[i].company[0] != '\0') {
 				TextColour colour = (this->rank == i) ? TC_RED : TC_BLACK; // draw new highscore in red
 
-				DrawString(pt.x + 71, pt.x + 569, pt.y + 140 + (i * 55), hs[i].company, colour);
+				SetDParamStr(0, hs[i].company);
+				DrawString(pt.x + 71, pt.x + 569, pt.y + 140 + (i * 55), STR_JUST_BIG_RAW_STRING, colour);
 				SetDParam(0, hs[i].title);
 				SetDParam(1, hs[i].score);
 				DrawString(pt.x + 71, pt.x + 569, pt.y + 140 + FONT_HEIGHT_LARGE + (i * 55), STR_HIGHSCORE_STATS, colour);
@@ -198,18 +206,18 @@ struct HighScoreWindow : EndGameHighScoreBaseWindow {
 };
 
 static const NWidgetPart _nested_highscore_widgets[] = {
-	NWidget(WWT_PANEL, COLOUR_END, WID_H_BACKGROUND), SetMinimalSize(641, 481), SetResize(1, 1), EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_H_BACKGROUND), SetMinimalSize(641, 481), SetResize(1, 1), EndContainer(),
 };
 
-static const WindowDesc _highscore_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _highscore_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_HIGHSCORE, WC_NONE,
 	0,
 	_nested_highscore_widgets, lengthof(_nested_highscore_widgets)
 );
 
-static const WindowDesc _endgame_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _endgame_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_ENDSCREEN, WC_NONE,
 	0,
 	_nested_highscore_widgets, lengthof(_nested_highscore_widgets)

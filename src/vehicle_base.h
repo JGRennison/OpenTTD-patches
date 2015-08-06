@@ -12,6 +12,7 @@
 #ifndef VEHICLE_BASE_H
 #define VEHICLE_BASE_H
 
+#include "core/smallmap_type.hpp"
 #include "track_type.h"
 #include "command_type.h"
 #include "order_base.h"
@@ -21,6 +22,9 @@
 #include "order_func.h"
 #include "transport_type.h"
 #include "group_type.h"
+#include "base_consist.h"
+#include <list>
+#include <map>
 
 /** Vehicle status bits in #Vehicle::vehstatus. */
 enum VehStatus {
@@ -44,6 +48,8 @@ enum VehicleFlags {
 	VF_AUTOFILL_PRES_WAIT_TIME, ///< Whether non-destructive auto-fill should preserve waiting times
 	VF_STOP_LOADING,            ///< Don't load anymore during the next load cycle.
 	VF_PATHFINDER_LOST,         ///< Vehicle's pathfinder is lost.
+	VF_SERVINT_IS_CUSTOM,       ///< Service interval is custom.
+	VF_SERVINT_IS_PERCENT,      ///< Service interval is percent.
 };
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */
@@ -52,6 +58,7 @@ enum NewGRFCacheValidValues {
 	NCVV_POSITION_SAME_ID_LENGTH   = 1, ///< This bit will be set if the NewGRF var 41 currently stored is valid.
 	NCVV_CONSIST_CARGO_INFORMATION = 2, ///< This bit will be set if the NewGRF var 42 currently stored is valid.
 	NCVV_COMPANY_INFORMATION       = 3, ///< This bit will be set if the NewGRF var 43 currently stored is valid.
+	NCVV_POSITION_IN_VEHICLE       = 4, ///< This bit will be set if the NewGRF var 4D currently stored is valid.
 	NCVV_END,                           ///< End of the bits.
 };
 
@@ -62,6 +69,7 @@ struct NewGRFCache {
 	uint32 position_same_id_length;   ///< Cache for NewGRF var 41.
 	uint32 consist_cargo_information; ///< Cache for NewGRF var 42. (Note: The cargotype is untranslated in the cache because the accessing GRF is yet unknown.)
 	uint32 company_information;       ///< Cache for NewGRF var 43.
+	uint32 position_in_vehicle;       ///< Cache for NewGRF var 4D.
 	uint8  cache_valid;               ///< Bitset that indicates which cache values are valid.
 };
 
@@ -79,9 +87,20 @@ enum VisualEffect {
 	VE_TYPE_ELECTRIC       = 3, ///< Electric sparks
 
 	VE_DISABLE_EFFECT      = 6, ///< Flag to disable visual effect
+	VE_ADVANCED_EFFECT     = VE_DISABLE_EFFECT, ///< Flag for advanced effects
 	VE_DISABLE_WAGON_POWER = 7, ///< Flag to disable wagon power
 
 	VE_DEFAULT = 0xFF,          ///< Default value to indicate that visual effect should be based on engine class
+};
+
+/** Models for spawning visual effects. */
+enum VisualEffectSpawnModel {
+	VESM_NONE              = 0, ///< No visual effect
+	VESM_STEAM,                 ///< Steam model
+	VESM_DIESEL,                ///< Diesel model
+	VESM_ELECTRIC,              ///< Electric model
+
+	VESM_END
 };
 
 /**
@@ -120,22 +139,35 @@ extern void FixOldVehicles();
 
 struct GRFFile;
 
+/**
+ * Simulated cargo type and capacity for prediction of future links.
+ */
+struct RefitDesc {
+	CargoID cargo;    ///< Cargo type the vehicle will be carrying.
+	uint16 capacity;  ///< Capacity the vehicle will have.
+	uint16 remaining; ///< Capacity remaining from before the previous refit.
+	RefitDesc(CargoID cargo, uint16 capacity, uint16 remaining) :
+			cargo(cargo), capacity(capacity), remaining(remaining) {}
+};
+
 /** %Vehicle data structure. */
-struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle {
+struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle, BaseConsist {
 private:
+	typedef std::list<RefitDesc> RefitList;
+	typedef std::map<CargoID, uint> CapacitiesMap;
+
 	Vehicle *next;                      ///< pointer to the next vehicle in the chain
 	Vehicle *previous;                  ///< NOSAVE: pointer to the previous vehicle in the chain
 	Vehicle *first;                     ///< NOSAVE: pointer to the first vehicle in the chain
 
 	Vehicle *next_shared;               ///< pointer to the next vehicle that shares the order
 	Vehicle *previous_shared;           ///< NOSAVE: pointer to the previous vehicle in the shared order chain
+
 public:
 	friend const SaveLoad *GetVehicleDescription(VehicleType vt); ///< So we can use private/protected variables in the saveload code
 	friend void FixOldVehicles();
 	friend void AfterLoadVehicles(bool part_of_load);             ///< So we can set the #previous and #first pointers while loading
 	friend bool LoadOldVehicle(LoadgameState *ls, int num);       ///< So we can set the proper next pointer while loading
-
-	char *name;                         ///< Name of vehicle
 
 	TileIndex tile;                     ///< Current tile index
 
@@ -151,11 +183,6 @@ public:
 	Money value;                        ///< Value of the vehicle
 
 	CargoPayment *cargo_payment;        ///< The cargo payment we're currently in
-
-	/* Used for timetabling. */
-	uint32 current_order_time;          ///< How many ticks have passed since this order started.
-	int32 lateness_counter;             ///< How many ticks late (or early if negative) this vehicle is.
-	Date timetable_start;               ///< When the vehicle is supposed to start the timetable.
 
 	Rect coord;                         ///< NOSAVE: Graphical bounding box of the vehicle, i.e. what to redraw on moves.
 
@@ -173,7 +200,6 @@ public:
 	Date age;                           ///< Age in days
 	Date max_age;                       ///< Maximum age
 	Date date_of_last_service;          ///< Last date the vehicle had a service at a depot.
-	Date service_interval;              ///< The interval for (automatic) servicing; either in days or %.
 	uint16 reliability;                 ///< Reliability.
 	uint16 reliability_spd_dec;         ///< Reliability decrease speed.
 	byte breakdown_ctr;                 ///< Counter for managing breakdown events. @see Vehicle::HandleBreakdown
@@ -216,10 +242,12 @@ public:
 	byte waiting_triggers;              ///< Triggers to be yet matched before rerandomizing the random bits.
 
 	StationID last_station_visited;     ///< The last station we stopped at.
+	StationID last_loading_station;     ///< Last station the vehicle has stopped at and could possibly leave from with any cargo loaded.
 
 	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
 	byte cargo_subtype;                 ///< Used for livery refits (NewGRF variations)
 	uint16 cargo_cap;                   ///< total capacity
+	uint16 refit_cap;                   ///< Capacity left over from before last refit.
 	VehicleCargoList cargo;             ///< The cargo this vehicle is carrying
 	uint16 cargo_age_counter;           ///< Ticks till cargo is aged next.
 
@@ -229,15 +257,11 @@ public:
 
 	byte vehstatus;                     ///< Status
 	Order current_order;                ///< The current order (+ status, like: loading)
-	VehicleOrderID cur_real_order_index;///< The index to the current real (non-implicit) order
-	VehicleOrderID cur_implicit_order_index;///< The index to the current implicit order
 
 	union {
 		OrderList *list;            ///< Pointer to the order list for this vehicle
 		Order     *old;             ///< Only used during conversion of old save games
 	} orders;                           ///< The orders currently assigned to the vehicle.
-
-	byte vehicle_flags;                 ///< Used for gradual loading and other miscellaneous things (@see VehicleFlags enum)
 
 	uint16 load_unload_ticks;           ///< Ticks to wait before starting next cycle.
 	GroupID group_id;                   ///< Index of group Pool array
@@ -253,6 +277,7 @@ public:
 	virtual ~Vehicle();
 
 	void BeginLoading();
+	void CancelReservation(StationID next, Station *st);
 	void LeaveStation();
 
 	GroundVehicleCache *GetGroundVehicleCache();
@@ -264,6 +289,10 @@ public:
 	void DeleteUnreachedImplicitOrders();
 
 	void HandleLoading(bool mode = false);
+
+	void GetConsistFreeCapacities(SmallMap<CargoID, uint> &capacities) const;
+
+	uint GetConsistTotalCapacity() const;
 
 	/**
 	 * Marks the vehicles to be redrawn and updates cached variables
@@ -399,6 +428,12 @@ public:
 	virtual int GetDisplayMaxSpeed() const { return 0; }
 
 	/**
+	 * Calculates the maximum speed of the vehicle under its current conditions.
+	 * @return Current maximum speed in native units.
+	 */
+	virtual int GetCurrentMaxSpeed() const { return 0; }
+
+	/**
 	 * Gets the running cost of a vehicle
 	 * @return the vehicle's running cost
 	 */
@@ -411,10 +446,22 @@ public:
 	virtual bool IsInDepot() const { return false; }
 
 	/**
+	 * Check whether the whole vehicle chain is in the depot.
+	 * @return true if and only if the whole chain is in the depot.
+	 */
+	virtual bool IsChainInDepot() const { return this->IsInDepot(); }
+
+	/**
 	 * Check whether the vehicle is in the depot *and* stopped.
 	 * @return true if and only if the vehicle is in the depot and stopped.
 	 */
-	virtual bool IsStoppedInDepot() const { return this->IsInDepot() && (this->vehstatus & VS_STOPPED) != 0; }
+	bool IsStoppedInDepot() const
+	{
+		assert(this == this->First());
+		/* Free wagons have no VS_STOPPED state */
+		if (this->IsPrimaryVehicle() && !(this->vehstatus & VS_STOPPED)) return false;
+		return this->IsChainInDepot();
+	}
 
 	/**
 	 * Calls the tick handler of the vehicle
@@ -527,6 +574,22 @@ public:
 	}
 
 	/**
+	 * Get the vehicle at offset \a n of this vehicle chain.
+	 * @param n Offset from the current vehicle.
+	 * @return The new vehicle or NULL if the offset is out-of-bounds.
+	 */
+	inline const Vehicle *Move(int n) const
+	{
+		const Vehicle *v = this;
+		if (n < 0) {
+			for (int i = 0; i != n && v != NULL; i--) v = v->Previous();
+		} else {
+			for (int i = 0; i != n && v != NULL; i++) v = v->Next();
+		}
+		return v;
+	}
+
+	/**
 	 * Get the first order of the vehicles order list.
 	 * @return first order of order list.
 	 */
@@ -572,6 +635,17 @@ public:
 	inline VehicleOrderID GetNumManualOrders() const { return (this->orders.list == NULL) ? 0 : this->orders.list->GetNumManualOrders(); }
 
 	/**
+	 * Get the next station the vehicle will stop at.
+	 * @return ID of the next station the vehicle will stop at or INVALID_STATION.
+	 */
+	inline StationIDStack GetNextStoppingStation() const
+	{
+		return (this->orders.list == NULL) ? INVALID_STATION : this->orders.list->GetNextStoppingStation(this);
+	}
+
+	void ResetRefitCaps();
+
+	/**
 	 * Copy certain configurations and statistics of a vehicle after successful autoreplace/renew
 	 * The function shall copy everything that cannot be copied by a command (like orders / group etc),
 	 * and that shall not be resetted for the new vehicle.
@@ -579,31 +653,21 @@ public:
 	 */
 	inline void CopyVehicleConfigAndStatistics(const Vehicle *src)
 	{
+		this->CopyConsistPropertiesFrom(src);
+
 		this->unitnumber = src->unitnumber;
 
-		this->cur_real_order_index = src->cur_real_order_index;
-		this->cur_implicit_order_index = src->cur_implicit_order_index;
 		this->current_order = src->current_order;
 		this->dest_tile  = src->dest_tile;
 
 		this->profit_this_year = src->profit_this_year;
 		this->profit_last_year = src->profit_last_year;
-
-		this->current_order_time = src->current_order_time;
-		this->lateness_counter = src->lateness_counter;
-		this->timetable_start = src->timetable_start;
-
-		if (HasBit(src->vehicle_flags, VF_TIMETABLE_STARTED)) SetBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
-		if (HasBit(src->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);
-		if (HasBit(src->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME)) SetBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
-
-		this->service_interval = src->service_interval;
 	}
 
 
 	bool HandleBreakdown();
 
-	bool NeedsAutorenewing(const Company *c) const;
+	bool NeedsAutorenewing(const Company *c, bool use_renew_setting = true) const;
 
 	bool NeedsServicing() const;
 	bool NeedsAutomaticServicing() const;
@@ -631,6 +695,23 @@ public:
 
 	void UpdateVisualEffect(bool allow_power_change = true);
 	void ShowVisualEffect() const;
+
+	void UpdatePosition();
+	void UpdateViewport(bool dirty);
+	void UpdatePositionAndViewport();
+	void MarkAllViewportsDirty() const;
+
+	inline uint16 GetServiceInterval() const { return this->service_interval; }
+
+	inline void SetServiceInterval(uint16 interval) { this->service_interval = interval; }
+
+	inline bool ServiceIntervalIsCustom() const { return HasBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM); }
+
+	inline bool ServiceIntervalIsPercent() const { return HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT); }
+
+	inline void SetServiceIntervalIsCustom(bool on) { SB(this->vehicle_flags, VF_SERVINT_IS_CUSTOM, 1, on); }
+
+	inline void SetServiceIntervalIsPercent(bool on) { SB(this->vehicle_flags, VF_SERVINT_IS_PERCENT, 1, on); }
 
 private:
 	/**
@@ -991,14 +1072,12 @@ struct SpecializedVehicle : public Vehicle {
 	 */
 	inline void UpdateViewport(bool force_update, bool update_delta)
 	{
-		extern void VehicleUpdateViewport(Vehicle *v, bool dirty);
-
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);
 		SpriteID old_image = this->cur_image;
 		this->cur_image = ((T *)this)->T::GetImage(this->direction, EIT_ON_MAP);
-		if (force_update || this->cur_image != old_image) VehicleUpdateViewport(this, true);
+		if (force_update || this->cur_image != old_image) this->Vehicle::UpdateViewport(true);
 	}
 };
 
@@ -1008,28 +1087,6 @@ struct SpecializedVehicle : public Vehicle {
  * @param var  The variable used to iterate over.
  */
 #define FOR_ALL_VEHICLES_OF_TYPE(name, var) FOR_ALL_ITEMS_FROM(name, vehicle_index, var, 0) if (var->type == name::EXPECTED_TYPE)
-
-/**
- * Disasters, like submarines, skyrangers and their shadows, belong to this class.
- */
-struct DisasterVehicle FINAL : public SpecializedVehicle<DisasterVehicle, VEH_DISASTER> {
-	SpriteID image_override;            ///< Override for the default disaster vehicle sprite.
-	VehicleID big_ufo_destroyer_target; ///< The big UFO that this destroyer is supposed to bomb.
-
-	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
-	DisasterVehicle() : SpecializedVehicleBase() {}
-	/** We want to 'destruct' the right class. */
-	virtual ~DisasterVehicle() {}
-
-	void UpdateDeltaXY(Direction direction);
-	bool Tick();
-};
-
-/**
- * Iterate over disaster vehicles.
- * @param var The variable used to iterate over.
- */
-#define FOR_ALL_DISASTERVEHICLES(var) FOR_ALL_VEHICLES_OF_TYPE(DisasterVehicle, var)
 
 /** Generates sequence of free UnitID numbers */
 struct FreeUnitIDGenerator {

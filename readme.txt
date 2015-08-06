@@ -1,6 +1,5 @@
-OpenTTD readme
-Last updated:    2012-04-15
-Release version: 1.2.0
+Last updated:    2015-02-24
+Release version: 1.5.0-beta2
 ------------------------------------------------------------------------
 
 
@@ -22,10 +21,12 @@ Table of contents
 7.0) Compiling
  * 7.1) Required/optional libraries
  * 7.2) Supported compilers
+ * 7.3) Compilation of base sets
 8.0) Translating
  * 8.1) Translation
  * 8.2) Previewing
 9.0) Troubleshooting
+10.0) Licensing
 X.X) Credits
 
 
@@ -35,9 +36,9 @@ OpenTTD is a transport simulation game based upon the popular game Transport
 Tycoon Deluxe, written by Chris Sawyer. It attempts to mimic the original
 game as closely as possible while extending it with new features.
 
-OpenTTD is licensed under the GNU General Public License version 2.0. For
-more information, see the file 'COPYING'.
-
+OpenTTD is licensed under the GNU General Public License version 2.0,
+but includes some 3rd party software under different licenses. See the
+section "Licensing" below for details.
 
 2.0) Contacting
 ---- ----------
@@ -80,8 +81,10 @@ After you have done all that you can report the bug. Please include the
 following information in your bug report:
  * OpenTTD version (PLEASE test the latest SVN/nightly build)
  * Bug details, including instructions how to reproduce it
- * Platform (Win32, Linux, FreeBSD, ...) and compiler (including version) if
+ * Platform (Windows, Linux, FreeBSD, ...) and compiler (including version) if
    you compiled OpenTTD yourself.
+ * The processor architecture of your OS (32 bits Windows, 64 bits Windows,
+   Linux on an ARM, Mac OS X on a PowerPC, ...)
  * Attach a saved game *and* a screenshot if possible
  * If this bug only occurred recently please note the last version without
    the bug and the first version including the bug. That way we can fix it
@@ -145,9 +148,9 @@ will not be able to reproduce the desync and thus will be unable to fix it.
 
 3.0) Supported platforms
 ---- -------------------
-OpenTTD has been ported to several platforms and operating systems. It shouldn't
-be very difficult to port it to a new platform. The currently working platforms
-are:
+OpenTTD has been ported to several platforms and operating systems. It should
+not be very difficult to port it to a new platform. The currently working
+platforms are:
 
   BeOS                 - SDL or Allegro
   DOS                  - Allegro
@@ -168,7 +171,7 @@ be installed, or you have downloaded an installer, which will automatically
 extract OpenTTD in the given directory.
 
 OpenTTD looks in multiple locations to find the required data files (described
-in section 4.2). Installing any 3rd party files into a "shared" location has
+in section 4.2). Installing any 3rd party files into a 'shared' location has
 the advantage that you only need to do this step once, rather than copying the
 data files into all OpenTTD versions you have.
 Savegames, screenshots, etc are saved relative to the config file (openttd.cfg)
@@ -177,15 +180,16 @@ shared directories, savegames will reside in the save/ directory next to the
 openttd.cfg file there.
 If you want savegames and screenshots in the directory where the OpenTTD binary
 resides, simply have your config file in that location. But if you remove this
-config file, savegames will still be in this directory (see notes in section 4.2)
+config file, savegames will still be in this directory (see notes in
+section 4.2 'OpenTTD directories')
 
 OpenTTD comes without AIs, so if you want to play with AIs you have to download
-them. The easiest way is via the "Check Online Content" button in the main menu.
+them. The easiest way is via the 'Check Online Content' button in the main menu.
 You can select some AIs that you think are compatible with your playing style.
 Another way is manually downloading the AIs from the forum although then you
 need to make sure that you install all the required AI libraries too; they get
-automatically selected (and downloaded) if you get the AIs via the "Check
-Online Content". If you do not have an AI but have configured OpenTTD to start
+automatically selected (and downloaded) if you get the AIs via the 'Check
+Online Content'. If you do not have an AI but have configured OpenTTD to start
 an AI a message will be shown that the 'dummy' AI has been started.
 
 4.1) (Required) 3rd party files
@@ -198,7 +202,7 @@ For OpenTTD you need to acquire some third party data files. For this you have
 the choice of using the original Transport Tycoon Deluxe data files or a set
 of free data files.
 
-Do NOT copy files included with OpenTTD into "shared" directories (explained in
+Do NOT copy files included with OpenTTD into 'shared' directories (explained in
 the following sections) as sooner or later you will run into graphical glitches
 when using other versions of the game.
 
@@ -215,9 +219,9 @@ The Windows installer can optionally download and install these packages.
 4.1.2) Original Transport Tycoon Deluxe graphics and sound files
 ------ ---------------------------------------------------------
 If you want to play with the original Transport Tycoon Deluxe data files you
-have to copy the data files from the CD-ROM into the data/ directory. It does
-not matter whether you copy them from the DOS or Windows version of Transport
-Tycoon Deluxe. The Windows install can optionally copy these files.
+have to copy the data files from the CD-ROM into the baseset/ directory. It
+does not matter whether you copy them from the DOS or Windows version of
+Transport Tycoon Deluxe. The Windows install can optionally copy these files.
 You need to copy the following files:
  - sample.cat
  - trg1r.grf or TRG1.GRF
@@ -239,7 +243,7 @@ not work.
 If you want AIs use the in-game content downloader. If for some reason that is
 not possible or you want to use an AI that has not been uploaded to the content
 download system download the tar file and place it in the ai/ directory. If the
-AI needs libraries you'll have to download those too and put them in the
+AI needs libraries you will have to download those too and put them in the
 ai/library/ directory. All AIs and AI Libraries that have been uploaded to
 the content download system can be found at http://noai.openttd.org/downloads/
 The AIs and libraries can be found their in the form of .tar.gz packages.
@@ -247,26 +251,39 @@ OpenTTD can read inside tar files but it does not extract .tar.gz files by
 itself.
 To figure out which libraries you need for an AI you have to start the AI and
 wait for an error message to pop up. The error message will tell you
-"couldn't find library 'lib-name'". Download that library and try again.
+'could not find library "lib-name"'. Download that library and try again.
+
+4.1.5) Game scripts
+------ ------------
+If you want an extra challenge in OpenTTD you can download so-called game
+scripts via the in-game content downloader. These game scripts have varying
+functionality, though they can generally influence town growth, subsidies, add
+goals to reach or provide a different ranking system.
+If you download a game script manually you have to follow the same rules as for
+AIs, except that game scripts are placed in the game/ directory instead of the
+ai/ directory.
+
 
 4.2) OpenTTD directories
 ---- -------------------
-OpenTTD uses its own directory to store its required 3rd party base set files (see section
-4.1 "Required 3rd party files") and non-compulsory extension and configuration files. See
-below for their proper place within this OpenTTD main data directory.
+OpenTTD uses its own directory to store its required 3rd party base set files
+(see section 4.1 'Required 3rd party files') and non-compulsory extension and
+configuration files. See below for their proper place within this OpenTTD main
+data directory.
 
-The main OpenTTD directories can be found in various locations, depending on your operating
-system:
+The main OpenTTD directories can be found in various locations, depending on
+your operating system:
 	1. The current working directory (from where you started OpenTTD)
 		For non-Windows operating systems OpenTTD will not scan for files in this
-		directory if it is your personal directory, i.e. "~/", or when it is the
-		root directory, i.e. "/".
+		directory if it is your personal directory, i.e. '~/', or when it is the
+		root directory, i.e. '/'.
 	2. Your personal directory
 		Windows: C:\My Documents\OpenTTD (95, 98, ME)
 		         C:\Documents and Settings\<username>\My Documents\OpenTTD (2000, XP)
 		         C:\Users\<username>\Documents\OpenTTD (Vista, 7)
 		Mac OSX: ~/Documents/OpenTTD
-		Linux:   ~/.openttd
+		Linux:   $XDG_DATA_HOME/openttd which is usually ~/.local/share/openttd when
+		         built with XDG base directory support, otherwise ~/.openttd
 	3. The shared directory
 		Windows: C:\Documents and Settings\All Users\Shared Documents\OpenTTD (2000, XP)
 		         C:\Users\Public\Documents\OpenTTD (Vista, 7)
@@ -278,41 +295,47 @@ system:
 	5. The installation directory (Linux only)
 		Linux:   /usr/share/games/openttd
 	6. The application bundle (Mac OSX only)
-		It includes the OpenTTD files (grf+lng) and it will work as long as they aren't
-		touched
+		It includes the OpenTTD files (grf+lng) and it will work as long as they
+		are not touched
 
-Different types of data or extensions go into different subdirectories of the chosen main
-OpenTTD directory:
+Different types of data or extensions go into different subdirectories of the
+chosen main OpenTTD directory:
 	Config File:         (no subdirectory)
-	Screenshots:         (no subdirectory)
+	Screenshots:         screenshot
 	Base Graphics:       baseset                 (or a subdirectory thereof)
 	Sound Sets:          baseset                 (or a subdirectory thereof)
 	NewGRFs:             newgrf                  (or a subdirectory thereof)
 	32bpp Sets:          newgrf                  (or a subdirectory thereof)
 	Music Sets:          baseset                 (or a subdirectory thereof)
 	AIs:                 ai                      (or a subdirectory thereof)
-	AI Libraries:        ai/libraries            (or a subdirectory thereof)
+	AI Libraries:        ai/library              (or a subdirectory thereof)
 	Game Scripts (GS):   game                    (or a subdirectory thereof)
-	GS Libraries:        game/libraries          (or a subdirectory thereof)
+	GS Libraries:        game/library            (or a subdirectory thereof)
 	Savegames:           save
 	Automatic Savegames: save/autosave
 	Scenarios:           scenario
 
-The (automatically created) directory content_download is for OpenTTD's internal use and
-no files should be added to it or its subdirectories manually.
+The (automatically created) directory content_download is for OpenTTD's internal
+use and no files should be added to it or its subdirectories manually.
 
 Notes:
-	- Linux in the previous list means .deb, but most paths should be similar for others.
+	- Linux in the previous list means .deb, but most paths should be similar for
+	  others.
 	- The previous search order is also used for NewGRFs and openttd.cfg.
-	- If openttd.cfg is not found, then it will be created using the 2, 4, 1, 3, 5 order.
+	- If openttd.cfg is not found, then it will be created using the 2, 4, 1, 3,
+	  5 order. When built with XDG base directory support, openttd.cfg will be
+	  created in $XDG_CONFIG_HOME/openttd which is usually ~/.config/openttd.
 	- Savegames will be relative to the config file only if there is no save/
 	  directory in paths with higher priority than the config file path, but
 	  autosaves and screenshots will always be relative to the config file.
+	  Unless the configuration file is in $XDG_CONFIG_HOME/openttd, then all
+	  other files will be saved under $XDG_DATA_HOME/openttd.
 
 The preferred setup:
-Place 3rd party files in shared directory (or in personal directory if you don't
-have write access on shared directory) and have your openttd.cfg config file in
-personal directory (where the game will then also place savegames and screenshots).
+Place 3rd party files in shared directory (or in personal directory if you do
+not have write access on shared directory) and have your openttd.cfg config
+file in personal directory (where the game will then also place savegames and
+screenshots).
 
 4.3) Portable installations (portable media)
 ---- ---------------------------------------
@@ -334,12 +357,10 @@ makes it easy to bundle files belonging to the same script, NewGRF or base
 set. Music sets are the only exception as they cannot be stored in a tar
 file due to being played by external applications.
 
-OpenTTD sees each tar archive as the 'root' of its search path. This means
-that having a file with the same path in two different tar files means that
-one cannot be opened, after all only one file will be found first. This is
-done to make it possible to have the large 32bpp zoomed graphics in a separate
-file to the (relatively small) unzoomed 8bpp NewGRF. As such it is advisable
-to put an uniquely named folder in the root of the tar and put all the
+OpenTTD sees each tar archive as the 'root' of its search path. This means that
+having a file with the same path in two different tar files means that one
+cannot be opened, after all only one file will be found first. As such it is
+advisable to put an uniquely named folder in the root of the tar and put all the
 content in that folder. For example, all downloaded content has a path that
 concatenates the name of the content and the version, which makes the path
 unique. For custom tar files it is advised to do this as well.
@@ -393,7 +414,6 @@ Information logged:
   original Transport Tycoon version
 * Running a modified OpenTTD build
 * Changing settings affecting NewGRF behaviour (non-network-safe settings)
-* Changing landscape (by cheat)
 * Triggering NewGRF bugs
 
 No personal information is stored.
@@ -405,7 +425,7 @@ OpenTTD in debug mode.
 6.0) Configuration file
 ---- ------------------
 The configuration file for OpenTTD (openttd.cfg) is in a simple Windows-like
-.INI format. It's mostly undocumented. Almost all settings can be changed
+.INI format. It is mostly undocumented. Almost all settings can be changed
 ingame by using the 'Advanced Settings' window.
 When you cannot find openttd.cfg you should look in the directories as
 described in section 4.2. If you do not have an openttd.cfg OpenTTD will
@@ -429,24 +449,24 @@ Windows:
   Please read the Makefile for more information.
 
 Solaris, FreeBSD, OpenBSD:
-  Use "gmake", but do a "./configure" before the first build.
+  Use 'gmake', but do a './configure' before the first build.
 
 Linux/Unix:
-  OpenTTD can be built with GNU "make". On non-GNU systems it's called "gmake".
-  However, for the first build one has to do a "./configure" first.
+  OpenTTD can be built with GNU 'make'. On non-GNU systems it is called 'gmake'.
+  However, for the first build one has to do a './configure' first.
 
 MacOS X:
-  Use "make" or Xcode (which will then call make for you)
+  Use 'make' or Xcode (which will then call make for you)
   This will give you a binary for your CPU type (PPC/Intel)
-  However, for the first build one has to do a "./configure" first.
-  To make a universal binary type "./configure --enabled-universal"
-  instead of "./configure".
+  However, for the first build one has to do a './configure' first.
+  To make a universal binary type './configure --enabled-universal'
+  instead of './configure'.
 
 BeOS:
-  Use "make", but do a "./configure" before the first build.
+  Use 'make', but do a './configure' before the first build.
 
 MorphOS:
-  Use "make". However, for the first build one has to do a "./configure" first.
+  Use 'make'. However, for the first build one has to do a './configure' first.
   Note that you need the MorphOS SDK, latest libnix updates (else C++ parts of
   OpenTTD will not build) and the powersdl.library SDK. Optionally libz,
   libpng and freetype2 developer files.
@@ -458,12 +478,12 @@ OS/2:
 DOS:
   A build environment with DJGPP is needed as well as libraries such as
   Allegro, zlib and libpng, which all can be downloaded from the DJGPP
-  website. Compilation is straight forward: use make, but do a "./configure"
+  website. Compilation is straight forward: use make, but do a './configure'
   before the first build. The build binary will need cwsdpmi.exe to be in
   the same directory as the openttd executable. cwsdpmi.exe can be found in
-  the os/dos subdirectory. If you compile with stripping turned on a binary
-  will be generated that does not need cwsdpmi.exe by adding the cswdstub.exe
-  to the created OpenTTD binary.
+  the os/dos/cwsdpmi subdirectory. If you compile with stripping turned on a
+  binary will be generated that does not need cwsdpmi.exe by adding the
+  cswdstub.exe to the created OpenTTD binary.
 
 7.1) Required/optional libraries
 ---- ---------------------------
@@ -485,21 +505,15 @@ open most older savegames or use the content downloading system.
 Without libSDL/liballegro on non-Windows and non-MacOS X machines you have
 no graphical user interface; you would be building a dedicated server.
 
-To recompile the extra graphics needed to play with the original Transport
-Tycoon Deluxe graphics you need GRFCodec (which includes NFORenum) as well.
-GRFCodec can be found at: http://www.openttd.org/download-grfcodec
-The compilation of these extra graphics does generally not happen, unless
-you remove the graphics file using "make maintainer-clean".
-
 7.2) Supported compilers
 ---- -------------------
 The following compilers are known to compile OpenTTD:
   - Microsoft Visual C++ (MSVC) 2005, 2008 and 2010.
     Version 2005 gives bogus warnings about scoping issues.
-  - GNU Compiler Collection (GCC) 3.3 - 4.7.
+  - GNU Compiler Collection (GCC) 3.3 - 4.4, 4.6 - 4.8.
     Versions 4.1 and earlier give bogus warnings about uninitialised variables.
-    Versions 4.4 - 4.6 give bogus warnings about freeing non-heap objects.
-    Versions 4.5 and later give invalid warnings when lto is enabled.
+    Versions 4.4, 4.6 give bogus warnings about freeing non-heap objects.
+    Versions 4.6 and later give invalid warnings when lto is enabled.
   - Intel C++ Compiler (ICC) 12.0.
   - Clang/LLVM 2.9 - 3.0
     Version 2.9 gives bogus warnings about code nonconformity.
@@ -508,6 +522,8 @@ The following compilers are known not to compile OpenTTD:
   - Microsoft Visual C++ (MSVC) 2003 and earlier.
   - GNU Compiler Collection (GCC) 3.2 and earlier.
     These old versions fail due to OpenTTD's template usage.
+  - GNU Compiler Collection (GCC) 4.5. It optimizes enums too aggressively.
+    See http://bugs.openttd.org/task/5513 and references therein.
   - Intel C++ Compiler (ICC) 11.1 and earlier.
     Version 10.0 and earlier fail a configure check and fail with recent system
         headers.
@@ -518,6 +534,21 @@ The following compilers are known not to compile OpenTTD:
 
 If any of these compilers can compile OpenTTD again, please let us know.
 Patches to support more compilers are welcome.
+
+7.3) Compilation of base sets
+-----------------------------
+To recompile the extra graphics needed to play with the original Transport
+Tycoon Deluxe graphics you need GRFCodec (which includes NFORenum) as well.
+GRFCodec can be found at: http://www.openttd.org/download-grfcodec
+The compilation of these extra graphics does generally not happen, unless
+you remove the graphics file using 'make maintainer-clean'.
+
+Re-compilation of the base sets, thus also use of --maintainer-clean can
+leave the repository in a modified state as different grfcodec versions can
+cause binary differences in the resulting grf. Also translations might have
+been added for the base sets which are not yet included in the base set
+information files. Use the configure option --without-grfcodec to avoid
+modification of the base set files by the build process.
 
 
 8.0) Translating
@@ -537,7 +568,7 @@ someone else may have already started translating to the same language.
 
 8.1) Translation
 ---- -----------
-So, now that you've notified the development team about your intention to
+So, now that you have notified the development team about your intention to
 translate (You did, right? Of course you did.) you can pick up english.txt
 (found in the SVN repository under /src/lang) and translate.
 
@@ -556,10 +587,9 @@ Note: Do not alter the following parts of the file:
 8.2) Previewing
 ---- ----------
 In order to view the translation in the game, you need to compile your language
-file with the strgen utility. You can download the precompiled strgen from:
-http://www.openttd.org/download-strgen
-To compile it yourself just take the normal OpenTTD sources and build that.
-During the build process the strgen utility will be made.
+file with the strgen utility. As this utility is tailored to a specific OpenTTD
+version, you need to compile it yourself. Just take the normal OpenTTD sources
+and build that. During the build process the strgen utility will be made.
 
 strgen is a command-line utility. It takes the language filename as parameter.
 Example:
@@ -571,17 +601,17 @@ Any missing strings are replaced with the English strings. Note that it looks
 for english.txt in the lang subdirectory, which is where your language file
 should also be.
 
-That's all! You should now be able to select the language in the game options.
+That is all! You should now be able to select the language in the game options.
 
 
 9.0) Troubleshooting
 ---- ---------------
 To see all startup options available to you, start OpenTTD with the
-"./openttd -h" option. This might help you tweak some of the settings.
+'./openttd -h' option. This might help you tweak some of the settings.
 
 If the game is acting strange and you feel adventurous you can try the
-"-d [[<name>]=[<level>]" flag, where the higher levels will give you more
-debugging output. The "name" variable can help you to display only some type of
+'-d [[<name>=]<level>]' flag, where the higher levels will give you more
+debugging output. The 'name' variable can help you to display only some type of
 debugging messages. This is mostly undocumented so best is to look in the
 source code file debug.c for the various debugging types. For more information
 look at http://wiki.openttd.org/index.php/Command_line.
@@ -604,61 +634,93 @@ and add a suitable font for the small, medium and / or large font, e.g.:
 	small_font = "Tahoma"
 	medium_font = "Tahoma"
 	large_font = "Tahoma"
-You should use a font name like "Tahoma" or a path to the desired font.
+You should use a font name like 'Tahoma' or a path to the desired font.
 
 Any NewGRF file used in a game is stored inside the savegame and will refuse
-to load if you don't have that NewGRF file available. A list of missing files
+to load if you do not have that NewGRF file available. A list of missing files
 can be viewed in the NewGRF window accessible from the file load dialogue window.
 
 You can try to obtain the missing files from that NewGRF dialogue or - if they
 are not available online - you can search manually through our forum's graphics
 development section (http://www.tt-forums.net/viewforum.php?f=66) or GrfCrawler
 (http://grfcrawler.tt-forums.net/). Put the NewGRF files in OpenTTD's newgrf folder
-(see section 4.2 "OpenTTD directories") and rescan the list of available NewGRFs.
+(see section 4.2 'OpenTTD directories') and rescan the list of available NewGRFs.
 Once you have all missing files, you are set to go.
 
+10.0) Licensing
+----- ---------
+OpenTTD is licensed under the GNU General Public License version 2.0. For
+the complete license text, see the file 'COPYING'. This license applies
+to all files in this distribution, except as noted below.
+
+The squirrel implementation in src/3rdparty/squirrel is licensed under
+the Zlib license. See src/3rdparty/squirrel/COPYRIGHT for the complete
+license text.
+
+The md5 implementation in src/3rdparty/md5 is licensed under the Zlib
+license. See the comments in the source files in src/3rdparty/md5 for
+the complete license text.
+
+The implementations of Posix getaddrinfo and getnameinfo for OS/2 in
+src/3rdparty/os2 are distributed partly under the GNU Lesser General Public
+License 2.1, and partly under the (3-clause) BSD license. The exact licensing
+terms can be found in src/3rdparty/os2/getaddrinfo.c resp.
+src/3rdparty/os2/getnameinfo.c.
+
+The exe2coff implementation in os/dos/exe2coff is available under the
+GPL, with a number of additional terms. See os/dos/exe2coff/copying and
+os/dos/exe2coff/copying.dj for the exact licensing terms.
+
+The CWSDPMI implementation in os/dos/cwsdpmi is distributed under a
+custom binary-only license that prohibits modification. The exact
+licensing terms can be found in os/dos/cwsdpmi/cwsdpmi.txt. The sources
+for these files can be downloaded at its author site, at:
+http://homer.rice.edu/~sandmann/cwsdpmi/csdpmi5s.zip
 
 X.X) Credits
 ---- -------
 The OpenTTD team (in alphabetical order):
-  Albert Hofkamp (Alberth)        - GUI expert
-  Jean-François Claeys (Belugas)  - GUI, newindustries and more
-  Matthijs Kooijman (blathijs)    - Pathfinder-guru, pool rework
-  Christoph Elsenhans (frosch)    - General coding
-  Loïc Guilloux (glx)             - Windows Expert
-  Michael Lutz (michi_cc)         - Path based signals
-  Owen Rudge (orudge)             - Forum host, OS/2 port
-  Peter Nelson (peter1138)        - Spiritual descendant from newGRF gods
-  Ingo von Borstel (planetmaker)  - Support
-  Remko Bijker (Rubidium)         - Lead coder and way more
-  Zdeněk Sojka (SmatZ)            - Bug finder and fixer
-  José Soler (Terkhen)            - General coding
-  Thijs Marinussen (Yexo)         - AI Framework
+  Albert Hofkamp (Alberth)        - GUI expert (since 0.7)
+  Matthijs Kooijman (blathijs)    - Pathfinder-guru, Debian port (since 0.3)
+  Ulf Hermann (fonsinchen)        - Cargo Distribution (since 1.3)
+  Christoph Elsenhans (frosch)    - General coding (since 0.6)
+  Loïc Guilloux (glx)             - Windows Expert (since 0.4.5)
+  Michael Lutz (michi_cc)         - Path based signals (since 0.7)
+  Owen Rudge (orudge)             - Forum host, OS/2 port (since 0.1)
+  Peter Nelson (peter1138)        - Spiritual descendant from newGRF gods (since 0.4.5)
+  Ingo von Borstel (planetmaker)  - General coding, Support (since 1.1)
+  Remko Bijker (Rubidium)         - Lead coder and way more (since 0.4.5)
+  José Soler (Terkhen)            - General coding (since 1.0)
+  Leif Linse (Zuu)                - AI/Game Script (since 1.2)
 
 Inactive Developers:
-  Bjarni Corfitzen (Bjarni)       - MacOSX port, coder and vehicles
-  Victor Fischer (Celestar)       - Programming everywhere you need him to
-  Tamás Faragó (Darkvater)        - Ex-Lead coder
-  Jaroslav Mazanec (KUDr)         - YAPG (Yet Another Pathfinder God) ;)
-  Jonathan Coome (Maedhros)       - High priest of the NewGRF Temple
-  Attila Bán (MiHaMiX)            - WebTranslator 1 and 2
-  Christoph Mallon (Tron)         - Programmer, code correctness police
+  Jean-François Claeys (Belugas)  - GUI, newindustries and more (0.4.5 - 1.0)
+  Bjarni Corfitzen (Bjarni)       - MacOSX port, coder and vehicles (0.3 - 0.7)
+  Victor Fischer (Celestar)       - Programming everywhere you need him to (0.3 - 0.6)
+  Jaroslav Mazanec (KUDr)         - YAPG (Yet Another Pathfinder God) ;) (0.4.5 - 0.6)
+  Jonathan Coome (Maedhros)       - High priest of the NewGRF Temple (0.5 - 0.6)
+  Attila Bán (MiHaMiX)            - WebTranslator 1 and 2 (0.3 - 0.5)
+  Zdeněk Sojka (SmatZ)            - Bug finder and fixer (0.6 - 1.3)
+  Christoph Mallon (Tron)         - Programmer, code correctness police (0.3 - 0.5)
+  Patric Stout (TrueBrain)        - NoProgrammer (0.3 - 1.2), sys op (active)
+  Thijs Marinussen (Yexo)         - AI Framework, General (0.6 - 1.3)
 
 Retired Developers:
-  Ludvig Strigeus (ludde)         - OpenTTD author, main coder (0.1 - 0.3.3)
-  Serge Paquet (vurlix)           - Assistant project manager, coder (0.1 - 0.3.3)
-  Dominik Scherer (dominik81)     - Lead programmer, GUI expert (0.3.0 - 0.3.6)
-  Benedikt Brüggemeier (skidd13)  - Bug fixer and code reworker
-  Patric Stout (TrueBrain)        - NoProgrammer (0.3 - 1.2), sys op (active)
+  Tamás Faragó (Darkvater)        - Ex-Lead coder (0.3 - 0.5)
+  Dominik Scherer (dominik81)     - Lead programmer, GUI expert (0.3 - 0.3)
+  Emil Djupfeld (egladil)         - MacOSX port (0.4 - 0.6)
+  Simon Sasburg (HackyKid)        - Bug fixer (0.4 - 0.4.5)
+  Ludvig Strigeus (ludde)         - Original author of OpenTTD, main coder (0.1 - 0.3)
+  Cian Duffy (MYOB)               - BeOS port / manual writing (0.1 - 0.3)
+  Petr Baudiš (pasky)             - Many patches, newgrf support, etc. (0.3 - 0.3)
+  Benedikt Brüggemeier (skidd13)  - Bug fixer and code reworker (0.6 - 0.7)
+  Serge Paquet (vurlix)           - 2nd contributor after ludde (0.1 - 0.3)
 
 Thanks to:
   Josef Drexler                   - For his great work on TTDPatch.
-  Marcin Grzegorczyk              - For his TTDPatch work and documentation of Transport Tycoon Deluxe internals and graphics (signals and track foundations)
-  Petr Baudiš (pasky)             - Many patches, newgrf support, etc.
-  Simon Sasburg (HackyKid)        - For the many bugfixes he has blessed us with
+  Marcin Grzegorczyk              - For his TTDPatch work and documentation of Transport Tycoon Deluxe internals and track foundations
   Stefan Meißner (sign_de)        - For his work on the console
   Mike Ragsdale                   - OpenTTD installer
-  Cian Duffy (MYOB)               - BeOS port / manual writing
   Christian Rosentreter (tokai)   - MorphOS / AmigaOS port
   Richard Kempton (RichK67)       - Additional airports, initial TGP implementation
   Alberto Demichelis              - Squirrel scripting language
@@ -667,7 +729,6 @@ Thanks to:
   George                          - Canal graphics
   Andrew Parkhouse (andythenorth) - River graphics
   David Dallaston (Pikka)         - Tram tracks
-  Marcin Grzegorczyk              - Foundations for tracks on slopes",
   All Translators                 - For their support to make OpenTTD a truly international game
   Bug Reporters                   - Thanks for all bug reports
   Chris Sawyer                    - For an amazing game!

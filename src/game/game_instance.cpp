@@ -33,6 +33,7 @@
 #include "../script/api/game/game_bridgelist.hpp.sq"
 #include "../script/api/game/game_cargo.hpp.sq"
 #include "../script/api/game/game_cargolist.hpp.sq"
+#include "../script/api/game/game_cargomonitor.hpp.sq"
 #include "../script/api/game/game_company.hpp.sq"
 #include "../script/api/game/game_companymode.hpp.sq"
 #include "../script/api/game/game_controller.hpp.sq"
@@ -65,6 +66,9 @@
 #include "../script/api/game/game_signlist.hpp.sq"
 #include "../script/api/game/game_station.hpp.sq"
 #include "../script/api/game/game_stationlist.hpp.sq"
+#include "../script/api/game/game_story_page.hpp.sq"
+#include "../script/api/game/game_storypageelementlist.hpp.sq"
+#include "../script/api/game/game_storypagelist.hpp.sq"
 #include "../script/api/game/game_subsidy.hpp.sq"
 #include "../script/api/game/game_subsidylist.hpp.sq"
 #include "../script/api/game/game_testmode.hpp.sq"
@@ -81,6 +85,8 @@
 #include "../script/api/game/game_waypointlist.hpp.sq"
 #include "../script/api/game/game_window.hpp.sq"
 
+#include "../safeguards.h"
+
 
 GameInstance::GameInstance() :
 	ScriptInstance("GS")
@@ -88,6 +94,8 @@ GameInstance::GameInstance() :
 
 void GameInstance::Initialize(GameInfo *info)
 {
+	this->versionAPI = info->GetAPIVersion();
+
 	/* Register the GameController */
 	SQGSController_Register(this->engine);
 
@@ -113,6 +121,7 @@ void GameInstance::RegisterAPI()
 	SQGSCargoList_IndustryAccepting_Register(this->engine);
 	SQGSCargoList_IndustryProducing_Register(this->engine);
 	SQGSCargoList_StationAccepting_Register(this->engine);
+	SQGSCargoMonitor_Register(this->engine);
 	SQGSCompany_Register(this->engine);
 	SQGSCompanyMode_Register(this->engine);
 	SQGSDate_Register(this->engine);
@@ -126,10 +135,13 @@ void GameInstance::RegisterAPI()
 	SQGSEventCompanyInTrouble_Register(this->engine);
 	SQGSEventCompanyMerger_Register(this->engine);
 	SQGSEventCompanyNew_Register(this->engine);
+	SQGSEventCompanyTown_Register(this->engine);
 	SQGSEventController_Register(this->engine);
+	SQGSEventExclusiveTransportRights_Register(this->engine);
 	SQGSEventGoalQuestionAnswer_Register(this->engine);
 	SQGSEventIndustryClose_Register(this->engine);
 	SQGSEventIndustryOpen_Register(this->engine);
+	SQGSEventRoadReconstruction_Register(this->engine);
 	SQGSEventStationFirstVehicle_Register(this->engine);
 	SQGSEventSubsidyAwarded_Register(this->engine);
 	SQGSEventSubsidyExpired_Register(this->engine);
@@ -161,7 +173,21 @@ void GameInstance::RegisterAPI()
 	SQGSSignList_Register(this->engine);
 	SQGSStation_Register(this->engine);
 	SQGSStationList_Register(this->engine);
+	SQGSStationList_Cargo_Register(this->engine);
+	SQGSStationList_CargoPlanned_Register(this->engine);
+	SQGSStationList_CargoPlannedByFrom_Register(this->engine);
+	SQGSStationList_CargoPlannedByVia_Register(this->engine);
+	SQGSStationList_CargoPlannedFromByVia_Register(this->engine);
+	SQGSStationList_CargoPlannedViaByFrom_Register(this->engine);
+	SQGSStationList_CargoWaiting_Register(this->engine);
+	SQGSStationList_CargoWaitingByFrom_Register(this->engine);
+	SQGSStationList_CargoWaitingByVia_Register(this->engine);
+	SQGSStationList_CargoWaitingFromByVia_Register(this->engine);
+	SQGSStationList_CargoWaitingViaByFrom_Register(this->engine);
 	SQGSStationList_Vehicle_Register(this->engine);
+	SQGSStoryPage_Register(this->engine);
+	SQGSStoryPageElementList_Register(this->engine);
+	SQGSStoryPageList_Register(this->engine);
 	SQGSSubsidy_Register(this->engine);
 	SQGSSubsidyList_Register(this->engine);
 	SQGSTestMode_Register(this->engine);
@@ -187,6 +213,8 @@ void GameInstance::RegisterAPI()
 	SQGSWindow_Register(this->engine);
 
 	RegisterGameTranslation(this->engine);
+
+	if (!this->LoadCompatibilityScripts(this->versionAPI, GAME_DIR)) this->Died();
 }
 
 int GameInstance::GetSetting(const char *name)

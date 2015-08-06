@@ -13,11 +13,14 @@
 #include "window_gui.h"
 #include "transparency.h"
 #include "sound_func.h"
+#include "settings_type.h"
 
 #include "widgets/transparency_widget.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 TransparencyOptionBits _transparency_opt;  ///< The bits that should be transparent.
 TransparencyOptionBits _transparency_lock; ///< Prevent these bits from flipping with X.
@@ -27,9 +30,9 @@ byte _display_opt; ///< What do we want to draw/do?
 class TransparenciesWindow : public Window
 {
 public:
-	TransparenciesWindow(const WindowDesc *desc, int window_number) : Window()
+	TransparenciesWindow(WindowDesc *desc, int window_number) : Window(desc)
 	{
-		this->InitNested(desc, window_number);
+		this->InitNested(window_number);
 	}
 
 	virtual void OnPaint()
@@ -76,7 +79,7 @@ public:
 			} else {
 				/* toggle the bit of the transparencies variable and play a sound */
 				ToggleTransparency((TransparencyOption)(widget - WID_TT_BEGIN));
-				SndPlayFx(SND_15_BEEP);
+				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				MarkWholeScreenDirty();
 			}
 		} else if (widget == WID_TT_BUTTONS) {
@@ -90,7 +93,7 @@ public:
 			if (i == WID_TT_LOADING || i == WID_TT_END) return;
 
 			ToggleInvisibility((TransparencyOption)(i - WID_TT_BEGIN));
-			SndPlayFx(SND_15_BEEP);
+			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 
 			/* Redraw whole screen only if transparency is set */
 			if (IsTransparencySet((TransparencyOption)(i - WID_TT_BEGIN))) {
@@ -101,7 +104,7 @@ public:
 		}
 	}
 
-	virtual Point OnInitialPosition(const WindowDesc *desc, int16 sm_width, int16 sm_height, int window_number)
+	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
 	{
 		Point pt = GetToolbarAlignedWindowPosition(sm_width);
 		pt.y += 2 * (sm_height - this->GetWidget<NWidgetBase>(WID_TT_BUTTONS)->current_y);
@@ -140,13 +143,13 @@ static const NWidgetPart _nested_transparency_widgets[] = {
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_TT_LOADING), SetMinimalSize(22, 22), SetFill(0, 1), SetDataTip(SPR_IMG_TRAINLIST, STR_TRANSPARENT_LOADING_TOOLTIP),
 		NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetFill(1, 1), EndContainer(),
 	EndContainer(),
-	/* Panel with 'inivisibility' buttons. */
+	/* Panel with 'invisibility' buttons. */
 	NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_TT_BUTTONS), SetMinimalSize(219, 13), SetDataTip(0x0, STR_TRANSPARENT_INVISIBLE_TOOLTIP),
 	EndContainer(),
 };
 
-static const WindowDesc _transparency_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _transparency_desc(
+	WDP_MANUAL, "toolbar_transparency", 0, 0,
 	WC_TRANSPARENCY_TOOLBAR, WC_NONE,
 	0,
 	_nested_transparency_widgets, lengthof(_nested_transparency_widgets)

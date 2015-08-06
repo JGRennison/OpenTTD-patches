@@ -20,10 +20,16 @@
 #include "company_func.h"
 #include "rail.h"
 #include "settings_type.h"
+#include "train.h"
+#include "roadveh.h"
+#include "ship.h"
+#include "aircraft.h"
 
 #include "widgets/engine_widget.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 /**
  * Return the category of an engine.
@@ -59,20 +65,39 @@ static const NWidgetPart _nested_engine_preview_widgets[] = {
 };
 
 struct EnginePreviewWindow : Window {
-	static const int VEHICLE_SPACE = 40; // The space to show the vehicle image
+	int vehicle_space; // The space to show the vehicle image
 
-	EnginePreviewWindow(const WindowDesc *desc, WindowNumber window_number) : Window()
+	EnginePreviewWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
-		this->InitNested(desc, window_number);
+		this->InitNested(window_number);
+
+		/* There is no way to recover the window; so disallow closure via DEL; unless SHIFT+DEL */
+		this->flags |= WF_STICKY;
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		if (widget != WID_EP_QUESTION) return;
 
+		/* Get size of engine sprite, on loan from depot_gui.cpp */
 		EngineID engine = this->window_number;
+		EngineImageType image_type = EIT_PURCHASE;
+		uint x, y;
+		int x_offs, y_offs;
+
+		const Engine *e = Engine::Get(engine);
+		switch (e->type) {
+			default: NOT_REACHED();
+			case VEH_TRAIN:    GetTrainSpriteSize(   engine, x, y, x_offs, y_offs, image_type); break;
+			case VEH_ROAD:     GetRoadVehSpriteSize( engine, x, y, x_offs, y_offs, image_type); break;
+			case VEH_SHIP:     GetShipSpriteSize(    engine, x, y, x_offs, y_offs, image_type); break;
+			case VEH_AIRCRAFT: GetAircraftSpriteSize(engine, x, y, x_offs, y_offs, image_type); break;
+		}
+		this->vehicle_space = max<int>(40, y - y_offs);
+
+		size->width = max(size->width, x - x_offs);
 		SetDParam(0, GetEngineCategoryName(engine));
-		size->height = GetStringHeight(STR_ENGINE_PREVIEW_MESSAGE, size->width) + WD_PAR_VSEP_WIDE + FONT_HEIGHT_NORMAL + VEHICLE_SPACE;
+		size->height = GetStringHeight(STR_ENGINE_PREVIEW_MESSAGE, size->width) + WD_PAR_VSEP_WIDE + FONT_HEIGHT_NORMAL + this->vehicle_space;
 		SetDParam(0, engine);
 		size->height += GetStringHeight(GetEngineInfoString(engine), size->width);
 	}
@@ -90,9 +115,9 @@ struct EnginePreviewWindow : Window {
 		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_ENGINE_NAME, TC_BLACK, SA_HOR_CENTER);
 		y += FONT_HEIGHT_NORMAL;
 
-		DrawVehicleEngine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, this->width >> 1, y + VEHICLE_SPACE / 2, engine, GetEnginePalette(engine, _local_company), EIT_PREVIEW);
+		DrawVehicleEngine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, this->width >> 1, y + this->vehicle_space / 2, engine, GetEnginePalette(engine, _local_company), EIT_PREVIEW);
 
-		y += VEHICLE_SPACE;
+		y += this->vehicle_space;
 		DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, r.bottom, GetEngineInfoString(engine), TC_FROMSTRING, SA_CENTER);
 	}
 
@@ -107,10 +132,18 @@ struct EnginePreviewWindow : Window {
 				break;
 		}
 	}
+
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	{
+		if (!gui_scope) return;
+
+		EngineID engine = this->window_number;
+		if (Engine::Get(engine)->preview_company != _local_company) delete this;
+	}
 };
 
-static const WindowDesc _engine_preview_desc(
-	WDP_CENTER, 0, 0,
+static WindowDesc _engine_preview_desc(
+	WDP_CENTER, "engine_preview", 0, 0,
 	WC_ENGINE_PREVIEW, WC_NONE,
 	WDF_CONSTRUCTION,
 	_nested_engine_preview_widgets, lengthof(_nested_engine_preview_widgets)
@@ -129,14 +162,8 @@ void ShowEnginePreviewWindow(EngineID engine)
  */
 uint GetTotalCapacityOfArticulatedParts(EngineID engine)
 {
-	uint total = 0;
-
 	CargoArray cap = GetCapacityOfArticulatedParts(engine);
-	for (CargoID c = 0; c < NUM_CARGO; c++) {
-		total += cap[c];
-	}
-
-	return total;
+	return cap.GetSum<uint>();
 }
 
 static StringID GetTrainEngineInfoString(const Engine *e)

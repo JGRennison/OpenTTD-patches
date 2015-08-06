@@ -15,6 +15,8 @@
 #include "table/airport_movement.h"
 #include "table/airporttile_ids.h"
 
+#include "safeguards.h"
+
 
 /**
  * Define a generic airport.
@@ -22,7 +24,7 @@
  * @param terminals The terminals.
  * @param num_helipads Number of heli pads.
  * @param flags Information about the class of FTA.
- * @param delta_z Height of the arport above the land.
+ * @param delta_z Height of the airport above the land.
  */
 #define AIRPORT_GENERIC(name, terminals, num_helipads, flags, delta_z) \
 	static AirportFTAClass _airportfta_ ## name(_airport_moving_data_ ## name, terminals, \
@@ -41,7 +43,7 @@
  * Define a heliport.
  * @param name Suffix of the names of the helipad data.
  * @param num_helipads Number of heli pads.
- * @param delta_z Height of the arport above the land.
+ * @param delta_z Height of the airport above the land.
  */
 #define HELIPORT(name, num_helipads, delta_z) \
 	AIRPORT_GENERIC(name, NULL, num_helipads, AirportFTAClass::HELICOPTERS, delta_z)

@@ -346,16 +346,6 @@ static inline void SetSignalVariant(TileIndex t, Track track, SignalVariant v)
 }
 
 /**
- * These are states in which a signal can be. Currently these are only two, so
- * simple boolean logic will do. But do try to compare to this enum instead of
- * normal boolean evaluation, since that will make future additions easier.
- */
-enum SignalState {
-	SIGNAL_STATE_RED   = 0, ///< The signal is red
-	SIGNAL_STATE_GREEN = 1, ///< The signal is green
-};
-
-/**
  * Set the states of the signals (Along/AgainstTrackDir)
  * @param tile  the tile to set the states for
  * @param state the new state
@@ -535,7 +525,7 @@ static inline void MakeRailNormal(TileIndex t, Owner o, TrackBits b, RailType r)
 	_m[t].m3 = r;
 	_m[t].m4 = 0;
 	_m[t].m5 = RAIL_TILE_NORMAL << 6 | b;
-	SB(_m[t].m6, 2, 4, 0);
+	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }
 
@@ -548,7 +538,7 @@ static inline void MakeRailDepot(TileIndex t, Owner o, DepotID did, DiagDirectio
 	_m[t].m3 = r;
 	_m[t].m4 = 0;
 	_m[t].m5 = RAIL_TILE_DEPOT << 6 | d;
-	SB(_m[t].m6, 2, 4, 0);
+	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }
 

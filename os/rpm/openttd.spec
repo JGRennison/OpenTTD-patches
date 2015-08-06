@@ -17,9 +17,9 @@
 #
 
 Name:           openttd
-Version:        1.2.beta4
+Version:        1.6.beta1
 Release:        0
-%define srcver  1.2.0-beta4
+%define srcver  1.6.0-beta1
 Summary:        An open source reimplementation of Chris Sawyer's Transport Tycoon Deluxe
 License:        GPL-2.0
 Group:          Amusements/Games/Strategy/Other
@@ -227,11 +227,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %dir %{_datadir}/%{name}/baseset
 %dir %{_datadir}/%{name}/scripts
 %dir %{_datadir}/%{name}/ai
+%dir %{_datadir}/%{name}/game
 %{_datadir}/doc/%{name}/*
 %{_datadir}/%{name}/lang/*
 %{_datadir}/%{name}/baseset/*
 %{_datadir}/%{name}/scripts/*
 %{_datadir}/%{name}/ai/*
+%{_datadir}/%{name}/game/*
 %doc %{_mandir}/man6/%{name}.6.*
 
 %files gui

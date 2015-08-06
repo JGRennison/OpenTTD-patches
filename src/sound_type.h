@@ -24,9 +24,21 @@ struct SoundEntry {
 	byte grf_container_ver; ///< NewGRF container version if the sound is from a NewGRF.
 };
 
+/**
+ * Sound effects from baseset.
+ *
+ * This enum contains the sound effects from the sound baseset.
+ * For hysterical raisins the order of sound effects in the baseset
+ * is different to the order they are referenced in TTD/NewGRF.
+ *  - The first two sound effects from the baseset are inserted at position 39.
+ *    (see translation table _sound_idx)
+ *  - The order in the enum is the order using in TTD/NewGRF.
+ *  - The naming of the enum values includes the position in the baseset.
+ * That is, for sound effects 0x02 to 0x28 the naming is off-by-two.
+ */
 enum SoundFx {
 	SND_BEGIN = 0,
-	SND_02_SPLAT = 0,                          //  0 == 0x00 !
+	SND_02_SPLAT_WATER = 0,                ///< Water construction.
 	SND_03_FACTORY_WHISTLE,
 	SND_04_TRAIN,
 	SND_05_TRAIN_THROUGH_TUNNEL,
@@ -55,8 +67,8 @@ enum SoundFx {
 	SND_1C_TRUCK_START_2,
 	SND_1D_APPLAUSE,
 	SND_1E_OOOOH,
-	SND_1F_SPLAT,                          // 29 == 0x1D
-	SND_20_SPLAT_2,                        // 30 == 0x1E
+	SND_1F_SPLAT_OTHER,                    ///< Non-water non-rail construction.
+	SND_20_SPLAT_RAIL,                     ///< Rail construction.
 	SND_21_JACKHAMMER,
 	SND_22_CAR_HORN,
 	SND_23_CAR_HORN_2,

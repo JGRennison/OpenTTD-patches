@@ -30,6 +30,8 @@
 #define stderr stdout
 #endif /* __MORPHOS__ */
 
+#include "../safeguards.h"
+
 /**
  * Report a fatal error.
  * @param s Format string.
@@ -40,7 +42,7 @@ void NORETURN CDECL error(const char *s, ...)
 	char buf[1024];
 	va_list va;
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 	fprintf(stderr, "FATAL: %s\n", buf);
 	exit(1);

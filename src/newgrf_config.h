@@ -46,12 +46,13 @@ enum GRFBugs {
 	GBUG_VEH_REFIT,         ///< Articulated vehicles carry different cargoes resp. are differently refittable than specified in purchase list
 	GBUG_VEH_POWERED_WAGON, ///< Powered wagon changed poweredness state when not inside a depot
 	GBUG_UNKNOWN_CB_RESULT, ///< A callback returned an unknown/invalid result
+	GBUG_VEH_CAPACITY,      ///< Capacity of vehicle changes when not refitting or arranging
 };
 
 /** Status of post-gameload GRF compatibility check */
 enum GRFListCompatibility {
 	GLC_ALL_GOOD,   ///< All GRF needed by game are present
-	GLC_COMPATIBLE, ///< Compatible (eg. the same ID, but different chacksum) GRF found in at least one case
+	GLC_COMPATIBLE, ///< Compatible (eg. the same ID, but different checksum) GRF found in at least one case
 	GLC_NOT_FOUND,  ///< At least one GRF couldn't be found (higher priority than GLC_COMPATIBLE)
 };
 
@@ -133,9 +134,11 @@ struct GRFParameterInfo {
 	byte first_bit;        ///< First bit to use in the GRF parameter
 	byte num_bit;          ///< Number of bits to use for this parameter
 	SmallMap<uint32, struct GRFText *, 8> value_names; ///< Names for each value.
+	bool complete_labels;  ///< True if all values have a label.
 
 	uint32 GetValue(struct GRFConfig *config) const;
 	void SetValue(struct GRFConfig *config, uint32 value);
+	void Finalize();
 };
 
 /** Reference counted wrapper around a GRFText pointer. */
@@ -174,6 +177,8 @@ struct GRFConfig : ZeroedMemoryAllocator {
 
 	struct GRFConfig *next;                        ///< NOSAVE: Next item in the linked list
 
+	void CopyParams(const GRFConfig &src);
+
 	bool IsOpenTTDBaseGRF() const;
 
 	const char *GetTextfile(TextfileType type) const;
@@ -183,6 +188,7 @@ struct GRFConfig : ZeroedMemoryAllocator {
 
 	void SetParameterDefaults();
 	void SetSuitablePalette();
+	void FinalizeParameterInfo();
 };
 
 /** Method to find GRFs using FindGRFConfig */

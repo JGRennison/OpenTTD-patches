@@ -87,11 +87,115 @@ public:
 	static int32 GetCargoWaiting(StationID station_id, CargoID cargo_id);
 
 	/**
+	 * See how much cargo with a specific source station there is waiting on a station.
+	 * @param station_id The station to get the cargo-waiting of.
+	 * @param from_station_id The source station of the cargo. Pass STATION_INVALID to get cargo of which the source has been deleted.
+	 * @param cargo_id The cargo to get the cargo-waiting of.
+	 * @pre IsValidStation(station_id).
+	 * @pre IsValidStation(from_station_id) || from_station_id == STATION_INVALID.
+	 * @pre IsValidCargo(cargo_id).
+	 * @return The amount of units waiting at the station originating from from_station_id.
+	 * @note source station means, the station where cargo was first loaded.
+	 */
+	static int32 GetCargoWaitingFrom(StationID station_id, StationID from_station_id, CargoID cargo_id);
+
+	/**
+	 * See how much cargo with a specific via-station there is waiting on a station.
+	 * @param station_id The station to get the cargo-waiting of.
+	 * @param via_station_id The next station the cargo is going to. Pass STATION_INVALID to get waiting cargo for "via any station".
+	 * @param cargo_id The cargo to get the cargo-waiting of.
+	 * @pre IsValidStation(station_id).
+	 * @pre IsValidStation(via_station_id) || via_station_id == STATION_INVALID.
+	 * @pre IsValidCargo(cargo_id).
+	 * @return The amount of units waiting at the station with via_station_id as next hop.
+	 * @note if ScriptCargo.GetCargoDistributionType(cargo_id) == ScriptCargo.DT_MANUAL, then all waiting cargo will have STATION_INVALID as next hop.
+	 */
+	static int32 GetCargoWaitingVia(StationID station_id, StationID via_station_id, CargoID cargo_id);
+
+	/**
+	 * See how much cargo with a specific via-station and source station there is waiting on a station.
+	 * @param station_id The station to get the cargo-waiting of.
+	 * @param from_station_id The source station of the cargo. Pass STATION_INVALID to get cargo of which the source has been deleted.
+	 * @param via_station_id The next station the cargo is going to. Pass STATION_INVALID to get waiting cargo for "via any station".
+	 * @param cargo_id The cargo to get the cargo-waiting of.
+	 * @pre IsValidStation(station_id).
+	 * @pre IsValidStation(from_station_id) || from_station_id == STATION_INVALID.
+	 * @pre IsValidStation(via_station_id) || via_station_id == STATION_INVALID.
+	 * @pre IsValidCargo(cargo_id).
+	 * @return The amount of units waiting at the station with from_station_id as source and via_station_id as next hop.
+	 * @note if ScriptCargo.GetCargoDistributionType(cargo_id) == ScriptCargo.DT_MANUAL, then all waiting cargo will have STATION_INVALID as next hop.
+	 */
+	static int32 GetCargoWaitingFromVia(StationID station_id, StationID from_station_id, StationID via_station_id, CargoID cargo_id);
+
+	/**
+	 * See how much cargo was planned to pass (including production and consumption) this station per month.
+	 * @param station_id The station to get the planned flow for.
+	 * @param cargo_id The cargo type to get the planned flow for.
+	 * @pre IsValidStation(station_id).
+	 * @pre IsValidCargo(cargo_id).
+	 * @return The amount of cargo units planned to pass the station per month.
+	 */
+	static int32 GetCargoPlanned(StationID station_id, CargoID cargo_id);
+
+	/**
+	 * See how much cargo from the specified origin was planned to pass (including production and consumption) this station per month.
+	 * @param station_id The station to get the planned flow for.
+	 * @param from_station_id The station the cargo originates at.
+	 * @param cargo_id The cargo type to get the planned flow for.
+	 * @pre IsValidStation(station_id).
+	 * @pre IsValidStation(from_station_id) || from_station_id == STATION_INVALID.
+	 * @pre IsValidCargo(cargo_id).
+	 * @return The amount of cargo units from the specified origin planned to pass the station per month.
+	 */
+	static int32 GetCargoPlannedFrom(StationID station_id, StationID from_station_id, CargoID cargo_id);
+
+	/**
+	 * See how much cargo was planned to pass (including production and consumption) this station per month, heading for the specified next hop.
+	 * @param station_id The station to get the planned flow for.
+	 * @param via_station_id The next station the cargo will go on to.
+	 * @param cargo_id The cargo type to get the planned flow for.
+	 * @pre IsValidStation(station_id).
+	 * @pre IsValidStation(via_station_id) || via_station_id == STATION_INVALID.
+	 * @pre IsValidCargo(cargo_id).
+	 * @return The amount of cargo units planned to pass the station per month, going via the specified next hop.
+	 * @note Cargo planned to go "via" the same station that's being queried is actually planned to be consumed there.
+	 */
+	static int32 GetCargoPlannedVia(StationID station_id, StationID via_station_id, CargoID cargo_id);
+
+	/**
+	 * See how much cargo from the specified origin was planned to pass this station per month,
+	 * heading for the specified next hop.
+	 * @param station_id The station to get the planned flow for.
+	 * @param from_station_id The station the cargo originates at.
+	 * @param via_station_id The next station the cargo will go on to.
+	 * @param cargo_id The cargo type to get the planned flow for.
+	 * @pre IsValidStation(station_id).
+	 * @pre IsValidStation(from_station_id) || from_station_id == STATION_INVALID.
+	 * @pre IsValidStation(via_station_id) || via_station_id == STATION_INVALID.
+	 * @pre IsValidCargo(cargo_id).
+	 * @return The amount of cargo units from the specified origin planned to pass the station per month, going via the specified next hop.
+	 * @note Cargo planned to go "via" the same station that's being queried is actually planned to be consumed there.
+	 * @note Cargo planned to pass "from" the same station that's being queried is actually produced there.
+	 */
+	static int32 GetCargoPlannedFromVia(StationID station_id, StationID from_station_id, StationID via_station_id, CargoID cargo_id);
+
+	/**
+	 * Check whether the given cargo at the given station a rating.
+	 * @param station_id The station to get the cargo-rating state of.
+	 * @param cargo_id The cargo to get the cargo-rating state of.
+	 * @pre IsValidStation(station_id).
+	 * @pre IsValidCargo(cargo_id).
+	 * @return True if the cargo has a rating, otherwise false.
+	 */
+	static bool HasCargoRating(StationID station_id, CargoID cargo_id);
+
+	/**
 	 * See how high the rating is of a cargo on a station.
 	 * @param station_id The station to get the cargo-rating of.
 	 * @param cargo_id The cargo to get the cargo-rating of.
 	 * @pre IsValidStation(station_id).
 	 * @pre IsValidCargo(cargo_id).
+	 * @pre HasCargoRating(station_id, cargo_id).
 	 * @return The rating in percent of the cargo on the station.
 	 */
 	static int32 GetCargoRating(StationID station_id, CargoID cargo_id);
@@ -172,6 +276,38 @@ public:
 	 *  towns grow, towns change. So don't depend on this value too much.
 	 */
 	static TownID GetNearestTown(StationID station_id);
+
+	/**
+	 * Get the open/closed state of an airport.
+	 * @param station_id The airport to look at.
+	 * @pre IsValidStation(station_id).
+	 * @pre HasStationType(station_id, STATION_AIRPORT).
+	 * @return True if the airport is currently closed to incoming traffic.
+	 */
+	static bool IsAirportClosed(StationID station_id);
+
+	/**
+	 * Toggle the open/closed state of an airport.
+	 * @param station_id The airport to modify.
+	 * @pre IsValidStation(station_id).
+	 * @pre HasStationType(station_id, STATION_AIRPORT).
+	 * @return True if the state was toggled successfully.
+	 */
+	static bool OpenCloseAirport(StationID station_id);
+
+private:
+	template<bool Tfrom, bool Tvia>
+	static bool IsCargoRequestValid(StationID station_id, StationID from_station_id,
+			StationID via_station_id, CargoID cargo_id);
+
+	template<bool Tfrom, bool Tvia>
+	static int32 CountCargoWaiting(StationID station_id, StationID from_station_id,
+			StationID via_station_id, CargoID cargo_id);
+
+	template<bool Tfrom, bool Tvia>
+	static int32 CountCargoPlanned(StationID station_id, StationID from_station_id,
+			StationID via_station_id, CargoID cargo_id);
+
 };
 
 DECLARE_ENUM_AS_BIT_SET(ScriptStation::StationType)

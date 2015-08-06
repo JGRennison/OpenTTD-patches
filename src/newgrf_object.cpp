@@ -13,17 +13,18 @@
 #include "company_base.h"
 #include "company_func.h"
 #include "debug.h"
+#include "genworld.h"
 #include "newgrf_class_func.h"
 #include "newgrf_object.h"
 #include "newgrf_sound.h"
-#include "newgrf_spritegroup.h"
-#include "newgrf_town.h"
 #include "object_base.h"
 #include "object_map.h"
 #include "tile_cmd.h"
 #include "town.h"
 #include "water.h"
 #include "newgrf_animation_base.h"
+
+#include "safeguards.h"
 
 /** The override manager for our objects. */
 ObjectOverrideManager _object_mngr(NEW_OBJECT_OFFSET, NUM_OBJECTS, INVALID_OBJECT_TYPE);
@@ -54,15 +55,32 @@ ObjectSpec _object_specs[NUM_OBJECTS];
 }
 
 /**
+ * Check whether the object might be available at some point in this game with the current game mode.
+ * @return true if it might be available.
+ */
+bool ObjectSpec::IsEverAvailable() const
+{
+	return this->enabled && HasBit(this->climate, _settings_game.game_creation.landscape) &&
+			(this->flags & ((_game_mode != GM_EDITOR && !_generating_world) ? OBJECT_FLAG_ONLY_IN_SCENEDIT : OBJECT_FLAG_ONLY_IN_GAME)) == 0;
+}
+
+/**
+ * Check whether the object was available at some point in the past or present in this game with the current game mode.
+ * @return true if it was ever or is available.
+ */
+bool ObjectSpec::WasEverAvailable() const
+{
+	return this->IsEverAvailable() && _date > this->introduction_date;
+}
+
+/**
  * Check whether the object is available at this time.
  * @return true if it is available.
  */
 bool ObjectSpec::IsAvailable() const
 {
-	return this->enabled && _date > this->introduction_date &&
-			(_date < this->end_of_life_date || this->end_of_life_date < this->introduction_date + 365) &&
-			HasBit(this->climate, _settings_game.game_creation.landscape) &&
-			(flags & (_game_mode != GM_EDITOR ? OBJECT_FLAG_ONLY_IN_SCENEDIT : OBJECT_FLAG_ONLY_IN_GAME)) == 0;
+	return this->WasEverAvailable() &&
+			(_date < this->end_of_life_date || this->end_of_life_date < this->introduction_date + 365);
 }
 
 /**
@@ -91,38 +109,44 @@ void ResetObjects()
 template <typename Tspec, typename Tid, Tid Tmax>
 /* static */ void NewGRFClass<Tspec, Tid, Tmax>::InsertDefaults()
 {
-	/* We only add the transmitters in the scenario editor. */
-	if (_game_mode != GM_EDITOR) return;
-
 	ObjectClassID cls = ObjectClass::Allocate('LTHS');
-	ObjectClass::SetName(cls, STR_OBJECT_CLASS_LTHS);
+	ObjectClass::Get(cls)->name = STR_OBJECT_CLASS_LTHS;
 	_object_specs[OBJECT_LIGHTHOUSE].cls_id = cls;
 	ObjectClass::Assign(&_object_specs[OBJECT_LIGHTHOUSE]);
 
 	cls = ObjectClass::Allocate('TRNS');
-	ObjectClass::SetName(cls, STR_OBJECT_CLASS_TRNS);
+	ObjectClass::Get(cls)->name = STR_OBJECT_CLASS_TRNS;
 	_object_specs[OBJECT_TRANSMITTER].cls_id = cls;
 	ObjectClass::Assign(&_object_specs[OBJECT_TRANSMITTER]);
 }
 
+template <typename Tspec, typename Tid, Tid Tmax>
+bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint index) const
+{
+	return this->GetSpec(index)->IsEverAvailable();
+}
+
 INSTANTIATE_NEWGRF_CLASS_METHODS(ObjectClass, ObjectSpec, ObjectClassID, OBJECT_CLASS_MAX)
 
-
-static uint32 ObjectGetRandomBits(const ResolverObject *object)
+/**
+ * Constructor of an object scope resolver.
+ * @param ro Surrounding resolver.
+ * @param obj Object being resolved.
+ * @param tile %Tile of the object.
+ * @param view View of the object.
+ */
+ObjectScopeResolver::ObjectScopeResolver(ResolverObject &ro, Object *obj, TileIndex tile, uint8 view)
+		: ScopeResolver(ro)
 {
-	TileIndex t = object->u.object.tile;
-	return IsValidTile(t) && IsTileType(t, MP_OBJECT) ? GetObjectRandomBits(t) : 0;
+	this->obj = obj;
+	this->tile = tile;
+	this->view = view;
 }
 
-static uint32 ObjectGetTriggers(const ResolverObject *object)
+/* virtual */ uint32 ObjectScopeResolver::GetRandomBits() const
 {
-	return 0;
+	return IsValidTile(this->tile) && IsTileType(this->tile, MP_OBJECT) ? GetObjectRandomBits(this->tile) : 0;
 }
-
-static void ObjectSetTriggers(const ResolverObject *object, int triggers)
-{
-}
-
 
 /**
  * Make an analysis of a tile and get the object type.
@@ -136,7 +160,8 @@ static uint32 GetObjectIDAtOffset(TileIndex tile, uint32 cur_grfid)
 		return 0xFFFF;
 	}
 
-	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+	const Object *o = Object::GetByTile(tile);
+	const ObjectSpec *spec = ObjectSpec::Get(o->type);
 
 	/* Default objects have no associated NewGRF file */
 	if (spec->grf_prop.grffile == NULL) {
@@ -144,7 +169,7 @@ static uint32 GetObjectIDAtOffset(TileIndex tile, uint32 cur_grfid)
 	}
 
 	if (spec->grf_prop.grffile->grfid == cur_grfid) { // same object, same grf ?
-		return spec->grf_prop.local_id;
+		return spec->grf_prop.local_id | o->view << 16;
 	}
 
 	return 0xFFFE; // Defined in another grf file
@@ -178,7 +203,7 @@ static uint32 GetClosestObject(TileIndex tile, ObjectType type, const Object *cu
 	uint32 best_dist = UINT32_MAX;
 	const Object *o;
 	FOR_ALL_OBJECTS(o) {
-		if (GetObjectType(o->location.tile) != type || o == current) continue;
+		if (o->type != type || o == current) continue;
 
 		best_dist = min(best_dist, DistanceManhattan(tile, o->location.tile));
 	}
@@ -221,21 +246,13 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 }
 
 /** Used by the resolver to get values for feature 0F deterministic spritegroups. */
-static uint32 ObjectGetVariable(const ResolverObject *object, byte variable, uint32 parameter, bool *available)
+/* virtual */ uint32 ObjectScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
 {
-	const Object *o = object->u.object.o;
-	TileIndex tile = object->u.object.tile;
-
-	if (object->scope == VSG_SCOPE_PARENT) {
-		/* Pass the request on to the town of the object */
-		return TownGetVariable(variable, parameter, available, (o == NULL) ? ClosestTownFromTile(tile, UINT_MAX) : o->town, object->grffile);
-	}
-
 	/* We get the town from the object, or we calculate the closest
 	 * town if we need to when there's no object. */
 	const Town *t = NULL;
 
-	if (o == NULL) {
+	if (this->obj == NULL) {
 		switch (variable) {
 			/* Allow these when there's no object. */
 			case 0x41:
@@ -248,8 +265,8 @@ static uint32 ObjectGetVariable(const ResolverObject *object, byte variable, uin
 			/* Allow these, but find the closest town. */
 			case 0x45:
 			case 0x46:
-				if (!IsValidTile(tile)) goto unhandled;
-				t = ClosestTownFromTile(tile, UINT_MAX);
+				if (!IsValidTile(this->tile)) goto unhandled;
+				t = ClosestTownFromTile(this->tile, UINT_MAX);
 				break;
 
 			/* Construction date */
@@ -259,7 +276,7 @@ static uint32 ObjectGetVariable(const ResolverObject *object, byte variable, uin
 			case 0x44: return _current_company;
 
 			/* Object view */
-			case 0x48: return object->u.object.view;
+			case 0x48: return this->view;
 
 			/*
 			 * Disallow the rest:
@@ -273,62 +290,64 @@ static uint32 ObjectGetVariable(const ResolverObject *object, byte variable, uin
 		}
 
 		/* If there's an invalid tile, then we don't have enough information at all. */
-		if (!IsValidTile(tile)) goto unhandled;
+		if (!IsValidTile(this->tile)) goto unhandled;
 	} else {
-		t = o->town;
+		t = this->obj->town;
 	}
 
 	switch (variable) {
 		/* Relative position. */
 		case 0x40: {
-			uint offset = tile - o->location.tile;
+			uint offset = this->tile - this->obj->location.tile;
 			uint offset_x = TileX(offset);
 			uint offset_y = TileY(offset);
 			return offset_y << 20 | offset_x << 16 | offset_y << 8 | offset_x;
 		}
 
 		/* Tile information. */
-		case 0x41: return GetTileSlope(tile) << 8 | GetTerrainType(tile);
+		case 0x41: return GetTileSlope(this->tile) << 8 | GetTerrainType(this->tile);
 
 		/* Construction date */
-		case 0x42: return o->build_date;
+		case 0x42: return this->obj->build_date;
 
 		/* Animation counter */
-		case 0x43: return GetAnimationFrame(tile);
+		case 0x43: return GetAnimationFrame(this->tile);
 
 		/* Object founder information */
-		case 0x44: return GetTileOwner(tile);
+		case 0x44: return GetTileOwner(this->tile);
 
 		/* Get town zone and Manhattan distance of closest town */
-		case 0x45: return GetTownRadiusGroup(t, tile) << 16 | min(DistanceManhattan(tile, t->xy), 0xFFFF);
+		case 0x45: return GetTownRadiusGroup(t, this->tile) << 16 | min(DistanceManhattan(this->tile, t->xy), 0xFFFF);
 
 		/* Get square of Euclidian distance of closes town */
-		case 0x46: return GetTownRadiusGroup(t, tile) << 16 | min(DistanceSquare(tile, t->xy), 0xFFFF);
+		case 0x46: return GetTownRadiusGroup(t, this->tile) << 16 | min(DistanceSquare(this->tile, t->xy), 0xFFFF);
 
 		/* Object colour */
-		case 0x47: return o->colour;
+		case 0x47: return this->obj->colour;
 
 		/* Object view */
-		case 0x48: return o->view;
+		case 0x48: return this->obj->view;
 
 		/* Get object ID at offset param */
-		case 0x60: return GetObjectIDAtOffset(GetNearbyTile(parameter, tile), object->grffile->grfid);
+		case 0x60: return GetObjectIDAtOffset(GetNearbyTile(parameter, this->tile), this->ro.grffile->grfid);
 
 		/* Get random tile bits at offset param */
-		case 0x61:
-			tile = GetNearbyTile(parameter, tile);
-			return (IsTileType(tile, MP_OBJECT) && Object::GetByTile(tile) == o) ? GetObjectRandomBits(tile) : 0;
+		case 0x61: {
+			TileIndex tile = GetNearbyTile(parameter, this->tile);
+			return (IsTileType(tile, MP_OBJECT) && Object::GetByTile(tile) == this->obj) ? GetObjectRandomBits(tile) : 0;
+		}
 
 		/* Land info of nearby tiles */
-		case 0x62: return GetNearbyObjectTileInformation(parameter, tile, o == NULL ? INVALID_OBJECT : o->index, object->grffile->grf_version >= 8);
+		case 0x62: return GetNearbyObjectTileInformation(parameter, this->tile, this->obj == NULL ? INVALID_OBJECT : this->obj->index, this->ro.grffile->grf_version >= 8);
 
 		/* Animation counter of nearby tile */
-		case 0x63:
-			tile = GetNearbyTile(parameter, tile);
-			return (IsTileType(tile, MP_OBJECT) && Object::GetByTile(tile) == o) ? GetAnimationFrame(tile) : 0;
+		case 0x63: {
+			TileIndex tile = GetNearbyTile(parameter, this->tile);
+			return (IsTileType(tile, MP_OBJECT) && Object::GetByTile(tile) == this->obj) ? GetAnimationFrame(tile) : 0;
+		}
 
 		/* Count of object, distance of closest instance */
-		case 0x64: return GetCountAndDistanceOfClosestInstance(parameter, object->grffile->grfid, tile, o);
+		case 0x64: return GetCountAndDistanceOfClosestInstance(parameter, this->ro.grffile->grfid, this->tile, this->obj);
 	}
 
 unhandled:
@@ -338,68 +357,47 @@ unhandled:
 	return UINT_MAX;
 }
 
-static const SpriteGroup *ObjectResolveReal(const ResolverObject *object, const RealSpriteGroup *group)
+/**
+ * Constructor of the object resolver.
+ * @param obj Object being resolved.
+ * @param tile %Tile of the object.
+ * @param view View of the object.
+ * @param callback Callback ID.
+ * @param callback_param1 First parameter (var 10) of the callback.
+ * @param callback_param2 Second parameter (var 18) of the callback.
+ */
+ObjectResolverObject::ObjectResolverObject(const ObjectSpec *spec, Object *obj, TileIndex tile, uint8 view,
+		CallbackID callback, uint32 param1, uint32 param2)
+	: ResolverObject(spec->grf_prop.grffile, callback, param1, param2), object_scope(*this, obj, tile, view)
 {
-	/* Objects do not have 'real' groups */
-	return NULL;
+	this->town_scope = NULL;
+	this->root_spritegroup = (obj == NULL && spec->grf_prop.spritegroup[CT_PURCHASE_OBJECT] != NULL) ?
+			spec->grf_prop.spritegroup[CT_PURCHASE_OBJECT] : spec->grf_prop.spritegroup[0];
+}
+
+ObjectResolverObject::~ObjectResolverObject()
+{
+	delete this->town_scope;
 }
 
 /**
- * Get the object's sprite group.
- * @param spec The specification to get the sprite group from.
- * @param o    The object to get he sprite group for.
- * @return The resolved sprite group.
+ * Get the town resolver scope that belongs to this object resolver.
+ * On the first call, the town scope is created (if possible).
+ * @return Town scope, if available.
  */
-static const SpriteGroup *GetObjectSpriteGroup(const ObjectSpec *spec, const Object *o)
+TownScopeResolver *ObjectResolverObject::GetTown()
 {
-	const SpriteGroup *group = NULL;
-
-	if (o == NULL) group = spec->grf_prop.spritegroup[CT_PURCHASE_OBJECT];
-	if (group != NULL) return group;
-
-	/* Fall back to the default set if the selected cargo type is not defined */
-	return spec->grf_prop.spritegroup[0];
-
-}
-
-/**
- * Store a value into the persistent storage of the object's parent.
- * @param object Object that we want to query.
- * @param pos Position in the persistent storage to use.
- * @param value Value to store.
- */
-void ObjectStorePSA(ResolverObject *object, uint pos, int32 value)
-{
-	/* Objects have no persistent storage. */
-	Object *o = object->u.object.o;
-	if (object->scope != VSG_SCOPE_PARENT || o == NULL) return;
-
-	/* Pass the request on to the town of the object */
-	TownStorePSA(o->town, object->grffile, pos, value);
-}
-
-/**
- * Returns a resolver object to be used with feature 0F spritegroups.
- */
-static void NewObjectResolver(ResolverObject *res, const ObjectSpec *spec, Object *o, TileIndex tile, uint8 view = 0)
-{
-	res->GetRandomBits = ObjectGetRandomBits;
-	res->GetTriggers   = ObjectGetTriggers;
-	res->SetTriggers   = ObjectSetTriggers;
-	res->GetVariable   = ObjectGetVariable;
-	res->ResolveReal   = ObjectResolveReal;
-	res->StorePSA      = ObjectStorePSA;
-
-	res->u.object.o    = o;
-	res->u.object.tile = tile;
-	res->u.object.view = view;
-
-	res->callback        = CBID_NO_CALLBACK;
-	res->callback_param1 = 0;
-	res->callback_param2 = 0;
-	res->ResetState();
-
-	res->grffile = spec->grf_prop.grffile;
+	if (this->town_scope == NULL) {
+		Town *t;
+		if (this->object_scope.obj != NULL) {
+			t = this->object_scope.obj->town;
+		} else {
+			t = ClosestTownFromTile(this->object_scope.tile, UINT_MAX);
+		}
+		if (t == NULL) return NULL;
+		this->town_scope = new TownScopeResolver(*this, t, this->object_scope.obj == NULL);
+	}
+	return this->town_scope;
 }
 
 /**
@@ -415,16 +413,8 @@ static void NewObjectResolver(ResolverObject *res, const ObjectSpec *spec, Objec
  */
 uint16 GetObjectCallback(CallbackID callback, uint32 param1, uint32 param2, const ObjectSpec *spec, Object *o, TileIndex tile, uint8 view)
 {
-	ResolverObject object;
-	NewObjectResolver(&object, spec, o, tile, view);
-	object.callback = callback;
-	object.callback_param1 = param1;
-	object.callback_param2 = param2;
-
-	const SpriteGroup *group = SpriteGroup::Resolve(GetObjectSpriteGroup(spec, o), &object);
-	if (group == NULL) return CALLBACK_FAILED;
-
-	return group->GetCallbackResult();
+	ObjectResolverObject object(spec, o, tile, view, callback, param1, param2);
+	return object.ResolveCallback();
 }
 
 /**
@@ -461,11 +451,10 @@ static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *grou
  */
 void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec)
 {
-	ResolverObject object;
 	Object *o = Object::GetByTile(ti->tile);
-	NewObjectResolver(&object, spec, o, ti->tile);
+	ObjectResolverObject object(spec, o, ti->tile);
 
-	const SpriteGroup *group = SpriteGroup::Resolve(GetObjectSpriteGroup(spec, o), &object);
+	const SpriteGroup *group = object.Resolve();
 	if (group == NULL || group->type != SGT_TILELAYOUT) return;
 
 	DrawTileLayout(ti, (const TileLayoutSpriteGroup *)group, spec);
@@ -480,10 +469,8 @@ void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec)
  */
 void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8 view)
 {
-	ResolverObject object;
-	NewObjectResolver(&object, spec, NULL, INVALID_TILE, view);
-
-	const SpriteGroup *group = SpriteGroup::Resolve(GetObjectSpriteGroup(spec, NULL), &object);
+	ObjectResolverObject object(spec, NULL, INVALID_TILE, view);
+	const SpriteGroup *group = object.Resolve();
 	if (group == NULL || group->type != SGT_TILELAYOUT) return;
 
 	const DrawTileSprites *dts = ((const TileLayoutSpriteGroup *)group)->ProcessRegisters(NULL);
@@ -576,14 +563,4 @@ void TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const Obj
 	TILE_AREA_LOOP(tile, o->location) {
 		TriggerObjectTileAnimation(o, tile, trigger, spec);
 	}
-}
-
-/**
- * Resolve an object's spec and such so we can get a variable.
- * @param ro    The resolver object to fill.
- * @param index The object tile to get the data from.
- */
-void GetObjectResolver(ResolverObject *ro, uint index)
-{
-	NewObjectResolver(ro, ObjectSpec::GetByTile(index), Object::GetByTile(index), index);
 }

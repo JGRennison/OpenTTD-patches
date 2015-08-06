@@ -29,6 +29,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 /**
  * Get the name of the song.
  * @param index of the song.
@@ -174,22 +176,22 @@ static void SkipToNextSong()
 
 static void MusicVolumeChanged(byte new_vol)
 {
-	_music_driver->SetVolume(new_vol);
+	MusicDriver::GetInstance()->SetVolume(new_vol);
 }
 
 static void DoPlaySong()
 {
 	char filename[MAX_PATH];
-	if (FioFindFullPath(filename, lengthof(filename), BASESET_DIR, BaseMusic::GetUsedSet()->files[_music_wnd_cursong - 1].filename) == NULL) {
-		FioFindFullPath(filename, lengthof(filename), OLD_GM_DIR, BaseMusic::GetUsedSet()->files[_music_wnd_cursong - 1].filename);
+	if (FioFindFullPath(filename, lastof(filename), BASESET_DIR, BaseMusic::GetUsedSet()->files[_music_wnd_cursong - 1].filename) == NULL) {
+		FioFindFullPath(filename, lastof(filename), OLD_GM_DIR, BaseMusic::GetUsedSet()->files[_music_wnd_cursong - 1].filename);
 	}
-	_music_driver->PlaySong(filename);
+	MusicDriver::GetInstance()->PlaySong(filename);
 	SetWindowDirty(WC_MUSIC_WINDOW, 0);
 }
 
 static void DoStopMusic()
 {
-	_music_driver->StopSong();
+	MusicDriver::GetInstance()->StopSong();
 	SetWindowDirty(WC_MUSIC_WINDOW, 0);
 }
 
@@ -200,12 +202,17 @@ static void SelectSongToPlay()
 
 	memset(_cur_playlist, 0, sizeof(_cur_playlist));
 	do {
-		const char *filename = BaseMusic::GetUsedSet()->files[_playlists[_settings_client.music.playlist][i] - 1].filename;
-		/* We are now checking for the existence of that file prior
-		 * to add it to the list of available songs */
-		if (!StrEmpty(filename) && FioCheckFileExists(filename, BASESET_DIR)) {
-			_cur_playlist[j] = _playlists[_settings_client.music.playlist][i];
-			j++;
+		/* File is the index into the file table of the music set. The play list uses 0 as 'no entry',
+		 * so we need to subtract 1. In case of 'no entry' (file = -1), just skip adding it outright. */
+		int file = _playlists[_settings_client.music.playlist][i] - 1;
+		if (file >= 0) {
+			const char *filename = BaseMusic::GetUsedSet()->files[file].filename;
+			/* We are now checking for the existence of that file prior
+			 * to add it to the list of available songs */
+			if (!StrEmpty(filename) && FioCheckFileExists(filename, BASESET_DIR)) {
+				_cur_playlist[j] = _playlists[_settings_client.music.playlist][i];
+				j++;
+			}
 		}
 	} while (_playlists[_settings_client.music.playlist][++i] != 0 && j < lengthof(_cur_playlist) - 1);
 
@@ -271,7 +278,7 @@ void MusicLoop()
 
 	if (!_song_is_active) return;
 
-	if (!_music_driver->IsSongPlaying()) {
+	if (!MusicDriver::GetInstance()->IsSongPlaying()) {
 		if (_game_mode != GM_MENU) {
 			StopMusic();
 			SkipToNextSong();
@@ -290,9 +297,9 @@ static void SelectPlaylist(byte list)
 }
 
 struct MusicTrackSelectionWindow : public Window {
-	MusicTrackSelectionWindow(const WindowDesc *desc, WindowNumber number) : Window()
+	MusicTrackSelectionWindow(WindowDesc *desc, WindowNumber number) : Window(desc)
 	{
-		this->InitNested(desc, number);
+		this->InitNested(number);
 		this->LowerWidget(WID_MTS_LIST_LEFT);
 		this->LowerWidget(WID_MTS_LIST_RIGHT);
 		this->SetWidgetDisabledState(WID_MTS_CLEAR, _settings_client.music.playlist <= 3);
@@ -495,10 +502,10 @@ static const NWidgetPart _nested_music_track_selection_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _music_track_selection_desc(
-	WDP_AUTO, 0, 0,
+static WindowDesc _music_track_selection_desc(
+	WDP_AUTO, "music_track", 0, 0,
 	WC_MUSIC_TRACK_SELECTION, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_nested_music_track_selection_widgets, lengthof(_nested_music_track_selection_widgets)
 );
 
@@ -510,9 +517,9 @@ static void ShowMusicTrackSelection()
 struct MusicWindow : public Window {
 	static const int slider_width = 3;
 
-	MusicWindow(const WindowDesc *desc, WindowNumber number) : Window()
+	MusicWindow(WindowDesc *desc, WindowNumber number) : Window(desc)
 	{
-		this->InitNested(desc, number);
+		this->InitNested(number);
 		this->LowerWidget(_settings_client.music.playlist + WID_M_ALL);
 		this->SetWidgetLoweredState(WID_M_SHUFFLE, _settings_client.music.shuffle);
 	}
@@ -682,6 +689,8 @@ static const NWidgetPart _nested_music_window_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_MUSIC_JAZZ_JUKEBOX_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, COLOUR_GREY),
+		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL),
@@ -758,10 +767,10 @@ static const NWidgetPart _nested_music_window_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _music_window_desc(
-	WDP_AUTO, 0, 0,
+static WindowDesc _music_window_desc(
+	WDP_AUTO, "music", 0, 0,
 	WC_MUSIC_WINDOW, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_nested_music_window_widgets, lengthof(_nested_music_window_widgets)
 );
 

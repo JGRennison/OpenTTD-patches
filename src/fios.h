@@ -15,6 +15,7 @@
 #include "gfx_type.h"
 #include "company_base.h"
 #include "newgrf_config.h"
+#include "network/core/tcp_content.h"
 
 
 typedef SmallMap<uint, CompanyProperties *> CompanyPropertiesMap;
@@ -40,7 +41,8 @@ struct LoadCheckData {
 	struct LoggedAction *gamelog_action;          ///< Gamelog actions
 	uint gamelog_actions;                         ///< Number of gamelog actions
 
-	LoadCheckData() : error_data(NULL), grfconfig(NULL), gamelog_action(NULL)
+	LoadCheckData() : error_data(NULL), grfconfig(NULL),
+			grf_compatibility(GLC_NOT_FOUND), gamelog_action(NULL), gamelog_actions(0)
 	{
 		this->Clear();
 	}
@@ -87,9 +89,9 @@ enum FileSlots {
 	CONFIG_SLOT    =  0,
 	/** Slot for the sound. */
 	SOUND_SLOT     =  1,
-	/** First slot useable for (New)GRFs used during the game. */
+	/** First slot usable for (New)GRFs used during the game. */
 	FIRST_GRF_SLOT =  2,
-	/** Last slot useable for (New)GRFs used during the game. */
+	/** Last slot usable for (New)GRFs used during the game. */
 	LAST_GRF_SLOT  = 63,
 	/** Maximum number of slots. */
 	MAX_FILE_SLOTS = 64
@@ -168,8 +170,8 @@ const char *FiosBrowseTo(const FiosItem *item);
 
 StringID FiosGetDescText(const char **path, uint64 *total_free);
 bool FiosDelete(const char *name);
-void FiosMakeHeightmapName(char *buf,const char *name, size_t size);
-void FiosMakeSavegameName(char *buf, const char *name, size_t size);
+void FiosMakeHeightmapName(char *buf, const char *name, const char *last);
+void FiosMakeSavegameName(char *buf, const char *name, const char *last);
 
 FiosType FiosGetSavegameListCallback(SaveLoadDialogMode mode, const char *file, const char *ext, char *title, const char *last);
 

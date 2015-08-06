@@ -15,7 +15,7 @@
 #include "vehicle_base.h"
 #include "water_map.h"
 
-void GetShipSpriteSize(EngineID engine, uint &width, uint &height, EngineImageType image_type);
+void GetShipSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 WaterClass GetEffectiveWaterClass(TileIndex tile);
 
 /**
@@ -37,6 +37,7 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	SpriteID GetImage(Direction direction, EngineImageType image_type) const;
 	int GetDisplaySpeed() const { return this->cur_speed / 2; }
 	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed / 2; }
+	int GetCurrentMaxSpeed() const { return min(this->vcache.cached_max_speed, this->current_order.GetMaxSpeed() * 2); }
 	Money GetRunningCost() const;
 	bool IsInDepot() const { return this->state == TRACK_BIT_DEPOT; }
 	bool Tick();

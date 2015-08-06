@@ -141,7 +141,7 @@ private:
 };
 
 /**
- * Event Subidy Awarded, indicating a subsidy is awarded to some company.
+ * Event Subsidy Awarded, indicating a subsidy is awarded to some company.
  * @api ai game
  */
 class ScriptEventSubsidyAwarded : public ScriptEvent {
@@ -168,7 +168,7 @@ public:
 	SubsidyID GetSubsidyID() { return this->subsidy_id; }
 
 private:
-	SubsidyID subsidy_id; ///< The subsidy that was awared.
+	SubsidyID subsidy_id; ///< The subsidy that was awarded.
 };
 
 /**
@@ -412,7 +412,7 @@ class ScriptEventCompanyMerger : public ScriptEvent {
 public:
 	/**
 	 * @param old_owner The company bought off.
-	 * @param new_owner The company that bougth owner.
+	 * @param new_owner The company that bought owner.
 	 */
 	ScriptEventCompanyMerger(Owner old_owner, Owner new_owner) :
 		ScriptEvent(ET_COMPANY_MERGER),
@@ -432,7 +432,7 @@ public:
 	 * @return The CompanyID of the company that has been bought.
 	 * @note: The value below is not valid anymore as CompanyID, and
 	 *  ScriptCompany::ResolveCompanyID will return COMPANY_COMPANY. It's
-	 *  only usefull if you're keeping track of company's yourself.
+	 *  only useful if you're keeping track of company's yourself.
 	 */
 	ScriptCompany::CompanyID GetOldCompanyID() { return this->old_owner; }
 
@@ -700,7 +700,7 @@ public:
 	VehicleID GetVehicleID() { return this->vehicle; }
 
 private:
-	StationID station; ///< The station the vehicle arived at.
+	StationID station; ///< The station the vehicle arrived at.
 	VehicleID vehicle; ///< The vehicle that arrived at the station.
 };
 
@@ -839,15 +839,8 @@ public:
 	/**
 	 * @param json The JSON string which got sent.
 	 */
-	ScriptEventAdminPort(const char *json) :
-		ScriptEvent(ET_ADMIN_PORT),
-		json(strdup(json))
-	{}
-
-	~ScriptEventAdminPort()
-	{
-		free(this->json);
-	}
+	ScriptEventAdminPort(const char *json);
+	~ScriptEventAdminPort();
 
 	/**
 	 * Convert an ScriptEvent to the real instance.
@@ -980,5 +973,91 @@ private:
 	ScriptGoal::QuestionButton button; ///< The button he pressed.
 };
 
+/**
+ * Base class for events involving a town and a company.
+ * @api ai game
+ */
+class ScriptEventCompanyTown : public ScriptEvent {
+public:
+	/**
+	 * @param event The eventtype.
+	 * @param company The company.
+	 * @param town The town.
+	 */
+	ScriptEventCompanyTown(ScriptEventType event, ScriptCompany::CompanyID company, TownID town) :
+		ScriptEvent(event),
+		company(company),
+		town(town)
+	{}
+
+	/**
+	 * Convert an ScriptEvent to the real instance.
+	 * @param instance The instance to convert.
+	 * @return The converted instance.
+	 */
+	static ScriptEventCompanyTown *Convert(ScriptEvent *instance) { return (ScriptEventCompanyTown *)instance; }
+
+	/**
+	 * Get the CompanyID of the company.
+	 * @return The CompanyID of the company involved into the event.
+	 */
+	ScriptCompany::CompanyID GetCompanyID() { return this->company; }
+
+	/**
+	 * Get the TownID of the town.
+	 * @return The TownID of the town involved into the event.
+	 */
+	TownID GetTownID() { return this->town; }
+
+private:
+	ScriptCompany::CompanyID company; ///< The company involved into the event.
+	TownID town;                      ///< The town involved into the event.
+};
+
+/**
+ * Event Exclusive Transport Rights, indicating that company bought
+ * exclusive transport rights in a town.
+ * @api ai game
+ */
+class ScriptEventExclusiveTransportRights : public ScriptEventCompanyTown {
+public:
+	/**
+	 * @param company The company.
+	 * @param town The town.
+	 */
+	ScriptEventExclusiveTransportRights(ScriptCompany::CompanyID company, TownID town) :
+		ScriptEventCompanyTown(ET_EXCLUSIVE_TRANSPORT_RIGHTS, company, town)
+	{}
+
+	/**
+	 * Convert an ScriptEvent to the real instance.
+	 * @param instance The instance to convert.
+	 * @return The converted instance.
+	 */
+	static ScriptEventExclusiveTransportRights *Convert(ScriptEventCompanyTown *instance) { return (ScriptEventExclusiveTransportRights *)instance; }
+};
+
+/**
+ * Event Road Reconstruction, indicating that company triggered
+ * road reconstructions in a town.
+ * @api ai game
+ */
+class ScriptEventRoadReconstruction : public ScriptEventCompanyTown {
+public:
+	/**
+	 * @param company The company.
+	 * @param town The town.
+	 */
+	ScriptEventRoadReconstruction(ScriptCompany::CompanyID company, TownID town) :
+		ScriptEventCompanyTown(ET_ROAD_RECONSTRUCTION, company, town)
+	{}
+
+	/**
+	 * Convert an ScriptEvent to the real instance.
+	 * @param instance The instance to convert.
+	 * @return The converted instance.
+	 */
+	static ScriptEventRoadReconstruction *Convert(ScriptEventCompanyTown *instance) { return (ScriptEventRoadReconstruction *)instance; }
+};
 
 #endif /* SCRIPT_EVENT_TYPES_HPP */

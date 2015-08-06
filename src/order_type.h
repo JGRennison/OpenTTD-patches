@@ -27,6 +27,12 @@ static const VehicleOrderID MAX_VEH_ORDER_ID     = INVALID_VEH_ORDER_ID - 1;
 /** Invalid order (sentinel) */
 static const OrderID INVALID_ORDER = 0xFFFF;
 
+/**
+ * Maximum number of orders in implicit-only lists before we start searching
+ * harder for duplicates.
+ */
+static const uint IMPLICIT_ORDER_ONLY_CAP = 32;
+
 /** Order types */
 enum OrderType {
 	OT_BEGIN         = 0,
@@ -61,8 +67,8 @@ enum OrderUnloadFlags {
  */
 enum OrderLoadFlags {
 	OLF_LOAD_IF_POSSIBLE = 0,      ///< Load as long as there is cargo that fits in the train.
-	OLFB_FULL_LOAD       = 1 << 1, ///< Full load the complete the consist.
-	OLF_FULL_LOAD_ANY    = 3,      ///< Full load the a single cargo of the consist.
+	OLFB_FULL_LOAD       = 1 << 1, ///< Full load all cargoes of the consist.
+	OLF_FULL_LOAD_ANY    = 3,      ///< Full load a single cargo of the consist.
 	OLFB_NO_LOAD         = 4,      ///< Do not load anything.
 };
 
@@ -137,7 +143,7 @@ enum OrderConditionComparator {
 
 
 /**
- * Enumeration for the data to set in CmdModifyOrder.
+ * Enumeration for the data to set in #CmdModifyOrder.
  */
 enum ModifyOrderFlags {
 	MOF_NON_STOP,        ///< Passes an OrderNonStopFlags.
@@ -154,7 +160,7 @@ enum ModifyOrderFlags {
 template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 4> {};
 
 /**
- * Depot action to switch to when doing a MOF_DEPOT_ACTION.
+ * Depot action to switch to when doing a #MOF_DEPOT_ACTION.
  */
 enum OrderDepotAction {
 	DA_ALWAYS_GO, ///< Always go to the depot
@@ -164,7 +170,7 @@ enum OrderDepotAction {
 };
 
 /**
- * Enumeration for the data to set in CmdChangeTimetable.
+ * Enumeration for the data to set in #CmdChangeTimetable.
  */
 enum ModifyTimetableFlags {
 	MTF_WAIT_TIME,    ///< Set wait time.
@@ -175,7 +181,7 @@ enum ModifyTimetableFlags {
 template <> struct EnumPropsT<ModifyTimetableFlags> : MakeEnumPropsT<ModifyTimetableFlags, byte, MTF_WAIT_TIME, MTF_END, MTF_END, 2> {};
 
 
-/* Possible clone options */
+/** Clone actions. */
 enum CloneOptions {
 	CO_SHARE   = 0,
 	CO_COPY    = 1,

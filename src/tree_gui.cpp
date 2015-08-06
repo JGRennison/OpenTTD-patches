@@ -25,6 +25,8 @@
 #include "table/strings.h"
 #include "table/tree_land.h"
 
+#include "safeguards.h"
+
 void PlaceTreesRandomly();
 
 /** Tree Sprites with their palettes */
@@ -52,9 +54,9 @@ class BuildTreesWindow : public Window
 	TreeType tree_to_plant; ///< Tree number to plant, \c TREE_INVALID for a random tree.
 
 public:
-	BuildTreesWindow(const WindowDesc *desc, WindowNumber window_number) : Window()
+	BuildTreesWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
-		this->InitNested(desc, window_number);
+		this->InitNested(window_number);
 		ResetObjectToPlace();
 	}
 
@@ -100,11 +102,6 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
-	{
-		this->DrawWidgets();
-	}
-
 	virtual void DrawWidget(const Rect &r, int widget) const
 	{
 		if (widget < WID_BT_TYPE_11 || widget > WID_BT_TYPE_34 || widget - WID_BT_TYPE_11 >= this->count) return;
@@ -134,9 +131,7 @@ public:
 				break;
 
 			case WID_BT_MANY_RANDOM: // place trees randomly over the landscape
-				this->LowerWidget(WID_BT_MANY_RANDOM);
-				this->SetTimeout();
-				SndPlayFx(SND_15_BEEP);
+				if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
 				PlaceTreesRandomly();
 				MarkWholeScreenDirty();
 				break;
@@ -145,8 +140,7 @@ public:
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)
 	{
-		VpStartPlaceSizing(tile, VPM_X_AND_Y_LIMITED, DDSP_PLANT_TREES);
-		VpSetPlaceSizingLimit(20);
+		VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_PLANT_TREES);
 	}
 
 	virtual void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt)
@@ -169,12 +163,6 @@ public:
 	{
 		this->base  = _tree_base_by_landscape[_settings_game.game_creation.landscape];
 		this->count = _tree_count_by_landscape[_settings_game.game_creation.landscape];
-	}
-
-	virtual void OnTimeout()
-	{
-		this->RaiseWidget(WID_BT_MANY_RANDOM);
-		this->SetWidgetDirty(WID_BT_MANY_RANDOM);
 	}
 
 	virtual void OnPlaceObjectAbort()
@@ -239,7 +227,7 @@ static const NWidgetPart _nested_build_trees_widgets[] = {
 				NWidget(NWID_SPACER), SetMinimalSize(0, 1),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_TYPE_RANDOM), SetMinimalSize(139, 12), SetDataTip(STR_TREES_RANDOM_TYPE, STR_TREES_RANDOM_TYPE_TOOLTIP),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 1),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_MANY_RANDOM), SetMinimalSize(139, 12), SetDataTip(STR_TREES_RANDOM_TREES_BUTTON, STR_TREES_RANDOM_TREES_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BT_MANY_RANDOM), SetMinimalSize(139, 12), SetDataTip(STR_TREES_RANDOM_TREES_BUTTON, STR_TREES_RANDOM_TREES_TOOLTIP),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 2),
 			EndContainer(),
 			NWidget(NWID_SPACER), SetMinimalSize(2, 0),
@@ -247,8 +235,8 @@ static const NWidgetPart _nested_build_trees_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _build_trees_desc(
-	WDP_AUTO, 0, 0,
+static WindowDesc _build_trees_desc(
+	WDP_AUTO, "build_tree", 0, 0,
 	WC_BUILD_TREES, WC_NONE,
 	WDF_CONSTRUCTION,
 	_nested_build_trees_widgets, lengthof(_nested_build_trees_widgets)

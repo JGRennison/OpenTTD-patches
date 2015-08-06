@@ -45,7 +45,7 @@ struct PoolBase {
 	static void Clean(PoolType);
 
 	/**
-	 * Contructor registers this object in the pool vector.
+	 * Constructor registers this object in the pool vector.
 	 * @param pt type of this pool.
 	 */
 	PoolBase(PoolType pt) : type(pt)
@@ -59,6 +59,13 @@ struct PoolBase {
 	 * Virtual method that deletes all items in the pool.
 	 */
 	virtual void CleanPool() = 0;
+
+private:
+	/**
+	 * Dummy private copy constructor to prevent compilers from
+	 * copying the structure, which fails due to GetPools().
+	 */
+	PoolBase(const PoolBase &other);
 };
 
 /**
@@ -74,6 +81,9 @@ struct PoolBase {
  */
 template <class Titem, typename Tindex, size_t Tgrowth_step, size_t Tmax_size, PoolType Tpool_type = PT_NORMAL, bool Tcache = false, bool Tzero = true>
 struct Pool : PoolBase {
+	/* Ensure Tmax_size is within the bounds of Tindex. */
+	assert_compile((uint64)(Tmax_size - 1) >> 8 * sizeof(Tindex) == 0);
+
 	static const size_t MAX_SIZE = Tmax_size; ///< Make template parameter accessible from outside
 
 	const char * const name; ///< Name of this pool
@@ -93,7 +103,7 @@ struct Pool : PoolBase {
 	virtual void CleanPool();
 
 	/**
-	 * Returs Titem with given index
+	 * Returns Titem with given index
 	 * @param index of item to get
 	 * @return pointer to Titem
 	 * @pre index < this->first_unused
@@ -154,6 +164,7 @@ struct Pool : PoolBase {
 		 */
 		inline void operator delete(void *p)
 		{
+			if (p == NULL) return;
 			Titem *pn = (Titem *)p;
 			assert(pn == Tpool->Get(pn->index));
 			Tpool->FreeItem(pn->index);
@@ -227,7 +238,7 @@ struct Pool : PoolBase {
 		}
 
 		/**
-		 * Returs Titem with given index
+		 * Returns Titem with given index
 		 * @param index of item to get
 		 * @return pointer to Titem
 		 * @pre index < this->first_unused
@@ -238,7 +249,7 @@ struct Pool : PoolBase {
 		}
 
 		/**
-		 * Returs Titem with given index
+		 * Returns Titem with given index
 		 * @param index of item to get
 		 * @return pointer to Titem
 		 * @note returns NULL for invalid index
@@ -278,7 +289,7 @@ struct Pool : PoolBase {
 	};
 
 private:
-	static const size_t NO_FREE_ITEM = MAX_UVALUE(size_t); ///< Contant to indicate we can't allocate any more items
+	static const size_t NO_FREE_ITEM = MAX_UVALUE(size_t); ///< Constant to indicate we can't allocate any more items
 
 	/**
 	 * Helper struct to cache 'freed' PoolItems so we

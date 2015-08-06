@@ -39,27 +39,57 @@ public:
 	 * Copy constructor.
 	 * @param other The other vector to copy.
 	 */
+	SmallVector(const SmallVector &other) : data(NULL), items(0), capacity(0)
+	{
+		this->Assign(other);
+	}
+
+	/**
+	 * Generic copy constructor.
+	 * @param other The other vector to copy.
+	 */
 	template <uint X>
 	SmallVector(const SmallVector<T, X> &other) : data(NULL), items(0), capacity(0)
 	{
-		MemCpyT<T>(this->Append(other.Length()), other.Begin(), other.Length());
+		this->Assign(other);
 	}
 
 	/**
 	 * Assignment.
-	 * @param other The new vector that.
+	 * @param other The other vector to assign.
+	 */
+	SmallVector &operator=(const SmallVector &other)
+	{
+		this->Assign(other);
+		return *this;
+	}
+
+	/**
+	 * Generic assignment.
+	 * @param other The other vector to assign.
 	 */
 	template <uint X>
 	SmallVector &operator=(const SmallVector<T, X> &other)
 	{
-		this->Reset();
-		MemCpyT<T>(this->Append(other.Length()), other.Begin(), other.Length());
+		this->Assign(other);
 		return *this;
 	}
 
 	~SmallVector()
 	{
 		free(this->data);
+	}
+
+	/**
+	 * Assign items from other vector.
+	 */
+	template <uint X>
+	inline void Assign(const SmallVector<T, X> &other)
+	{
+		if ((const void *)&other == (void *)this) return;
+
+		this->Clear();
+		if (other.Length() > 0) MemCpyT<T>(this->Append(other.Length()), other.Begin(), other.Length());
 	}
 
 	/**
@@ -115,6 +145,20 @@ public:
 	}
 
 	/**
+	 * Set the size of the vector, effectively truncating items from the end or appending uninitialised ones.
+	 * @param num_items Target size.
+	 */
+	inline void Resize(uint num_items)
+	{
+		this->items = num_items;
+
+		if (this->items > this->capacity) {
+			this->capacity = Align(this->items, S);
+			this->data = ReallocT(this->data, this->capacity);
+		}
+	}
+
+	/**
 	 * Search for the first occurrence of an item.
 	 * The '!=' operator of T is used for comparison.
 	 * @param item Item to search for
@@ -148,10 +192,10 @@ public:
 	 * @param item Item to search for
 	 * @return The position of the item, or -1 when not present
 	 */
-	inline int FindIndex(const T &item)
+	inline int FindIndex(const T &item) const
 	{
 		int index = 0;
-		T *pos = this->Begin();
+		const T *pos = this->Begin();
 		const T *end = this->End();
 		while (pos != end && *pos != item) {
 			pos++;
@@ -180,6 +224,21 @@ public:
 	{
 		assert(item >= this->Begin() && item < this->End());
 		*item = this->data[--this->items];
+	}
+
+	/**
+	 * Remove items from the vector while preserving the order of other items.
+	 * @param pos First item to remove.
+	 * @param count Number of consecutive items to remove.
+	 */
+	void ErasePreservingOrder(uint pos, uint count = 1)
+	{
+		if (count == 0) return;
+		assert(pos < this->items);
+		assert(pos + count <= this->items);
+		this->items -= count;
+		uint to_move = this->items - pos;
+		if (to_move > 0) MemMoveT(this->data + pos, this->data + pos + count, to_move);
 	}
 
 	/**

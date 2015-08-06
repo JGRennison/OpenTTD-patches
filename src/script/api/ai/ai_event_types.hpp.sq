@@ -361,3 +361,47 @@ void SQAIEventAircraftDestTooFar_Register(Squirrel *engine)
 
 	SQAIEventAircraftDestTooFar.PostRegister(engine);
 }
+
+
+template <> const char *GetClassName<ScriptEventCompanyTown, ST_AI>() { return "AIEventCompanyTown"; }
+
+void SQAIEventCompanyTown_Register(Squirrel *engine)
+{
+	DefSQClass<ScriptEventCompanyTown, ST_AI> SQAIEventCompanyTown("AIEventCompanyTown");
+	SQAIEventCompanyTown.PreRegister(engine, "AIEvent");
+
+	SQAIEventCompanyTown.DefSQStaticMethod(engine, &ScriptEventCompanyTown::Convert, "Convert", 2, ".x");
+
+	SQAIEventCompanyTown.DefSQMethod(engine, &ScriptEventCompanyTown::GetCompanyID, "GetCompanyID", 1, "x");
+	SQAIEventCompanyTown.DefSQMethod(engine, &ScriptEventCompanyTown::GetTownID,    "GetTownID",    1, "x");
+
+	SQAIEventCompanyTown.PostRegister(engine);
+}
+
+
+template <> const char *GetClassName<ScriptEventExclusiveTransportRights, ST_AI>() { return "AIEventExclusiveTransportRights"; }
+
+void SQAIEventExclusiveTransportRights_Register(Squirrel *engine)
+{
+	DefSQClass<ScriptEventExclusiveTransportRights, ST_AI> SQAIEventExclusiveTransportRights("AIEventExclusiveTransportRights");
+	SQAIEventExclusiveTransportRights.PreRegister(engine, "AIEventCompanyTown");
+	SQAIEventExclusiveTransportRights.AddConstructor<void (ScriptEventExclusiveTransportRights::*)(ScriptCompany::CompanyID company, TownID town), 3>(engine, "xii");
+
+	SQAIEventExclusiveTransportRights.DefSQStaticMethod(engine, &ScriptEventExclusiveTransportRights::Convert, "Convert", 2, ".x");
+
+	SQAIEventExclusiveTransportRights.PostRegister(engine);
+}
+
+
+template <> const char *GetClassName<ScriptEventRoadReconstruction, ST_AI>() { return "AIEventRoadReconstruction"; }
+
+void SQAIEventRoadReconstruction_Register(Squirrel *engine)
+{
+	DefSQClass<ScriptEventRoadReconstruction, ST_AI> SQAIEventRoadReconstruction("AIEventRoadReconstruction");
+	SQAIEventRoadReconstruction.PreRegister(engine, "AIEventCompanyTown");
+	SQAIEventRoadReconstruction.AddConstructor<void (ScriptEventRoadReconstruction::*)(ScriptCompany::CompanyID company, TownID town), 3>(engine, "xii");
+
+	SQAIEventRoadReconstruction.DefSQStaticMethod(engine, &ScriptEventRoadReconstruction::Convert, "Convert", 2, ".x");
+
+	SQAIEventRoadReconstruction.PostRegister(engine);
+}

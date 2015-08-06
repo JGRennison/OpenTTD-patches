@@ -10,6 +10,8 @@
 /** @file currency.cpp Support for different currencies. */
 
 #include "stdafx.h"
+#include "core/bitmath_func.hpp"
+
 #include "currency.h"
 #include "news_func.h"
 #include "settings_type.h"
@@ -18,12 +20,14 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 	/*   exchange rate    prefix                         symbol_pos
 	 *   |  separator        |           postfix             |
 	 *   |   |   Euro year   |              |                | name
 	 *   |   |    |          |              |                |  | */
 /** The original currency specifications. */
-static const CurrencySpec origin_currency_specs[NUM_CURRENCY] = {
+static const CurrencySpec origin_currency_specs[CURRENCY_END] = {
 	{    1, "", CF_NOEURO, "\xC2\xA3",     "",               0, STR_GAME_OPTIONS_CURRENCY_GBP    }, ///< british pound
 	{    2, "", CF_NOEURO, "$",            "",               0, STR_GAME_OPTIONS_CURRENCY_USD    }, ///< american dollar
 	{    2, "", CF_ISEURO, "\xE2\x82\xAC", "",               0, STR_GAME_OPTIONS_CURRENCY_EUR    }, ///< euro
@@ -52,48 +56,16 @@ static const CurrencySpec origin_currency_specs[NUM_CURRENCY] = {
 	{   60, "", 2009,      "",             NBSP "Sk",        1, STR_GAME_OPTIONS_CURRENCY_SKK    }, ///< slovak koruna
 	{    4, "", CF_NOEURO, "R$" NBSP,      "",               0, STR_GAME_OPTIONS_CURRENCY_BRL    }, ///< brazil real
 	{   31, "", 2011,      "",             NBSP "EEK",       1, STR_GAME_OPTIONS_CURRENCY_EEK    }, ///< estonian krooni
-	{    1, "", CF_NOEURO, "",             "",               2, STR_GAME_OPTIONS_CURRENCY_CUSTOM }, ///< custom currency
+	{    4, "", 2015,      "",             NBSP "Lt",        1, STR_GAME_OPTIONS_CURRENCY_LTL    }, ///< lithuanian litas
+	{ 1850, "", CF_NOEURO, "\xE2\x82\xA9", "",               0, STR_GAME_OPTIONS_CURRENCY_KRW    }, ///< south korean won
+	{   13, "", CF_NOEURO, "R" NBSP,       "",               0, STR_GAME_OPTIONS_CURRENCY_ZAR    }, ///< south african rand
+	{    1, "", CF_NOEURO, "",             "",               2, STR_GAME_OPTIONS_CURRENCY_CUSTOM }, ///< custom currency (add further languages below)
+	{    3, "", CF_NOEURO, "",             NBSP "GEL",       1, STR_GAME_OPTIONS_CURRENCY_GEL    }, ///< Georgian Lari
+	{ 4901, "", CF_NOEURO, "",             NBSP "Rls",       1, STR_GAME_OPTIONS_CURRENCY_IRR    }, ///< Iranian Rial
 };
 
 /** Array of currencies used by the system */
-CurrencySpec _currency_specs[NUM_CURRENCY];
-
-/**
- * These enums are only declared in order to make sens
- * out of the TTDPatch_To_OTTDIndex array that will follow
- * Every currency used by Ottd is there, just in case TTDPatch will
- * add those missing in its code
- */
-enum Currencies {
-	CURR_GBP,
-	CURR_USD,
-	CURR_EUR,
-	CURR_JPY,
-	CURR_ATS,
-	CURR_BEF,
-	CURR_CHF,
-	CURR_CZK,
-	CURR_DEM,
-	CURR_DKK,
-	CURR_ESP,
-	CURR_FIM,
-	CURR_FRF,
-	CURR_GRD,
-	CURR_HUF,
-	CURR_ISK,
-	CURR_ITL,
-	CURR_NLG,
-	CURR_NOK,
-	CURR_PLN,
-	CURR_RON,
-	CURR_RUR,
-	CURR_SIT,
-	CURR_SEK,
-	CURR_YTL,
-	CURR_SKK,
-	CURR_BRL,
-	CURR_EEK,
-};
+CurrencySpec _currency_specs[CURRENCY_END];
 
 /**
  * This array represent the position of OpenTTD's currencies,
@@ -103,29 +75,29 @@ enum Currencies {
  */
 const byte TTDPatch_To_OTTDIndex[] =
 {
-	CURR_GBP,
-	CURR_USD,
-	CURR_FRF,
-	CURR_DEM,
-	CURR_JPY,
-	CURR_ESP,
-	CURR_HUF,
-	CURR_PLN,
-	CURR_ATS,
-	CURR_BEF,
-	CURR_DKK,
-	CURR_FIM,
-	CURR_GRD,
-	CURR_CHF,
-	CURR_NLG,
-	CURR_ITL,
-	CURR_SEK,
-	CURR_RUR,
-	CURR_EUR,
+	CURRENCY_GBP,
+	CURRENCY_USD,
+	CURRENCY_FRF,
+	CURRENCY_DEM,
+	CURRENCY_JPY,
+	CURRENCY_ESP,
+	CURRENCY_HUF,
+	CURRENCY_PLN,
+	CURRENCY_ATS,
+	CURRENCY_BEF,
+	CURRENCY_DKK,
+	CURRENCY_FIM,
+	CURRENCY_GRD,
+	CURRENCY_CHF,
+	CURRENCY_NLG,
+	CURRENCY_ITL,
+	CURRENCY_SEK,
+	CURRENCY_RUR,
+	CURRENCY_EUR,
 };
 
 /**
- * Will return the ottd's index correspondance to
+ * Will return the ottd's index correspondence to
  * the ttdpatch's id.  If the id is bigger than the array,
  * it is a grf written for ottd, thus returning the same id.
  * Only called from newgrf.cpp
@@ -141,19 +113,19 @@ byte GetNewgrfCurrencyIdConverted(byte grfcurr_id)
  * get a mask of the allowed currencies depending on the year
  * @return mask of currencies
  */
-uint GetMaskOfAllowedCurrencies()
+uint64 GetMaskOfAllowedCurrencies()
 {
-	uint mask = 0;
+	uint64 mask = 0LL;
 	uint i;
 
-	for (i = 0; i < NUM_CURRENCY; i++) {
+	for (i = 0; i < CURRENCY_END; i++) {
 		Year to_euro = _currency_specs[i].to_euro;
 
 		if (to_euro != CF_NOEURO && to_euro != CF_ISEURO && _cur_year >= to_euro) continue;
 		if (to_euro == CF_ISEURO && _cur_year < 2000) continue;
-		mask |= (1 << i);
+		SetBit(mask, i);
 	}
-	mask |= (1 << CUSTOM_CURRENCY_ID); // always allow custom currency
+	SetBit(mask, CURRENCY_CUSTOM); // always allow custom currency
 	return mask;
 }
 
@@ -166,7 +138,7 @@ void CheckSwitchToEuro()
 			_currency_specs[_settings_game.locale.currency].to_euro != CF_ISEURO &&
 			_cur_year >= _currency_specs[_settings_game.locale.currency].to_euro) {
 		_settings_game.locale.currency = 2; // this is the index of euro above.
-		AddNewsItem(STR_NEWS_EURO_INTRODUCTION, NS_ECONOMY);
+		AddNewsItem(STR_NEWS_EURO_INTRODUCTION, NT_ECONOMY, NF_NORMAL);
 	}
 }
 
@@ -174,14 +146,14 @@ void CheckSwitchToEuro()
  * Will fill _currency_specs array with
  * default values from origin_currency_specs
  * Called only from newgrf.cpp and settings.cpp.
- * @param preserve_custom will not reset custom currency (the latest one on the list)
- *        if ever it is flagged to true. In which case, the total size of the memory to move
- *        will be one currency spec less, thus preserving the custom curreny from been
- *        overwritten.
+ * @param preserve_custom will not reset custom currency
  */
 void ResetCurrencies(bool preserve_custom)
 {
-	memcpy(&_currency_specs, &origin_currency_specs, sizeof(origin_currency_specs) - (preserve_custom ? sizeof(_custom_currency) : 0));
+	for (uint i = 0; i < CURRENCY_END; i++) {
+		if (preserve_custom && i == CURRENCY_CUSTOM) continue;
+		_currency_specs[i] = origin_currency_specs[i];
+	}
 }
 
 /**
@@ -191,11 +163,11 @@ void ResetCurrencies(bool preserve_custom)
 StringID *BuildCurrencyDropdown()
 {
 	/* Allow room for all currencies, plus a terminator entry */
-	static StringID names[NUM_CURRENCY + 1];
+	static StringID names[CURRENCY_END + 1];
 	uint i;
 
 	/* Add each name */
-	for (i = 0; i < NUM_CURRENCY; i++) {
+	for (i = 0; i < CURRENCY_END; i++) {
 		names[i] = _currency_specs[i].name;
 	}
 	/* Terminate the list */

@@ -29,6 +29,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /** Widgets for the background window to prevent smearing. */
 static const struct NWidgetPart _background_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_DARK_BLUE, WID_BB_BACKGROUND), SetResize(1, 1),
@@ -37,8 +39,8 @@ static const struct NWidgetPart _background_widgets[] = {
 /**
  * Window description for the background window to prevent smearing.
  */
-static const WindowDesc _background_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _background_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_BOOTSTRAP, WC_NONE,
 	0,
 	_background_widgets, lengthof(_background_widgets)
@@ -47,9 +49,9 @@ static const WindowDesc _background_desc(
 /** The background for the game. */
 class BootstrapBackground : public Window {
 public:
-	BootstrapBackground() : Window()
+	BootstrapBackground() : Window(&_background_desc)
 	{
-		this->InitNested(&_background_desc, 0);
+		this->InitNested(0);
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		ResizeWindow(this, _screen.width, _screen.height);
 	}
@@ -70,8 +72,8 @@ static const NWidgetPart _nested_boostrap_download_status_window_widgets[] = {
 };
 
 /** Window description for the download window */
-static const WindowDesc _bootstrap_download_status_window_desc(
-	WDP_CENTER, 0, 0,
+static WindowDesc _bootstrap_download_status_window_desc(
+	WDP_CENTER, NULL, 0, 0,
 	WC_NETWORK_STATUS_WINDOW, WC_NONE,
 	WDF_MODAL,
 	_nested_boostrap_download_status_window_widgets, lengthof(_nested_boostrap_download_status_window_widgets)
@@ -115,10 +117,10 @@ static const NWidgetPart _bootstrap_query_widgets[] = {
 };
 
 /** The window description for the query. */
-static const WindowDesc _bootstrap_query_desc(
-	WDP_CENTER, 0, 0,
+static WindowDesc _bootstrap_query_desc(
+	WDP_CENTER, NULL, 0, 0,
 	WC_CONFIRM_POPUP_QUERY, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_bootstrap_query_widgets, lengthof(_bootstrap_query_widgets)
 );
 
@@ -128,9 +130,9 @@ class BootstrapAskForDownloadWindow : public Window, ContentCallback {
 
 public:
 	/** Start listening to the content client events. */
-	BootstrapAskForDownloadWindow() : Window()
+	BootstrapAskForDownloadWindow() : Window(&_bootstrap_query_desc)
 	{
-		this->InitNested(&_bootstrap_query_desc, WN_CONFIRM_POPUP_QUERY_BOOTSTRAP);
+		this->InitNested(WN_CONFIRM_POPUP_QUERY_BOOTSTRAP);
 		_network_content_client.AddCallback(this);
 	}
 
@@ -205,7 +207,7 @@ public:
 #endif /* defined(ENABLE_NETWORK) && defined(WITH_FREETYPE) */
 
 /**
- * Handle all procedures for bootstrapping OpenTTD without a base grapics set.
+ * Handle all procedures for bootstrapping OpenTTD without a base graphics set.
  * This requires all kinds of trickery that is needed to avoid the use of
  * sprites from the base graphics set which are pretty interwoven.
  * @return True if a base set exists, otherwise false.
@@ -215,10 +217,10 @@ bool HandleBootstrap()
 	if (BaseGraphics::GetUsedSet() != NULL) return true;
 
 	/* No user interface, bail out with an error. */
-	if (BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth() == 0) goto failure;
+	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 0) goto failure;
 
 	/* If there is no network or no freetype, then there is nothing we can do. Go straight to failure. */
-#if defined(ENABLE_NETWORK) && defined(WITH_FREETYPE) && !defined(__APPLE__)
+#if defined(ENABLE_NETWORK) && defined(WITH_FREETYPE) && (defined(WITH_FONTCONFIG) || defined(WIN32) || defined(__APPLE__))
 	if (!_network_available) goto failure;
 
 	/* First tell the game we're bootstrapping. */
@@ -244,7 +246,7 @@ bool HandleBootstrap()
 	new BootstrapAskForDownloadWindow();
 
 	/* Process the user events. */
-	_video_driver->MainLoop();
+	VideoDriver::GetInstance()->MainLoop();
 
 	/* _exit_game is used to get out of the video driver's main loop.
 	 * In case GM_BOOTSTRAP is still set we did not exit it via the

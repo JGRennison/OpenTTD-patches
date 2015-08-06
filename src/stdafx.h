@@ -21,6 +21,7 @@
 	#include <unistd.h>
 	#define _GNU_SOURCE
 	#define TROUBLED_INTS
+	#include <strings.h>
 #elif defined(__NDS__)
 	#include <nds/jtypes.h>
 	#define TROUBLED_INTS
@@ -28,31 +29,54 @@
 
 /* It seems that we need to include stdint.h before anything else
  * We need INT64_MAX, which for most systems comes from stdint.h. However, MSVC
- * does not have stdint.h and apparently neither does MorphOS, so define
- * INT64_MAX for them ourselves. */
-#if defined(__APPLE__)
-	/* Already done in osx_stdafx.h */
-#elif !defined(_MSC_VER) && !defined( __MORPHOS__) && !defined(_STDINT_H_)
+ * does not have stdint.h and apparently neither does MorphOS.
+ * For OSX the inclusion is already done in osx_stdafx.h. */
+#if !defined(__APPLE__) && (!defined(_MSC_VER) || _MSC_VER >= 1600) && !defined(__MORPHOS__)
 	#if defined(SUNOS)
 		/* SunOS/Solaris does not have stdint.h, but inttypes.h defines everything
 		 * stdint.h defines and we need. */
 		#include <inttypes.h>
-	# else
+	#else
 		#define __STDC_LIMIT_MACROS
 		#include <stdint.h>
 	#endif
-#else
+#endif
+
+/* The conditions for these constants to be available are way too messy; so check them one by one */
+#if !defined(UINT64_MAX)
 	#define UINT64_MAX (18446744073709551615ULL)
+#endif
+#if !defined(INT64_MAX)
 	#define INT64_MAX  (9223372036854775807LL)
+#endif
+#if !defined(INT64_MIN)
 	#define INT64_MIN  (-INT64_MAX - 1)
+#endif
+#if !defined(UINT32_MAX)
 	#define UINT32_MAX (4294967295U)
+#endif
+#if !defined(INT32_MAX)
 	#define INT32_MAX  (2147483647)
+#endif
+#if !defined(INT32_MIN)
 	#define INT32_MIN  (-INT32_MAX - 1)
+#endif
+#if !defined(UINT16_MAX)
 	#define UINT16_MAX (65535U)
+#endif
+#if !defined(INT16_MAX)
 	#define INT16_MAX  (32767)
+#endif
+#if !defined(INT16_MIN)
 	#define INT16_MIN  (-INT16_MAX - 1)
+#endif
+#if !defined(UINT8_MAX)
 	#define UINT8_MAX  (255)
+#endif
+#if !defined(INT8_MAX)
 	#define INT8_MAX   (127)
+#endif
+#if !defined(INT8_MIN)
 	#define INT8_MIN   (-INT8_MAX - 1)
 #endif
 
@@ -154,19 +178,30 @@
 /* Stuff for MSVC */
 #if defined(_MSC_VER)
 	#pragma once
-	/* Define a win32 target platform, to override defaults of the SDK
-	 * We need to define NTDDI version for Vista SDK, but win2k is minimum */
-	#define NTDDI_VERSION NTDDI_WIN2K // Windows 2000
-	#define _WIN32_WINNT 0x0500       // Windows 2000
-	#define _WIN32_WINDOWS 0x400      // Windows 95
-	#if !defined(WINCE)
-		#define WINVER 0x0400     // Windows NT 4.0 / Windows 95
+	#ifdef _WIN64
+		/* No 64-bit Windows below XP, so we can safely assume it as the target platform. */
+		#define NTDDI_VERSION NTDDI_WINXP // Windows XP
+		#define _WIN32_WINNT 0x501        // Windows XP
+		#define _WIN32_WINDOWS 0x501      // Windows XP
+		#define WINVER 0x0501             // Windows XP
+		#define _WIN32_IE_ 0x0600         // 6.0 (XP+)
+	#else
+		/* Define a win32 target platform, to override defaults of the SDK
+		 * We need to define NTDDI version for Vista SDK, but win2k is minimum */
+		#define NTDDI_VERSION NTDDI_WIN2K // Windows 2000
+		#define _WIN32_WINNT 0x0500       // Windows 2000
+		#define _WIN32_WINDOWS 0x400      // Windows 95
+		#if !defined(WINCE)
+			#define WINVER 0x0400     // Windows NT 4.0 / Windows 95
+		#endif
+		#define _WIN32_IE_ 0x0401         // 4.01 (win98 and NT4SP5+)
 	#endif
-	#define _WIN32_IE_ 0x0401         // 4.01 (win98 and NT4SP5+)
+	#define NOMINMAX                // Disable min/max macros in windows.h.
 
 	#pragma warning(disable: 4244)  // 'conversion' conversion from 'type1' to 'type2', possible loss of data
 	#pragma warning(disable: 4761)  // integral size mismatch in argument : conversion supplied
 	#pragma warning(disable: 4200)  // nonstandard extension used : zero-sized array in struct/union
+	#pragma warning(disable: 4355)  // 'this' : used in base member initializer list
 
 	#if (_MSC_VER < 1400)                   // MSVC 2005 safety checks
 		#error "Only MSVC 2005 or higher are supported. MSVC 2003 and earlier are not! Upgrade your compiler."
@@ -181,6 +216,11 @@
 	#pragma warning(disable: 6255)   // code analyzer: _alloca indicates failure by raising a stack overflow exception. Consider using _malloca instead
 	#pragma warning(disable: 6246)   // code analyzer: Local declaration of 'statspec' hides declaration of the same name in outer scope. For additional information, see previous declaration at ...
 
+	#if (_MSC_VER == 1500)           // Addresses item #13 on http://blogs.msdn.com/b/vcblog/archive/2008/08/11/tr1-fixes-in-vc9-sp1.aspx, for Visual Studio 2008
+		#define _DO_NOT_DECLARE_INTERLOCKED_INTRINSICS_IN_MEMORY
+		#include <intrin.h>
+	#endif
+
 	#include <malloc.h> // alloca()
 	#define NORETURN __declspec(noreturn)
 	#define inline __forceinline
@@ -193,7 +233,6 @@
 	#define WARN_FORMAT(string, args)
 	#define FINAL sealed
 
-	int CDECL snprintf(char *str, size_t size, const char *format, ...) WARN_FORMAT(3, 4);
 	#if defined(WINCE)
 		int CDECL vsnprintf(char *str, size_t size, const char *format, va_list ap);
 	#endif
@@ -227,6 +266,8 @@
 		#define strncasecmp strnicmp
 	#endif
 
+	#define strtoull _strtoui64
+
 	/* MSVC doesn't have these :( */
 	#define S_ISDIR(mode) (mode & S_IFDIR)
 	#define S_ISREG(mode) (mode & S_IFREG)
@@ -243,7 +284,7 @@
 #endif
 
 #if defined(WINCE)
-	#define strdup _strdup
+	#define stredup _stredup
 #endif /* WINCE */
 
 /* NOTE: the string returned by these functions is only valid until the next
@@ -262,15 +303,11 @@
 		#endif /* WINCE */
 
 		const char *FS2OTTD(const TCHAR *name);
-		const TCHAR *OTTD2FS(const char *name);
-		#define SQ2OTTD(name) FS2OTTD(name)
-		#define OTTD2SQ(name) OTTD2FS(name)
+		const TCHAR *OTTD2FS(const char *name, bool console_cp = false);
 	#else
 		#define fopen(file, mode) fopen(OTTD2FS(file), mode)
 		const char *FS2OTTD(const char *name);
 		const char *OTTD2FS(const char *name);
-		#define SQ2OTTD(name) (name)
-		#define OTTD2SQ(name) (name)
 	#endif /* WIN32 */
 #endif /* STRGEN || SETTINGSGEN */
 
@@ -455,5 +492,26 @@ static inline void free(const void *ptr)
  * @param type the type of the variable
  */
 #define MAX_UVALUE(type) ((type)~(type)0)
+
+#if defined(_MSC_VER) && !defined(_DEBUG)
+	#define IGNORE_UNINITIALIZED_WARNING_START __pragma(warning(push)) __pragma(warning(disable:4700))
+	#define IGNORE_UNINITIALIZED_WARNING_STOP __pragma(warning(pop))
+#elif defined(__GNUC__) && !defined(_DEBUG)
+	#define HELPER0(x) #x
+	#define HELPER1(x) HELPER0(GCC diagnostic ignored x)
+	#define HELPER2(y) HELPER1(#y)
+#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
+	#define IGNORE_UNINITIALIZED_WARNING_START \
+		_Pragma("GCC diagnostic push") \
+		_Pragma(HELPER2(-Wuninitialized)) \
+		_Pragma(HELPER2(-Wmaybe-uninitialized))
+	#define IGNORE_UNINITIALIZED_WARNING_STOP _Pragma("GCC diagnostic pop")
+#endif
+#endif
+
+#ifndef IGNORE_UNINITIALIZED_WARNING_START
+	#define IGNORE_UNINITIALIZED_WARNING_START
+	#define IGNORE_UNINITIALIZED_WARNING_STOP
+#endif
 
 #endif /* STDAFX_H */

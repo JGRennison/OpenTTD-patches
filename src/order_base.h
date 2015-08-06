@@ -42,14 +42,13 @@ private:
 	DestinationID dest;   ///< The destination of the order.
 
 	CargoID refit_cargo;  ///< Refit CargoID
-	byte refit_subtype;   ///< Refit subtype
-
-public:
-	Order *next;          ///< Pointer to next order. If NULL, end of list
 
 	uint16 wait_time;    ///< How long in ticks to wait at the destination.
 	uint16 travel_time;  ///< How long in ticks the journey to this destination should take.
 	uint16 max_speed;    ///< How fast the vehicle may go on the way to the destination.
+
+public:
+	Order *next;          ///< Pointer to next order. If NULL, end of list
 
 	Order() : refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
 	~Order();
@@ -72,7 +71,7 @@ public:
 	void Free();
 
 	void MakeGoToStation(StationID destination);
-	void MakeGoToDepot(DepotID destination, OrderDepotTypeFlags order, OrderNonStopFlags non_stop_type = ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS, OrderDepotActionFlags action = ODATF_SERVICE_ONLY, CargoID cargo = CT_NO_REFIT, byte subtype = 0);
+	void MakeGoToDepot(DepotID destination, OrderDepotTypeFlags order, OrderNonStopFlags non_stop_type = ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS, OrderDepotActionFlags action = ODATF_SERVICE_ONLY, CargoID cargo = CT_NO_REFIT);
 	void MakeGoToWaypoint(StationID destination);
 	void MakeLoading(bool ordered);
 	void MakeLeaveStation();
@@ -124,27 +123,20 @@ public:
 	 */
 	inline CargoID GetRefitCargo() const { return this->refit_cargo; }
 
-	/**
-	 * Get the cargo subtype to to refit to.
-	 * @pre IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION)
-	 * @return the cargo subtype.
-	 */
-	inline byte GetRefitSubtype() const { return this->refit_subtype; }
-
-	void SetRefit(CargoID cargo, byte subtype = 0);
+	void SetRefit(CargoID cargo);
 
 	/** How must the consist be loaded? */
-	inline OrderLoadFlags GetLoadType() const { return (OrderLoadFlags)GB(this->flags, 4, 4); }
+	inline OrderLoadFlags GetLoadType() const { return (OrderLoadFlags)GB(this->flags, 4, 3); }
 	/** How must the consist be unloaded? */
-	inline OrderUnloadFlags GetUnloadType() const { return (OrderUnloadFlags)GB(this->flags, 0, 4); }
+	inline OrderUnloadFlags GetUnloadType() const { return (OrderUnloadFlags)GB(this->flags, 0, 3); }
 	/** At which stations must we stop? */
 	inline OrderNonStopFlags GetNonStopType() const { return (OrderNonStopFlags)GB(this->type, 6, 2); }
 	/** Where must we stop at the platform? */
 	inline OrderStopLocation GetStopLocation() const { return (OrderStopLocation)GB(this->type, 4, 2); }
 	/** What caused us going to the depot? */
-	inline OrderDepotTypeFlags GetDepotOrderType() const { return (OrderDepotTypeFlags)GB(this->flags, 0, 4); }
+	inline OrderDepotTypeFlags GetDepotOrderType() const { return (OrderDepotTypeFlags)GB(this->flags, 0, 3); }
 	/** What are we going to do when in the depot. */
-	inline OrderDepotActionFlags GetDepotActionType() const { return (OrderDepotActionFlags)GB(this->flags, 4, 4); }
+	inline OrderDepotActionFlags GetDepotActionType() const { return (OrderDepotActionFlags)GB(this->flags, 4, 3); }
 	/** What variable do we have to compare? */
 	inline OrderConditionVariable GetConditionVariable() const { return (OrderConditionVariable)GB(this->dest, 11, 5); }
 	/** What is the comparator to use? */
@@ -155,17 +147,17 @@ public:
 	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
 
 	/** Set how the consist must be loaded. */
-	inline void SetLoadType(OrderLoadFlags load_type) { SB(this->flags, 4, 4, load_type); }
+	inline void SetLoadType(OrderLoadFlags load_type) { SB(this->flags, 4, 3, load_type); }
 	/** Set how the consist must be unloaded. */
-	inline void SetUnloadType(OrderUnloadFlags unload_type) { SB(this->flags, 0, 4, unload_type); }
+	inline void SetUnloadType(OrderUnloadFlags unload_type) { SB(this->flags, 0, 3, unload_type); }
 	/** Set whether we must stop at stations or not. */
 	inline void SetNonStopType(OrderNonStopFlags non_stop_type) { SB(this->type, 6, 2, non_stop_type); }
 	/** Set where we must stop at the platform. */
 	inline void SetStopLocation(OrderStopLocation stop_location) { SB(this->type, 4, 2, stop_location); }
 	/** Set the cause to go to the depot. */
-	inline void SetDepotOrderType(OrderDepotTypeFlags depot_order_type) { SB(this->flags, 0, 4, depot_order_type); }
+	inline void SetDepotOrderType(OrderDepotTypeFlags depot_order_type) { SB(this->flags, 0, 3, depot_order_type); }
 	/** Set what we are going to do in the depot. */
-	inline void SetDepotActionType(OrderDepotActionFlags depot_service_type) { SB(this->flags, 4, 4, depot_service_type); }
+	inline void SetDepotActionType(OrderDepotActionFlags depot_service_type) { SB(this->flags, 4, 3, depot_service_type); }
 	/** Set variable we have to compare. */
 	inline void SetConditionVariable(OrderConditionVariable condition_variable) { SB(this->dest, 11, 5, condition_variable); }
 	/** Set the comparator to use. */
@@ -175,14 +167,70 @@ public:
 	/** Set the value to base the skip on. */
 	inline void SetConditionValue(uint16 value) { SB(this->dest, 0, 11, value); }
 
+	/* As conditional orders write their "skip to" order all over the flags, we cannot check the
+	 * flags to find out if timetabling is enabled. However, as conditional orders are never
+	 * autofilled we can be sure that any non-zero values for their wait_time and travel_time are
+	 * explicitly set (but travel_time is actually unused for conditionals). */
+
+	/** Does this order have an explicit wait time set? */
+	inline bool IsWaitTimetabled() const { return this->IsType(OT_CONDITIONAL) ? this->wait_time > 0 : HasBit(this->flags, 3); }
+	/** Does this order have an explicit travel time set? */
+	inline bool IsTravelTimetabled() const { return this->IsType(OT_CONDITIONAL) ? this->travel_time > 0 : HasBit(this->flags, 7); }
+
+	/** Get the time in ticks a vehicle should wait at the destination or 0 if it's not timetabled. */
+	inline uint16 GetTimetabledWait() const { return this->IsWaitTimetabled() ? this->wait_time : 0; }
+	/** Get the time in ticks a vehicle should take to reach the destination or 0 if it's not timetabled. */
+	inline uint16 GetTimetabledTravel() const { return this->IsTravelTimetabled() ? this->travel_time : 0; }
+	/** Get the time in ticks a vehicle will probably wait at the destination (timetabled or not). */
+	inline uint16 GetWaitTime() const { return this->wait_time; }
+	/** Get the time in ticks a vehicle will probably take to reach the destination (timetabled or not). */
+	inline uint16 GetTravelTime() const { return this->travel_time; }
+
+	/**
+	 * Get the maxmimum speed in km-ish/h a vehicle is allowed to reach on the way to the
+	 * destination.
+	 * @return maximum speed.
+	 */
+	inline uint16 GetMaxSpeed() const { return this->max_speed; }
+
+	/** Set if the wait time is explicitly timetabled (unless the order is conditional). */
+	inline void SetWaitTimetabled(bool timetabled) { if (!this->IsType(OT_CONDITIONAL)) SB(this->flags, 3, 1, timetabled ? 1 : 0); }
+	/** Set if the travel time is explicitly timetabled (unless the order is conditional). */
+	inline void SetTravelTimetabled(bool timetabled) { if (!this->IsType(OT_CONDITIONAL)) SB(this->flags, 7, 1, timetabled ? 1 : 0); }
+
+	/**
+	 * Set the time in ticks to wait at the destination.
+	 * @param time Time to set as wait time.
+	 */
+	inline void SetWaitTime(uint16 time) { this->wait_time = time;  }
+
+	/**
+	 * Set the time in ticks to take for travelling to the destination.
+	 * @param time Time to set as travel time.
+	 */
+	inline void SetTravelTime(uint16 time) { this->travel_time = time; }
+
+	/**
+	 * Set the maxmimum speed in km-ish/h a vehicle is allowed to reach on the way to the
+	 * destination.
+	 * @param speed Speed to be set.
+	 */
+	inline void SetMaxSpeed(uint16 speed) { this->max_speed = speed; }
+
 	bool ShouldStopAtStation(const Vehicle *v, StationID station) const;
+	bool CanLoadOrUnload() const;
+	bool CanLeaveWithCargo(bool has_cargo) const;
+
 	TileIndex GetLocation(const Vehicle *v, bool airport = false) const;
 
-	/** Checks if this order has travel_time and if needed wait_time set. */
+	/** Checks if travel_time and wait_time apply to this order and if they are timetabled. */
 	inline bool IsCompletelyTimetabled() const
 	{
-		if (this->travel_time == 0 && !this->IsType(OT_CONDITIONAL)) return false;
-		if (this->wait_time == 0 && this->IsType(OT_GOTO_STATION) && !(this->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) return false;
+		if (!this->IsTravelTimetabled() && !this->IsType(OT_CONDITIONAL)) return false;
+		if (!this->IsWaitTimetabled() && this->IsType(OT_GOTO_STATION) &&
+				!(this->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
+			return false;
+		}
 		return true;
 	}
 
@@ -206,19 +254,22 @@ private:
 	friend void AfterLoadVehicles(bool part_of_load); ///< For instantiating the shared vehicle chain
 	friend const struct SaveLoad *GetOrderListDescription(); ///< Saving and loading of order lists.
 
+	StationID GetBestLoadableNext(const Vehicle *v, const Order *o1, const Order *o2) const;
+
 	Order *first;                     ///< First order of the order list.
 	VehicleOrderID num_orders;        ///< NOSAVE: How many orders there are in the list.
 	VehicleOrderID num_manual_orders; ///< NOSAVE: How many manually added orders are there in the list.
 	uint num_vehicles;                ///< NOSAVE: Number of vehicles that share this order list.
 	Vehicle *first_shared;            ///< NOSAVE: pointer to the first vehicle in the shared order chain.
 
-	Ticks timetable_duration;         ///< NOSAVE: Total duration of the order list
+	Ticks timetable_duration;         ///< NOSAVE: Total timetabled duration of the order list.
+	Ticks total_duration;             ///< NOSAVE: Total (timetabled or not) duration of the order list.
 
 public:
 	/** Default constructor producing an invalid order list. */
 	OrderList(VehicleOrderID num_orders = INVALID_VEH_ORDER_ID)
 		: first(NULL), num_orders(num_orders), num_manual_orders(0), num_vehicles(0), first_shared(NULL),
-		  timetable_duration(0) { }
+		  timetable_duration(0), total_duration(0) { }
 
 	/**
 	 * Create an order list with the given order chain for the given vehicle.
@@ -247,6 +298,14 @@ public:
 	inline Order *GetLastOrder() const { return this->GetOrderAt(this->num_orders - 1); }
 
 	/**
+	 * Get the order after the given one or the first one, if the given one is the
+	 * last one.
+	 * @param curr Order to find the next one for.
+	 * @return Next order.
+	 */
+	inline const Order *GetNext(const Order *curr) const { return (curr->next == NULL) ? this->GetFirstOrder() : curr->next; }
+
+	/**
 	 * Get number of orders in the order list.
 	 * @return number of orders in the chain.
 	 */
@@ -257,6 +316,9 @@ public:
 	 * @return number of manual orders in the chain.
 	 */
 	inline VehicleOrderID GetNumManualOrders() const { return this->num_manual_orders; }
+
+	StationIDStack GetNextStoppingStation(const Vehicle *v, const Order *first = NULL, uint hops = 0) const;
+	const Order *GetNextDecisionNode(const Order *next, uint hops) const;
 
 	void InsertOrderAt(Order *new_order, int index);
 	void DeleteOrderAt(int index);
@@ -308,10 +370,22 @@ public:
 	inline Ticks GetTimetableDurationIncomplete() const { return this->timetable_duration; }
 
 	/**
+	 * Gets the known duration of the vehicles orders, timetabled or not.
+	 * @return  known order duration.
+	 */
+	inline Ticks GetTotalDuration() const { return this->total_duration; }
+
+	/**
 	 * Must be called if an order's timetable is changed to update internal book keeping.
 	 * @param delta By how many ticks has the timetable duration changed
 	 */
-	void UpdateOrderTimetable(Ticks delta) { this->timetable_duration += delta; }
+	void UpdateTimetableDuration(Ticks delta) { this->timetable_duration += delta; }
+
+	/**
+	 * Must be called if an order's timetable is changed to update internal book keeping.
+	 * @param delta By how many ticks has the total duration changed
+	 */
+	void UpdateTotalDuration(Ticks delta) { this->total_duration += delta; }
 
 	void FreeChain(bool keep_orderlist = false);
 

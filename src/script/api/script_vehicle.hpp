@@ -213,7 +213,7 @@ public:
 
 	/**
 	 * Get the current speed of a vehicle.
-	 * @param vehicle_id The vehicle to get the age of.
+	 * @param vehicle_id The vehicle to get the speed of.
 	 * @pre IsValidVehicle(vehicle_id).
 	 * @return The current speed of the vehicle.
 	 * @note The speed is in OpenTTD's internal speed unit.
@@ -232,7 +232,7 @@ public:
 
 	/**
 	 * Get the running cost of this vehicle.
-	 * @param vehicle_id The vehicle to get the age of.
+	 * @param vehicle_id The vehicle to get the running cost of.
 	 * @pre IsValidVehicle(vehicle_id).
 	 * @return The running cost of the vehicle per year.
 	 * @note Cost is per year; divide by 365 to get per day.
@@ -370,7 +370,7 @@ public:
 	static bool MoveWagonChain(VehicleID source_vehicle_id, int source_wagon, int dest_vehicle_id, int dest_wagon);
 
 	/**
-	 * Gets the capacity of the given vehicle when refited to the given cargo type.
+	 * Gets the capacity of the given vehicle when refitted to the given cargo type.
 	 * @param vehicle_id The vehicle to refit.
 	 * @param cargo The cargo to refit to.
 	 * @pre IsValidVehicle(vehicle_id).
@@ -506,12 +506,12 @@ public:
 	static int GetLength(VehicleID vehicle_id);
 
 	/**
-	 * Get the amount of a specific cargo the given vehicle transports.
+	 * Get the amount of a specific cargo the given vehicle is transporting.
 	 * @param vehicle_id The vehicle to get the load amount of.
-	 * @param cargo The cargo to get the load amount for.
+	 * @param cargo The cargo to get the loaded amount for.
 	 * @pre IsValidVehicle(vehicle_id).
 	 * @pre ScriptCargo::IsValidCargo(cargo).
-	 * @return The amount of the given cargo the vehicle currently transports.
+	 * @return The amount of the given cargo the vehicle is currently transporting.
 	 */
 	static int32 GetCargoLoad(VehicleID vehicle_id, CargoID cargo);
 
@@ -549,10 +549,15 @@ public:
 
 	/**
 	 * Get the maximum allowed distance between two orders for a vehicle.
+	 * The distance returned is a vehicle-type specific distance independent from other
+	 * map distances, you may use the result of this function to compare it
+	 * with the result of ScriptOrder::GetOrderDistance.
 	 * @param vehicle_id The vehicle to get the distance for.
 	 * @pre IsValidVehicle(vehicle_id).
 	 * @return The maximum distance between two orders for this vehicle
-	 *  or 0 if the distance is unlimited.
+	 *         or 0 if the distance is unlimited.
+	 * @note   The unit of the order distances is unspecified and should
+	 *         not be compared with map distances
 	 * @see ScriptOrder::GetOrderDistance
 	 */
 	static uint GetMaximumOrderDistance(VehicleID vehicle_id);

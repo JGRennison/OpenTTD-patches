@@ -10,7 +10,7 @@
 /** @file console_gui.cpp Handling the GUI of the in-game console. */
 
 #include "stdafx.h"
-#include "textbuf_gui.h"
+#include "textbuf_type.h"
 #include "window_gui.h"
 #include "console_gui.h"
 #include "console_internal.h"
@@ -21,10 +21,13 @@
 #include "settings_type.h"
 #include "console_func.h"
 #include "rev.h"
+#include "video/video_driver.hpp"
 
 #include "widgets/console_widget.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 static const uint ICON_HISTORY_SIZE       = 20;
 static const uint ICON_LINE_SPACING       =  2;
@@ -126,7 +129,7 @@ struct IConsoleLine {
 
 
 /* ** main console cmd buffer ** */
-static Textbuf _iconsole_cmdline;
+static Textbuf _iconsole_cmdline(ICON_CMDLN_SIZE);
 static char *_iconsole_history[ICON_HISTORY_SIZE];
 static int _iconsole_historypos;
 IConsoleModes _iconsole_mode;
@@ -158,8 +161,8 @@ static const struct NWidgetPart _nested_console_window_widgets[] = {
 	NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_BACKGROUND), SetResize(1, 1),
 };
 
-static const WindowDesc _console_window_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _console_window_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_CONSOLE, WC_NONE,
 	0,
 	_nested_console_window_widgets, lengthof(_nested_console_window_widgets)
@@ -171,19 +174,20 @@ struct IConsoleWindow : Window
 	int line_height;   ///< Height of one line of text in the console.
 	int line_offset;
 
-	IConsoleWindow() : Window()
+	IConsoleWindow() : Window(&_console_window_desc)
 	{
 		_iconsole_mode = ICONSOLE_OPENED;
 		this->line_height = FONT_HEIGHT_NORMAL + ICON_LINE_SPACING;
 		this->line_offset = GetStringBoundingBox("] ").width + 5;
 
-		this->InitNested(&_console_window_desc, 0);
+		this->InitNested(0);
 		ResizeWindow(this, _screen.width, _screen.height / 3);
 	}
 
 	~IConsoleWindow()
 	{
 		_iconsole_mode = ICONSOLE_CLOSED;
+		VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 
 	/**
@@ -215,6 +219,9 @@ struct IConsoleWindow : Window
 			delta = 0;
 		}
 
+		/* If we have a marked area, draw a background highlight. */
+		if (_iconsole_cmdline.marklength != 0) GfxFillRect(this->line_offset + delta + _iconsole_cmdline.markxoffs, this->height - this->line_height, this->line_offset + delta + _iconsole_cmdline.markxoffs + _iconsole_cmdline.marklength, this->height - 1, PC_DARK_RED);
+
 		DrawString(this->line_offset + delta, right, this->height - this->line_height, _iconsole_cmdline.buf, (TextColour)CC_COMMAND, SA_LEFT | SA_FORCE);
 
 		if (_focused_window == this && _iconsole_cmdline.caret) {
@@ -233,10 +240,10 @@ struct IConsoleWindow : Window
 
 	virtual void OnMouseLoop()
 	{
-		if (HandleCaret(&_iconsole_cmdline)) this->SetDirty();
+		if (_iconsole_cmdline.HandleCaret()) this->SetDirty();
 	}
 
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode)
+	virtual EventState OnKeyPress(WChar key, uint16 keycode)
 	{
 		if (_focused_window != this) return ES_NOT_HANDLED;
 
@@ -290,46 +297,13 @@ struct IConsoleWindow : Window
 				MarkWholeScreenDirty();
 				break;
 
-#ifdef WITH_COCOA
-			case (WKC_META | 'V'):
-#endif
-			case (WKC_CTRL | 'V'):
-				if (InsertTextBufferClipboard(&_iconsole_cmdline)) {
-					IConsoleResetHistoryPos();
-					this->SetDirty();
-				}
-				break;
-
 			case (WKC_CTRL | 'L'):
 				IConsoleCmdExec("clear");
 				break;
 
-#ifdef WITH_COCOA
-			case (WKC_META | 'U'):
-#endif
-			case (WKC_CTRL | 'U'):
-				DeleteTextBufferAll(&_iconsole_cmdline);
-				this->SetDirty();
-				break;
-
-			case WKC_BACKSPACE: case WKC_DELETE:
-				if (DeleteTextBufferChar(&_iconsole_cmdline, keycode)) {
-					IConsoleResetHistoryPos();
-					this->SetDirty();
-				}
-				break;
-
-			case WKC_LEFT: case WKC_RIGHT: case WKC_END: case WKC_HOME:
-				if (MoveTextBufferPos(&_iconsole_cmdline, keycode)) {
-					IConsoleResetHistoryPos();
-					this->SetDirty();
-				}
-				break;
-
 			default:
-				if (IsValidChar(key, CS_ALPHANUMERAL)) {
+				if (_iconsole_cmdline.HandleKeyPress(key, keycode) != HKPR_NOT_HANDLED) {
 					IConsoleWindow::scroll = 0;
-					InsertTextBufferChar(&_iconsole_cmdline, key);
 					IConsoleResetHistoryPos();
 					this->SetDirty();
 				} else {
@@ -340,9 +314,69 @@ struct IConsoleWindow : Window
 		return ES_HANDLED;
 	}
 
+	virtual void InsertTextString(int wid, const char *str, bool marked, const char *caret, const char *insert_location, const char *replacement_end)
+	{
+		if (_iconsole_cmdline.InsertString(str, marked, caret, insert_location, replacement_end)) {
+			IConsoleWindow::scroll = 0;
+			IConsoleResetHistoryPos();
+			this->SetDirty();
+		}
+	}
+
+	virtual const char *GetFocusedText() const
+	{
+		return _iconsole_cmdline.buf;
+	}
+
+	virtual const char *GetCaret() const
+	{
+		return _iconsole_cmdline.buf + _iconsole_cmdline.caretpos;
+	}
+
+	virtual const char *GetMarkedText(size_t *length) const
+	{
+		if (_iconsole_cmdline.markend == 0) return NULL;
+
+		*length = _iconsole_cmdline.markend - _iconsole_cmdline.markpos;
+		return _iconsole_cmdline.buf + _iconsole_cmdline.markpos;
+	}
+
+	virtual Point GetCaretPosition() const
+	{
+		int delta = min(this->width - this->line_offset - _iconsole_cmdline.pixels - ICON_RIGHT_BORDERWIDTH, 0);
+		Point pt = {this->line_offset + delta + _iconsole_cmdline.caretxoffs, this->height - this->line_height};
+
+		return pt;
+	}
+
+	virtual Rect GetTextBoundingRect(const char *from, const char *to) const
+	{
+		int delta = min(this->width - this->line_offset - _iconsole_cmdline.pixels - ICON_RIGHT_BORDERWIDTH, 0);
+
+		Point p1 = GetCharPosInString(_iconsole_cmdline.buf, from, FS_NORMAL);
+		Point p2 = from != to ? GetCharPosInString(_iconsole_cmdline.buf, from) : p1;
+
+		Rect r = {this->line_offset + delta + p1.x, this->height - this->line_height, this->line_offset + delta + p2.x, this->height};
+		return r;
+	}
+
+	virtual const char *GetTextCharacterAtPosition(const Point &pt) const
+	{
+		int delta = min(this->width - this->line_offset - _iconsole_cmdline.pixels - ICON_RIGHT_BORDERWIDTH, 0);
+
+		if (!IsInsideMM(pt.y, this->height - this->line_height, this->height)) return NULL;
+
+		return GetCharAtPosition(_iconsole_cmdline.buf, pt.x - delta);
+	}
+
 	virtual void OnMouseWheel(int wheel)
 	{
 		this->Scroll(-wheel);
+	}
+
+	virtual void OnFocusLost()
+	{
+		VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 };
 
@@ -355,10 +389,6 @@ void IConsoleGUIInit()
 
 	IConsoleLine::Reset();
 	memset(_iconsole_history, 0, sizeof(_iconsole_history));
-
-	_iconsole_cmdline.buf = CallocT<char>(ICON_CMDLN_SIZE); // create buffer and zero it
-	_iconsole_cmdline.max_bytes = ICON_CMDLN_SIZE;
-	_iconsole_cmdline.max_chars = ICON_CMDLN_SIZE;
 
 	IConsolePrintF(CC_WARNING, "OpenTTD Game Console Revision 7 - %s", _openttd_revision);
 	IConsolePrint(CC_WHITE,  "------------------------------------");
@@ -374,7 +404,6 @@ void IConsoleClearBuffer()
 
 void IConsoleGUIFree()
 {
-	free(_iconsole_cmdline.buf);
 	IConsoleClearBuffer();
 }
 
@@ -436,7 +465,7 @@ static const char *IConsoleHistoryAdd(const char *cmd)
 	if (_iconsole_history[0] == NULL || strcmp(_iconsole_history[0], cmd) != 0) {
 		free(_iconsole_history[ICON_HISTORY_SIZE - 1]);
 		memmove(&_iconsole_history[1], &_iconsole_history[0], sizeof(_iconsole_history[0]) * (ICON_HISTORY_SIZE - 1));
-		_iconsole_history[0] = strdup(cmd);
+		_iconsole_history[0] = stredup(cmd);
 	}
 
 	/* Reset the history position */
@@ -456,11 +485,10 @@ static void IConsoleHistoryNavigate(int direction)
 	if (direction > 0 && _iconsole_history[_iconsole_historypos] == NULL) _iconsole_historypos--;
 
 	if (_iconsole_historypos == -1) {
-		*_iconsole_cmdline.buf = '\0';
+		_iconsole_cmdline.DeleteAll();
 	} else {
-		ttd_strlcpy(_iconsole_cmdline.buf, _iconsole_history[_iconsole_historypos], _iconsole_cmdline.max_bytes);
+		_iconsole_cmdline.Assign(_iconsole_history[_iconsole_historypos]);
 	}
-	UpdateTextBufferSize(&_iconsole_cmdline);
 }
 
 /**

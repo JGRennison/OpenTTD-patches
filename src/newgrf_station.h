@@ -19,6 +19,56 @@
 #include "cargo_type.h"
 #include "station_type.h"
 #include "rail_type.h"
+#include "newgrf_spritegroup.h"
+#include "newgrf_town.h"
+
+/** Scope resolver for stations. */
+struct StationScopeResolver : public ScopeResolver {
+	TileIndex tile;                     ///< %Tile of the station.
+	struct BaseStation *st;             ///< Instance of the station.
+	const struct StationSpec *statspec; ///< Station (type) specification.
+	CargoID cargo_type;                 ///< Type of cargo of the station.
+	Axis axis;                          ///< Station axis, used only for the slope check callback.
+
+	StationScopeResolver(ResolverObject &ro, const StationSpec *statspec, BaseStation *st, TileIndex tile);
+
+	/* virtual */ uint32 GetRandomBits() const;
+	/* virtual */ uint32 GetTriggers() const;
+	/* virtual */ void SetTriggers(int triggers) const;
+
+	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
+};
+
+/** Station resolver. */
+struct StationResolverObject : public ResolverObject {
+	StationScopeResolver station_scope; ///< The station scope resolver.
+	TownScopeResolver *town_scope;      ///< The town scope resolver (created on the first call).
+
+	StationResolverObject(const StationSpec *statspec, BaseStation *st, TileIndex tile,
+			CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
+	~StationResolverObject();
+
+	TownScopeResolver *GetTown();
+
+	/* virtual */ ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0)
+	{
+		switch (scope) {
+			case VSG_SCOPE_SELF:
+				return &this->station_scope;
+
+			case VSG_SCOPE_PARENT: {
+				TownScopeResolver *tsr = this->GetTown();
+				if (tsr != NULL) return tsr;
+				/* FALL-THROUGH */
+			}
+
+			default:
+				return ResolverObject::GetScope(scope, relative);
+		}
+	}
+
+	/* virtual */ const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const;
+};
 
 enum StationClassID {
 	STAT_CLASS_BEGIN = 0,    ///< the lowest valid value
@@ -40,6 +90,16 @@ enum StationSpecFlags {
 	SSF_EXTENDED_FOUNDATIONS, ///< Extended foundation block instead of simple.
 };
 
+/** Randomisation triggers for stations */
+enum StationRandomTrigger {
+	SRT_NEW_CARGO,        ///< Trigger station on new cargo arrival.
+	SRT_CARGO_TAKEN,      ///< Trigger station when cargo is completely taken.
+	SRT_TRAIN_ARRIVES,    ///< Trigger platform when train arrives.
+	SRT_TRAIN_DEPARTS,    ///< Trigger platform when train leaves.
+	SRT_TRAIN_LOADS,      ///< Trigger platform when train loads/unloads.
+	SRT_PATH_RESERVATION, ///< Trigger platform when train reserves path.
+};
+
 /* Station layout for given dimensions - it is a two-dimensional array
  * where index is computed as (x * platforms) + platform. */
 typedef byte *StationLayout;
@@ -58,12 +118,12 @@ struct StationSpec {
 
 	/**
 	 * Bitmask of number of platforms available for the station.
-	 * 0..6 correpsond to 1..7, while bit 7 corresponds to >7 platforms.
+	 * 0..6 correspond to 1..7, while bit 7 corresponds to >7 platforms.
 	 */
 	byte disallowed_platforms;
 	/**
 	 * Bitmask of platform lengths available for the station.
-	 * 0..6 correpsond to 1..7, while bit 7 corresponds to >7 tiles long.
+	 * 0..6 correspond to 1..7, while bit 7 corresponds to >7 tiles long.
 	 */
 	byte disallowed_lengths;
 
@@ -126,6 +186,7 @@ bool DrawStationTile(int x, int y, RailType railtype, Axis axis, StationClassID 
 
 void AnimateStationTile(TileIndex tile);
 void TriggerStationAnimation(BaseStation *st, TileIndex tile, StationAnimationTrigger trigger, CargoID cargo_type = CT_INVALID);
-void StationUpdateAnimTriggers(BaseStation *st);
+void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigger trigger, CargoID cargo_type = CT_INVALID);
+void StationUpdateCachedTriggers(BaseStation *st);
 
 #endif /* NEWGRF_STATION_H */

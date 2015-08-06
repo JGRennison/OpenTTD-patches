@@ -12,6 +12,8 @@
 #include "../stdafx.h"
 #include "32bpp_base.hpp"
 
+#include "../safeguards.h"
+
 void *Blitter_32bppBase::MoveTo(void *video, int x, int y)
 {
 	return (uint32 *)video + x + y * _screen.pitch;
@@ -107,7 +109,7 @@ void Blitter_32bppBase::ScrollBuffer(void *video, int &left, int &top, int &widt
 		dst = (uint32 *)video + left + top * _screen.pitch;
 		src = dst - scroll_y * _screen.pitch;
 
-		/* Decrese height. (scroll_y is <=0). */
+		/* Decrease height. (scroll_y is <=0). */
 		height += scroll_y;
 		assert(height > 0);
 

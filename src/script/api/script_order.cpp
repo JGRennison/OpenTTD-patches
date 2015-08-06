@@ -21,6 +21,8 @@
 #include "../../station_base.h"
 #include "../../waypoint_base.h"
 
+#include "../../safeguards.h"
+
 /**
  * Gets the order type given a tile
  * @param t the tile to get the order from
@@ -66,7 +68,7 @@ static const Order *ResolveOrder(VehicleID vehicle_id, ScriptOrder::OrderPositio
 		order_position = ScriptOrder::ResolveOrderPosition(vehicle_id, order_position);
 		if (order_position == ScriptOrder::ORDER_INVALID) return NULL;
 	}
-	const Order *order = v->orders.list->GetFirstOrder();
+	const Order *order = v->GetFirstOrder();
 	while (order->GetType() == OT_IMPLICIT) order = order->next;
 	while (order_position > 0) {
 		order_position = (ScriptOrder::OrderPosition)(order_position - 1);
@@ -165,18 +167,22 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 {
 	if (!ScriptVehicle::IsValidVehicle(vehicle_id)) return ORDER_INVALID;
 
+	int num_manual_orders = ::Vehicle::Get(vehicle_id)->GetNumManualOrders();
+	if (num_manual_orders == 0) return ORDER_INVALID;
+
 	if (order_position == ORDER_CURRENT) {
 		int cur_order_pos = ::Vehicle::Get(vehicle_id)->cur_real_order_index;
-		const Order *order = ::Vehicle::Get(vehicle_id)->GetOrder(0);
-		if (order == NULL) return ORDER_INVALID;
+		const Order *order = ::Vehicle::Get(vehicle_id)->GetFirstOrder();
 		int num_implicit_orders = 0;
 		for (int i = 0; i < cur_order_pos; i++) {
 			if (order->GetType() == OT_IMPLICIT) num_implicit_orders++;
 			order = order->next;
 		}
-		return (ScriptOrder::OrderPosition)(cur_order_pos - num_implicit_orders);
+		int real_order_pos = cur_order_pos - num_implicit_orders;
+		assert(real_order_pos < num_manual_orders);
+		return (ScriptOrder::OrderPosition)real_order_pos;
 	}
-	return (order_position >= 0 && order_position < ::Vehicle::Get(vehicle_id)->GetNumManualOrders()) ? order_position : ORDER_INVALID;
+	return (order_position >= 0 && order_position < num_manual_orders) ? order_position : ORDER_INVALID;
 }
 
 
@@ -627,6 +633,7 @@ static void _DoCommandReturnSetOrderFlags(class ScriptInstance *instance)
 
 	EnforcePrecondition(false, IsValidVehicleOrder(vehicle_id, order_position_move));
 	EnforcePrecondition(false, IsValidVehicleOrder(vehicle_id, order_position_target));
+	EnforcePrecondition(false, order_position_move != order_position_target);
 
 	int order_pos_move = ScriptOrderPositionToRealOrderPosition(vehicle_id, order_position_move);
 	int order_pos_target = ScriptOrderPositionToRealOrderPosition(vehicle_id, order_position_target);
@@ -659,8 +666,8 @@ static void _DoCommandReturnSetOrderFlags(class ScriptInstance *instance)
 /* static */ uint ScriptOrder::GetOrderDistance(ScriptVehicle::VehicleType vehicle_type, TileIndex origin_tile, TileIndex dest_tile)
 {
 	if (vehicle_type == ScriptVehicle::VT_AIR) {
-		if (ScriptTile::IsStationTile(origin_tile) && ::Station::Get(origin_tile)->airport.tile != INVALID_TILE) origin_tile = ::Station::Get(origin_tile)->airport.tile;
-		if (ScriptTile::IsStationTile(dest_tile) && ::Station::Get(dest_tile)->airport.tile != INVALID_TILE) dest_tile = ::Station::Get(dest_tile)->airport.tile;
+		if (ScriptTile::IsStationTile(origin_tile) && ::Station::GetByTile(origin_tile)->airport.tile != INVALID_TILE) origin_tile = ::Station::GetByTile(origin_tile)->airport.tile;
+		if (ScriptTile::IsStationTile(dest_tile) && ::Station::GetByTile(dest_tile)->airport.tile != INVALID_TILE) dest_tile = ::Station::GetByTile(dest_tile)->airport.tile;
 
 		return ScriptMap::DistanceSquare(origin_tile, dest_tile);
 	} else {

@@ -38,6 +38,8 @@
 #include "table/strings.h"
 #include "table/object_land.h"
 
+#include "safeguards.h"
+
 ObjectPool _object_pool("Object");
 INSTANTIATE_POOL_METHODS(Object)
 uint16 Object::counts[NUM_OBJECTS];
@@ -50,6 +52,18 @@ uint16 Object::counts[NUM_OBJECTS];
 /* static */ Object *Object::GetByTile(TileIndex tile)
 {
 	return Object::Get(GetObjectIndex(tile));
+}
+
+/**
+ * Gets the ObjectType of the given object tile
+ * @param t the tile to get the type from.
+ * @pre IsTileType(t, MP_OBJECT)
+ * @return the type.
+ */
+ObjectType GetObjectType(TileIndex t)
+{
+	assert(IsTileType(t, MP_OBJECT));
+	return Object::GetByTile(t)->type;
 }
 
 /** Initialize/reset the objects. */
@@ -74,6 +88,7 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 
 	TileArea ta(tile, GB(spec->size, HasBit(view, 0) ? 4 : 0, 4), GB(spec->size, HasBit(view, 0) ? 0 : 4, 4));
 	Object *o = new Object();
+	o->type          = type;
 	o->location      = ta;
 	o->town          = town == NULL ? CalcClosestTownFromTile(tile) : town;
 	o->build_date    = _date;
@@ -108,7 +123,7 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 			Company::Get(owner)->infrastructure.water++;
 			DirtyCompanyInfrastructureWindows(owner);
 		}
-		MakeObject(t, type, owner, o->index, wc, Random());
+		MakeObject(t, owner, o->index, wc, Random());
 		MarkTileDirtyByTile(t);
 	}
 
@@ -192,13 +207,15 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 {
 	CommandCost cost(EXPENSES_PROPERTY);
 
-	ObjectType type = (ObjectType)GB(p1, 0, 8);
+	ObjectType type = (ObjectType)GB(p1, 0, 16);
+	if (type >= NUM_OBJECTS) return CMD_ERROR;
 	uint8 view = GB(p2, 0, 2);
 	const ObjectSpec *spec = ObjectSpec::Get(type);
-	if (!spec->IsAvailable()) return CMD_ERROR;
+	if (_game_mode == GM_NORMAL && !spec->IsAvailable() && !_generating_world) return CMD_ERROR;
+	if ((_game_mode == GM_EDITOR || _generating_world) && !spec->WasEverAvailable()) return CMD_ERROR;
 
-	if (spec->flags & OBJECT_FLAG_ONLY_IN_SCENEDIT && (_game_mode != GM_EDITOR || _current_company != OWNER_NONE)) return CMD_ERROR;
-	if (spec->flags & OBJECT_FLAG_ONLY_IN_GAME && (_game_mode != GM_NORMAL || _current_company > MAX_COMPANIES)) return CMD_ERROR;
+	if ((spec->flags & OBJECT_FLAG_ONLY_IN_SCENEDIT) != 0 && ((!_generating_world && _game_mode != GM_EDITOR) || _current_company != OWNER_NONE)) return CMD_ERROR;
+	if ((spec->flags & OBJECT_FLAG_ONLY_IN_GAME) != 0 && (_generating_world || _game_mode != GM_NORMAL || _current_company > MAX_COMPANIES)) return CMD_ERROR;
 	if (view >= spec->views) return CMD_ERROR;
 
 	if (!Object::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_OBJECTS);
@@ -255,7 +272,7 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			} else {
 				/* The meaning of bit 10 is inverted for a grf version < 8. */
 				if (spec->grf_prop.grffile->grf_version < 8) ToggleBit(callback, 10);
-				CommandCost ret = GetErrorMessageFromLocationCallbackResult(callback, spec->grf_prop.grffile->grfid, STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
+				CommandCost ret = GetErrorMessageFromLocationCallbackResult(callback, spec->grf_prop.grffile, STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 				if (ret.Failed()) return ret;
 			}
 		}
@@ -278,7 +295,7 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 	/* Finally do a check for bridges. */
 	TILE_AREA_LOOP(t, ta) {
-		if (MayHaveBridgeAbove(t) && IsBridgeAbove(t) && (
+		if (IsBridgeAbove(t) && (
 				!(spec->flags & OBJECT_FLAG_ALLOW_UNDER_BRIDGE) ||
 				(GetTileMaxZ(t) + spec->height >= GetBridgeHeight(GetSouthernBridgeEnd(t))))) {
 			return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
@@ -289,13 +306,13 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	switch (type) {
 		case OBJECT_TRANSMITTER:
 		case OBJECT_LIGHTHOUSE:
-			if (GetTileSlope(tile) != SLOPE_FLAT) return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
+			if (!IsTileFlat(tile)) return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
 			break;
 
 		case OBJECT_OWNED_LAND:
 			if (IsTileType(tile, MP_OBJECT) &&
 					IsTileOwner(tile, _current_company) &&
-					IsOwnedLand(tile)) {
+					IsObjectType(tile, OBJECT_OWNED_LAND)) {
 				return_cmd_error(STR_ERROR_YOU_ALREADY_OWN_IT);
 			}
 			break;
@@ -391,12 +408,12 @@ static void DrawTile_Object(TileInfo *ti)
 		DrawNewObjectTile(ti, spec);
 	}
 
-	if (spec->flags & OBJECT_FLAG_ALLOW_UNDER_BRIDGE) DrawBridgeMiddle(ti);
+	DrawBridgeMiddle(ti);
 }
 
 static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y)
 {
-	if (IsOwnedLand(tile)) {
+	if (IsObjectType(tile, OBJECT_OWNED_LAND)) {
 		int z;
 		Slope tileh = GetTilePixelSlope(tile, &z);
 
@@ -408,7 +425,7 @@ static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y)
 
 static Foundation GetFoundation_Object(TileIndex tile, Slope tileh)
 {
-	return IsOwnedLand(tile) ? FOUNDATION_NONE : FlatteningFoundation(tileh);
+	return IsObjectType(tile, OBJECT_OWNED_LAND) ? FOUNDATION_NONE : FlatteningFoundation(tileh);
 }
 
 /**
@@ -417,7 +434,7 @@ static Foundation GetFoundation_Object(TileIndex tile, Slope tileh)
  */
 static void ReallyClearObjectTile(Object *o)
 {
-	Object::DecTypeCount(GetObjectType(o->location.tile));
+	Object::DecTypeCount(o->type);
 	TILE_AREA_LOOP(tile_cur, o->location) {
 		DeleteNewGRFInspectWindow(GSF_OBJECTS, tile_cur);
 
@@ -447,12 +464,12 @@ ClearedObjectArea *FindClearedObject(TileIndex tile)
 
 static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 {
-	ObjectType type = GetObjectType(tile);
-	const ObjectSpec *spec = ObjectSpec::Get(type);
-
 	/* Get to the northern most tile. */
 	Object *o = Object::GetByTile(tile);
 	TileArea ta = o->location;
+
+	ObjectType type = o->type;
+	const ObjectSpec *spec = ObjectSpec::Get(type);
 
 	CommandCost cost(EXPENSES_CONSTRUCTION, spec->GetClearCost() * ta.w * ta.h / 5);
 	if (spec->flags & OBJECT_FLAG_CLEAR_INCOME) cost.MultiplyCost(-1); // They get an income!
@@ -471,8 +488,8 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 		} else if (_game_mode == GM_EDITOR) {
 			/* No further limitations for the editor. */
 		} else if (GetTileOwner(tile) == OWNER_NONE) {
-			/* Owned by nobody, so we can only remove it with brute force! */
-			if (!_cheats.magic_bulldozer.value) return CMD_ERROR;
+			/* Owned by nobody and unremovable, so we can only remove it with brute force! */
+			if (!_cheats.magic_bulldozer.value && (spec->flags & OBJECT_FLAG_CANNOT_REMOVE) != 0) return CMD_ERROR;
 		} else if (CheckTileOwnership(tile).Failed()) {
 			/* We don't own it!. */
 			return_cmd_error(STR_ERROR_OWNED_BY);
@@ -525,7 +542,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 
 static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, uint32 *always_accepted)
 {
-	if (!IsCompanyHQ(tile)) return;
+	if (!IsObjectType(tile, OBJECT_HQ)) return;
 
 	/* HQ accepts passenger and mail; but we have to divide the values
 	 * between 4 tiles it occupies! */
@@ -570,7 +587,7 @@ static void TileLoop_Object(TileIndex tile)
 
 	if (IsTileOnWater(tile)) TileLoop_Water(tile);
 
-	if (!IsCompanyHQ(tile)) return;
+	if (!IsObjectType(tile, OBJECT_HQ)) return;
 
 	/* HQ accepts passenger and mail; but we have to divide the values
 	 * between 4 tiles it occupies! */
@@ -607,7 +624,7 @@ static TrackStatus GetTileTrackStatus_Object(TileIndex tile, TransportType mode,
 
 static bool ClickTile_Object(TileIndex tile)
 {
-	if (!IsCompanyHQ(tile)) return false;
+	if (!IsObjectType(tile, OBJECT_HQ)) return false;
 
 	ShowCompany(GetTileOwner(tile));
 	return true;
@@ -626,20 +643,77 @@ static void AnimateTile_Object(TileIndex tile)
  */
 static bool HasTransmitter(TileIndex tile, void *user)
 {
-	return IsTransmitterTile(tile);
+	return IsObjectTypeTile(tile, OBJECT_TRANSMITTER);
+}
+
+/**
+ * Try to build a lighthouse.
+ * @return True iff building a lighthouse succeeded.
+ */
+static bool TryBuildLightHouse()
+{
+	uint maxx = MapMaxX();
+	uint maxy = MapMaxY();
+	uint r = Random();
+
+	/* Scatter the lighthouses more evenly around the perimeter */
+	int perimeter = (GB(r, 16, 16) % (2 * (maxx + maxy))) - maxy;
+	DiagDirection dir;
+	for (dir = DIAGDIR_NE; perimeter > 0; dir++) {
+		perimeter -= (DiagDirToAxis(dir) == AXIS_X) ? maxx : maxy;
+	}
+
+	TileIndex tile;
+	switch (dir) {
+		default:
+		case DIAGDIR_NE: tile = TileXY(maxx - 1, r % maxy); break;
+		case DIAGDIR_SE: tile = TileXY(r % maxx, 1); break;
+		case DIAGDIR_SW: tile = TileXY(1,        r % maxy); break;
+		case DIAGDIR_NW: tile = TileXY(r % maxx, maxy - 1); break;
+	}
+
+	/* Only build lighthouses at tiles where the border is sea. */
+	if (!IsTileType(tile, MP_WATER)) return false;
+
+	for (int j = 0; j < 19; j++) {
+		int h;
+		if (IsTileType(tile, MP_CLEAR) && IsTileFlat(tile, &h) && h <= 2 && !IsBridgeAbove(tile)) {
+			BuildObject(OBJECT_LIGHTHOUSE, tile);
+			assert(tile < MapSize());
+			return true;
+		}
+		tile += TileOffsByDiagDir(dir);
+		if (!IsValidTile(tile)) return false;
+	}
+	return false;
+}
+
+/**
+ * Try to build a transmitter.
+ * @return True iff a transmitter was built.
+ */
+static bool TryBuildTransmitter()
+{
+	TileIndex tile = RandomTile();
+	int h;
+	if (IsTileType(tile, MP_CLEAR) && IsTileFlat(tile, &h) && h >= 4 && !IsBridgeAbove(tile)) {
+		TileIndex t = tile;
+		if (CircularTileSearch(&t, 9, HasTransmitter, NULL)) return false;
+
+		BuildObject(OBJECT_TRANSMITTER, tile);
+		return true;
+	}
+	return false;
 }
 
 void GenerateObjects()
 {
-	if (_settings_game.game_creation.landscape == LT_TOYLAND) return;
+	/* Set a guestimate on how much we progress */
+	SetGeneratingWorldProgress(GWP_OBJECT, NUM_OBJECTS);
 
-	/* add radio tower */
-	int radiotower_to_build = ScaleByMapSize(15); // maximum number of radio towers on the map
-	int lighthouses_to_build = _settings_game.game_creation.landscape == LT_TROPIC ? 0 : ScaleByMapSize1D((Random() & 3) + 7);
-
-	/* Scale the amount of lighthouses with the amount of land at the borders. */
-	if (_settings_game.construction.freeform_edges && lighthouses_to_build != 0) {
-		uint num_water_tiles = 0;
+	/* Determine number of water tiles at map border needed for freeform_edges */
+	uint num_water_tiles = 0;
+	if (_settings_game.construction.freeform_edges) {
 		for (uint x = 0; x < MapMaxX(); x++) {
 			if (IsTileType(TileXY(x, 1), MP_WATER)) num_water_tiles++;
 			if (IsTileType(TileXY(x, MapMaxY() - 1), MP_WATER)) num_water_tiles++;
@@ -648,64 +722,47 @@ void GenerateObjects()
 			if (IsTileType(TileXY(1, y), MP_WATER)) num_water_tiles++;
 			if (IsTileType(TileXY(MapMaxX() - 1, y), MP_WATER)) num_water_tiles++;
 		}
-		/* The -6 is because the top borders are MP_VOID (-2) and all corners
-		 * are counted twice (-4). */
-		lighthouses_to_build = lighthouses_to_build * num_water_tiles / (2 * MapMaxY() + 2 * MapMaxX() - 6);
 	}
 
-	SetGeneratingWorldProgress(GWP_OBJECT, radiotower_to_build + lighthouses_to_build);
+	/* Iterate over all possible object types */
+	for (uint i = 0; i < NUM_OBJECTS; i++) {
+		const ObjectSpec *spec = ObjectSpec::Get(i);
 
-	for (uint i = ScaleByMapSize(1000); i != 0 && Object::CanAllocateItem(); i--) {
-		TileIndex tile = RandomTile();
+		/* Continue, if the object was never available till now or shall not be placed */
+		if (!spec->WasEverAvailable() || spec->generate_amount == 0) continue;
 
-		int h;
-		if (IsTileType(tile, MP_CLEAR) && GetTileSlope(tile, &h) == SLOPE_FLAT && h >= 4 && !IsBridgeAbove(tile)) {
-			TileIndex t = tile;
-			if (CircularTileSearch(&t, 9, HasTransmitter, NULL)) continue;
+		uint16 amount = spec->generate_amount;
 
-			BuildObject(OBJECT_TRANSMITTER, tile);
-			IncreaseGeneratingWorldProgress(GWP_OBJECT);
-			if (--radiotower_to_build == 0) break;
-		}
-	}
-
-	/* add lighthouses */
-	uint maxx = MapMaxX();
-	uint maxy = MapMaxY();
-	for (int loop_count = 0; loop_count < 1000 && lighthouses_to_build != 0 && Object::CanAllocateItem(); loop_count++) {
-		uint r = Random();
-
-		/* Scatter the lighthouses more evenly around the perimeter */
-		int perimeter = (GB(r, 16, 16) % (2 * (maxx + maxy))) - maxy;
-		DiagDirection dir;
-		for (dir = DIAGDIR_NE; perimeter > 0; dir++) {
-			perimeter -= (DiagDirToAxis(dir) == AXIS_X) ? maxx : maxy;
+		/* Scale by map size */
+		if ((spec->flags & OBJECT_FLAG_SCALE_BY_WATER) && _settings_game.construction.freeform_edges) {
+			/* Scale the amount of lighthouses with the amount of land at the borders.
+			 * The -6 is because the top borders are MP_VOID (-2) and all corners
+			 * are counted twice (-4). */
+			amount = ScaleByMapSize1D(amount * num_water_tiles) / (2 * MapMaxY() + 2 * MapMaxX() - 6);
+		} else if (spec->flags & OBJECT_FLAG_SCALE_BY_WATER) {
+			amount = ScaleByMapSize1D(amount);
+		} else {
+			amount = ScaleByMapSize(amount);
 		}
 
-		TileIndex tile;
-		switch (dir) {
-			default:
-			case DIAGDIR_NE: tile = TileXY(maxx - 1, r % maxy); break;
-			case DIAGDIR_SE: tile = TileXY(r % maxx, 1); break;
-			case DIAGDIR_SW: tile = TileXY(1,        r % maxy); break;
-			case DIAGDIR_NW: tile = TileXY(r % maxx, maxy - 1); break;
-		}
+		/* Now try to place the requested amount of this object */
+		for (uint j = ScaleByMapSize(1000); j != 0 && amount != 0 && Object::CanAllocateItem(); j--) {
+			switch (i) {
+				case OBJECT_TRANSMITTER:
+					if (TryBuildTransmitter()) amount--;
+					break;
 
-		/* Only build lighthouses at tiles where the border is sea. */
-		if (!IsTileType(tile, MP_WATER)) continue;
+				case OBJECT_LIGHTHOUSE:
+					if (TryBuildLightHouse()) amount--;
+					break;
 
-		for (int j = 0; j < 19; j++) {
-			int h;
-			if (IsTileType(tile, MP_CLEAR) && GetTileSlope(tile, &h) == SLOPE_FLAT && h <= 2 && !IsBridgeAbove(tile)) {
-				BuildObject(OBJECT_LIGHTHOUSE, tile);
-				IncreaseGeneratingWorldProgress(GWP_OBJECT);
-				lighthouses_to_build--;
-				assert(tile < MapSize());
-				break;
+				default:
+					uint8 view = RandomRange(spec->views);
+					if (CmdBuildObject(RandomTile(), DC_EXEC | DC_AUTO | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING, i, view, NULL).Succeeded()) amount--;
+					break;
 			}
-			tile += TileOffsByDiagDir(dir);
-			if (!IsValidTile(tile)) break;
 		}
+		IncreaseGeneratingWorldProgress(GWP_OBJECT);
 	}
 }
 
@@ -713,9 +770,9 @@ static void ChangeTileOwner_Object(TileIndex tile, Owner old_owner, Owner new_ow
 {
 	if (!IsTileOwner(tile, old_owner)) return;
 
-	if (IsOwnedLand(tile) && new_owner != INVALID_OWNER) {
+	if (IsObjectType(tile, OBJECT_OWNED_LAND) && new_owner != INVALID_OWNER) {
 		SetTileOwner(tile, new_owner);
-	} else if (IsStatueTile(tile)) {
+	} else if (IsObjectType(tile, OBJECT_STATUE)) {
 		Town *t = Object::GetByTile(tile)->town;
 		ClrBit(t->statues, old_owner);
 		if (new_owner != INVALID_OWNER && !HasBit(t->statues, new_owner)) {

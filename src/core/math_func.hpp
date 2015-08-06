@@ -12,18 +12,6 @@
 #ifndef MATH_FUNC_HPP
 #define MATH_FUNC_HPP
 
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
-#ifdef abs
-#undef abs
-#endif
-
 /**
  * Returns the maximum of two values.
  *
@@ -317,6 +305,7 @@ static inline uint ToPercent16(uint i)
 
 int LeastCommonMultiple(int a, int b);
 int GreatestCommonDivisor(int a, int b);
+int DivideApprox(int a, int b);
 
 /**
  * Computes ceil(a / b) for non-negative a and b.

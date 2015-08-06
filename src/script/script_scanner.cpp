@@ -18,15 +18,23 @@
 #include "script_scanner.hpp"
 #include "script_info.hpp"
 
+#if defined(ENABLE_NETWORK)
+#include "../network/network_content.h"
+#include "../3rdparty/md5/md5.h"
+#include "../tar_type.h"
+#endif /* ENABLE_NETWORK */
+
+#include "../safeguards.h"
+
 bool ScriptScanner::AddFile(const char *filename, size_t basepath_length, const char *tar_filename)
 {
 	free(this->main_script);
-	this->main_script = strdup(filename);
+	this->main_script = stredup(filename);
 	if (this->main_script == NULL) return false;
 
 	free(this->tar_file);
 	if (tar_filename != NULL) {
-		this->tar_file = strdup(tar_filename);
+		this->tar_file = stredup(tar_filename);
 		if (this->tar_file == NULL) return false;
 	} else {
 		this->tar_file = NULL;
@@ -45,9 +53,9 @@ bool ScriptScanner::AddFile(const char *filename, size_t basepath_length, const 
 
 	if (!FioCheckFileExists(filename, this->subdir) || !FioCheckFileExists(this->main_script, this->subdir)) return false;
 
-	/* We don't care if one of the other scripts failed to load. */
-	this->engine->ResetCrashed();
+	this->ResetEngine();
 	this->engine->LoadScript(filename);
+
 	return true;
 }
 
@@ -58,17 +66,20 @@ ScriptScanner::ScriptScanner() :
 {
 }
 
+void ScriptScanner::ResetEngine()
+{
+	this->engine->Reset();
+	this->engine->SetGlobalPointer(this);
+	this->RegisterAPI(this->engine);
+}
+
 void ScriptScanner::Initialize(const char *name)
 {
 	this->engine = new Squirrel(name);
 
-	/* Mark this class as global pointer */
-	this->engine->SetGlobalPointer(this);
-
-	this->RegisterAPI(this->engine);
 	this->RescanDir();
 
-	this->engine->ResetCrashed();
+	this->ResetEngine();
 }
 
 ScriptScanner::~ScriptScanner()
@@ -76,6 +87,7 @@ ScriptScanner::~ScriptScanner()
 	this->Reset();
 
 	free(this->main_script);
+	free(this->tar_file);
 	delete this->engine;
 }
 
@@ -107,11 +119,11 @@ void ScriptScanner::Reset()
 void ScriptScanner::RegisterScript(ScriptInfo *info)
 {
 	char script_original_name[1024];
-	this->GetScriptName(info, script_original_name, sizeof(script_original_name));
+	this->GetScriptName(info, script_original_name, lastof(script_original_name));
 	strtolower(script_original_name);
 
 	char script_name[1024];
-	snprintf(script_name, sizeof(script_name), "%s.%d", script_original_name, info->GetVersion());
+	seprintf(script_name, lastof(script_name), "%s.%d", script_original_name, info->GetVersion());
 
 	/* Check if GetShortName follows the rules */
 	if (strlen(info->GetShortName()) != 4) {
@@ -141,13 +153,13 @@ void ScriptScanner::RegisterScript(ScriptInfo *info)
 		return;
 	}
 
-	this->info_list[strdup(script_name)] = info;
+	this->info_list[stredup(script_name)] = info;
 
 	if (!info->IsDeveloperOnly() || _settings_client.gui.ai_developer_tools) {
 		/* Add the script to the 'unique' script list, where only the highest version
 		 *  of the script is registered. */
 		if (this->info_single_list.find(script_original_name) == this->info_single_list.end()) {
-			this->info_single_list[strdup(script_original_name)] = info;
+			this->info_single_list[stredup(script_original_name)] = info;
 		} else if (this->info_single_list[script_original_name]->GetVersion() < info->GetVersion()) {
 			this->info_single_list[script_original_name] = info;
 		}
@@ -169,9 +181,6 @@ char *ScriptScanner::GetConsoleList(char *p, const char *last, bool newest_only)
 }
 
 #if defined(ENABLE_NETWORK)
-#include "../network/network_content.h"
-#include "../3rdparty/md5/md5.h"
-#include "../tar_type.h"
 
 /** Helper for creating a MD5sum of all files within of a script. */
 struct ScriptFileChecksumCreator : FileScanner {
@@ -269,6 +278,14 @@ bool ScriptScanner::HasScript(const ContentInfo *ci, bool md5sum)
 		if (IsSameScript(ci, md5sum, (*it).second, this->GetDirectory())) return true;
 	}
 	return false;
+}
+
+const char *ScriptScanner::FindMainScript(const ContentInfo *ci, bool md5sum)
+{
+	for (ScriptInfoList::iterator it = this->info_list.begin(); it != this->info_list.end(); it++) {
+		if (IsSameScript(ci, md5sum, (*it).second, this->GetDirectory())) return (*it).second->GetMainScript();
+	}
+	return NULL;
 }
 
 #endif /* ENABLE_NETWORK */

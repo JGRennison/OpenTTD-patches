@@ -20,6 +20,8 @@ enum BlitterMode {
 	BM_NORMAL,       ///< Perform the simple blitting.
 	BM_COLOUR_REMAP, ///< Perform a colour remapping.
 	BM_TRANSPARENT,  ///< Perform transparency colour remapping.
+	BM_CRASH_REMAP,  ///< Perform a crash remapping.
+	BM_BLACK_REMAP,  ///< Perform remapping to a completely blackened sprite
 };
 
 /**
@@ -77,7 +79,7 @@ public:
 	/**
 	 * Convert a sprite from the loader to our own format.
 	 */
-	virtual Sprite *Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator) = 0;
+	virtual Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator) = 0;
 
 	/**
 	 * Move the destination pointer the requested amount x and y, keeping in mind
@@ -118,12 +120,13 @@ public:
 	 * @param screen_height The height of the screen you are drawing in (to avoid buffer-overflows).
 	 * @param colour A 8bpp mapping colour.
 	 * @param width Line width.
+	 * @param dash Length of dashes for dashed lines. 0 means solid line.
 	 */
-	virtual void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width);
+	virtual void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash = 0);
 
 	/**
 	 * Copy from a buffer to the screen.
-	 * @param video The destionation pointer (video-buffer).
+	 * @param video The destination pointer (video-buffer).
 	 * @param src The buffer from which the data will be read.
 	 * @param width The width of the buffer.
 	 * @param height The height of the buffer.

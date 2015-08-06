@@ -13,6 +13,7 @@
 #include "fileio_func.h"
 #include "spriteloader/grf.hpp"
 #include "gfx_func.h"
+#include "error.h"
 #include "zoom_func.h"
 #include "settings_type.h"
 #include "blitter/factory.hpp"
@@ -20,7 +21,10 @@
 #include "core/mem_func.hpp"
 
 #include "table/sprites.h"
+#include "table/strings.h"
 #include "table/palette_convert.h"
+
+#include "safeguards.h"
 
 /* Default of 4MB spritecache */
 uint _sprite_cache_size = 4;
@@ -79,6 +83,7 @@ struct MemBlock {
 
 static uint _sprite_lru_counter;
 static MemBlock *_spritecache_ptr;
+static uint _allocated_sprite_cache_size = 0;
 static int _compact_cache_counter;
 
 static void CompactSpriteCache();
@@ -115,9 +120,10 @@ bool SkipSpriteData(byte type, uint16 num)
 /* Check if the given Sprite ID exists */
 bool SpriteExists(SpriteID id)
 {
+	if (id >= _spritecache_items) return false;
+
 	/* Special case for Sprite ID zero -- its position is also 0... */
 	if (id == 0) return true;
-	if (id >= _spritecache_items) return false;
 	return !(GetSpriteCache(id)->file_pos == 0 && GetSpriteCache(id)->file_slot == 0);
 }
 
@@ -158,7 +164,7 @@ uint GetMaxSpriteID()
 
 static bool ResizeSpriteIn(SpriteLoader::Sprite *sprite, ZoomLevel src, ZoomLevel tgt)
 {
-	uint8 scaled_1 = UnScaleByZoom(1, (ZoomLevel)(tgt - src));
+	uint8 scaled_1 = ScaleByZoom(1, (ZoomLevel)(src - tgt));
 
 	/* Check for possible memory overflow. */
 	if (sprite[src].width * scaled_1 > UINT16_MAX || sprite[src].height * scaled_1 > UINT16_MAX) return false;
@@ -390,7 +396,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	sprite[ZOOM_LVL_NORMAL].type = sprite_type;
 
 	SpriteLoaderGrf sprite_loader(sc->container_ver);
-	if (sprite_type != ST_MAPGEN && BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth() == 32) {
+	if (sprite_type != ST_MAPGEN && BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
 		/* Try for 32bpp sprites first. */
 		sprite_avail = sprite_loader.LoadSprite(sprite, file_slot, file_pos, sprite_type, true);
 	}
@@ -413,7 +419,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 		 *  extract the data directly and store that as sprite.
 		 * Ugly: yes. Other solution: no. Blame the original author or
 		 *  something ;) The image should really have been a data-stream
-		 *  (so type = 0xFF basicly). */
+		 *  (so type = 0xFF basically). */
 		uint num = sprite[ZOOM_LVL_NORMAL].width * sprite[ZOOM_LVL_NORMAL].height;
 
 		Sprite *s = (Sprite *)allocator(sizeof(*s) + num);
@@ -432,17 +438,25 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 		return s;
 	}
 
-	if (sprite_type == ST_NORMAL) {
-		if (!ResizeSprites(sprite, sprite_avail, file_slot, sc->id)) {
-			if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't resize the fallback sprite. What should I do?");
-			return (void*)GetRawSprite(SPR_IMG_QUERY, ST_NORMAL, allocator);
-		}
+	if (!ResizeSprites(sprite, sprite_avail, file_slot, sc->id)) {
+		if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't resize the fallback sprite. What should I do?");
+		return (void*)GetRawSprite(SPR_IMG_QUERY, ST_NORMAL, allocator);
 	}
-	return BlitterFactoryBase::GetCurrentBlitter()->Encode(sprite, allocator);
+
+	if (sprite->type == ST_FONT && ZOOM_LVL_GUI != ZOOM_LVL_NORMAL) {
+		/* Make ZOOM_LVL_GUI be ZOOM_LVL_NORMAL */
+		sprite[ZOOM_LVL_NORMAL].width  = sprite[ZOOM_LVL_GUI].width;
+		sprite[ZOOM_LVL_NORMAL].height = sprite[ZOOM_LVL_GUI].height;
+		sprite[ZOOM_LVL_NORMAL].x_offs = sprite[ZOOM_LVL_GUI].x_offs;
+		sprite[ZOOM_LVL_NORMAL].y_offs = sprite[ZOOM_LVL_GUI].y_offs;
+		sprite[ZOOM_LVL_NORMAL].data   = sprite[ZOOM_LVL_GUI].data;
+	}
+
+	return BlitterFactory::GetCurrentBlitter()->Encode(sprite, allocator);
 }
 
 
-/** */
+/** Map from sprite numbers to position in the GRF file. */
 static std::map<uint32, size_t> _grf_sprite_offsets;
 
 /**
@@ -809,7 +823,7 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
  */
 void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator)
 {
-	assert(IsMapgenSpriteID(sprite) == (type == ST_MAPGEN));
+	assert(type != ST_MAPGEN || IsMapgenSpriteID(sprite));
 	assert(type < ST_INVALID);
 
 	if (!SpriteExists(sprite)) {
@@ -843,10 +857,50 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator)
 static void GfxInitSpriteCache()
 {
 	/* initialize sprite cache heap */
-	if (_spritecache_ptr == NULL) _spritecache_ptr = (MemBlock*)MallocT<byte>(_sprite_cache_size * 1024 * 1024);
+	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+	uint target_size = (bpp > 0 ? _sprite_cache_size * bpp / 8 : 1) * 1024 * 1024;
+
+	/* Remember 'target_size' from the previous allocation attempt, so we do not try to reach the target_size multiple times in case of failure. */
+	static uint last_alloc_attempt = 0;
+
+	if (_spritecache_ptr == NULL || (_allocated_sprite_cache_size != target_size && target_size != last_alloc_attempt)) {
+		delete[] reinterpret_cast<byte *>(_spritecache_ptr);
+
+		last_alloc_attempt = target_size;
+		_allocated_sprite_cache_size = target_size;
+
+		do {
+			try {
+				/* Try to allocate 50% more to make sure we do not allocate almost all available. */
+				_spritecache_ptr = reinterpret_cast<MemBlock *>(new byte[_allocated_sprite_cache_size + _allocated_sprite_cache_size / 2]);
+			} catch (std::bad_alloc &) {
+				_spritecache_ptr = NULL;
+			}
+
+			if (_spritecache_ptr != NULL) {
+				/* Allocation succeeded, but we wanted less. */
+				delete[] reinterpret_cast<byte *>(_spritecache_ptr);
+				_spritecache_ptr = reinterpret_cast<MemBlock *>(new byte[_allocated_sprite_cache_size]);
+			} else if (_allocated_sprite_cache_size < 2 * 1024 * 1024) {
+				usererror("Cannot allocate spritecache");
+			} else {
+				/* Try again to allocate half. */
+				_allocated_sprite_cache_size >>= 1;
+			}
+		} while (_spritecache_ptr == NULL);
+
+		if (_allocated_sprite_cache_size != target_size) {
+			DEBUG(misc, 0, "Not enough memory to allocate %d MiB of spritecache. Spritecache was reduced to %d MiB.", target_size / 1024 / 1024, _allocated_sprite_cache_size / 1024 / 1024);
+
+			ErrorMessageData msg(STR_CONFIG_ERROR_OUT_OF_MEMORY, STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG);
+			msg.SetDParam(0, target_size);
+			msg.SetDParam(1, _allocated_sprite_cache_size);
+			ScheduleErrorMessage(msg);
+		}
+	}
 
 	/* A big free block */
-	_spritecache_ptr->size = ((_sprite_cache_size * 1024 * 1024) - sizeof(MemBlock)) | S_FREE_MASK;
+	_spritecache_ptr->size = (_allocated_sprite_cache_size - sizeof(MemBlock)) | S_FREE_MASK;
 	/* Sentinel block (identified by size == 0) */
 	NextBlock(_spritecache_ptr)->size = 0;
 }

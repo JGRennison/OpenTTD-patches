@@ -14,11 +14,14 @@
 #include "../core/random_func.hpp"
 #include "script_info.hpp"
 #include "../textfile_gui.h"
+#include "../string_func.h"
+
+#include "../safeguards.h"
 
 void ScriptConfig::Change(const char *name, int version, bool force_exact_match, bool is_random)
 {
 	free(this->name);
-	this->name = (name == NULL) ? NULL : strdup(name);
+	this->name = (name == NULL) ? NULL : stredup(name);
 	this->info = (name == NULL) ? NULL : this->FindInfo(this->name, version, force_exact_match);
 	this->version = (info == NULL) ? -1 : info->GetVersion();
 	this->is_random = is_random;
@@ -42,14 +45,14 @@ void ScriptConfig::Change(const char *name, int version, bool force_exact_match,
 
 ScriptConfig::ScriptConfig(const ScriptConfig *config)
 {
-	this->name = (config->name == NULL) ? NULL : strdup(config->name);
+	this->name = (config->name == NULL) ? NULL : stredup(config->name);
 	this->info = config->info;
 	this->version = config->version;
 	this->config_list = NULL;
 	this->is_random = config->is_random;
 
 	for (SettingValueList::const_iterator it = config->settings.begin(); it != config->settings.end(); it++) {
-		this->settings[strdup((*it).first)] = (*it).second;
+		this->settings[stredup((*it).first)] = (*it).second;
 	}
 	this->AddRandomDeviation();
 }
@@ -84,13 +87,17 @@ void ScriptConfig::ClearConfigList()
 	this->settings.clear();
 }
 
+void ScriptConfig::AnchorUnchangeableSettings()
+{
+	for (ScriptConfigItemList::const_iterator it = this->GetConfigList()->begin(); it != this->GetConfigList()->end(); it++) {
+		if (((*it).flags & SCRIPTCONFIG_INGAME) == 0) {
+			this->SetSetting((*it).name, this->GetSetting((*it).name));
+		}
+	}
+}
+
 int ScriptConfig::GetSetting(const char *name) const
 {
-	/* Return default values if the difficulty is not set to Custom */
-	if (GetGameSettings().difficulty.diff_level != 3) {
-		return this->info->GetSettingDefaultValue(name);
-	}
-
 	SettingValueList::const_iterator it = this->settings.find(name);
 	if (it == this->settings.end()) return this->info->GetSettingDefaultValue(name);
 	return (*it).second;
@@ -110,7 +117,7 @@ void ScriptConfig::SetSetting(const char *name, int value)
 	if (it != this->settings.end()) {
 		(*it).second = value;
 	} else {
-		this->settings[strdup(name)] = value;
+		this->settings[stredup(name)] = value;
 	}
 }
 
@@ -153,7 +160,7 @@ int ScriptConfig::GetVersion() const
 
 void ScriptConfig::StringToSettings(const char *value)
 {
-	char *value_copy = strdup(value);
+	char *value_copy = stredup(value);
 	char *s = value_copy;
 
 	while (s != NULL) {
@@ -177,27 +184,27 @@ void ScriptConfig::StringToSettings(const char *value)
 	free(value_copy);
 }
 
-void ScriptConfig::SettingsToString(char *string, size_t size) const
+void ScriptConfig::SettingsToString(char *string, const char *last) const
 {
-	string[0] = '\0';
+	char *s = string;
+	*s = '\0';
 	for (SettingValueList::const_iterator it = this->settings.begin(); it != this->settings.end(); it++) {
 		char no[10];
-		snprintf(no, sizeof(no), "%d", (*it).second);
+		seprintf(no, lastof(no), "%d", (*it).second);
 
 		/* Check if the string would fit in the destination */
-		size_t needed_size = strlen((*it).first) + 1 + strlen(no) + 1;
+		size_t needed_size = strlen((*it).first) + 1 + strlen(no);
 		/* If it doesn't fit, skip the next settings */
-		if (size <= needed_size) break;
-		size -= needed_size;
+		if (string + needed_size > last) break;
 
-		strcat(string, (*it).first);
-		strcat(string, "=");
-		strcat(string, no);
-		strcat(string, ",");
+		s = strecat(s, (*it).first, last);
+		s = strecat(s, "=", last);
+		s = strecat(s, no, last);
+		s = strecat(s, ",", last);
 	}
+
 	/* Remove the last ',', but only if at least one setting was saved. */
-	size_t len = strlen(string);
-	if (len > 0) string[len - 1] = '\0';
+	if (s != string) s[-1] = '\0';
 }
 
 const char *ScriptConfig::GetTextfile(TextfileType type, CompanyID slot) const

@@ -17,39 +17,47 @@
 #include "station_type.h"
 #include "industry_type.h"
 
-void AddNewsItem(StringID string, NewsSubtype subtype, NewsReferenceType reftype1 = NR_NONE, uint32 ref1 = UINT32_MAX, NewsReferenceType reftype2 = NR_NONE, uint32 ref2 = UINT32_MAX, void *free_data = NULL);
+void AddNewsItem(StringID string, NewsType type, NewsFlag flags, NewsReferenceType reftype1 = NR_NONE, uint32 ref1 = UINT32_MAX, NewsReferenceType reftype2 = NR_NONE, uint32 ref2 = UINT32_MAX, void *free_data = NULL);
 
-static inline void AddCompanyNewsItem(StringID string, NewsSubtype subtype, CompanyNewsInformation *cni)
+static inline void AddCompanyNewsItem(StringID string, CompanyNewsInformation *cni)
 {
-	AddNewsItem(string, subtype, NR_NONE, UINT32_MAX, NR_NONE, UINT32_MAX, cni);
+	AddNewsItem(string, NT_COMPANY_INFO, NF_COMPANY, NR_NONE, UINT32_MAX, NR_NONE, UINT32_MAX, cni);
 }
 
 /**
  * Adds a newsitem referencing a vehicle.
  *
- * @warning
- * Be careful!
- * Vehicles are a special case, as news are kept when vehicles are autoreplaced/renewed.
- * You have to make sure, #ChangeVehicleNews catches the DParams of your message.
- * This is NOT ensured by the references.
+ * @warning The DParams may not reference the vehicle due to autoreplace stuff. See AddVehicleAdviceNewsItem for how that can be done.
  */
-static inline void AddVehicleNewsItem(StringID string, NewsSubtype subtype, VehicleID vehicle, StationID station = INVALID_STATION)
+static inline void AddVehicleNewsItem(StringID string, NewsType type, VehicleID vehicle, StationID station = INVALID_STATION)
 {
-	AddNewsItem(string, subtype, NR_VEHICLE, vehicle, station == INVALID_STATION ? NR_NONE : NR_STATION, station);
+	AddNewsItem(string, type, NF_NO_TRANSPARENT | NF_SHADE | NF_THIN, NR_VEHICLE, vehicle, station == INVALID_STATION ? NR_NONE : NR_STATION, station);
 }
 
-static inline void AddIndustryNewsItem(StringID string, NewsSubtype subtype, IndustryID industry)
+/**
+ * Adds a vehicle-advice news item.
+ *
+ * @warning DParam 0 must reference the vehicle!
+ */
+static inline void AddVehicleAdviceNewsItem(StringID string, VehicleID vehicle)
 {
-	AddNewsItem(string, subtype, NR_INDUSTRY, industry);
+	AddNewsItem(string, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0, NR_VEHICLE, vehicle);
+}
+
+static inline void AddTileNewsItem(StringID string, NewsType type, TileIndex tile, void *free_data = NULL)
+{
+	AddNewsItem(string, type, NF_NO_TRANSPARENT | NF_SHADE | NF_THIN, NR_TILE, tile, NR_NONE, UINT32_MAX, free_data);
+}
+
+static inline void AddIndustryNewsItem(StringID string, NewsType type, IndustryID industry)
+{
+	AddNewsItem(string, type, NF_NO_TRANSPARENT | NF_SHADE | NF_THIN, NR_INDUSTRY, industry);
 }
 
 void NewsLoop();
 void InitNewsItemStructs();
 
 extern const NewsItem *_statusbar_news_item;
-extern bool _news_ticker_sound;
-
-extern NewsTypeData _news_type_data[];
 
 void DeleteInvalidEngineNews();
 void DeleteVehicleNews(VehicleID vid, StringID news);

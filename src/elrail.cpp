@@ -25,7 +25,7 @@
  * Group 0: Tiles with both an even X coordinate and an even Y coordinate
  * Group 1: Tiles with an even X and an odd Y coordinate
  * Group 2: Tiles with an odd X and an even Y coordinate
- * Group 3: Tiles with both an odd X and Y coordnate.
+ * Group 3: Tiles with both an odd X and Y coordinate.
  *
  * <h3>Pylon Points</h3>
  * <h4>Control Points</h4>
@@ -39,7 +39,7 @@
  * other tile.
  *
  * Now on each edge there are two PCPs: One from each adjacent tile. Both PCPs
- * are merged using an OR operation (i. e. if one tile needs a PCP at the postion
+ * are merged using an OR operation (i. e. if one tile needs a PCP at the position
  * in question, both tiles get it).
  *
  * <h4>Position Points</h4>
@@ -49,8 +49,8 @@
  * that are impossible (because the pylon would be situated on the track) and
  * some that are preferred (because the pylon would be rectangular to the track).
  *
- * <img src="../../elrail_tile.png">
- * <img src="../../elrail_track.png">
+ * @image html elrail_tile.png
+ * @image html elrail_track.png
  *
  */
 
@@ -66,6 +66,8 @@
 #include "newgrf_railtype.h"
 
 #include "table/elrail_data.h"
+
+#include "safeguards.h"
 
 /**
  * Get the tile location group of a tile.
@@ -111,7 +113,6 @@ static TrackBits GetRailTrackBitsUniversal(TileIndex t, byte *override)
 		case MP_STATION:
 			if (!HasStationRail(t)) return TRACK_BIT_NONE;
 			if (!HasCatenary(GetRailType(t))) return TRACK_BIT_NONE;
-			if (!IsStationTileElectrifiable(t)) return TRACK_BIT_NONE;
 			return TrackToTrackBits(GetRailStationTrack(t));
 
 		default:
@@ -128,11 +129,15 @@ static TrackBits MaskWireBits(TileIndex t, TrackBits tracks)
 
 	TrackdirBits neighbour_tdb = TRACKDIR_BIT_NONE;
 	for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
-		/* If the neighbor tile is either not electrified or has no tracks that can be reached
+		/* If the neighbour tile is either not electrified or has no tracks that can be reached
 		 * from this tile, mark all trackdirs that can be reached from the neighbour tile
-		 * as needing no catenary. */
-		RailType rt = GetTileRailType(TileAddByDiagDir(t, d));
-		if (rt == INVALID_RAILTYPE || !HasCatenary(rt) || (TrackStatusToTrackBits(GetTileTrackStatus(TileAddByDiagDir(t, d), TRANSPORT_RAIL, 0)) & DiagdirReachesTracks(d)) == TRACK_BIT_NONE) {
+		 * as needing no catenary. We make an exception for blocked station tiles with a matching
+		 * axis that still display wires to preserve visual continuity. */
+		TileIndex next_tile = TileAddByDiagDir(t, d);
+		RailType rt = GetTileRailType(next_tile);
+		if (rt == INVALID_RAILTYPE || !HasCatenary(rt) ||
+				((TrackStatusToTrackBits(GetTileTrackStatus(next_tile, TRANSPORT_RAIL, 0)) & DiagdirReachesTracks(d)) == TRACK_BIT_NONE &&
+				(!HasStationTileRail(next_tile) || GetRailStationAxis(next_tile) != DiagDirToAxis(d) || !CanStationTileHaveWires(next_tile)))) {
 			neighbour_tdb |= DiagdirReachesTrackdirs(ReverseDiagDir(d));
 		}
 	}
@@ -324,6 +329,9 @@ static void DrawCatenaryRailway(const TileInfo *ti)
 		wireconfig[TS_NEIGHBOUR] = MaskWireBits(neighbour, trackconfig[TS_NEIGHBOUR]);
 		if (IsTunnelTile(neighbour) && i != GetTunnelBridgeDirection(neighbour)) wireconfig[TS_NEIGHBOUR] = trackconfig[TS_NEIGHBOUR] = TRACK_BIT_NONE;
 
+		/* Ignore station tiles that allow neither wires nor pylons. */
+		if (IsRailStationTile(neighbour) && !CanStationTileHavePylons(neighbour) && !CanStationTileHaveWires(neighbour)) wireconfig[TS_NEIGHBOUR] = trackconfig[TS_NEIGHBOUR] = TRACK_BIT_NONE;
+
 		/* If the neighboured tile does not smoothly connect to the current tile (because of a foundation),
 		 * we have to draw all pillars on the current tile. */
 		if (elevation != GetPCPElevation(neighbour, ReverseDiagDir(i))) wireconfig[TS_NEIGHBOUR] = trackconfig[TS_NEIGHBOUR] = TRACK_BIT_NONE;
@@ -370,7 +378,7 @@ static void DrawCatenaryRailway(const TileInfo *ti)
 		/* Station and road crossings are always "flat", so adjust the tileh accordingly */
 		if (IsTileType(neighbour, MP_STATION) || IsTileType(neighbour, MP_ROAD)) tileh[TS_NEIGHBOUR] = SLOPE_FLAT;
 
-		/* Read the foundataions if they are present, and adjust the tileh */
+		/* Read the foundations if they are present, and adjust the tileh */
 		if (trackconfig[TS_NEIGHBOUR] != TRACK_BIT_NONE && IsTileType(neighbour, MP_RAILWAY) && HasCatenary(GetRailType(neighbour))) foundation = GetRailFoundation(tileh[TS_NEIGHBOUR], trackconfig[TS_NEIGHBOUR]);
 		if (IsBridgeTile(neighbour)) {
 			foundation = GetBridgeFoundation(tileh[TS_NEIGHBOUR], DiagDirToAxis(GetTunnelBridgeDirection(neighbour)));
@@ -399,7 +407,7 @@ static void DrawCatenaryRailway(const TileInfo *ti)
 		 * Remove those (simply by ANDing with allowed, since these markers are never allowed) */
 		if ((PPPallowed[i] & PPPpreferred[i]) != 0) PPPallowed[i] &= PPPpreferred[i];
 
-		if (MayHaveBridgeAbove(ti->tile) && IsBridgeAbove(ti->tile)) {
+		if (IsBridgeAbove(ti->tile)) {
 			Track bridgetrack = GetBridgeAxis(ti->tile) == AXIS_X ? TRACK_X : TRACK_Y;
 			int height = GetBridgeHeight(GetNorthernBridgeEnd(ti->tile));
 
@@ -409,7 +417,8 @@ static void DrawCatenaryRailway(const TileInfo *ti)
 			}
 		}
 
-		if (PPPallowed[i] != 0 && HasBit(PCPstatus, i) && !HasBit(OverridePCP, i)) {
+		if (PPPallowed[i] != 0 && HasBit(PCPstatus, i) && !HasBit(OverridePCP, i) &&
+				(!IsRailStationTile(ti->tile) || CanStationTileHavePylons(ti->tile))) {
 			for (Direction k = DIR_BEGIN; k < DIR_END; k++) {
 				byte temp = PPPorder[i][GetTLG(ti->tile)][k];
 
@@ -419,7 +428,7 @@ static void DrawCatenaryRailway(const TileInfo *ti)
 
 					/* Don't build the pylon if it would be outside the tile */
 					if (!HasBit(OwnedPPPonPCP[i], temp)) {
-						/* We have a neighour that will draw it, bail out */
+						/* We have a neighbour that will draw it, bail out */
 						if (trackconfig[TS_NEIGHBOUR] != TRACK_BIT_NONE) break;
 						continue; // No neighbour, go looking for a better position
 					}
@@ -437,11 +446,14 @@ static void DrawCatenaryRailway(const TileInfo *ti)
 	if (IsTunnelTile(ti->tile)) return;
 
 	/* Don't draw a wire under a low bridge */
-	if (MayHaveBridgeAbove(ti->tile) && IsBridgeAbove(ti->tile) && !IsTransparencySet(TO_CATENARY)) {
+	if (IsBridgeAbove(ti->tile) && !IsTransparencySet(TO_BRIDGES)) {
 		int height = GetBridgeHeight(GetNorthernBridgeEnd(ti->tile));
 
 		if (height <= GetTileMaxZ(ti->tile) + 1) return;
 	}
+
+	/* Don't draw a wire if the station tile does not want any */
+	if (IsRailStationTile(ti->tile) && !CanStationTileHaveWires(ti->tile)) return;
 
 	SpriteID wire_normal = GetWireBase(ti->tile);
 	SpriteID wire_halftile = (halftile_corner != CORNER_INVALID) ? GetWireBase(ti->tile, TCX_UPPER_HALFTILE) : wire_normal;
@@ -617,7 +629,7 @@ bool SettingsDisableElrail(int32 p1)
 	FOR_ALL_TRAINS(t) {
 		/* power and acceleration is cached only for front engines */
 		if (t->IsFrontEngine()) {
-			t->ConsistChanged(true);
+			t->ConsistChanged(CCF_TRACK);
 		}
 	}
 

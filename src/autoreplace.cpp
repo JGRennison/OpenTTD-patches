@@ -15,6 +15,8 @@
 #include "autoreplace_base.h"
 #include "core/pool_func.hpp"
 
+#include "safeguards.h"
+
 /** The pool of autoreplace "orders". */
 EngineRenewPool _enginerenew_pool("EngineRenew");
 INSTANTIATE_POOL_METHODS(EngineRenew)
@@ -28,7 +30,7 @@ static EngineRenew *GetEngineReplacement(EngineRenewList erl, EngineID engine, G
 	EngineRenew *er = (EngineRenew *)erl;
 
 	while (er != NULL) {
-		if (er->from == engine && er->group_id == group) return er;
+		if (er->from == engine && GroupIsInGroup(group, er->group_id)) return er;
 		er = er->next;
 	}
 	return NULL;
@@ -57,16 +59,18 @@ void RemoveAllEngineReplacement(EngineRenewList *erl)
  * @param erl The renewlist to search in.
  * @param engine Engine type to be replaced.
  * @param group The group related to this replacement.
+ * @param[out] replace_when_old Set to true if the replacement should be done when old.
  * @return The engine type to replace with, or INVALID_ENGINE if no
  * replacement is in the list.
  */
-EngineID EngineReplacement(EngineRenewList erl, EngineID engine, GroupID group)
+EngineID EngineReplacement(EngineRenewList erl, EngineID engine, GroupID group, bool *replace_when_old)
 {
 	const EngineRenew *er = GetEngineReplacement(erl, engine, group);
 	if (er == NULL && (group == DEFAULT_GROUP || (Group::IsValidID(group) && !Group::Get(group)->replace_protection))) {
 		/* We didn't find anything useful in the vehicle's own group so we will try ALL_GROUP */
 		er = GetEngineReplacement(erl, engine, ALL_GROUP);
 	}
+	if (replace_when_old != NULL) *replace_when_old = er == NULL ? false : er->replace_when_old;
 	return er == NULL ? INVALID_ENGINE : er->to;
 }
 
@@ -76,15 +80,19 @@ EngineID EngineReplacement(EngineRenewList erl, EngineID engine, GroupID group)
  * @param old_engine The original engine type.
  * @param new_engine The replacement engine type.
  * @param group The group related to this replacement.
+ * @param replace_when_old Replace when old or always?
  * @param flags The calling command flags.
  * @return 0 on success, CMD_ERROR on failure.
  */
-CommandCost AddEngineReplacement(EngineRenewList *erl, EngineID old_engine, EngineID new_engine, GroupID group, DoCommandFlag flags)
+CommandCost AddEngineReplacement(EngineRenewList *erl, EngineID old_engine, EngineID new_engine, GroupID group, bool replace_when_old, DoCommandFlag flags)
 {
 	/* Check if the old vehicle is already in the list */
 	EngineRenew *er = GetEngineReplacement(*erl, old_engine, group);
 	if (er != NULL) {
-		if (flags & DC_EXEC) er->to = new_engine;
+		if (flags & DC_EXEC) {
+			er->to = new_engine;
+			er->replace_when_old = replace_when_old;
+		}
 		return CommandCost();
 	}
 
@@ -93,6 +101,7 @@ CommandCost AddEngineReplacement(EngineRenewList *erl, EngineID old_engine, Engi
 	if (flags & DC_EXEC) {
 		er = new EngineRenew(old_engine, new_engine);
 		er->group_id = group;
+		er->replace_when_old = replace_when_old;
 
 		/* Insert before the first element */
 		er->next = (EngineRenew *)(*erl);

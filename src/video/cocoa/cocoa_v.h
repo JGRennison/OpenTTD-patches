@@ -14,7 +14,7 @@
 
 #include "../video_driver.hpp"
 
-class VideoDriver_Cocoa: public VideoDriver {
+class VideoDriver_Cocoa : public VideoDriver {
 public:
 	/* virtual */ const char *Start(const char * const *param);
 
@@ -50,18 +50,21 @@ public:
 	 */
 	/* virtual */ bool AfterBlitterChange();
 
+	/**
+	 * An edit box lost the input focus. Abort character compositing if necessary.
+	 */
+	/* virtual */ void EditBoxLostFocus();
+
 	/** Return driver name
 	 * @return driver name
 	 */
 	/* virtual */ const char *GetName() const { return "cocoa"; }
 };
 
-class FVideoDriver_Cocoa: public VideoDriverFactory<FVideoDriver_Cocoa> {
+class FVideoDriver_Cocoa : public DriverFactoryBase {
 public:
-	static const int priority = 10;
-	/* virtual */ const char *GetName() { return "cocoa"; }
-	/* virtual */ const char *GetDescription() { return "Cocoa Video Driver"; }
-	/* virtual */ Driver *CreateInstance() { return new VideoDriver_Cocoa(); }
+	FVideoDriver_Cocoa() : DriverFactoryBase(Driver::DT_VIDEO, 10, "cocoa", "Cocoa Video Driver") {}
+	/* virtual */ Driver *CreateInstance() const { return new VideoDriver_Cocoa(); }
 };
 
 
@@ -134,7 +137,7 @@ public:
 	virtual bool IsFullscreen() = 0;
 
 	/** Toggle between fullscreen and windowed mode
-	 * @return whether switch was successfull
+	 * @return whether switch was successful
 	 */
 	virtual bool ToggleFullscreen() { return false; };
 
@@ -180,7 +183,7 @@ public:
 	virtual void SetPortAlphaOpaque() { return; };
 
 	/** Whether the window was successfully resized
-	 * @return whether the window was succesfully resized
+	 * @return whether the window was successfully resized
 	 */
 	virtual bool WindowResized() { return false; };
 };
@@ -227,7 +230,17 @@ uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_i
 @end
 
 /** Subclass of NSView to fix Quartz rendering and mouse awareness */
-@interface OTTD_CocoaView : NSView {
+@interface OTTD_CocoaView : NSView
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5
+#	if MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4
+		<NSTextInputClient, NSTextInput>
+#	else
+		<NSTextInputClient>
+#	endif /* MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4 */
+#else
+	<NSTextInput>
+#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5 */
+{
 	CocoaSubdriver *driver;
 	NSTrackingRectTag trackingtag;
 }
@@ -253,6 +266,7 @@ uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_i
 - (void)setDriver:(CocoaSubdriver*)drv;
 
 - (BOOL)windowShouldClose:(id)sender;
+- (void)windowDidEnterFullScreen:(NSNotification *)aNotification;
 @end
 
 

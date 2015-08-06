@@ -29,9 +29,13 @@
 #include "engine_base.h"
 #include "company_base.h"
 #include "vehicle_func.h"
+#include "articulated_vehicles.h"
+#include "error.h"
 
 #include "table/strings.h"
 #include "table/engines.h"
+
+#include "safeguards.h"
 
 EnginePool _engine_pool("Engine");
 INSTANTIATE_POOL_METHODS(Engine)
@@ -146,12 +150,12 @@ Engine::~Engine()
 }
 
 /**
- * Checks whether the engine spec is properly initialised.
+ * Checks whether the engine is a valid (non-articulated part of an) engine.
  * @return true if enabled
  */
 bool Engine::IsEnabled() const
 {
-	return this->info.string_id != STR_NEWGRF_INVALID_ENGINE;
+	return this->info.string_id != STR_NEWGRF_INVALID_ENGINE && HasBit(this->info.climates, _settings_game.game_creation.landscape);
 }
 
 /**
@@ -651,6 +655,7 @@ void StartupOneEngine(Engine *e, Date aging_date)
 	e->age = 0;
 	e->flags = 0;
 	e->company_avail = 0;
+	e->company_hidden = 0;
 
 	/* Don't randomise the start-date in the first two years after gamestart to ensure availability
 	 * of engines in early starting games.
@@ -740,7 +745,8 @@ static void AcceptEnginePreview(EngineID eid, CompanyID company)
 		SetBit(c->avail_roadtypes, HasBit(e->info.misc_flags, EF_ROAD_TRAM) ? ROADTYPE_TRAM : ROADTYPE_ROAD);
 	}
 
-	e->preview_company_rank = 0xFF;
+	e->preview_company = INVALID_COMPANY;
+	e->preview_asked = (CompanyMask)-1;
 	if (company == _local_company) {
 		AddRemoveEngineFromAutoreplaceAndBuildWindows(e->type);
 	}
@@ -748,37 +754,66 @@ static void AcceptEnginePreview(EngineID eid, CompanyID company)
 	/* Update the toolbar. */
 	if (e->type == VEH_ROAD) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_ROAD);
 	if (e->type == VEH_SHIP) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_WATER);
+
+	/* Notify preview window, that it might want to close.
+	 * Note: We cannot directly close the window.
+	 *       In singleplayer this function is called from the preview window, so
+	 *       we have to use the GUI-scope scheduling of InvalidateWindowData.
+	 */
+	InvalidateWindowData(WC_ENGINE_PREVIEW, eid);
 }
 
 /**
- * Get the N-th best company.
- * @param pp Value N, 1 means best, 2 means second best, etc.
- * @return N-th best company if it exists, #INVALID_COMPANY otherwise.
+ * Get the best company for an engine preview.
+ * @param e Engine to preview.
+ * @return Best company if it exists, #INVALID_COMPANY otherwise.
  */
-static CompanyID GetBestCompany(uint8 pp)
+static CompanyID GetPreviewCompany(Engine *e)
 {
-	CompanyID best_company;
-	CompanyMask mask = 0;
+	CompanyID best_company = INVALID_COMPANY;
 
-	do {
-		int32 best_hist = -1;
-		best_company = INVALID_COMPANY;
+	/* For trains the cargomask has no useful meaning, since you can attach other wagons */
+	uint32 cargomask = e->type != VEH_TRAIN ? GetUnionOfArticulatedRefitMasks(e->index, true) : (uint32)-1;
 
-		const Company *c;
-		FOR_ALL_COMPANIES(c) {
-			if (c->block_preview == 0 && !HasBit(mask, c->index) &&
-					c->old_economy[0].performance_history > best_hist) {
+	int32 best_hist = -1;
+	const Company *c;
+	FOR_ALL_COMPANIES(c) {
+		if (c->block_preview == 0 && !HasBit(e->preview_asked, c->index) &&
+				c->old_economy[0].performance_history > best_hist) {
+
+			/* Check whether the company uses similar vehicles */
+			Vehicle *v;
+			FOR_ALL_VEHICLES(v) {
+				if (v->owner != c->index || v->type != e->type) continue;
+				if (!v->GetEngine()->CanCarryCargo() || !HasBit(cargomask, v->cargo_type)) continue;
+
 				best_hist = c->old_economy[0].performance_history;
 				best_company = c->index;
+				break;
 			}
 		}
-
-		if (best_company == INVALID_COMPANY) return INVALID_COMPANY;
-
-		SetBit(mask, best_company);
-	} while (--pp != 0);
+	}
 
 	return best_company;
+}
+
+/**
+ * Checks if a vehicle type is disabled for all/ai companies.
+ * @param type The vehicle type which shall be checked.
+ * @param ai If true, check if the type is disabled for AI companies, otherwise check if
+ *           the vehicle type is disabled for human companies.
+ * @return Whether or not a vehicle type is disabled.
+ */
+static bool IsVehicleTypeDisabled(VehicleType type, bool ai)
+{
+	switch (type) {
+		case VEH_TRAIN:    return _settings_game.vehicle.max_trains == 0   || (ai && _settings_game.ai.ai_disable_veh_train);
+		case VEH_ROAD:     return _settings_game.vehicle.max_roadveh == 0  || (ai && _settings_game.ai.ai_disable_veh_roadveh);
+		case VEH_SHIP:     return _settings_game.vehicle.max_ships == 0    || (ai && _settings_game.ai.ai_disable_veh_ship);
+		case VEH_AIRCRAFT: return _settings_game.vehicle.max_aircraft == 0 || (ai && _settings_game.ai.ai_disable_veh_aircraft);
+
+		default: NOT_REACHED();
+	}
 }
 
 /** Daily check to offer an exclusive engine preview to the companies. */
@@ -792,34 +827,73 @@ void EnginesDailyLoop()
 	FOR_ALL_ENGINES(e) {
 		EngineID i = e->index;
 		if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) {
-			if (e->flags & ENGINE_OFFER_WINDOW_OPEN) {
-				if (e->preview_company_rank != 0xFF && !--e->preview_wait) {
-					e->flags &= ~ENGINE_OFFER_WINDOW_OPEN;
+			if (e->preview_company != INVALID_COMPANY) {
+				if (!--e->preview_wait) {
 					DeleteWindowById(WC_ENGINE_PREVIEW, i);
-					e->preview_company_rank++;
+					e->preview_company = INVALID_COMPANY;
 				}
-			} else if (e->preview_company_rank != 0xFF) {
-				CompanyID best_company = GetBestCompany(e->preview_company_rank);
+			} else if (CountBits(e->preview_asked) < MAX_COMPANIES) {
+				e->preview_company = GetPreviewCompany(e);
 
-				if (best_company == INVALID_COMPANY) {
-					e->preview_company_rank = 0xFF;
+				if (e->preview_company == INVALID_COMPANY) {
+					e->preview_asked = (CompanyMask)-1;
 					continue;
 				}
 
-				e->flags |= ENGINE_OFFER_WINDOW_OPEN;
+				SetBit(e->preview_asked, e->preview_company);
 				e->preview_wait = 20;
-				AI::NewEvent(best_company, new ScriptEventEnginePreview(i));
-				if (IsInteractiveCompany(best_company)) ShowEnginePreviewWindow(i);
+				/* AIs are intentionally not skipped for preview even if they cannot build a certain
+				 * vehicle type. This is done to not give poor performing human companies an "unfair"
+				 * boost that they wouldn't have gotten against other human companies. The check on
+				 * the line below is just to make AIs not notice that they have a preview if they
+				 * cannot build the vehicle. */
+				if (!IsVehicleTypeDisabled(e->type, true)) AI::NewEvent(e->preview_company, new ScriptEventEnginePreview(i));
+				if (IsInteractiveCompany(e->preview_company)) ShowEnginePreviewWindow(i);
 			}
 		}
 	}
 }
 
 /**
+ * Clear the 'hidden' flag for all engines of a new company.
+ * @param cid Company being created.
+ */
+void ClearEnginesHiddenFlagOfCompany(CompanyID cid)
+{
+	Engine *e;
+	FOR_ALL_ENGINES(e) {
+		SB(e->company_hidden, cid, 1, 0);
+	}
+}
+
+/**
+ * Set the visibility of an engine.
+ * @param tile Unused.
+ * @param flags Operation to perform.
+ * @param p1 Unused.
+ * @param p2 Bit 31: 0=visible, 1=hidden, other bits for the #EngineID.
+ * @param text Unused.
+ * @return The cost of this operation or an error.
+ */
+CommandCost CmdSetVehicleVisibility(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Engine *e = Engine::GetIfValid(GB(p2, 0, 31));
+	if (e == NULL || _current_company >= MAX_COMPANIES) return CMD_ERROR;
+	if ((e->flags & ENGINE_AVAILABLE) == 0 || !HasBit(e->company_avail, _current_company)) return CMD_ERROR;
+
+	if ((flags & DC_EXEC) != 0) {
+		SB(e->company_hidden, _current_company, 1, GB(p2, 31, 1));
+		AddRemoveEngineFromAutoreplaceAndBuildWindows(e->type);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Accept an engine prototype. XXX - it is possible that the top-company
  * changes while you are waiting to accept the offer? Then it becomes invalid
  * @param tile unused
- * @param flags operation to perfom
+ * @param flags operation to perform
  * @param p1 engine-prototype offered
  * @param p2 unused
  * @param text unused
@@ -828,7 +902,7 @@ void EnginesDailyLoop()
 CommandCost CmdWantEnginePreview(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	Engine *e = Engine::GetIfValid(p1);
-	if (e == NULL || GetBestCompany(e->preview_company_rank) != _current_company) return CMD_ERROR;
+	if (e == NULL || e->preview_company != _current_company) return CMD_ERROR;
 
 	if (flags & DC_EXEC) AcceptEnginePreview(p1, _current_company);
 
@@ -889,17 +963,25 @@ static void NewVehicleAvailable(Engine *e)
 		FOR_ALL_COMPANIES(c) SetBit(c->avail_roadtypes, HasBit(e->info.misc_flags, EF_ROAD_TRAM) ? ROADTYPE_TRAM : ROADTYPE_ROAD);
 	}
 
-	AI::BroadcastNewEvent(new ScriptEventEngineAvailable(index));
+	/* Only broadcast event if AIs are able to build this vehicle type. */
+	if (!IsVehicleTypeDisabled(e->type, true)) AI::BroadcastNewEvent(new ScriptEventEngineAvailable(index));
 
-	SetDParam(0, GetEngineCategoryName(index));
-	SetDParam(1, index);
-	AddNewsItem(STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE, NS_NEW_VEHICLES, NR_ENGINE, index);
+	/* Only provide the "New Vehicle available" news paper entry, if engine can be built. */
+	if (!IsVehicleTypeDisabled(e->type, false)) {
+		SetDParam(0, GetEngineCategoryName(index));
+		SetDParam(1, index);
+		AddNewsItem(STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE, NT_NEW_VEHICLES, NF_VEHICLE, NR_ENGINE, index);
+	}
 
 	/* Update the toolbar. */
 	if (e->type == VEH_ROAD) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_ROAD);
 	if (e->type == VEH_SHIP) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_WATER);
+
+	/* Close pending preview windows */
+	DeleteWindowById(WC_ENGINE_PREVIEW, index);
 }
 
+/** Monthly update of the availability, reliability, and preview offers of the engines. */
 void EnginesMonthlyLoop()
 {
 	if (_cur_year < _year_engine_aging_stops) {
@@ -918,18 +1000,31 @@ void EnginesMonthlyLoop()
 				/* Introduce it to all companies */
 				NewVehicleAvailable(e);
 			} else if (!(e->flags & (ENGINE_AVAILABLE | ENGINE_EXCLUSIVE_PREVIEW)) && _date >= e->intro_date) {
-				/* Introduction date has passed.. show introducing dialog to one companies. */
-				e->flags |= ENGINE_EXCLUSIVE_PREVIEW;
+				/* Introduction date has passed...
+				 * Check if it is allowed to build this vehicle type at all
+				 * based on the current game settings. If not, it does not
+				 * make sense to show the preview dialog to any company. */
+				if (IsVehicleTypeDisabled(e->type, false)) continue;
 
 				/* Do not introduce new rail wagons */
-				if (!IsWagon(e->index)) {
-					e->preview_company_rank = 1; // Give to the company with the highest rating.
-				}
+				if (IsWagon(e->index)) continue;
+
+				/* Show preview dialog to one of the companies. */
+				e->flags |= ENGINE_EXCLUSIVE_PREVIEW;
+				e->preview_company = INVALID_COMPANY;
+				e->preview_asked = 0;
 			}
 		}
+
+		InvalidateWindowClassesData(WC_BUILD_VEHICLE); // rebuild the purchase list (esp. when sorted by reliability)
 	}
 }
 
+/**
+ * Is \a name still free as name for an engine?
+ * @param name New name of an engine.
+ * @return \c false if the name is being used already, else \c true.
+ */
 static bool IsUniqueEngineName(const char *name)
 {
 	const Engine *e;
@@ -944,7 +1039,7 @@ static bool IsUniqueEngineName(const char *name)
 /**
  * Rename an engine.
  * @param tile unused
- * @param flags operation to perfom
+ * @param flags operation to perform
  * @param p1 engine ID to rename
  * @param p2 unused
  * @param text the new name or an empty string when resetting to the default
@@ -968,7 +1063,7 @@ CommandCost CmdRenameEngine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		if (reset) {
 			e->name = NULL;
 		} else {
-			e->name = strdup(text);
+			e->name = stredup(text);
 		}
 
 		MarkWholeScreenDirty();
@@ -996,8 +1091,14 @@ bool IsEngineBuildable(EngineID engine, VehicleType type, CompanyID company)
 	/* check if it's an engine of specified type */
 	if (e->type != type) return false;
 
-	/* check if it's available */
-	if (company != OWNER_DEITY && !HasBit(e->company_avail, company)) return false;
+	/* check if it's available ... */
+	if (company == OWNER_DEITY) {
+		/* ... for any company (preview does not count) */
+		if (!(e->flags & ENGINE_AVAILABLE) || e->company_avail == 0) return false;
+	} else {
+		/* ... for this company */
+		if (!HasBit(e->company_avail, company)) return false;
+	}
 
 	if (!e->IsEnabled()) return false;
 
@@ -1035,4 +1136,30 @@ bool IsEngineRefittable(EngineID engine)
 	/* Is there any cargo except the default cargo? */
 	CargoID default_cargo = e->GetDefaultCargoType();
 	return default_cargo != CT_INVALID && ei->refit_mask != 1U << default_cargo;
+}
+
+/**
+ * Check for engines that have an appropriate availability.
+ */
+void CheckEngines()
+{
+	const Engine *e;
+	Date min_date = INT32_MAX;
+
+	FOR_ALL_ENGINES(e) {
+		if (!e->IsEnabled()) continue;
+
+		/* We have an available engine... yay! */
+		if ((e->flags & ENGINE_AVAILABLE) != 0 && e->company_avail != 0) return;
+
+		/* Okay, try to find the earliest date. */
+		min_date = min(min_date, e->info.base_intro);
+	}
+
+	if (min_date < INT32_MAX) {
+		SetDParam(0, min_date);
+		ShowErrorMessage(STR_ERROR_NO_VEHICLES_AVAILABLE_YET, STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION, WL_WARNING);
+	} else {
+		ShowErrorMessage(STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL, STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION, WL_WARNING);
+	}
 }

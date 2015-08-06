@@ -17,8 +17,49 @@
 
 static const int CF_NOEURO = 0; ///< Currency never switches to the Euro (as far as known).
 static const int CF_ISEURO = 1; ///< Currency _is_ the Euro.
-static const uint NUM_CURRENCY = 29; ///< Number of currencies.
-static const int CUSTOM_CURRENCY_ID = NUM_CURRENCY - 1; ///< Index of the custom currency.
+
+/**
+ * This enum gives the currencies a unique id which must be maintained for
+ * savegame compatibility and in order to refer to them quickly, especially
+ * for referencing the custom one.
+ */
+enum Currencies {
+	CURRENCY_GBP,       ///< British Pound
+	CURRENCY_USD,       ///< US Dollar
+	CURRENCY_EUR,       ///< Euro
+	CURRENCY_JPY,       ///< Japanese Yen
+	CURRENCY_ATS,       ///< Austrian Schilling
+	CURRENCY_BEF,       ///< Belgian Franc
+	CURRENCY_CHF,       ///< Swiss Franc
+	CURRENCY_CZK,       ///< Czech Koruna
+	CURRENCY_DEM,       ///< Deutsche Mark
+	CURRENCY_DKK,       ///< Danish Krona
+	CURRENCY_ESP,       ///< Spanish Peseta
+	CURRENCY_FIM,       ///< Finish Markka
+	CURRENCY_FRF,       ///< French Franc
+	CURRENCY_GRD,       ///< Greek Drachma
+	CURRENCY_HUF,       ///< Hungarian Forint
+	CURRENCY_ISK,       ///< Icelandic Krona
+	CURRENCY_ITL,       ///< Italian Lira
+	CURRENCY_NLG,       ///< Dutch Gulden
+	CURRENCY_NOK,       ///< Norwegian Krone
+	CURRENCY_PLN,       ///< Polish Zloty
+	CURRENCY_RON,       ///< Romenian Leu
+	CURRENCY_RUR,       ///< Russian Rouble
+	CURRENCY_SIT,       ///< Slovenian Tolar
+	CURRENCY_SEK,       ///< Swedish Krona
+	CURRENCY_YTL,       ///< Turkish Lira
+	CURRENCY_SKK,       ///< Slovak Kornuna
+	CURRENCY_BRL,       ///< Brazilian Real
+	CURRENCY_EEK,       ///< Estonian Krooni
+	CURRENCY_LTL,       ///< Lithuanian Litas
+	CURRENCY_KRW,       ///< South Korean Won
+	CURRENCY_ZAR,       ///< South African Rand
+	CURRENCY_CUSTOM,    ///< Custom currency
+	CURRENCY_GEL,       ///< Georgian Lari
+	CURRENCY_IRR,       ///< Iranian Rial
+	CURRENCY_END,       ///< always the last item
+};
 
 /** Specification of a currency. */
 struct CurrencySpec {
@@ -40,14 +81,13 @@ struct CurrencySpec {
 	StringID name;
 };
 
-
-extern CurrencySpec _currency_specs[NUM_CURRENCY];
+extern CurrencySpec _currency_specs[CURRENCY_END];
 
 /* XXX small hack, but makes the rest of the code a bit nicer to read */
-#define _custom_currency (_currency_specs[CUSTOM_CURRENCY_ID])
+#define _custom_currency (_currency_specs[CURRENCY_CUSTOM])
 #define _currency ((const CurrencySpec*)&_currency_specs[GetGameSettings().locale.currency])
 
-uint GetMaskOfAllowedCurrencies();
+uint64 GetMaskOfAllowedCurrencies();
 void CheckSwitchToEuro();
 void ResetCurrencies(bool preserve_custom = true);
 StringID *BuildCurrencyDropdown();

@@ -4,18 +4,22 @@ animated_tile.cpp
 articulated_vehicles.cpp
 autoreplace.cpp
 bmp.cpp
+cargoaction.cpp
+cargomonitor.cpp
 cargopacket.cpp
 cargotype.cpp
 cheat.cpp
 command.cpp
 console.cpp
 console_cmds.cpp
+cpu.cpp
 crashlog.cpp
 currency.cpp
 date.cpp
 debug.cpp
 dedicated.cpp
 depot.cpp
+disaster_vehicle.cpp
 driver.cpp
 economy.cpp
 effectvehicle.cpp
@@ -24,10 +28,13 @@ engine.cpp
 fileio.cpp
 fios.cpp
 fontcache.cpp
+fontdetection.cpp
+base_consist.cpp
 gamelog.cpp
 genworld.cpp
 gfx.cpp
 gfxinit.cpp
+gfx_layout.cpp
 goal.cpp
 ground_vehicle.cpp
 heightmap.cpp
@@ -37,6 +44,13 @@ hotkeys.cpp
 ini.cpp
 ini_load.cpp
 landscape.cpp
+linkgraph/demands.cpp
+linkgraph/flowmapper.cpp
+linkgraph/linkgraph.cpp
+linkgraph/linkgraphjob.cpp
+linkgraph/linkgraphschedule.cpp
+linkgraph/mcf.cpp
+linkgraph/refresh.cpp
 map.cpp
 misc.cpp
 mixer.cpp
@@ -51,7 +65,6 @@ network/network_server.cpp
 network/network_udp.cpp
 openttd.cpp
 order_backup.cpp
-os_timer.cpp
 pbs.cpp
 progress.cpp
 rail.cpp
@@ -71,8 +84,11 @@ spritecache.cpp
 station.cpp
 strgen/strgen_base.cpp
 string.cpp
+stringfilter.cpp
 strings.cpp
+story.cpp
 subsidy.cpp
+textbuf.cpp
 texteff.cpp
 tgp.cpp
 tile_map.cpp
@@ -84,6 +100,10 @@ townname.cpp
 	#else
 		#if OS2
 			os/os2/os2.cpp
+			3rdparty/os2/getaddrinfo.c
+			3rdparty/os2/getaddrinfo.h
+			3rdparty/os2/getnameinfo.c
+			3rdparty/os2/getnameinfo.h
 		#else
 			#if OSX
 				os/macosx/crashlog_osx.cpp
@@ -97,6 +117,9 @@ townname.cpp
 vehicle.cpp
 vehiclelist.cpp
 viewport.cpp
+#if SSE
+viewport_sprite_sorter_sse4.cpp
+#end
 waypoint.cpp
 widget.cpp
 window.cpp
@@ -122,6 +145,8 @@ base_station_base.h
 bmp.h
 bridge.h
 cargo_type.h
+cargoaction.h
+cargomonitor.h
 cargopacket.h
 cargotype.h
 cheat_func.h
@@ -139,6 +164,7 @@ console_func.h
 console_gui.h
 console_internal.h
 console_type.h
+cpu.h
 crashlog.h
 currency.h
 date_func.h
@@ -152,6 +178,7 @@ depot_map.h
 depot_type.h
 direction_func.h
 direction_type.h
+disaster_vehicle.h
 music/dmusic.h
 driver.h
 economy_base.h
@@ -169,10 +196,13 @@ fileio_func.h
 fileio_type.h
 fios.h
 fontcache.h
+fontdetection.h
+base_consist.h
 gamelog.h
 gamelog_internal.h
 genworld.h
 gfx_func.h
+gfx_layout.h
 gfx_type.h
 gfxinit.h
 goal_base.h
@@ -196,6 +226,18 @@ ini_type.h
 landscape.h
 landscape_type.h
 language.h
+linkgraph/demands.h
+linkgraph/flowmapper.h
+linkgraph/init.h
+linkgraph/linkgraph.h
+linkgraph/linkgraph_base.h
+linkgraph/linkgraph_gui.h
+linkgraph/linkgraph_type.h
+linkgraph/linkgraphjob.h
+linkgraph/linkgraphjob_base.h
+linkgraph/linkgraphschedule.h
+linkgraph/mcf.h
+linkgraph/refresh.h
 livery.h
 map_func.h
 map_type.h
@@ -269,11 +311,13 @@ road_internal.h
 road_type.h
 roadstop_base.h
 roadveh.h
+safeguards.h
 screenshot.h
 sdl.h
 sound/sdl_s.h
 video/sdl_v.h
 settings_func.h
+settings_gui.h
 settings_internal.h
 settings_type.h
 ship.h
@@ -296,9 +340,13 @@ station_gui.h
 station_type.h
 statusbar_gui.h
 stdafx.h
+story_base.h
+story_type.h
 strgen/strgen.h
+string_base.h
 string_func.h
 string_type.h
+stringfilter_type.h
 strings_func.h
 strings_type.h
 subsidy_base.h
@@ -307,6 +355,7 @@ subsidy_type.h
 tar_type.h
 terraform_gui.h
 textbuf_gui.h
+textbuf_type.h
 texteff.hpp
 textfile_gui.h
 textfile_type.h
@@ -337,6 +386,7 @@ vehicle_gui_base.h
 vehicle_type.h
 vehiclelist.h
 viewport_func.h
+viewport_sprite_sorter.h
 viewport_type.h
 water.h
 waypoint_base.h
@@ -383,6 +433,7 @@ core/geometry_type.hpp
 core/math_func.cpp
 core/math_func.hpp
 core/mem_func.hpp
+core/multimap.hpp
 core/overflowsafe_type.hpp
 core/pool_func.cpp
 core/pool_func.hpp
@@ -390,6 +441,8 @@ core/pool_type.hpp
 core/random_func.cpp
 core/random_func.hpp
 core/smallmap_type.hpp
+core/smallmatrix_type.hpp
+core/smallstack_type.hpp
 core/smallvec_type.hpp
 core/sort_func.hpp
 core/string_compare_type.hpp
@@ -417,6 +470,7 @@ group_gui.cpp
 highscore_gui.cpp
 industry_gui.cpp
 intro_gui.cpp
+linkgraph/linkgraph_gui.cpp
 main_gui.cpp
 misc_gui.cpp
 music_gui.cpp
@@ -438,6 +492,7 @@ signs_gui.cpp
 smallmap_gui.cpp
 station_gui.cpp
 statusbar_gui.cpp
+story_gui.cpp
 subsidy_gui.cpp
 terraform_gui.cpp
 textfile_gui.cpp
@@ -478,6 +533,7 @@ widgets/group_widget.h
 widgets/highscore_widget.h
 widgets/industry_widget.h
 widgets/intro_widget.h
+widgets/link_graph_legend_widget.h
 widgets/main_widget.h
 widgets/misc_widget.h
 widgets/music_widget.h
@@ -497,6 +553,7 @@ widgets/sign_widget.h
 widgets/smallmap_widget.h
 widgets/station_widget.h
 widgets/statusbar_widget.h
+widgets/story_widget.h
 widgets/subsidy_widget.h
 widgets/terraform_widget.h
 widgets/timetable_widget.h
@@ -514,7 +571,6 @@ autoreplace_cmd.cpp
 clear_cmd.cpp
 company_cmd.cpp
 depot_cmd.cpp
-disaster_cmd.cpp
 group_cmd.cpp
 industry_cmd.cpp
 misc_cmd.cpp
@@ -543,6 +599,7 @@ saveload/ai_sl.cpp
 saveload/airport_sl.cpp
 saveload/animated_tile_sl.cpp
 saveload/autoreplace_sl.cpp
+saveload/cargomonitor_sl.cpp
 saveload/cargopacket_sl.cpp
 saveload/cheat_sl.cpp
 saveload/company_sl.cpp
@@ -555,6 +612,7 @@ saveload/goal_sl.cpp
 saveload/group_sl.cpp
 saveload/industry_sl.cpp
 saveload/labelmaps_sl.cpp
+saveload/linkgraph_sl.cpp
 saveload/map_sl.cpp
 saveload/misc_sl.cpp
 saveload/newgrf_sl.cpp
@@ -572,6 +630,7 @@ saveload/signs_sl.cpp
 saveload/station_sl.cpp
 saveload/storage_sl.cpp
 saveload/strings_sl.cpp
+saveload/story_sl.cpp
 saveload/subsidy_sl.cpp
 saveload/town_sl.cpp
 saveload/vehicle_sl.cpp
@@ -592,6 +651,7 @@ table/control_codes.h
 table/elrail_data.h
 table/engines.h
 table/genland.h
+table/heightmap_colours.h
 table/industry_land.h
 table/landscape_sprite.h
 table/newgrf_debug_data.h
@@ -606,6 +666,7 @@ table/roadveh_movement.h
 table/sprites.h
 table/station_land.h
 table/strgen_tables.h
+table/string_colours.h
 ../objs/langs/table/strings.h
 table/town_land.h
 table/townname.h
@@ -669,13 +730,8 @@ script/squirrel_std.hpp
 3rdparty/squirrel/squirrel/sqpcheader.h
 3rdparty/squirrel/squirrel/sqstate.h
 3rdparty/squirrel/include/sqstdaux.h
-3rdparty/squirrel/include/sqstdblob.h
-3rdparty/squirrel/sqstdlib/sqstdblobimpl.h
-3rdparty/squirrel/include/sqstdio.h
 3rdparty/squirrel/include/sqstdmath.h
-3rdparty/squirrel/sqstdlib/sqstdstream.h
 3rdparty/squirrel/include/sqstdstring.h
-3rdparty/squirrel/include/sqstdsystem.h
 3rdparty/squirrel/squirrel/sqstring.h
 3rdparty/squirrel/squirrel/sqtable.h
 3rdparty/squirrel/include/squirrel.h
@@ -727,6 +783,7 @@ script/api/script_bridge.hpp
 script/api/script_bridgelist.hpp
 script/api/script_cargo.hpp
 script/api/script_cargolist.hpp
+script/api/script_cargomonitor.hpp
 script/api/script_company.hpp
 script/api/script_companymode.hpp
 script/api/script_controller.hpp
@@ -763,6 +820,9 @@ script/api/script_sign.hpp
 script/api/script_signlist.hpp
 script/api/script_station.hpp
 script/api/script_stationlist.hpp
+script/api/script_story_page.hpp
+script/api/script_storypagelist.hpp
+script/api/script_storypageelementlist.hpp
 script/api/script_subsidy.hpp
 script/api/script_subsidylist.hpp
 script/api/script_testmode.hpp
@@ -790,6 +850,7 @@ script/api/script_bridge.cpp
 script/api/script_bridgelist.cpp
 script/api/script_cargo.cpp
 script/api/script_cargolist.cpp
+script/api/script_cargomonitor.cpp
 script/api/script_company.cpp
 script/api/script_companymode.cpp
 script/api/script_controller.cpp
@@ -825,6 +886,9 @@ script/api/script_sign.cpp
 script/api/script_signlist.cpp
 script/api/script_station.cpp
 script/api/script_stationlist.cpp
+script/api/script_story_page.cpp
+script/api/script_storypagelist.cpp
+script/api/script_storypageelementlist.cpp
 script/api/script_subsidy.cpp
 script/api/script_subsidylist.cpp
 script/api/script_testmode.cpp
@@ -846,12 +910,26 @@ script/api/script_window.cpp
 #else
 blitter/32bpp_anim.cpp
 blitter/32bpp_anim.hpp
+#if SSE
+blitter/32bpp_anim_sse4.cpp
+blitter/32bpp_anim_sse4.hpp
+#end
 blitter/32bpp_base.cpp
 blitter/32bpp_base.hpp
 blitter/32bpp_optimized.cpp
 blitter/32bpp_optimized.hpp
 blitter/32bpp_simple.cpp
 blitter/32bpp_simple.hpp
+#if SSE
+blitter/32bpp_sse_func.hpp
+blitter/32bpp_sse_type.h
+blitter/32bpp_sse2.cpp
+blitter/32bpp_sse2.hpp
+blitter/32bpp_sse4.cpp
+blitter/32bpp_sse4.hpp
+blitter/32bpp_ssse3.cpp
+blitter/32bpp_ssse3.hpp
+#end
 blitter/8bpp_base.cpp
 blitter/8bpp_base.hpp
 blitter/8bpp_optimized.cpp
@@ -992,6 +1070,7 @@ pathfinder/yapf/yapf_node_ship.hpp
 pathfinder/yapf/yapf_rail.cpp
 pathfinder/yapf/yapf_road.cpp
 pathfinder/yapf/yapf_ship.cpp
+pathfinder/yapf/yapf_type.hpp
 
 # Video
 video/dedicated_v.cpp
@@ -1034,7 +1113,10 @@ music/null_m.cpp
 		#else
 			#if DOS
 			#else
-				music/extmidi.cpp
+				#if MORPHOS
+				#else
+					music/extmidi.cpp
+				#end
 			#end
 		#end
 	#end

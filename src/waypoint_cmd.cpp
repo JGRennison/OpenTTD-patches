@@ -32,6 +32,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Update the virtual coords needed to draw the waypoint sign.
  */
@@ -131,7 +133,7 @@ static CommandCost IsValidTileForWaypoint(TileIndex tile, Axis axis, StationID *
 		return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
 	}
 
-	if (MayHaveBridgeAbove(tile) && IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
 	return CommandCost();
 }
@@ -170,7 +172,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 	/* Check if the given station class is valid */
 	if (spec_class != STAT_CLASS_WAYP) return CMD_ERROR;
-	if (spec_index >= StationClass::GetCount(spec_class)) return CMD_ERROR;
+	if (spec_index >= StationClass::Get(spec_class)->GetSpecCount()) return CMD_ERROR;
 
 	/* The number of parts to build */
 	byte count = axis == AXIS_X ? height : width;
@@ -242,7 +244,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 		wp->UpdateVirtCoord();
 
-		const StationSpec *spec = StationClass::Get(spec_class, spec_index);
+		const StationSpec *spec = StationClass::Get(spec_class)->GetSpec(spec_index);
 		byte *layout_ptr = AllocaM(byte, count);
 		if (spec == NULL) {
 			/* The layout must be 0 for the 'normal' waypoints by design. */
@@ -287,9 +289,9 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	if (tile == 0 || !HasTileWaterGround(tile)) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
-	if (MayHaveBridgeAbove(tile) && IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
-	if (GetTileSlope(tile) != SLOPE_FLAT) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
+	if (!IsTileFlat(tile)) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 
 	/* Check if there is an already existing, deleted, waypoint close to us that we can reuse. */
 	Waypoint *wp = FindDeletedWaypointCloseTo(tile, STR_SV_STNAME_BUOY, OWNER_NONE);
@@ -414,7 +416,7 @@ CommandCost CmdRenameWaypoint(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 
 	if (flags & DC_EXEC) {
 		free(wp->name);
-		wp->name = reset ? NULL : strdup(text);
+		wp->name = reset ? NULL : stredup(text);
 
 		wp->UpdateVirtCoord();
 	}

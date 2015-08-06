@@ -19,6 +19,8 @@
 #include "company_base.h"
 #include "infrastructure_func.h"
 
+#include "safeguards.h"
+
 
 /** these are the maximums used for updating signal blocks */
 static const uint SIG_TBU_SIZE    =  64; ///< number of signals entering to block
@@ -53,7 +55,7 @@ template <typename Tdir, uint items>
 struct SmallSet {
 private:
 	uint n;           // actual number of units
-	bool overflowed;  // did we try to oveflow the set?
+	bool overflowed;  // did we try to overflow the set?
 	const char *name; // name, used for debugging purposes...
 
 	/** Element of set */
@@ -74,7 +76,7 @@ public:
 	}
 
 	/**
-	 * Returns value of 'oveflowed'
+	 * Returns value of 'overflowed'
 	 * @return did we try to overflow the set?
 	 */
 	bool Overflowed()
@@ -132,7 +134,7 @@ public:
 	 * Tries to find given tile and dir in the set
 	 * @param tile tile
 	 * @param dir and dir to find
-	 * @return true iff the tile & dir elemnt was found
+	 * @return true iff the tile & dir element was found
 	 */
 	bool IsIn(TileIndex tile, Tdir dir)
 	{
@@ -202,7 +204,7 @@ static Vehicle *TrainOnTileEnum(Vehicle *v, void *)
  * The new and reverse direction is removed from _globset, because we are sure
  * it doesn't need to be checked again
  * Also, remove reverse direction from _tbdset
- * This is the 'core' part so the graph seaching won't enter any tile twice
+ * This is the 'core' part so the graph searching won't enter any tile twice
  *
  * @param t1 tile we are entering
  * @param d1 direction (tile side) we are entering
@@ -228,7 +230,7 @@ static inline bool CheckAddToTodoSet(TileIndex t1, DiagDirection d1, TileIndex t
  * The new and reverse direction is removed from Global set, because we are sure
  * it doesn't need to be checked again
  * Also, remove reverse direction from Todo set
- * This is the 'core' part so the graph seaching won't enter any tile twice
+ * This is the 'core' part so the graph searching won't enter any tile twice
  *
  * @param t1 tile we are entering
  * @param d1 direction (tile side) we are entering
@@ -295,6 +297,7 @@ static SigFlags ExploreSegment(Owner owner)
 					}
 				}
 
+				assert(IsValidDiagDirection(enterdir));
 				TrackBits tracks = GetTrackBits(tile); // trackbits of tile
 				TrackBits tracks_masked = (TrackBits)(tracks & _enterdir_to_trackbits[enterdir]); // only incidating trackbits
 

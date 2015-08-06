@@ -38,10 +38,9 @@
 #include "console_func.h"
 #include "engine_base.h"
 #include "game/game.hpp"
+#include "table/strings.h"
 
-#ifdef ENABLE_NETWORK
-	#include "table/strings.h"
-#endif /* ENABLE_NETWORK */
+#include "safeguards.h"
 
 /* scriptfile handling */
 static bool _script_running; ///< Script is running (used to abort execution when #ConReturn is encountered).
@@ -968,7 +967,7 @@ DEF_CONSOLE_CMD(ConExec)
 	}
 
 	if (ferror(script_file)) {
-		IConsoleError("Encountered errror while trying to read from script file");
+		IConsoleError("Encountered error while trying to read from script file");
 	}
 
 	_script_running = false;
@@ -1069,7 +1068,7 @@ DEF_CONSOLE_CMD(ConRestart)
 }
 
 /**
- * Print a text buffer line by line to the console. Lines are seperated by '\n'.
+ * Print a text buffer line by line to the console. Lines are separated by '\n'.
  * @param buf The buffer to print.
  * @note All newlines are replace by '\0' characters.
  */
@@ -1345,7 +1344,7 @@ DEF_CONSOLE_CMD(ConAlias)
 		IConsoleAliasRegister(argv[1], argv[2]);
 	} else {
 		free(alias->cmdline);
-		alias->cmdline = strdup(argv[2]);
+		alias->cmdline = stredup(argv[2]);
 	}
 	return true;
 }
@@ -1531,6 +1530,45 @@ DEF_CONSOLE_CMD(ConListAliases)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConCompanies)
+{
+	if (argc == 0) {
+		IConsoleHelp("List the details of all companies in the game. Usage 'companies'");
+		return true;
+	}
+
+	Company *c;
+	FOR_ALL_COMPANIES(c) {
+		/* Grab the company name */
+		char company_name[512];
+		SetDParam(0, c->index);
+		GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
+
+		const char *password_state = "";
+		if (c->is_ai) {
+			password_state = "AI";
+		}
+#ifdef ENABLE_NETWORK
+		else if (_network_server) {
+				password_state = StrEmpty(_network_company_states[c->index].password) ? "unprotected" : "protected";
+		}
+#endif
+
+		char colour[512];
+		GetString(colour, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(colour));
+		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Year Founded: %d  Money: " OTTD_PRINTF64 "  Loan: " OTTD_PRINTF64 "  Value: " OTTD_PRINTF64 "  (T:%d, R:%d, P:%d, S:%d) %s",
+			c->index + 1, colour, company_name,
+			c->inaugurated_year, (int64)c->money, (int64)c->current_loan, (int64)CalculateCompanyValue(c),
+			c->group_all[VEH_TRAIN].num_vehicle,
+			c->group_all[VEH_ROAD].num_vehicle,
+			c->group_all[VEH_AIRCRAFT].num_vehicle,
+			c->group_all[VEH_SHIP].num_vehicle,
+			password_state);
+	}
+
+	return true;
+}
+
 #ifdef ENABLE_NETWORK
 
 DEF_CONSOLE_CMD(ConSay)
@@ -1547,38 +1585,6 @@ DEF_CONSOLE_CMD(ConSay)
 	} else {
 		bool from_admin = (_redirect_console_to_admin < INVALID_ADMIN_ID);
 		NetworkServerSendChat(NETWORK_ACTION_CHAT, DESTTYPE_BROADCAST, 0, argv[1], CLIENT_ID_SERVER, from_admin);
-	}
-
-	return true;
-}
-
-DEF_CONSOLE_CMD(ConCompanies)
-{
-	if (argc == 0) {
-		IConsoleHelp("List the in-game details of all clients connected to the server. Usage 'companies'");
-		return true;
-	}
-	NetworkCompanyStats company_stats[MAX_COMPANIES];
-	NetworkPopulateCompanyStats(company_stats);
-
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
-		/* Grab the company name */
-		char company_name[NETWORK_COMPANY_NAME_LENGTH];
-		SetDParam(0, c->index);
-		GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
-
-		char buffer[512];
-		const NetworkCompanyStats *stats = &company_stats[c->index];
-
-		GetString(buffer, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(buffer));
-		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Year Founded: %d  Money: " OTTD_PRINTF64 "  Loan: " OTTD_PRINTF64 "  Value: " OTTD_PRINTF64 "  (T:%d, R:%d, P:%d, S:%d) %sprotected",
-			c->index + 1, buffer, company_name, c->inaugurated_year, (int64)c->money, (int64)c->current_loan, (int64)CalculateCompanyValue(c),
-			/* trains      */ stats->num_vehicle[0],
-			/* lorry + bus */ stats->num_vehicle[1] + stats->num_vehicle[2],
-			/* planes      */ stats->num_vehicle[3],
-			/* ships       */ stats->num_vehicle[4],
-			/* protected   */ StrEmpty(_network_company_states[c->index].password) ? "un" : "");
 	}
 
 	return true;
@@ -1712,6 +1718,22 @@ struct ConsoleContentCallback : public ContentCallback {
 	}
 };
 
+/**
+ * Outputs content state information to console
+ * @param ci the content info
+ */
+static void OutputContentState(const ContentInfo *const ci)
+{
+	static const char * const types[] = { "Base graphics", "NewGRF", "AI", "AI library", "Scenario", "Heightmap", "Base sound", "Base music", "Game script", "GS library" };
+	assert_compile(lengthof(types) == CONTENT_TYPE_END - CONTENT_TYPE_BEGIN);
+	static const char * const states[] = { "Not selected", "Selected", "Dep Selected", "Installed", "Unknown" };
+	static const TextColour state_to_colour[] = { CC_COMMAND, CC_INFO, CC_INFO, CC_WHITE, CC_ERROR };
+
+	char buf[sizeof(ci->md5sum) * 2 + 1];
+	md5sumToString(buf, lastof(buf), ci->md5sum);
+	IConsolePrintF(state_to_colour[ci->state], "%d, %s, %s, %s, %08X, %s", ci->id, types[ci->type - 1], states[ci->state], ci->name, ci->unique_id, buf);
+}
+
 DEF_CONSOLE_CMD(ConContent)
 {
 	static ContentCallback *cb = NULL;
@@ -1721,12 +1743,12 @@ DEF_CONSOLE_CMD(ConContent)
 	}
 
 	if (argc <= 1) {
-		IConsoleHelp("Query, select and download content. Usage: 'content update|upgrade|select [all|id]|unselect [all|id]|state|download'");
+		IConsoleHelp("Query, select and download content. Usage: 'content update|upgrade|select [all|id]|unselect [all|id]|state [filter]|download'");
 		IConsoleHelp("  update: get a new list of downloadable content; must be run first");
 		IConsoleHelp("  upgrade: select all items that are upgrades");
-		IConsoleHelp("  select: select a specific item given by its id or 'all' to select all");
+		IConsoleHelp("  select: select a specific item given by its id or 'all' to select all. If no parameter is given, all selected content will be listed");
 		IConsoleHelp("  unselect: unselect a specific item given by its id or 'all' to unselect all");
-		IConsoleHelp("  state: show the download/select state of all downloadable content");
+		IConsoleHelp("  state: show the download/select state of all downloadable content. Optionally give a filter string");
 		IConsoleHelp("  download: download all content you've selected");
 		return true;
 	}
@@ -1743,10 +1765,13 @@ DEF_CONSOLE_CMD(ConContent)
 
 	if (strcasecmp(argv[1], "select") == 0) {
 		if (argc <= 2) {
-			IConsoleError("You must enter the id.");
-			return false;
-		}
-		if (strcasecmp(argv[2], "all") == 0) {
+			/* List selected content */
+			IConsolePrintF(CC_WHITE, "id, type, state, name");
+			for (ConstContentIterator iter = _network_content_client.Begin(); iter != _network_content_client.End(); iter++) {
+				if ((*iter)->state != ContentInfo::SELECTED && (*iter)->state != ContentInfo::AUTOSELECTED) continue;
+				OutputContentState(*iter);
+			}
+		} else if (strcasecmp(argv[2], "all") == 0) {
 			_network_content_client.SelectAll();
 		} else {
 			_network_content_client.Select((ContentID)atoi(argv[2]));
@@ -1770,13 +1795,8 @@ DEF_CONSOLE_CMD(ConContent)
 	if (strcasecmp(argv[1], "state") == 0) {
 		IConsolePrintF(CC_WHITE, "id, type, state, name");
 		for (ConstContentIterator iter = _network_content_client.Begin(); iter != _network_content_client.End(); iter++) {
-			static const char * const types[] = { "Base graphics", "NewGRF", "AI", "AI library", "Scenario", "Heightmap", "Base sound", "Base music", "Game script", "GS library" };
-			assert_compile(lengthof(types) == CONTENT_TYPE_END - CONTENT_TYPE_BEGIN);
-			static const char * const states[] = { "Not selected", "Selected", "Dep Selected", "Installed", "Unknown" };
-			static const TextColour state_to_colour[] = { CC_COMMAND, CC_INFO, CC_INFO, CC_WHITE, CC_ERROR };
-
-			const ContentInfo *ci = *iter;
-			IConsolePrintF(state_to_colour[ci->state], "%d, %s, %s, %s", ci->id, types[ci->type - 1], states[ci->state], ci->name);
+			if (argc > 2 && strcasestr((*iter)->name, argv[2]) == NULL) continue;
+			OutputContentState(*iter);
 		}
 		return true;
 	}
@@ -1937,6 +1957,9 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("list_game_libs", ConListGameLibs);
 	IConsoleCmdRegister("rescan_game",    ConRescanGame);
 
+	IConsoleCmdRegister("companies",       ConCompanies);
+	IConsoleAliasRegister("players",       "companies");
+
 	/* networking functions */
 #ifdef ENABLE_NETWORK
 /* Content downloading is only available with ZLIB */
@@ -1946,8 +1969,6 @@ void IConsoleStdLibRegister()
 
 	/*** Networking commands ***/
 	IConsoleCmdRegister("say",             ConSay, ConHookNeedNetwork);
-	IConsoleCmdRegister("companies",       ConCompanies, ConHookServerOnly);
-	IConsoleAliasRegister("players",       "companies");
 	IConsoleCmdRegister("say_company",     ConSayCompany, ConHookNeedNetwork);
 	IConsoleAliasRegister("say_player",    "say_company %+");
 	IConsoleCmdRegister("say_client",      ConSayClient, ConHookNeedNetwork);

@@ -58,7 +58,6 @@ struct SQSharedState
 {
 	SQSharedState();
 	~SQSharedState();
-	void Init();
 public:
 	SQChar* GetScratchPad(SQInteger size);
 	SQInteger GetMetaMethodIdxByName(const SQObjectPtr &name);
@@ -122,12 +121,6 @@ private:
 #define _class_ddel		_table(_sharedstate->_class_default_delegate)
 #define _instance_ddel	_table(_sharedstate->_instance_default_delegate)
 #define _weakref_ddel	_table(_sharedstate->_weakref_default_delegate)
-
-#ifdef SQUNICODE //rsl REAL STRING LEN
-#define rsl(l) ((l)<<1)
-#else
-#define rsl(l) (l)
-#endif
 
 extern SQObjectPtr _null_;
 extern SQObjectPtr _true_;

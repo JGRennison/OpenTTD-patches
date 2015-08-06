@@ -51,13 +51,15 @@ static inline bool IsValidSearchPath(Searchpath sp)
 void FioFCloseFile(FILE *f);
 FILE *FioFOpenFile(const char *filename, const char *mode, Subdirectory subdir, size_t *filesize = NULL);
 bool FioCheckFileExists(const char *filename, Subdirectory subdir);
-char *FioGetFullPath(char *buf, size_t buflen, Searchpath sp, Subdirectory subdir, const char *filename);
-char *FioFindFullPath(char *buf, size_t buflen, Subdirectory subdir, const char *filename);
-char *FioAppendDirectory(char *buf, size_t buflen, Searchpath sp, Subdirectory subdir);
-char *FioGetDirectory(char *buf, size_t buflen, Subdirectory subdir);
+char *FioGetFullPath(char *buf, const char *last, Searchpath sp, Subdirectory subdir, const char *filename);
+char *FioFindFullPath(char *buf, const char *last, Subdirectory subdir, const char *filename);
+char *FioAppendDirectory(char *buf, const char *last, Searchpath sp, Subdirectory subdir);
+char *FioGetDirectory(char *buf, const char *last, Subdirectory subdir);
+
+const char *FiosGetScreenshotDir();
 
 void SanitizeFilename(char *filename);
-bool AppendPathSeparator(char *buf, size_t buflen);
+bool AppendPathSeparator(char *buf, const char *last);
 void DeterminePaths(const char *exe);
 void *ReadFileToMem(const char *filename, size_t *lenp, size_t maxsize);
 bool FileExists(const char *filename);
@@ -65,7 +67,7 @@ const char *FioTarFirstDir(const char *tarname, Subdirectory subdir);
 void FioTarAddLink(const char *src, const char *dest, Subdirectory subdir);
 bool ExtractTar(const char *tar_filename, Subdirectory subdir);
 
-extern char *_personal_dir; ///< custom directory for personal settings, saves, newgrf, etc.
+extern const char *_personal_dir; ///< custom directory for personal settings, saves, newgrf, etc.
 
 /** Helper for scanning for files with a given name */
 class FileScanner {
@@ -116,7 +118,6 @@ DECLARE_ENUM_AS_BIT_SET(TarScanner::Mode)
 
 /* Implementation of opendir/readdir/closedir for Windows */
 #if defined(WIN32)
-#include <windows.h>
 struct DIR;
 
 struct dirent { // XXX - only d_name implemented
@@ -125,19 +126,6 @@ struct dirent { // XXX - only d_name implemented
 	 * save us a call to GetFileAttributes if we want information
 	 * about the file (for example in function fio_bla) */
 	DIR *dir;
-};
-
-struct DIR {
-	HANDLE hFind;
-	/* the dirent returned by readdir.
-	 * note: having only one global instance is not possible because
-	 * multiple independent opendir/readdir sequences must be supported. */
-	dirent ent;
-	WIN32_FIND_DATA fd;
-	/* since opendir calls FindFirstFile, we need a means of telling the
-	 * first call to readdir that we already have a file.
-	 * that's the case iff this is true */
-	bool at_first_entry;
 };
 
 DIR *opendir(const TCHAR *path);

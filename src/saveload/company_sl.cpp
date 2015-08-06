@@ -21,6 +21,8 @@
 
 #include "table/strings.h"
 
+#include "../safeguards.h"
+
 /**
  * Converts an old company manager's face format to the new company manager's face format
  *
@@ -256,7 +258,7 @@ static const SaveLoad _company_desc[] = {
 
 	    SLE_VAR(CompanyProperties, colour,                SLE_UINT8),
 	    SLE_VAR(CompanyProperties, money_fraction,        SLE_UINT8),
-	SLE_CONDVAR(CompanyProperties, avail_railtypes,       SLE_UINT8,                   0, 57),
+	SLE_CONDVAR(CompanyProperties, avail_railtypes,       SLE_VAR_I32 | SLE_FILE_I8,   0, 57),
 	    SLE_VAR(CompanyProperties, block_preview,         SLE_UINT8),
 
 	SLE_CONDNULL(2,  0,  93), ///< cargo_types
@@ -272,7 +274,7 @@ static const SaveLoad _company_desc[] = {
 
 	    SLE_VAR(CompanyProperties, num_valid_stat_ent,    SLE_UINT8),
 
-	    SLE_VAR(CompanyProperties, quarters_of_bankruptcy,SLE_UINT8),
+	    SLE_VAR(CompanyProperties, months_of_bankruptcy,  SLE_UINT8),
 	SLE_CONDVAR(CompanyProperties, bankrupt_asked,        SLE_FILE_U8  | SLE_VAR_U16,  0, 103),
 	SLE_CONDVAR(CompanyProperties, bankrupt_asked,        SLE_UINT16,                104, SL_MAX_VERSION),
 	    SLE_VAR(CompanyProperties, bankrupt_timeout,      SLE_INT16),
@@ -281,7 +283,7 @@ static const SaveLoad _company_desc[] = {
 
 	/* yearly expenses was changed to 64-bit in savegame version 2. */
 	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_FILE_I32 | SLE_VAR_I64, 3 * 13, 0, 1),
-	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_INT64, 3 * 13,                  2, 200),
+	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_INT64, 3 * 13,                  2, 199),
 	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_INT64, 3 * 15,                200, SL_MAX_VERSION),
 
 	SLE_CONDVAR(CompanyProperties, is_ai,                 SLE_BOOL,                    2, SL_MAX_VERSION),
@@ -290,6 +292,7 @@ static const SaveLoad _company_desc[] = {
 
 	SLE_CONDVAR(CompanyProperties, terraform_limit,       SLE_UINT32,                156, SL_MAX_VERSION),
 	SLE_CONDVAR(CompanyProperties, clear_limit,           SLE_UINT32,                156, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, tree_limit,            SLE_UINT32,                175, SL_MAX_VERSION),
 
 	SLE_END()
 };

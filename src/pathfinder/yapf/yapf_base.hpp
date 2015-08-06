@@ -34,8 +34,8 @@ extern int _total_pf_time_us;
  *  you need to declare only your node type. Look at test_yapf.h for an example.
  *
  *
- *  Requrements to your pathfinder class derived from CYapfBaseT:
- *  -------------------------------------------------------------
+ *  Requirements to your pathfinder class derived from CYapfBaseT:
+ *  --------------------------------------------------------------
  *  Your pathfinder derived class needs to implement following methods:
  *    inline void PfSetStartupNodes()
  *    inline void PfFollowNode(Node& org)
@@ -220,6 +220,21 @@ public:
 			Node& n = Yapf().CreateNewNode();
 			n.Set(parent, tf.m_new_tile, td, is_choice);
 			Yapf().AddNewNode(n, tf);
+		}
+	}
+
+	/**
+	 * In some cases an intermediate node branch should be pruned.
+	 * The most prominent case is when a red EOL signal is encountered, but
+	 * there was a segment change (e.g. a rail type change) before that. If
+	 * the branch would not be pruned, the rail type change location would
+	 * remain the best intermediate node, and thus the vehicle would still
+	 * go towards the red EOL signal.
+	 */
+	void PruneIntermediateNodeBranch()
+	{
+		while (Yapf().m_pBestIntermediateNode != NULL && (Yapf().m_pBestIntermediateNode->m_segment->m_end_segment_reason & ESRB_CHOICE_FOLLOWS) == 0) {
+			Yapf().m_pBestIntermediateNode = Yapf().m_pBestIntermediateNode->m_parent;
 		}
 	}
 

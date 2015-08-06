@@ -16,6 +16,8 @@
 #include "address.h"
 #include "../../debug.h"
 
+#include "../../safeguards.h"
+
 /**
  * Get the hostname; in case it wasn't given the
  * IPv4 dotted representation is given.
@@ -259,7 +261,7 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 	for (struct addrinfo *runp = ai; runp != NULL; runp = runp->ai_next) {
 		/* When we are binding to multiple sockets, make sure we do not
 		 * connect to one with exactly the same address twice. That's
-		 * ofcourse totally unneeded ;) */
+		 * of course totally unneeded ;) */
 		if (sockets != NULL) {
 			NetworkAddress address(runp->ai_addr, (int)runp->ai_addrlen);
 			if (sockets->Contains(address)) continue;
@@ -354,10 +356,12 @@ static SOCKET ListenLoopProc(addrinfo *runp)
 		DEBUG(net, 3, "[%s] could not set reusable %s sockets for port %s: %s", type, family, address, strerror(errno));
 	}
 
+#ifndef __OS2__
 	if (runp->ai_family == AF_INET6 &&
 			setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (const char*)&on, sizeof(on)) == -1) {
 		DEBUG(net, 3, "[%s] could not disable IPv4 over IPv6 on port %s: %s", type, address, strerror(errno));
 	}
+#endif
 
 	if (bind(sock, runp->ai_addr, (int)runp->ai_addrlen) != 0) {
 		DEBUG(net, 1, "[%s] could not bind on %s port %s: %s", type, family, address, strerror(errno));

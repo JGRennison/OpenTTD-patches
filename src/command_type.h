@@ -16,6 +16,8 @@
 #include "strings_type.h"
 #include "tile_type.h"
 
+struct GRFFile;
+
 /**
  * Common return value for all commands. Wraps the cost and
  * a possible error message/state together.
@@ -25,6 +27,7 @@ class CommandCost {
 	Money cost;       ///< The cost of this action
 	StringID message; ///< Warning message for when success is unset
 	bool success;     ///< Whether the comment went fine up to this moment
+	const GRFFile *textref_stack_grffile; ///< NewGRF providing the #TextRefStack content.
 	uint textref_stack_size;   ///< Number of uint32 values to put on the #TextRefStack for the error message.
 
 	static uint32 textref_stack[16];
@@ -33,25 +36,25 @@ public:
 	/**
 	 * Creates a command cost return with no cost and no error
 	 */
-	CommandCost() : expense_type(INVALID_EXPENSES), cost(0), message(INVALID_STRING_ID), success(true), textref_stack_size(0) {}
+	CommandCost() : expense_type(INVALID_EXPENSES), cost(0), message(INVALID_STRING_ID), success(true), textref_stack_grffile(NULL), textref_stack_size(0) {}
 
 	/**
 	 * Creates a command return value the is failed with the given message
 	 */
-	explicit CommandCost(StringID msg) : expense_type(INVALID_EXPENSES), cost(0), message(msg), success(false), textref_stack_size(0) {}
+	explicit CommandCost(StringID msg) : expense_type(INVALID_EXPENSES), cost(0), message(msg), success(false), textref_stack_grffile(NULL), textref_stack_size(0) {}
 
 	/**
 	 * Creates a command cost with given expense type and start cost of 0
 	 * @param ex_t the expense type
 	 */
-	explicit CommandCost(ExpensesType ex_t) : expense_type(ex_t), cost(0), message(INVALID_STRING_ID), success(true), textref_stack_size(0) {}
+	explicit CommandCost(ExpensesType ex_t) : expense_type(ex_t), cost(0), message(INVALID_STRING_ID), success(true), textref_stack_grffile(NULL), textref_stack_size(0) {}
 
 	/**
 	 * Creates a command return value with the given start cost and expense type
 	 * @param ex_t the expense type
 	 * @param cst the initial cost of this command
 	 */
-	CommandCost(ExpensesType ex_t, const Money &cst) : expense_type(ex_t), cost(cst), message(INVALID_STRING_ID), success(true), textref_stack_size(0) {}
+	CommandCost(ExpensesType ex_t, const Money &cst) : expense_type(ex_t), cost(cst), message(INVALID_STRING_ID), success(true), textref_stack_grffile(NULL), textref_stack_size(0) {}
 
 
 	/**
@@ -103,7 +106,16 @@ public:
 		this->message = message;
 	}
 
-	void UseTextRefStack(uint num_registers);
+	void UseTextRefStack(const GRFFile *grffile, uint num_registers);
+
+	/**
+	 * Returns the NewGRF providing the #TextRefStack of the error message.
+	 * @return the NewGRF.
+	 */
+	const GRFFile *GetTextRefStackGRF() const
+	{
+		return this->textref_stack_grffile;
+	}
 
 	/**
 	 * Returns the number of uint32 values for the #TextRefStack of the error message.
@@ -204,6 +216,7 @@ enum Commands {
 	CMD_SELL_VEHICLE,                 ///< sell a vehicle
 	CMD_REFIT_VEHICLE,                ///< refit the cargo space of a vehicle
 	CMD_SEND_VEHICLE_TO_DEPOT,        ///< send a vehicle to a depot
+	CMD_SET_VEHICLE_VISIBILITY,       ///< hide or unhide a vehicle in the build vehicle and autoreplace GUIs
 
 	CMD_MOVE_RAIL_VEHICLE,            ///< move a rail vehicle (in the depot)
 	CMD_FORCE_TRAIN_PROCEED,          ///< proceed a train to pass a red signal
@@ -259,6 +272,7 @@ enum Commands {
 	CMD_CLEAR_AREA,                   ///< clear an area
 
 	CMD_MONEY_CHEAT,                  ///< do the money cheat
+	CMD_CHANGE_BANK_BALANCE,          ///< change bank balance to charge costs or give money from a GS
 	CMD_BUILD_CANAL,                  ///< build a canal
 
 	CMD_CREATE_SUBSIDY,               ///< create a new subsidy
@@ -266,8 +280,19 @@ enum Commands {
 	CMD_CUSTOM_NEWS_ITEM,             ///< create a custom news message
 	CMD_CREATE_GOAL,                  ///< create a new goal
 	CMD_REMOVE_GOAL,                  ///< remove a goal
+	CMD_SET_GOAL_TEXT,                ///< update goal text of a goal
+	CMD_SET_GOAL_PROGRESS,            ///< update goal progress text of a goal
+	CMD_SET_GOAL_COMPLETED,           ///< update goal completed status of a goal
 	CMD_GOAL_QUESTION,                ///< ask a goal related question
 	CMD_GOAL_QUESTION_ANSWER,         ///< answer(s) to CMD_GOAL_QUESTION
+	CMD_CREATE_STORY_PAGE,            ///< create a new story page
+	CMD_CREATE_STORY_PAGE_ELEMENT,    ///< create a new story page element
+	CMD_UPDATE_STORY_PAGE_ELEMENT,    ///< update a story page element
+	CMD_SET_STORY_PAGE_TITLE,         ///< update title of a story page
+	CMD_SET_STORY_PAGE_DATE,          ///< update date of a story page
+	CMD_SHOW_STORY_PAGE,              ///< show a story page
+	CMD_REMOVE_STORY_PAGE,            ///< remove a story page
+	CMD_REMOVE_STORY_PAGE_ELEMENT,    ///< remove a story page element
 	CMD_LEVEL_LAND,                   ///< level land
 
 	CMD_BUILD_LOCK,                   ///< build a lock
@@ -277,7 +302,7 @@ enum Commands {
 
 	CMD_GIVE_MONEY,                   ///< give money to another company
 	CMD_CHANGE_SETTING,               ///< change a setting
-	CMD_CHANGE_COMPANY_SETTING,       ///< change a company etting
+	CMD_CHANGE_COMPANY_SETTING,       ///< change a company setting
 
 	CMD_SET_AUTOREPLACE,              ///< set an autoreplace entry
 
@@ -290,7 +315,7 @@ enum Commands {
 
 	CMD_CREATE_GROUP,                 ///< create a new group
 	CMD_DELETE_GROUP,                 ///< delete a group
-	CMD_RENAME_GROUP,                 ///< rename a group
+	CMD_ALTER_GROUP,                  ///< alter a group
 	CMD_ADD_VEHICLE_GROUP,            ///< add a vehicle to a group
 	CMD_ADD_SHARED_VEHICLE_GROUP,     ///< add all other shared vehicles to a group which are missing
 	CMD_REMOVE_ALL_VEHICLES_GROUP,    ///< remove all vehicles from a group
@@ -301,6 +326,8 @@ enum Commands {
 	CMD_SET_VEHICLE_ON_TIME,          ///< set the vehicle on time feature (timetable)
 	CMD_AUTOFILL_TIMETABLE,           ///< autofill the timetable
 	CMD_SET_TIMETABLE_START,          ///< set the date that a timetable should start
+
+	CMD_OPEN_CLOSE_AIRPORT,           ///< open/close an airport to incoming aircraft
 
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };

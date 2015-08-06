@@ -22,6 +22,8 @@
 #include "ai_info.hpp"
 #include "ai.hpp"
 
+#include "../safeguards.h"
+
 /* static */ uint AI::frame_counter = 0;
 /* static */ AIScannerInfo *AI::scanner_info = NULL;
 /* static */ AIScannerLibrary *AI::scanner_library = NULL;
@@ -47,6 +49,7 @@
 		/* Load default data and store the name in the settings */
 		config->Change(info->GetName(), -1, false, true);
 	}
+	config->AnchorUnchangeableSettings();
 
 	Backup<CompanyByte> cur_company(_current_company, company, FILE_LINE);
 	Company *c = Company::Get(company);
@@ -112,14 +115,35 @@
 	DeleteWindowById(WC_AI_SETTINGS, company);
 }
 
-/* static */ void AI::Suspend(CompanyID company)
+/* static */ void AI::Pause(CompanyID company)
 {
-	if (_networking && !_network_server) return;
+	/* The reason why dedicated servers are forbidden to execute this
+	 * command is not because it is unsafe, but because there is no way
+	 * for the server owner to unpause the script again. */
+	if (_network_dedicated) return;
 
 	Backup<CompanyByte> cur_company(_current_company, company, FILE_LINE);
-	Company::Get(company)->ai_instance->Suspend();
+	Company::Get(company)->ai_instance->Pause();
 
 	cur_company.Restore();
+}
+
+/* static */ void AI::Unpause(CompanyID company)
+{
+	Backup<CompanyByte> cur_company(_current_company, company, FILE_LINE);
+	Company::Get(company)->ai_instance->Unpause();
+
+	cur_company.Restore();
+}
+
+/* static */ bool AI::IsPaused(CompanyID company)
+{
+	Backup<CompanyByte> cur_company(_current_company, company, FILE_LINE);
+	bool paused = Company::Get(company)->ai_instance->IsPaused();
+
+	cur_company.Restore();
+
+	return paused;
 }
 
 /* static */ void AI::KillAll()
@@ -176,7 +200,7 @@
 
 /* static */ void AI::ResetConfig()
 {
-	/* Check for both newgame as current game if we can reload the AIInfo insde
+	/* Check for both newgame as current game if we can reload the AIInfo inside
 	 *  the AIConfig. If not, remove the AI from the list (which will assign
 	 *  a random new AI on reload). */
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
@@ -352,3 +376,14 @@
 }
 
 #endif /* defined(ENABLE_NETWORK) */
+
+/* static */ AIScannerInfo *AI::GetScannerInfo()
+{
+	return AI::scanner_info;
+}
+
+/* static */ AIScannerLibrary *AI::GetScannerLibrary()
+{
+	return AI::scanner_library;
+}
+

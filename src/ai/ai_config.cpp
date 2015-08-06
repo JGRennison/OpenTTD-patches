@@ -11,9 +11,12 @@
 
 #include "../stdafx.h"
 #include "../settings_type.h"
+#include "../string_func.h"
 #include "ai.hpp"
 #include "ai_config.hpp"
 #include "ai_info.hpp"
+
+#include "../safeguards.h"
 
 /** Configuration for AI start date, every AI has this setting. */
 ScriptConfigItem _start_date_config = {
@@ -28,7 +31,8 @@ ScriptConfigItem _start_date_config = {
 	AI::START_NEXT_DEVIATION,
 	30,
 	SCRIPTCONFIG_NONE,
-	NULL
+	NULL,
+	false
 };
 
 /* static */ AIConfig *AIConfig::GetConfig(CompanyID company, ScriptSettingSource source)
@@ -79,13 +83,13 @@ int AIConfig::GetSetting(const char *name) const
 {
 	if (this->info == NULL) {
 		SettingValueList::const_iterator it = this->settings.find(name);
-		if (it == this->settings.end() || GetGameSettings().difficulty.diff_level != 3) {
+		if (it == this->settings.end()) {
 			assert(strcmp("start_date", name) == 0);
-			switch (GetGameSettings().difficulty.diff_level) {
-				case 0: return AI::START_NEXT_EASY;
-				case 1: return AI::START_NEXT_MEDIUM;
-				case 2: return AI::START_NEXT_HARD;
-				case 3: return AI::START_NEXT_MEDIUM;
+			switch (GetGameSettings().script.settings_profile) {
+				case SP_EASY:   return AI::START_NEXT_EASY;
+				case SP_MEDIUM: return AI::START_NEXT_MEDIUM;
+				case SP_HARD:   return AI::START_NEXT_HARD;
+				case SP_CUSTOM: return AI::START_NEXT_MEDIUM;
 				default: NOT_REACHED();
 			}
 		}
@@ -106,7 +110,7 @@ void AIConfig::SetSetting(const char *name, int value)
 		if (it != this->settings.end()) {
 			(*it).second = value;
 		} else {
-			this->settings[strdup(name)] = value;
+			this->settings[stredup(name)] = value;
 		}
 
 		return;

@@ -18,12 +18,8 @@
 #include "tile_type.h"
 #include "widget_type.h"
 #include "core/smallvec_type.hpp"
-
-/** State of handling an event. */
-enum EventState {
-	ES_HANDLED,     ///< The passed event is handled.
-	ES_NOT_HANDLED, ///< The passed event is not handled.
-};
+#include "core/smallmap_type.hpp"
+#include "string_type.h"
 
 /**
  * Flags to describe the look of the frame
@@ -105,6 +101,13 @@ enum WidgetDrawDistances {
 	WD_DEBUGBOX_TOP    = 3,     ///< Top offset of debug sprite.
 	WD_DEBUGBOX_BOTTOM = 3,     ///< Bottom offset of debug sprite.
 
+	/* WWT_DEFSIZEBOX */
+	WD_DEFSIZEBOX_WIDTH  = 12,  ///< Width of a standard defsize box widget.
+	WD_DEFSIZEBOX_LEFT   = 2,   ///< Left offset of defsize sprite.
+	WD_DEFSIZEBOX_RIGHT  = 2,   ///< Right offset of defsize sprite.
+	WD_DEFSIZEBOX_TOP    = 3,   ///< Top offset of defsize sprite.
+	WD_DEFSIZEBOX_BOTTOM = 3,   ///< Bottom offset of defsize sprite.
+
 	/* WWT_RESIZEBOX */
 	WD_RESIZEBOX_WIDTH  = 12,   ///< Width of a resize box widget.
 	WD_RESIZEBOX_LEFT   = 3,    ///< Left offset of resize sprite.
@@ -129,11 +132,9 @@ enum WidgetDrawDistances {
 	/* Dropdown widget. */
 	WD_DROPDOWN_HEIGHT     = 12, ///< Height of a drop down widget.
 	WD_DROPDOWNTEXT_LEFT   = 2,  ///< Left offset of the dropdown widget string.
-	WD_DROPDOWNTEXT_RIGHT  = 14, ///< Right offset of the dropdown widget string.
+	WD_DROPDOWNTEXT_RIGHT  = 2,  ///< Right offset of the dropdown widget string.
 	WD_DROPDOWNTEXT_TOP    = 1,  ///< Top offset of the dropdown widget string.
 	WD_DROPDOWNTEXT_BOTTOM = 1,  ///< Bottom offset of the dropdown widget string.
-
-	WD_SORTBUTTON_ARROW_WIDTH = 11, ///< Width of up/down arrow of sort button state.
 
 	WD_PAR_VSEP_NORMAL = 2,      ///< Normal amount of vertical space between two paragraphs of text.
 	WD_PAR_VSEP_WIDE   = 8,      ///< Large amount of vertical space between two paragraphs of text.
@@ -159,25 +160,47 @@ enum WindowPosition {
 
 Point GetToolbarAlignedWindowPosition(int window_width);
 
+struct HotkeyList;
+
 /**
  * High level window description
  */
 struct WindowDesc : ZeroedMemoryAllocator {
 
-	WindowDesc(WindowPosition default_pos, int16 def_width, int16 def_height,
+	WindowDesc(WindowPosition default_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
-			const NWidgetPart *nwid_parts, int16 nwid_length);
+			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys = NULL);
 
 	~WindowDesc();
 
-	WindowPosition default_pos;    ///< Prefered position of the window. @see WindowPosition()
-	int16 default_width;           ///< Prefered initial width of the window.
-	int16 default_height;          ///< Prefered initial height of the window.
+	WindowPosition default_pos;    ///< Preferred position of the window. @see WindowPosition()
 	WindowClass cls;               ///< Class of the window, @see WindowClass.
 	WindowClass parent_cls;        ///< Class of the parent window. @see WindowClass
-	uint32 flags;                  ///< Flags. @see WindowDefaultFlags
+	const char *ini_key;           ///< Key to store window defaults in openttd.cfg. \c NULL if nothing shall be stored.
+	uint32 flags;                  ///< Flags. @see WindowDefaultFlag
 	const NWidgetPart *nwid_parts; ///< Nested widget parts describing the window.
 	int16 nwid_length;             ///< Length of the #nwid_parts array.
+	HotkeyList *hotkeys;           ///< Hotkeys for the window.
+
+	bool pref_sticky;              ///< Preferred stickyness.
+	int16 pref_width;              ///< User-preferred width of the window. Zero if unset.
+	int16 pref_height;             ///< User-preferred height of the window. Zero if unset.
+
+	int16 GetDefaultWidth() const;
+	int16 GetDefaultHeight() const;
+
+	static void LoadFromConfig();
+	static void SaveToConfig();
+
+private:
+	int16 default_width_trad;      ///< Preferred initial width of the window (pixels at 1x zoom).
+	int16 default_height_trad;     ///< Preferred initial height of the window (pixels at 1x zoom).
+
+	/**
+	 * Dummy private copy constructor to prevent compilers from
+	 * copying the structure, which fails due to _window_descs.
+	 */
+	WindowDesc(const WindowDesc &other);
 };
 
 /**
@@ -185,9 +208,8 @@ struct WindowDesc : ZeroedMemoryAllocator {
  */
 enum WindowDefaultFlag {
 	WDF_CONSTRUCTION    =   1 << 0, ///< This window is used for construction; close it whenever changing company.
-	WDF_UNCLICK_BUTTONS =   1 << 1, ///< Unclick buttons when the window event times out
-	WDF_MODAL           =   1 << 2, ///< The window is a modal child of some other window, meaning the parent is 'inactive'
-	WDF_NO_FOCUS        =   1 << 3, ///< This window won't get focus/make any other window lose focus when click
+	WDF_MODAL           =   1 << 1, ///< The window is a modal child of some other window, meaning the parent is 'inactive'
+	WDF_NO_FOCUS        =   1 << 2, ///< This window won't get focus/make any other window lose focus when click
 };
 
 /**
@@ -241,19 +263,21 @@ struct ViewportData : ViewPort {
 	int32 dest_scrollpos_y;   ///< Current destination y coordinate to display (virtual screen coordinate of topleft corner of the viewport).
 };
 
+struct QueryString;
+
 /**
  * Data structure for an opened window
  */
 struct Window : ZeroedMemoryAllocator {
 protected:
-	void InitializeData(const WindowDesc *desc, WindowNumber window_number);
+	void InitializeData(WindowNumber window_number);
 	void InitializePositionSize(int x, int y, int min_width, int min_height);
-	void FindWindowPlacementAndResize(int def_width, int def_height);
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height);
 
 	SmallVector<int, 4> scheduled_invalidation_data;  ///< Data of scheduled OnInvalidateData() calls.
 
 public:
-	Window();
+	Window(WindowDesc *desc);
 
 	virtual ~Window();
 
@@ -277,12 +301,13 @@ public:
 	{
 	}
 
+	WindowDesc *window_desc;    ///< Window description
 	WindowFlags flags;          ///< Window flags
 	WindowClass window_class;   ///< Window class
 	WindowNumber window_number; ///< Window number within the window class
 
 	uint8 timeout_timer;      ///< Timer value of the WF_TIMEOUT for flags.
-	uint8 white_border_timer; ///< Timervalue of the WF_WHITE_BORDER for flags.
+	uint8 white_border_timer; ///< Timer value of the WF_WHITE_BORDER for flags.
 
 	int left;   ///< x position of left edge of the window
 	int top;    ///< y position of top edge of the window
@@ -294,8 +319,8 @@ public:
 	Owner owner;        ///< The owner of the content shown in this window. Company colour is acquired from this variable.
 
 	ViewportData *viewport;          ///< Pointer to viewport data, if present.
-	uint32 desc_flags;               ///< Window/widgets default flags setting. @see WindowDefaultFlag
 	const NWidgetCore *nested_focus; ///< Currently focused nested widget, or \c NULL if no nested widget has focus.
+	SmallMap<int, QueryString*> querystrings; ///< QueryString associated to WWT_EDITBOX widgets.
 	NWidgetBase *nested_root;        ///< Root of the nested tree.
 	NWidgetBase **nested_array;      ///< Array of pointers into the tree. Do not access directly, use #Window::GetWidget() instead.
 	uint nested_array_size;          ///< Size of the nested array.
@@ -316,9 +341,19 @@ public:
 	const Scrollbar *GetScrollbar(uint widnum) const;
 	Scrollbar *GetScrollbar(uint widnum);
 
-	void InitNested(const WindowDesc *desc, WindowNumber number = 0);
-	void CreateNestedTree(const WindowDesc *desc, bool fill_nested = true);
-	void FinishInitNested(const WindowDesc *desc, WindowNumber window_number = 0);
+	const QueryString *GetQueryString(uint widnum) const;
+	QueryString *GetQueryString(uint widnum);
+
+	virtual const char *GetFocusedText() const;
+	virtual const char *GetCaret() const;
+	virtual const char *GetMarkedText(size_t *length) const;
+	virtual Point GetCaretPosition() const;
+	virtual Rect GetTextBoundingRect(const char *from, const char *to) const;
+	virtual const char *GetTextCharacterAtPosition(const Point &pt) const;
+
+	void InitNested(WindowNumber number = 0);
+	void CreateNestedTree(bool fill_nested = true);
+	void FinishInitNested(WindowNumber window_number = 0);
 
 	/**
 	 * Set the timeout flag of the window and initiate the timer.
@@ -457,7 +492,10 @@ public:
 	}
 
 	void UnfocusFocusedWidget();
-	bool SetFocusedWidget(byte widget_index);
+	bool SetFocusedWidget(int widget_index);
+
+	EventState HandleEditBoxKey(int wid, WChar key, uint16 keycode);
+	virtual void InsertTextString(int wid, const char *str, bool marked, const char *caret, const char *insert_location, const char *replacement_end);
 
 	void HandleButtonClick(byte widget);
 	int GetRowFromWidget(int clickpos, int widget, int padding, int line_height = -1) const;
@@ -470,6 +508,7 @@ public:
 	void DrawWidgets() const;
 	void DrawViewport() const;
 	void DrawSortButtonState(int widget, SortButtonState state) const;
+	static int SortButtonWidth();
 
 	void DeleteChildWindows(WindowClass wc = WC_INVALID) const;
 
@@ -496,15 +535,16 @@ public:
 	 */
 	virtual void OnInit() { }
 
+	virtual void ApplyDefaults();
+
 	/**
 	 * Compute the initial position of the window.
-	 * @param *desc         The pointer to the WindowDesc of the window to create.
 	 * @param sm_width      Smallest width of the window.
 	 * @param sm_height     Smallest height of the window.
 	 * @param window_number The window number of the new window.
 	 * @return Initial position of the top-left corner of the window.
 	 */
-	virtual Point OnInitialPosition(const WindowDesc *desc, int16 sm_width, int16 sm_height, int window_number);
+	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number);
 
 	/**
 	 * The window must be repainted.
@@ -550,10 +590,7 @@ public:
 	 */
 	virtual void OnFocus() {}
 
-	/**
-	 * Called when window looses focus
-	 */
-	virtual void OnFocusLost() {}
+	virtual void OnFocusLost();
 
 	/**
 	 * A key has been pressed.
@@ -562,7 +599,9 @@ public:
 	 * @return #ES_HANDLED if the key press has been handled and no other
 	 *         window should receive the event.
 	 */
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode) { return ES_NOT_HANDLED; }
+	virtual EventState OnKeyPress(WChar key, uint16 keycode) { return ES_NOT_HANDLED; }
+
+	virtual EventState OnHotkey(int hotkey);
 
 	/**
 	 * The state of the control key has changed
@@ -664,6 +703,14 @@ public:
 	 * @param index  the element in the dropdown that is selected.
 	 */
 	virtual void OnDropdownSelect(int widget, int index) {}
+
+	virtual void OnDropdownClose(Point pt, int widget, int index, bool instant_close);
+
+	/**
+	 * The text in an editbox has been edited.
+	 * @param widget The widget of the editbox.
+	 */
+	virtual void OnEditboxChanged(int widget) {}
 
 	/**
 	 * The query window opened from this window has closed.
@@ -789,7 +836,7 @@ inline const NWID *Window::GetWidget(uint widnum) const
 class PickerWindowBase : public Window {
 
 public:
-	PickerWindowBase(Window *parent) : Window()
+	PickerWindowBase(WindowDesc *desc, Window *parent) : Window(desc)
 	{
 		this->parent = parent;
 	}
@@ -802,14 +849,17 @@ Window *FindWindowFromPt(int x, int y);
 
 /**
  * Open a new window.
+ * @tparam Wcls %Window class to use if the window does not exist.
  * @param desc The pointer to the WindowDesc to be created
  * @param window_number the window number of the new window
- * @return see Window pointer of the newly created window
+ * @param return_existing If set, also return the window if it already existed.
+ * @return %Window pointer of the newly created window, or the existing one if \a return_existing is set, or \c NULL.
  */
 template <typename Wcls>
-Wcls *AllocateWindowDescFront(const WindowDesc *desc, int window_number)
+Wcls *AllocateWindowDescFront(WindowDesc *desc, int window_number, bool return_existing = false)
 {
-	if (BringWindowToFrontById(desc->cls, window_number)) return NULL;
+	Wcls *w = static_cast<Wcls *>(BringWindowToFrontById(desc->cls, window_number));
+	if (w != NULL) return return_existing ? w : NULL;
 	return new Wcls(desc, window_number);
 }
 

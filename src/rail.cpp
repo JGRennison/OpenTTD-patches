@@ -17,6 +17,8 @@
 #include "company_base.h"
 #include "engine_base.h"
 
+#include "safeguards.h"
+
 /* XXX: Below 3 tables store duplicate data. Maybe remove some? */
 /* Maps a trackdir to the bit that stores its status in the map arrays, in the
  * direction along with the trackdir */
@@ -216,7 +218,7 @@ RailType GetBestRailtype(const CompanyID company)
 /**
  * Add the rail types that are to be introduced at the given date.
  * @param current The currently available railtypes.
- * @param date    The date for the introduction comparisions.
+ * @param date    The date for the introduction comparisons.
  * @return The rail types that should be available when date
  *         introduced rail types are taken into account as well.
  */

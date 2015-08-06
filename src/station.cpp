@@ -24,12 +24,19 @@
 #include "roadstop_base.h"
 #include "industry.h"
 #include "core/random_func.hpp"
+#include "linkgraph/linkgraph.h"
+#include "linkgraph/linkgraphschedule.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 /** The pool of stations. */
 StationPool _station_pool("Station");
 INSTANTIATE_POOL_METHODS(Station)
+
+typedef StationIDStack::SmallStackPool StationIDStackPool;
+template<> StationIDStackPool StationIDStack::_pool = StationIDStackPool();
 
 BaseStation::~BaseStation()
 {
@@ -38,13 +45,10 @@ BaseStation::~BaseStation()
 
 	if (CleaningPool()) return;
 
-	Owner owner = this->owner;
-	if (!Company::IsValidID(owner)) owner = _local_company;
-	if (!Company::IsValidID(owner)) return; // Spectators
-	DeleteWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    owner, this->index).Pack());
-	DeleteWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     owner, this->index).Pack());
-	DeleteWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     owner, this->index).Pack());
-	DeleteWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, owner, this->index).Pack());
+	DeleteWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    this->owner, this->index).Pack());
+	DeleteWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     this->owner, this->index).Pack());
+	DeleteWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     this->owner, this->index).Pack());
+	DeleteWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, this->owner, this->index).Pack());
 
 	this->sign.MarkDirty();
 }
@@ -63,7 +67,8 @@ Station::Station(TileIndex tile) :
 }
 
 /**
- * Clean up a station by clearing vehicle orders and invalidating windows.
+ * Clean up a station by clearing vehicle orders, invalidating windows and
+ * removing link stats.
  * Aircraft-Hangar orders need special treatment here, as the hangars are
  * actually part of a station (tiletype is STATION), but the order type
  * is OT_GOTO_DEPOT.
@@ -87,11 +92,33 @@ Station::~Station()
 		if (a->targetairport == this->index) a->targetairport = INVALID_STATION;
 	}
 
+	for (CargoID c = 0; c < NUM_CARGO; ++c) {
+		LinkGraph *lg = LinkGraph::GetIfValid(this->goods[c].link_graph);
+		if (lg == NULL) continue;
+
+		for (NodeID node = 0; node < lg->Size(); ++node) {
+			Station *st = Station::Get((*lg)[node].Station());
+			st->goods[c].flows.erase(this->index);
+			if ((*lg)[node][this->goods[c].node].LastUpdate() != INVALID_DATE) {
+				st->goods[c].flows.DeleteFlows(this->index);
+				RerouteCargo(st, c, this->index, st->index);
+			}
+		}
+		lg->RemoveNode(this->goods[c].node);
+		if (lg->Size() == 0) {
+			LinkGraphSchedule::instance.Unqueue(lg);
+			delete lg;
+		}
+	}
+
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
 		/* Forget about this station if this station is removed */
 		if (v->last_station_visited == this->index) {
 			v->last_station_visited = INVALID_STATION;
+		}
+		if (v->last_loading_station == this->index) {
+			v->last_loading_station = INVALID_STATION;
 		}
 	}
 
@@ -114,7 +141,7 @@ Station::~Station()
 	DeleteStationNews(this->index);
 
 	for (CargoID c = 0; c < NUM_CARGO; c++) {
-		this->goods[c].cargo.Truncate(0);
+		this->goods[c].cargo.Truncate();
 	}
 
 	CargoPacket::InvalidateAllFrom(this->index);
@@ -143,7 +170,7 @@ RoadStop *Station::GetPrimaryRoadStop(const RoadVehicle *v) const
 	for (; rs != NULL; rs = rs->next) {
 		/* The vehicle cannot go to this roadstop (different roadtype) */
 		if ((GetRoadTypes(rs->xy) & v->compatible_roadtypes) == ROADTYPES_NONE) continue;
-		/* The vehicle is articulated and can therefor not go the a standard road stop */
+		/* The vehicle is articulated and can therefore not go to a standard road stop. */
 		if (IsStandardRoadStopTile(rs->xy) && v->HasArticulatedPart()) continue;
 
 		/* The vehicle can actually go to this road stop. So, return it! */
@@ -376,7 +403,7 @@ void StationRect::MakeEmpty()
  * @note x and y are in Tile coordinates
  * @param x X coordinate
  * @param y Y coordinate
- * @param distance The maxmium distance a point may have (L1 norm)
+ * @param distance The maximum distance a point may have (L1 norm)
  * @return true if the point is within distance tiles of the station rectangle
  */
 bool StationRect::PtInExtendedRect(int x, int y, int distance) const

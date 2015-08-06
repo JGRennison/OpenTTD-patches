@@ -21,8 +21,18 @@
 #include "../texteff.hpp"
 #include "../thread/thread.h"
 #include "../progress.h"
+#include "../window_gui.h"
+#include "../window_func.h"
 #include "win32_v.h"
 #include <windows.h>
+#include <imm.h>
+
+#include "../safeguards.h"
+
+/* Missing define in MinGW headers. */
+#ifndef MAPVK_VK_TO_CHAR
+#define MAPVK_VK_TO_CHAR    (2)
+#endif
 
 static struct {
 	HWND main_wnd;
@@ -42,10 +52,9 @@ static struct {
 bool _force_full_redraw;
 bool _window_maximize;
 uint _display_hz;
-uint _fullscreen_bpp;
 static Dimension _bck_resolution;
-#if !defined(UNICODE)
-uint _codepage;
+#if !defined(WINCE) || _WIN32_WCE >= 0x400
+DWORD _imm_props;
 #endif
 
 /** Whether the drawing is/may be done in a separate thread. */
@@ -54,6 +63,8 @@ static bool _draw_threaded;
 static ThreadObject *_draw_thread = NULL;
 /** Mutex to keep the access to the shared memory controlled. */
 static ThreadMutex *_draw_mutex = NULL;
+/** Event that is signaled when the drawing thread has finished initializing. */
+static HANDLE _draw_thread_initialized = NULL;
 /** Should we keep continue drawing? */
 static volatile bool _draw_continue;
 /** Local copy of the palette for use in the drawing thread. */
@@ -181,15 +192,9 @@ static void ClientSizeChanged(int w, int h)
 		_cur_palette.count_dirty = 256;
 		_local_palette = _cur_palette;
 
-		BlitterFactoryBase::GetCurrentBlitter()->PostResize();
+		BlitterFactory::GetCurrentBlitter()->PostResize();
 
 		GameSizeChanged();
-
-		/* redraw screen */
-		if (_wnd.running) {
-			_screen.dst_ptr = _wnd.buffer_bits;
-			UpdateWindows();
-		}
 	}
 }
 
@@ -203,7 +208,6 @@ int RedrawScreenDebug()
 	HBITMAP old_bmp;
 	HPALETTE old_palette;
 
-	_screen.dst_ptr = _wnd.buffer_bits;
 	UpdateWindows();
 
 	dc = GetDC(_wnd.main_wnd);
@@ -267,26 +271,33 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 	if (full_screen) {
 		DEVMODE settings;
 
-		/* Make sure we are always at least the screen-depth of the blitter */
-		if (_fullscreen_bpp < BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth()) _fullscreen_bpp = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
-
 		memset(&settings, 0, sizeof(settings));
 		settings.dmSize = sizeof(settings);
 		settings.dmFields =
-			(_fullscreen_bpp != 0 ? DM_BITSPERPEL : 0) |
+			DM_BITSPERPEL |
 			DM_PELSWIDTH |
 			DM_PELSHEIGHT |
 			(_display_hz != 0 ? DM_DISPLAYFREQUENCY : 0);
-		settings.dmBitsPerPel = _fullscreen_bpp;
+		settings.dmBitsPerPel = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 		settings.dmPelsWidth  = _wnd.width_org;
 		settings.dmPelsHeight = _wnd.height_org;
 		settings.dmDisplayFrequency = _display_hz;
+
+		/* Check for 8 bpp support. */
+		if (settings.dmBitsPerPel == 8 &&
+				(_support8bpp != S8BPP_HARDWARE || ChangeDisplaySettings(&settings, CDS_FULLSCREEN | CDS_TEST) != DISP_CHANGE_SUCCESSFUL)) {
+			settings.dmBitsPerPel = 32;
+		}
 
 		/* Test fullscreen with current resolution, if it fails use desktop resolution. */
 		if (ChangeDisplaySettings(&settings, CDS_FULLSCREEN | CDS_TEST) != DISP_CHANGE_SUCCESSFUL) {
 			RECT r;
 			GetWindowRect(GetDesktopWindow(), &r);
-			return this->ChangeResolution(r.right - r.left, r.bottom - r.top);
+			/* Guard against recursion. If we already failed here once, just fall through to
+			 * the next ChangeDisplaySettings call which will fail and error out appropriately. */
+			if ((int)settings.dmPelsWidth != r.right - r.left || (int)settings.dmPelsHeight != r.bottom - r.top) {
+				return this->ChangeResolution(r.right - r.left, r.bottom - r.top);
+			}
 		}
 
 		if (ChangeDisplaySettings(&settings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
@@ -296,13 +307,16 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 	} else if (_wnd.fullscreen) {
 		/* restore display? */
 		ChangeDisplaySettings(NULL, 0);
+		/* restore the resolution */
+		_wnd.width = _bck_resolution.width;
+		_wnd.height = _bck_resolution.height;
 	}
 #endif
 
 	{
 		RECT r;
 		DWORD style, showstyle;
-		int x, y, w, h;
+		int w, h;
 
 		showstyle = SW_SHOWNORMAL;
 		_wnd.fullscreen = full_screen;
@@ -321,14 +335,13 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 #endif
 		w = r.right - r.left;
 		h = r.bottom - r.top;
-		x = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
-		y = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
 
-		if (_wnd.main_wnd) {
-			ShowWindow(_wnd.main_wnd, SW_SHOWNORMAL); // remove maximize-flag
-			SetWindowPos(_wnd.main_wnd, 0, x, y, w, h, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+		if (_wnd.main_wnd != NULL) {
+			if (!_window_maximize) SetWindowPos(_wnd.main_wnd, 0, 0, 0, w, h, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOMOVE);
 		} else {
 			TCHAR Windowtitle[50];
+			int x = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
+			int y = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
 
 			_sntprintf(Windowtitle, lengthof(Windowtitle), _T("OpenTTD %s"), MB_TO_WIDE(_openttd_revision));
 
@@ -338,10 +351,10 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 		}
 	}
 
-	BlitterFactoryBase::GetCurrentBlitter()->PostResize();
+	BlitterFactory::GetCurrentBlitter()->PostResize();
 
 	GameSizeChanged(); // invalidate all windows, force redraw
-	return true; // the request succedded
+	return true; // the request succeeded
 }
 
 /** Do palette animation and blit to the window. */
@@ -352,7 +365,7 @@ static void PaintWindow(HDC dc)
 	HPALETTE old_palette = SelectPalette(dc, _wnd.gdi_palette, FALSE);
 
 	if (_cur_palette.count_dirty != 0) {
-		Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		switch (blitter->UsePaletteAnimation()) {
 			case Blitter::PALETTE_ANIMATION_VIDEO_BACKEND:
@@ -382,11 +395,7 @@ static void PaintWindowThread(void *)
 {
 	/* First tell the main thread we're started */
 	_draw_mutex->BeginCritical();
-	_draw_mutex->SendSignal();
-
-	/* Do our best to make sure the main thread is the one that
-	 * gets the signal, and not our wait below. */
-	Sleep(0);
+	SetEvent(_draw_thread_initialized);
 
 	/* Now wait for the first thing to draw! */
 	_draw_mutex->WaitForSignal();
@@ -418,6 +427,215 @@ static void PaintWindowThread(void *)
 	_draw_thread->Exit();
 }
 
+/** Forward key presses to the window system. */
+static LRESULT HandleCharMsg(uint keycode, WChar charcode)
+{
+#if !defined(UNICODE)
+	static char prev_char = 0;
+
+	char input[2] = {(char)charcode, 0};
+	int input_len = 1;
+
+	if (prev_char != 0) {
+		/* We stored a lead byte previously, combine it with this byte. */
+		input[0] = prev_char;
+		input[1] = (char)charcode;
+		input_len = 2;
+	} else if (IsDBCSLeadByte(charcode)) {
+		/* We got a lead byte, store and exit. */
+		prev_char = charcode;
+		return 0;
+	}
+	prev_char = 0;
+
+	wchar_t w[2]; // Can get up to two code points as a result.
+	int len = MultiByteToWideChar(CP_ACP, 0, input, input_len, w, 2);
+	switch (len) {
+		case 1: // Normal unicode character.
+			charcode = w[0];
+			break;
+
+		case 2: // Got an UTF-16 surrogate pair back.
+			charcode = Utf16DecodeSurrogate(w[0], w[1]);
+			break;
+
+		default: // Some kind of error.
+			DEBUG(driver, 1, "Invalid DBCS character sequence encountered, dropping input");
+			charcode = 0;
+			break;
+	}
+#else
+	static WChar prev_char = 0;
+
+	/* Did we get a lead surrogate? If yes, store and exit. */
+	if (Utf16IsLeadSurrogate(charcode)) {
+		if (prev_char != 0) DEBUG(driver, 1, "Got two UTF-16 lead surrogates, dropping the first one");
+		prev_char = charcode;
+		return 0;
+	}
+
+	/* Stored lead surrogate and incoming trail surrogate? Combine and forward to input handling. */
+	if (prev_char != 0) {
+		if (Utf16IsTrailSurrogate(charcode)) {
+			charcode = Utf16DecodeSurrogate(prev_char, charcode);
+		} else {
+			DEBUG(driver, 1, "Got an UTF-16 lead surrogate without a trail surrogate, dropping the lead surrogate");
+		}
+	}
+	prev_char = 0;
+#endif /* UNICODE */
+
+	HandleKeypress(keycode, charcode);
+
+	return 0;
+}
+
+#if !defined(WINCE) || _WIN32_WCE >= 0x400
+/** Should we draw the composition string ourself, i.e is this a normal IME? */
+static bool DrawIMECompositionString()
+{
+	return (_imm_props & IME_PROP_AT_CARET) && !(_imm_props & IME_PROP_SPECIAL_UI);
+}
+
+/** Set position of the composition window to the caret position. */
+static void SetCompositionPos(HWND hwnd)
+{
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC != NULL) {
+		COMPOSITIONFORM cf;
+		cf.dwStyle = CFS_POINT;
+
+		if (EditBoxInGlobalFocus()) {
+			/* Get caret position. */
+			Point pt = _focused_window->GetCaretPosition();
+			cf.ptCurrentPos.x = _focused_window->left + pt.x;
+			cf.ptCurrentPos.y = _focused_window->top  + pt.y;
+		} else {
+			cf.ptCurrentPos.x = 0;
+			cf.ptCurrentPos.y = 0;
+		}
+		ImmSetCompositionWindow(hIMC, &cf);
+	}
+	ImmReleaseContext(hwnd, hIMC);
+}
+
+/** Set the position of the candidate window. */
+static void SetCandidatePos(HWND hwnd)
+{
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC != NULL) {
+		CANDIDATEFORM cf;
+		cf.dwIndex = 0;
+		cf.dwStyle = CFS_EXCLUDE;
+
+		if (EditBoxInGlobalFocus()) {
+			Point pt = _focused_window->GetCaretPosition();
+			cf.ptCurrentPos.x = _focused_window->left + pt.x;
+			cf.ptCurrentPos.y = _focused_window->top  + pt.y;
+			if (_focused_window->window_class == WC_CONSOLE) {
+				cf.rcArea.left   = _focused_window->left;
+				cf.rcArea.top    = _focused_window->top;
+				cf.rcArea.right  = _focused_window->left + _focused_window->width;
+				cf.rcArea.bottom = _focused_window->top  + _focused_window->height;
+			} else {
+				cf.rcArea.left   = _focused_window->left + _focused_window->nested_focus->pos_x;
+				cf.rcArea.top    = _focused_window->top  + _focused_window->nested_focus->pos_y;
+				cf.rcArea.right  = cf.rcArea.left + _focused_window->nested_focus->current_x;
+				cf.rcArea.bottom = cf.rcArea.top  + _focused_window->nested_focus->current_y;
+			}
+		} else {
+			cf.ptCurrentPos.x = 0;
+			cf.ptCurrentPos.y = 0;
+			SetRectEmpty(&cf.rcArea);
+		}
+		ImmSetCandidateWindow(hIMC, &cf);
+	}
+	ImmReleaseContext(hwnd, hIMC);
+}
+
+/** Handle WM_IME_COMPOSITION messages. */
+static LRESULT HandleIMEComposition(HWND hwnd, WPARAM wParam, LPARAM lParam)
+{
+	HIMC hIMC = ImmGetContext(hwnd);
+
+	if (hIMC != NULL) {
+		if (lParam & GCS_RESULTSTR) {
+			/* Read result string from the IME. */
+			LONG len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0); // Length is always in bytes, even in UNICODE build.
+			TCHAR *str = (TCHAR *)_alloca(len + sizeof(TCHAR));
+			len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, str, len);
+			str[len / sizeof(TCHAR)] = '\0';
+
+			/* Transmit text to windowing system. */
+			if (len > 0) {
+				HandleTextInput(NULL, true); // Clear marked string.
+				HandleTextInput(FS2OTTD(str));
+			}
+			SetCompositionPos(hwnd);
+
+			/* Don't pass the result string on to the default window proc. */
+			lParam &= ~(GCS_RESULTSTR | GCS_RESULTCLAUSE | GCS_RESULTREADCLAUSE | GCS_RESULTREADSTR);
+		}
+
+		if ((lParam & GCS_COMPSTR) && DrawIMECompositionString()) {
+			/* Read composition string from the IME. */
+			LONG len = ImmGetCompositionString(hIMC, GCS_COMPSTR, NULL, 0); // Length is always in bytes, even in UNICODE build.
+			TCHAR *str = (TCHAR *)_alloca(len + sizeof(TCHAR));
+			len = ImmGetCompositionString(hIMC, GCS_COMPSTR, str, len);
+			str[len / sizeof(TCHAR)] = '\0';
+
+			if (len > 0) {
+				static char utf8_buf[1024];
+				convert_from_fs(str, utf8_buf, lengthof(utf8_buf));
+
+				/* Convert caret position from bytes in the input string to a position in the UTF-8 encoded string. */
+				LONG caret_bytes = ImmGetCompositionString(hIMC, GCS_CURSORPOS, NULL, 0);
+				const char *caret = utf8_buf;
+				for (const TCHAR *c = str; *c != '\0' && *caret != '\0' && caret_bytes > 0; c++, caret_bytes--) {
+					/* Skip DBCS lead bytes or leading surrogates. */
+#ifdef UNICODE
+					if (Utf16IsLeadSurrogate(*c)) {
+#else
+					if (IsDBCSLeadByte(*c)) {
+#endif
+						c++;
+						caret_bytes--;
+					}
+					Utf8Consume(&caret);
+				}
+
+				HandleTextInput(utf8_buf, true, caret);
+			} else {
+				HandleTextInput(NULL, true);
+			}
+
+			lParam &= ~(GCS_COMPSTR | GCS_COMPATTR | GCS_COMPCLAUSE | GCS_CURSORPOS | GCS_DELTASTART);
+		}
+	}
+	ImmReleaseContext(hwnd, hIMC);
+
+	return lParam != 0 ? DefWindowProc(hwnd, WM_IME_COMPOSITION, wParam, lParam) : 0;
+}
+
+/** Clear the current composition string. */
+static void CancelIMEComposition(HWND hwnd)
+{
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC != NULL) ImmNotifyIME(hIMC, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
+	ImmReleaseContext(hwnd, hIMC);
+	/* Clear any marked string from the current edit box. */
+	HandleTextInput(NULL, true);
+}
+
+#else
+
+static bool DrawIMECompositionString() { return false; }
+static void SetCompositionPos(HWND hwnd) {}
+static void SetCandidatePos(HWND hwnd) {}
+static void CancelIMEComposition(HWND hwnd) {}
+
+#endif /* !defined(WINCE) || _WIN32_WCE >= 0x400 */
+
 static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static uint32 keycode = 0;
@@ -427,6 +645,10 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 	switch (msg) {
 		case WM_CREATE:
 			SetTimer(hwnd, TID_POLLMOUSE, MOUSE_POLL_DELAY, (TIMERPROC)TrackMouseTimerProc);
+			SetCompositionPos(hwnd);
+#if !defined(WINCE) || _WIN32_WCE >= 0x400
+			_imm_props = ImmGetProperty(GetKeyboardLayout(0), IGP_PROPERTY);
+#endif
 			break;
 
 		case WM_ENTERSIZEMOVE:
@@ -523,45 +745,57 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			if (!_cursor.in_window) {
 				_cursor.in_window = true;
 				SetTimer(hwnd, TID_POLLMOUSE, MOUSE_POLL_DELAY, (TIMERPROC)TrackMouseTimerProc);
-
-				DrawMouseCursor();
 			}
 
-			if (_cursor.fix_at) {
-				int dx = x - _cursor.pos.x;
-				int dy = y - _cursor.pos.y;
-				if (dx != 0 || dy != 0) {
-					_cursor.delta.x = dx;
-					_cursor.delta.y = dy;
-
-					pt.x = _cursor.pos.x;
-					pt.y = _cursor.pos.y;
-
-					ClientToScreen(hwnd, &pt);
-					SetCursorPos(pt.x, pt.y);
-				}
-			} else {
-				_cursor.delta.x = x - _cursor.pos.x;
-				_cursor.delta.y = y - _cursor.pos.y;
-				_cursor.pos.x = x;
-				_cursor.pos.y = y;
-				_cursor.dirty = true;
+			if (_cursor.UpdateCursorPosition(x, y, true)) {
+				pt.x = _cursor.pos.x;
+				pt.y = _cursor.pos.y;
+				ClientToScreen(hwnd, &pt);
+				SetCursorPos(pt.x, pt.y);
 			}
 			MyShowCursor(false);
 			HandleMouseEvents();
 			return 0;
 		}
 
-#if !defined(UNICODE)
-		case WM_INPUTLANGCHANGE: {
-			TCHAR locale[6];
-			LCID lcid = GB(lParam, 0, 16);
+#if !defined(WINCE) || _WIN32_WCE >= 0x400
+		case WM_INPUTLANGCHANGE:
+			_imm_props = ImmGetProperty(GetKeyboardLayout(0), IGP_PROPERTY);
+			break;
 
-			int len = GetLocaleInfo(lcid, LOCALE_IDEFAULTANSICODEPAGE, locale, lengthof(locale));
-			if (len != 0) _codepage = _ttoi(locale);
-			return 1;
-		}
-#endif /* UNICODE */
+		case WM_IME_SETCONTEXT:
+			/* Don't show the composition window if we draw the string ourself. */
+			if (DrawIMECompositionString()) lParam &= ~ISC_SHOWUICOMPOSITIONWINDOW;
+			break;
+
+		case WM_IME_STARTCOMPOSITION:
+			SetCompositionPos(hwnd);
+			if (DrawIMECompositionString()) return 0;
+			break;
+
+		case WM_IME_COMPOSITION:
+			return HandleIMEComposition(hwnd, wParam, lParam);
+
+		case WM_IME_ENDCOMPOSITION:
+			/* Clear any pending composition string. */
+			HandleTextInput(NULL, true);
+			if (DrawIMECompositionString()) return 0;
+			break;
+
+		case WM_IME_NOTIFY:
+			if (wParam == IMN_OPENCANDIDATE) SetCandidatePos(hwnd);
+			break;
+
+#if !defined(UNICODE)
+		case WM_IME_CHAR:
+			if (GB(wParam, 8, 8) != 0) {
+				/* DBCS character, send lead byte first. */
+				HandleCharMsg(0, GB(wParam, 8, 8));
+			}
+			HandleCharMsg(0, GB(wParam, 0, 8));
+			return 0;
+#endif
+#endif
 
 		case WM_DEADCHAR:
 			console = GB(lParam, 16, 8) == 41;
@@ -578,31 +812,50 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				return 0;
 			}
 
-#if !defined(UNICODE)
-			wchar_t w;
-			int len = MultiByteToWideChar(_codepage, 0, (char*)&charcode, 1, &w, 1);
-			charcode = len == 1 ? w : 0;
-#endif /* UNICODE */
+			/* IMEs and other input methods sometimes send a WM_CHAR without a WM_KEYDOWN,
+			 * clear the keycode so a previous WM_KEYDOWN doesn't become 'stuck'. */
+			uint cur_keycode = keycode;
+			keycode = 0;
 
-			/* No matter the keyboard layout, we will map the '~' to the console */
-			scancode = scancode == 41 ? (int)WKC_BACKQUOTE : keycode;
-			HandleKeypress(GB(charcode, 0, 16) | (scancode << 16));
-			return 0;
+			return HandleCharMsg(cur_keycode, charcode);
 		}
 
 		case WM_KEYDOWN: {
-			keycode = MapWindowsKey(wParam);
+			/* No matter the keyboard layout, we will map the '~' to the console. */
+			uint scancode = GB(lParam, 16, 8);
+			keycode = scancode == 41 ? (uint)WKC_BACKQUOTE : MapWindowsKey(wParam);
 
 			/* Silently drop all messages handled by WM_CHAR. */
 			MSG msg;
 			if (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
-				if (msg.message == WM_CHAR && GB(lParam, 16, 8) == GB(msg.lParam, 16, 8)) {
+				if ((msg.message == WM_CHAR || msg.message == WM_DEADCHAR) && GB(lParam, 16, 8) == GB(msg.lParam, 16, 8)) {
 					return 0;
 				}
 			}
 
-			HandleKeypress(0 | (keycode << 16));
-			return 0;
+			uint charcode = MapVirtualKey(wParam, MAPVK_VK_TO_CHAR);
+
+			/* No character translation? */
+			if (charcode == 0) {
+				HandleKeypress(keycode, 0);
+				return 0;
+			}
+
+			/* Is the console key a dead key? If yes, ignore the first key down event. */
+			if (HasBit(charcode, 31) && !console) {
+				if (scancode == 41) {
+					console = true;
+					return 0;
+				}
+			}
+			console = false;
+
+			/* IMEs and other input methods sometimes send a WM_CHAR without a WM_KEYDOWN,
+			 * clear the keycode so a previous WM_KEYDOWN doesn't become 'stuck'. */
+			uint cur_keycode = keycode;
+			keycode = 0;
+
+			return HandleCharMsg(cur_keycode, LOWORD(charcode));
 		}
 
 		case WM_SYSKEYDOWN: // user presses F10 or Alt, both activating the title-menu
@@ -616,11 +869,11 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 					return 0; // do nothing
 
 				case VK_F10: // F10, ignore activation of menu
-					HandleKeypress(MapWindowsKey(wParam) << 16);
+					HandleKeypress(MapWindowsKey(wParam), 0);
 					return 0;
 
 				default: // ALT in combination with something else
-					HandleKeypress(MapWindowsKey(wParam) << 16);
+					HandleKeypress(MapWindowsKey(wParam), 0);
 					break;
 			}
 			break;
@@ -630,7 +883,7 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				/* Set maximized flag when we maximize (obviously), but also when we
 				 * switched to fullscreen from a maximized state */
 				_window_maximize = (wParam == SIZE_MAXIMIZED || (_window_maximize && _fullscreen));
-				if (_window_maximize) _bck_resolution = _cur_resolution;
+				if (_window_maximize || _fullscreen) _bck_resolution = _cur_resolution;
 				ClientSizeChanged(LOWORD(lParam), HIWORD(lParam));
 			}
 			return 0;
@@ -717,6 +970,7 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 
 		case WM_SETFOCUS:
 			_wnd.has_focus = true;
+			SetCompositionPos(hwnd);
 			break;
 
 		case WM_KILLFOCUS:
@@ -734,7 +988,7 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				if (active && minimized) {
 					/* Restore the game window */
 					ShowWindow(hwnd, SW_RESTORE);
-					static_cast<VideoDriver_Win32 *>(_video_driver)->MakeWindow(true);
+					static_cast<VideoDriver_Win32 *>(VideoDriver::GetInstance())->MakeWindow(true);
 				} else if (!active && !minimized) {
 					/* Minimise the window and restore desktop */
 					ShowWindow(hwnd, SW_MINIMIZE);
@@ -777,7 +1031,7 @@ static bool AllocateDibSection(int w, int h, bool force)
 {
 	BITMAPINFO *bi;
 	HDC dc;
-	int bpp = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
+	uint bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	w = max(w, 64);
 	h = max(h, 64);
@@ -786,9 +1040,6 @@ static bool AllocateDibSection(int w, int h, bool force)
 
 	if (!force && w == _screen.width && h == _screen.height) return false;
 
-	_screen.width = w;
-	_screen.pitch = (bpp == 8) ? Align(w, 4) : w;
-	_screen.height = h;
 	bi = (BITMAPINFO*)alloca(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
 	memset(bi, 0, sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
 	bi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -797,7 +1048,7 @@ static bool AllocateDibSection(int w, int h, bool force)
 	bi->bmiHeader.biHeight = -(_wnd.height = h);
 
 	bi->bmiHeader.biPlanes = 1;
-	bi->bmiHeader.biBitCount = BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth();
+	bi->bmiHeader.biBitCount = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 	bi->bmiHeader.biCompression = BI_RGB;
 
 	if (_wnd.dib_sect) DeleteObject(_wnd.dib_sect);
@@ -806,6 +1057,11 @@ static bool AllocateDibSection(int w, int h, bool force)
 	_wnd.dib_sect = CreateDIBSection(dc, bi, DIB_RGB_COLORS, (VOID**)&_wnd.buffer_bits, NULL, 0);
 	if (_wnd.dib_sect == NULL) usererror("CreateDIBSection failed");
 	ReleaseDC(0, dc);
+
+	_screen.width = w;
+	_screen.pitch = (bpp == 8) ? Align(w, 4) : w;
+	_screen.height = h;
+	_screen.dst_ptr = _wnd.buffer_bits;
 
 	return true;
 }
@@ -834,11 +1090,14 @@ static void FindResolutions()
 	uint i;
 	DEVMODEA dm;
 
+	/* Check modes for the relevant fullscreen bpp */
+	uint bpp = _support8bpp != S8BPP_HARDWARE ? 32 : BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+
 	/* XXX - EnumDisplaySettingsW crashes with unicows.dll on Windows95
 	 * Doesn't really matter since we don't pass a string anyways, but still
 	 * a letdown */
 	for (i = 0; EnumDisplaySettingsA(NULL, i, &dm) != 0; i++) {
-		if (dm.dmBitsPerPel == BlitterFactoryBase::GetCurrentBlitter()->GetScreenDepth() &&
+		if (dm.dmBitsPerPel == bpp &&
 				dm.dmPelsWidth >= 640 && dm.dmPelsHeight >= 480) {
 			uint j;
 
@@ -935,24 +1194,24 @@ void VideoDriver_Win32::MainLoop()
 		/* Initialise the mutex first, because that's the thing we *need*
 		 * directly in the newly created thread. */
 		_draw_mutex = ThreadMutex::New();
-		if (_draw_mutex == NULL) {
+		_draw_thread_initialized = CreateEvent(NULL, FALSE, FALSE, NULL);
+		if (_draw_mutex == NULL || _draw_thread_initialized == NULL) {
 			_draw_threaded = false;
 		} else {
-			_draw_mutex->BeginCritical();
 			_draw_continue = true;
-
 			_draw_threaded = ThreadObject::New(&PaintWindowThread, NULL, &_draw_thread);
 
 			/* Free the mutex if we won't be able to use it. */
 			if (!_draw_threaded) {
-				_draw_mutex->EndCritical();
 				delete _draw_mutex;
 				_draw_mutex = NULL;
+				CloseHandle(_draw_thread_initialized);
+				_draw_thread_initialized = NULL;
 			} else {
 				DEBUG(driver, 1, "Threaded drawing enabled");
-
-				/* Wait till the draw mutex has started itself. */
-				_draw_mutex->WaitForSignal();
+				/* Wait till the draw thread has started itself. */
+				WaitForSingleObject(_draw_thread_initialized, INFINITE);
+				_draw_mutex->BeginCritical();
 			}
 		}
 	}
@@ -965,7 +1224,8 @@ void VideoDriver_Win32::MainLoop()
 
 		while (PeekMessage(&mesg, NULL, 0, 0, PM_REMOVE)) {
 			InteractiveRandom(); // randomness
-			TranslateMessage(&mesg);
+			/* Convert key messages to char messages if we want text input. */
+			if (EditBoxInGlobalFocus()) TranslateMessage(&mesg);
 			DispatchMessage(&mesg);
 		}
 		if (_exit_game) return;
@@ -1019,7 +1279,6 @@ void VideoDriver_Win32::MainLoop()
 
 			if (_force_full_redraw) MarkWholeScreenDirty();
 
-			_screen.dst_ptr = _wnd.buffer_bits;
 			UpdateWindows();
 			CheckPaletteAnim();
 		} else {
@@ -1033,7 +1292,6 @@ void VideoDriver_Win32::MainLoop()
 			Sleep(1);
 			if (_draw_threaded) _draw_mutex->BeginCritical();
 
-			_screen.dst_ptr = _wnd.buffer_bits;
 			NetworkDrawChatMessage();
 			DrawMouseCursor();
 		}
@@ -1047,6 +1305,7 @@ void VideoDriver_Win32::MainLoop()
 		_draw_mutex->EndCritical();
 		_draw_thread->Join();
 
+		CloseHandle(_draw_thread_initialized);
 		delete _draw_mutex;
 		delete _draw_thread;
 	}
@@ -1054,18 +1313,38 @@ void VideoDriver_Win32::MainLoop()
 
 bool VideoDriver_Win32::ChangeResolution(int w, int h)
 {
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
+	if (_window_maximize) ShowWindow(_wnd.main_wnd, SW_SHOWNORMAL);
+
 	_wnd.width = _wnd.width_org = w;
 	_wnd.height = _wnd.height_org = h;
 
-	return this->MakeWindow(_fullscreen); // _wnd.fullscreen screws up ingame resolution switching
+	bool ret = this->MakeWindow(_fullscreen); // _wnd.fullscreen screws up ingame resolution switching
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
+	return ret;
 }
 
 bool VideoDriver_Win32::ToggleFullscreen(bool full_screen)
 {
-	return this->MakeWindow(full_screen);
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
+	bool ret = this->MakeWindow(full_screen);
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
+	return ret;
 }
 
 bool VideoDriver_Win32::AfterBlitterChange()
 {
-	return AllocateDibSection(_screen.width, _screen.height, true) && this->MakeWindow(_fullscreen);
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
+	bool ret = AllocateDibSection(_screen.width, _screen.height, true) && this->MakeWindow(_fullscreen);
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
+	return ret;
+}
+
+void VideoDriver_Win32::EditBoxLostFocus()
+{
+	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
+	CancelIMEComposition(_wnd.main_wnd);
+	SetCompositionPos(_wnd.main_wnd);
+	SetCandidatePos(_wnd.main_wnd);
+	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
 }

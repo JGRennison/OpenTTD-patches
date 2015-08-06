@@ -27,12 +27,15 @@
 #include "../effectvehicle_base.h"
 #include "../engine_func.h"
 #include "../company_base.h"
+#include "../disaster_vehicle.h"
 #include "saveload_internal.h"
 #include "oldloader.h"
 
 #include "table/strings.h"
 #include "../table/engines.h"
 #include "../table/townname.h"
+
+#include "../safeguards.h"
 
 static bool _read_ttdpatch_flags;    ///< Have we (tried to) read TTDPatch extra flags?
 static uint16 _old_extra_chunk_nums; ///< Number of extra TTDPatch chunks
@@ -445,7 +448,8 @@ static bool FixTTOEngines()
 			e->info.climates = 1;
 		}
 
-		e->preview_company_rank = 0;
+		e->preview_company = INVALID_COMPANY;
+		e->preview_asked = (CompanyMask)-1;
 		e->preview_wait = 0;
 		e->name = NULL;
 	}
@@ -625,7 +629,7 @@ static bool LoadOldOrder(LoadgameState *ls, int num)
 	if (o->IsType(OT_NOTHING)) {
 		delete o;
 	} else {
-		/* Relink the orders to eachother (in the orders for one vehicle are behind eachother,
+		/* Relink the orders to each other (in the orders for one vehicle are behind each other,
 		 * with an invalid order (OT_NOTHING) as indication that it is the last order */
 		Order *prev = Order::GetIfValid(num - 1);
 		if (prev != NULL) prev->next = o;
@@ -636,7 +640,7 @@ static bool LoadOldOrder(LoadgameState *ls, int num)
 
 static bool LoadOldAnimTileList(LoadgameState *ls, int num)
 {
-	/* This is sligthly hackish - we must load a chunk into an array whose
+	/* This is slightly hackish - we must load a chunk into an array whose
 	 * address isn't static, but instead pointed to by _animated_tile_list.
 	 * To achieve that, create an OldChunks list on the stack on the fly.
 	 * The list cannot be static because the value of _animated_tile_list
@@ -687,7 +691,7 @@ static uint8  _cargo_days;
 
 static const OldChunks goods_chunk[] = {
 	OCL_VAR ( OC_UINT16, 1,          &_waiting_acceptance ),
-	OCL_SVAR(  OC_UINT8, GoodsEntry, days_since_pickup ),
+	OCL_SVAR(  OC_UINT8, GoodsEntry, time_since_pickup ),
 	OCL_SVAR(  OC_UINT8, GoodsEntry, rating ),
 	OCL_VAR (  OC_UINT8, 1,          &_cargo_source ),
 	OCL_VAR (  OC_UINT8, 1,          &_cargo_days ),
@@ -707,10 +711,11 @@ static bool LoadOldGood(LoadgameState *ls, int num)
 
 	if (!LoadChunk(ls, ge, goods_chunk)) return false;
 
-	SB(ge->acceptance_pickup, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
-	SB(ge->acceptance_pickup, GoodsEntry::GES_PICKUP, 1, _cargo_source != 0xFF);
+	SB(ge->status, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
+	SB(ge->status, GoodsEntry::GES_RATING, 1, _cargo_source != 0xFF);
 	if (GB(_waiting_acceptance, 0, 12) != 0 && CargoPacket::CanAllocateItem()) {
-		ge->cargo.Append(new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_days, (_cargo_source == 0xFF) ? INVALID_STATION : _cargo_source, 0, 0));
+		ge->cargo.Append(new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_days, (_cargo_source == 0xFF) ? INVALID_STATION : _cargo_source, 0, 0),
+				INVALID_STATION);
 	}
 
 	return true;
@@ -926,7 +931,7 @@ static const OldChunks _company_chunk[] = {
 
 	OCL_SVAR(  OC_UINT8, Company, colour ),
 	OCL_SVAR(  OC_UINT8, Company, money_fraction ),
-	OCL_SVAR(  OC_UINT8, Company, quarters_of_bankruptcy ),
+	OCL_SVAR(  OC_UINT8, Company, months_of_bankruptcy ),
 	OCL_SVAR( OC_FILE_U8  | OC_VAR_U16, Company, bankrupt_asked ),
 	OCL_SVAR( OC_FILE_U32 | OC_VAR_I64, Company, bankrupt_value ),
 	OCL_SVAR( OC_UINT16, Company, bankrupt_timeout ),
@@ -1251,6 +1256,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;
 			if (v == NULL) continue;
+			v->refit_cap = v->cargo_cap;
 
 			SpriteID sprite = v->cur_image;
 			/* no need to override other sprites */
@@ -1401,7 +1407,7 @@ static const OldChunks engine_chunk[] = {
 
 	OCL_NULL( 1 ), // lifelength
 	OCL_SVAR(  OC_UINT8, Engine, flags ),
-	OCL_SVAR(  OC_UINT8, Engine, preview_company_rank ),
+	OCL_NULL( 1 ), // preview_company_rank
 	OCL_SVAR(  OC_UINT8, Engine, preview_wait ),
 
 	OCL_CNULL( OC_TTD, 2 ), ///< railtype + junk
@@ -1489,10 +1495,10 @@ static bool LoadOldMapPart1(LoadgameState *ls, int num)
 		}
 		for (uint i = 0; i < OLD_MAP_SIZE / 4; i++) {
 			byte b = ReadByte(ls);
-			_m[i * 4 + 0].m6 = GB(b, 0, 2);
-			_m[i * 4 + 1].m6 = GB(b, 2, 2);
-			_m[i * 4 + 2].m6 = GB(b, 4, 2);
-			_m[i * 4 + 3].m6 = GB(b, 6, 2);
+			_me[i * 4 + 0].m6 = GB(b, 0, 2);
+			_me[i * 4 + 1].m6 = GB(b, 2, 2);
+			_me[i * 4 + 2].m6 = GB(b, 4, 2);
+			_me[i * 4 + 3].m6 = GB(b, 6, 2);
 		}
 	}
 
@@ -1504,7 +1510,7 @@ static bool LoadOldMapPart2(LoadgameState *ls, int num)
 	uint i;
 
 	for (i = 0; i < OLD_MAP_SIZE; i++) {
-		_m[i].type_height = ReadByte(ls);
+		_m[i].type = ReadByte(ls);
 	}
 	for (i = 0; i < OLD_MAP_SIZE; i++) {
 		_m[i].m5 = ReadByte(ls);
@@ -1573,6 +1579,8 @@ extern TileIndex _cur_tileloop_tile;
 extern uint16 _disaster_delay;
 extern byte _trees_tick_ctr;
 extern byte _age_cargo_skip_counter; // From misc_sl.cpp
+extern uint8 _old_diff_level;
+extern uint8 _old_units;
 static const OldChunks main_chunk[] = {
 	OCL_ASSERT( OC_TTD, 0 ),
 	OCL_ASSERT( OC_TTO, 0 ),
@@ -1701,7 +1709,7 @@ static const OldChunks main_chunk[] = {
 	OCL_NULL( 1 ),               ///< Station tick counter, no longer in use
 
 	OCL_VAR (  OC_UINT8,    1, &_settings_game.locale.currency ),
-	OCL_VAR (  OC_UINT8,    1, &_settings_game.locale.units ),
+	OCL_VAR (  OC_UINT8,    1, &_old_units ),
 	OCL_VAR ( OC_FILE_U8 | OC_VAR_U32,    1, &_cur_company_tick_index ),
 
 	OCL_NULL( 2 ),               ///< Date stuff, calculated automatically
@@ -1718,7 +1726,7 @@ static const OldChunks main_chunk[] = {
 
 	OCL_ASSERT( OC_TTD, 0x77130 ),
 
-	OCL_VAR (  OC_UINT8,    1, &_settings_game.difficulty.diff_level ),
+	OCL_VAR (  OC_UINT8,    1, &_old_diff_level ),
 
 	OCL_VAR ( OC_TTD | OC_UINT8,    1, &_settings_game.game_creation.landscape ),
 	OCL_VAR ( OC_TTD | OC_UINT8,    1, &_trees_tick_ctr ),
@@ -1777,7 +1785,7 @@ bool LoadTTDMain(LoadgameState *ls)
 	FixOldVehicles();
 
 	/* We have a new difficulty setting */
-	_settings_game.difficulty.town_council_tolerance = Clamp(_settings_game.difficulty.diff_level, 0, 2);
+	_settings_game.difficulty.town_council_tolerance = Clamp(_old_diff_level, 0, 2);
 
 	DEBUG(oldloader, 3, "Finished converting game data");
 	DEBUG(oldloader, 1, "TTD(Patch) savegame successfully converted");
@@ -1820,7 +1828,7 @@ bool LoadTTOMain(LoadgameState *ls)
 	FixTTOCompanies();
 
 	/* We have a new difficulty setting */
-	_settings_game.difficulty.town_council_tolerance = Clamp(_settings_game.difficulty.diff_level, 0, 2);
+	_settings_game.difficulty.town_council_tolerance = Clamp(_old_diff_level, 0, 2);
 
 	/* SVXConverter about cargo payment rates correction:
 	 * "increase them to compensate for the faster time advance in TTD compared to TTO

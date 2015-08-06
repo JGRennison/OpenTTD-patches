@@ -15,6 +15,8 @@
 
 #include "table/strings.h"
 
+#include "../safeguards.h"
+
 static const int NUM_OLD_STRINGS     = 512; ///< The number of custom strings stored in old savegames.
 static const int LEN_OLD_STRINGS     =  32; ///< The number of characters per string.
 static const int LEN_OLD_STRINGS_TTO =  24; ///< The number of characters per string in TTO savegames.
@@ -92,10 +94,10 @@ char *CopyFromOldName(StringID id)
 		/* Terminate the new string and copy it back to the name array */
 		*strto = '\0';
 
-		return strdup(tmp);
+		return stredup(tmp);
 	} else {
 		/* Name will already be in UTF-8. */
-		return strdup(&_old_name_array[LEN_OLD_STRINGS * GB(id, 0, 9)]);
+		return stredup(&_old_name_array[LEN_OLD_STRINGS * GB(id, 0, 9)]);
 	}
 }
 

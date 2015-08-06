@@ -106,6 +106,25 @@ public:
 	};
 
 	/**
+	 * Possible town construction sizes.
+	 */
+	enum TownSize {
+		TOWN_SIZE_SMALL   = ::TSZ_SMALL,  ///< Small town.
+		TOWN_SIZE_MEDIUM  = ::TSZ_MEDIUM, ///< Medium town.
+		TOWN_SIZE_LARGE   = ::TSZ_LARGE,  ///< Large town.
+
+		TOWN_SIZE_INVALID = -1,  ///< Invalid town size.
+	};
+
+	/**
+	 * Special values for SetGrowthRate.
+	 */
+	enum TownGrowth {
+		TOWN_GROWTH_NONE   = 0xFFFF,  ///< Town does not grow at all.
+		TOWN_GROWTH_NORMAL = 0x10000, ///< Use default town growth algorithm instead of custom growth rate.
+	};
+
+	/**
 	 * Gets the number of towns.
 	 * @return The number of towns.
 	 */
@@ -125,6 +144,16 @@ public:
 	 * @return The name of the town.
 	 */
 	static char *GetName(TownID town_id);
+
+	/**
+	 * Rename a town.
+	 * @param town_id The town to rename
+	 * @param name The new name of the town. If NULL or an empty string is passed, the town name will be reset to the default name.
+	 * @pre IsValidTown(town_id).
+	 * @return True if the action succeeded.
+	 * @api -ai
+	 */
+	static bool SetName(TownID town_id, Text *name);
 
 	/**
 	 * Set the custom text of a town, shown in the GUI.
@@ -203,10 +232,10 @@ public:
 	/**
 	 * Set the goal of a cargo for this town.
 	 * @param town_id The index of the town.
-	 * @param towneffect_id The index of the cargo.
+	 * @param towneffect_id The index of the towneffect.
 	 * @param goal The new goal.
 	 * @pre IsValidTown(town_id).
-	 * @pre ScriptCargo::IsValidTownEffect(cargo_id).
+	 * @pre ScriptCargo::IsValidTownEffect(towneffect_id).
 	 * @return True if the action succeeded.
 	 * @api -ai
 	 */
@@ -218,7 +247,7 @@ public:
 	 * @param town_id The index of the town.
 	 * @param towneffect_id The index of the towneffect.
 	 * @pre IsValidTown(town_id).
-	 * @pre ScriptCargo::IsValidTownEffect(cargo_id).
+	 * @pre ScriptCargo::IsValidTownEffect(towneffect_id).
 	 * @return The goal of the cargo.
 	 * @note Goals can change over time. For example with a changing snowline, or
 	 *  with a growing town.
@@ -228,19 +257,22 @@ public:
 	/**
 	 * Set the amount of days between town growth.
 	 * @param town_id The index of the town.
-	 * @param days_between_town_growth The amont of days between town growth.
+	 * @param days_between_town_growth The amount of days between town growth, TOWN_GROWTH_NONE or TOWN_GROWTH_NORMAL.
 	 * @pre IsValidTown(town_id).
+	 * @pre days_between_town_growth <= 30000 || days_between_town_growth == TOWN_GROWTH_NONE || days_between_town_growth == TOWN_GROWTH_NORMAL.
 	 * @return True if the action succeeded.
-	 * @note If 'Fund Building' and 'economy.town_growth_rate' is active, the game will often set a new GrowthRate.
+	 * @note Even when setting a growth rate, towns only grow when the conditions for growth (SetCargoCoal) are met,
+	 *       and the game settings (economy.town_growth_rate) allow town growth at all.
+	 * @note When changing the growth rate, the relative progress is preserved and scaled to the new rate.
 	 * @api -ai
 	 */
-	static bool SetGrowthRate(TownID town_id, uint16 days_between_town_growth);
+	static bool SetGrowthRate(TownID town_id, uint32 days_between_town_growth);
 
 	/**
 	 * Get the amount of days between town growth.
 	 * @param town_id The index of the town.
 	 * @pre IsValidTown(town_id).
-	 * @return True if the action succeeded.
+	 * @return Amount of days between town growth, or TOWN_GROWTH_NONE.
 	 * @note This function does not indicate when it will grow next. It only tells you the time between growths.
 	 */
 	static int32 GetGrowthRate(TownID town_id);
@@ -303,6 +335,15 @@ public:
 	static int GetRoadReworkDuration(TownID town_id);
 
 	/**
+	 * Find out how long new buildings are still being funded in a town.
+	 * @param town_id The town to check.
+	 * @pre IsValidTown(town_id).
+	 * @return The number of months building construction is still funded.
+	 *         The value 0 means that there is currently no funding.
+	 */
+	static int GetFundBuildingsDuration(TownID town_id);
+
+	/**
 	 * Find out which company currently has the exclusive rights of this town.
 	 * @param town_id The town to check.
 	 * @pre IsValidTown(town_id).
@@ -354,6 +395,25 @@ public:
 	 * @api -ai
 	 */
 	static bool ExpandTown(TownID town_id, int houses);
+
+	/**
+	 * Found a new town.
+	 * @param tile The location of the new town.
+	 * @param size The town size of the new town.
+	 * @param city True if the new town should be a city.
+	 * @param layout The town layout of the new town.
+	 * @param name The name of the new town. Pass NULL to use a random town name.
+	 * @game @pre no company mode in scope || ScriptSettings.GetValue("economy.found_town") != 0.
+	 * @ai @pre ScriptSettings.GetValue("economy.found_town") != 0.
+	 * @game @pre no company mode in scope || size != TOWN_SIZE_LARGE.
+	 * @ai @pre size != TOWN_SIZE_LARGE.
+	 * @pre size != TOWN_SIZE_INVALID.
+	 * @pre layout != ROAD_LAYOUT_INVALID.
+	 * @return True if the action succeeded.
+	 * @game @note Companies are restricted by the advanced setting that controls if funding towns is allowed or not. If custom road layout is forbidden and there is a company mode in scope, the layout parameter will be ignored.
+	 * @ai @note AIs are restricted by the advanced setting that controls if funding towns is allowed or not. If custom road layout is forbidden, the layout parameter will be ignored.
+	 */
+	static bool FoundTown(TileIndex tile, TownSize size, bool city, RoadLayout layout, Text *name);
 
 	/**
 	 * Get the rating of a company within a town.

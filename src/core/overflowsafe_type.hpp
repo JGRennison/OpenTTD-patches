@@ -12,10 +12,11 @@
 #ifndef OVERFLOWSAFE_TYPE_HPP
 #define OVERFLOWSAFE_TYPE_HPP
 
+#include "math_func.hpp"
 
 /**
  * Overflow safe template for integers, i.e. integers that will never overflow
- * you multiply the maximum value with 2, or add 2, or substract somethng from
+ * you multiply the maximum value with 2, or add 2, or subtract something from
  * the minimum value, etc.
  * @param T     the type these integers are stored with.
  * @param T_MAX the maximum value for the integers.
@@ -54,7 +55,7 @@ public:
 		return *this;
 	}
 
-	/* Operators for addition and substraction */
+	/* Operators for addition and subtraction */
 	inline OverflowSafeInt  operator +  (const OverflowSafeInt& other) const { OverflowSafeInt result = *this; result += other; return result; }
 	inline OverflowSafeInt  operator +  (const int              other) const { OverflowSafeInt result = *this; result += (int64)other; return result; }
 	inline OverflowSafeInt  operator +  (const uint             other) const { OverflowSafeInt result = *this; result += (int64)other; return result; }
@@ -151,5 +152,6 @@ template <class T, int64 T_MAX, int64 T_MIN> inline OverflowSafeInt<T, T_MAX, T_
 template <class T, int64 T_MAX, int64 T_MIN> inline OverflowSafeInt<T, T_MAX, T_MIN> operator / (byte  a, OverflowSafeInt<T, T_MAX, T_MIN> b) { return (OverflowSafeInt<T, T_MAX, T_MIN>)a / (int)b; }
 
 typedef OverflowSafeInt<int64, INT64_MAX, INT64_MIN> OverflowSafeInt64;
+typedef OverflowSafeInt<int32, INT32_MAX, INT32_MIN> OverflowSafeInt32;
 
 #endif /* OVERFLOWSAFE_TYPE_HPP */

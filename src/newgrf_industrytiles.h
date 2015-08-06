@@ -16,6 +16,37 @@
 #include "newgrf_industries.h"
 #include "core/random_func.hpp"
 
+/** Resolver for the industry tiles scope. */
+struct IndustryTileScopeResolver : public ScopeResolver {
+	Industry *industry; ///< Industry owning the tiles.
+	TileIndex tile;     ///< %Tile being resolved.
+
+	IndustryTileScopeResolver(ResolverObject &ro, Industry *industry, TileIndex tile);
+
+	/* virtual */ uint32 GetRandomBits() const;
+	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
+	/* virtual */ uint32 GetTriggers() const;
+	/* virtual */ void SetTriggers(int triggers) const;
+};
+
+/** Resolver for industry tiles. */
+struct IndustryTileResolverObject : public ResolverObject {
+	IndustryTileScopeResolver indtile_scope; ///< Scope resolver for the industry tile.
+	IndustriesScopeResolver ind_scope;       ///< Scope resolver for the industry owning the tile.
+
+	IndustryTileResolverObject(IndustryGfx gfx, TileIndex tile, Industry *indus,
+			CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
+
+	/* virtual */ ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0)
+	{
+		switch (scope) {
+			case VSG_SCOPE_SELF: return &indtile_scope;
+			case VSG_SCOPE_PARENT: return &ind_scope;
+			default: return ResolverObject::GetScope(scope, relative);
+		}
+	}
+};
+
 bool DrawNewIndustryTile(TileInfo *ti, Industry *i, IndustryGfx gfx, const IndustryTileSpec *inds);
 uint16 GetIndustryTileCallback(CallbackID callback, uint32 param1, uint32 param2, IndustryGfx gfx_id, Industry *industry, TileIndex tile);
 CommandCost PerformIndustryTileSlopeCheck(TileIndex ind_base_tile, TileIndex ind_tile, const IndustryTileSpec *its, IndustryType type, IndustryGfx gfx, uint itspec_index, uint16 initial_random_bits, Owner founder, IndustryAvailabilityCallType creation_type);

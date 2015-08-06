@@ -81,7 +81,8 @@
 
 #include "../company_base.h"
 #include "../company_func.h"
-#include "../fileio_func.h"
+
+#include "../safeguards.h"
 
 AIInstance::AIInstance() :
 	ScriptInstance("AI")
@@ -128,13 +129,16 @@ void AIInstance::RegisterAPI()
 	SQAIEventCompanyInTrouble_Register(this->engine);
 	SQAIEventCompanyMerger_Register(this->engine);
 	SQAIEventCompanyNew_Register(this->engine);
+	SQAIEventCompanyTown_Register(this->engine);
 	SQAIEventController_Register(this->engine);
 	SQAIEventDisasterZeppelinerCleared_Register(this->engine);
 	SQAIEventDisasterZeppelinerCrashed_Register(this->engine);
 	SQAIEventEngineAvailable_Register(this->engine);
 	SQAIEventEnginePreview_Register(this->engine);
+	SQAIEventExclusiveTransportRights_Register(this->engine);
 	SQAIEventIndustryClose_Register(this->engine);
 	SQAIEventIndustryOpen_Register(this->engine);
+	SQAIEventRoadReconstruction_Register(this->engine);
 	SQAIEventStationFirstVehicle_Register(this->engine);
 	SQAIEventSubsidyAwarded_Register(this->engine);
 	SQAIEventSubsidyExpired_Register(this->engine);
@@ -167,6 +171,17 @@ void AIInstance::RegisterAPI()
 	SQAISignList_Register(this->engine);
 	SQAIStation_Register(this->engine);
 	SQAIStationList_Register(this->engine);
+	SQAIStationList_Cargo_Register(this->engine);
+	SQAIStationList_CargoPlanned_Register(this->engine);
+	SQAIStationList_CargoPlannedByFrom_Register(this->engine);
+	SQAIStationList_CargoPlannedByVia_Register(this->engine);
+	SQAIStationList_CargoPlannedFromByVia_Register(this->engine);
+	SQAIStationList_CargoPlannedViaByFrom_Register(this->engine);
+	SQAIStationList_CargoWaiting_Register(this->engine);
+	SQAIStationList_CargoWaitingByFrom_Register(this->engine);
+	SQAIStationList_CargoWaitingByVia_Register(this->engine);
+	SQAIStationList_CargoWaitingFromByVia_Register(this->engine);
+	SQAIStationList_CargoWaitingViaByFrom_Register(this->engine);
 	SQAIStationList_Vehicle_Register(this->engine);
 	SQAISubsidy_Register(this->engine);
 	SQAISubsidyList_Register(this->engine);
@@ -191,29 +206,7 @@ void AIInstance::RegisterAPI()
 	SQAIWaypointList_Register(this->engine);
 	SQAIWaypointList_Vehicle_Register(this->engine);
 
-	if (!this->LoadCompatibilityScripts(this->versionAPI)) this->Died();
-}
-
-bool AIInstance::LoadCompatibilityScripts(const char *api_version)
-{
-	char script_name[32];
-	seprintf(script_name, lastof(script_name), "compat_%s.nut", api_version);
-	char buf[MAX_PATH];
-	Searchpath sp;
-	FOR_ALL_SEARCHPATHS(sp) {
-		FioAppendDirectory(buf, MAX_PATH, sp, AI_DIR);
-		ttd_strlcat(buf, script_name, MAX_PATH);
-		if (!FileExists(buf)) continue;
-
-		if (this->engine->LoadScript(buf)) return true;
-
-		ScriptLog::Error("Failed to load API compatibility script");
-		DEBUG(script, 0, "Error compiling / running API compatibility script: %s", buf);
-		return false;
-	}
-
-	ScriptLog::Warning("API compatibility script not found");
-	return true;
+	if (!this->LoadCompatibilityScripts(this->versionAPI, AI_DIR)) this->Died();
 }
 
 void AIInstance::Died()
@@ -258,8 +251,17 @@ ScriptInfo *AIInstance::FindLibrary(const char *library, int version)
  */
 void CcAI(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
 {
-	Company::Get(_current_company)->ai_instance->DoCommandCallback(result, tile, p1, p2);
-	Company::Get(_current_company)->ai_instance->Continue();
+	/*
+	 * The company might not exist anymore. Check for this.
+	 * The command checks are not useful since this callback
+	 * is also called when the command fails, which is does
+	 * when the company does not exist anymore.
+	 */
+	const Company *c = Company::GetIfValid(_current_company);
+	if (c == NULL || c->ai_instance == NULL) return;
+
+	c->ai_instance->DoCommandCallback(result, tile, p1, p2);
+	c->ai_instance->Continue();
 }
 
 CommandCallback *AIInstance::GetDoCommandCallback()

@@ -21,6 +21,7 @@
 #include "../querystring_gui.h"
 #include "../town.h"
 #include "../window_func.h"
+#include "../toolbar_gui.h"
 #include "../core/geometry_func.hpp"
 #include "network.h"
 #include "network_client.h"
@@ -29,6 +30,8 @@
 #include "../widgets/network_chat_widget.h"
 
 #include "table/strings.h"
+
+#include "../safeguards.h"
 
 /** The draw buffer must be able to contain the chat message, client name and the "[All]" message,
  * some spaces and possible translations of [All] to other languages. */
@@ -81,40 +84,24 @@ static inline uint GetChatMessageCount()
 void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const char *message, ...)
 {
 	char buf[DRAW_STRING_BUFFER];
-	const char *bufp;
 	va_list va;
-	uint msg_count;
-	uint16 lines;
 
 	va_start(va, message);
-	vsnprintf(buf, lengthof(buf), message, va);
+	vseprintf(buf, lastof(buf), message, va);
 	va_end(va);
 
 	Utf8TrimString(buf, DRAW_STRING_BUFFER);
 
-	/* Force linebreaks for strings that are too long */
-	lines = GB(FormatStringLinebreaks(buf, lastof(buf), _chatmsg_box.width - 8), 0, 16) + 1;
-	if (lines >= MAX_CHAT_MESSAGES) return;
-
-	msg_count = GetChatMessageCount();
-	/* We want to add more chat messages than there is free space for, remove 'old' */
-	if (lines > MAX_CHAT_MESSAGES - msg_count) {
-		int i = lines - (MAX_CHAT_MESSAGES - msg_count);
-		memmove(&_chatmsg_list[0], &_chatmsg_list[i], sizeof(_chatmsg_list[0]) * (msg_count - i));
-		msg_count = MAX_CHAT_MESSAGES - lines;
+	uint msg_count = GetChatMessageCount();
+	if (MAX_CHAT_MESSAGES == msg_count) {
+		memmove(&_chatmsg_list[0], &_chatmsg_list[1], sizeof(_chatmsg_list[0]) * (msg_count - 1));
+		msg_count = MAX_CHAT_MESSAGES - 1;
 	}
 
-	for (bufp = buf; lines != 0; lines--) {
-		ChatMessage *cmsg = &_chatmsg_list[msg_count++];
-		strecpy(cmsg->message, bufp, lastof(cmsg->message));
-
-		/* The default colour for a message is company colour. Replace this with
-		 * white for any additional lines */
-		cmsg->colour = (bufp == buf && (colour & TC_IS_PALETTE_COLOUR)) ? colour : TC_WHITE;
-		cmsg->remove_time = _realtime_tick + duration * 1000;
-
-		bufp += strlen(bufp) + 1; // jump to 'next line' in the formatted string
-	}
+	ChatMessage *cmsg = &_chatmsg_list[msg_count++];
+	strecpy(cmsg->message, buf, lastof(cmsg->message));
+	cmsg->colour = (colour & TC_IS_PALETTE_COLOUR) ? colour : TC_WHITE;
+	cmsg->remove_time = _realtime_tick + duration * 1000;
 
 	_chatmessage_dirty = true;
 }
@@ -124,7 +111,7 @@ void NetworkReInitChatBoxSize()
 {
 	_chatmsg_box.y       = 3 * FONT_HEIGHT_NORMAL;
 	_chatmsg_box.height  = MAX_CHAT_MESSAGES * (FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING) + 2;
-	_chatmessage_backup  = ReallocT(_chatmessage_backup, _chatmsg_box.width * _chatmsg_box.height * BlitterFactoryBase::GetCurrentBlitter()->GetBytesPerPixel());
+	_chatmessage_backup  = ReallocT(_chatmessage_backup, _chatmsg_box.width * _chatmsg_box.height * BlitterFactory::GetCurrentBlitter()->GetBytesPerPixel());
 }
 
 /** Initialize all buffers of the chat visualisation. */
@@ -134,7 +121,7 @@ void NetworkInitChatMessage()
 
 	_chatmsg_list        = ReallocT(_chatmsg_list, _settings_client.gui.network_chat_box_height);
 	_chatmsg_box.x       = 10;
-	_chatmsg_box.width   = _settings_client.gui.network_chat_box_width;
+	_chatmsg_box.width   = _settings_client.gui.network_chat_box_width_pct * _screen.width / 100;
 	NetworkReInitChatBoxSize();
 	_chatmessage_visible = false;
 
@@ -165,7 +152,7 @@ void NetworkUndrawChatMessage()
 	}
 
 	if (_chatmessage_visible) {
-		Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 		int x      = _chatmsg_box.x;
 		int y      = _screen.height - _chatmsg_box.y - _chatmsg_box.height;
 		int width  = _chatmsg_box.width;
@@ -183,7 +170,7 @@ void NetworkUndrawChatMessage()
 		/* Put our 'shot' back to the screen */
 		blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), _chatmessage_backup, width, height);
 		/* And make sure it is updated next time */
-		_video_driver->MakeDirty(x, y, width, height);
+		VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
 
 		_chatmessage_dirty = true;
 	}
@@ -214,7 +201,7 @@ void NetworkChatMessageLoop()
 /** Draw the chat message-box */
 void NetworkDrawChatMessage()
 {
-	Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	if (!_chatmessage_dirty) return;
 
 	/* First undraw if needed */
@@ -246,22 +233,31 @@ void NetworkDrawChatMessage()
 
 	_cur_dpi = &_screen; // switch to _screen painting
 
+	int string_height = 0;
+	for (uint i = 0; i < count; i++) {
+		SetDParamStr(0, _chatmsg_list[i].message);
+		string_height += GetStringLineCount(STR_JUST_RAW_STRING, width - 1) * FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING;
+	}
+
+	string_height = min(string_height, MAX_CHAT_MESSAGES * (FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING));
+
+	int top = _screen.height - _chatmsg_box.y - string_height - 2;
+	int bottom = _screen.height - _chatmsg_box.y - 2;
 	/* Paint a half-transparent box behind the chat messages */
-	GfxFillRect(
-			_chatmsg_box.x,
-			_screen.height - _chatmsg_box.y - count * (FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING) - 2,
-			_chatmsg_box.x + _chatmsg_box.width - 1,
-			_screen.height - _chatmsg_box.y - 2,
+	GfxFillRect(_chatmsg_box.x, top - 2, _chatmsg_box.x + _chatmsg_box.width - 1, bottom,
 			PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOUR // black, but with some alpha for background
 		);
 
 	/* Paint the chat messages starting with the lowest at the bottom */
-	for (uint y = FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING; count-- != 0; y += (FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING)) {
-		DrawString(_chatmsg_box.x + 3, _chatmsg_box.x + _chatmsg_box.width - 1, _screen.height - _chatmsg_box.y - y + 1, _chatmsg_list[count].message, _chatmsg_list[count].colour);
+	int ypos = bottom - 2;
+
+	for (int i = count - 1; i >= 0; i--) {
+		ypos = DrawStringMultiLine(_chatmsg_box.x + 3, _chatmsg_box.x + _chatmsg_box.width - 1, top, ypos, _chatmsg_list[i].message, _chatmsg_list[i].colour, SA_LEFT | SA_BOTTOM | SA_FORCE) - NETWORK_CHAT_LINE_SPACING;
+		if (ypos < top) break;
 	}
 
 	/* Make sure the data is updated next flush */
-	_video_driver->MakeDirty(x, y, width, height);
+	VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
 
 	_chatmessage_visible = true;
 	_chatmessage_dirty = false;
@@ -284,10 +280,11 @@ static void SendChat(const char *buf, DestType type, int dest)
 }
 
 /** Window to enter the chat message in. */
-struct NetworkChatWindow : public QueryStringBaseWindow {
+struct NetworkChatWindow : public Window {
 	DestType dtype;       ///< The type of destination.
 	StringID dest_string; ///< String representation of the destination.
 	int dest;             ///< The identifier of the destination.
+	QueryString message_editbox; ///< Message editbox.
 
 	/**
 	 * Create a chat input window.
@@ -295,12 +292,13 @@ struct NetworkChatWindow : public QueryStringBaseWindow {
 	 * @param type The type of destination.
 	 * @param dest The actual destination index.
 	 */
-	NetworkChatWindow(const WindowDesc *desc, DestType type, int dest) : QueryStringBaseWindow(NETWORK_CHAT_LENGTH)
+	NetworkChatWindow(WindowDesc *desc, DestType type, int dest) : Window(desc), message_editbox(NETWORK_CHAT_LENGTH)
 	{
 		this->dtype   = type;
 		this->dest    = dest;
-		this->afilter = CS_ALPHANUMERAL;
-		InitializeTextBuffer(&this->text, this->edit_str_buf, this->edit_str_size);
+		this->querystrings[WID_NC_TEXTBOX] = &this->message_editbox;
+		this->message_editbox.cancel_button = WID_NC_CLOSE;
+		this->message_editbox.ok_button = WID_NC_SENDBUTTON;
 
 		static const StringID chat_captions[] = {
 			STR_NETWORK_CHAT_ALL_CAPTION,
@@ -310,7 +308,7 @@ struct NetworkChatWindow : public QueryStringBaseWindow {
 		assert((uint)this->dtype < lengthof(chat_captions));
 		this->dest_string = chat_captions[this->dtype];
 
-		this->InitNested(desc, type);
+		this->InitNested(type);
 
 		this->SetFocusedWidget(WID_NC_TEXTBOX);
 		InvalidateWindowData(WC_NEWS_WINDOW, 0, this->height);
@@ -322,6 +320,11 @@ struct NetworkChatWindow : public QueryStringBaseWindow {
 	~NetworkChatWindow()
 	{
 		InvalidateWindowData(WC_NEWS_WINDOW, 0, 0);
+	}
+
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	/**
@@ -382,9 +385,9 @@ struct NetworkChatWindow : public QueryStringBaseWindow {
 	void ChatTabCompletion()
 	{
 		static char _chat_tab_completion_buf[NETWORK_CHAT_LENGTH];
-		assert(this->edit_str_size == lengthof(_chat_tab_completion_buf));
+		assert(this->message_editbox.text.max_bytes == lengthof(_chat_tab_completion_buf));
 
-		Textbuf *tb = &this->text;
+		Textbuf *tb = &this->message_editbox.text;
 		size_t len, tb_len;
 		uint item;
 		char *tb_buf, *pre_buf;
@@ -394,7 +397,7 @@ struct NetworkChatWindow : public QueryStringBaseWindow {
 		item = 0;
 
 		/* Copy the buffer so we can modify it without damaging the real data */
-		pre_buf = (_chat_tab_completion_active) ? strdup(_chat_tab_completion_buf) : strdup(tb->buf);
+		pre_buf = (_chat_tab_completion_active) ? stredup(_chat_tab_completion_buf) : stredup(tb->buf);
 
 		tb_buf  = ChatTabCompletionFindText(pre_buf);
 		tb_len  = strlen(tb_buf);
@@ -431,18 +434,15 @@ struct NetworkChatWindow : public QueryStringBaseWindow {
 			len = strlen(cur_name);
 			if (tb_len < len && strncasecmp(cur_name, tb_buf, tb_len) == 0) {
 				/* Save the data it was before completion */
-				if (!second_scan) snprintf(_chat_tab_completion_buf, lengthof(_chat_tab_completion_buf), "%s", tb->buf);
+				if (!second_scan) seprintf(_chat_tab_completion_buf, lastof(_chat_tab_completion_buf), "%s", tb->buf);
 				_chat_tab_completion_active = true;
 
 				/* Change to the found name. Add ': ' if we are at the start of the line (pretty) */
 				if (pre_buf == tb_buf) {
-					snprintf(tb->buf, this->edit_str_size, "%s: ", cur_name);
+					this->message_editbox.text.Print("%s: ", cur_name);
 				} else {
-					snprintf(tb->buf, this->edit_str_size, "%s %s", pre_buf, cur_name);
+					this->message_editbox.text.Print("%s %s", pre_buf, cur_name);
 				}
-
-				/* Update the textbuffer */
-				UpdateTextBufferSize(&this->text);
 
 				this->SetDirty();
 				free(pre_buf);
@@ -451,25 +451,16 @@ struct NetworkChatWindow : public QueryStringBaseWindow {
 		}
 
 		if (second_scan) {
-			/* We walked all posibilities, and the user presses tab again.. revert to original text */
-			strcpy(tb->buf, _chat_tab_completion_buf);
+			/* We walked all possibilities, and the user presses tab again.. revert to original text */
+			this->message_editbox.text.Assign(_chat_tab_completion_buf);
 			_chat_tab_completion_active = false;
-
-			/* Update the textbuffer */
-			UpdateTextBufferSize(&this->text);
 
 			this->SetDirty();
 		}
 		free(pre_buf);
 	}
 
-	virtual void OnPaint()
-	{
-		this->DrawWidgets();
-		this->DrawEditBox(WID_NC_TEXTBOX);
-	}
-
-	virtual Point OnInitialPosition(const WindowDesc *desc, int16 sm_width, int16 sm_height, int window_number)
+	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
 	{
 		Point pt = { 0, _screen.height - sm_height - FindWindowById(WC_STATUS_BAR, 0)->height };
 		return pt;
@@ -502,45 +493,25 @@ struct NetworkChatWindow : public QueryStringBaseWindow {
 	{
 		switch (widget) {
 			/* Send */
-			case WID_NC_SENDBUTTON: SendChat(this->text.buf, this->dtype, this->dest);
+			case WID_NC_SENDBUTTON: SendChat(this->message_editbox.text.buf, this->dtype, this->dest);
 				/* FALL THROUGH */
 			case WID_NC_CLOSE: /* Cancel */ delete this; break;
 		}
 	}
 
-	virtual void OnMouseLoop()
-	{
-		this->HandleEditBox(WID_NC_TEXTBOX);
-	}
-
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode)
+	virtual EventState OnKeyPress(WChar key, uint16 keycode)
 	{
 		EventState state = ES_NOT_HANDLED;
 		if (keycode == WKC_TAB) {
 			ChatTabCompletion();
 			state = ES_HANDLED;
-		} else {
-			_chat_tab_completion_active = false;
-			switch (this->HandleEditBoxKey(WID_NC_TEXTBOX, key, keycode, state)) {
-				default: NOT_REACHED();
-				case HEBR_EDITING: {
-					Window *osk = FindWindowById(WC_OSK, 0);
-					if (osk != NULL && osk->parent == this) osk->InvalidateData();
-					break;
-				}
-				case HEBR_CONFIRM:
-					SendChat(this->text.buf, this->dtype, this->dest);
-					/* FALL THROUGH */
-				case HEBR_CANCEL: delete this; break;
-				case HEBR_NOT_FOCUSED: break;
-			}
 		}
 		return state;
 	}
 
-	virtual void OnOpenOSKWindow(int wid)
+	virtual void OnEditboxChanged(int wid)
 	{
-		ShowOnScreenKeyboard(this, wid, WID_NC_CLOSE, WID_NC_SENDBUTTON);
+		_chat_tab_completion_active = false;
 	}
 
 	/**
@@ -570,8 +541,8 @@ static const NWidgetPart _nested_chat_window_widgets[] = {
 };
 
 /** The description of the chat window. */
-static const WindowDesc _chat_window_desc(
-	WDP_MANUAL, 640, 14, // x, y, width, height
+static WindowDesc _chat_window_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_SEND_NETWORK_MSG, WC_NONE,
 	0,
 	_nested_chat_window_widgets, lengthof(_nested_chat_window_widgets)

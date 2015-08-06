@@ -15,6 +15,8 @@
 
 #include "saveload.h"
 
+#include "../safeguards.h"
+
 /**
  * Savegame conversion for cargopackets.
  */
@@ -22,14 +24,14 @@
 {
 	if (IsSavegameVersionBefore(44)) {
 		Vehicle *v;
-		/* If we remove a station while cargo from it is still enroute, payment calculation will assume
+		/* If we remove a station while cargo from it is still en route, payment calculation will assume
 		 * 0, 0 to be the source of the cargo, resulting in very high payments usually. v->source_xy
 		 * stores the coordinates, preserving them even if the station is removed. However, if a game is loaded
 		 * where this situation exists, the cargo-source information is lost. in this case, we set the source
 		 * to the current tile of the vehicle to prevent excessive profits
 		 */
 		FOR_ALL_VEHICLES(v) {
-			const VehicleCargoList::List *packets = v->cargo.Packets();
+			const CargoPacketList *packets = v->cargo.Packets();
 			for (VehicleCargoList::ConstIterator it(packets->begin()); it != packets->end(); it++) {
 				CargoPacket *cp = *it;
 				cp->source_xy = Station::IsValidID(cp->source) ? Station::Get(cp->source)->xy : v->tile;
@@ -47,7 +49,7 @@
 			for (CargoID c = 0; c < NUM_CARGO; c++) {
 				GoodsEntry *ge = &st->goods[c];
 
-				const StationCargoList::List *packets = ge->cargo.Packets();
+				const StationCargoPacketMap *packets = ge->cargo.Packets();
 				for (StationCargoList::ConstIterator it(packets->begin()); it != packets->end(); it++) {
 					CargoPacket *cp = *it;
 					cp->source_xy = Station::IsValidID(cp->source) ? Station::Get(cp->source)->xy : st->xy;
@@ -76,6 +78,11 @@
 		FOR_ALL_STATIONS(st) {
 			for (CargoID c = 0; c < NUM_CARGO; c++) st->goods[c].cargo.InvalidateCache();
 		}
+	}
+
+	if (IsSavegameVersionBefore(181)) {
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) v->cargo.KeepAll();
 	}
 }
 

@@ -266,3 +266,47 @@ void SQGSEventGoalQuestionAnswer_Register(Squirrel *engine)
 
 	SQGSEventGoalQuestionAnswer.PostRegister(engine);
 }
+
+
+template <> const char *GetClassName<ScriptEventCompanyTown, ST_GS>() { return "GSEventCompanyTown"; }
+
+void SQGSEventCompanyTown_Register(Squirrel *engine)
+{
+	DefSQClass<ScriptEventCompanyTown, ST_GS> SQGSEventCompanyTown("GSEventCompanyTown");
+	SQGSEventCompanyTown.PreRegister(engine, "GSEvent");
+
+	SQGSEventCompanyTown.DefSQStaticMethod(engine, &ScriptEventCompanyTown::Convert, "Convert", 2, ".x");
+
+	SQGSEventCompanyTown.DefSQMethod(engine, &ScriptEventCompanyTown::GetCompanyID, "GetCompanyID", 1, "x");
+	SQGSEventCompanyTown.DefSQMethod(engine, &ScriptEventCompanyTown::GetTownID,    "GetTownID",    1, "x");
+
+	SQGSEventCompanyTown.PostRegister(engine);
+}
+
+
+template <> const char *GetClassName<ScriptEventExclusiveTransportRights, ST_GS>() { return "GSEventExclusiveTransportRights"; }
+
+void SQGSEventExclusiveTransportRights_Register(Squirrel *engine)
+{
+	DefSQClass<ScriptEventExclusiveTransportRights, ST_GS> SQGSEventExclusiveTransportRights("GSEventExclusiveTransportRights");
+	SQGSEventExclusiveTransportRights.PreRegister(engine, "GSEventCompanyTown");
+	SQGSEventExclusiveTransportRights.AddConstructor<void (ScriptEventExclusiveTransportRights::*)(ScriptCompany::CompanyID company, TownID town), 3>(engine, "xii");
+
+	SQGSEventExclusiveTransportRights.DefSQStaticMethod(engine, &ScriptEventExclusiveTransportRights::Convert, "Convert", 2, ".x");
+
+	SQGSEventExclusiveTransportRights.PostRegister(engine);
+}
+
+
+template <> const char *GetClassName<ScriptEventRoadReconstruction, ST_GS>() { return "GSEventRoadReconstruction"; }
+
+void SQGSEventRoadReconstruction_Register(Squirrel *engine)
+{
+	DefSQClass<ScriptEventRoadReconstruction, ST_GS> SQGSEventRoadReconstruction("GSEventRoadReconstruction");
+	SQGSEventRoadReconstruction.PreRegister(engine, "GSEventCompanyTown");
+	SQGSEventRoadReconstruction.AddConstructor<void (ScriptEventRoadReconstruction::*)(ScriptCompany::CompanyID company, TownID town), 3>(engine, "xii");
+
+	SQGSEventRoadReconstruction.DefSQStaticMethod(engine, &ScriptEventRoadReconstruction::Convert, "Convert", 2, ".x");
+
+	SQGSEventRoadReconstruction.PostRegister(engine);
+}

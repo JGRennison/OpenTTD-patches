@@ -10,13 +10,9 @@
 #
 
 # The revision is needed for the bundle name and creating an OSX application bundle.
-ifdef REVISION
-REV := $(REVISION)
-else
 # Detect the revision
 VERSIONS := $(shell AWK="$(AWK)" "$(ROOT_DIR)/findversion.sh")
 REV      := $(shell echo "$(VERSIONS)" | cut -f 1 -d'	')
-endif
 
 # Make sure we have something in REV
 ifeq ($(REV),)
@@ -30,11 +26,13 @@ endif
 # An OSX application bundle needs the data files, lang files and openttd executable in a different location.
 ifdef OSXAPP
 AI_DIR      = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/ai
+GAME_DIR    = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/game
 BASESET_DIR = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/baseset
 LANG_DIR    = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/lang
 TTD_DIR     = $(BUNDLE_DIR)/$(OSXAPP)/Contents/MacOS
 else
 AI_DIR      = $(BUNDLE_DIR)/ai
+GAME_DIR    = $(BUNDLE_DIR)/game
 BASESET_DIR = $(BUNDLE_DIR)/baseset
 LANG_DIR    = $(BUNDLE_DIR)/lang
 TTD_DIR     = $(BUNDLE_DIR)
@@ -49,6 +47,7 @@ bundle: all
 	$(Q)mkdir -p "$(BUNDLE_DIR)/scripts"
 	$(Q)mkdir -p "$(TTD_DIR)"
 	$(Q)mkdir -p "$(AI_DIR)"
+	$(Q)mkdir -p "$(GAME_DIR)"
 	$(Q)mkdir -p "$(BASESET_DIR)"
 	$(Q)mkdir -p "$(LANG_DIR)"
 ifdef OSXAPP
@@ -63,6 +62,7 @@ ifeq ($(OS),UNIX)
 endif
 	$(Q)cp "$(BIN_DIR)/$(TTD)"                "$(TTD_DIR)/"
 	$(Q)cp "$(BIN_DIR)/ai/"compat_*.nut       "$(AI_DIR)/"
+	$(Q)cp "$(BIN_DIR)/game/"compat_*.nut     "$(GAME_DIR)/"
 	$(Q)cp "$(BIN_DIR)/baseset/"*.grf         "$(BASESET_DIR)/"
 	$(Q)cp "$(BIN_DIR)/baseset/"*.obg         "$(BASESET_DIR)/"
 	$(Q)cp "$(BIN_DIR)/baseset/"*.obs         "$(BASESET_DIR)/"
@@ -73,7 +73,6 @@ endif
 	$(Q)cp "$(ROOT_DIR)/COPYING"              "$(BUNDLE_DIR)/"
 	$(Q)cp "$(ROOT_DIR)/known-bugs.txt"       "$(BUNDLE_DIR)/"
 	$(Q)cp "$(ROOT_DIR)/docs/multiplayer.txt" "$(BUNDLE_DIR)/docs/"
-	$(Q)cp "$(ROOT_DIR)/docs/32bpp.txt"       "$(BUNDLE_DIR)/docs/"
 	$(Q)cp "$(ROOT_DIR)/changelog.txt"        "$(BUNDLE_DIR)/"
 ifdef MAN_DIR
 	$(Q)mkdir -p "$(BUNDLE_DIR)/man/"
@@ -91,9 +90,9 @@ endif
 ifeq ($(TTD), openttd.exe)
 	$(Q)unix2dos "$(BUNDLE_DIR)/docs/"* "$(BUNDLE_DIR)/readme.txt" "$(BUNDLE_DIR)/COPYING" "$(BUNDLE_DIR)/changelog.txt" "$(BUNDLE_DIR)/known-bugs.txt"
 ifeq ($(OS), DOS)
-	$(Q)cp "$(ROOT_DIR)/os/dos/cwsdpmi.txt"   "$(BUNDLE_DIR)/docs/"
+	$(Q)cp "$(ROOT_DIR)/os/dos/cwsdpmi/cwsdpmi.txt"   "$(BUNDLE_DIR)/docs/"
 ifndef STRIP
-	$(Q)cp "$(ROOT_DIR)/os/dos/cwsdpmi.exe"   "$(TTD_DIR)/"
+	$(Q)cp "$(ROOT_DIR)/os/dos/cwsdpmi/cwsdpmi.exe"   "$(TTD_DIR)/"
 endif
 endif
 endif

@@ -35,15 +35,13 @@ void CleanUpGRFText(struct GRFText *grftext);
 
 bool CheckGrfLangID(byte lang_id, byte grf_version);
 
-void StartTextRefStackUsage(byte numEntries, const uint32 *values = NULL);
+void StartTextRefStackUsage(const GRFFile *grffile, byte numEntries, const uint32 *values = NULL);
 void StopTextRefStackUsage();
 void RewindTextRefStack();
 bool UsingNewGRFTextStack();
 struct TextRefStack *CreateTextRefStackBackup();
 void RestoreTextRefStackBackup(struct TextRefStack *backup);
-uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const char **str, int64 *argv, bool modify_argv);
-
-StringID TTDPStringIDToOTTDStringIDMapping(StringID string);
+uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const char **str, int64 *argv, uint argv_size, bool modify_argv);
 
 /** Mapping of language data between a NewGRF and OpenTTD. */
 struct LanguageMap {

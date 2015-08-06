@@ -9,7 +9,7 @@
 
 /**
  * @file sprites.h
- * This file contails all sprite-related enums and defines. These consist mainly of
+ * This file contains all sprite-related enums and defines. These consist mainly of
  * the sprite numbers and a bunch of masks and macros to handle sprites and to get
  * rid of all the magic numbers in the code.
  *
@@ -26,7 +26,7 @@
  *
  * All sprites which are described here are referenced only one to a handful of times
  * throughout the code. When introducing new sprite enums, use meaningful names.
- * Don't be lazy and typing, and only use abbrevations when their meaning is clear or
+ * Don't be lazy and typing, and only use abbreviations when their meaning is clear or
  * the length of the enum would get out of hand. In that case EXPLAIN THE ABBREVATION
  * IN THIS FILE, and perhaps add some comments in the code where it is used.
  * Now, don't whine about this being too much typing work if the enums are like
@@ -56,7 +56,7 @@ static const SpriteID SPR_LARGE_SMALL_WINDOW = 682;
 
 /** Extra graphic spritenumbers */
 static const SpriteID SPR_OPENTTD_BASE   = 4896;
-static const uint16 OPENTTD_SPRITE_COUNT = 162;
+static const uint16 OPENTTD_SPRITE_COUNT = 175;
 
 /* Halftile-selection sprites */
 static const SpriteID SPR_HALFTILE_SELECTION_FLAT = SPR_OPENTTD_BASE;
@@ -84,6 +84,8 @@ static const SpriteID SPR_HOUSE_ICON         = SPR_OPENTTD_BASE + 49;
 static const SpriteID SPR_SHARED_ORDERS_ICON = SPR_OPENTTD_BASE + 50;
 static const SpriteID SPR_PIN_UP             = SPR_OPENTTD_BASE + 51;  // pin icon
 static const SpriteID SPR_PIN_DOWN           = SPR_OPENTTD_BASE + 52;
+
+static const SpriteID SPR_CLOSEBOX           = 143;
 
 static const SpriteID SPR_CIRCLE_FOLDED      = SPR_OPENTTD_BASE + 147; // (+) icon
 static const SpriteID SPR_CIRCLE_UNFOLDED    = SPR_OPENTTD_BASE + 148; // (-) icon
@@ -147,7 +149,19 @@ static const SpriteID SPR_GROUP_REPLACE_OFF_ROADVEH  = SPR_OPENTTD_BASE + 131;
 static const SpriteID SPR_GROUP_REPLACE_OFF_SHIP     = SPR_OPENTTD_BASE + 132;
 static const SpriteID SPR_GROUP_REPLACE_OFF_AIRCRAFT = SPR_OPENTTD_BASE + 133;
 
+static const SpriteID SPR_TOWN_RATING_NA             = SPR_OPENTTD_BASE + 162;
+static const SpriteID SPR_TOWN_RATING_APALLING       = SPR_OPENTTD_BASE + 163;
+static const SpriteID SPR_TOWN_RATING_MEDIOCRE       = SPR_OPENTTD_BASE + 164;
+static const SpriteID SPR_TOWN_RATING_GOOD           = SPR_OPENTTD_BASE + 165;
+
 static const SpriteID SPR_IMG_SWITCH_TOOLBAR = SPR_OPENTTD_BASE + 144;
+
+static const SpriteID SPR_IMG_DELETE_LEFT            = SPR_OPENTTD_BASE + 166;
+static const SpriteID SPR_IMG_DELETE_RIGHT           = SPR_OPENTTD_BASE + 167;
+
+static const SpriteID SPR_WINDOW_DEFSIZE             = SPR_OPENTTD_BASE + 168;
+
+static const SpriteID SPR_IMG_CARGOFLOW              = SPR_OPENTTD_BASE + 174;
 
 static const SpriteID SPR_SIGNALS_BASE  = SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
 static const uint16 PRESIGNAL_SPRITE_COUNT                   =  48;
@@ -278,8 +292,12 @@ static const uint16 RAILTYPE_TUNNEL_BASE_COUNT = 16;
 static const SpriteID SPR_EMPTY_BOUNDING_BOX = SPR_RAILTYPE_TUNNEL_BASE + RAILTYPE_TUNNEL_BASE_COUNT;
 static const uint16 EMPTY_BOUNDING_BOX_SPRITE_COUNT = 1;
 
+/* Black palette sprite, needed for painting (fictive) tiles outside map */
+static const SpriteID SPR_PALETTE_BASE = SPR_EMPTY_BOUNDING_BOX + EMPTY_BOUNDING_BOX_SPRITE_COUNT;
+static const uint16 PALETTE_SPRITE_COUNT = 1;
+
 /* From where can we start putting NewGRFs? */
-static const SpriteID SPR_NEWGRFS_BASE = SPR_EMPTY_BOUNDING_BOX + EMPTY_BOUNDING_BOX_SPRITE_COUNT;
+static const SpriteID SPR_NEWGRFS_BASE = SPR_PALETTE_BASE + PALETTE_SPRITE_COUNT;
 
 /* Manager face sprites */
 static const SpriteID SPR_GRADIENT = 874; // background gradient behind manager face
@@ -701,14 +719,14 @@ static const SpriteID SPR_BTSGA_MGLV_Y_REAR       = 4365;
  * TILE_* denotes the different tiles a suspension bridge
  * can have
  * TILE_A and TILE_B are the "beginnings" and "ends" of the
- *   suspension system. they have small rectangluar endcaps
+ *   suspension system. They have small rectangular endcaps
  * TILE_C and TILE_D look almost identical to TILE_A and
  *   TILE_B, but they do not have the "endcaps". They form the
  *   middle part
  * TILE_E is a condensed configuration of two pillars. while they
  *   are usually 2 pillars apart, they only have 1 pillar separation
  *   here
- * TILE_F is an extended configuration of pillars. they are
+ * TILE_F is an extended configuration of pillars. They are
  *   plugged in when pillars should be 3 tiles apart
  */
 static const SpriteID SPR_BTSUS_ROAD_Y_REAR_TILE_A  = 2453;
@@ -852,7 +870,7 @@ static const SpriteID SPR_BTGIR_MGLV_Y        = 4403;
  * tubular bridges have 3 kinds of tiles:
  *  a start tile (with only half a tube on the far side, marked _BEG
  *  a middle tile (full tunnel), marked _MID
- *  and an end tile (half a tube on the near side, maked _END
+ *  and an end tile (half a tube on the near side, marked _END
  */
 static const SpriteID SPR_BTTUB_X_FRONT_BEG       = 2559;
 static const SpriteID SPR_BTTUB_X_FRONT_MID       = 2560;
@@ -981,10 +999,10 @@ static const SpriteID SPR_CNST1_TOWNHOUSE_06_V1               = 1444;
 static const SpriteID SPR_CNST2_TOWNHOUSE_06_V1               = 1445;
 static const SpriteID SPR_BUILD_TOWNHOUSE_06_V1               = 1446; // 1st variation
 static const SpriteID SPR_GRND_TOWNHOUSE_06_V1                = 1447;
-static const SpriteID SPR_GRND_STADIUM_N                      = 1479; //stadium ground at north
-static const SpriteID SPR_GRND_STADIUM_E                      = 1480; //stadium ground at east
-static const SpriteID SPR_GRND_STADIUM_W                      = 1481; //stadium ground at west
-static const SpriteID SPR_GRND_STADIUM_S                      = 1482; //stadium ground at south
+static const SpriteID SPR_GRND_STADIUM_N                      = 1479; // stadium ground at north
+static const SpriteID SPR_GRND_STADIUM_E                      = 1480; // stadium ground at east
+static const SpriteID SPR_GRND_STADIUM_W                      = 1481; // stadium ground at west
+static const SpriteID SPR_GRND_STADIUM_S                      = 1482; // stadium ground at south
 static const SpriteID SPR_CNST1_TOWNHOUSE_06_V2               = 1501; // used as ground, but is stage1
 static const SpriteID SPR_CNST1_TOWNHOUSE_06_V2_P             = 1502; // pipes extensions for previous
 static const SpriteID SPR_CNST2_TOWNHOUSE_06_V2_G             = 1503; // Ground of cnst stage 2
@@ -1078,6 +1096,7 @@ static const SpriteID SPR_IMG_MESSAGES        = 680;
 static const SpriteID SPR_IMG_QUERY           = 723;
 static const SpriteID SPR_IMG_SIGN            = 4082;
 static const SpriteID SPR_IMG_BUY_LAND        = 4791;
+static const SpriteID SPR_IMG_STORY_BOOK      = SPR_OPENTTD_BASE + 169;
 
 /* OpenTTD in gamescreen */
 static const SpriteID SPR_OTTD_O                = 4842;
@@ -1307,6 +1326,12 @@ static const SpriteID SPR_IMG_CONVERT_ELRAIL = SPR_OPENTTD_BASE + 59;
 static const SpriteID SPR_IMG_CONVERT_MONO   = SPR_OPENTTD_BASE + 65;
 static const SpriteID SPR_IMG_CONVERT_MAGLEV = SPR_OPENTTD_BASE + 71;
 
+/* story_gui.cpp */
+static const SpriteID SPR_IMG_VIEW_LOCATION  = SPR_OPENTTD_BASE + 170;
+static const SpriteID SPR_IMG_GOAL           = SPR_OPENTTD_BASE + 171;
+static const SpriteID SPR_IMG_GOAL_COMPLETED = SPR_OPENTTD_BASE + 172;
+static const SpriteID SPR_IMG_GOAL_BROKEN_REF= SPR_OPENTTD_BASE + 173;
+
 /* intro_gui.cpp, genworld_gui.cpp */
 static const SpriteID SPR_SELECT_TEMPERATE           = 4882;
 static const SpriteID SPR_SELECT_TEMPERATE_PUSHED    = 4883;
@@ -1456,10 +1481,14 @@ static const CursorID ANIMCURSOR_BUILDSIGNALS = ANIMCURSOR_FLAG | 4; ///< 1292 -
  * bits used for the recolouring process. For transparency, it must be 0x322.</li></ul>
  */
 enum SpriteSetup {
+	/* These bits are applied to sprite ID */
 	TRANSPARENT_BIT = 31,       ///< toggles transparency in the sprite
 	RECOLOUR_BIT = 30,          ///< toggles recolouring in the sprite
 	CUSTOM_BIT = 29,
 	OPAQUE_BIT = 28,
+
+	/* This bit is applied to palette ID */
+	PALETTE_TEXT_RECOLOUR = 31, ///< Set if palette is actually a magic text recolour
 
 	PALETTE_WIDTH = 24,         ///< number of bits of the sprite containing the recolour palette
 	SPRITE_WIDTH = 24,          ///< number of bits for the sprite number
@@ -1542,5 +1571,7 @@ static const PaletteID PALETTE_CRASH               = 804;  ///< Recolour sprite 
 /* Two recolourings only used by the church */
 static const PaletteID PALETTE_CHURCH_RED          = 1438; ///< Recolour sprite for reddish churches
 static const PaletteID PALETTE_CHURCH_CREAM        = 1439; ///< Recolour sprite for white churches
+
+static const PaletteID PALETTE_ALL_BLACK           = SPR_PALETTE_BASE; ///< Exchange any color by black, needed for painting fictive tiles outside map
 
 #endif /* SPRITES_H */

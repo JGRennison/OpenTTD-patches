@@ -59,7 +59,7 @@ void PayStationSharingFee(Vehicle *v, const Station *st)
 
 uint16 is2_GetWeight(Train *v)
 {
-	uint16 weight = (CargoSpec::Get(v->cargo_type)->weight * v->cargo.Count() * FreightWagonMult(v->cargo_type)) / 16;
+	uint16 weight = (CargoSpec::Get(v->cargo_type)->weight * v->cargo.StoredCount() * FreightWagonMult(v->cargo_type)) / 16;
 		/* Vehicle weight is not added for articulated parts. */
 	if (!v->IsArticulatedPart()) {
 		weight += GetVehicleProperty(v, PROP_TRAIN_WEIGHT, RailVehInfo(v->engine_type)->weight);

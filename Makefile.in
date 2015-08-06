@@ -41,7 +41,6 @@ TTDS        = $(SRC_DIRS:%=%/$(TTD))
 OS          = !!OS!!
 OSXAPP      = !!OSXAPP!!
 LIPO        = !!LIPO!!
-REVISION    = !!REVISION!!
 AWK         = !!AWK!!
 SORT        = !!SORT!!
 DISTCC      = !!DISTCC!!
@@ -145,17 +144,15 @@ mrproper:
 # output of profiling
 	$(Q)rm -f $(BIN_DIR)/gmon.out
 # output of generating 'API' documentation
-	$(Q)rm -f $(ROOT_DIR)/openttd.tag
 	$(Q)rm -rf $(ROOT_DIR)/docs/source
-# output of generating AI API documentation
-	$(Q)rm -f $(SRC_DIR)/ai/api/openttd.tag
 	$(Q)rm -rf $(ROOT_DIR)/docs/aidocs
+	$(Q)rm -rf $(ROOT_DIR)/docs/gamedocs
 # directories created by OpenTTD on regression testing
 	$(Q)rm -rf $(BIN_DIR)/ai/regression/content_download $(BIN_DIR)/ai/regression/save $(BIN_DIR)/ai/regression/scenario
 distclean: mrproper
 
 maintainer-clean: distclean
-	$(Q)rm -f $(BIN_DIR)/baseset/openttd.grf
+	$(Q)rm -f $(BIN_DIR)/baseset/openttd.grf $(BIN_DIR)/baseset/*.obg $(BIN_DIR)/baseset/*.obs $(BIN_DIR)/baseset/*.obm
 
 depend:
 	@for dir in $(SRC_DIRS); do \

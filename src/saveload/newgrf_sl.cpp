@@ -15,6 +15,8 @@
 #include "saveload.h"
 #include "newgrf_sl.h"
 
+#include "../safeguards.h"
+
 /** Save and load the mapping between a spec and the NewGRF it came from. */
 static const SaveLoad _newgrf_mapping_desc[] = {
 	SLE_VAR(EntityIDMapping, grfid,         SLE_UINT32),
@@ -49,7 +51,7 @@ void Load_NewGRFMapping(OverrideManagerBase &mapping)
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		if ((uint)index >= max_id) break;
+		if ((uint)index >= max_id) SlErrorCorrupt("Too many NewGRF entity mappings");
 		SlObject(&mapping.mapping_ID[index], _newgrf_mapping_desc);
 	}
 }

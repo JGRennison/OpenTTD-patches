@@ -32,15 +32,17 @@
 #include "core/geometry_func.hpp"
 #include "command_func.h"
 #include "company_base.h"
+#include "settings_internal.h"
 
 #include "widgets/news_widget.h"
 
 #include "table/strings.h"
 
-const NewsItem *_statusbar_news_item = NULL;
-bool _news_ticker_sound; ///< Make a ticker sound when a news item is published.
+#include "safeguards.h"
 
-static uint MIN_NEWS_AMOUNT = 30;           ///< prefered minimum amount of news messages
+const NewsItem *_statusbar_news_item = NULL;
+
+static uint MIN_NEWS_AMOUNT = 30;           ///< preferred minimum amount of news messages
 static uint _total_news = 0;                ///< current number of news items
 static NewsItem *_oldest_news = NULL;       ///< head of news items queue
 static NewsItem *_latest_news = NULL;       ///< tail of news items queue
@@ -78,7 +80,7 @@ static TileIndex GetReferenceTile(NewsReferenceType reftype, uint32 ref)
 static const NWidgetPart _nested_normal_news_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_PANEL),
 		NWidget(NWID_HORIZONTAL), SetPadding(1, 1, 0, 1),
-			NWidget(WWT_TEXT, COLOUR_WHITE, WID_N_CLOSEBOX), SetDataTip(STR_SILVER_CROSS, STR_NULL), SetPadding(0, 0, 0, 1),
+			NWidget(WWT_CLOSEBOX, COLOUR_WHITE, WID_N_CLOSEBOX), SetPadding(0, 0, 0, 1),
 			NWidget(NWID_SPACER), SetFill(1, 0),
 			NWidget(NWID_VERTICAL),
 				NWidget(WWT_LABEL, COLOUR_WHITE, WID_N_DATE), SetDataTip(STR_DATE_LONG_SMALL, STR_NULL),
@@ -89,8 +91,8 @@ static const NWidgetPart _nested_normal_news_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _normal_news_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _normal_news_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
 	_nested_normal_news_widgets, lengthof(_nested_normal_news_widgets)
@@ -101,7 +103,7 @@ static const NWidgetPart _nested_vehicle_news_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_PANEL),
 		NWidget(NWID_HORIZONTAL), SetPadding(1, 1, 0, 1),
 			NWidget(NWID_VERTICAL),
-				NWidget(WWT_TEXT, COLOUR_WHITE, WID_N_CLOSEBOX), SetDataTip(STR_SILVER_CROSS, STR_NULL), SetPadding(0, 0, 0, 1),
+				NWidget(WWT_CLOSEBOX, COLOUR_WHITE, WID_N_CLOSEBOX), SetPadding(0, 0, 0, 1),
 				NWidget(NWID_SPACER), SetFill(0, 1),
 			EndContainer(),
 			NWidget(WWT_LABEL, COLOUR_WHITE, WID_N_VEH_TITLE), SetFill(1, 1), SetMinimalSize(419, 55), SetDataTip(STR_EMPTY, STR_NULL),
@@ -116,8 +118,8 @@ static const NWidgetPart _nested_vehicle_news_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _vehicle_news_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _vehicle_news_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
 	_nested_vehicle_news_widgets, lengthof(_nested_vehicle_news_widgets)
@@ -128,7 +130,7 @@ static const NWidgetPart _nested_company_news_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_PANEL),
 		NWidget(NWID_HORIZONTAL), SetPadding(1, 1, 0, 1),
 			NWidget(NWID_VERTICAL),
-				NWidget(WWT_TEXT, COLOUR_WHITE, WID_N_CLOSEBOX), SetDataTip(STR_SILVER_CROSS, STR_NULL), SetPadding(0, 0, 0, 1),
+				NWidget(WWT_CLOSEBOX, COLOUR_WHITE, WID_N_CLOSEBOX), SetPadding(0, 0, 0, 1),
 				NWidget(NWID_SPACER), SetFill(0, 1),
 			EndContainer(),
 			NWidget(WWT_LABEL, COLOUR_WHITE, WID_N_TITLE), SetFill(1, 1), SetMinimalSize(410, 20), SetDataTip(STR_EMPTY, STR_NULL),
@@ -136,10 +138,7 @@ static const NWidgetPart _nested_company_news_widgets[] = {
 		NWidget(NWID_HORIZONTAL), SetPadding(0, 1, 1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(WWT_EMPTY, COLOUR_WHITE, WID_N_MGR_FACE), SetMinimalSize(93, 119), SetPadding(2, 6, 2, 1),
-				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_EMPTY, COLOUR_WHITE, WID_N_MGR_NAME), SetMinimalSize(93, 24), SetPadding(0, 0, 0, 1),
-					NWidget(NWID_SPACER), SetFill(1, 0),
-				EndContainer(),
+				NWidget(WWT_EMPTY, COLOUR_WHITE, WID_N_MGR_NAME), SetMinimalSize(93, 24), SetPadding(0, 0, 0, 1),
 				NWidget(NWID_SPACER), SetFill(0, 1),
 			EndContainer(),
 			NWidget(WWT_EMPTY, COLOUR_WHITE, WID_N_COMPANY_MSG), SetFill(1, 1), SetMinimalSize(328, 150),
@@ -147,8 +146,8 @@ static const NWidgetPart _nested_company_news_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _company_news_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _company_news_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
 	_nested_company_news_widgets, lengthof(_nested_company_news_widgets)
@@ -158,7 +157,7 @@ static const WindowDesc _company_news_desc(
 static const NWidgetPart _nested_thin_news_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_PANEL),
 		NWidget(NWID_HORIZONTAL), SetPadding(1, 1, 0, 1),
-			NWidget(WWT_TEXT, COLOUR_WHITE, WID_N_CLOSEBOX), SetDataTip(STR_SILVER_CROSS, STR_NULL), SetPadding(0, 0, 0, 1),
+			NWidget(WWT_CLOSEBOX, COLOUR_WHITE, WID_N_CLOSEBOX), SetPadding(0, 0, 0, 1),
 			NWidget(NWID_SPACER), SetFill(1, 0),
 			NWidget(NWID_VERTICAL),
 				NWidget(WWT_LABEL, COLOUR_WHITE, WID_N_DATE), SetDataTip(STR_DATE_LONG_SMALL, STR_NULL),
@@ -170,8 +169,8 @@ static const NWidgetPart _nested_thin_news_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _thin_news_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _thin_news_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
 	_nested_thin_news_widgets, lengthof(_nested_thin_news_widgets)
@@ -194,72 +193,67 @@ static const NWidgetPart _nested_small_news_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _small_news_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _small_news_desc(
+	WDP_MANUAL, NULL, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
 	_nested_small_news_widgets, lengthof(_nested_small_news_widgets)
 );
 
 /**
- * Data common to all news items of a given subtype (structure)
+ * Window layouts for news items.
  */
-struct NewsSubtypeData {
-	NewsType type;          ///< News category @see NewsType
-	NewsFlag flags;         ///< Initial NewsFlags bits @see NewsFlag
-	const WindowDesc *desc; ///< Window description for displaying this news.
+static WindowDesc* _news_window_layout[] = {
+	&_thin_news_desc,    ///< NF_THIN
+	&_small_news_desc,   ///< NF_SMALL
+	&_normal_news_desc,  ///< NF_NORMAL
+	&_vehicle_news_desc, ///< NF_VEHICLE
+	&_company_news_desc, ///< NF_COMPANY
 };
 
-/**
- * Data common to all news items of a given subtype (actual data)
- */
-static const NewsSubtypeData _news_subtype_data[] = {
-	/* type,               display_mode, flags,                         window description,            callback */
-	{ NT_ARRIVAL_COMPANY,  (NF_NO_TRANSPARENT | NF_SHADE), &_thin_news_desc    }, ///< NS_ARRIVAL_COMPANY
-	{ NT_ARRIVAL_OTHER,    (NF_NO_TRANSPARENT | NF_SHADE), &_thin_news_desc    }, ///< NS_ARRIVAL_OTHER
-	{ NT_ACCIDENT,         (NF_NO_TRANSPARENT | NF_SHADE), &_thin_news_desc    }, ///< NS_ACCIDENT
-	{ NT_COMPANY_INFO,     NF_NONE,                        &_company_news_desc }, ///< NS_COMPANY_TROUBLE
-	{ NT_COMPANY_INFO,     NF_NONE,                        &_company_news_desc }, ///< NS_COMPANY_MERGER
-	{ NT_COMPANY_INFO,     NF_NONE,                        &_company_news_desc }, ///< NS_COMPANY_BANKRUPT
-	{ NT_COMPANY_INFO,     NF_NONE,                        &_company_news_desc }, ///< NS_COMPANY_NEW
-	{ NT_INDUSTRY_OPEN,    (NF_NO_TRANSPARENT | NF_SHADE), &_thin_news_desc    }, ///< NS_INDUSTRY_OPEN
-	{ NT_INDUSTRY_CLOSE,   (NF_NO_TRANSPARENT | NF_SHADE), &_thin_news_desc    }, ///< NS_INDUSTRY_CLOSE
-	{ NT_ECONOMY,          NF_NONE,                        &_normal_news_desc  }, ///< NS_ECONOMY
-	{ NT_INDUSTRY_COMPANY, (NF_NO_TRANSPARENT | NF_SHADE), &_thin_news_desc    }, ///< NS_INDUSTRY_COMPANY
-	{ NT_INDUSTRY_OTHER,   (NF_NO_TRANSPARENT | NF_SHADE), &_thin_news_desc    }, ///< NS_INDUSTRY_OTHER
-	{ NT_INDUSTRY_NOBODY,  (NF_NO_TRANSPARENT | NF_SHADE), &_thin_news_desc    }, ///< NS_INDUSTRY_NOBODY
-	{ NT_ADVICE,           NF_INCOLOUR,                    &_small_news_desc   }, ///< NS_ADVICE
-	{ NT_NEW_VEHICLES,     NF_NONE,                        &_vehicle_news_desc }, ///< NS_NEW_VEHICLES
-	{ NT_ACCEPTANCE,       NF_INCOLOUR,                    &_small_news_desc   }, ///< NS_ACCEPTANCE
-	{ NT_SUBSIDIES,        NF_NONE,                        &_normal_news_desc  }, ///< NS_SUBSIDIES
-	{ NT_GENERAL,          NF_NONE,                        &_normal_news_desc  }, ///< NS_GENERAL
-};
-
-assert_compile(lengthof(_news_subtype_data) == NS_END);
+WindowDesc* GetNewsWindowLayout(NewsFlag flags)
+{
+	uint layout = GB(flags, NFB_WINDOW_LAYOUT, NFB_WINDOW_LAYOUT_COUNT);
+	assert(layout < lengthof(_news_window_layout));
+	return _news_window_layout[layout];
+}
 
 /**
  * Per-NewsType data
  */
-NewsTypeData _news_type_data[] = {
-	/*            name,              age, sound,           display,    description */
-	NewsTypeData("arrival_player",    60, SND_1D_APPLAUSE, ND_FULL,    STR_NEWS_MESSAGE_TYPE_ARRIVAL_OF_FIRST_VEHICLE_OWN       ),  ///< NT_ARRIVAL_COMPANY
-	NewsTypeData("arrival_other",     60, SND_1D_APPLAUSE, ND_SUMMARY, STR_NEWS_MESSAGE_TYPE_ARRIVAL_OF_FIRST_VEHICLE_OTHER     ),  ///< NT_ARRIVAL_OTHER
-	NewsTypeData("accident",          90, SND_BEGIN,       ND_FULL,    STR_NEWS_MESSAGE_TYPE_ACCIDENTS_DISASTERS                ),  ///< NT_ACCIDENT
-	NewsTypeData("company_info",      60, SND_BEGIN,       ND_FULL,    STR_NEWS_MESSAGE_TYPE_COMPANY_INFORMATION                ),  ///< NT_COMPANY_INFO
-	NewsTypeData("open",              90, SND_BEGIN,       ND_SUMMARY, STR_NEWS_MESSAGE_TYPE_INDUSTRY_OPEN                      ),  ///< NT_INDUSTRY_OPEN
-	NewsTypeData("close",             90, SND_BEGIN,       ND_SUMMARY, STR_NEWS_MESSAGE_TYPE_INDUSTRY_CLOSE                     ),  ///< NT_INDUSTRY_CLOSE
-	NewsTypeData("economy",           30, SND_BEGIN,       ND_FULL,    STR_NEWS_MESSAGE_TYPE_ECONOMY_CHANGES                    ),  ///< NT_ECONOMY
-	NewsTypeData("production_player", 30, SND_BEGIN,       ND_SUMMARY, STR_NEWS_MESSAGE_TYPE_INDUSTRY_CHANGES_SERVED_BY_COMPANY ),  ///< NT_INDUSTRY_COMPANY
-	NewsTypeData("production_other",  30, SND_BEGIN,       ND_OFF,     STR_NEWS_MESSAGE_TYPE_INDUSTRY_CHANGES_SERVED_BY_OTHER   ),  ///< NT_INDUSTRY_OTHER
-	NewsTypeData("production_nobody", 30, SND_BEGIN,       ND_OFF,     STR_NEWS_MESSAGE_TYPE_INDUSTRY_CHANGES_UNSERVED          ),  ///< NT_INDUSTRY_NOBODY
-	NewsTypeData("advice",           150, SND_BEGIN,       ND_FULL,    STR_NEWS_MESSAGE_TYPE_ADVICE_INFORMATION_ON_COMPANY      ),  ///< NT_ADVICE
-	NewsTypeData("new_vehicles",      30, SND_1E_OOOOH,    ND_FULL,    STR_NEWS_MESSAGE_TYPE_NEW_VEHICLES                       ),  ///< NT_NEW_VEHICLES
-	NewsTypeData("acceptance",        90, SND_BEGIN,       ND_FULL,    STR_NEWS_MESSAGE_TYPE_CHANGES_OF_CARGO_ACCEPTANCE        ),  ///< NT_ACCEPTANCE
-	NewsTypeData("subsidies",        180, SND_BEGIN,       ND_SUMMARY, STR_NEWS_MESSAGE_TYPE_SUBSIDIES                          ),  ///< NT_SUBSIDIES
-	NewsTypeData("general",           60, SND_BEGIN,       ND_FULL,    STR_NEWS_MESSAGE_TYPE_GENERAL_INFORMATION                ),  ///< NT_GENERAL
+static NewsTypeData _news_type_data[] = {
+	/*            name,                           age, sound,          */
+	NewsTypeData("news_display.arrival_player",    60, SND_1D_APPLAUSE ),  ///< NT_ARRIVAL_COMPANY
+	NewsTypeData("news_display.arrival_other",     60, SND_1D_APPLAUSE ),  ///< NT_ARRIVAL_OTHER
+	NewsTypeData("news_display.accident",          90, SND_BEGIN       ),  ///< NT_ACCIDENT
+	NewsTypeData("news_display.company_info",      60, SND_BEGIN       ),  ///< NT_COMPANY_INFO
+	NewsTypeData("news_display.open",              90, SND_BEGIN       ),  ///< NT_INDUSTRY_OPEN
+	NewsTypeData("news_display.close",             90, SND_BEGIN       ),  ///< NT_INDUSTRY_CLOSE
+	NewsTypeData("news_display.economy",           30, SND_BEGIN       ),  ///< NT_ECONOMY
+	NewsTypeData("news_display.production_player", 30, SND_BEGIN       ),  ///< NT_INDUSTRY_COMPANY
+	NewsTypeData("news_display.production_other",  30, SND_BEGIN       ),  ///< NT_INDUSTRY_OTHER
+	NewsTypeData("news_display.production_nobody", 30, SND_BEGIN       ),  ///< NT_INDUSTRY_NOBODY
+	NewsTypeData("news_display.advice",           150, SND_BEGIN       ),  ///< NT_ADVICE
+	NewsTypeData("news_display.new_vehicles",      30, SND_1E_OOOOH    ),  ///< NT_NEW_VEHICLES
+	NewsTypeData("news_display.acceptance",        90, SND_BEGIN       ),  ///< NT_ACCEPTANCE
+	NewsTypeData("news_display.subsidies",        180, SND_BEGIN       ),  ///< NT_SUBSIDIES
+	NewsTypeData("news_display.general",           60, SND_BEGIN       ),  ///< NT_GENERAL
 };
 
 assert_compile(lengthof(_news_type_data) == NT_END);
+
+/**
+ * Return the news display option.
+ * @return display options
+ */
+NewsDisplay NewsTypeData::GetDisplay() const
+{
+	uint index;
+	const SettingDesc *sd = GetSettingFromName(this->name, &index);
+	assert(sd != NULL);
+	void *ptr = GetVariableAddress(NULL, &sd->save);
+	return (NewsDisplay)ReadValue(ptr, sd->save.conv);
+}
 
 /** Window class displaying a news item. */
 struct NewsWindow : Window {
@@ -268,7 +262,7 @@ struct NewsWindow : Window {
 	const NewsItem *ni;   ///< News item to display.
 	static uint duration; ///< Remaining time for showing current news message (may only be accessed while a news item is displayed).
 
-	NewsWindow(const WindowDesc *desc, const NewsItem *ni) : Window(), ni(ni)
+	NewsWindow(WindowDesc *desc, const NewsItem *ni) : Window(desc), ni(ni)
 	{
 		NewsWindow::duration = 555;
 		const Window *w = FindWindowByClass(WC_SEND_NETWORK_MSG);
@@ -277,28 +271,12 @@ struct NewsWindow : Window {
 
 		this->flags |= WF_DISABLE_VP_SCROLL;
 
-		this->CreateNestedTree(desc);
-		switch (this->ni->subtype) {
-			case NS_COMPANY_TROUBLE:
-				this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = STR_NEWS_COMPANY_IN_TROUBLE_TITLE;
-				break;
+		this->CreateNestedTree();
 
-			case NS_COMPANY_MERGER:
-				this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = STR_NEWS_COMPANY_MERGER_TITLE;
-				break;
+		/* For company news with a face we have a separate headline in param[0] */
+		if (desc == &_company_news_desc) this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = this->ni->params[0];
 
-			case NS_COMPANY_BANKRUPT:
-				this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = STR_NEWS_COMPANY_BANKRUPT_TITLE;
-				break;
-
-			case NS_COMPANY_NEW:
-				this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = STR_NEWS_COMPANY_LAUNCH_TITLE;
-				break;
-
-			default:
-				break;
-		}
-		this->FinishInitNested(desc, 0);
+		this->FinishInitNested(0);
 
 		/* Initialize viewport if it exists. */
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_N_VIEWPORT);
@@ -325,7 +303,7 @@ struct NewsWindow : Window {
 		GfxFillRect(r.left,  r.bottom, r.right, r.bottom, PC_BLACK);
 	}
 
-	virtual Point OnInitialPosition(const WindowDesc *desc, int16 sm_width, int16 sm_height, int window_number)
+	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
 	{
 		Point pt = { 0, _screen.height };
 		return pt;
@@ -335,6 +313,10 @@ struct NewsWindow : Window {
 	{
 		StringID str = STR_NULL;
 		switch (widget) {
+			case WID_N_MGR_FACE:
+				*size = maxdim(*size, GetSpriteSize(SPR_GRADIENT));
+				break;
+
 			case WID_N_MESSAGE:
 				CopyInDParam(0, this->ni->params, lengthof(this->ni->params));
 				str = this->ni->string_id;
@@ -393,7 +375,7 @@ struct NewsWindow : Window {
 			case WID_N_MGR_FACE: {
 				const CompanyNewsInformation *cni = (const CompanyNewsInformation*)this->ni->free_data;
 				DrawCompanyManagerFace(cni->face, cni->colour, r.left, r.top);
-				GfxFillRect(r.left + 1, r.top, r.left + 1 + 91, r.top + 118, PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
+				GfxFillRect(r.left, r.top, r.right, r.bottom, PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 				break;
 			}
 			case WID_N_MGR_NAME: {
@@ -470,7 +452,7 @@ struct NewsWindow : Window {
 		}
 	}
 
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode)
+	virtual EventState OnKeyPress(WChar key, uint16 keycode)
 	{
 		if (keycode == WKC_SPACE) {
 			/* Don't continue. */
@@ -520,29 +502,9 @@ private:
 
 	StringID GetCompanyMessageString() const
 	{
-		switch (this->ni->subtype) {
-			case NS_COMPANY_TROUBLE:
-				SetDParam(0, this->ni->params[2]);
-				return STR_NEWS_COMPANY_IN_TROUBLE_DESCRIPTION;
-
-			case NS_COMPANY_MERGER:
-				SetDParam(0, this->ni->params[2]);
-				SetDParam(1, this->ni->params[3]);
-				SetDParam(2, this->ni->params[4]);
-				return this->ni->params[4] == 0 ? STR_NEWS_MERGER_TAKEOVER_TITLE : STR_NEWS_COMPANY_MERGER_DESCRIPTION;
-
-			case NS_COMPANY_BANKRUPT:
-				SetDParam(0, this->ni->params[2]);
-				return STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION;
-
-			case NS_COMPANY_NEW:
-				SetDParam(0, this->ni->params[2]);
-				SetDParam(1, this->ni->params[3]);
-				return STR_NEWS_COMPANY_LAUNCH_DESCRIPTION;
-
-			default:
-				NOT_REACHED();
-		}
+		/* Company news with a face have a separate headline, so the normal message is shifted by two params */
+		CopyInDParam(0, this->ni->params + 2, lengthof(this->ni->params) - 2);
+		return this->ni->params[1];
 	}
 
 	StringID GetNewVehicleMessageString(int widget) const
@@ -571,16 +533,16 @@ private:
 /** Open up an own newspaper window for the news item */
 static void ShowNewspaper(const NewsItem *ni)
 {
-	SoundFx sound = _news_type_data[_news_subtype_data[ni->subtype].type].sound;
-	if (sound != 0) SndPlayFx(sound);
+	SoundFx sound = _news_type_data[ni->type].sound;
+	if (sound != 0 && _settings_client.sound.news_full) SndPlayFx(sound);
 
-	new NewsWindow(_news_subtype_data[ni->subtype].desc, ni);
+	new NewsWindow(GetNewsWindowLayout(ni->flags), ni);
 }
 
 /** Show news item in the ticker */
 static void ShowTicker(const NewsItem *ni)
 {
-	if (_news_ticker_sound) SndPlayFx(SND_16_MORSE);
+	if (_settings_client.sound.news_ticker) SndPlayFx(SND_16_MORSE);
 
 	_statusbar_news_item = ni;
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SHOW_TICKER);
@@ -636,12 +598,12 @@ static void MoveToNextItem()
 	if (_current_news != _latest_news) {
 		_current_news = (_current_news == NULL) ? _oldest_news : _current_news->next;
 		const NewsItem *ni = _current_news;
-		const NewsType type = _news_subtype_data[ni->subtype].type;
+		const NewsType type = ni->type;
 
 		/* check the date, don't show too old items */
 		if (_date - _news_type_data[type].age > ni->date) return;
 
-		switch (_news_type_data[type].display) {
+		switch (_news_type_data[type].GetDisplay()) {
 			default: NOT_REACHED();
 			case ND_OFF: // Off - show nothing only a small reminder in the status bar
 				InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SHOW_REMINDER);
@@ -661,7 +623,8 @@ static void MoveToNextItem()
 /**
  * Add a new newsitem to be shown.
  * @param string String to display
- * @param subtype news category, any of the NewsSubtype enums (NS_)
+ * @param type news category
+ * @param flags display flags for the news
  * @param reftype1 Type of ref1
  * @param ref1     Reference 1 to some object: Used for a possible viewport, scrolling after clicking on the news, and for deleteing the news when the object is deleted.
  * @param reftype2 Type of ref2
@@ -670,7 +633,7 @@ static void MoveToNextItem()
  *
  * @see NewsSubtype
  */
-void AddNewsItem(StringID string, NewsSubtype subtype, NewsReferenceType reftype1, uint32 ref1, NewsReferenceType reftype2, uint32 ref2, void *free_data)
+void AddNewsItem(StringID string, NewsType type, NewsFlag flags, NewsReferenceType reftype1, uint32 ref1, NewsReferenceType reftype2, uint32 ref2, void *free_data)
 {
 	if (_game_mode == GM_MENU) return;
 
@@ -678,8 +641,8 @@ void AddNewsItem(StringID string, NewsSubtype subtype, NewsReferenceType reftype
 	NewsItem *ni = new NewsItem;
 
 	ni->string_id = string;
-	ni->subtype = subtype;
-	ni->flags = _news_subtype_data[subtype].flags;
+	ni->type = type;
+	ni->flags = flags;
 
 	/* show this news message in colour? */
 	if (_cur_year >= _settings_client.gui.coloured_news_year) ni->flags |= NF_INCOLOUR;
@@ -713,7 +676,7 @@ void AddNewsItem(StringID string, NewsSubtype subtype, NewsReferenceType reftype
  * @param tile unused
  * @param flags type of operation
  * @param p1 various bitstuffed elements
- * - p1 = (bit  0 -  7) - NewsSubtype of the message.
+ * - p1 = (bit  0 -  7) - NewsType of the message.
  * - p1 = (bit  8 - 15) - NewsReferenceType of first reference.
  * - p1 = (bit 16 - 23) - Company this news message is for.
  * @param p2 First reference of the news message.
@@ -724,12 +687,12 @@ CommandCost CmdCustomNewsItem(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
-	NewsSubtype subtype = (NewsSubtype)GB(p1, 0, 8);
+	NewsType type = (NewsType)GB(p1, 0, 8);
 	NewsReferenceType reftype1 = (NewsReferenceType)GB(p1, 8, 8);
 	CompanyID company = (CompanyID)GB(p1, 16, 8);
 
 	if (company != INVALID_OWNER && !Company::IsValidID(company)) return CMD_ERROR;
-	if (subtype >= NS_END) return CMD_ERROR;
+	if (type >= NT_END) return CMD_ERROR;
 	if (StrEmpty(text)) return CMD_ERROR;
 
 	switch (reftype1) {
@@ -761,37 +724,12 @@ CommandCost CmdCustomNewsItem(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 		default: return CMD_ERROR;
 	}
 
-	const WindowDesc *desc = _news_subtype_data[subtype].desc;
-	for (int i = 0; i < desc->nwid_length; i++) {
-		if (desc->nwid_parts[i].type == NWID_VIEWPORT && reftype1 != NR_VEHICLE && GetReferenceTile(reftype1, p2) == INVALID_TILE) {
-			return CMD_ERROR;
-		}
-	}
-
-	switch (subtype) {
-		/* These sub types require more parameters that are never passed. */
-		case NS_COMPANY_TROUBLE:
-		case NS_COMPANY_MERGER:
-		case NS_COMPANY_BANKRUPT:
-		case NS_COMPANY_NEW:
-			return CMD_ERROR;
-
-		/* This one only accepts engines. */
-		case NS_NEW_VEHICLES:
-			if (reftype1 != NR_ENGINE) return CMD_ERROR;
-			break;
-
-		/* The rest, in theory, accepts everything. */
-		default:
-			break;
-	}
-
 	if (company != INVALID_OWNER && company != _local_company) return CommandCost();
 
 	if (flags & DC_EXEC) {
-		char *news = strdup(text);
+		char *news = stredup(text);
 		SetDParamStr(0, news);
-		AddNewsItem(STR_NEWS_CUSTOM_ITEM, subtype, reftype1, p2, NR_NONE, UINT32_MAX, news);
+		AddNewsItem(STR_NEWS_CUSTOM_ITEM, type, NF_NORMAL, reftype1, p2, NR_NONE, UINT32_MAX, news);
 	}
 
 	return CommandCost();
@@ -909,7 +847,7 @@ static void RemoveOldNewsItems()
 	NewsItem *next;
 	for (NewsItem *cur = _oldest_news; _total_news > MIN_NEWS_AMOUNT && cur != NULL; cur = next) {
 		next = cur->next;
-		if (_date - _news_type_data[_news_subtype_data[cur->subtype].type].age * _settings_client.gui.news_message_timeout > cur->date) DeleteNewsItem(cur);
+		if (_date - _news_type_data[cur->type].age * _settings_client.gui.news_message_timeout > cur->date) DeleteNewsItem(cur);
 	}
 }
 
@@ -924,15 +862,7 @@ void ChangeVehicleNews(VehicleID from_index, VehicleID to_index)
 	for (NewsItem *ni = _oldest_news; ni != NULL; ni = ni->next) {
 		if (ni->reftype1 == NR_VEHICLE && ni->ref1 == from_index) ni->ref1 = to_index;
 		if (ni->reftype2 == NR_VEHICLE && ni->ref2 == from_index) ni->ref2 = to_index;
-
-		/* Oh noes :(
-		 * Autoreplace is breaking the whole news-reference concept here, as we want to keep the news,
-		 * but do not know which DParams to change.
-		 *
-		 * Currently only NS_ADVICE news have vehicle IDs in their DParams.
-		 * And all NS_ADVICE news have the ID in param 0.
-		 */
-		if (ni->subtype == NS_ADVICE && ni->params[0] == from_index) ni->params[0] = to_index;
+		if (ni->flags & NF_VEHICLE_PARAM0 && ni->params[0] == from_index) ni->params[0] = to_index;
 	}
 }
 
@@ -976,19 +906,41 @@ static void ShowNewsMessage(const NewsItem *ni)
 /** Show previous news item */
 void ShowLastNewsMessage()
 {
+	const NewsItem *ni = NULL;
 	if (_total_news == 0) {
 		return;
 	} else if (_forced_news == NULL) {
 		/* Not forced any news yet, show the current one, unless a news window is
 		 * open (which can only be the current one), then show the previous item */
-		const Window *w = FindWindowById(WC_NEWS_WINDOW, 0);
-		ShowNewsMessage((w == NULL || (_current_news == _oldest_news)) ? _current_news : _current_news->prev);
+		if (_current_news == NULL) {
+			/* No news were shown yet resp. the last shown one was already deleted.
+			 * Threat this as if _forced_news reached _oldest_news; so, wrap around and start anew with the latest. */
+			ni = _latest_news;
+		} else {
+			const Window *w = FindWindowById(WC_NEWS_WINDOW, 0);
+			ni = (w == NULL || (_current_news == _oldest_news)) ? _current_news : _current_news->prev;
+		}
 	} else if (_forced_news == _oldest_news) {
 		/* We have reached the oldest news, start anew with the latest */
-		ShowNewsMessage(_latest_news);
+		ni = _latest_news;
 	} else {
 		/* 'Scrolling' through news history show each one in turn */
-		ShowNewsMessage(_forced_news->prev);
+		ni = _forced_news->prev;
+	}
+	bool wrap = false;
+	for (;;) {
+		if (_news_type_data[ni->type].GetDisplay() != ND_OFF) {
+			ShowNewsMessage(ni);
+			break;
+		}
+
+		ni = ni->prev;
+		if (ni == NULL) {
+			if (wrap) break;
+			/* We have reached the oldest news, start anew with the latest */
+			ni = _latest_news;
+			wrap = true;
+		}
 	}
 }
 
@@ -1034,7 +986,7 @@ static void DrawNewsString(uint left, uint right, int y, TextColour colour, cons
 	}
 
 	*dest = '\0';
-	/* Truncate and show string; postfixed by '...' if neccessary */
+	/* Truncate and show string; postfixed by '...' if necessary */
 	DrawString(left, right, y, buffer2, colour);
 }
 
@@ -1042,16 +994,16 @@ struct MessageHistoryWindow : Window {
 	static const int top_spacing;    ///< Additional spacing at the top of the #WID_MH_BACKGROUND widget.
 	static const int bottom_spacing; ///< Additional spacing at the bottom of the #WID_MH_BACKGROUND widget.
 
-	int line_height; /// < Height of a single line in the news histoy window including spacing.
+	int line_height; /// < Height of a single line in the news history window including spacing.
 	int date_width;  /// < Width needed for the date part.
 
 	Scrollbar *vscroll;
 
-	MessageHistoryWindow(const WindowDesc *desc) : Window()
+	MessageHistoryWindow(WindowDesc *desc) : Window(desc)
 	{
-		this->CreateNestedTree(desc);
+		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_MH_SCROLLBAR);
-		this->FinishInitNested(desc); // Initializes 'this->line_height' and 'this->date_width'.
+		this->FinishInitNested(); // Initializes 'this->line_height' and 'this->date_width'.
 		this->OnInvalidateData(0);
 	}
 
@@ -1135,7 +1087,7 @@ struct MessageHistoryWindow : Window {
 
 	virtual void OnResize()
 	{
-		this->vscroll->SetCapacity(this->GetWidget<NWidgetBase>(WID_MH_BACKGROUND)->current_y / this->line_height);
+		this->vscroll->SetCapacityFromWidget(this, WID_MH_BACKGROUND);
 	}
 };
 
@@ -1147,6 +1099,7 @@ static const NWidgetPart _nested_message_history[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_MESSAGE_HISTORY, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
 
@@ -1160,10 +1113,10 @@ static const NWidgetPart _nested_message_history[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _message_history_desc(
-	WDP_AUTO, 400, 140,
+static WindowDesc _message_history_desc(
+	WDP_AUTO, "list_news", 400, 140,
 	WC_MESSAGE_HISTORY, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_nested_message_history, lengthof(_nested_message_history)
 );
 
@@ -1172,271 +1125,4 @@ void ShowMessageHistory()
 {
 	DeleteWindowById(WC_MESSAGE_HISTORY, 0);
 	new MessageHistoryWindow(&_message_history_desc);
-}
-
-struct MessageOptionsWindow : Window {
-	static const StringID message_opt[]; ///< Message report options, 'off', 'summary', or 'full'.
-	int state;                           ///< Option value for setting all categories at once.
-	Dimension dim_message_opt;           ///< Amount of space needed for a label such that all labels will fit.
-
-	MessageOptionsWindow(const WindowDesc *desc) : Window()
-	{
-		this->InitNested(desc, WN_GAME_OPTIONS_MESSAGE_OPTION);
-		/* Set up the initial disabled buttons in the case of 'off' or 'full' */
-		NewsDisplay all_val = _news_type_data[0].display;
-		for (int i = 0; i < NT_END; i++) {
-			this->SetMessageButtonStates(_news_type_data[i].display, i);
-			/* If the value doesn't match the ALL-button value, set the ALL-button value to 'off' */
-			if (_news_type_data[i].display != all_val) all_val = ND_OFF;
-		}
-		/* If all values are the same value, the ALL-button will take over this value */
-		this->state = all_val;
-		this->OnInvalidateData(0);
-	}
-
-	/**
-	 * Setup the disabled/enabled buttons in the message window
-	 * If the value is 'off' disable the [<] widget, and enable the [>] one
-	 * Same-wise for all the others. Starting value of 4 is the first widget
-	 * group. These are grouped as [<][>] .. [<][>], etc.
-	 * @param value to set in the widget
-	 * @param element index of the group of widget to set
-	 */
-	void SetMessageButtonStates(byte value, int element)
-	{
-		element *= MOS_WIDG_PER_SETTING;
-
-		this->SetWidgetDisabledState(element + WID_MO_START_OPTION, value == 0);
-		this->SetWidgetDisabledState(element + WID_MO_START_OPTION + 2, value == 2);
-	}
-
-	virtual void DrawWidget(const Rect &r, int widget) const
-	{
-		if (widget >= WID_MO_START_OPTION && widget < WID_MO_END_OPTION && (widget -  WID_MO_START_OPTION) % MOS_WIDG_PER_SETTING == 1) {
-			/* Draw the string of each setting on each button. */
-			int i = (widget -  WID_MO_START_OPTION) / MOS_WIDG_PER_SETTING;
-			DrawString(r.left, r.right, r.top + 2, this->message_opt[_news_type_data[i].display], TC_BLACK, SA_HOR_CENTER);
-		}
-	}
-
-	virtual void OnInit()
-	{
-		this->dim_message_opt.width  = 0;
-		this->dim_message_opt.height = 0;
-		for (const StringID *str = message_opt; *str != INVALID_STRING_ID; str++) this->dim_message_opt = maxdim(this->dim_message_opt, GetStringBoundingBox(*str));
-	}
-
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
-	{
-		if (widget >= WID_MO_START_OPTION && widget < WID_MO_END_OPTION) {
-			/* Height is the biggest widget height in a row. */
-			size->height = FONT_HEIGHT_NORMAL + max(WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM, WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
-
-			/* Compute width for the label widget only. */
-			if ((widget - WID_MO_START_OPTION) % MOS_WIDG_PER_SETTING == 1) {
-				size->width = this->dim_message_opt.width + padding.width + MOS_BUTTON_SPACE; // A bit extra for better looks.
-			}
-			return;
-		}
-
-		/* Size computations for global message options. */
-		if (widget == WID_MO_DROP_SUMMARY || widget == WID_MO_LABEL_SUMMARY || widget == WID_MO_SOUNDTICKER || widget == WID_MO_SOUNDTICKER_LABEL) {
-			/* Height is the biggest widget height in a row. */
-			size->height = FONT_HEIGHT_NORMAL + max(WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM, WD_DROPDOWNTEXT_TOP + WD_DROPDOWNTEXT_BOTTOM);
-
-			if (widget == WID_MO_DROP_SUMMARY) {
-				size->width = this->dim_message_opt.width + padding.width + MOS_BUTTON_SPACE; // A bit extra for better looks.
-			} else if (widget == WID_MO_SOUNDTICKER) {
-				size->width += MOS_BUTTON_SPACE; // A bit extra for better looks.
-			}
-			return;
-		}
-	}
-
-	/**
-	 * Some data on this window has become invalid.
-	 * @param data Information about the changed data.
-	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
-	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
-	{
-		if (!gui_scope) return;
-		/* Update the dropdown value for 'set all categories'. */
-		this->GetWidget<NWidgetCore>(WID_MO_DROP_SUMMARY)->widget_data = this->message_opt[this->state];
-
-		/* Update widget to reflect the value of the #_news_ticker_sound variable. */
-		this->SetWidgetLoweredState(WID_MO_SOUNDTICKER, _news_ticker_sound);
-	}
-
-	virtual void OnClick(Point pt, int widget, int click_count)
-	{
-		switch (widget) {
-			case WID_MO_DROP_SUMMARY: // Dropdown menu for all settings
-				ShowDropDownMenu(this, this->message_opt, this->state, WID_MO_DROP_SUMMARY, 0, 0);
-				break;
-
-			case WID_MO_SOUNDTICKER: // Change ticker sound on/off
-				_news_ticker_sound ^= 1;
-				this->InvalidateData();
-				break;
-
-			default: { // Clicked on the [<] .. [>] widgets
-				if (widget >= WID_MO_START_OPTION && widget < WID_MO_END_OPTION) {
-					int wid = widget - WID_MO_START_OPTION;
-					int element = wid / MOS_WIDG_PER_SETTING;
-					byte val = (_news_type_data[element].display + ((wid % MOS_WIDG_PER_SETTING) ? 1 : -1)) % 3;
-
-					this->SetMessageButtonStates(val, element);
-					_news_type_data[element].display = (NewsDisplay)val;
-					this->SetDirty();
-				}
-				break;
-			}
-		}
-	}
-
-	virtual void OnDropdownSelect(int widget, int index)
-	{
-		this->state = index;
-
-		for (int i = 0; i < NT_END; i++) {
-			this->SetMessageButtonStates(index, i);
-			_news_type_data[i].display = (NewsDisplay)index;
-		}
-		this->InvalidateData();
-	}
-};
-
-const StringID MessageOptionsWindow::message_opt[] = {STR_NEWS_MESSAGES_OFF, STR_NEWS_MESSAGES_SUMMARY, STR_NEWS_MESSAGES_FULL, INVALID_STRING_ID};
-
-/** Make a column with the buttons for changing each news category setting, and the global settings. */
-static NWidgetBase *MakeButtonsColumn(int *biggest_index)
-{
-	NWidgetVertical *vert_buttons = new NWidgetVertical;
-
-	/* Top-part of the column, one row for each new category. */
-	int widnum = WID_MO_START_OPTION;
-	for (int i = 0; i < NT_END; i++) {
-		NWidgetHorizontal *hor = new NWidgetHorizontal;
-		/* [<] button. */
-		NWidgetLeaf *leaf = new NWidgetLeaf(WWT_PUSHARROWBTN, COLOUR_YELLOW, widnum, AWV_DECREASE, STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST);
-		leaf->SetFill(1, 1);
-		hor->Add(leaf);
-		/* Label. */
-		leaf = new NWidgetLeaf(WWT_PUSHTXTBTN, COLOUR_YELLOW, widnum + 1, STR_EMPTY, STR_NULL);
-		leaf->SetFill(1, 1);
-		hor->Add(leaf);
-		/* [>] button. */
-		leaf = new NWidgetLeaf(WWT_PUSHARROWBTN, COLOUR_YELLOW, widnum + 2, AWV_INCREASE, STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST);
-		leaf->SetFill(1, 1);
-		hor->Add(leaf);
-		vert_buttons->Add(hor);
-
-		widnum += MOS_WIDG_PER_SETTING;
-	}
-	*biggest_index = widnum - MOS_WIDG_PER_SETTING + 2;
-
-	/* Space between the category buttons and the global settings buttons. */
-	NWidgetSpacer *spacer = new NWidgetSpacer(0, MOS_ABOVE_GLOBAL_SETTINGS);
-	vert_buttons->Add(spacer);
-
-	/* Bottom part of the column with buttons for global changes. */
-	NWidgetLeaf *leaf = new NWidgetLeaf(WWT_DROPDOWN, COLOUR_YELLOW, WID_MO_DROP_SUMMARY, STR_EMPTY, STR_NULL);
-	leaf->SetFill(1, 1);
-	vert_buttons->Add(leaf);
-
-	leaf = new NWidgetLeaf(WWT_TEXTBTN_2, COLOUR_YELLOW, WID_MO_SOUNDTICKER, STR_STATION_BUILD_COVERAGE_OFF, STR_NULL);
-	leaf->SetFill(1, 1);
-	vert_buttons->Add(leaf);
-
-	*biggest_index = max(*biggest_index, max<int>(WID_MO_DROP_SUMMARY, WID_MO_SOUNDTICKER));
-	return vert_buttons;
-}
-
-/** Make a column with descriptions for each news category and the global settings. */
-static NWidgetBase *MakeDescriptionColumn(int *biggest_index)
-{
-	NWidgetVertical *vert_desc = new NWidgetVertical;
-
-	/* Top-part of the column, one row for each new category. */
-	int widnum = WID_MO_START_OPTION;
-	for (int i = 0; i < NT_END; i++) {
-		NWidgetHorizontal *hor = new NWidgetHorizontal;
-
-		/* Descriptive text. */
-		NWidgetLeaf *leaf = new NWidgetLeaf(WWT_TEXT, COLOUR_YELLOW, widnum + 3, _news_type_data[i].description, STR_NULL);
-		hor->Add(leaf);
-		/* Filling empty space to push text to the left. */
-		NWidgetSpacer *spacer = new NWidgetSpacer(0, 0);
-		spacer->SetFill(1, 0);
-		hor->Add(spacer);
-		vert_desc->Add(hor);
-
-		widnum += MOS_WIDG_PER_SETTING;
-	}
-	*biggest_index = widnum - MOS_WIDG_PER_SETTING + 3;
-
-	/* Space between the category descriptions and the global settings descriptions. */
-	NWidgetSpacer *spacer = new NWidgetSpacer(0, MOS_ABOVE_GLOBAL_SETTINGS);
-	vert_desc->Add(spacer);
-
-	/* Bottom part of the column with descriptions of global changes. */
-	NWidgetHorizontal *hor = new NWidgetHorizontal;
-	NWidgetLeaf *leaf = new NWidgetLeaf(WWT_TEXT, COLOUR_YELLOW, WID_MO_LABEL_SUMMARY, STR_NEWS_MESSAGES_ALL, STR_NULL);
-	hor->Add(leaf);
-	/* Filling empty space to push text to the left. */
-	spacer = new NWidgetSpacer(0, 0);
-	spacer->SetFill(1, 0);
-	hor->Add(spacer);
-	vert_desc->Add(hor);
-
-	hor = new NWidgetHorizontal;
-	leaf = new NWidgetLeaf(WWT_TEXT, COLOUR_YELLOW, WID_MO_SOUNDTICKER_LABEL, STR_NEWS_MESSAGES_SOUND, STR_NULL);
-	hor->Add(leaf);
-	/* Filling empty space to push text to the left. */
-	spacer = new NWidgetSpacer(0, 0);
-	leaf->SetFill(1, 0);
-	hor->Add(spacer);
-	vert_desc->Add(hor);
-
-	*biggest_index = max(*biggest_index, max<int>(WID_MO_LABEL_SUMMARY, WID_MO_SOUNDTICKER_LABEL));
-	return vert_desc;
-}
-
-static const NWidgetPart _nested_message_options_widgets[] = {
-	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_NEWS_MESSAGE_OPTIONS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_BROWN, WID_MO_BACKGROUND),
-		NWidget(NWID_HORIZONTAL),
-			NWidget(NWID_SPACER), SetFill(1, 0),
-			NWidget(WWT_LABEL, COLOUR_BROWN, WID_MO_LABEL), SetMinimalSize(0, 14), SetDataTip(STR_NEWS_MESSAGE_TYPES, STR_NULL),
-			NWidget(NWID_SPACER), SetFill(1, 0),
-		EndContainer(),
-		NWidget(NWID_HORIZONTAL),
-			NWidget(NWID_SPACER), SetMinimalSize(MOS_LEFT_EDGE, 0),
-			NWidgetFunction(MakeButtonsColumn),
-			NWidget(NWID_SPACER), SetMinimalSize(MOS_COLUMN_SPACING, 0),
-			NWidgetFunction(MakeDescriptionColumn),
-			NWidget(NWID_SPACER), SetMinimalSize(MOS_RIGHT_EDGE, 0),
-		EndContainer(),
-		NWidget(NWID_SPACER), SetMinimalSize(0, MOS_BOTTOM_EDGE),
-	EndContainer(),
-};
-
-static const WindowDesc _message_options_desc(
-	WDP_AUTO, 0, 0,
-	WC_GAME_OPTIONS, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
-	_nested_message_options_widgets, lengthof(_nested_message_options_widgets)
-);
-
-/**
- * Show the settings window for news messages.
- */
-void ShowMessageOptions()
-{
-	DeleteWindowByClass(WC_GAME_OPTIONS);
-	new MessageOptionsWindow(&_message_options_desc);
 }

@@ -25,6 +25,8 @@
 #include "../rev.h"
 #include "../game/game.hpp"
 
+#include "../safeguards.h"
+
 
 /* This file handles all the admin network commands. */
 
@@ -336,6 +338,11 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyInfo(const Company
 	p->Send_bool  (NetworkCompanyIsPassworded(c->index));
 	p->Send_uint32(c->inaugurated_year);
 	p->Send_bool  (c->is_ai);
+	p->Send_uint8 (CeilDiv(c->months_of_bankruptcy, 3)); // send as quarters_of_bankruptcy
+
+	for (size_t i = 0; i < lengthof(c->share_owners); i++) {
+		p->Send_uint8(c->share_owners[i]);
+	}
 
 	this->SendPacket(p);
 
@@ -365,7 +372,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyUpdate(const Compa
 	p->Send_string(manager_name);
 	p->Send_uint8 (c->colour);
 	p->Send_bool  (NetworkCompanyIsPassworded(c->index));
-	p->Send_uint8 (c->quarters_of_bankruptcy);
+	p->Send_uint8 (CeilDiv(c->months_of_bankruptcy, 3)); // send as quarters_of_bankruptcy
 
 	for (size_t i = 0; i < lengthof(c->share_owners); i++) {
 		p->Send_uint8(c->share_owners[i]);
@@ -481,6 +488,20 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendChat(NetworkAction action
 }
 
 /**
+ * Send a notification indicating the rcon command has completed.
+ * @param command The original command sent.
+ */
+NetworkRecvStatus ServerNetworkAdminSocketHandler::SendRconEnd(const char *command)
+{
+	Packet *p = new Packet(ADMIN_PACKET_SERVER_RCON_END);
+
+	p->Send_string(command);
+	this->SendPacket(p);
+
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+/**
  * Send the reply of an rcon command.
  * @param colour The colour of the text.
  * @param result The result of the command.
@@ -509,7 +530,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_RCON(Packet *p)
 	_redirect_console_to_admin = this->index;
 	IConsoleCmdExec(command);
 	_redirect_console_to_admin = INVALID_ADMIN_ID;
-	return NETWORK_RECV_STATUS_OKAY;
+	return this->SendRconEnd(command);
 }
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_GAMESCRIPT(Packet *p)
@@ -524,6 +545,17 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_GAMESCRIPT(Pack
 
 	Game::NewEvent(new ScriptEventAdminPort(json));
 	return NETWORK_RECV_STATUS_OKAY;
+}
+
+NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_PING(Packet *p)
+{
+	if (this->status == ADMIN_STATUS_INACTIVE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+
+	uint32 d1 = p->Recv_uint32();
+
+	DEBUG(net, 2, "[admin] Ping from '%s' (%s): '%d'", this->admin_name, this->admin_version, d1);
+
+	return this->SendPong(d1);
 }
 
 /**
@@ -554,14 +586,25 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendConsole(const char *origi
  */
 NetworkRecvStatus ServerNetworkAdminSocketHandler::SendGameScript(const char *json)
 {
-	/* At the moment we cannot transmit anything larger than MTU. So the string
-	 *  has to be no longer than the length of the json + '\0' + 3 bytes of the
-	 *  packet header. */
-	if (strlen(json) + 1 + 3 >= SEND_MTU) return NETWORK_RECV_STATUS_OKAY;
+	/* At the moment we cannot transmit anything larger than MTU. So we limit
+	 *  the maximum amount of json data that can be sent. Account also for
+	 *  the trailing \0 of the string */
+	if (strlen(json) + 1 >= NETWORK_GAMESCRIPT_JSON_LENGTH) return NETWORK_RECV_STATUS_OKAY;
 
 	Packet *p = new Packet(ADMIN_PACKET_SERVER_GAMESCRIPT);
 
 	p->Send_string(json);
+	this->SendPacket(p);
+
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+/** Send ping-reply (pong) to admin **/
+NetworkRecvStatus ServerNetworkAdminSocketHandler::SendPong(uint32 d1)
+{
+	Packet *p = new Packet(ADMIN_PACKET_SERVER_PONG);
+
+	p->Send_uint32(d1);
 	this->SendPacket(p);
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -974,7 +1017,7 @@ void ServerNetworkAdminSocketHandler::WelcomeAll()
 
 /**
  * Send (push) updates to the admin network as they have registered for these updates.
- * @param freq the frequency to be processd.
+ * @param freq the frequency to be processed.
  */
 void NetworkAdminUpdate(AdminUpdateFrequency freq)
 {

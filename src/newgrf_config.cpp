@@ -25,6 +25,8 @@
 #include "fileio_func.h"
 #include "fios.h"
 
+#include "safeguards.h"
+
 /** Create a new GRFTextWrapper. */
 GRFTextWrapper::GRFTextWrapper() :
 	text(NULL)
@@ -48,7 +50,7 @@ GRFConfig::GRFConfig(const char *filename) :
 	url(new GRFTextWrapper()),
 	num_valid_params(lengthof(param))
 {
-	if (filename != NULL) this->filename = strdup(filename);
+	if (filename != NULL) this->filename = stredup(filename);
 	this->name->AddRef();
 	this->info->AddRef();
 	this->url->AddRef();
@@ -76,11 +78,11 @@ GRFConfig::GRFConfig(const GRFConfig &config) :
 {
 	MemCpyT<uint8>(this->original_md5sum, config.original_md5sum, lengthof(this->original_md5sum));
 	MemCpyT<uint32>(this->param, config.param, lengthof(this->param));
-	if (config.filename != NULL) this->filename = strdup(config.filename);
+	if (config.filename != NULL) this->filename = stredup(config.filename);
 	this->name->AddRef();
 	this->info->AddRef();
 	this->url->AddRef();
-	if (config.error    != NULL) this->error    = new GRFError(*config.error);
+	if (config.error != NULL) this->error = new GRFError(*config.error);
 	for (uint i = 0; i < config.param_info.Length(); i++) {
 		if (config.param_info[i] == NULL) {
 			*this->param_info.Append() = NULL;
@@ -93,7 +95,7 @@ GRFConfig::GRFConfig(const GRFConfig &config) :
 /** Cleanup a GRFConfig object. */
 GRFConfig::~GRFConfig()
 {
-	/* GCF_COPY as in NOT strdupped/alloced the filename */
+	/* GCF_COPY as in NOT stredupped/alloced the filename */
 	if (!HasBit(this->flags, GCF_COPY)) {
 		free(this->filename);
 		delete this->error;
@@ -103,6 +105,17 @@ GRFConfig::~GRFConfig()
 	this->url->Release();
 
 	for (uint i = 0; i < this->param_info.Length(); i++) delete this->param_info[i];
+}
+
+/**
+ * Copy the parameter information from the \a src config.
+ * @param src Source config.
+ */
+void GRFConfig::CopyParams(const GRFConfig &src)
+{
+	this->num_params = src.num_params;
+	this->num_valid_params = src.num_valid_params;
+	MemCpyT<uint32>(this->param, src.param, lengthof(this->param));
 }
 
 /**
@@ -164,6 +177,17 @@ void GRFConfig::SetSuitablePalette()
 	SB(this->palette, GRFP_USE_BIT, 1, pal == PAL_WINDOWS ? GRFP_USE_WINDOWS : GRFP_USE_DOS);
 }
 
+/**
+ * Finalize Action 14 info after file scan is finished.
+ */
+void GRFConfig::FinalizeParameterInfo()
+{
+	for (GRFParameterInfo **info = this->param_info.Begin(); info != this->param_info.End(); ++info) {
+		if (*info == NULL) continue;
+		(*info)->Finalize();
+	}
+}
+
 GRFConfig *_all_grfs;
 GRFConfig *_grfconfig;
 GRFConfig *_grfconfig_newgame;
@@ -191,8 +215,8 @@ GRFError::GRFError(const GRFError &error) :
 	message(error.message),
 	severity(error.severity)
 {
-	if (error.custom_message != NULL) this->custom_message = strdup(error.custom_message);
-	if (error.data           != NULL) this->data           = strdup(error.data);
+	if (error.custom_message != NULL) this->custom_message = stredup(error.custom_message);
+	if (error.data           != NULL) this->data           = stredup(error.data);
 	memcpy(this->param_value, error.param_value, sizeof(this->param_value));
 }
 
@@ -215,7 +239,8 @@ GRFParameterInfo::GRFParameterInfo(uint nr) :
 	def_value(0),
 	param_nr(nr),
 	first_bit(0),
-	num_bit(32)
+	num_bit(32),
+	complete_labels(false)
 {}
 
 /**
@@ -232,7 +257,8 @@ GRFParameterInfo::GRFParameterInfo(GRFParameterInfo &info) :
 	def_value(info.def_value),
 	param_nr(info.param_nr),
 	first_bit(info.first_bit),
-	num_bit(info.num_bit)
+	num_bit(info.num_bit),
+	complete_labels(info.complete_labels)
 {
 	for (uint i = 0; i < info.value_names.Length(); i++) {
 		SmallPair<uint32, GRFText *> *data = info.value_names.Get(i);
@@ -281,6 +307,20 @@ void GRFParameterInfo::SetValue(struct GRFConfig *config, uint32 value)
 }
 
 /**
+ * Finalize Action 14 info after file scan is finished.
+ */
+void GRFParameterInfo::Finalize()
+{
+	this->complete_labels = true;
+	for (uint32 value = this->min_value; value <= this->max_value; value++) {
+		if (!this->value_names.Contains(value)) {
+			this->complete_labels = false;
+			break;
+		}
+	}
+}
+
+/**
  * Update the palettes of the graphics from the config file.
  * Called when changing the default palette in advanced settings.
  * @param p1 Unused.
@@ -308,7 +348,14 @@ size_t GRFGetSizeOfDataSection(FILE *f)
 	if (fread(data, 1, header_len, f) == header_len) {
 		if (data[0] == 0 && data[1] == 0 && MemCmpT(data + 2, _grf_cont_v2_sig, 8) == 0) {
 			/* Valid container version 2, get data section size. */
-			size_t offset = (data[13] << 24) | (data[12] << 16) | (data[11] << 8) | data[10];
+			size_t offset = ((size_t)data[13] << 24) | ((size_t)data[12] << 16) | ((size_t)data[11] << 8) | (size_t)data[10];
+			if (offset >= 1 * 1024 * 1024 * 1024) {
+				DEBUG(grf, 0, "Unexpectedly large offset for NewGRF");
+				/* Having more than 1 GiB of data is very implausible. Mostly because then
+				 * all pools in OpenTTD are flooded already. Or it's just Action C all over.
+				 * In any case, the offsets to graphics will likely not work either. */
+				return SIZE_MAX;
+			}
 			return header_len + offset;
 		}
 	}
@@ -333,9 +380,13 @@ static bool CalcGRFMD5Sum(GRFConfig *config, Subdirectory subdir)
 	f = FioFOpenFile(config->filename, "rb", subdir, &size);
 	if (f == NULL) return false;
 
-	size_t start = ftell(f);
+	long start = ftell(f);
 	size = min(size, GRFGetSizeOfDataSection(f));
-	fseek(f, start, SEEK_SET);
+
+	if (start < 0 || fseek(f, start, SEEK_SET) < 0) {
+		FioFCloseFile(f);
+		return false;
+	}
 
 	/* calculate md5sum */
 	while ((len = fread(buffer, 1, (size > sizeof(buffer)) ? sizeof(buffer) : size, f)) != 0 && size != 0) {
@@ -367,6 +418,7 @@ bool FillGRFDetails(GRFConfig *config, bool is_static, Subdirectory subdir)
 	/* Find and load the Action 8 information */
 	LoadNewGRFFile(config, CONFIG_SLOT, GLS_FILESCAN, subdir);
 	config->SetSuitablePalette();
+	config->FinalizeParameterInfo();
 
 	/* Skip if the grfid is 0 (not read) or 0xFFFFFFFF (ttdp system grf) */
 	if (config->ident.grfid == 0 || config->ident.grfid == 0xFFFFFFFF || config->IsOpenTTDBaseGRF()) return false;
@@ -543,7 +595,7 @@ compatible_grf:
 			 * already a local one, so there is no need to replace it. */
 			if (!HasBit(c->flags, GCF_COPY)) {
 				free(c->filename);
-				c->filename = strdup(f->filename);
+				c->filename = stredup(f->filename);
 				memcpy(c->ident.md5sum, f->ident.md5sum, sizeof(c->ident.md5sum));
 				c->name->Release();
 				c->name = f->name;
@@ -663,7 +715,7 @@ static int CDECL GRFSorter(GRFConfig * const *p1, GRFConfig * const *p2)
 	const GRFConfig *c1 = *p1;
 	const GRFConfig *c2 = *p2;
 
-	return strcasecmp(c1->GetName(), c2->GetName());
+	return strnatcmp(c1->GetName(), c2->GetName());
 }
 
 /**
@@ -683,8 +735,8 @@ void DoScanNewGRFFiles(void *callback)
 	DEBUG(grf, 1, "Scan complete, found %d files", num);
 	if (num != 0 && _all_grfs != NULL) {
 		/* Sort the linked list using quicksort.
-		* For that we first have to make an array, then sort and
-		* then remake the linked list. */
+		 * For that we first have to make an array, then sort and
+		 * then remake the linked list. */
 		GRFConfig **to_sort = MallocT<GRFConfig*>(num);
 
 		uint i = 0;
@@ -734,7 +786,7 @@ void ScanNewGRFFiles(NewGRFScanCallback *callback)
 	/* Only then can we really start, especially by marking the whole screen dirty. Get those other windows hidden!. */
 	MarkWholeScreenDirty();
 
-	if (!_video_driver->HasGUI() || !ThreadObject::New(&DoScanNewGRFFiles, callback, NULL)) {
+	if (!VideoDriver::GetInstance()->HasGUI() || !ThreadObject::New(&DoScanNewGRFFiles, callback, NULL)) {
 		_modal_progress_work_mutex->EndCritical();
 		_modal_progress_paint_mutex->EndCritical();
 		DoScanNewGRFFiles(callback);

@@ -11,8 +11,11 @@
 
 #include "../../stdafx.h"
 #include "script_base.hpp"
+#include "script_error.hpp"
 #include "../../network/network.h"
 #include "../../core/random_func.hpp"
+
+#include "../../safeguards.h"
 
 /* static */ uint32 ScriptBase::Rand()
 {
@@ -42,7 +45,8 @@
 
 /* static */ bool ScriptBase::Chance(uint out, uint max)
 {
-	return (uint16)Rand() <= (uint16)((65536 * out) / max);
+	EnforcePrecondition(false, out <= max);
+	return ScriptBase::RandRange(max) < out;
 }
 
 /* static */ bool ScriptBase::ChanceItem(int unused_param, uint out, uint max)

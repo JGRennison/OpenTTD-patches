@@ -15,12 +15,17 @@
 /** Widgets of the #StationViewWindow class. */
 enum StationViewWidgets {
 	WID_SV_CAPTION,            ///< Caption of the window.
+	WID_SV_SORT_ORDER,         ///< 'Sort order' button
+	WID_SV_SORT_BY,            ///< 'Sort by' button
+	WID_SV_GROUP,              ///< label for "group by"
+	WID_SV_GROUP_BY,           ///< 'Group by' button
 	WID_SV_WAITING,            ///< List of waiting cargo.
 	WID_SV_SCROLLBAR,          ///< Scrollbar.
 	WID_SV_ACCEPT_RATING_LIST, ///< List of accepted cargoes / rating of cargoes.
 	WID_SV_LOCATION,           ///< 'Location' button.
 	WID_SV_ACCEPTS_RATINGS,    ///< 'Accepts' / 'Ratings' button.
 	WID_SV_RENAME,             ///< 'Rename' button.
+	WID_SV_CLOSE_AIRPORT,      ///< 'Close airport' button.
 	WID_SV_TRAINS,             ///< List of scheduled trains button.
 	WID_SV_ROADVEHS,           ///< List of scheduled road vehs button.
 	WID_SV_SHIPS,              ///< List of scheduled ships button.

@@ -13,6 +13,8 @@
 #include "../../core/alloc_func.hpp"
 #include "queue.h"
 
+#include "../../safeguards.h"
+
 
 /*
  * Binary Heap
@@ -158,7 +160,7 @@ bool BinaryHeap::Delete(void *item, int priority)
 
 		for (;;) {
 			j = i;
-			/* Check if we have 2 childs */
+			/* Check if we have 2 children */
 			if (2 * j + 1 <= this->size) {
 				/* Is this child smaller than the parent? */
 				if (this->GetElement(j).priority >= this->GetElement(2 * j).priority) i = 2 * j;
@@ -170,13 +172,13 @@ bool BinaryHeap::Delete(void *item, int priority)
 				if (this->GetElement(j).priority >= this->GetElement(2 * j).priority) i = 2 * j;
 			}
 
-			/* One of our childs is smaller than we are, switch */
+			/* One of our children is smaller than we are, switch */
 			if (i != j) {
 				temp = this->GetElement(j);
 				this->GetElement(j) = this->GetElement(i);
 				this->GetElement(i) = temp;
 			} else {
-				/* None of our childs is smaller, so we stay here.. stop :) */
+				/* None of our children is smaller, so we stay here.. stop :) */
 				break;
 			}
 		}

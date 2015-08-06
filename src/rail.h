@@ -20,6 +20,7 @@
 #include "slope_type.h"
 #include "strings_type.h"
 #include "date_type.h"
+#include "signal_type.h"
 
 /** Railtype flags. */
 enum RailTypeFlags {
@@ -47,6 +48,7 @@ enum RailTypeSpriteGroup {
 	RTSG_DEPOT,       ///< Depot images
 	RTSG_FENCES,      ///< Fence images
 	RTSG_TUNNEL_PORTAL, ///< Tunnel portal overlay
+	RTSG_SIGNALS,     ///< Signal images
 	RTSG_END,
 };
 
@@ -74,7 +76,7 @@ enum RailTrackOffset {
 };
 
 /**
- * Offsets for spries within a bridge surface overlay set.
+ * Offsets for sprites within a bridge surface overlay set.
  */
 enum RailTrackBridgeOffset {
 	RTBO_X,     ///< Piece of rail in X direction
@@ -87,14 +89,22 @@ enum RailTrackBridgeOffset {
  *  the sprites in the original data files.
  */
 enum RailFenceOffset {
-	RFO_FLAT_X,
-	RFO_FLAT_Y,
-	RFO_FLAT_VERT,
-	RFO_FLAT_HORZ,
-	RFO_SLOPE_SW,
-	RFO_SLOPE_SE,
-	RFO_SLOPE_NE,
-	RFO_SLOPE_NW,
+	RFO_FLAT_X_NW,     //!< Slope FLAT, Track X,     Fence NW
+	RFO_FLAT_Y_NE,     //!< Slope FLAT, Track Y,     Fence NE
+	RFO_FLAT_LEFT,     //!< Slope FLAT, Track LEFT,  Fence E
+	RFO_FLAT_UPPER,    //!< Slope FLAT, Track UPPER, Fence S
+	RFO_SLOPE_SW_NW,   //!< Slope SW,   Track X,     Fence NW
+	RFO_SLOPE_SE_NE,   //!< Slope SE,   Track Y,     Fence NE
+	RFO_SLOPE_NE_NW,   //!< Slope NE,   Track X,     Fence NW
+	RFO_SLOPE_NW_NE,   //!< Slope NW,   Track Y,     Fence NE
+	RFO_FLAT_X_SE,     //!< Slope FLAT, Track X,     Fence SE
+	RFO_FLAT_Y_SW,     //!< Slope FLAT, Track Y,     Fence SW
+	RFO_FLAT_RIGHT,    //!< Slope FLAT, Track RIGHT, Fence W
+	RFO_FLAT_LOWER,    //!< Slope FLAT, Track LOWER, Fence N
+	RFO_SLOPE_SW_SE,   //!< Slope SW,   Track X,     Fence SE
+	RFO_SLOPE_SE_SW,   //!< Slope SE,   Track Y,     Fence SW
+	RFO_SLOPE_NE_SE,   //!< Slope NE,   Track X,     Fence SE
+	RFO_SLOPE_NW_SW,   //!< Slope NW,   Track Y,     Fence SW
 };
 
 /** List of rail type labels. */
@@ -118,7 +128,7 @@ struct RailtypeInfo {
 		SpriteID single_s;     ///< single piece of rail in the southern corner
 		SpriteID single_e;     ///< single piece of rail in the eastern corner
 		SpriteID single_w;     ///< single piece of rail in the western corner
-		SpriteID single_sloped;///< single piecs of rail for slopes
+		SpriteID single_sloped;///< single piece of rail for slopes
 		SpriteID crossing;     ///< level crossing, rail in X direction
 		SpriteID tunnel;       ///< tunnel sprites base
 	} base_sprites;
@@ -136,6 +146,7 @@ struct RailtypeInfo {
 		SpriteID build_depot;        ///< button for building depots
 		SpriteID build_tunnel;       ///< button for building a tunnel
 		SpriteID convert_rail;       ///< button for converting rail
+		SpriteID signals[SIGTYPE_END][2][2]; ///< signal GUI sprites (type, variant, state)
 	} gui_sprites;
 
 	struct {
@@ -147,16 +158,16 @@ struct RailtypeInfo {
 		CursorID depot;      ///< Cursor for building a depot
 		CursorID tunnel;     ///< Cursor for building a tunnel
 		CursorID convert;    ///< Cursor for converting track
-	} cursor;
+	} cursor;                    ///< Cursors associated with the rail type.
 
 	struct {
-		StringID name;
-		StringID toolbar_caption;
-		StringID menu_text;
-		StringID build_caption;
-		StringID replace_text;
-		StringID new_loco;
-	} strings;
+		StringID name;            ///< Name of this rail type.
+		StringID toolbar_caption; ///< Caption in the construction toolbar GUI for this rail type.
+		StringID menu_text;       ///< Name of this rail type in the main toolbar dropdown.
+		StringID build_caption;   ///< Caption of the build vehicle GUI for this rail type.
+		StringID replace_text;    ///< Text used in the autoreplace GUI.
+		StringID new_loco;        ///< Name of an engine for this type of rail in the engine preview GUI.
+	} strings;                        ///< Strings associated with the rail type.
 
 	/** sprite number difference between a piece of track on a snowy ground and the corresponding one on normal ground */
 	SpriteID snow_offset;
