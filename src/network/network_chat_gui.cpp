@@ -21,6 +21,7 @@
 #include "../querystring_gui.h"
 #include "../town.h"
 #include "../window_func.h"
+#include "../toolbar_gui.h"
 #include "../core/geometry_func.hpp"
 #include "network.h"
 #include "network_client.h"
@@ -29,6 +30,8 @@
 #include "../widgets/network_chat_widget.h"
 
 #include "table/strings.h"
+
+#include "../safeguards.h"
 
 /** The draw buffer must be able to contain the chat message, client name and the "[All]" message,
  * some spaces and possible translations of [All] to other languages. */
@@ -84,7 +87,7 @@ void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const char *m
 	va_list va;
 
 	va_start(va, message);
-	vsnprintf(buf, lengthof(buf), message, va);
+	vseprintf(buf, lastof(buf), message, va);
 	va_end(va);
 
 	Utf8TrimString(buf, DRAW_STRING_BUFFER);
@@ -118,7 +121,7 @@ void NetworkInitChatMessage()
 
 	_chatmsg_list        = ReallocT(_chatmsg_list, _settings_client.gui.network_chat_box_height);
 	_chatmsg_box.x       = 10;
-	_chatmsg_box.width   = _settings_client.gui.network_chat_box_width;
+	_chatmsg_box.width   = _settings_client.gui.network_chat_box_width_pct * _screen.width / 100;
 	NetworkReInitChatBoxSize();
 	_chatmessage_visible = false;
 
@@ -167,7 +170,7 @@ void NetworkUndrawChatMessage()
 		/* Put our 'shot' back to the screen */
 		blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), _chatmessage_backup, width, height);
 		/* And make sure it is updated next time */
-		_video_driver->MakeDirty(x, y, width, height);
+		VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
 
 		_chatmessage_dirty = true;
 	}
@@ -254,7 +257,7 @@ void NetworkDrawChatMessage()
 	}
 
 	/* Make sure the data is updated next flush */
-	_video_driver->MakeDirty(x, y, width, height);
+	VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
 
 	_chatmessage_visible = true;
 	_chatmessage_dirty = false;
@@ -317,6 +320,11 @@ struct NetworkChatWindow : public Window {
 	~NetworkChatWindow()
 	{
 		InvalidateWindowData(WC_NEWS_WINDOW, 0, 0);
+	}
+
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	/**
@@ -389,7 +397,7 @@ struct NetworkChatWindow : public Window {
 		item = 0;
 
 		/* Copy the buffer so we can modify it without damaging the real data */
-		pre_buf = (_chat_tab_completion_active) ? strdup(_chat_tab_completion_buf) : strdup(tb->buf);
+		pre_buf = (_chat_tab_completion_active) ? stredup(_chat_tab_completion_buf) : stredup(tb->buf);
 
 		tb_buf  = ChatTabCompletionFindText(pre_buf);
 		tb_len  = strlen(tb_buf);
@@ -426,7 +434,7 @@ struct NetworkChatWindow : public Window {
 			len = strlen(cur_name);
 			if (tb_len < len && strncasecmp(cur_name, tb_buf, tb_len) == 0) {
 				/* Save the data it was before completion */
-				if (!second_scan) snprintf(_chat_tab_completion_buf, lengthof(_chat_tab_completion_buf), "%s", tb->buf);
+				if (!second_scan) seprintf(_chat_tab_completion_buf, lastof(_chat_tab_completion_buf), "%s", tb->buf);
 				_chat_tab_completion_active = true;
 
 				/* Change to the found name. Add ': ' if we are at the start of the line (pretty) */
@@ -534,7 +542,7 @@ static const NWidgetPart _nested_chat_window_widgets[] = {
 
 /** The description of the chat window. */
 static WindowDesc _chat_window_desc(
-	WDP_MANUAL, NULL, 640, 14, // x, y, width, height
+	WDP_MANUAL, NULL, 0, 0,
 	WC_SEND_NETWORK_MSG, WC_NONE,
 	0,
 	_nested_chat_window_widgets, lengthof(_nested_chat_window_widgets)

@@ -29,6 +29,8 @@
 #include "table/strings.h"
 #include <list>
 
+#include "safeguards.h"
+
 static const NWidgetPart _nested_errmsg_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_RED),
@@ -75,7 +77,7 @@ ErrorMessageData::ErrorMessageData(const ErrorMessageData &data)
 	*this = data;
 	for (size_t i = 0; i < lengthof(this->strings); i++) {
 		if (this->strings[i] != NULL) {
-			this->strings[i] = strdup(this->strings[i]);
+			this->strings[i] = stredup(this->strings[i]);
 			this->decode_params[i] = (size_t)this->strings[i];
 		}
 	}
@@ -156,7 +158,7 @@ void ErrorMessageData::SetDParam(uint n, uint64 v)
 void ErrorMessageData::SetDParamStr(uint n, const char *str)
 {
 	free(this->strings[n]);
-	this->strings[n] = strdup(str);
+	this->strings[n] = stredup(str);
 }
 
 /** Define a queue with errors. */
@@ -180,21 +182,30 @@ public:
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
-		if (widget != WID_EM_MESSAGE) return;
+		switch (widget) {
+			case WID_EM_MESSAGE: {
+				CopyInDParam(0, this->decode_params, lengthof(this->decode_params));
+				if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, this->textref_stack);
 
-		CopyInDParam(0, this->decode_params, lengthof(this->decode_params));
-		if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, this->textref_stack);
+				int text_width = max(0, (int)size->width - WD_FRAMETEXT_LEFT - WD_FRAMETEXT_RIGHT);
+				this->height_summary = GetStringHeight(this->summary_msg, text_width);
+				this->height_detailed = (this->detailed_msg == INVALID_STRING_ID) ? 0 : GetStringHeight(this->detailed_msg, text_width);
 
-		int text_width = max(0, (int)size->width - WD_FRAMETEXT_LEFT - WD_FRAMETEXT_RIGHT);
-		this->height_summary  = GetStringHeight(this->summary_msg, text_width);
-		this->height_detailed = (this->detailed_msg == INVALID_STRING_ID) ? 0 : GetStringHeight(this->detailed_msg, text_width);
+				if (this->textref_stack_size > 0) StopTextRefStackUsage();
 
-		if (this->textref_stack_size > 0) StopTextRefStackUsage();
+				uint panel_height = WD_FRAMERECT_TOP + this->height_summary + WD_FRAMERECT_BOTTOM;
+				if (this->detailed_msg != INVALID_STRING_ID) panel_height += this->height_detailed + WD_PAR_VSEP_WIDE;
 
-		uint panel_height = WD_FRAMERECT_TOP + this->height_summary + WD_FRAMERECT_BOTTOM;
-		if (this->detailed_msg != INVALID_STRING_ID) panel_height += this->height_detailed + WD_PAR_VSEP_WIDE;
-
-		size->height = max(size->height, panel_height);
+				size->height = max(size->height, panel_height);
+				break;
+			}
+			case WID_EM_FACE: {
+				Dimension face_size = GetSpriteSize(SPR_GRADIENT);
+				size->width = max(size->width, face_size.width);
+				size->height = max(size->height, face_size.height);
+				break;
+			}
+		}
 	}
 
 	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)

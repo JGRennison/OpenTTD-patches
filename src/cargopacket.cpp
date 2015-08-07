@@ -17,6 +17,8 @@
 #include "cargoaction.h"
 #include "order_type.h"
 
+#include "safeguards.h"
+
 /* Initialize the cargopacket-pool */
 CargoPacketPool _cargopacket_pool("CargoPacket");
 INSTANTIATE_POOL_METHODS(CargoPacket)
@@ -357,6 +359,7 @@ void VehicleCargoList::AddToCache(const CargoPacket *cp)
  */
 void VehicleCargoList::RemoveFromMeta(const CargoPacket *cp, MoveToAction action, uint count)
 {
+	assert(count <= this->action_counts[action]);
 	this->AssertCountConsistency();
 	this->RemoveFromCache(cp, count);
 	this->action_counts[action] -= count;

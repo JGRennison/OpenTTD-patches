@@ -113,9 +113,9 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	 * Calculates the total slope resistance for this vehicle.
 	 * @return Slope resistance.
 	 */
-	inline int32 GetSlopeResistance() const
+	inline int64 GetSlopeResistance() const
 	{
-		int32 incl = 0;
+		int64 incl = 0;
 
 		for (const T *u = T::From(this); u != NULL; u = u->Next()) {
 			if (HasBit(u->gv_flags, GVF_GOINGUP_BIT)) {
@@ -231,9 +231,9 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	 * @param update_delta Indicates to also update the delta.
 	 * @return Old height of the vehicle.
 	 */
-	inline byte UpdateInclination(bool new_tile, bool update_delta)
+	inline int UpdateInclination(bool new_tile, bool update_delta)
 	{
-		byte old_z = this->z_pos;
+		int old_z = this->z_pos;
 
 		if (new_tile) {
 			this->UpdateZPositionAndInclination();

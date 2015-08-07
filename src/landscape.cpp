@@ -37,6 +37,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 extern const TileTypeProcs
 	_tile_type_clear_procs,
 	_tile_type_rail_procs,
@@ -890,6 +892,7 @@ static void CreateDesertOrRainForest()
 {
 	TileIndex update_freq = MapSize() / 4;
 	const TileIndexDiffC *data;
+	uint max_desert_height = CeilDiv(_settings_game.construction.max_heightlevel, 4);
 
 	for (TileIndex tile = 0; tile != MapSize(); ++tile) {
 		if ((tile % update_freq) == 0) IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
@@ -899,7 +902,7 @@ static void CreateDesertOrRainForest()
 		for (data = _make_desert_or_rainforest_data;
 				data != endof(_make_desert_or_rainforest_data); ++data) {
 			TileIndex t = AddTileIndexDiffCWrap(tile, *data);
-			if (t != INVALID_TILE && (TileHeight(t) >= 4 || IsTileType(t, MP_WATER))) break;
+			if (t != INVALID_TILE && (TileHeight(t) >= max_desert_height || IsTileType(t, MP_WATER))) break;
 		}
 		if (data == endof(_make_desert_or_rainforest_data)) {
 			SetTropicZone(tile, TROPICZONE_DESERT);
@@ -1270,7 +1273,8 @@ void GenerateLandscape(byte mode)
 				assert(_settings_game.difficulty.quantity_sea_lakes != CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY);
 				uint i = ScaleByMapSize(GB(r, 0, 7) + (3 - _settings_game.difficulty.quantity_sea_lakes) * 256 + 100);
 				for (; i != 0; --i) {
-					GenerateTerrain(_settings_game.difficulty.terrain_type, 0);
+					/* Make sure we do not overflow. */
+					GenerateTerrain(Clamp(_settings_game.difficulty.terrain_type, 0, 3), 0);
 				}
 				break;
 			}

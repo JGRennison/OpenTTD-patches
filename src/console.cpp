@@ -20,6 +20,8 @@
 
 #include <stdarg.h>
 
+#include "safeguards.h"
+
 static const uint ICON_TOKEN_COUNT = 20;     ///< Maximum number of tokens in one command
 
 /* console parser */
@@ -103,7 +105,7 @@ void IConsolePrint(TextColour colour_code, const char *string)
 
 	/* Create a copy of the string, strip if of colours and invalid
 	 * characters and (when applicable) assign it to the console buffer */
-	str = strdup(string);
+	str = stredup(string);
 	str_strip_colours(str);
 	str_validate(str, str + strlen(str));
 
@@ -135,7 +137,7 @@ void CDECL IConsolePrintF(TextColour colour_code, const char *format, ...)
 	char buf[ICON_MAX_STREAMSIZE];
 
 	va_start(va, format);
-	vsnprintf(buf, sizeof(buf), format, va);
+	vseprintf(buf, lastof(buf), format, va);
 	va_end(va);
 
 	IConsolePrint(colour_code, buf);
@@ -254,7 +256,7 @@ char *RemoveUnderscores(char *name)
 void IConsoleCmdRegister(const char *name, IConsoleCmdProc *proc, IConsoleHook *hook)
 {
 	IConsoleCmd *item_new = MallocT<IConsoleCmd>(1);
-	item_new->name = RemoveUnderscores(strdup(name));
+	item_new->name = RemoveUnderscores(stredup(name));
 	item_new->next = NULL;
 	item_new->proc = proc;
 	item_new->hook = hook;
@@ -289,8 +291,8 @@ void IConsoleAliasRegister(const char *name, const char *cmd)
 		return;
 	}
 
-	char *new_alias = RemoveUnderscores(strdup(name));
-	char *cmd_aliased = strdup(cmd);
+	char *new_alias = RemoveUnderscores(stredup(name));
+	char *cmd_aliased = stredup(cmd);
 	IConsoleAlias *item_new = MallocT<IConsoleAlias>(1);
 
 	item_new->next = NULL;

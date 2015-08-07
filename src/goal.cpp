@@ -24,6 +24,8 @@
 #include "gui.h"
 #include "network/network.h"
 
+#include "safeguards.h"
+
 
 GoalID _new_goal_id;
 
@@ -88,7 +90,7 @@ CommandCost CmdCreateGoal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		g->type = type;
 		g->dst = p2;
 		g->company = company;
-		g->text = strdup(text);
+		g->text = stredup(text);
 		g->progress = NULL;
 		g->completed = false;
 
@@ -153,7 +155,7 @@ CommandCost CmdSetGoalText(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	if (flags & DC_EXEC) {
 		Goal *g = Goal::Get(p1);
 		free(g->text);
-		g->text = strdup(text);
+		g->text = stredup(text);
 
 		if (g->company == INVALID_COMPANY) {
 			InvalidateWindowClassesData(WC_GOALS_LIST);
@@ -185,7 +187,7 @@ CommandCost CmdSetGoalProgress(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		if (StrEmpty(text)) {
 			g->progress = NULL;
 		} else {
-			g->progress = strdup(text);
+			g->progress = stredup(text);
 		}
 
 		if (g->company == INVALID_COMPANY) {

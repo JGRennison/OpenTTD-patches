@@ -41,22 +41,6 @@ class LinkGraph : public LinkGraphPool::PoolItem<&_link_graph_pool> {
 public:
 
 	/**
-	 * Special modes for updating links. 'Restricted' means that vehicles with
-	 * 'no loading' orders are serving the link. If a link is only served by
-	 * such vehicles it's 'fully restricted'. This means the link can be used
-	 * by cargo arriving in such vehicles, but not by cargo generated or
-	 * transferring at the source station of the link. In order to find out
-	 * about this condition we keep two update timestamps in each link, one for
-	 * the restricted and one for the unrestricted part of it. If either one
-	 * times out while the other is still valid the link becomes fully
-	 * restricted or fully unrestricted, respectively.
-	 */
-	enum UpdateMode {
-		REFRESH_RESTRICTED = UINT_MAX - 1, ///< Refresh restricted link.
-		REFRESH_UNRESTRICTED = UINT_MAX    ///< Refresh unrestricted link.
-	};
-
-	/**
 	 * Node of the link graph. contains all relevant information from the associated
 	 * station. It's copied so that the link graph job can work on its own data set
 	 * in a separate thread.
@@ -65,8 +49,9 @@ public:
 		uint supply;             ///< Supply at the station.
 		uint demand;             ///< Acceptance at the station.
 		StationID station;       ///< Station ID.
+		TileIndex xy;            ///< Location of the station referred to by the node.
 		Date last_update;        ///< When the supply was last updated.
-		void Init(StationID st = INVALID_STATION, uint demand = 0);
+		void Init(TileIndex xy = INVALID_TILE, StationID st = INVALID_STATION, uint demand = 0);
 	};
 
 	/**
@@ -76,13 +61,12 @@ public:
 	 * the column as next_edge.
 	 */
 	struct BaseEdge {
-		uint distance;                 ///< Length of the link.
 		uint capacity;                 ///< Capacity of the link.
 		uint usage;                    ///< Usage of the link.
 		Date last_unrestricted_update; ///< When the unrestricted part of the link was last updated.
 		Date last_restricted_update;   ///< When the restricted part of the link was last updated.
 		NodeID next_edge;              ///< Destination of next valid edge starting at the same source node.
-		void Init(uint distance = 0);
+		void Init();
 	};
 
 	/**
@@ -113,12 +97,6 @@ public:
 		 * @return Usage.
 		 */
 		uint Usage() const { return this->edge.usage; }
-
-		/**
-		 * Get edge's distance.
-		 * @return Distance.
-		 */
-		uint Distance() const { return this->edge.distance; }
 
 		/**
 		 * Get the date of the last update to the edge's unrestricted capacity.
@@ -185,6 +163,12 @@ public:
 		 * @return Last update.
 		 */
 		Date LastUpdate() const { return this->node.last_update; }
+
+		/**
+		 * Get the location of the station associated with the node.
+		 * @return Location of the station.
+		 */
+		TileIndex XY() const { return this->node.xy; }
 	};
 
 	/**
@@ -313,7 +297,7 @@ public:
 		 * @param edge Edge to be wrapped.
 		 */
 		Edge(BaseEdge &edge) : EdgeWrapper<BaseEdge>(edge) {}
-		void Update(uint capacity, uint usage);
+		void Update(uint capacity, uint usage, EdgeUpdateMode mode);
 		void Restrict() { this->edge.last_unrestricted_update = INVALID_DATE; }
 		void Release() { this->edge.last_restricted_update = INVALID_DATE; }
 	};
@@ -429,6 +413,15 @@ public:
 		}
 
 		/**
+		 * Update the node's location on the map.
+		 * @param xy New location.
+		 */
+		void UpdateLocation(TileIndex xy)
+		{
+			this->node.xy = xy;
+		}
+
+		/**
 		 * Set the node's demand.
 		 * @param demand New demand for the node.
 		 */
@@ -437,8 +430,8 @@ public:
 			this->node.demand = demand;
 		}
 
-		void AddEdge(NodeID to, uint capacity, uint usage = 0);
-		void UpdateEdge(NodeID to, uint capacity, uint usage = 0);
+		void AddEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMode mode);
+		void UpdateEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMode mode);
 		void RemoveEdge(NodeID to);
 	};
 
@@ -529,7 +522,6 @@ public:
 
 	NodeID AddNode(const Station *st);
 	void RemoveNode(NodeID id);
-	void UpdateDistances(NodeID id, TileIndex xy);
 
 protected:
 	friend class LinkGraph::ConstNode;

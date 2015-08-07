@@ -21,6 +21,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Check whether the given name is globally unique amongst depots.
  * @param name The name to check.
@@ -68,7 +70,7 @@ CommandCost CmdRenameDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			d->name = NULL;
 			MakeDefaultName(d);
 		} else {
-			d->name = strdup(text);
+			d->name = stredup(text);
 		}
 
 		/* Update the orders and depot */

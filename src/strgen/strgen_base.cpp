@@ -19,6 +19,8 @@
 
 #include "../table/strgen_tables.h"
 
+#include "../safeguards.h"
+
 /* Compiles a list of strings into a compiled string list */
 
 static bool _translated;              ///< Whether the current language is not the master language
@@ -38,7 +40,7 @@ static const CmdStruct *ParseCommandString(const char **str, char *param, int *a
  * @param next    The next chained case.
  */
 Case::Case(int caseidx, const char *string, Case *next) :
-		caseidx(caseidx), string(strdup(string)), next(next)
+		caseidx(caseidx), string(stredup(string)), next(next)
 {
 }
 
@@ -57,7 +59,7 @@ Case::~Case()
  * @param line    The line this string was found on.
  */
 LangString::LangString(const char *name, const char *english, int index, int line) :
-		name(strdup(name)), english(strdup(english)), translated(NULL),
+		name(stredup(name)), english(stredup(english)), translated(NULL),
 		hash_next(0), index(index), line(line), translated_case(NULL)
 {
 }
@@ -386,13 +388,22 @@ static void EmitWordList(Buffer *buffer, const char * const *words, uint nw)
 void EmitPlural(Buffer *buffer, char *buf, int value)
 {
 	int argidx = _cur_argidx;
-	int offset = 0;
+	int offset = -1;
 	int expected = _plural_forms[_lang.plural_form].plural_count;
 	const char **words = AllocaM(const char *, max(expected, MAX_PLURALS));
 	int nw = 0;
 
 	/* Parse out the number, if one exists. Otherwise default to prev arg. */
 	if (!ParseRelNum(&buf, &argidx, &offset)) argidx--;
+
+	const CmdStruct *cmd = _cur_pcs.cmd[argidx];
+	if (offset == -1) {
+		/* Use default offset */
+		if (cmd == NULL || cmd->default_plural_offset < 0) {
+			strgen_fatal("Command '%s' has no (default) plural position", cmd == NULL ? "<empty>" : cmd->cmd);
+		}
+		offset = cmd->default_plural_offset;
+	}
 
 	/* Parse each string */
 	for (nw = 0; nw < MAX_PLURALS; nw++) {
@@ -575,7 +586,7 @@ static const CmdStruct *ParseCommandString(const char **str, char *param, int *a
  * @param translation Are we reading a translation?
  */
 StringReader::StringReader(StringData &data, const char *file, bool master, bool translation) :
-		data(data), file(strdup(file)), master(master), translation(translation)
+		data(data), file(stredup(file)), master(master), translation(translation)
 {
 }
 
@@ -612,7 +623,7 @@ static void ExtractCommandString(ParsedCommandStruct *p, const char *s, bool war
 		} else if (!(ar->flags & C_DONTCOUNT)) { // Ignore some of them
 			if (p->np >= lengthof(p->pairs)) strgen_fatal("too many commands in string, max " PRINTF_SIZE, lengthof(p->pairs));
 			p->pairs[p->np].a = ar;
-			p->pairs[p->np].v = param[0] != '\0' ? strdup(param) : "";
+			p->pairs[p->np].v = param[0] != '\0' ? stredup(param) : "";
 			p->np++;
 		}
 	}
@@ -776,7 +787,7 @@ void StringReader::HandleString(char *str)
 		if (casep != NULL) {
 			ent->translated_case = new Case(ResolveCaseName(casep, strlen(casep)), s, ent->translated_case);
 		} else {
-			ent->translated = strdup(s);
+			ent->translated = stredup(s);
 			/* If the string was translated, use the line from the
 			 * translated language so errors in the translated file
 			 * are properly referenced to. */
@@ -819,7 +830,7 @@ void StringReader::ParseFile()
 	strecpy(_lang.digit_decimal_separator, ".", lastof(_lang.digit_decimal_separator));
 
 	_cur_line = 1;
-	while (this->ReadLine(buf, sizeof(buf)) != NULL) {
+	while (this->ReadLine(buf, lastof(buf)) != NULL) {
 		rstrip(buf);
 		this->HandleString(buf);
 		_cur_line++;

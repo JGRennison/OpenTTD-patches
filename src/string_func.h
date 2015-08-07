@@ -26,16 +26,17 @@
 #ifndef STRING_FUNC_H
 #define STRING_FUNC_H
 
+#include <stdarg.h>
+
 #include "core/bitmath_func.hpp"
 #include "string_type.h"
 
-void ttd_strlcat(char *dst, const char *src, size_t size);
-void ttd_strlcpy(char *dst, const char *src, size_t size);
-
 char *strecat(char *dst, const char *src, const char *last);
 char *strecpy(char *dst, const char *src, const char *last);
+char *stredup(const char *src, const char *last = NULL);
 
 int CDECL seprintf(char *str, const char *last, const char *format, ...) WARN_FORMAT(3, 4);
+int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap);
 
 char *CDECL str_fmt(const char *str, ...) WARN_FORMAT(1, 2);
 
@@ -247,14 +248,6 @@ static inline bool IsWhitespace(WChar c)
 #if defined(__NetBSD__) || defined(__FreeBSD__)
 #include <sys/param.h>
 #endif
-
-/* strndup is a GNU extension */
-#if defined(_GNU_SOURCE) || (defined(__NetBSD_Version__) && 400000000 <= __NetBSD_Version__) || (defined(__FreeBSD_version) && 701101 <= __FreeBSD_version) || (defined(__DARWIN_C_LEVEL) && __DARWIN_C_LEVEL >= 200809L)
-#	undef DEFINE_STRNDUP
-#else
-#	define DEFINE_STRNDUP
-char *strndup(const char *s, size_t len);
-#endif /* strndup is available */
 
 /* strcasestr is available for _GNU_SOURCE, BSD and some Apple */
 #if defined(_GNU_SOURCE) || (defined(__BSD_VISIBLE) && __BSD_VISIBLE) || (defined(__APPLE__) && (!defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE))) || defined(_NETBSD_SOURCE)

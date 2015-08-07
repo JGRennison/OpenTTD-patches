@@ -597,16 +597,16 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 	_cocoa_video_dialog = true;
 
 	bool wasstarted = _cocoa_video_started;
-	if (_video_driver == NULL) {
+	if (VideoDriver::GetInstance() == NULL) {
 		setupApplication(); // Setup application before showing dialog
-	} else if (!_cocoa_video_started && _video_driver->Start(NULL) != NULL) {
+	} else if (!_cocoa_video_started && VideoDriver::GetInstance()->Start(NULL) != NULL) {
 		fprintf(stderr, "%s: %s\n", title, message);
 		return;
 	}
 
 	NSRunAlertPanel([ NSString stringWithUTF8String:title ], [ NSString stringWithUTF8String:message ], [ NSString stringWithUTF8String:buttonLabel ], nil, nil);
 
-	if (!wasstarted && _video_driver != NULL) _video_driver->Stop();
+	if (!wasstarted && VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
 
 	_cocoa_video_dialog = false;
 }
@@ -621,8 +621,8 @@ void cocoaSetApplicationBundleDir()
 	char tmp[MAXPATHLEN];
 	CFURLRef url = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
 	if (CFURLGetFileSystemRepresentation(url, true, (unsigned char*)tmp, MAXPATHLEN)) {
-		AppendPathSeparator(tmp, lengthof(tmp));
-		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = strdup(tmp);
+		AppendPathSeparator(tmp, lastof(tmp));
+		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = stredup(tmp);
 	} else {
 		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = NULL;
 	}
@@ -1086,6 +1086,140 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 #endif
 {
 	return 0;
+}
+
+/** Delete single character left of the cursor. */
+- (void)deleteBackward:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_BACKSPACE, 0);
+}
+
+/** Delete word left of the cursor. */
+- (void)deleteWordBackward:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_BACKSPACE | WKC_CTRL, 0);
+}
+
+/** Delete single character right of the cursor. */
+- (void)deleteForward:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_DELETE, 0);
+}
+
+/** Delete word right of the cursor. */
+- (void)deleteWordForward:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_DELETE | WKC_CTRL, 0);
+}
+
+/** Move cursor one character left. */
+- (void)moveLeft:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_LEFT, 0);
+}
+
+/** Move cursor one word left. */
+- (void)moveWordLeft:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_LEFT | WKC_CTRL, 0);
+}
+
+/** Move cursor one character right. */
+- (void)moveRight:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_RIGHT, 0);
+}
+
+/** Move cursor one word right. */
+- (void)moveWordRight:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_RIGHT | WKC_CTRL, 0);
+}
+
+/** Move cursor one line up. */
+- (void)moveUp:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_UP, 0);
+}
+
+/** Move cursor one line down. */
+- (void)moveDown:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_DOWN, 0);
+}
+
+/** MScroll one line up. */
+- (void)moveUpAndModifySelection:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_UP | WKC_SHIFT, 0);
+}
+
+/** Scroll one line down. */
+- (void)moveDownAndModifySelection:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_DOWN | WKC_SHIFT, 0);
+}
+
+/** Move cursor to the start of the line. */
+- (void)moveToBeginningOfLine:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_HOME, 0);
+}
+
+/** Move cursor to the end of the line. */
+- (void)moveToEndOfLine:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_END, 0);
+}
+
+/** Scroll one page up. */
+- (void)scrollPageUp:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_PAGEUP, 0);
+}
+
+/** Scroll one page down. */
+- (void)scrollPageDown:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_PAGEDOWN, 0);
+}
+
+/** Move cursor (and selection) one page up. */
+- (void)pageUpAndModifySelection:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_PAGEUP | WKC_SHIFT, 0);
+}
+
+/** Move cursor (and selection) one page down. */
+- (void)pageDownAndModifySelection:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_PAGEDOWN | WKC_SHIFT, 0);
+}
+
+/** Scroll to the beginning of the document. */
+- (void)scrollToBeginningOfDocument:(id)sender
+{
+	/* For compatibility with OTTD on Win/Linux. */
+	[ self moveToBeginningOfLine:sender ];
+}
+
+/** Scroll to the end of the document. */
+- (void)scrollToEndOfDocument:(id)sender
+{
+	/* For compatibility with OTTD on Win/Linux. */
+	[ self moveToEndOfLine:sender ];
+}
+
+/** Return was pressed. */
+- (void)insertNewline:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_RETURN, '\r');
+}
+
+/** Escape was pressed. */
+- (void)cancelOperation:(id)sender
+{
+	if (EditBoxInGlobalFocus()) HandleKeypress(WKC_ESC, 0);
 }
 
 /** Invoke the selector if we implement it. */

@@ -101,7 +101,7 @@ protected:
 	/**
 	 * Get the script name how to store the script in memory.
 	 */
-	virtual void GetScriptName(ScriptInfo *info, char *name, int len) = 0;
+	virtual void GetScriptName(ScriptInfo *info, char *name, const char *last) = 0;
 
 	/**
 	 * Get the filename to scan for this type of script.
@@ -128,6 +128,10 @@ protected:
 	 */
 	void Reset();
 
+	/**
+	 * Reset the engine to ensure a clean environment for further steps.
+	 */
+	void ResetEngine();
 };
 
 #endif /* SCRIPT_SCANNER_HPP */

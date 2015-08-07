@@ -17,7 +17,10 @@
 #include "../../settings_type.h"
 #include "../../engine_base.h"
 #include "../../articulated_vehicles.h"
+#include "../../string_func.h"
 #include "table/strings.h"
+
+#include "../../safeguards.h"
 
 bool ScriptEventEnginePreview::IsEngineValid() const
 {
@@ -117,6 +120,17 @@ bool ScriptEventCompanyAskMerger::AcceptMerger()
 	return ScriptObject::DoCommand(0, this->owner, 0, CMD_BUY_COMPANY);
 }
 
+ScriptEventAdminPort::ScriptEventAdminPort(const char *json) :
+		ScriptEvent(ET_ADMIN_PORT),
+		json(stredup(json))
+{
+}
+
+ScriptEventAdminPort::~ScriptEventAdminPort()
+{
+	free(this->json);
+}
+
 #define SKIP_EMPTY(p) while (*(p) == ' ' || *(p) == '\n' || *(p) == '\r') (p)++;
 #define RETURN_ERROR(stack) { ScriptLog::Error("Received invalid JSON data from AdminPort."); if (stack != 0) sq_pop(vm, stack); return NULL; }
 
@@ -157,7 +171,7 @@ char *ScriptEventAdminPort::ReadString(HSQUIRRELVM vm, char *p)
 	}
 
 	*p = '\0';
-	sq_pushstring(vm, OTTD2SQ(value), -1);
+	sq_pushstring(vm, value, -1);
 	*p++ = '"';
 
 	return p;
@@ -245,10 +259,10 @@ char *ScriptEventAdminPort::ReadValue(HSQUIRRELVM vm, char *p)
 			sq_newarray(vm, 0);
 
 			/* Empty array? */
-			char *p2 = p+1;
+			char *p2 = p + 1;
 			SKIP_EMPTY(p2);
 			if (*p2 == ']') {
-				p = p2+1;
+				p = p2 + 1;
 				break;
 			}
 

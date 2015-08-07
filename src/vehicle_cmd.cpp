@@ -34,6 +34,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /* Tables used in vehicle.h to find the right command for a certain vehicle type */
 const uint32 _veh_build_proc_table[] = {
 	CMD_BUILD_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN),
@@ -749,7 +751,7 @@ static void CloneVehicleName(const Vehicle *src, Vehicle *dst)
 
 		/* Check the name is unique. */
 		if (IsUniqueVehicleName(buf)) {
-			dst->name = strdup(buf);
+			dst->name = stredup(buf);
 			break;
 		}
 	}
@@ -1027,7 +1029,7 @@ CommandCost CmdRenameVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 
 	if (flags & DC_EXEC) {
 		free(v->name);
-		v->name = reset ? NULL : strdup(text);
+		v->name = reset ? NULL : stredup(text);
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 1);
 		MarkWholeScreenDirty();
 	}

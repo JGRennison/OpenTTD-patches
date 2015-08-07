@@ -71,6 +71,8 @@
 #include "table/strings.h"
 #include "table/settings.h"
 
+#include "safeguards.h"
+
 ClientSettings _settings_client;
 GameSettings _settings_game;     ///< Game settings of a running game or the scenario editor.
 GameSettings _settings_newgame;  ///< Game settings for new games (updated from the intro screen).
@@ -524,13 +526,13 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 				switch (GetVarMemType(sld->conv)) {
 					case SLE_VAR_STRB:
 					case SLE_VAR_STRBQ:
-						if (p != NULL) ttd_strlcpy((char*)ptr, (const char*)p, sld->length);
+						if (p != NULL) strecpy((char*)ptr, (const char*)p, (char*)ptr + sld->length - 1);
 						break;
 
 					case SLE_VAR_STR:
 					case SLE_VAR_STRQ:
 						free(*(char**)ptr);
-						*(char**)ptr = p == NULL ? NULL : strdup((const char*)p);
+						*(char**)ptr = p == NULL ? NULL : stredup((const char*)p);
 						break;
 
 					case SLE_VAR_CHAR: if (p != NULL) *(char *)ptr = *(const char *)p; break;
@@ -685,7 +687,7 @@ static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 
 		/* The value is different, that means we have to write it to the ini */
 		free(item->value);
-		item->value = strdup(buf);
+		item->value = stredup(buf);
 	}
 }
 
@@ -707,7 +709,7 @@ static void IniLoadSettingList(IniFile *ini, const char *grpname, StringList *li
 	list->Clear();
 
 	for (const IniItem *item = group->item; item != NULL; item = item->next) {
-		if (item->name != NULL) *list->Append() = strdup(item->name);
+		if (item->name != NULL) *list->Append() = stredup(item->name);
 	}
 }
 
@@ -1066,6 +1068,12 @@ static bool ZoomMinMaxChanged(int32 p1)
 	extern void ConstrainAllViewportsZoom();
 	ConstrainAllViewportsZoom();
 	GfxClearSpriteCache();
+	if (_settings_client.gui.zoom_min > _gui_zoom) {
+		/* Restrict GUI zoom if it is no longer available. */
+		_gui_zoom = _settings_client.gui.zoom_min;
+		UpdateCursorSize();
+		LoadStringWidthTable();
+	}
 	return true;
 }
 
@@ -1139,7 +1147,7 @@ static bool InvalidateCompanyWindow(int32 p1)
 static void ValidateSettings()
 {
 	/* Do not allow a custom sea level with the original land generator. */
-	if (_settings_newgame.game_creation.land_generator == 0 &&
+	if (_settings_newgame.game_creation.land_generator == LG_ORIGINAL &&
 			_settings_newgame.difficulty.quantity_sea_lakes == CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY) {
 		_settings_newgame.difficulty.quantity_sea_lakes = CUSTOM_SEA_LEVEL_MIN_PERCENTAGE;
 	}
@@ -1269,9 +1277,37 @@ static bool ChangeDynamicEngines(int32 p1)
 	return true;
 }
 
+static bool ChangeMaxHeightLevel(int32 p1)
+{
+	if (_game_mode == GM_NORMAL) return false;
+	if (_game_mode != GM_EDITOR) return true;
+
+	/* Check if at least one mountain on the map is higher than the new value.
+	 * If yes, disallow the change. */
+	for (TileIndex t = 0; t < MapSize(); t++) {
+		if ((int32)TileHeight(t) > p1) {
+			ShowErrorMessage(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN, INVALID_STRING_ID, WL_ERROR);
+			/* Return old, unchanged value */
+			return false;
+		}
+	}
+
+	/* The smallmap uses an index from heightlevels to colours. Trigger rebuilding it. */
+	InvalidateWindowClassesData(WC_SMALLMAP, 2);
+
+	return true;
+}
+
 static bool StationCatchmentChanged(int32 p1)
 {
 	Station::RecomputeIndustriesNearForAll();
+	return true;
+}
+
+static bool MaxVehiclesChanged(int32 p1)
+{
+	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);
+	MarkWholeScreenDirty();
 	return true;
 }
 
@@ -1406,6 +1442,40 @@ static void GameLoadConfig(IniFile *ini, const char *grpname)
 }
 
 /**
+ * Convert a character to a hex nibble value, or \c -1 otherwise.
+ * @param c Character to convert.
+ * @return Hex value of the character, or \c -1 if not a hex digit.
+ */
+static int DecodeHexNibble(char c)
+{
+	if (c >= '0' && c <= '9') return c - '0';
+	if (c >= 'A' && c <= 'F') return c + 10 - 'A';
+	if (c >= 'a' && c <= 'f') return c + 10 - 'a';
+	return -1;
+}
+
+/**
+ * Parse a sequence of characters (supposedly hex digits) into a sequence of bytes.
+ * After the hex number should be a \c '|' character.
+ * @param pos First character to convert.
+ * @param dest [out] Output byte array to write the bytes.
+ * @param dest_size Number of bytes in \a dest.
+ * @return Whether reading was successful.
+ */
+static bool DecodeHexText(char *pos, uint8 *dest, size_t dest_size)
+{
+	while (dest_size > 0) {
+		int hi = DecodeHexNibble(pos[0]);
+		int lo = (hi >= 0) ? DecodeHexNibble(pos[1]) : -1;
+		if (lo < 0) return false;
+		*dest++ = (hi << 4) | lo;
+		pos += 2;
+		dest_size--;
+	}
+	return *pos == '|';
+}
+
+/**
  * Load a GRF configuration
  * @param ini       The configuration to read from.
  * @param grpname   Group name containing the configuration of the GRF.
@@ -1421,16 +1491,41 @@ static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_stati
 	if (group == NULL) return NULL;
 
 	for (item = group->item; item != NULL; item = item->next) {
-		GRFConfig *c = new GRFConfig(item->name);
+		GRFConfig *c = NULL;
+
+		uint8 grfid_buf[4], md5sum[16];
+		char *filename = item->name;
+		bool has_grfid = false;
+		bool has_md5sum = false;
+
+		/* Try reading "<grfid>|" and on success, "<md5sum>|". */
+		has_grfid = DecodeHexText(filename, grfid_buf, lengthof(grfid_buf));
+		if (has_grfid) {
+			filename += 1 + 2 * lengthof(grfid_buf);
+			has_md5sum = DecodeHexText(filename, md5sum, lengthof(md5sum));
+			if (has_md5sum) filename += 1 + 2 * lengthof(md5sum);
+
+			uint32 grfid = grfid_buf[0] | (grfid_buf[1] << 8) | (grfid_buf[2] << 16) | (grfid_buf[3] << 24);
+			if (has_md5sum) {
+				const GRFConfig *s = FindGRFConfig(grfid, FGCM_EXACT, md5sum);
+				if (s != NULL) c = new GRFConfig(*s);
+			}
+			if (c == NULL && !FioCheckFileExists(filename, NEWGRF_DIR)) {
+				const GRFConfig *s = FindGRFConfig(grfid, FGCM_NEWEST_VALID);
+				if (s != NULL) c = new GRFConfig(*s);
+			}
+		}
+		if (c == NULL) c = new GRFConfig(filename);
 
 		/* Parse parameters */
 		if (!StrEmpty(item->value)) {
-			c->num_params = ParseIntList(item->value, (int*)c->param, lengthof(c->param));
-			if (c->num_params == (byte)-1) {
-				SetDParamStr(0, item->name);
+			int count = ParseIntList(item->value, (int*)c->param, lengthof(c->param));
+			if (count < 0) {
+				SetDParamStr(0, filename);
 				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY, WL_CRITICAL);
-				c->num_params = 0;
+				count = 0;
 			}
+			c->num_params = count;
 		}
 
 		/* Check if item is valid */
@@ -1447,7 +1542,7 @@ static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_stati
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN);
 			}
 
-			SetDParamStr(0, item->name);
+			SetDParamStr(0, StrEmpty(filename) ? item->name : filename);
 			ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_GRF, WL_CRITICAL);
 			delete c;
 			continue;
@@ -1457,7 +1552,7 @@ static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_stati
 		bool duplicate = false;
 		for (const GRFConfig *gc = first; gc != NULL; gc = gc->next) {
 			if (gc->ident.grfid == c->ident.grfid) {
-				SetDParamStr(0, item->name);
+				SetDParamStr(0, c->filename);
 				SetDParamStr(1, gc->filename);
 				ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_DUPLICATE_GRFID, WL_CRITICAL);
 				duplicate = true;
@@ -1491,7 +1586,7 @@ static void AISaveConfig(IniFile *ini, const char *grpname)
 		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
 		const char *name;
 		char value[1024];
-		config->SettingsToString(value, lengthof(value));
+		config->SettingsToString(value, lastof(value));
 
 		if (config->HasScript()) {
 			name = config->GetName();
@@ -1499,7 +1594,7 @@ static void AISaveConfig(IniFile *ini, const char *grpname)
 			name = "none";
 		}
 
-		IniItem *item = new IniItem(group, name, strlen(name));
+		IniItem *item = new IniItem(group, name);
 		item->SetValue(value);
 	}
 }
@@ -1514,7 +1609,7 @@ static void GameSaveConfig(IniFile *ini, const char *grpname)
 	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
 	const char *name;
 	char value[1024];
-	config->SettingsToString(value, lengthof(value));
+	config->SettingsToString(value, lastof(value));
 
 	if (config->HasScript()) {
 		name = config->GetName();
@@ -1522,7 +1617,7 @@ static void GameSaveConfig(IniFile *ini, const char *grpname)
 		name = "none";
 	}
 
-	IniItem *item = new IniItem(group, name, strlen(name));
+	IniItem *item = new IniItem(group, name);
 	item->SetValue(value);
 }
 
@@ -1535,7 +1630,7 @@ static void SaveVersionInConfig(IniFile *ini)
 	IniGroup *group = ini->GetGroup("version");
 
 	char version[9];
-	snprintf(version, lengthof(version), "%08X", _openttd_newgrf_version);
+	seprintf(version, lastof(version), "%08X", _openttd_newgrf_version);
 
 	const char * const versions[][2] = {
 		{ "version_string", _openttd_revision },
@@ -1555,10 +1650,15 @@ static void GRFSaveConfig(IniFile *ini, const char *grpname, const GRFConfig *li
 	const GRFConfig *c;
 
 	for (c = list; c != NULL; c = c->next) {
+		/* Hex grfid (4 bytes in nibbles), "|", hex md5sum (16 bytes in nibbles), "|", file system path. */
+		char key[4 * 2 + 1 + 16 * 2 + 1 + MAX_PATH];
 		char params[512];
 		GRFBuildParamList(params, c, lastof(params));
 
-		group->GetItem(c->filename, true)->SetValue(params);
+		char *pos = key + seprintf(key, lastof(key), "%08X|", BSWAP32(c->ident.grfid));
+		pos = md5sumToString(pos, lastof(key), c->ident.md5sum);
+		seprintf(pos, lastof(key), "|%s", c->filename);
+		group->GetItem(key, true)->SetValue(params);
 	}
 }
 
@@ -1657,7 +1757,7 @@ void GetGRFPresetList(GRFPresetList *list)
 	IniGroup *group;
 	for (group = ini->group; group != NULL; group = group->next) {
 		if (strncmp(group->name, "preset-", 7) == 0) {
-			*list->Append() = strdup(group->name + 7);
+			*list->Append() = stredup(group->name + 7);
 		}
 	}
 
@@ -1672,8 +1772,9 @@ void GetGRFPresetList(GRFPresetList *list)
  */
 GRFConfig *LoadGRFPresetFromConfig(const char *config_name)
 {
-	char *section = (char*)alloca(strlen(config_name) + 8);
-	sprintf(section, "preset-%s", config_name);
+	size_t len = strlen(config_name) + 8;
+	char *section = (char*)alloca(len);
+	seprintf(section, section + len - 1, "preset-%s", config_name);
 
 	IniFile *ini = IniLoadConfig();
 	GRFConfig *config = GRFLoadConfig(ini, section, false);
@@ -1690,8 +1791,9 @@ GRFConfig *LoadGRFPresetFromConfig(const char *config_name)
  */
 void SaveGRFPresetToConfig(const char *config_name, GRFConfig *config)
 {
-	char *section = (char*)alloca(strlen(config_name) + 8);
-	sprintf(section, "preset-%s", config_name);
+	size_t len = strlen(config_name) + 8;
+	char *section = (char*)alloca(len);
+	seprintf(section, section + len - 1, "preset-%s", config_name);
 
 	IniFile *ini = IniLoadConfig();
 	GRFSaveConfig(ini, section, config);
@@ -1705,8 +1807,9 @@ void SaveGRFPresetToConfig(const char *config_name, GRFConfig *config)
  */
 void DeleteGRFPresetFromConfig(const char *config_name)
 {
-	char *section = (char*)alloca(strlen(config_name) + 8);
-	sprintf(section, "preset-%s", config_name);
+	size_t len = strlen(config_name) + 8;
+	char *section = (char*)alloca(len);
+	seprintf(section, section + len - 1, "preset-%s", config_name);
 
 	IniFile *ini = IniLoadConfig();
 	ini->RemoveGroup(section);
@@ -1924,10 +2027,10 @@ bool SetSettingValue(uint index, const char *value, bool force_newgame)
 	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) {
 		char **var = (char**)GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
 		free(*var);
-		*var = strcmp(value, "(null)") == 0 ? NULL : strdup(value);
+		*var = strcmp(value, "(null)") == 0 ? NULL : stredup(value);
 	} else {
 		char *var = (char*)GetVariableAddress(NULL, &sd->save);
-		ttd_strlcpy(var, value, sd->save.length);
+		strecpy(var, value, &var[sd->save.length - 1]);
 	}
 	if (sd->desc.proc != NULL) sd->desc.proc(0);
 
@@ -2038,9 +2141,9 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'", name, (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
 	} else {
 		if (sd->desc.cmd == SDT_BOOLX) {
-			snprintf(value, sizeof(value), (*(const bool*)ptr != 0) ? "on" : "off");
+			seprintf(value, lastof(value), (*(const bool*)ptr != 0) ? "on" : "off");
 		} else {
-			snprintf(value, sizeof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
+			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
 		}
 
 		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s%d, max: %u)",
@@ -2064,11 +2167,11 @@ void IConsoleListSettings(const char *prefilter)
 		const void *ptr = GetVariableAddress(&GetGameSettings(), &sd->save);
 
 		if (sd->desc.cmd == SDT_BOOLX) {
-			snprintf(value, lengthof(value), (*(const bool *)ptr != 0) ? "on" : "off");
+			seprintf(value, lastof(value), (*(const bool *)ptr != 0) ? "on" : "off");
 		} else if (sd->desc.cmd == SDT_STRING) {
-			snprintf(value, sizeof(value), "%s", (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
+			seprintf(value, lastof(value), "%s", (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
 		} else {
-			snprintf(value, lengthof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
+			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
 		}
 		IConsolePrintF(CC_DEFAULT, "%s = %s", sd->desc.name, value);
 	}

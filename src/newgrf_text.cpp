@@ -33,6 +33,8 @@
 #include "table/strings.h"
 #include "table/control_codes.h"
 
+#include "safeguards.h"
+
 #define GRFTAB  28
 #define TABSIZE 11
 
@@ -229,7 +231,7 @@ struct UnmappedChoiceList : ZeroedMemoryAllocator {
 			/* In case of a (broken) NewGRF without a default,
 			 * assume an empty string. */
 			grfmsg(1, "choice list misses default value");
-			this->strings[0] = strdup("");
+			this->strings[0] = stredup("");
 		}
 
 		char *d = old_d;
@@ -1056,6 +1058,16 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 
 			case SCC_NEWGRF_PRINT_WORD_STRING_ID:
 				*argv = MapGRFStringID(_newgrf_textrefstack.grffile->grfid, _newgrf_textrefstack.PopUnsignedWord());
+				break;
+		}
+	} else {
+		/* Consume additional parameter characters */
+		switch (scc) {
+			default: break;
+
+			case SCC_NEWGRF_PUSH_WORD:
+			case SCC_NEWGRF_UNPRINT:
+				Utf8Consume(str);
 				break;
 		}
 	}

@@ -32,6 +32,8 @@
 #include "basedir.h"
 #endif
 
+#include "safeguards.h"
+
 /** Size of the #Fio data buffer. */
 #define FIO_BUFFER_SIZE 512
 
@@ -263,7 +265,7 @@ void FioOpenFile(int slot, const char *filename, Subdirectory subdir)
 
 	/* Store the filename without path and extension */
 	const char *t = strrchr(filename, PATHSEPCHAR);
-	_fio.shortnames[slot] = strdup(t == NULL ? filename : t);
+	_fio.shortnames[slot] = stredup(t == NULL ? filename : t);
 	char *t2 = strrchr(_fio.shortnames[slot], '.');
 	if (t2 != NULL) *t2 = '\0';
 	strtolower(_fio.shortnames[slot]);
@@ -342,30 +344,30 @@ void FioFCloseFile(FILE *f)
 	fclose(f);
 }
 
-char *FioGetFullPath(char *buf, size_t buflen, Searchpath sp, Subdirectory subdir, const char *filename)
+char *FioGetFullPath(char *buf, const char *last, Searchpath sp, Subdirectory subdir, const char *filename)
 {
 	assert(subdir < NUM_SUBDIRS);
 	assert(sp < NUM_SEARCHPATHS);
 
-	snprintf(buf, buflen, "%s%s%s", _searchpaths[sp], _subdirs[subdir], filename);
+	seprintf(buf, last, "%s%s%s", _searchpaths[sp], _subdirs[subdir], filename);
 	return buf;
 }
 
 /**
  * Find a path to the filename in one of the search directories.
  * @param buf [out] Destination buffer for the path.
- * @param buflen Length of the destination buffer.
+ * @param last End of the destination buffer.
  * @param subdir Subdirectory to try.
  * @param filename Filename to look for.
  * @return \a buf containing the path if the path was found, else \c NULL.
  */
-char *FioFindFullPath(char *buf, size_t buflen, Subdirectory subdir, const char *filename)
+char *FioFindFullPath(char *buf, const char *last, Subdirectory subdir, const char *filename)
 {
 	Searchpath sp;
 	assert(subdir < NUM_SUBDIRS);
 
 	FOR_ALL_SEARCHPATHS(sp) {
-		FioGetFullPath(buf, buflen, sp, subdir, filename);
+		FioGetFullPath(buf, last, sp, subdir, filename);
 		if (FileExists(buf)) return buf;
 #if !defined(WIN32)
 		/* Be, as opening files, aware that sometimes the filename
@@ -378,27 +380,27 @@ char *FioFindFullPath(char *buf, size_t buflen, Subdirectory subdir, const char 
 	return NULL;
 }
 
-char *FioAppendDirectory(char *buf, size_t buflen, Searchpath sp, Subdirectory subdir)
+char *FioAppendDirectory(char *buf, const char *last, Searchpath sp, Subdirectory subdir)
 {
 	assert(subdir < NUM_SUBDIRS);
 	assert(sp < NUM_SEARCHPATHS);
 
-	snprintf(buf, buflen, "%s%s", _searchpaths[sp], _subdirs[subdir]);
+	seprintf(buf, last, "%s%s", _searchpaths[sp], _subdirs[subdir]);
 	return buf;
 }
 
-char *FioGetDirectory(char *buf, size_t buflen, Subdirectory subdir)
+char *FioGetDirectory(char *buf, const char *last, Subdirectory subdir)
 {
 	Searchpath sp;
 
 	/* Find and return the first valid directory */
 	FOR_ALL_SEARCHPATHS(sp) {
-		char *ret = FioAppendDirectory(buf, buflen, sp, subdir);
+		char *ret = FioAppendDirectory(buf, last, sp, subdir);
 		if (FileExists(buf)) return ret;
 	}
 
 	/* Could not find the directory, fall back to a base path */
-	ttd_strlcpy(buf, _personal_dir, buflen);
+	strecpy(buf, _personal_dir, last);
 
 	return buf;
 }
@@ -419,7 +421,7 @@ static FILE *FioFOpenFileSp(const char *filename, const char *mode, Searchpath s
 	if (subdir == NO_DIRECTORY) {
 		strecpy(buf, filename, lastof(buf));
 	} else {
-		snprintf(buf, lengthof(buf), "%s%s%s", _searchpaths[sp], _subdirs[subdir], filename);
+		seprintf(buf, lastof(buf), "%s%s%s", _searchpaths[sp], _subdirs[subdir], filename);
 	}
 
 #if defined(WIN32)
@@ -548,7 +550,7 @@ static void FioCreateDirectory(const char *name)
 	mkdir(OTTD2FS(name));
 #elif defined(__MORPHOS__) || defined(__AMIGAOS__)
 	char buf[MAX_PATH];
-	ttd_strlcpy(buf, name, MAX_PATH);
+	strecpy(buf, name, lastof(buf));
 
 	size_t len = strlen(name) - 1;
 	if (buf[len] == '/') {
@@ -564,20 +566,19 @@ static void FioCreateDirectory(const char *name)
 /**
  * Appends, if necessary, the path separator character to the end of the string.
  * It does not add the path separator to zero-sized strings.
- * @param buf    string to append the separator to
- * @param buflen the length of \a buf.
+ * @param buf  string to append the separator to
+ * @param last the last element of \a buf.
  * @return true iff the operation succeeded
  */
-bool AppendPathSeparator(char *buf, size_t buflen)
+bool AppendPathSeparator(char *buf, const char *last)
 {
 	size_t s = strlen(buf);
 
 	/* Length of string + path separator + '\0' */
 	if (s != 0 && buf[s - 1] != PATHSEPCHAR) {
-		if (s + 2 >= buflen) return false;
+		if (&buf[s] >= last) return false;
 
-		buf[s]     = PATHSEPCHAR;
-		buf[s + 1] = '\0';
+		seprintf(buf + s, last, "%c", PATHSEPCHAR);
 	}
 
 	return true;
@@ -592,7 +593,8 @@ bool AppendPathSeparator(char *buf, size_t buflen)
 char *BuildWithFullPath(const char *dir)
 {
 	char *dest = MallocT<char>(MAX_PATH);
-	ttd_strlcpy(dest, dir, MAX_PATH);
+	char *last = dest + MAX_PATH - 1;
+	strecpy(dest, dir, last);
 
 	/* Check if absolute or relative path */
 	const char *s = strchr(dest, PATHSEPCHAR);
@@ -600,10 +602,10 @@ char *BuildWithFullPath(const char *dir)
 	/* Add absolute path */
 	if (s == NULL || dest != s) {
 		if (getcwd(dest, MAX_PATH) == NULL) *dest = '\0';
-		AppendPathSeparator(dest, MAX_PATH);
-		ttd_strlcat(dest, dir, MAX_PATH);
+		AppendPathSeparator(dest, last);
+		strecat(dest, dir, last);
 	}
-	AppendPathSeparator(dest, MAX_PATH);
+	AppendPathSeparator(dest, last);
 
 	return dest;
 }
@@ -753,7 +755,7 @@ bool TarScanner::AddFile(const char *filename, size_t basepath_length, const cha
 	 * been given read access. */
 	if (f == NULL) return false;
 
-	const char *dupped_filename = strdup(filename);
+	const char *dupped_filename = stredup(filename);
 	_tar_list[this->subdir][filename].filename = dupped_filename;
 	_tar_list[this->subdir][filename].dirname = NULL;
 
@@ -789,15 +791,15 @@ bool TarScanner::AddFile(const char *filename, size_t basepath_length, const cha
 
 		/* The prefix contains the directory-name */
 		if (th.prefix[0] != '\0') {
-			ttd_strlcpy(name, th.prefix, lengthof(name));
-			ttd_strlcat(name, PATHSEP, lengthof(name));
+			strecpy(name, th.prefix, lastof(name));
+			strecat(name, PATHSEP, lastof(name));
 		}
 
 		/* Copy the name of the file in a safe way at the end of 'name' */
-		ttd_strlcat(name, th.name, lengthof(name));
+		strecat(name, th.name, lastof(name));
 
 		/* Calculate the size of the file.. for some strange reason this is stored as a string */
-		ttd_strlcpy(buf, th.size, lengthof(buf));
+		strecpy(buf, th.size, lastof(buf));
 		size_t skip = strtoul(buf, &end, 8);
 
 		switch (th.typeflag) {
@@ -826,7 +828,7 @@ bool TarScanner::AddFile(const char *filename, size_t basepath_length, const cha
 			case '1': // hard links
 			case '2': { // symbolic links
 				/* Copy the destination of the link in a safe way at the end of 'linkname' */
-				ttd_strlcpy(link, th.linkname, lengthof(link));
+				strecpy(link, th.linkname, lastof(link));
 
 				if (strlen(name) == 0 || strlen(link) == 0) break;
 
@@ -842,36 +844,45 @@ bool TarScanner::AddFile(const char *filename, size_t basepath_length, const cha
 
 				/* Process relative path.
 				 * Note: The destination of links must not contain any directory-links. */
-				ttd_strlcpy(dest, name, lengthof(dest));
+				strecpy(dest, name, lastof(dest));
 				char *destpos = strrchr(dest, PATHSEPCHAR);
 				if (destpos == NULL) destpos = dest;
 				*destpos = '\0';
 
 				char *pos = link;
 				while (*pos != '\0') {
-					char *next = strchr(link, PATHSEPCHAR);
-					if (next == NULL) next = pos + strlen(pos);
+					char *next = strchr(pos, PATHSEPCHAR);
+					if (next == NULL) {
+						next = pos + strlen(pos);
+					} else {
+						/* Terminate the substring up to the path separator character. */
+						*next++= '\0';
+					}
 
-					/* Skip '.' (current dir) */
-					if (next != pos + 1 || pos[0] != '.') {
-						if (next == pos + 2 && pos[0] == '.' && pos[1] == '.') {
-							/* level up */
-							if (dest[0] == '\0') {
-								DEBUG(misc, 1, "Ignoring link pointing outside of data directory: %s -> %s", name, link);
-								break;
-							}
-
-							/* Truncate 'dest' after last PATHSEPCHAR.
-							 * This assumes that the truncated part is a real directory and not a link. */
-							destpos = strrchr(dest, PATHSEPCHAR);
-							if (destpos == NULL) destpos = dest;
-						} else {
-							/* Append at end of 'dest' */
-							if (destpos != dest) *(destpos++) = PATHSEPCHAR;
-							strncpy(destpos, pos, next - pos); // Safe as we do '\0'-termination ourselves
-							destpos += next - pos;
+					if (strcmp(pos, ".") == 0) {
+						/* Skip '.' (current dir) */
+					} else if (strcmp(pos, "..") == 0) {
+						/* level up */
+						if (dest[0] == '\0') {
+							DEBUG(misc, 1, "Ignoring link pointing outside of data directory: %s -> %s", name, link);
+							break;
 						}
+
+						/* Truncate 'dest' after last PATHSEPCHAR.
+						 * This assumes that the truncated part is a real directory and not a link. */
+						destpos = strrchr(dest, PATHSEPCHAR);
+						if (destpos == NULL) destpos = dest;
 						*destpos = '\0';
+					} else {
+						/* Append at end of 'dest' */
+						if (destpos != dest) destpos = strecpy(destpos, PATHSEP, lastof(dest));
+						destpos = strecpy(destpos, pos, lastof(dest));
+					}
+
+					if (destpos >= lastof(dest)) {
+						DEBUG(misc, 0, "The length of a link in tar-file '%s' is too large (malformed?)", filename);
+						fclose(f);
+						return false;
 					}
 
 					pos = next;
@@ -890,7 +901,7 @@ bool TarScanner::AddFile(const char *filename, size_t basepath_length, const cha
 
 				/* Store the first directory name we detect */
 				DEBUG(misc, 6, "Found dir in tar: %s", name);
-				if (_tar_list[this->subdir][filename].dirname == NULL) _tar_list[this->subdir][filename].dirname = strdup(name);
+				if (_tar_list[this->subdir][filename].dirname == NULL) _tar_list[this->subdir][filename].dirname = stredup(name);
 				break;
 
 			default:
@@ -1070,8 +1081,8 @@ bool DoScanWorkingDirectory()
 	if (_searchpaths[SP_PERSONAL_DIR] == NULL) return true;
 
 	char tmp[MAX_PATH];
-	snprintf(tmp, lengthof(tmp), "%s%s", _searchpaths[SP_WORKING_DIR], PERSONAL_DIR);
-	AppendPathSeparator(tmp, MAX_PATH);
+	seprintf(tmp, lastof(tmp), "%s%s", _searchpaths[SP_WORKING_DIR], PERSONAL_DIR);
+	AppendPathSeparator(tmp, lastof(tmp));
 	return strcmp(tmp, _searchpaths[SP_PERSONAL_DIR]) != 0;
 }
 
@@ -1084,12 +1095,12 @@ void DetermineBasePaths(const char *exe)
 	char tmp[MAX_PATH];
 #if defined(WITH_XDG_BASEDIR) && defined(WITH_PERSONAL_DIR)
 	const char *xdg_data_home = xdgDataHome(NULL);
-	snprintf(tmp, MAX_PATH, "%s" PATHSEP "%s", xdg_data_home,
+	seprintf(tmp, lastof(tmp), "%s" PATHSEP "%s", xdg_data_home,
 			PERSONAL_DIR[0] == '.' ? &PERSONAL_DIR[1] : PERSONAL_DIR);
 	free(xdg_data_home);
 
-	AppendPathSeparator(tmp, MAX_PATH);
-	_searchpaths[SP_PERSONAL_DIR_XDG] = strdup(tmp);
+	AppendPathSeparator(tmp, lastof(tmp));
+	_searchpaths[SP_PERSONAL_DIR_XDG] = stredup(tmp);
 #endif
 #if defined(__MORPHOS__) || defined(__AMIGA__) || defined(DOS) || defined(OS2) || !defined(WITH_PERSONAL_DIR)
 	_searchpaths[SP_PERSONAL_DIR] = NULL;
@@ -1097,7 +1108,7 @@ void DetermineBasePaths(const char *exe)
 #ifdef __HAIKU__
 	BPath path;
 	find_directory(B_USER_SETTINGS_DIRECTORY, &path);
-	const char *homedir = strdup(path.Path());
+	const char *homedir = stredup(path.Path());
 #else
 	/* getenv is highly unsafe; duplicate it as soon as possible,
 	 * or at least before something else touches the environment
@@ -1105,21 +1116,21 @@ void DetermineBasePaths(const char *exe)
 	 * unvalidated data we rather not want internally. */
 	const char *homedir = getenv("HOME");
 	if (homedir != NULL) {
-		homedir = strndup(homedir, MAX_PATH);
+		homedir = stredup(homedir);
 	}
 
 	if (homedir == NULL) {
 		const struct passwd *pw = getpwuid(getuid());
-		homedir = (pw == NULL) ? NULL : strdup(pw->pw_dir);
+		homedir = (pw == NULL) ? NULL : stredup(pw->pw_dir);
 	}
 #endif
 
 	if (homedir != NULL) {
 		ValidateString(homedir);
-		snprintf(tmp, MAX_PATH, "%s" PATHSEP "%s", homedir, PERSONAL_DIR);
-		AppendPathSeparator(tmp, MAX_PATH);
+		seprintf(tmp, lastof(tmp), "%s" PATHSEP "%s", homedir, PERSONAL_DIR);
+		AppendPathSeparator(tmp, lastof(tmp));
 
-		_searchpaths[SP_PERSONAL_DIR] = strdup(tmp);
+		_searchpaths[SP_PERSONAL_DIR] = stredup(tmp);
 		free(homedir);
 	} else {
 		_searchpaths[SP_PERSONAL_DIR] = NULL;
@@ -1127,9 +1138,9 @@ void DetermineBasePaths(const char *exe)
 #endif
 
 #if defined(WITH_SHARED_DIR)
-	snprintf(tmp, MAX_PATH, "%s", SHARED_DIR);
-	AppendPathSeparator(tmp, MAX_PATH);
-	_searchpaths[SP_SHARED_DIR] = strdup(tmp);
+	seprintf(tmp, lastof(tmp), "%s", SHARED_DIR);
+	AppendPathSeparator(tmp, lastof(tmp));
+	_searchpaths[SP_SHARED_DIR] = stredup(tmp);
 #else
 	_searchpaths[SP_SHARED_DIR] = NULL;
 #endif
@@ -1138,8 +1149,8 @@ void DetermineBasePaths(const char *exe)
 	_searchpaths[SP_WORKING_DIR] = NULL;
 #else
 	if (getcwd(tmp, MAX_PATH) == NULL) *tmp = '\0';
-	AppendPathSeparator(tmp, MAX_PATH);
-	_searchpaths[SP_WORKING_DIR] = strdup(tmp);
+	AppendPathSeparator(tmp, lastof(tmp));
+	_searchpaths[SP_WORKING_DIR] = stredup(tmp);
 #endif
 
 	_do_scan_working_directory = DoScanWorkingDirectory();
@@ -1147,8 +1158,8 @@ void DetermineBasePaths(const char *exe)
 	/* Change the working directory to that one of the executable */
 	if (ChangeWorkingDirectoryToExecutable(exe)) {
 		if (getcwd(tmp, MAX_PATH) == NULL) *tmp = '\0';
-		AppendPathSeparator(tmp, MAX_PATH);
-		_searchpaths[SP_BINARY_DIR] = strdup(tmp);
+		AppendPathSeparator(tmp, lastof(tmp));
+		_searchpaths[SP_BINARY_DIR] = stredup(tmp);
 	} else {
 		_searchpaths[SP_BINARY_DIR] = NULL;
 	}
@@ -1163,9 +1174,9 @@ void DetermineBasePaths(const char *exe)
 #if defined(__MORPHOS__) || defined(__AMIGA__) || defined(DOS) || defined(OS2)
 	_searchpaths[SP_INSTALLATION_DIR] = NULL;
 #else
-	snprintf(tmp, MAX_PATH, "%s", GLOBAL_DATA_DIR);
-	AppendPathSeparator(tmp, MAX_PATH);
-	_searchpaths[SP_INSTALLATION_DIR] = strdup(tmp);
+	seprintf(tmp, lastof(tmp), "%s", GLOBAL_DATA_DIR);
+	AppendPathSeparator(tmp, lastof(tmp));
+	_searchpaths[SP_INSTALLATION_DIR] = stredup(tmp);
 #endif
 #ifdef WITH_COCOA
 extern void cocoaSetApplicationBundleDir();
@@ -1192,11 +1203,11 @@ void DeterminePaths(const char *exe)
 	char config_home[MAX_PATH];
 
 	const char *xdg_config_home = xdgConfigHome(NULL);
-	snprintf(config_home, MAX_PATH, "%s" PATHSEP "%s", xdg_config_home,
+	seprintf(config_home, lastof(config_home), "%s" PATHSEP "%s", xdg_config_home,
 			PERSONAL_DIR[0] == '.' ? &PERSONAL_DIR[1] : PERSONAL_DIR);
 	free(xdg_config_home);
 
-	AppendPathSeparator(config_home, MAX_PATH);
+	AppendPathSeparator(config_home, lastof(config_home));
 #endif
 
 	Searchpath sp;
@@ -1207,7 +1218,7 @@ void DeterminePaths(const char *exe)
 
 	char *config_dir;
 	if (_config_file != NULL) {
-		config_dir = strdup(_config_file);
+		config_dir = stredup(_config_file);
 		char *end = strrchr(config_dir, PATHSEPCHAR);
 		if (end == NULL) {
 			config_dir[0] = '\0';
@@ -1216,10 +1227,10 @@ void DeterminePaths(const char *exe)
 		}
 	} else {
 		char personal_dir[MAX_PATH];
-		if (FioFindFullPath(personal_dir, lengthof(personal_dir), BASE_DIR, "openttd.cfg") != NULL) {
+		if (FioFindFullPath(personal_dir, lastof(personal_dir), BASE_DIR, "openttd.cfg") != NULL) {
 			char *end = strrchr(personal_dir, PATHSEPCHAR);
 			if (end != NULL) end[1] = '\0';
-			config_dir = strdup(personal_dir);
+			config_dir = stredup(personal_dir);
 			_config_file = str_fmt("%sopenttd.cfg", config_dir);
 		} else {
 #if defined(WITH_XDG_BASEDIR) && defined(WITH_PERSONAL_DIR)
@@ -1233,7 +1244,7 @@ void DeterminePaths(const char *exe)
 			config_dir = NULL;
 			for (uint i = 0; i < lengthof(new_openttd_cfg_order); i++) {
 				if (IsValidSearchPath(new_openttd_cfg_order[i])) {
-					config_dir = strdup(_searchpaths[new_openttd_cfg_order[i]]);
+					config_dir = stredup(_searchpaths[new_openttd_cfg_order[i]]);
 					break;
 				}
 			}
@@ -1397,13 +1408,13 @@ static uint ScanPath(FileScanner *fs, const char *extension, const char *path, s
 
 		if (!FiosIsValidFile(path, dirent, &sb)) continue;
 
-		snprintf(filename, lengthof(filename), "%s%s", path, d_name);
+		seprintf(filename, lastof(filename), "%s%s", path, d_name);
 
 		if (S_ISDIR(sb.st_mode)) {
 			/* Directory */
 			if (!recursive) continue;
 			if (strcmp(d_name, ".") == 0 || strcmp(d_name, "..") == 0) continue;
-			if (!AppendPathSeparator(filename, lengthof(filename))) continue;
+			if (!AppendPathSeparator(filename, lastof(filename))) continue;
 			num += ScanPath(fs, extension, filename, basepath_length, recursive);
 		} else if (S_ISREG(sb.st_mode)) {
 			/* File */
@@ -1454,7 +1465,7 @@ uint FileScanner::Scan(const char *extension, Subdirectory sd, bool tars, bool r
 		/* Don't search in the working directory */
 		if (sp == SP_WORKING_DIR && !_do_scan_working_directory) continue;
 
-		FioAppendDirectory(path, MAX_PATH, sp, sd);
+		FioAppendDirectory(path, lastof(path), sp, sd);
 		num += ScanPath(this, extension, path, strlen(path), recursive);
 	}
 
@@ -1490,6 +1501,6 @@ uint FileScanner::Scan(const char *extension, const char *directory, bool recurs
 {
 	char path[MAX_PATH];
 	strecpy(path, directory, lastof(path));
-	if (!AppendPathSeparator(path, lengthof(path))) return 0;
+	if (!AppendPathSeparator(path, lastof(path))) return 0;
 	return ScanPath(this, extension, path, strlen(path), recursive);
 }

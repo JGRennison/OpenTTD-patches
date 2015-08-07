@@ -39,6 +39,8 @@
 #include "table/strings.h"
 #include "table/train_cmd.h"
 
+#include "safeguards.h"
+
 static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool force_res, bool *got_reservation, bool mark_stuck);
 static bool TrainCheckIfLineEnds(Train *v, bool reverse = true);
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // Also used in vehicle_sl.cpp.
@@ -430,7 +432,7 @@ int Train::GetCurrentMaxSpeed() const
 		}
 	}
 
-	max_speed = min(max_speed, this->current_order.max_speed);
+	max_speed = min(max_speed, this->current_order.GetMaxSpeed());
 	return min(max_speed, this->gcache.cached_max_track_speed);
 }
 
@@ -462,10 +464,10 @@ int Train::GetDisplayImageWidth(Point *offset) const
 	}
 
 	if (offset != NULL) {
-		offset->x = reference_width / 2;
-		offset->y = vehicle_pitch;
+		offset->x = ScaleGUITrad(reference_width) / 2;
+		offset->y = ScaleGUITrad(vehicle_pitch);
 	}
-	return this->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH;
+	return ScaleGUITrad(this->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH);
 }
 
 static SpriteID GetDefaultTrainSprite(uint8 spritenum, Direction direction)
@@ -512,7 +514,7 @@ static SpriteID GetRailIcon(EngineID engine, bool rear_head, int &y, EngineImage
 		SpriteID sprite = GetCustomVehicleIcon(engine, dir, image_type);
 		if (sprite != 0) {
 			if (e->GetGRF() != NULL) {
-				y += e->GetGRF()->traininfo_vehicle_pitch;
+				y += ScaleGUITrad(e->GetGRF()->traininfo_vehicle_pitch);
 			}
 			return sprite;
 		}
@@ -536,14 +538,18 @@ void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engin
 		const Sprite *real_spritef = GetSprite(spritef, ST_NORMAL);
 		const Sprite *real_spriter = GetSprite(spriter, ST_NORMAL);
 
-		preferred_x = Clamp(preferred_x, left - UnScaleByZoom(real_spritef->x_offs, ZOOM_LVL_GUI) + 14, right - UnScaleByZoom(real_spriter->width, ZOOM_LVL_GUI) - UnScaleByZoom(real_spriter->x_offs, ZOOM_LVL_GUI) - 15);
+		preferred_x = Clamp(preferred_x,
+				left - UnScaleGUI(real_spritef->x_offs) + ScaleGUITrad(14),
+				right - UnScaleGUI(real_spriter->width) - UnScaleGUI(real_spriter->x_offs) - ScaleGUITrad(15));
 
-		DrawSprite(spritef, pal, preferred_x - 14, yf);
-		DrawSprite(spriter, pal, preferred_x + 15, yr);
+		DrawSprite(spritef, pal, preferred_x - ScaleGUITrad(14), yf);
+		DrawSprite(spriter, pal, preferred_x + ScaleGUITrad(15), yr);
 	} else {
 		SpriteID sprite = GetRailIcon(engine, false, y, image_type);
 		const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
-		preferred_x = Clamp(preferred_x, left - UnScaleByZoom(real_sprite->x_offs, ZOOM_LVL_GUI), right - UnScaleByZoom(real_sprite->width, ZOOM_LVL_GUI) - UnScaleByZoom(real_sprite->x_offs, ZOOM_LVL_GUI));
+		preferred_x = Clamp(preferred_x,
+				left - UnScaleGUI(real_sprite->x_offs),
+				right - UnScaleGUI(real_sprite->width) - UnScaleGUI(real_sprite->x_offs));
 		DrawSprite(sprite, pal, preferred_x, y);
 	}
 }
@@ -564,20 +570,20 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
 	SpriteID sprite = GetRailIcon(engine, false, y, image_type);
 	const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
 
-	width  = UnScaleByZoom(real_sprite->width, ZOOM_LVL_GUI);
-	height = UnScaleByZoom(real_sprite->height, ZOOM_LVL_GUI);
-	xoffs  = UnScaleByZoom(real_sprite->x_offs, ZOOM_LVL_GUI);
-	yoffs  = UnScaleByZoom(real_sprite->y_offs, ZOOM_LVL_GUI);
+	width  = UnScaleGUI(real_sprite->width);
+	height = UnScaleGUI(real_sprite->height);
+	xoffs  = UnScaleGUI(real_sprite->x_offs);
+	yoffs  = UnScaleGUI(real_sprite->y_offs);
 
 	if (RailVehInfo(engine)->railveh_type == RAILVEH_MULTIHEAD) {
 		sprite = GetRailIcon(engine, true, y, image_type);
 		real_sprite = GetSprite(sprite, ST_NORMAL);
 
 		/* Calculate values relative to an imaginary center between the two sprites. */
-		width = TRAININFO_DEFAULT_VEHICLE_WIDTH + UnScaleByZoom(real_sprite->width, ZOOM_LVL_GUI) + UnScaleByZoom(real_sprite->x_offs, ZOOM_LVL_GUI) - xoffs;
-		height = max<uint>(height, UnScaleByZoom(real_sprite->height, ZOOM_LVL_GUI));
-		xoffs  = xoffs - TRAININFO_DEFAULT_VEHICLE_WIDTH / 2;
-		yoffs  = min(yoffs, UnScaleByZoom(real_sprite->y_offs, ZOOM_LVL_GUI));
+		width = ScaleGUITrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) + UnScaleGUI(real_sprite->width) + UnScaleGUI(real_sprite->x_offs) - xoffs;
+		height = max<uint>(height, UnScaleGUI(real_sprite->height));
+		xoffs  = xoffs - ScaleGUITrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) / 2;
+		yoffs  = min(yoffs, UnScaleGUI(real_sprite->y_offs));
 	}
 }
 
@@ -640,7 +646,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 
 		_new_vehicle_id = v->index;
 
-		VehicleUpdatePosition(v);
+		v->UpdatePosition();
 		v->First()->ConsistChanged(CCF_ARRANGE);
 		UpdateTrainGroupID(v->First());
 
@@ -703,7 +709,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	v->SetMultiheaded();
 	u->SetMultiheaded();
 	v->SetNext(u);
-	VehicleUpdatePosition(u);
+	u->UpdatePosition();
 
 	/* Now we need to link the front and rear engines together */
 	v->other_multiheaded_part = u;
@@ -775,7 +781,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->SetFrontEngine();
 		v->SetEngine();
 
-		VehicleUpdatePosition(v);
+		v->UpdatePosition();
 
 		if (rvi->railveh_type == RAILVEH_MULTIHEAD) {
 			AddRearEngineToMultiheadedTrain(v);
@@ -1437,7 +1443,7 @@ void Train::UpdateDeltaXY(Direction direction)
 	if (!IsDiagonalDirection(direction)) {
 		static const int _sign_table[] =
 		{
-			// x, y
+			/* x, y */
 			-1, -1, // DIR_N
 			-1,  1, // DIR_E
 			 1,  1, // DIR_S
@@ -1563,14 +1569,14 @@ static void UpdateStatusAfterSwap(Train *v)
 				/* We have just left the wormhole, possibly set the
 				 * "goingdown" bit. UpdateInclination() can be used
 				 * because we are at the border of the tile. */
-				VehicleUpdatePosition(v);
+				v->UpdatePosition();
 				v->UpdateInclination(true, true);
 				return;
 			}
 		}
 	}
 
-	VehicleUpdatePosition(v);
+	v->UpdatePosition();
 	v->UpdateViewport(true, true);
 }
 
@@ -2181,7 +2187,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	v->cur_speed = 0;
 
 	v->UpdateViewport(true, true);
-	VehicleUpdatePosition(v);
+	v->UpdatePosition();
 	UpdateSignalsOnSegment(v->tile, INVALID_DIAGDIR, v->owner);
 	v->UpdateAcceleration();
 	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
@@ -2210,8 +2216,12 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 				SetTunnelBridgeReservation(end, false);
 
 				if (_settings_client.gui.show_track_reservation) {
-					MarkTileDirtyByTile(tile);
-					MarkTileDirtyByTile(end);
+					if (IsBridge(tile)) {
+						MarkBridgeDirty(tile);
+					} else {
+						MarkTileDirtyByTile(tile);
+						MarkTileDirtyByTile(end);
+					}
 				}
 			}
 		}
@@ -3332,8 +3342,8 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 			} else {
 				v->x_pos = gp.x;
 				v->y_pos = gp.y;
-				VehicleUpdatePosition(v);
-				if ((v->vehstatus & VS_HIDDEN) == 0) VehicleUpdateViewport(v, true);
+				v->UpdatePosition();
+				if ((v->vehstatus & VS_HIDDEN) == 0) v->Vehicle::UpdateViewport(true);
 				continue;
 			}
 		}
@@ -3343,7 +3353,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 		v->x_pos = gp.x;
 		v->y_pos = gp.y;
-		VehicleUpdatePosition(v);
+		v->UpdatePosition();
 
 		/* update the Z position of the vehicle */
 		int old_z = v->UpdateInclination(gp.new_tile != gp.old_tile, false);
@@ -3513,7 +3523,7 @@ static void ChangeTrainDirRandomly(Train *v)
 			 * a bridge, because UpdateInclination() will put the vehicle under
 			 * the bridge in that case */
 			if (v->track != TRACK_BIT_WORMHOLE) {
-				VehicleUpdatePosition(v);
+				v->UpdatePosition();
 				v->UpdateInclination(false, false);
 			}
 		}

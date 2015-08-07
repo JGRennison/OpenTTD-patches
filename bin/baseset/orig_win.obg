@@ -25,6 +25,7 @@ description.es_ES = Gráficos originales de Transport Tycoon Deluxe versión Win
 description.et_EE = Algse Transport Tycoon Deluxe Windowsi versiooni graafika.
 description.fi_FI = Alkuperäiset Transport Tycoon Deluxen Windows-version grafiikat.
 description.fr_FR = Graphiques originaux de Transport Tycoon Deluxe (version Windows).
+description.ga_IE = Grafaicí bunaidhTransport Tycoon Deluxe, eagrán Windows.
 description.gd_GB = Grafaigeachd aig an deasachadh Windows tùsail aig Transport Tycoon Deluxe.
 description.gl_ES = Graficos da edición orixinal de Transport Tycoon Deluxe para Windows.
 description.hr_HR = Originalna grafika za Transport Tycoon Deluxe Windows izdanje.
@@ -34,6 +35,7 @@ description.is_IS = Upprunalega grafíkin úr Transport Tycoon Deluxe Windows ú
 description.it_IT = Grafica originale di Transport Tycoon Deluxe, edizione Windows.
 description.ja_JP = Transport Tycoon Deluxe オリジナル版 グラフィック (Windows)
 description.ko_KR = 오리지널 트랜스포트 타이쿤 디럭스 윈도 에디션의 그래픽입니다.
+description.la_VA = Graphica ex editione originale Transport Tycoon Deluxe Windows.
 description.lb_LU = Original Transport Tycoon Deluxe Windows Editioun Grafik.
 description.lt_LT = Originali Transport Tycoon Deluxe Windows leidimo grafika.
 description.nb_NO = Original grafikk fra Transport Tycoon Deluxe for Windows.
@@ -70,7 +72,7 @@ TRGIR.GRF    = 0c2484ff6be49fc63a83be6ab5c38f32
 TRGCR.GRF    = 3668f410c761a050b5e7095a2b14879b
 TRGHR.GRF    = 06bf2b7a31766f048baac2ebe43457b1
 TRGTR.GRF    = de53650517fe661ceaa3138c6edb0eb8
-OPENTTD.GRF  = 75a93cea2ed455c2fd5dcbda39e53538
+OPENTTD.GRF  = 505d96061556d3bb5cec6234096ec5bc
 
 [origin]
 default      = You can find it on your Transport Tycoon Deluxe CD-ROM.

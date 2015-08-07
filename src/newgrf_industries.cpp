@@ -24,6 +24,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /* Since the industry IDs defined by the GRF file don't necessarily correlate
  * to those used by the game, the IDs used for overriding old industries must be
  * translated when the idustry spec is set. */
@@ -39,9 +41,9 @@ IndustryTileOverrideManager _industile_mngr(NEW_INDUSTRYTILEOFFSET, NUM_INDUSTRY
 IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32 grf_id)
 {
 	if (grf_type == IT_INVALID) return IT_INVALID;
-	if (!HasBit(grf_type, 7)) return GB(grf_type, 0, 6);
+	if (!HasBit(grf_type, 7)) return GB(grf_type, 0, 7);
 
-	return _industry_mngr.GetID(GB(grf_type, 0, 6), grf_id);
+	return _industry_mngr.GetID(GB(grf_type, 0, 7), grf_id);
 }
 
 /**
@@ -352,7 +354,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 		case 0xA4: return this->industry->last_month_transported[1];
 		case 0xA5: return GB(this->industry->last_month_transported[1], 8, 8);
 
-		case 0xA6: return this->industry->type;
+		case 0xA6: return indspec->grf_prop.local_id;
 		case 0xA7: return this->industry->founder;
 		case 0xA8: return this->industry->random_colour;
 		case 0xA9: return Clamp(this->industry->last_prod_year - ORIGINAL_BASE_YEAR, 0, 255);

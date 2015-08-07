@@ -31,6 +31,8 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 typedef GUIList<const StoryPage*> GUIStoryPageList;
 typedef GUIList<const StoryPageElement*> GUIStoryPageElementList;
 
@@ -566,10 +568,10 @@ public:
 		if (widget != WID_SB_SEL_PAGE && widget != WID_SB_PAGE_PANEL) return;
 
 		Dimension d;
-		d.height= FONT_HEIGHT_NORMAL;
+		d.height = FONT_HEIGHT_NORMAL;
 		d.width = 0;
 
-		switch(widget) {
+		switch (widget) {
 			case WID_SB_SEL_PAGE: {
 
 				/* Get max title width. */
@@ -756,13 +758,15 @@ static WindowDesc _story_book_desc(
 	_nested_story_book_widgets, lengthof(_nested_story_book_widgets)
 );
 
+/**
+ * Raise or create the story book window for \a company, at page \a page_id.
+ * @param company 'Owner' of the story book, may be #INVALID_COMPANY.
+ * @param page_id Page to open, may be #INVALID_STORY_PAGE.
+ */
 void ShowStoryBook(CompanyID company, uint16 page_id)
 {
 	if (!Company::IsValidID(company)) company = (CompanyID)INVALID_COMPANY;
 
-	StoryBookWindow *w = AllocateWindowDescFront<StoryBookWindow>(&_story_book_desc, company);
-	if (page_id != INVALID_STORY_PAGE) {
-		if (w == NULL) w = (StoryBookWindow *)FindWindowById(WC_STORY_BOOK, company);
-		w->SetSelectedPage(page_id);
-	}
+	StoryBookWindow *w = AllocateWindowDescFront<StoryBookWindow>(&_story_book_desc, company, true);
+	if (page_id != INVALID_STORY_PAGE) w->SetSelectedPage(page_id);
 }

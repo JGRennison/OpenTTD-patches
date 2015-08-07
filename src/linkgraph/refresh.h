@@ -23,7 +23,7 @@
  */
 class LinkRefresher {
 public:
-	static void Run(Vehicle *v, bool allow_merge = true);
+	static void Run(Vehicle *v, bool allow_merge = true, bool is_full_loading = false);
 
 protected:
 	/**
@@ -31,10 +31,11 @@ protected:
 	 * an influence on the next one.
 	 */
 	enum RefreshFlags {
-		USE_NEXT,   ///< There was a conditional jump. Try to use the given next order when looking for a new one.
-		HAS_CARGO,  ///< Consist could leave the last stop where it could interact with cargo carrying cargo (i.e. not an "unload all" + "no loading" order).
-		WAS_REFIT,  ///< Consist was refit since the last stop where it could interact with cargo.
-		RESET_REFIT ///< Consist had a chance to load since the last refit and the refit capacities can be reset.
+		USE_NEXT,     ///< There was a conditional jump. Try to use the given next order when looking for a new one.
+		HAS_CARGO,    ///< Consist could leave the last stop where it could interact with cargo carrying cargo (i.e. not an "unload all" + "no loading" order).
+		WAS_REFIT,    ///< Consist was refit since the last stop where it could interact with cargo.
+		RESET_REFIT,  ///< Consist had a chance to load since the last refit and the refit capacities can be reset.
+		IN_AUTOREFIT, ///< Currently doing an autorefit loop. Ignore the first autorefit order.
 	};
 
 	/**
@@ -88,10 +89,11 @@ protected:
 	HopSet *seen_hops;          ///< Hops already seen. If the same hop is seen twice we stop the algorithm. This is shared between all Refreshers of the same run.
 	CargoID cargo;              ///< Cargo given in last refit order.
 	bool allow_merge;           ///< If the refresher is allowed to merge or extend link graphs.
+	bool is_full_loading;       ///< If the vehicle is full loading.
 
-	LinkRefresher(Vehicle *v, HopSet *seen_hops, bool allow_merge);
+	LinkRefresher(Vehicle *v, HopSet *seen_hops, bool allow_merge, bool is_full_loading);
 
-	void HandleRefit(const Order *next);
+	bool HandleRefit(CargoID refit_cargo);
 	void ResetRefit();
 	void RefreshStats(const Order *cur, const Order *next);
 	const Order *PredictNextOrder(const Order *cur, const Order *next, uint8 flags, uint num_hops = 0);
@@ -99,4 +101,4 @@ protected:
 	void RefreshLinks(const Order *cur, const Order *next, uint8 flags, uint num_hops = 0);
 };
 
-#endif // REFRESH_H
+#endif /* REFRESH_H */

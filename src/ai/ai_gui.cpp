@@ -40,10 +40,11 @@
 #include "../game/game_info.hpp"
 #include "../game/game_instance.hpp"
 
-
 #include "table/strings.h"
 
 #include <vector>
+
+#include "../safeguards.h"
 
 static ScriptConfig *GetConfig(CompanyID slot)
 {
@@ -345,7 +346,7 @@ struct AISettingsWindow : public Window {
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		if (widget == WID_AIS_BACKGROUND) {
-			this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+			this->line_height = max(SETTING_BUTTON_HEIGHT, FONT_HEIGHT_NORMAL) + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
 
 			resize->width = 1;
 			resize->height = this->line_height;
@@ -370,6 +371,7 @@ struct AISettingsWindow : public Window {
 
 		int y = r.top;
 		int button_y_offset = (this->line_height - SETTING_BUTTON_HEIGHT) / 2;
+		int text_y_offset = (this->line_height - FONT_HEIGHT_NORMAL) / 2;
 		for (; this->vscroll->IsVisible(i) && it != visible_settings.end(); i++, it++) {
 			const ScriptConfigItem &config_item = **it;
 			int current_value = config->GetSetting((config_item).name);
@@ -411,7 +413,7 @@ struct AISettingsWindow : public Window {
 				}
 			}
 
-			DrawString(text_left, text_right, y + WD_MATRIX_TOP, str, colour);
+			DrawString(text_left, text_right, y + text_y_offset, str, colour);
 			y += this->line_height;
 		}
 	}
@@ -853,7 +855,7 @@ struct AIConfigWindow : public Window {
 			case WID_AIC_GAMELIST: {
 				this->selected_slot = OWNER_DEITY;
 				this->InvalidateData();
-				if (click_count > 1 && this->selected_slot != INVALID_COMPANY) ShowAIListWindow((CompanyID)this->selected_slot);
+				if (click_count > 1 && this->selected_slot != INVALID_COMPANY && _game_mode != GM_NORMAL) ShowAIListWindow((CompanyID)this->selected_slot);
 				break;
 			}
 
@@ -968,7 +970,7 @@ struct AIDebugWindow : public Window {
 	static const int top_offset;    ///< Offset of the text at the top of the WID_AID_LOG_PANEL.
 	static const int bottom_offset; ///< Offset of the text at the bottom of the WID_AID_LOG_PANEL.
 
-	static const unsigned int MAX_BREAK_STR_STRING_LENGTH = 256; ///< Maximum length of the break string.
+	static const uint MAX_BREAK_STR_STRING_LENGTH = 256;   ///< Maximum length of the break string.
 
 	static CompanyID ai_debug_company;                     ///< The AI that is (was last) being debugged.
 	int redraw_timer;                                      ///< Timer for redrawing the window, otherwise it'll happen every tick.

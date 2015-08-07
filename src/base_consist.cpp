@@ -12,6 +12,9 @@
 #include "stdafx.h"
 #include "base_consist.h"
 #include "vehicle_base.h"
+#include "string_func.h"
+
+#include "safeguards.h"
 
 BaseConsist::~BaseConsist()
 {
@@ -27,7 +30,7 @@ void BaseConsist::CopyConsistPropertiesFrom(const BaseConsist *src)
 	if (this == src) return;
 
 	free(this->name);
-	this->name = src->name != NULL ? strdup(src->name) : NULL;
+	this->name = src->name != NULL ? stredup(src->name) : NULL;
 
 	this->current_order_time = src->current_order_time;
 	this->lateness_counter = src->lateness_counter;
@@ -41,4 +44,8 @@ void BaseConsist::CopyConsistPropertiesFrom(const BaseConsist *src)
 	if (HasBit(src->vehicle_flags, VF_TIMETABLE_STARTED)) SetBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 	if (HasBit(src->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);
 	if (HasBit(src->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME)) SetBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+	if (HasBit(src->vehicle_flags, VF_SERVINT_IS_PERCENT) != HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT)) {
+		ToggleBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT);
+	}
+	if (HasBit(src->vehicle_flags, VF_SERVINT_IS_CUSTOM)) SetBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM);
 }

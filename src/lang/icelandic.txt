@@ -240,6 +240,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Skrunsl�
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Rennislá - rennir lista til vinstri/hægri
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Eyða byggingum o.s.frv. á lóðarreiti. Ctrl velur svæðið skáhalt. Haldið Shift inni til að sýna áætlaðan kostnað
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Sjálfgildi
 STR_BUTTON_CANCEL                                               :{BLACK}Hætta við
@@ -349,7 +352,6 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Hætta
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Stillingar
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :Ítarlegar stillingar
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Gervigreind/leikjaforskrift
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF stillingar
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Gegnsæisstillingar
@@ -457,7 +459,7 @@ STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Sýna/fela afm�
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :Sýna/fela litun á endurteiknuðum hlutum
 ############ range ends here
 
-############ range for days starts (also used for the place in the highscore window)
+############ range for ordinal numbers used for the place in the highscore window
 STR_ORDINAL_NUMBER_1ST                                          :1.
 STR_ORDINAL_NUMBER_2ND                                          :2.
 STR_ORDINAL_NUMBER_3RD                                          :3
@@ -473,22 +475,40 @@ STR_ORDINAL_NUMBER_12TH                                         :12.
 STR_ORDINAL_NUMBER_13TH                                         :13.
 STR_ORDINAL_NUMBER_14TH                                         :14.
 STR_ORDINAL_NUMBER_15TH                                         :15.
-STR_ORDINAL_NUMBER_16TH                                         :16.
-STR_ORDINAL_NUMBER_17TH                                         :17.
-STR_ORDINAL_NUMBER_18TH                                         :18.
-STR_ORDINAL_NUMBER_19TH                                         :19.
-STR_ORDINAL_NUMBER_20TH                                         :20.
-STR_ORDINAL_NUMBER_21ST                                         :21.
-STR_ORDINAL_NUMBER_22ND                                         :22.
-STR_ORDINAL_NUMBER_23RD                                         :23.
-STR_ORDINAL_NUMBER_24TH                                         :24.
-STR_ORDINAL_NUMBER_25TH                                         :25.
-STR_ORDINAL_NUMBER_26TH                                         :26.
-STR_ORDINAL_NUMBER_27TH                                         :27.
-STR_ORDINAL_NUMBER_28TH                                         :28.
-STR_ORDINAL_NUMBER_29TH                                         :29.
-STR_ORDINAL_NUMBER_30TH                                         :30.
-STR_ORDINAL_NUMBER_31ST                                         :31.
+############ range for ordinal numbers ends
+
+############ range for days starts
+STR_DAY_NUMBER_1ST                                              :1.
+STR_DAY_NUMBER_2ND                                              :2.
+STR_DAY_NUMBER_3RD                                              :3
+STR_DAY_NUMBER_4TH                                              :4.
+STR_DAY_NUMBER_5TH                                              :5.
+STR_DAY_NUMBER_6TH                                              :6.
+STR_DAY_NUMBER_7TH                                              :7.
+STR_DAY_NUMBER_8TH                                              :8.
+STR_DAY_NUMBER_9TH                                              :9.
+STR_DAY_NUMBER_10TH                                             :10.
+STR_DAY_NUMBER_11TH                                             :11.
+STR_DAY_NUMBER_12TH                                             :12.
+STR_DAY_NUMBER_13TH                                             :13.
+STR_DAY_NUMBER_14TH                                             :14.
+STR_DAY_NUMBER_15TH                                             :15.
+STR_DAY_NUMBER_16TH                                             :16.
+STR_DAY_NUMBER_17TH                                             :17.
+STR_DAY_NUMBER_18TH                                             :18.
+STR_DAY_NUMBER_19TH                                             :19.
+STR_DAY_NUMBER_20TH                                             :20.
+STR_DAY_NUMBER_21ST                                             :21.
+STR_DAY_NUMBER_22ND                                             :22.
+STR_DAY_NUMBER_23RD                                             :23.
+STR_DAY_NUMBER_24TH                                             :24.
+STR_DAY_NUMBER_25TH                                             :25.
+STR_DAY_NUMBER_26TH                                             :26.
+STR_DAY_NUMBER_27TH                                             :27.
+STR_DAY_NUMBER_28TH                                             :28.
+STR_DAY_NUMBER_29TH                                             :29.
+STR_DAY_NUMBER_30TH                                             :30.
+STR_DAY_NUMBER_31ST                                             :31.
 ############ range for days ends
 
 ############ range for months starts
@@ -791,13 +811,11 @@ STR_NEWS_ROAD_VEHICLE_IS_WAITING                                :{WHITE}{VEHICLE
 STR_NEWS_SHIP_IS_WAITING                                        :{WHITE}{VEHICLE} bíður í þjónustumiðstöð
 STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE} bíður í flugskýlinu
 
-# Start of order review system
-# DON'T ADD OR REMOVE LINES HERE
+# Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE} hefur of fáar skipanir á áætlun
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} hefur ógilda skipun
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} hefur endurteknar skipanir
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} hefur ógilda stöð í skipunum sínum
-# end of order system
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} er tekinn að eldast
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} er tekinn að eldast mikið
@@ -880,10 +898,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari (Gel)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Íranskt ríal (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Aksturstefna
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Aksturstefna bifreiða
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vinstristefna
@@ -919,11 +933,13 @@ STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :Katalónsk
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Sjálfvirk vistun
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Tíðni sjálfvirkra vistana
 
+############ start of autosave dropdown
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :Aldrei
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Mánaðarlega
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :Ársfjórðungslega
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :Hálfsárslega
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Árlega
+############ end of autosave dropdown
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}Tungumál
 STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}Tungumál viðmóts
@@ -935,8 +951,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skjáupp
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Stilla skjáupplausn
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
 
-STR_GAME_OPTIONS_SCREENSHOT_FORMAT                              :{BLACK}Snið skjámynda
-STR_GAME_OPTIONS_SCREENSHOT_FORMAT_TOOLTIP                      :{BLACK}Snið á skjámyndaskrám
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grunngrafík
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Nota grunngrafíkina
@@ -1037,8 +1052,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :Fjandsamleg
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Engin nothæf gervigreind í boði...{}Þú getur hlaðið niður mörgum gervigreindum í gegnum 'Ná í viðbætur af netinu' viðmótið
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}Ítarlegar stillingar
+# Settings tree window
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Sía:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Þenja út
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Draga saman
@@ -1105,8 +1119,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Kveikja eða sl
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Viðhörf bæjaryfirvalda til endurskipulagningar: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Veldu hversu mikil áhrif hávaði og umhverfisspjöll frá fyrirtækjum hafa áhrif á mat bæja á fyrirtækinu og frekari framkvæmdir innan bæjarmarkanna
 
-STR_CONFIG_SETTING_BUILDONSLOPES                                :Leyfilegt að byggja í halla og á strönd: {STRING}
-STR_CONFIG_SETTING_BUILDONSLOPES_HELPTEXT                       :Ef þessi stilling er virk er hægt að byggja spor og stöðvar í flestum brekkum. Ef hún er óvirk er það bara hægt í brekkum sem snúa í sömu átt og sporin og því þurfa þau engar undirstöður
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Leyfa landslagsbreytingar undir byggingum, sporum o.fl. (landfylling): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Leyfa mótun á landslagi undir byggingum og sporum án þess að þurfa að fjarlægja
 STR_CONFIG_SETTING_CATCHMENT                                    :Raunverulegri stærð svæðis sem stöðvar ná yfir: {STRING}
@@ -1131,14 +1143,8 @@ STR_CONFIG_SETTING_FORBID_90_DEG                                :Banna lestum og
 STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :90 gráðu beygjur verða þegar lárétt spor liggja saman við lóðrétt spor, þannig að lestin beygir 90 gráður þegar hún fer milli reita í staðinn fyrir 45 gráður fyrir aðrar samsetningar spora. Þetta á einnig við um beygjuradíus skipa
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :Leyfa sameiningu stöðva sem ekki tengjast á korti: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :Gerir mögulegt að bæta við stöð án þess að reitirnir liggi saman. Það þarf að halda Ctrl+Smella þegar bætt er við stöðina
-STR_CONFIG_SETTING_IMPROVEDLOAD                                 :Nota endurbættan algóriþma við hleðslu: {STRING}
-STR_CONFIG_SETTING_IMPROVEDLOAD_HELPTEXT                        :Ef þetta er virkt þá eru farartækin sem bíða á stöðinni hlaðinn eftir röð. Hleðsla á næsta farartæki byrjar aðeins þegar það bíður nógur farmur til að fylla fyrsta ökutækið
-STR_CONFIG_SETTING_GRADUAL_LOADING                              :Ferma farartæki smám saman: {STRING}
-STR_CONFIG_SETTING_GRADUAL_LOADING_HELPTEXT                     :Smám saman hlaða farartækin eftir ákveðnum tíma sem miðast við hvert farartæki, í staðinn fyrir að hlaða öllu í einu á ákveðnum tíma sem miðast við magn farmsins
 STR_CONFIG_SETTING_INFLATION                                    :Verðbólga: {STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :Hafa verðbólgu, þá eykst kostnaður aðeins hraðar en greiðslur
-STR_CONFIG_SETTING_SELECTGOODS                                  :Aðeins afhlaða farmi á stöðvum þar sem er eftirspurn: {STRING}
-STR_CONFIG_SETTING_SELECTGOODS_HELPTEXT                         :Aðeins afhlaða farm á stöðvar sem taka á móti fluttum farmi. Það kemur í veg fyrir að farmur fái slæma einkunn á stöð sem ekki tekur við viðkomandi farmi
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :Hámarkslengd á brúm: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :Hámarkslengd á brúm sem á að byggja
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :Hámarkslengd á göngum: {STRING}
@@ -1166,8 +1172,6 @@ STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Sjálfgefin sti
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :upphaf
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :miðju
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :enda
-STR_CONFIG_SETTING_ROAD_VEHICLE_QUEUEING                        :Bifreiðir bíða í röð (með skömmtunaráhrifum): {STRING}
-STR_CONFIG_SETTING_ROAD_VEHICLE_QUEUEING_HELPTEXT               :Bílar verða að bíða fyrir aftan vegahindranir þar til þær hafa verið fjarlægðar
 STR_CONFIG_SETTING_AUTOSCROLL                                   :Færa sjónarhorn þegar músin nálgast brún gluggans: {STRING}
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :Ef þessi stilling er virk þá færist landslagið til hliðar ef músin er við jaðra gluggans
 STR_CONFIG_SETTING_AUTOSCROLL_DISABLED                          :Óvirkt
@@ -1198,10 +1202,6 @@ STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Leyfa stoppist�
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :Leyfa byggingu stoppistöðvar sem keyrt er í gegnum, á vegum í eigu bæja
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :Leyfa stoppistöðvar sem keyrt er í gegnum, á vegum í eigu samkeppnisaðila: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Leyfa byggingu stoppistöðva sem keyrt er í gegnum, á vegum í eigu samkeppnisaðila
-STR_CONFIG_SETTING_ADJACENT_STATIONS                            :Heimila sambyggingu stöðva: {STRING}
-STR_CONFIG_SETTING_ADJACENT_STATIONS_HELPTEXT                   :Leyfa ólíkum stöðvum að snerta hvor aðra
-STR_CONFIG_SETTING_DYNAMIC_ENGINES                              :Virkja mörg NewGRF vélasöfn: {STRING}
-STR_CONFIG_SETTING_DYNAMIC_ENGINES_HELPTEXT                     :Samhæfni kostur fyrir gamla NewGRF. Ekki slökkva á þessu, nema þú vitir nákvæmlega hvað þú ert að gera!
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Ekki er hægt að breyta þessari stillingu þegar til eru farartæki
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Viðhald á innviðum: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Ef þessi stilling er virk kostar að reka innviði fyrirtækisins. Kostnaður eykst í auknu hlutfalli við stærð fyrirtækisins, því eru áhrifin meiri á stór fyrirtæki en lítil
@@ -1259,8 +1259,6 @@ STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Snúningur hæ�
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Rangsælis
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Réttsælis
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :Hæð jafnslétts lands yfir sjávarmáli: {STRING}
-STR_CONFIG_SETTING_ENABLE_FREEFORM_EDGES                        :Leyfa landslagsbreytingar á jöðrum korts: {STRING}
-STR_CONFIG_SETTING_ENABLE_FREEFORM_EDGES_HELPTEXT               :Ef þessi stilling er óvirk eru jaðrar kortsins alltaf sjór
 STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}Einn eða fleiri reitir við norðurjaðarinn eru ekki tómir
 STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}Einn eða fleiri reitir við eina hlið kortsins hafa ekki vatn
 
@@ -1311,14 +1309,12 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Af
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Skrun með hægri músarhnappi: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Virkja að hægt sé að færa sjónarhornið með því að færa það með vinstri músar takkanum. Þetta er sérstaklega gott þegar notast er við snerti-skjá til að færa sjónarhornið
 
+
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Nota dagsetningar á {STRING} formi fyrir vistaða leiki.
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Snið á dagsetningu í nöfnum á vistuðum leikjum
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :löngu (31. Des 2008)
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_SHORT              :stuttu (31-12-2008)
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-12-31)
-
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE                       :Sjálfgefið litaspjald fyrir NewGRF sem tilgreina ekki litaspjald: {STRING}
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_HELPTEXT              :Sjálfgefið litaspjald til að nota með NewGRF sem skilgreina ekki hvaða litaspjald það notar
 
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME                            :Setja leik á bið þegar nýr leikur er hafinn: {STRING}
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME_HELPTEXT                   :Ef þessi stilling er virk mun leikurinn fara sjálfvirkt á bið þegar nýr leikur hefst. Það gefur færi á að skoða kortið betur
@@ -1541,8 +1537,6 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 af {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Enginn
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Upphaflegur margfaldari bogarstærðar: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Meðalstærð borga miðað við bæi, við upphaf leiks
-STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD                        :Fjarlægja fráleita vegahluti þegar vegagerð stendur yfir: {STRING}
-STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD_HELPTEXT               :Þegar bæir hafa verið styrktir til að endurnýja vegina sýna á þá að fjarlægja ónotaða vegenda
 
 
 
@@ -1551,25 +1545,15 @@ STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD_HELPTEXT               :Þegar bæir ha
 
 
 
-STR_CONFIG_SETTING_GUI                                          :{ORANGE}Viðmót
-STR_CONFIG_SETTING_CONSTRUCTION                                 :{ORANGE}Bygging
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Farartæki
-STR_CONFIG_SETTING_STATIONS                                     :{ORANGE}Stöðvar
-STR_CONFIG_SETTING_ECONOMY                                      :{ORANGE}Efnahagur
-STR_CONFIG_SETTING_AI                                           :{ORANGE}Mótherji
-STR_CONFIG_SETTING_DISPLAY_OPTIONS                              :{ORANGE}Skjá-valmöguleikar
-STR_CONFIG_SETTING_INTERACTION                                  :{ORANGE}Viðmót
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Hljóð
-STR_CONFIG_SETTING_NEWS                                         :{ORANGE}Fréttir og skilaboð
-STR_CONFIG_SETTING_CONSTRUCTION_SIGNALS                         :{ORANGE}Umferðarmerki
-STR_CONFIG_SETTING_STATIONS_CARGOHANDLING                       :{ORANGE}Meðhöndlun farms
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Gervigreind
-STR_CONFIG_SETTING_VEHICLES_AUTORENEW                           :{ORANGE}Sjálfvirk endurnýjun
-STR_CONFIG_SETTING_VEHICLES_SERVICING                           :{ORANGE}Viðhald farartækja
+STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Viðmót
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Bygging
+STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Farartæki
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Leiðarvísun farartækja
-STR_CONFIG_SETTING_VEHICLES_TRAINS                              :{ORANGE}Lestir
-STR_CONFIG_SETTING_ECONOMY_TOWNS                                :{ORANGE}Bæir
-STR_CONFIG_SETTING_ECONOMY_INDUSTRIES                           :{ORANGE}Iðnaður
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Bæir
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Iðnaður
+STR_CONFIG_SETTING_AI                                           :{ORANGE}Mótherji
+STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Gervigreind
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :Upprunalegt
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
@@ -1618,7 +1602,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Fjölspi
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Stillingar
 STR_INTRO_HIGHSCORE                                             :{BLACK}Stigatafla
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}Ítarlegar stillingar
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF Stillingar
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Ná í viðbætur af netinu
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}GG/forskriftar stillingar
@@ -1638,7 +1621,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Leikfang
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Stilla OpenTTD
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Birta stigatöflu
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}Birta ítarlegar stillingar
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Sýna NewGRF stillingar
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Skoða viðbætur sem hægt er að ná í af netinu
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Birta stillingar fyrir gervigreind/forskrift
@@ -1726,6 +1708,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :Farmsporvagn
 STR_FACE_CAPTION                                                :{WHITE}Andlitsval
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}Hætta við andlitsval
 STR_FACE_OK_TOOLTIP                                             :{BLACK}Samþykkja andlitsval
+STR_FACE_RANDOM                                                 :{BLACK}Nýtt raðnúmer
 
 STR_FACE_MALE_BUTTON                                            :{BLACK}Karlmaður
 STR_FACE_MALE_TOOLTIP                                           :{BLACK}Velja karlmannsandlit
@@ -2553,7 +2536,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Land í eigu fy
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upphaflegur höfundarréttur {COPYRIGHT} 1995 Chris Sawyer, Öll réttindi áskilin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáfa {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2014 OpenTTD hópurinn
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 OpenTTD hópurinn
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Vista leik
@@ -2590,10 +2573,6 @@ STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Fjöldi 
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hæð snjólínu:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Hækka snjólínu upp um eitt þrep
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Lækka snjólínu niður um eitt þrep
-STR_MAPGEN_RANDOM_SEED                                          :{BLACK}Raðnúmer lands:
-STR_MAPGEN_RANDOM_SEED_HELP                                     :{BLACK}Smelltu til að skrifa inn raðnúmer
-STR_MAPGEN_RANDOM                                               :{BLACK}Nýtt raðnúmer
-STR_MAPGEN_RANDOM_HELP                                          :{BLACK}Fá tilviljanakennt raðnúmer fyrir myndun lands
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Landmyndun:
 STR_MAPGEN_TREE_PLACER                                          :{BLACK}Planta trjám:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Gerð lands:
@@ -2620,7 +2599,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nafn hæ
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Stærð:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} * {NUM}
 
-STR_MAPGEN_RANDOM_SEED_OSKTITLE                                 :{BLACK}Sláðu inn slembistofn
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Breyta hæð snjólínu
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Breyta upphafsári
 
@@ -2699,6 +2677,8 @@ STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}Viðeigand
 STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Óvirkt
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Ósamhæft við þessa útgáfu af OpenTTD
 
+# NewGRF save preset window
+
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Breyta NewGRF stillingum
 STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Loka
@@ -2729,7 +2709,6 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Fyrri hr
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fara á fyrri venjulegu hreyfimynd, sleppir gervi/endurlitun/letur hreyfimyndum og fer aftast í listen þegar upphafi er náð.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Framsetning á valinni hreyfimynd. Samstillingu er sleppt við teikningu á þessari hreyfimynd.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Færðu hreyfimyndina, breytir X og Y hliðrun
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X hliðrun: {NUM}, Y hliðrun: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Veldu hreyfimynd
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Veldu hreyfimynd hvaðan sem er af skjánum
 
@@ -2895,7 +2874,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Upplýsingar
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Varúð
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Villa
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Hætta við
 STR_GOAL_QUESTION_BUTTON_OK                                     :Í lagi
 STR_GOAL_QUESTION_BUTTON_NO                                     :Nei
@@ -2914,6 +2893,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Byrja aftur
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Fresta
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Gefast upp
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Loka
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Samstarfssamningar
@@ -2939,7 +2919,6 @@ STR_STATION_LIST_NO_WAITING_CARGO                               :{BLACK}Enginn f
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
-STR_STATION_VIEW_WAITING_TITLE                                  :{BLACK}Bíður: {WHITE}{STRING}
 STR_STATION_VIEW_WAITING_CARGO                                  :{WHITE}{CARGO_LONG}
 STR_STATION_VIEW_EN_ROUTE_FROM                                  :{YELLOW}({CARGO_SHORT} frá {STATION})
 STR_STATION_VIEW_RESERVED                                       :{YELLOW}({CARGO_SHORT} frátekin fyrir hleðslu)
@@ -3167,6 +3146,7 @@ STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Eyða v�
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Endurnefna valinn hóp
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Smelltu til að halda þessum hóp frá sjálfvirkri uppfærslu
 
+
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Bæta við deildu farartæki
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Fjarlægja öll farartæki
 
@@ -3228,6 +3208,9 @@ STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}Endurnef
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Endurnefna tegund bifreiðar
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Endurnefna skipategund
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Endurnefna tegund flugvélar
+
+
+
 
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Endurskíra lestargerð
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Endurnefna tegund bifreiðar
@@ -3332,6 +3315,7 @@ STR_REPLACE_VEHICLE_TRAIN                                       :Lest
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :Bifreið
 STR_REPLACE_VEHICLE_SHIP                                        :Skip
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Flugvél
+
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Veldu vagntegund til að skipta út
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Velja vagntegund sem þú myndir vilja nota í staðin fyrir vagntegundina sem valinn er vinstra megin
@@ -3974,6 +3958,7 @@ STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... getu
 STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... skógur getur aðeins verið gróðursettur yfir snjólínu
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... er aðeins hægt að byggja fyrir ofan snælínu
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... er aðeins hægt að byggja fyrir neðan snælínu
+
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Get ekki byggt lestarstöð hér...
@@ -4706,8 +4691,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
@@ -4718,9 +4701,7 @@ STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
-STR_GREEN_STRING                                                :{GREEN}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
-STR_RED_STRING                                                  :{RED}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
 STR_WHITE_STRING                                                :{WHITE}{STRING}
 STR_ORANGE_STRING1_WHITE                                        :{ORANGE}{STRING}{WHITE}

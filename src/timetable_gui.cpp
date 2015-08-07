@@ -30,6 +30,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /** Container for the arrival/departure dates of a vehicle */
 struct TimetableArrivalDeparture {
 	Ticks arrival;   ///< The arrival time
@@ -54,18 +56,6 @@ void SetTimetableParams(int param1, int param2, Ticks ticks)
 }
 
 /**
- * Sets the arrival or departure string and parameters.
- * @param param1 the first DParam to fill
- * @param param2 the second DParam to fill
- * @param ticks  the number of ticks to 'draw'
- */
-static void SetArrivalDepartParams(int param1, int param2, Ticks ticks)
-{
-	SetDParam(param1, STR_JUST_DATE_TINY);
-	SetDParam(param2, _date + (ticks / DAY_TICKS));
-}
-
-/**
  * Check whether it is possible to determine how long the order takes.
  * @param order the order to check.
  * @param travelling whether we are interested in the travel or the wait part.
@@ -76,9 +66,12 @@ static bool CanDetermineTimeTaken(const Order *order, bool travelling)
 	/* Current order is conditional */
 	if (order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT)) return false;
 	/* No travel time and we have not already finished travelling */
-	if (travelling && order->travel_time == 0) return false;
+	if (travelling && !order->IsTravelTimetabled()) return false;
 	/* No wait time but we are loading at this timetabled station */
-	if (!travelling && order->wait_time == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) return false;
+	if (!travelling && !order->IsWaitTimetabled() && order->IsType(OT_GOTO_STATION) &&
+			!(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
+		return false;
+	}
 
 	return true;
 }
@@ -116,12 +109,12 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 		if (!order->IsType(OT_IMPLICIT)) {
 			if (travelling || i != start) {
 				if (!CanDetermineTimeTaken(order, true)) return;
-				sum += order->travel_time;
+				sum += order->GetTimetabledTravel();
 				table[i].arrival = sum;
 			}
 
 			if (!CanDetermineTimeTaken(order, false)) return;
-			sum += order->wait_time;
+			sum += order->GetTimetabledWait();
 			table[i].departure = sum;
 		}
 
@@ -138,7 +131,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	 * travelling part of the first order. */
 	if (!travelling) {
 		if (!CanDetermineTimeTaken(order, true)) return;
-		sum += order->travel_time;
+		sum += order->GetTimetabledTravel();
 		table[i].arrival = sum;
 	}
 }
@@ -396,13 +389,23 @@ struct TimetableWindow : Window {
 						} else if (order->IsType(OT_IMPLICIT)) {
 							string = STR_TIMETABLE_NOT_TIMETABLEABLE;
 							colour = ((i == selected) ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
-						} else if (order->travel_time == 0) {
-							string = order->max_speed != UINT16_MAX ? STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED : STR_TIMETABLE_TRAVEL_NOT_TIMETABLED;
+						} else if (!order->IsTravelTimetabled()) {
+							if (order->GetTravelTime() > 0) {
+								SetTimetableParams(0, 1, order->GetTravelTime());
+								string = order->GetMaxSpeed() != UINT16_MAX ?
+										STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED  :
+										STR_TIMETABLE_TRAVEL_FOR_ESTIMATED;
+							} else {
+								string = order->GetMaxSpeed() != UINT16_MAX ?
+										STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED :
+										STR_TIMETABLE_TRAVEL_NOT_TIMETABLED;
+							}
 						} else {
-							SetTimetableParams(0, 1, order->travel_time);
-							string = order->max_speed != UINT16_MAX ? STR_TIMETABLE_TRAVEL_FOR_SPEED : STR_TIMETABLE_TRAVEL_FOR;
+							SetTimetableParams(0, 1, order->GetTimetabledTravel());
+							string = order->GetMaxSpeed() != UINT16_MAX ?
+									STR_TIMETABLE_TRAVEL_FOR_SPEED : STR_TIMETABLE_TRAVEL_FOR;
 						}
-						SetDParam(2, order->max_speed);
+						SetDParam(2, order->GetMaxSpeed());
 
 						DrawString(rtl ? r.left + WD_FRAMERECT_LEFT : middle, rtl ? middle : r.right - WD_FRAMERECT_LEFT, y, string, colour);
 
@@ -447,18 +450,20 @@ struct TimetableWindow : Window {
 						if (arr_dep[i / 2].arrival != INVALID_TICKS) {
 							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_ARRIVAL_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
 							if (this->show_expected && i / 2 == earlyID) {
-								SetArrivalDepartParams(0, 1, arr_dep[i / 2].arrival);
-								DrawString(time_left, time_right, y, STR_GREEN_STRING, i == selected ? TC_WHITE : TC_BLACK);
+								SetDParam(0, _date + arr_dep[i / 2].arrival / DAY_TICKS);
+								DrawString(time_left, time_right, y, STR_JUST_DATE_TINY, TC_GREEN);
 							} else {
-								SetArrivalDepartParams(0, 1, arr_dep[i / 2].arrival + offset);
-								DrawString(time_left, time_right, y, show_late ? STR_RED_STRING : STR_JUST_STRING, i == selected ? TC_WHITE : TC_BLACK);
+								SetDParam(0, _date + (arr_dep[i / 2].arrival + offset) / DAY_TICKS);
+								DrawString(time_left, time_right, y, STR_JUST_DATE_TINY,
+										show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
 							}
 						}
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
 							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
-							SetArrivalDepartParams(0, 1, arr_dep[i/2].departure + offset);
-							DrawString(time_left, time_right, y, show_late ? STR_RED_STRING : STR_JUST_STRING, i == selected ? TC_WHITE : TC_BLACK);
+							SetDParam(0, _date + (arr_dep[i/2].departure + offset) / DAY_TICKS);
+							DrawString(time_left, time_right, y, STR_JUST_DATE_TINY,
+									show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
 						}
 					}
 					y += FONT_HEIGHT_NORMAL;
@@ -538,7 +543,7 @@ struct TimetableWindow : Window {
 				StringID current = STR_EMPTY;
 
 				if (order != NULL) {
-					uint time = (selected % 2 == 1) ? order->travel_time : order->wait_time;
+					uint time = (selected % 2 == 1) ? order->GetTravelTime() : order->GetWaitTime();
 					if (!_settings_client.gui.timetable_in_ticks) time /= DAY_TICKS;
 
 					if (time != 0) {
@@ -548,7 +553,7 @@ struct TimetableWindow : Window {
 				}
 
 				this->query_is_speed_query = false;
-				ShowQueryString(current, STR_TIMETABLE_CHANGE_TIME, 31, this, CS_NUMERAL, QSF_NONE);
+				ShowQueryString(current, STR_TIMETABLE_CHANGE_TIME, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				break;
 			}
 
@@ -561,8 +566,8 @@ struct TimetableWindow : Window {
 				StringID current = STR_EMPTY;
 				const Order *order = v->GetOrder(real);
 				if (order != NULL) {
-					if (order->max_speed != UINT16_MAX) {
-						SetDParam(0, ConvertKmhishSpeedToDisplaySpeed(order->max_speed));
+					if (order->GetMaxSpeed() != UINT16_MAX) {
+						SetDParam(0, ConvertKmhishSpeedToDisplaySpeed(order->GetMaxSpeed()));
 						current = STR_JUST_INT;
 					}
 				}

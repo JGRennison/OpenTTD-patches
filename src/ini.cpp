@@ -26,6 +26,8 @@
 # include "core/mem_func.hpp"
 #endif
 
+#include "safeguards.h"
+
 /**
  * Create a new ini file with given group names.
  * @param list_group_names A \c NULL terminated list with group names that should be loaded as lists instead of variables. @see IGT_LIST
@@ -87,6 +89,8 @@ bool IniFile::SaveToDisk(const char *filename)
 #endif
 
 #if defined(WIN32) || defined(WIN64)
+	/* _tcsncpy = strcpy is TCHAR is char, but isn't when TCHAR is wchar. */
+	#undef strncpy
 	/* Allocate space for one more \0 character. */
 	TCHAR tfilename[MAX_PATH + 1], tfile_new[MAX_PATH + 1];
 	_tcsncpy(tfilename, OTTD2FS(filename), MAX_PATH);

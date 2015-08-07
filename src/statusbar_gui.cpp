@@ -24,12 +24,15 @@
 #include "saveload/saveload.h"
 #include "window_func.h"
 #include "statusbar_gui.h"
+#include "toolbar_gui.h"
 #include "core/geometry_func.hpp"
 
 #include "widgets/statusbar_widget.h"
 
 #include "table/strings.h"
 #include "table/sprites.h"
+
+#include "safeguards.h"
 
 static bool DrawScrollingStatusText(const NewsItem *ni, int scroll_pos, int left, int right, int top, int bottom)
 {
@@ -97,6 +100,11 @@ struct StatusBarWindow : Window {
 	{
 		Point pt = { 0, _screen.height - sm_height };
 		return pt;
+	}
+
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
@@ -236,7 +244,7 @@ static const NWidgetPart _nested_main_status_widgets[] = {
 };
 
 static WindowDesc _main_status_desc(
-	WDP_MANUAL, NULL, 640, 12,
+	WDP_MANUAL, NULL, 0, 0,
 	WC_STATUS_BAR, WC_NONE,
 	WDF_NO_FOCUS,
 	_nested_main_status_widgets, lengthof(_nested_main_status_widgets)

@@ -27,6 +27,8 @@
 #include <zlib.h>
 #endif
 
+#include "../safeguards.h"
+
 extern bool HasScenario(const ContentInfo *ci, bool md5sum);
 
 /** The client we use to connect to the server. */
@@ -388,7 +390,7 @@ static char *GetFullFilename(const ContentInfo *ci, bool compressed)
 	if (dir == NO_DIRECTORY) return NULL;
 
 	static char buf[MAX_PATH];
-	FioGetFullPath(buf, lengthof(buf), SP_AUTODOWNLOAD_DIR, dir, ci->filename);
+	FioGetFullPath(buf, lastof(buf), SP_AUTODOWNLOAD_DIR, dir, ci->filename);
 	strecat(buf, compressed ? ".tar.gz" : ".tar", lastof(buf));
 
 	return buf;

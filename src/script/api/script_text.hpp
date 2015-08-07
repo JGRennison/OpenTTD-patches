@@ -42,9 +42,8 @@ public:
  */
 class RawText : public Text {
 public:
-	RawText(const char *text) :
-	  text(strdup(text)) {}
-	~RawText() { free(this->text); }
+	RawText(const char *text);
+	~RawText();
 
 	/* virtual */ const char *GetEncodedText() { return this->text; }
 private:
@@ -130,7 +129,7 @@ public:
 private:
 	StringID string;
 	char *params[SCRIPT_TEXT_MAX_PARAMETERS];
-	int parami[SCRIPT_TEXT_MAX_PARAMETERS];
+	int64 parami[SCRIPT_TEXT_MAX_PARAMETERS];
 	ScriptText *paramt[SCRIPT_TEXT_MAX_PARAMETERS];
 	int paramc;
 

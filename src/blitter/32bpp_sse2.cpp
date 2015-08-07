@@ -17,6 +17,8 @@
 #include "32bpp_sse2.hpp"
 #include "32bpp_sse_func.hpp"
 
+#include "../safeguards.h"
+
 /** Instantiation of the SSE2 32bpp blitter factory. */
 static FBlitter_32bppSSE2 iFBlitter_32bppSSE2;
 
@@ -36,6 +38,7 @@ Sprite *Blitter_32bppSSE_Base::Encode(const SpriteLoader::Sprite *sprite, Alloca
 
 	/* Calculate sizes and allocate. */
 	SpriteData sd;
+	memset(&sd, 0, sizeof(sd));
 	uint all_sprites_size = 0;
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_sprite = &sprite[z];

@@ -27,8 +27,11 @@
 #include "waypoint_base.h"
 #include "company_base.h"
 #include "order_backup.h"
+#include "cheat_type.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 /* DestinationID must be at least as large as every these below, because it can
  * be any of them
@@ -295,11 +298,13 @@ void OrderList::Initialize(Order *chain, Vehicle *v)
 	this->num_manual_orders = 0;
 	this->num_vehicles = 1;
 	this->timetable_duration = 0;
+	this->total_duration = 0;
 
 	for (Order *o = this->first; o != NULL; o = o->next) {
 		++this->num_orders;
 		if (!o->IsType(OT_IMPLICIT)) ++this->num_manual_orders;
-		this->timetable_duration += o->wait_time + o->travel_time;
+		this->timetable_duration += o->GetTimetabledWait() + o->GetTimetabledTravel();
+		this->total_duration += o->GetWaitTime() + o->GetTravelTime();
 	}
 
 	for (Vehicle *u = this->first_shared->PreviousShared(); u != NULL; u = u->PreviousShared()) {
@@ -474,7 +479,8 @@ void OrderList::InsertOrderAt(Order *new_order, int index)
 	}
 	++this->num_orders;
 	if (!new_order->IsType(OT_IMPLICIT)) ++this->num_manual_orders;
-	this->timetable_duration += new_order->wait_time + new_order->travel_time;
+	this->timetable_duration += new_order->GetTimetabledWait() + new_order->GetTimetabledTravel();
+	this->total_duration += new_order->GetWaitTime() + new_order->GetTravelTime();
 
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
 	 * the list of stations. So, we need to invalidate that window if needed. */
@@ -506,7 +512,8 @@ void OrderList::DeleteOrderAt(int index)
 	}
 	--this->num_orders;
 	if (!to_remove->IsType(OT_IMPLICIT)) --this->num_manual_orders;
-	this->timetable_duration -= (to_remove->wait_time + to_remove->travel_time);
+	this->timetable_duration -= (to_remove->GetTimetabledWait() + to_remove->GetTimetabledTravel());
+	this->total_duration -= (to_remove->GetWaitTime() + to_remove->GetTravelTime());
 	delete to_remove;
 }
 
@@ -601,26 +608,29 @@ void OrderList::DebugCheckSanity() const
 	VehicleOrderID check_num_manual_orders = 0;
 	uint check_num_vehicles = 0;
 	Ticks check_timetable_duration = 0;
+	Ticks check_total_duration = 0;
 
 	DEBUG(misc, 6, "Checking OrderList %hu for sanity...", this->index);
 
 	for (const Order *o = this->first; o != NULL; o = o->next) {
 		++check_num_orders;
 		if (!o->IsType(OT_IMPLICIT)) ++check_num_manual_orders;
-		check_timetable_duration += o->wait_time + o->travel_time;
+		check_timetable_duration += o->GetTimetabledWait() + o->GetTimetabledTravel();
+		check_total_duration += o->GetWaitTime() + o->GetTravelTime();
 	}
 	assert(this->num_orders == check_num_orders);
 	assert(this->num_manual_orders == check_num_manual_orders);
 	assert(this->timetable_duration == check_timetable_duration);
+	assert(this->total_duration == check_total_duration);
 
 	for (const Vehicle *v = this->first_shared; v != NULL; v = v->NextShared()) {
 		++check_num_vehicles;
 		assert(v->orders.list == this);
 	}
 	assert(this->num_vehicles == check_num_vehicles);
-	DEBUG(misc, 6, "... detected %u orders (%u manual), %u vehicles, %i ticks",
+	DEBUG(misc, 6, "... detected %u orders (%u manual), %u vehicles, %i timetabled, %i total",
 			(uint)this->num_orders, (uint)this->num_manual_orders,
-			this->num_vehicles, this->timetable_duration);
+			this->num_vehicles, this->timetable_duration, this->total_duration);
 }
 
 /**
@@ -648,6 +658,7 @@ static void DeleteOrderWarnings(const Vehicle *v)
 	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_VOID_ORDER);
 	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY);
 	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_INVALID_ENTRY);
+	DeleteVehicleNews(v->index, STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY);
 }
 
 /**
@@ -1761,17 +1772,16 @@ void CheckOrders(const Vehicle *v)
 
 	/* Only check every 20 days, so that we don't flood the message log */
 	if (v->owner == _local_company && v->day_counter % 20 == 0) {
-		int n_st, problem_type = -1;
 		const Order *order;
-		int message = 0;
+		StringID message = INVALID_STRING_ID;
 
 		/* Check the order list */
-		n_st = 0;
+		int n_st = 0;
 
 		FOR_VEHICLE_ORDERS(v, order) {
 			/* Dummy order? */
 			if (order->IsType(OT_DUMMY)) {
-				problem_type = 1;
+				message = STR_NEWS_VEHICLE_HAS_VOID_ORDER;
 				break;
 			}
 			/* Does station have a load-bay for this vehicle? */
@@ -1779,7 +1789,16 @@ void CheckOrders(const Vehicle *v)
 				const Station *st = Station::Get(order->GetDestination());
 
 				n_st++;
-				if (!CanVehicleUseStation(v, st)) problem_type = 3;
+				if (!CanVehicleUseStation(v, st)) {
+					message = STR_NEWS_VEHICLE_HAS_INVALID_ENTRY;
+				} else if (v->type == VEH_AIRCRAFT &&
+							(AircraftVehInfo(v->engine_type)->subtype & AIR_FAST) &&
+							(st->airport.GetFTA()->flags & AirportFTAClass::SHORT_STRIP) &&
+							_settings_game.vehicle.plane_crashes != 0 &&
+							!_cheats.no_jetcrash.value &&
+							message == INVALID_STRING_ID) {
+					message = STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY;
+				}
 			}
 		}
 
@@ -1788,22 +1807,19 @@ void CheckOrders(const Vehicle *v)
 			const Order *last = v->GetLastOrder();
 
 			if (v->orders.list->GetFirstOrder()->Equals(*last)) {
-				problem_type = 2;
+				message = STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY;
 			}
 		}
 
 		/* Do we only have 1 station in our order list? */
-		if (n_st < 2 && problem_type == -1) problem_type = 0;
+		if (n_st < 2 && message == INVALID_STRING_ID) message = STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS;
 
 #ifndef NDEBUG
 		if (v->orders.list != NULL) v->orders.list->DebugCheckSanity();
 #endif
 
 		/* We don't have a problem */
-		if (problem_type < 0) return;
-
-		message = STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS + problem_type;
-		//DEBUG(misc, 3, "Triggered News Item for vehicle %d", v->index);
+		if (message == INVALID_STRING_ID) return;
 
 		SetDParam(0, v->index);
 		AddVehicleAdviceNewsItem(message, v->index);
@@ -1854,7 +1870,19 @@ restart:
 					break;
 				}
 
+				/* Clear wait time */
+				v->orders.list->UpdateTotalDuration(-order->GetWaitTime());
+				if (order->IsWaitTimetabled()) {
+					v->orders.list->UpdateTimetableDuration(-order->GetTimetabledWait());
+					order->SetWaitTimetabled(false);
+				}
+				order->SetWaitTime(0);
+
+				/* Clear order, preserving travel time */
+				bool travel_timetabled = order->IsTravelTimetabled();
 				order->MakeDummy();
+				order->SetTravelTimetabled(travel_timetabled);
+
 				for (const Vehicle *w = v->FirstShared(); w != NULL; w = w->NextShared()) {
 					/* In GUI, simulate by removing the order and adding it back */
 					InvalidateVehicleOrder(w, id | (INVALID_VEH_ORDER_ID << 8));
@@ -2079,7 +2107,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 				UpdateVehicleTimetable(v, false);
 				v->cur_implicit_order_index = v->cur_real_order_index = next_order;
 				v->UpdateRealOrderIndex();
-				v->current_order_time += v->GetOrder(v->cur_real_order_index)->travel_time;
+				v->current_order_time += v->GetOrder(v->cur_real_order_index)->GetTimetabledTravel();
 
 				/* Disable creation of implicit orders.
 				 * When inserting them we do not know that we would have to make the conditional orders point to them. */

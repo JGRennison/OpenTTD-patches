@@ -15,6 +15,8 @@
 
 #include "../table/sprites.h"
 
+#include "../safeguards.h"
+
 /** Instantiation of the 32bpp with animation blitter factory. */
 static FBlitter_32bppAnim iFBlitter_32bppAnim;
 
@@ -173,6 +175,16 @@ inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 					}
 					break;
 
+
+				case BM_BLACK_REMAP:
+					do {
+						*dst++ = Colour(0, 0, 0);
+						*anim++ = 0;
+						src_px++;
+						src_n++;
+					} while (--n != 0);
+					break;
+
 				case BM_TRANSPARENT:
 					/* TODO -- We make an assumption here that the remap in fact is transparency, not some colour.
 					 *  This is never a problem with the code we produce, but newgrfs can make it fail... or at least:
@@ -249,6 +261,7 @@ void Blitter_32bppAnim::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 		case BM_COLOUR_REMAP: Draw<BM_COLOUR_REMAP>(bp, zoom); return;
 		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT> (bp, zoom); return;
 		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP> (bp, zoom); return;
+		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP> (bp, zoom); return;
 	}
 }
 
@@ -480,7 +493,7 @@ void Blitter_32bppAnim::PaletteAnimate(const Palette &palette)
 	}
 
 	/* Make sure the backend redraws the whole screen */
-	_video_driver->MakeDirty(0, 0, _screen.width, _screen.height);
+	VideoDriver::GetInstance()->MakeDirty(0, 0, _screen.width, _screen.height);
 }
 
 Blitter::PaletteAnimation Blitter_32bppAnim::UsePaletteAnimation()

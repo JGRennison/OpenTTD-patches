@@ -17,6 +17,7 @@
  * See docs/desync.txt for details.
  */
 // #define DEBUG_DUMP_COMMANDS
+// #define DEBUG_FAILED_DUMP_COMMANDS
 
 #include "core/address.h"
 #include "network_type.h"
@@ -71,7 +72,7 @@ void NetworkServerYearlyLoop();
 void NetworkServerSendConfigUpdate();
 void NetworkServerShowStatusToConsole();
 bool NetworkServerStart();
-void NetworkServerUpdateCompanyPassworded(CompanyID company_id, bool passworded);
+void NetworkServerNewCompany(const Company *company, NetworkClientInfo *ci);
 bool NetworkServerChangeClientName(ClientID client_id, const char *new_name);
 
 

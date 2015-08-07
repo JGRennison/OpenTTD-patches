@@ -24,6 +24,8 @@
 #include "../script_fatalerror.hpp"
 #include "script_error.hpp"
 
+#include "../../safeguards.h"
+
 /**
  * Get the storage associated with the current ScriptInstance.
  * @return The storage.
@@ -262,7 +264,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	char buffer[64];
 	::GetString(buffer, string, lastof(buffer));
 	::str_validate(buffer, lastof(buffer), SVS_NONE);
-	return ::strdup(buffer);
+	return ::stredup(buffer);
 }
 
 /* static */ void ScriptObject::SetCallbackVariable(int index, int value)

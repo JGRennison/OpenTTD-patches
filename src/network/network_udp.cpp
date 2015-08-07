@@ -34,6 +34,8 @@
 
 #include "core/udp.h"
 
+#include "../safeguards.h"
+
 /** Mutex for all out threaded udp resolution and such. */
 static ThreadMutex *_network_udp_mutex = ThreadMutex::New();
 
@@ -382,7 +384,7 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE(Packet *p, NetworkAd
 	}
 
 	if (item->info.hostname[0] == '\0') {
-		snprintf(item->info.hostname, sizeof(item->info.hostname), "%s", client_addr->GetHostname());
+		seprintf(item->info.hostname, lastof(item->info.hostname), "%s", client_addr->GetHostname());
 	}
 
 	if (client_addr->GetAddress()->ss_family == AF_INET6) {

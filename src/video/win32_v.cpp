@@ -27,6 +27,8 @@
 #include <windows.h>
 #include <imm.h>
 
+#include "../safeguards.h"
+
 /* Missing define in MinGW headers. */
 #ifndef MAPVK_VK_TO_CHAR
 #define MAPVK_VK_TO_CHAR    (2)
@@ -50,7 +52,6 @@ static struct {
 bool _force_full_redraw;
 bool _window_maximize;
 uint _display_hz;
-uint _fullscreen_bpp;
 static Dimension _bck_resolution;
 #if !defined(WINCE) || _WIN32_WCE >= 0x400
 DWORD _imm_props;
@@ -270,23 +271,21 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 	if (full_screen) {
 		DEVMODE settings;
 
-		/* Make sure we are always at least the screen-depth of the blitter */
-		if (_fullscreen_bpp < BlitterFactory::GetCurrentBlitter()->GetScreenDepth()) _fullscreen_bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
-
 		memset(&settings, 0, sizeof(settings));
 		settings.dmSize = sizeof(settings);
 		settings.dmFields =
-			(_fullscreen_bpp != 0 ? DM_BITSPERPEL : 0) |
+			DM_BITSPERPEL |
 			DM_PELSWIDTH |
 			DM_PELSHEIGHT |
 			(_display_hz != 0 ? DM_DISPLAYFREQUENCY : 0);
-		settings.dmBitsPerPel = _fullscreen_bpp;
+		settings.dmBitsPerPel = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 		settings.dmPelsWidth  = _wnd.width_org;
 		settings.dmPelsHeight = _wnd.height_org;
 		settings.dmDisplayFrequency = _display_hz;
 
 		/* Check for 8 bpp support. */
-		if (settings.dmBitsPerPel != 32 && ChangeDisplaySettings(&settings, CDS_FULLSCREEN | CDS_TEST) != DISP_CHANGE_SUCCESSFUL) {
+		if (settings.dmBitsPerPel == 8 &&
+				(_support8bpp != S8BPP_HARDWARE || ChangeDisplaySettings(&settings, CDS_FULLSCREEN | CDS_TEST) != DISP_CHANGE_SUCCESSFUL)) {
 			settings.dmBitsPerPel = 32;
 		}
 
@@ -748,25 +747,11 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				SetTimer(hwnd, TID_POLLMOUSE, MOUSE_POLL_DELAY, (TIMERPROC)TrackMouseTimerProc);
 			}
 
-			if (_cursor.fix_at) {
-				int dx = x - _cursor.pos.x;
-				int dy = y - _cursor.pos.y;
-				if (dx != 0 || dy != 0) {
-					_cursor.delta.x = dx;
-					_cursor.delta.y = dy;
-
-					pt.x = _cursor.pos.x;
-					pt.y = _cursor.pos.y;
-
-					ClientToScreen(hwnd, &pt);
-					SetCursorPos(pt.x, pt.y);
-				}
-			} else {
-				_cursor.delta.x = x - _cursor.pos.x;
-				_cursor.delta.y = y - _cursor.pos.y;
-				_cursor.pos.x = x;
-				_cursor.pos.y = y;
-				_cursor.dirty = true;
+			if (_cursor.UpdateCursorPosition(x, y, true)) {
+				pt.x = _cursor.pos.x;
+				pt.y = _cursor.pos.y;
+				ClientToScreen(hwnd, &pt);
+				SetCursorPos(pt.x, pt.y);
 			}
 			MyShowCursor(false);
 			HandleMouseEvents();
@@ -1003,7 +988,7 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 				if (active && minimized) {
 					/* Restore the game window */
 					ShowWindow(hwnd, SW_RESTORE);
-					static_cast<VideoDriver_Win32 *>(_video_driver)->MakeWindow(true);
+					static_cast<VideoDriver_Win32 *>(VideoDriver::GetInstance())->MakeWindow(true);
 				} else if (!active && !minimized) {
 					/* Minimise the window and restore desktop */
 					ShowWindow(hwnd, SW_MINIMIZE);
@@ -1046,7 +1031,7 @@ static bool AllocateDibSection(int w, int h, bool force)
 {
 	BITMAPINFO *bi;
 	HDC dc;
-	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+	uint bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	w = max(w, 64);
 	h = max(h, 64);
@@ -1105,11 +1090,14 @@ static void FindResolutions()
 	uint i;
 	DEVMODEA dm;
 
+	/* Check modes for the relevant fullscreen bpp */
+	uint bpp = _support8bpp != S8BPP_HARDWARE ? 32 : BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+
 	/* XXX - EnumDisplaySettingsW crashes with unicows.dll on Windows95
 	 * Doesn't really matter since we don't pass a string anyways, but still
 	 * a letdown */
 	for (i = 0; EnumDisplaySettingsA(NULL, i, &dm) != 0; i++) {
-		if (dm.dmBitsPerPel == BlitterFactory::GetCurrentBlitter()->GetScreenDepth() &&
+		if (dm.dmBitsPerPel == bpp &&
 				dm.dmPelsWidth >= 640 && dm.dmPelsHeight >= 480) {
 			uint j;
 

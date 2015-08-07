@@ -46,6 +46,7 @@
 #include "game/game.hpp"
 #include "goal_base.h"
 #include "story_base.h"
+#include "toolbar_gui.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -53,6 +54,11 @@
 #include "network/network_gui.h"
 #include "network/network_func.h"
 
+#include "safeguards.h"
+
+
+/** Width of the toolbar, shared by statusbar. */
+uint _toolbar_width = 0;
 
 RailType _last_built_railtype;
 RoadType _last_built_roadtype;
@@ -305,7 +311,7 @@ static CallBackFunction ToolbarOptionsClick(Window *w)
 {
 	DropDownList *list = new DropDownList();
 	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_GAME_OPTIONS,             OME_GAMEOPTIONS, false);
-	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_CONFIG_SETTINGS,          OME_SETTINGS, false);
+	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE,     OME_SETTINGS, false);
 	/* Changes to the per-AI settings don't get send from the server to the clients. Clients get
 	 * the settings once they join but never update it. As such don't show the window at all
 	 * to network clients. */
@@ -1119,7 +1125,7 @@ void SetStartingYear(Year year)
 	_settings_game.game_creation.starting_year = Clamp(year, MIN_YEAR, MAX_YEAR);
 	Date new_date = ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
 	/* If you open a savegame as scenario there may already be link graphs.*/
-	LinkGraphSchedule::Instance()->ShiftDates(new_date - _date);
+	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
 	SetDate(new_date, 0);
 }
 
@@ -1348,7 +1354,7 @@ public:
 				child_wid->current_x = child_wid->smallest_x;
 			}
 		}
-		w->window_desc->default_width = nbuttons * this->smallest_x;
+		_toolbar_width = nbuttons * this->smallest_x;
 	}
 
 	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl)
@@ -1524,7 +1530,7 @@ class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 
 			assert(i < lengthof(this->panel_widths));
 			this->panel_widths[i++] = child_wid->current_x;
-			w->window_desc->default_width += child_wid->current_x;
+			_toolbar_width += child_wid->current_x;
 		}
 	}
 
@@ -1662,6 +1668,11 @@ struct MainToolbarWindow : Window {
 		this->SetWidgetDisabledState(WID_TN_FAST_FORWARD, _networking); // if networking, disable fast-forward button
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
+	}
+
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	virtual void OnPaint()
@@ -1898,7 +1909,7 @@ static const NWidgetPart _nested_toolbar_normal_widgets[] = {
 };
 
 static WindowDesc _toolb_normal_desc(
-	WDP_MANUAL, NULL, 640, 22,
+	WDP_MANUAL, NULL, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS,
 	_nested_toolbar_normal_widgets, lengthof(_nested_toolbar_normal_widgets),
@@ -1977,6 +1988,11 @@ struct ScenarioEditorToolbarWindow : Window {
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
+	}
+
+	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	{
+		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
 	virtual void OnPaint()
@@ -2209,7 +2225,7 @@ static const NWidgetPart _nested_toolb_scen_widgets[] = {
 };
 
 static WindowDesc _toolb_scen_desc(
-	WDP_MANUAL, NULL, 640, 22,
+	WDP_MANUAL, NULL, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS,
 	_nested_toolb_scen_widgets, lengthof(_nested_toolb_scen_widgets),

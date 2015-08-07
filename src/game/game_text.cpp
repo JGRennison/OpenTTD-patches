@@ -24,12 +24,14 @@
 
 #include <stdarg.h>
 
+#include "../safeguards.h"
+
 void CDECL strgen_warning(const char *s, ...)
 {
 	char buf[1024];
 	va_list va;
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 	DEBUG(script, 0, "%s:%d: warning: %s", _file, _cur_line, buf);
 	_warnings++;
@@ -40,7 +42,7 @@ void CDECL strgen_error(const char *s, ...)
 	char buf[1024];
 	va_list va;
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 	DEBUG(script, 0, "%s:%d: error: %s", _file, _cur_line, buf);
 	_errors++;
@@ -51,7 +53,7 @@ void NORETURN CDECL strgen_fatal(const char *s, ...)
 	char buf[1024];
 	va_list va;
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 	DEBUG(script, 0, "%s:%d: FATAL: %s", _file, _cur_line, buf);
 	throw std::exception();
@@ -64,7 +66,7 @@ void NORETURN CDECL strgen_fatal(const char *s, ...)
  */
 LanguageStrings::LanguageStrings(const char *language, const char *end)
 {
-	this->language = end == NULL ? strdup(language) : strndup(language, end - language);
+	this->language = stredup(language, end != NULL ? end - 1 : NULL);
 }
 
 /** Free everything. */
@@ -113,7 +115,7 @@ LanguageStrings *ReadRawLanguageStrings(const char *file)
 			while (i > 0 && (buffer[i - 1] == '\r' || buffer[i - 1] == '\n' || buffer[i - 1] == ' ')) i--;
 			buffer[i] = '\0';
 
-			*ret->lines.Append() = strndup(buffer, to_read);
+			*ret->lines.Append() = stredup(buffer, buffer + to_read - 1);
 
 			if (len > to_read) {
 				to_read = 0;
@@ -149,11 +151,11 @@ struct StringListReader : StringReader {
 	{
 	}
 
-	/* virtual */ char *ReadLine(char *buffer, size_t size)
+	/* virtual */ char *ReadLine(char *buffer, const char *last)
 	{
 		if (this->p == this->end) return NULL;
 
-		strncpy(buffer, *this->p, size);
+		strecpy(buffer, *this->p, last);
 		this->p++;
 
 		return buffer;
@@ -210,7 +212,7 @@ struct StringNameWriter : HeaderWriter {
 
 	void WriteStringID(const char *name, int stringid)
 	{
-		if (stringid == (int)this->strings->Length()) *this->strings->Append() = strdup(name);
+		if (stringid == (int)this->strings->Length()) *this->strings->Append() = stredup(name);
 	}
 
 	void Finalise(const StringData &data)
@@ -229,7 +231,7 @@ private:
 
 public:
 	/** Initialise */
-	LanguageScanner(GameStrings *gs, const char *exclude) : gs(gs), exclude(strdup(exclude)) {}
+	LanguageScanner(GameStrings *gs, const char *exclude) : gs(gs), exclude(stredup(exclude)) {}
 	~LanguageScanner() { free(exclude); }
 
 	/**
@@ -354,12 +356,12 @@ void RegisterGameTranslation(Squirrel *engine)
 
 	HSQUIRRELVM vm = engine->GetVM();
 	sq_pushroottable(vm);
-	sq_pushstring(vm, _SC("GSText"), -1);
+	sq_pushstring(vm, "GSText", -1);
 	if (SQ_FAILED(sq_get(vm, -2))) return;
 
 	int idx = 0;
 	for (const char * const *p = _current_data->string_names.Begin(); p != _current_data->string_names.End(); p++, idx++) {
-		sq_pushstring(vm, OTTD2SQ(*p), -1);
+		sq_pushstring(vm, *p, -1);
 		sq_pushinteger(vm, idx);
 		sq_rawset(vm, -3);
 	}
@@ -377,7 +379,7 @@ void ReconsiderGameScriptLanguage()
 	if (_current_data == NULL) return;
 
 	char temp[MAX_PATH];
-	strecpy(temp, _current_language->file, temp + sizeof(temp));
+	strecpy(temp, _current_language->file, lastof(temp));
 
 	/* Remove the extension */
 	char *l = strrchr(temp, '.');

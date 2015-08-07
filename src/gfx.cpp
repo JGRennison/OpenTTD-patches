@@ -23,11 +23,15 @@
 #include "newgrf_debug.h"
 
 #include "table/palettes.h"
+#include "table/string_colours.h"
 #include "table/sprites.h"
 #include "table/control_codes.h"
 
+#include "safeguards.h"
+
 byte _dirkeys;        ///< 1 = left, 2 = up, 4 = right, 8 = down
 bool _fullscreen;
+byte _support8bpp;
 CursorVars _cursor;
 bool _ctrl_pressed;   ///< Is Ctrl pressed?
 bool _shift_pressed;  ///< Is Shift pressed?
@@ -52,6 +56,8 @@ static void GfxMainBlitterViewport(const Sprite *sprite, int x, int y, BlitterMo
 static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = NULL, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_NORMAL);
 
 static ReusableBuffer<uint8> _cursor_backup;
+
+ZoomLevelByte _gui_zoom; ///< GUI Zoom level
 
 /**
  * The rect for repaint.
@@ -85,7 +91,7 @@ void GfxScroll(int left, int top, int width, int height, int xo, int yo)
 
 	blitter->ScrollBuffer(_screen.dst_ptr, left, top, width, height, xo, yo);
 	/* This part of the screen is now dirty. */
-	_video_driver->MakeDirty(left, top, width, height);
+	VideoDriver::GetInstance()->MakeDirty(left, top, width, height);
 }
 
 
@@ -170,40 +176,35 @@ static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int 
 
 	assert(width > 0);
 
-	if (y2 == y) {
-		/* Special case: horizontal line. */
-		blitter->DrawLine(video,
-				Clamp(x, 0, screen_width), y,
-				Clamp(x2, 0, screen_width), y2,
-				screen_width, screen_height, colour, width, dash);
-		return;
-	}
-	if (x2 == x) {
-		/* Special case: vertical line. */
-		blitter->DrawLine(video,
-				x, Clamp(y, 0, screen_height),
-				x2, Clamp(y2, 0, screen_height),
-				screen_width, screen_height, colour, width, dash);
+	if (y2 == y || x2 == x) {
+		/* Special case: horizontal/vertical line. All checks already done in GfxPreprocessLine. */
+		blitter->DrawLine(video, x, y, x2, y2, screen_width, screen_height, colour, width, dash);
 		return;
 	}
 
 	int grade_y = y2 - y;
 	int grade_x = x2 - x;
 
+	/* Clipping rectangle. Slightly extended so we can ignore the width of the line. */
+	uint extra = CeilDiv(3 * width, 4); // not less then "width * sqrt(2) / 2"
+	Rect clip = { -extra, -extra, screen_width - 1 + extra, screen_height - 1 + extra };
+
 	/* prevent integer overflows. */
 	int margin = 1;
-	while (INT_MAX / abs(grade_y) < max(abs(x), abs(screen_width - x))) {
+	while (INT_MAX / abs(grade_y) < max(abs(clip.left - x), abs(clip.right - x))) {
 		grade_y /= 2;
 		grade_x /= 2;
 		margin  *= 2; // account for rounding errors
 	}
 
-	/* If the line is outside the screen on the same side at X positions 0
-	 * and screen_width, we don't need to draw anything. */
-	int offset_0 = y - x * grade_y / grade_x;
-	int offset_width = y + (screen_width - x) * grade_y / grade_x;
-	if ((offset_0 > screen_height + width / 2 + margin && offset_width > screen_height + width / 2 + margin) ||
-			(offset_0 < -width / 2 - margin && offset_width < -width / 2 - margin)) {
+	/* Imagine that the line is infinitely long and it intersects with
+	 * infinitely long left and right edges of the clipping rectangle.
+	 * If both intersection points are outside the clipping rectangle
+	 * and both on the same side of it, we don't need to draw anything. */
+	int left_isec_y = y + (clip.left - x) * grade_y / grade_x;
+	int right_isec_y = y + (clip.right - x) * grade_y / grade_x;
+	if ((left_isec_y > clip.bottom + margin && right_isec_y > clip.bottom + margin) ||
+			(left_isec_y < clip.top - margin && right_isec_y < clip.top - margin)) {
 		return;
 	}
 
@@ -432,7 +433,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line *line, int y, int left, 
 		int dpi_left  = dpi->left;
 		int dpi_right = dpi->left + dpi->width - 1;
 
-		draw_shadow = fc->GetDrawGlyphShadow() && colour != TC_BLACK;
+		draw_shadow = fc->GetDrawGlyphShadow() && (colour & TC_NO_SHADE) == 0 && colour != TC_BLACK;
 
 		for (int i = 0; i < run->GetGlyphCount(); i++) {
 			GlyphID glyph = run->GetGlyphs()[i];
@@ -780,6 +781,21 @@ Dimension GetSpriteSize(SpriteID sprid, Point *offset, ZoomLevel zoom)
 }
 
 /**
+ * Helper function to get the blitter mode for different types of palettes.
+ * @param pal The palette to get the blitter mode for.
+ * @return The blitter mode associated with the palette.
+ */
+static BlitterMode GetBlitterMode(PaletteID pal)
+{
+	switch (pal) {
+		case PAL_NONE:          return BM_NORMAL;
+		case PALETTE_CRASH:     return BM_CRASH_REMAP;
+		case PALETTE_ALL_BLACK: return BM_BLACK_REMAP;
+		default:                return BM_COLOUR_REMAP;
+	}
+}
+
+/**
  * Draw a sprite in a viewport.
  * @param img  Image number to draw
  * @param pal  Palette to use.
@@ -794,8 +810,12 @@ void DrawSpriteViewport(SpriteID img, PaletteID pal, int x, int y, const SubSpri
 		_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
 		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, BM_TRANSPARENT, sub, real_sprite);
 	} else if (pal != PAL_NONE) {
-		_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
-		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, pal == PALETTE_CRASH ? BM_CRASH_REMAP : BM_COLOUR_REMAP, sub, real_sprite);
+		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
+			SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
+		} else {
+			_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+		}
+		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite);
 	} else {
 		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, BM_NORMAL, sub, real_sprite);
 	}
@@ -817,8 +837,12 @@ void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub,
 		_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
 		GfxMainBlitter(GetSprite(real_sprite, ST_NORMAL), x, y, BM_TRANSPARENT, sub, real_sprite, zoom);
 	} else if (pal != PAL_NONE) {
-		_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
-		GfxMainBlitter(GetSprite(real_sprite, ST_NORMAL), x, y, pal == PALETTE_CRASH ? BM_CRASH_REMAP : BM_COLOUR_REMAP, sub, real_sprite, zoom);
+		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
+			SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
+		} else {
+			_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+		}
+		GfxMainBlitter(GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite, zoom);
 	} else {
 		GfxMainBlitter(GetSprite(real_sprite, ST_NORMAL), x, y, BM_NORMAL, sub, real_sprite, zoom);
 	}
@@ -1111,6 +1135,7 @@ void LoadStringWidthTable(bool monospace)
 		}
 	}
 
+	ClearFontCache();
 	ReInitAllWindows();
 }
 
@@ -1183,7 +1208,7 @@ void UndrawMouseCursor()
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 		_cursor.visible = false;
 		blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, _cursor.draw_pos.x, _cursor.draw_pos.y), _cursor_backup.GetBuffer(), _cursor.draw_size.x, _cursor.draw_size.y);
-		_video_driver->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
+		VideoDriver::GetInstance()->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
 	}
 }
 
@@ -1243,7 +1268,7 @@ void DrawMouseCursor()
 	_cur_dpi = &_screen;
 	DrawSprite(_cursor.sprite, _cursor.pal, _cursor.pos.x + _cursor.short_vehicle_offset, _cursor.pos.y);
 
-	_video_driver->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
+	VideoDriver::GetInstance()->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
 
 	_cursor.visible = true;
 	_cursor.dirty = false;
@@ -1267,7 +1292,7 @@ void RedrawScreenRect(int left, int top, int right, int bottom)
 
 	DrawOverlappedWindowForAll(left, top, right, bottom);
 
-	_video_driver->MakeDirty(left, top, right - left, bottom - top);
+	VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 }
 
 /**
@@ -1503,10 +1528,10 @@ void UpdateCursorSize()
 	CursorVars *cv = &_cursor;
 	const Sprite *p = GetSprite(GB(cv->sprite, 0, SPRITE_WIDTH), ST_NORMAL);
 
-	cv->size.y = UnScaleByZoom(p->height, ZOOM_LVL_GUI);
-	cv->size.x = UnScaleByZoom(p->width, ZOOM_LVL_GUI);
-	cv->offs.x = UnScaleByZoom(p->x_offs, ZOOM_LVL_GUI);
-	cv->offs.y = UnScaleByZoom(p->y_offs, ZOOM_LVL_GUI);
+	cv->size.y = UnScaleGUI(p->height);
+	cv->size.x = UnScaleGUI(p->width);
+	cv->offs.x = UnScaleGUI(p->x_offs);
+	cv->offs.y = UnScaleGUI(p->y_offs);
 
 	cv->dirty = true;
 }
@@ -1574,14 +1599,64 @@ void SetAnimatedMouseCursor(const AnimCursor *table)
 	SwitchAnimatedCursor();
 }
 
+/**
+ * Update cursor position on mouse movement.
+ * @param x New X position.
+ * @param y New Y position.
+ * @param queued True, if the OS queues mouse warps after pending mouse movement events.
+ *               False, if the warp applies instantaneous.
+ * @return true, if the OS cursor position should be warped back to this->pos.
+ */
+bool CursorVars::UpdateCursorPosition(int x, int y, bool queued_warp)
+{
+	/* Detecting relative mouse movement is somewhat tricky.
+	 *  - There may be multiple mouse move events in the video driver queue (esp. when OpenTTD lags a bit).
+	 *  - When we request warping the mouse position (return true), a mouse move event is appended at the end of the queue.
+	 *
+	 * So, when this->fix_at is active, we use the following strategy:
+	 *  - The first movement triggers the warp to reset the mouse position.
+	 *  - Subsequent events have to compute movement relative to the previous event.
+	 *  - The relative movement is finished, when we receive the event matching the warp.
+	 */
+
+	if (x == this->pos.x && y == this->pos.y) {
+		/* Warp finished. */
+		this->queued_warp = false;
+	}
+
+	this->delta.x = x - (this->queued_warp ? this->last_position.x : this->pos.x);
+	this->delta.y = y - (this->queued_warp ? this->last_position.y : this->pos.y);
+
+	this->last_position.x = x;
+	this->last_position.y = y;
+
+	bool need_warp = false;
+	if (this->fix_at) {
+		if (this->delta.x != 0 || this->delta.y != 0) {
+			/* Trigger warp.
+			 * Note: We also trigger warping again, if there is already a pending warp.
+			 *       This makes it more tolerant about the OS or other software inbetween
+			 *       botchering the warp. */
+			this->queued_warp = queued_warp;
+			need_warp = true;
+		}
+	} else if (this->pos.x != x || this->pos.y != y) {
+		this->queued_warp = false; // Cancel warping, we are no longer confining the position.
+		this->dirty = true;
+		this->pos.x = x;
+		this->pos.y = y;
+	}
+	return need_warp;
+}
+
 bool ChangeResInGame(int width, int height)
 {
-	return (_screen.width == width && _screen.height == height) || _video_driver->ChangeResolution(width, height);
+	return (_screen.width == width && _screen.height == height) || VideoDriver::GetInstance()->ChangeResolution(width, height);
 }
 
 bool ToggleFullScreen(bool fs)
 {
-	bool result = _video_driver->ToggleFullscreen(fs);
+	bool result = VideoDriver::GetInstance()->ToggleFullscreen(fs);
 	if (_fullscreen != fs && _num_resolutions == 0) {
 		DEBUG(driver, 0, "Could not find a suitable fullscreen resolution");
 	}

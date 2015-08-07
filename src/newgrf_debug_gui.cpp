@@ -19,6 +19,7 @@
 #include "strings_func.h"
 #include "textbuf_gui.h"
 #include "vehicle_gui.h"
+#include "zoom_func.h"
 
 #include "engine_base.h"
 #include "industry.h"
@@ -42,6 +43,8 @@
 #include "widgets/newgrf_debug_widget.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 /** The sprite picker. */
 NewGrfDebugSpritePicker _newgrf_debug_sprite_picker = { SPM_NONE, NULL, 0, SmallVector<SpriteID, 256>() };
@@ -398,7 +401,7 @@ struct NewGRFInspectWindow : Window {
 
 		va_list va;
 		va_start(va, format);
-		vsnprintf(buf, lengthof(buf), format, va);
+		vseprintf(buf, lastof(buf), format, va);
 		va_end(va);
 
 		offset -= this->vscroll->GetPosition();
@@ -699,8 +702,8 @@ void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32 gr
 	if (!IsNewGRFInspectable(feature, index)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
-	NewGRFInspectWindow *w = AllocateWindowDescFront<NewGRFInspectWindow>(feature == GSF_TRAINS || feature == GSF_ROADVEHICLES ? &_newgrf_inspect_chain_desc : &_newgrf_inspect_desc, wno);
-	if (w == NULL) w = (NewGRFInspectWindow *)FindWindowById(WC_NEWGRF_INSPECT, wno);
+	WindowDesc *desc = (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES) ? &_newgrf_inspect_chain_desc : &_newgrf_inspect_desc;
+	NewGRFInspectWindow *w = AllocateWindowDescFront<NewGRFInspectWindow>(desc, wno, true);
 	w->SetCallerGRFID(grfid);
 }
 
@@ -803,8 +806,11 @@ GrfSpecFeature GetGrfSpecFeature(VehicleType type)
 
 /** Window used for aligning sprites. */
 struct SpriteAlignerWindow : Window {
-	SpriteID current_sprite; ///< The currently shown sprite
+	typedef SmallPair<int16, int16> XyOffs;    ///< Pair for x and y offsets of the sprite before alignment. First value contains the x offset, second value y offset.
+
+	SpriteID current_sprite;                   ///< The currently shown sprite.
 	Scrollbar *vscroll;
+	SmallMap<SpriteID, XyOffs> offs_start_map; ///< Mapping of starting offsets for the sprites which have been aligned in the sprite aligner window.
 
 	SpriteAlignerWindow(WindowDesc *desc, WindowNumber wno) : Window(desc)
 	{
@@ -818,16 +824,30 @@ struct SpriteAlignerWindow : Window {
 
 	virtual void SetStringParameters(int widget) const
 	{
+		const Sprite *spr = GetSprite(this->current_sprite, ST_NORMAL);
 		switch (widget) {
 			case WID_SA_CAPTION:
 				SetDParam(0, this->current_sprite);
 				SetDParamStr(1, FioGetFilename(GetOriginFileSlot(this->current_sprite)));
 				break;
 
-			case WID_SA_OFFSETS: {
-				const Sprite *spr = GetSprite(this->current_sprite, ST_NORMAL);
-				SetDParam(0, spr->x_offs / ZOOM_LVL_BASE);
-				SetDParam(1, spr->y_offs / ZOOM_LVL_BASE);
+			case WID_SA_OFFSETS_ABS:
+				SetDParam(0, spr->x_offs);
+				SetDParam(1, spr->y_offs);
+				break;
+
+			case WID_SA_OFFSETS_REL: {
+				/* Relative offset is new absolute offset - starting absolute offset.
+				 * Show 0, 0 as the relative offsets if entry is not in the map (meaning they have not been changed yet).
+				 */
+				const SmallPair<SpriteID, XyOffs> *key_offs_pair = this->offs_start_map.Find(this->current_sprite);
+				if (key_offs_pair != this->offs_start_map.End()) {
+					SetDParam(0, spr->x_offs - key_offs_pair->second.first);
+					SetDParam(1, spr->y_offs - key_offs_pair->second.second);
+				} else {
+					SetDParam(0, 0);
+					SetDParam(1, 0);
+				}
 				break;
 			}
 
@@ -853,20 +873,20 @@ struct SpriteAlignerWindow : Window {
 			case WID_SA_SPRITE: {
 				/* Center the sprite ourselves */
 				const Sprite *spr = GetSprite(this->current_sprite, ST_NORMAL);
-				int width  = r.right  - r.left + 1;
-				int height = r.bottom - r.top  + 1;
-				int x = r.left - spr->x_offs / ZOOM_LVL_BASE + (width  - spr->width / ZOOM_LVL_BASE) / 2;
-				int y = r.top  - spr->y_offs / ZOOM_LVL_BASE + (height - spr->height / ZOOM_LVL_BASE) / 2;
+				int width  = r.right  - r.left + 1 - WD_BEVEL_LEFT - WD_BEVEL_RIGHT;
+				int height = r.bottom - r.top  + 1 - WD_BEVEL_TOP - WD_BEVEL_BOTTOM;
+				int x = -UnScaleGUI(spr->x_offs) + (width  - UnScaleGUI(spr->width) ) / 2;
+				int y = -UnScaleGUI(spr->y_offs) + (height - UnScaleGUI(spr->height)) / 2;
 
-				/* And draw only the part within the sprite area */
-				SubSprite subspr = {
-					spr->x_offs + (spr->width  - width  * ZOOM_LVL_BASE) / 2 + 1,
-					spr->y_offs + (spr->height - height * ZOOM_LVL_BASE) / 2 + 1,
-					spr->x_offs + (spr->width  + width  * ZOOM_LVL_BASE) / 2 - 1,
-					spr->y_offs + (spr->height + height * ZOOM_LVL_BASE) / 2 - 1,
-				};
+				DrawPixelInfo new_dpi;
+				if (!FillDrawPixelInfo(&new_dpi, r.left + WD_BEVEL_LEFT, r.top + WD_BEVEL_TOP, width, height)) break;
+				DrawPixelInfo *old_dpi = _cur_dpi;
+				_cur_dpi = &new_dpi;
 
-				DrawSprite(this->current_sprite, PAL_NONE, x, y, &subspr, ZOOM_LVL_GUI);
+				DrawSprite(this->current_sprite, PAL_NONE, x, y, NULL, ZOOM_LVL_GUI);
+
+				_cur_dpi = old_dpi;
+
 				break;
 			}
 
@@ -946,17 +966,28 @@ struct SpriteAlignerWindow : Window {
 				 * particular NewGRF developer.
 				 */
 				Sprite *spr = const_cast<Sprite *>(GetSprite(this->current_sprite, ST_NORMAL));
+
+				/* Remember the original offsets of the current sprite, if not already in mapping. */
+				if (!(this->offs_start_map.Contains(this->current_sprite))) {
+					this->offs_start_map.Insert(this->current_sprite, XyOffs(spr->x_offs, spr->y_offs));
+				}
 				switch (widget) {
-					case WID_SA_UP:    spr->y_offs -= ZOOM_LVL_BASE; break;
-					case WID_SA_DOWN:  spr->y_offs += ZOOM_LVL_BASE; break;
-					case WID_SA_LEFT:  spr->x_offs -= ZOOM_LVL_BASE; break;
-					case WID_SA_RIGHT: spr->x_offs += ZOOM_LVL_BASE; break;
+					case WID_SA_UP:    spr->y_offs--; break;
+					case WID_SA_DOWN:  spr->y_offs++; break;
+					case WID_SA_LEFT:  spr->x_offs--; break;
+					case WID_SA_RIGHT: spr->x_offs++; break;
 				}
 				/* Of course, we need to redraw the sprite, but where is it used?
 				 * Everywhere is a safe bet. */
 				MarkWholeScreenDirty();
 				break;
 			}
+
+			case WID_SA_RESET_REL:
+				/* Reset the starting offsets for the current sprite. */
+				this->offs_start_map.Erase(this->current_sprite);
+				this->SetDirty();
+				break;
 		}
 	}
 
@@ -1032,8 +1063,12 @@ static const NWidgetPart _nested_sprite_aligner_widgets[] = {
 					NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SA_DOWN), SetDataTip(SPR_ARROW_DOWN, STR_SPRITE_ALIGNER_MOVE_TOOLTIP), SetResize(0, 0),
 					NWidget(NWID_SPACER), SetFill(1, 1),
 				EndContainer(),
+				NWidget(WWT_LABEL, COLOUR_GREY, WID_SA_OFFSETS_ABS), SetDataTip(STR_SPRITE_ALIGNER_OFFSETS_ABS, STR_NULL), SetFill(1, 0), SetPadding(0, 10, 0, 10),
+				NWidget(WWT_LABEL, COLOUR_GREY, WID_SA_OFFSETS_REL), SetDataTip(STR_SPRITE_ALIGNER_OFFSETS_REL, STR_NULL), SetFill(1, 0), SetPadding(0, 10, 0, 10),
 				NWidget(NWID_HORIZONTAL), SetPIP(10, 5, 10),
-					NWidget(WWT_LABEL, COLOUR_GREY, WID_SA_OFFSETS), SetDataTip(STR_SPRITE_ALIGNER_OFFSETS, STR_NULL), SetFill(1, 0),
+					NWidget(NWID_SPACER), SetFill(1, 1),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SA_RESET_REL), SetDataTip(STR_SPRITE_ALIGNER_RESET_BUTTON, STR_SPRITE_ALIGNER_RESET_TOOLTIP), SetFill(0, 0),
+					NWidget(NWID_SPACER), SetFill(1, 1),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_VERTICAL), SetPIP(10, 5, 10),

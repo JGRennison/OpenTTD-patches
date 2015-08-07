@@ -33,6 +33,8 @@
 #include "../core/random_func.hpp"
 #include "../rev.h"
 
+#include "../safeguards.h"
+
 
 /* This file handles all the server-commands */
 
@@ -274,7 +276,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
 		char client_name[NETWORK_CLIENT_NAME_LENGTH];
 		NetworkClientSocket *new_cs;
 
-		this->GetClientName(client_name, sizeof(client_name));
+		this->GetClientName(client_name, lastof(client_name));
 
 		NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, client_name, NULL, STR_NETWORK_ERROR_CLIENT_CONNECTION_LOST);
 
@@ -380,7 +382,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendCompanyInfo()
 	FOR_ALL_CLIENT_SOCKETS(csi) {
 		char client_name[NETWORK_CLIENT_NAME_LENGTH];
 
-		((ServerNetworkGameSocketHandler*)csi)->GetClientName(client_name, sizeof(client_name));
+		((ServerNetworkGameSocketHandler*)csi)->GetClientName(client_name, lastof(client_name));
 
 		ci = csi->GetInfo();
 		if (ci != NULL && Company::IsValidID(ci->client_playas)) {
@@ -442,7 +444,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode err
 		NetworkClientSocket *new_cs;
 		char client_name[NETWORK_CLIENT_NAME_LENGTH];
 
-		this->GetClientName(client_name, sizeof(client_name));
+		this->GetClientName(client_name, lastof(client_name));
 
 		DEBUG(net, 1, "'%s' made an error and has been disconnected. Reason: '%s'", client_name, str);
 
@@ -939,7 +941,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 	/* We need a valid name.. make it Player */
 	if (StrEmpty(name)) strecpy(name, "Player", lastof(name));
 
-	if (!NetworkFindName(name)) { // Change name if duplicate
+	if (!NetworkFindName(name, lastof(name))) { // Change name if duplicate
 		/* We could not create a name for this client */
 		return this->SendError(NETWORK_ERROR_NAME_IN_USE);
 	}
@@ -951,7 +953,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 	strecpy(ci->client_name, name, lastof(ci->client_name));
 	ci->client_playas = playas;
 	ci->client_lang = client_lang;
-	DEBUG(desync, 1, "client: %08x; %02x; %02x; %04x", _date, _date_fract, (int)ci->client_playas, ci->index);
+	DEBUG(desync, 1, "client: %08x; %02x; %02x; %02x", _date, _date_fract, (int)ci->client_playas, (int)ci->index);
 
 	/* Make sure companies to which people try to join are not autocleaned */
 	if (Company::IsValidID(playas)) _network_company_states[playas].months_empty = 0;
@@ -1042,7 +1044,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MAP_OK(Packet *
 		char client_name[NETWORK_CLIENT_NAME_LENGTH];
 		NetworkClientSocket *new_cs;
 
-		this->GetClientName(client_name, sizeof(client_name));
+		this->GetClientName(client_name, lastof(client_name));
 
 		NetworkTextMessage(NETWORK_ACTION_JOIN, CC_DEFAULT, false, client_name, NULL, this->client_id);
 
@@ -1160,7 +1162,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 		return this->CloseConnection(NETWORK_RECV_STATUS_CONN_LOST);
 	}
 
-	this->GetClientName(client_name, sizeof(client_name));
+	this->GetClientName(client_name, lastof(client_name));
 
 	StringID strid = GetNetworkErrorMsg(errorno);
 	GetString(str, strid, lastof(str));
@@ -1192,7 +1194,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_QUIT(Packet *p)
 		return this->CloseConnection(NETWORK_RECV_STATUS_CONN_LOST);
 	}
 
-	this->GetClientName(client_name, sizeof(client_name));
+	this->GetClientName(client_name, lastof(client_name));
 
 	NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, client_name, NULL, STR_NETWORK_MESSAGE_CLIENT_LEAVING);
 
@@ -1441,7 +1443,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SET_NAME(Packet
 
 	if (ci != NULL) {
 		/* Display change */
-		if (NetworkFindName(client_name)) {
+		if (NetworkFindName(client_name, lastof(client_name))) {
 			NetworkTextMessage(NETWORK_ACTION_NAME_CHANGE, CC_DEFAULT, false, ci->client_name, client_name);
 			strecpy(ci->client_name, client_name, lastof(ci->client_name));
 			NetworkUpdateClientInfo(ci->client_id);
@@ -1699,16 +1701,16 @@ static void NetworkAutoCleanCompanies()
 /**
  * Check whether a name is unique, and otherwise try to make it unique.
  * @param new_name The name to check/modify.
+ * @param last     The last writeable element of the buffer.
  * @return True if an unique name was achieved.
  */
-bool NetworkFindName(char new_name[NETWORK_CLIENT_NAME_LENGTH])
+bool NetworkFindName(char *new_name, const char *last)
 {
 	bool found_name = false;
 	uint number = 0;
 	char original_name[NETWORK_CLIENT_NAME_LENGTH];
 
-	/* We use NETWORK_CLIENT_NAME_LENGTH in here, because new_name is really a pointer */
-	ttd_strlcpy(original_name, new_name, NETWORK_CLIENT_NAME_LENGTH);
+	strecpy(original_name, new_name, lastof(original_name));
 
 	while (!found_name) {
 		const NetworkClientInfo *ci;
@@ -1732,7 +1734,7 @@ bool NetworkFindName(char new_name[NETWORK_CLIENT_NAME_LENGTH])
 
 			/* Something's really wrong when there're more names than clients */
 			if (number++ > MAX_CLIENTS) break;
-			snprintf(new_name, NETWORK_CLIENT_NAME_LENGTH, "%s #%d", original_name, number);
+			seprintf(new_name, last, "%s #%d", original_name, number);
 		}
 	}
 
@@ -2100,7 +2102,7 @@ uint NetworkServerKickOrBanIP(const char *ip, bool ban)
 				break;
 			}
 		}
-		if (!contains) *_network_ban_list.Append() = strdup(ip);
+		if (!contains) *_network_ban_list.Append() = stredup(ip);
 	}
 
 	uint n = 0;
@@ -2136,16 +2138,16 @@ bool NetworkCompanyHasClients(CompanyID company)
 /**
  * Get the name of the client, if the user did not send it yet, Client #<no> is used.
  * @param client_name The variable to write the name to.
- * @param size        The amount of bytes we can write.
+ * @param last        The pointer to the last element of the destination buffer
  */
-void ServerNetworkGameSocketHandler::GetClientName(char *client_name, size_t size) const
+void ServerNetworkGameSocketHandler::GetClientName(char *client_name, const char *last) const
 {
 	const NetworkClientInfo *ci = this->GetInfo();
 
 	if (ci == NULL || StrEmpty(ci->client_name)) {
-		snprintf(client_name, size, "Client #%4d", this->client_id);
+		seprintf(client_name, last, "Client #%4d", this->client_id);
 	} else {
-		ttd_strlcpy(client_name, ci->client_name, size);
+		strecpy(client_name, ci->client_name, last);
 	}
 }
 
@@ -2168,6 +2170,39 @@ void NetworkPrintClients()
 					ci->client_name,
 					ci->client_playas + (Company::IsValidID(ci->client_playas) ? 1 : 0));
 		}
+	}
+}
+
+/**
+ * Perform all the server specific administration of a new company.
+ * @param c  The newly created company; can't be NULL.
+ * @param ci The client information of the client that made the company; can be NULL.
+ */
+void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
+{
+	assert(c != NULL);
+
+	if (!_network_server) return;
+
+	_network_company_states[c->index].months_empty = 0;
+	_network_company_states[c->index].password[0] = '\0';
+	NetworkServerUpdateCompanyPassworded(c->index, false);
+
+	if (ci != NULL) {
+		/* ci is NULL when replaying, or for AIs. In neither case there is a client. */
+		ci->client_playas = c->index;
+		NetworkUpdateClientInfo(ci->client_id);
+		NetworkSendCommand(0, 0, 0, CMD_RENAME_PRESIDENT, NULL, ci->client_name, c->index);
+	}
+
+	/* Announce new company on network. */
+	NetworkAdminCompanyInfo(c, true);
+
+	if (ci != NULL) {
+		/* ci is NULL when replaying, or for AIs. In neither case there is a client.
+		   We need to send Admin port update here so that they first know about the new company
+		   and then learn about a possibly joining client (see FS#6025) */
+		NetworkServerSendChat(NETWORK_ACTION_COMPANY_NEW, DESTTYPE_BROADCAST, 0, "", ci->client_id, c->index + 1);
 	}
 }
 

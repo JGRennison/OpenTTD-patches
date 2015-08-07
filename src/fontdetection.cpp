@@ -35,6 +35,8 @@ extern FT_Library _library;
 #include <shlobj.h> /* SHGetFolderPath */
 #include "os/windows/win32.h"
 
+#include "safeguards.h"
+
 /**
  * Get the short DOS 8.3 format for paths.
  * FreeType doesn't support Unicode filenames and Windows' fopen (as used
@@ -373,6 +375,8 @@ bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, i
 
 #include "os/macosx/macos.h"
 
+#include "safeguards.h"
+
 FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 {
 	FT_Error err = FT_Err_Cannot_Open_Resource;
@@ -392,7 +396,7 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 	} else
 #endif
 	{
-#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5) && !__LP64__
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5) && !defined(__LP64__)
 		/* This type was introduced with the 10.5 SDK. */
 #if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_5)
 	#define ATSFSSpec FSSpec
@@ -542,6 +546,8 @@ bool SetFallbackFont(FreeTypeSettings *settings, const char *language_isocode, i
 
 #include <fontconfig/fontconfig.h>
 
+#include "safeguards.h"
+
 /* ========================================================================================
  * FontConfig (unix) support
  * ======================================================================================== */
@@ -560,7 +566,7 @@ FT_Error GetFontByFaceName(const char *font_name, FT_Face *face)
 		char *font_family;
 
 		/* Split & strip the font's style */
-		font_family = strdup(font_name);
+		font_family = stredup(font_name);
 		font_style = strchr(font_family, ',');
 		if (font_style != NULL) {
 			font_style[0] = '\0';

@@ -23,6 +23,8 @@
 #include "table/sprites.h"
 #include "table/clear_land.h"
 
+#include "safeguards.h"
+
 static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlag flags)
 {
 	static const Price clear_price_table[] = {
@@ -110,7 +112,7 @@ static void DrawTile_Clear(TileInfo *ti)
 			break;
 
 		case CLEAR_ROCKS:
-			DrawGroundSprite(SPR_FLAT_ROCKY_LAND_1 + SlopeToSpriteOffset(ti->tileh), PAL_NONE);
+			DrawGroundSprite((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (TileHash(ti->x, ti->y) & 1) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + SlopeToSpriteOffset(ti->tileh), PAL_NONE);
 			break;
 
 		case CLEAR_FIELDS:

@@ -19,6 +19,8 @@
 #include "saveload.h"
 #include "table/strings.h"
 
+#include "../safeguards.h"
+
 /**
  * Update the buoy orders to be waypoint orders.
  * @param o the order 'list' to check.
@@ -93,7 +95,7 @@ void MoveBuoysToWaypoints()
 			TILE_AREA_LOOP(t, train_st) {
 				if (!IsTileType(t, MP_STATION) || GetStationIndex(t) != index) continue;
 
-				SB(_m[t].m6, 3, 3, STATION_WAYPOINT);
+				SB(_me[t].m6, 3, 3, STATION_WAYPOINT);
 				wp->rect.BeforeAddTile(t, StationRect::ADD_FORCE);
 			}
 
@@ -265,7 +267,7 @@ const SaveLoad *GetGoodsDesc()
 {
 	static const SaveLoad goods_desc[] = {
 		SLEG_CONDVAR(            _waiting_acceptance,  SLE_UINT16,                  0, 67),
-		 SLE_CONDVAR(GoodsEntry, acceptance_pickup,    SLE_UINT8,                  68, SL_MAX_VERSION),
+		 SLE_CONDVAR(GoodsEntry, status,               SLE_UINT8,                  68, SL_MAX_VERSION),
 		SLE_CONDNULL(2,                                                            51, 67),
 		     SLE_VAR(GoodsEntry, time_since_pickup,    SLE_UINT8),
 		     SLE_VAR(GoodsEntry, rating,               SLE_UINT8),
@@ -337,7 +339,7 @@ static void Load_STNS()
 			SlObject(ge, GetGoodsDesc());
 			SwapPackets(ge);
 			if (IsSavegameVersionBefore(68)) {
-				SB(ge->acceptance_pickup, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
+				SB(ge->status, GoodsEntry::GES_ACCEPTANCE, 1, HasBit(_waiting_acceptance, 15));
 				if (GB(_waiting_acceptance, 0, 12) != 0) {
 					/* In old versions, enroute_from used 0xFF as INVALID_STATION */
 					StationID source = (IsSavegameVersionBefore(7) && _cargo_source == 0xFF) ? INVALID_STATION : _cargo_source;
@@ -351,7 +353,7 @@ static void Load_STNS()
 					/* Don't construct the packet with station here, because that'll fail with old savegames */
 					CargoPacket *cp = new CargoPacket(GB(_waiting_acceptance, 0, 12), _cargo_days, source, _cargo_source_xy, _cargo_source_xy, _cargo_feeder_share);
 					ge->cargo.Append(cp, INVALID_STATION);
-					SB(ge->acceptance_pickup, GoodsEntry::GES_PICKUP, 1, 1);
+					SB(ge->status, GoodsEntry::GES_RATING, 1, 1);
 				}
 			}
 		}
@@ -539,7 +541,7 @@ static void Load_STNN()
 				for (uint32 j = 0; j < _num_flows; ++j) {
 					SlObject(&flow, _flow_desc);
 					if (fs == NULL || prev_source != flow.source) {
-						fs = &(st->goods[i].flows.insert(std::make_pair(flow.source, FlowStat(flow.via, flow.share))).first->second);
+						fs = &(st->goods[i].flows.insert(std::make_pair(flow.source, FlowStat(flow.via, flow.share, flow.restricted))).first->second);
 					} else {
 						fs->AppendShare(flow.via, flow.share, flow.restricted);
 					}

@@ -29,6 +29,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /** Widgets for the background window to prevent smearing. */
 static const struct NWidgetPart _background_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_DARK_BLUE, WID_BB_BACKGROUND), SetResize(1, 1),
@@ -244,7 +246,7 @@ bool HandleBootstrap()
 	new BootstrapAskForDownloadWindow();
 
 	/* Process the user events. */
-	_video_driver->MainLoop();
+	VideoDriver::GetInstance()->MainLoop();
 
 	/* _exit_game is used to get out of the video driver's main loop.
 	 * In case GM_BOOTSTRAP is still set we did not exit it via the

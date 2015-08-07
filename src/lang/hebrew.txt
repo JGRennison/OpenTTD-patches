@@ -109,7 +109,7 @@ STR_CARGO_SINGULAR_FIZZY_DRINK.plural                           :משקאות מ
 
 # Quantity of cargo
 STR_QUANTITY_NOTHING                                            :
-STR_QUANTITY_PASSENGERS                                         :{P 0 "נוסע " ""}{COMMA}{P "" " נוסעים"}
+STR_QUANTITY_PASSENGERS                                         :{COMMA}{NBSP}נוסע{P "" ים}
 STR_QUANTITY_COAL                                               :{WEIGHT_LONG} של פחם
 STR_QUANTITY_MAIL                                               :{P 0 "שק " ""}{COMMA}{P "" " שקים"} של דואר
 STR_QUANTITY_OIL                                                :{VOLUME_LONG} של נפט
@@ -262,6 +262,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}כפתו
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}פס הגלילה - גלילה של רשימות ימינה\שמאלה
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}הסרת בניינים וכו' במשבצת קרקע. מקש Ctrl מסמן את האזור באופן אלכנסוני. מקש Shift מעביר בין בנייה לבין הצגה של הערכת העלות
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}בחירת מחדל
 STR_BUTTON_CANCEL                                               :{BLACK}ביטול
@@ -375,7 +378,6 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :יציאה
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :אפשרויות המשחק
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :הגדרות מתקדמות
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :הגדרות סקריפטים של משחק/שחקני מחשב
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :הגדרות GRF חדש
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :אפשרויות שקיפות
@@ -484,7 +486,7 @@ STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :הדלק/כבה
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :הפעל/כבה צביעת בלוקים לא מעודכנים
 ############ range ends here
 
-############ range for days starts (also used for the place in the highscore window)
+############ range for ordinal numbers used for the place in the highscore window
 STR_ORDINAL_NUMBER_1ST                                          :1
 STR_ORDINAL_NUMBER_2ND                                          :2
 STR_ORDINAL_NUMBER_3RD                                          :3
@@ -500,22 +502,40 @@ STR_ORDINAL_NUMBER_12TH                                         :12
 STR_ORDINAL_NUMBER_13TH                                         :13
 STR_ORDINAL_NUMBER_14TH                                         :14
 STR_ORDINAL_NUMBER_15TH                                         :15
-STR_ORDINAL_NUMBER_16TH                                         :16
-STR_ORDINAL_NUMBER_17TH                                         :17
-STR_ORDINAL_NUMBER_18TH                                         :18
-STR_ORDINAL_NUMBER_19TH                                         :19
-STR_ORDINAL_NUMBER_20TH                                         :20
-STR_ORDINAL_NUMBER_21ST                                         :21
-STR_ORDINAL_NUMBER_22ND                                         :22
-STR_ORDINAL_NUMBER_23RD                                         :23
-STR_ORDINAL_NUMBER_24TH                                         :24
-STR_ORDINAL_NUMBER_25TH                                         :25
-STR_ORDINAL_NUMBER_26TH                                         :26
-STR_ORDINAL_NUMBER_27TH                                         :27
-STR_ORDINAL_NUMBER_28TH                                         :28
-STR_ORDINAL_NUMBER_29TH                                         :29
-STR_ORDINAL_NUMBER_30TH                                         :30
-STR_ORDINAL_NUMBER_31ST                                         :31
+############ range for ordinal numbers ends
+
+############ range for days starts
+STR_DAY_NUMBER_1ST                                              :1
+STR_DAY_NUMBER_2ND                                              :2
+STR_DAY_NUMBER_3RD                                              :3
+STR_DAY_NUMBER_4TH                                              :4
+STR_DAY_NUMBER_5TH                                              :5
+STR_DAY_NUMBER_6TH                                              :6
+STR_DAY_NUMBER_7TH                                              :7
+STR_DAY_NUMBER_8TH                                              :8
+STR_DAY_NUMBER_9TH                                              :9
+STR_DAY_NUMBER_10TH                                             :10
+STR_DAY_NUMBER_11TH                                             :11
+STR_DAY_NUMBER_12TH                                             :12
+STR_DAY_NUMBER_13TH                                             :13
+STR_DAY_NUMBER_14TH                                             :14
+STR_DAY_NUMBER_15TH                                             :15
+STR_DAY_NUMBER_16TH                                             :16
+STR_DAY_NUMBER_17TH                                             :17
+STR_DAY_NUMBER_18TH                                             :18
+STR_DAY_NUMBER_19TH                                             :19
+STR_DAY_NUMBER_20TH                                             :20
+STR_DAY_NUMBER_21ST                                             :21
+STR_DAY_NUMBER_22ND                                             :22
+STR_DAY_NUMBER_23RD                                             :23
+STR_DAY_NUMBER_24TH                                             :24
+STR_DAY_NUMBER_25TH                                             :25
+STR_DAY_NUMBER_26TH                                             :26
+STR_DAY_NUMBER_27TH                                             :27
+STR_DAY_NUMBER_28TH                                             :28
+STR_DAY_NUMBER_29TH                                             :29
+STR_DAY_NUMBER_30TH                                             :30
+STR_DAY_NUMBER_31ST                                             :31
 ############ range for days ends
 
 ############ range for months starts
@@ -824,19 +844,17 @@ STR_NEWS_ROAD_VEHICLE_IS_WAITING                                :{WHITE}{VEHICLE
 STR_NEWS_SHIP_IS_WAITING                                        :{WHITE}ממתינה במבדוק {VEHICLE}
 STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}ממתין בסככת המטוסים {VEHICLE}
 
-# Start of order review system
-# DON'T ADD OR REMOVE LINES HERE
+# Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}ל{VEHICLE} חסר(ים) יעד(ים) במסלול הנסיעה של
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}ל{VEHICLE} יעד שאינו קיים עוד עבור
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}ל{VEHICLE} כפילות ברשימת היעדים של
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} יעד בלתי חוקי במסלול הנסיעה של
-# end of order system
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}מתיישן {VEHICLE}
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}מתיישן מאוד {VEHICLE}
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD_AND                        :{WHITE}מתיישן מאוד, וזקוק להחלפה בדחיפות {VEHICLE}
 STR_NEWS_TRAIN_IS_STUCK                                         :אינה יכולה למצוא נתיב המשך {WHITE}{VEHICLE}
-STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} הל{P "ך" "כה"} לאיבוד
+STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} הל לאיבוד
 STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :ריווחי {WHITE}{VEHICLE} שנה שעברה הם {CURRENCY_LONG}
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE}אינ{G 0 "ו" "ה"} יכול{G 0 "" "ה"} להגיע אל היעד הבא כי הוא מחוץ לטווח
 
@@ -913,10 +931,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :לארי גאו
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :ריאל איראני (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}רכבי כביש
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}בחר את צד הכביש בו יסעו כלי הרכב
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :סע בצד שמאל
@@ -952,11 +966,13 @@ STR_GAME_OPTIONS_TOWN_NAME_CATALAN                              :רומאית
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}שמירה אוטומטית
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}בחר פרק זמן בין שמירות אוטומטיות
 
+############ start of autosave dropdown
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :כבוי
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :מידי חודש
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :כל 3 חודשים
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :כל 6 חודשים
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :כל 12 חודשים
+############ end of autosave dropdown
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}שפה
 STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}בחר את שפת הממשק
@@ -968,8 +984,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}רזלו
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}בחר את רזולוציית המסך
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :אחר
 
-STR_GAME_OPTIONS_SCREENSHOT_FORMAT                              :{BLACK}פורמט עבור צילומי מסך
-STR_GAME_OPTIONS_SCREENSHOT_FORMAT_TOOLTIP                      :{BLACK}בחר את הפורמט של צילום המסך
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}ערכת גרפיקה בסיסית
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}בחר בערכת גרפיקה בסיסית לשימוש
@@ -985,6 +1000,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}בחר �
 STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM} קובץ פגום{P "" s}
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}מידע נוסף אודות ערכת המוזיקה הבסיסית
 
+STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}שגיאה ביצירת רשימה של רזולוציות אפשריות
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}נכשל בשינויי למסך מלא
 
 # Custom currency window
@@ -1070,8 +1086,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :עויין
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}אין בינות מלאכותיות מתאימות...{}באפשרותך להוריד בינות מלאכותיות בעזרת מערכת ה'תוכן המקוון'
 
-# Advanced settings window
-STR_CONFIG_SETTING_CAPTION                                      :{WHITE}הגדרות מתקדמות
+# Settings tree window
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}מחרוזת סינון:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}הרחב הכל
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}צמצם הכל
@@ -1086,20 +1101,20 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :הגדרת חב
 
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}קטגוריה:
 STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}סוג:
-STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}מגביל את הרשימה להלן כך שתציג רק הגדרות שהשתנו
-STR_CONFIG_SETTING_RESTRICT_BASIC                               :הגדרות בסיסיות
-STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :הגדרות מתקדמות
-STR_CONFIG_SETTING_RESTRICT_ALL                                 :הגדרות מומחה / כל ההגדרות
+STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}מגביל את הרשימה להלן תוך שימוש בסינון שהוגדר מראש.
+STR_CONFIG_SETTING_RESTRICT_BASIC                               :הגדרות בסיסיות (הצג רק הגדרות חשובות)
+STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :הגדרות מתקדמות (הצג את רוב ההגדרות)
+STR_CONFIG_SETTING_RESTRICT_ALL                                 :הגדרות מומחה (הצג את כל ההגדרות, כולל הגדרות משונות)
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT             :הגדרות בעלות ערך השונה מברירת המחדל
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW                 :הגדרות בעלות ערך השונה מזה אשר בהגדרות המשחק החדש שלך
 
 STR_CONFIG_SETTING_TYPE_DROPDOWN_HELPTEXT                       :{BLACK}מגביל את הרשימה הבאה להגדרות מסוימות
 STR_CONFIG_SETTING_TYPE_DROPDOWN_ALL                            :כל ההגדרות
-STR_CONFIG_SETTING_TYPE_DROPDOWN_CLIENT                         :הגדרות משתמש(לא נמצא בשמורים; משפיע על כל המשחקים)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :הגדרות משחק (נמצא בשמורים; משפיע רק על משחקים חדשים)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :הגדרות משחק (נמצא בשמורים; משפיע רק על משחק נוכחי)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :הגדרות חברה (נמצא בשמורים; משפיע רק על משחקים חדשים)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :הגדרות חברה (נמצא בשמורים; משפיע רק על חברה נוכחית)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_CLIENT                         :הגדרות משתמש (לא מאוחסנות במשחקים שמורים; משפיעות על כל המשחקים)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :הגדרות משחק (מאוחסנות במשחקים שמורים; משפיעות רק על משחקים חדשים)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :הגדרות משחק (מאוחסנות במשחק שמור; משפיעות רק על משחק נוכחי)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :הגדרות חברה (מאוחסנות במשחקים שמורים; משפיעות רק על משחקים חדשים)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :הגדרות חברה (מאוחסנות במשחק שמור; משפיעות רק על חברה נוכחית)
 STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}הצג את תוצאות החיפוש בהגדרת {SILVER}הקטגוריה {} {BLACK} ל{WHITE}{STRING}
 STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}הצג את תוצאות החיפוש בהגדרת {SILVER}הסוג {} {BLACK}ל{WHITE}כל סוגי ההגדרות
 STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}הצג את תוצאות החיפוש בהגדרת{SILVER}הקטגוריה{} {BLACK}ל{WHITE}{STRING} {BLACK}וגם את {SILVER}הסוג {BLACK}ל{WHITE}כל סוגי ההגדרות
@@ -1144,9 +1159,10 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :אפשר/מנע
 STR_CONFIG_SETTING_CITY_APPROVAL                                :יחס מועצת העיר כלפי שינוי מבנה אזורי: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :בחר באיזו מידה רעש ונזק סביבתי ע"י חברות משפיעים על הדירוג העירוני שלהן ופעולות בנייה עתידיות באזור
 
-STR_CONFIG_SETTING_BUILDONSLOPES                                :אפשר לבנות על מידרונות וחופים: {STRING}
-STR_CONFIG_SETTING_BUILDONSLOPES_HELPTEXT                       :אם מאופשר, ניתן לבנות מסילות ותחנות על גבי רוב המדרונות. אם מבוטל, ניתן לבנות אותם רק על מדרונות המתאימים לכיוון המסילה וכך אינם דורשים יסודות
-STR_CONFIG_SETTING_AUTOSLOPE                                    :{STRING} :'אפשר יצירת מילוי עפר תחת מבנים, פסי רכבת וכו
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :גובה מפה מקסימלי: {STRING}
+STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :קבע את הגובה המקסימלי להרים במפה
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}לא ניתן לקבוע את הגובה המקסימלי במפה לערך זה. קיים לפחות הר אחד גבוה יותר
+STR_CONFIG_SETTING_AUTOSLOPE                                    :אפשר יצירת מילוי עפר תחת מבנים, פסי רכבת וכו': {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :אפשר שינוי פני השטח מתחת לבניינים ולמסילות ללא הסרתם
 STR_CONFIG_SETTING_CATCHMENT                                    :אפשר לאזורי אגירת מים להיראות יותר ריאליסטיים: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :אזורי אגירה בגדלים שונים עבור סוגים שונים של תחנות ונמלי תעופה
@@ -1170,14 +1186,8 @@ STR_CONFIG_SETTING_FORBID_90_DEG                                :אסור על �
 STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :סיבוב של 90 מעלות מתרחש כאשר מסילה אנכית באה מיד אחרי מסילה אופקית במשבצת סמוכה, וכך מאלצת את הרכבת לבצע פנייה של 90 מעלות בעת חציית גבול המשבצות במקום פניית 45 הרגילה עבור צירופי מסילות אחרים. הנ"ל תקף גם לגבי רדיוס הסיבוב של אוניות
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :{STRING} :אפשר חיבור בין תחנות שאינן צמודות זו לזו
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :אפשר הוספת חלקים לתחנה מבלי לגעת ישירות בחלקים הקיימים. דורש קליק בצירוף לחיצה על מקש Ctrl בעת מיקום החלקים החדשים
-STR_CONFIG_SETTING_IMPROVEDLOAD                                 :השתמש באלגוריתם טעינה משופר: {STRING}
-STR_CONFIG_SETTING_IMPROVEDLOAD_HELPTEXT                        :אם מאופר, מספר רכבים הממתינים בתחנה מוטענים בזה אחר זה. טעינת הרכב הבא מתחילה רק כאשר ממתין די מטען לצורך מילוי הרכב הראשון
-STR_CONFIG_SETTING_GRADUAL_LOADING                              :טען כלי רכב בהדרגה: {STRING}
-STR_CONFIG_SETTING_GRADUAL_LOADING_HELPTEXT                     :טען רכבים בהדרגה באמצעות זמני טעינה ייחודיים לכל רכב, במקום לטעון הכל בבת אחת עם פרק זמן קבוע התלוי רק בכמות המטען הטעונה
 STR_CONFIG_SETTING_INFLATION                                    :אנפלציה: {STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :אפשר אינפלציה בכלכלה, כך שהעלויות עולות מעט מהר יותר מאשר התשלומים
-STR_CONFIG_SETTING_SELECTGOODS                                  :מסור סחורה לתחנה רק כאשר יש ביקוש: {STRING}
-STR_CONFIG_SETTING_SELECTGOODS_HELPTEXT                         :מסור מטען לתחנה רק אם התבקש ע"י כלי רכב טוען. זה מונע דירוגים רעים עבור מטענים אשר אינם מקבלים שירות בתחנה
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :אורך גשר מירבי: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :אורך מירבי לבניית גשרים
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :אורך מנהרה מירבי: {STRING}
@@ -1205,8 +1215,6 @@ STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :מקום בו �
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :קצה קרוב
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :אמצע
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :קצה רחוק
-STR_CONFIG_SETTING_ROAD_VEHICLE_QUEUEING                        ::(כלי רכב ממתינים(עם אפקט קונט {STRING}
-STR_CONFIG_SETTING_ROAD_VEHICLE_QUEUEING_HELPTEXT               :גרום לרכבי כביש להמתין מול תחנות מלאות עד שהן מתפנות
 STR_CONFIG_SETTING_AUTOSCROLL                                   :{STRING} :גלילת תצוגה בעת שסמן העכבר נמצא בסמוך לקצוות
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :כאשר מאופשר, חלונות תצוגה יתחילו לגלול כאשר העכבר קרוב לקצה החלון
 STR_CONFIG_SETTING_AUTOSCROLL_DISABLED                          :מבוטל
@@ -1237,10 +1245,6 @@ STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :{STRING} :אפ�
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :אפשר בנייה של תחנות "על הדרך" בכבישים בבעלות עיירות
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :אפשר נסיעה דרך תמרורי-עצירה על דרכים בבעלות מתחרים: {STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :אפשר בנייה של תחנות "על הדרך" בכבישים בבעלות חברות אחרות
-STR_CONFIG_SETTING_ADJACENT_STATIONS                            :{STRING} :אפשר בניית תחנות בשכנות
-STR_CONFIG_SETTING_ADJACENT_STATIONS_HELPTEXT                   :אפשר לתחנות שונות לדעת זו בזו
-STR_CONFIG_SETTING_DYNAMIC_ENGINES                              :אפשר מספר ערכות מנוע GRF חדשות: {STRING}
-STR_CONFIG_SETTING_DYNAMIC_ENGINES_HELPTEXT                     :אפשרות תאימות עבור NewGRF-ים ישנים. אל תבטל/י אפשרות זו, אלא אם את/ה יודע/ת בדיוק מה את/ה עושה!
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}שינוי הגדרה זו אינה אפשרית כאשר קיימים כלי רכב
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :תחזוקת תשתיות: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :כאשר מאופשר, תשתיות גורמות לעלויות תחזוקה. העלות גדלה באופן שהוא מעבר ליחסי לעומת גודל הרשת, וכך משפיע יותר על חברות גדולות מאשר על חברות קטנות
@@ -1271,39 +1275,51 @@ STR_CONFIG_SETTING_ERRMSG_DURATION                              :משך הצגת
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :פרק הזמן להצגת הודעות שגיאה בחלון אדום. יש לשים לב כי כמה הודעות שגיאה (קריטיות) אינן נסגרות אוטומטית אחרי פרק זמן זה, אלא יש לסגור אותן ידנית
 STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{P 0 "שנייה " ""}{COMMA}{P "" " שניות"}
 STR_CONFIG_SETTING_HOVER_DELAY                                  :הצג רמזים צצים: {STRING}
-STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :השהייה טרם הצגת רמזים צצים כאשר העכבר מרחף מעל חלק ממשק. לחלופין, ניתן לקשר רמזים צצים לכפתור העכבר הימני
-STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :רחף למשך {P 0 "שניה " ""}{COMMA}{P "" " שניות"}
+STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :השהייה טרם הצגת רמזים צצים כאשר העכבר מרחף מעל חלק ממשק. לחלופין, ניתן לקשר רמזים צצים לכפתור העכבר הימני כאשר מוגדר 0.
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :רחף למשך {P 0 "מילישניה " ""}{COMMA}{P "" " מילישניות"}
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :קליק ימני
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :הראה את אוכלוסיית העיר בתוך תוית השם של העיר: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :הצג את אוכלוסייתן של עיירות בתווית שלהן על גבי המפה
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :עובי קווים בגרפים: {STRING}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :עובי הקו בגרפים. קו דק ניתן לקריאה באופן מדויק יותר, אולם קל יותר לראות קו עבה ולהבחין בין הצבעים של קוים עבים
 
-STR_CONFIG_SETTING_LAND_GENERATOR                               :יוצר אדמה: {STRING}
+STR_CONFIG_SETTING_LAND_GENERATOR                               :מחולל פני שטח: {STRING}
+STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :המחולל המקורי מבוסס על הגרפיקה הבסיסית, ויוצר פני שטח אחידים. בורא הקרקע מבוסס על אלגוריתם רעש פרלין עם אפשרויות עריכה עדינות
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :מקורי
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :בורא הקרקע
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :סוג המשטח: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :(בורא הקרקע בלבד) הרריות המשטח
+STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :צפיפות תעשיות: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :בחר כמה תעשיות יווצרו ומהי הרמה שתישמר לאורך המשחק
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :מרחק מירבי מן הקצה עבור מזקקות נפט: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :מזקקות נפט נבנות רק בקרבת גבול המפה, כלומר חוף הים עבור מפות בצורת אי
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :גובה קו השלג: {STRING}
-STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :רמת חספוס השטח (בבורא האדמה בלבד) : {STRING}
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :בחר מהו הגובה בו מתחיל השלג באקלים קר. שלג משפיע גם על הדרישות ביצירת תעשייה וגידול ערים
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :רמת חספוס השטח: {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(בורא הקרקע בלבד) בחר את תדירות הגבעות: למשטחים חלקים פחות גבעות שמפוזרות במרחב. למשטחים מחוספסים יש הרבה גבעות, שעלולות להיראות מחזוריות
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :חלק מאוד
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :חלק
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :מחוספס
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :מחוספס מאוד
+STR_CONFIG_SETTING_VARIETY                                      :הפצה מגוונת: {STRING}
+STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(עבור בורא הקרקע בלבד) בחר האם המפה תכיל גם הרים וגם אזורים שטוחים. מכיוון שכך המפה שטוחה יותר, יש לקבוע את ההגדרות הנוספות להררי
+STR_CONFIG_SETTING_RIVER_AMOUNT                                 :כמות הנהרות: {STRING}
+STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :בחר את כמות הנהרות
 STR_CONFIG_SETTING_TREE_PLACER                                  :אלגוריתם של נוטע העצים: {STRING}
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :בחר את הפיזור של העצים על המפה: 'מקורי' שותל עצים בצורה אחידה, 'משופר' שותל אותם בקבוצות
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :בכלל לא
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :מקורי
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :משופר
+STR_CONFIG_SETTING_ROAD_SIDE                                    :כלי רכב: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :בחר את צד הנסיעה
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :סיבוב מפת גבהים: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :נגד כיוון השעון
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :בכיוון השעון
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :{STRING} :עומק הקרקע עבור מפה שטוחה
-STR_CONFIG_SETTING_ENABLE_FREEFORM_EDGES                        :{STRING} :אפשר יצירת קרקע בשולי המפה
-STR_CONFIG_SETTING_ENABLE_FREEFORM_EDGES_HELPTEXT               :אם מבוטל, גבולות המפה תמיד יהיו אוקיינוס
 STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}לפחות משבצת אחת בקצה הצפוני אינה ריקה
 STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}לפחות משבצת אחת באחד הקצוות אינה מכוסה מים
 
-STR_CONFIG_SETTING_STATION_SPREAD                               :התפרסות תחנה מירבית: {STRING}
+STR_CONFIG_SETTING_STATION_SPREAD                               :פריסה מירבית לתחנה: {STRING}
 STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :שטח מירבי עליו יכולים להתפרס חלקיה השונים של תחנה בודדת. יש לשים לב כי ערכים גבוהים יאטו את המשחק
 STR_CONFIG_SETTING_SERVICEATHELIPAD                             :{STRING}טיפול אוטומטי במסוקים במנחת
 STR_CONFIG_SETTING_SERVICEATHELIPAD_HELPTEXT                    :תחזק מסוקים אחרי כל נחיתה, אפילו אם אין מוסך בנמל התעופה
@@ -1320,7 +1336,7 @@ STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :{STRING} :גל�
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :שלוט כיצד התצוגה הראשית נגללת למיקום מסוים כאשר מקליקים על המפה הקטנה אן כאשר נותנים הוראה לגלול לעצם מסוים על גבי המפה. אם מאופשר, חלון התצוגה נגלל באופן חלק, אם מבוטל הוא מוקפץ ישירות אל נקודת המטרה
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :{STRING} :'הצג מידות בעת בניית כבישים/מסילות וכיוב
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :הצג מרחק במשבצות והבדלי גבהים בעת גרירה תוך כדי פעולות בנייה
-STR_CONFIG_SETTING_LIVERIES                                     :{STRING} :הצג את צבעי החברה
+STR_CONFIG_SETTING_LIVERIES                                     :הצג צבעים מיוחדים לכלי רכב: {STRING}
 STR_CONFIG_SETTING_LIVERIES_HELPTEXT                            :שלוט בשימוש בצבעים ייחודיים לסוגי כלי רכב (בניגוד לצבעים ייחודיים לחברה)
 STR_CONFIG_SETTING_LIVERIES_NONE                                :לא
 STR_CONFIG_SETTING_LIVERIES_OWN                                 :החברה שלי
@@ -1350,16 +1366,14 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :כבוי
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :גלילה בלחיצה שמאלית: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :אפשר גלילת המפה באמצעות גרירתה עם כפתור העכבר השמאלי. אפשרות זו שימושית במיוחד בעת שימוש במסך מגע לצורך גלילה
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :שמירה אוטומטית: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :בחר פרק זמן בין שמירות אוטומטיות
+
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :השתמש במבנה התאריך {STRING} בשביל שמות קבצי השמירה.
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :פורמט התאריך בשמות קבצים של משחקים שמורים
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :ארוך (31 בדצמבר 2008)
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_SHORT              :קצר (31-12-2008)
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-12-31)
-
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE                       :לוח צבעים ברירת מחדל שיש להניח עבור NewGRF-ים אשר אינם מפרטים לוח צבעים: {STRING}
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_HELPTEXT              :לוח צבעים ברירת מחדל לשימוש עבור NewGRF-ים אשר אינם מפרטים איזה לוח צבעים הם צריכים
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_DOS                   :לוח צבעים ברירת מחדל (D)
-STR_CONFIG_SETTING_NEWGRF_DEFAULT_PALETTE_WIN                   :לוח צבעים מיושן (W)
 
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME                            :עצור משחק אוטומטית אחרי התחלת משחק חדש: {STRING}
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME_HELPTEXT                   :כאשר מאופשר, המשחק יושהה אוטומטית בעת התחלת משחק חדש, דבר המאפשר בחינה מדוקדקת יותר של המפה
@@ -1369,7 +1383,7 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_NO_ACTIONS               :שום פעול
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_CONSTRUCTION     :כל הפעולות שאינן פעולות בנייה
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_LANDSCAPING      :כל הפעולות שאינן משנות את פני השטח
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :כל הפעולות
-STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :השתמש ברשימת כלי הרכב המתקדמת: {STRING}
+STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :השתמש בקבוצות ברשימת כלי הרכב: {STRING}
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :אפשר שימוש ברשימות כלי הרכב המתקדמות לצורך חלוקת כלי רכב לקבוצות
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :{STRING} :הצג מצביעי הטענה
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :בחר האם מדדי טעינה יוצגו מעל רכבים בעת טעינתם או פריקתם
@@ -1384,7 +1398,7 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :סוג מסיל
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :הראשון הזמין
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :האחרון הזמין
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :הנפוץ ביותר
-STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :{STRING} :הדגש מסלולים שבשימוש
+STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :הדגש מסלולים שבשימוש: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :תן צבע שונה למסילות שמורות כדי לסייע בבעיות עם רכבות המסרבות להיכנס לגושים מבוססי מסלול
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :{STRING}: שמור על כלי הבנייה פעילים לאחר השימוש
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :השאר את כלי הבנייה עבור גשרים, מנהרות וכו' פתוחים אחרי השימוש
@@ -1410,13 +1424,13 @@ STR_CONFIG_SETTING_SOUND_AMBIENT_HELPTEXT                       :השמע קול
 
 STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING                  :מנע בניית תשתיות כאשר אין כלי רכב מתאימים זמינים: {STRING}
 STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING_HELPTEXT         :כאשר מאופשר, תשתיות זמינות רק כאשר ישנם גם כלי רכב זמינים, דבר המונע בזבוז זמן וכסף על תשתיות בלתי שמישות
-STR_CONFIG_SETTING_MAX_TRAINS                                   :{STRING} :מספר רכבות מירבי לשחקן
+STR_CONFIG_SETTING_MAX_TRAINS                                   :מספר רכבות מירבי לשחקן: {STRING}
 STR_CONFIG_SETTING_MAX_TRAINS_HELPTEXT                          :מספר מירבי של רכבות בהן חברה יכולה להחזיק
-STR_CONFIG_SETTING_MAX_ROAD_VEHICLES                            :{STRING} :מספר משאיות/אוטובוסים מירבי לשחקן
+STR_CONFIG_SETTING_MAX_ROAD_VEHICLES                            :מספר משאיות/אוטובוסים מירבי לשחקן: {STRING}
 STR_CONFIG_SETTING_MAX_ROAD_VEHICLES_HELPTEXT                   :מספר מירבי של רכבי כביש בהם חברה יכולה להחזיק
-STR_CONFIG_SETTING_MAX_AIRCRAFT                                 :{STRING} :מספר כלי טייס מירבי לשחקן
+STR_CONFIG_SETTING_MAX_AIRCRAFT                                 :מספר כלי טייס מירבי לשחקן: {STRING}
 STR_CONFIG_SETTING_MAX_AIRCRAFT_HELPTEXT                        :מספר מירבי של מטוסים בהם חברה יכולה להחזיק
-STR_CONFIG_SETTING_MAX_SHIPS                                    :{STRING} :מספר כלי שייט מירבי לשחקן
+STR_CONFIG_SETTING_MAX_SHIPS                                    :מספר כלי שייט מירבי לשחקן: {STRING}
 STR_CONFIG_SETTING_MAX_SHIPS_HELPTEXT                           :מספר מירבי של אוניות בהן חברה יכולה להחזיק
 
 STR_CONFIG_SETTING_AI_BUILDS_TRAINS                             :מנע הפעלת רכבות ע”י שחקני המחשב: {STRING}
@@ -1510,7 +1524,7 @@ STR_CONFIG_SETTING_DRAG_SIGNALS_FIXED_DISTANCE_HELPTEXT         :בחר את ה�
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE                  :{STRING} :בנה רמזורים מכאניים לפני
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE_HELPTEXT         :קבע את השנה בה רמזורים חשמליים ישמשו במסילות. לפני שנה זו יהיו בשימוש רמזורים מכניים (פעולתם זהה, הם רק נראים אחרת)
 STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI                            :{STRING} :אפשר ממשק ויזואלי עבור רמזורים
-STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI_HELPTEXT                   :הצג חלון לבחירת סוג הרמזור להצבה, במקום רק מעבר בין האפשרויות ללא חלון באמצעות הקלקה על "בנה רמזורים" תוך לחיצה על מקש Ctrl
+STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI_HELPTEXT                   :הצג חלון לבחירת סוג הרמזור להצבה, במקום רק מעבר בין האפשרויות באמצעות Ctrl+לחיצה על רמזורים בנויים
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_TYPE                          :{STRING} :ברירת מחדל לבניית רמזורי רכבת
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_TYPE_HELPTEXT                 :סוג רמזור לשימוש בברירת מחדל
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_NORMAL                        :רמזורי בלוק
@@ -1582,8 +1596,6 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 ב-{COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :ללא
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :{STRING} :מכפיל התחלתי של גודל העיירות
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :גודל ממוצע של ערים יחסית לעיירות רגילות בתחילת המשחק
-STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD                        :הסר רכיבי-דרך לא הגיוניים במהלך בניית דרכים: {STRING}
-STR_CONFIG_SETTING_MODIFIED_ROAD_REBUILD_HELPTEXT               :הסר קצות כבישים ללא מוצא בעת סלילה מחדש ממומנת של כבישים
 
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :עדכן את הגרף מדי {STRING} {P 0:2 יום ימים}
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :זמן לחישוב מחדש של גרף הקישור. כל חישוב מחדש מחשב את התכניות של פריט יחיד בגרף. כלומר, בהגדרה של ערך X אין הכרח שכל הגרף יתעדכן מדי X ימים. רק פריט ממנו יתעדכן. ערך קטן יותר דורש יותר זמן מעבד לחישוב. ערך גבוה קובע זמן ארוך יותר עד שחלוקת המטען מתחילה בנתיב חדש.
@@ -1597,7 +1609,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :"סימטרי" 
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :אופן החלוקה עבור דואר: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :"סימטרי" הכוונה שכמות הדואר מתחנה א' לתחנה ב' הוא פחות או יותר אותה כמות הדואר מתחנה ב' לתחנה א'. "אסימטרי" הכוונה שכמויות דואר שרירותיות יכולות להישלח לכל אחד מהכיוונים. "ידני" הכוונה שאין חלוקה אוטומטית עבור דואר.
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :אופן החלוקה עבור מחלקה משוריינת: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :מחלקה משוריינת מובילה חפצי ערך באקלים ממוזג, יהלומים באקלים טרופי וזהב באקלים קר. קבצי שדרוג גראפי עלולים לשנות חלוקה זו. "סימטרי" הכוונה שכמות המטען מתחנה א' לתחנה ב' הוא פחות או יותר אותה כמות המטען מתחנה ב' לתחנה א'. "אסימטרי" הכוונה שכמויות מטען שרירותיות יכולות להישלח לכל אחד מהכיוונים. "ידני" הכוונה שאין חלוקה אוטומטית עבור המטען. באקלים קר מומלץ לקבוע למצב אסימטרי או ידני כי בנקים לא שולחים זהב חזרה למכרות יהלומים. באקלים ממוטזג או טרופי ניתן לבחור גם במצב סימטרי כאשר בנקים ישלחו חפצי ערך חזרה למקור של אותם חפצי ערך.
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :מחלקה משוריינת מובילה חפצי ערך באקלים ממוזג, יהלומים באקלים טרופי וזהב באקלים קר. קבצי שדרוג גראפי עלולים לשנות חלוקה זו. "סימטרי" הכוונה שכמות המטען מתחנה א' לתחנה ב' הוא פחות או יותר אותה כמות המטען מתחנה ב' לתחנה א'. "אסימטרי" הכוונה שכמויות מטען שרירותיות יכולות להישלח לכל אחד מהכיוונים. "ידני" הכוונה שאין חלוקה אוטומטית עבור המטען. באקלים קר מומלץ לקבוע למצב אסימטרי או ידני כי בנקים לא שולחים זהב חזרה למכרות יהלומים. באקלים ממוזג או טרופי ניתן לבחור גם במצב סימטרי כאשר בנקים ישלחו חפצי ערך חזרה למקור של אותם חפצי ערך.
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :אופן החלוקה עבור מטענים אחרים: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"אסימטרי" הכוונה שכמויות מטען שרירותיות יכולות להישלח לכל אחד מהכיוונים. "ידני" הכוונה שאין חלוקה אוטומטית עבור המטען.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :דיוק החלוקה: {STRING}
@@ -1633,32 +1645,22 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :מטרי (קי�
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :בינלאומית (קילו ניוטון)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :יחידות גובה: {STRING}
-STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :כאשר מוצגים גבהים השתמש ביחידות שנבחרו.
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :כאשר מוצגים גבהים השתמש ביחידות שנבחרו
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :בריטית (רגל)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :מטרי (מטר)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (מטר)
 
-STR_CONFIG_SETTING_GUI                                          :{ORANGE}ממשק חזותי
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}הגדרות מיקום
-STR_CONFIG_SETTING_CONSTRUCTION                                 :{ORANGE}בנייה
-STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}כלי תחבורה
-STR_CONFIG_SETTING_STATIONS                                     :{ORANGE}תחנות
-STR_CONFIG_SETTING_ECONOMY                                      :{ORANGE}כלכלה
-STR_CONFIG_SETTING_LINKGRAPH                                    :{ORANGE}התפלגות המטען
-STR_CONFIG_SETTING_AI                                           :{ORANGE}מתחרים
-STR_CONFIG_SETTING_DISPLAY_OPTIONS                              :{ORANGE}הצג הגדרות
-STR_CONFIG_SETTING_INTERACTION                                  :{ORANGE}אינטראקציה
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}צלילים
-STR_CONFIG_SETTING_NEWS                                         :{ORANGE}חדשות והודעות
-STR_CONFIG_SETTING_CONSTRUCTION_SIGNALS                         :{ORANGE}רמזורים
-STR_CONFIG_SETTING_STATIONS_CARGOHANDLING                       :{ORANGE}טיפול במטען
-STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}שחקני מחשב
-STR_CONFIG_SETTING_VEHICLES_AUTORENEW                           :{ORANGE}חידוש אוטומטי
-STR_CONFIG_SETTING_VEHICLES_SERVICING                           :{ORANGE}טיפולים
+STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}ממשק חזותי
+STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}בנייה
+STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}כלי תחבורה
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}ניתוב
-STR_CONFIG_SETTING_VEHICLES_TRAINS                              :{ORANGE}רכבות
-STR_CONFIG_SETTING_ECONOMY_TOWNS                                :{ORANGE}ערים
-STR_CONFIG_SETTING_ECONOMY_INDUSTRIES                           :{ORANGE}תעשיות
+STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}ערים
+STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}תעשיות
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}התפלגות המטען
+STR_CONFIG_SETTING_AI                                           :{ORANGE}מתחרים
+STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}שחקני מחשב
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :מקורי
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
@@ -1705,7 +1707,6 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}משחק
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}אפשרויות
 STR_INTRO_HIGHSCORE                                             :{BLACK}טבלת ניקוד מירבי
-STR_INTRO_ADVANCED_SETTINGS                                     :{BLACK}הגדרות מתקדמות
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}(NewGRF)הגדרות שדרוג גראפי
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK} בדוק תוכן מקוון
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}הגדרות סקריפטים של משחק/שחקני מחשב
@@ -1725,7 +1726,6 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}ארץ �
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}הצג הגדרות משחק
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}הצג טבלת ניקוד מירבי
-STR_INTRO_TOOLTIP_ADVANCED_SETTINGS                             :{BLACK}הצג הגדרות מתקדמות
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}הצג הגדרות שדרוג גראפי
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK} חפש תוכן חדש/מעודכן להורדה
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK} הצג הגדרות סקריפטים של משחק/שחקני מחשב
@@ -1765,6 +1765,8 @@ STR_CHEAT_CHANGE_COMPANY                                        :{ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}טרקטור אימתני (הסרת מפעלים, רכיבים שאי אפשר להזיז): {ORANGE}{STRING}
 STR_CHEAT_CROSSINGTUNNELS                                       :{ORANGE}{STRING}{LTBLUE} :מנהרות יכולות לחצות זו את זו
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}מטוסי סילון לא יתרסקו (לעיתים קרובות) בשדות תעופה קטנים: {ORANGE}{STRING}
+STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}ערוך את הגובה המקסימלי במפה: {ORANGE}{NUM}
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :ערוך את הגובה המקסימלי של הרים במפה
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :אקלים ממוזג
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :אקלים קר
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :אקלים טרופי
@@ -1813,6 +1815,7 @@ STR_LIVERY_FREIGHT_TRAM                                         :חשמלית מ
 STR_FACE_CAPTION                                                :{WHITE}בחירת תווי פנים
 STR_FACE_CANCEL_TOOLTIP                                         :{BLACK}בטל פנים חדשות
 STR_FACE_OK_TOOLTIP                                             :{BLACK}אישור תווי פנים
+STR_FACE_RANDOM                                                 :{BLACK}אקראית
 
 STR_FACE_MALE_BUTTON                                            :{BLACK}גבר
 STR_FACE_MALE_TOOLTIP                                           :{BLACK}בחר תווי פנים של גברים
@@ -1927,13 +1930,13 @@ STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}קבע �
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}הגן על המשחק שלך עם סיסמה אם אתה לא רוצה שהוא יהיה זמין לכולם
 
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} לקוח{P "" "ות"}
-STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}מקסימום לקוחות:
+STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}מספר מקסימלי של לקוחות:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK} :מספר משתתפים מירבי
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} חבר{P "ה" "ות"}
-STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}מקסימום חברות:
+STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}מספר מקסימלי של חברות:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}הגבל את השרת למספר מסויים של חברות
 STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} צופ{P "ה" "ים"}
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK} :מספר צופים מירבי
+STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}מספר צופים מירבי:
 STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}הגבלת השרת למספר צופים מסויים
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}שפת דיבור:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}שחקנים אחרים ידעו איו שפה מדוברת בשרת
@@ -2638,7 +2641,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :שטח בבעל
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD אודות
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}כל הזכויות שמורות , {COPYRIGHT}1995 כריס סויר - {NBSP}זכויות יוצרים מקוריות
 STR_ABOUT_VERSION                                               :{BLACK}{REV} גירסה , OpenTTD
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2014 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}שמור משחק
@@ -2673,14 +2676,13 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK} :מספר העיירות
 STR_MAPGEN_DATE                                                 :{BLACK} :תאריך
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK} :מספר התעשיות
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}גובה מפה מקסימלי:
+STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}הגדל את הגובה המקסימלי של הרים במפה ביחידה אחת
+STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}הקטן את הגובה המקסימלי במפה ביחידה אחת
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}גובה קו השלג
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}הגבה את קו השלג
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}הנמך את קו השלג
-STR_MAPGEN_RANDOM_SEED                                          :{BLACK} :מספר אקראי
-STR_MAPGEN_RANDOM_SEED_HELP                                     :{BLACK}הכנס מספר אקראי כלשהוא
-STR_MAPGEN_RANDOM                                               :{BLACK}אקראית
-STR_MAPGEN_RANDOM_HELP                                          :{BLACK}בחר מספר אקראי שישמש בסיס ליצירת הקרקע
-STR_MAPGEN_LAND_GENERATOR                                       :{BLACK} :יצירת קרקע
+STR_MAPGEN_LAND_GENERATOR                                       :{BLACK} :מחולל פני שטח
 STR_MAPGEN_TREE_PLACER                                          :{BLACK}אלגוריתם העצים:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK} :סוג הקרקע
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK} :כמות ימים/אגמים
@@ -2706,7 +2708,7 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK} :שם �
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}גודל:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} על {NUM}
 
-STR_MAPGEN_RANDOM_SEED_OSKTITLE                                 :{BLACK}מספר אקראי
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}שינוי הגובה המקסימלי במפה
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}שנה את גובה קו השלג
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}שנה את שנת הפתיחה
 
@@ -2761,6 +2763,8 @@ STR_NEWGRF_SETTINGS_MOVEUP                                      :{BLACK}העבר
 STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}מעביר את הקובץ שנבחר כלפי מעלה ברשימה
 STR_NEWGRF_SETTINGS_MOVEDOWN                                    :{BLACK}העבר למטה
 STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}מעביר את הקובץ שנבחר כלפי מטה ברשימה
+STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}עדכן
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP                             :{BLACK}עדכן קבצי NewGRF שלהם הגרסה המותקנת חדשה יותר
 STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK} רשימת קבצי שדרוג גראפי מותקנים
 
 STR_NEWGRF_SETTINGS_SET_PARAMETERS                              :{BLACK}קבע ערכים
@@ -2784,6 +2788,16 @@ STR_NEWGRF_SETTINGS_NO_INFO                                     :{BLACK}לא ק�
 STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}לא נמצא קובץ מתאים
 STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}מושתק
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}אינו תואם גרסא זו של OpenTTD
+
+# NewGRF save preset window
+STR_SAVE_PRESET_CAPTION                                         :{WHITE}שמור סביבה גראפית
+STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}הצג את כל הסביבות הגראפיות, בחר אחת כדי להעתיק את שמה לשמירה
+STR_SAVE_PRESET_TITLE                                           :{BLACK}הכנס שם לסביבה הגראפית
+STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}השם הנבחר לשמירת הסביבה הגראפית
+STR_SAVE_PRESET_CANCEL                                          :{BLACK}ביטול
+STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}אל תשנה את הסביבה הגראפית
+STR_SAVE_PRESET_SAVE                                            :{BLACK}שמור
+STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}שמור את הסביבה הגראפית עם השם שנבחר
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}שנה/י פרמטרים של NewGRF
@@ -2812,10 +2826,9 @@ STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}עבור
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}דלג לספרייט
 STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}עבור לספרייט הנתון. אם הוא אינו ספרייט רגיל, עבור לספרייט הרגיל הראשון שבא אחריו
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}הספרייט הקודם
-STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}עבור לספרייט הקודם, כאשר נדלג על כל הספרייטים המיוחדים ונחזור בסוף לתחילת הרשימה
+STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}עבור לספרייט הקודם, כאשר נדלג על כל הספרייטים המיוחדים ונחזור מתחילת הרשימה לסופה
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}הייצוג של הספרייט הנבחר. בעת ציור הספרייט, נתעלם מהיישור שלו
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}הזז את הספרייט, תוך שינוי מיקום על צירי ה-X וה-Y
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X היסט: {NUM}, Y היסט: {NUM}
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}בחר ספרייט
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}בחר ספרייט מנקודה כלשהיא במסך
 
@@ -2985,7 +2998,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :מידע
 STR_GOAL_QUESTION_CAPTION_WARNING                               :אזהרה
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :שגיאה
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :ביטול
 STR_GOAL_QUESTION_BUTTON_OK                                     :אישור
 STR_GOAL_QUESTION_BUTTON_NO                                     :לא
@@ -3004,6 +3017,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :אתחל
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :דחה
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :היכנע
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :סגור
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}סובסידיות
@@ -3020,7 +3034,7 @@ STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}מטרה �
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}שמות תחנות - לחץ על השם כדי להתמקד בתחנה. Ctrl+לחיצה פותח חלונית תצוגה חדשה על מיקום התחנה
 STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}לחץ והחזק מקש קונטרל כדי לבחור יותר מפריט אחד
-STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {P 0 "תחנה " ""}{COMMA}{P "" " תחנות"}
+STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {P 1 "תחנה " ""}{COMMA}{P "" " תחנות"}
 STR_STATION_LIST_STATION                                        :{YELLOW} {1:STATION_FEATURES}{0:STATION}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- כלום -
@@ -3030,7 +3044,6 @@ STR_STATION_LIST_NO_WAITING_CARGO                               :{BLACK}שום �
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
-STR_STATION_VIEW_WAITING_TITLE                                  :{BLACK}ממתינים: {WHITE}{STRING}
 STR_STATION_VIEW_WAITING_CARGO                                  :{WHITE}{CARGO_LONG}
 STR_STATION_VIEW_EN_ROUTE_FROM                                  :{YELLOW}({CARGO_SHORT} בדרך מ{STATION})
 
@@ -3270,11 +3283,12 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :רכבים לא
 STR_GROUP_DEFAULT_SHIPS                                         :כלי שייט לא משוייכים
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :כלי טייס לא משוייכים
 
-STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}קבוצות כלים – לחץ על קבוצה לצפייה בכל הכלים השייכים אליה
+STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}קבוצות – לחץ על קבוצה לצפייה בכל הכלים השייכים אליה. גרור כדי לסדר הירארכיה.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}לחץ ליצירת קבוצה חדשה
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}מחק את הקבוצה שנבחרה
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}שנה את שם הקבוצה
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}לחץ על מנת להגן על הכלים בקבוצה בפני החלפה אוטומטית
+
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :הוסף כלים
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :הסר את כל הכלים מהקבוצה
@@ -3337,6 +3351,11 @@ STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}שנה �
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}שנה את שם סוג כלי הרכב
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}החלף שם סוג כלי השייט
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}החלף שם סוג כלי הטיס
+
+
+
+STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :הסתר/הצג סוג של כלי שיט
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}הסתר/הצג סוג של כלי טיס
 
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}שנה את שם סוג קרון הרכבת
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}שנה את שם סוג כלי הרכב
@@ -3441,6 +3460,7 @@ STR_REPLACE_VEHICLE_TRAIN                                       :רכבת
 STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :רכב
 STR_REPLACE_VEHICLE_SHIP                                        :כלי שייט
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :כלי טייס
+
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}בחר את סוג המנוע/קטר שברצונך להחליף
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}בחר את הקטר/מנוע שברצונך לבנות במקום הקטר/מנוע הקיים
@@ -3660,8 +3680,8 @@ STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}שנה �
 
 STR_ORDER_REFIT                                                 :{BLACK}התאם מחדש
 STR_ORDER_REFIT_TOOLTIP                                         :{BLACK}בחר את סוג המיטען אליו יותאם הכלי ביעד זה
-STR_ORDER_REFIT_AUTO                                            :{BLACK}אבזור מחדש אוטומטי
-STR_ORDER_REFIT_AUTO_TOOLTIP                                    :{BLACK}בחרלאיזה סוג מטען לאבזר מחדש בפקודה זו. הקלק בשילוב לחיצה על מקש Ctrl כדי להסיר את הוראת האבזור מחדש. אבזור מחדש יתרחש רק אם כלי הרכב מאפשר זאת
+STR_ORDER_REFIT_AUTO                                            :{BLACK}אבזור מחדש בתחנה
+STR_ORDER_REFIT_AUTO_TOOLTIP                                    :{BLACK}בחרלאיזה סוג מטען לאבזר מחדש בפקודה זו. Ctrl+לחיצה כדי להסיר את הוראת האבזור מחדש. אבזור מחדש יתרחש רק אם כלי הרכב מאפשר זאת
 STR_ORDER_DROP_REFIT_AUTO                                       :מטען קבוע
 STR_ORDER_DROP_REFIT_AUTO_ANY                                   :מטען זמין
 
@@ -3759,8 +3779,8 @@ STR_ORDER_UNLOAD_REFIT                                          :(פרוק וק�
 STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :(פרוק והמתן למטען מלא עם אבזור מחדש אוטומטי ל-{STRING})
 STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :(פרוק והמתן למטען מלא כלשהו עם אבזור מחדש אוטומטי ל-{STRING})
 STR_ORDER_TRANSFER_REFIT                                        :(העבר וקח מטען עם אבזור מחדש אוטומטי ל-{STRING})
-STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :(העבר ומתן למטען מלא עם אבזור מחדש אוטומטי ל-{STRING})
-STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :(העבר ומתן למטען מלא כלשהו עם אבזור מחדש אוטומטי ל-{STRING})
+STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :(העבר והמתן למטען מלא עם אבזור מחדש אוטומטי ל-{STRING})
+STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :(העבר והמתן למטען מלא כלשהו עם אבזור מחדש אוטומטי ל-{STRING})
 STR_ORDER_NO_UNLOAD_REFIT                                       :(ללא פריקה וקח מטען עם אבזור מחדש אוטומטי ל-{STRING})
 STR_ORDER_NO_UNLOAD_FULL_LOAD_REFIT                             :(ללא פריקה והמתן למטען מלא עם אבזור מחדש אוטומטי ל-{STRING})
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT                         :(ללא פריקה והמתן למטען מלא כלשהו עם אבזור מחדש אוטומטי ל-{STRING})
@@ -4079,6 +4099,7 @@ STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... יע
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... ניתן/ת לבנייה רק מעל לקו השלג
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... ניתן/ת לבנייה רק מתחת לקו השלג
 
+
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}לא ניתן לבנות תחנת רכבת כאן...
 STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}לא ניתן לבנות תחנת אוטובוס...
@@ -4215,6 +4236,7 @@ STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}יש ל�
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}לא ניתן להתחיל ולסיים באותה הנקודה
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}צדדי הגשר לא באותו הגובה
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}גשר נמוך מידי עבור השטח
+STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}גשר גבוה מדי עבור פני השטח.
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}התחלה וסיום חייבים להיות באותו הקו
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... קצות הגשר צריכים להיות על קרקע
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... גשר ארוך מידי
@@ -4772,6 +4794,7 @@ STR_COMPANY_NAME                                                :{COMPANY}
 STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMPANY_NUM}
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
+STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} (מוסתר)
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}
@@ -4807,8 +4830,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
@@ -4819,9 +4840,7 @@ STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
-STR_GREEN_STRING                                                :{GREEN}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
-STR_RED_STRING                                                  :{RED}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
 STR_WHITE_STRING                                                :{WHITE}{STRING}
 STR_ORANGE_STRING1_WHITE                                        :{ORANGE}{STRING}{WHITE}

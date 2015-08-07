@@ -20,6 +20,8 @@
 #include "../game/game_instance.hpp"
 #include "../game/game_text.hpp"
 
+#include "../safeguards.h"
+
 static char _game_saveload_name[64];
 static int  _game_saveload_version;
 static char _game_saveload_settings[1024];
@@ -38,7 +40,7 @@ static void SaveReal_GSDT(int *index_ptr)
 	GameConfig *config = GameConfig::GetConfig();
 
 	if (config->HasScript()) {
-		ttd_strlcpy(_game_saveload_name, config->GetName(), lengthof(_game_saveload_name));
+		strecpy(_game_saveload_name, config->GetName(), lastof(_game_saveload_name));
 		_game_saveload_version = config->GetVersion();
 	} else {
 		/* No GameScript is configured for this so store an empty string as name. */
@@ -48,7 +50,7 @@ static void SaveReal_GSDT(int *index_ptr)
 
 	_game_saveload_is_random = config->IsRandom();
 	_game_saveload_settings[0] = '\0';
-	config->SettingsToString(_game_saveload_settings, lengthof(_game_saveload_settings));
+	config->SettingsToString(_game_saveload_settings, lastof(_game_saveload_settings));
 
 	SlObject(NULL, _game_script);
 	Game::Save();
@@ -76,22 +78,22 @@ static void Load_GSDT()
 		config->Change(_game_saveload_name, _game_saveload_version, false, _game_saveload_is_random);
 		if (!config->HasScript()) {
 			/* No version of the GameScript available that can load the data. Try to load the
-				* latest version of the GameScript instead. */
+			 * latest version of the GameScript instead. */
 			config->Change(_game_saveload_name, -1, false, _game_saveload_is_random);
 			if (!config->HasScript()) {
 				if (strcmp(_game_saveload_name, "%_dummy") != 0) {
 					DEBUG(script, 0, "The savegame has an GameScript by the name '%s', version %d which is no longer available.", _game_saveload_name, _game_saveload_version);
-					DEBUG(script, 0, "This game wil continue to run without GameScript.");
+					DEBUG(script, 0, "This game will continue to run without GameScript.");
 				} else {
 					DEBUG(script, 0, "The savegame had no GameScript available at the time of saving.");
-					DEBUG(script, 0, "This game wil continue to run without GameScript.");
+					DEBUG(script, 0, "This game will continue to run without GameScript.");
 				}
 			} else {
 				DEBUG(script, 0, "The savegame has an GameScript by the name '%s', version %d which is no longer available.", _game_saveload_name, _game_saveload_version);
 				DEBUG(script, 0, "The latest version of that GameScript has been loaded instead, but it'll not get the savegame data as it's incompatible.");
 			}
 			/* Make sure the GameScript doesn't get the saveload data, as he was not the
-				*  writer of the saveload data in the first place */
+			 *  writer of the saveload data in the first place */
 			_game_saveload_version = -1;
 		}
 	}
@@ -151,7 +153,7 @@ static void Load_GSTR()
 		LanguageStrings *ls = new LanguageStrings(_game_saveload_string != NULL ? _game_saveload_string : "");
 		for (uint i = 0; i < _game_saveload_strings; i++) {
 			SlObject(NULL, _game_language_string);
-			*ls->lines.Append() = strdup(_game_saveload_string != NULL ? _game_saveload_string : "");
+			*ls->lines.Append() = stredup(_game_saveload_string != NULL ? _game_saveload_string : "");
 		}
 
 		*_current_data->raw_strings.Append() = ls;

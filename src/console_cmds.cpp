@@ -40,6 +40,8 @@
 #include "game/game.hpp"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /* scriptfile handling */
 static bool _script_running; ///< Script is running (used to abort execution when #ConReturn is encountered).
 
@@ -1342,7 +1344,7 @@ DEF_CONSOLE_CMD(ConAlias)
 		IConsoleAliasRegister(argv[1], argv[2]);
 	} else {
 		free(alias->cmdline);
-		alias->cmdline = strdup(argv[2]);
+		alias->cmdline = stredup(argv[2]);
 	}
 	return true;
 }

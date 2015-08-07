@@ -37,6 +37,8 @@ class FlowStat {
 public:
 	typedef std::map<uint32, StationID> SharesMap;
 
+	static const SharesMap empty_sharesmap;
+
 	/**
 	 * Invalid constructor. This can't be called as a FlowStat must not be
 	 * empty. However, the constructor must be defined and reachable for
@@ -48,12 +50,13 @@ public:
 	 * Create a FlowStat with an initial entry.
 	 * @param st Station the initial entry refers to.
 	 * @param flow Amount of flow for the initial entry.
+	 * @param restricted If the flow to be added is restricted.
 	 */
-	inline FlowStat(StationID st, uint flow)
+	inline FlowStat(StationID st, uint flow, bool restricted = false)
 	{
 		assert(flow > 0);
 		this->shares[flow] = st;
-		this->unrestricted = flow;
+		this->unrestricted = restricted ? 0 : flow;
 	}
 
 	/**
@@ -148,6 +151,11 @@ private:
 /** Flow descriptions by origin stations. */
 class FlowStatMap : public std::map<StationID, FlowStat> {
 public:
+	uint GetFlow() const;
+	uint GetFlowVia(StationID via) const;
+	uint GetFlowFrom(StationID from) const;
+	uint GetFlowFromVia(StationID from, StationID via) const;
+
 	void AddFlow(StationID origin, StationID via, uint amount);
 	void PassOnFlow(StationID origin, StationID via, uint amount);
 	StationIDStack DeleteFlows(StationID via);
@@ -169,13 +177,14 @@ struct GoodsEntry {
 		GES_ACCEPTANCE,
 
 		/**
-		 * Set when the cargo was ever waiting at the station.
+		 * This indicates whether a cargo has a rating at the station.
+		 * Set when cargo was ever waiting at the station.
 		 * It is set when cargo supplied by surrounding tiles is moved to the station, or when
 		 * arriving vehicles unload/transfer cargo without it being a final delivery.
-		 * This also indicates, whether a cargo has a rating at the station.
-		 * This flag is never cleared.
+		 *
+		 * This flag is cleared after 255 * STATION_RATING_TICKS of not having seen a pickup.
 		 */
-		GES_PICKUP,
+		GES_RATING,
 
 		/**
 		 * Set when a vehicle ever delivered cargo to the station for final delivery.
@@ -203,7 +212,7 @@ struct GoodsEntry {
 	};
 
 	GoodsEntry() :
-		acceptance_pickup(0),
+		status(0),
 		time_since_pickup(255),
 		rating(INITIAL_STATION_RATING),
 		last_speed(0),
@@ -214,7 +223,7 @@ struct GoodsEntry {
 		max_waiting_cargo(0)
 	{}
 
-	byte acceptance_pickup; ///< Status of this cargo, see #GoodsEntryStatus.
+	byte status; ///< Status of this cargo, see #GoodsEntryStatus.
 
 	/**
 	 * Number of rating-intervals (up to 255) since the last vehicle tried to load this cargo.
@@ -252,21 +261,19 @@ struct GoodsEntry {
 
 	/**
 	 * Reports whether a vehicle has ever tried to load the cargo at this station.
-	 * This does not imply that there was cargo available for loading. Refer to GES_PICKUP for that.
+	 * This does not imply that there was cargo available for loading. Refer to GES_RATING for that.
 	 * @return true if vehicle tried to load.
 	 */
 	bool HasVehicleEverTriedLoading() const { return this->last_speed != 0; }
 
 	/**
 	 * Does this cargo have a rating at this station?
-	 * @return true if the cargo has a rating, i.e. pickup has been attempted.
+	 * @return true if the cargo has a rating, i.e. cargo has been moved to the station.
 	 */
 	inline bool HasRating() const
 	{
-		return HasBit(this->acceptance_pickup, GES_PICKUP);
+		return HasBit(this->status, GES_RATING);
 	}
-
-	uint GetSumFlowVia(StationID via) const;
 
 	/**
 	 * Get the best next hop for a cargo packet from station source.
@@ -301,7 +308,7 @@ struct Airport : public TileArea {
 	uint64 flags;       ///< stores which blocks on the airport are taken. was 16 bit earlier on, then 32
 	byte type;          ///< Type of this airport, @see AirportTypes
 	byte layout;        ///< Airport layout number.
-	Direction rotation; ///< How this airport is rotated.
+	DirectionByte rotation; ///< How this airport is rotated.
 
 	PersistentStorage *psa; ///< Persistent storage for NewGRF airports.
 

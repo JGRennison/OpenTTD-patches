@@ -238,6 +238,9 @@ STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}स्�
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}स्क्रोल पट्टी - स्क्रोल यादी डाव्या/उजव्या
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}जमिनीच्या एका चौकोनावरील इमारत नष्ट करणे इ. Ctrl ने तिरका प्रदेश निवडता येतो. Shift नं इमारती किंवा किंमतीचा अंदाज दिसणं चालू/बंद होतं.
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}स्थिर
 STR_BUTTON_CANCEL                                               :{BLACK}रद्द करा
@@ -341,7 +344,6 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :बंद क�
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :खेळाचे पर्याय
-STR_SETTINGS_MENU_CONFIG_SETTINGS                               :प्रगत सेटिंग
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :ए.आय. / गेम स्क्रिप्ट सेटिंग्ज
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF पर्याय
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :पारदर्शकता पर्याय
@@ -442,7 +444,7 @@ STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :संपूर
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :ओपेन टीटीडी बद्दल
 ############ range ends here
 
-############ range for days starts (also used for the place in the highscore window)
+############ range for ordinal numbers used for the place in the highscore window
 STR_ORDINAL_NUMBER_1ST                                          :१
 STR_ORDINAL_NUMBER_2ND                                          :२
 STR_ORDINAL_NUMBER_3RD                                          :३
@@ -458,22 +460,40 @@ STR_ORDINAL_NUMBER_12TH                                         :१२
 STR_ORDINAL_NUMBER_13TH                                         :१३
 STR_ORDINAL_NUMBER_14TH                                         :१४
 STR_ORDINAL_NUMBER_15TH                                         :१५
-STR_ORDINAL_NUMBER_16TH                                         :१६
-STR_ORDINAL_NUMBER_17TH                                         :१७
-STR_ORDINAL_NUMBER_18TH                                         :१८
-STR_ORDINAL_NUMBER_19TH                                         :१९
-STR_ORDINAL_NUMBER_20TH                                         :२०
-STR_ORDINAL_NUMBER_21ST                                         :२१
-STR_ORDINAL_NUMBER_22ND                                         :२२
-STR_ORDINAL_NUMBER_23RD                                         :२३
-STR_ORDINAL_NUMBER_24TH                                         :२४
-STR_ORDINAL_NUMBER_25TH                                         :२५
-STR_ORDINAL_NUMBER_26TH                                         :२६
-STR_ORDINAL_NUMBER_27TH                                         :२७
-STR_ORDINAL_NUMBER_28TH                                         :२८
-STR_ORDINAL_NUMBER_29TH                                         :२९
-STR_ORDINAL_NUMBER_30TH                                         :३०
-STR_ORDINAL_NUMBER_31ST                                         :३१
+############ range for ordinal numbers ends
+
+############ range for days starts
+STR_DAY_NUMBER_1ST                                              :१
+STR_DAY_NUMBER_2ND                                              :२
+STR_DAY_NUMBER_3RD                                              :३
+STR_DAY_NUMBER_4TH                                              :४
+STR_DAY_NUMBER_5TH                                              :५
+STR_DAY_NUMBER_6TH                                              :६
+STR_DAY_NUMBER_7TH                                              :७
+STR_DAY_NUMBER_8TH                                              :८
+STR_DAY_NUMBER_9TH                                              :९
+STR_DAY_NUMBER_10TH                                             :१०
+STR_DAY_NUMBER_11TH                                             :११
+STR_DAY_NUMBER_12TH                                             :१२
+STR_DAY_NUMBER_13TH                                             :१३
+STR_DAY_NUMBER_14TH                                             :१४
+STR_DAY_NUMBER_15TH                                             :१५
+STR_DAY_NUMBER_16TH                                             :१६
+STR_DAY_NUMBER_17TH                                             :१७
+STR_DAY_NUMBER_18TH                                             :१८
+STR_DAY_NUMBER_19TH                                             :१९
+STR_DAY_NUMBER_20TH                                             :२०
+STR_DAY_NUMBER_21ST                                             :२१
+STR_DAY_NUMBER_22ND                                             :२२
+STR_DAY_NUMBER_23RD                                             :२३
+STR_DAY_NUMBER_24TH                                             :२४
+STR_DAY_NUMBER_25TH                                             :२५
+STR_DAY_NUMBER_26TH                                             :२६
+STR_DAY_NUMBER_27TH                                             :२७
+STR_DAY_NUMBER_28TH                                             :२८
+STR_DAY_NUMBER_29TH                                             :२९
+STR_DAY_NUMBER_30TH                                             :३०
+STR_DAY_NUMBER_31ST                                             :३१
 ############ range for days ends
 
 ############ range for months starts
@@ -658,9 +678,7 @@ STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDE
 
 
 
-# Start of order review system
-# DON'T ADD OR REMOVE LINES HERE
-# end of order system
+# Order review system / warnings
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} जुनी होत आहे
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} खूप जुनी होत आहे
@@ -705,10 +723,6 @@ STR_GAME_OPTIONS_CURRENCY_SKK                                   :स्लोव
 ############ end of currency region
 
 
-############ start of measuring units region
-############ end of measuring units region
-
-
 
 ############ start of townname region
 STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :फ्रेंच
@@ -730,15 +744,18 @@ STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :ईटेलि
 ############ end of townname region
 
 
+############ start of autosave dropdown
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :दर महिने
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :दर ३ महिने
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :दर ६ महिने
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :दर १२ महिने
+############ end of autosave dropdown
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}भाषा
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :अन्य
+
 
 
 
@@ -767,7 +784,7 @@ STR_SUBSIDY_X4                                                  :x४
 
 
 
-# Advanced settings window
+# Settings tree window
 
 
 
@@ -1121,6 +1138,8 @@ STR_GENERATION_PROGRESS_NUM                                     :{BLACK}{NUM} / 
 
 
 
+# NewGRF save preset window
+
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_SETTING                                   :{STRING}: {ORANGE}{STRING}
 
@@ -1177,7 +1196,8 @@ STR_GOALS_TEXT                                                  :{ORANGE}{STRING
 
 # Goal question window
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
+############ End of Goal Question button list
 
 # Subsidies window
 
@@ -1286,6 +1306,7 @@ STR_GROUP_ALL_AIRCRAFTS                                         :सर्व �
 
 
 
+
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :सगळे वाहने काढा
 
 
@@ -1301,6 +1322,9 @@ STR_PURCHASE_INFO_SPEED                                         :{BLACK}गत�
 STR_PURCHASE_INFO_COST                                          :{BLACK}किंमत: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}वजन: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
 STR_PURCHASE_INFO_COST_SPEED                                    :{BLACK}किंमत: {GOLD}{CURRENCY_LONG}{BLACK} गती: {GOLD}{VELOCITY}
+
+
+
 
 
 
@@ -1338,6 +1362,7 @@ STR_ENGINE_PREVIEW_SHIP                                         :जहाज
 # Autoreplace window
 STR_REPLACE_VEHICLE_SHIP                                        :जहाज
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :विमान
+
 
 
 
@@ -1508,6 +1533,7 @@ STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE} स्�
 # Town related errors
 
 # Industry related errors
+
 
 # Station construction related errors
 
@@ -1791,8 +1817,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
@@ -1803,9 +1827,7 @@ STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
-STR_GREEN_STRING                                                :{GREEN}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
-STR_RED_STRING                                                  :{RED}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
 STR_WHITE_STRING                                                :{WHITE}{STRING}
 STR_ORANGE_STRING1_WHITE                                        :{ORANGE}{STRING}{WHITE}

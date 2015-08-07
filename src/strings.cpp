@@ -13,7 +13,6 @@
 #include "currency.h"
 #include "station_base.h"
 #include "town.h"
-#include "screenshot.h"
 #include "waypoint_base.h"
 #include "depot_base.h"
 #include "industry.h"
@@ -36,10 +35,13 @@
 #include "window_func.h"
 #include "debug.h"
 #include "game/game_text.hpp"
+#include "network/network_content_gui.h"
 #include <stack>
 
 #include "table/strings.h"
 #include "table/control_codes.h"
+
+#include "safeguards.h"
 
 char _config_language_file[MAX_PATH];             ///< The file (name) stored in the configuration.
 LanguageList _languages;                          ///< The actual list of language meta data.
@@ -163,7 +165,7 @@ void CopyOutDParam(uint64 *dst, const char **strings, StringID string, int num)
 	MemCpyT(dst, _global_string_params.GetPointerToOffset(0), num);
 	for (int i = 0; i < num; i++) {
 		if (_global_string_params.HasTypeInformation() && _global_string_params.GetTypeAtOffset(i) == SCC_RAW_STRING_POINTER) {
-			strings[i] = strdup((const char *)(size_t)_global_string_params.GetParam(i));
+			strings[i] = stredup((const char *)(size_t)_global_string_params.GetParam(i));
 			dst[i] = (size_t)strings[i];
 		} else {
 			strings[i] = NULL;
@@ -398,7 +400,7 @@ static char *FormatBytes(char *buff, int64 number, const char *last)
 	}
 
 	assert(id < lengthof(iec_prefixes));
-	buff += seprintf(buff, last, " %sB", iec_prefixes[id]);
+	buff += seprintf(buff, last, NBSP "%sB", iec_prefixes[id]);
 
 	return buff;
 }
@@ -408,7 +410,7 @@ static char *FormatYmdString(char *buff, Date date, const char *last, uint case_
 	YearMonthDay ymd;
 	ConvertDateToYMD(date, &ymd);
 
-	int64 args[] = {ymd.day + STR_ORDINAL_NUMBER_1ST - 1, STR_MONTH_ABBREV_JAN + ymd.month, ymd.year};
+	int64 args[] = {ymd.day + STR_DAY_NUMBER_1ST - 1, STR_MONTH_ABBREV_JAN + ymd.month, ymd.year};
 	StringParameters tmp_params(args);
 	return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_LONG), &tmp_params, last, case_index);
 }
@@ -431,8 +433,8 @@ static char *FormatTinyOrISODate(char *buff, Date date, StringID str, const char
 	char day[3];
 	char month[3];
 	/* We want to zero-pad the days and months */
-	snprintf(day,   lengthof(day),   "%02i", ymd.day);
-	snprintf(month, lengthof(month), "%02i", ymd.month + 1);
+	seprintf(day,   lastof(day),   "%02i", ymd.day);
+	seprintf(month, lastof(month), "%02i", ymd.month + 1);
 
 	int64 args[] = {(int64)(size_t)day, (int64)(size_t)month, ymd.year};
 	StringParameters tmp_params(args);
@@ -467,10 +469,10 @@ static char *FormatGenericCurrency(char *buff, const CurrencySpec *spec, Money n
 		 * and 1 000 M is inconsistent, so always use 1 000 M. */
 		if (number >= 1000000000 - 500) {
 			number = (number + 500000) / 1000000;
-			multiplier = "M";
+			multiplier = NBSP "M";
 		} else if (number >= 1000000) {
 			number = (number + 500) / 1000;
-			multiplier = "k";
+			multiplier = NBSP "k";
 		}
 	}
 
@@ -873,7 +875,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 						bool lookup = (l == SCC_ENCODED);
 						if (lookup) s += len;
 
-						param = (int32)strtoul(s, &p, 16);
+						param = strtoull(s, &p, 16);
 
 						if (lookup) {
 							if (param >= TAB_SIZE) {
@@ -887,7 +889,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 
 						sub_args.SetParam(i++, param);
 					} else {
-						char *g = strdup(s);
+						char *g = stredup(s);
 						g[p - s] = '\0';
 
 						sub_args_need_free[i] = true;
@@ -1680,12 +1682,6 @@ static char *GetSpecialNameString(char *buff, int ind, StringParameters *args, c
 		return buff;
 	}
 
-	/* screenshot format name? */
-	if (IsInsideMM(ind, (SPECSTR_SCREENSHOT_START - 0x70E4), (SPECSTR_SCREENSHOT_END - 0x70E4) + 1)) {
-		int i = ind - (SPECSTR_SCREENSHOT_START - 0x70E4);
-		return strecpy(buff, GetScreenshotFormatDesc(i), last);
-	}
-
 	NOT_REACHED();
 }
 
@@ -1819,6 +1815,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	SortIndustryTypes();
 	BuildIndustriesLegend();
 	SortNetworkLanguages();
+	BuildContentTypeStringList();
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
 	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
 	InvalidateWindowClassesData(WC_ROADVEH_LIST);       // Road vehicle group window.
@@ -1869,7 +1866,7 @@ int CDECL StringIDSorter(const StringID *a, const StringID *b)
 	GetString(stra, *a, lastof(stra));
 	GetString(strb, *b, lastof(strb));
 
-	return strcmp(stra, strb);
+	return strnatcmp(stra, strb);
 }
 
 /**
@@ -1952,7 +1949,7 @@ void InitializeLanguagePacks()
 
 	FOR_ALL_SEARCHPATHS(sp) {
 		char path[MAX_PATH];
-		FioAppendDirectory(path, lengthof(path), sp, LANG_DIR);
+		FioAppendDirectory(path, lastof(path), sp, LANG_DIR);
 		GetLanguageList(path);
 	}
 	if (_languages.Length() == 0) usererror("No available language packs (invalid versions?)");
@@ -2122,7 +2119,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		 * properly we have to set the colour of the string, otherwise we end up with a lot of artifacts.
 		 * The colour 'character' might change in the future, so for safety we just Utf8 Encode it into
 		 * the string, which takes exactly three characters, so it replaces the "XXX" with the colour marker. */
-		static char *err_str = strdup("XXXThe current font is missing some of the characters used in the texts for this language. Read the readme to see how to solve this.");
+		static char *err_str = stredup("XXXThe current font is missing some of the characters used in the texts for this language. Read the readme to see how to solve this.");
 		Utf8Encode(err_str, SCC_YELLOW);
 		SetDParamStr(0, err_str);
 		ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_WARNING);
@@ -2150,7 +2147,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	 * the colour marker.
 	 */
 	if (_current_text_dir != TD_LTR) {
-		static char *err_str = strdup("XXXThis version of OpenTTD does not support right-to-left languages. Recompile with icu enabled.");
+		static char *err_str = stredup("XXXThis version of OpenTTD does not support right-to-left languages. Recompile with icu enabled.");
 		Utf8Encode(err_str, SCC_YELLOW);
 		SetDParamStr(0, err_str);
 		ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);

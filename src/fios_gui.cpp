@@ -34,6 +34,8 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 SaveLoadDialogMode _saveload_mode;
 LoadCheckData _load_check_data;    ///< Data loaded from save during SL_LOAD_CHECK.
 
@@ -296,17 +298,17 @@ public:
 		switch (_saveload_mode) {
 			case SLD_SAVE_GAME:
 			case SLD_LOAD_GAME:
-				FioGetDirectory(o_dir.name, lengthof(o_dir.name), SAVE_DIR);
+				FioGetDirectory(o_dir.name, lastof(o_dir.name), SAVE_DIR);
 				break;
 
 			case SLD_SAVE_SCENARIO:
 			case SLD_LOAD_SCENARIO:
-				FioGetDirectory(o_dir.name, lengthof(o_dir.name), SCENARIO_DIR);
+				FioGetDirectory(o_dir.name, lastof(o_dir.name), SCENARIO_DIR);
 				break;
 
 			case SLD_SAVE_HEIGHTMAP:
 			case SLD_LOAD_HEIGHTMAP:
-				FioGetDirectory(o_dir.name, lengthof(o_dir.name), HEIGHTMAP_DIR);
+				FioGetDirectory(o_dir.name, lastof(o_dir.name), HEIGHTMAP_DIR);
 				break;
 
 			default:
@@ -481,7 +483,7 @@ public:
 			case WID_SL_SORT_BYNAME:
 			case WID_SL_SORT_BYDATE: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
-				d.width += padding.width + WD_SORTBUTTON_ARROW_WIDTH * 2; // Doubled since the string is centred and it also looks better.
+				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
 				*size = maxdim(*size, d);
 				break;
@@ -533,7 +535,7 @@ public:
 					if (_saveload_mode == SLD_LOAD_HEIGHTMAP) {
 						delete this;
 						ShowHeightmapLoad();
-					} else if (_load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
+					} else if (!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
 						_switch_mode = (_game_mode == GM_EDITOR) ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 						ClearErrorMessages();
 						delete this;
@@ -550,7 +552,7 @@ public:
 			case WID_SL_MISSING_NEWGRFS:
 				if (!_network_available) {
 					ShowErrorMessage(STR_NETWORK_ERROR_NOTAVAILABLE, INVALID_STRING_ID, WL_ERROR);
-				} else {
+				} else if (_load_check_data.HasNewGrfs()) {
 #if defined(ENABLE_NETWORK)
 					ShowMissingContentWindow(_load_check_data.grfconfig);
 #endif
@@ -652,10 +654,10 @@ public:
 		} else if (this->IsWidgetLowered(WID_SL_SAVE_GAME)) { // Save button clicked
 			if (_saveload_mode  == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO) {
 				_switch_mode = SM_SAVE_GAME;
-				FiosMakeSavegameName(_file_to_saveload.name, this->filename_editbox.text.buf, sizeof(_file_to_saveload.name));
+				FiosMakeSavegameName(_file_to_saveload.name, this->filename_editbox.text.buf, lastof(_file_to_saveload.name));
 			} else {
 				_switch_mode = SM_SAVE_HEIGHTMAP;
-				FiosMakeHeightmapName(_file_to_saveload.name, this->filename_editbox.text.buf, sizeof(_file_to_saveload.name));
+				FiosMakeHeightmapName(_file_to_saveload.name, this->filename_editbox.text.buf, lastof(_file_to_saveload.name));
 			}
 
 			/* In the editor set up the vehicle engines correctly (date might have changed) */
@@ -691,7 +693,7 @@ public:
 				}
 				if (_saveload_mode == SLD_LOAD_GAME || _saveload_mode == SLD_LOAD_SCENARIO) {
 					this->SetWidgetDisabledState(WID_SL_LOAD_BUTTON,
-							this->selected == NULL || _load_check_data.HasErrors() || !(_load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()));
+							this->selected == NULL || _load_check_data.HasErrors() || !(!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()));
 					this->SetWidgetDisabledState(WID_SL_NEWGRF_INFO,
 							!_load_check_data.HasNewGrfs());
 					this->SetWidgetDisabledState(WID_SL_MISSING_NEWGRFS,

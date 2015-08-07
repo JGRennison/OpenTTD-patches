@@ -24,6 +24,8 @@
 #include <windows.h>
 #include <signal.h>
 
+#include "../../safeguards.h"
+
 static const uint MAX_SYMBOL_LEN = 512;
 static const uint MAX_FRAMES     = 64;
 
@@ -521,7 +523,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	/* Close any possible log files */
 	CloseConsoleLogIfActive();
 
-	if ((_video_driver == NULL || _video_driver->HasGUI()) && _safe_esp != NULL) {
+	if ((VideoDriver::GetInstance() == NULL || VideoDriver::GetInstance()->HasGUI()) && _safe_esp != NULL) {
 #ifdef _M_AMD64
 		ep->ContextRecord->Rip = (DWORD64)ShowCrashlogWindow;
 		ep->ContextRecord->Rsp = (DWORD64)_safe_esp;
@@ -610,6 +612,10 @@ static void SetWndSize(HWND wnd, int mode)
 			0, 0, SWP_NOSIZE);
 	}
 }
+
+/* When TCHAR is char, then _sntprintf becomes snprintf. When TCHAR is wchar it doesn't. Likewise for strcat. */
+#undef snprintf
+#undef strcat
 
 static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {

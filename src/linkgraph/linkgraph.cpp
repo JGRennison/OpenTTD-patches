@@ -13,17 +13,21 @@
 #include "../core/pool_func.hpp"
 #include "linkgraph.h"
 
+#include "../safeguards.h"
+
 /* Initialize the link-graph-pool */
 LinkGraphPool _link_graph_pool("LinkGraph");
 INSTANTIATE_POOL_METHODS(LinkGraph)
 
 /**
  * Create a node or clear it.
+ * @param xy Location of the associated station.
  * @param st ID of the associated station.
  * @param demand Demand for cargo at the station.
  */
-inline void LinkGraph::BaseNode::Init(StationID st, uint demand)
+inline void LinkGraph::BaseNode::Init(TileIndex xy, StationID st, uint demand)
 {
+	this->xy = xy;
 	this->supply = 0;
 	this->demand = demand;
 	this->station = st;
@@ -32,11 +36,9 @@ inline void LinkGraph::BaseNode::Init(StationID st, uint demand)
 
 /**
  * Create an edge.
- * @param distance Length of the link as manhattan distance.
  */
-inline void LinkGraph::BaseEdge::Init(uint distance)
+inline void LinkGraph::BaseEdge::Init()
 {
-	this->distance = distance;
 	this->capacity = 0;
 	this->usage = 0;
 	this->last_unrestricted_update = INVALID_DATE;
@@ -145,21 +147,6 @@ void LinkGraph::RemoveNode(NodeID id)
 }
 
 /**
- * Update distances between the given node and all others.
- * @param id Node that changed position.
- * @param xy New position of the node.
- */
-void LinkGraph::UpdateDistances(NodeID id, TileIndex xy)
-{
-	assert(id < this->Size());
-	for (NodeID other = 0; other < this->Size(); ++other) {
-		if (other == id) continue;
-		this->edges[id][other].distance = this->edges[other][id].distance =
-				DistanceMaxPlusManhattan(xy, Station::Get(this->nodes[other].station)->xy);
-	}
-}
-
-/**
  * Add a node to the component and create empty edges associated with it. Set
  * the station's last_component to this component. Calculate the distances to all
  * other nodes. The distances to _all_ nodes are important as the demand
@@ -178,8 +165,8 @@ NodeID LinkGraph::AddNode(const Station *st)
 	this->edges.Resize(new_node + 1U,
 			max(new_node + 1U, this->edges.Height()));
 
-	this->nodes[new_node].Init(st->index,
-			HasBit(good.acceptance_pickup, GoodsEntry::GES_ACCEPTANCE));
+	this->nodes[new_node].Init(st->xy, st->index,
+			HasBit(good.status, GoodsEntry::GES_ACCEPTANCE));
 
 	BaseEdge *new_edges = this->edges[new_node];
 
@@ -187,55 +174,48 @@ NodeID LinkGraph::AddNode(const Station *st)
 	new_edges[new_node].next_edge = INVALID_NODE;
 
 	for (NodeID i = 0; i <= new_node; ++i) {
-		uint distance = DistanceMaxPlusManhattan(st->xy, Station::Get(this->nodes[i].station)->xy);
-		new_edges[i].Init(distance);
-		this->edges[i][new_node].Init(distance);
+		new_edges[i].Init();
+		this->edges[i][new_node].Init();
 	}
 	return new_node;
 }
 
 /**
- * Fill an edge with values from a link. If usage < capacity set the usage,
- * otherwise set the restricted or unrestricted update timestamp.
+ * Fill an edge with values from a link. Set the restricted or unrestricted
+ * update timestamp according to the given update mode.
  * @param to Destination node of the link.
  * @param capacity Capacity of the link.
- * @param usage Usage to be added or REFRESH_UNRESTRICTED or REFRESH_RESTRICTED.
+ * @param usage Usage to be added.
+ * @param mode Update mode to be used.
  */
-void LinkGraph::Node::AddEdge(NodeID to, uint capacity, uint usage)
+void LinkGraph::Node::AddEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMode mode)
 {
 	assert(this->index != to);
 	BaseEdge &edge = this->edges[to];
 	BaseEdge &first = this->edges[this->index];
 	edge.capacity = capacity;
+	edge.usage = usage;
 	edge.next_edge = first.next_edge;
 	first.next_edge = to;
-	switch (usage) {
-		case REFRESH_UNRESTRICTED:
-			edge.last_unrestricted_update = _date;
-			break;
-		case REFRESH_RESTRICTED:
-			edge.last_restricted_update = _date;
-			break;
-		default:
-			edge.usage = usage;
-			break;
-	}
+	if (mode & EUM_UNRESTRICTED)  edge.last_unrestricted_update = _date;
+	if (mode & EUM_RESTRICTED) edge.last_restricted_update = _date;
 }
 
 /**
  * Creates an edge if none exists yet or updates an existing edge.
  * @param to Target node.
  * @param capacity Capacity of the link.
- * @param usage Usage to be added or REFRESH_UNRESTRICTED or REFRESH_RESTRICTED.
+ * @param usage Usage to be added.
+ * @param mode Update mode to be used.
  */
-void LinkGraph::Node::UpdateEdge(NodeID to, uint capacity, uint usage)
+void LinkGraph::Node::UpdateEdge(NodeID to, uint capacity, uint usage, EdgeUpdateMode mode)
 {
 	assert(capacity > 0);
-	assert(usage <= capacity || usage == REFRESH_RESTRICTED || usage == REFRESH_UNRESTRICTED);
+	assert(usage <= capacity);
 	if (this->edges[to].capacity == 0) {
-		this->AddEdge(to, capacity, usage);
+		this->AddEdge(to, capacity, usage, mode);
 	} else {
-		(*this)[to].Update(capacity, usage);
+		(*this)[to].Update(capacity, usage, mode);
 	}
 }
 
@@ -268,34 +248,30 @@ void LinkGraph::Node::RemoveEdge(NodeID to)
 }
 
 /**
- * Create a new edge or update an existing one. If usage is REFRESH_UNRESTRICTED
- * or REFRESH_RESTRICTED refresh the edge to have at least the given capacity
- * and also update the respective update timestamp, otherwise add the capacity.
+ * Update an edge. If mode contains UM_REFRESH refresh the edge to have at
+ * least the given capacity and usage, otherwise add the capacity and usage.
+ * In any case set the respective update timestamp(s), according to the given
+ * mode.
  * @param from Start node of the edge.
  * @param to End node of the edge.
  * @param capacity Capacity to be added/updated.
- * @param usage Usage to be added or REFRESH_UNRESTRICTED or REFRESH_RESTRICTED.
+ * @param usage Usage to be added.
+ * @param mode Update mode to be applied.
  */
-void LinkGraph::Edge::Update(uint capacity, uint usage)
+void LinkGraph::Edge::Update(uint capacity, uint usage, EdgeUpdateMode mode)
 {
 	assert(this->edge.capacity > 0);
-	if (usage > capacity) {
-		this->edge.capacity = max(this->edge.capacity, capacity);
-		switch (usage) {
-			case REFRESH_UNRESTRICTED:
-				this->edge.last_unrestricted_update = _date;
-				break;
-			case REFRESH_RESTRICTED:
-				this->edge.last_restricted_update = _date;
-				break;
-			default:
-				NOT_REACHED();
-				break;
-		}
-	} else {
+	assert(capacity >= usage);
+
+	if (mode & EUM_INCREASE) {
 		this->edge.capacity += capacity;
 		this->edge.usage += usage;
+	} else if (mode & EUM_REFRESH) {
+		this->edge.capacity = max(this->edge.capacity, capacity);
+		this->edge.usage = max(this->edge.usage, usage);
 	}
+	if (mode & EUM_UNRESTRICTED) this->edge.last_unrestricted_update = _date;
+	if (mode & EUM_RESTRICTED) this->edge.last_restricted_update = _date;
 }
 
 /**

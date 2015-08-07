@@ -32,10 +32,13 @@
 #include "hotkeys.h"
 #include "engine_base.h"
 #include "terraform_gui.h"
+#include "zoom_func.h"
 
 #include "widgets/terraform_widget.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 void CcTerraform(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
 {
@@ -207,12 +210,7 @@ struct TerraformToolbarWindow : Window {
 				break;
 
 			case WID_TT_PLACE_OBJECT: // Place object button
-				/* Don't show the place object button when there are no objects to place. */
-				if (ObjectClass::GetUIClassCount() == 0) return;
-				if (HandlePlacePushButton(this, WID_TT_PLACE_OBJECT, SPR_CURSOR_TRANSMITTER, HT_RECT)) {
-					ShowBuildObjectPicker(this);
-					this->last_user_action = widget;
-				}
+				ShowBuildObjectPicker();
 				break;
 
 			default: NOT_REACHED();
@@ -244,10 +242,6 @@ struct TerraformToolbarWindow : Window {
 
 			case WID_TT_PLACE_SIGN: // Place sign button
 				PlaceProc_Sign(tile);
-				break;
-
-			case WID_TT_PLACE_OBJECT: // Place object button
-				PlaceProc_Object(tile);
 				break;
 
 			default: NOT_REACHED();
@@ -283,7 +277,6 @@ struct TerraformToolbarWindow : Window {
 
 	virtual void OnPlaceObjectAbort()
 	{
-		DeleteWindowById(WC_BUILD_OBJECT, 0);
 		this->RaiseButtons();
 	}
 
@@ -341,7 +334,7 @@ static const NWidgetPart _nested_terraform_widgets[] = {
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_TT_PLACE_SIGN), SetMinimalSize(22, 22),
 								SetFill(0, 1), SetDataTip(SPR_IMG_SIGN, STR_SCENEDIT_TOOLBAR_PLACE_SIGN),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TT_SHOW_PLACE_OBJECT),
-			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_TT_PLACE_OBJECT), SetMinimalSize(22, 22),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_DARK_GREEN, WID_TT_PLACE_OBJECT), SetMinimalSize(22, 22),
 								SetFill(0, 1), SetDataTip(SPR_IMG_TRANSMITTER, STR_SCENEDIT_TOOLBAR_PLACE_OBJECT),
 		EndContainer(),
 	EndContainer(),
@@ -358,7 +351,7 @@ static WindowDesc _terraform_desc(
 /**
  * Show the toolbar for terraforming in the game.
  * @param link The toolbar we might want to link to.
- * @return The allocated toolbar.
+ * @return The allocated toolbar if the window was newly opened, else \c NULL.
  */
 Window *ShowTerraformToolbar(Window *link)
 {
@@ -552,6 +545,14 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		}
 	}
 
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	{
+		if (widget != WID_ETT_DOTS) return;
+
+		size->width  = max<uint>(size->width,  ScaleGUITrad(59));
+		size->height = max<uint>(size->height, ScaleGUITrad(31));
+	}
+
 	virtual void DrawWidget(const Rect &r, int widget) const
 	{
 		if (widget != WID_ETT_DOTS) return;
@@ -564,7 +565,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 		assert(n != 0);
 		do {
-			DrawSprite(SPR_WHITE_POINT, PAL_NONE, center_x + coords[0], center_y + coords[1]);
+			DrawSprite(SPR_WHITE_POINT, PAL_NONE, center_x + ScaleGUITrad(coords[0]), center_y + ScaleGUITrad(coords[1]));
 			coords += 2;
 		} while (--n);
 	}
@@ -605,10 +606,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_PLACE_OBJECT: // Place transmitter button
-				if (HandlePlacePushButton(this, WID_ETT_PLACE_OBJECT, SPR_CURSOR_TRANSMITTER, HT_RECT)) {
-					ShowBuildObjectPicker(this);
-					this->last_user_action = widget;
-				}
+				ShowBuildObjectPicker();
 				break;
 
 			case WID_ETT_INCREASE_SIZE:
@@ -674,10 +672,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 			case WID_ETT_PLACE_DESERT: // Place desert button (in tropical climate)
 				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CREATE_DESERT);
-				break;
-
-			case WID_ETT_PLACE_OBJECT: // Place transmitter button
-				PlaceProc_Object(tile);
 				break;
 
 			default: NOT_REACHED();
@@ -752,7 +746,7 @@ static WindowDesc _scen_edit_land_gen_desc(
 
 /**
  * Show the toolbar for terraforming in the scenario editor.
- * @return The allocated toolbar.
+ * @return The allocated toolbar if the window was newly opened, else \c NULL.
  */
 Window *ShowEditorTerraformToolbar()
 {

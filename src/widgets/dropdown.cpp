@@ -18,6 +18,8 @@
 
 #include "dropdown_widget.h"
 
+#include "../safeguards.h"
+
 
 void DropDownListItem::Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
 {
@@ -80,7 +82,7 @@ static const NWidgetPart _nested_dropdown_menu_widgets[] = {
 static WindowDesc _dropdown_desc(
 	WDP_MANUAL, NULL, 0, 0,
 	WC_DROPDOWN_MENU, WC_NONE,
-	0,
+	WDF_NO_FOCUS,
 	_nested_dropdown_menu_widgets, lengthof(_nested_dropdown_menu_widgets)
 );
 
@@ -114,6 +116,8 @@ struct DropdownWindow : Window {
 	DropdownWindow(Window *parent, const DropDownList *list, int selected, int button, bool instant_close, const Point &position, const Dimension &size, Colours wi_colour, bool scroll)
 			: Window(&_dropdown_desc)
 	{
+		assert(list->Length() > 0);
+
 		this->position = position;
 
 		this->CreateNestedTree();
@@ -340,26 +344,17 @@ void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int b
 	/* The preferred width equals the calling widget */
 	uint width = wi_rect.right - wi_rect.left + 1;
 
+	/* Longest item in the list, if auto_width is enabled */
 	uint max_item_width = 0;
 
-	if (auto_width) {
-		/* Find the longest item in the list */
-		for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
-			const DropDownListItem *item = *it;
-			max_item_width = max(max_item_width, item->Width() + 5);
-		}
-	}
-
 	/* Total length of list */
-	int list_height = 0;
+	int height = 0;
 
 	for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
 		const DropDownListItem *item = *it;
-		list_height += item->Height(width);
+		height += item->Height(width);
+		if (auto_width) max_item_width = max(max_item_width, item->Width() + 5);
 	}
-
-	/* Height of window visible */
-	int height = list_height;
 
 	/* Check if the status bar is visible, as we don't want to draw over it */
 	int screen_bottom = GetMainViewBottom();
@@ -373,7 +368,7 @@ void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int b
 		} else {
 			/* ... and lastly if it won't, enable the scroll bar and fit the
 			 * list in below the widget */
-			int avg_height = list_height / (int)list->Length();
+			int avg_height = height / (int)list->Length();
 			int rows = (screen_bottom - 4 - top) / avg_height;
 			height = rows * avg_height;
 			scroll = true;

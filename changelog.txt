@@ -1,3 +1,218 @@
+1.5.0-beta2 (2015-02-24)
+------------------------------------------------------------------------
+- Feature: [NoGo] Game scripts can point to a location, station, industry, or town when publishing news. (r27164)
+- Feature: Allow changing max heightlevel in scenario editor. (r27151)
+- Feature: Make use of both rocky tile sets from the base graphics. (r27117)
+- Change: Scale (non-custom) default window sizes according to GUI zoom. (r27147)
+- Change: Make statusbar and chat-entry window use the same width as the toolbar. (r27146)
+- Change: The chatbox-width setting now uses percent of screen width instead of pixels. (r27144)
+- Change: [NewGRF] Interpret negative positions in industry layouts depending on GRF version. (r27138)
+- Fix: [SDL, Windows] Right-mouse-button scrolling scrolled/jumped too far, when OpenTTD lagged during mouse event processing. (r27167)
+- Fix: Toolbars were not invalidated when changing max-vehicles settings. [FS#6204] (r27163)
+- Fix: Tile selection was drawn outside of map in some cases. [FS#6208] (r27162)
+- Fix: Reimplement the viewport drawing algorithm. [FS#6156] [FS#6206] (r27161)
+- Fix: Issues with smallmap and viewport coordinates and transformations. (r27160, r27159, r27158)
+- Fix: Mark bridge middle tiles dirty when building/removing/changing bridges. (r27157)
+- Fix: Rounding and unit-conversion inconsistencies in calls to MarkAllViewportsDirty. (r27148)
+- Fix: Oilrig empty-tile checks were incorrect due to wrong TileIndexDiff->TileIndexDiffC conversion. (r27137)
+- Fix: Misalignment in generate world window in case of small fonts. (r27135)
+- Fix: Dragging of free wagons in depot failed with GUI zoom. (r27133)
+- Fix: Reduce memory footprint of map array by shuffling its members. [FS#6218] (r27132, r27126)
+- Fix: Dropdown- and tooltip-windows should not steal the focus. (r27131)
+- Fix: [NewGRF] Action 7/9 condition 0A failed for present, but disabled, NewGRF. (r27119)
+- Fix: Road vehicles could not reverse to be sent to depots when the following tile has the right type to run on, but could not be entered. [FS#6183] (r27107)
+- Fix: Use the actual max speed of the vehicle in front when determining if a RV can overtake. [FS#6176] (r27106)
+- Fix: grow_counter was not properly bounded by growth_rate, but by some other value used to calculate growth_rate. [FS#6195] (r27105)
+- Fix: [Script] Support 64 bits integers in ScriptLists. [FS#6194] (r27104)
+- Fix: [Script] Money values would end up wrong in strings when outside the bounds of a 32 bits integer. [FS#6194] (r27102)
+
+
+1.5.0-beta1 (2014-12-24)
+------------------------------------------------------------------------
+- Feature: Support .txt.gz and -txt.xz changelog, readme and license files in basesets, NewGRFs, etc (r27035, r27034)
+- Feature: More height levels [FS#4126] (r27010)
+- Feature: Latin translation (r26993)
+- Feature: Add option to choose normal, double or quad-size interface (r26990)
+- Feature: [Script] Swap method for script lists (r26894)
+- Feature: [Script] ScriptStationList_Cargo for sorting cargo by from and via (r26893)
+- Feature: [Script] API for retrieving planned flow (r26892)
+- Feature: [CargoDist] Predict links for station-autorefitting vehicles (r26889)
+- Feature: Setting for limiting the height of bridges (r26882)
+- Feature: Make aircraft ascend/descend when they are too close to the ground or too far away (r26866)
+- Feature: Allow hiding of non-interesting engines in the GUI (r26805, r26804)
+- Feature: Vehicle sorting in autoreplace GUI [FS#1640] (r26800)
+- Feature: [NewGRF] Advanced visual effects with multiple effect sprites independent of spawning model (r26988, r26747)
+- Feature: Warn about missing industries after generating a map (r26729)
+- Feature: Upgrade currently active NewGRFs to newest installed version (r26613)
+- Feature: Save and load grfid and md5sum of NewGRFs in config file (r26611)
+- Feature: Select an editable preset name for saving (r26610)
+- Feature: Cancel cargo delivery from industries/houses to stations after about 21 months of not having picked up any of the cargo (r26582)
+- Feature: Give a warning when a plane's orders tell it to use a runway which is too short for it [FS#6009] (r26566)
+- Feature: [Script] Extended API for CargoDist (r26557)
+- Feature: Show measured order times in timetable GUI also when not timetabled (r26550)
+- Feature: Prompt for confirmation when deleting a vehicle group (r26455)
+- Feature: Hierarchical vehicle subgroups (r26450)
+- Feature: Allow more sound sleep for dedicated servers when there's nothing to do and nobody paying attention (r26449)
+- Feature: [NewGRF] Add vehicle modflag 1 (unloading in progress) (r26430)
+- Change: Improvements to the man page (r27091, r27012)
+- Change: Allow to set the granularity of the tooltip hover time in milliseconds instead of seconds. New default value is 250ms (r26815)
+- Change: Follow SI recommendation about spaces between numbers and units [FS#6086] (r26733)
+- Change: [CargoDist] Save locations instead of distances in link graphs to reduce size (r26646)
+- Change: [Squirrel] Make the internal integer for scripts always 64 bits, so scripts behave the same on 32 and 64 bit architectures and money can be represented properly (r26585, r26584)
+- Change: Reshuffle advanced settings tree (r26614, r26536)
+- Change: Add backend-independent config-file setting to disable 8bpp video modes, and disable 8bpp by default (r26522)
+- Fix: [OS/2] Compile again [FS#6186] (r27092)
+- Fix: Compilation with freetype2 version 2.5.4 and newer [FS#6185] (r27079)
+- Fix: Variable 47 used the carge translation table of the wrong GRF in case of callback 1D [FS#6182] (r27075)
+- Fix: Some lists did not use natural string sorting [FS#6172] (r27063)
+- Fix: Mercurial version detection failed if personal presets were configured (r27059)
+- Fix: [OSX] Don't require double-press from non-dead console hotkeys [FS#5812] (r27046)
+- Fix: Crash when having the vehicle list opened from a buoy or oil rig when the buoy/oil rig is removed (r27030)
+- Fix: Unit number was not always fully shown in depots [FS#6102] (r27014)
+- Fix: [CargoDist] Reserve cargo only after unloading finished or if the vehicle has the desired cargo already [FS#6110] (r26918)
+- Fix: [Squirrel] Loading a value saved as boolean caused it to be of type integer instead of boolean (r26785)
+- Fix: [Squirrel] Harden string handling (r26777)
+- Fix: [OSX] Implement more of the text editing API to prevent crashes and improve IME support [FS#5972] (r26758)
+- Fix: Incorrect saving of order backups [FS#6066] (r26700)
+- Fix: Ordering a vehicle to a competitor's rail waypoint displayed an error message. Ignore the click as is done for the other order types to competitor's stuff [FS#6059] (r26692)
+- Fix: [Script] Loading/parsing of info .nuts was done in the same VM, causing e.g. constants to break the loading of info of other scripts [FS#5973] (r26617)
+- Fix: [CargoDist] Improve estimation of link capacitites (r26549)
+- Remove: A bunch of archaic settings from the GUI (r26528, r26526, r26525)
+
+
+1.4.4 (2014-10-21)
+------------------------------------------------------------------------
+(None)
+
+
+1.4.4-RC1 (2014-10-08)
+------------------------------------------------------------------------
+- Fix: Image widgets stored 32bit SpriteID in uint16 (r26971)
+- Fix: Owner of road depot road types were not properly changed upon bankruptcy [FS#6126] (r26955)
+- Fix: Compilation on HAIKU (r26922)
+- Fix: Crash when enabling 'Full animation' if multiplayer chat text is on screen [FS#6096] (r26919)
+- Fix: Height computation of game script text in town GUI did not consider margins [FS#6119] (r26859)
+- Fix: [Squirrel] Debian lintian issues (r26853)
+- Fix: Compilation of strgen on various platforms like Solaris (r26850)
+- Fix: Better display of refit information for articulated vehicles [FS#6113] (r26849, r26848)
+- Fix: Do not assign a next hop when returning cargo [FS#6110] (r26847)
+- Fix: The ok-button in the OSK for the signs list should just close the OSK [FS#6116] (r26827)
+
+
+1.4.3 (2014-09-23)
+------------------------------------------------------------------------
+(None)
+
+
+1.4.3-RC2 (2014-09-14)
+------------------------------------------------------------------------
+- Fix: Crashes on joining a server with pending order backups [FS#6112] (r26819)
+- Fix: Crashes on start due to dereferencing the -1 index of the file names array of music files (r26809)
+
+
+1.4.3-RC1 (2014-09-07)
+------------------------------------------------------------------------
+- Fix: TC_NO_SHADE did not work for 32bpp text rendering (r26792)
+- Fix: Loading a game with order backups leaked Orders and left unreachable items in the pool (r26787)
+- Fix: Buffer overrun in SQCompiler::Error (r26764)
+- Fix: Desync due to not always properly restoring game state from the savegame (r26753)
+- Fix: [Script] Crashes and infinite loops when using lists in item-descending order [FS#6085] (r26744)
+- Fix: Incorrect CFLAGS when enabling gprof profiling (r26737, r26735)
+- Fix: Do not reset the last selected airport or layout, unless it is really necessary [FS#6083] (r26732)
+- Fix: Use the normal search path to look for xdg-open at Unix [FS#6077] (r26724)
+- Fix: Properly check for cargo acceptance of houses [FS#5997] (r26723)
+
+
+1.4.2 (2014-08-16)
+------------------------------------------------------------------------
+(None)
+
+
+1.4.2-RC2 (2014-08-03)
+------------------------------------------------------------------------
+- Change: Use awk instead of trying to convince cpp to preprocess nfo files (r26708)
+- Fix: CMD_CLEAR_ORDER_BACKUP should not be suppressed by pause modes (r26716)
+- Fix: [NewGRF] Parameters to SCC_NEWGRF_PUSH_WORD and SCC_NEWGRF_UNPRINT were not skipped during drawing (r26713)
+- Fix: [OSX] Compilation fails with some lzo2 versions, if __LP64__ is defined to 0 instead of checking whether it is defined [FS#6069] (r26709)
+- Fix: Wrong breakdown sound was played for ships [FS#6015] (r26706)
+- Fix: Integer overflows in acceleration code causing either too low acceleration or too high acceleration [FS#6067] (r26702)
+- Fix: Discard incorrectly saved order backups when clients join [FS#6066] (r26700)
+- Fix: Do not crash when trying to show an error about vehicle in a NewGRF and the NewGRF was not loaded at all (r26699)
+- Fix: Slovak uses space as group separator in numbers [FS#6064] (r26695)
+- Fix: Tighten parameter bound checks on GSCargoMonitor functions, and return -1 on out-of-bound parameters (r26685)
+
+
+1.4.2-RC1 (2014-07-03)
+------------------------------------------------------------------------
+- Fix: CargoPacket::SourceStation() returns a StationID (r26660)
+- Fix: Days in dates are not represented by ordinal numbers in all languages [FS#6047] (r26657)
+- Fix: Production cheat cannot be allowed to be active in multiplayer for desync reasons, even when activated in singleplayer previously [FS#6044] (r26656)
+- Fix: Make sure an 'abs' is used that supports int64 when using 'abs' on those variables (r26651)
+- Fix: Support save/load chunk lengths of up to (1 << 32) - 1 [FS#6041] (r26650)
+- Fix: Incorrect usage of string commands in the base language [FS#6037] (r26642, r26640, r26639, r26632)
+- Fix: Segmentation fault when encountering a .obg/.obs/.obm with empty string/zero length MD5 checksums [FS#6038] (r26637)
+- Fix: The 'Load' button was not properly enabled/disabled for old savegames without NewGRF information (r26634)
+- Fix: If the video driver fails to supply a list of resolutions, display an error message [FS#6012] (r26629)
+
+
+1.4.1 (2014-06-02)
+------------------------------------------------------------------------
+- Fix: First send packages about new company, then clients joining it to admin port [FS#6025] (r26616)
+
+
+1.4.1-RC2 (2014-05-18)
+------------------------------------------------------------------------
+- Fix: Save/load issues on big endian machines (r26593, r26590, r26589)
+- Fix: Consider multiheaded trains in station refits [FS#5995] (r26586)
+- Fix: Game script could be changed in game by double clicking [FS#5974] (r26583)
+- Fix: Transfer stations also should have a cargo rating [FS#5989] (r26581, r26580)
+- Fix: [Network] AIs would not reset certain network state information upon creation of their company [FS#6003] (r26578, r26576)
+- Fix: [Network] Client of non-dedicated server was not correctly put into the first company for all state variables [FS#6001] (r26577)
+
+
+1.4.1-RC1 (2014-05-04)
+------------------------------------------------------------------------
+- Change: Remove demand calculation based on tiles (r26484)
+- Change: Use pkg-config for libpng as well (r26435, r26433, r26432)
+- Change: Use better distance metric for link graph [FS#5941] (r26411)
+- Fix: [Windows] Crash when the operating system performs the "paint" callback during window creation [FS#5994] (r26539, r26538)
+- Fix: OpenBSD compilation [FS#5992] (r26523)
+- Fix: prevent from ever reading huge (or negative) amounts of data in strgen (r26521)
+- Fix: Severity rating of dedicated server messages during world generation (r26518)
+- Fix: Buffer overruns in handling of symbolic links inside tars (r26514)
+- Fix: Incorrect usage of strecpy (r26505, r26485)
+- Fix: Reading console input on dedicated server relied on unspecified behaviour (r26496)
+- Fix: Allow single-vehicle consists to station-refit in a meaningful way (r26483)
+- Fix: Prevent comparing to NULL when strndup could not allocate memory (r26476)
+- Fix: Potentially undefined shifts in NewGRF code (r26475)
+- Fix: Make sure there is no uninitialised sprite data (r26473)
+- Fix: Draw text shadow for ellipses (r26467)
+- Fix: Add special handling for PALETTE_CRASH to work for non-8bpp-mapped sprites (r26463)
+- Fix: Avoid division by 0 when scaling flow values [FS#5970] (r26448)
+- Fix: Draw links to match _settings_game.vehicle.road_side [FS#5961] (r26445)
+- Fix: Load button for heightmap list was missing [FS#5953] (r26428)
+- Fix: Do not crash when supplying an invalid filename without extension to cmd parameter -q (r26423)
+- Fix: Some road constructions used the rail sound effect [FS#5946] (r26422)
+- Fix: Goal GUI failed to shade [FS#5948] (r26420)
+- Fix: Shares button state was not appropriately updated when switching setting or company [FS#5947] (r26416)
+
+
+1.4.0 (2014-04-01)
+------------------------------------------------------------------------
+(None)
+
+
+1.4.0-RC1 (2014-03-18)
+------------------------------------------------------------------------
+- Feature: [Script] APIs to get cargo waiting from/via other station (r26396)
+- Fix: Do not explain "symmetric" cargodist mode when the setting does not allow it [FS#5939] (r26394)
+- Fix: Update distances between link graph nodes when station sign is moved (r26393)
+- Fix: No need to call OnFocus twice [FS#5933] (r26392)
+- Fix: Select a specific font size when freetype fails to select one automatically [FS#5885] (r26389)
+- Fix: Return correct values from ICU iterators in case of leading or trailing whitespace [FS#5924] (r26384)
+- Fix: All goal commands invalidated the goal list of company 0 [FS#5932] (r26382)
+
+
 1.4.0-beta5 (2014-02-25)
 ------------------------------------------------------------------------
 - Feature: Warn the user about empty setting search results, and about missing setting search results due to filtering (r26322, r26321)

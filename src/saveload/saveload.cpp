@@ -49,6 +49,8 @@
 #include "saveload_internal.h"
 #include "saveload_filter.h"
 
+#include "../safeguards.h"
+
 /*
  * Previous savegame versions, the trunk revision where they were
  * introduced and the released version that had that particular
@@ -255,8 +257,13 @@
  *  187   25899
  *  188   26169   1.4.x
  *  189   26450
+ *  190   26547
+ *  191   26646
+ *  192   26700
+ *  193   26802
+ *  194   26881   1.5.x
  */
-extern const uint16 SAVEGAME_VERSION = 189; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 194; ///< Current savegame version of OpenTTD.
 
 SavegameType _savegame_type; ///< type of savegame we are loading
 
@@ -525,11 +532,11 @@ void NORETURN SlError(StringID string, const char *extra_msg)
 	if (_sl.action == SLA_LOAD_CHECK) {
 		_load_check_data.error = string;
 		free(_load_check_data.error_data);
-		_load_check_data.error_data = (extra_msg == NULL) ? NULL : strdup(extra_msg);
+		_load_check_data.error_data = (extra_msg == NULL) ? NULL : stredup(extra_msg);
 	} else {
 		_sl.error_str = string;
 		free(_sl.extra_msg);
-		_sl.extra_msg = (extra_msg == NULL) ? NULL : strdup(extra_msg);
+		_sl.extra_msg = (extra_msg == NULL) ? NULL : stredup(extra_msg);
 	}
 
 	/* We have to NULL all pointers here; we might be in a state where
@@ -671,7 +678,11 @@ static uint SlReadSimpleGamma()
 			if (HasBit(i, 5)) {
 				i &= ~0x20;
 				if (HasBit(i, 4)) {
-					SlErrorCorrupt("Unsupported gamma");
+					i &= ~0x10;
+					if (HasBit(i, 3)) {
+						SlErrorCorrupt("Unsupported gamma");
+					}
+					i = SlReadByte(); // 32 bits only.
 				}
 				i = (i << 8) | SlReadByte();
 			}
@@ -691,6 +702,11 @@ static uint SlReadSimpleGamma()
  * 10xxxxxx xxxxxxxx
  * 110xxxxx xxxxxxxx xxxxxxxx
  * 1110xxxx xxxxxxxx xxxxxxxx xxxxxxxx
+ * 11110--- xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
+ * We could extend the scheme ad infinum to support arbitrarily
+ * large chunks, but as sizeof(size_t) == 4 is still very common
+ * we don't support anything above 32 bits. That's why in the last
+ * case the 3 most significant bits are unused.
  * @param i Index being written
  */
 
@@ -699,8 +715,13 @@ static void SlWriteSimpleGamma(size_t i)
 	if (i >= (1 << 7)) {
 		if (i >= (1 << 14)) {
 			if (i >= (1 << 21)) {
-				assert(i < (1 << 28));
-				SlWriteByte((byte)(0xE0 | (i >> 24)));
+				if (i >= (1 << 28)) {
+					assert(i <= UINT32_MAX); // We can only support 32 bits for now.
+					SlWriteByte((byte)(0xF0));
+					SlWriteByte((byte)(i >> 24));
+				} else {
+					SlWriteByte((byte)(0xE0 | (i >> 24)));
+				}
 				SlWriteByte((byte)(i >> 16));
 			} else {
 				SlWriteByte((byte)(0xC0 | (i >> 16)));
@@ -716,7 +737,7 @@ static void SlWriteSimpleGamma(size_t i)
 /** Return how many bytes used to encode a gamma value */
 static inline uint SlGetGammaLength(size_t i)
 {
-	return 1 + (i >= (1 << 7)) + (i >= (1 << 14)) + (i >= (1 << 21));
+	return 1 + (i >= (1 << 7)) + (i >= (1 << 14)) + (i >= (1 << 21)) + (i >= (1 << 28));
 }
 
 static inline uint SlReadSparseIndex()
@@ -1461,9 +1482,50 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 	return 0;
 }
 
+/**
+ * Check whether the variable size of the variable in the saveload configuration
+ * matches with the actual variable size.
+ * @param sld The saveload configuration to test.
+ */
+static bool IsVariableSizeRight(const SaveLoad *sld)
+{
+	switch (sld->cmd) {
+		case SL_VAR:
+			switch (GetVarMemType(sld->conv)) {
+				case SLE_VAR_BL:
+					return sld->size == sizeof(bool);
+				case SLE_VAR_I8:
+				case SLE_VAR_U8:
+					return sld->size == sizeof(int8);
+				case SLE_VAR_I16:
+				case SLE_VAR_U16:
+					return sld->size == sizeof(int16);
+				case SLE_VAR_I32:
+				case SLE_VAR_U32:
+					return sld->size == sizeof(int32);
+				case SLE_VAR_I64:
+				case SLE_VAR_U64:
+					return sld->size == sizeof(int64);
+				default:
+					return sld->size == sizeof(void *);
+			}
+		case SL_REF:
+			/* These should all be pointer sized. */
+			return sld->size == sizeof(void *);
+
+		case SL_STR:
+			/* These should be pointer sized, or fixed array. */
+			return sld->size == sizeof(void *) || sld->size == sld->length;
+
+		default:
+			return true;
+	}
+}
 
 bool SlObjectMember(void *ptr, const SaveLoad *sld)
 {
+	assert(IsVariableSizeRight(sld));
+
 	VarType conv = GB(sld->conv, 0, 8);
 	switch (sld->cmd) {
 		case SL_VAR:
@@ -1605,9 +1667,11 @@ static void SlLoadChunk(const ChunkHandler *ch)
 		case CH_ARRAY:
 			_sl.array_index = 0;
 			ch->load_proc();
+			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		case CH_SPARSE_ARRAY:
 			ch->load_proc();
+			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		default:
 			if ((m & 0xF) == CH_RIFF) {
@@ -2612,7 +2676,7 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 	/* loader for this savegame type is not implemented? */
 	if (fmt->init_load == NULL) {
 		char err_str[64];
-		snprintf(err_str, lengthof(err_str), "Loader for '%s' is not available.", fmt->name);
+		seprintf(err_str, lastof(err_str), "Loader for '%s' is not available.", fmt->name);
 		SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, err_str);
 	}
 
@@ -2728,9 +2792,9 @@ SaveOrLoadResult SaveOrLoad(const char *filename, int mode, Subdirectory sb, boo
 			InitializeGame(256, 256, true, true); // set a mapsize of 256x256 for TTDPatch games or it might get confused
 
 			/* TTD/TTO savegames have no NewGRFs, TTDP savegame have them
-			* and if so a new NewGRF list will be made in LoadOldSaveGame.
-			* Note: this is done here because AfterLoadGame is also called
-			* for OTTD savegames which have their own NewGRF logic. */
+			 * and if so a new NewGRF list will be made in LoadOldSaveGame.
+			 * Note: this is done here because AfterLoadGame is also called
+			 * for OTTD savegames which have their own NewGRF logic. */
 			ClearGRFConfigList(&_grfconfig);
 			GamelogReset();
 			if (!LoadOldSaveGame(filename)) return SL_REINIT;
