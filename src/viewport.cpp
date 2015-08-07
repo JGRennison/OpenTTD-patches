@@ -1934,7 +1934,7 @@ static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileTy
 		case MP_WATER:
 			if (is_32bpp) {
 				uint slope_index = 0;
-				if (GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
+				if (IsTileType(t, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
 				return _vp_map_water_colour[slope_index];
 			}
 			/* FALL THROUGH */
@@ -1972,7 +1972,7 @@ static inline uint32 ViewportMapGetColourIndustries(const TileIndex tile, const 
 
 	if (is_32bpp && t2 == MP_WATER) {
 		uint slope_index = 0;
-		if (t != MP_INDUSTRY && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index); ///< Ignore industry on water not shown on map.
+		if (t != MP_INDUSTRY && IsTileType(t, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index); ///< Ignore industry on water not shown on map.
 		return _vp_map_water_colour[slope_index];
 	}
 
@@ -2003,7 +2003,7 @@ static inline uint32 ViewportMapGetColourOwner(const TileIndex tile, TileType t,
 		if (t == MP_WATER) {
 			if (is_32bpp) {
 				uint slope_index = 0;
-				if (GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
+				if (IsTileType(t, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
 				return _vp_map_water_colour[slope_index];
 			} else {
 				return PC_WATER;
@@ -2041,9 +2041,10 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const ViewPort * c
 		} else {
 			ViewportMapStoreBridgeTunnel(vp, from_tile);
 			switch (GetTunnelBridgeTransportType(from_tile)) {
-				case TRANSPORT_RAIL: *tile_type = MP_RAILWAY; break;
-				case TRANSPORT_ROAD: *tile_type = MP_ROAD;    break;
-				default:             *tile_type = MP_WATER;   break;
+				case TRANSPORT_RAIL:  *tile_type = MP_RAILWAY; break;
+				case TRANSPORT_ROAD:  *tile_type = MP_ROAD;    break;
+				case TRANSPORT_WATER: *tile_type = MP_WATER;   break;
+				default:              NOT_REACHED();           break;
 			}
 		}
 		return from_tile;
