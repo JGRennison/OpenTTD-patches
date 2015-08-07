@@ -3057,6 +3057,25 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		/*
+		 * Cost scaling changes:
+		 * SpringPP divides all prices by the difficulty factor, effectively making things about 8 times cheaper.
+		 * Adjust the inflation factor to compensate for this, as otherwise the game is unplayable on load if inflation has been running for a while.
+		 * To avoid making things too cheap, clamp the price inflation factor to no lower than the payment inflation factor.
+		 */
+
+		DEBUG(sl, 3, "Inflation prices: %f", _economy.inflation_prices / 65536.0);
+		DEBUG(sl, 3, "Inflation payments: %f", _economy.inflation_payment / 65536.0);
+
+		_economy.inflation_prices >>= 3;
+		if (_economy.inflation_prices < _economy.inflation_payment) {
+			_economy.inflation_prices = _economy.inflation_payment;
+		}
+
+		DEBUG(sl, 3, "New inflation prices: %f", _economy.inflation_prices / 65536.0);
+	}
+
 	/* Station acceptance is some kind of cache */
 	if (IsSavegameVersionBefore(127)) {
 		Station *st;
