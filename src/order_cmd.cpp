@@ -239,6 +239,7 @@ Order::Order(uint32 packed)
 	this->dest    = GB(packed, 16, 16);
 	this->next    = NULL;
 	this->refit_cargo   = CT_NO_REFIT;
+	this->occupancy     = 0;
 	this->wait_time     = 0;
 	this->travel_time   = 0;
 	this->max_speed     = UINT16_MAX;

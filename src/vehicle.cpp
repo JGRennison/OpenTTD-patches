@@ -2115,6 +2115,28 @@ void Vehicle::LeaveStation()
 		SetBit(Train::From(this)->flags, VRF_LEAVING_STATION);
 	}
 
+	if (this->cur_real_order_index < this->GetNumOrders()) {
+		Order *real_current_order = this->GetOrder(this->cur_real_order_index);
+		uint current_occupancy = CalcPercentVehicleFilled(this, NULL);
+		uint old_occupancy = real_current_order->GetOccupancy();
+		uint new_occupancy;
+		if (old_occupancy == 0) {
+			new_occupancy = current_occupancy;
+		} else {
+			// Exponential weighted moving average using occupancy_smoothness
+			new_occupancy = (old_occupancy - 1) * _settings_game.order.occupancy_smoothness;
+			new_occupancy += current_occupancy * (100 - _settings_game.order.occupancy_smoothness);
+			new_occupancy += 50; // round to nearest integer percent, rather than just floor
+			new_occupancy /= 100;
+		}
+		if (new_occupancy + 1 != old_occupancy) {
+			real_current_order->SetOccupancy(static_cast<uint8>(new_occupancy + 1));
+			for (const Vehicle *v = this->FirstShared(); v != NULL; v = v->NextShared()) {
+				SetWindowDirty(WC_VEHICLE_ORDERS, v->index);
+			}
+		}
+	}
+
 	this->MarkDirty();
 }
 
