@@ -878,7 +878,7 @@ void CallVehicleTicks()
 {
 	_vehicles_to_autoreplace.Clear();
 
-	RunVehicleDayProc();
+	if (_tick_skip_counter == 0) RunVehicleDayProc();
 
 	Station *st;
 	FOR_ALL_STATIONS(st) LoadUnloadStation(st);

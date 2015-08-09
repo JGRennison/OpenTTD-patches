@@ -1527,6 +1527,8 @@ STR_CONFIG_SETTING_ALLOW_SHARES                                 :Allow buying sh
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :When enabled, allow buying and selling of company shares. Shares will only be available for companies reaching a certain age
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Percentage of leg profit to pay in feeder systems: {STRING2}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Percentage of income given to the intermediate legs in feeder systems, giving more control over the income
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :Day length factor: {STRING2}
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :Game pace is slowed by this factor
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :When dragging, place signals every: {STRING2}
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :Set the distance at which signals will be built on a track up to the next obstacle (signal, junction), if signals are dragged
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_VALUE                   :{COMMA} tile{P 0 "" s}

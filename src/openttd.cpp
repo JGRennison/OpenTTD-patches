@@ -1377,11 +1377,17 @@ void StateGameLoop()
 		Backup<CompanyByte> cur_company(_current_company, OWNER_NONE, FILE_LINE);
 
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
-		AnimateAnimatedTiles();
-		IncreaseDate();
-		RunTileLoop();
-		CallVehicleTicks();
-		CallLandscapeTick();
+		_tick_skip_counter++;
+		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
+			CallVehicleTicks();
+		} else {
+			_tick_skip_counter = 0;
+			AnimateAnimatedTiles();
+			IncreaseDate();
+			RunTileLoop();
+			CallVehicleTicks();
+			CallLandscapeTick();
+		}
 		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 
 #ifndef DEBUG_DUMP_COMMANDS

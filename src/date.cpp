@@ -28,6 +28,7 @@ Month     _cur_month;  ///< Current month (0..11)
 Date      _date;       ///< Current date in days (day counter)
 DateFract _date_fract; ///< Fractional part of the day.
 uint16 _tick_counter;  ///< Ever incrementing (and sometimes wrapping) tick counter for setting off various events
+uint8 _tick_skip_counter; ///< Counter for ticks, when only vehicles are moving and nothing else happens
 
 /**
  * Set the date.
