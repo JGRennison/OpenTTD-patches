@@ -95,6 +95,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
  * - p1 = (bit  0-19) - Vehicle with the orders to change.
  * - p1 = (bit 20-27) - Order index to modify.
  * - p1 = (bit 28-29) - Timetable data to change (@see ModifyTimetableFlags)
+ * - p1 = (bit    30) - 0 to set timetable wait/travel time, 1 to clear it
  * @param p2 The amount of time to wait.
  * - p2 = (bit  0-15) - The data to modify as specified by p1 bits 28-29.
  *                      0 to clear times, UINT16_MAX to clear speed limit.
@@ -118,16 +119,20 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 2>(p1);
 	if (mtf >= MTF_END) return CMD_ERROR;
 
+	bool clear_field = GB(p1, 30, 1) == 1;
+
 	int wait_time   = order->GetWaitTime();
 	int travel_time = order->GetTravelTime();
 	int max_speed   = order->GetMaxSpeed();
 	switch (mtf) {
 		case MTF_WAIT_TIME:
 			wait_time = GB(p2, 0, 16);
+			if (clear_field) assert(wait_time == 0);
 			break;
 
 		case MTF_TRAVEL_TIME:
 			travel_time = GB(p2, 0, 16);
+			if (clear_field) assert(travel_time == 0);
 			break;
 
 		case MTF_TRAVEL_SPEED:
@@ -159,15 +164,15 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		switch (mtf) {
 			case MTF_WAIT_TIME:
 				/* Set time if changing the value or confirming an estimated time as timetabled. */
-				if (wait_time != order->GetWaitTime() || (wait_time > 0 && !order->IsWaitTimetabled())) {
-					ChangeTimetable(v, order_number, wait_time, MTF_WAIT_TIME, wait_time > 0);
+				if (wait_time != order->GetWaitTime() || (clear_field == order->IsWaitTimetabled())) {
+					ChangeTimetable(v, order_number, wait_time, MTF_WAIT_TIME, !clear_field);
 				}
 				break;
 
 			case MTF_TRAVEL_TIME:
 				/* Set time if changing the value or confirming an estimated time as timetabled. */
-				if (travel_time != order->GetTravelTime() || (travel_time > 0 && !order->IsTravelTimetabled())) {
-					ChangeTimetable(v, order_number, travel_time, MTF_TRAVEL_TIME, travel_time > 0);
+				if (travel_time != order->GetTravelTime() || (clear_field == order->IsTravelTimetabled())) {
+					ChangeTimetable(v, order_number, travel_time, MTF_TRAVEL_TIME, !clear_field);
 				}
 				break;
 
