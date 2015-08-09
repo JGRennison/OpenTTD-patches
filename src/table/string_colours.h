@@ -7,19 +7,25 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file object.h Functions related to objects. */
+/** @file string_colours.h The colour translation of GRF's strings. */
 
-#ifndef OBJECT_H
-#define OBJECT_H
-
-#include "tile_type.h"
-#include "company_type.h"
-#include "object_type.h"
-
-void UpdateCompanyHQ(TileIndex tile, uint score);
-
-void BuildObject(ObjectType type, TileIndex tile, CompanyID owner = OWNER_NONE, struct Town *town = NULL, uint8 view = 0);
-
-void ShowBuildObjectPicker();
-
-#endif /* OBJECT_H */
+/** Colour mapping for the TextColours. */
+static const byte _string_colourmap[17] = {
+		150, // TC_BLUE
+		 12, // TC_SILVER
+		189, // TC_GOLD
+		184, // TC_RED
+		174, // TC_PURPLE
+		 30, // TC_LIGHT_BROWN
+		195, // TC_ORANGE
+		209, // TC_GREEN
+		 68, // TC_YELLOW
+		 95, // TC_DARK_GREEN
+		 79, // TC_CREAM
+		116, // TC_BROWN
+		 15, // TC_WHITE
+		152, // TC_LIGHT_BLUE
+		  6, // TC_GREY
+		133, // TC_DARK_BLUE
+		  1, // TC_BLACK
+};
