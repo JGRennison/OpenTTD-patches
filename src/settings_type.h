@@ -532,6 +532,7 @@ struct EconomySettings {
 	bool   allow_town_level_crossings;       ///< towns are allowed to build level crossings
 	int8   town_cargo_factor;                ///< power-of-two multiplier for town (passenger, mail) generation. May be negative.
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure
+	uint8  day_length_factor;                ///< factor which the length of day is multiplied
 };
 
 struct LinkGraphSettings {
