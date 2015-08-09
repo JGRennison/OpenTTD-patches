@@ -404,7 +404,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
-			v->lateness_counter = (_date - v->timetable_start) * DAY_TICKS * _settings_game.economy.day_length_factor + _date_fract + _tick_skip_counter;
+			v->lateness_counter = ((_date - v->timetable_start) * DAY_TICKS + _date_fract) * _settings_game.economy.day_length_factor + _tick_skip_counter;
 			v->timetable_start = 0;
 		}
 
