@@ -534,14 +534,14 @@ struct TimetableWindow : Window {
 		}
 	}
 
-	static inline uint32 PackTimetableArgs(const Vehicle *v, uint selected, bool speed)
+	static inline uint32 PackTimetableArgs(const Vehicle *v, uint selected, bool speed, bool clear = false)
 	{
 		uint order_number = (selected + 1) / 2;
 		ModifyTimetableFlags mtf = (selected % 2 == 1) ? (speed ? MTF_TRAVEL_SPEED : MTF_TRAVEL_TIME) : MTF_WAIT_TIME;
 
 		if (order_number >= v->GetNumOrders()) order_number = 0;
 
-		return v->index | (order_number << 20) | (mtf << 28);
+		return v->index | (order_number << 20) | (mtf << 28) | (clear ? 1 << 30 : 0);
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)
@@ -623,7 +623,7 @@ struct TimetableWindow : Window {
 			}
 
 			case WID_VT_CLEAR_TIME: { // Clear waiting time.
-				uint32 p1 = PackTimetableArgs(v, this->sel_index, false);
+				uint32 p1 = PackTimetableArgs(v, this->sel_index, false, true);
 				DoCommandP(0, p1, 0, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
