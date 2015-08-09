@@ -475,6 +475,7 @@ struct OrderSettings {
 	bool   timetable_automated;              ///< whether to automatically manage timetables
 	bool   timetable_separation;             ///< whether to perform automatic separation based on timetable
 	bool   serviceathelipad;                 ///< service helicopters at helipads automatically (no need to send to depot)
+	uint8  occupancy_smoothness;             ///< percentage smoothness of occupancy measurement changes
 };
 
 /** Settings related to vehicles. */

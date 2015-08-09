@@ -1789,6 +1789,9 @@ STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Pay for repairi
 STR_CONFIG_SETTING_REPAIR_COST                                  :Cost of repairing vehicle: 1/{STRING2} of total cost
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Cost of repairing vehicle
 
+STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :Smoothness of order occupancy measurement: {STRING2}
+STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0% sets the measurement to the most recent value, 100% leaves it unchanged
+
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Error with the configuration file...
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... error in array '{RAW_STRING}'
@@ -4235,6 +4238,11 @@ STR_ORDER_SHARE                                                 :Share orders
 STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Insert a new order before the highlighted order, or add to end of list. Ctrl makes station orders 'full load any cargo', waypoint orders 'non-stop' and depot orders 'service'. 'Share orders' or Ctrl lets this vehicle share orders with the selected vehicle. Clicking a vehicle copies the orders from that vehicle. A depot order disables automatic servicing of the vehicle
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}Show all vehicles that share this schedule
+
+STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}%
+STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages
+STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Order occupancy - this shows runnings averages of recent occupancy levels when leaving a station, for all vehicles sharing these orders
+STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 # String parts to build the order string
 STR_ORDER_GO_TO_WAYPOINT                                        :Go via {WAYPOINT}
