@@ -16,9 +16,7 @@
 #include "../../tracerestrict.h"
 
 template <class Types>
-class CYapfCostRailT
-	: public CYapfCostBase
-{
+class CYapfCostRailT : public CYapfCostBase {
 public:
 	typedef typename Types::Tpf Tpf;              ///< the pathfinder class (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower;
@@ -75,10 +73,7 @@ protected:
 
 	static const int s_max_segment_cost = 10000;
 
-	CYapfCostRailT()
-		: m_max_cost(0)
-		, m_disable_cache(false)
-		, m_stopped_on_first_two_way_signal(false)
+	CYapfCostRailT() : m_max_cost(0), m_disable_cache(false), m_stopped_on_first_two_way_signal(false)
 	{
 		/* pre-compute look-ahead penalties into array */
 		int p0 = Yapf().PfGetSettings().rail_look_ahead_signal_p0;
@@ -93,7 +88,7 @@ protected:
 	/** to access inherited path finder */
 	Tpf& Yapf()
 	{
-		return *static_cast<Tpf*>(this);
+		return *static_cast<Tpf *>(this);
 	}
 
 public:
@@ -131,7 +126,7 @@ public:
 	}
 
 	/** Return one tile cost (base cost + level crossing penalty). */
-	inline int OneTileCost(TileIndex& tile, Trackdir trackdir)
+	inline int OneTileCost(TileIndex &tile, Trackdir trackdir)
 	{
 		int cost = 0;
 		/* set base cost */
@@ -166,7 +161,7 @@ public:
 	}
 
 	/** The cost for reserved tiles, including skipped ones. */
-	inline int ReservationCost(Node& n, TileIndex tile, Trackdir trackdir, int skipped)
+	inline int ReservationCost(Node &n, TileIndex tile, Trackdir trackdir, int skipped)
 	{
 		if (n.m_num_signals_passed >= m_sig_look_ahead_costs.Size() / 2) return 0;
 		if (!IsPbsSignal(n.m_last_signal_type)) return 0;
@@ -281,7 +276,7 @@ private:
 	}
 
 public:
-	int SignalCost(Node& n, TileIndex tile, Trackdir trackdir)
+	int SignalCost(Node &n, TileIndex tile, Trackdir trackdir)
 	{
 		int cost = 0;
 		/* if there is one-way signal in the opposite direction, then it is not our way */
@@ -729,14 +724,14 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 		return true;
 	}
 
-	inline bool CanUseGlobalCache(Node& n) const
+	inline bool CanUseGlobalCache(Node &n) const
 	{
 		return !m_disable_cache
 			&& (n.m_parent != NULL)
 			&& (n.m_parent->m_num_signals_passed >= m_sig_look_ahead_costs.Size());
 	}
 
-	inline void ConnectNodeToCachedData(Node& n, CachedData& ci)
+	inline void ConnectNodeToCachedData(Node &n, CachedData &ci)
 	{
 		n.m_segment = &ci;
 		if (n.m_segment->m_cost < 0) {
