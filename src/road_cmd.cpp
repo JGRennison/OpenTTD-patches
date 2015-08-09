@@ -237,21 +237,20 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				SetRoadTypes(tile, GetRoadTypes(tile) & ~RoadTypeToRoadTypes(rt));
 
 				/* If the owner of the bridge sells all its road, also move the ownership
-				 * to the owner of the other roadtype. */
+				 * to the owner of the other roadtype, unless the bridge owner is a town. */
 				RoadType other_rt = (rt == ROADTYPE_ROAD) ? ROADTYPE_TRAM : ROADTYPE_ROAD;
 				Owner other_owner = GetRoadOwner(tile, other_rt);
-				if (other_owner != GetTileOwner(tile)) {
+				if (!IsTileOwner(tile, other_owner) && !IsTileOwner(tile, OWNER_TOWN)) {
 					SetTileOwner(tile, other_owner);
 					SetTileOwner(other_end, other_owner);
 				}
 
 				/* Mark tiles dirty that have been repaved */
-				MarkTileDirtyByTile(tile);
-				MarkTileDirtyByTile(other_end);
 				if (IsBridge(tile)) {
-					TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
-
-					for (TileIndex t = tile + delta; t != other_end; t += delta) MarkTileDirtyByTile(t);
+					MarkBridgeDirty(tile);
+				} else {
+					MarkTileDirtyByTile(tile);
+					MarkTileDirtyByTile(other_end);
 				}
 			}
 		} else {
@@ -385,7 +384,10 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 					/* Update rail count for level crossings. The plain track should still be accounted
 					 * for, so only subtract the difference to the level crossing cost. */
 					c = Company::GetIfValid(GetTileOwner(tile));
-					if (c != NULL) c->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR - 1;
+					if (c != NULL) {
+						c->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR - 1;
+						DirtyCompanyInfrastructureWindows(c->index);
+					}
 				} else {
 					SetRoadTypes(tile, rts);
 				}
@@ -564,6 +566,15 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 						}
 						return_cmd_error(STR_ERROR_ALREADY_BUILT);
 					}
+					/* Disallow breaking end-of-line of someone else
+					 * so trams can still reverse on this tile. */
+					if (rt == ROADTYPE_TRAM && HasExactlyOneBit(existing)) {
+						Owner owner = GetRoadOwner(tile, rt);
+						if (Company::IsValidID(owner)) {
+							CommandCost ret = CheckOwnership(owner);
+							if (ret.Failed()) return ret;
+						}
+					}
 					break;
 				}
 
@@ -630,7 +641,10 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				/* Update rail count for level crossings. The plain track is already
 				 * counted, so only add the difference to the level crossing cost. */
 				c = Company::GetIfValid(GetTileOwner(tile));
-				if (c != NULL) c->infrastructure.rail[GetRailType(tile)] += LEVELCROSSING_TRACKBIT_FACTOR - 1;
+				if (c != NULL) {
+					c->infrastructure.rail[GetRailType(tile)] += LEVELCROSSING_TRACKBIT_FACTOR - 1;
+					DirtyCompanyInfrastructureWindows(c->index);
+				}
 
 				/* Always add road to the roadtypes (can't draw without it) */
 				bool reserved = HasBit(GetRailReservationTrackBits(tile), railtrack);
@@ -747,12 +761,11 @@ do_clear:;
 				SetRoadOwner(tile, rt, company);
 
 				/* Mark tiles dirty that have been repaved */
-				MarkTileDirtyByTile(other_end);
-				MarkTileDirtyByTile(tile);
 				if (IsBridge(tile)) {
-					TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
-
-					for (TileIndex t = tile + delta; t != other_end; t += delta) MarkTileDirtyByTile(t);
+					MarkBridgeDirty(tile);
+				} else {
+					MarkTileDirtyByTile(other_end);
+					MarkTileDirtyByTile(tile);
 				}
 				break;
 			}
@@ -1158,16 +1171,15 @@ const byte _road_sloped_sprites[14] = {
 };
 
 /**
- * Whether to draw unpaved roads regardless of the town zone.
- * By default, OpenTTD always draws roads as unpaved if they are on a desert
- * tile or above the snowline. Newgrf files, however, can set a bit that allows
- * paved roads to be built on desert tiles as they would be on grassy tiles.
+ * Should the road be drawn as a unpaved snow/desert road?
+ * By default, roads are always drawn as unpaved if they are on desert or
+ * above the snow line, but NewGRFs can override this for desert.
  *
  * @param tile The tile the road is on
  * @param roadside What sort of road this is
- * @return True if the road should be drawn unpaved regardless of the roadside.
+ * @return True if snow/desert road sprites should be used.
  */
-static bool AlwaysDrawUnpavedRoads(TileIndex tile, Roadside roadside)
+static bool DrawRoadAsSnowDesert(TileIndex tile, Roadside roadside)
 {
 	return (IsOnSnow(tile) &&
 			!(_settings_game.game_creation.landscape == LT_TROPIC && HasGrfMiscBit(GMB_DESERT_PAVED_ROADS) &&
@@ -1247,7 +1259,7 @@ static void DrawRoadBits(TileInfo *ti)
 
 	Roadside roadside = GetRoadside(ti->tile);
 
-	if (AlwaysDrawUnpavedRoads(ti->tile, roadside)) {
+	if (DrawRoadAsSnowDesert(ti->tile, roadside)) {
 		image += 19;
 	} else {
 		switch (roadside) {
@@ -1330,7 +1342,7 @@ static void DrawTile_Road(TileInfo *ti)
 
 				Roadside roadside = GetRoadside(ti->tile);
 
-				if (AlwaysDrawUnpavedRoads(ti->tile, roadside)) {
+				if (DrawRoadAsSnowDesert(ti->tile, roadside)) {
 					road += 19;
 				} else {
 					switch (roadside) {
@@ -1356,7 +1368,7 @@ static void DrawTile_Road(TileInfo *ti)
 
 				Roadside roadside = GetRoadside(ti->tile);
 
-				if (AlwaysDrawUnpavedRoads(ti->tile, roadside)) {
+				if (DrawRoadAsSnowDesert(ti->tile, roadside)) {
 					image += 8;
 				} else {
 					switch (roadside) {

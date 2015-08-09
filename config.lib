@@ -29,6 +29,7 @@ set_default() {
 	strip=""
 	lipo=""
 	awk="awk"
+	pkg_config="pkg-config"
 	os="DETECT"
 	endian="AUTO"
 	cpu_type="DETECT"
@@ -105,6 +106,7 @@ set_default() {
 		strip
 		lipo
 		awk
+		pkg_config
 		os
 		endian
 		cpu_type
@@ -213,6 +215,8 @@ detect_params() {
 			--windres=*)                  windres="$optarg";;
 			--awk)                        prev_p="awk";;
 			--awk=*)                      awk="$optarg";;
+			--pkg-config)                 prev_p="pkg_config";;
+			--pkg-config=*)               pkg_config="$optarg";;
 			--strip)                      prev_p="strip";;
 			--strip=*)                    strip="$optarg";;
 			--lipo)                       prev_p="lipo";;
@@ -526,10 +530,10 @@ check_params() {
 		log 1 " PREPROCESSOR is only available for OSX"
 		exit 1
 	fi
-	# OS only allows DETECT, UNIX, OSX, FREEBSD, OPENBSD, MORPHOS, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
-	if [ -z "`echo $os | egrep '^(DETECT|UNIX|OSX|FREEBSD|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP)$'`" ]; then
+	# OS only allows DETECT, UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, MORPHOS, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
+	if [ -z "`echo $os | egrep '^(DETECT|UNIX|OSX|FREEBSD|DRAGONFLY|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP)$'`" ]; then
 		log 1 "configure: error: invalid option --os=$os"
-		log 1 " Available options are: --os=[DETECT|UNIX|OSX|FREEBSD|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP]"
+		log 1 " Available options are: --os=[DETECT|UNIX|OSX|FREEBSD|DRAGONFLY|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP]"
 		exit 1
 	fi
 	# cpu_type can be either 32 or 64
@@ -1054,7 +1058,7 @@ check_params() {
 	fi
 
 	if [ "$doc_dir" = "1" ]; then
-		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
 			doc_dir="share/doc/openttd"
 		else
 			doc_dir="$data_dir/docs"
@@ -1064,7 +1068,7 @@ check_params() {
 	fi
 
 	if [ "$icon_theme_dir" = "1" ]; then
-		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
 			icon_theme_dir="share/icons/hicolor"
 		else
 			icon_theme_dir=""
@@ -1098,7 +1102,7 @@ check_params() {
 
 	if [ "$man_dir" = "1" ]; then
 		# add manpage on UNIX systems
-		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OSX" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OSX" ]; then
 			man_dir="share/man/man6"
 		else
 			man_dir=""
@@ -1109,7 +1113,7 @@ check_params() {
 
 	if [ "$menu_dir" = "1" ]; then
 		# add a freedesktop menu item only for some UNIX systems
-		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
 			menu_dir="share/applications"
 		else
 			menu_dir=""
@@ -1538,7 +1542,7 @@ make_cflags_and_ldflags() {
 		fi
 	fi
 
-	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "FREEBSD" ] && [ "$os" != "OPENBSD" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
+	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "OPENBSD" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
 		LIBS="$LIBS -lpthread"
 	fi
 
@@ -1563,10 +1567,6 @@ make_cflags_and_ldflags() {
 
 	if [ "$os" = "OPENBSD" ]; then
 		LIBS="$LIBS -pthread"
-	fi
-
-	if [ "$os" = "FREEBSD" ]; then
-		LIBS="$LIBS -lpthread"
 	fi
 
 	if [ "$os" = "OSX" ]; then
@@ -1610,7 +1610,7 @@ make_cflags_and_ldflags() {
 	fi
 
 	# Most targets act like UNIX, just with some additions
-	if [ "$os" = "BEOS" ] || [ "$os" = "HAIKU" ] || [ "$os" = "OSX" ] || [ "$os" = "MORPHOS" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OS2" ]; then
+	if [ "$os" = "BEOS" ] || [ "$os" = "HAIKU" ] || [ "$os" = "OSX" ] || [ "$os" = "MORPHOS" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OS2" ]; then
 		CFLAGS="$CFLAGS -DUNIX"
 	fi
 	# And others like Windows
@@ -1942,9 +1942,26 @@ check_compiler() {
 		log 2 "  exit code $ret"
 
 		if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
-			log 1 "checking $1... $compiler not found"
-			log 1 "I couldn't detect any $6 binary for $3"
-			exit 1
+			if [ -z "$5" ]; then
+				log 1 "checking $1... $compiler not found"
+				log 1 "I couldn't detect any $6 binary for $3"
+				exit 1
+			else
+				compiler="$3-$5"
+			fi
+			machine=`eval $compiler $9 2>/dev/null`
+			ret=$?
+			eval "$2=\"$compiler\""
+
+			log 2 "executing $compiler $9"
+			log 2 "  returned $machine"
+			log 2 "  exit code $ret"
+
+			if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
+				log 1 "checking $1... $compiler not found"
+				log 1 "I couldn't detect any $5 binary for $3"
+				exit 1
+			fi
 		fi
 
 		if [ "$machine" != "$3" ] && ( [ "$8" = "0" ] || [ "$8" = "1" ] ); then
@@ -2268,52 +2285,54 @@ detect_awk() {
 
 detect_os() {
 	if [ "$os" = "DETECT" ]; then
-		# Detect UNIX, OSX, FREEBSD, OPENBSD, NETBSD, HPUX, MORPHOS, BEOS, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
+		# Detect UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, HPUX, MORPHOS, BEOS, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
 
 		# Try first via dumpmachine, then via uname
 		os=`echo "$host" | tr '[A-Z]' '[a-z]' | $awk '
-					/linux/        { print "UNIX";    exit}
-					/darwin/       { print "OSX";     exit}
-					/freebsd/      { print "FREEBSD"; exit}
-					/openbsd/      { print "OPENBSD"; exit}
-					/netbsd/       { print "NETBSD";  exit}
-					/hp-ux/        { print "HPUX";    exit}
-					/morphos/      { print "MORPHOS"; exit}
-					/beos/         { print "BEOS";    exit}
-					/haiku/        { print "HAIKU";   exit}
-					/sunos/        { print "SUNOS";   exit}
-					/solaris/      { print "SUNOS";   exit}
-					/cygwin/       { print "CYGWIN";  exit}
-					/mingw/        { print "MINGW";   exit}
-					/os2/          { print "OS2";     exit}
-					/dos/          { print "DOS";     exit}
-					/wince/        { print "WINCE";   exit}
-					/psp/          { print "PSP";     exit}
+					/linux/        { print "UNIX";      exit}
+					/darwin/       { print "OSX";       exit}
+					/freebsd/      { print "FREEBSD";   exit}
+					/dragonfly/    { print "DRAGONFLY"; exit}
+					/openbsd/      { print "OPENBSD";   exit}
+					/netbsd/       { print "NETBSD";    exit}
+					/hp-ux/        { print "HPUX";      exit}
+					/morphos/      { print "MORPHOS";   exit}
+					/beos/         { print "BEOS";      exit}
+					/haiku/        { print "HAIKU";     exit}
+					/sunos/        { print "SUNOS";     exit}
+					/solaris/      { print "SUNOS";     exit}
+					/cygwin/       { print "CYGWIN";    exit}
+					/mingw/        { print "MINGW";     exit}
+					/os2/          { print "OS2";       exit}
+					/dos/          { print "DOS";       exit}
+					/wince/        { print "WINCE";     exit}
+					/psp/          { print "PSP";       exit}
 		'`
 
 		if [ -z "$os" ]; then
 			os=`LC_ALL=C uname | tr '[A-Z]' '[a-z]' | $awk '
-					/linux/        { print "UNIX";    exit}
-					/darwin/       { print "OSX";     exit}
-					/freebsd/      { print "FREEBSD"; exit}
-					/openbsd/      { print "OPENBSD"; exit}
-					/netbsd/       { print "NETBSD";  exit}
-					/hp-ux/        { print "HPUX";    exit}
-					/morphos/      { print "MORPHOS"; exit}
-					/beos/         { print "BEOS";    exit}
-					/haiku/        { print "HAIKU";   exit}
-					/sunos/        { print "SUNOS";   exit}
-					/cygwin/       { print "CYGWIN";  exit}
-					/mingw/        { print "MINGW";   exit}
-					/os\/2/        { print "OS2";     exit}
-					/gnu/          { print "UNIX";    exit}
+					/linux/        { print "UNIX";      exit}
+					/darwin/       { print "OSX";       exit}
+					/freebsd/      { print "FREEBSD";   exit}
+					/dragonfly/    { print "DRAGONFLY"; exit}
+					/openbsd/      { print "OPENBSD";   exit}
+					/netbsd/       { print "NETBSD";    exit}
+					/hp-ux/        { print "HPUX";      exit}
+					/morphos/      { print "MORPHOS";   exit}
+					/beos/         { print "BEOS";      exit}
+					/haiku/        { print "HAIKU";     exit}
+					/sunos/        { print "SUNOS";     exit}
+					/cygwin/       { print "CYGWIN";    exit}
+					/mingw/        { print "MINGW";     exit}
+					/os\/2/        { print "OS2";       exit}
+					/gnu/          { print "UNIX";      exit}
 			'`
 		fi
 
 		if [ -z "$os" ]; then
 			log 1 "detecting OS... none detected"
 			log 1 "I couldn't detect your OS. Please use --os=OS to force one"
-			log 1 "Allowed values are: UNIX, OSX, FREEBSD, OPENBSD, NETBSD, MORPHOS, HPUX, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP"
+			log 1 "Allowed values are: UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, MORPHOS, HPUX, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP"
 			exit 1
 		fi
 
@@ -2738,7 +2757,7 @@ detect_pkg_config() {
 	log 2 "detecting $2"
 
 	if [ "$1" = "1" ] || [ "$1" = "" ] || [ "$1" = "2" ]; then
-		pkg_config_call="pkg-config $2"
+		pkg_config_call="$pkg_config $2"
 	else
 		pkg_config_call="$1"
 	fi
@@ -2760,7 +2779,7 @@ detect_pkg_config() {
 
 		# It was forced, so it should be found.
 		if [ "$1" != "1" ]; then
-			log 1 "configure: error: pkg-config $2 couldn't be found"
+			log 1 "configure: error: $pkg_config $2 couldn't be found"
 			log 1 "configure: error: you supplied '$1', but it seems invalid"
 			exit 1
 		fi
@@ -2942,7 +2961,7 @@ detect_icu() {
 		# It was forced, so it should be found.
 		if [ "$with_icu" != "1" ]; then
 			log 1 "configure: error: icu-config couldn't be found"
-			log 1 "configure: error: you supplied '$with_icuconfig', but it seems invalid"
+			log 1 "configure: error: you supplied '$with_icu', but it seems invalid"
 			exit 1
 		fi
 
@@ -3590,11 +3609,12 @@ showhelp() {
 	echo "  --windres=WINDRES              the windres to use [HOST-windres]"
 	echo "  --strip=STRIP                  the strip to use [HOST-strip]"
 	echo "  --awk=AWK                      the awk to use in configure [awk]"
+	echo "  --pkg-config=PKG-CONFIG        the pkg-config to use in configure [pkg-config]"
 	echo "  --lipo=LIPO                    the lipo to use (OSX ONLY) [HOST-lipo]"
 	echo "  --os=OS                        the OS we are compiling for [DETECT]"
-	echo "                                 DETECT/UNIX/OSX/FREEBSD/OPENBSD/NETBSD/"
-	echo "                                 MORPHOS/HPUX/BEOS/SUNOS/CYGWIN/MINGW/OS2/"
-	echo "                                 DOS/WINCE/PSP/HAIKU"
+	echo "                                 DETECT/UNIX/OSX/FREEBSD/DRAGONFLY/OPENBSD/"
+	echo "                                 NETBSD/MORPHOS/HPUX/BEOS/SUNOS/CYGWIN/"
+	echo "                                 MINGW/OS2/DOS/WINCE/PSP/HAIKU"
 	echo "  --endian=ENDIAN                set the endian of the HOST (AUTO/LE/BE)"
 	echo ""
 	echo "Paths:"

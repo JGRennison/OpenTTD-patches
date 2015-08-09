@@ -927,10 +927,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgian lari (
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranin rial (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Ajoneuvot
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Valitse kummalla puolella tietä ajetaan.
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vasemmalla kaistalla
@@ -2879,7 +2875,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Edelinen
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Jatka edelliseen tavalliseen spriteen ja hyppää yli kaikki pseudo-/uudelleenväritetyt/fontti- spritet ja mene loppuun kun päästään ensimmäiseen
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Valitun spriten näyttö. Sijaintia ei huomioida spriteä piirrettäessä
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Liikuta spriteä ympäriinsä, muuttaen X- ja Y-sijainteja
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X-sijainti: {NUM}, Y-sijainti: {NUM}
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Nollaa suhteelliset
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Nollaa suhteelliset erotukset
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X-erotus: {NUM}, Y-erotus: {NUM} (Absoluuttinen)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X-erotus: {NUM}, Y-erotus: {NUM} (Suhteellinen)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Valitse sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Valitse sprite ruudulta
 
@@ -3052,7 +3051,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Tietoa
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Varoitus
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Virhe
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Peruuta
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Ei
@@ -3071,6 +3070,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Aloita uudellee
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Lykkää myöhemmäksi
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Luovuta
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Sulje
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Tuet
