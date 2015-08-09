@@ -205,8 +205,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 					continue;
 				}
 
-				/* If an order doesn't have a travel time set, then stop. */
-				if (order->GetTravelTime() == 0) {
+				/* If an order has a 0 travel time, and it's not explictly set, then stop. */
+				if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
 					break;
 				}
 
@@ -362,7 +362,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 					candidate_via = (StationID)order->GetDestination();
 				}
 
-				if (c.scheduled_date != 0 && order->GetTravelTime() != 0) {
+				if (c.scheduled_date != 0 && (order->GetTravelTime() != 0 || order->IsTravelTimetabled())) {
 					c.scheduled_date += order->GetTravelTime();
 				} else {
 					c.scheduled_date = 0;
@@ -585,8 +585,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				continue;
 			}
 
-			/* If an order doesn't have a travel time set, then stop. */
-			if (order->GetTravelTime() == 0) {
+			/* If an order has a 0 travel time, and it's not explictly set, then stop. */
+			if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
 				break;
 			}
 
