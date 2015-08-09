@@ -441,6 +441,27 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 	return CommandCost();
 }
 
+static inline bool IsOrderUsableForSeparation(const Order *order)
+{
+	if (order->IsType(OT_CONDITIONAL)) {
+		// Auto separation is unlikely to useful work at all if one of these is present, so give up
+		return false;
+	}
+
+	if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION)) {
+		// non-station orders are permitted to have 0 wait times
+		return false;
+	}
+
+	if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
+		// 0 travel times are permitted, if explicitly timetabled
+		// this is useful for depot service orders
+		return false;
+	}
+
+	return true;
+}
+
 int TimeToFinishOrder(Vehicle *v, int n)
 {
 	int left;
@@ -448,8 +469,8 @@ int TimeToFinishOrder(Vehicle *v, int n)
 	int wait_time   = order->GetWaitTime();
 	int travel_time = order->GetTravelTime();
 	assert(order != NULL);
+	if (!IsOrderUsableForSeparation(order)) return -1;
 	if ((v->cur_real_order_index == n) && (v->last_station_visited == order->GetDestination())) {
-		if (wait_time == 0) return -1;
 		if (v->current_loading_time > 0) {
 			left = wait_time - v->current_order_time;
 		} else {
@@ -459,7 +480,6 @@ int TimeToFinishOrder(Vehicle *v, int n)
 	} else {
 		left = travel_time;
 		if (v->cur_real_order_index == n) left -= v->current_order_time;
-		if (travel_time == 0 || wait_time == 0) return -1;
 		if (left < 0) left = 0;
 		left +=wait_time;
 	}
@@ -486,10 +506,8 @@ int SeparationBetween(Vehicle *v1, Vehicle *v2)
 	if (time < 0) {
 		for (n = 0; n < v1->GetNumOrders(); n++) {
 			Order *order = v1->GetOrder(n);
-			int wait_time   = order->GetWaitTime();
-			int travel_time = order->GetTravelTime();
-			if (travel_time == 0 || wait_time == 0) return -1;
-			time += travel_time + wait_time;
+			if (!IsOrderUsableForSeparation(order)) return -1;
+			time += order->GetTravelTime() + order->GetWaitTime();
 		}
 	}
 	separation += time;
