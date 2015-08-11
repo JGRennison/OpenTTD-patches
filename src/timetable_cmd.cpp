@@ -548,8 +548,11 @@ void UpdateSeparationOrder(Vehicle *v_start)
 			}
 			int separation_ahead = SeparationBetween(v, v->AheadSeparation());
 			int separation_behind = SeparationBetween(v->BehindSeparation(), v);
-			v->lateness_counter = (separation_ahead - separation_behind) / 2;
-			if (separation_ahead == -1 || separation_behind == -1) v->lateness_counter = 0;
+			if (separation_ahead != -1 && separation_behind != -1) {
+				int new_lateness = (separation_ahead - separation_behind) / 2;
+				v->lateness_counter = (new_lateness * _settings_game.order.timetable_separation_rate +
+						v->lateness_counter * (100 - _settings_game.order.timetable_separation_rate)) / 100;
+			}
 			v = v->AheadSeparation();
 		} while (v != v_start);
 	}
@@ -668,15 +671,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			new_time = time_loading;
 		}
 
-		/* Check for too large a difference from expected time, and if so don't average. */
-		if (!(new_time > (int32)timetabled * 2 || new_time < (int32)timetabled / 2)) {
-			int arrival_error = timetabled - new_time;
-			/* Compute running average, with sign conversion to avoid negative overflow. */
-			new_time = ((int32)timetabled * 4 + new_time + 2) / 5;
-			/* Use arrival_error to finetune order ticks. */
-			if (arrival_error < 0) new_time++;
-			if (arrival_error > 0) new_time--;
-		} else if (new_time > (int32)timetabled * 10 && travelling) {
+		if (new_time > (int32)timetabled * 4 && travelling) {
 			/* Possible jam, clear time and restart timetable for all vehicles.
 			 * Otherwise we risk trains blocking 1-lane stations for long times. */
 			ChangeTimetable(v, v->cur_real_order_index, 0, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
@@ -686,6 +681,15 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 			}
 			return;
+		} else if (new_time >= (int32)timetabled / 2) {
+			/* Compute running average, with sign conversion to avoid negative overflow. */
+			if (new_time < (int32)timetabled) {
+				new_time = ((int32)timetabled * 3 + new_time * 2 + 2) / 5;
+			} else {
+				new_time = ((int32)timetabled * 9 + new_time + 5) / 10;
+			}
+		} else {
+			/* new time is less than hald old time, set value directly */
 		}
 
 		if (new_time < 1) new_time = 1;
