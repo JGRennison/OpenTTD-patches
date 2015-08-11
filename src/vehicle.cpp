@@ -138,6 +138,11 @@ bool Vehicle::NeedsServicing() const
 		return true;
 	}
 
+	/* Is vehicle old and renewing is enabled */
+	if (this->NeedsAutorenewing(c, true)) {
+		return true;
+	}
+
 	/* Test whether there is some pending autoreplace.
 	 * Note: We do this after the service-interval test.
 	 * There are a lot more reasons for autoreplace to fail than we can test here reasonably. */
