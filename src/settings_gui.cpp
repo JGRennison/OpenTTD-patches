@@ -1628,6 +1628,7 @@ static SettingsContainer &GetSettingsTree()
 			vehicles->Add(new SettingEntry("order.serviceathelipad"));
 			vehicles->Add(new SettingEntry("order.timetable_automated"));
 			vehicles->Add(new SettingEntry("order.timetable_separation"));
+			vehicles->Add(new SettingEntry("order.timetable_separation_rate"));
 		}
 
 		SettingsPage *limitations = main->Add(new SettingsPage(STR_CONFIG_SETTING_LIMITATIONS));

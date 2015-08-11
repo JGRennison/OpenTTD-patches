@@ -548,8 +548,11 @@ void UpdateSeparationOrder(Vehicle *v_start)
 			}
 			int separation_ahead = SeparationBetween(v, v->AheadSeparation());
 			int separation_behind = SeparationBetween(v->BehindSeparation(), v);
-			v->lateness_counter = (separation_ahead - separation_behind) / 2;
-			if (separation_ahead == -1 || separation_behind == -1) v->lateness_counter = 0;
+			if (separation_ahead != -1 && separation_behind != -1) {
+				int new_lateness = (separation_ahead - separation_behind) / 2;
+				v->lateness_counter = (new_lateness * _settings_game.order.timetable_separation_rate +
+						v->lateness_counter * (100 - _settings_game.order.timetable_separation_rate)) / 100;
+			}
 			v = v->AheadSeparation();
 		} while (v != v_start);
 	}
