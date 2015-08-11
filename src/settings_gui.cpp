@@ -1675,6 +1675,7 @@ static SettingsContainer &GetSettingsTree()
 			vehicles->Add(new SettingEntry("order.serviceathelipad"));
 			vehicles->Add(new SettingEntry("order.timetable_automated"));
 			vehicles->Add(new SettingEntry("order.timetable_separation"));
+			vehicles->Add(new SettingEntry("order.timetable_separation_rate"));
 			vehicles->Add(new SettingEntry("vehicle.adjacent_crossings"));
 			vehicles->Add(new SettingEntry("order.occupancy_smoothness"));
 		}
