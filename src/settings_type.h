@@ -474,7 +474,9 @@ struct OrderSettings {
 	bool   no_servicing_if_no_breakdowns;    ///< don't send vehicles to depot when breakdowns are disabled
 	bool   timetable_automated;              ///< whether to automatically manage timetables
 	bool   timetable_separation;             ///< whether to perform automatic separation based on timetable
+	uint8  timetable_separation_rate;        ///< percentage of timetable separation change to apply
 	bool   serviceathelipad;                 ///< service helicopters at helipads automatically (no need to send to depot)
+	uint8  occupancy_smoothness;             ///< percentage smoothness of occupancy measurement changes
 };
 
 /** Settings related to vehicles. */

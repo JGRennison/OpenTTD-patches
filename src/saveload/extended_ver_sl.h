@@ -28,13 +28,14 @@ enum SlXvFeatureIndex {
 	XSLFI_TIMETABLES_START_TICKS,                 ///< Timetable start time is in ticks, instead of days (from departure boards patch)
 	XSLFI_TOWN_CARGO_ADJ,                         ///< Town cargo adjustment patch
 	XSLFI_SIG_TUNNEL_BRIDGE,                      ///< Signals on tunnels and bridges
-	XLSFI_IMPROVED_BREAKDOWNS,                    ///< Improved breakdowns patch
+	XSLFI_IMPROVED_BREAKDOWNS,                    ///< Improved breakdowns patch
 	XSLFI_TT_WAIT_IN_DEPOT,                       ///< Timetabling waiting time in depot patch
 	XSLFI_AUTO_TIMETABLE,                         ///< Auto timetables and separation patch
 	XSLFI_VEHICLE_REPAIR_COST,                    ///< Vehicle repair costs patch
 	XSLFI_ENH_VIEWPORT_PLANS,                     ///< Enhanced viewport patch: plans
 	XSLFI_INFRA_SHARING,                          ///< Infrastructure sharing patch
 	XSLFI_VARIABLE_DAY_LENGTH,                    ///< Variable day length patch
+	XSLFI_ORDER_OCCUPANCY,                        ///< Running average of order occupancy
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

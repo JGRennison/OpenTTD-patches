@@ -2845,7 +2845,7 @@ bool AfterLoadGame()
 	}
 
 	/* Set some breakdown-related variables to the correct values. */
-	if (SlXvIsFeatureMissing(XLSFI_IMPROVED_BREAKDOWNS)) {
+	if (SlXvIsFeatureMissing(XSLFI_IMPROVED_BREAKDOWNS)) {
 		Vehicle *v;
 		FOR_ALL_VEHICLES(v) {
 			switch(v->type) {

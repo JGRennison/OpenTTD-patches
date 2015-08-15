@@ -43,6 +43,8 @@ private:
 
 	CargoID refit_cargo;  ///< Refit CargoID
 
+	uint8 occupancy;     ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
+
 	uint16 wait_time;    ///< How long in ticks to wait at the destination.
 	uint16 travel_time;  ///< How long in ticks the journey to this destination should take.
 	uint16 max_speed;    ///< How fast the vehicle may go on the way to the destination.
@@ -217,6 +219,18 @@ public:
 	 * @param speed Speed to be set.
 	 */
 	inline void SetMaxSpeed(uint16 speed) { this->max_speed = speed; }
+
+	/**
+	 * Get the occupancy value
+	 * @return occupancy
+	 */
+	inline uint8 GetOccupancy() const { return this->occupancy; }
+
+	/**
+	 * Set the occupancy value
+	 * @param occupancy The occupancy to set
+	 */
+	inline void SetOccupancy(uint8 occupancy) { this->occupancy = occupancy; }
 
 	bool ShouldStopAtStation(const Vehicle *v, StationID station) const;
 	bool CanLoadOrUnload() const;
