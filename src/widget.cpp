@@ -22,7 +22,7 @@
 
 #include "table/sprites.h"
 #include "table/strings.h"
-#include "table/palettes.h"
+#include "table/string_colours.h"
 
 #include "safeguards.h"
 
@@ -1545,7 +1545,7 @@ void NWidgetMatrix::SetupSmallestSize(Window *w, bool init_array)
 	SB(nw->index, 16, 16, 0);
 	this->head->SetupSmallestSize(w, init_array);
 
-	Dimension padding = {this->pip_pre + this->pip_post, this->pip_pre + this->pip_post};
+	Dimension padding = { (uint)this->pip_pre + this->pip_post, (uint)this->pip_pre + this->pip_post};
 	Dimension size    = {this->head->smallest_x + padding.width, this->head->smallest_y + padding.height};
 	Dimension fill    = {0, 0};
 	Dimension resize  = {this->pip_inter + this->head->smallest_x, this->pip_inter + this->head->smallest_y};
@@ -2284,7 +2284,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w, bool init_array)
 		}
 		case WWT_EDITBOX: {
 			Dimension sprite_size = GetSpriteSize(_current_text_dir == TD_RTL ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT);
-			size.width = 30 + sprite_size.width;
+			size.width = max(size.width, 30 + sprite_size.width);
 			size.height = max(sprite_size.height, GetStringBoundingBox("_").height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
 			/* FALL THROUGH */
 		}
@@ -2524,10 +2524,10 @@ void NWidgetLeaf::Draw(const Window *w)
 bool NWidgetLeaf::ButtonHit(const Point &pt)
 {
 	if (_current_text_dir == TD_LTR) {
-		int button_width = this->pos_x + this->current_x - 12;
+		int button_width = this->pos_x + this->current_x - NWidgetLeaf::dropdown_dimension.width;
 		return pt.x < button_width;
 	} else {
-		int button_left = this->pos_x + 12;
+		int button_left = this->pos_x + NWidgetLeaf::dropdown_dimension.width;
 		return pt.x >= button_left;
 	}
 }

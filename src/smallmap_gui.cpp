@@ -28,6 +28,8 @@
 
 #include "table/strings.h"
 
+#include <bitset>
+
 #include "safeguards.h"
 
 static int _smallmap_industry_count; ///< Number of used industries
@@ -175,7 +177,7 @@ void BuildIndustriesLegend()
 	uint j = 0;
 
 	/* Add each name */
-	for (uint8 i = 0; i < NUM_INDUSTRYTYPES; i++) {
+	for (uint i = 0; i < NUM_INDUSTRYTYPES; i++) {
 		IndustryType ind = _sorted_industry_types[i];
 		const IndustrySpec *indsp = GetIndustrySpec(ind);
 		if (indsp->enabled) {
@@ -1074,7 +1076,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 		_heightmap_schemes[n].height_colours = ReallocT<uint32>(_heightmap_schemes[n].height_colours, heights);
 
 		for (int z = 0; z < heights; z++) {
-			uint access_index = (_heightmap_schemes[n].colour_count * z) / heights;
+			size_t access_index = (_heightmap_schemes[n].colour_count * z) / heights;
 
 			/* Choose colour by mapping the range (0..max heightlevel) on the complete colour table. */
 			_heightmap_schemes[n].height_colours[z] = _heightmap_schemes[n].height_colours_base[access_index];
@@ -1399,7 +1401,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 		case WID_SM_ZOOM_IN:
 		case WID_SM_ZOOM_OUT: {
 			const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
-			Point pt = {wid->current_x / 2, wid->current_y / 2};
+			Point pt = { (int)wid->current_x / 2, (int)wid->current_y / 2};
 			this->SetZoomLevel((widget == WID_SM_ZOOM_IN) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &pt);
 			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 			break;
@@ -1507,11 +1509,11 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 			break;
 
 		case 0: {
-			extern uint64 _displayed_industries;
+			extern std::bitset<NUM_INDUSTRYTYPES> _displayed_industries;
 			if (this->map_type != SMT_INDUSTRY) this->SwitchMapType(SMT_INDUSTRY);
 
 			for (int i = 0; i != _smallmap_industry_count; i++) {
-				_legend_from_industries[i].show_on_map = HasBit(_displayed_industries, _legend_from_industries[i].type);
+				_legend_from_industries[i].show_on_map = _displayed_industries.test(_legend_from_industries[i].type);
 			}
 			break;
 		}
