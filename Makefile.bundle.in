@@ -45,6 +45,7 @@ bundle: all
 	$(Q)mkdir -p "$(BUNDLE_DIR)/docs"
 	$(Q)mkdir -p "$(BUNDLE_DIR)/media"
 	$(Q)mkdir -p "$(BUNDLE_DIR)/scripts"
+	$(Q)mkdir -p "$(BUNDLE_DIR)/data"
 	$(Q)mkdir -p "$(TTD_DIR)"
 	$(Q)mkdir -p "$(AI_DIR)"
 	$(Q)mkdir -p "$(GAME_DIR)"
@@ -82,6 +83,7 @@ endif
 	$(Q)cp "$(ROOT_DIR)/media/openttd.32.xpm" "$(BUNDLE_DIR)/media/"
 	$(Q)cp "$(ROOT_DIR)/media/openttd."*.png  "$(BUNDLE_DIR)/media/"
 	$(Q)cp "$(BIN_DIR)/scripts/"*             "$(BUNDLE_DIR)/scripts/"
+	$(Q)cp "$(BIN_DIR)/data/"*.grf            "$(BUNDLE_DIR)/data/"
 ifdef MENU_DIR
 	$(Q)cp "$(ROOT_DIR)/media/openttd.desktop" "$(BUNDLE_DIR)/media/"
 	$(Q)$(AWK) -f "$(ROOT_DIR)/media/openttd.desktop.translation.awk" "$(SRC_DIR)/lang/"*.txt | $(SORT) |  $(AWK) -f "$(ROOT_DIR)/media/openttd.desktop.filter.awk" >> "$(BUNDLE_DIR)/media/openttd.desktop"
