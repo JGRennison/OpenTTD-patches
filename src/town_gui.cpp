@@ -1314,7 +1314,7 @@ public:
 
 		/* list house sets */
 		this->house_sets.Clear();
-		const GRFFile *last_set;
+		const GRFFile *last_set = NULL;
 		for (uint i = 0; i < this->Length(); i++) {
 			const HouseSpec *hs = HouseSpec::Get((*this)[i]);
 			/* add house set */
