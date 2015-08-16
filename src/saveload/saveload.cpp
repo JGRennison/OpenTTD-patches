@@ -2467,8 +2467,6 @@ static inline void ClearSaveLoadState()
 
 	delete _sl.lf;
 	_sl.lf = NULL;
-
-	SlXvSetCurrentState();
 }
 
 /**
@@ -2780,6 +2778,8 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 		GamelogStopAction();
 	}
 
+	SlXvSetCurrentState();
+
 	return SL_OK;
 }
 
@@ -2839,6 +2839,7 @@ SaveOrLoadResult SaveOrLoad(const char *filename, int mode, Subdirectory sb, boo
 				return SL_REINIT;
 			}
 			GamelogStopAction();
+			SlXvSetCurrentState();
 			return SL_OK;
 		}
 
