@@ -355,6 +355,7 @@ public:
 	{
 		uint64 p1 = 0;
 		while(true) {
+			if(si == NULL) break;
 			switch(si->Opcode()) {
 				case PSO_SET_SIGNAL: {
 					SB(p1, 0, 3, this->track);
@@ -365,6 +366,7 @@ public:
 					this->RebuildInstructionList();
 					si = ((SignalSet*)si)->next;
 				} break;
+
 				case PSO_IF: {
 					SB(p1, 0, 3, this->track);
 					SB(p1, 3, 16, next);
@@ -393,11 +395,15 @@ public:
 
 					si = ((SignalIf*)si)->after;
 				} break;
+
+				case PSO_LAST:
+				case PSO_IF_ELSE:
+				case PSO_IF_ENDIF:
+					return;
+
+				default:
+					NOT_REACHED();
 			}
-			if(si == NULL) break;
-			if(si->Opcode() == PSO_LAST) break;
-			if(si->Opcode() == PSO_IF_ELSE) break;
-			if(si->Opcode() == PSO_IF_ENDIF) break;
 		}
 	}
 
