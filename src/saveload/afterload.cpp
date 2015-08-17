@@ -3076,6 +3076,45 @@ bool AfterLoadGame()
 		DEBUG(sl, 3, "New inflation prices: %f", _economy.inflation_prices / 65536.0);
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		/*
+		 * Reject huge airports and helicopters aproaching oil rigs using the wrong aircraft movement data
+		 * Annoyingly SpringPP has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG
+		 */
+		Station *st;
+		FOR_ALL_STATIONS(st) {
+			if (st->airport.tile == INVALID_TILE) continue;
+			StringID err = INVALID_STRING_ID;
+			if (st->airport.type == 9) {
+				if (st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
+					/* this airport is probably an oil rig, not a huge airport */
+				} else {
+					err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
+				}
+				st->airport.type = AT_OILRIG;
+			} else if (st->airport.type == 10) {
+				err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
+			}
+			if (err != INVALID_STRING_ID) {
+				SetSaveLoadError(err);
+				/* Restore the signals */
+				ResetSignalHandlers();
+				return false;
+			}
+		}
+		Aircraft *v;
+		FOR_ALL_AIRCRAFT(v) {
+			Station *st = GetTargetAirportIfValid(v);
+			if (st != NULL && st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
+				/* aircraft is on approach to an oil rig, bail out now */
+				SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG);
+				/* Restore the signals */
+				ResetSignalHandlers();
+				return false;
+			}
+		}
+	}
+
 	/* Station acceptance is some kind of cache */
 	if (IsSavegameVersionBefore(127)) {
 		Station *st;
