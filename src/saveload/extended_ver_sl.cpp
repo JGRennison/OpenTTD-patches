@@ -150,7 +150,7 @@ void SlXvCheckSpecialSavegameVersions()
 
 		_sl_xv_feature_versions[XSLFI_TIMETABLES_START_TICKS] = 1;
 		_sl_xv_feature_versions[XSLFI_VEHICLE_REPAIR_COST] = 1;
-		_sl_xv_feature_versions[XLSFI_IMPROVED_BREAKDOWNS] = 1;
+		_sl_xv_feature_versions[XSLFI_IMPROVED_BREAKDOWNS] = 1;
 		_sl_xv_feature_versions[XSLFI_INFRA_SHARING] = 1;
 		_sl_xv_feature_versions[XSLFI_AUTO_TIMETABLE] = 1;
 
