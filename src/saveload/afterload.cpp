@@ -3057,10 +3057,10 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {
 		/*
 		 * Cost scaling changes:
-		 * SpringPP divides all prices by the difficulty factor, effectively making things about 8 times cheaper.
+		 * SpringPP v2.0.102 divides all prices by the difficulty factor, effectively making things about 8 times cheaper.
 		 * Adjust the inflation factor to compensate for this, as otherwise the game is unplayable on load if inflation has been running for a while.
 		 * To avoid making things too cheap, clamp the price inflation factor to no lower than the payment inflation factor.
 		 */
@@ -3078,8 +3078,8 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 		/*
-		 * Reject huge airports and helicopters aproaching oil rigs using the wrong aircraft movement data
-		 * Annoyingly SpringPP has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG
+		 * Reject huge airports
+		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG,
 		 */
 		Station *st;
 		FOR_ALL_STATIONS(st) {
@@ -3102,6 +3102,12 @@ bool AfterLoadGame()
 				return false;
 			}
 		}
+	}
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {
+		/*
+		 * Reject helicopters aproaching oil rigs using the wrong aircraft movement data
+		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG
+		 */
 		Aircraft *v;
 		FOR_ALL_AIRCRAFT(v) {
 			Station *st = GetTargetAirportIfValid(v);
