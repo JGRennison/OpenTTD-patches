@@ -49,11 +49,10 @@
  * This is not done for shared programs as this would delete the shared aspect whenever
  * the program became empty.
  *
- * Empty programs with a refcount of 1 may still exist due to the edge case where:
- * 1: There is an empty program with refcount 2
- * 2: One of the two mappings is deleted
- * Finding the other mapping would entail a linear search of the mappings, and there is little
- * to be gained by doing so.
+ * Special case: In the case where an empty program with refcount 2 has one of its
+ * mappings removed, the other mapping is left pointing to an empty unshared program.
+ * This other mapping is then removed by performing a linear search of the mappings,
+ * and removing the reference to that program ID.
  */
 
 TraceRestrictProgramPool _tracerestrictprogram_pool("TraceRestrictProgram");
@@ -604,7 +603,13 @@ void TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 	TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.find(ref);
 	if (iter != _tracerestrictprogram_mapping.end()) {
 		// Found
-		_tracerestrictprogram_pool.Get(iter->second.program_id)->DecrementRefCount();
+		TraceRestrictProgram *prog = _tracerestrictprogram_pool.Get(iter->second.program_id);
+
+		// check to see if another mapping needs to be removed as well
+		// do this before decrementing the refcount
+		bool remove_other_mapping = prog->refcount == 2 && prog->items.empty();
+
+		prog->DecrementRefCount();
 		_tracerestrictprogram_mapping.erase(iter);
 
 		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
@@ -612,6 +617,17 @@ void TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		SetIsSignalRestrictedBit(tile);
 		MarkTileDirtyByTile(tile);
 		YapfNotifyTrackLayoutChange(tile, track);
+
+		if (remove_other_mapping) {
+			TraceRestrictProgramID id = prog->index;
+			for (TraceRestrictMapping::iterator rm_iter = _tracerestrictprogram_mapping.begin();
+					rm_iter != _tracerestrictprogram_mapping.end(); ++rm_iter) {
+				if (rm_iter->second.program_id == id) {
+					TraceRestrictRemoveProgramMapping(rm_iter->first);
+					break;
+				}
+			}
+		}
 	}
 }
 

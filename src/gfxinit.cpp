@@ -179,6 +179,9 @@ static void LoadSpriteTables()
 	/* Progsignal sprites. */
 	LoadGrfFile("progsignals.grf", SPR_PROGSIGNAL_BASE, i++);
 
+	/* Tracerestrict sprites. */
+	LoadGrfFile("tracerestrict.grf", SPR_TRACERESTRICT_BASE, i++);
+
 	/*
 	 * The second basic file always starts at the given location and does
 	 * contain a different amount of sprites depending on the "type"; DOS
