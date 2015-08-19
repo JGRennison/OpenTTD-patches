@@ -3152,6 +3152,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_RAIL_AGEING)) {
+		/* remove rail aging data */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsPlainRailTile(t)) {
+				SB(_me[t].m7, 0, 8, 0);
+			}
+		}
+	}
+
 	/* Station acceptance is some kind of cache */
 	if (IsSavegameVersionBefore(127)) {
 		Station *st;
