@@ -170,6 +170,9 @@ static void LoadSpriteTables()
 	_palette_remap_grf[i] = (PAL_DOS != used_set->palette);
 	LoadGrfFile(used_set->files[GFT_BASE].filename, 0, i++);
 
+	/* Tracerestrict sprites. */
+	LoadGrfFile("tracerestrict.grf", SPR_TRACERESTRICT_BASE, i++);
+
 	/*
 	 * The second basic file always starts at the given location and does
 	 * contain a different amount of sprites depending on the "type"; DOS
