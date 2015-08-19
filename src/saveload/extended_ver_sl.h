@@ -40,6 +40,7 @@ enum SlXvFeatureIndex {
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
 	XSLFI_MIGHT_USE_PAX_SIGNALS,                  ///< This save game might use the pax-signals feature
+	XSLFI_TRAFFIC_LIGHTS,                         ///< This save game uses road traffic lights
 	XSLFI_SPRINGPP,                               ///< This is a SpringPP game, use this for loading some settings
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature

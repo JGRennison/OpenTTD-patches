@@ -161,6 +161,7 @@ void SlXvCheckSpecialSavegameVersions()
 		_sl_xv_feature_versions[XSLFI_RIFF_HEADER_60_BIT] = 1;
 		_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 1;
 		_sl_xv_feature_versions[XSLFI_MIGHT_USE_PAX_SIGNALS] = 1;
+		_sl_xv_feature_versions[XSLFI_TRAFFIC_LIGHTS] = 1;
 
 		_sl_xv_feature_versions[XSLFI_TIMETABLES_START_TICKS] = 1;
 		_sl_xv_feature_versions[XSLFI_VEHICLE_REPAIR_COST] = 1;

@@ -56,6 +56,7 @@
 #include "../order_backup.h"
 #include "../error.h"
 #include "../disaster_vehicle.h"
+#include "../tracerestrict.h"
 
 
 #include "saveload_internal.h"
@@ -3117,6 +3118,36 @@ bool AfterLoadGame()
 				/* Restore the signals */
 				ResetSignalHandlers();
 				return false;
+			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_MIGHT_USE_PAX_SIGNALS) || SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (HasStationTileRail(t)) {
+				/* clear station PAX bit */
+				ClrBit(_me[t].m6, 6);
+			}
+			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+				/*
+				 * tracerestrict uses same bit as 1st PAX signals bit
+				 * only conditionally clear the bit, don't bother checking for whether to set it
+				 */
+				if (IsRestrictedSignal(t)) {
+					TraceRestrictSetIsSignalRestrictedBit(t);
+				}
+
+				/* clear 2nd signal PAX bit */
+				ClrBit(_m[t].m2, 13);
+			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_TRAFFIC_LIGHTS)) {
+		/* remove traffic lights */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL)) {
+				ClrBit(_me[t].m7, 4);
 			}
 		}
 	}
