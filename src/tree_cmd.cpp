@@ -119,6 +119,50 @@ static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint
 }
 
 /**
+ * Previous value of _settings_game.construction.trees_around_snow_line_range
+ * used to calculate _arctic_tree_occurance
+ */
+static uint8 _previous_trees_around_snow_line_range = 255;
+
+/**
+ * Array of probabilities for artic trees to appear,
+ * by normalised distance from snow line
+ */
+static uint8 _arctic_tree_occurance[24];
+
+/** Recalculate _arctic_tree_occurance */
+static void RecalculateArcticTreeOccuranceArray()
+{
+	/*
+	 * Approximate: 256 * exp(-3 * distance / range)
+	 * By using:
+	 * 256 * ((1 + (-3 * distance / range) / 6) ** 6)
+	 * ((256 - (128 * distance / range)) ** 6) >> (5 * 8);
+	 */
+	uint8 range = _settings_game.construction.trees_around_snow_line_range;
+	_previous_trees_around_snow_line_range = range;
+	_arctic_tree_occurance[0] = 255;
+	uint i = 1;
+	for (; i < lengthof(_arctic_tree_occurance); i++) {
+		if (range == 0) break;
+		uint x = 256 - ((128 * i) / range);
+		uint32 output = x;
+		output *= x;
+		output *= x;
+		output *= x;
+		output >>= 16;
+		output *= x;
+		output *= x;
+		output >>= 24;
+		if (output == 0) break;
+		_arctic_tree_occurance[i] = output;
+	}
+	for (; i < lengthof(_arctic_tree_occurance); i++) {
+		_arctic_tree_occurance[i] = 0;
+	}
+}
+
+/**
  * Get a random TreeType for the given tile based on a given seed
  *
  * This function returns a random TreeType which can be placed on the given tile.
@@ -131,33 +175,33 @@ static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint
  */
 static TreeType GetRandomTreeType(TileIndex tile, uint seed)
 {
-	/* no_trees_on_this_level example: 0xDC96521 is no trees on z levels 13,12,9,6,5,2,1. Set to 0 gives you original gameplay. (See openttd.cfg) */
-	uint32 no_tree = _settings_game.construction.no_trees_on_this_level;
-	byte   range   = _settings_game.construction.trees_around_snow_line_range;
-
 	switch (_settings_game.game_creation.landscape) {
 		case LT_TEMPERATE:
-			if (no_tree == 0) return (TreeType)(seed * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
+			return (TreeType)(seed * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
+
 		case LT_ARCTIC: {
-			if (no_tree == 0) return (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
+			if (!_settings_game.construction.trees_around_snow_line_enabled) {
+				return (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
+			}
+
+			uint8 range = _settings_game.construction.trees_around_snow_line_range;
+			if (range != _previous_trees_around_snow_line_range) RecalculateArcticTreeOccuranceArray();
 
 			int z = GetTileZ(tile);
-			if (z > _settings_game.game_creation.snow_line_height + (2 * range)) return TREE_INVALID; // Above tree line.
-
-			/* no_trees_on_this_level */
-			for (; no_tree != 0;) {
-				if ((int)(no_tree & 0xF) == z) return TREE_INVALID;
-				no_tree = no_tree >> 4;
+			int height_above_snow_line = z - _settings_game.game_creation.snow_line_height;
+			uint normalised_distance = (height_above_snow_line < 0) ? -height_above_snow_line : height_above_snow_line + 1;
+			bool arctic_tree = false;
+			if (normalised_distance < lengthof(_arctic_tree_occurance)) {
+				uint adjusted_seed = (seed ^ tile) & 0xFF;
+				arctic_tree = adjusted_seed < _arctic_tree_occurance[normalised_distance];
 			}
-			if (z > (int)_settings_game.game_creation.snow_line_height - range) {
-				/* Below snow level mixed forest. Above is Arctic trees and thinning out. */
-				if (z < _settings_game.game_creation.snow_line_height) {
-					return (seed & 1) ? (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC) : (TreeType)(seed * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
-				} else {
-					return (seed & 1) ? TREE_INVALID : (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
-				}
+			if (height_above_snow_line < 0) {
+				/* Below snow level mixed forest. */
+				return (arctic_tree) ? (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC) : (TreeType)(seed * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
+			} else {
+				/* Above is Arctic trees and thinning out. */
+				return (arctic_tree) ? (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC) : TREE_INVALID;
 			}
-			return (TreeType)(seed * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
 		}
 		case LT_TROPIC:
 			switch (GetTropicZone(tile)) {
