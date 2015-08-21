@@ -1019,7 +1019,9 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
 		if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return CMD_ERROR;
 		CommandCost ret = EnsureNoTrainOnTrack(GetOtherTunnelBridgeEnd(tile), track);
-		//if (ret.Failed()) return ret;
+		if (ret.Failed()) return ret;
+		ret = EnsureNoTrainOnTrack(tile, track);
+		if (ret.Failed()) return ret;
 	} else if (!ValParamTrackOrientation(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
 		return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 	}
@@ -1492,6 +1494,8 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 
 		CommandCost ret = EnsureNoTrainOnTrack(GetOtherTunnelBridgeEnd(tile), track);
 		if (ret.Failed()) return ret;
+		ret = EnsureNoTrainOnTrack(tile, track);
+		if (ret.Failed()) return ret;
 	} else {
 		if (!ValParamTrackOrientation(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
 			return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
@@ -1958,6 +1962,7 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 	SignalVariant variant = GetSignalVariant(tile, track);
 
 	SpriteID sprite = GetCustomSignalSprite(rti, tile, type, variant, condition);
+	bool is_custom_sprite = (sprite != 0);
 	if (sprite != 0) {
 		sprite += image;
 	} else {
@@ -1968,10 +1973,25 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 
 	if (type == SIGTYPE_PROG && variant == SIG_SEMAPHORE) {
 		sprite = SPR_PROGSIGNAL_BASE + image * 2 + condition;
+		is_custom_sprite = false;
 	} else if (type == SIGTYPE_PROG && variant == SIG_ELECTRIC) {
 		sprite = SPR_PROGSIGNAL_BASE + 16 + image * 2 + condition;
+		is_custom_sprite = false;
 	}
-	AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
+
+	if (!is_custom_sprite && variant == SIG_ELECTRIC && IsRestrictedSignal(tile) && GetExistingTraceRestrictProgram(tile, track) != NULL) {
+		if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
+			static const SubSprite lower_part { -50, -10, 50, 50 };
+			static const SubSprite upper_part { -50, -50, 50, -11 };
+
+			AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track), false, 0, 0, 0, &lower_part);
+			AddSortableSpriteToDraw(sprite,               PAL_NONE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track), false, 0, 0, 0, &upper_part);
+		} else {
+			AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + 1, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
+		}
+	} else {
+		AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
+	}
 }
 
 static uint32 _drawtile_track_palette;

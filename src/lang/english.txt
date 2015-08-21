@@ -1224,8 +1224,8 @@ STR_CONFIG_SETTING_STOP_LOCATION                                :New train order
 STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Place where a train will stop at the platform by default. The 'near end' means close to the entry point, 'middle' means in the middle of the platform, and 'far end' means far away from the entry point. Note, that this setting only defines a default value for new orders. Individual orders can be set explicitly to either behaviour nevertheless
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :near end
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :middle
-STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :Enable improved breakdowns: {STRING2}
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :far end
+STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :Enable improved breakdowns: {STRING2}
 STR_CONFIG_SETTING_AUTOSCROLL                                   :Pan window when mouse is at the edge: {STRING2}
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :When enabled, viewports will start to scroll when the mouse is near the edge of the window
 STR_CONFIG_SETTING_AUTOSCROLL_DISABLED                          :Disabled
