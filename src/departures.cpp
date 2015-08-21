@@ -138,7 +138,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			}
 
 			const Order *order = (*v)->GetOrder((*v)->cur_implicit_order_index % (*v)->GetNumOrders());
-			DateTicks start_date = (DateTicks)_date_fract - (*v)->current_order_time;
+			DateTicks start_date = (DateTicks)_date_fract - ((*v)->current_order_time / _settings_game.economy.day_length_factor);
 			DepartureStatus status = D_TRAVELLING;
 
 			/* If the vehicle is stopped in a depot, ignore it. */
@@ -643,6 +643,16 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 	for (uint i = 0; i < next_orders.Length(); ++i) {
 		OrderDate *od = *(next_orders.Get(i));
 		delete od;
+	}
+
+	uint8 day_len = _settings_game.economy.day_length_factor;
+	if (day_len > 1) {
+		DateTicks now = ((DateTicks)_date * DAY_TICKS) + _date_fract;
+		for (size_t i = 0; i < result->Length(); i++) {
+			Departure *dep = (*result)[i];
+			dep->scheduled_date = now + (dep->scheduled_date - now) / day_len;
+			dep->lateness /= day_len;
+		}
 	}
 
 	/* Done. Phew! */
