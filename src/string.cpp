@@ -131,6 +131,16 @@ char *stredup(const char *s, const char *last)
 	return tmp;
 }
 
+char *str_vfmt(const char *str, va_list va)
+{
+	char buf[4096];
+
+	int len = vseprintf(buf, lastof(buf), str, va);
+	char *p = MallocT<char>(len + 1);
+	memcpy(p, buf, len + 1);
+	return p;
+}
+
 /**
  * Format, "printf", into a newly allocated string.
  * @param str The formatting string.
@@ -138,15 +148,11 @@ char *stredup(const char *s, const char *last)
  */
 char *CDECL str_fmt(const char *str, ...)
 {
-	char buf[4096];
 	va_list va;
-
 	va_start(va, str);
-	int len = vseprintf(buf, lastof(buf), str, va);
+	char *output = str_vfmt(str, va);
 	va_end(va);
-	char *p = MallocT<char>(len + 1);
-	memcpy(p, buf, len + 1);
-	return p;
+	return output;
 }
 
 /**
