@@ -639,6 +639,12 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 		}
 	}
 
+	/* Avoid leaking OrderDate structs */
+	for (uint i = 0; i < next_orders.Length(); ++i) {
+		OrderDate *od = *(next_orders.Get(i));
+		delete od;
+	}
+
 	/* Done. Phew! */
 	return result;
 }
