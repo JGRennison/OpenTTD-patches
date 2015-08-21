@@ -310,6 +310,8 @@ struct ConstructionSettings {
 	uint8  industry_platform;                ///< the amount of flat land around an industry
 	bool   freeform_edges;                   ///< allow terraforming the tiles at the map edges
 	uint8  extra_tree_placement;             ///< (dis)allow building extra trees in-game
+	uint8  trees_around_snow_line_range;     ///< range around snowline for mixed and arctic forest.
+	uint32 no_trees_on_this_level;           ///< option to avoid growth of trees on certain tile level.
 	uint8  command_pause_level;              ///< level/amount of commands that can't be executed while paused
 
 	uint32 terraform_per_64k_frames;         ///< how many tile heights may, over a long period, be terraformed per 65536 frames?

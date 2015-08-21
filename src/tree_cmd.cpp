@@ -131,13 +131,34 @@ static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint
  */
 static TreeType GetRandomTreeType(TileIndex tile, uint seed)
 {
+	/* no_trees_on_this_level example: 0xDC96521 is no trees on z levels 13,12,9,6,5,2,1. Set to 0 gives you original gameplay. (See openttd.cfg) */
+	uint32 no_tree = _settings_game.construction.no_trees_on_this_level;
+	byte   range   = _settings_game.construction.trees_around_snow_line_range;
+
 	switch (_settings_game.game_creation.landscape) {
 		case LT_TEMPERATE:
+			if (no_tree == 0) return (TreeType)(seed * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
+		case LT_ARCTIC: {
+			if (no_tree == 0) return (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
+
+			int z = GetTileZ(tile);
+			if (z > _settings_game.game_creation.snow_line_height + (2 * range)) return TREE_INVALID; // Above tree line.
+
+			/* no_trees_on_this_level */
+			for (; no_tree != 0;) {
+				if ((int)(no_tree & 0xF) == z) return TREE_INVALID;
+				no_tree = no_tree >> 4;
+			}
+			if (z > (int)_settings_game.game_creation.snow_line_height - range) {
+				/* Below snow level mixed forest. Above is Arctic trees and thinning out. */
+				if (z < _settings_game.game_creation.snow_line_height) {
+					return (seed & 1) ? (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC) : (TreeType)(seed * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
+				} else {
+					return (seed & 1) ? TREE_INVALID : (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
+				}
+			}
 			return (TreeType)(seed * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
-
-		case LT_ARCTIC:
-			return (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
-
+		}
 		case LT_TROPIC:
 			switch (GetTropicZone(tile)) {
 				case TROPICZONE_NORMAL:  return (TreeType)(seed * TREE_COUNT_SUB_TROPICAL / 256 + TREE_SUB_TROPICAL);
