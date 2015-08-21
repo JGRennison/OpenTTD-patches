@@ -111,7 +111,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			continue;
 		}
 
-        /* MAX_COMPANIES is probably the wrong thing to put here, but it works. GenerateVehicleSortList doesn't check the company when the type of list is VL_STATION_LIST (r20801). */
+		/* MAX_COMPANIES is probably the wrong thing to put here, but it works. GenerateVehicleSortList doesn't check the company when the type of list is VL_STATION_LIST (r20801). */
 		if (!GenerateVehicleSortList(&vehicles, VehicleListIdentifier(VL_STATION_LIST, (VehicleType)(VEH_TRAIN + i), MAX_COMPANIES, station).Pack())) {
 			/* Something went wrong: panic! */
 			return result;
@@ -417,45 +417,45 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 			if (found_terminus) {
 				/* Add the departure to the result list. */
-                bool duplicate = false;
+				bool duplicate = false;
 
-                if (_settings_client.gui.departure_merge_identical) {
-                    for (uint i = 0; i < result->Length(); ++i) {
-                        if (*d == **(result->Get(i))) {
-                            duplicate = true;
-                            break;
-                        }
-                    }
-                }
+				if (_settings_client.gui.departure_merge_identical) {
+					for (uint i = 0; i < result->Length(); ++i) {
+						if (*d == **(result->Get(i))) {
+							duplicate = true;
+							break;
+						}
+					}
+				}
 
-                if (!duplicate) {
-                    *(result->Append(1)) = d;
+				if (!duplicate) {
+					*(result->Append(1)) = d;
 
-                    if (_settings_client.gui.departure_smart_terminus && type == D_DEPARTURE) {
-                        for (uint i = 0; i < result->Length()-1; ++i) {
-                            Departure *d_first = *(result->Get(i));
-                            uint k = d_first->calling_at.Length()-2;
-                            for (uint j = d->calling_at.Length(); j > 0; --j) {
-                                CallAt c = CallAt(*(d->calling_at.Get(j-1)));
+					if (_settings_client.gui.departure_smart_terminus && type == D_DEPARTURE) {
+						for (uint i = 0; i < result->Length()-1; ++i) {
+							Departure *d_first = *(result->Get(i));
+							uint k = d_first->calling_at.Length()-2;
+							for (uint j = d->calling_at.Length(); j > 0; --j) {
+								CallAt c = CallAt(*(d->calling_at.Get(j-1)));
 
-                                if (d_first->terminus >= c && d_first->calling_at.Length() >= 2) {
-                                    d_first->terminus = CallAt(*(d_first->calling_at.Get(k)));
+								if (d_first->terminus >= c && d_first->calling_at.Length() >= 2) {
+									d_first->terminus = CallAt(*(d_first->calling_at.Get(k)));
 
-                                    if (k == 0) break;
+									if (k == 0) break;
 
-                                    k--;
-                                }
-                            }
-                        }
-                    }
+									k--;
+								}
+							}
+						}
+					}
 
-                    /* If the vehicle is expected to be late, we want to know what time it will arrive rather than depart. */
-                    /* This is done because it looked silly to me to have a vehicle not be expected for another few days, yet it be at the same time pulling into the station. */
-                    if (d->status != D_ARRIVED &&
-                            d->lateness > 0) {
-                        d->lateness -= least_order->order->GetWaitTime();
-                    }
-                }
+					/* If the vehicle is expected to be late, we want to know what time it will arrive rather than depart. */
+					/* This is done because it looked silly to me to have a vehicle not be expected for another few days, yet it be at the same time pulling into the station. */
+					if (d->status != D_ARRIVED &&
+							d->lateness > 0) {
+						d->lateness -= least_order->order->GetWaitTime();
+					}
+				}
 			}
 		} else {
 			/* Computing arrivals: */
@@ -521,20 +521,20 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			d->terminus = CallAt((StationID)candidate_origin->GetDestination());
 
 			if (found_origin) {
-                bool duplicate = false;
+				bool duplicate = false;
 
-                if (_settings_client.gui.departure_merge_identical) {
-                    for (uint i = 0; i < result->Length(); ++i) {
-                        if (*d == **(result->Get(i))) {
-                            duplicate = true;
-                            break;
-                        }
-                    }
-                }
+				if (_settings_client.gui.departure_merge_identical) {
+					for (uint i = 0; i < result->Length(); ++i) {
+						if (*d == **(result->Get(i))) {
+							duplicate = true;
+							break;
+						}
+					}
+				}
 
-                if (!duplicate) {
-                    *(result->Append(1)) = d;
-                }
+				if (!duplicate) {
+					*(result->Append(1)) = d;
+				}
 			}
 		}
 
