@@ -1774,9 +1774,14 @@ static SettingsContainer &GetSettingsTree()
 				cdist->Add(new SettingEntry("linkgraph.demand_size"));
 				cdist->Add(new SettingEntry("linkgraph.short_path_saturation"));
 			}
+			SettingsPage *treedist = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_TREES));
+			{
+				treedist->Add(new SettingEntry("construction.extra_tree_placement"));
+				treedist->Add(new SettingEntry("construction.trees_around_snow_line_enabled"));
+				treedist->Add(new SettingEntry("construction.trees_around_snow_line_range"));
+			}
 
 			environment->Add(new SettingEntry("station.modified_catchment"));
-			environment->Add(new SettingEntry("construction.extra_tree_placement"));
 		}
 
 		SettingsPage *ai = main->Add(new SettingsPage(STR_CONFIG_SETTING_AI));
