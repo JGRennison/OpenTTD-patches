@@ -80,20 +80,20 @@ typedef struct Departure {
 		calling_at.Reset();
 	}
 
-    inline bool operator==(const Departure& d) const {
-        if (this->calling_at.Length() != d.calling_at.Length()) return false;
+	inline bool operator==(const Departure& d) const {
+		if (this->calling_at.Length() != d.calling_at.Length()) return false;
 
-        for (uint i = 0; i < this->calling_at.Length(); ++i) {
-            if (*(this->calling_at.Get(i)) != *(d.calling_at.Get(i))) return false;
-        }
+		for (uint i = 0; i < this->calling_at.Length(); ++i) {
+			if (*(this->calling_at.Get(i)) != *(d.calling_at.Get(i))) return false;
+		}
 
-        return
-            (this->scheduled_date / DATE_UNIT_SIZE) == (d.scheduled_date / DATE_UNIT_SIZE) &&
-            this->vehicle->type == d.vehicle->type &&
-            this->via == d.via &&
-            this->type == d.type
-            ;
-    }
+		return
+			(this->scheduled_date / DATE_UNIT_SIZE) == (d.scheduled_date / DATE_UNIT_SIZE) &&
+			this->vehicle->type == d.vehicle->type &&
+			this->via == d.via &&
+			this->type == d.type
+			;
+	}
 } Departure;
 
 typedef SmallVector<Departure*, 32> DepartureList;

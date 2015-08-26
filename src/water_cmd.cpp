@@ -387,7 +387,7 @@ bool RiverModifyDesertZone(TileIndex tile, void *)
  * @param tile end tile of stretch-dragging
  * @param flags type of operation
  * @param p1 start tile of stretch-dragging
- * @param p2 waterclass to build. sea and river can only be built in scenario editor
+ * @param p2 waterclass to build. sea and river can only be built in scenario editor, unless enable_build_river is enabled
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -397,7 +397,13 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	if (p1 >= MapSize() || wc == WATER_CLASS_INVALID) return CMD_ERROR;
 
 	/* Outside of the editor you can only build canals, not oceans */
-	if (wc != WATER_CLASS_CANAL && _game_mode != GM_EDITOR) return CMD_ERROR;
+	if (_game_mode != GM_EDITOR) {
+		if (wc == WATER_CLASS_RIVER) {
+			if (!_settings_game.construction.enable_build_river) return CMD_ERROR;
+		} else if (wc != WATER_CLASS_CANAL) {
+			return CMD_ERROR;
+		}
+	}
 
 	TileArea ta(tile, p1);
 
@@ -452,6 +458,9 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		}
 
 		cost.AddCost(_price[PR_BUILD_CANAL]);
+		if (wc == WATER_CLASS_RIVER) {
+			cost.AddCost(_price[PR_BUILD_CANAL] * 3);
+		}
 	}
 
 	if (cost.GetCost() == 0) {

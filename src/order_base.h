@@ -44,6 +44,7 @@ private:
 	CargoID refit_cargo;  ///< Refit CargoID
 
 	uint8 occupancy;     ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
+	int8 jump_counter;   ///< Counter for the 'jump xx% of times' option
 
 	uint16 wait_time;    ///< How long in ticks to wait at the destination.
 	uint16 travel_time;  ///< How long in ticks the journey to this destination should take.
@@ -127,6 +128,14 @@ public:
 	inline CargoID GetRefitCargo() const { return this->refit_cargo; }
 
 	void SetRefit(CargoID cargo);
+
+	/**
+	 * Update the jump_counter of this order.
+	 * @param the jump chance in %.
+	 * @return whether to jump or not.
+	 * @pre IsType(OT_CONDITIONAL) && this->GetConditionVariable() == OCV_PERCENT.
+	 */
+	bool UpdateJumpCounter(uint8 percent);
 
 	/** How must the consist be loaded? */
 	inline OrderLoadFlags GetLoadType() const { return (OrderLoadFlags)GB(this->flags, 4, 3); }

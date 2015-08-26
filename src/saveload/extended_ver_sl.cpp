@@ -61,6 +61,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_INFRA_SHARING,          XSCF_NULL,              1,                                    1, "infra_sharing",         NULL, NULL, NULL        },
 	{ XSLFI_VARIABLE_DAY_LENGTH,    XSCF_NULL,              1,                                    1, "variable_day_length",   NULL, NULL, NULL        },
 	{ XSLFI_ORDER_OCCUPANCY,        XSCF_NULL,              1,                                    1, "order_occupancy",       NULL, NULL, NULL        },
+	{ XSLFI_MORE_COND_ORDERS,       XSCF_NULL,              1,                                    1, "more_cond_orders",      NULL, NULL, NULL        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 
@@ -169,6 +170,7 @@ void SlXvCheckSpecialSavegameVersions()
 		_sl_xv_feature_versions[XSLFI_IMPROVED_BREAKDOWNS] = 1;
 		_sl_xv_feature_versions[XSLFI_INFRA_SHARING] = 1;
 		_sl_xv_feature_versions[XSLFI_AUTO_TIMETABLE] = 1;
+		_sl_xv_feature_versions[XSLFI_MORE_COND_ORDERS] = 1;
 
 		_sl_xv_discardable_chunk_ids.push_back('SNOW');
 	}
