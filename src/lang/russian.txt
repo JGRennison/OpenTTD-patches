@@ -3685,18 +3685,9 @@ STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Процент 
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Надёжность
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Макс. скорость
 STR_ORDER_CONDITIONAL_AGE                                       :Возраст (лет)
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Требуется обслуживание {STRING}
+STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Требуется обслуживание
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Всегда
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Оставшийся срок службы (лет)
-
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Следующая станция {STRING} {STRING} для погрузки
-STR_ORDER_CONDITIONAL_ACCEPTANCE                                :Следующая станция {STRING} {STRING}
-STR_ORDER_CONDITIONAL_PERCENT                                   :Процентов времени
-STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Свободные платформы
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_DROPDOWN                 :Требует обслуживания
-STR_ORDER_CONDITIONAL_CARGO_WAITING_DROPDOWN                    :Ожидает
-STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Принимает
-STR_ORDER_CONDITIONAL_NEXT_STATION                              :следующая станция
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Условие перехода
 STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS                         :равно
