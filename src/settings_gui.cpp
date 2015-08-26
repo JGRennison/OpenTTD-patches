@@ -1702,6 +1702,7 @@ static SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("construction.road_stop_on_competitor_road"));
 			limitations->Add(new SettingEntry("vehicle.disable_elrails"));
 			limitations->Add(new SettingEntry("construction.maximum_signal_evaluations"));
+			limitations->Add(new SettingEntry("construction.enable_build_river"));
 		}
 
 		SettingsPage *disasters = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCIDENTS));
