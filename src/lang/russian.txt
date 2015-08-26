@@ -3685,9 +3685,18 @@ STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Процент 
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Надёжность
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Макс. скорость
 STR_ORDER_CONDITIONAL_AGE                                       :Возраст (лет)
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Требуется обслуживание
+STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Требуется обслуживание {STRING}
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Всегда
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Оставшийся срок службы (лет)
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Следующая станция {STRING} {STRING} для погрузки
+STR_ORDER_CONDITIONAL_ACCEPTANCE                                :Следующая станция {STRING} {STRING}
+STR_ORDER_CONDITIONAL_PERCENT                                   :Процентов времени
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Свободные платформы
+STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_DROPDOWN                 :Требует обслуживания
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DROPDOWN                    :Ожидает
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Принимает
+STR_ORDER_CONDITIONAL_NEXT_STATION                              :следующая станция
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Условие перехода
 STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS                         :равно
@@ -3783,6 +3792,16 @@ STR_ORDER_OUT_OF_RANGE                                          :{RED} (Расс
 STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :Перейти к заданию {COMMA}
 STR_ORDER_CONDITIONAL_NUM                                       :Перейти к заданию {COMMA}, если {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Перейти к заданию {COMMA}, если {STRING} - {STRING}
+STR_CONDITIONAL_FREE_PLATFORMS                                  :Перейти к заданию {COMMA} когда след. станция {STRING} {COMMA} свободн{P ая ые ых} платформ{P а ы ""}
+STR_CONDITIONAL_PERCENT                                         :Перейти к заданию {COMMA} {COMMA} процентов времени
+STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :принимает
+STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :не принимает
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :имеет
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :не имеет
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :имеет меньше чем
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :имеет меньше или равно
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :имеет больше чем
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :имеет больше или равно
 
 STR_INVALID_ORDER                                               :{RED} (Неверное место назначения)
 

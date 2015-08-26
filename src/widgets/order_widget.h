@@ -32,6 +32,8 @@ enum OrderWidgets {
 	WID_O_COND_VARIABLE,             ///< Choose condition variable.
 	WID_O_COND_COMPARATOR,           ///< Choose condition type.
 	WID_O_COND_VALUE,                ///< Choose condition value.
+	WID_O_COND_CARGO,
+	WID_O_SEL_COND_VALUE,            ///< widget for conditional value or conditional cargo type.
 	WID_O_SEL_TOP_LEFT,              ///< #NWID_SELECTION widget for left part of the top row of the 'your train' order window.
 	WID_O_SEL_TOP_MIDDLE,            ///< #NWID_SELECTION widget for middle part of the top row of the 'your train' order window.
 	WID_O_SEL_TOP_RIGHT,             ///< #NWID_SELECTION widget for right part of the top row of the 'your train' order window.
