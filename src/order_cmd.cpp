@@ -124,10 +124,9 @@ void Order::MakeLoading(bool ordered)
 /**
  * Makes this order a Leave Station order.
  */
-
 bool Order::UpdateJumpCounter(byte percent)
 {
-	if(this->jump_counter >= 0) {
+	if (this->jump_counter >= 0) {
 		this->jump_counter += (percent - 100);
 		return true;
 	}
@@ -961,9 +960,7 @@ static CargoID GetFirstValidCargo()
 		if (CargoSpec::Get(i)->IsValid()) return i;
 	}
 	/* No cargos defined -> 'Houston, we have a problem!' */
-	assert(0);
-	/* Return something to avoid compiler warning */
-	return 0;
+	NOT_REACHED();
 }
 
 /**
@@ -2014,7 +2011,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v)
 		}
 		case OCV_PERCENT: {
 			/* get a non-const reference to the current order */
-			Order *ord = (Order *)order;
+			Order *ord = const_cast<Order *>(order);
 			skip_order = ord->UpdateJumpCounter((byte)value);
 			break;
 		}

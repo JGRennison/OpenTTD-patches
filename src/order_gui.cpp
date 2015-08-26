@@ -348,41 +348,42 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			SetDParam(1, order->GetConditionSkipToOrder() + 1);
 			const OrderConditionVariable ocv = order->GetConditionVariable( );
 			/* handle some non-ordinary cases seperately */
-			if ( ocv == OCV_UNCONDITIONALLY ) {
+			if (ocv == OCV_UNCONDITIONALLY) {
 				SetDParam(0, STR_ORDER_CONDITIONAL_UNCONDITIONAL);
-			} else if ( ocv == OCV_PERCENT ) {
-				SetDParam( 0, STR_CONDITIONAL_PERCENT );
-				SetDParam( 2, order->GetConditionValue( ) );
-			} else if ( ocv == OCV_FREE_PLATFORMS ) {
-				SetDParam( 0, STR_CONDITIONAL_FREE_PLATFORMS );
-				SetDParam( 2, STR_ORDER_CONDITIONAL_COMPARATOR_HAS + order->GetConditionComparator() );
-				SetDParam( 3, order->GetConditionValue( ) );
+			} else if (ocv == OCV_PERCENT) {
+				SetDParam(0, STR_CONDITIONAL_PERCENT);
+				SetDParam(2, order->GetConditionValue());
+			} else if (ocv == OCV_FREE_PLATFORMS) {
+				SetDParam(0, STR_CONDITIONAL_FREE_PLATFORMS );
+				SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_HAS + order->GetConditionComparator());
+				SetDParam(3, order->GetConditionValue());
 			} else {
 				OrderConditionComparator occ = order->GetConditionComparator();
 				bool is_cargo = ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING;
-				SetDParam( 0, is_cargo ? STR_ORDER_CONDITIONAL_CARGO : (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_TRUE_FALSE : STR_ORDER_CONDITIONAL_NUM );
-				SetDParam( 2, (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING || ocv == OCV_FREE_PLATFORMS) ? STR_ORDER_CONDITIONAL_NEXT_STATION : STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + ocv );
+				SetDParam(0, is_cargo ? STR_ORDER_CONDITIONAL_CARGO : (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_TRUE_FALSE : STR_ORDER_CONDITIONAL_NUM);
+				SetDParam(2, (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING || ocv == OCV_FREE_PLATFORMS)
+						? STR_ORDER_CONDITIONAL_NEXT_STATION : STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + ocv);
 
 				uint value = order->GetConditionValue();
-				switch ( ocv ) {
+				switch (ocv) {
 					case OCV_CARGO_ACCEPTANCE:
-						SetDParam( 3, STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS + occ - OCC_IS_TRUE );
-						SetDParam( 4, CargoSpec::Get( value )->name );
+						SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS + occ - OCC_IS_TRUE);
+						SetDParam(4, CargoSpec::Get( value )->name );
 						break;
 					case OCV_CARGO_WAITING:
-						SetDParam( 3, STR_ORDER_CONDITIONAL_COMPARATOR_HAS + occ - OCC_IS_TRUE );
-						SetDParam( 4, CargoSpec::Get( value )->name );
+						SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_HAS + occ - OCC_IS_TRUE);
+						SetDParam(4, CargoSpec::Get( value )->name );
 						break;
 					case OCV_REQUIRES_SERVICE:
-						SetDParam( 3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + occ );
+						SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + occ);
 						break;
 					case OCV_MAX_SPEED:
-						value = ConvertSpeedToDisplaySpeed( value );
+						value = ConvertSpeedToDisplaySpeed(value);
 						/* FALL THROUGH */
 					default:
-						SetDParam( 3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + occ );
-				SetDParam(4, value);
-			}
+						SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + occ);
+					SetDParam(4, value);
+				}
 			}
 
 			if (timetable && order->wait_time > 0) {
@@ -391,8 +392,9 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else {
 				SetDParam(5, STR_EMPTY);
 			}
-                }
+
 			break;
+		}
 
 		default: NOT_REACHED();
 	}
@@ -562,9 +564,9 @@ private:
 		DP_ROW_LOAD        = 0, ///< Display 'load' / 'unload' / 'refit' buttons in the top row of the ship/airplane order window.
 		DP_ROW_DEPOT       = 1, ///< Display 'refit' / 'service' buttons in the top row of the ship/airplane order window.
 
-                /* WID_O_SEL_COND_VALUE */
-                DP_COND_VALUE_NUMBER = 0, ///< Display number widget
-                DP_COND_VALUE_CARGO  = 1, ///< Display dropdown widget cargo types
+		/* WID_O_SEL_COND_VALUE */
+		DP_COND_VALUE_NUMBER = 0, ///< Display number widget
+		DP_COND_VALUE_CARGO  = 1, ///< Display dropdown widget cargo types
 
 		DP_ROW_CONDITIONAL = 2, ///< Display the conditional order buttons in the top row of the ship/airplane order window.
 
@@ -623,10 +625,15 @@ private:
 	{
 		if (order == NULL) return _order_conditional_condition;
 		switch (order->GetConditionVariable()) {
-			case OCV_FREE_PLATFORMS:   //fall through
-			case OCV_CARGO_WAITING:    return _order_conditional_condition_has;     break;
-			case OCV_CARGO_ACCEPTANCE: return _order_conditional_condition_accepts; break;
-			default:                   return _order_conditional_condition;         break;
+			case OCV_FREE_PLATFORMS:
+			case OCV_CARGO_WAITING:
+				return _order_conditional_condition_has;
+
+			case OCV_CARGO_ACCEPTANCE:
+				return _order_conditional_condition_accepts;
+
+			default:
+				return _order_conditional_condition;
 		}
 	}
 
@@ -940,7 +947,7 @@ public:
 			if (CargoSpec::Get(c)->IsValid()) {
 				this->cargo_names_list[c] = CargoSpec::Get(c)->name;
 				SetBit(this->cargo_bitmask, c);
-	}
+			}
 		}
 		this->cargo_bitmask = ~this->cargo_bitmask;
 		this->cargo_names_list[NUM_CARGO] = INVALID_STRING_ID;
@@ -1146,15 +1153,15 @@ public:
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_CONDITIONAL);
 					}
 					OrderConditionVariable ocv = (order == NULL) ? OCV_LOAD_PERCENTAGE : order->GetConditionVariable();
-                                        bool is_cargo = ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING;
-                                        
-                                        if ( is_cargo ) {
-                                            this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data      = cargo_names_list[order == NULL ? 0 : order->GetConditionValue()];
-                                            this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_CARGO);
-                                        } else {
-                                            this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER);
-                                        }
-                                        
+					bool is_cargo = (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING);
+
+					if (is_cargo) {
+						this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = cargo_names_list[(order == NULL) ? 0 : order->GetConditionValue()];
+						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_CARGO);
+					} else {
+						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER);
+					}
+
 					/* Set the strings for the dropdown boxes. */
 					this->GetWidget<NWidgetCore>(WID_O_COND_VARIABLE)->widget_data   = STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + (order == NULL ? 0 : ocv);
 					this->GetWidget<NWidgetCore>(WID_O_COND_COMPARATOR)->widget_data = GetComparatorStrings(order)[order == NULL ? 0 : order->GetConditionComparator()];
@@ -1413,10 +1420,8 @@ public:
 			case WID_O_COND_COMPARATOR: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 				OrderConditionVariable cond_var = o->GetConditionVariable();
-				ShowDropDownMenu(this, GetComparatorStrings( o ), o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0, 
-						(cond_var == OCV_REQUIRES_SERVICE ||
-					cond_var == OCV_CARGO_ACCEPTANCE ||
-					cond_var == OCV_CARGO_WAITING) ? 0x3F : 0xC0);
+				ShowDropDownMenu(this, GetComparatorStrings(o), o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0,
+						(cond_var == OCV_REQUIRES_SERVICE || cond_var == OCV_CARGO_ACCEPTANCE || cond_var == OCV_CARGO_WAITING) ? 0x3F : 0xC0);
 				break;
 			}
 
@@ -1698,7 +1703,7 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COND_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_BLACK_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
-					SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
 		EndContainer(),
