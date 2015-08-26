@@ -14,6 +14,9 @@
 
 #include "../fileio_type.h"
 #include "../strings_type.h"
+#include "extended_ver_sl.h"
+
+#include <stdarg.h>
 
 /** Save or load result codes. */
 enum SaveOrLoadResult {
@@ -215,6 +218,7 @@ struct SaveLoad {
 	 * that is called to save it. address: global=true, offset: global=false */
 	void *address;       ///< address of variable OR offset of variable in the struct (max offset is 65536)
 	size_t size;         ///< the sizeof size.
+	SlXvFeatureTest ext_feature_test;  ///< extended feature test
 };
 
 /** Same as #SaveLoad but global variables are used (for better readability); */
@@ -228,9 +232,11 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL(cmd, base, variable, type, length, from, to) {false, cmd, type, length, from, to, (void*)cpp_offsetof(base, variable), cpp_sizeof(base, variable)}
+#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) {false, cmd, type, length, from, to, (void*)cpp_offsetof(base, variable), cpp_sizeof(base, variable), extver}
+#define SLE_GENERAL(cmd, base, variable, type, length, from, to) SLE_GENERAL_X(cmd, base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a variable in some savegame versions.
@@ -239,8 +245,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDVAR(base, variable, type, from, to) SLE_GENERAL(SL_VAR, base, variable, type, 0, from, to)
+#define SLE_CONDVAR_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_VAR, base, variable, type, 0, from, to, extver)
+#define SLE_CONDVAR(base, variable, type, from, to) SLE_CONDVAR_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a reference in some savegame versions.
@@ -249,8 +257,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Type of the reference, a value from #SLRefType.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDREF(base, variable, type, from, to) SLE_GENERAL(SL_REF, base, variable, type, 0, from, to)
+#define SLE_CONDREF_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_REF, base, variable, type, 0, from, to, extver)
+#define SLE_CONDREF(base, variable, type, from, to) SLE_CONDREF_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of an array in some savegame versions.
@@ -260,8 +270,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param length   Number of elements in the array.
  * @param from     First savegame version that has the array.
  * @param to       Last savegame version that has the array.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDARR(base, variable, type, length, from, to) SLE_GENERAL(SL_ARR, base, variable, type, length, from, to)
+#define SLE_CONDARR_X(base, variable, type, length, from, to, extver) SLE_GENERAL_X(SL_ARR, base, variable, type, length, from, to, extver)
+#define SLE_CONDARR(base, variable, type, length, from, to) SLE_CONDARR_X(base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a string in some savegame versions.
@@ -271,8 +283,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param length   Number of elements in the string (only used for fixed size buffers).
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDSTR(base, variable, type, length, from, to) SLE_GENERAL(SL_STR, base, variable, type, length, from, to)
+#define SLE_CONDSTR_X(base, variable, type, length, from, to, extver) SLE_GENERAL_X(SL_STR, base, variable, type, length, from, to, extver)
+#define SLE_CONDSTR(base, variable, type, length, from, to) SLE_CONDSTR_X(base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a list in some savegame versions.
@@ -281,8 +295,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDLST(base, variable, type, from, to) SLE_GENERAL(SL_LST, base, variable, type, 0, from, to)
+#define SLE_CONDLST_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_LST, base, variable, type, 0, from, to, extver)
+#define SLE_CONDLST(base, variable, type, from, to) SLE_CONDLST_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a variable in every version of a savegame.
@@ -337,17 +353,19 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param length Length of the empty space.
  * @param from   First savegame version that has the empty space.
  * @param to     Last savegame version that has the empty space.
+ * @param extver SlXvFeatureTest to test (along with from and to) which savegames have empty space
  */
-#define SLE_CONDNULL(length, from, to) SLE_CONDARR(NullStruct, null, SLE_FILE_U8 | SLE_VAR_NULL | SLF_NOT_IN_CONFIG, length, from, to)
+#define SLE_CONDNULL_X(length, from, to, extver) SLE_CONDARR_X(NullStruct, null, SLE_FILE_U8 | SLE_VAR_NULL | SLF_NOT_IN_CONFIG, length, from, to, extver)
+#define SLE_CONDNULL(length, from, to) SLE_CONDNULL_X(length, from, to, SlXvFeatureTest())
 
 /** Translate values ingame to different values in the savegame and vv. */
 #define SLE_WRITEBYTE(base, variable, value) SLE_GENERAL(SL_WRITEBYTE, base, variable, 0, 0, value, value)
 
-#define SLE_VEH_INCLUDE() {false, SL_VEH_INCLUDE, 0, 0, 0, SL_MAX_VERSION, NULL, 0}
-#define SLE_ST_INCLUDE() {false, SL_ST_INCLUDE, 0, 0, 0, SL_MAX_VERSION, NULL, 0}
+#define SLE_VEH_INCLUDE() {false, SL_VEH_INCLUDE, 0, 0, 0, SL_MAX_VERSION, NULL, 0, SlXvFeatureTest()}
+#define SLE_ST_INCLUDE() {false, SL_ST_INCLUDE, 0, 0, 0, SL_MAX_VERSION, NULL, 0, SlXvFeatureTest()}
 
 /** End marker of a struct/class save or load. */
-#define SLE_END() {false, SL_END, 0, 0, 0, 0, NULL, 0}
+#define SLE_END() {false, SL_END, 0, 0, 0, 0, NULL, 0, SlXvFeatureTest()}
 
 /**
  * Storage of global simple variables, references (pointers), and arrays.
@@ -356,9 +374,11 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
-#define SLEG_GENERAL(cmd, variable, type, length, from, to) {true, cmd, type, length, from, to, (void*)&variable, sizeof(variable)}
+#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) {true, cmd, type, length, from, to, (void*)&variable, sizeof(variable), extver}
+#define SLEG_GENERAL(cmd, variable, type, length, from, to) SLEG_GENERAL_X(cmd, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a global variable in some savegame versions.
@@ -366,8 +386,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDVAR(variable, type, from, to) SLEG_GENERAL(SL_VAR, variable, type, 0, from, to)
+#define SLEG_CONDVAR_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_VAR, variable, type, 0, from, to, extver)
+#define SLEG_CONDVAR(variable, type, from, to) SLEG_CONDVAR_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a global reference in some savegame versions.
@@ -375,8 +397,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDREF(variable, type, from, to) SLEG_GENERAL(SL_REF, variable, type, 0, from, to)
+#define SLEG_CONDREF_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_REF, variable, type, 0, from, to, extver)
+#define SLEG_CONDREF(variable, type, from, to) SLEG_CONDREF_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a global array in some savegame versions.
@@ -385,8 +409,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param length   Number of elements in the array.
  * @param from     First savegame version that has the array.
  * @param to       Last savegame version that has the array.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDARR(variable, type, length, from, to) SLEG_GENERAL(SL_ARR, variable, type, length, from, to)
+#define SLEG_CONDARR_X(variable, type, length, from, to, extver) SLEG_GENERAL_X(SL_ARR, variable, type, length, from, to, extver)
+#define SLEG_CONDARR(variable, type, length, from, to) SLEG_CONDARR_X(variable, type, length, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a global string in some savegame versions.
@@ -395,8 +421,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param length   Number of elements in the string (only used for fixed size buffers).
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDSTR(variable, type, length, from, to) SLEG_GENERAL(SL_STR, variable, type, length, from, to)
+#define SLEG_CONDSTR_X(variable, type, length, from, to, extver) SLEG_GENERAL_X(SL_STR, variable, type, length, from, to, extver)
+#define SLEG_CONDSTR(variable, type, length, from, to) SLEG_CONDSTR_X(variable, type, length, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a global list in some savegame versions.
@@ -404,8 +432,10 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDLST(variable, type, from, to) SLEG_GENERAL(SL_LST, variable, type, 0, from, to)
+#define SLEG_CONDLST_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_LST, variable, type, 0, from, to, extver)
+#define SLEG_CONDLST(variable, type, from, to) SLEG_CONDLST_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a global variable in every savegame version.
@@ -447,11 +477,12 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param length Length of the empty space.
  * @param from   First savegame version that has the empty space.
  * @param to     Last savegame version that has the empty space.
+ * @param extver SlXvFeatureTest to test (along with from and to) which savegames have empty space
  */
-#define SLEG_CONDNULL(length, from, to) {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL | SLF_NOT_IN_CONFIG, length, from, to, (void*)NULL}
+#define SLEG_CONDNULL(length, from, to) {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL | SLF_NOT_IN_CONFIG, length, from, to, (void*)NULL, SlXvFeatureTest()}
 
 /** End marker of global variables save or load. */
-#define SLEG_END() {true, SL_END, 0, 0, 0, 0, NULL, 0}
+#define SLEG_END() {true, SL_END, 0, 0, 0, 0, NULL, 0, SlXvFeatureTest()}
 
 /**
  * Checks whether the savegame is below \a major.\a minor.
@@ -473,10 +504,10 @@ static inline bool IsSavegameVersionBefore(uint16 major, byte minor = 0)
  * @param version_to   Highest version number that falls within the range.
  * @return Active savegame version falls within the given range.
  */
-static inline bool SlIsObjectCurrentlyValid(uint16 version_from, uint16 version_to)
+static inline bool SlIsObjectCurrentlyValid(uint16 version_from, uint16 version_to, SlXvFeatureTest ext_feature_test)
 {
 	extern const uint16 SAVEGAME_VERSION;
-	if (SAVEGAME_VERSION < version_from || SAVEGAME_VERSION > version_to) return false;
+	if (!ext_feature_test.IsFeaturePresent(SAVEGAME_VERSION, version_from, version_to)) return false;
 
 	return true;
 }
@@ -539,12 +570,64 @@ size_t SlCalcObjLength(const void *object, const SaveLoad *sld);
 byte SlReadByte();
 void SlWriteByte(byte b);
 
+static inline int SlReadUint16()
+{
+	int x = SlReadByte() << 8;
+	return x | SlReadByte();
+}
+
+static inline uint32 SlReadUint32()
+{
+	uint32 x = SlReadUint16() << 16;
+	return x | SlReadUint16();
+}
+
+static inline uint64 SlReadUint64()
+{
+	uint32 x = SlReadUint32();
+	uint32 y = SlReadUint32();
+	return (uint64)x << 32 | y;
+}
+
+static inline void SlWriteUint16(uint16 v)
+{
+	SlWriteByte(GB(v, 8, 8));
+	SlWriteByte(GB(v, 0, 8));
+}
+
+static inline void SlWriteUint32(uint32 v)
+{
+	SlWriteUint16(GB(v, 16, 16));
+	SlWriteUint16(GB(v,  0, 16));
+}
+
+static inline void SlWriteUint64(uint64 x)
+{
+	SlWriteUint32((uint32)(x >> 32));
+	SlWriteUint32((uint32)x);
+}
+
+/**
+ * Read in bytes from the file/data structure but don't do
+ * anything with them, discarding them in effect
+ * @param length The amount of bytes that is being treated this way
+ */
+static inline void SlSkipBytes(size_t length)
+{
+	for (; length != 0; length--) SlReadByte();
+}
+
+size_t SlGetBytesRead();
+size_t SlGetBytesWritten();
+
 void SlGlobList(const SaveLoadGlobVarList *sldg);
 void SlArray(void *array, size_t length, VarType conv);
 void SlObject(void *object, const SaveLoad *sld);
 bool SlObjectMember(void *object, const SaveLoad *sld);
-void NORETURN SlError(StringID string, const char *extra_msg = NULL);
-void NORETURN SlErrorCorrupt(const char *msg);
+void NORETURN SlError(StringID string, const char *extra_msg = NULL, bool already_malloced = false);
+void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced = false);
+void CDECL NORETURN SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);
+void CDECL NORETURN SlErrorCorruptFmt(const char *msg, ...) WARN_FORMAT(1, 2);
 
 bool SaveloadCrashWithMissingNewGRFs();
 
