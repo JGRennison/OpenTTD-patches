@@ -162,7 +162,7 @@ typedef SmallVector<StringSpriteToDraw, 4> StringSpriteToDrawVector;
 typedef SmallVector<ParentSpriteToDraw, 64> ParentSpriteToDrawVector;
 typedef SmallVector<ChildScreenSpriteToDraw, 16> ChildScreenSpriteToDrawVector;
 
-typedef std::list<std::pair<int, OrderType>> RankOrderTypeList;
+typedef std::list<std::pair<int, OrderType> > RankOrderTypeList;
 typedef std::map<TileIndex, RankOrderTypeList> RouteStepsMap;
 
 /** Data structure storing rendering information */
