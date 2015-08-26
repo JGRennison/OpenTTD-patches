@@ -93,8 +93,6 @@ enum SLRefType {
 /** Highest possible savegame version. */
 #define SL_MAX_VERSION UINT16_MAX
 
-#define SL_CONDORDERS 200
-
 /** Flags of a chunk. */
 enum ChunkType {
 	CH_RIFF         =  0,
