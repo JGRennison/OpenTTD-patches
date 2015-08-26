@@ -125,7 +125,13 @@ void Order::MakeLoading(bool ordered)
 }
 
 /**
- * Makes this order a Leave Station order.
+ * Update the jump counter, for percent probability
+ * conditional orders
+ *
+ * Not that jump_counter is signed and may become
+ * negative when a jump has been taken
+ *
+ * @return true if the jump should be taken
  */
 bool Order::UpdateJumpCounter(byte percent)
 {
@@ -137,6 +143,9 @@ bool Order::UpdateJumpCounter(byte percent)
 	return false;
 }
 
+/**
+ * Makes this order a Leave Station order.
+ */
 void Order::MakeLeaveStation()
 {
 	this->type = OT_LEAVESTATION;
@@ -2132,12 +2141,12 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v)
 		case OCV_UNCONDITIONALLY:    skip_order = true; break;
 		case OCV_CARGO_WAITING: {
 			StationID next_station = GetNextRealStation(v, order);
-			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, !Station::Get(next_station)->goods[value].cargo.Empty(), value);
+			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, !Station::Get(next_station)->goods[value].cargo.AvailableCount() > 0, value);
 				break;
 		}
 		case OCV_CARGO_ACCEPTANCE: {
 			StationID next_station = GetNextRealStation(v, order);
-			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, HasBit(Station::Get(next_station)->goods[value].acceptance_pickup, GoodsEntry::GES_ACCEPTANCE), value);
+			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, HasBit(Station::Get(next_station)->goods[value].status, GoodsEntry::GES_ACCEPTANCE), value);
 			break;
 		}
 		case OCV_FREE_PLATFORMS: {
