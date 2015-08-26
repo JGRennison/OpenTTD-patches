@@ -18,6 +18,9 @@
 #include "sound_func.h"
 #include "fileio_func.h"
 #include "debug.h"
+#include "settings_type.h"
+
+#include "safeguards.h"
 
 static SmallVector<SoundEntry, 8> _sounds;
 
@@ -167,6 +170,8 @@ bool LoadNewGRFSound(SoundEntry *sound)
  */
 bool PlayVehicleSound(const Vehicle *v, VehicleSoundEvent event)
 {
+	if (!_settings_client.sound.vehicle) return true;
+
 	const GRFFile *file = v->GetGRF();
 	uint16 callback;
 
@@ -195,7 +200,7 @@ bool PlayVehicleSound(const Vehicle *v, VehicleSoundEvent event)
 }
 
 /**
- * Play a NewGRF sound effect at the location of a specfic tile.
+ * Play a NewGRF sound effect at the location of a specific tile.
  * @param file NewGRF triggering the sound effect.
  * @param sound_id Sound effect the NewGRF wants to play.
  * @param tile Location of the effect.

@@ -21,14 +21,14 @@ public:
 	/**
 	 * Check if we have a game by name and version available in our list.
 	 * @param nameParam The name of the game script.
-	 * @param versionParam The versionof the game script, or -1 if you want the latest.
+	 * @param versionParam The version of the game script, or -1 if you want the latest.
 	 * @param force_exact_match Only match name+version, never latest.
 	 * @return NULL if no match found, otherwise the game script that matched.
 	 */
 	class GameInfo *FindInfo(const char *nameParam, int versionParam, bool force_exact_match);
 
 protected:
-	/* virtual */ void GetScriptName(ScriptInfo *info, char *name, int len);
+	/* virtual */ void GetScriptName(ScriptInfo *info, char *name, const char *last);
 	/* virtual */ const char *GetFileName() const { return PATHSEP "info.nut"; }
 	/* virtual */ Subdirectory GetDirectory() const { return GAME_DIR; }
 	/* virtual */ const char *GetScannerName() const { return "Game Scripts"; }
@@ -49,7 +49,7 @@ public:
 	class GameLibrary *FindLibrary(const char *library, int version);
 
 protected:
-	/* virtual */ void GetScriptName(ScriptInfo *info, char *name, int len);
+	/* virtual */ void GetScriptName(ScriptInfo *info, char *name, const char *last);
 	/* virtual */ const char *GetFileName() const { return PATHSEP "library.nut"; }
 	/* virtual */ Subdirectory GetDirectory() const { return GAME_LIBRARY_DIR; }
 	/* virtual */ const char *GetScannerName() const { return "GS Libraries"; }

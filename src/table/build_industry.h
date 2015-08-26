@@ -254,7 +254,6 @@ static const IndustryTileTable _tile_table_oil_rig_0[] = {
 	MK(1, 0, 26),
 	MK(1, 1, 27),
 	MK(1, 2, 28),
-	MK(-4, -5, 255),
 	MK(-4, -4, 255),
 	MK(-4, -3, 255),
 	MK(-4, -2, 255),
@@ -265,9 +264,10 @@ static const IndustryTileTable _tile_table_oil_rig_0[] = {
 	MK(-4, 3, 255),
 	MK(-4, 4, 255),
 	MK(-4, 5, 255),
-	MK(-3, 5, 255),
-	MK(-2, 5, 255),
-	MK(-1, 5, 255),
+	MK(-4, 6, 255),
+	MK(-3, 6, 255),
+	MK(-2, 6, 255),
+	MK(-1, 6, 255),
 	MK(0, 6, 255),
 	MK(1, 6, 255),
 	MK(2, 6, 255),
@@ -289,9 +289,9 @@ static const IndustryTileTable _tile_table_oil_rig_0[] = {
 	MK(2, -4, 255),
 	MK(1, -4, 255),
 	MK(0, -4, 255),
-	MK(-1, -5, 255),
-	MK(-2, -5, 255),
-	MK(-3, -5, 255),
+	MK(-1, -4, 255),
+	MK(-2, -4, 255),
+	MK(-3, -4, 255),
 	MK(2, 0, 255),
 	MKEND
 };
@@ -1171,7 +1171,7 @@ enum IndustryTypes {
  * @param a3   accepted cargo 3
  * @param im3  input multiplier for cargo 3
  * @param pr   industry life (actually, the same as extractive, organic, processing in ttdpatch's specs)
- * @param clim climate availaility
+ * @param clim climate availability
  * @param bev  industry behaviour
  * @param in   name
  * @param intx text while building

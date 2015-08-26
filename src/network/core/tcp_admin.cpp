@@ -19,6 +19,8 @@
 #include "tcp_admin.h"
 #include "../../debug.h"
 
+#include "../../safeguards.h"
+
 /* Make sure that these enums match. */
 assert_compile((int)CRR_MANUAL    == (int)ADMIN_CRR_MANUAL);
 assert_compile((int)CRR_AUTOCLEAN == (int)ADMIN_CRR_AUTOCLEAN);
@@ -29,9 +31,11 @@ assert_compile((int)CRR_END       == (int)ADMIN_CRR_END);
  * Create the admin handler for the given socket.
  * @param s The socket to communicate over.
  */
-NetworkAdminSocketHandler::NetworkAdminSocketHandler(SOCKET s)
+NetworkAdminSocketHandler::NetworkAdminSocketHandler(SOCKET s) : status(ADMIN_STATUS_INACTIVE)
 {
 	this->sock = s;
+	this->admin_name[0] = '\0';
+	this->admin_version[0] = '\0';
 }
 
 NetworkAdminSocketHandler::~NetworkAdminSocketHandler()
@@ -61,6 +65,7 @@ NetworkRecvStatus NetworkAdminSocketHandler::HandlePacket(Packet *p)
 		case ADMIN_PACKET_ADMIN_CHAT:             return this->Receive_ADMIN_CHAT(p);
 		case ADMIN_PACKET_ADMIN_RCON:             return this->Receive_ADMIN_RCON(p);
 		case ADMIN_PACKET_ADMIN_GAMESCRIPT:       return this->Receive_ADMIN_GAMESCRIPT(p);
+		case ADMIN_PACKET_ADMIN_PING:             return this->Receive_ADMIN_PING(p);
 
 		case ADMIN_PACKET_SERVER_FULL:            return this->Receive_SERVER_FULL(p);
 		case ADMIN_PACKET_SERVER_BANNED:          return this->Receive_SERVER_BANNED(p);
@@ -87,6 +92,8 @@ NetworkRecvStatus NetworkAdminSocketHandler::HandlePacket(Packet *p)
 		case ADMIN_PACKET_SERVER_CONSOLE:         return this->Receive_SERVER_CONSOLE(p);
 		case ADMIN_PACKET_SERVER_CMD_NAMES:       return this->Receive_SERVER_CMD_NAMES(p);
 		case ADMIN_PACKET_SERVER_CMD_LOGGING:     return this->Receive_SERVER_CMD_LOGGING(p);
+		case ADMIN_PACKET_SERVER_RCON_END:        return this->Receive_SERVER_RCON_END(p);
+		case ADMIN_PACKET_SERVER_PONG:            return this->Receive_SERVER_PONG(p);
 
 		default:
 			if (this->HasClientQuit()) {
@@ -136,6 +143,7 @@ NetworkRecvStatus NetworkAdminSocketHandler::Receive_ADMIN_POLL(Packet *p) { ret
 NetworkRecvStatus NetworkAdminSocketHandler::Receive_ADMIN_CHAT(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_ADMIN_CHAT); }
 NetworkRecvStatus NetworkAdminSocketHandler::Receive_ADMIN_RCON(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_ADMIN_RCON); }
 NetworkRecvStatus NetworkAdminSocketHandler::Receive_ADMIN_GAMESCRIPT(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_ADMIN_GAMESCRIPT); }
+NetworkRecvStatus NetworkAdminSocketHandler::Receive_ADMIN_PING(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_ADMIN_PING); }
 
 NetworkRecvStatus NetworkAdminSocketHandler::Receive_SERVER_FULL(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_SERVER_FULL); }
 NetworkRecvStatus NetworkAdminSocketHandler::Receive_SERVER_BANNED(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_SERVER_BANNED); }
@@ -162,5 +170,7 @@ NetworkRecvStatus NetworkAdminSocketHandler::Receive_SERVER_RCON(Packet *p) { re
 NetworkRecvStatus NetworkAdminSocketHandler::Receive_SERVER_CONSOLE(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_SERVER_CONSOLE); }
 NetworkRecvStatus NetworkAdminSocketHandler::Receive_SERVER_CMD_NAMES(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_SERVER_CMD_NAMES); }
 NetworkRecvStatus NetworkAdminSocketHandler::Receive_SERVER_CMD_LOGGING(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_SERVER_CMD_LOGGING); }
+NetworkRecvStatus NetworkAdminSocketHandler::Receive_SERVER_RCON_END(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_SERVER_RCON_END); }
+NetworkRecvStatus NetworkAdminSocketHandler::Receive_SERVER_PONG(Packet *p) { return this->ReceiveInvalidPacket(ADMIN_PACKET_SERVER_PONG); }
 
 #endif /* ENABLE_NETWORK */

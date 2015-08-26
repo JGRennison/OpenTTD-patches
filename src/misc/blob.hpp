@@ -31,7 +31,7 @@
  *     Always, when it allocates memory the allocated size is:
  *                                                      sizeof(BlobHeader) + <data capacity>
  *  3. Two 'virtual' members (items and capacity) are stored in the BlobHeader at beginning
- *     of the alloated block.
+ *     of the allocated block.
  *  4. The pointer of the union pobsize_ts behind the header (to the first data byte).
  *     When memory block is allocated, the sizeof(BlobHeader) it added to it.
  *  5. Benefits of this layout:
@@ -71,7 +71,10 @@ public:
 	static const size_t header_size = sizeof(BlobHeader);
 
 	/** default constructor - initializes empty blob */
-	inline ByteBlob() { InitEmpty(); }
+	inline ByteBlob()
+	{
+		InitEmpty();
+	}
 
 	/** copy constructor */
 	inline ByteBlob(const ByteBlob &src)
@@ -311,9 +314,22 @@ public:
 
 	struct OnTransfer {
 		typename base::BlobHeader *header;
-		OnTransfer(const OnTransfer& src) : header(src.header) {assert(src.header != NULL); *const_cast<typename base::BlobHeader**>(&src.header) = NULL;}
-		OnTransfer(CBlobT& src) : header(src.header) {src.InitEmpty();}
-		~OnTransfer() {assert(header == NULL);}
+
+		OnTransfer(const OnTransfer& src) : header(src.header)
+		{
+			assert(src.header != NULL);
+			*const_cast<typename base::BlobHeader**>(&src.header) = NULL;
+		}
+
+		OnTransfer(CBlobT& src) : header(src.header)
+		{
+			src.InitEmpty();
+		}
+
+		~OnTransfer()
+		{
+			assert(header == NULL);
+		}
 	};
 
 	/** Default constructor - makes new Blob ready to accept any data */

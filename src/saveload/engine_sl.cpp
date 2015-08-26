@@ -12,7 +12,10 @@
 #include "../stdafx.h"
 #include "saveload_internal.h"
 #include "../engine_base.h"
-#include <map>
+#include "../string_func.h"
+#include <vector>
+
+#include "../safeguards.h"
 
 static const SaveLoad _engine_desc[] = {
 	 SLE_CONDVAR(Engine, intro_date,          SLE_FILE_U16 | SLE_VAR_I32,  0,  30),
@@ -30,11 +33,14 @@ static const SaveLoad _engine_desc[] = {
 
 	SLE_CONDNULL(1,                                                        0, 120),
 	     SLE_VAR(Engine, flags,               SLE_UINT8),
-	     SLE_VAR(Engine, preview_company_rank,SLE_UINT8),
+	SLE_CONDNULL(1,                                                        0, 178), // old preview_company_rank
+	 SLE_CONDVAR(Engine, preview_asked,       SLE_UINT16,                179, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, preview_company,     SLE_UINT8,                 179, SL_MAX_VERSION),
 	     SLE_VAR(Engine, preview_wait,        SLE_UINT8),
 	SLE_CONDNULL(1,                                                        0,  44),
 	 SLE_CONDVAR(Engine, company_avail,       SLE_FILE_U8  | SLE_VAR_U16,  0, 103),
 	 SLE_CONDVAR(Engine, company_avail,       SLE_UINT16,                104, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, company_hidden,      SLE_UINT16,                193, SL_MAX_VERSION),
 	 SLE_CONDSTR(Engine, name,                SLE_STR, 0,                 84, SL_MAX_VERSION),
 
 	SLE_CONDNULL(16,                                                       2, 143), // old reserved space
@@ -42,11 +48,42 @@ static const SaveLoad _engine_desc[] = {
 	SLE_END()
 };
 
-static std::map<EngineID, Engine> _temp_engine;
+static std::vector<Engine*> _temp_engine;
+
+/**
+ * Allocate an Engine structure, but not using the pools.
+ * The allocated Engine must be freed using FreeEngine;
+ * @return Allocated engine.
+ */
+static Engine* CallocEngine()
+{
+	uint8 *zero = CallocT<uint8>(sizeof(Engine));
+	Engine *engine = new (zero) Engine();
+	return engine;
+}
+
+/**
+ * Deallocate an Engine constructed by CallocEngine.
+ * @param e Engine to free.
+ */
+static void FreeEngine(Engine *e)
+{
+	if (e != NULL) {
+		e->~Engine();
+		free(e);
+	}
+}
 
 Engine *GetTempDataEngine(EngineID index)
 {
-	return &_temp_engine[index];
+	if (index < _temp_engine.size()) {
+		return _temp_engine[index];
+	} else if (index == _temp_engine.size()) {
+		_temp_engine.push_back(CallocEngine());
+		return _temp_engine[index];
+	} else {
+		NOT_REACHED();
+	}
 }
 
 static void Save_ENGN()
@@ -67,6 +104,14 @@ static void Load_ENGN()
 	while ((index = SlIterateArray()) != -1) {
 		Engine *e = GetTempDataEngine(index);
 		SlObject(e, _engine_desc);
+
+		if (IsSavegameVersionBefore(179)) {
+			/* preview_company_rank was replaced with preview_company and preview_asked.
+			 * Just cancel any previews. */
+			e->flags &= ~4; // ENGINE_OFFER_WINDOW_OPEN
+			e->preview_company = INVALID_COMPANY;
+			e->preview_asked = (CompanyMask)-1;
+		}
 	}
 }
 
@@ -91,13 +136,18 @@ void CopyTempEngineData()
 		e->duration_phase_2    = se->duration_phase_2;
 		e->duration_phase_3    = se->duration_phase_3;
 		e->flags               = se->flags;
-		e->preview_company_rank= se->preview_company_rank;
+		e->preview_asked       = se->preview_asked;
+		e->preview_company     = se->preview_company;
 		e->preview_wait        = se->preview_wait;
 		e->company_avail       = se->company_avail;
-		if (se->name != NULL) e->name = strdup(se->name);
+		e->company_hidden      = se->company_hidden;
+		if (se->name != NULL) e->name = stredup(se->name);
 	}
 
 	/* Get rid of temporary data */
+	for (std::vector<Engine*>::iterator it = _temp_engine.begin(); it != _temp_engine.end(); ++it) {
+		FreeEngine(*it);
+	}
 	_temp_engine.clear();
 }
 

@@ -27,7 +27,7 @@
 class ScriptTestMode : public ScriptObject {
 private:
 	ScriptModeProc *last_mode;   ///< The previous mode we were in.
-	ScriptObject *last_instance; ///< The previous instace of the mode.
+	ScriptObject *last_instance; ///< The previous instance of the mode.
 
 protected:
 	/**
@@ -48,6 +48,8 @@ public:
 	 *   in when the instance was created.
 	 */
 	~ScriptTestMode();
+
+	virtual void FinalRelease();
 };
 
 #endif /* SCRIPT_TESTMODE_HPP */

@@ -14,6 +14,8 @@
 #include "../settings_type.h"
 #include "32bpp_optimized.hpp"
 
+#include "../safeguards.h"
+
 /** Instantiation of the optimized 32bpp blitter factory. */
 static FBlitter_32bppOptimized iFBlitter_32bppOptimized;
 
@@ -141,6 +143,49 @@ inline void Blitter_32bppOptimized::Draw(const Blitter::BlitterParams *bp, ZoomL
 					}
 					break;
 
+				case BM_CRASH_REMAP:
+					if (src_px->a == 255) {
+						do {
+							uint m = *src_n;
+							if (m == 0) {
+								uint8 g = MakeDark(src_px->r, src_px->g, src_px->b);
+								*dst = ComposeColourRGBA(g, g, g, src_px->a, *dst);
+							} else {
+								uint r = remap[GB(m, 0, 8)];
+								if (r != 0) *dst = this->AdjustBrightness(this->LookupColourInPalette(r), GB(m, 8, 8));
+							}
+							dst++;
+							src_px++;
+							src_n++;
+						} while (--n != 0);
+					} else {
+						do {
+							uint m = *src_n;
+							if (m == 0) {
+								if (src_px->a != 0) {
+									uint8 g = MakeDark(src_px->r, src_px->g, src_px->b);
+									*dst = ComposeColourRGBA(g, g, g, src_px->a, *dst);
+								}
+							} else {
+								uint r = remap[GB(m, 0, 8)];
+								if (r != 0) *dst = ComposeColourPANoCheck(this->AdjustBrightness(this->LookupColourInPalette(r), GB(m, 8, 8)), src_px->a, *dst);
+							}
+							dst++;
+							src_px++;
+							src_n++;
+						} while (--n != 0);
+					}
+					break;
+
+				case BM_BLACK_REMAP:
+					do {
+						*dst = Colour(0, 0, 0);
+						dst++;
+						src_px++;
+						src_n++;
+					} while (--n != 0);
+					break;
+
 				case BM_TRANSPARENT:
 					/* TODO -- We make an assumption here that the remap in fact is transparency, not some colour.
 					 *  This is never a problem with the code we produce, but newgrfs can make it fail... or at least:
@@ -204,10 +249,12 @@ void Blitter_32bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, 
 		case BM_NORMAL:       Draw<BM_NORMAL>      (bp, zoom); return;
 		case BM_COLOUR_REMAP: Draw<BM_COLOUR_REMAP>(bp, zoom); return;
 		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT> (bp, zoom); return;
+		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP> (bp, zoom); return;
+		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP> (bp, zoom); return;
 	}
 }
 
-Sprite *Blitter_32bppOptimized::Encode(SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
+Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
 {
 	/* streams of pixels (a, r, g, b channels)
 	 *

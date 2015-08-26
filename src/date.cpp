@@ -18,7 +18,10 @@
 #include "date_func.h"
 #include "vehicle_base.h"
 #include "rail_gui.h"
+#include "linkgraph/linkgraph.h"
 #include "saveload/saveload.h"
+
+#include "safeguards.h"
 
 Year      _cur_year;   ///< Current year, starting at 0
 Month     _cur_month;  ///< Current month (0..11)
@@ -138,7 +141,7 @@ void ConvertDateToYMD(Date date, YearMonthDay *ymd)
 }
 
 /**
- * Converts a tupe of Year, Month and Day to a Date.
+ * Converts a tuple of Year, Month and Day to a Date.
  * @param year  is a number between 0..MAX_YEAR
  * @param month is a number between 0..11
  * @param day   is a number between 1..31
@@ -204,12 +207,15 @@ static void OnNewYear()
 	/* check if we reached the maximum year, decrement dates by a year */
 	} else if (_cur_year == MAX_YEAR + 1) {
 		Vehicle *v;
-		uint days_this_year;
+		int days_this_year;
 
 		_cur_year--;
 		days_this_year = IsLeapYear(_cur_year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR;
 		_date -= days_this_year;
 		FOR_ALL_VEHICLES(v) v->date_of_last_service -= days_this_year;
+
+		LinkGraph *lg;
+		FOR_ALL_LINK_GRAPHS(lg) lg->ShiftDates(-days_this_year);
 
 #ifdef ENABLE_NETWORK
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
@@ -277,24 +283,28 @@ void IncreaseDate()
 	if (_date_fract < DAY_TICKS) return;
 	_date_fract = 0;
 
-	/* increase day counter and call various daily loops */
+	/* increase day counter */
 	_date++;
-	OnNewDay();
 
 	YearMonthDay ymd;
+	ConvertDateToYMD(_date, &ymd);
 
 	/* check if we entered a new month? */
-	ConvertDateToYMD(_date, &ymd);
-	if (ymd.month == _cur_month) return;
-
-	/* yes, call various monthly loops */
-	_cur_month = ymd.month;
-	OnNewMonth();
+	bool new_month = ymd.month != _cur_month;
 
 	/* check if we entered a new year? */
-	if (ymd.year == _cur_year) return;
+	bool new_year = ymd.year != _cur_year;
+
+	/* update internal variables before calling the daily/monthly/yearly loops */
+	_cur_month = ymd.month;
+	_cur_year  = ymd.year;
+
+	/* yes, call various daily loops */
+	OnNewDay();
+
+	/* yes, call various monthly loops */
+	if (new_month) OnNewMonth();
 
 	/* yes, call various yearly loops */
-	_cur_year = ymd.year;
-	OnNewYear();
+	if (new_year) OnNewYear();
 }

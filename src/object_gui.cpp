@@ -16,47 +16,87 @@
 #include "newgrf_text.h"
 #include "strings_func.h"
 #include "viewport_func.h"
+#include "tilehighlight_func.h"
 #include "window_gui.h"
+#include "window_func.h"
+#include "zoom_func.h"
 
 #include "widgets/object_widget.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 static ObjectClassID _selected_object_class; ///< the currently visible object class
 static int _selected_object_index;           ///< the index of the selected object in the current class or -1
 static uint8 _selected_object_view;          ///< the view of the selected object
 
 /** The window used for building objects. */
-class BuildObjectWindow : public PickerWindowBase {
+class BuildObjectWindow : public Window {
 	static const int OBJECT_MARGIN = 4; ///< The margin (in pixels) around an object.
 	int line_height;                    ///< The height of a single line.
-	int object_height;                  ///< The height of the object box.
 	int info_height;                    ///< The height of the info box.
 	Scrollbar *vscroll;                 ///< The scrollbar.
 
-public:
-	BuildObjectWindow(const WindowDesc *desc, Window *w) : PickerWindowBase(w), info_height(1)
+	/** Scroll #WID_BO_CLASS_LIST so that the selected object class is visible. */
+	void EnsureSelectedObjectClassIsVisible()
 	{
-		this->CreateNestedTree(desc);
+		uint pos = 0;
+		for (int i = 0; i < _selected_object_class; i++) {
+			if (ObjectClass::Get((ObjectClassID) i)->GetUISpecCount() == 0) continue;
+			pos++;
+		}
+		this->vscroll->ScrollTowards(pos);
+	}
 
+	/**
+	 * Tests whether the previously selected object can be selected.
+	 * @return \c true if the selected object is available, \c false otherwise.
+	 */
+	bool CanRestoreSelectedObject()
+	{
+		if (_selected_object_index == -1) return false;
+
+		ObjectClass *sel_objclass = ObjectClass::Get(_selected_object_class);
+		if ((int)sel_objclass->GetSpecCount() <= _selected_object_index) return false;
+
+		return sel_objclass->GetSpec(_selected_object_index)->IsAvailable();
+	}
+
+	/**
+	 * Calculate the number of columns of the #WID_BO_SELECT_MATRIX widget.
+	 * @return Number of columns in the matrix.
+	 */
+	uint GetMatrixColumnCount()
+	{
+		const NWidgetBase *matrix = this->GetWidget<NWidgetBase>(WID_BO_SELECT_MATRIX);
+		return 1 + (matrix->current_x - matrix->smallest_x) / matrix->resize_x;
+	}
+
+public:
+	BuildObjectWindow(WindowDesc *desc, WindowNumber number) : Window(desc), info_height(1)
+	{
+		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_BO_SCROLLBAR);
-		this->vscroll->SetCapacity(5);
+		this->FinishInitNested(number);
+
+		ResetObjectToPlace();
+
 		this->vscroll->SetPosition(0);
 		this->vscroll->SetCount(ObjectClass::GetUIClassCount());
 
-		this->FinishInitNested(desc, 0);
-
-		this->SelectFirstAvailableObject(true);
-		assert(ObjectClass::Get(_selected_object_class)->GetUISpecCount() > 0); // object GUI should be disables elsewise
-		this->GetWidget<NWidgetMatrix>(WID_BO_OBJECT_MATRIX)->SetCount(4);
-
 		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BO_SELECT_MATRIX);
 		matrix->SetScrollbar(this->GetScrollbar(WID_BO_SELECT_SCROLL));
-		matrix->SetCount(ObjectClass::Get(_selected_object_class)->GetUISpecCount());
-	}
 
-	virtual ~BuildObjectWindow()
-	{
+		this->SelectOtherClass(_selected_object_class);
+		if (this->CanRestoreSelectedObject()) {
+			this->SelectOtherObject(_selected_object_index);
+		} else {
+			this->SelectFirstAvailableObject(true);
+		}
+		assert(ObjectClass::Get(_selected_object_class)->GetUISpecCount() > 0); // object GUI should be disables elsewise
+		this->EnsureSelectedObjectClassIsVisible();
+		this->GetWidget<NWidgetMatrix>(WID_BO_OBJECT_MATRIX)->SetCount(4);
 	}
 
 	virtual void SetStringParameters(int widget) const
@@ -92,9 +132,15 @@ public:
 				size->width += padding.width;
 				this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
 				resize->height = this->line_height;
-				size->height = this->vscroll->GetCapacity() * this->line_height;
+				size->height = 5 * this->line_height;
 				break;
 			}
+
+			case WID_BO_OBJECT_NAME:
+			case WID_BO_OBJECT_SIZE:
+				/* We do not want the window to resize when selecting objects; better clip texts */
+				size->width = 0;
+				break;
 
 			case WID_BO_OBJECT_MATRIX: {
 				/* Get the right amount of buttons based on the current spec. */
@@ -109,7 +155,7 @@ public:
 			}
 
 			case WID_BO_OBJECT_SPRITE: {
-				bool two_wide = false;  // Whether there will be two widgets next to eachother in the matrix or not.
+				bool two_wide = false;  // Whether there will be two widgets next to each other in the matrix or not.
 				int height[2] = {0, 0}; // The height for the different views; in this case views 1/2 and 4.
 
 				/* Get the height and view information. */
@@ -122,8 +168,8 @@ public:
 
 				/* Determine the pixel heights. */
 				for (size_t i = 0; i < lengthof(height); i++) {
-					height[i] *= TILE_HEIGHT;
-					height[i] += TILE_PIXELS + 2 * OBJECT_MARGIN;
+					height[i] *= ScaleGUITrad(TILE_HEIGHT);
+					height[i] += ScaleGUITrad(TILE_PIXELS) + 2 * OBJECT_MARGIN;
 				}
 
 				/* Now determine the size of the minimum widgets. When there are two columns, then
@@ -132,9 +178,9 @@ public:
 				 * of widgets, or just the twice the widget height of the two row ones. */
 				size->height = max(height[0], height[1] * 2 + 2);
 				if (two_wide) {
-					size->width  = (3 * TILE_PIXELS + 2 * OBJECT_MARGIN) * 2 + 2;
+					size->width  = (3 * ScaleGUITrad(TILE_PIXELS) + 2 * OBJECT_MARGIN) * 2 + 2;
 				} else {
-					size->width  = 4 * TILE_PIXELS + 2 * OBJECT_MARGIN;
+					size->width  = 4 * ScaleGUITrad(TILE_PIXELS) + 2 * OBJECT_MARGIN;
 				}
 
 				/* Get the right size for the single widget based on the current spec. */
@@ -155,6 +201,11 @@ public:
 				resize->height = 1;
 				break;
 
+			case WID_BO_SELECT_IMAGE:
+				size->width  = ScaleGUITrad(64) + 2;
+				size->height = ScaleGUITrad(58) + 2;
+				break;
+
 			default: break;
 		}
 	}
@@ -169,8 +220,7 @@ public:
 					ObjectClass *objclass = ObjectClass::Get((ObjectClassID)i);
 					if (objclass->GetUISpecCount() == 0) continue;
 					if (!this->vscroll->IsVisible(pos++)) continue;
-					SetDParam(0, objclass->name);
-					DrawString(r.left + WD_MATRIX_LEFT, r.right + WD_MATRIX_RIGHT, y + WD_MATRIX_TOP, STR_JUST_STRING,
+					DrawString(r.left + WD_MATRIX_LEFT, r.right - WD_MATRIX_RIGHT, y + WD_MATRIX_TOP, objclass->name,
 							((int)i == _selected_object_class) ? TC_WHITE : TC_BLACK);
 					y += this->line_height;
 				}
@@ -184,7 +234,7 @@ public:
 				/* Height of the selection matrix.
 				 * Depending on the number of views, the matrix has a 1x1, 1x2, 2x1 or 2x2 layout. To make the previews
 				 * look nice in all layouts, we use the 4x4 layout (smallest previews) as starting point. For the bigger
-				 * previews in the layouts with less views we add space homogenously on all sides, so the 4x4 preview-rectangle
+				 * previews in the layouts with less views we add space homogeneously on all sides, so the 4x4 preview-rectangle
 				 * is centered in the 2x1, 1x2 resp. 1x1 buttons. */
 				uint matrix_height = this->GetWidget<NWidgetMatrix>(WID_BO_OBJECT_MATRIX)->current_y;
 
@@ -196,9 +246,9 @@ public:
 					if (spec->grf_prop.grffile == NULL) {
 						extern const DrawTileSprites _objects[];
 						const DrawTileSprites *dts = &_objects[spec->grf_prop.local_id];
-						DrawOrigTileSeqInGUI((r.right - r.left) / 2 - 1, (r.bottom - r.top + matrix_height / 2) / 2 - OBJECT_MARGIN - TILE_PIXELS, dts, PAL_NONE);
+						DrawOrigTileSeqInGUI((r.right - r.left) / 2 - 1, (r.bottom - r.top + matrix_height / 2) / 2 - OBJECT_MARGIN - ScaleGUITrad(TILE_PIXELS), dts, PAL_NONE);
 					} else {
-						DrawNewObjectTileInGUI((r.right - r.left) / 2 - 1, (r.bottom - r.top + matrix_height / 2) / 2 - OBJECT_MARGIN - TILE_PIXELS, spec, GB(widget, 16, 16));
+						DrawNewObjectTileInGUI((r.right - r.left) / 2 - 1, (r.bottom - r.top + matrix_height / 2) / 2 - OBJECT_MARGIN - ScaleGUITrad(TILE_PIXELS), spec, GB(widget, 16, 16));
 					}
 					_cur_dpi = old_dpi;
 				}
@@ -223,9 +273,9 @@ public:
 					if (spec->grf_prop.grffile == NULL) {
 						extern const DrawTileSprites _objects[];
 						const DrawTileSprites *dts = &_objects[spec->grf_prop.local_id];
-						DrawOrigTileSeqInGUI((r.right - r.left) / 2 - 1, r.bottom - r.top - OBJECT_MARGIN - TILE_PIXELS, dts, PAL_NONE);
+						DrawOrigTileSeqInGUI((r.right - r.left) / 2 - 1, r.bottom - r.top - OBJECT_MARGIN - ScaleGUITrad(TILE_PIXELS), dts, PAL_NONE);
 					} else {
-						DrawNewObjectTileInGUI((r.right - r.left) / 2 - 1, r.bottom - r.top - OBJECT_MARGIN - TILE_PIXELS, spec,
+						DrawNewObjectTileInGUI((r.right - r.left) / 2 - 1, r.bottom - r.top - OBJECT_MARGIN - ScaleGUITrad(TILE_PIXELS), spec,
 								min(_selected_object_view, spec->views - 1));
 					}
 					_cur_dpi = old_dpi;
@@ -246,7 +296,7 @@ public:
 						} else {
 							StringID message = GetGRFStringID(spec->grf_prop.grffile->grfid, 0xD000 + callback_res);
 							if (message != STR_NULL && message != STR_UNDEFINED) {
-								StartTextRefStackUsage(6);
+								StartTextRefStackUsage(spec->grf_prop.grffile, 6);
 								/* Use all the available space left from where we stand up to the
 								 * end of the window. We ALSO enlarge the window if needed, so we
 								 * can 'go' wild with the bottom of the window. */
@@ -266,6 +316,16 @@ public:
 	}
 
 	/**
+	 * Select the specified object class.
+	 * @param object_class_index Object class index to select.
+	 */
+	void SelectOtherClass(ObjectClassID object_class_index)
+	{
+		_selected_object_class = object_class_index;
+		this->GetWidget<NWidgetMatrix>(WID_BO_SELECT_MATRIX)->SetCount(ObjectClass::Get(_selected_object_class)->GetUISpecCount());
+	}
+
+	/**
 	 * Select the specified object in #_selected_object_class class.
 	 * @param object_index Object index to select, \c -1 means select nothing.
 	 */
@@ -280,10 +340,11 @@ public:
 			_selected_object_view = 0;
 		}
 
-		this->GetWidget<NWidgetMatrix>(WID_BO_OBJECT_MATRIX)->SetClicked(_selected_object_view);
-		this->GetWidget<NWidgetMatrix>(WID_BO_SELECT_MATRIX)->SetClicked(_selected_object_index != -1 ? ObjectClass::Get(_selected_object_class)->GetUIFromIndex(_selected_object_index) : -1);
-		this->UpdateSelectSize();
-		this->SetDirty();
+		if (_selected_object_index != -1) {
+			SetObjectToPlaceWnd(SPR_CURSOR_TRANSMITTER, PAL_NONE, HT_RECT, this);
+		}
+
+		this->UpdateButtons(_selected_object_class, _selected_object_index, _selected_object_view);
 	}
 
 	void UpdateSelectSize()
@@ -298,10 +359,32 @@ public:
 		}
 	}
 
+	/**
+	 * Update buttons to show the selection to the user.
+	 * @param sel_class The class of the selected object.
+	 * @param sel_index Index of the object to select, or \c -1 .
+	 * @param sel_view View of the object to select.
+	 */
+	void UpdateButtons(ObjectClassID sel_class, int sel_index, uint sel_view)
+	{
+		int view_number, object_number;
+		if (sel_index == -1) {
+			view_number = -1; // If no object selected, also hide the selected view.
+			object_number = -1;
+		} else {
+			view_number = sel_view;
+			object_number = ObjectClass::Get(sel_class)->GetUIFromIndex(sel_index);
+		}
+
+		this->GetWidget<NWidgetMatrix>(WID_BO_OBJECT_MATRIX)->SetClicked(view_number);
+		this->GetWidget<NWidgetMatrix>(WID_BO_SELECT_MATRIX)->SetClicked(object_number);
+		this->UpdateSelectSize();
+		this->SetDirty();
+	}
+
 	virtual void OnResize()
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_BO_CLASS_LIST);
-		this->GetWidget<NWidgetCore>(WID_BO_CLASS_LIST)->widget_data = (this->vscroll->GetCapacity() << MAT_ROW_START) + (1 << MAT_COL_START);
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)
@@ -311,8 +394,7 @@ public:
 				int num_clicked = this->vscroll->GetPosition() + (pt.y - this->nested_array[widget]->pos_y) / this->line_height;
 				if (num_clicked >= (int)ObjectClass::GetUIClassCount()) break;
 
-				_selected_object_class = ObjectClass::GetUIClass(num_clicked);
-				this->GetWidget<NWidgetMatrix>(WID_BO_SELECT_MATRIX)->SetCount(ObjectClass::Get(_selected_object_class)->GetUISpecCount());
+				this->SelectOtherClass(ObjectClass::GetUIClass(num_clicked));
 				this->SelectFirstAvailableObject(false);
 				break;
 			}
@@ -327,12 +409,21 @@ public:
 			case WID_BO_OBJECT_SPRITE:
 				if (_selected_object_index != -1) {
 					_selected_object_view = GB(widget, 16, 16);
-					this->GetWidget<NWidgetMatrix>(WID_BO_OBJECT_MATRIX)->SetClicked(_selected_object_view);
-					this->UpdateSelectSize();
-					this->SetDirty();
+					this->SelectOtherObject(_selected_object_index); // Re-select the object for a different view.
 				}
 				break;
 		}
+	}
+
+	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	{
+		DoCommandP(tile, ObjectClass::Get(_selected_object_class)->GetSpec(_selected_object_index)->Index(),
+				_selected_object_view, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_OBJECT), CcTerraform);
+	}
+
+	virtual void OnPlaceObjectAbort()
+	{
+		this->UpdateButtons(_selected_object_class, -1, _selected_object_view);
 	}
 
 	/**
@@ -359,7 +450,7 @@ public:
 				for (uint i = 0; i < objclass->GetSpecCount(); i++) {
 					const ObjectSpec *spec = objclass->GetSpec(i);
 					if (spec->IsAvailable()) {
-						_selected_object_class = j;
+						this->SelectOtherClass(j);
 						this->SelectOtherObject(i);
 						return;
 					}
@@ -371,7 +462,7 @@ public:
 			/* ... but make sure that the class is not empty. */
 			for (ObjectClassID j = OBJECT_CLASS_BEGIN; j < OBJECT_CLASS_MAX; j++) {
 				if (ObjectClass::Get(j)->GetUISpecCount() > 0) {
-					_selected_object_class = j;
+					this->SelectOtherClass(j);
 					break;
 				}
 			}
@@ -384,12 +475,13 @@ static const NWidgetPart _nested_build_object_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetDataTip(STR_OBJECT_BUILD_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
 		NWidget(NWID_HORIZONTAL), SetPadding(2, 0, 0, 0),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 2, 5),
-					NWidget(WWT_MATRIX, COLOUR_GREY, WID_BO_CLASS_LIST), SetFill(1, 0), SetDataTip(0x501, STR_OBJECT_BUILD_CLASS_TOOLTIP), SetScrollbar(WID_BO_SCROLLBAR),
+					NWidget(WWT_MATRIX, COLOUR_GREY, WID_BO_CLASS_LIST), SetFill(1, 0), SetMatrixDataTip(1, 0, STR_OBJECT_BUILD_CLASS_TOOLTIP), SetScrollbar(WID_BO_SCROLLBAR),
 					NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BO_SCROLLBAR),
 				EndContainer(),
 				NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 0, 5),
@@ -421,8 +513,8 @@ static const NWidgetPart _nested_build_object_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _build_object_desc(
-	WDP_AUTO, 0, 0,
+static WindowDesc _build_object_desc(
+	WDP_AUTO, "build_object", 0, 0,
 	WC_BUILD_OBJECT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
 	_nested_build_object_widgets, lengthof(_nested_build_object_widgets)
@@ -432,23 +524,13 @@ static const WindowDesc _build_object_desc(
  * Show our object picker.
  * @param w The toolbar window we're associated with.
  */
-void ShowBuildObjectPicker(Window *w)
+void ShowBuildObjectPicker()
 {
-	new BuildObjectWindow(&_build_object_desc, w);
+	AllocateWindowDescFront<BuildObjectWindow>(&_build_object_desc, 0);
 }
 
 /** Reset all data of the object GUI. */
 void InitializeObjectGui()
 {
 	_selected_object_class = (ObjectClassID)0;
-}
-
-/**
- * PlaceProc function, called when someone pressed the button if the
- *  object-tool is selected
- * @param tile on which to place the object
- */
-void PlaceProc_Object(TileIndex tile)
-{
-	DoCommandP(tile, ObjectClass::Get(_selected_object_class)->GetSpec(_selected_object_index)->Index(), _selected_object_view, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_OBJECT), CcTerraform);
 }

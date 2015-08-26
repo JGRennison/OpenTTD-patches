@@ -17,9 +17,7 @@ enum WindowNumberEnum {
 	WN_GAME_OPTIONS_AI = 0,          ///< AI settings.
 	WN_GAME_OPTIONS_ABOUT,           ///< About window.
 	WN_GAME_OPTIONS_NEWGRF_STATE,    ///< NewGRF settings.
-	WN_GAME_OPTIONS_MESSAGE_OPTION,  ///< News settings.
 	WN_GAME_OPTIONS_GAME_OPTIONS,    ///< Game options.
-	WN_GAME_OPTIONS_GAME_DIFFICULTY, ///< Game difficulty.
 	WN_GAME_OPTIONS_GAME_SETTINGS,   ///< Game settings.
 
 	WN_QUERY_STRING = 0,  ///< Query string.
@@ -56,7 +54,7 @@ enum WindowClass {
 
 	/**
 	 * Statusbar (at the bottom of your screen); %Window numbers:
-	 *   - 0 = #StatusbarWidget
+	 *   - 0 = #StatusbarWidgets
 	 */
 	WC_STATUS_BAR,
 
@@ -286,6 +284,11 @@ enum WindowClass {
 	 */
 	WC_GOALS_LIST,
 
+	/**
+	 * Story book; %Window numbers:
+	 *   - CompanyID = #StoryBookWidgets
+	 */
+	WC_STORY_BOOK,
 
 	/**
 	 * Station list; %Window numbers:
@@ -443,7 +446,7 @@ enum WindowClass {
 	/**
 	 * Generate landscape (newgame); %Window numbers:
 	 *   - GLWM_SCENARIO = #CreateScenarioWidgets
-	 *   - #GenenerateLandscapeWindowMode = #GenerateLandscapeWidgets
+	 *   - #GenerateLandscapeWindowMode = #GenerateLandscapeWidgets
 	 */
 	WC_GENERATE_LANDSCAPE,
 
@@ -599,9 +602,7 @@ enum WindowClass {
 	 *   - #WN_GAME_OPTIONS_AI = #AIConfigWidgets
 	 *   - #WN_GAME_OPTIONS_ABOUT = #AboutWidgets
 	 *   - #WN_GAME_OPTIONS_NEWGRF_STATE = #NewGRFStateWidgets
-	 *   - #WN_GAME_OPTIONS_MESSAGE_OPTION = #MessageOptionWidgets
 	 *   - #WN_GAME_OPTIONS_GAME_OPTIONS = #GameOptionsWidgets
-	 *   - #WN_GAME_OPTIONS_GAME_DIFFICULTY = #GameDifficultyWidgets
 	 *   - #WN_GAME_OPTIONS_GAME_SETTINGS = #GameSettingsWidgets
 	 */
 	WC_GAME_OPTIONS,
@@ -668,6 +669,18 @@ enum WindowClass {
 	 */
 	WC_SPRITE_ALIGNER,
 
+	/**
+	 * Linkgraph legend; %Window numbers:
+	 *   - 0 = #LinkGraphWidgets
+	 */
+	WC_LINKGRAPH_LEGEND,
+
+	/**
+	 * Save preset; %Window numbers:
+	 *   - 0 = #SavePresetWidgets
+	 */
+	WC_SAVE_PRESET,
+
 	WC_INVALID = 0xFFFF, ///< Invalid window.
 };
 
@@ -677,12 +690,17 @@ enum GameOptionsInvalidationData {
 	GOID_NEWGRF_RESCANNED,     ///< NewGRFs were just rescanned.
 	GOID_NEWGRF_LIST_EDITED,   ///< List of active NewGRFs is being edited.
 	GOID_NEWGRF_PRESET_LOADED, ///< A NewGRF preset was picked.
-	GOID_DIFFICULTY_CHANGED,   ///< Difficulty settings were changed.
 };
 
 struct Window;
 
 /** Number to differentiate different windows of the same class */
 typedef int32 WindowNumber;
+
+/** State of handling an event. */
+enum EventState {
+	ES_HANDLED,     ///< The passed event is handled.
+	ES_NOT_HANDLED, ///< The passed event is not handled.
+};
 
 #endif /* WINDOW_TYPE_H */

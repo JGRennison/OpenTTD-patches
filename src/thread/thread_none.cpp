@@ -12,6 +12,8 @@
 #include "../stdafx.h"
 #include "thread.h"
 
+#include "../safeguards.h"
+
 /* static */ bool ThreadObject::New(OTTDThreadFunc proc, void *param, ThreadObject **thread)
 {
 	if (thread != NULL) *thread = NULL;
@@ -21,8 +23,8 @@
 /** Mutex that doesn't do locking because it ain't needed when there're no threads */
 class ThreadMutex_None : public ThreadMutex {
 public:
-	virtual void BeginCritical() {}
-	virtual void EndCritical() {}
+	virtual void BeginCritical(bool allow_recursive = false) {}
+	virtual void EndCritical(bool allow_recursive = false) {}
 	virtual void WaitForSignal() {}
 	virtual void SendSignal() {}
 };

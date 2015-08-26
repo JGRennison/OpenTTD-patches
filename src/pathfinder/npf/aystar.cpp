@@ -27,6 +27,8 @@
 #include "../../core/alloc_func.hpp"
 #include "aystar.h"
 
+#include "../../safeguards.h"
+
 /**
  * This looks in the hash whether a node exists in the closed list.
  * @param node Node to search.
@@ -124,7 +126,7 @@ void AyStar::CheckTile(AyStarNode *current, OpenListNode *parent)
 	/* The f-value if g + h */
 	new_f = new_g + new_h;
 
-	/* Get the pointer to the parent in the ClosedList (the currentone is to a copy of the one in the OpenList) */
+	/* Get the pointer to the parent in the ClosedList (the current one is to a copy of the one in the OpenList) */
 	closedlist_parent = this->ClosedListIsInList(&parent->path.node);
 
 	/* Check if this item is already in the OpenList */

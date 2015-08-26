@@ -44,7 +44,7 @@ struct StringData {
 	LangString **strings; ///< Array of all known strings.
 	uint16 *hash_heads;   ///< Hash table for the strings.
 	size_t tabs;          ///< The number of 'tabs' of strings.
-	size_t max_strings;   ///< The maxmimum number of strings.
+	size_t max_strings;   ///< The maximum number of strings.
 	int next_string_id;   ///< The next string ID to allocate.
 
 	StringData(size_t tabs);
@@ -72,16 +72,16 @@ struct StringReader {
 	/**
 	 * Read a single line from the source of strings.
 	 * @param buffer The buffer to read the data in to.
-	 * @param size   The size of the buffer.
+	 * @param last   The last element in the buffer.
 	 * @return The buffer, or NULL if at the end of the file.
 	 */
-	virtual char *ReadLine(char *buffer, size_t size) = 0;
+	virtual char *ReadLine(char *buffer, const char *last) = 0;
 
 	/**
 	 * Handle the pragma of the file.
 	 * @param str    The pragma string to parse.
 	 */
-	virtual void HandlePragma(char *str) = 0;
+	virtual void HandlePragma(char *str);
 
 	/**
 	 * Start parsing the file.

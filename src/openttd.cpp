@@ -60,11 +60,15 @@
 #include "game/game.hpp"
 #include "game/game_config.hpp"
 #include "town.h"
+#include "subsidy_func.h"
+#include "gfx_layout.h"
+#include "viewport_sprite_sorter.h"
 
-
+#include "linkgraph/linkgraphschedule.h"
 
 #include <stdarg.h>
 
+#include "safeguards.h"
 
 void CallLandscapeTick();
 void IncreaseDate();
@@ -74,7 +78,6 @@ void ResetMusic();
 void CallWindowTickEvent();
 bool HandleBootstrap();
 
-extern void SetDifficultyLevel(int mode, DifficultySettings *gm_opt);
 extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY);
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern char *_config_file;
@@ -90,11 +93,11 @@ void CDECL usererror(const char *s, ...)
 	char buf[512];
 
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 
 	ShowOSErrorBox(buf, false);
-	if (_video_driver != NULL) _video_driver->Stop();
+	if (VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
 
 	exit(1);
 }
@@ -110,7 +113,7 @@ void CDECL error(const char *s, ...)
 	char buf[512];
 
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 
 	ShowOSErrorBox(buf, true);
@@ -129,7 +132,7 @@ void CDECL ShowInfoF(const char *str, ...)
 	va_list va;
 	char buf[1024];
 	va_start(va, str);
-	vsnprintf(buf, lengthof(buf), str, va);
+	vseprintf(buf, lastof(buf), str, va);
 	va_end(va);
 	ShowInfo(buf);
 }
@@ -159,7 +162,7 @@ static void ShowHelp()
 		"  -g [savegame]       = Start new/save game immediately\n"
 		"  -G seed             = Set random seed\n"
 #if defined(ENABLE_NETWORK)
-		"  -n [ip:port#company]= Start networkgame\n"
+		"  -n [ip:port#company]= Join network game\n"
 		"  -p password         = Password to join server\n"
 		"  -P password         = Password to join company\n"
 		"  -D [ip][:port]      = Start dedicated server\n"
@@ -188,10 +191,10 @@ static void ShowHelp()
 	p = BaseMusic::GetSetsList(p, lastof(buf));
 
 	/* List the drivers */
-	p = VideoDriverFactoryBase::GetDriversInfo(p, lastof(buf));
+	p = DriverFactoryBase::GetDriversInfo(p, lastof(buf));
 
 	/* List the blitters */
-	p = BlitterFactoryBase::GetBlittersInfo(p, lastof(buf));
+	p = BlitterFactory::GetBlittersInfo(p, lastof(buf));
 
 	/* List the debug facilities. */
 	p = DumpDebugFacilityNames(p, lastof(buf));
@@ -298,6 +301,7 @@ static void ShutdownGame()
 	free(_config_file);
 #endif
 
+	LinkGraphSchedule::Clear();
 	PoolBase::Clean(PT_ALL);
 
 	/* No NewGRFs were loaded when it was still bootstrapping. */
@@ -339,7 +343,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 	CheckForMissingGlyphs();
 
 	/* Play main theme */
-	if (_music_driver->IsSongPlaying()) ResetMusic();
+	if (MusicDriver::GetInstance()->IsSongPlaying()) ResetMusic();
 }
 
 void MakeNewgameSettingsLive()
@@ -426,12 +430,13 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 		CheckConfig();
 		LoadFromHighScore();
 		LoadHotkeysFromConfig();
+		WindowDesc::LoadFromConfig();
 
 		/* We have loaded the config, so we may possibly save it. */
 		*save_config_ptr = save_config;
 
 		/* restore saved music volume */
-		_music_driver->SetVolume(_settings_client.music.music_vol);
+		MusicDriver::GetInstance()->SetVolume(_settings_client.music.music_vol);
 
 		if (startyear != INVALID_YEAR) _settings_newgame.game_creation.starting_year = startyear;
 		if (generation_seed != GENERATE_NEW_SEED) _settings_newgame.game_creation.generation_seed = generation_seed;
@@ -439,7 +444,7 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 #if defined(ENABLE_NETWORK)
 		if (dedicated_host != NULL) {
 			_network_bind_list.Clear();
-			*_network_bind_list.Append() = strdup(dedicated_host);
+			*_network_bind_list.Append() = stredup(dedicated_host);
 		}
 		if (dedicated_port != 0) _settings_client.network.server_port = dedicated_port;
 #endif /* ENABLE_NETWORK */
@@ -521,8 +526,13 @@ static const OptionData _options[] = {
 	GETOPT_END()
 };
 
-
-int ttd_main(int argc, char *argv[])
+/**
+ * Main entry point for this lovely game.
+ * @param argc The number of arguments passed to this game.
+ * @param argv The values of the arguments.
+ * @return 0 when there is no error.
+ */
+int openttd_main(int argc, char *argv[])
 {
 	char *musicdriver = NULL;
 	char *sounddriver = NULL;
@@ -548,27 +558,28 @@ int ttd_main(int argc, char *argv[])
 	_config_file = NULL;
 
 	GetOptData mgo(argc - 1, argv + 1, _options);
+	int ret = 0;
 
 	int i;
 	while ((i = mgo.GetOpt()) != -1) {
 		switch (i) {
-		case 'I': free(graphics_set); graphics_set = strdup(mgo.opt); break;
-		case 'S': free(sounds_set); sounds_set = strdup(mgo.opt); break;
-		case 'M': free(music_set); music_set = strdup(mgo.opt); break;
-		case 'm': free(musicdriver); musicdriver = strdup(mgo.opt); break;
-		case 's': free(sounddriver); sounddriver = strdup(mgo.opt); break;
-		case 'v': free(videodriver); videodriver = strdup(mgo.opt); break;
-		case 'b': free(blitter); blitter = strdup(mgo.opt); break;
+		case 'I': free(graphics_set); graphics_set = stredup(mgo.opt); break;
+		case 'S': free(sounds_set); sounds_set = stredup(mgo.opt); break;
+		case 'M': free(music_set); music_set = stredup(mgo.opt); break;
+		case 'm': free(musicdriver); musicdriver = stredup(mgo.opt); break;
+		case 's': free(sounddriver); sounddriver = stredup(mgo.opt); break;
+		case 'v': free(videodriver); videodriver = stredup(mgo.opt); break;
+		case 'b': free(blitter); blitter = stredup(mgo.opt); break;
 #if defined(ENABLE_NETWORK)
 		case 'D':
 			free(musicdriver);
 			free(sounddriver);
 			free(videodriver);
 			free(blitter);
-			musicdriver = strdup("null");
-			sounddriver = strdup("null");
-			videodriver = strdup("dedicated");
-			blitter = strdup("null");
+			musicdriver = stredup("null");
+			sounddriver = stredup("null");
+			videodriver = stredup("dedicated");
+			blitter = stredup("null");
 			dedicated = true;
 			SetDebugString("net=6");
 			if (mgo.opt != NULL) {
@@ -629,7 +640,11 @@ int ttd_main(int argc, char *argv[])
 			break;
 		case 'q': {
 			DeterminePaths(argv[0]);
-			if (StrEmpty(mgo.opt)) return 1;
+			if (StrEmpty(mgo.opt)) {
+				ret = 1;
+				goto exit_noshutdown;
+			}
+
 			char title[80];
 			title[0] = '\0';
 			FiosGetSavegameListCallback(SLD_LOAD_GAME, mgo.opt, strrchr(mgo.opt, '.'), title, lastof(title));
@@ -644,15 +659,15 @@ int ttd_main(int argc, char *argv[])
 					GetString(buf, _load_check_data.error, lastof(buf));
 					fprintf(stderr, "%s\n", buf);
 				}
-				return 1;
+				goto exit_noshutdown;
 			}
 
 			WriteSavegameInfo(title);
 
-			return 0;
+			goto exit_noshutdown;
 		}
 		case 'G': scanner->generation_seed = atoi(mgo.opt); break;
-		case 'c': _config_file = strdup(mgo.opt); break;
+		case 'c': free(_config_file); _config_file = stredup(mgo.opt); break;
 		case 'x': scanner->save_config = false; break;
 		case 'h':
 			i = -2; // Force printing of help.
@@ -673,8 +688,8 @@ int ttd_main(int argc, char *argv[])
 		BaseSounds::FindSets();
 		BaseMusic::FindSets();
 		ShowHelp();
-		delete scanner;
-		return 0;
+
+		goto exit_noshutdown;
 	}
 
 #if defined(WINCE) && defined(_DEBUG)
@@ -724,9 +739,15 @@ int ttd_main(int argc, char *argv[])
 	InitWindowSystem();
 
 	BaseGraphics::FindSets();
-	if (graphics_set == NULL && BaseGraphics::ini_set != NULL) graphics_set = strdup(BaseGraphics::ini_set);
-	if (!BaseGraphics::SetSet(graphics_set) && !StrEmpty(graphics_set)) {
-		usererror("Failed to select requested graphics set '%s'", graphics_set);
+	if (graphics_set == NULL && BaseGraphics::ini_set != NULL) graphics_set = stredup(BaseGraphics::ini_set);
+	if (!BaseGraphics::SetSet(graphics_set)) {
+		if (!StrEmpty(graphics_set)) {
+			BaseGraphics::SetSet(NULL);
+
+			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND);
+			msg.SetDParamStr(0, graphics_set);
+			ScheduleErrorMessage(msg);
+		}
 	}
 	free(graphics_set);
 
@@ -734,11 +755,18 @@ int ttd_main(int argc, char *argv[])
 	GfxInitPalettes();
 
 	DEBUG(misc, 1, "Loading blitter...");
-	if (blitter == NULL && _ini_blitter != NULL) blitter = strdup(_ini_blitter);
+	if (blitter == NULL && _ini_blitter != NULL) blitter = stredup(_ini_blitter);
 	_blitter_autodetected = StrEmpty(blitter);
-	/* If we have a 32 bpp base set, try to select the 32 bpp blitter first, but only if we autoprobe the blitter. */
-	if (!_blitter_autodetected || BaseGraphics::GetUsedSet() == NULL || BaseGraphics::GetUsedSet()->blitter == BLT_8BPP || BlitterFactoryBase::SelectBlitter("32bpp-anim") == NULL) {
-		if (BlitterFactoryBase::SelectBlitter(blitter) == NULL) {
+	/* Activate the initial blitter.
+	 * This is only some initial guess, after NewGRFs have been loaded SwitchNewGRFBlitter may switch to a different one.
+	 *  - Never guess anything, if the user specified a blitter. (_blitter_autodetected)
+	 *  - Use 32bpp blitter if baseset or 8bpp-support settings says so.
+	 *  - Use 8bpp blitter otherwise.
+	 */
+	if (!_blitter_autodetected ||
+			(_support8bpp != S8BPP_NONE && (BaseGraphics::GetUsedSet() == NULL || BaseGraphics::GetUsedSet()->blitter == BLT_8BPP)) ||
+			BlitterFactory::SelectBlitter("32bpp-anim") == NULL) {
+		if (BlitterFactory::SelectBlitter(blitter) == NULL) {
 			StrEmpty(blitter) ?
 				usererror("Failed to autoprobe blitter") :
 				usererror("Failed to select requested blitter '%s'; does it exist?", blitter);
@@ -746,14 +774,11 @@ int ttd_main(int argc, char *argv[])
 	}
 	free(blitter);
 
-	if (videodriver == NULL && _ini_videodriver != NULL) videodriver = strdup(_ini_videodriver);
-	_video_driver = (VideoDriver*)VideoDriverFactoryBase::SelectDriver(videodriver, Driver::DT_VIDEO);
-	if (_video_driver == NULL) {
-		StrEmpty(videodriver) ?
-			usererror("Failed to autoprobe video driver") :
-			usererror("Failed to select requested video driver '%s'", videodriver);
-	}
+	if (videodriver == NULL && _ini_videodriver != NULL) videodriver = stredup(_ini_videodriver);
+	DriverFactoryBase::SelectDriver(videodriver, Driver::DT_VIDEO);
 	free(videodriver);
+
+	InitializeSpriteSorter();
 
 	/* Initialize the zoom level of the screen to normal */
 	_screen.zoom = ZOOM_LVL_NORMAL;
@@ -775,47 +800,49 @@ int ttd_main(int argc, char *argv[])
 	}
 #endif /* ENABLE_NETWORK */
 
-	if (!HandleBootstrap()) goto exit;
+	if (!HandleBootstrap()) {
+		ShutdownGame();
 
-	_video_driver->ClaimMousePointer();
+		goto exit_bootstrap;
+	}
+
+	VideoDriver::GetInstance()->ClaimMousePointer();
 
 	/* initialize screenshot formats */
 	InitializeScreenshotFormats();
 
 	BaseSounds::FindSets();
-	if (sounds_set == NULL && BaseSounds::ini_set != NULL) sounds_set = strdup(BaseSounds::ini_set);
+	if (sounds_set == NULL && BaseSounds::ini_set != NULL) sounds_set = stredup(BaseSounds::ini_set);
 	if (!BaseSounds::SetSet(sounds_set)) {
-		StrEmpty(sounds_set) ?
-			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 4.1 of readme.txt.") :
-			usererror("Failed to select requested sounds set '%s'", sounds_set);
+		if (StrEmpty(sounds_set) || !BaseSounds::SetSet(NULL)) {
+			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 4.1 of readme.txt.");
+		} else {
+			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND);
+			msg.SetDParamStr(0, sounds_set);
+			ScheduleErrorMessage(msg);
+		}
 	}
 	free(sounds_set);
 
 	BaseMusic::FindSets();
-	if (music_set == NULL && BaseMusic::ini_set != NULL) music_set = strdup(BaseMusic::ini_set);
+	if (music_set == NULL && BaseMusic::ini_set != NULL) music_set = stredup(BaseMusic::ini_set);
 	if (!BaseMusic::SetSet(music_set)) {
-		StrEmpty(music_set) ?
-			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 4.1 of readme.txt.") :
-			usererror("Failed to select requested music set '%s'", music_set);
+		if (StrEmpty(music_set) || !BaseMusic::SetSet(NULL)) {
+			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 4.1 of readme.txt.");
+		} else {
+			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND);
+			msg.SetDParamStr(0, music_set);
+			ScheduleErrorMessage(msg);
+		}
 	}
 	free(music_set);
 
-	if (sounddriver == NULL && _ini_sounddriver != NULL) sounddriver = strdup(_ini_sounddriver);
-	_sound_driver = (SoundDriver*)SoundDriverFactoryBase::SelectDriver(sounddriver, Driver::DT_SOUND);
-	if (_sound_driver == NULL) {
-		StrEmpty(sounddriver) ?
-			usererror("Failed to autoprobe sound driver") :
-			usererror("Failed to select requested sound driver '%s'", sounddriver);
-	}
+	if (sounddriver == NULL && _ini_sounddriver != NULL) sounddriver = stredup(_ini_sounddriver);
+	DriverFactoryBase::SelectDriver(sounddriver, Driver::DT_SOUND);
 	free(sounddriver);
 
-	if (musicdriver == NULL && _ini_musicdriver != NULL) musicdriver = strdup(_ini_musicdriver);
-	_music_driver = (MusicDriver*)MusicDriverFactoryBase::SelectDriver(musicdriver, Driver::DT_MUSIC);
-	if (_music_driver == NULL) {
-		StrEmpty(musicdriver) ?
-			usererror("Failed to autoprobe music driver") :
-			usererror("Failed to select requested music driver '%s'", musicdriver);
-	}
+	if (musicdriver == NULL && _ini_musicdriver != NULL) musicdriver = stredup(_ini_musicdriver);
+	DriverFactoryBase::SelectDriver(musicdriver, Driver::DT_MUSIC);
 	free(musicdriver);
 
 	/* Take our initial lock on whatever we might want to do! */
@@ -829,9 +856,11 @@ int ttd_main(int argc, char *argv[])
 
 	CheckForMissingGlyphs();
 
+	/* ScanNewGRFFiles now has control over the scanner. */
 	ScanNewGRFFiles(scanner);
+	scanner = NULL;
 
-	_video_driver->MainLoop();
+	VideoDriver::GetInstance()->MainLoop();
 
 	WaitTillSaved();
 
@@ -839,22 +868,47 @@ int ttd_main(int argc, char *argv[])
 	if (save_config) {
 		SaveToConfig();
 		SaveHotkeysToConfig();
+		WindowDesc::SaveToConfig();
 		SaveToHighScore();
 	}
 
-exit:
 	/* Reset windowing system, stop drivers, free used memory, ... */
 	ShutdownGame();
+	goto exit_normal;
 
+exit_noshutdown:
+	/* These three are normally freed before bootstrap. */
+	free(graphics_set);
+	free(videodriver);
+	free(blitter);
+
+exit_bootstrap:
+	/* These are normally freed before exit, but after bootstrap. */
+	free(sounds_set);
+	free(music_set);
+	free(musicdriver);
+	free(sounddriver);
+
+exit_normal:
 	free(BaseGraphics::ini_set);
 	free(BaseSounds::ini_set);
 	free(BaseMusic::ini_set);
+
 	free(_ini_musicdriver);
 	free(_ini_sounddriver);
 	free(_ini_videodriver);
 	free(_ini_blitter);
 
-	return 0;
+	delete scanner;
+
+#ifdef ENABLE_NETWORK
+	extern FILE *_log_fd;
+	if (_log_fd != NULL) {
+		fclose(_log_fd);
+	}
+#endif /* ENABLE_NETWORK */
+
+	return ret;
 }
 
 void HandleExitGameRequest()
@@ -874,8 +928,9 @@ static void MakeNewGameDone()
 	SettingsDisableElrail(_settings_game.vehicle.disable_elrails);
 
 	/* In a dedicated server, the server does not play */
-	if (!_video_driver->HasGUI()) {
+	if (!VideoDriver::GetInstance()->HasGUI()) {
 		SetLocalCompany(COMPANY_SPECTATOR);
+		if (_settings_client.gui.pause_on_newgame) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 		IConsoleCmdExec("exec scripts/game_start.scr 0");
 		return;
 	}
@@ -902,6 +957,8 @@ static void MakeNewGameDone()
 
 	if (_settings_client.gui.pause_on_newgame) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
+	CheckEngines();
+	CheckIndustries();
 	MarkWholeScreenDirty();
 }
 
@@ -1014,7 +1071,7 @@ void SwitchToMode(SwitchMode new_mode)
 		}
 	}
 #endif /* ENABLE_NETWORK */
-	/* Make sure all AI controllers are gone at quiting game */
+	/* Make sure all AI controllers are gone at quitting game */
 	if (new_mode != SM_SAVE_GAME) AI::KillAll();
 
 	switch (new_mode) {
@@ -1026,7 +1083,7 @@ void SwitchToMode(SwitchMode new_mode)
 		case SM_NEWGAME: // New Game --> 'Random game'
 #ifdef ENABLE_NETWORK
 			if (_network_server) {
-				snprintf(_network_game_info.map_name, lengthof(_network_game_info.map_name), "Random Map");
+				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "Random Map");
 			}
 #endif /* ENABLE_NETWORK */
 			MakeNewGame(false, new_mode == SM_NEWGAME);
@@ -1041,7 +1098,8 @@ void SwitchToMode(SwitchMode new_mode)
 				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);
 			} else {
 				if (_saveload_mode == SLD_LOAD_SCENARIO) {
-					StartupEngines();
+					/* Reset engine pool to simplify changing engine NewGRFs in scenario editor. */
+					EngineOverrideManager::ResetToCurrentNewGRFConfig();
 				}
 				/* Update the local company for a loaded game. It is either always
 				 * company #1 (eg 0) or in the case of a dedicated server a spectator */
@@ -1052,7 +1110,7 @@ void SwitchToMode(SwitchMode new_mode)
 				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
 #ifdef ENABLE_NETWORK
 				if (_network_server) {
-					snprintf(_network_game_info.map_name, lengthof(_network_game_info.map_name), "%s (Loaded game)", _file_to_saveload.title);
+					seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "%s (Loaded game)", _file_to_saveload.title);
 				}
 #endif /* ENABLE_NETWORK */
 			}
@@ -1062,7 +1120,7 @@ void SwitchToMode(SwitchMode new_mode)
 		case SM_START_HEIGHTMAP: // Load a heightmap and start a new game from it
 #ifdef ENABLE_NETWORK
 			if (_network_server) {
-				snprintf(_network_game_info.map_name, lengthof(_network_game_info.map_name), "%s (Heightmap)", _file_to_saveload.title);
+				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "%s (Heightmap)", _file_to_saveload.title);
 			}
 #endif /* ENABLE_NETWORK */
 			MakeNewGame(true, true);
@@ -1092,7 +1150,7 @@ void SwitchToMode(SwitchMode new_mode)
 			LoadIntroGame();
 			if (BaseSounds::ini_set == NULL && BaseSounds::GetUsedSet()->fallback) {
 				ShowErrorMessage(STR_WARNING_FALLBACK_SOUNDSET, INVALID_STRING_ID, WL_CRITICAL);
-				BaseSounds::ini_set = strdup(BaseSounds::GetUsedSet()->name);
+				BaseSounds::ini_set = stredup(BaseSounds::GetUsedSet()->name);
 			}
 			break;
 
@@ -1144,6 +1202,7 @@ static void CheckCaches()
 
 	extern void RebuildTownCaches();
 	RebuildTownCaches();
+	RebuildSubsidisedSourceAndDestinationCache();
 
 	uint i = 0;
 	FOR_ALL_TOWNS(t) {
@@ -1212,7 +1271,7 @@ static void CheckCaches()
 		}
 
 		switch (v->type) {
-			case VEH_TRAIN:    Train::From(v)->ConsistChanged(true);     break;
+			case VEH_TRAIN:    Train::From(v)->ConsistChanged(CCF_TRACK); break;
 			case VEH_ROAD:     RoadVehUpdateCache(RoadVehicle::From(v)); break;
 			case VEH_AIRCRAFT: UpdateAircraftCache(Aircraft::From(v));   break;
 			case VEH_SHIP:     Ship::From(v)->UpdateCache();             break;
@@ -1280,22 +1339,25 @@ static void CheckCaches()
  */
 void StateGameLoop()
 {
-	/* dont execute the state loop during pause */
+	/* don't execute the state loop during pause */
 	if (_pause_mode != PM_UNPAUSED) {
 		UpdateLandscapingLimits();
+#ifndef DEBUG_DUMP_COMMANDS
 		Game::GameLoop();
+#endif
 		CallWindowTickEvent();
 		return;
 	}
 	if (HasModalProgress()) return;
 
-	ClearStorageChanges(false);
+	Layouter::ReduceLineCache();
 
 	if (_game_mode == GM_EDITOR) {
+		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 		RunTileLoop();
 		CallVehicleTicks();
 		CallLandscapeTick();
-		ClearStorageChanges(true);
+		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 		UpdateLandscapingLimits();
 
 		CallWindowTickEvent();
@@ -1304,7 +1366,7 @@ void StateGameLoop()
 		if (_debug_desync_level > 2 && _date_fract == 0 && (_date & 0x1F) == 0) {
 			/* Save the desync savegame if needed. */
 			char name[MAX_PATH];
-			snprintf(name, lengthof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, _date);
+			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, _date);
 			SaveOrLoad(name, SL_SAVE, AUTOSAVE_DIR, false);
 		}
 
@@ -1314,15 +1376,18 @@ void StateGameLoop()
 		 *  for multiplayer compatibility */
 		Backup<CompanyByte> cur_company(_current_company, OWNER_NONE, FILE_LINE);
 
+		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 		AnimateAnimatedTiles();
 		IncreaseDate();
 		RunTileLoop();
 		CallVehicleTicks();
 		CallLandscapeTick();
-		ClearStorageChanges(true);
+		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 
+#ifndef DEBUG_DUMP_COMMANDS
 		AI::GameLoop();
 		Game::GameLoop();
+#endif
 		UpdateLandscapingLimits();
 
 		CallWindowTickEvent();
@@ -1353,7 +1418,7 @@ static void DoAutosave()
 		static int _autosave_ctr = 0;
 
 		/* generate a savegame name and number according to _settings_client.gui.max_num_autosaves */
-		snprintf(buf, sizeof(buf), "autosave%d.sav", _autosave_ctr);
+		seprintf(buf, lastof(buf), "autosave%d.sav", _autosave_ctr);
 
 		if (++_autosave_ctr >= _settings_client.gui.max_num_autosaves) _autosave_ctr = 0;
 	}
@@ -1379,8 +1444,8 @@ void GameLoop()
 
 	/* autosave game? */
 	if (_do_autosave) {
-		_do_autosave = false;
 		DoAutosave();
+		_do_autosave = false;
 		SetWindowDirty(WC_STATUS_BAR, 0);
 	}
 
@@ -1430,6 +1495,6 @@ void GameLoop()
 
 	InputLoop();
 
-	_sound_driver->MainLoop();
+	SoundDriver::GetInstance()->MainLoop();
 	MusicLoop();
 }

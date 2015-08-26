@@ -96,7 +96,7 @@ public:
 			const char *data = NULL, int depth = 0) :
 		TCPConnecter(address),
 		callback(callback),
-		url(strdup(url)),
+		url(stredup(url)),
 		data(data),
 		depth(depth)
 	{
@@ -117,7 +117,7 @@ public:
 	virtual void OnConnect(SOCKET s)
 	{
 		new NetworkHTTPSocketHandler(s, this->callback, this->address.GetHostname(), this->url, this->data, this->depth);
-		/* We've relinguished control of data now. */
+		/* We've relinquished control of data now. */
 		this->data = NULL;
 	}
 };

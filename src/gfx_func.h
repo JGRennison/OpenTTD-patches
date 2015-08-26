@@ -26,10 +26,10 @@
  * This whole mechanism is controlled by an rectangle defined in #_invalid_rect. This
  * rectangle defines the area on the screen which must be repaint. If a new object
  * needs to be repainted this rectangle is extended to 'catch' the object on the
- * screen. At some point (which is normaly uninteressted for patch writers) this
+ * screen. At some point (which is normally uninteresting for patch writers) this
  * rectangle is send to the video drivers method
  * VideoDriver::MakeDirty and it is truncated back to an empty rectangle. At some
- * later point (which is uninteressted, too) the video driver
+ * later point (which is uninteresting, too) the video driver
  * repaints all these saved rectangle instead of the whole screen and drop the
  * rectangle informations. Then a new round begins by marking objects "dirty".
  *
@@ -44,6 +44,7 @@
 
 #include "gfx_type.h"
 #include "strings_type.h"
+#include "string_type.h"
 
 void GameLoop();
 
@@ -51,6 +52,7 @@ void CreateConsole();
 
 extern byte _dirkeys;        ///< 1 = left, 2 = up, 4 = right, 8 = down
 extern bool _fullscreen;
+extern byte _support8bpp;
 extern CursorVars _cursor;
 extern bool _ctrl_pressed;   ///< Is Ctrl pressed?
 extern bool _shift_pressed;  ///< Is Shift pressed?
@@ -69,7 +71,8 @@ extern Dimension _resolutions[32];
 extern Dimension _cur_resolution;
 extern Palette _cur_palette; ///< Current palette
 
-void HandleKeypress(uint32 key);
+void HandleKeypress(uint keycode, WChar key);
+void HandleTextInput(const char *str, bool marked = false, const char *caret = NULL, const char *insert_location = NULL, const char *replacement_end = NULL);
 void HandleCtrlChanged();
 void HandleMouseEvents();
 void CSleep(int milliseconds);
@@ -105,7 +108,6 @@ enum StringAlignment {
 	SA_CENTER      = SA_HOR_CENTER | SA_VERT_CENTER, ///< Center both horizontally and vertically.
 
 	SA_FORCE       = 1 << 4, ///< Force the alignment, i.e. don't swap for RTL languages.
-	SA_STRIP       = 1 << 5, ///< Strip the SETX/SETXY commands from the string
 };
 DECLARE_ENUM_AS_BIT_SET(StringAlignment)
 
@@ -117,22 +119,26 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, 
 void DrawCharCentered(uint32 c, int x, int y, TextColour colour);
 
 void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
-void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1);
+void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
 void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
 
 Dimension GetStringBoundingBox(const char *str, FontSize start_fontsize = FS_NORMAL);
 Dimension GetStringBoundingBox(StringID strid);
-uint32 FormatStringLinebreaks(char *str, const char *last, int maxw, FontSize start_fontsize = FS_NORMAL);
+int GetStringHeight(const char *str, int maxw, FontSize fontsize = FS_NORMAL);
 int GetStringHeight(StringID str, int maxw);
+int GetStringLineCount(StringID str, int maxw);
 Dimension GetStringMultiLineBoundingBox(StringID str, const Dimension &suggestion);
 Dimension GetStringMultiLineBoundingBox(const char *str, const Dimension &suggestion);
 void LoadStringWidthTable(bool monospace = false);
+Point GetCharPosInString(const char *str, const char *ch, FontSize start_fontsize = FS_NORMAL);
+const char *GetCharAtPosition(const char *str, int x, FontSize start_fontsize = FS_NORMAL);
 
 void DrawDirtyBlocks();
 void SetDirtyBlocks(int left, int top, int right, int bottom);
 void MarkWholeScreenDirty();
 
 void GfxInitPalettes();
+void CheckBlitter();
 
 bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int height);
 
@@ -150,18 +156,9 @@ bool ToggleFullScreen(bool fs);
 /* gfx.cpp */
 byte GetCharacterWidth(FontSize size, uint32 key);
 byte GetDigitWidth(FontSize size = FS_NORMAL);
+void GetBroadestDigit(uint *front, uint *next, FontSize size = FS_NORMAL);
 
-/**
- * Get height of a character for a given font size.
- * @param size Font size to get height of
- * @return     Height of characters in the given font (pixels)
- */
-static inline byte GetCharacterHeight(FontSize size)
-{
-	assert(size < FS_END);
-	extern int _font_height[FS_END];
-	return _font_height[size];
-}
+int GetCharacterHeight(FontSize size);
 
 /** Height of characters in the small (#FS_SMALL) font. */
 #define FONT_HEIGHT_SMALL  (GetCharacterHeight(FS_SMALL))
@@ -176,6 +173,8 @@ static inline byte GetCharacterHeight(FontSize size)
 #define FONT_HEIGHT_MONO  (GetCharacterHeight(FS_MONO))
 
 extern DrawPixelInfo *_cur_dpi;
+
+TextColour GetContrastColour(uint8 background);
 
 /**
  * All 16 colour gradients

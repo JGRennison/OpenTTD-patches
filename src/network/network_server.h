@@ -19,7 +19,7 @@
 #include "../thread/thread.h"
 
 class ServerNetworkGameSocketHandler;
-/** Make the code look slightliy nicer/simpler. */
+/** Make the code look slightly nicer/simpler. */
 typedef ServerNetworkGameSocketHandler NetworkClientSocket;
 /** Pool with all client sockets. */
 typedef Pool<NetworkClientSocket, ClientIndex, 8, MAX_CLIENT_SLOTS, PT_NCLIENT> NetworkClientSocketPool;
@@ -75,18 +75,15 @@ public:
 	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery
 	int receive_limit;           ///< Amount of bytes that we can receive at this moment
 
-	Packet *savegame_packets;      ///< Packet queue of the savegame; send these "slowly" to the client.
 	struct PacketWriter *savegame; ///< Writer used to write the savegame.
-	ThreadMutex *savegame_mutex;   ///< Mutex for making threaded saving safe.
 	NetworkAddress client_address; ///< IP-address of the client (so he can be banned)
 
 	ServerNetworkGameSocketHandler(SOCKET s);
 	~ServerNetworkGameSocketHandler();
 
 	virtual Packet *ReceivePacket();
-	virtual void SendPacket(Packet *packet);
 	NetworkRecvStatus CloseConnection(NetworkRecvStatus status);
-	void GetClientName(char *client_name, size_t size) const;
+	void GetClientName(char *client_name, const char *last) const;
 
 	NetworkRecvStatus SendMap();
 	NetworkRecvStatus SendErrorQuit(ClientID client_id, NetworkErrorCode errorno);
@@ -126,6 +123,7 @@ public:
 
 void NetworkServer_Tick(bool send_frame);
 void NetworkServerSetCompanyPassword(CompanyID company_id, const char *password, bool already_hashed = true);
+void NetworkServerUpdateCompanyPassworded(CompanyID company_id, bool passworded);
 
 /**
  * Iterate over all the sockets from a given starting point.

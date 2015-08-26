@@ -13,21 +13,25 @@
 #include "../strgen/strgen.h"
 #include "../debug.h"
 #include "../fileio_func.h"
+#include "../tar_type.h"
 #include "../script/squirrel_class.hpp"
 #include "../strings_func.h"
 #include "game_text.hpp"
 #include "game.hpp"
+#include "game_info.hpp"
 
 #include "table/strings.h"
 
 #include <stdarg.h>
+
+#include "../safeguards.h"
 
 void CDECL strgen_warning(const char *s, ...)
 {
 	char buf[1024];
 	va_list va;
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 	DEBUG(script, 0, "%s:%d: warning: %s", _file, _cur_line, buf);
 	_warnings++;
@@ -38,7 +42,7 @@ void CDECL strgen_error(const char *s, ...)
 	char buf[1024];
 	va_list va;
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 	DEBUG(script, 0, "%s:%d: error: %s", _file, _cur_line, buf);
 	_errors++;
@@ -49,7 +53,7 @@ void NORETURN CDECL strgen_fatal(const char *s, ...)
 	char buf[1024];
 	va_list va;
 	va_start(va, s);
-	vsnprintf(buf, lengthof(buf), s, va);
+	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 	DEBUG(script, 0, "%s:%d: FATAL: %s", _file, _cur_line, buf);
 	throw std::exception();
@@ -58,18 +62,11 @@ void NORETURN CDECL strgen_fatal(const char *s, ...)
 /**
  * Create a new container for language strings.
  * @param language The language name.
+ * @param end If not NULL, terminate \a language at this position.
  */
-LanguageStrings::LanguageStrings(const char *language)
+LanguageStrings::LanguageStrings(const char *language, const char *end)
 {
-	const char *p = strrchr(language, PATHSEPCHAR);
-	if (p == NULL) {
-		p = language;
-	} else {
-		p++;
-	}
-
-	const char *e = strchr(p, '.');
-	this->language = e == NULL ? strdup(p) : strndup(p, e - p);
+	this->language = stredup(language, end != NULL ? end - 1 : NULL);
 }
 
 /** Free everything. */
@@ -86,14 +83,28 @@ LanguageStrings::~LanguageStrings()
 LanguageStrings *ReadRawLanguageStrings(const char *file)
 {
 	LanguageStrings *ret = NULL;
+	FILE *fh = NULL;
 	try {
 		size_t to_read;
-		FILE *fh = FioFOpenFile(file, "rb", GAME_DIR, &to_read);
+		fh = FioFOpenFile(file, "rb", GAME_DIR, &to_read);
 		if (fh == NULL) {
 			return NULL;
 		}
 
-		ret = new LanguageStrings(file);
+		const char *langname = strrchr(file, PATHSEPCHAR);
+		if (langname == NULL) {
+			langname = file;
+		} else {
+			langname++;
+		}
+
+		/* Check for invalid empty filename */
+		if (*langname == '.' || *langname == 0) {
+			fclose(fh);
+			return NULL;
+		}
+
+		ret = new LanguageStrings(langname, strchr(langname, '.'));
 
 		char buffer[2048];
 		while (to_read != 0 && fgets(buffer, sizeof(buffer), fh) != NULL) {
@@ -104,7 +115,7 @@ LanguageStrings *ReadRawLanguageStrings(const char *file)
 			while (i > 0 && (buffer[i - 1] == '\r' || buffer[i - 1] == '\n' || buffer[i - 1] == ' ')) i--;
 			buffer[i] = '\0';
 
-			*ret->lines.Append() = strndup(buffer, to_read);
+			*ret->lines.Append() = stredup(buffer, buffer + to_read - 1);
 
 			if (len > to_read) {
 				to_read = 0;
@@ -113,8 +124,10 @@ LanguageStrings *ReadRawLanguageStrings(const char *file)
 			}
 		}
 
+		fclose(fh);
 		return ret;
 	} catch (...) {
+		if (fh != NULL) fclose(fh);
 		delete ret;
 		return NULL;
 	}
@@ -138,19 +151,14 @@ struct StringListReader : StringReader {
 	{
 	}
 
-	/* virtual */ char *ReadLine(char *buffer, size_t size)
+	/* virtual */ char *ReadLine(char *buffer, const char *last)
 	{
 		if (this->p == this->end) return NULL;
 
-		strncpy(buffer, *this->p, size);
+		strecpy(buffer, *this->p, last);
 		this->p++;
 
 		return buffer;
-	}
-
-	/* virtual */ void HandlePragma(char *str)
-	{
-		strgen_fatal("unknown pragma '%s'", str);
 	}
 };
 
@@ -183,7 +191,10 @@ struct TranslationWriter : LanguageWriter {
 
 	void Write(const byte *buffer, size_t length)
 	{
-		*this->strings->Append() = strndup((const char*)buffer, length);
+		char *dest = MallocT<char>(length + 1);
+		memcpy(dest, buffer, length);
+		dest[length] = '\0';
+		*this->strings->Append() = dest;
 	}
 };
 
@@ -201,7 +212,7 @@ struct StringNameWriter : HeaderWriter {
 
 	void WriteStringID(const char *name, int stringid)
 	{
-		if (stringid == (int)this->strings->Length()) *this->strings->Append() = strdup(name);
+		if (stringid == (int)this->strings->Length()) *this->strings->Append() = stredup(name);
 	}
 
 	void Finalise(const StringData &data)
@@ -209,22 +220,6 @@ struct StringNameWriter : HeaderWriter {
 		/* Nothing to do. */
 	}
 };
-
-static void GetBasePath(char *buffer, size_t length)
-{
-	strecpy(buffer, Game::GetMainScript(), buffer + length);
-	char *s = strrchr(buffer, PATHSEPCHAR);
-	if (s != NULL) {
-		/* Keep the PATHSEPCHAR there, remove the rest */
-		s++;
-		*s = '\0';
-	}
-
-	/* Tars dislike opening files with '/' on Windows.. so convert it to '\\' */
-#if (PATHSEPCHAR != '/')
-	for (char *n = buffer; *n != '\0'; n++) if (*n == '/') *n = PATHSEPCHAR;
-#endif
-}
 
 /**
  * Scanner to find language files in a GameScript directory.
@@ -236,7 +231,7 @@ private:
 
 public:
 	/** Initialise */
-	LanguageScanner(GameStrings *gs, const char *exclude) : gs(gs), exclude(strdup(exclude)) {}
+	LanguageScanner(GameStrings *gs, const char *exclude) : gs(gs), exclude(stredup(exclude)) {}
 	~LanguageScanner() { free(exclude); }
 
 	/**
@@ -262,20 +257,45 @@ public:
  */
 GameStrings *LoadTranslations()
 {
+	const GameInfo *info = Game::GetInfo();
+	char filename[512];
+	strecpy(filename, info->GetMainScript(), lastof(filename));
+	char *e = strrchr(filename, PATHSEPCHAR);
+	if (e == NULL) return NULL;
+	e++; // Make 'e' point after the PATHSEPCHAR
+
+	strecpy(e, "lang" PATHSEP "english.txt", lastof(filename));
+	if (!FioCheckFileExists(filename, GAME_DIR)) return NULL;
+
 	GameStrings *gs = new GameStrings();
 	try {
-		char filename[512];
-		GetBasePath(filename, sizeof(filename));
-		char *e = filename + strlen(filename);
-
-		seprintf(e, filename + sizeof(filename), "lang" PATHSEP "english.txt");
-		if (!FioCheckFileExists(filename, GAME_DIR)) throw std::exception();
 		*gs->raw_strings.Append() = ReadRawLanguageStrings(filename);
 
 		/* Scan for other language files */
 		LanguageScanner scanner(gs, filename);
-		strecpy(e, "lang" PATHSEP, filename + sizeof(filename));
-		scanner.Scan(filename);
+		strecpy(e, "lang" PATHSEP, lastof(filename));
+		size_t len = strlen(filename);
+
+		const char *tar_filename = info->GetTarFile();
+		TarList::iterator iter;
+		if (tar_filename != NULL && (iter = _tar_list[GAME_DIR].find(tar_filename)) != _tar_list[GAME_DIR].end()) {
+			/* The main script is in a tar file, so find all files that
+			 * are in the same tar and add them to the langfile scanner. */
+			TarFileList::iterator tar;
+			FOR_ALL_TARS(tar, GAME_DIR) {
+				/* Not in the same tar. */
+				if (tar->second.tar_filename != iter->first) continue;
+
+				/* Check the path and extension. */
+				if (tar->first.size() <= len || tar->first.compare(0, len, filename) != 0) continue;
+				if (tar->first.compare(tar->first.size() - 4, 4, ".txt") != 0) continue;
+
+				scanner.AddFile(tar->first.c_str(), 0, tar_filename);
+			}
+		} else {
+			/* Scan filesystem */
+			scanner.Scan(filename);
+		}
 
 		gs->Compile();
 		return gs;
@@ -336,12 +356,12 @@ void RegisterGameTranslation(Squirrel *engine)
 
 	HSQUIRRELVM vm = engine->GetVM();
 	sq_pushroottable(vm);
-	sq_pushstring(vm, _SC("GSText"), -1);
+	sq_pushstring(vm, "GSText", -1);
 	if (SQ_FAILED(sq_get(vm, -2))) return;
 
 	int idx = 0;
 	for (const char * const *p = _current_data->string_names.Begin(); p != _current_data->string_names.End(); p++, idx++) {
-		sq_pushstring(vm, OTTD2SQ(*p), -1);
+		sq_pushstring(vm, *p, -1);
 		sq_pushinteger(vm, idx);
 		sq_rawset(vm, -3);
 	}
@@ -359,7 +379,7 @@ void ReconsiderGameScriptLanguage()
 	if (_current_data == NULL) return;
 
 	char temp[MAX_PATH];
-	strecpy(temp, _current_language->file, temp + sizeof(temp));
+	strecpy(temp, _current_language->file, lastof(temp));
 
 	/* Remove the extension */
 	char *l = strrchr(temp, '.');

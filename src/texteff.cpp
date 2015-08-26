@@ -17,9 +17,12 @@
 #include "viewport_func.h"
 #include "settings_type.h"
 
+#include "safeguards.h"
+
 /** Container for all information about a text effect */
 struct TextEffect : public ViewportSign {
 	uint64 params_1;     ///< DParam parameter
+	uint64 params_2;     ///< second DParam parameter
 	StringID string_id;  ///< String to draw for the text effect, if INVALID_STRING_ID then it's not valid
 	uint8 duration;      ///< How long the text effect should stay, in ticks (applies only when mode == TE_RISING)
 	TextEffectMode mode; ///< Type of text effect
@@ -52,6 +55,7 @@ TextEffectID AddTextEffect(StringID msg, int center, int y, uint8 duration, Text
 	te->string_id = msg;
 	te->duration = duration;
 	te->params_1 = GetDParam(0);
+	te->params_2 = GetDParam(1);
 	te->mode = mode;
 
 	/* Make sure we only dirty the new area */
@@ -68,6 +72,7 @@ void UpdateTextEffect(TextEffectID te_id, StringID msg)
 	if (msg == te->string_id && GetDParam(0) == te->params_1) return;
 	te->string_id = msg;
 	te->params_1 = GetDParam(0);
+	te->params_2 = GetDParam(1);
 
 	te->UpdatePosition(te->center, te->top, msg);
 }
@@ -109,7 +114,7 @@ void DrawTextEffects(DrawPixelInfo *dpi)
 	for (TextEffect *te = _text_effects.Begin(); te != end; te++) {
 		if (te->string_id == INVALID_STRING_ID) continue;
 		if (te->mode == TE_RISING || (_settings_client.gui.loading_indicators && !IsTransparencySet(TO_LOADING))) {
-			ViewportAddString(dpi, ZOOM_LVL_OUT_8X, te, te->string_id, te->string_id - 1, 0, te->params_1);
+			ViewportAddString(dpi, ZOOM_LVL_OUT_8X, te, te->string_id, te->string_id - 1, STR_NULL, te->params_1, te->params_2);
 		}
 	}
 }

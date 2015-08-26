@@ -13,6 +13,17 @@
 #include "random_func.hpp"
 #include "bitmath_func.hpp"
 
+#ifdef RANDOM_DEBUG
+#include "../network/network.h"
+#include "../network/network_server.h"
+#include "../network/network_internal.h"
+#include "../company_func.h"
+#include "../fileio_func.h"
+#include "../date_func.h"
+#endif /* RANDOM_DEBUG */
+
+#include "../safeguards.h"
+
 Randomizer _random, _interactive_random;
 
 /**
@@ -29,13 +40,14 @@ uint32 Randomizer::Next()
 }
 
 /**
- * Generate the next pseudo random number scaled to max
- * @param max the maximum value of the returned random number
- * @return the random number
+ * Generate the next pseudo random number scaled to \a limit, excluding \a limit
+ * itself.
+ * @param limit Limit of the range to be generated from.
+ * @return Random number in [0,\a limit)
  */
-uint32 Randomizer::Next(uint32 max)
+uint32 Randomizer::Next(uint32 limit)
 {
-	return ((uint64)this->Next() * (uint64)max) >> 32;
+	return ((uint64)this->Next() * (uint64)limit) >> 32;
 }
 
 /**
@@ -59,13 +71,6 @@ void SetRandomSeed(uint32 seed)
 }
 
 #ifdef RANDOM_DEBUG
-#include "../network/network.h"
-#include "../network/network_server.h"
-#include "../network/network_internal.h"
-#include "../company_func.h"
-#include "../fileio_func.h"
-#include "../date_func.h"
-
 uint32 DoRandom(int line, const char *file)
 {
 	if (_networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::STATUS_INACTIVE))) {
@@ -75,8 +80,8 @@ uint32 DoRandom(int line, const char *file)
 	return _random.Next();
 }
 
-uint32 DoRandomRange(uint32 max, int line, const char *file)
+uint32 DoRandomRange(uint32 limit, int line, const char *file)
 {
-	return ((uint64)DoRandom(line, file) * (uint64)max) >> 32;
+	return ((uint64)DoRandom(line, file) * (uint64)limit) >> 32;
 }
 #endif /* RANDOM_DEBUG */

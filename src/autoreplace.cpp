@@ -15,6 +15,8 @@
 #include "autoreplace_base.h"
 #include "core/pool_func.hpp"
 
+#include "safeguards.h"
+
 /** The pool of autoreplace "orders". */
 EngineRenewPool _enginerenew_pool("EngineRenew");
 INSTANTIATE_POOL_METHODS(EngineRenew)
@@ -28,7 +30,7 @@ static EngineRenew *GetEngineReplacement(EngineRenewList erl, EngineID engine, G
 	EngineRenew *er = (EngineRenew *)erl;
 
 	while (er != NULL) {
-		if (er->from == engine && er->group_id == group) return er;
+		if (er->from == engine && GroupIsInGroup(group, er->group_id)) return er;
 		er = er->next;
 	}
 	return NULL;
@@ -87,7 +89,10 @@ CommandCost AddEngineReplacement(EngineRenewList *erl, EngineID old_engine, Engi
 	/* Check if the old vehicle is already in the list */
 	EngineRenew *er = GetEngineReplacement(*erl, old_engine, group);
 	if (er != NULL) {
-		if (flags & DC_EXEC) er->to = new_engine;
+		if (flags & DC_EXEC) {
+			er->to = new_engine;
+			er->replace_when_old = replace_when_old;
+		}
 		return CommandCost();
 	}
 

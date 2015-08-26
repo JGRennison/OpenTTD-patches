@@ -23,6 +23,8 @@
 #include "table/sprites.h"
 #include "table/clear_land.h"
 
+#include "safeguards.h"
+
 static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlag flags)
 {
 	static const Price clear_price_table[] = {
@@ -65,33 +67,33 @@ static void DrawClearLandFence(const TileInfo *ti)
 
 	int maxz = GetSlopeMaxPixelZ(ti->tileh);
 
-	bool fence_nw = GetFenceNW(ti->tile) != 0;
-	if (fence_nw) {
+	uint fence_nw = GetFence(ti->tile, DIAGDIR_NW);
+	if (fence_nw != 0) {
 		int z = GetSlopePixelZInCorner(ti->tileh, CORNER_W);
-		SpriteID sprite = _clear_land_fence_sprites[GetFenceNW(ti->tile) - 1] + _fence_mod_by_tileh_nw[ti->tileh];
+		SpriteID sprite = _clear_land_fence_sprites[fence_nw - 1] + _fence_mod_by_tileh_nw[ti->tileh];
 		AddSortableSpriteToDraw(sprite, PAL_NONE, ti->x, ti->y - 15, 16, 31, maxz - z + 4, ti->z + z, false, 0, 15, -z);
 	}
 
-	bool fence_ne = GetFenceNE(ti->tile) != 0;
-	if (fence_ne) {
+	uint fence_ne = GetFence(ti->tile, DIAGDIR_NE);
+	if (fence_ne != 0) {
 		int z = GetSlopePixelZInCorner(ti->tileh, CORNER_E);
-		SpriteID sprite = _clear_land_fence_sprites[GetFenceNE(ti->tile) - 1] + _fence_mod_by_tileh_ne[ti->tileh];
+		SpriteID sprite = _clear_land_fence_sprites[fence_ne - 1] + _fence_mod_by_tileh_ne[ti->tileh];
 		AddSortableSpriteToDraw(sprite, PAL_NONE, ti->x - 15, ti->y, 31, 16, maxz - z + 4, ti->z + z, false, 15, 0, -z);
 	}
 
-	bool fence_sw = GetFenceSW(ti->tile) != 0;
-	bool fence_se = GetFenceSE(ti->tile) != 0;
+	uint fence_sw = GetFence(ti->tile, DIAGDIR_SW);
+	uint fence_se = GetFence(ti->tile, DIAGDIR_SE);
 
-	if (fence_sw || fence_se) {
+	if (fence_sw != 0 || fence_se != 0) {
 		int z = GetSlopePixelZInCorner(ti->tileh, CORNER_S);
 
-		if (fence_sw) {
-			SpriteID sprite = _clear_land_fence_sprites[GetFenceSW(ti->tile) - 1] + _fence_mod_by_tileh_sw[ti->tileh];
+		if (fence_sw != 0) {
+			SpriteID sprite = _clear_land_fence_sprites[fence_sw - 1] + _fence_mod_by_tileh_sw[ti->tileh];
 			AddSortableSpriteToDraw(sprite, PAL_NONE, ti->x, ti->y, 16, 16, maxz - z + 4, ti->z + z, false, 0, 0, -z);
 		}
 
-		if (fence_se) {
-			SpriteID sprite = _clear_land_fence_sprites[GetFenceSE(ti->tile) - 1] + _fence_mod_by_tileh_se[ti->tileh];
+		if (fence_se != 0) {
+			SpriteID sprite = _clear_land_fence_sprites[fence_se - 1] + _fence_mod_by_tileh_se[ti->tileh];
 			AddSortableSpriteToDraw(sprite, PAL_NONE, ti->x, ti->y, 16, 16, maxz - z + 4, ti->z + z, false, 0, 0, -z);
 		}
 	}
@@ -110,7 +112,7 @@ static void DrawTile_Clear(TileInfo *ti)
 			break;
 
 		case CLEAR_ROCKS:
-			DrawGroundSprite(SPR_FLAT_ROCKY_LAND_1 + SlopeToSpriteOffset(ti->tileh), PAL_NONE);
+			DrawGroundSprite((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (TileHash(ti->x, ti->y) & 1) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + SlopeToSpriteOffset(ti->tileh), PAL_NONE);
 			break;
 
 		case CLEAR_FIELDS:
@@ -146,26 +148,26 @@ static void UpdateFences(TileIndex tile)
 	bool dirty = false;
 
 	bool neighbour = (IsTileType(TILE_ADDXY(tile, 1, 0), MP_CLEAR) && IsClearGround(TILE_ADDXY(tile, 1, 0), CLEAR_FIELDS));
-	if (!neighbour && GetFenceSW(tile) == 0) {
-		SetFenceSW(tile, 3);
+	if (!neighbour && GetFence(tile, DIAGDIR_SW) == 0) {
+		SetFence(tile, DIAGDIR_SW, 3);
 		dirty = true;
 	}
 
 	neighbour = (IsTileType(TILE_ADDXY(tile, 0, 1), MP_CLEAR) && IsClearGround(TILE_ADDXY(tile, 0, 1), CLEAR_FIELDS));
-	if (!neighbour && GetFenceSE(tile) == 0) {
-		SetFenceSE(tile, 3);
+	if (!neighbour && GetFence(tile, DIAGDIR_SE) == 0) {
+		SetFence(tile, DIAGDIR_SE, 3);
 		dirty = true;
 	}
 
 	neighbour = (IsTileType(TILE_ADDXY(tile, -1, 0), MP_CLEAR) && IsClearGround(TILE_ADDXY(tile, -1, 0), CLEAR_FIELDS));
-	if (!neighbour && GetFenceNE(tile) == 0) {
-		SetFenceNE(tile, 3);
+	if (!neighbour && GetFence(tile, DIAGDIR_NE) == 0) {
+		SetFence(tile, DIAGDIR_NE, 3);
 		dirty = true;
 	}
 
 	neighbour = (IsTileType(TILE_ADDXY(tile, 0, -1), MP_CLEAR) && IsClearGround(TILE_ADDXY(tile, 0, -1), CLEAR_FIELDS));
-	if (!neighbour && GetFenceNW(tile) == 0) {
-		SetFenceNW(tile, 3);
+	if (!neighbour && GetFence(tile, DIAGDIR_NW) == 0) {
+		SetFence(tile, DIAGDIR_NW, 3);
 		dirty = true;
 	}
 
@@ -190,12 +192,12 @@ static void TileLoopClearAlps(TileIndex tile)
 		}
 	}
 	/* Update snow density. */
-	uint curent_density = GetClearDensity(tile);
+	uint current_density = GetClearDensity(tile);
 	uint req_density = (k < 0) ? 0u : min((uint)k, 3);
 
-	if (curent_density < req_density) {
+	if (current_density < req_density) {
 		AddClearDensity(tile, 1);
-	} else if (curent_density > req_density) {
+	} else if (current_density > req_density) {
 		AddClearDensity(tile, -1);
 	} else {
 		/* Density at the required level. */
@@ -249,8 +251,7 @@ static void TileLoop_Clear(TileIndex tile)
 	/* If the tile is at any edge flood it to prevent maps without water. */
 	if (_settings_game.construction.freeform_edges && DistanceFromEdge(tile) == 1) {
 		int z;
-		Slope slope = GetTileSlope(tile, &z);
-		if (z == 0 && slope == SLOPE_FLAT) {
+		if (IsTileFlat(tile, &z) && z == 0) {
 			DoFloodTile(tile);
 			MarkTileDirtyByTile(tile);
 			return;

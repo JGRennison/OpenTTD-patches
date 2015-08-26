@@ -29,6 +29,8 @@
 #include "table/tree_land.h"
 #include "table/clear_land.h"
 
+#include "safeguards.h"
+
 /**
  * List of tree placer algorithm.
  *
@@ -592,7 +594,7 @@ static void TileLoopTreesDesert(TileIndex tile)
 			};
 			uint32 r = Random();
 
-			if (Chance16I(1, 200, r)) SndPlayTileFx(forest_sounds[GB(r, 16, 2)], tile);
+			if (Chance16I(1, 200, r) && _settings_client.sound.ambient) SndPlayTileFx(forest_sounds[GB(r, 16, 2)], tile);
 			break;
 		}
 
@@ -621,7 +623,7 @@ static void TileLoopTreesAlps(TileIndex tile)
 		} else {
 			if (GetTreeDensity(tile) == 3) {
 				uint32 r = Random();
-				if (Chance16I(1, 200, r)) {
+				if (Chance16I(1, 200, r) && _settings_client.sound.ambient) {
 					SndPlayTileFx((r & 0x80000000) ? SND_39_HEAVY_WIND : SND_34_WIND, tile);
 				}
 			}

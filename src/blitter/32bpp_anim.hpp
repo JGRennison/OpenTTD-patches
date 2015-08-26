@@ -15,8 +15,8 @@
 #include "32bpp_optimized.hpp"
 
 /** The optimised 32 bpp blitter with palette animation. */
-class Blitter_32bppAnim FINAL : public Blitter_32bppOptimized {
-private:
+class Blitter_32bppAnim : public Blitter_32bppOptimized {
+protected:
 	uint16 *anim_buf;    ///< In this buffer we keep track of the 8bpp indexes so we can do palette animation
 	int anim_buf_width;  ///< The width of the animation buffer.
 	int anim_buf_height; ///< The height of the animation buffer.
@@ -56,10 +56,9 @@ public:
 };
 
 /** Factory for the 32bpp blitter with animation. */
-class FBlitter_32bppAnim: public BlitterFactory<FBlitter_32bppAnim> {
+class FBlitter_32bppAnim : public BlitterFactory {
 public:
-	/* virtual */ const char *GetName() { return "32bpp-anim"; }
-	/* virtual */ const char *GetDescription() { return "32bpp Animation Blitter (palette animation)"; }
+	FBlitter_32bppAnim() : BlitterFactory("32bpp-anim", "32bpp Animation Blitter (palette animation)") {}
 	/* virtual */ Blitter *CreateInstance() { return new Blitter_32bppAnim(); }
 };
 

@@ -136,13 +136,14 @@ struct IndustrySpec {
 	GRFFileProps grf_prop;                ///< properties related to the grf file
 
 	bool IsRawIndustry() const;
+	bool IsProcessingIndustry() const;
 	Money GetConstructionCost() const;
 	Money GetRemovalCost() const;
 	bool UsesSmoothEconomy() const;
 };
 
 /**
- * Defines the data structure of each indivudual tile of an industry.
+ * Defines the data structure of each individual tile of an industry.
  */
 struct IndustryTileSpec {
 	CargoID accepts_cargo[3];             ///< Cargo accepted by this tile

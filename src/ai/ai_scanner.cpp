@@ -18,6 +18,8 @@
 #include "ai_info.hpp"
 #include "ai_scanner.hpp"
 
+#include "../safeguards.h"
+
 
 AIScannerInfo::AIScannerInfo() :
 	ScriptScanner(),
@@ -31,7 +33,7 @@ void AIScannerInfo::Initialize()
 
 	/* Create the dummy AI */
 	free(this->main_script);
-	this->main_script = strdup("%_dummy");
+	this->main_script = stredup("%_dummy");
 	extern void Script_CreateDummyInfo(HSQUIRRELVM vm, const char *type, const char *dir);
 	Script_CreateDummyInfo(this->engine->GetVM(), "AI", "ai");
 }
@@ -46,9 +48,9 @@ AIScannerInfo::~AIScannerInfo()
 	delete this->info_dummy;
 }
 
-void AIScannerInfo::GetScriptName(ScriptInfo *info, char *name, int len)
+void AIScannerInfo::GetScriptName(ScriptInfo *info, char *name, const char *last)
 {
-	snprintf(name, len, "%s", info->GetName());
+	seprintf(name, last, "%s", info->GetName());
 }
 
 void AIScannerInfo::RegisterAPI(class Squirrel *engine)
@@ -96,7 +98,7 @@ AIInfo *AIScannerInfo::FindInfo(const char *nameParam, int versionParam, bool fo
 	if (nameParam == NULL) return NULL;
 
 	char ai_name[1024];
-	ttd_strlcpy(ai_name, nameParam, sizeof(ai_name));
+	strecpy(ai_name, nameParam, lastof(ai_name));
 	strtolower(ai_name);
 
 	AIInfo *info = NULL;
@@ -118,7 +120,7 @@ AIInfo *AIScannerInfo::FindInfo(const char *nameParam, int versionParam, bool fo
 	if (force_exact_match) {
 		/* Try to find a direct 'name.version' match */
 		char ai_name_tmp[1024];
-		snprintf(ai_name_tmp, sizeof(ai_name_tmp), "%s.%d", ai_name, versionParam);
+		seprintf(ai_name_tmp, lastof(ai_name_tmp), "%s.%d", ai_name, versionParam);
 		strtolower(ai_name_tmp);
 		if (this->info_list.find(ai_name_tmp) != this->info_list.end()) return static_cast<AIInfo *>(this->info_list[ai_name_tmp]);
 	}
@@ -143,10 +145,10 @@ void AIScannerLibrary::Initialize()
 	ScriptScanner::Initialize("AIScanner");
 }
 
-void AIScannerLibrary::GetScriptName(ScriptInfo *info, char *name, int len)
+void AIScannerLibrary::GetScriptName(ScriptInfo *info, char *name, const char *last)
 {
 	AILibrary *library = static_cast<AILibrary *>(info);
-	snprintf(name, len, "%s.%s", library->GetCategory(), library->GetInstanceName());
+	seprintf(name, last, "%s.%s", library->GetCategory(), library->GetInstanceName());
 }
 
 void AIScannerLibrary::RegisterAPI(class Squirrel *engine)
@@ -158,7 +160,7 @@ AILibrary *AIScannerLibrary::FindLibrary(const char *library, int version)
 {
 	/* Internally we store libraries as 'library.version' */
 	char library_name[1024];
-	snprintf(library_name, sizeof(library_name), "%s.%d", library, version);
+	seprintf(library_name, lastof(library_name), "%s.%d", library, version);
 	strtolower(library_name);
 
 	/* Check if the library + version exists */

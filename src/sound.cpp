@@ -21,6 +21,8 @@
 #define SET_TYPE "sounds"
 #include "base_media_func.h"
 
+#include "safeguards.h"
+
 static SoundEntry _original_sounds[ORIGINAL_SAMPLE_COUNT];
 
 static void OpenBankFile(const char *filename)
@@ -306,7 +308,7 @@ template <class Tbase_set>
 
 	const Tbase_set *best = NULL;
 	for (const Tbase_set *c = BaseMedia<Tbase_set>::available_sets; c != NULL; c = c->next) {
-		/* Skip unuseable sets */
+		/* Skip unusable sets */
 		if (c->GetNumMissing() != 0) continue;
 
 		if (best == NULL ||

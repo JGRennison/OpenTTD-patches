@@ -34,8 +34,14 @@
 #include "vehicle_func.h"
 #include "smallmap_gui.h"
 #include "game/game.hpp"
+#include "goal_base.h"
+#include "story_base.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
+
+void ClearEnginesHiddenFlagOfCompany(CompanyID cid);
 
 CompanyByte _local_company;   ///< Company controlled by the human player at this client. Can also be #COMPANY_SPECTATOR.
 CompanyByte _current_company; ///< Company currently doing an action.
@@ -82,6 +88,7 @@ void Company::PostDestructor(size_t index)
 	InvalidateWindowData(WC_GRAPH_LEGEND, 0, (int)index);
 	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0, (int)index);
 	InvalidateWindowData(WC_COMPANY_LEAGUE, 0, 0);
+	InvalidateWindowData(WC_LINKGRAPH_LEGEND, 0);
 	/* If the currently shown error message has this company in it, then close it. */
 	InvalidateWindowData(WC_ERRMSG, 0);
 }
@@ -550,15 +557,17 @@ Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY)
 	c->avail_railtypes = GetCompanyRailtypes(c->index);
 	c->avail_roadtypes = GetCompanyRoadtypes(c->index);
 	c->inaugurated_year = _cur_year;
-	RandomCompanyManagerFaceBits(c->face, (GenderEthnicity)Random(), false); // create a random company manager face
+	RandomCompanyManagerFaceBits(c->face, (GenderEthnicity)Random(), false, false); // create a random company manager face
 
 	SetDefaultCompanySettings(c->index);
+	ClearEnginesHiddenFlagOfCompany(c->index);
 
 	GeneratePresidentName(c);
 
 	SetWindowDirty(WC_GRAPH_LEGEND, 0);
 	SetWindowClassesDirty(WC_CLIENT_LIST_POPUP);
 	SetWindowDirty(WC_CLIENT_LIST, 0);
+	InvalidateWindowData(WC_LINKGRAPH_LEGEND, 0);
 	BuildOwnerLegend();
 	InvalidateWindowData(WC_SMALLMAP, 0, 1);
 
@@ -725,9 +734,9 @@ void CompaniesYearlyLoop()
 		ShowCompanyFinances(_local_company);
 		c = Company::Get(_local_company);
 		if (c->num_valid_stat_ent > 5 && c->old_economy[0].performance_history < c->old_economy[4].performance_history) {
-			SndPlayFx(SND_01_BAD_YEAR);
+			if (_settings_client.sound.new_year) SndPlayFx(SND_01_BAD_YEAR);
 		} else {
-			SndPlayFx(SND_00_GOOD_YEAR);
+			if (_settings_client.sound.new_year) SndPlayFx(SND_00_GOOD_YEAR);
 		}
 	}
 }
@@ -849,59 +858,21 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				MarkWholeScreenDirty();
 			}
 
-			if (_network_server) {
-				if (ci != NULL) {
-					/* ci is only NULL when replaying.
-					 * When replaying no client is actually in need of an update. */
-					ci->client_playas = c->index;
-					NetworkUpdateClientInfo(ci->client_id);
-				}
-
-				if (Company::IsValidID(c->index)) {
-					_network_company_states[c->index].months_empty = 0;
-					_network_company_states[c->index].password[0] = '\0';
-					NetworkServerUpdateCompanyPassworded(c->index, false);
-
-					/* XXX - When a client joins, we automatically set its name to the
-					 * client's name (for some reason). As it stands now only the server
-					 * knows the client's name, so it needs to send out a "broadcast" to
-					 * do this. To achieve this we send a network command. However, it
-					 * uses _local_company to execute the command as.  To prevent abuse
-					 * (eg. only yourself can change your name/company), we 'cheat' by
-					 * impersonation _local_company as the server. Not the best solution;
-					 * but it works.
-					 * TODO: Perhaps this could be improved by when the client is ready
-					 * with joining to let it send itself the command, and not the server?
-					 * For example in network_client.c:534? */
-					if (ci != NULL) {
-						/* ci is only NULL when replaying.
-						 * When replaying, the command to rename the president will
-						 * automatically be ran, so this is not even needed to get
-						 * the exact same state. */
-						NetworkSendCommand(0, 0, 0, CMD_RENAME_PRESIDENT, NULL, ci->client_name, c->index);
-					}
-				}
-
-				/* Announce new company on network. */
-				NetworkAdminCompanyInfo(c, true);
-
-				if (ci != NULL) {
-					/* ci is only NULL when replaying.
-					 * When replaying, the message that someone started a new company
-					 * is not interesting at all. */
-					NetworkServerSendChat(NETWORK_ACTION_COMPANY_NEW, DESTTYPE_BROADCAST, 0, "", ci->client_id, c->index + 1);
-				}
-			}
+			NetworkServerNewCompany(c, ci);
 #endif /* ENABLE_NETWORK */
 			break;
 		}
 
-		case 1: // Make a new AI company
+		case 1: { // Make a new AI company
 			if (!(flags & DC_EXEC)) return CommandCost();
 
 			if (company_id != INVALID_COMPANY && (company_id >= MAX_COMPANIES || Company::IsValidID(company_id))) return CMD_ERROR;
-			DoStartupNewCompany(true, company_id);
+			Company *c = DoStartupNewCompany(true, company_id);
+#ifdef ENABLE_NETWORK
+			if (c != NULL) NetworkServerNewCompany(c, NULL);
+#endif /* ENABLE_NETWORK */
 			break;
+		}
 
 		case 2: { // Delete a company
 			CompanyRemoveReason reason = (CompanyRemoveReason)GB(p2, 0, 2);
@@ -932,6 +903,8 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			AI::BroadcastNewEvent(new ScriptEventCompanyBankrupt(c_index));
 			Game::NewEvent(new ScriptEventCompanyBankrupt(c_index));
 			CompanyAdminRemove(c_index, (CompanyRemoveReason)reason);
+
+			if (StoryPage::GetNumItems() == 0 || Goal::GetNumItems() == 0) InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
 			break;
 		}
 
@@ -1052,6 +1025,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		InvalidateWindowData(WC_DELIVERED_CARGO, 0);
 		InvalidateWindowData(WC_PERFORMANCE_HISTORY, 0);
 		InvalidateWindowData(WC_COMPANY_VALUE, 0);
+		InvalidateWindowData(WC_LINKGRAPH_LEGEND, 0);
 		/* The smallmap owner view also stores the company colours. */
 		BuildOwnerLegend();
 		InvalidateWindowData(WC_SMALLMAP, 0, 1);
@@ -1105,7 +1079,7 @@ CommandCost CmdRenameCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	if (flags & DC_EXEC) {
 		Company *c = Company::Get(_current_company);
 		free(c->name);
-		c->name = reset ? NULL : strdup(text);
+		c->name = reset ? NULL : stredup(text);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
 	}
@@ -1154,12 +1128,12 @@ CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		if (reset) {
 			c->president_name = NULL;
 		} else {
-			c->president_name = strdup(text);
+			c->president_name = stredup(text);
 
 			if (c->name_1 == STR_SV_UNNAMED && c->name == NULL) {
 				char buf[80];
 
-				snprintf(buf, lengthof(buf), "%s Transport", text);
+				seprintf(buf, lastof(buf), "%s Transport", text);
 				DoCommand(0, 0, 0, DC_EXEC, CMD_RENAME_COMPANY, buf);
 			}
 		}
@@ -1169,4 +1143,22 @@ CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	}
 
 	return CommandCost();
+}
+
+/**
+ * Get the service interval for the given company and vehicle type.
+ * @param c The company, or NULL for client-default settings.
+ * @param type The vehicle type to get the interval for.
+ * @return The service interval.
+ */
+int CompanyServiceInterval(const Company *c, VehicleType type)
+{
+	const VehicleDefaultSettings *vds = (c == NULL) ? &_settings_client.company.vehicle : &c->settings.vehicle;
+	switch (type) {
+		default: NOT_REACHED();
+		case VEH_TRAIN:    return vds->servint_trains;
+		case VEH_ROAD:     return vds->servint_roadveh;
+		case VEH_AIRCRAFT: return vds->servint_aircraft;
+		case VEH_SHIP:     return vds->servint_ships;
+	}
 }

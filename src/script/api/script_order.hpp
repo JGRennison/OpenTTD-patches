@@ -34,7 +34,7 @@ public:
 		/** Destination of new order is to far away from the previous order */
 		ERR_ORDER_TOO_FAR_AWAY_FROM_PREVIOUS_DESTINATION,    // [STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION]
 
-		/* Aircraft has not enough range to copy/share orders. */
+		/** Aircraft has not enough range to copy/share orders. */
 		ERR_ORDER_AIRCRAFT_NOT_ENOUGH_RANGE,                 // [STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE]
 	};
 
@@ -47,7 +47,7 @@ public:
 
 		/** Do not stop at the stations that are passed when going to the destination. Only for trains and road vehicles. */
 		OF_NON_STOP_INTERMEDIATE = 1 << 0,
-		/** Do not stop at the destionation station. Only for trains and road vehicles. */
+		/** Do not stop at the destination station. Only for trains and road vehicles. */
 		OF_NON_STOP_DESTINATION  = 1 << 1,
 
 		/** Always unload the vehicle; only for stations. Cannot be set when OF_TRANSFER or OF_NO_UNLOAD is set. */
@@ -524,6 +524,7 @@ public:
 	 * @param order_position_target The target order
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position_move).
 	 * @pre IsValidVehicleOrder(vehicle_id, order_position_target).
+	 * @pre order_position_move != order_position_target.
 	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
 	 * @return True if and only if the order was moved.
 	 * @note If the order is moved to a lower place (e.g. from 7 to 2)
@@ -585,10 +586,17 @@ public:
 
 	/**
 	 * Get the distance between two points for a vehicle type.
+	 * Use this function to compute the distance between two tiles wrt. a vehicle type.
+	 * These vehicle-type specific distances are independent from other map distances, you may
+	 * use the result of this function to compare it with the result of
+	 * ScriptEngine::GetMaximumOrderDistance or ScriptVehicle::GetMaximumOrderDistance.
 	 * @param vehicle_type The vehicle type to get the distance for.
 	 * @param origin_tile Origin, can be any tile or a tile of a specific station.
-	 * @param dest_tile Destination, ca be any tile or a tile of a specific station.
-	 * @return The distance between the origin and the destination for a vehicle of the given vehicle type.
+	 * @param dest_tile Destination, can be any tile or a tile of a specific station.
+	 * @return The distance between the origin and the destination for a
+	 *         vehicle of the given vehicle type.
+	 * @note   The unit of the order distances is unspecified and should
+	 *         not be compared with map distances
 	 * @see ScriptEngine::GetMaximumOrderDistance and ScriptVehicle::GetMaximumOrderDistance
 	 */
 	static uint GetOrderDistance(ScriptVehicle::VehicleType vehicle_type, TileIndex origin_tile, TileIndex dest_tile);

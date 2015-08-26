@@ -40,10 +40,13 @@
 #include "core/backup_type.hpp"
 #include "object_base.h"
 #include "game/game.hpp"
+#include "error.h"
 
 #include "table/strings.h"
 #include "table/industry_land.h"
 #include "table/build_industry.h"
+
+#include "safeguards.h"
 
 IndustryPool _industry_pool("Industry");
 INSTANTIATE_POOL_METHODS(Industry)
@@ -329,7 +332,7 @@ static void DrawTile_Industry(TileInfo *ti)
 
 	SpriteID image = dits->ground.sprite;
 
-	/* DrawFoundation() modifes ti->z and ti->tileh */
+	/* DrawFoundation() modifies ti->z and ti->tileh */
 	if (ti->tileh != SLOPE_FLAT) DrawFoundation(ti, FOUNDATION_LEVELED);
 
 	/* If the ground sprite is the default flat water sprite, draw also canal/river borders.
@@ -518,7 +521,7 @@ static void TransportIndustryGoods(TileIndex tile)
 
 		if (newgfx != INDUSTRYTILE_NOANIM) {
 			ResetIndustryConstructionStage(tile);
-			SetIndustryCompleted(tile, true);
+			SetIndustryCompleted(tile);
 			SetIndustryGfx(tile, newgfx);
 			MarkTileDirtyByTile(tile);
 		}
@@ -540,9 +543,11 @@ static void AnimateTile_Industry(TileIndex tile)
 		if ((_tick_counter & 1) == 0) {
 			byte m = GetAnimationFrame(tile) + 1;
 
-			switch (m & 7) {
-			case 2: SndPlayTileFx(SND_2D_RIP_2, tile); break;
-			case 6: SndPlayTileFx(SND_29_RIP, tile); break;
+			if (_settings_client.sound.ambient) {
+				switch (m & 7) {
+					case 2: SndPlayTileFx(SND_2D_RIP_2, tile); break;
+					case 6: SndPlayTileFx(SND_29_RIP, tile); break;
+				}
 			}
 
 			if (m >= 96) {
@@ -559,7 +564,7 @@ static void AnimateTile_Industry(TileIndex tile)
 		if ((_tick_counter & 3) == 0) {
 			byte m = GetAnimationFrame(tile);
 
-			if (_industry_anim_offs_toffee[m] == 0xFF) {
+			if (_industry_anim_offs_toffee[m] == 0xFF && _settings_client.sound.ambient) {
 				SndPlayTileFx(SND_30_CARTOON_SOUND, tile);
 			}
 
@@ -606,9 +611,9 @@ static void AnimateTile_Industry(TileIndex tile)
 			byte m = GetAnimationFrame(tile) + 1;
 
 			switch (m) {
-				case  1: SndPlayTileFx(SND_2C_MACHINERY, tile); break;
-				case 23: SndPlayTileFx(SND_2B_COMEDY_HIT, tile); break;
-				case 28: SndPlayTileFx(SND_2A_EXTRACT_AND_POP, tile); break;
+				case  1: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2C_MACHINERY, tile); break;
+				case 23: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2B_COMEDY_HIT, tile); break;
+				case 28: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2A_EXTRACT_AND_POP, tile); break;
 				default:
 					if (m >= 50) {
 						int n = GetIndustryAnimationLoop(tile) + 1;
@@ -671,7 +676,7 @@ static void AnimateTile_Industry(TileIndex tile)
 					byte m = GetAnimationFrame(tile);
 					if (!(m & 0x40)) {
 						SetAnimationFrame(tile, m | 0x40);
-						SndPlayTileFx(SND_0B_MINING_MACHINERY, tile);
+						if (_settings_client.sound.ambient) SndPlayTileFx(SND_0B_MINING_MACHINERY, tile);
 					}
 					if (state & 7) return;
 				} else {
@@ -716,7 +721,7 @@ static void MakeIndustryTileBigger(TileIndex tile)
 	SetIndustryConstructionCounter(tile, 0);
 	SetIndustryConstructionStage(tile, stage);
 	StartStopIndustryTileAnimation(tile, IAT_CONSTRUCTION_STATE_CHANGE);
-	if (stage == INDUSTRY_COMPLETED) SetIndustryCompleted(tile, true);
+	if (stage == INDUSTRY_COMPLETED) SetIndustryCompleted(tile);
 
 	MarkTileDirtyByTile(tile);
 
@@ -772,7 +777,7 @@ static void TileLoopIndustry_BubbleGenerator(TileIndex tile)
 		{ 49,  59, 60,  65 },
 	};
 
-	SndPlayTileFx(SND_2E_EXTRACT_AND_POP, tile);
+	if (_settings_client.sound.ambient) SndPlayTileFx(SND_2E_EXTRACT_AND_POP, tile);
 
 	int dir = Random() & 3;
 
@@ -852,7 +857,7 @@ static void TileLoop_Industry(TileIndex tile)
 				case GFX_GOLD_MINE_TOWER_ANIMATED:   gfx = GFX_GOLD_MINE_TOWER_NOT_ANIMATED;   break;
 			}
 			SetIndustryGfx(tile, gfx);
-			SetIndustryCompleted(tile, true);
+			SetIndustryCompleted(tile);
 			SetIndustryConstructionStage(tile, 3);
 			DeleteAnimatedTile(tile);
 		}
@@ -860,7 +865,7 @@ static void TileLoop_Industry(TileIndex tile)
 
 	case GFX_POWERPLANT_SPARKS:
 		if (Chance16(1, 3)) {
-			SndPlayTileFx(SND_0C_ELECTRIC_SPARK, tile);
+			if (_settings_client.sound.ambient) SndPlayTileFx(SND_0C_ELECTRIC_SPARK, tile);
 			AddAnimatedTile(tile);
 		}
 		break;
@@ -938,26 +943,33 @@ bool IsTileForestIndustry(TileIndex tile)
 
 static const byte _plantfarmfield_type[] = {1, 1, 1, 1, 1, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6};
 
-static bool IsBadFarmFieldTile(TileIndex tile)
+/**
+ * Check whether the tile can be replaced by a farm field.
+ * @param tile the tile to investigate.
+ * @param allow_fields if true, the method will return true even if
+ * the tile is a farm tile, otherwise the tile may not be a farm tile
+ * @return true if the tile can become a farm field
+ */
+static bool IsSuitableForFarmField(TileIndex tile, bool allow_fields)
 {
 	switch (GetTileType(tile)) {
-		case MP_CLEAR: return IsClearGround(tile, CLEAR_FIELDS) || IsClearGround(tile, CLEAR_SNOW) || IsClearGround(tile, CLEAR_DESERT);
-		case MP_TREES: return (GetTreeGround(tile) == TREE_GROUND_SHORE);
-		default:       return true;
+		case MP_CLEAR: return !IsClearGround(tile, CLEAR_SNOW) && !IsClearGround(tile, CLEAR_DESERT) && (allow_fields || !IsClearGround(tile, CLEAR_FIELDS));
+		case MP_TREES: return GetTreeGround(tile) != TREE_GROUND_SHORE;
+		default:       return false;
 	}
 }
 
-static bool IsBadFarmFieldTile2(TileIndex tile)
+/**
+ * Build farm field fence
+ * @param tile the tile to position the fence on
+ * @param size the size of the field being planted in tiles
+ * @param type type of fence to set
+ * @param side the side of the tile to attempt placement
+ */
+static void SetupFarmFieldFence(TileIndex tile, int size, byte type, DiagDirection side)
 {
-	switch (GetTileType(tile)) {
-		case MP_CLEAR: return IsClearGround(tile, CLEAR_SNOW) || IsClearGround(tile, CLEAR_DESERT);
-		case MP_TREES: return (GetTreeGround(tile) == TREE_GROUND_SHORE);
-		default:       return true;
-	}
-}
+	TileIndexDiff diff = (DiagDirToAxis(side) == AXIS_Y ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
 
-static void SetupFarmFieldFence(TileIndex tile, int size, byte type, Axis direction, bool north)
-{
 	do {
 		tile = TILE_MASK(tile);
 
@@ -966,22 +978,10 @@ static void SetupFarmFieldFence(TileIndex tile, int size, byte type, Axis direct
 
 			if (or_ == 1 && Chance16(1, 7)) or_ = 2;
 
-			if (direction == AXIS_X) {
-				if (north) {
-					SetFenceNW(tile, or_);
-				} else {
-					SetFenceSE(tile, or_);
-				}
-			} else {
-				if (north) {
-					SetFenceNE(tile, or_);
-				} else {
-					SetFenceSW(tile, or_);
-				}
-			}
+			SetFence(tile, side, or_);
 		}
 
-		tile += (direction == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
+		tile += diff;
 	} while (--size);
 }
 
@@ -1006,9 +1006,9 @@ static void PlantFarmField(TileIndex tile, IndustryID industry)
 	int count = 0;
 	TILE_AREA_LOOP(cur_tile, ta) {
 		assert(cur_tile < MapSize());
-		count += IsBadFarmFieldTile(cur_tile);
+		count += IsSuitableForFarmField(cur_tile, false);
 	}
-	if (count * 2 >= ta.w * ta.h) return;
+	if (count * 2 < ta.w * ta.h) return;
 
 	/* determine type of field */
 	r = Random();
@@ -1018,7 +1018,7 @@ static void PlantFarmField(TileIndex tile, IndustryID industry)
 	/* make field */
 	TILE_AREA_LOOP(cur_tile, ta) {
 		assert(cur_tile < MapSize());
-		if (!IsBadFarmFieldTile2(cur_tile)) {
+		if (IsSuitableForFarmField(cur_tile, true)) {
 			MakeField(cur_tile, field_type, industry);
 			SetClearCounter(cur_tile, counter);
 			MarkTileDirtyByTile(cur_tile);
@@ -1030,10 +1030,10 @@ static void PlantFarmField(TileIndex tile, IndustryID industry)
 		type = _plantfarmfield_type[Random() & 0xF];
 	}
 
-	SetupFarmFieldFence(ta.tile, ta.h, type, AXIS_Y, true);
-	SetupFarmFieldFence(ta.tile, ta.w, type, AXIS_X, true);
-	SetupFarmFieldFence(ta.tile + TileDiffXY(ta.w - 1, 0), ta.h, type, AXIS_Y, false);
-	SetupFarmFieldFence(ta.tile + TileDiffXY(0, ta.h - 1), ta.w, type, AXIS_X, false);
+	SetupFarmFieldFence(ta.tile, ta.h, type, DIAGDIR_NE);
+	SetupFarmFieldFence(ta.tile, ta.w, type, DIAGDIR_NW);
+	SetupFarmFieldFence(ta.tile + TileDiffXY(ta.w - 1, 0), ta.h, type, DIAGDIR_SW);
+	SetupFarmFieldFence(ta.tile + TileDiffXY(0, ta.h - 1), ta.w, type, DIAGDIR_SE);
 }
 
 void PlantRandomFarmField(const Industry *i)
@@ -1061,7 +1061,7 @@ static bool SearchLumberMillTrees(TileIndex tile, void *user_data)
 
 		_industry_sound_ctr = 1;
 		_industry_sound_tile = tile;
-		SndPlayTileFx(SND_38_CHAINSAW, tile);
+		if (_settings_client.sound.ambient) SndPlayTileFx(SND_38_CHAINSAW, tile);
 
 		DoCommand(tile, 0, 0, DC_EXEC, CMD_LANDSCAPE_CLEAR);
 
@@ -1098,7 +1098,7 @@ static void ProduceIndustryGoods(Industry *i)
 	if ((i->counter & 0x3F) == 0) {
 		uint32 r;
 		uint num;
-		if (Chance16R(1, 14, r) && (num = indsp->number_of_sounds) != 0) {
+		if (Chance16R(1, 14, r) && (num = indsp->number_of_sounds) != 0 && _settings_client.sound.ambient) {
 			SndPlayTileFx(
 				(SoundFx)(indsp->random_sounds[((r >> 16) * num) >> 16]),
 				i->location.tile);
@@ -1157,10 +1157,10 @@ void OnTick_Industry()
 		_industry_sound_ctr++;
 
 		if (_industry_sound_ctr == 75) {
-			SndPlayTileFx(SND_37_BALLOON_SQUEAK, _industry_sound_tile);
+			if (_settings_client.sound.ambient) SndPlayTileFx(SND_37_BALLOON_SQUEAK, _industry_sound_tile);
 		} else if (_industry_sound_ctr == 160) {
 			_industry_sound_ctr = 0;
-			SndPlayTileFx(SND_36_CARTOON_CRASH, _industry_sound_tile);
+			if (_settings_client.sound.ambient) SndPlayTileFx(SND_36_CARTOON_CRASH, _industry_sound_tile);
 		}
 	}
 
@@ -1384,13 +1384,13 @@ static CommandCost CheckIfIndustryTilesAreFree(TileIndex tile, const IndustryTil
 
 		if (gfx == GFX_WATERTILE_SPECIALCHECK) {
 			if (!IsTileType(cur_tile, MP_WATER) ||
-					GetTileSlope(cur_tile) != SLOPE_FLAT) {
+					!IsTileFlat(cur_tile)) {
 				return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 			}
 		} else {
 			CommandCost ret = EnsureNoVehicleOnGround(cur_tile);
 			if (ret.Failed()) return ret;
-			if (MayHaveBridgeAbove(cur_tile) && IsBridgeAbove(cur_tile)) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
+			if (IsBridgeAbove(cur_tile)) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 
 			const IndustryTileSpec *its = GetIndustryTileSpec(gfx);
 
@@ -1566,7 +1566,30 @@ static bool CheckIfCanLevelIndustryPlatform(TileIndex tile, DoCommandFlag flags,
 static CommandCost CheckIfFarEnoughFromConflictingIndustry(TileIndex tile, int type)
 {
 	const IndustrySpec *indspec = GetIndustrySpec(type);
-	const Industry *i;
+	const Industry *i = NULL;
+
+	/* On a large map with many industries, it may be faster to check an area. */
+	static const int dmax = 14;
+	if (Industry::GetNumItems() > (size_t) (dmax * dmax * 2)) {
+		const int tx = TileX(tile);
+		const int ty = TileY(tile);
+		TileArea tile_area = TileArea(TileXY(max(0, tx - dmax), max(0, ty - dmax)), TileXY(min(MapMaxX(), tx + dmax), min(MapMaxY(), ty + dmax)));
+		TILE_AREA_LOOP(atile, tile_area) {
+			if (GetTileType(atile) == MP_INDUSTRY) {
+				const Industry *i2 = Industry::GetByTile(atile);
+				if (i == i2) continue;
+				i = i2;
+				if (DistanceMax(tile, i->location.tile) > (uint)dmax) continue;
+				if (i->type == indspec->conflicting[0] ||
+						i->type == indspec->conflicting[1] ||
+						i->type == indspec->conflicting[2]) {
+					return_cmd_error(STR_ERROR_INDUSTRY_TOO_CLOSE);
+				}
+			}
+		}
+		return CommandCost();
+	}
+
 	FOR_ALL_INDUSTRIES(i) {
 		/* Within 14 tiles from another industry is considered close */
 		if (DistanceMax(tile, i->location.tile) > 14) continue;
@@ -1827,6 +1850,7 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 -  7) - industry type see build_industry.h and see industry.h
  * - p1 = (bit  8 - 15) - first layout to try
+ * - p1 = (bit 16     ) - 0 = prospect, 1 = fund (only valid if current company is DEITY)
  * @param p2 seed to use for desyncfree randomisations
  * @param text unused
  * @return the cost of this operation or an error
@@ -1843,11 +1867,11 @@ CommandCost CmdBuildIndustry(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 
 	/* If the setting for raw-material industries is not on, you cannot build raw-material industries.
 	 * Raw material industries are industries that do not accept cargo (at least for now) */
-	if (_game_mode != GM_EDITOR && _settings_game.construction.raw_industry_construction == 0 && indspec->IsRawIndustry()) {
+	if (_game_mode != GM_EDITOR && _current_company != OWNER_DEITY && _settings_game.construction.raw_industry_construction == 0 && indspec->IsRawIndustry()) {
 		return CMD_ERROR;
 	}
 
-	if (_game_mode != GM_EDITOR && GetIndustryProbabilityCallback(it, IACT_USERCREATION, 1) == 0) {
+	if (_game_mode != GM_EDITOR && GetIndustryProbabilityCallback(it, _current_company == OWNER_DEITY ? IACT_RANDOMCREATION : IACT_USERCREATION, 1) == 0) {
 		return CMD_ERROR;
 	}
 
@@ -1857,16 +1881,17 @@ CommandCost CmdBuildIndustry(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	uint32 random_var8f = randomizer.Next();
 	int num_layouts = indspec->num_table;
 	CommandCost ret = CommandCost(STR_ERROR_SITE_UNSUITABLE);
+	const bool deity_prospect = _current_company == OWNER_DEITY && !HasBit(p1, 16);
 
 	Industry *ind = NULL;
-	if (_game_mode != GM_EDITOR && _settings_game.construction.raw_industry_construction == 2 && indspec->IsRawIndustry()) {
+	if (deity_prospect || (_game_mode != GM_EDITOR && _current_company != OWNER_DEITY && _settings_game.construction.raw_industry_construction == 2 && indspec->IsRawIndustry())) {
 		if (flags & DC_EXEC) {
 			/* Prospected industries are build as OWNER_TOWN to not e.g. be build on owned land of the founder */
 			Backup<CompanyByte> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
 			/* Prospecting has a chance to fail, however we cannot guarantee that something can
 			 * be built on the map, so the chance gets lower when the map is fuller, but there
 			 * is nothing we can really do about that. */
-			if (Random() <= indspec->prospecting_chance) {
+			if (deity_prospect || Random() <= indspec->prospecting_chance) {
 				for (int i = 0; i < 5000; i++) {
 					/* We should not have more than one Random() in a function call
 					 * because parameter evaluation order is not guaranteed in the c++ standard
@@ -1877,7 +1902,7 @@ CommandCost CmdBuildIndustry(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 					/* Check now each layout, starting with the random one */
 					for (int j = 0; j < num_layouts; j++) {
 						layout = (layout + 1) % num_layouts;
-						ret = CreateNewIndustryHelper(tile, it, flags, indspec, layout, random_var8f, random_initial_bits, cur_company.GetOriginalValue(), IACT_PROSPECTCREATION, &ind);
+						ret = CreateNewIndustryHelper(tile, it, flags, indspec, layout, random_var8f, random_initial_bits, cur_company.GetOriginalValue(), _current_company == OWNER_DEITY ? IACT_RANDOMCREATION : IACT_PROSPECTCREATION, &ind);
 						if (ret.Succeeded()) break;
 					}
 					if (ret.Succeeded()) break;
@@ -1892,7 +1917,7 @@ CommandCost CmdBuildIndustry(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 		/* Check subsequently each layout, starting with the given layout in p1 */
 		for (int i = 0; i < num_layouts; i++) {
 			layout = (layout + 1) % num_layouts;
-			ret = CreateNewIndustryHelper(tile, it, flags, indspec, layout, random_var8f, random_initial_bits, _current_company, IACT_USERCREATION, &ind);
+			ret = CreateNewIndustryHelper(tile, it, flags, indspec, layout, random_var8f, random_initial_bits, _current_company, _current_company == OWNER_DEITY ? IACT_RANDOMCREATION : IACT_USERCREATION, &ind);
 			if (ret.Succeeded()) break;
 		}
 
@@ -1996,7 +2021,7 @@ static uint GetNumberOfIndustries()
 
 	assert(lengthof(numof_industry_table) == ID_END);
 	uint difficulty = (_game_mode != GM_EDITOR) ? _settings_game.difficulty.industry_density : (uint)ID_VERY_LOW;
-	return ScaleByMapSize(numof_industry_table[difficulty]);
+	return min(IndustryPool::MAX_SIZE, ScaleByMapSize(numof_industry_table[difficulty]));
 }
 
 /**
@@ -2596,6 +2621,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	/* Close if needed and allowed */
 	if (closeit && !CheckIndustryCloseDownProtection(i->type)) {
 		i->prod_level = PRODLEVEL_CLOSURE;
+		SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 		str = indspec->closure_text;
 	}
 
@@ -2651,7 +2677,7 @@ void IndustryDailyLoop()
 	 * is sufficient for an industry. */
 	uint16 change_loop = _economy.industry_daily_change_counter >> 16;
 
-	/* Reset the active part of the counter, just keeping the "factional part" */
+	/* Reset the active part of the counter, just keeping the "fractional part" */
 	_economy.industry_daily_change_counter &= 0xFFFF;
 
 	if (change_loop == 0) {
@@ -2716,14 +2742,43 @@ void InitializeIndustries()
 	_industry_builder.Reset();
 }
 
+/** Verify whether the generated industries are complete, and warn the user if not. */
+void CheckIndustries()
+{
+	int count = 0;
+	for (IndustryType it = 0; it < NUM_INDUSTRYTYPES; it++) {
+		if (Industry::GetIndustryTypeCount(it) > 0) continue; // Types of existing industries can be skipped.
+
+		bool force_at_least_one;
+		uint32 chance = GetScaledIndustryGenerationProbability(it, &force_at_least_one);
+		if (chance == 0 || !force_at_least_one) continue; // Types that are not available can be skipped.
+
+		const IndustrySpec *is = GetIndustrySpec(it);
+		SetDParam(0, is->name);
+		ShowErrorMessage(STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES, STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION, WL_WARNING);
+
+		count++;
+		if (count >= 3) break; // Don't swamp the user with errors.
+	}
+}
+
 /**
  * Is an industry with the spec a raw industry?
  * @return true if it should be handled as a raw industry
  */
 bool IndustrySpec::IsRawIndustry() const
 {
-	/* Lumber mills are extractive/organic, but can always be built like a non-raw industry */
-	return (this->life_type & (INDUSTRYLIFE_EXTRACTIVE | INDUSTRYLIFE_ORGANIC)) != 0 &&
+	return (this->life_type & (INDUSTRYLIFE_EXTRACTIVE | INDUSTRYLIFE_ORGANIC)) != 0;
+}
+
+/**
+ * Is an industry with the spec a processing industry?
+ * @return true if it should be handled as a processing industry
+ */
+bool IndustrySpec::IsProcessingIndustry() const
+{
+	/* Lumber mills are neither raw nor processing */
+	return (this->life_type & INDUSTRYLIFE_PROCESSING) != 0 &&
 			(this->behaviour & INDUSTRYBEH_CUT_TREES) == 0;
 }
 

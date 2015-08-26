@@ -91,7 +91,7 @@ enum TTDPAirportType {
 struct HangarTileTable {
 	TileIndexDiffC ti; ///< Tile offset from the top-most airport tile.
 	Direction dir;     ///< Direction of the exit.
-	byte hangar_num;   ///< The hanger to which this tile belongs.
+	byte hangar_num;   ///< The hangar to which this tile belongs.
 };
 
 /**
@@ -114,7 +114,7 @@ struct AirportSpec {
 	TTDPAirportType ttd_airport_type;      ///< ttdpatch airport type (Small/Large/Helipad/Oilrig)
 	AirportClassID cls_id;                 ///< the class to which this airport type belongs
 	SpriteID preview_sprite;               ///< preview sprite for this airport
-	uint16 maintenance_cost;               ///< maintenance cost mulltiplier
+	uint16 maintenance_cost;               ///< maintenance cost multiplier
 	/* Newgrf data */
 	bool enabled;                          ///< Entity still available (by default true). Newgrf can disable it, though.
 	struct GRFFileProps grf_prop;          ///< Properties related to the grf file.

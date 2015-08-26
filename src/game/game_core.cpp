@@ -21,16 +21,13 @@
 #include "game_instance.hpp"
 #include "game_info.hpp"
 
+#include "../safeguards.h"
+
 /* static */ uint Game::frame_counter = 0;
 /* static */ GameInfo *Game::info = NULL;
 /* static */ GameInstance *Game::instance = NULL;
 /* static */ GameScannerInfo *Game::scanner_info = NULL;
 /* static */ GameScannerLibrary *Game::scanner_library = NULL;
-
-/* static */ const char *Game::GetMainScript()
-{
-		return Game::info->GetMainScript();
-}
 
 /* static */ void Game::GameLoop()
 {
@@ -76,6 +73,8 @@
 	GameInfo *info = config->GetInfo();
 	if (info == NULL) return;
 
+	config->AnchorUnchangeableSettings();
+
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
 	cur_company.Change(OWNER_DEITY);
 
@@ -117,6 +116,21 @@
 	}
 }
 
+/* static */ void Game::Pause()
+{
+	if (Game::instance != NULL) Game::instance->Pause();
+}
+
+/* static */ void Game::Unpause()
+{
+	if (Game::instance != NULL) Game::instance->Unpause();
+}
+
+/* static */ bool Game::IsPaused()
+{
+	return Game::instance != NULL? Game::instance->IsPaused() : false;
+}
+
 /* static */ void Game::NewEvent(ScriptEvent *event)
 {
 	/* AddRef() and Release() need to be called at least once, so do it here */
@@ -144,7 +158,7 @@
 
 /* static */ void Game::ResetConfig()
 {
-	/* Check for both newgame as current game if we can reload the GameInfo insde
+	/* Check for both newgame as current game if we can reload the GameInfo inside
 	 *  the GameConfig. If not, remove the Game from the list. */
 	if (_settings_game.game_config != NULL && _settings_game.game_config->HasScript()) {
 		if (!_settings_game.game_config->ResetInfo(true)) {
@@ -253,3 +267,12 @@
 }
 
 #endif /* defined(ENABLE_NETWORK) */
+
+/* static */ GameScannerInfo *Game::GetScannerInfo()
+{
+	return Game::scanner_info;
+}
+/* static */ GameScannerLibrary *Game::GetScannerLibrary()
+{
+	return Game::scanner_library;
+}

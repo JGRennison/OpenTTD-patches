@@ -12,7 +12,10 @@
 #include "stdafx.h"
 #include "viewport_func.h"
 #include "vehicle_func.h"
+#include "newgrf_station.h"
 #include "pathfinder/follow_track.hpp"
+
+#include "safeguards.h"
 
 /**
  * Get the reserved trackbits for any tile, regardless of type.
@@ -72,16 +75,21 @@ void SetRailStationPlatformReservation(TileIndex start, DiagDirection dir, bool 
  * Try to reserve a specific track on a tile
  * @param tile the tile
  * @param t the track
+ * @param trigger_stations whether to call station randomisation trigger
  * @return \c true if reservation was successful, i.e. the track was
  *     free and didn't cross any other reserved tracks.
  */
-bool TryReserveRailTrack(TileIndex tile, Track t)
+bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 {
 	assert((GetTileTrackStatus(tile, TRANSPORT_RAIL, 0) & TrackToTrackBits(t)) != 0);
 
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
-		MarkTileDirtyByTile(tile);
+		if (IsBridgeTile(tile)) {
+			MarkBridgeDirty(tile);
+		} else {
+			MarkTileDirtyByTile(tile);
+		}
 	}
 
 	switch (GetTileType(tile)) {
@@ -108,6 +116,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t)
 		case MP_STATION:
 			if (HasStationRail(tile) && !HasStationReservation(tile)) {
 				SetRailStationReservation(tile, true);
+				if (trigger_stations && IsRailStation(tile)) TriggerStationRandomisation(NULL, tile, SRT_PATH_RESERVATION);
 				MarkTileDirtyByTile(tile); // some GRFs need redraw after reserving track
 				return true;
 			}
@@ -136,7 +145,11 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 	assert((GetTileTrackStatus(tile, TRANSPORT_RAIL, 0) & TrackToTrackBits(t)) != 0);
 
 	if (_settings_client.gui.show_track_reservation) {
-		MarkTileDirtyByTile(tile);
+		if (IsBridgeTile(tile)) {
+			MarkBridgeDirty(tile);
+		} else {
+			MarkTileDirtyByTile(tile);
+		}
 	}
 
 	switch (GetTileType(tile)) {
@@ -219,7 +232,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 
 		if (first_loop) {
 			/* Update the start tile after we followed the track the first
-			 * time. This is neccessary because the track follower can skip
+			 * time. This is necessary because the track follower can skip
 			 * tiles (in stations for example) which means that we might
 			 * never visit our original starting tile again. */
 			start_tile = tile;
@@ -376,7 +389,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 		if (HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) return true;
 	}
 
-	/* Check next tile. For perfomance reasons, we check for 90 degree turns ourself. */
+	/* Check next tile. For performance reasons, we check for 90 degree turns ourself. */
 	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);
 
 	/* End of track? */

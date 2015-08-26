@@ -27,6 +27,9 @@
 
 #include "../company_base.h"
 #include "../company_func.h"
+#include "../fileio_func.h"
+
+#include "../safeguards.h"
 
 ScriptStorage::~ScriptStorage()
 {
@@ -43,11 +46,12 @@ ScriptStorage::~ScriptStorage()
 static void PrintFunc(bool error_msg, const SQChar *message)
 {
 	/* Convert to OpenTTD internal capable string */
-	ScriptController::Print(error_msg, SQ2OTTD(message));
+	ScriptController::Print(error_msg, message);
 }
 
 ScriptInstance::ScriptInstance(const char *APIName) :
 	engine(NULL),
+	versionAPI(NULL),
 	controller(NULL),
 	storage(NULL),
 	instance(NULL),
@@ -55,6 +59,7 @@ ScriptInstance::ScriptInstance(const char *APIName) :
 	is_dead(false),
 	is_save_data_on_stack(false),
 	suspend(0),
+	is_paused(false),
 	callback(NULL)
 {
 	this->storage = new ScriptStorage();
@@ -104,6 +109,28 @@ void ScriptInstance::RegisterAPI()
 	squirrel_register_std(this->engine);
 }
 
+bool ScriptInstance::LoadCompatibilityScripts(const char *api_version, Subdirectory dir)
+{
+	char script_name[32];
+	seprintf(script_name, lastof(script_name), "compat_%s.nut", api_version);
+	char buf[MAX_PATH];
+	Searchpath sp;
+	FOR_ALL_SEARCHPATHS(sp) {
+		FioAppendDirectory(buf, lastof(buf), sp, dir);
+		strecat(buf, script_name, lastof(buf));
+		if (!FileExists(buf)) continue;
+
+		if (this->engine->LoadScript(buf)) return true;
+
+		ScriptLog::Error("Failed to load API compatibility script");
+		DEBUG(script, 0, "Error compiling / running API compatibility script: %s", buf);
+		return false;
+	}
+
+	ScriptLog::Warning("API compatibility script not found");
+	return true;
+}
+
 ScriptInstance::~ScriptInstance()
 {
 	ScriptObject::ActiveInstance active(this);
@@ -142,6 +169,7 @@ void ScriptInstance::GameLoop()
 		this->Died();
 		return;
 	}
+	if (this->is_paused) return;
 	this->controller->ticks++;
 
 	if (this->suspend   < -1) this->suspend++; // Multiplayer suspend, increase up to -1.
@@ -250,6 +278,16 @@ void ScriptInstance::CollectGarbage() const
 	instance->engine->InsertResult(ScriptObject::GetNewGoalID());
 }
 
+/* static */ void ScriptInstance::DoCommandReturnStoryPageID(ScriptInstance *instance)
+{
+	instance->engine->InsertResult(ScriptObject::GetNewStoryPageID());
+}
+
+/* static */ void ScriptInstance::DoCommandReturnStoryPageElementID(ScriptInstance *instance)
+{
+	instance->engine->InsertResult(ScriptObject::GetNewStoryPageElementID());
+}
+
 ScriptStorage *ScriptInstance::GetStorage()
 {
 	return this->storage;
@@ -329,11 +367,8 @@ static const SaveLoad _script_byte[] = {
 				_script_sl_byte = SQSL_STRING;
 				SlObject(NULL, _script_byte);
 			}
-			const SQChar *res;
-			sq_getstring(vm, index, &res);
-			/* @bug if a string longer than 512 characters is given to SQ2OTTD, the
-			 *  internal buffer overflows. */
-			const char *buf = SQ2OTTD(res);
+			const SQChar *buf;
+			sq_getstring(vm, index, &buf);
 			size_t len = strlen(buf) + 1;
 			if (len >= 255) {
 				ScriptLog::Error("Maximum string length is 254 chars. No data saved.");
@@ -497,10 +532,23 @@ void ScriptInstance::Save()
 	}
 }
 
-void ScriptInstance::Suspend()
+void ScriptInstance::Pause()
 {
+	/* Suspend script. */
 	HSQUIRRELVM vm = this->engine->GetVM();
 	Squirrel::DecreaseOps(vm, _settings_game.script.script_max_opcode_till_suspend);
+
+	this->is_paused = true;
+}
+
+void ScriptInstance::Unpause()
+{
+	this->is_paused = false;
+}
+
+bool ScriptInstance::IsPaused()
+{
+	return this->is_paused;
 }
 
 /* static */ bool ScriptInstance::LoadObjects(HSQUIRRELVM vm)
@@ -518,7 +566,7 @@ void ScriptInstance::Suspend()
 			SlObject(NULL, _script_byte);
 			static char buf[256];
 			SlArray(buf, _script_sl_byte, SLE_CHAR);
-			if (vm != NULL) sq_pushstring(vm, OTTD2SQ(buf), -1);
+			if (vm != NULL) sq_pushstring(vm, buf, -1);
 			return true;
 		}
 
@@ -543,7 +591,7 @@ void ScriptInstance::Suspend()
 
 		case SQSL_BOOL: {
 			SlObject(NULL, _script_byte);
-			if (vm != NULL) sq_pushinteger(vm, (SQBool)(_script_sl_byte != 0));
+			if (vm != NULL) sq_pushbool(vm, (SQBool)(_script_sl_byte != 0));
 			return true;
 		}
 
@@ -607,7 +655,7 @@ bool ScriptInstance::CallLoad()
 	/* Go to the instance-root */
 	sq_pushobject(vm, *this->instance);
 	/* Find the function-name inside the script */
-	sq_pushstring(vm, OTTD2SQ("Load"), -1);
+	sq_pushstring(vm, "Load", -1);
 	/* Change the "Load" string in a function pointer */
 	sq_get(vm, -2);
 	/* Push the main instance as "this" object */

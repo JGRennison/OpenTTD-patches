@@ -26,18 +26,21 @@
 #include "core/geometry_func.hpp"
 #include "language.h"
 #include "rev.h"
+#include "highscore.h"
 
 #include "widgets/intro_widget.h"
 
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 struct SelectGameWindow : public Window {
 
-	SelectGameWindow(const WindowDesc *desc) : Window()
+	SelectGameWindow(WindowDesc *desc) : Window(desc)
 	{
-		this->CreateNestedTree(desc);
-		this->FinishInitNested(desc, 0);
+		this->CreateNestedTree();
+		this->FinishInitNested(0);
 		this->OnInvalidateData();
 	}
 
@@ -53,11 +56,6 @@ struct SelectGameWindow : public Window {
 		this->SetWidgetLoweredState(WID_SGI_ARCTIC_LANDSCAPE,    _settings_newgame.game_creation.landscape == LT_ARCTIC);
 		this->SetWidgetLoweredState(WID_SGI_TROPIC_LANDSCAPE,    _settings_newgame.game_creation.landscape == LT_TROPIC);
 		this->SetWidgetLoweredState(WID_SGI_TOYLAND_LANDSCAPE,   _settings_newgame.game_creation.landscape == LT_TOYLAND);
-	}
-
-	virtual void SetStringParameters(int widget) const
-	{
-		if (widget == WID_SGI_DIFFICULTIES) SetDParam(0, STR_DIFFICULTY_LEVEL_EASY + _settings_newgame.difficulty.diff_level);
 	}
 
 	virtual void OnInit()
@@ -79,18 +77,6 @@ struct SelectGameWindow : public Window {
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		switch (widget) {
-			case WID_SGI_DIFFICULTIES: {
-				Dimension textdim = {0, 0};
-				for (uint i = STR_DIFFICULTY_LEVEL_EASY; i <= STR_DIFFICULTY_LEVEL_CUSTOM; i++) {
-					SetDParam(0, i);
-					textdim = maxdim(textdim, GetStringBoundingBox(STR_INTRO_DIFFICULTY));
-				}
-				textdim.width += padding.width;
-				textdim.height += padding.height;
-				*size = maxdim(*size, textdim);
-				break;
-			}
-
 			case WID_SGI_TRANSLATION: {
 				SetDParam(0, _current_language->missing);
 				int height = GetStringHeight(STR_INTRO_TRANSLATION, size->width);
@@ -144,7 +130,7 @@ struct SelectGameWindow : public Window {
 				break;
 
 			case WID_SGI_OPTIONS:         ShowGameOptions(); break;
-			case WID_SGI_DIFFICULTIES:    ShowGameDifficulty(); break;
+			case WID_SGI_HIGHSCORE:       ShowHighscoreTable(); break;
 			case WID_SGI_SETTINGS_OPTIONS:ShowGameSettings(); break;
 			case WID_SGI_GRF_SETTINGS:    ShowNewGRFSettings(true, true, false, &_grfconfig_newgame); break;
 			case WID_SGI_CONTENT_DOWNLOAD:
@@ -219,32 +205,32 @@ static const NWidgetPart _nested_select_game_widgets[] = {
 		EndContainer(),
 	EndContainer(),
 
-	/* 'game options' and 'difficulty options' buttons */
+	/* 'game options' and 'advanced settings' buttons */
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_OPTIONS), SetMinimalSize(158, 12),
 							SetDataTip(STR_INTRO_GAME_OPTIONS, STR_INTRO_TOOLTIP_GAME_OPTIONS), SetPadding(0, 0, 0, 10), SetFill(1, 0),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_DIFFICULTIES), SetMinimalSize(158, 12),
-							SetDataTip(STR_INTRO_DIFFICULTY, STR_INTRO_TOOLTIP_DIFFICULTY_OPTIONS), SetPadding(0, 10, 0, 0), SetFill(1, 0),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_SETTINGS_OPTIONS), SetMinimalSize(158, 12),
+							SetDataTip(STR_INTRO_CONFIG_SETTINGS_TREE, STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE), SetPadding(0, 10, 0, 0), SetFill(1, 0),
 	EndContainer(),
 
 	NWidget(NWID_SPACER), SetMinimalSize(0, 6),
 
-	/* 'advanced settings' and 'newgrf settings' buttons */
+	/* 'script settings' and 'newgrf settings' buttons */
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_SETTINGS_OPTIONS), SetMinimalSize(158, 12),
-							SetDataTip(STR_INTRO_ADVANCED_SETTINGS, STR_INTRO_TOOLTIP_ADVANCED_SETTINGS), SetPadding(0, 0, 0, 10), SetFill(1, 0),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_AI_SETTINGS), SetMinimalSize(158, 12),
+							SetDataTip(STR_INTRO_SCRIPT_SETTINGS, STR_INTRO_TOOLTIP_SCRIPT_SETTINGS), SetPadding(0, 0, 0, 10), SetFill(1, 0),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_GRF_SETTINGS), SetMinimalSize(158, 12),
 							SetDataTip(STR_INTRO_NEWGRF_SETTINGS, STR_INTRO_TOOLTIP_NEWGRF_SETTINGS), SetPadding(0, 10, 0, 0), SetFill(1, 0),
 	EndContainer(),
 
 	NWidget(NWID_SPACER), SetMinimalSize(0, 6),
 
-	/* 'online content' and 'ai settings' buttons */
+	/* 'online content' and 'highscore' buttons */
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_CONTENT_DOWNLOAD), SetMinimalSize(158, 12),
 							SetDataTip(STR_INTRO_ONLINE_CONTENT, STR_INTRO_TOOLTIP_ONLINE_CONTENT), SetPadding(0, 0, 0, 10), SetFill(1, 0),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_AI_SETTINGS), SetMinimalSize(158, 12),
-							SetDataTip(STR_INTRO_SCRIPT_SETTINGS, STR_INTRO_TOOLTIP_SCRIPT_SETTINGS), SetPadding(0, 10, 0, 0), SetFill(1, 0),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_HIGHSCORE), SetMinimalSize(158, 12),
+							SetDataTip(STR_INTRO_HIGHSCORE, STR_INTRO_TOOLTIP_HIGHSCORE), SetPadding(0, 10, 0, 0), SetFill(1, 0),
 	EndContainer(),
 
 	NWidget(NWID_SPACER), SetMinimalSize(0, 6),
@@ -262,10 +248,10 @@ static const NWidgetPart _nested_select_game_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _select_game_desc(
-	WDP_CENTER, 0, 0,
+static WindowDesc _select_game_desc(
+	WDP_CENTER, NULL, 0, 0,
 	WC_SELECT_GAME, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_nested_select_game_widgets, lengthof(_nested_select_game_widgets)
 );
 

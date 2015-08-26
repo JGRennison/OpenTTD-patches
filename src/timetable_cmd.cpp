@@ -16,8 +16,11 @@
 #include "window_func.h"
 #include "vehicle_base.h"
 #include "cmd_helper.h"
+#include "core/sort_func.hpp"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 /**
  * Change/update a particular timetable entry.
@@ -25,45 +28,54 @@
  * @param order_number The index of the timetable in the order list.
  * @param val          The new data of the timetable entry.
  * @param mtf          Which part of the timetable entry to change.
+ * @param timetabled   If the new value is explicitly timetabled.
  */
-static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val, ModifyTimetableFlags mtf)
+static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val, ModifyTimetableFlags mtf, bool timetabled)
 {
 	Order *order = v->GetOrder(order_number);
-	int delta = 0;
+	int total_delta = 0;
+	int timetable_delta = 0;
 
 	switch (mtf) {
 		case MTF_WAIT_TIME:
-			delta = val - order->wait_time;
-			order->wait_time = val;
+			total_delta = val - order->GetWaitTime();
+			timetable_delta = (timetabled ? val : 0) - order->GetTimetabledWait();
+			order->SetWaitTime(val);
+			order->SetWaitTimetabled(timetabled);
 			break;
 
 		case MTF_TRAVEL_TIME:
-			delta = val - order->travel_time;
-			order->travel_time = val;
+			total_delta = val - order->GetTravelTime();
+			timetable_delta = (timetabled ? val : 0) - order->GetTimetabledTravel();
+			order->SetTravelTime(val);
+			order->SetTravelTimetabled(timetabled);
 			break;
 
 		case MTF_TRAVEL_SPEED:
-			order->max_speed = val;
+			order->SetMaxSpeed(val);
 			break;
 
 		default:
 			NOT_REACHED();
 	}
-	v->orders.list->UpdateOrderTimetable(delta);
+	v->orders.list->UpdateTotalDuration(total_delta);
+	v->orders.list->UpdateTimetableDuration(timetable_delta);
 
 	for (v = v->FirstShared(); v != NULL; v = v->NextShared()) {
 		if (v->cur_real_order_index == order_number && v->current_order.Equals(*order)) {
 			switch (mtf) {
 				case MTF_WAIT_TIME:
-					v->current_order.wait_time = val;
+					v->current_order.SetWaitTime(val);
+					v->current_order.SetWaitTimetabled(timetabled);
 					break;
 
 				case MTF_TRAVEL_TIME:
-					v->current_order.travel_time = val;
+					v->current_order.SetTravelTime(val);
+					v->current_order.SetTravelTimetabled(timetabled);
 					break;
 
 				case MTF_TRAVEL_SPEED:
-					v->current_order.max_speed = val;
+					v->current_order.SetMaxSpeed(val);
 					break;
 
 				default:
@@ -84,6 +96,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
  * - p1 = (bit 28-29) - Timetable data to change (@see ModifyTimetableFlags)
  * @param p2 The amount of time to wait.
  * - p2 = (bit  0-15) - The data to modify as specified by p1 bits 28-29.
+ *                      0 to clear times, UINT16_MAX to clear speed limit.
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -104,9 +117,9 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 2>(p1);
 	if (mtf >= MTF_END) return CMD_ERROR;
 
-	int wait_time   = order->wait_time;
-	int travel_time = order->travel_time;
-	int max_speed   = order->max_speed;
+	int wait_time   = order->GetWaitTime();
+	int travel_time = order->GetTravelTime();
+	int max_speed   = order->GetMaxSpeed();
 	switch (mtf) {
 		case MTF_WAIT_TIME:
 			wait_time = GB(p2, 0, 16);
@@ -125,7 +138,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			NOT_REACHED();
 	}
 
-	if (wait_time != order->wait_time) {
+	if (wait_time != order->GetWaitTime()) {
 		switch (order->GetType()) {
 			case OT_GOTO_STATION:
 				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
@@ -138,13 +151,34 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		}
 	}
 
-	if (travel_time != order->travel_time && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
-	if (max_speed != order->max_speed && (order->IsType(OT_CONDITIONAL) || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
+	if (travel_time != order->GetTravelTime() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
+	if (max_speed != order->GetMaxSpeed() && (order->IsType(OT_CONDITIONAL) || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		if (wait_time   != order->wait_time)   ChangeTimetable(v, order_number, wait_time,   MTF_WAIT_TIME);
-		if (travel_time != order->travel_time) ChangeTimetable(v, order_number, travel_time, MTF_TRAVEL_TIME);
-		if (max_speed   != order->max_speed)   ChangeTimetable(v, order_number, max_speed,   MTF_TRAVEL_SPEED);
+		switch (mtf) {
+			case MTF_WAIT_TIME:
+				/* Set time if changing the value or confirming an estimated time as timetabled. */
+				if (wait_time != order->GetWaitTime() || (wait_time > 0 && !order->IsWaitTimetabled())) {
+					ChangeTimetable(v, order_number, wait_time, MTF_WAIT_TIME, wait_time > 0);
+				}
+				break;
+
+			case MTF_TRAVEL_TIME:
+				/* Set time if changing the value or confirming an estimated time as timetabled. */
+				if (travel_time != order->GetTravelTime() || (travel_time > 0 && !order->IsTravelTimetabled())) {
+					ChangeTimetable(v, order_number, travel_time, MTF_TRAVEL_TIME, travel_time > 0);
+				}
+				break;
+
+			case MTF_TRAVEL_SPEED:
+				if (max_speed != order->GetMaxSpeed()) {
+					ChangeTimetable(v, order_number, max_speed, MTF_TRAVEL_SPEED, max_speed != UINT16_MAX);
+				}
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	return CommandCost();
@@ -165,7 +199,7 @@ CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == NULL || !v->IsPrimaryVehicle() || v->orders.list == NULL) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -179,18 +213,62 @@ CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 }
 
 /**
+ * Order vehicles based on their timetable. The vehicles will be sorted in order
+ * they would reach the first station.
+ *
+ * @param ap First Vehicle pointer.
+ * @param bp Second Vehicle pointer.
+ * @return Comparison value.
+ */
+static int CDECL VehicleTimetableSorter(Vehicle * const *ap, Vehicle * const *bp)
+{
+	const Vehicle *a = *ap;
+	const Vehicle *b = *bp;
+
+	VehicleOrderID a_order = a->cur_real_order_index;
+	VehicleOrderID b_order = b->cur_real_order_index;
+	int j = (int)b_order - (int)a_order;
+
+	/* Are we currently at an ordered station (un)loading? */
+	bool a_load = a->current_order.IsType(OT_LOADING) && a->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE;
+	bool b_load = b->current_order.IsType(OT_LOADING) && b->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE;
+
+	/* If the current order is not loading at the ordered station, decrease the order index by one since we have
+	 * not yet arrived at the station (and thus the timetable entry; still in the travelling of the previous one).
+	 * Since the ?_order variables are unsigned the -1 will flow under and place the vehicles going to order #0 at
+	 * the begin of the list with vehicles arriving at #0. */
+	if (!a_load) a_order--;
+	if (!b_load) b_order--;
+
+	/* First check the order index that accounted for loading, then just the raw one. */
+	int i = (int)b_order - (int)a_order;
+	if (i != 0) return i;
+	if (j != 0) return j;
+
+	/* Look at the time we spent in this order; the higher, the closer to its destination. */
+	i = b->current_order_time - a->current_order_time;
+	if (i != 0) return i;
+
+	/* If all else is equal, use some unique index to sort it the same way. */
+	return b->unitnumber - a->unitnumber;
+}
+
+/**
  * Set the start date of the timetable.
  * @param tile Not used.
  * @param flags Operation to perform.
- * @param p1 Vehicle id.
+ * @param p2 Various bitstuffed elements
+ * - p2 = (bit 0-19) - Vehicle ID.
+ * - p2 = (bit 20)   - Set to 1 to set timetable start for all vehicles sharing this order
  * @param p2 The timetable start date.
  * @param text Not used.
  * @return The error or cost of the operation.
  */
 CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
+	bool timetable_all = HasBit(p1, 20);
 	Vehicle *v = Vehicle::GetIfValid(GB(p1, 0, 20));
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == NULL || !v->IsPrimaryVehicle() || v->orders.list == NULL) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -200,13 +278,39 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	if (start_date < 0 || start_date > MAX_DAY) return CMD_ERROR;
 	if (start_date - _date > 15 * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
 	if (_date - start_date > DAYS_IN_LEAP_YEAR) return CMD_ERROR;
+	if (timetable_all && !v->orders.list->IsCompleteTimetable()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->lateness_counter = 0;
-		ClrBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
-		v->timetable_start = start_date;
+		SmallVector<Vehicle *, 8> vehs;
 
-		SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+		if (timetable_all) {
+			for (Vehicle *w = v->orders.list->GetFirstSharedVehicle(); w != NULL; w = w->NextShared()) {
+				*vehs.Append() = w;
+			}
+		} else {
+			*vehs.Append() = v;
+		}
+
+		int total_duration = v->orders.list->GetTimetableTotalDuration();
+		int num_vehs = vehs.Length();
+
+		if (num_vehs >= 2) {
+			QSortT(vehs.Begin(), vehs.Length(), &VehicleTimetableSorter);
+		}
+
+		int base = vehs.FindIndex(v);
+
+		for (Vehicle **viter = vehs.Begin(); viter != vehs.End(); viter++) {
+			int idx = (viter - vehs.Begin()) - base;
+			Vehicle *w = *viter;
+
+			w->lateness_counter = 0;
+			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
+			/* Do multiplication, then division to reduce rounding errors. */
+			w->timetable_start = start_date + idx * total_duration / num_vehs / DAY_TICKS;
+			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
+		}
+
 	}
 
 	return CommandCost();
@@ -231,7 +335,7 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == NULL || !v->IsPrimaryVehicle() || v->orders.list == NULL) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -274,12 +378,14 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
  */
 void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 {
-	uint timetabled = travelling ? v->current_order.travel_time : v->current_order.wait_time;
 	uint time_taken = v->current_order_time;
 
 	v->current_order_time = 0;
 
 	if (v->current_order.IsType(OT_IMPLICIT)) return; // no timetabling of auto orders
+
+	if (v->cur_real_order_index >= v->GetNumOrders()) return;
+	Order *real_current_order = v->GetOrder(v->cur_real_order_index);
 
 	VehicleOrderID first_manual_order = 0;
 	for (Order *o = v->GetFirstOrder(); o != NULL && o->IsType(OT_IMPLICIT); o = o->next) {
@@ -307,42 +413,51 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 
 	if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) return;
 
-	if (HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE)) {
-		if (travelling && !HasBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME)) {
-			/* Need to clear that now as otherwise we are not able to reduce the wait time */
-			v->current_order.wait_time = 0;
-		}
+	bool autofilling = HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE);
+	bool remeasure_wait_time = !real_current_order->IsWaitTimetabled() ||
+			(autofilling && !HasBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME));
 
-		if (just_started) return;
-
-		/* Modify station waiting time only if our new value is larger (this is
-		 * always the case when we cleared the timetable). */
-		if (!v->current_order.IsType(OT_CONDITIONAL) && (travelling || time_taken > v->current_order.wait_time)) {
-			/* Round the time taken up to the nearest day, as this will avoid
-			 * confusion for people who are timetabling in days, and can be
-			 * adjusted later by people who aren't.
-			 * For trains/aircraft multiple movement cycles are done in one
-			 * tick. This makes it possible to leave the station and process
-			 * e.g. a depot order in the same tick, causing it to not fill
-			 * the timetable entry like is done for road vehicles/ships.
-			 * Thus always make sure at least one tick is used between the
-			 * processing of different orders when filling the timetable. */
-			time_taken = CeilDiv(max(time_taken, 1U), DAY_TICKS) * DAY_TICKS;
-
-			ChangeTimetable(v, v->cur_real_order_index, time_taken, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME);
-		}
-
-		if (v->cur_real_order_index == first_manual_order && travelling) {
-			/* If we just started we would have returned earlier and have not reached
-			 * this code. So obviously, we have completed our round: So turn autofill
-			 * off again. */
-			ClrBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE);
-			ClrBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
-		}
-		return;
+	if (travelling && remeasure_wait_time) {
+		/* We just finished travelling and want to remeasure the loading time,
+		 * so do not apply any restrictions for the loading to finish. */
+		v->current_order.SetWaitTime(0);
 	}
 
 	if (just_started) return;
+
+	/* Before modifying waiting times, check whether we want to preserve bigger ones. */
+	if (!real_current_order->IsType(OT_CONDITIONAL) &&
+			(travelling || time_taken > real_current_order->GetWaitTime() || remeasure_wait_time)) {
+		/* Round the time taken up to the nearest day, as this will avoid
+		 * confusion for people who are timetabling in days, and can be
+		 * adjusted later by people who aren't.
+		 * For trains/aircraft multiple movement cycles are done in one
+		 * tick. This makes it possible to leave the station and process
+		 * e.g. a depot order in the same tick, causing it to not fill
+		 * the timetable entry like is done for road vehicles/ships.
+		 * Thus always make sure at least one tick is used between the
+		 * processing of different orders when filling the timetable. */
+		uint time_to_set = CeilDiv(max(time_taken, 1U), DAY_TICKS) * DAY_TICKS;
+
+		if (travelling && (autofilling || !real_current_order->IsTravelTimetabled())) {
+			ChangeTimetable(v, v->cur_real_order_index, time_to_set, MTF_TRAVEL_TIME, autofilling);
+		} else if (!travelling && (autofilling || !real_current_order->IsWaitTimetabled())) {
+			ChangeTimetable(v, v->cur_real_order_index, time_to_set, MTF_WAIT_TIME, autofilling);
+		}
+	}
+
+	if (v->cur_real_order_index == first_manual_order && travelling) {
+		/* If we just started we would have returned earlier and have not reached
+		 * this code. So obviously, we have completed our round: So turn autofill
+		 * off again. */
+		ClrBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE);
+		ClrBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+	}
+
+	if (autofilling) return;
+
+	uint timetabled = travelling ? real_current_order->GetTimetabledTravel() :
+			real_current_order->GetTimetabledWait();
 
 	/* Vehicles will wait at stations if they arrive early even if they are not
 	 * timetabled to wait there, so make sure the lateness counter is updated

@@ -14,20 +14,26 @@
 
 #include "strings_type.h"
 #include "company_type.h"
+#include "settings_type.h"
 
 struct HighScore {
-	char company[100];
+	/**
+	 * The name of the company and president.
+	 * The + 5 is for the comma and space or possibly other characters
+	 * that join the two names in this single string and the '\0'.
+	 */
+	char company[(MAX_LENGTH_COMPANY_NAME_CHARS + MAX_LENGTH_PRESIDENT_NAME_CHARS + 5) * MAX_CHAR_LENGTH];
 	StringID title; ///< NOSAVE, has troubles with changing string-numbers.
-	uint16 score;   ///< do NOT change type, will break hs.dat
+	uint16 score;   ///< The score for this high score. Do NOT change type, will break hs.dat
 };
 
-extern HighScore _highscore_table[5][5]; // 4 difficulty-settings (+ network); top 5
+extern HighScore _highscore_table[SP_HIGHSCORE_END][5];
 
 void SaveToHighScore();
 void LoadFromHighScore();
 int8 SaveHighScoreValue(const Company *c);
 int8 SaveHighScoreValueNetwork();
 StringID EndGameGetPerformanceTitleFromValue(uint value);
-void ShowHighscoreTable(int difficulty, int8 rank);
+void ShowHighscoreTable(int difficulty = SP_CUSTOM, int8 rank = -1);
 
 #endif /* HIGHSCORE_H */

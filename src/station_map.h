@@ -45,7 +45,7 @@ static const int GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET =  4; ///< The offset for the
 static inline StationType GetStationType(TileIndex t)
 {
 	assert(IsTileType(t, MP_STATION));
-	return (StationType)GB(_m[t].m6, 3, 3);
+	return (StationType)GB(_me[t].m6, 3, 3);
 }
 
 /**
@@ -364,25 +364,25 @@ static inline TrackBits GetRailStationTrackBits(TileIndex t)
 }
 
 /**
- * Check if tile is compatible with a railstation tile. The two tiles
- * are compatible if all of the following are true:
- * \li both tiles are rail station tiles
- * \li the railtype of \a t1 is compatible with the railtype of \a t2
- * \li the tracks on \a t1 and \a t2 are in the same direction
+ * Check if a tile is a valid continuation to a railstation tile.
+ * The tile \a test_tile is a valid continuation to \a station_tile, if all of the following are true:
+ * \li \a test_tile is a rail station tile
+ * \li the railtype of \a test_tile is compatible with the railtype of \a station_tile
+ * \li the tracks on \a test_tile and \a station_tile are in the same direction
  * \li both tiles belong to the same station
- * \li \a t1 is not blocked (@see IsStationTileBlocked)
- * @param t1 First tile to compare
- * @param t2 Second tile to compare
- * @pre IsRailStationTile(t2)
+ * \li \a test_tile is not blocked (@see IsStationTileBlocked)
+ * @param test_tile Tile to test
+ * @param station_tile Station tile to compare with
+ * @pre IsRailStationTile(station_tile)
  * @return true if the two tiles are compatible
  */
-static inline bool IsCompatibleTrainStationTile(TileIndex t1, TileIndex t2)
+static inline bool IsCompatibleTrainStationTile(TileIndex test_tile, TileIndex station_tile)
 {
-	assert(IsRailStationTile(t2));
-	return IsRailStationTile(t1) && IsCompatibleRail(GetRailType(t1), GetRailType(t2)) &&
-			GetRailStationAxis(t1) == GetRailStationAxis(t2) &&
-			GetStationIndex(t1) == GetStationIndex(t2) &&
-			!IsStationTileBlocked(t1);
+	assert(IsRailStationTile(station_tile));
+	return IsRailStationTile(test_tile) && IsCompatibleRail(GetRailType(test_tile), GetRailType(station_tile)) &&
+			GetRailStationAxis(test_tile) == GetRailStationAxis(station_tile) &&
+			GetStationIndex(test_tile) == GetStationIndex(station_tile) &&
+			!IsStationTileBlocked(test_tile);
 }
 
 /**
@@ -394,7 +394,7 @@ static inline bool IsCompatibleTrainStationTile(TileIndex t1, TileIndex t2)
 static inline bool HasStationReservation(TileIndex t)
 {
 	assert(HasStationRail(t));
-	return HasBit(_m[t].m6, 2);
+	return HasBit(_me[t].m6, 2);
 }
 
 /**
@@ -406,7 +406,7 @@ static inline bool HasStationReservation(TileIndex t)
 static inline void SetRailStationReservation(TileIndex t, bool b)
 {
 	assert(HasStationRail(t));
-	SB(_m[t].m6, 2, 1, b ? 1 : 0);
+	SB(_me[t].m6, 2, 1, b ? 1 : 0);
 }
 
 /**
@@ -539,8 +539,8 @@ static inline void MakeStation(TileIndex t, Owner o, StationID sid, StationType 
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
 	_m[t].m5 = section;
-	SB(_m[t].m6, 2, 1, 0);
-	SB(_m[t].m6, 3, 3, st);
+	SB(_me[t].m6, 2, 1, 0);
+	SB(_me[t].m6, 3, 3, st);
 	_me[t].m7 = 0;
 }
 

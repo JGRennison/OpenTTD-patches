@@ -24,6 +24,8 @@
 #include "../script_fatalerror.hpp"
 #include "script_error.hpp"
 
+#include "../../safeguards.h"
+
 /**
  * Get the storage associated with the current ScriptInstance.
  * @return The storage.
@@ -144,6 +146,8 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	SetNewSignID(_new_sign_id);
 	SetNewGroupID(_new_group_id);
 	SetNewGoalID(_new_goal_id);
+	SetNewStoryPageID(_new_story_page_id);
+	SetNewStoryPageElementID(_new_story_page_element_id);
 }
 
 /* static */ bool ScriptObject::GetLastCommandRes()
@@ -189,6 +193,26 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ GroupID ScriptObject::GetNewGoalID()
 {
 	return GetStorage()->new_goal_id;
+}
+
+/* static */ void ScriptObject::SetNewStoryPageID(StoryPageID story_page_id)
+{
+	GetStorage()->new_story_page_id = story_page_id;
+}
+
+/* static */ GroupID ScriptObject::GetNewStoryPageID()
+{
+	return GetStorage()->new_story_page_id;
+}
+
+/* static */ void ScriptObject::SetNewStoryPageElementID(StoryPageElementID story_page_element_id)
+{
+	GetStorage()->new_story_page_element_id = story_page_element_id;
+}
+
+/* static */ GroupID ScriptObject::GetNewStoryPageElementID()
+{
+	return GetStorage()->new_story_page_element_id;
 }
 
 /* static */ void ScriptObject::SetAllowDoCommand(bool allow)
@@ -240,7 +264,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	char buffer[64];
 	::GetString(buffer, string, lastof(buffer));
 	::str_validate(buffer, lastof(buffer), SVS_NONE);
-	return ::strdup(buffer);
+	return ::stredup(buffer);
 }
 
 /* static */ void ScriptObject::SetCallbackVariable(int index, int value)
@@ -263,6 +287,12 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	if (ScriptObject::GetCompany() != OWNER_DEITY && !::Company::IsValidID(ScriptObject::GetCompany())) {
 		ScriptObject::SetLastError(ScriptError::ERR_PRECONDITION_INVALID_COMPANY);
 		return false;
+	}
+
+	if (!StrEmpty(text) && (GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
+		/* The string must be valid, i.e. not contain special codes. Since some
+		 * can be made with GSText, make sure the control codes are removed. */
+		::str_validate(const_cast<char *>(text), text + strlen(text), SVS_NONE);
 	}
 
 	/* Set the default callback to return a true/false result of the DoCommand */
@@ -300,7 +330,12 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	if (_generating_world) {
 		IncreaseDoCommandCosts(res.GetCost());
-		if (callback != NULL) callback(GetActiveInstance());
+		if (callback != NULL) {
+			/* Insert return value into to stack and throw a control code that
+			 * the return value in the stack should be used. */
+			callback(GetActiveInstance());
+			throw SQInteger(1);
+		}
 		return true;
 	} else if (_networking) {
 		/* Suspend the script till the command is really executed. */

@@ -22,12 +22,15 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
 /* Extra ViewPort Window Stuff */
 static const NWidgetPart _nested_extra_view_port_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_EV_CAPTION), SetDataTip(STR_EXTRA_VIEW_PORT_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
@@ -51,9 +54,9 @@ static const NWidgetPart _nested_extra_view_port_widgets[] = {
 
 class ExtraViewportWindow : public Window {
 public:
-	ExtraViewportWindow(const WindowDesc *desc, int window_number, TileIndex tile) : Window()
+	ExtraViewportWindow(WindowDesc *desc, int window_number, TileIndex tile) : Window(desc)
 	{
-		this->InitNested(desc, window_number);
+		this->InitNested(window_number);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_EV_VIEWPORT);
 		nvp->InitializeViewport(this, 0, ZOOM_LVL_VIEWPORT);
@@ -153,10 +156,10 @@ public:
 	}
 };
 
-static const WindowDesc _extra_view_port_desc(
-	WDP_AUTO, 300, 268,
+static WindowDesc _extra_view_port_desc(
+	WDP_AUTO, "extra_viewport", 300, 268,
 	WC_EXTRA_VIEW_PORT, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_nested_extra_view_port_widgets, lengthof(_nested_extra_view_port_widgets)
 );
 

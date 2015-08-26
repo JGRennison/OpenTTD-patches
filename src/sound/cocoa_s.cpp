@@ -30,6 +30,8 @@
 #undef Rect
 #undef Point
 
+#include "../safeguards.h"
+
 static FSoundDriver_Cocoa iFSoundDriver_Cocoa;
 
 static AudioUnit _outputAudioUnit;
@@ -67,7 +69,7 @@ const char *SoundDriver_Cocoa::Start(const char * const *parm)
 	requestedDesc.mBytesPerFrame = requestedDesc.mBitsPerChannel * requestedDesc.mChannelsPerFrame / 8;
 	requestedDesc.mBytesPerPacket = requestedDesc.mBytesPerFrame * requestedDesc.mFramesPerPacket;
 
-	MxInitialize(requestedDesc.mSampleRate);
+	MxInitialize((uint)requestedDesc.mSampleRate);
 
 	/* Locate the default output audio unit */
 	desc.componentType = kAudioUnitType_Output;

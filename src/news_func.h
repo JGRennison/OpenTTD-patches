@@ -58,9 +58,6 @@ void NewsLoop();
 void InitNewsItemStructs();
 
 extern const NewsItem *_statusbar_news_item;
-extern bool _news_ticker_sound;
-
-extern NewsTypeData _news_type_data[];
 
 void DeleteInvalidEngineNews();
 void DeleteVehicleNews(VehicleID vid, StringID news);

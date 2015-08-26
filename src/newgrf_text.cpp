@@ -22,6 +22,7 @@
 #include "strings_func.h"
 #include "newgrf_storage.h"
 #include "newgrf_text.h"
+#include "newgrf_cargo.h"
 #include "string_func.h"
 #include "date_type.h"
 #include "debug.h"
@@ -32,72 +33,10 @@
 #include "table/strings.h"
 #include "table/control_codes.h"
 
+#include "safeguards.h"
+
 #define GRFTAB  28
 #define TABSIZE 11
-
-/**
- * Perform a mapping from TTDPatch's string IDs to OpenTTD's
- * string IDs, but only for the ones we are aware off; the rest
- * like likely unused and will show a warning.
- * @param str the string ID to convert
- * @return the converted string ID
- */
-StringID TTDPStringIDToOTTDStringIDMapping(StringID str)
-{
-	/* StringID table for TextIDs 0x4E->0x6D */
-	static const StringID units_volume[] = {
-		STR_ITEMS,      STR_PASSENGERS, STR_TONS,       STR_BAGS,
-		STR_LITERS,     STR_ITEMS,      STR_CRATES,     STR_TONS,
-		STR_TONS,       STR_TONS,       STR_TONS,       STR_BAGS,
-		STR_TONS,       STR_TONS,       STR_TONS,       STR_BAGS,
-		STR_TONS,       STR_TONS,       STR_BAGS,       STR_LITERS,
-		STR_TONS,       STR_LITERS,     STR_TONS,       STR_ITEMS,
-		STR_BAGS,       STR_LITERS,     STR_TONS,       STR_ITEMS,
-		STR_TONS,       STR_ITEMS,      STR_LITERS,     STR_ITEMS
-	};
-
-	/* A string straight from a NewGRF; no need to remap this as it's already mapped. */
-	if (IsInsideMM(str, 0xD000, 0xD7FF)) return str;
-
-#define TEXTID_TO_STRINGID(begin, end, stringid, stringend) \
-	assert_compile(stringend - stringid == end - begin); \
-	if (str >= begin && str <= end) return str + (stringid - begin)
-
-	/* We have some changes in our cargo strings, resulting in some missing. */
-	TEXTID_TO_STRINGID(0x000E, 0x002D, STR_CARGO_PLURAL_NOTHING,                      STR_CARGO_PLURAL_FIZZY_DRINKS);
-	TEXTID_TO_STRINGID(0x002E, 0x004D, STR_CARGO_SINGULAR_NOTHING,                    STR_CARGO_SINGULAR_FIZZY_DRINK);
-	if (str >= 0x004E && str <= 0x006D) return units_volume[str - 0x004E];
-	TEXTID_TO_STRINGID(0x006E, 0x008D, STR_QUANTITY_NOTHING,                          STR_QUANTITY_FIZZY_DRINKS);
-	TEXTID_TO_STRINGID(0x008E, 0x00AD, STR_ABBREV_NOTHING,                            STR_ABBREV_FIZZY_DRINKS);
-	TEXTID_TO_STRINGID(0x00D1, 0x00E0, STR_COLOUR_DARK_BLUE,                          STR_COLOUR_WHITE);
-
-	/* Map building names according to our lang file changes. There are several
-	 * ranges of house ids, all of which need to be remapped to allow newgrfs
-	 * to use original house names. */
-	TEXTID_TO_STRINGID(0x200F, 0x201F, STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1,    STR_TOWN_BUILDING_NAME_OLD_HOUSES_1);
-	TEXTID_TO_STRINGID(0x2036, 0x2041, STR_TOWN_BUILDING_NAME_COTTAGES_1,             STR_TOWN_BUILDING_NAME_SHOPPING_MALL_1);
-	TEXTID_TO_STRINGID(0x2059, 0x205C, STR_TOWN_BUILDING_NAME_IGLOO_1,                STR_TOWN_BUILDING_NAME_PIGGY_BANK_1);
-
-	/* Same thing for industries */
-	TEXTID_TO_STRINGID(0x4802, 0x4826, STR_INDUSTRY_NAME_COAL_MINE,                   STR_INDUSTRY_NAME_SUGAR_MINE);
-	TEXTID_TO_STRINGID(0x482D, 0x482E, STR_NEWS_INDUSTRY_CONSTRUCTION,                STR_NEWS_INDUSTRY_PLANTED);
-	TEXTID_TO_STRINGID(0x4832, 0x4834, STR_NEWS_INDUSTRY_CLOSURE_GENERAL,             STR_NEWS_INDUSTRY_CLOSURE_LACK_OF_TREES);
-	TEXTID_TO_STRINGID(0x4835, 0x4838, STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL, STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_FARM);
-	TEXTID_TO_STRINGID(0x4839, 0x483A, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL, STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM);
-
-	switch (str) {
-		case 0x4830: return STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY;
-		case 0x4831: return STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED;
-		case 0x483B: return STR_ERROR_CAN_ONLY_BE_POSITIONED;
-	}
-#undef TEXTID_TO_STRINGID
-
-	if (str == STR_NULL) return STR_EMPTY;
-
-	DEBUG(grf, 0, "Unknown StringID 0x%04X remapped to STR_EMPTY. Please open a Feature Request if you need it", str);
-
-	return STR_EMPTY;
-}
 
 /**
  * Explains the newgrf shift bit positioning.
@@ -182,7 +121,7 @@ private:
 	GRFText(byte langid_, const char *text_, size_t len_) : next(NULL), len(len_), langid(langid_)
 	{
 		/* We need to use memcpy instead of strcpy due to
-		 * the possibility of "choice lists" and therefor
+		 * the possibility of "choice lists" and therefore
 		 * intermediate string terminators. */
 		memcpy(this->text, text_, len);
 	}
@@ -292,11 +231,11 @@ struct UnmappedChoiceList : ZeroedMemoryAllocator {
 			/* In case of a (broken) NewGRF without a default,
 			 * assume an empty string. */
 			grfmsg(1, "choice list misses default value");
-			this->strings[0] = strdup("");
+			this->strings[0] = stredup("");
 		}
 
 		char *d = old_d;
-		if (lm == NULL && this->type != SCC_PLURAL_LIST) {
+		if (lm == NULL) {
 			/* In case there is no mapping, just ignore everything but the default.
 			 * A probable cause for this happening is when the language file has
 			 * been removed by the user and as such no mapping could be made. */
@@ -432,8 +371,8 @@ char *TranslateTTDPatchCodes(uint32 grfid, uint8 language_id, bool allow_newline
 		switch (c) {
 			case 0x01:
 				if (str[0] == '\0') goto string_end;
-				d += Utf8Encode(d, SCC_SETX);
-				*d++ = *str++;
+				d += Utf8Encode(d, ' ');
+				str++;
 				break;
 			case 0x0A: break;
 			case 0x0D:
@@ -447,9 +386,8 @@ char *TranslateTTDPatchCodes(uint32 grfid, uint8 language_id, bool allow_newline
 			case 0x0F: d += Utf8Encode(d, SCC_BIGFONT); break;
 			case 0x1F:
 				if (str[0] == '\0' || str[1] == '\0') goto string_end;
-				d += Utf8Encode(d, SCC_SETXY);
-				*d++ = *str++;
-				*d++ = *str++;
+				d += Utf8Encode(d, ' ');
+				str += 2;
 				break;
 			case 0x7B:
 			case 0x7C:
@@ -585,7 +523,12 @@ char *TranslateTTDPatchCodes(uint32 grfid, uint8 language_id, bool allow_newline
 					case 0x17:
 					case 0x18:
 					case 0x19:
-					case 0x1A: d += Utf8Encode(d, SCC_NEWGRF_PRINT_DWORD_DATE_LONG + code - 0x16); break;
+					case 0x1A:
+					case 0x1B:
+					case 0x1C:
+					case 0x1D:
+						d += Utf8Encode(d, SCC_NEWGRF_PRINT_DWORD_DATE_LONG + code - 0x16);
+						break;
 
 					default:
 						grfmsg(1, "missing handler for extended format code");
@@ -755,20 +698,12 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
 	return (GRFTAB << TABSIZE) + id;
 }
 
-/* Used to remember the grfid that the last retrieved string came from */
-static uint32 _last_grfid = 0;
-
 /**
  * Returns the index for this stringid associated with its grfID
  */
 StringID GetGRFStringID(uint32 grfid, uint16 stringid)
 {
-	uint id;
-
-	/* grfid is zero when we're being called via an include */
-	if (grfid == 0) grfid = _last_grfid;
-
-	for (id = 0; id < _num_grf_texts; id++) {
+	for (uint id = 0; id < _num_grf_texts; id++) {
 		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
 			return (GRFTAB << TABSIZE) + id;
 		}
@@ -809,9 +744,6 @@ const char *GetGRFStringFromGRFText(const GRFText *text)
 const char *GetGRFStringPtr(uint16 stringid)
 {
 	assert(_grf_text[stringid].grfid != 0);
-
-	/* Remember this grfid in case the string has included text */
-	_last_grfid = _grf_text[stringid].grfid;
 
 	const char *str = GetGRFStringFromGRFText(_grf_text[stringid].textholder);
 	if (str != NULL) return str;
@@ -881,12 +813,14 @@ void CleanUpStrings()
 struct TextRefStack {
 	byte stack[0x30];
 	byte position;
+	const GRFFile *grffile;
 	bool used;
 
-	TextRefStack() : used(false) {}
+	TextRefStack() : position(0), grffile(NULL), used(false) {}
 
 	TextRefStack(const TextRefStack &stack) :
 		position(stack.position),
+		grffile(stack.grffile),
 		used(stack.used)
 	{
 		memcpy(this->stack, stack.stack, sizeof(this->stack));
@@ -938,7 +872,14 @@ struct TextRefStack {
 		this->stack[this->position + 1] = GB(word, 8, 8);
 	}
 
-	void ResetStack()  { this->position = 0; this->used = true; }
+	void ResetStack(const GRFFile *grffile)
+	{
+		assert(grffile != NULL);
+		this->position = 0;
+		this->grffile = grffile;
+		this->used = true;
+	}
+
 	void RewindStack() { this->position = 0; }
 };
 
@@ -987,14 +928,15 @@ void RestoreTextRefStackBackup(struct TextRefStack *backup)
  * by calling #StopTextRefStackUsage(), so NewGRF string codes operate on the
  * normal string parameters again.
  *
+ * @param grffile the NewGRF providing the stack data
  * @param numEntries number of entries to copy from the registers
  * @param values values to copy onto the stack; if NULL the temporary NewGRF registers will be used instead
  */
-void StartTextRefStackUsage(byte numEntries, const uint32 *values)
+void StartTextRefStackUsage(const GRFFile *grffile, byte numEntries, const uint32 *values)
 {
 	extern TemporaryStorageArray<int32, 0x110> _temp_store;
 
-	_newgrf_textrefstack.ResetStack();
+	_newgrf_textrefstack.ResetStack(grffile);
 
 	byte *p = _newgrf_textrefstack.stack;
 	for (uint i = 0; i < numEntries; i++) {
@@ -1023,11 +965,53 @@ void RewindTextRefStack()
  * @param buff  the buffer we're writing to
  * @param str   the string that we need to write
  * @param argv  the OpenTTD stack of values
+ * @param argv_size space on the stack \a argv
  * @param modify_argv When true, modify the OpenTTD stack.
  * @return the string control code to "execute" now
  */
-uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const char **str, int64 *argv, bool modify_argv)
+uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const char **str, int64 *argv, uint argv_size, bool modify_argv)
 {
+	switch (scc) {
+		default: break;
+
+		case SCC_NEWGRF_PRINT_DWORD_SIGNED:
+		case SCC_NEWGRF_PRINT_WORD_SIGNED:
+		case SCC_NEWGRF_PRINT_BYTE_SIGNED:
+		case SCC_NEWGRF_PRINT_WORD_UNSIGNED:
+		case SCC_NEWGRF_PRINT_BYTE_HEX:
+		case SCC_NEWGRF_PRINT_WORD_HEX:
+		case SCC_NEWGRF_PRINT_DWORD_HEX:
+		case SCC_NEWGRF_PRINT_QWORD_HEX:
+		case SCC_NEWGRF_PRINT_DWORD_CURRENCY:
+		case SCC_NEWGRF_PRINT_QWORD_CURRENCY:
+		case SCC_NEWGRF_PRINT_WORD_STRING_ID:
+		case SCC_NEWGRF_PRINT_WORD_DATE_LONG:
+		case SCC_NEWGRF_PRINT_DWORD_DATE_LONG:
+		case SCC_NEWGRF_PRINT_WORD_DATE_SHORT:
+		case SCC_NEWGRF_PRINT_DWORD_DATE_SHORT:
+		case SCC_NEWGRF_PRINT_WORD_SPEED:
+		case SCC_NEWGRF_PRINT_WORD_VOLUME_LONG:
+		case SCC_NEWGRF_PRINT_WORD_VOLUME_SHORT:
+		case SCC_NEWGRF_PRINT_WORD_WEIGHT_LONG:
+		case SCC_NEWGRF_PRINT_WORD_WEIGHT_SHORT:
+		case SCC_NEWGRF_PRINT_WORD_POWER:
+		case SCC_NEWGRF_PRINT_WORD_STATION_NAME:
+			if (argv_size < 1) {
+				DEBUG(misc, 0, "Too many NewGRF string parameters.");
+				return 0;
+			}
+			break;
+
+		case SCC_NEWGRF_PRINT_WORD_CARGO_LONG:
+		case SCC_NEWGRF_PRINT_WORD_CARGO_SHORT:
+		case SCC_NEWGRF_PRINT_WORD_CARGO_TINY:
+			if (argv_size < 2) {
+				DEBUG(misc, 0, "Too many NewGRF string parameters.");
+				return 0;
+			}
+			break;
+	}
+
 	if (_newgrf_textrefstack.used && modify_argv) {
 		switch (scc) {
 			default: NOT_REACHED();
@@ -1065,8 +1049,25 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 			case SCC_NEWGRF_PUSH_WORD:              _newgrf_textrefstack.PushWord(Utf8Consume(str)); break;
 			case SCC_NEWGRF_UNPRINT:                *buff = max(*buff - Utf8Consume(str), buf_start); break;
 
+			case SCC_NEWGRF_PRINT_WORD_CARGO_LONG:
+			case SCC_NEWGRF_PRINT_WORD_CARGO_SHORT:
+			case SCC_NEWGRF_PRINT_WORD_CARGO_TINY:
+				argv[0] = GetCargoTranslation(_newgrf_textrefstack.PopUnsignedWord(), _newgrf_textrefstack.grffile);
+				argv[1] = _newgrf_textrefstack.PopUnsignedWord();
+				break;
+
 			case SCC_NEWGRF_PRINT_WORD_STRING_ID:
-				*argv = TTDPStringIDToOTTDStringIDMapping(_newgrf_textrefstack.PopUnsignedWord());
+				*argv = MapGRFStringID(_newgrf_textrefstack.grffile->grfid, _newgrf_textrefstack.PopUnsignedWord());
+				break;
+		}
+	} else {
+		/* Consume additional parameter characters */
+		switch (scc) {
+			default: break;
+
+			case SCC_NEWGRF_PUSH_WORD:
+			case SCC_NEWGRF_UNPRINT:
+				Utf8Consume(str);
 				break;
 		}
 	}
@@ -1117,6 +1118,15 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 
 		case SCC_NEWGRF_PRINT_WORD_POWER:
 			return SCC_POWER;
+
+		case SCC_NEWGRF_PRINT_WORD_CARGO_LONG:
+			return SCC_CARGO_LONG;
+
+		case SCC_NEWGRF_PRINT_WORD_CARGO_SHORT:
+			return SCC_CARGO_SHORT;
+
+		case SCC_NEWGRF_PRINT_WORD_CARGO_TINY:
+			return SCC_CARGO_TINY;
 
 		case SCC_NEWGRF_PRINT_WORD_STATION_NAME:
 			return SCC_STATION_NAME;

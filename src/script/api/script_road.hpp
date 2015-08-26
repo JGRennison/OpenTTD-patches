@@ -93,6 +93,7 @@ public:
 	 * Checks whether the given tile is actually a tile with a road depot.
 	 * @param tile The tile to check.
 	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
 	 * @return True if and only if the tile has a road depot.
 	 */
 	static bool IsRoadDepotTile(TileIndex tile);
@@ -101,6 +102,7 @@ public:
 	 * Checks whether the given tile is actually a tile with a road station.
 	 * @param tile The tile to check.
 	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
 	 * @return True if and only if the tile has a road station.
 	 */
 	static bool IsRoadStationTile(TileIndex tile);
@@ -110,6 +112,7 @@ public:
 	 *  road station.
 	 * @param tile The tile to check.
 	 * @pre ScriptMap::IsValidTile(tile).
+	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
 	 * @return True if and only if the tile has a drive through road station.
 	 */
 	static bool IsDriveThroughRoadStationTile(TileIndex tile);
@@ -147,7 +150,7 @@ public:
 	/**
 	 * Checks whether the given tiles are directly connected, i.e. whether
 	 *  a road vehicle can travel from the center of the first tile to the
-	  * center of the second tile.
+	 * center of the second tile.
 	 * @param tile_from The source tile.
 	 * @param tile_to The destination tile.
 	 * @pre IsRoadTypeAvailable(GetCurrentRoadType()).
@@ -418,6 +421,7 @@ public:
 	 * Removes a road from the center of tile start to the center of tile end.
 	 * @param start The start tile of the road.
 	 * @param end The end tile of the road.
+	 * @pre 'start' is not equal to 'end'.
 	 * @pre ScriptMap::IsValidTile(start).
 	 * @pre ScriptMap::IsValidTile(end).
 	 * @pre 'start' and 'end' are in a straight line, i.e.
@@ -437,6 +441,7 @@ public:
 	 *  included).
 	 * @param start The start tile of the road.
 	 * @param end The end tile of the road.
+	 * @pre 'start' is not equal to 'end'.
 	 * @pre ScriptMap::IsValidTile(start).
 	 * @pre ScriptMap::IsValidTile(end).
 	 * @pre 'start' and 'end' are in a straight line, i.e.

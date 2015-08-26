@@ -18,6 +18,8 @@
 #include "../../strings_func.h"
 #include "../../tile_map.h"
 
+#include "../../safeguards.h"
+
 /* static */ bool ScriptSign::IsValidSign(SignID sign_id)
 {
 	const Sign *si = ::Sign::GetIfValid(sign_id);
@@ -37,8 +39,8 @@
 
 	EnforcePrecondition(false, IsValidSign(sign_id));
 	EnforcePrecondition(false, name != NULL);
-	const char *text = name->GetEncodedText();
-	EnforcePrecondition(false, !::StrEmpty(text));
+	const char *text = name->GetDecodedText();
+	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_SIGN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
 	return ScriptObject::DoCommand(0, sign_id, 0, CMD_RENAME_SIGN, text);
@@ -72,8 +74,8 @@
 
 	EnforcePrecondition(INVALID_SIGN, ::IsValidTile(location));
 	EnforcePrecondition(INVALID_SIGN, name != NULL);
-	const char *text = name->GetEncodedText();
-	EnforcePrecondition(INVALID_SIGN, !::StrEmpty(text));
+	const char *text = name->GetDecodedText();
+	EnforcePreconditionEncodedText(INVALID_SIGN, text);
 	EnforcePreconditionCustomError(INVALID_SIGN, ::Utf8StringLength(text) < MAX_LENGTH_SIGN_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
 	if (!ScriptObject::DoCommand(location, 0, 0, CMD_PLACE_SIGN, text, &ScriptInstance::DoCommandReturnSignID)) return INVALID_SIGN;

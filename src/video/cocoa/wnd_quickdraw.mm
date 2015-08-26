@@ -45,7 +45,7 @@
 class WindowQuickdrawSubdriver;
 
 
-class WindowQuickdrawSubdriver: public CocoaSubdriver {
+class WindowQuickdrawSubdriver : public CocoaSubdriver {
 private:
 	/**
 	 * This function copies 32bpp pixels from the screen buffer in 16bpp windowed mode.
@@ -158,7 +158,7 @@ bool WindowQuickdrawSubdriver::SetVideoMode(int width, int height, int bpp)
 	this->GetDeviceInfo();
 
 	if (bpp > this->device_depth) {
-		DEBUG(driver, 0, "Cannot use a blitter with a higer screen depth than the display when running in windowed mode.");
+		DEBUG(driver, 0, "Cannot use a blitter with a higher screen depth than the display when running in windowed mode.");
 		this->setup = false;
 		return false;
 	}

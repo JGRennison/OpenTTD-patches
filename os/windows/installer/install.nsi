@@ -1,9 +1,9 @@
 # Version numbers to update
 !define APPV_MAJOR 1
-!define APPV_MINOR 3
+!define APPV_MINOR 6
 !define APPV_MAINT 0
 !define APPV_BUILD 0
-!define APPV_EXTRA "-alpha"
+!define APPV_EXTRA "-beta1"
 
 !define APPNAME "OpenTTD"   ; Define application name
 !define APPVERSION "${APPV_MAJOR}.${APPV_MINOR}.${APPV_MAINT}${APPV_EXTRA}"  ; Define application version
@@ -123,6 +123,10 @@ Section "!OpenTTD" Section1
 	; Copy AI files
 	SetOutPath "$INSTDIR\ai\"
 	File ${PATH_ROOT}bin\ai\compat_*.nut
+
+	; Copy Game Script files
+	SetOutPath "$INSTDIR\game\"
+	File ${PATH_ROOT}bin\game\compat_*.nut
 
 	; Copy data files
 	SetOutPath "$INSTDIR\baseset\"
@@ -398,6 +402,9 @@ Section "Uninstall"
 	; AI files
 	Delete "$INSTDIR\ai\compat_*.nut"
 
+	; Game Script files
+	Delete "$INSTDIR\game\compat_*.nut"
+
 	; Baseset files
 	Delete "$INSTDIR\baseset\opntitle.dat"
 	Delete "$INSTDIR\baseset\openttd.grf"
@@ -469,6 +476,7 @@ Section "Uninstall"
 	RMDir "$SMPROGRAMS\$SHORTCUTS\Docs\"
 	RMDir "$SMPROGRAMS\$SHORTCUTS"
 	RMDir "$INSTDIR\ai"
+	RMDir "$INSTDIR\game"
 	RMDir "$INSTDIR\data"
 	RMDir "$INSTDIR\baseset"
 	RMDir "$INSTDIR\gm"
@@ -537,15 +545,22 @@ FunctionEnd
 ;-------------------------------------------------------------------------------
 ; Determine windows version, returns "win9x" if Win9x/Me/2000/XP SP2- or "winnt" for the rest on the stack
 Function GetWindowsVersion
+	GetVersion::WindowsPlatformArchitecture
+	Pop $R0
+	IntCmp $R0 64 WinNT 0
 	ClearErrors
 	StrCpy $R0 "win9x"
 	${If} ${IsNT}
 		${If} ${IsWinXP}
 		${AndIf} ${AtLeastServicePack} 3
 		${OrIf} ${AtLeastWin2003}
-			StrCpy $R0 "winnt"
+			GoTo WinNT
 		${EndIf}
 	${EndIf}
+	GoTo Done
+WinNT:
+	StrCpy $R0 "winnt"
+Done:
 	Push $R0
 FunctionEnd
 

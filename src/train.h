@@ -12,6 +12,8 @@
 #ifndef TRAIN_H
 #define TRAIN_H
 
+#include "core/enum_type.hpp"
+
 #include "newgrf_engine.h"
 #include "cargotype.h"
 #include "rail.h"
@@ -37,9 +39,23 @@ enum VehicleRailFlags {
 enum TrainForceProceeding {
 	TFP_NONE   = 0,    ///< Normal operation.
 	TFP_STUCK  = 1,    ///< Proceed till next signal, but ignore being stuck till then. This includes force leaving depots.
-	TFP_SIGNAL = 2,    ///< Ignore next signal, after the signal ignore being stucked.
+	TFP_SIGNAL = 2,    ///< Ignore next signal, after the signal ignore being stuck.
 };
 typedef SimpleTinyEnumT<TrainForceProceeding, byte> TrainForceProceedingByte;
+
+/** Flags for Train::ConsistChanged */
+enum ConsistChangeFlags {
+	CCF_LENGTH     = 0x01,     ///< Allow vehicles to change length.
+	CCF_CAPACITY   = 0x02,     ///< Allow vehicles to change capacity.
+
+	CCF_TRACK      = 0,                          ///< Valid changes while vehicle is driving, and possibly changing tracks.
+	CCF_LOADUNLOAD = 0,                          ///< Valid changes while vehicle is loading/unloading.
+	CCF_AUTOREFIT  = CCF_CAPACITY,               ///< Valid changes for autorefitting in stations.
+	CCF_REFIT      = CCF_LENGTH | CCF_CAPACITY,  ///< Valid changes for refitting in a depot.
+	CCF_ARRANGE    = CCF_LENGTH | CCF_CAPACITY,  ///< Valid changes for arranging the consist in a depot.
+	CCF_SAVELOAD   = CCF_LENGTH,                 ///< Valid changes when loading a savegame. (Everything that is not stored in the save.)
+};
+DECLARE_ENUM_AS_BIT_SET(ConsistChangeFlags)
 
 byte FreightWagonMult(CargoID cargo);
 
@@ -49,6 +65,8 @@ void FreeTrainTrackReservation(const Train *v, TileIndex origin = INVALID_TILE, 
 bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false);
 
 int GetTrainStopLocation(StationID station_id, TileIndex tile, const Train *v, int *station_ahead, int *station_length);
+
+void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
 /** Variables that are cached to improve performance and such */
 struct TrainCache {
@@ -101,8 +119,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed; }
 	Money GetRunningCost() const;
 	int GetDisplayImageWidth(Point *offset = NULL) const;
-	bool IsInDepot() const;
-	bool IsStoppedInDepot() const;
+	bool IsInDepot() const { return this->track == TRACK_BIT_DEPOT; }
 	bool Tick();
 	void OnNewDay();
 	uint Crash(bool flooded = false);
@@ -114,7 +131,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	int GetCurveSpeedLimit() const;
 
-	void ConsistChanged(bool same_length);
+	void ConsistChanged(ConsistChangeFlags allowed_changes);
 
 	int UpdateSpeed();
 
@@ -198,7 +215,7 @@ protected: // These functions should not be called outside acceleration code.
 	 */
 	inline uint16 GetWeight() const
 	{
-		uint16 weight = (CargoSpec::Get(this->cargo_type)->weight * this->cargo.Count() * FreightWagonMult(this->cargo_type)) / 16;
+		uint16 weight = (CargoSpec::Get(this->cargo_type)->weight * this->cargo.StoredCount() * FreightWagonMult(this->cargo_type)) / 16;
 
 		/* Vehicle weight is not added for articulated parts. */
 		if (!this->IsArticulatedPart()) {

@@ -70,7 +70,7 @@ ROOT_DIR=`pwd`
 # Determine if we are using a modified version
 # Assume the dir is not modified
 MODIFIED="0"
-if [ -d "$ROOT_DIR/.svn" ]; then
+if [ -d "$ROOT_DIR/.svn" ] || [ -d "$ROOT_DIR/../.svn" ]; then
 	# We are an svn checkout
 	if [ -n "`svnversion | grep 'M'`" ]; then
 		MODIFIED="2"
@@ -106,21 +106,21 @@ elif [ -d "$ROOT_DIR/.git" ]; then
 	fi
 elif [ -d "$ROOT_DIR/.hg" ]; then
 	# We are a hg checkout
-	if [ -n "`hg status | grep -v '^?'`" ]; then
+	if [ -n "`HGPLAIN= hg status | grep -v '^?'`" ]; then
 		MODIFIED="2"
 	fi
-	HASH=`LC_ALL=C hg id -i | cut -c1-12`
+	HASH=`LC_ALL=C HGPLAIN= hg id -i | cut -c1-12`
 	REV="h`echo $HASH | cut -c1-8`"
-	BRANCH="`hg branch | sed 's@^default$@@'`"
-	TAG="`hg id -t | grep -v 'tip$'`"
+	BRANCH="`HGPLAIN= hg branch | sed 's@^default$@@'`"
+	TAG="`HGPLAIN= hg id -t | grep -v 'tip$'`"
 	if [ -n "$TAG" ]; then
 		BRANCH=""
 		REV="$TAG"
 	fi
-	REV_NR=`LC_ALL=C hg log -f -k "(svn r" -l 1 --template "{desc|firstline}\n" | grep "^(svn r[0-9]*)" | sed "s@.*(svn r\([0-9]*\)).*@\1@"`
+	REV_NR=`LC_ALL=C HGPLAIN= hg log -f -k "(svn r" -l 1 --template "{desc|firstline}\n" | grep "^(svn r[0-9]*)" | sed "s@.*(svn r\([0-9]*\)).*@\1@"`
 	if [ -z "$REV_NR" ]; then
 		# No rev? Maybe it is a custom hgsubversion clone
-		REV_NR=`LC_ALL=C hg parent --template="{svnrev}"`
+		REV_NR=`LC_ALL=C HGPLAIN= hg parent --template="{svnrev}"`
 	fi
 elif [ -f "$ROOT_DIR/.ottdrev" ]; then
 	# We are an exported source bundle

@@ -14,6 +14,8 @@
 #include "../script_instance.hpp"
 #include "../script_fatalerror.hpp"
 
+#include "../../safeguards.h"
+
 bool ScriptTestMode::ModeProc()
 {
 	/* In test mode we only return 'false', telling the DoCommand it
@@ -28,7 +30,7 @@ ScriptTestMode::ScriptTestMode()
 	this->SetDoCommandMode(&ScriptTestMode::ModeProc, this);
 }
 
-ScriptTestMode::~ScriptTestMode()
+void ScriptTestMode::FinalRelease()
 {
 	if (this->GetDoCommandModeInstance() != this) {
 		/* Ignore this error if the script already died. */
@@ -36,5 +38,9 @@ ScriptTestMode::~ScriptTestMode()
 			throw Script_FatalError("Testmode object was removed while it was not the latest *Mode object created.");
 		}
 	}
+}
+
+ScriptTestMode::~ScriptTestMode()
+{
 	this->SetDoCommandMode(this->last_mode, this->last_instance);
 }

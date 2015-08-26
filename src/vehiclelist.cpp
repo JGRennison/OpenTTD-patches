@@ -12,18 +12,22 @@
 #include "stdafx.h"
 #include "train.h"
 #include "vehiclelist.h"
+#include "group.h"
+
+#include "safeguards.h"
 
 /**
  * Pack a VehicleListIdentifier in a single uint32.
  * @return The packed identifier.
  */
-uint32 VehicleListIdentifier::Pack()
+uint32 VehicleListIdentifier::Pack() const
 {
 	byte c = this->company == OWNER_NONE ? 0xF : (byte)this->company;
 	assert(c             < (1 <<  4));
-	assert(this->type    < (1 <<  3));
 	assert(this->vtype   < (1 <<  2));
 	assert(this->index   < (1 << 20));
+	assert(this->type    < VLT_END);
+	assert_compile(VLT_END <= (1 <<  3));
 
 	return c << 28 | this->type << 23 | this->vtype << 26 | this->index;
 }
@@ -60,7 +64,7 @@ VehicleListIdentifier::VehicleListIdentifier(uint32 data)
  * @param tile    The tile the depot is located on
  * @param engines Pointer to list to add vehicles to
  * @param wagons  Pointer to list to add wagons to (can be NULL)
- * @param individual_wagons If true add every wagon to #wagons which is not attached to an engine. If false only add the first wagon of every row.
+ * @param individual_wagons If true add every wagon to \a wagons which is not attached to an engine. If false only add the first wagon of every row.
  */
 void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engines, VehicleList *wagons, bool individual_wagons)
 {
@@ -144,7 +148,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 			if (vli.index != ALL_GROUP) {
 				FOR_ALL_VEHICLES(v) {
 					if (v->type == vli.vtype && v->IsPrimaryVehicle() &&
-							v->owner == vli.company && v->group_id == vli.index) {
+							v->owner == vli.company && GroupIsInGroup(v->group_id, vli.index)) {
 						*list->Append() = v;
 					}
 				}

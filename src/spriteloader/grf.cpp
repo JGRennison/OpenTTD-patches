@@ -21,6 +21,8 @@
 #include "../core/bitmath_func.hpp"
 #include "grf.hpp"
 
+#include "../safeguards.h"
+
 extern const byte _palmap_w2d[];
 
 /** The different colour components a sprite can have. */
@@ -228,12 +230,17 @@ uint8 LoadSpriteV1(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_po
 	/* Type 0xFF indicates either a colourmap or some other non-sprite info; we do not handle them here */
 	if (type == 0xFF) return 0;
 
-	ZoomLevel zoom_lvl = (sprite_type == ST_NORMAL) ? ZOOM_LVL_OUT_4X : ZOOM_LVL_NORMAL;
+	ZoomLevel zoom_lvl = (sprite_type != ST_MAPGEN) ? ZOOM_LVL_OUT_4X : ZOOM_LVL_NORMAL;
 
 	sprite[zoom_lvl].height = FioReadByte();
 	sprite[zoom_lvl].width  = FioReadWord();
 	sprite[zoom_lvl].x_offs = FioReadWord();
 	sprite[zoom_lvl].y_offs = FioReadWord();
+
+	if (sprite[zoom_lvl].width > INT16_MAX) {
+		WarnCorruptSprite(file_slot, file_pos, __LINE__);
+		return 0;
+	}
 
 	/* 0x02 indicates it is a compressed sprite, so we can't rely on 'num' to be valid.
 	 * In case it is uncompressed, the size is 'num' - 8 (header-size). */
@@ -268,8 +275,8 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_po
 		byte colour = type & SCC_MASK;
 		byte zoom = FioReadByte();
 
-		if (colour != 0 && (load_32bpp ? colour != SCC_PAL : colour == SCC_PAL) && (sprite_type == ST_NORMAL ? zoom < lengthof(zoom_lvl_map) : zoom == 0)) {
-			ZoomLevel zoom_lvl = (sprite_type == ST_NORMAL) ? zoom_lvl_map[zoom] : ZOOM_LVL_NORMAL;
+		if (colour != 0 && (load_32bpp ? colour != SCC_PAL : colour == SCC_PAL) && (sprite_type != ST_MAPGEN ? zoom < lengthof(zoom_lvl_map) : zoom == 0)) {
+			ZoomLevel zoom_lvl = (sprite_type != ST_MAPGEN) ? zoom_lvl_map[zoom] : ZOOM_LVL_NORMAL;
 
 			if (HasBit(loaded_sprites, zoom_lvl)) {
 				/* We already have this zoom level, skip sprite. */
@@ -282,6 +289,11 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_po
 			sprite[zoom_lvl].width  = FioReadWord();
 			sprite[zoom_lvl].x_offs = FioReadWord();
 			sprite[zoom_lvl].y_offs = FioReadWord();
+
+			if (sprite[zoom_lvl].width > INT16_MAX || sprite[zoom_lvl].height > INT16_MAX) {
+				WarnCorruptSprite(file_slot, file_pos, __LINE__);
+				return 0;
+			}
 
 			/* Mask out colour information. */
 			type = type & ~SCC_MASK;

@@ -29,7 +29,7 @@ enum PacketGameType {
 	/*
 	 * These first three pair of packets (thus six in
 	 * total) must remain in this order for backward
-	 * and forward compatability between clients that
+	 * and forward compatibility between clients that
 	 * are trying to join directly.
 	 */
 
@@ -137,7 +137,7 @@ class CommandQueue {
 
 public:
 	/** Initialise the command queue. */
-	CommandQueue() : first(NULL), last(NULL) {}
+	CommandQueue() : first(NULL), last(NULL), count(0) {}
 	/** Clear the command queue. */
 	~CommandQueue() { this->Free(); }
 	void Append(CommandPacket *p);
@@ -326,8 +326,8 @@ protected:
 	 * Sends the current frame counter to the client:
 	 * uint32  Frame counter
 	 * uint32  Frame counter max (how far may the client walk before the server?)
-	 * uint32  General seed 1 (dependant on compile settings, not default).
-	 * uint32  General seed 2 (dependant on compile settings, not default).
+	 * uint32  General seed 1 (dependent on compile settings, not default).
+	 * uint32  General seed 2 (dependent on compile settings, not default).
 	 * uint8   Random token to validate the client is actually listening (only occasionally present).
 	 * @param p The packet that was just received.
 	 */
@@ -337,7 +337,7 @@ protected:
 	 * Sends a sync-check to the client:
 	 * uint32  Frame counter.
 	 * uint32  General seed 1.
-	 * uint32  General seed 2 (dependant on compile settings, not default).
+	 * uint32  General seed 2 (dependent on compile settings, not default).
 	 * @param p The packet that was just received.
 	 */
 	virtual NetworkRecvStatus Receive_SERVER_SYNC(Packet *p);
@@ -413,13 +413,13 @@ protected:
 	virtual NetworkRecvStatus Receive_CLIENT_SET_NAME(Packet *p);
 
 	/**
-	 * The client is quiting the game.
+	 * The client is quitting the game.
 	 * @param p The packet that was just received.
 	 */
 	virtual NetworkRecvStatus Receive_CLIENT_QUIT(Packet *p);
 
 	/**
-	 * The client made an error and is quiting the game.
+	 * The client made an error and is quitting the game.
 	 * uint8   Error of the code caused (see NetworkErrorCode).
 	 * @param p The packet that was just received.
 	 */

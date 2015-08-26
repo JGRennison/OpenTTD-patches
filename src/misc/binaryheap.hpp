@@ -44,7 +44,7 @@
  * implementation.
  *
  * @par
- * For further information about the Binary Heap algotithm, see
+ * For further information about the Binary Heap algorithm, see
  * http://www.policyalmanac.org/games/binaryHeaps.htm
  *
  * @tparam T Type of the items stored in the binary heap
@@ -157,21 +157,30 @@ public:
 	 *
 	 *  @return The number of items in the queue
 	 */
-	inline uint Length() const { return this->items; }
+	inline uint Length() const
+	{
+		return this->items;
+	}
 
 	/**
 	 * Test if the priority queue is empty.
 	 *
 	 * @return True if empty
 	 */
-	inline bool IsEmpty() const { return this->items == 0; }
+	inline bool IsEmpty() const
+	{
+		return this->items == 0;
+	}
 
 	/**
 	 * Test if the priority queue is full.
 	 *
 	 * @return True if full.
 	 */
-	inline bool IsFull() const { return this->items >= this->capacity; }
+	inline bool IsFull() const
+	{
+		return this->items >= this->capacity;
+	}
 
 	/**
 	 * Get the smallest item in the binary tree.
@@ -187,7 +196,7 @@ public:
 	/**
 	 * Get the LAST item in the binary tree.
 	 *
-	 * @note The last item is not neccesary the biggest!
+	 * @note The last item is not necessary the biggest!
 	 *
 	 * @return The last item
 	 */
@@ -266,7 +275,7 @@ public:
 
 	/**
 	 * Search for an item in the priority queue.
-	 *  Matching is done by comparing adress of the
+	 *  Matching is done by comparing address of the
 	 *  item.
 	 *
 	 * @param item The reference to the item
@@ -287,7 +296,10 @@ public:
 	 * Make the priority queue empty.
 	 * All remaining items will remain untouched.
 	 */
-	inline void Clear() { this->items = 0; }
+	inline void Clear()
+	{
+		this->items = 0;
+	}
 };
 
 #endif /* BINARYHEAP_HPP */

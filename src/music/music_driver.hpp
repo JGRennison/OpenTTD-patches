@@ -15,7 +15,7 @@
 #include "../driver.h"
 
 /** Driver for all music playback. */
-class MusicDriver: public Driver {
+class MusicDriver : public Driver {
 public:
 	/**
 	 * Play a particular song.
@@ -39,28 +39,15 @@ public:
 	 * @param vol The new volume.
 	 */
 	virtual void SetVolume(byte vol) = 0;
-};
-
-/** Base of the factory for the music drivers. */
-class MusicDriverFactoryBase: public DriverFactoryBase {
-};
-
-/**
- * Factory for the music drivers.
- * @tparam T The type of the music factory to register.
- */
-template <class T>
-class MusicDriverFactory: public MusicDriverFactoryBase {
-public:
-	MusicDriverFactory() { this->RegisterDriver(((T *)this)->GetName(), Driver::DT_MUSIC, ((T *)this)->priority); }
 
 	/**
-	 * Get the long, human readable, name for the Driver-class.
+	 * Get the currently active instance of the music driver.
 	 */
-	const char *GetName();
+	static MusicDriver *GetInstance() {
+		return static_cast<MusicDriver*>(*DriverFactoryBase::GetActiveDriver(Driver::DT_MUSIC));
+	}
 };
 
-extern MusicDriver *_music_driver;
 extern char *_ini_musicdriver;
 
 #endif /* MUSIC_MUSIC_DRIVER_HPP */

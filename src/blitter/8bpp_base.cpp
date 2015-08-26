@@ -13,6 +13,8 @@
 #include "../gfx_func.h"
 #include "8bpp_base.hpp"
 
+#include "../safeguards.h"
+
 void Blitter_8bppBase::DrawColourMappingRect(void *dst, int width, int height, PaletteID pal)
 {
 	const uint8 *ctab = GetNonSprite(pal, ST_RECOLOUR) + 1;
@@ -112,7 +114,7 @@ void Blitter_8bppBase::ScrollBuffer(void *video, int &left, int &top, int &width
 		dst = (uint8 *)video + left + top * _screen.pitch;
 		src = dst - scroll_y * _screen.pitch;
 
-		/* Decrese height. (scroll_y is <=0). */
+		/* Decrease height. (scroll_y is <=0). */
 		height += scroll_y;
 		assert(height > 0);
 

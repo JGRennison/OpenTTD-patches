@@ -29,6 +29,7 @@
 #include "company_func.h"
 #include "toolbar_gui.h"
 #include "statusbar_gui.h"
+#include "linkgraph/linkgraph_gui.h"
 #include "tilehighlight_func.h"
 #include "hotkeys.h"
 
@@ -43,6 +44,8 @@
 
 #include "table/sprites.h"
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 static int _rename_id = 1;
 static int _rename_what = -1;
@@ -76,7 +79,7 @@ void HandleOnEditText(const char *str)
 
 		uint32 money_c = Clamp(ClampToI32(money), 0, 20000000); // Clamp between 20 million and 0
 
-		/* Give 'id' the money, and substract it from ourself */
+		/* Give 'id' the money, and subtract it from ourself */
 		DoCommandP(0, money_c, _rename_id, CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_INSUFFICIENT_FUNDS), CcGiveMoney, str);
 		break;
 	}
@@ -101,7 +104,7 @@ bool HandlePlacePushButton(Window *w, int widget, CursorID cursor, HighLightStyl
 {
 	if (w->IsWidgetDisabled(widget)) return false;
 
-	SndPlayFx(SND_15_BEEP);
+	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 	w->SetDirty();
 
 	if (w->IsWidgetLowered(widget)) {
@@ -117,7 +120,7 @@ bool HandlePlacePushButton(Window *w, int widget, CursorID cursor, HighLightStyl
 
 void CcPlaySound10(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
 {
-	if (result.Succeeded()) SndPlayTileFx(SND_12_EXPLOSION, tile);
+	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_12_EXPLOSION, tile);
 }
 
 #ifdef ENABLE_NETWORK
@@ -205,13 +208,6 @@ static const struct NWidgetPart _nested_main_window_widgets[] = {
 	NWidget(NWID_VIEWPORT, INVALID_COLOUR, WID_M_VIEWPORT), SetResize(1, 1),
 };
 
-static const WindowDesc _main_window_desc(
-	WDP_MANUAL, 0, 0,
-	WC_MAIN_WINDOW, WC_NONE,
-	0,
-	_nested_main_window_widgets, lengthof(_nested_main_window_widgets)
-);
-
 enum {
 	GHK_QUIT,
 	GHK_ABANDON,
@@ -239,14 +235,37 @@ enum {
 
 struct MainWindow : Window
 {
-	MainWindow() : Window()
+	uint refresh;
+
+	static const uint LINKGRAPH_REFRESH_PERIOD = 0xff;
+	static const uint LINKGRAPH_DELAY = 0xf;
+
+	MainWindow(WindowDesc *desc) : Window(desc)
 	{
-		this->InitNested(&_main_window_desc, 0);
+		this->InitNested(0);
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		ResizeWindow(this, _screen.width, _screen.height);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_M_VIEWPORT);
 		nvp->InitializeViewport(this, TileXY(32, 32), ZOOM_LVL_VIEWPORT);
+
+		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, 0, 0, 3);
+		this->refresh = LINKGRAPH_DELAY;
+	}
+
+	virtual void OnTick()
+	{
+		if (--this->refresh > 0) return;
+
+		this->refresh = LINKGRAPH_REFRESH_PERIOD;
+
+		if (this->viewport->overlay->GetCargoMask() == 0 ||
+				this->viewport->overlay->GetCompanyMask() == 0) {
+			return;
+		}
+
+		this->viewport->overlay->RebuildCache();
+		this->GetWidget<NWidgetBase>(WID_M_VIEWPORT)->SetDirty(this);
 	}
 
 	virtual void OnPaint()
@@ -269,10 +288,9 @@ struct MainWindow : Window
 		}
 	}
 
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode)
+	virtual EventState OnHotkey(int hotkey)
 	{
-		int num = CheckHotkeyMatch(global_hotkeys, keycode, this);
-		if (num == GHK_QUIT) {
+		if (hotkey == GHK_QUIT) {
 			HandleExitGameRequest();
 			return ES_HANDLED;
 		}
@@ -283,7 +301,7 @@ struct MainWindow : Window
 		 * assertions that are hard to trigger and debug */
 		if (HasModalProgress()) return ES_NOT_HANDLED;
 
-		switch (num) {
+		switch (hotkey) {
 			case GHK_ABANDON:
 				/* No point returning from the main menu to itself */
 				if (_game_mode == GM_MENU) return ES_HANDLED;
@@ -310,13 +328,13 @@ struct MainWindow : Window
 
 		if (_game_mode == GM_MENU) return ES_NOT_HANDLED;
 
-		switch (num) {
+		switch (hotkey) {
 			case GHK_CENTER:
 			case GHK_CENTER_ZOOM: {
 				Point pt = GetTileBelowCursor();
 				if (pt.x != -1) {
-					bool instant = (num == GHK_CENTER_ZOOM && this->viewport->zoom != _settings_client.gui.zoom_min);
-					if (num == GHK_CENTER_ZOOM) MaxZoomInOut(ZOOM_IN, this);
+					bool instant = (hotkey == GHK_CENTER_ZOOM && this->viewport->zoom != _settings_client.gui.zoom_min);
+					if (hotkey == GHK_CENTER_ZOOM) MaxZoomInOut(ZOOM_IN, this);
 					ScrollMainWindowTo(pt.x, pt.y, -1, instant);
 				}
 				break;
@@ -350,7 +368,7 @@ struct MainWindow : Window
 			case GHK_TOGGLE_TRANSPARENCY + 7:
 			case GHK_TOGGLE_TRANSPARENCY + 8:
 				/* Transparency toggle hot keys */
-				ToggleTransparency((TransparencyOption)(num - GHK_TOGGLE_TRANSPARENCY));
+				ToggleTransparency((TransparencyOption)(hotkey - GHK_TOGGLE_TRANSPARENCY));
 				MarkWholeScreenDirty();
 				break;
 
@@ -363,7 +381,7 @@ struct MainWindow : Window
 			case GHK_TOGGLE_INVISIBILITY + 6:
 			case GHK_TOGGLE_INVISIBILITY + 7:
 				/* Invisibility toggle hot keys */
-				ToggleInvisibilityWithTransparency((TransparencyOption)(num - GHK_TOGGLE_INVISIBILITY));
+				ToggleInvisibilityWithTransparency((TransparencyOption)(hotkey - GHK_TOGGLE_INVISIBILITY));
 				MarkWholeScreenDirty();
 				break;
 
@@ -416,6 +434,7 @@ struct MainWindow : Window
 		this->viewport->scrollpos_y += ScaleByZoom(delta.y, this->viewport->zoom);
 		this->viewport->dest_scrollpos_x = this->viewport->scrollpos_x;
 		this->viewport->dest_scrollpos_y = this->viewport->scrollpos_y;
+		this->refresh = LINKGRAPH_DELAY;
 	}
 
 	virtual void OnMouseWheel(int wheel)
@@ -430,6 +449,7 @@ struct MainWindow : Window
 		if (this->viewport != NULL) {
 			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_M_VIEWPORT);
 			nvp->UpdateViewportCoordinates(this);
+			this->refresh = LINKGRAPH_DELAY;
 		}
 	}
 
@@ -441,11 +461,11 @@ struct MainWindow : Window
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
 	{
 		if (!gui_scope) return;
-		/* Forward the message to the appropiate toolbar (ingame or scenario editor) */
+		/* Forward the message to the appropriate toolbar (ingame or scenario editor) */
 		InvalidateWindowData(WC_MAIN_TOOLBAR, 0, data, true);
 	}
 
-	static Hotkey<MainWindow> global_hotkeys[];
+	static HotkeyList hotkeys;
 };
 
 const uint16 _ghk_quit_keys[] = {'Q' | WKC_CTRL, 'Q' | WKC_META, 0};
@@ -455,51 +475,59 @@ const uint16 _ghk_chat_all_keys[] = {WKC_SHIFT | WKC_RETURN, WKC_SHIFT | 'T', 0}
 const uint16 _ghk_chat_company_keys[] = {WKC_CTRL | WKC_RETURN, WKC_CTRL | 'T', 0};
 const uint16 _ghk_chat_server_keys[] = {WKC_CTRL | WKC_SHIFT | WKC_RETURN, WKC_CTRL | WKC_SHIFT | 'T', 0};
 
-Hotkey<MainWindow> MainWindow::global_hotkeys[] = {
-	Hotkey<MainWindow>(_ghk_quit_keys, "quit", GHK_QUIT),
-	Hotkey<MainWindow>(_ghk_abandon_keys, "abandon", GHK_ABANDON),
-	Hotkey<MainWindow>(WKC_BACKQUOTE, "console", GHK_CONSOLE),
-	Hotkey<MainWindow>('B' | WKC_CTRL, "bounding_boxes", GHK_BOUNDING_BOXES),
-	Hotkey<MainWindow>('I' | WKC_CTRL, "dirty_blocks", GHK_DIRTY_BLOCKS),
-	Hotkey<MainWindow>('C', "center", GHK_CENTER),
-	Hotkey<MainWindow>('Z', "center_zoom", GHK_CENTER_ZOOM),
-	Hotkey<MainWindow>(WKC_ESC, "reset_object_to_place", GHK_RESET_OBJECT_TO_PLACE),
-	Hotkey<MainWindow>(WKC_DELETE, "delete_windows", GHK_DELETE_WINDOWS),
-	Hotkey<MainWindow>(WKC_DELETE | WKC_SHIFT, "delete_all_windows", GHK_DELETE_NONVITAL_WINDOWS),
-	Hotkey<MainWindow>('R' | WKC_CTRL, "refresh_screen", GHK_REFRESH_SCREEN),
+static Hotkey global_hotkeys[] = {
+	Hotkey(_ghk_quit_keys, "quit", GHK_QUIT),
+	Hotkey(_ghk_abandon_keys, "abandon", GHK_ABANDON),
+	Hotkey(WKC_BACKQUOTE, "console", GHK_CONSOLE),
+	Hotkey('B' | WKC_CTRL, "bounding_boxes", GHK_BOUNDING_BOXES),
+	Hotkey('I' | WKC_CTRL, "dirty_blocks", GHK_DIRTY_BLOCKS),
+	Hotkey('C', "center", GHK_CENTER),
+	Hotkey('Z', "center_zoom", GHK_CENTER_ZOOM),
+	Hotkey(WKC_ESC, "reset_object_to_place", GHK_RESET_OBJECT_TO_PLACE),
+	Hotkey(WKC_DELETE, "delete_windows", GHK_DELETE_WINDOWS),
+	Hotkey(WKC_DELETE | WKC_SHIFT, "delete_all_windows", GHK_DELETE_NONVITAL_WINDOWS),
+	Hotkey('R' | WKC_CTRL, "refresh_screen", GHK_REFRESH_SCREEN),
 #if defined(_DEBUG)
-	Hotkey<MainWindow>('0' | WKC_ALT, "crash_game", GHK_CRASH),
-	Hotkey<MainWindow>('1' | WKC_ALT, "money", GHK_MONEY),
-	Hotkey<MainWindow>('2' | WKC_ALT, "update_coordinates", GHK_UPDATE_COORDS),
+	Hotkey('0' | WKC_ALT, "crash_game", GHK_CRASH),
+	Hotkey('1' | WKC_ALT, "money", GHK_MONEY),
+	Hotkey('2' | WKC_ALT, "update_coordinates", GHK_UPDATE_COORDS),
 #endif
-	Hotkey<MainWindow>('1' | WKC_CTRL, "transparency_signs", GHK_TOGGLE_TRANSPARENCY),
-	Hotkey<MainWindow>('2' | WKC_CTRL, "transparency_trees", GHK_TOGGLE_TRANSPARENCY + 1),
-	Hotkey<MainWindow>('3' | WKC_CTRL, "transparency_houses", GHK_TOGGLE_TRANSPARENCY + 2),
-	Hotkey<MainWindow>('4' | WKC_CTRL, "transparency_industries", GHK_TOGGLE_TRANSPARENCY + 3),
-	Hotkey<MainWindow>('5' | WKC_CTRL, "transparency_buildings", GHK_TOGGLE_TRANSPARENCY + 4),
-	Hotkey<MainWindow>('6' | WKC_CTRL, "transparency_bridges", GHK_TOGGLE_TRANSPARENCY + 5),
-	Hotkey<MainWindow>('7' | WKC_CTRL, "transparency_structures", GHK_TOGGLE_TRANSPARENCY + 6),
-	Hotkey<MainWindow>('8' | WKC_CTRL, "transparency_catenary", GHK_TOGGLE_TRANSPARENCY + 7),
-	Hotkey<MainWindow>('9' | WKC_CTRL, "transparency_loading", GHK_TOGGLE_TRANSPARENCY + 8),
-	Hotkey<MainWindow>('1' | WKC_CTRL | WKC_SHIFT, "invisibility_signs", GHK_TOGGLE_INVISIBILITY),
-	Hotkey<MainWindow>('2' | WKC_CTRL | WKC_SHIFT, "invisibility_trees", GHK_TOGGLE_INVISIBILITY + 1),
-	Hotkey<MainWindow>('3' | WKC_CTRL | WKC_SHIFT, "invisibility_houses", GHK_TOGGLE_INVISIBILITY + 2),
-	Hotkey<MainWindow>('4' | WKC_CTRL | WKC_SHIFT, "invisibility_industries", GHK_TOGGLE_INVISIBILITY + 3),
-	Hotkey<MainWindow>('5' | WKC_CTRL | WKC_SHIFT, "invisibility_buildings", GHK_TOGGLE_INVISIBILITY + 4),
-	Hotkey<MainWindow>('6' | WKC_CTRL | WKC_SHIFT, "invisibility_bridges", GHK_TOGGLE_INVISIBILITY + 5),
-	Hotkey<MainWindow>('7' | WKC_CTRL | WKC_SHIFT, "invisibility_structures", GHK_TOGGLE_INVISIBILITY + 6),
-	Hotkey<MainWindow>('8' | WKC_CTRL | WKC_SHIFT, "invisibility_catenary", GHK_TOGGLE_INVISIBILITY + 7),
-	Hotkey<MainWindow>('X' | WKC_CTRL, "transparency_toolbar", GHK_TRANSPARENCY_TOOLBAR),
-	Hotkey<MainWindow>('X', "toggle_transparency", GHK_TRANSPARANCY),
+	Hotkey('1' | WKC_CTRL, "transparency_signs", GHK_TOGGLE_TRANSPARENCY),
+	Hotkey('2' | WKC_CTRL, "transparency_trees", GHK_TOGGLE_TRANSPARENCY + 1),
+	Hotkey('3' | WKC_CTRL, "transparency_houses", GHK_TOGGLE_TRANSPARENCY + 2),
+	Hotkey('4' | WKC_CTRL, "transparency_industries", GHK_TOGGLE_TRANSPARENCY + 3),
+	Hotkey('5' | WKC_CTRL, "transparency_buildings", GHK_TOGGLE_TRANSPARENCY + 4),
+	Hotkey('6' | WKC_CTRL, "transparency_bridges", GHK_TOGGLE_TRANSPARENCY + 5),
+	Hotkey('7' | WKC_CTRL, "transparency_structures", GHK_TOGGLE_TRANSPARENCY + 6),
+	Hotkey('8' | WKC_CTRL, "transparency_catenary", GHK_TOGGLE_TRANSPARENCY + 7),
+	Hotkey('9' | WKC_CTRL, "transparency_loading", GHK_TOGGLE_TRANSPARENCY + 8),
+	Hotkey('1' | WKC_CTRL | WKC_SHIFT, "invisibility_signs", GHK_TOGGLE_INVISIBILITY),
+	Hotkey('2' | WKC_CTRL | WKC_SHIFT, "invisibility_trees", GHK_TOGGLE_INVISIBILITY + 1),
+	Hotkey('3' | WKC_CTRL | WKC_SHIFT, "invisibility_houses", GHK_TOGGLE_INVISIBILITY + 2),
+	Hotkey('4' | WKC_CTRL | WKC_SHIFT, "invisibility_industries", GHK_TOGGLE_INVISIBILITY + 3),
+	Hotkey('5' | WKC_CTRL | WKC_SHIFT, "invisibility_buildings", GHK_TOGGLE_INVISIBILITY + 4),
+	Hotkey('6' | WKC_CTRL | WKC_SHIFT, "invisibility_bridges", GHK_TOGGLE_INVISIBILITY + 5),
+	Hotkey('7' | WKC_CTRL | WKC_SHIFT, "invisibility_structures", GHK_TOGGLE_INVISIBILITY + 6),
+	Hotkey('8' | WKC_CTRL | WKC_SHIFT, "invisibility_catenary", GHK_TOGGLE_INVISIBILITY + 7),
+	Hotkey('X' | WKC_CTRL, "transparency_toolbar", GHK_TRANSPARENCY_TOOLBAR),
+	Hotkey('X', "toggle_transparency", GHK_TRANSPARANCY),
 #ifdef ENABLE_NETWORK
-	Hotkey<MainWindow>(_ghk_chat_keys, "chat", GHK_CHAT),
-	Hotkey<MainWindow>(_ghk_chat_all_keys, "chat_all", GHK_CHAT_ALL),
-	Hotkey<MainWindow>(_ghk_chat_company_keys, "chat_company", GHK_CHAT_COMPANY),
-	Hotkey<MainWindow>(_ghk_chat_server_keys, "chat_server", GHK_CHAT_SERVER),
+	Hotkey(_ghk_chat_keys, "chat", GHK_CHAT),
+	Hotkey(_ghk_chat_all_keys, "chat_all", GHK_CHAT_ALL),
+	Hotkey(_ghk_chat_company_keys, "chat_company", GHK_CHAT_COMPANY),
+	Hotkey(_ghk_chat_server_keys, "chat_server", GHK_CHAT_SERVER),
 #endif
-	HOTKEY_LIST_END(MainWindow)
+	HOTKEY_LIST_END
 };
-Hotkey<MainWindow> *_global_hotkeys = MainWindow::global_hotkeys;
+HotkeyList MainWindow::hotkeys("global", global_hotkeys);
+
+static WindowDesc _main_window_desc(
+	WDP_MANUAL, NULL, 0, 0,
+	WC_MAIN_WINDOW, WC_NONE,
+	0,
+	_nested_main_window_widgets, lengthof(_nested_main_window_widgets),
+	&MainWindow::hotkeys
+);
 
 /**
  * Does the given keycode match one of the keycodes bound to 'quit game'?
@@ -508,7 +536,7 @@ Hotkey<MainWindow> *_global_hotkeys = MainWindow::global_hotkeys;
  */
 bool IsQuitKey(uint16 keycode)
 {
-	int num = CheckHotkeyMatch<MainWindow>(_global_hotkeys, keycode, NULL);
+	int num = MainWindow::hotkeys.CheckMatch(keycode);
 	return num == GHK_QUIT;
 }
 
@@ -527,7 +555,7 @@ void SetupColoursAndInitialWindow()
 		memcpy(_colour_gradient[i], b + 0xC6, sizeof(_colour_gradient[i]));
 	}
 
-	new MainWindow;
+	new MainWindow(&_main_window_desc);
 
 	/* XXX: these are not done */
 	switch (_game_mode) {

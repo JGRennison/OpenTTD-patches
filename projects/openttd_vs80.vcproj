@@ -52,7 +52,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR=\&quot;OpenTTD\&quot;;WITH_ASSERT"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR=\&quot;OpenTTD\&quot;;WITH_ASSERT"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
@@ -87,7 +87,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib ws2_32.lib libpng.lib zlibstat.lib lzo2.lib liblzma.lib libfreetype2.lib icuuc.lib icuin.lib icudt.lib"
+				AdditionalDependencies="winmm.lib ws2_32.lib imm32.lib libpng.lib zlibstat.lib lzo2.lib liblzma.lib libfreetype2.lib icuuc.lib icuin.lib icudt.lib icule.lib iculx.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames=""
@@ -156,7 +156,7 @@
 				AdditionalOptions="/MP"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR=\&quot;OpenTTD\&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR=\&quot;OpenTTD\&quot;"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -184,7 +184,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib ws2_32.lib libpng.lib zlibstat.lib lzo2.lib liblzma.lib libfreetype2.lib icuuc.lib icuin.lib icudt.lib"
+				AdditionalDependencies="winmm.lib ws2_32.lib imm32.lib libpng.lib zlibstat.lib lzo2.lib liblzma.lib libfreetype2.lib icuuc.lib icuin.lib icudt.lib icule.lib iculx.lib"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="LIBCMT.lib"
@@ -257,7 +257,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR=\&quot;OpenTTD\&quot;;_SQ64;WITH_ASSERT"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR=\&quot;OpenTTD\&quot;;_SQ64;WITH_ASSERT"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
@@ -292,7 +292,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib ws2_32.lib libpng.lib zlibstat.lib lzo2.lib liblzma.lib libfreetype2.lib icuuc.lib icuin.lib icudt.lib"
+				AdditionalDependencies="winmm.lib ws2_32.lib imm32.lib libpng.lib zlibstat.lib lzo2.lib liblzma.lib libfreetype2.lib icuuc.lib icuin.lib icudt.lib icule.lib iculx.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames=""
@@ -362,7 +362,7 @@
 				AdditionalOptions="/MP"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR=\&quot;OpenTTD\&quot;;_SQ64"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR=\&quot;OpenTTD\&quot;;_SQ64"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -392,7 +392,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib ws2_32.lib libpng.lib zlibstat.lib lzo2.lib liblzma.lib libfreetype2.lib icuuc.lib icuin.lib icudt.lib"
+				AdditionalDependencies="winmm.lib ws2_32.lib imm32.lib libpng.lib zlibstat.lib lzo2.lib liblzma.lib libfreetype2.lib icuuc.lib icuin.lib icudt.lib icule.lib iculx.lib"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="LIBCMT.lib"
@@ -455,6 +455,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\cargoaction.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\cargomonitor.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\cargopacket.cpp"
 				>
 			</File>
@@ -479,6 +487,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\cpu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\crashlog.cpp"
 				>
 			</File>
@@ -500,6 +512,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\depot.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\disaster_vehicle.cpp"
 				>
 			</File>
 			<File
@@ -535,6 +551,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\fontdetection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\base_consist.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\gamelog.cpp"
 				>
 			</File>
@@ -548,6 +572,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\gfxinit.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\gfx_layout.cpp"
 				>
 			</File>
 			<File
@@ -580,6 +608,34 @@
 			</File>
 			<File
 				RelativePath=".\..\src\landscape.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\demands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\flowmapper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraph.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraphjob.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraphschedule.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\mcf.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\refresh.cpp"
 				>
 			</File>
 			<File
@@ -636,10 +692,6 @@
 			</File>
 			<File
 				RelativePath=".\..\src\order_backup.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\..\src\os_timer.cpp"
 				>
 			</File>
 			<File
@@ -719,6 +771,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\story.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\subsidy.cpp"
 				>
 			</File>
@@ -756,6 +812,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\viewport.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\viewport_sprite_sorter_sse4.cpp"
 				>
 			</File>
 			<File
@@ -835,6 +895,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\cargoaction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\cargomonitor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\cargopacket.h"
 				>
 			</File>
@@ -903,6 +971,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\cpu.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\crashlog.h"
 				>
 			</File>
@@ -952,6 +1024,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\direction_type.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\disaster_vehicle.h"
 				>
 			</File>
 			<File
@@ -1023,6 +1099,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\fontdetection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\base_consist.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\gamelog.h"
 				>
 			</File>
@@ -1036,6 +1120,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\gfx_func.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\gfx_layout.h"
 				>
 			</File>
 			<File
@@ -1124,6 +1212,54 @@
 			</File>
 			<File
 				RelativePath=".\..\src\language.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\demands.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\flowmapper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\init.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraph.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraph_base.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraph_gui.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraph_type.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraphjob.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraphjob_base.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\linkgraphschedule.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\mcf.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\linkgraph\refresh.h"
 				>
 			</File>
 			<File
@@ -1419,6 +1555,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\safeguards.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\screenshot.h"
 				>
 			</File>
@@ -1531,7 +1671,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\story_base.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\story_type.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\strgen\strgen.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\string_base.h"
 				>
 			</File>
 			<File
@@ -1703,6 +1855,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\viewport_sprite_sorter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\viewport_type.h"
 				>
 			</File>
@@ -1823,6 +1979,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\core\multimap.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\core\overflowsafe_type.hpp"
 				>
 			</File>
@@ -1848,6 +2008,14 @@
 			</File>
 			<File
 				RelativePath=".\..\src\core\smallmap_type.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\core\smallmatrix_type.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\core\smallstack_type.hpp"
 				>
 			</File>
 			<File
@@ -1955,6 +2123,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\linkgraph\linkgraph_gui.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\main_gui.cpp"
 				>
 			</File>
@@ -2036,6 +2208,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\statusbar_gui.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\story_gui.cpp"
 				>
 			</File>
 			<File
@@ -2195,6 +2371,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\widgets\link_graph_legend_widget.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\widgets\main_widget.h"
 				>
 			</File>
@@ -2271,6 +2451,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\widgets\story_widget.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\widgets\subsidy_widget.h"
 				>
 			</File>
@@ -2332,10 +2516,6 @@
 			</File>
 			<File
 				RelativePath=".\..\src\depot_cmd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\..\src\disaster_cmd.cpp"
 				>
 			</File>
 			<File
@@ -2447,6 +2627,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\saveload\cargomonitor_sl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\saveload\cargopacket_sl.cpp"
 				>
 			</File>
@@ -2492,6 +2676,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\saveload\labelmaps_sl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\saveload\linkgraph_sl.cpp"
 				>
 			</File>
 			<File
@@ -2560,6 +2748,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\saveload\strings_sl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\saveload\story_sl.cpp"
 				>
 			</File>
 			<File
@@ -2639,6 +2831,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\table\heightmap_colours.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\table\industry_land.h"
 				>
 			</File>
@@ -2692,6 +2888,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\table\strgen_tables.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\table\string_colours.h"
 				>
 			</File>
 			<File
@@ -2931,31 +3131,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\..\src\3rdparty\squirrel\include\sqstdblob.h"
-				>
-			</File>
-			<File
-				RelativePath=".\..\src\3rdparty\squirrel\sqstdlib\sqstdblobimpl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\..\src\3rdparty\squirrel\include\sqstdio.h"
-				>
-			</File>
-			<File
 				RelativePath=".\..\src\3rdparty\squirrel\include\sqstdmath.h"
 				>
 			</File>
 			<File
-				RelativePath=".\..\src\3rdparty\squirrel\sqstdlib\sqstdstream.h"
-				>
-			</File>
-			<File
 				RelativePath=".\..\src\3rdparty\squirrel\include\sqstdstring.h"
-				>
-			</File>
-			<File
-				RelativePath=".\..\src\3rdparty\squirrel\include\sqstdsystem.h"
 				>
 			</File>
 			<File
@@ -3143,6 +3323,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\script\api\script_cargomonitor.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\script\api\script_company.hpp"
 				>
 			</File>
@@ -3287,6 +3471,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\script\api\script_story_page.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_storypagelist.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_storypageelementlist.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\script\api\script_subsidy.hpp"
 				>
 			</File>
@@ -3388,6 +3584,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\script\api\script_cargolist.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_cargomonitor.cpp"
 				>
 			</File>
 			<File
@@ -3531,6 +3731,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\script\api\script_story_page.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_storypagelist.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_storypageelementlist.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\script\api\script_subsidy.cpp"
 				>
 			</File>
@@ -3603,6 +3815,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\blitter\32bpp_anim_sse4.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_anim_sse4.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\blitter\32bpp_base.cpp"
 				>
 			</File>
@@ -3624,6 +3844,38 @@
 			</File>
 			<File
 				RelativePath=".\..\src\blitter\32bpp_simple.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_sse_func.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_sse_type.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_sse2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_sse2.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_sse4.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_sse4.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_ssse3.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_ssse3.hpp"
 				>
 			</File>
 			<File
@@ -4144,6 +4396,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\pathfinder\yapf\yapf_ship.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\pathfinder\yapf\yapf_type.hpp"
 				>
 			</File>
 		</Filter>

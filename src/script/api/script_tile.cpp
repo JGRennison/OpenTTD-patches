@@ -20,6 +20,8 @@
 #include "../../town.h"
 #include "../../landscape.h"
 
+#include "../../safeguards.h"
+
 /* static */ bool ScriptTile::IsBuildable(TileIndex tile)
 {
 	if (!::IsValidTile(tile)) return false;
@@ -43,10 +45,11 @@
 
 /* static */ bool ScriptTile::IsBuildableRectangle(TileIndex tile, uint width, uint height)
 {
-	uint tx, ty;
+	/* Check whether we can extract valid X and Y */
+	if (!::IsValidTile(tile)) return false;
 
-	tx = ScriptMap::GetTileX(tile);
-	ty = ScriptMap::GetTileY(tile);
+	uint tx = ScriptMap::GetTileX(tile);
+	uint ty = ScriptMap::GetTileY(tile);
 
 	for (uint x = tx; x < width + tx; x++) {
 		for (uint y = ty; y < height + ty; y++) {
@@ -133,6 +136,19 @@
 	if (!::IsValidTile(tile)) return false;
 
 	return (::IsTileType(tile, MP_CLEAR) && ::IsClearGround(tile, CLEAR_DESERT));
+}
+
+/* static */ ScriptTile::TerrainType ScriptTile::GetTerrainType(TileIndex tile)
+{
+	if (!::IsValidTile(tile)) return TERRAIN_NORMAL;
+
+	switch (::GetTerrainType(tile)) {
+		default:
+		case 0: return TERRAIN_NORMAL;
+		case 1: return TERRAIN_DESERT;
+		case 2: return TERRAIN_RAINFOREST;
+		case 4: return TERRAIN_SNOW;
+	}
 }
 
 /* static */ ScriptTile::Slope ScriptTile::GetSlope(TileIndex tile)

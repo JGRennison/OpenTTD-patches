@@ -32,7 +32,7 @@ public:
 	 * Create the window with the given description.
 	 * @param desc  The description of the window.
 	 */
-	BaseNetworkContentDownloadStatusWindow(const WindowDesc *desc);
+	BaseNetworkContentDownloadStatusWindow(WindowDesc *desc);
 
 	/**
 	 * Free everything associated with this window.
@@ -42,5 +42,7 @@ public:
 	virtual void DrawWidget(const Rect &r, int widget) const;
 	virtual void OnDownloadProgress(const ContentInfo *ci, int bytes);
 };
+
+void BuildContentTypeStringList();
 
 #endif /* NETWORK_CONTENT_GUI_H */

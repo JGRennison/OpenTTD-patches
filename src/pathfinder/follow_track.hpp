@@ -77,6 +77,8 @@ struct CFollowTrackT
 		m_veh_owner = o;
 		m_pPerf = pPerf;
 		/* don't worry, all is inlined so compiler should remove unnecessary initializations */
+		m_old_tile = INVALID_TILE;
+		m_old_td = INVALID_TRACKDIR;
 		m_new_tile = INVALID_TILE;
 		m_new_td_bits = TRACKDIR_BIT_NONE;
 		m_exitdir = INVALID_DIAGDIR;
@@ -86,13 +88,13 @@ struct CFollowTrackT
 		m_railtypes = railtype_override;
 	}
 
-	inline static TransportType TT() {return Ttr_type_;}
-	inline static bool IsWaterTT() {return TT() == TRANSPORT_WATER;}
-	inline static bool IsRailTT() {return TT() == TRANSPORT_RAIL;}
-	inline bool IsTram() {return IsRoadTT() && HasBit(RoadVehicle::From(m_veh)->compatible_roadtypes, ROADTYPE_TRAM);}
-	inline static bool IsRoadTT() {return TT() == TRANSPORT_ROAD;}
-	inline static bool Allow90degTurns() {return T90deg_turns_allowed_;}
-	inline static bool DoTrackMasking() {return IsRailTT() && Tmask_reserved_tracks;}
+	inline static TransportType TT() { return Ttr_type_; }
+	inline static bool IsWaterTT() { return TT() == TRANSPORT_WATER; }
+	inline static bool IsRailTT() { return TT() == TRANSPORT_RAIL; }
+	inline bool IsTram() { return IsRoadTT() && HasBit(RoadVehicle::From(m_veh)->compatible_roadtypes, ROADTYPE_TRAM); }
+	inline static bool IsRoadTT() { return TT() == TRANSPORT_ROAD; }
+	inline static bool Allow90degTurns() { return T90deg_turns_allowed_; }
+	inline static bool DoTrackMasking() { return Tmask_reserved_tracks; }
 
 	/** Tests if a tile is a road tile with a single tramtrack (tram can reverse) */
 	inline DiagDirection GetSingleTramBit(TileIndex tile)
@@ -121,16 +123,15 @@ struct CFollowTrackT
 		m_old_tile = old_tile;
 		m_old_td = old_td;
 		m_err = EC_NONE;
-		assert(((TrackStatusToTrackdirBits(GetTileTrackStatus(m_old_tile, TT(), IsRoadTT() && m_veh != NULL ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0)) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
+		assert(((TrackStatusToTrackdirBits(GetTileTrackStatus(m_old_tile, TT(), IsRoadTT() ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0)) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
 		       (IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR)); // Disable the assertion for single tram bits
 		m_exitdir = TrackdirToExitdir(m_old_td);
 		if (ForcedReverse()) return true;
 		if (!CanExitOldTile()) return false;
 		FollowTileExit();
 		if (!QueryNewTileTrackStatus()) return TryReverse();
-		if (!CanEnterNewTile()) return false;
 		m_new_td_bits &= DiagdirReachesTrackdirs(m_exitdir);
-		if (m_new_td_bits == TRACKDIR_BIT_NONE) {
+		if (m_new_td_bits == TRACKDIR_BIT_NONE || !CanEnterNewTile()) {
 			/* In case we can't enter the next tile, but are
 			 * a normal road vehicle, then we can actually
 			 * try to reverse as this is the end of the road.
@@ -233,7 +234,7 @@ protected:
 		if (IsRailTT() && IsPlainRailTile(m_new_tile)) {
 			m_new_td_bits = (TrackdirBits)(GetTrackBits(m_new_tile) * 0x101);
 		} else {
-			m_new_td_bits = TrackStatusToTrackdirBits(GetTileTrackStatus(m_new_tile, TT(), IsRoadTT() && m_veh != NULL ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0));
+			m_new_td_bits = TrackStatusToTrackdirBits(GetTileTrackStatus(m_new_tile, TT(), IsRoadTT() ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0));
 
 			if (IsTram() && m_new_td_bits == 0) {
 				/* GetTileTrackStatus() returns 0 for single tram bits.

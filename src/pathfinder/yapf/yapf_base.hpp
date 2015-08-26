@@ -34,14 +34,14 @@ extern int _total_pf_time_us;
  *  you need to declare only your node type. Look at test_yapf.h for an example.
  *
  *
- *  Requrements to your pathfinder class derived from CYapfBaseT:
- *  -------------------------------------------------------------
+ *  Requirements to your pathfinder class derived from CYapfBaseT:
+ *  --------------------------------------------------------------
  *  Your pathfinder derived class needs to implement following methods:
  *    inline void PfSetStartupNodes()
- *    inline void PfFollowNode(Node& org)
- *    inline bool PfCalcCost(Node& n)
- *    inline bool PfCalcEstimate(Node& n)
- *    inline bool PfDetectDestination(Node& n)
+ *    inline void PfFollowNode(Node &org)
+ *    inline bool PfCalcCost(Node &n)
+ *    inline bool PfCalcEstimate(Node &n)
+ *    inline bool PfDetectDestination(Node &n)
  *
  *  For more details about those methods, look at the end of CYapfBaseT
  *  declaration. There are some examples. For another example look at
@@ -99,7 +99,7 @@ protected:
 	/** to access inherited path finder */
 	inline Tpf& Yapf()
 	{
-		return *static_cast<Tpf*>(this);
+		return *static_cast<Tpf *>(this);
 	}
 
 public:
@@ -193,12 +193,12 @@ public:
 	 */
 	inline Node& CreateNewNode()
 	{
-		Node& node = *m_nodes.CreateNewNode();
+		Node &node = *m_nodes.CreateNewNode();
 		return node;
 	}
 
 	/** Add new node (created by CreateNewNode and filled with data) into open list */
-	inline void AddStartupNode(Node& n)
+	inline void AddStartupNode(Node &n)
 	{
 		Yapf().PfNodeCacheFetch(n);
 		/* insert the new node only if it is not there */
@@ -217,9 +217,24 @@ public:
 		bool is_choice = (KillFirstBit(tf.m_new_td_bits) != TRACKDIR_BIT_NONE);
 		for (TrackdirBits rtds = tf.m_new_td_bits; rtds != TRACKDIR_BIT_NONE; rtds = KillFirstBit(rtds)) {
 			Trackdir td = (Trackdir)FindFirstBit2x64(rtds);
-			Node& n = Yapf().CreateNewNode();
+			Node &n = Yapf().CreateNewNode();
 			n.Set(parent, tf.m_new_tile, td, is_choice);
 			Yapf().AddNewNode(n, tf);
+		}
+	}
+
+	/**
+	 * In some cases an intermediate node branch should be pruned.
+	 * The most prominent case is when a red EOL signal is encountered, but
+	 * there was a segment change (e.g. a rail type change) before that. If
+	 * the branch would not be pruned, the rail type change location would
+	 * remain the best intermediate node, and thus the vehicle would still
+	 * go towards the red EOL signal.
+	 */
+	void PruneIntermediateNodeBranch()
+	{
+		while (Yapf().m_pBestIntermediateNode != NULL && (Yapf().m_pBestIntermediateNode->m_segment->m_end_segment_reason & ESRB_CHOICE_FOLLOWS) == 0) {
+			Yapf().m_pBestIntermediateNode = Yapf().m_pBestIntermediateNode->m_parent;
 		}
 	}
 
@@ -318,7 +333,7 @@ public:
 	inline void PfSetStartupNodes()
 	{
 		/* example: */
-		Node& n1 = *base::m_nodes.CreateNewNode();
+		Node &n1 = *base::m_nodes.CreateNewNode();
 		.
 		. // setup node members here
 		.
@@ -326,10 +341,10 @@ public:
 	}
 
 	/** Example: PfFollowNode() - set following (child) nodes of the given node */
-	inline void PfFollowNode(Node& org)
+	inline void PfFollowNode(Node &org)
 	{
 		for (each follower of node org) {
-			Node& n = *base::m_nodes.CreateNewNode();
+			Node &n = *base::m_nodes.CreateNewNode();
 			.
 			. // setup node members here
 			.
@@ -339,7 +354,7 @@ public:
 	}
 
 	/** Example: PfCalcCost() - set path cost from origin to the given node */
-	inline bool PfCalcCost(Node& n)
+	inline bool PfCalcCost(Node &n)
 	{
 		/* evaluate last step cost */
 		int cost = ...;
@@ -349,7 +364,7 @@ public:
 	}
 
 	/** Example: PfCalcEstimate() - set path cost estimate from origin to the target through given node */
-	inline bool PfCalcEstimate(Node& n)
+	inline bool PfCalcEstimate(Node &n)
 	{
 		/* evaluate the distance to our destination */
 		int distance = ...;
@@ -359,7 +374,7 @@ public:
 	}
 
 	/** Example: PfDetectDestination() - return true if the given node is our destination */
-	inline bool PfDetectDestination(Node& n)
+	inline bool PfDetectDestination(Node &n)
 	{
 		bool bDest = (n.m_key.m_x == m_x2) && (n.m_key.m_y == m_y2);
 		return bDest;

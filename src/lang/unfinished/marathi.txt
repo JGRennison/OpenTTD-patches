@@ -192,31 +192,57 @@ STR_COLOUR_WHITE                                                :पांढर
 
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
+STR_UNITS_VELOCITY_METRIC                                       :{COMMA} किमी / तास
+STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
+STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hp
+STR_UNITS_POWER_METRIC                                          :{COMMA}hp
 
-STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA} किग्रॅ
+STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}ट
+STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}ट
+STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA} किलो
 
 STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA} टन
 STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA} किलो
 
+STR_UNITS_VOLUME_SHORT_IMPERIAL                                 :{COMMA}गॅलन
+STR_UNITS_VOLUME_SHORT_METRIC                                   :{COMMA}लि
+STR_UNITS_VOLUME_SHORT_SI                                       :{COMMA}m³
 
 STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA} लिटर
+STR_UNITS_VOLUME_LONG_SI                                        :{COMMA} m³
 
 
 
 # Common window strings
+STR_LIST_FILTER_TITLE                                           :{BLACK}शब्द गाळा:
+STR_LIST_FILTER_OSKTITLE                                        :{BLACK}गाळेला शब्द प्रविष्ट करा
+STR_LIST_FILTER_TOOLTIP                                         :{BLACK}सूची फिल्टर करण्यासाठी एक शब्द प्रविष्ट करा
 
+STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}वर्गीकरण क्रम निवडा
+STR_TOOLTIP_SORT_ORDER                                          :{BLACK}वर्गीकरण आदेश निवडा (उतरत्या / चढत्या)
+STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}वर्गीकरण निकष निवडा
+STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}फिल्टरिंग निकष निवडा
+STR_BUTTON_SORT_BY                                              :{BLACK}यानुसार क्रमवारी लावा
 STR_BUTTON_LOCATION                                             :{BLACK}जागा
 STR_BUTTON_RENAME                                               :{BLACK}नाव बदला
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}खिडकी बंद करा
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}खिडकीचं नाव - खिडकी हलवण्यासाठी हे पकडून ओढा.
 STR_TOOLTIP_SHADE                                               :{BLACK}गवाक्ष - फक्त नावाची पट्टी दाखवा
+STR_TOOLTIP_DEFSIZE                                             :{BLACK} डीफॉल्ट आकारात विंडो आकार बदला.Ctrl+Click डीफॉल्ट म्हणून वर्तमान आकार साठवण्यासाठी
+STR_TOOLTIP_STICKY                                              :{BLACK} ही विंडो म्हणून चिन्हांकित समाप्त नाही 'बंद करा सर्व विंडोज'.Ctrl+Click डीफॉल्ट म्हणून राज्य जतन
 STR_TOOLTIP_RESIZE                                              :{BLACK}खिडकीचा आकार बदलण्यासाठी पकडून ओढा
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}खिडकीचा आकार लहान/मोठा करा
+STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}स्क्रोल पट्टी - स्क्रोल यादी वर/खाली
+STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}स्क्रोल पट्टी - स्क्रोल यादी डाव्या/उजव्या
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}जमिनीच्या एका चौकोनावरील इमारत नष्ट करणे इ. Ctrl ने तिरका प्रदेश निवडता येतो. Shift नं इमारती किंवा किंमतीचा अंदाज दिसणं चालू/बंद होतं.
 
+# Show engines button
+
+
 # Query window
+STR_BUTTON_DEFAULT                                              :{BLACK}स्थिर
 STR_BUTTON_CANCEL                                               :{BLACK}रद्द करा
 STR_BUTTON_OK                                                   :{BLACK}ठीक आहे
 
@@ -232,13 +258,13 @@ STR_MEASURE_AREA_HEIGHTDIFF                                     :{BLACK}क्�
 
 
 # These are used in buttons
-STR_SORT_BY_CAPTION_POPULATION                                  :{BLACK}लोकसंख्या
 STR_SORT_BY_CAPTION_NAME                                        :{BLACK}नाव
 STR_SORT_BY_CAPTION_DATE                                        :{BLACK}दिनांक
 # These are used in dropdowns
 STR_SORT_BY_NAME                                                :नाव
 STR_SORT_BY_PRODUCTION                                          :निर्मिती
 STR_SORT_BY_TYPE                                                :प्रकार
+STR_SORT_BY_TRANSPORTED                                         :रवाना
 STR_SORT_BY_NUMBER                                              :क्रमांक
 STR_SORT_BY_PROFIT_LAST_YEAR                                    :गेल्या वर्षीचा नफा
 STR_SORT_BY_PROFIT_THIS_YEAR                                    :चालू वर्षीचा नफा
@@ -249,23 +275,44 @@ STR_SORT_BY_MAX_SPEED                                           :सर्वो
 STR_SORT_BY_MODEL                                               :मोडल
 STR_SORT_BY_VALUE                                               :किंमत
 STR_SORT_BY_LENGTH                                              :लांबी
-STR_SORT_BY_LIFE_TIME                                           :उर्वरित आयुर्मान
+STR_SORT_BY_LIFE_TIME                                           :उर्वरित कार्यकाळात
 STR_SORT_BY_TIMETABLE_DELAY                                     :वेळापत्रकीय अंतर
 STR_SORT_BY_FACILITY                                            :स्थानक प्रकार
+STR_SORT_BY_WAITING_TOTAL                                       :एकूण प्रतीक्षा मालवाहू
+STR_SORT_BY_WAITING_AVAILABLE                                   :उपलब्ध प्रतीक्षा मालवाहू
+STR_SORT_BY_RATING_MAX                                          :सर्वोच्च मालवाहू धारा
+STR_SORT_BY_RATING_MIN                                          :सर्वात कमी मालवाहू धारा
+STR_SORT_BY_ENGINE_ID                                           :यंत्र क्रमांक (जुन्या क्रमवारी)
 STR_SORT_BY_COST                                                :किंमत
 STR_SORT_BY_POWER                                               :ताकद
+STR_SORT_BY_INTRO_DATE                                          :परिचय तारीख
 STR_SORT_BY_RUNNING_COST                                        :चालवण्याचा खर्च
 STR_SORT_BY_POWER_VS_RUNNING_COST                               :ताकद/चालवण्याचा खर्च
 STR_SORT_BY_CARGO_CAPACITY                                      :मालवाहन क्षमता
+STR_SORT_BY_RANGE                                               :प्रकार
+STR_SORT_BY_POPULATION                                          :लोकसंख्या
+STR_SORT_BY_RATING                                              :धारा
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK} खेळ स्थगित करा
+STR_TOOLBAR_TOOLTIP_FORWARD                                     :{BLACK}जलद खेळ अग्रेषित
 STR_TOOLBAR_TOOLTIP_OPTIONS                                     :{BLACK}पर्याय
+STR_TOOLBAR_TOOLTIP_SAVE_GAME_ABANDON_GAME                      :{BLACK}खेळ जतन, खेळ त्याग, बाहेर जाणे
+STR_TOOLBAR_TOOLTIP_DISPLAY_MAP                                 :{BLACK}प्रदर्शन नकाशा, अतिरिक्त व्ह्यूपोर्ट किंवा चिन्हे यादी
 STR_TOOLBAR_TOOLTIP_DISPLAY_TOWN_DIRECTORY                      :{BLACK}शहरांची यादी दाखवा
+STR_TOOLBAR_TOOLTIP_DISPLAY_SUBSIDIES                           :{BLACK}प्रदर्शन अनुदान
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}कंपनीच्या स्थानकांची यादी दाखवा
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}कंपनीची आर्थिक माहिती दाखवा
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}कंपनीची सर्वसाधारण माहिती दाखवा
+STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}प्रदर्शन पुस्तक
+STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}प्रदर्शन ध्येय सूची
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}आलेख दाखवा
+STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}दाखवा कंपनी लीग तक्ता
+STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}नवीन उद्योगाचे फंड बांधकाम
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}कंपनीच्या गाड्या प्रदर्शन यादी.Ctrl+Click गट / वाहन सूची उघडणे
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}कंपनीच्या रस्त्याच्या वाहने प्रदर्शन यादी.Ctrl+Click गट / वाहन सूची उघडणे
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}कंपनीच्या जहाजे प्रदर्शन यादी.Ctrl+Click गट / वाहन सूची उघडणे
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_AIRCRAFT            :{BLACK} कंपनीच्या विमानाची प्रदर्शन यादी.Ctrl+Click गट / वाहन सूची उघडणे
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN                            :{BLACK}द्श्य मोठे करा
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT                           :{BLACK}द्श्य छोटे करा
 STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK} लोहमार्ग बांधा
@@ -273,6 +320,8 @@ STR_TOOLBAR_TOOLTIP_BUILD_ROADS                                 :{BLACK}रस�
 STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}बोटींचा धक्का बांधा
 STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}विमानतळ बांधा
 STR_TOOLBAR_TOOLTIP_SHOW_SOUND_MUSIC_WINDOW                     :{BLACK}आवाज/संगीत खिडकी दाखवा
+STR_TOOLBAR_TOOLTIP_SHOW_LAST_MESSAGE_NEWS                      :{BLACK}शेवटचा संदेश अहवाल दर्शवा, संदेश पर्याय दर्शवा
+STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}साधनपट्टी बदला
 
 # Extra tooltips for the scenario editor toolbar
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}ओपेन टीटीडी
@@ -280,52 +329,75 @@ STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}सु�
 STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}सुरुवातीची तारीख एक वर्ष पुढे न्या
 STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}सुरुवातीचं वर्ष पुरवण्यासाठी क्लिक करा
 STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}नकाशा, शहरांची यादी दाखवा
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}प्रदेश उत्पन्न करणे
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}गावे उत्पन्न करणे
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}इंडस्ट्री उत्पन्न करणे
 STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}रस्तेबांधणी
 STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}चिन्ह लावा
 
 ############ range for SE file menu starts
+STR_SCENEDIT_FILE_MENU_SAVE_SCENARIO                            :उद्देश जतन
+STR_SCENEDIT_FILE_MENU_LOAD_SCENARIO                            :उद्देश उघडा
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :बंद करा
 ############ range for SE file menu starts
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :खेळाचे पर्याय
+STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :ए.आय. / गेम स्क्रिप्ट सेटिंग्ज
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF पर्याय
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :पारदर्शकता पर्याय
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :शहरांची नावे दाखवा
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :स्थानकांची नावे दाखवा
+STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :दिशा नावे दर्शविली
 STR_SETTINGS_MENU_SIGNS_DISPLAYED                               :चिन्ह दाखवा
+STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS                         :स्पर्धक चिन्हे आणि दर्शविले नावे
+STR_SETTINGS_MENU_FULL_ANIMATION                                :पूर्ण अॅनिमेशन
 STR_SETTINGS_MENU_FULL_DETAIL                                   :पूर्ण तपशील
 STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS                         :इमारती पारदर्शक
 STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :स्थानकांची नावे पारदर्शक
 ############ range ends here
 
 ############ range for file menu starts
+STR_FILE_MENU_SAVE_GAME                                         :खेळ वाचवणे
+STR_FILE_MENU_LOAD_GAME                                         :खेळ उघडा
 STR_FILE_MENU_QUIT_GAME                                         :खेळ सोडून द्या
 STR_FILE_MENU_SEPARATOR                                         :
 STR_FILE_MENU_EXIT                                              :बाहेर पडा
 ############ range ends here
 
-############ range for map menu starts
+# map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :वैश्विक नकाशा
 STR_MAP_MENU_SIGN_LIST                                          :चिन्हांची यादी
-############ range for town menu starts, yet the town directory is shown in the map menu in the scenario editor
+
+############ range for town menu starts
 STR_TOWN_MENU_TOWN_DIRECTORY                                    :शहरांची यादी
-############ end of the 'Display map' dropdown
 STR_TOWN_MENU_FOUND_TOWN                                        :सापडलेलं शहर
-############ end of the 'Town' dropdown
+############ range ends here
 
 ############ range for subsidies menu starts
+STR_SUBSIDIES_MENU_SUBSIDIES                                    :अनुदान
 ############ range ends here
 
 ############ range for graph menu starts
+STR_GRAPH_MENU_OPERATING_PROFIT_GRAPH                           :चालू असले नफा आलेख
 STR_GRAPH_MENU_INCOME_GRAPH                                     :आवक आलेख
+STR_GRAPH_MENU_DELIVERED_CARGO_GRAPH                            :वितरित मालवाहू आलेख
+STR_GRAPH_MENU_PERFORMANCE_HISTORY_GRAPH                        :कामगिरी इतिहास आलेख
+STR_GRAPH_MENU_COMPANY_VALUE_GRAPH                              :कंपनी मूल्य आलेख
+STR_GRAPH_MENU_CARGO_PAYMENT_RATES                              :मालवाहू देयक दर
 ############ range ends here
 
 ############ range for company league menu starts
+STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE                             :कंपनी लीग तक्ता
+STR_GRAPH_MENU_DETAILED_PERFORMANCE_RATING                      :तपशीलावर कामगिरी रेटिंग
+STR_GRAPH_MENU_HIGHSCORE                                        :उच्च स्कोअर तक्ता
 ############ range ends here
 
 ############ range for industry menu starts
+STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY                            :उद्योग निर्देशिका
+STR_INDUSTRY_MENU_INDUSTRY_CHAIN                                :इंडस्ट्री बंदिवासात
+STR_INDUSTRY_MENU_FUND_NEW_INDUSTRY                             :नवीन उद्योग फंड
 ############ range ends here
 
 ############ range for railway construction menu starts
@@ -358,24 +430,85 @@ STR_TOOLBAR_SOUND_MUSIC                                         :ध्वनी
 ############ range ends here
 
 ############ range for message menu starts
-STR_NEWS_MENU_MESSAGE_SETTINGS                                  :निरोपांचे पर्याय
+STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :शेवटचा संदेश/बातम्या अहवाल
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :निरोपांचा इतिहास
 ############ range ends here
 
 ############ range for about menu starts
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :जागाची माहिती
 STR_ABOUT_MENU_SEPARATOR                                        :
+STR_ABOUT_MENU_SCREENSHOT                                       :द्श्य
+STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :द्श्य मोठे करा
+STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :स्थिर द्श्य
+STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :संपूर्ण नकाशा स्क्रीनशॉट
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :ओपेन टीटीडी बद्दल
 ############ range ends here
 
-############ range for days starts (also used for the place in the highscore window)
-STR_ORDINAL_NUMBER_1ST                                          :प्रथम
-STR_ORDINAL_NUMBER_2ND                                          :द्वितीय
-STR_ORDINAL_NUMBER_3RD                                          :तृतीय
-STR_ORDINAL_NUMBER_4TH                                          :चौथे
+############ range for ordinal numbers used for the place in the highscore window
+STR_ORDINAL_NUMBER_1ST                                          :१
+STR_ORDINAL_NUMBER_2ND                                          :२
+STR_ORDINAL_NUMBER_3RD                                          :३
+STR_ORDINAL_NUMBER_4TH                                          :४
+STR_ORDINAL_NUMBER_5TH                                          :५
+STR_ORDINAL_NUMBER_6TH                                          :६
+STR_ORDINAL_NUMBER_7TH                                          :७
+STR_ORDINAL_NUMBER_8TH                                          :८
+STR_ORDINAL_NUMBER_9TH                                          :९
+STR_ORDINAL_NUMBER_10TH                                         :१०
+STR_ORDINAL_NUMBER_11TH                                         :११
+STR_ORDINAL_NUMBER_12TH                                         :१२
+STR_ORDINAL_NUMBER_13TH                                         :१३
+STR_ORDINAL_NUMBER_14TH                                         :१४
+STR_ORDINAL_NUMBER_15TH                                         :१५
+############ range for ordinal numbers ends
+
+############ range for days starts
+STR_DAY_NUMBER_1ST                                              :१
+STR_DAY_NUMBER_2ND                                              :२
+STR_DAY_NUMBER_3RD                                              :३
+STR_DAY_NUMBER_4TH                                              :४
+STR_DAY_NUMBER_5TH                                              :५
+STR_DAY_NUMBER_6TH                                              :६
+STR_DAY_NUMBER_7TH                                              :७
+STR_DAY_NUMBER_8TH                                              :८
+STR_DAY_NUMBER_9TH                                              :९
+STR_DAY_NUMBER_10TH                                             :१०
+STR_DAY_NUMBER_11TH                                             :११
+STR_DAY_NUMBER_12TH                                             :१२
+STR_DAY_NUMBER_13TH                                             :१३
+STR_DAY_NUMBER_14TH                                             :१४
+STR_DAY_NUMBER_15TH                                             :१५
+STR_DAY_NUMBER_16TH                                             :१६
+STR_DAY_NUMBER_17TH                                             :१७
+STR_DAY_NUMBER_18TH                                             :१८
+STR_DAY_NUMBER_19TH                                             :१९
+STR_DAY_NUMBER_20TH                                             :२०
+STR_DAY_NUMBER_21ST                                             :२१
+STR_DAY_NUMBER_22ND                                             :२२
+STR_DAY_NUMBER_23RD                                             :२३
+STR_DAY_NUMBER_24TH                                             :२४
+STR_DAY_NUMBER_25TH                                             :२५
+STR_DAY_NUMBER_26TH                                             :२६
+STR_DAY_NUMBER_27TH                                             :२७
+STR_DAY_NUMBER_28TH                                             :२८
+STR_DAY_NUMBER_29TH                                             :२९
+STR_DAY_NUMBER_30TH                                             :३०
+STR_DAY_NUMBER_31ST                                             :३१
 ############ range for days ends
 
 ############ range for months starts
+STR_MONTH_ABBREV_JAN                                            :जाने
+STR_MONTH_ABBREV_FEB                                            :फेब्रु
+STR_MONTH_ABBREV_MAR                                            :मार्च
+STR_MONTH_ABBREV_APR                                            :एप्रिल
+STR_MONTH_ABBREV_MAY                                            :मे
+STR_MONTH_ABBREV_JUN                                            :जून
+STR_MONTH_ABBREV_JUL                                            :जुलै
+STR_MONTH_ABBREV_AUG                                            :ऑग
+STR_MONTH_ABBREV_SEP                                            :सप्टें
+STR_MONTH_ABBREV_OCT                                            :ऑक्टो
+STR_MONTH_ABBREV_NOV                                            :नोव्हें
+STR_MONTH_ABBREV_DEC                                            :डिसें
 
 STR_MONTH_JAN                                                   :जानेवारी
 STR_MONTH_FEB                                                   :फेब्रूवारी
@@ -392,41 +525,122 @@ STR_MONTH_DEC                                                   :डिसें
 ############ range for months ends
 
 # Graph window
+STR_GRAPH_KEY_BUTTON                                            :{BLACK}किल्ली
+STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}आलेख दर्शवा की
 STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
 STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
+STR_GRAPH_OPERATING_PROFIT_CAPTION                              :{WHITE}चालू असले नफा आलेख
+STR_GRAPH_INCOME_CAPTION                                        :{WHITE}उत्पन्न आलेख
+STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}वितरित कार्गो एकके
+STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}कंपनी कामगिरी रेटिंग (कमाल रेटिंग = 1000)
+STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}कंपनी मूल्ये
 
+STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}मालवाहू भरणा दर
+STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}संक्रमणादरम्यान दिवस
+STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}मालवाहू 10 युनिट (किंवा 10,000 लिटर) 20 चौरस अंतरावर वितरण भरणा
+STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}सर्व सक्षम
+STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}सर्व अक्षम
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}देयक दर आलेखावरील सर्व मालवाहू प्रदर्शित
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}देयक दर आलेखावरील नाही मालवाहू प्रदर्शित
+STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}मालवाहू प्रकारासाठी टॉगल आलेख - वर / बंद
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
+STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}सविस्तर कामगिरी रेटिंग दाखवा
 
 # Graph key window
+STR_GRAPH_KEY_CAPTION                                           :{WHITE}कंपनी आलेख किल्ली
 
 # Company league window
+STR_COMPANY_LEAGUE_TABLE_CAPTION                                :{WHITE}कंपनी लीग सारणी
 STR_COMPANY_LEAGUE_COMPANY_NAME                                 :{ORANGE}{COMPANY} {BLACK}{COMPANY_NUM} '{STRING}'
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_ENGINEER                   :अभियंता
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRAFFIC_MANAGER            :वाहतूक व्यवस्थापक
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRANSPORT_COORDINATOR      :वाहतूक समन्वयक
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_ROUTE_SUPERVISOR           :रूट पर्यवेक्षक
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_DIRECTOR                   :संचालक
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_CHIEF_EXECUTIVE            :मुख्य कार्यकारी
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_CHAIRMAN                   :अध्यक्ष
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_PRESIDENT                  :राष्ट्राध्यक्ष
 
 # Performance detail window
+STR_PERFORMANCE_DETAIL                                          :{WHITE}तपशीलवार कामगिरी रेटिंग
+STR_PERFORMANCE_DETAIL_KEY                                      :{BLACK}तपशील
 STR_PERFORMANCE_DETAIL_AMOUNT_CURRENCY                          :{BLACK}({CURRENCY_SHORT}/{CURRENCY_SHORT})
 STR_PERFORMANCE_DETAIL_AMOUNT_INT                               :{BLACK}({COMMA}/{COMMA})
 STR_PERFORMANCE_DETAIL_PERCENT                                  :{WHITE}{NUM}%
+STR_PERFORMANCE_DETAIL_SELECT_COMPANY_TOOLTIP                   :{BLACK}या कंपनी बद्दल तपशील पहा
 ############ Those following lines need to be in this order!!
+STR_PERFORMANCE_DETAIL_VEHICLES                                 :{BLACK}वाहने:
+STR_PERFORMANCE_DETAIL_STATIONS                                 :{BLACK}स्टेशन:
+STR_PERFORMANCE_DETAIL_MIN_PROFIT                               :{BLACK}किमान नफा:
+STR_PERFORMANCE_DETAIL_MIN_INCOME                               :{BLACK}किमान उत्पन्न:
+STR_PERFORMANCE_DETAIL_MAX_INCOME                               :{BLACK}कमाल उत्पन्न:
+STR_PERFORMANCE_DETAIL_DELIVERED                                :{BLACK}वितरीत:
+STR_PERFORMANCE_DETAIL_CARGO                                    :{BLACK}मालवाहू:
+STR_PERFORMANCE_DETAIL_MONEY                                    :{BLACK}पैसा:
+STR_PERFORMANCE_DETAIL_LOAN                                     :{BLACK}कर्ज:
+STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}एकूण:
 ############ End of order list
+STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP                         :{BLACK}गेल्या वर्षी नफा दिल्या वाहनांची संख्या. या वाहने, गाड्या, जहाजे, विमानाची समावेश आहे.
+STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP                       :{BLACK}सर्वात कमी उत्पन्न वाहनाच्या नफा (दोन वर्षे पेक्षा फक्त वाहने जुन्या मानले जातात)
+STR_PERFORMANCE_DETAIL_MIN_INCOME_TOOLTIP                       :{BLACK}गेल्या 12 मात्रेत सर्वात कमी नफा तिमाहीत केली रोख
+STR_PERFORMANCE_DETAIL_MAX_INCOME_TOOLTIP                       :{BLACK}गेल्या 12 मात्रेत सर्वाधिक नफा तिमाहीत केली रोख
+STR_PERFORMANCE_DETAIL_DELIVERED_TOOLTIP                        :{BLACK}गेल्या चार मात्रेत वितरित कार्गो एकके
+STR_PERFORMANCE_DETAIL_CARGO_TOOLTIP                            :{BLACK}गेल्या तिमाहीत वितरित माल प्रकारच्या संख्या
+STR_PERFORMANCE_DETAIL_MONEY_TOOLTIP                            :{BLACK}पैसा या कंपनीच्या बँकेत आहे.
+STR_PERFORMANCE_DETAIL_LOAN_TOOLTIP                             :{BLACK}पैसा हा कंपनी कर्ज घेतले आहे.
+STR_PERFORMANCE_DETAIL_TOTAL_TOOLTIP                            :{BLACK}शक्य बिंदू बाहेर एकूण गुण.
 
 # Music window
+STR_MUSIC_PLAYLIST_ALL                                          :{TINY_FONT}{BLACK}सर्व
+STR_MUSIC_PLAYLIST_OLD_STYLE                                    :{TINY_FONT}{BLACK}जुन्या शैली
+STR_MUSIC_PLAYLIST_NEW_STYLE                                    :{TINY_FONT}{BLACK}नवीन शैली
+STR_MUSIC_PLAYLIST_EZY_STREET                                   :{TINY_FONT}{BLACK}Ezy रस्त्यावर
+STR_MUSIC_PLAYLIST_CUSTOM_1                                     :{TINY_FONT}{BLACK}सानुकूल १
+STR_MUSIC_PLAYLIST_CUSTOM_2                                     :{TINY_FONT}{BLACK}सानुकूल २
+STR_MUSIC_MUSIC_VOLUME                                          :{TINY_FONT}{BLACK}संगीत आवाज
+STR_MUSIC_EFFECTS_VOLUME                                        :{TINY_FONT}{BLACK}प्रभाव आवाज
+STR_MUSIC_RULER_MIN                                             :{TINY_FONT}{BLACK}कमी
+STR_MUSIC_RULER_MAX                                             :{TINY_FONT}{BLACK}अधिक
 STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLACK}'
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
+STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}लोहमार्ग
+STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}शीर्षक
+STR_MUSIC_SHUFFLE                                               :{TINY_FONT}{BLACK}चुळबूळ
+STR_MUSIC_PROGRAM                                               :{TINY_FONT}{BLACK}कार्यक्रम
+STR_MUSIC_TOOLTIP_SKIP_TO_PREVIOUS_TRACK                        :{BLACK}मागील संगीत जा
+STR_MUSIC_TOOLTIP_SKIP_TO_NEXT_TRACK_IN_SELECTION               :{BLACK}पुढील संगीत जा
+STR_MUSIC_TOOLTIP_STOP_PLAYING_MUSIC                            :{BLACK}संगीत थांबवा
+STR_MUSIC_TOOLTIP_START_PLAYING_MUSIC                           :{BLACK}संगीत प्रारंभ
+STR_MUSIC_TOOLTIP_DRAG_SLIDERS_TO_SET_MUSIC                     :{BLACK}संगीत आणि खंड सेट करण्यासाठी स्लाइडर पकडू
+STR_MUSIC_TOOLTIP_SELECT_ALL_TRACKS_PROGRAM                     :{BLACK}निवडा 'सर्व संगीत' कार्यक्रम
+STR_MUSIC_TOOLTIP_SELECT_OLD_STYLE_MUSIC                        :{BLACK}निवडा 'जुन्या प्रकारच्या संगीत' कार्यक्रम
+STR_MUSIC_TOOLTIP_SELECT_NEW_STYLE_MUSIC                        :{BLACK}निवडा 'नवीन संगीत' कार्यक्रम
+STR_MUSIC_TOOLTIP_SELECT_EZY_STREET_STYLE                       :{BLACK}निवडा 'स्ट्रीट संगीत' कार्यक्रम
+STR_MUSIC_TOOLTIP_SELECT_CUSTOM_1_USER_DEFINED                  :{BLACK}'कस्टम 1' (वापरकर्ता परिभाषित) कार्यक्रम निवडा
+STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}'कस्टम 2' (वापरकर्ता परिभाषित) कार्यक्रम निवडा
+STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}कार्यक्रम चुळबूळ - प्रारंभ / बंद
+STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}संगीत ट्रॅक निवड दाखवा
 
+STR_ERROR_NO_SONGS                                              :{WHITE}संगीत न संगीत संच निवडले गेले आहे. एकही गाणी खेळला जाईल.
 
 # Playlist window
+STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}संगीत कार्यक्रम निवड.
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
+STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}गाणे क्रमांक
+STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}कार्यक्रम - '{STRING}'
+STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}स्पष्ट
 
 # Highscore window
+STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED                         :{BIG_FONT}{BLACK}{NUM} स्थान अव्वल कंपन्या
 STR_HIGHSCORE_POSITION                                          :{BIG_FONT}{BLACK}{COMMA}.
-STR_HIGHSCORE_NAME                                              :{BIG_FONT}{PRESIDENT_NAME}, {COMPANY}
+STR_HIGHSCORE_NAME                                              :{PRESIDENT_NAME}, {COMPANY}
 STR_HIGHSCORE_STATS                                             :{BIG_FONT}'{STRING}'   ({COMMA})
 
 # Smallmap window
@@ -452,9 +666,6 @@ STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {C
 # News message history
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
-# Message settings window
-
-
 
 
 
@@ -467,9 +678,7 @@ STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDE
 
 
 
-# Start of order review system
-# DON'T ADD OR REMOVE LINES HERE
-# end of order system
+# Order review system / warnings
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} जुनी होत आहे
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} खूप जुनी होत आहे
@@ -514,10 +723,6 @@ STR_GAME_OPTIONS_CURRENCY_SKK                                   :स्लोव
 ############ end of currency region
 
 
-############ start of measuring units region
-############ end of measuring units region
-
-
 
 ############ start of townname region
 STR_GAME_OPTIONS_TOWN_NAME_FRENCH                               :फ्रेंच
@@ -539,15 +744,18 @@ STR_GAME_OPTIONS_TOWN_NAME_ITALIAN                              :ईटेलि
 ############ end of townname region
 
 
+############ start of autosave dropdown
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :दर महिने
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :दर ३ महिने
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :दर ६ महिने
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :दर १२ महिने
+############ end of autosave dropdown
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}भाषा
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :अन्य
+
 
 
 
@@ -561,14 +769,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :अन्य
 
 
 
-# Difficulty level window
-
-############ range for difficulty levels starts
-############ range for difficulty levels ends
-
-
-############ range for difficulty settings starts
-############ range for difficulty settings ends
 
 
 
@@ -584,15 +784,16 @@ STR_SUBSIDY_X4                                                  :x४
 
 
 
+# Settings tree window
 
 
-# Advanced settings window
 
 
 
 STR_CONFIG_SETTING_NONE                                         :नाही
 STR_CONFIG_SETTING_ORIGINAL                                     :मुळ
 STR_CONFIG_SETTING_REALISTIC                                    :खरेखुरे
+
 
 
 STR_CONFIG_SETTING_SMOKE_AMOUNT                                 :वाहनांचा धूर/ठिणग्या: {STRING}
@@ -616,7 +817,18 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :सर्व �
 
 
 
+
+
+
+
 STR_CONFIG_SETTING_STATUSBAR_POS                                :स्टेटसबार वरचं स्थान: {STRING}
+
+
+
+
+
+
+
 
 
 
@@ -788,6 +1000,10 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 
 # Transparency settings window
 
+# Linkgraph legend window
+
+# Linkgraph legend window and linkgraph legend in smallmap
+
 # Base for station construction window(s)
 
 # Join station window
@@ -922,6 +1138,8 @@ STR_GENERATION_PROGRESS_NUM                                     :{BLACK}{NUM} / 
 
 
 
+# NewGRF save preset window
+
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_SETTING                                   :{STRING}: {ORANGE}{STRING}
 
@@ -947,6 +1165,8 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO_ABBREV                                 :??
+
+# Placeholders for other invalid stuff, e.g. vehicles that have gone (Game Script).
 
 # NewGRF scanning window
 
@@ -976,9 +1196,12 @@ STR_GOALS_TEXT                                                  :{ORANGE}{STRING
 
 # Goal question window
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
+############ End of Goal Question button list
 
 # Subsidies window
+
+# Story book window
 
 # Station list window
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
@@ -989,7 +1212,9 @@ STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION
 STR_STATION_VIEW_WAITING_CARGO                                  :{WHITE}{CARGO_LONG}
 
 
-STR_STATION_VIEW_CARGO_RATING                                   :{WHITE}{STRING}: {YELLOW}{STRING} ({COMMA}%)
+
+
+
 
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :धक्कादायक
@@ -1001,6 +1226,7 @@ STR_CARGO_RATING_VERY_GOOD                                      :अतिशय
 STR_CARGO_RATING_EXCELLENT                                      :अव्वल
 STR_CARGO_RATING_OUTSTANDING                                    :उत्कृष्ट
 ############ range for rating ends
+
 
 
 
@@ -1080,6 +1306,7 @@ STR_GROUP_ALL_AIRCRAFTS                                         :सर्व �
 
 
 
+
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :सगळे वाहने काढा
 
 
@@ -1095,6 +1322,9 @@ STR_PURCHASE_INFO_SPEED                                         :{BLACK}गत�
 STR_PURCHASE_INFO_COST                                          :{BLACK}किंमत: {GOLD}{CURRENCY_LONG}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}वजन: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
 STR_PURCHASE_INFO_COST_SPEED                                    :{BLACK}किंमत: {GOLD}{CURRENCY_LONG}{BLACK} गती: {GOLD}{VELOCITY}
+
+
+
 
 
 
@@ -1138,6 +1368,7 @@ STR_REPLACE_VEHICLE_AIRCRAFT                                    :विमान
 
 
 
+
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
@@ -1159,6 +1390,7 @@ STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE
 
 
 # The next two need to stay in this order
+
 
 
 
@@ -1285,6 +1517,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}अं�
 
 # Screenshot related messages
 
+
 # Error message titles
 
 # Generic construction errors
@@ -1300,6 +1533,7 @@ STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE} स्�
 # Town related errors
 
 # Industry related errors
+
 
 # Station construction related errors
 
@@ -1351,6 +1585,7 @@ STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}पू�
 
 
 
+
 # Specific vehicle errors
 
 
@@ -1363,6 +1598,8 @@ STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}पू�
 # Sign related errors
 
 # Translatable comment for OpenTTD's desktop shortcut
+
+# Translatable descriptions in media/baseset/*.ob* files
 
 ##id 0x2000
 # Town building names
@@ -1567,7 +1804,7 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
-STR_JUST_STRING_SPACE_STRING                                    :{STRING} {STRING}
+STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 
 # Slightly 'raw' stringcodes with colour or size
@@ -1580,8 +1817,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
@@ -1592,9 +1827,7 @@ STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
-STR_GREEN_STRING                                                :{GREEN}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
-STR_RED_STRING                                                  :{RED}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
 STR_WHITE_STRING                                                :{WHITE}{STRING}
 STR_ORANGE_STRING1_WHITE                                        :{ORANGE}{STRING}{WHITE}

@@ -14,6 +14,7 @@
 
 #include "script_object.hpp"
 #include "../../cargotype.h"
+#include "../../linkgraph/linkgraph_type.h"
 
 /**
  * Class that handles all cargo related functions.
@@ -61,6 +62,16 @@ public:
 	};
 
 	/**
+	 * Type of cargo distribution.
+	 */
+	enum DistributionType {
+		DT_MANUAL = ::DT_MANUAL,         ///< Manual distribution.
+		DT_ASYMMETRIC = ::DT_ASYMMETRIC, ///< Asymmetric distribution. Usually cargo will only travel in one direction.
+		DT_SYMMETRIC = ::DT_SYMMETRIC,   ///< Symmetric distribution. The same amount of cargo travels in each direction between each pair of nodes.
+		INVALID_DISTRIBUTION_TYPE = 0xFFFF, ///< Invalid distribution type.
+	};
+
+	/**
 	 * Checks whether the given cargo type is valid.
 	 * @param cargo_type The cargo to check.
 	 * @return True if and only if the cargo type is valid.
@@ -79,8 +90,15 @@ public:
 	 * @param cargo_type The cargo to get the string representation of.
 	 * @pre ScriptCargo::IsValidCargo(cargo_type).
 	 * @return The cargo label.
-	 * @note Never use this to check if it is a certain cargo. NewGRF can
-	 *  redefine all of the names.
+	 * @note
+	 *  - The label uniquely identifies a specific cargo. Use this if you want to
+	 *    detect special cargos from specific industry set (like production booster cargos, supplies, ...).
+	 *  - For more generic cargo support, rather check cargo properties though. For example:
+	 *     - Use ScriptCargo::HasCargoClass(..., CC_PASSENGER) to decide bus vs. truck requirements.
+	 *     - Use ScriptCargo::GetTownEffect(...) paired with ScriptTown::GetCargoGoal(...) to determine
+	 *       town growth requirements.
+	 *  - In other words: Only use the cargo label, if you know more about the behaviour
+	 *    of a specific cargo from a specific industry set, than the API methods can tell you.
 	 */
 	static char *GetCargoLabel(CargoID cargo_type);
 
@@ -121,6 +139,13 @@ public:
 	 * @return The amount of money that would be earned by this trip.
 	 */
 	static Money GetCargoIncome(CargoID cargo_type, uint32 distance, uint32 days_in_transit);
+
+	/**
+	 * Get the cargo distribution type for a cargo.
+	 * @param cargo_type The cargo to check on.
+	 * @return The cargo distribution type for the given cargo.
+	 */
+	static DistributionType GetDistributionType(CargoID cargo_type);
 };
 
 #endif /* SCRIPT_CARGO_HPP */

@@ -29,6 +29,8 @@
 #include "table/strings.h"
 #include <list>
 
+#include "safeguards.h"
+
 static const NWidgetPart _nested_errmsg_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_RED),
@@ -39,8 +41,8 @@ static const NWidgetPart _nested_errmsg_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _errmsg_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _errmsg_desc(
+	WDP_MANUAL, "error", 0, 0,
 	WC_ERRMSG, WC_NONE,
 	0,
 	_nested_errmsg_widgets, lengthof(_nested_errmsg_widgets)
@@ -59,15 +61,15 @@ static const NWidgetPart _nested_errmsg_face_widgets[] = {
 	EndContainer(),
 };
 
-static const WindowDesc _errmsg_face_desc(
-	WDP_MANUAL, 0, 0,
+static WindowDesc _errmsg_face_desc(
+	WDP_MANUAL, "error_face", 0, 0,
 	WC_ERRMSG, WC_NONE,
 	0,
 	_nested_errmsg_face_widgets, lengthof(_nested_errmsg_face_widgets)
 );
 
 /**
- * Copy the given data into our instace.
+ * Copy the given data into our instance.
  * @param data The data to copy.
  */
 ErrorMessageData::ErrorMessageData(const ErrorMessageData &data)
@@ -75,7 +77,7 @@ ErrorMessageData::ErrorMessageData(const ErrorMessageData &data)
 	*this = data;
 	for (size_t i = 0; i < lengthof(this->strings); i++) {
 		if (this->strings[i] != NULL) {
-			this->strings[i] = strdup(this->strings[i]);
+			this->strings[i] = stredup(this->strings[i]);
 			this->decode_params[i] = (size_t)this->strings[i];
 		}
 	}
@@ -94,11 +96,13 @@ ErrorMessageData::~ErrorMessageData()
  * @param duration     The amount of time to show this error message.
  * @param x            World X position (TileVirtX) of the error location. Set both x and y to 0 to just center the message when there is no related error tile.
  * @param y            World Y position (TileVirtY) of the error location. Set both x and y to 0 to just center the message when there is no related error tile.
+ * @param textref_stack_grffile NewGRF that provides the #TextRefStack for the error message.
  * @param textref_stack_size Number of uint32 values to put on the #TextRefStack for the error message; 0 if the #TextRefStack shall not be used.
  * @param textref_stack Values to put on the #TextRefStack.
  */
-ErrorMessageData::ErrorMessageData(StringID summary_msg, StringID detailed_msg, uint duration, int x, int y, uint textref_stack_size, const uint32 *textref_stack) :
+ErrorMessageData::ErrorMessageData(StringID summary_msg, StringID detailed_msg, uint duration, int x, int y, const GRFFile *textref_stack_grffile, uint textref_stack_size, const uint32 *textref_stack) :
 	duration(duration),
+	textref_stack_grffile(textref_stack_grffile),
 	textref_stack_size(textref_stack_size),
 	summary_msg(summary_msg),
 	detailed_msg(detailed_msg),
@@ -126,7 +130,7 @@ void ErrorMessageData::CopyOutDParams()
 	memset(this->strings, 0, sizeof(this->strings));
 
 	/* Get parameters using type information */
-	if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_size, this->textref_stack);
+	if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, this->textref_stack);
 	CopyOutDParam(this->decode_params, this->strings, this->detailed_msg == INVALID_STRING_ID ? this->summary_msg : this->detailed_msg, lengthof(this->decode_params));
 	if (this->textref_stack_size > 0) StopTextRefStackUsage();
 
@@ -154,7 +158,7 @@ void ErrorMessageData::SetDParam(uint n, uint64 v)
 void ErrorMessageData::SetDParamStr(uint n, const char *str)
 {
 	free(this->strings[n]);
-	this->strings[n] = strdup(str);
+	this->strings[n] = stredup(str);
 }
 
 /** Define a queue with errors. */
@@ -171,31 +175,40 @@ private:
 	uint height_detailed;           ///< Height of the #detailed_msg string in pixels in the #WID_EM_MESSAGE widget.
 
 public:
-	ErrmsgWindow(const ErrorMessageData &data) : Window(), ErrorMessageData(data)
+	ErrmsgWindow(const ErrorMessageData &data) : Window(data.HasFace() ? &_errmsg_face_desc : &_errmsg_desc), ErrorMessageData(data)
 	{
-		this->InitNested((this->face == INVALID_COMPANY) ? &_errmsg_desc : &_errmsg_face_desc);
+		this->InitNested();
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
-		if (widget != WID_EM_MESSAGE) return;
+		switch (widget) {
+			case WID_EM_MESSAGE: {
+				CopyInDParam(0, this->decode_params, lengthof(this->decode_params));
+				if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, this->textref_stack);
 
-		CopyInDParam(0, this->decode_params, lengthof(this->decode_params));
-		if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_size, this->textref_stack);
+				int text_width = max(0, (int)size->width - WD_FRAMETEXT_LEFT - WD_FRAMETEXT_RIGHT);
+				this->height_summary = GetStringHeight(this->summary_msg, text_width);
+				this->height_detailed = (this->detailed_msg == INVALID_STRING_ID) ? 0 : GetStringHeight(this->detailed_msg, text_width);
 
-		int text_width = max(0, (int)size->width - WD_FRAMETEXT_LEFT - WD_FRAMETEXT_RIGHT);
-		this->height_summary  = GetStringHeight(this->summary_msg, text_width);
-		this->height_detailed = (this->detailed_msg == INVALID_STRING_ID) ? 0 : GetStringHeight(this->detailed_msg, text_width);
+				if (this->textref_stack_size > 0) StopTextRefStackUsage();
 
-		if (this->textref_stack_size > 0) StopTextRefStackUsage();
+				uint panel_height = WD_FRAMERECT_TOP + this->height_summary + WD_FRAMERECT_BOTTOM;
+				if (this->detailed_msg != INVALID_STRING_ID) panel_height += this->height_detailed + WD_PAR_VSEP_WIDE;
 
-		uint panel_height = WD_FRAMERECT_TOP + this->height_summary + WD_FRAMERECT_BOTTOM;
-		if (this->detailed_msg != INVALID_STRING_ID) panel_height += this->height_detailed + WD_PAR_VSEP_WIDE;
-
-		size->height = max(size->height, panel_height);
+				size->height = max(size->height, panel_height);
+				break;
+			}
+			case WID_EM_FACE: {
+				Dimension face_size = GetSpriteSize(SPR_GRADIENT);
+				size->width = max(size->width, face_size.width);
+				size->height = max(size->height, face_size.height);
+				break;
+			}
+		}
 	}
 
-	virtual Point OnInitialPosition(const WindowDesc *desc, int16 sm_width, int16 sm_height, int window_number)
+	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
 	{
 		/* Position (0, 0) given, center the window. */
 		if (this->position.x == 0 && this->position.y == 0) {
@@ -253,7 +266,7 @@ public:
 
 			case WID_EM_MESSAGE:
 				CopyInDParam(0, this->decode_params, lengthof(this->decode_params));
-				if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_size, this->textref_stack);
+				if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, this->textref_stack);
 
 				if (this->detailed_msg == INVALID_STRING_ID) {
 					DrawStringMultiLine(r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM,
@@ -300,7 +313,7 @@ public:
 		if (_window_system_initialized) ShowFirstError();
 	}
 
-	virtual EventState OnKeyPress(uint16 key, uint16 keycode)
+	virtual EventState OnKeyPress(WChar key, uint16 keycode)
 	{
 		if (keycode != WKC_SPACE) return ES_NOT_HANDLED;
 		delete this;
@@ -358,19 +371,20 @@ void UnshowCriticalError()
  * @param wl           Message severity.
  * @param x            World X position (TileVirtX) of the error location. Set both x and y to 0 to just center the message when there is no related error tile.
  * @param y            World Y position (TileVirtY) of the error location. Set both x and y to 0 to just center the message when there is no related error tile.
+ * @param textref_stack_grffile NewGRF providing the #TextRefStack for the error message.
  * @param textref_stack_size Number of uint32 values to put on the #TextRefStack for the error message; 0 if the #TextRefStack shall not be used.
  * @param textref_stack Values to put on the #TextRefStack.
  */
-void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel wl, int x, int y, uint textref_stack_size, const uint32 *textref_stack)
+void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel wl, int x, int y, const GRFFile *textref_stack_grffile, uint textref_stack_size, const uint32 *textref_stack)
 {
-	assert(textref_stack_size == 0 || textref_stack != NULL);
+	assert(textref_stack_size == 0 || (textref_stack_grffile != NULL && textref_stack != NULL));
 	if (summary_msg == STR_NULL) summary_msg = STR_EMPTY;
 
 	if (wl != WL_INFO) {
 		/* Print message to console */
 		char buf[DRAW_STRING_BUFFER];
 
-		if (textref_stack_size > 0) StartTextRefStackUsage(textref_stack_size, textref_stack);
+		if (textref_stack_size > 0) StartTextRefStackUsage(textref_stack_grffile, textref_stack_size, textref_stack);
 
 		char *b = GetString(buf, summary_msg, lastof(buf));
 		if (detailed_msg != INVALID_STRING_ID) {
@@ -390,7 +404,7 @@ void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel 
 
 	if (_settings_client.gui.errmsg_duration == 0 && !no_timeout) return;
 
-	ErrorMessageData data(summary_msg, detailed_msg, no_timeout ? 0 : _settings_client.gui.errmsg_duration, x, y, textref_stack_size, textref_stack);
+	ErrorMessageData data(summary_msg, detailed_msg, no_timeout ? 0 : _settings_client.gui.errmsg_duration, x, y, textref_stack_grffile, textref_stack_size, textref_stack);
 	data.CopyOutDParams();
 
 	ErrmsgWindow *w = (ErrmsgWindow*)FindWindowById(WC_ERRMSG, 0);
@@ -416,4 +430,14 @@ void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel 
 void ScheduleErrorMessage(ErrorList &datas)
 {
 	_error_list.splice(_error_list.end(), datas);
+}
+
+/**
+ * Schedule an error.
+ * Note: This does not try to display the error now. This is useful if the window system is not yet running.
+ * @param data Error message data; cleared afterwards
+ */
+void ScheduleErrorMessage(const ErrorMessageData &data)
+{
+	_error_list.push_back(data);
 }

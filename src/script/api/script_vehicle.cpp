@@ -24,6 +24,8 @@
 #include "../../aircraft.h"
 #include "table/strings.h"
 
+#include "../../safeguards.h"
+
 /* static */ bool ScriptVehicle::IsValidVehicle(VehicleID vehicle_id)
 {
 	const Vehicle *v = ::Vehicle::GetIfValid(vehicle_id);
@@ -182,7 +184,7 @@
 /* static */ bool ScriptVehicle::IsInDepot(VehicleID vehicle_id)
 {
 	if (!IsValidVehicle(vehicle_id)) return false;
-	return ::Vehicle::Get(vehicle_id)->IsInDepot();
+	return ::Vehicle::Get(vehicle_id)->IsChainInDepot();
 }
 
 /* static */ bool ScriptVehicle::IsStoppedInDepot(VehicleID vehicle_id)
@@ -219,8 +221,8 @@
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);
 	EnforcePrecondition(false, IsValidVehicle(vehicle_id));
 	EnforcePrecondition(false, name != NULL);
-	const char *text = name->GetEncodedText();
-	EnforcePrecondition(false, !::StrEmpty(text));
+	const char *text = name->GetDecodedText();
+	EnforcePreconditionEncodedText(false, text);
 	EnforcePreconditionCustomError(false, ::Utf8StringLength(text) < MAX_LENGTH_VEHICLE_NAME_CHARS, ScriptError::ERR_PRECONDITION_STRING_TOO_LONG);
 
 	return ScriptObject::DoCommand(0, vehicle_id, 0, CMD_RENAME_VEHICLE, text);
@@ -399,7 +401,7 @@
 
 	uint32 amount = 0;
 	for (const Vehicle *v = ::Vehicle::Get(vehicle_id); v != NULL; v = v->Next()) {
-		if (v->cargo_type == cargo) amount += v->cargo.Count();
+		if (v->cargo_type == cargo) amount += v->cargo.StoredCount();
 	}
 
 	return amount;

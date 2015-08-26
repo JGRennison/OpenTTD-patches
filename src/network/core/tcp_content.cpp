@@ -14,7 +14,17 @@
 #ifdef ENABLE_NETWORK
 
 #include "../../stdafx.h"
+#ifndef OPENTTD_MSU
+#include "../../textfile_gui.h"
+#include "../../newgrf_config.h"
+#include "../../base_media_base.h"
+#include "../../ai/ai.hpp"
+#include "../../game/game.hpp"
+#include "../../fios.h"
+#endif /* OPENTTD_MSU */
 #include "tcp_content.h"
+
+#include "../../safeguards.h"
 
 /** Clear everything in the struct */
 ContentInfo::ContentInfo()
@@ -86,6 +96,55 @@ bool ContentInfo::IsValid() const
 	return this->state < ContentInfo::INVALID && this->type >= CONTENT_TYPE_BEGIN && this->type < CONTENT_TYPE_END;
 }
 
+#ifndef OPENTTD_MSU
+/**
+ * Search a textfile file next to this file in the content list.
+ * @param type The type of the textfile to search for.
+ * @return The filename for the textfile, \c NULL otherwise.
+ */
+const char *ContentInfo::GetTextfile(TextfileType type) const
+{
+	if (this->state == INVALID) return NULL;
+	const char *tmp;
+	switch (this->type) {
+		default: NOT_REACHED();
+		case CONTENT_TYPE_AI:
+			tmp = AI::GetScannerInfo()->FindMainScript(this, true);
+			break;
+		case CONTENT_TYPE_AI_LIBRARY:
+			tmp = AI::GetScannerLibrary()->FindMainScript(this, true);
+			break;
+		case CONTENT_TYPE_GAME:
+			tmp = Game::GetScannerInfo()->FindMainScript(this, true);
+			break;
+		case CONTENT_TYPE_GAME_LIBRARY:
+			tmp = Game::GetScannerLibrary()->FindMainScript(this, true);
+			break;
+		case CONTENT_TYPE_NEWGRF: {
+			const GRFConfig *gc = FindGRFConfig(BSWAP32(this->unique_id), FGCM_EXACT, this->md5sum);
+			tmp = gc != NULL ? gc->filename : NULL;
+			break;
+		}
+		case CONTENT_TYPE_BASE_GRAPHICS:
+			tmp = TryGetBaseSetFile(this, true, BaseGraphics::GetAvailableSets());
+			break;
+		case CONTENT_TYPE_BASE_SOUNDS:
+			tmp = TryGetBaseSetFile(this, true, BaseSounds::GetAvailableSets());
+			break;
+		case CONTENT_TYPE_BASE_MUSIC:
+			tmp = TryGetBaseSetFile(this, true, BaseMusic::GetAvailableSets());
+			break;
+		case CONTENT_TYPE_SCENARIO:
+		case CONTENT_TYPE_HEIGHTMAP:
+			extern const char *FindScenario(const ContentInfo *ci, bool md5sum);
+			tmp = FindScenario(this, true);
+			break;
+	}
+	if (tmp == NULL) return NULL;
+	return ::GetTextfile(type, GetContentInfoSubDir(this->type), tmp);
+}
+#endif /* OPENTTD_MSU */
+
 void NetworkContentSocketHandler::Close()
 {
 	CloseConnection();
@@ -94,12 +153,6 @@ void NetworkContentSocketHandler::Close()
 	closesocket(this->sock);
 	this->sock = INVALID_SOCKET;
 }
-
-/**
- * Defines a simple (switch) case for each network packet
- * @param type the packet type to create the case for
- */
-#define CONTENT_COMMAND(type) case type: return this->NetworkPacketReceive_ ## type ## _command(p); break;
 
 /**
  * Handle the given packet, i.e. pass it to the right
@@ -132,15 +185,39 @@ bool NetworkContentSocketHandler::HandlePacket(Packet *p)
 
 /**
  * Receive a packet at TCP level
+ * @return Whether at least one packet was received.
  */
-void NetworkContentSocketHandler::ReceivePackets()
+bool NetworkContentSocketHandler::ReceivePackets()
 {
+	/*
+	 * We read only a few of the packets. This as receiving packets can be expensive
+	 * due to the re-resolving of the parent/child relations and checking the toggle
+	 * state of all bits. We cannot do this all in one go, as we want to show the
+	 * user what we already received. Otherwise, it can take very long before any
+	 * progress is shown to the end user that something has been received.
+	 * It is also the case that we request extra content from the content server in
+	 * case there is an unknown (in the content list) piece of content. These will
+	 * come in after the main lists have been requested. As a result, we won't be
+	 * getting everything reliably in one batch. Thus, we need to make subsequent
+	 * updates in that case as well.
+	 *
+	 * As a result, we simple handle an arbitrary number of packets in one cycle,
+	 * and let the rest be handled in subsequent cycles. These are ran, almost,
+	 * immediately after this cycle so in speed it does not matter much, except
+	 * that the user inferface will appear better responding.
+	 *
+	 * What arbitrary number to choose is the ultimate question though.
+	 */
 	Packet *p;
-	while ((p = this->ReceivePacket()) != NULL) {
+	static const int MAX_PACKETS_TO_RECEIVE = 42;
+	int i = MAX_PACKETS_TO_RECEIVE;
+	while (--i != 0 && (p = this->ReceivePacket()) != NULL) {
 		bool cont = this->HandlePacket(p);
 		delete p;
-		if (!cont) return;
+		if (!cont) return true;
 	}
+
+	return i != MAX_PACKETS_TO_RECEIVE - 1;
 }
 
 
@@ -162,5 +239,32 @@ bool NetworkContentSocketHandler::Receive_CLIENT_INFO_EXTID_MD5(Packet *p) { ret
 bool NetworkContentSocketHandler::Receive_SERVER_INFO(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CONTENT_SERVER_INFO); }
 bool NetworkContentSocketHandler::Receive_CLIENT_CONTENT(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CONTENT_CLIENT_CONTENT); }
 bool NetworkContentSocketHandler::Receive_SERVER_CONTENT(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CONTENT_SERVER_CONTENT); }
+
+#ifndef OPENTTD_MSU
+/**
+ * Helper to get the subdirectory a #ContentInfo is located in.
+ * @param type The type of content.
+ * @return The subdirectory the content is located in.
+ */
+Subdirectory GetContentInfoSubDir(ContentType type)
+{
+	switch (type) {
+		default: return NO_DIRECTORY;
+		case CONTENT_TYPE_AI:           return AI_DIR;
+		case CONTENT_TYPE_AI_LIBRARY:   return AI_LIBRARY_DIR;
+		case CONTENT_TYPE_GAME:         return GAME_DIR;
+		case CONTENT_TYPE_GAME_LIBRARY: return GAME_LIBRARY_DIR;
+		case CONTENT_TYPE_NEWGRF:       return NEWGRF_DIR;
+
+		case CONTENT_TYPE_BASE_GRAPHICS:
+		case CONTENT_TYPE_BASE_SOUNDS:
+		case CONTENT_TYPE_BASE_MUSIC:
+			return BASESET_DIR;
+
+		case CONTENT_TYPE_SCENARIO:     return SCENARIO_DIR;
+		case CONTENT_TYPE_HEIGHTMAP:    return HEIGHTMAP_DIR;
+	}
+}
+#endif /* OPENTTD_MSU */
 
 #endif /* ENABLE_NETWORK */

@@ -27,7 +27,7 @@ enum SettingDescTypeLong {
 	SDT_BOOLX       = 1, ///< a boolean number
 	SDT_ONEOFMANY   = 2, ///< bitmasked number where only ONE bit may be set
 	SDT_MANYOFMANY  = 3, ///< bitmasked number where MULTIPLE bits may be set
-	SDT_INTLIST     = 4, ///< list of integers seperated by a comma ','
+	SDT_INTLIST     = 4, ///< list of integers separated by a comma ','
 	SDT_STRING      = 5, ///< string with a pre-allocated buffer
 	SDT_END,
 	/* 10 more possible primitives */
@@ -52,9 +52,43 @@ enum SettingGuiFlagLong {
 DECLARE_ENUM_AS_BIT_SET(SettingGuiFlagLong)
 typedef SimpleTinyEnumT<SettingGuiFlagLong, uint16> SettingGuiFlag;
 
+/**
+ * A SettingCategory defines a grouping of the settings.
+ * The group #SC_BASIC is intended for settings which also a novice player would like to change and is able to understand.
+ * The group #SC_ADVANCED is intended for settings which an experienced player would like to use. This is the case for most settings.
+ * Finally #SC_EXPERT settings only few people want to see in rare cases.
+ * The grouping is meant to be inclusive, i.e. all settings in #SC_BASIC also will be included
+ * in the set of settings in #SC_ADVANCED. The group #SC_EXPERT contains all settings.
+ */
+enum SettingCategory {
+	SC_NONE = 0,
+
+	/* Filters for the list */
+	SC_BASIC_LIST      = 1 << 0,    ///< Settings displayed in the list of basic settings.
+	SC_ADVANCED_LIST   = 1 << 1,    ///< Settings displayed in the list of advanced settings.
+	SC_EXPERT_LIST     = 1 << 2,    ///< Settings displayed in the list of expert settings.
+
+	/* Setting classification */
+	SC_BASIC           = SC_BASIC_LIST | SC_ADVANCED_LIST | SC_EXPERT_LIST,  ///< Basic settings are part of all lists.
+	SC_ADVANCED        = SC_ADVANCED_LIST | SC_EXPERT_LIST,                  ///< Advanced settings are part of advanced and expert list.
+	SC_EXPERT          = SC_EXPERT_LIST,                                     ///< Expert settings can only be seen in the expert list.
+
+	SC_END,
+};
+
+/**
+ * Type of settings for filtering.
+ */
+enum SettingType {
+	ST_GAME,      ///< Game setting.
+	ST_COMPANY,   ///< Company setting.
+	ST_CLIENT,    ///< Client setting.
+
+	ST_ALL,       ///< Used in setting filter to match all types.
+};
 
 typedef bool OnChange(int32 var);           ///< callback prototype on data modification
-typedef size_t OnConvert(const char *value); ///< callback prototype for convertion error
+typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
 
 /** Properties of config file settings. */
 struct SettingDescBase {
@@ -71,11 +105,15 @@ struct SettingDescBase {
 	StringID str_val;       ///< (Translated) first string describing the value.
 	OnChange *proc;         ///< callback procedure for when the value is changed
 	OnConvert *proc_cnvt;   ///< callback procedure when loading value mechanism fails
+	SettingCategory cat;    ///< assigned categories of the setting
 };
 
 struct SettingDesc {
 	SettingDescBase desc;   ///< Settings structure (going to configuration file)
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
+
+	bool IsEditable(bool do_command = false) const;
+	SettingType GetType() const;
 };
 
 /* NOTE: The only difference between SettingDesc and SettingDescGlob is

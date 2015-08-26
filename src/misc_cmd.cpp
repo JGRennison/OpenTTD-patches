@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "command_func.h"
 #include "economy_func.h"
+#include "cmd_helper.h"
 #include "window_func.h"
 #include "textbuf_gui.h"
 #include "network/network.h"
@@ -23,6 +24,8 @@
 #include "core/backup_type.hpp"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 /**
  * Increase the loan of your company.
@@ -178,7 +181,6 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, 
 			} else {
 				_pause_mode = _pause_mode | p1;
 			}
-			InvalidateWindowClassesData(WC_AI_DEBUG, -2);
 
 #ifdef ENABLE_NETWORK
 			NetworkHandlePauseChange(prev_mode, (PauseMode)p1);
@@ -195,7 +197,7 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, 
  * Change the financial flow of your company.
  * @param tile unused
  * @param flags operation to perform
- * @param p1 the amount of money to receive (if negative), or spend (if positive)
+ * @param p1 the amount of money to receive (if positive), or spend (if negative)
  * @param p2 unused
  * @param text unused
  * @return the cost of this operation or an error
@@ -206,9 +208,41 @@ CommandCost CmdMoneyCheat(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 }
 
 /**
+ * Change the bank bank balance of a company by inserting or removing money without affecting the loan.
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 the amount of money to receive (if positive), or spend (if negative)
+ * @param p2 (bit 0-7)  - the company ID.
+ *           (bit 8-15) - the expenses type which should register the cost/income @see ExpensesType.
+ * @param text unused
+ * @return zero cost or an error
+ */
+CommandCost CmdChangeBankBalance(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	int32 delta = (int32)p1;
+	CompanyID company = (CompanyID) GB(p2, 0, 8);
+	ExpensesType expenses_type = Extract<ExpensesType, 8, 8>(p2);
+
+	if (!Company::IsValidID(company)) return CMD_ERROR;
+	if (expenses_type >= EXPENSES_END) return CMD_ERROR;
+	if (_current_company != OWNER_DEITY) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		/* Change company bank balance of company. */
+		Backup<CompanyByte> cur_company(_current_company, company, FILE_LINE);
+		SubtractMoneyFromCompany(CommandCost(expenses_type, -delta));
+		cur_company.Restore();
+	}
+
+	/* This command doesn't cost anyting for deity. */
+	CommandCost zero_cost(expenses_type, 0);
+	return zero_cost;
+}
+
+/**
  * Transfer funds (money) from one company to another.
  * To prevent abuse in multiplayer games you can only send money to other
- * companies if you have paid off your loan (either explicitely, or implicitely
+ * companies if you have paid off your loan (either explicitly, or implicitly
  * given the fact that you have more money than loan).
  * @param tile unused
  * @param flags operation to perform

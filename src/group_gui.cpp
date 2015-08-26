@@ -30,6 +30,10 @@
 
 #include "table/sprites.h"
 
+#include "safeguards.h"
+
+static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
+
 typedef GUIList<const Group*> GUIGroupList;
 
 static const NWidgetPart _nested_group_widgets[] = {
@@ -37,6 +41,7 @@ static const NWidgetPart _nested_group_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_GL_CAPTION),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
@@ -46,21 +51,20 @@ static const NWidgetPart _nested_group_widgets[] = {
 			NWidget(WWT_PANEL, COLOUR_GREY, WID_GL_ALL_VEHICLES), SetFill(1, 0), EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_GREY, WID_GL_DEFAULT_VEHICLES), SetFill(1, 0), EndContainer(),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_MATRIX, COLOUR_GREY, WID_GL_LIST_GROUP), SetDataTip(0x701, STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP),
+				NWidget(WWT_MATRIX, COLOUR_GREY, WID_GL_LIST_GROUP), SetMatrixDataTip(1, 0, STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP),
 						SetFill(1, 0), SetResize(0, 1), SetScrollbar(WID_GL_LIST_GROUP_SCROLLBAR),
 				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_GL_LIST_GROUP_SCROLLBAR),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_CREATE_GROUP), SetMinimalSize(24, 25), SetFill(0, 1),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_CREATE_GROUP), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_CREATE_TRAIN, STR_GROUP_CREATE_TOOLTIP),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_DELETE_GROUP), SetMinimalSize(24, 25), SetFill(0, 1),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_DELETE_GROUP), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_DELETE_TRAIN, STR_GROUP_DELETE_TOOLTIP),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_RENAME_GROUP), SetMinimalSize(24, 25), SetFill(0, 1),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_RENAME_GROUP), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_RENAME_TRAIN, STR_GROUP_RENAME_TOOLTIP),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), EndContainer(),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_REPLACE_PROTECTION), SetMinimalSize(24, 25), SetFill(0, 1),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_REPLACE_PROTECTION), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_REPLACE_OFF_TRAIN, STR_GROUP_REPLACE_PROTECTION_TOOLTIP),
-				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(0, 1), EndContainer(),
 			EndContainer(),
 		EndContainer(),
 		/* right part */
@@ -71,20 +75,20 @@ static const NWidgetPart _nested_group_widgets[] = {
 				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetResize(1, 0), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_MATRIX, COLOUR_GREY, WID_GL_LIST_VEHICLE), SetMinimalSize(248, 0), SetDataTip(0x701, STR_NULL), SetResize(1, 1), SetFill(1, 0), SetScrollbar(WID_GL_LIST_VEHICLE_SCROLLBAR),
+				NWidget(WWT_MATRIX, COLOUR_GREY, WID_GL_LIST_VEHICLE), SetMinimalSize(248, 0), SetMatrixDataTip(1, 0, STR_NULL), SetResize(1, 1), SetFill(1, 0), SetScrollbar(WID_GL_LIST_VEHICLE_SCROLLBAR),
 				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_GL_LIST_VEHICLE_SCROLLBAR),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(1, 0), SetFill(1, 1), SetResize(1, 0), EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_AVAILABLE_VEHICLES), SetMinimalSize(106, 12), SetFill(0, 1),
 						SetDataTip(STR_BLACK_STRING, STR_VEHICLE_LIST_AVAILABLE_ENGINES_TOOLTIP),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(0, 12), SetFill(1, 1), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_MANAGE_VEHICLES_DROPDOWN), SetMinimalSize(118, 12), SetFill(0, 1),
 						SetDataTip(STR_VEHICLE_LIST_MANAGE_LIST, STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_STOP_ALL), SetMinimalSize(12, 12), SetFill(0, 1),
 						SetDataTip(SPR_FLAG_VEH_STOPPED, STR_VEHICLE_LIST_MASS_STOP_LIST_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_START_ALL), SetMinimalSize(12, 12), SetFill(0, 1),
 						SetDataTip(SPR_FLAG_VEH_RUNNING, STR_VEHICLE_LIST_MASS_START_LIST_TOOLTIP),
-				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(0, 12), SetFill(1, 1), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 			EndContainer(),
 		EndContainer(),
@@ -105,34 +109,27 @@ private:
 	};
 
 	VehicleID vehicle_sel; ///< Selected vehicle
+	GroupID group_sel;     ///< Selected group (for drag/drop)
 	GroupID group_rename;  ///< Group being renamed, INVALID_GROUP if none
 	GroupID group_over;    ///< Group over which a vehicle is dragged, INVALID_GROUP if none
+	GroupID group_confirm; ///< Group awaiting delete confirmation
 	GUIGroupList groups;   ///< List of groups
 	uint tiny_step_height; ///< Step height for the group list
 	Scrollbar *group_sb;
 
+	SmallVector<int, 16> indents; ///< Indentation levels
+
 	Dimension column_size[VGC_END]; ///< Size of the columns in the group list.
 
-	/**
-	 * (Re)Build the group list.
-	 *
-	 * @param owner The owner of the window
-	 */
-	void BuildGroupList(Owner owner)
+	void AddParents(GUIGroupList *source, GroupID parent, int indent)
 	{
-		if (!this->groups.NeedRebuild()) return;
-
-		this->groups.Clear();
-
-		const Group *g;
-		FOR_ALL_GROUPS(g) {
-			if (g->owner == owner && g->vehicle_type == this->vli.vtype) {
-				*this->groups.Append() = g;
+		for (const Group **g = source->Begin(); g != source->End(); g++) {
+			if ((*g)->parent == parent) {
+				*this->groups.Append() = *g;
+				*this->indents.Append() = indent;
+				AddParents(source, (*g)->index, indent + 1);
 			}
 		}
-
-		this->groups.Compact();
-		this->groups.RebuildDone();
 	}
 
 	/** Sort the groups by their name */
@@ -156,6 +153,36 @@ private:
 		int r = strnatcmp(last_name[0], last_name[1]); // Sort by name (natural sorting).
 		if (r == 0) return (*a)->index - (*b)->index;
 		return r;
+	}
+
+	/**
+	 * (Re)Build the group list.
+	 *
+	 * @param owner The owner of the window
+	 */
+	void BuildGroupList(Owner owner)
+	{
+		if (!this->groups.NeedRebuild()) return;
+
+		this->groups.Clear();
+		this->indents.Clear();
+
+		GUIGroupList list;
+
+		const Group *g;
+		FOR_ALL_GROUPS(g) {
+			if (g->owner == owner && g->vehicle_type == this->vli.vtype) {
+				*list.Append() = g;
+			}
+		}
+
+		list.ForceResort();
+		list.Sort(&GroupNameSorter);
+
+		AddParents(&list, INVALID_GROUP, 0);
+
+		this->groups.Compact();
+		this->groups.RebuildDone();
 	}
 
 	/**
@@ -183,7 +210,7 @@ private:
 		}
 		this->tiny_step_height = max(this->tiny_step_height, this->column_size[VGC_PROFIT].height);
 
-		SetDParam(0, GroupStatistics::Get(this->vli.company, ALL_GROUP, this->vli.vtype).num_vehicle > 900 ? 9999 : 999);
+		SetDParamMaxValue(0, GroupStatistics::Get(this->vli.company, ALL_GROUP, this->vli.vtype).num_vehicle, 3, FS_SMALL);
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(STR_TINY_COMMA);
 		this->tiny_step_height = max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
@@ -204,14 +231,17 @@ private:
 	 * @param left Left of the row.
 	 * @param right Right of the row.
 	 * @param g_id Group to list.
+	 * @param indent Indentation level.
 	 * @param protection Whether autoreplace protection is set.
 	 */
-	void DrawGroupInfo(int y, int left, int right, GroupID g_id, bool protection = false) const
+	void DrawGroupInfo(int y, int left, int right, GroupID g_id, int indent = 0, bool protection = false) const
 	{
-		/* Highlight the group if a vehicle is dragged over it and it isn't selected. */
-		if (g_id == this->group_over && g_id != this->vli.index) {
+		/* Highlight the group if a vehicle is dragged over it */
+		if (g_id == this->group_over) {
 			GfxFillRect(left + WD_FRAMERECT_LEFT, y + WD_FRAMERECT_TOP, right - WD_FRAMERECT_RIGHT, y + this->tiny_step_height - WD_FRAMERECT_BOTTOM - WD_MATRIX_TOP, _colour_gradient[COLOUR_GREY][7]);
 		}
+
+		if (g_id == NEW_GROUP) return;
 
 		/* draw the selected group in white, else we draw it in black */
 		TextColour colour = g_id == this->vli.index ? TC_WHITE : TC_BLACK;
@@ -229,7 +259,7 @@ private:
 			str = STR_GROUP_NAME;
 		}
 		int x = rtl ? right - WD_FRAMERECT_RIGHT - 8 - this->column_size[VGC_NAME].width + 1 : left + WD_FRAMERECT_LEFT + 8;
-		DrawString(x, x + this->column_size[VGC_NAME].width - 1, y + (this->tiny_step_height - this->column_size[VGC_NAME].height) / 2, str, colour);
+		DrawString(x + indent * LEVEL_WIDTH, x + this->column_size[VGC_NAME].width - 1, y + (this->tiny_step_height - this->column_size[VGC_NAME].height) / 2, str, colour);
 
 		/* draw autoreplace protection */
 		x = rtl ? x - 8 - this->column_size[VGC_PROTECT].width : x + 8 + this->column_size[VGC_NAME].width;
@@ -276,9 +306,9 @@ private:
 	}
 
 public:
-	VehicleGroupWindow(const WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(window_number)
+	VehicleGroupWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
-		this->CreateNestedTree(desc);
+		this->CreateNestedTree();
 
 		this->vscroll = this->GetScrollbar(WID_GL_LIST_VEHICLE_SCROLLBAR);
 		this->group_sb = this->GetScrollbar(WID_GL_LIST_GROUP_SCROLLBAR);
@@ -293,6 +323,7 @@ public:
 
 		this->vli.index = ALL_GROUP;
 		this->vehicle_sel = INVALID_VEHICLE;
+		this->group_sel = INVALID_GROUP;
 		this->group_rename = INVALID_GROUP;
 		this->group_over = INVALID_GROUP;
 
@@ -306,7 +337,6 @@ public:
 		this->groups.ForceRebuild();
 		this->groups.NeedResort();
 		this->BuildGroupList(vli.company);
-		this->groups.Sort(&GroupNameSorter);
 
 		this->GetWidget<NWidgetCore>(WID_GL_CAPTION)->widget_data = STR_VEHICLE_LIST_TRAIN_CAPTION + this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_LIST_VEHICLE)->tool_tip = STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype;
@@ -316,7 +346,7 @@ public:
 		this->GetWidget<NWidgetCore>(WID_GL_DELETE_GROUP)->widget_data += this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_REPLACE_PROTECTION)->widget_data += this->vli.vtype;
 
-		this->FinishInitNested(desc, window_number);
+		this->FinishInitNested(window_number);
 		this->owner = vli.company;
 	}
 
@@ -336,17 +366,13 @@ public:
 				size->height =  4 * GetVehicleListHeight(this->vli.vtype, this->tiny_step_height) - 2 * this->tiny_step_height;
 
 				/* ... minus the buttons at the bottom ... */
-				uint max_icon_height = 25;
-				max_icon_height = max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_GL_CREATE_GROUP)->widget_data).height);
+				uint max_icon_height = GetSpriteSize(this->GetWidget<NWidgetCore>(WID_GL_CREATE_GROUP)->widget_data).height;
 				max_icon_height = max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_GL_RENAME_GROUP)->widget_data).height);
 				max_icon_height = max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_GL_DELETE_GROUP)->widget_data).height);
 				max_icon_height = max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_GL_REPLACE_PROTECTION)->widget_data).height);
 
-				/* ... plus the statusbar below the vehicle list */
-				if (max_icon_height > FONT_HEIGHT_NORMAL) max_icon_height -= FONT_HEIGHT_NORMAL;
-
-				/* The size must be a multiple of tiny_step_height for the resizing to work */
-				size->height -= this->tiny_step_height * CeilDiv(max_icon_height, this->tiny_step_height);
+				/* Get a multiple of tiny_step_height of that amount */
+				size->height = Ceil(size->height - max_icon_height, tiny_step_height);
 				break;
 			}
 
@@ -358,7 +384,7 @@ public:
 
 			case WID_GL_SORT_BY_ORDER: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
-				d.width += padding.width + WD_SORTBUTTON_ARROW_WIDTH * 2; // Doubled since the string is centred and it also looks better.
+				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
 				*size = maxdim(*size, d);
 				break;
@@ -444,7 +470,6 @@ public:
 		this->SortVehicleList();
 
 		this->BuildGroupList(this->owner);
-		this->groups.Sort(&GroupNameSorter);
 
 		this->group_sb->SetCount(this->groups.Length());
 		this->vscroll->SetCount(this->vehicles.Length());
@@ -510,9 +535,12 @@ public:
 
 					assert(g->owner == this->owner);
 
-					DrawGroupInfo(y1, r.left, r.right, g->index, g->replace_protection);
+					DrawGroupInfo(y1, r.left, r.right, g->index, this->indents[i], g->replace_protection);
 
 					y1 += this->tiny_step_height;
+				}
+				if ((uint)this->group_sb->GetPosition() + this->group_sb->GetCapacity() > this->groups.Length()) {
+					DrawGroupInfo(y1, r.left, r.right, NEW_GROUP);
 				}
 				break;
 			}
@@ -522,8 +550,30 @@ public:
 				break;
 
 			case WID_GL_LIST_VEHICLE:
+				if (this->vli.index != ALL_GROUP) {
+					/* Mark vehicles which are in sub-groups */
+					int y = r.top;
+					uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->vehicles.Length());
+					for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
+						const Vehicle *v = this->vehicles[i];
+						if (v->group_id != this->vli.index) {
+							GfxFillRect(r.left + 1, y + 1, r.right - 1, y + this->resize.step_height - 2, _colour_gradient[COLOUR_GREY][3], FILLRECT_CHECKER);
+						}
+						y += this->resize.step_height;
+					}
+				}
+
 				this->DrawVehicleListItems(this->vehicle_sel, this->resize.step_height, r);
 				break;
+		}
+	}
+
+	static void DeleteGroupCallback(Window *win, bool confirmed)
+	{
+		if (confirmed) {
+			VehicleGroupWindow *w = (VehicleGroupWindow*)win;
+			w->vli.index = ALL_GROUP;
+			DoCommandP(0, w->group_confirm, 0, CMD_DELETE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_DELETE));
 		}
 	}
 
@@ -559,7 +609,9 @@ public:
 				uint id_g = this->group_sb->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_GROUP, 0, this->tiny_step_height);
 				if (id_g >= this->groups.Length()) return;
 
-				this->vli.index = this->groups[id_g]->index;
+				this->group_sel = this->vli.index = this->groups[id_g]->index;
+
+				SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 
 				this->vehicles.ForceRebuild();
 				this->SetDirty();
@@ -589,10 +641,8 @@ public:
 			}
 
 			case WID_GL_DELETE_GROUP: { // Delete the selected group
-				GroupID group = this->vli.index;
-				this->vli.index = ALL_GROUP;
-
-				DoCommandP(0, group, 0, CMD_DELETE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_DELETE));
+				this->group_confirm = this->vli.index;
+				ShowQuery(STR_QUERY_GROUP_DELETE_CAPTION, STR_GROUP_DELETE_QUERY_TEXT, this, DeleteGroupCallback);
 				break;
 			}
 
@@ -619,17 +669,48 @@ public:
 			case WID_GL_REPLACE_PROTECTION: {
 				const Group *g = Group::GetIfValid(this->vli.index);
 				if (g != NULL) {
-					DoCommandP(0, this->vli.index, !g->replace_protection, CMD_SET_GROUP_REPLACE_PROTECTION);
+					DoCommandP(0, this->vli.index, (g->replace_protection ? 0 : 1) | (_ctrl_pressed << 1), CMD_SET_GROUP_REPLACE_PROTECTION);
 				}
 				break;
 			}
 		}
 	}
 
-	virtual void OnDragDrop(Point pt, int widget)
+	void OnDragDrop_Group(Point pt, int widget)
 	{
+		const Group *g = Group::Get(this->group_sel);
+
 		switch (widget) {
 			case WID_GL_ALL_VEHICLES: // All vehicles
+			case WID_GL_DEFAULT_VEHICLES: // Ungroupd vehicles
+				if (g->parent != INVALID_GROUP) {
+					DoCommandP(0, this->group_sel | (1 << 16), INVALID_GROUP, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
+				}
+
+				this->group_sel = INVALID_GROUP;
+				this->group_over = INVALID_GROUP;
+				this->SetDirty();
+				break;
+
+			case WID_GL_LIST_GROUP: { // Matrix group
+				uint id_g = this->group_sb->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_GROUP, 0, this->tiny_step_height);
+				GroupID new_g = id_g >= this->groups.Length() ? INVALID_GROUP : this->groups[id_g]->index;
+
+				if (this->group_sel != new_g && g->parent != new_g) {
+					DoCommandP(0, this->group_sel | (1 << 16), new_g, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
+				}
+
+				this->group_sel = INVALID_GROUP;
+				this->group_over = INVALID_GROUP;
+				this->SetDirty();
+				break;
+			}
+		}
+	}
+
+	void OnDragDrop_Vehicle(Point pt, int widget)
+	{
+		switch (widget) {
 			case WID_GL_DEFAULT_VEHICLES: // Ungrouped vehicles
 				DoCommandP(0, DEFAULT_GROUP, this->vehicle_sel | (_ctrl_pressed ? 1 << 31 : 0), CMD_ADD_VEHICLE_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_ADD_VEHICLE));
 
@@ -668,24 +749,26 @@ public:
 				break;
 			}
 		}
+	}
+
+	virtual void OnDragDrop(Point pt, int widget)
+	{
+		if (this->vehicle_sel != INVALID_VEHICLE) OnDragDrop_Vehicle(pt, widget);
+		if (this->group_sel != INVALID_GROUP) OnDragDrop_Group(pt, widget);
+
 		_cursor.vehchain = false;
 	}
 
 	virtual void OnQueryTextFinished(char *str)
 	{
-		if (str != NULL) DoCommandP(0, this->group_rename, 0, CMD_RENAME_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), NULL, str);
+		if (str != NULL) DoCommandP(0, this->group_rename, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), NULL, str);
 		this->group_rename = INVALID_GROUP;
 	}
 
 	virtual void OnResize()
 	{
-		NWidgetCore *nwi = this->GetWidget<NWidgetCore>(WID_GL_LIST_GROUP);
-		this->group_sb->SetCapacity(nwi->current_y / this->tiny_step_height);
-		nwi->widget_data = (this->group_sb->GetCapacity() << MAT_ROW_START) + (1 << MAT_COL_START);
-
-		nwi = this->GetWidget<NWidgetCore>(WID_GL_LIST_VEHICLE);
+		this->group_sb->SetCapacityFromWidget(this, WID_GL_LIST_GROUP);
 		this->vscroll->SetCapacityFromWidget(this, WID_GL_LIST_VEHICLE);
-		nwi->widget_data = (this->vscroll->GetCapacity() << MAT_ROW_START) + (1 << MAT_COL_START);
 	}
 
 	virtual void OnDropdownSelect(int widget, int index)
@@ -747,28 +830,27 @@ public:
 
 	virtual void OnMouseDrag(Point pt, int widget)
 	{
-		if (this->vehicle_sel == INVALID_VEHICLE) return;
+		if (this->vehicle_sel == INVALID_VEHICLE && this->group_sel == INVALID_GROUP) return;
 
 		/* A vehicle is dragged over... */
 		GroupID new_group_over = INVALID_GROUP;
 		switch (widget) {
-			case WID_GL_ALL_VEHICLES: // ... the 'all' group.
-				/* Moving a vehicle from the all group to the default group
-				 * is a no-op, so do not highlight then. */
-				if (!IsDefaultGroupID(Vehicle::Get(vehicle_sel)->group_id)) new_group_over = ALL_GROUP;
-				break;
-
 			case WID_GL_DEFAULT_VEHICLES: // ... the 'default' group.
-				/* Moving a vehicle from the default group to the all group
-				 * is a no-op, so do not highlight then. */
-				if (!IsDefaultGroupID(Vehicle::Get(vehicle_sel)->group_id)) new_group_over = DEFAULT_GROUP;
+				new_group_over = DEFAULT_GROUP;
 				break;
 
 			case WID_GL_LIST_GROUP: { // ... the list of custom groups.
 				uint id_g = this->group_sb->GetScrolledRowFromWidget(pt.y, this, WID_GL_LIST_GROUP, 0, this->tiny_step_height);
-				if (id_g < this->groups.Length()) new_group_over = this->groups[id_g]->index;
+				new_group_over = id_g >= this->groups.Length() ? NEW_GROUP : this->groups[id_g]->index;
 				break;
 			}
+		}
+
+		/* Do not highlight when dragging over the current group */
+		if (this->vehicle_sel != INVALID_VEHICLE) {
+			if (Vehicle::Get(vehicle_sel)->group_id == new_group_over) new_group_over = INVALID_GROUP;
+		} else if (this->group_sel != INVALID_GROUP) {
+			if (this->group_sel == new_group_over || Group::Get(this->group_sel)->parent == new_group_over) new_group_over = INVALID_GROUP;
 		}
 
 		/* Mark widgets as dirty if the group changed. */
@@ -805,16 +887,16 @@ public:
 
 
 static WindowDesc _other_group_desc(
-	WDP_AUTO, 460, 246,
+	WDP_AUTO, "list_groups", 460, 246,
 	WC_INVALID, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_nested_group_widgets, lengthof(_nested_group_widgets)
 );
 
-static const WindowDesc _train_group_desc(
-	WDP_AUTO, 525, 246,
+static WindowDesc _train_group_desc(
+	WDP_AUTO, "list_groups_train", 525, 246,
 	WC_TRAINS_LIST, WC_NONE,
-	WDF_UNCLICK_BUTTONS,
+	0,
 	_nested_group_widgets, lengthof(_nested_group_widgets)
 );
 

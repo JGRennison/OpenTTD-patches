@@ -22,6 +22,8 @@
 
 #include "table/strings.h"
 
+#include "safeguards.h"
+
 /**
  * Convert RGB colours to Grayscale using 29.9% Red, 58.7% Green, 11.4% Blue
  *  (average luminosity formula, NTSC Colour Space)
@@ -46,9 +48,11 @@ static void ReadHeightmapPNGImageData(byte *map, png_structp png_ptr, png_infop 
 	uint x, y;
 	byte gray_palette[256];
 	png_bytep *row_pointers = NULL;
+	bool has_palette = png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_PALETTE;
+	uint channels = png_get_channels(png_ptr, info_ptr);
 
 	/* Get palette and convert it to grayscale */
-	if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_PALETTE) {
+	if (has_palette) {
 		int i;
 		int palette_size;
 		png_color *palette;
@@ -79,11 +83,11 @@ static void ReadHeightmapPNGImageData(byte *map, png_structp png_ptr, png_infop 
 	for (x = 0; x < png_get_image_width(png_ptr, info_ptr); x++) {
 		for (y = 0; y < png_get_image_height(png_ptr, info_ptr); y++) {
 			byte *pixel = &map[y * png_get_image_width(png_ptr, info_ptr) + x];
-			uint x_offset = x * png_get_channels(png_ptr, info_ptr);
+			uint x_offset = x * channels;
 
-			if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_PALETTE) {
+			if (has_palette) {
 				*pixel = gray_palette[row_pointers[y][x_offset]];
-			} else if (png_get_channels(png_ptr, info_ptr) == 3) {
+			} else if (channels == 3) {
 				*pixel = RGBToGrayscale(row_pointers[y][x_offset + 0],
 						row_pointers[y][x_offset + 1], row_pointers[y][x_offset + 2]);
 			} else {
@@ -344,7 +348,7 @@ static void GrayscaleToMapHeights(uint img_width, uint img_height, byte *map)
 					(col < col_pad) || (col >= (width  - col_pad - (_settings_game.construction.freeform_edges ? 0 : 1)))) {
 				SetTileHeight(tile, 0);
 			} else {
-				/* Use nearest neighbor resizing to scale map data.
+				/* Use nearest neighbour resizing to scale map data.
 				 *  We rotate the map 45 degrees (counter)clockwise */
 				img_row = (((row - row_pad) * num_div) / img_scale);
 				switch (_settings_game.game_creation.heightmap_rotation) {
@@ -360,12 +364,19 @@ static void GrayscaleToMapHeights(uint img_width, uint img_height, byte *map)
 				assert(img_row < img_height);
 				assert(img_col < img_width);
 
-				/* Colour scales from 0 to 255, OpenTTD height scales from 0 to 15 */
-				SetTileHeight(tile, map[img_row * img_width + img_col] / 16);
+				uint heightmap_height = map[img_row * img_width + img_col];
+
+				if (heightmap_height > 0) {
+					/* 0 is sea level.
+					 * Other grey scales are scaled evenly to the available height levels > 0.
+					 * (The coastline is independent from the number of height levels) */
+					heightmap_height = 1 + (heightmap_height - 1) * _settings_game.construction.max_heightlevel / 255;
+				}
+
+				SetTileHeight(tile, heightmap_height);
 			}
 			/* Only clear the tiles within the map area. */
-			if (TileX(tile) != MapMaxX() && TileY(tile) != MapMaxY() &&
-					(!_settings_game.construction.freeform_edges || (TileX(tile) != 0 && TileY(tile) != 0))) {
+			if (IsInnerTile(tile)) {
 				MakeClear(tile, CLEAR_GRASS, 3);
 			}
 		}
@@ -464,7 +475,7 @@ bool GetHeightmapDimensions(char *filename, uint *x, uint *y)
  * Load a heightmap from file and change the map in his current dimensions
  *  to a landscape representing the heightmap.
  * It converts pixels to height. The brighter, the higher.
- * @param filename of the heighmap file to be imported
+ * @param filename of the heightmap file to be imported
  */
 void LoadHeightmap(char *filename)
 {

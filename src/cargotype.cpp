@@ -20,13 +20,20 @@
 #include "table/strings.h"
 #include "table/cargo_const.h"
 
+#include "safeguards.h"
+
 CargoSpec CargoSpec::array[NUM_CARGO];
 
 /**
- * Bitmask of cargo types available.
+ * Bitmask of cargo types available. This includes phony cargoes like regearing cargoes.
  * Initialized during a call to #SetupCargoForClimate.
  */
 uint32 _cargo_mask;
+
+/**
+ * Bitmask of real cargo types available. Phony cargoes like regearing cargoes are excluded.
+ */
+uint32 _standard_cargo_mask;
 
 /**
  * Set up the default cargo types for the given landscape type.
@@ -176,10 +183,13 @@ void InitializeSortedCargoSpecs()
 	/* Sort cargo specifications by cargo class and name. */
 	QSortT(_sorted_cargo_specs, _sorted_cargo_specs_size, &CargoSpecClassSorter);
 
+	_standard_cargo_mask = 0;
+
 	_sorted_standard_cargo_specs_size = 0;
 	FOR_ALL_SORTED_CARGOSPECS(cargo) {
 		if (cargo->classes & CC_SPECIAL) break;
 		_sorted_standard_cargo_specs_size++;
+		SetBit(_standard_cargo_mask, cargo->Index());
 	}
 }
 

@@ -16,7 +16,15 @@
 #include "string_func.h"
 #include "window_gui.h"
 
+#include "safeguards.h"
+
 char *_hotkeys_file;
+
+/**
+ * List of all HotkeyLists.
+ * This is a pointer to ensure initialisation order with the various static HotkeyList instances.
+ */
+static SmallVector<HotkeyList*, 16> *_hotkey_lists = NULL;
 
 /** String representation of a keycode */
 struct KeycodeNames {
@@ -48,8 +56,7 @@ static const KeycodeNames _keycode_to_name[] = {
 	{"F11", WKC_F11},
 	{"F12", WKC_F12},
 	{"PAUSE", WKC_PAUSE},
-	{"PLUS", (WindowKeyCodes)'+'},
-	{"COMMA", (WindowKeyCodes)','},
+	{"COMMA", WKC_COMMA},
 	{"NUM_PLUS", WKC_NUM_PLUS},
 	{"NUM_MINUS", WKC_NUM_MINUS},
 	{"=", WKC_EQUALS},
@@ -116,8 +123,7 @@ static uint16 ParseKeycode(const char *start, const char *end)
  * @param hotkey The hotkey object to add the keycodes to
  * @param value The string to parse
  */
-template<class T>
-static void ParseHotkeys(Hotkey<T> *hotkey, const char *value)
+static void ParseHotkeys(Hotkey *hotkey, const char *value)
 {
 	const char *start = value;
 	while (*start != '\0') {
@@ -131,11 +137,11 @@ static void ParseHotkeys(Hotkey<T> *hotkey, const char *value)
 
 /**
  * Convert a hotkey to it's string representation so it can be written to the
- * config file. Seperate parts of the keycode (like "CTRL" and "F1" are split
+ * config file. Separate parts of the keycode (like "CTRL" and "F1" are split
  * by a '+'.
  * @param keycode The keycode to convert to a string.
  * @return A string representation of this keycode.
- * @note The return value is a static buffer, strdup the result before calling
+ * @note The return value is a static buffer, stredup the result before calling
  *  this function again.
  */
 static const char *KeycodeToString(uint16 keycode)
@@ -189,11 +195,10 @@ static const char *KeycodeToString(uint16 keycode)
  * keycodes are attached to the hotkey they are split by a comma.
  * @param hotkey The keycodes of this hotkey need to be converted to a string.
  * @return A string representation of all keycodes.
- * @note The return value is a static buffer, strdup the result before calling
+ * @note The return value is a static buffer, stredup the result before calling
  *  this function again.
  */
-template<class T>
-const char *SaveKeycodes(const Hotkey<T> *hotkey)
+const char *SaveKeycodes(const Hotkey *hotkey)
 {
 	static char buf[128];
 	buf[0] = '\0';
@@ -205,11 +210,66 @@ const char *SaveKeycodes(const Hotkey<T> *hotkey)
 	return buf;
 }
 
-template<class T>
-void LoadHotkeyGroup(IniGroup *group, T *hotkey_list)
+/**
+ * Create a new Hotkey object with a single default keycode.
+ * @param default_keycode The default keycode for this hotkey.
+ * @param name The name of this hotkey.
+ * @param num Number of this hotkey, should be unique within the hotkey list.
+ */
+Hotkey::Hotkey(uint16 default_keycode, const char *name, int num) :
+	name(name),
+	num(num)
 {
-	for (uint i = 0; hotkey_list[i].num != -1; i++) {
-		T *hotkey = &hotkey_list[i];
+	if (default_keycode != 0) this->AddKeycode(default_keycode);
+}
+
+/**
+ * Create a new Hotkey object with multiple default keycodes.
+ * @param default_keycodes An array of default keycodes terminated with 0.
+ * @param name The name of this hotkey.
+ * @param num Number of this hotkey, should be unique within the hotkey list.
+ */
+Hotkey::Hotkey(const uint16 *default_keycodes, const char *name, int num) :
+	name(name),
+	num(num)
+{
+	const uint16 *keycode = default_keycodes;
+	while (*keycode != 0) {
+		this->AddKeycode(*keycode);
+		keycode++;
+	}
+}
+
+/**
+ * Add a keycode to this hotkey, from now that keycode will be matched
+ * in addition to any previously added keycodes.
+ * @param keycode The keycode to add.
+ */
+void Hotkey::AddKeycode(uint16 keycode)
+{
+	this->keycodes.Include(keycode);
+}
+
+HotkeyList::HotkeyList(const char *ini_group, Hotkey *items, GlobalHotkeyHandlerFunc global_hotkey_handler) :
+	global_hotkey_handler(global_hotkey_handler), ini_group(ini_group), items(items)
+{
+	if (_hotkey_lists == NULL) _hotkey_lists = new SmallVector<HotkeyList*, 16>();
+	*_hotkey_lists->Append() = this;
+}
+
+HotkeyList::~HotkeyList()
+{
+	_hotkey_lists->Erase(_hotkey_lists->Find(this));
+}
+
+/**
+ * Load HotkeyList from IniFile.
+ * @param ini IniFile to load from.
+ */
+void HotkeyList::Load(IniFile *ini)
+{
+	IniGroup *group = ini->GetGroup(this->ini_group);
+	for (Hotkey *hotkey = this->items; hotkey->name != NULL; ++hotkey) {
 		IniItem *item = group->GetItem(hotkey->name, false);
 		if (item != NULL) {
 			hotkey->keycodes.Clear();
@@ -218,64 +278,49 @@ void LoadHotkeyGroup(IniGroup *group, T *hotkey_list)
 	}
 }
 
-template<class T>
-void SaveHotkeyGroup(IniGroup *group, T *hotkey_list)
+/**
+ * Save HotkeyList to IniFile.
+ * @param ini IniFile to save to.
+ */
+void HotkeyList::Save(IniFile *ini) const
 {
-	for (uint i = 0; hotkey_list[i].num != -1; i++) {
-		T *hotkey = &hotkey_list[i];
+	IniGroup *group = ini->GetGroup(this->ini_group);
+	for (const Hotkey *hotkey = this->items; hotkey->name != NULL; ++hotkey) {
 		IniItem *item = group->GetItem(hotkey->name, true);
 		item->SetValue(SaveKeycodes(hotkey));
 	}
 }
 
-template<class T>
-void SaveLoadHotkeyGroup(IniGroup *group, T *hotkey_list, bool save)
+/**
+ * Check if a keycode is bound to something.
+ * @param keycode The keycode that was pressed
+ * @param global_only Limit the search to hotkeys defined as 'global'.
+ * @return The number of the matching hotkey or -1.
+ */
+int HotkeyList::CheckMatch(uint16 keycode, bool global_only) const
 {
-	if (save) {
-		SaveHotkeyGroup(group, hotkey_list);
-	} else {
-		LoadHotkeyGroup(group, hotkey_list);
+	for (const Hotkey *list = this->items; list->name != NULL; ++list) {
+		if (list->keycodes.Contains(keycode | WKC_GLOBAL_HOTKEY) || (!global_only && list->keycodes.Contains(keycode))) {
+			return list->num;
+		}
 	}
+	return -1;
 }
 
-struct MainWindow;
-struct MainToolbarWindow;
-struct ScenarioEditorToolbarWindow;
-struct TerraformToolbarWindow;
-struct ScenarioEditorLandscapeGenerationWindow;
-struct OrdersWindow;
-struct BuildAirToolbarWindow;
-struct BuildDocksToolbarWindow;
-struct BuildRailToolbarWindow;
-struct BuildRoadToolbarWindow;
-struct SignListWindow;
 
 static void SaveLoadHotkeys(bool save)
 {
 	IniFile *ini = new IniFile();
 	ini->LoadFromDisk(_hotkeys_file, BASE_DIR);
 
-	IniGroup *group;
+	for (HotkeyList **list = _hotkey_lists->Begin(); list != _hotkey_lists->End(); ++list) {
+		if (save) {
+			(*list)->Save(ini);
+		} else {
+			(*list)->Load(ini);
+		}
+	}
 
-#define SL_HOTKEYS(name, window_name) \
-	extern Hotkey<window_name> *_##name##_hotkeys;\
-	group = ini->GetGroup(#name);\
-	SaveLoadHotkeyGroup(group, _##name##_hotkeys, save);
-
-	SL_HOTKEYS(global, MainWindow);
-	SL_HOTKEYS(maintoolbar, MainToolbarWindow);
-	SL_HOTKEYS(scenedit_maintoolbar, ScenarioEditorToolbarWindow);
-	SL_HOTKEYS(terraform, TerraformToolbarWindow);
-	SL_HOTKEYS(terraform_editor, ScenarioEditorLandscapeGenerationWindow);
-	SL_HOTKEYS(order, OrdersWindow);
-	SL_HOTKEYS(airtoolbar, BuildAirToolbarWindow);
-	SL_HOTKEYS(dockstoolbar, BuildDocksToolbarWindow);
-	SL_HOTKEYS(railtoolbar, BuildRailToolbarWindow);
-	SL_HOTKEYS(roadtoolbar, BuildRoadToolbarWindow);
-	SL_HOTKEYS(signlist, SignListWindow);
-
-
-#undef SL_HOTKEYS
 	if (save) ini->SaveToDisk(_hotkeys_file);
 	delete ini;
 }
@@ -293,43 +338,13 @@ void SaveHotkeysToConfig()
 	SaveLoadHotkeys(true);
 }
 
-typedef EventState GlobalHotkeyHandler(uint16, uint16);
-
-GlobalHotkeyHandler RailToolbarGlobalHotkeys;
-GlobalHotkeyHandler DockToolbarGlobalHotkeys;
-GlobalHotkeyHandler AirportToolbarGlobalHotkeys;
-GlobalHotkeyHandler TerraformToolbarGlobalHotkeys;
-GlobalHotkeyHandler TerraformToolbarEditorGlobalHotkeys;
-GlobalHotkeyHandler RoadToolbarGlobalHotkeys;
-GlobalHotkeyHandler RoadToolbarEditorGlobalHotkeys;
-GlobalHotkeyHandler SignListGlobalHotkeys;
-
-
-GlobalHotkeyHandler *_global_hotkey_handlers[] = {
-	RailToolbarGlobalHotkeys,
-	DockToolbarGlobalHotkeys,
-	AirportToolbarGlobalHotkeys,
-	TerraformToolbarGlobalHotkeys,
-	RoadToolbarGlobalHotkeys,
-	SignListGlobalHotkeys,
-};
-
-GlobalHotkeyHandler *_global_hotkey_handlers_editor[] = {
-	TerraformToolbarEditorGlobalHotkeys,
-	RoadToolbarEditorGlobalHotkeys,
-};
-
-
-void HandleGlobalHotkeys(uint16 key, uint16 keycode)
+void HandleGlobalHotkeys(WChar key, uint16 keycode)
 {
-	if (_game_mode == GM_NORMAL) {
-		for (uint i = 0; i < lengthof(_global_hotkey_handlers); i++) {
-			if (_global_hotkey_handlers[i](key, keycode) == ES_HANDLED) return;
-		}
-	} else if (_game_mode == GM_EDITOR) {
-		for (uint i = 0; i < lengthof(_global_hotkey_handlers_editor); i++) {
-			if (_global_hotkey_handlers_editor[i](key, keycode) == ES_HANDLED) return;
-		}
+	for (HotkeyList **list = _hotkey_lists->Begin(); list != _hotkey_lists->End(); ++list) {
+		if ((*list)->global_hotkey_handler == NULL) continue;
+
+		int hotkey = (*list)->CheckMatch(keycode, true);
+		if (hotkey >= 0 && ((*list)->global_hotkey_handler(hotkey) == ES_HANDLED)) return;
 	}
 }
 

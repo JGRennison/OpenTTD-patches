@@ -13,7 +13,9 @@
 #define STATION_TYPE_H
 
 #include "core/smallvec_type.hpp"
+#include "core/smallstack_type.hpp"
 #include "tilearea_type.h"
+#include <list>
 
 typedef uint16 StationID;
 typedef uint16 RoadStopID;
@@ -26,6 +28,8 @@ struct Waypoint;
 
 static const StationID NEW_STATION = 0xFFFE;
 static const StationID INVALID_STATION = 0xFFFF;
+
+typedef SmallStack<StationID, StationID, INVALID_STATION, 8, 0xFFFD> StationIDStack;
 
 /** Station types */
 enum StationType {
@@ -86,6 +90,9 @@ enum CatchmentArea {
 };
 
 static const uint MAX_LENGTH_STATION_NAME_CHARS = 32; ///< The maximum length of a station name in characters including '\0'
+
+/** List of station IDs */
+typedef std::list<StationID> StationIDList;
 
 /** List of stations */
 typedef SmallVector<Station *, 2> StationList;

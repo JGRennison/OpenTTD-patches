@@ -91,6 +91,9 @@ struct ContentInfo {
 	size_t Size() const;
 	bool IsSelected() const;
 	bool IsValid() const;
+#ifndef OPENTTD_MSU
+	const char *GetTextfile(TextfileType type) const;
+#endif /* OPENTTD_MSU */
 };
 
 /** Base socket handler for all Content TCP sockets */
@@ -136,7 +139,7 @@ protected:
 	/**
 	 * Client requesting a list of content info based on an external
 	 * 'unique' id; GRF ID + MD5 checksum for NewGRFS, shortname and
-	 * xor-ed MD5 checsums for base graphics and AIs.
+	 * xor-ed MD5 checksums for base graphics and AIs.
 	 * Scenarios and AI libraries are not supported
 	 *  uint8   count of requests
 	 *  for each request:
@@ -203,8 +206,12 @@ public:
 	/** On destructing of this class, the socket needs to be closed */
 	virtual ~NetworkContentSocketHandler() { this->Close(); }
 
-	void ReceivePackets();
+	bool ReceivePackets();
 };
+
+#ifndef OPENTTD_MSU
+Subdirectory GetContentInfoSubDir(ContentType type);
+#endif /* OPENTTD_MSU */
 
 #endif /* ENABLE_NETWORK */
 

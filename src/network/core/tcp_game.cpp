@@ -22,16 +22,16 @@
 
 #include "table/strings.h"
 
+#include "../../safeguards.h"
+
 /**
  * Create a new socket for the game connection.
  * @param s The socket to connect with.
  */
-NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s)
+NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s) : info(NULL), client_id(INVALID_CLIENT_ID),
+		last_frame(_frame_counter), last_frame_server(_frame_counter), last_packet(_realtime_tick)
 {
-	this->sock              = s;
-	this->last_frame        = _frame_counter;
-	this->last_frame_server = _frame_counter;
-	this->last_packet       = _realtime_tick;
+	this->sock = s;
 }
 
 /**
@@ -55,12 +55,6 @@ NetworkRecvStatus NetworkGameSocketHandler::CloseConnection(bool error)
 	return this->CloseConnection(error ? NETWORK_RECV_STATUS_SERVER_ERROR : NETWORK_RECV_STATUS_CONN_LOST);
 }
 
-
-/**
- * Defines a simple (switch) case for each network packet
- * @param type the packet type to create the case for
- */
-#define GAME_COMMAND(type) case type: return this->NetworkPacketReceive_ ## type ## _command(p); break;
 
 /**
  * Handle the given packet, i.e. pass it to the right parser receive command.

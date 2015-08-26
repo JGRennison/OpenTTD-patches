@@ -224,6 +224,9 @@ STR_BUTTON_RENAME                                               :{BLACK}Rinomiza
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Klozas fenestro
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Baskulas granda/mikra fenestro grandeso
 
+# Show engines button
+
+
 # Query window
 STR_BUTTON_CANCEL                                               :{BLACK}Anular
 STR_BUTTON_OK                                                   :{BLACK}OK
@@ -240,7 +243,6 @@ STR_MEASURE_AREA_HEIGHTDIFF                                     :{BLACK}Areo: {N
 
 
 # These are used in buttons
-STR_SORT_BY_CAPTION_POPULATION                                  :{BLACK}Populo
 STR_SORT_BY_CAPTION_NAME                                        :{BLACK}Nomo
 STR_SORT_BY_CAPTION_DATE                                        :{BLACK}Dato
 # These are used in dropdowns
@@ -253,6 +255,7 @@ STR_SORT_BY_MAX_SPEED                                           :Maximo rapideso
 STR_SORT_BY_LENGTH                                              :Longeso
 STR_SORT_BY_FACILITY                                            :Stacion-tipo
 STR_SORT_BY_POWER                                               :Povo
+STR_SORT_BY_POPULATION                                          :Populo
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pauzas ludo
@@ -292,12 +295,12 @@ STR_FILE_MENU_SEPARATOR                                         :
 STR_FILE_MENU_EXIT                                              :Ekiras
 ############ range ends here
 
-############ range for map menu starts
+# map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :Mapo di mondo
 STR_MAP_MENU_SIGN_LIST                                          :Listo di signi
-############ range for town menu starts, yet the town directory is shown in the map menu in the scenario editor
-############ end of the 'Display map' dropdown
-############ end of the 'Town' dropdown
+
+############ range for town menu starts
+############ range ends here
 
 ############ range for subsidies menu starts
 ############ range ends here
@@ -337,7 +340,10 @@ STR_GRAPH_MENU_DELIVERED_CARGO_GRAPH                            :Livrita kargajo
 ############ range for about menu starts
 ############ range ends here
 
-############ range for days starts (also used for the place in the highscore window)
+############ range for ordinal numbers used for the place in the highscore window
+############ range for ordinal numbers ends
+
+############ range for days starts
 ############ range for days ends
 
 ############ range for months starts
@@ -376,7 +382,7 @@ STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKG
 
 # Highscore window
 STR_HIGHSCORE_POSITION                                          :{BIG_FONT}{BLACK}{COMMA}.
-STR_HIGHSCORE_NAME                                              :{BIG_FONT}{PRESIDENT_NAME}, {COMPANY}
+STR_HIGHSCORE_NAME                                              :{PRESIDENT_NAME}, {COMPANY}
 STR_HIGHSCORE_STATS                                             :{BIG_FONT}'{STRING}'   ({COMMA})
 
 # Smallmap window
@@ -429,7 +435,6 @@ STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {C
 
 # News message history
 
-# Message settings window
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Sendajo
 
 
@@ -442,11 +447,7 @@ STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Sendajo
 
 
 
-
-
-# Start of order review system
-# DON'T ADD OR REMOVE LINES HERE
-# end of order system
+# Order review system / warnings
 
 
 
@@ -463,19 +464,18 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludo Sel
 ############ end of currency region
 
 
-############ start of measuring units region
-############ end of measuring units region
-
-
 
 ############ start of townname region
 ############ end of townname region
 
 
+############ start of autosave dropdown
+############ end of autosave dropdown
 
 
 
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :altra
+
 
 
 
@@ -489,16 +489,6 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :altra
 
 
 
-# Difficulty level window
-
-############ range for difficulty levels starts
-############ range for difficulty levels ends
-
-
-############ range for difficulty settings starts
-STR_DIFFICULTY_LEVEL_SETTING_ECONOMY                            :{LTBLUE}Ekonomio: {ORANGE}{STRING}
-STR_DIFFICULTY_LEVEL_SETTING_DISASTERS                          :{LTBLUE}Dizastri: {ORANGE}{STRING}
-############ range for difficulty settings ends
 
 STR_NUM_LOW                                                     :Basa
 STR_NUM_NORMAL                                                  :Normala
@@ -528,13 +518,14 @@ STR_SEA_LEVEL_CUSTOM_PERCENTAGE                                 :Kustumigita ({N
 
 
 
+# Settings tree window
 
 
-# Advanced settings window
 
 
 
 STR_CONFIG_SETTING_NONE                                         :Nulo
+
 
 
 STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :nulo
@@ -558,7 +549,18 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 
 
+
+
+
+
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :omnube
+
+
+
+
+
+
+
 
 
 
@@ -668,6 +670,10 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 
 # Transparency settings window
 
+# Linkgraph legend window
+
+# Linkgraph legend window and linkgraph legend in smallmap
+
 # Base for station construction window(s)
 STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Aceptas: {GOLD}{CARGO_LIST}
 
@@ -770,7 +776,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_HEADQUARTERS                 :Stabeyo di komp
 
 # About OpenTTD window
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versiono {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2012 La kruo OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 La kruo OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Ludo Detali
@@ -796,6 +802,8 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 
 STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Versiono: {SILVER}{NUM}
 
+
+# NewGRF save preset window
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Klozas
@@ -830,6 +838,8 @@ STR_NEWGRF_LIST_NONE                                            :Nulo
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO_ABBREV                                 :??
 
+# Placeholders for other invalid stuff, e.g. vehicles that have gone (Game Script).
+
 # NewGRF scanning window
 
 # Sign list window
@@ -855,9 +865,12 @@ STR_GOALS_TEXT                                                  :{ORANGE}{STRING
 
 # Goal question window
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
+############ End of Goal Question button list
 
 # Subsidies window
+
+# Story book window
 
 # Station list window
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
@@ -865,15 +878,17 @@ STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOI
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
-STR_STATION_VIEW_WAITING_TITLE                                  :{BLACK}Vartabas: {WHITE}{STRING}
 STR_STATION_VIEW_WAITING_CARGO                                  :{WHITE}{CARGO_LONG}
 
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Aceptas: {WHITE}{CARGO_LIST}
 
-STR_STATION_VIEW_CARGO_RATING                                   :{WHITE}{STRING}: {YELLOW}{STRING} ({COMMA}%)
+
+
+
 
 ############ range for rating starts
 ############ range for rating ends
+
 
 
 
@@ -950,7 +965,11 @@ STR_GROUP_DEFAULT_AIRCRAFTS                                     :Negrupigita aer
 
 
 
+
 # Build vehicle window
+
+
+
 
 
 
@@ -998,6 +1017,7 @@ STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aeronavo
 
 
 
+
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
@@ -1024,6 +1044,7 @@ STR_VEHICLE_COMMAND_STARTED                                     :{GREEN}Komencin
 
 
 # The next two need to stay in this order
+
 
 
 
@@ -1139,6 +1160,7 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 
 # Screenshot related messages
 
+
 # Error message titles
 STR_ERROR_MESSAGE_CAPTION                                       :{YELLOW}Sendajo
 STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY                         :{YELLOW}Sendajo de {STRING}
@@ -1166,6 +1188,7 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... tro 
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... tro multa industrii
+
 
 # Station construction related errors
 
@@ -1223,6 +1246,7 @@ STR_ERROR_CAN_T_BUILD_OBJECT                                    :{WHITE}Ne povas
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Tro multa vehili en la ludo
 
 
+
 # Specific vehicle errors
 
 
@@ -1235,6 +1259,8 @@ STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Tro mult
 # Sign related errors
 
 # Translatable comment for OpenTTD's desktop shortcut
+
+# Translatable descriptions in media/baseset/*.ob* files
 
 ##id 0x2000
 # Town building names
@@ -1314,7 +1340,7 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
-STR_JUST_STRING_SPACE_STRING                                    :{STRING} {STRING}
+STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 
 # Slightly 'raw' stringcodes with colour or size
@@ -1327,8 +1353,6 @@ STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
-STR_BLACK_CROSS                                                 :{BLACK}{CROSS}
-STR_SILVER_CROSS                                                :{SILVER}{CROSS}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
@@ -1339,9 +1363,7 @@ STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
 STR_BLACK_RAW_STRING                                            :{BLACK}{STRING}
-STR_GREEN_STRING                                                :{GREEN}{STRING}
 STR_ORANGE_STRING                                               :{ORANGE}{STRING}
-STR_RED_STRING                                                  :{RED}{STRING}
 STR_LTBLUE_STRING                                               :{LTBLUE}{STRING}
 STR_WHITE_STRING                                                :{WHITE}{STRING}
 STR_ORANGE_STRING1_WHITE                                        :{ORANGE}{STRING}{WHITE}

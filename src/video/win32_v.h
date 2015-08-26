@@ -15,7 +15,7 @@
 #include "video_driver.hpp"
 
 /** The video driver for windows. */
-class VideoDriver_Win32: public VideoDriver {
+class VideoDriver_Win32 : public VideoDriver {
 public:
 	/* virtual */ const char *Start(const char * const *param);
 
@@ -33,18 +33,18 @@ public:
 
 	/* virtual */ bool ClaimMousePointer();
 
+	/* virtual */ void EditBoxLostFocus();
+
 	/* virtual */ const char *GetName() const { return "win32"; }
 
 	bool MakeWindow(bool full_screen);
 };
 
 /** The factory for Windows' video driver. */
-class FVideoDriver_Win32: public VideoDriverFactory<FVideoDriver_Win32> {
+class FVideoDriver_Win32 : public DriverFactoryBase {
 public:
-	static const int priority = 10;
-	/* virtual */ const char *GetName() { return "win32"; }
-	/* virtual */ const char *GetDescription() { return "Win32 GDI Video Driver"; }
-	/* virtual */ Driver *CreateInstance() { return new VideoDriver_Win32(); }
+	FVideoDriver_Win32() : DriverFactoryBase(Driver::DT_VIDEO, 10, "win32", "Win32 GDI Video Driver") {}
+	/* virtual */ Driver *CreateInstance() const { return new VideoDriver_Win32(); }
 };
 
 #endif /* VIDEO_WIN32_H */

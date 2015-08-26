@@ -16,6 +16,8 @@
 #include "economy_type.h"
 #include "tile_type.h"
 #include "transport_type.h"
+#include "story_type.h"
+#include "company_type.h"
 
 struct Window;
 
@@ -25,7 +27,6 @@ void InitializeGUI();
 
 /* settings_gui.cpp */
 void ShowGameOptions();
-void ShowGameDifficulty();
 void ShowGameSettings();
 
 /* train_gui.cpp */
@@ -48,9 +49,11 @@ void ShowAboutWindow();
 void ShowBuildTreesToolbar();
 void ShowTownDirectory();
 void ShowIndustryDirectory();
+void ShowIndustryCargoesWindow();
 void ShowSubsidiesList();
-void ShowGoalsList();
+void ShowGoalsList(CompanyID company);
 void ShowGoalQuestion(uint16 id, byte type, uint32 button_mask, const char *question);
+void ShowStoryBook(CompanyID company, uint16 page_id = INVALID_STORY_PAGE);
 
 void ShowEstimatedCostOrIncome(Money cost, int x, int y);
 

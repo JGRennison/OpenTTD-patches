@@ -16,14 +16,16 @@
 #include "fileio_func.h"
 
 #if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500)
-# define WITH_FDATASYNC
 # include <unistd.h>
 #endif
 
 #ifdef WIN32
+# include <windows.h>
 # include <shellapi.h>
 # include "core/mem_func.hpp"
 #endif
+
+#include "safeguards.h"
 
 /**
  * Create a new ini file with given group names.
@@ -77,7 +79,7 @@ bool IniFile::SaveToDisk(const char *filename)
  * APIs to do so. We only need to flush the data as the metadata itself
  * (modification date etc.) is not important to us; only the real data is.
  */
-#ifdef WITH_FDATASYNC
+#if defined(_POSIX_SYNCHRONIZED_IO) && _POSIX_SYNCHRONIZED_IO > 0
 	int ret = fdatasync(fileno(f));
 	fclose(f);
 	if (ret != 0) return false;
@@ -86,6 +88,8 @@ bool IniFile::SaveToDisk(const char *filename)
 #endif
 
 #if defined(WIN32) || defined(WIN64)
+	/* _tcsncpy = strcpy is TCHAR is char, but isn't when TCHAR is wchar. */
+	#undef strncpy
 	/* Allocate space for one more \0 character. */
 	TCHAR tfilename[MAX_PATH + 1], tfile_new[MAX_PATH + 1];
 	_tcsncpy(tfilename, OTTD2FS(filename), MAX_PATH);
@@ -105,7 +109,9 @@ bool IniFile::SaveToDisk(const char *filename)
 	shfopt.pTo    = tfilename;
 	SHFileOperation(&shfopt);
 #else
-	rename(file_new, filename);
+	if (rename(file_new, filename) < 0) {
+		DEBUG(misc, 0, "Renaming %s to %s failed; configuration not saved", file_new, filename);
+	}
 #endif
 
 	return true;

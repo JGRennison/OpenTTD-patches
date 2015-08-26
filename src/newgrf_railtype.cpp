@@ -11,32 +11,22 @@
 
 #include "stdafx.h"
 #include "debug.h"
-#include "newgrf_spritegroup.h"
+#include "newgrf_railtype.h"
 #include "date_func.h"
 #include "depot_base.h"
 #include "town.h"
 
-static uint32 RailTypeGetRandomBits(const ResolverObject *object)
+#include "safeguards.h"
+
+/* virtual */ uint32 RailTypeScopeResolver::GetRandomBits() const
 {
-	TileIndex tile = object->u.routes.tile;
-	uint tmp = CountBits(tile + (TileX(tile) + TileY(tile)) * TILE_SIZE);
+	uint tmp = CountBits(this->tile + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
 	return GB(tmp, 0, 2);
 }
 
-static uint32 RailTypeGetTriggers(const ResolverObject *object)
+/* virtual */ uint32 RailTypeScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
 {
-	return 0;
-}
-
-static void RailTypeSetTriggers(const ResolverObject *object, int triggers)
-{
-}
-
-static uint32 RailTypeGetVariable(const ResolverObject *object, byte variable, uint32 parameter, bool *available)
-{
-	TileIndex tile = object->u.routes.tile;
-
-	if (tile == INVALID_TILE) {
+	if (this->tile == INVALID_TILE) {
 		switch (variable) {
 			case 0x40: return 0;
 			case 0x41: return 0;
@@ -47,20 +37,20 @@ static uint32 RailTypeGetVariable(const ResolverObject *object, byte variable, u
 	}
 
 	switch (variable) {
-		case 0x40: return GetTerrainType(tile, object->u.routes.context);
+		case 0x40: return GetTerrainType(this->tile, this->context);
 		case 0x41: return 0;
-		case 0x42: return IsLevelCrossingTile(tile) && IsCrossingBarred(tile);
+		case 0x42: return IsLevelCrossingTile(this->tile) && IsCrossingBarred(this->tile);
 		case 0x43:
-			if (IsRailDepotTile(tile)) return Depot::GetByTile(tile)->build_date;
+			if (IsRailDepotTile(this->tile)) return Depot::GetByTile(this->tile)->build_date;
 			return _date;
 		case 0x44: {
 			const Town *t = NULL;
-			if (IsRailDepotTile(tile)) {
-				t = Depot::GetByTile(tile)->town;
-			} else if (IsLevelCrossingTile(tile)) {
-				t = ClosestTownFromTile(tile, UINT_MAX);
+			if (IsRailDepotTile(this->tile)) {
+				t = Depot::GetByTile(this->tile)->town;
+			} else if (IsLevelCrossingTile(this->tile)) {
+				t = ClosestTownFromTile(this->tile, UINT_MAX);
 			}
-			return t != NULL ? GetTownRadiusGroup(t, tile) : HZB_TOWN_EDGE;
+			return t != NULL ? GetTownRadiusGroup(t, this->tile) : HZB_TOWN_EDGE;
 		}
 	}
 
@@ -70,30 +60,38 @@ static uint32 RailTypeGetVariable(const ResolverObject *object, byte variable, u
 	return UINT_MAX;
 }
 
-static const SpriteGroup *RailTypeResolveReal(const ResolverObject *object, const RealSpriteGroup *group)
+/* virtual */ const SpriteGroup *RailTypeResolverObject::ResolveReal(const RealSpriteGroup *group) const
 {
 	if (group->num_loading > 0) return group->loading[0];
 	if (group->num_loaded  > 0) return group->loaded[0];
 	return NULL;
 }
 
-static inline void NewRailTypeResolver(ResolverObject *res, TileIndex tile, TileContext context, const GRFFile *grffile, uint32 param1 = 0, uint32 param2 = 0)
+/**
+ * Constructor of the railtype scope resolvers.
+ * @param ro Surrounding resolver.
+ * @param tile %Tile containing the track. For track on a bridge this is the southern bridgehead.
+ * @param context Are we resolving sprites for the upper halftile, or on a bridge?
+ */
+RailTypeScopeResolver::RailTypeScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context) : ScopeResolver(ro)
 {
-	res->GetRandomBits = &RailTypeGetRandomBits;
-	res->GetTriggers   = &RailTypeGetTriggers;
-	res->SetTriggers   = &RailTypeSetTriggers;
-	res->GetVariable   = &RailTypeGetVariable;
-	res->ResolveReal   = &RailTypeResolveReal;
+	this->tile = tile;
+	this->context = context;
+}
 
-	res->u.routes.tile = tile;
-	res->u.routes.context = context;
-
-	res->callback        = CBID_NO_CALLBACK;
-	res->callback_param1 = param1;
-	res->callback_param2 = param2;
-	res->ResetState();
-
-	res->grffile         = grffile;
+/**
+ * Resolver object for rail types.
+ * @param rti Railtype. NULL in NewGRF Inspect window.
+ * @param tile %Tile containing the track. For track on a bridge this is the southern bridgehead.
+ * @param context Are we resolving sprites for the upper halftile, or on a bridge?
+ * @param rtsg Railpart of interest
+ * @param param1 Extra parameter (first parameter of the callback, except railtypes do not have callbacks).
+ * @param param2 Extra parameter (second parameter of the callback, except railtypes do not have callbacks).
+ */
+RailTypeResolverObject::RailTypeResolverObject(const RailtypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1, uint32 param2)
+	: ResolverObject(rti != NULL ? rti->grffile[rtsg] : NULL, CBID_NO_CALLBACK, param1, param2), railtype_scope(*this, tile, context)
+{
+	this->root_spritegroup = rti != NULL ? rti->group[rtsg] : NULL;
 }
 
 /**
@@ -102,21 +100,20 @@ static inline void NewRailTypeResolver(ResolverObject *res, TileIndex tile, Tile
  * @param tile The tile to get the sprite for.
  * @param rtsg The type of sprite to draw.
  * @param content Where are we drawing the tile?
+ * @param [out] num_results If not NULL, return the number of sprites in the spriteset.
  * @return The sprite to draw.
  */
-SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context)
+SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context, uint *num_results)
 {
 	assert(rtsg < RTSG_END);
 
 	if (rti->group[rtsg] == NULL) return 0;
 
-	const SpriteGroup *group;
-	ResolverObject object;
-
-	NewRailTypeResolver(&object, tile, context, rti->grffile[rtsg]);
-
-	group = SpriteGroup::Resolve(rti->group[rtsg], &object);
+	RailTypeResolverObject object(rti, tile, context, rtsg);
+	const SpriteGroup *group = object.Resolve();
 	if (group == NULL || group->GetNumResults() == 0) return 0;
+
+	if (num_results) *num_results = group->GetNumResults();
 
 	return group->GetResult();
 }
@@ -135,13 +132,11 @@ SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalTy
 {
 	if (rti->group[RTSG_SIGNALS] == NULL) return 0;
 
-	ResolverObject object;
-
 	uint32 param1 = gui ? 0x10 : 0x00;
 	uint32 param2 = (type << 16) | (var << 8) | state;
-	NewRailTypeResolver(&object, tile, TCX_NORMAL, rti->grffile[RTSG_SIGNALS], param1, param2);
+	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RTSG_SIGNALS, param1, param2);
 
-	const SpriteGroup *group = SpriteGroup::Resolve(rti->group[RTSG_SIGNALS], &object);
+	const SpriteGroup *group = object.Resolve();
 	if (group == NULL || group->GetNumResults() == 0) return 0;
 
 	return group->GetResult();
@@ -165,16 +160,4 @@ uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile)
 
 	/* If not found, return as invalid */
 	return 0xFF;
-}
-
-/**
- * Resolve a railtypes's spec and such so we can get a variable.
- * @param ro    The resolver object to fill.
- * @param index The rail tile to get the data from.
- */
-void GetRailTypeResolver(ResolverObject *ro, uint index)
-{
-	/* There is no unique GRFFile for the tile. Multiple GRFs can define different parts of the railtype.
-	 * However, currently the NewGRF Debug GUI does not display variables depending on the GRF (like 0x7F) anyway. */
-	NewRailTypeResolver(ro, index, TCX_NORMAL, NULL);
 }

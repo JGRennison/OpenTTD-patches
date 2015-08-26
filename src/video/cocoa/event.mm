@@ -34,7 +34,9 @@
 #include "../../gfx_func.h"
 #include "../../network/network.h"
 #include "../../core/random_func.hpp"
+#include "../../core/math_func.hpp"
 #include "../../texteff.hpp"
+#include "../../window_func.h"
 
 #import <sys/time.h> /* gettimeofday */
 
@@ -58,8 +60,25 @@ enum RightMouseButtonEmulationState {
 static unsigned int _current_mods;
 static bool _tab_is_down;
 static bool _emulating_right_button;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
+static float _current_magnification;
+#endif
 #ifdef _DEBUG
 static uint32 _tEvent;
+#endif
+
+
+/* Support for touch gestures is only available starting with the
+ * 10.6 SDK, even if it says that support starts in fact with 10.5.2.
+ * Replicate the needed stuff for older SDKs. */
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5 && MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_6)
+static const NSUInteger NSEventTypeMagnify    = 30;
+static const NSUInteger NSEventTypeEndGesture = 20;
+
+@interface NSEvent ()
+/* This message is valid for events of type NSEventTypeMagnify, on 10.5.2 or later */
+- (CGFloat)magnification WEAK_IMPORT_ATTRIBUTE;
+@end
 #endif
 
 
@@ -91,7 +110,7 @@ static void QZ_WarpCursor(int x, int y)
 static void QZ_CheckPaletteAnim()
 {
 	if (_cur_palette.count_dirty != 0) {
-		Blitter *blitter = BlitterFactoryBase::GetCurrentBlitter();
+		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		switch (blitter->UsePaletteAnimation()) {
 			case Blitter::PALETTE_ANIMATION_VIDEO_BACKEND:
@@ -250,11 +269,13 @@ static uint32 QZ_MapKey(unsigned short sym)
 	if (_current_mods & NSAlternateKeyMask) key |= WKC_ALT;
 	if (_current_mods & NSCommandKeyMask)   key |= (_settings_client.gui.right_mouse_btn_emulation != RMBE_CONTROL ? WKC_META : WKC_CTRL);
 
-	return key << 16;
+	return key;
 }
 
-static void QZ_KeyEvent(unsigned short keycode, unsigned short unicode, BOOL down)
+static bool QZ_KeyEvent(unsigned short keycode, unsigned short unicode, BOOL down)
 {
+	bool interpret_keys = true;
+
 	switch (keycode) {
 		case QZ_UP:    SB(_dirkeys, 1, 1, down); break;
 		case QZ_DOWN:  SB(_dirkeys, 3, 1, down); break;
@@ -266,18 +287,50 @@ static void QZ_KeyEvent(unsigned short keycode, unsigned short unicode, BOOL dow
 		case QZ_RETURN:
 		case QZ_f:
 			if (down && (_current_mods & NSCommandKeyMask)) {
-				_video_driver->ToggleFullscreen(!_fullscreen);
+				VideoDriver::GetInstance()->ToggleFullscreen(!_fullscreen);
+			}
+			break;
+
+		case QZ_v:
+			if (down && EditBoxInGlobalFocus() && (_current_mods & (NSCommandKeyMask | NSControlKeyMask))) {
+				HandleKeypress(WKC_CTRL | 'V', unicode);
+			}
+			break;
+		case QZ_u:
+			if (down && EditBoxInGlobalFocus() && (_current_mods & (NSCommandKeyMask | NSControlKeyMask))) {
+				HandleKeypress(WKC_CTRL | 'U', unicode);
 			}
 			break;
 	}
 
 	if (down) {
-		uint32 pressed_key = QZ_MapKey(keycode) | unicode;
-		HandleKeypress(pressed_key);
+		uint32 pressed_key = QZ_MapKey(keycode);
+
+		static bool console = false;
+
+		/* The second backquote may have a character, which we don't want to interpret. */
+		if (pressed_key == WKC_BACKQUOTE && (console || unicode == 0)) {
+			if (!console) {
+				/* Backquote is a dead key, require a double press for hotkey behaviour (i.e. console). */
+				console = true;
+				return true;
+			} else {
+				/* Second backquote, don't interpret as text input. */
+				interpret_keys = false;
+			}
+		}
+		console = false;
+
+		/* Don't handle normal characters if an edit box has the focus. */
+		if (!EditBoxInGlobalFocus() || IsInsideMM(pressed_key & ~WKC_SPECIAL_KEYS, WKC_F1, WKC_PAUSE + 1)) {
+			HandleKeypress(pressed_key, unicode);
+		}
 		DEBUG(driver, 2, "cocoa_v: QZ_KeyEvent: %x (%x), down, mapping: %x", keycode, unicode, pressed_key);
 	} else {
 		DEBUG(driver, 2, "cocoa_v: QZ_KeyEvent: %x (%x), up", keycode, unicode);
 	}
+
+	return interpret_keys;
 }
 
 static void QZ_DoUnsidedModifiers(unsigned int newMods)
@@ -309,22 +362,8 @@ static void QZ_DoUnsidedModifiers(unsigned int newMods)
 
 static void QZ_MouseMovedEvent(int x, int y)
 {
-	if (_cursor.fix_at) {
-		int dx = x - _cursor.pos.x;
-		int dy = y - _cursor.pos.y;
-
-		if (dx != 0 || dy != 0) {
-			_cursor.delta.x += dx;
-			_cursor.delta.y += dy;
-
-			QZ_WarpCursor(_cursor.pos.x, _cursor.pos.y);
-		}
-	} else {
-		_cursor.delta.x = x - _cursor.pos.x;
-		_cursor.delta.y = y - _cursor.pos.y;
-		_cursor.pos.x = x;
-		_cursor.pos.y = y;
-		_cursor.dirty = true;
+	if (_cursor.UpdateCursorPosition(x, y, false)) {
+		QZ_WarpCursor(_cursor.pos.x, _cursor.pos.y);
 	}
 	HandleMouseEvents();
 }
@@ -382,7 +421,6 @@ static bool QZ_PollEvent()
 
 	NSString *chars;
 	NSPoint  pt;
-	NSText   *fieldEditor;
 	switch ([ event type ]) {
 		case NSMouseMoved:
 		case NSOtherMouseDragged:
@@ -487,7 +525,7 @@ static bool QZ_PollEvent()
 			break;
 #endif
 
-		case NSKeyDown:
+		case NSKeyDown: {
 			/* Quit, hide and minimize */
 			switch ([ event keyCode ]) {
 				case QZ_q:
@@ -499,20 +537,20 @@ static bool QZ_PollEvent()
 					break;
 			}
 
-			fieldEditor = [[ event window ] fieldEditor:YES forObject:nil ];
-			[ fieldEditor setString:@"" ];
-			[ fieldEditor interpretKeyEvents: [ NSArray arrayWithObject:event ] ];
-
 			chars = [ event characters ];
-			if ([ chars length ] == 0) {
-				QZ_KeyEvent([ event keyCode ], 0, YES);
+			unsigned short unicode = [ chars length ] > 0 ? [ chars characterAtIndex:0 ] : 0;
+			if (EditBoxInGlobalFocus()) {
+				if (QZ_KeyEvent([ event keyCode ], unicode, YES)) {
+					[ _cocoa_subdriver->cocoaview interpretKeyEvents:[ NSArray arrayWithObject:event ] ];
+				}
 			} else {
-				QZ_KeyEvent([ event keyCode ], [ chars characterAtIndex:0 ], YES);
+				QZ_KeyEvent([ event keyCode ], unicode, YES);
 				for (uint i = 1; i < [ chars length ]; i++) {
 					QZ_KeyEvent(0, [ chars characterAtIndex:i ], YES);
 				}
 			}
 			break;
+		}
 
 		case NSKeyUp:
 			/* Quit, hide and minimize */
@@ -541,6 +579,38 @@ static bool QZ_PollEvent()
 			_cursor.h_wheel -= (int)([ event deltaX ] * 5 * _settings_client.gui.scrollwheel_multiplier);
 			_cursor.v_wheel -= (int)([ event deltaY ] * 5 * _settings_client.gui.scrollwheel_multiplier);
 			break;
+
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
+		case NSEventTypeMagnify:
+			/* Pinch open or close gesture. */
+			_current_magnification += [ event magnification ] * 5.0f;
+
+			while (_current_magnification >= 1.0f) {
+				_current_magnification -= 1.0f;
+				_cursor.wheel++;
+				HandleMouseEvents();
+			}
+			while (_current_magnification <= -1.0f) {
+				_current_magnification += 1.0f;
+				_cursor.wheel--;
+				HandleMouseEvents();
+			}
+			break;
+
+		case NSEventTypeEndGesture:
+			/* Gesture ended. */
+			_current_magnification = 0.0f;
+			break;
+#endif
+
+		case NSCursorUpdate:
+		case NSMouseEntered:
+		case NSMouseExited:
+			/* Catch these events if the cursor is dragging. During dragging, we reset
+			 * the mouse position programmatically, which would trigger OS X to show
+			 * the default arrow cursor if the events are propagated. */
+			if (_cursor.fix_at) break;
+			/* FALL THROUGH */
 
 		default:
 			[ NSApp sendEvent:event ];

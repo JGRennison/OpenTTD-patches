@@ -16,17 +16,16 @@
 #include "video/video_driver.hpp"
 #include "string_func.h"
 
-VideoDriver *_video_driver; ///< The currently active video driver.
+#include "safeguards.h"
+
 char *_ini_videodriver;     ///< The video driver a stored in the configuration file.
 int _num_resolutions;       ///< The number of resolutions.
 Dimension _resolutions[32]; ///< List of resolutions.
 Dimension _cur_resolution;  ///< The current resolution.
 bool _rightclick_emulate;   ///< Whether right clicking is emulated.
 
-SoundDriver *_sound_driver; ///< The currently active sound driver.
 char *_ini_sounddriver;     ///< The sound driver a stored in the configuration file.
 
-MusicDriver *_music_driver; ///< The currently active music driver.
 char *_ini_musicdriver;     ///< The music driver a stored in the configuration file.
 
 char *_ini_blitter;         ///< The blitter as stored in the configuration file.
@@ -86,9 +85,25 @@ int GetDriverParamInt(const char * const *parm, const char *name, int def)
  * @param type the type of driver to select
  * @post Sets the driver so GetCurrentDriver() returns it too.
  */
-Driver *DriverFactoryBase::SelectDriver(const char *name, Driver::Type type)
+void DriverFactoryBase::SelectDriver(const char *name, Driver::Type type)
 {
-	if (GetDrivers().size() == 0) return NULL;
+	if (!DriverFactoryBase::SelectDriverImpl(name, type)) {
+		StrEmpty(name) ?
+			usererror("Failed to autoprobe %s driver", GetDriverTypeName(type)) :
+			usererror("Failed to select requested %s driver '%s'", GetDriverTypeName(type), name);
+	}
+}
+
+/**
+ * Find the requested driver and return its class.
+ * @param name the driver to select.
+ * @param type the type of driver to select
+ * @post Sets the driver so GetCurrentDriver() returns it too.
+ * @return True upon success, otherwise false.
+ */
+bool DriverFactoryBase::SelectDriverImpl(const char *name, Driver::Type type)
+{
+	if (GetDrivers().size() == 0) return false;
 
 	if (StrEmpty(name)) {
 		/* Probe for this driver, but do not fall back to dedicated/null! */
@@ -101,15 +116,18 @@ Driver *DriverFactoryBase::SelectDriver(const char *name, Driver::Type type)
 				if (d->type != type) continue;
 				if (d->priority != priority) continue;
 
+				Driver *oldd = *GetActiveDriver(type);
 				Driver *newd = d->CreateInstance();
+				*GetActiveDriver(type) = newd;
+
 				const char *err = newd->Start(NULL);
 				if (err == NULL) {
 					DEBUG(driver, 1, "Successfully probed %s driver '%s'", GetDriverTypeName(type), d->name);
-					delete *GetActiveDriver(type);
-					*GetActiveDriver(type) = newd;
-					return newd;
+					delete oldd;
+					return true;
 				}
 
+				*GetActiveDriver(type) = oldd;
 				DEBUG(driver, 1, "Probing %s driver '%s' failed with error: %s", GetDriverTypeName(type), d->name, err);
 				delete newd;
 			}
@@ -158,37 +176,10 @@ Driver *DriverFactoryBase::SelectDriver(const char *name, Driver::Type type)
 			DEBUG(driver, 1, "Successfully loaded %s driver '%s'", GetDriverTypeName(type), d->name);
 			delete *GetActiveDriver(type);
 			*GetActiveDriver(type) = newd;
-			return newd;
+			return true;
 		}
 		usererror("No such %s driver: %s\n", GetDriverTypeName(type), buffer);
 	}
-}
-
-/**
- * Register a driver internally, based on its name.
- * @param name the name of the driver.
- * @param type the type of driver to register
- * @param priority the priority; how badly do we want this as default?
- * @note an assert() will be trigger if 2 driver with the same name try to register.
- */
-void DriverFactoryBase::RegisterDriver(const char *name, Driver::Type type, int priority)
-{
-	/* Don't register nameless Drivers */
-	if (name == NULL) return;
-
-	this->name = strdup(name);
-	this->type = type;
-	this->priority = priority;
-
-	/* Prefix the name with driver type to make it unique */
-	char buf[32];
-	strecpy(buf, GetDriverTypeName(type), lastof(buf));
-	strecpy(buf + 5, name, lastof(buf));
-
-	const char *longname = strdup(buf);
-
-	std::pair<Drivers::iterator, bool> P = GetDrivers().insert(Drivers::value_type(longname, this));
-	assert(P.second);
 }
 
 /**
@@ -219,12 +210,31 @@ char *DriverFactoryBase::GetDriversInfo(char *p, const char *last)
 }
 
 /**
+ * Construct a new DriverFactory.
+ * @param type        The type of driver.
+ * @param priority    The priority within the driver class.
+ * @param name        The name of the driver.
+ * @param description A long-ish description of the driver.
+ */
+DriverFactoryBase::DriverFactoryBase(Driver::Type type, int priority, const char *name, const char *description) :
+	type(type), priority(priority), name(name), description(description)
+{
+	/* Prefix the name with driver type to make it unique */
+	char buf[32];
+	strecpy(buf, GetDriverTypeName(type), lastof(buf));
+	strecpy(buf + 5, name, lastof(buf));
+
+	const char *longname = stredup(buf);
+
+	std::pair<Drivers::iterator, bool> P = GetDrivers().insert(Drivers::value_type(longname, this));
+	assert(P.second);
+}
+
+/**
  * Frees memory used for this->name
  */
 DriverFactoryBase::~DriverFactoryBase()
 {
-	if (this->name == NULL) return;
-
 	/* Prefix the name with driver type to make it unique */
 	char buf[32];
 	strecpy(buf, GetDriverTypeName(type), lastof(buf));
@@ -239,5 +249,4 @@ DriverFactoryBase::~DriverFactoryBase()
 	free(longname);
 
 	if (GetDrivers().empty()) delete &GetDrivers();
-	free(this->name);
 }

@@ -126,7 +126,7 @@ static inline void HaltLift(TileIndex t)
  */
 static inline byte GetLiftPosition(TileIndex t)
 {
-	return GB(_m[t].m6, 2, 6);
+	return GB(_me[t].m6, 2, 6);
 }
 
 /**
@@ -136,7 +136,7 @@ static inline byte GetLiftPosition(TileIndex t)
  */
 static inline void SetLiftPosition(TileIndex t, byte pos)
 {
-	SB(_m[t].m6, 2, 6, pos);
+	SB(_me[t].m6, 2, 6, pos);
 }
 
 /**
@@ -175,7 +175,7 @@ static inline void SetHouseCompleted(TileIndex t, bool status)
 /**
  * Gets the building stage of a house
  * Since the stage is used for determining what sprite to use,
- * if the house is complete (and that stage no longuer is available),
+ * if the house is complete (and that stage no longer is available),
  * fool the system by returning the TOWN_HOUSE_COMPLETE (3),
  * thus showing a beautiful complete house.
  * @param t the tile of the house to get the building stage of
@@ -315,7 +315,7 @@ static inline byte GetHouseTriggers(TileIndex t)
 static inline byte GetHouseProcessingTime(TileIndex t)
 {
 	assert(IsTileType(t, MP_HOUSE));
-	return GB(_m[t].m6, 2, 6);
+	return GB(_me[t].m6, 2, 6);
 }
 
 /**
@@ -327,7 +327,7 @@ static inline byte GetHouseProcessingTime(TileIndex t)
 static inline void SetHouseProcessingTime(TileIndex t, byte time)
 {
 	assert(IsTileType(t, MP_HOUSE));
-	SB(_m[t].m6, 2, 6, time);
+	SB(_me[t].m6, 2, 6, time);
 }
 
 /**
@@ -338,7 +338,7 @@ static inline void SetHouseProcessingTime(TileIndex t, byte time)
 static inline void DecHouseProcessingTime(TileIndex t)
 {
 	assert(IsTileType(t, MP_HOUSE));
-	_m[t].m6 -= 1 << 2;
+	_me[t].m6 -= 1 << 2;
 }
 
 /**

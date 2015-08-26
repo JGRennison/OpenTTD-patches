@@ -17,6 +17,7 @@
 
 #include "../command_type.h"
 #include "../company_type.h"
+#include "../fileio_type.h"
 
 static const uint SQUIRREL_MAX_DEPTH = 25; ///< The maximum recursive depth for items stored in the savegame.
 
@@ -107,6 +108,16 @@ public:
 	static void DoCommandReturnGoalID(ScriptInstance *instance);
 
 	/**
+	 * Return a StoryPageID reply for a DoCommand.
+	 */
+	static void DoCommandReturnStoryPageID(ScriptInstance *instance);
+
+	/**
+	 * Return a StoryPageElementID reply for a DoCommand.
+	 */
+	static void DoCommandReturnStoryPageElementID(ScriptInstance *instance);
+
+	/**
 	 * Get the controller attached to the instance.
 	 */
 	class ScriptController *GetController() { return controller; }
@@ -139,12 +150,24 @@ public:
 	static void LoadEmpty();
 
 	/**
-	 * Reduces the number of opcodes the script have left to zero. Unless
-	 * the script is in a state where it cannot suspend it will be suspended
-	 * for the reminder of the current tick. This function is safe to
-	 * call from within a function called by the script.
+	 * Suspends the script for the current tick and then pause the execution
+	 * of script. The script will not be resumed from its suspended state
+	 * until the script has been unpaused.
 	 */
-	void Suspend();
+	void Pause();
+
+	/**
+	 * Checks if the script is paused.
+	 * @return true if the script is paused, otherwise false
+	 */
+	bool IsPaused();
+
+	/**
+	 * Resume execution of the script. This function will not actually execute
+	 * the script, but set a flag so that the script is executed my the usual
+	 * mechanism that executes the script.
+	 */
+	void Unpause();
 
 	/**
 	 * Get the number of operations the script can execute before being suspended.
@@ -170,17 +193,27 @@ public:
 
 	/**
 	 * Check if the instance is sleeping, which either happened because the
-	 *  script executed a DoCommand, or executed this.Sleep().
+	 *  script executed a DoCommand, executed this.Sleep() or it has been
+	 *  paused.
 	 */
 	bool IsSleeping() { return this->suspend != 0; }
 
 protected:
 	class Squirrel *engine;               ///< A wrapper around the squirrel vm.
+	const char *versionAPI;               ///< Current API used by this script.
 
 	/**
 	 * Register all API functions to the VM.
 	 */
 	virtual void RegisterAPI();
+
+	/**
+	 * Load squirrel scripts to emulate an older API.
+	 * @param api_version: API version to load scripts for
+	 * @param dir Subdirectory to find the scripts in
+	 * @return true iff script loading should proceed
+	 */
+	bool LoadCompatibilityScripts(const char *api_version, Subdirectory dir);
 
 	/**
 	 * Tell the script it died.
@@ -206,6 +239,7 @@ private:
 	bool is_dead;                         ///< True if the script has been stopped.
 	bool is_save_data_on_stack;           ///< Is the save data still on the squirrel stack?
 	int suspend;                          ///< The amount of ticks to suspend this script before it's allowed to continue.
+	bool is_paused;                       ///< Is the script paused? (a paused script will not be executed until unpaused)
 	Script_SuspendCallbackProc *callback; ///< Callback that should be called in the next tick the script runs.
 
 	/**

@@ -12,11 +12,14 @@
 #ifndef STATION_BASE_H
 #define STATION_BASE_H
 
+#include "core/random_func.hpp"
 #include "base_station_base.h"
 #include "newgrf_airport.h"
 #include "cargopacket.h"
 #include "industry_type.h"
+#include "linkgraph/linkgraph_type.h"
 #include "newgrf_storage.h"
+#include <map>
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
@@ -24,34 +27,278 @@ extern StationPool _station_pool;
 static const byte INITIAL_STATION_RATING = 175;
 
 /**
+ * Flow statistics telling how much flow should be sent along a link. This is
+ * done by creating "flow shares" and using std::map's upper_bound() method to
+ * look them up with a random number. A flow share is the difference between a
+ * key in a map and the previous key. So one key in the map doesn't actually
+ * mean anything by itself.
+ */
+class FlowStat {
+public:
+	typedef std::map<uint32, StationID> SharesMap;
+
+	static const SharesMap empty_sharesmap;
+
+	/**
+	 * Invalid constructor. This can't be called as a FlowStat must not be
+	 * empty. However, the constructor must be defined and reachable for
+	 * FlwoStat to be used in a std::map.
+	 */
+	inline FlowStat() {NOT_REACHED();}
+
+	/**
+	 * Create a FlowStat with an initial entry.
+	 * @param st Station the initial entry refers to.
+	 * @param flow Amount of flow for the initial entry.
+	 * @param restricted If the flow to be added is restricted.
+	 */
+	inline FlowStat(StationID st, uint flow, bool restricted = false)
+	{
+		assert(flow > 0);
+		this->shares[flow] = st;
+		this->unrestricted = restricted ? 0 : flow;
+	}
+
+	/**
+	 * Add some flow to the end of the shares map. Only do that if you know
+	 * that the station isn't in the map yet. Anything else may lead to
+	 * inconsistencies.
+	 * @param st Remote station.
+	 * @param flow Amount of flow to be added.
+	 * @param restricted If the flow to be added is restricted.
+	 */
+	inline void AppendShare(StationID st, uint flow, bool restricted = false)
+	{
+		assert(flow > 0);
+		this->shares[(--this->shares.end())->first + flow] = st;
+		if (!restricted) this->unrestricted += flow;
+	}
+
+	uint GetShare(StationID st) const;
+
+	void ChangeShare(StationID st, int flow);
+
+	void RestrictShare(StationID st);
+
+	void ReleaseShare(StationID st);
+
+	void ScaleToMonthly(uint runtime);
+
+	/**
+	 * Get the actual shares as a const pointer so that they can be iterated
+	 * over.
+	 * @return Actual shares.
+	 */
+	inline const SharesMap *GetShares() const { return &this->shares; }
+
+	/**
+	 * Return total amount of unrestricted shares.
+	 * @return Amount of unrestricted shares.
+	 */
+	inline uint GetUnrestricted() const { return this->unrestricted; }
+
+	/**
+	 * Swap the shares maps, and thus the content of this FlowStat with the
+	 * other one.
+	 * @param other FlowStat to swap with.
+	 */
+	inline void SwapShares(FlowStat &other)
+	{
+		this->shares.swap(other.shares);
+		Swap(this->unrestricted, other.unrestricted);
+	}
+
+	/**
+	 * Get a station a package can be routed to. This done by drawing a
+	 * random number between 0 and sum_shares and then looking that up in
+	 * the map with lower_bound. So each share gets selected with a
+	 * probability dependent on its flow. Do include restricted flows here.
+	 * @param is_restricted Output if a restricted flow was chosen.
+	 * @return A station ID from the shares map.
+	 */
+	inline StationID GetViaWithRestricted(bool &is_restricted) const
+	{
+		assert(!this->shares.empty());
+		uint rand = RandomRange((--this->shares.end())->first);
+		is_restricted = rand >= this->unrestricted;
+		return this->shares.upper_bound(rand)->second;
+	}
+
+	/**
+	 * Get a station a package can be routed to. This done by drawing a
+	 * random number between 0 and sum_shares and then looking that up in
+	 * the map with lower_bound. So each share gets selected with a
+	 * probability dependent on its flow. Don't include restricted flows.
+	 * @return A station ID from the shares map.
+	 */
+	inline StationID GetVia() const
+	{
+		assert(!this->shares.empty());
+		return this->unrestricted > 0 ?
+				this->shares.upper_bound(RandomRange(this->unrestricted))->second :
+				INVALID_STATION;
+	}
+
+	StationID GetVia(StationID excluded, StationID excluded2 = INVALID_STATION) const;
+
+	void Invalidate();
+
+private:
+	SharesMap shares;  ///< Shares of flow to be sent via specified station (or consumed locally).
+	uint unrestricted; ///< Limit for unrestricted shares.
+};
+
+/** Flow descriptions by origin stations. */
+class FlowStatMap : public std::map<StationID, FlowStat> {
+public:
+	uint GetFlow() const;
+	uint GetFlowVia(StationID via) const;
+	uint GetFlowFrom(StationID from) const;
+	uint GetFlowFromVia(StationID from, StationID via) const;
+
+	void AddFlow(StationID origin, StationID via, uint amount);
+	void PassOnFlow(StationID origin, StationID via, uint amount);
+	StationIDStack DeleteFlows(StationID via);
+	void RestrictFlows(StationID via);
+	void ReleaseFlows(StationID via);
+	void FinalizeLocalConsumption(StationID self);
+};
+
+/**
  * Stores station stats for a single cargo.
  */
 struct GoodsEntry {
 	/** Status of this cargo for the station. */
 	enum GoodsEntryStatus {
-		GES_ACCEPTANCE,       ///< This cargo is currently being accepted by the station.
-		GES_PICKUP,           ///< This cargo has been picked up at this station at least once.
-		GES_EVER_ACCEPTED,    ///< The cargo has been accepted at least once.
-		GES_LAST_MONTH,       ///< The cargo was accepted last month.
-		GES_CURRENT_MONTH,    ///< The cargo was accepted this month.
-		GES_ACCEPTED_BIGTICK, ///< The cargo has been accepted since the last periodic processing.
+		/**
+		 * Set when the station accepts the cargo currently for final deliveries.
+		 * It is updated every STATION_ACCEPTANCE_TICKS ticks by checking surrounding tiles for acceptance >= 8/8.
+		 */
+		GES_ACCEPTANCE,
+
+		/**
+		 * This indicates whether a cargo has a rating at the station.
+		 * Set when cargo was ever waiting at the station.
+		 * It is set when cargo supplied by surrounding tiles is moved to the station, or when
+		 * arriving vehicles unload/transfer cargo without it being a final delivery.
+		 *
+		 * This flag is cleared after 255 * STATION_RATING_TICKS of not having seen a pickup.
+		 */
+		GES_RATING,
+
+		/**
+		 * Set when a vehicle ever delivered cargo to the station for final delivery.
+		 * This flag is never cleared.
+		 */
+		GES_EVER_ACCEPTED,
+
+		/**
+		 * Set when cargo was delivered for final delivery last month.
+		 * This flag is set to the value of GES_CURRENT_MONTH at the start of each month.
+		 */
+		GES_LAST_MONTH,
+
+		/**
+		 * Set when cargo was delivered for final delivery this month.
+		 * This flag is reset on the beginning of every month.
+		 */
+		GES_CURRENT_MONTH,
+
+		/**
+		 * Set when cargo was delivered for final delivery during the current STATION_ACCEPTANCE_TICKS interval.
+		 * This flag is reset every STATION_ACCEPTANCE_TICKS ticks.
+		 */
+		GES_ACCEPTED_BIGTICK,
 	};
 
 	GoodsEntry() :
-		acceptance_pickup(0),
-		days_since_pickup(255),
+		status(0),
+		time_since_pickup(255),
 		rating(INITIAL_STATION_RATING),
 		last_speed(0),
-		last_age(255)
+		last_age(255),
+		amount_fract(0),
+		link_graph(INVALID_LINK_GRAPH),
+		node(INVALID_NODE),
+		max_waiting_cargo(0)
 	{}
 
-	byte acceptance_pickup; ///< Status of this cargo, see #GoodsEntryStatus.
-	byte days_since_pickup; ///< Number of days since the last pickup for this cargo (up to 255).
-	byte rating;            ///< Station rating for this cargo.
-	byte last_speed;        ///< Maximum speed of the last vehicle that picked up this cargo (up to 255).
-	byte last_age;          ///< Age in years of the last vehicle that picked up this cargo.
+	byte status; ///< Status of this cargo, see #GoodsEntryStatus.
+
+	/**
+	 * Number of rating-intervals (up to 255) since the last vehicle tried to load this cargo.
+	 * The unit used is STATION_RATING_TICKS.
+	 * This does not imply there was any cargo to load.
+	 */
+	byte time_since_pickup;
+
+	byte rating;            ///< %Station rating for this cargo.
+
+	/**
+	 * Maximum speed (up to 255) of the last vehicle that tried to load this cargo.
+	 * This does not imply there was any cargo to load.
+	 * The unit used is a special vehicle-specific speed unit for station ratings.
+	 *  - Trains: km-ish/h
+	 *  - RV: km-ish/h
+	 *  - Ships: 0.5 * km-ish/h
+	 *  - Aircraft: 8 * mph
+	 */
+	byte last_speed;
+
+	/**
+	 * Age in years (up to 255) of the last vehicle that tried to load this cargo.
+	 * This does not imply there was any cargo to load.
+	 */
+	byte last_age;
+
 	byte amount_fract;      ///< Fractional part of the amount in the cargo list
 	StationCargoList cargo; ///< The cargo packets of cargo waiting in this station
+
+	LinkGraphID link_graph; ///< Link graph this station belongs to.
+	NodeID node;            ///< ID of node in link graph referring to this goods entry.
+	FlowStatMap flows;      ///< Planned flows through this station.
+	uint max_waiting_cargo; ///< Max cargo from this station waiting at any station.
+
+	/**
+	 * Reports whether a vehicle has ever tried to load the cargo at this station.
+	 * This does not imply that there was cargo available for loading. Refer to GES_RATING for that.
+	 * @return true if vehicle tried to load.
+	 */
+	bool HasVehicleEverTriedLoading() const { return this->last_speed != 0; }
+
+	/**
+	 * Does this cargo have a rating at this station?
+	 * @return true if the cargo has a rating, i.e. cargo has been moved to the station.
+	 */
+	inline bool HasRating() const
+	{
+		return HasBit(this->status, GES_RATING);
+	}
+
+	/**
+	 * Get the best next hop for a cargo packet from station source.
+	 * @param source Source of the packet.
+	 * @return The chosen next hop or INVALID_STATION if none was found.
+	 */
+	inline StationID GetVia(StationID source) const
+	{
+		FlowStatMap::const_iterator flow_it(this->flows.find(source));
+		return flow_it != this->flows.end() ? flow_it->second.GetVia() : INVALID_STATION;
+	}
+
+	/**
+	 * Get the best next hop for a cargo packet from station source, optionally
+	 * excluding one or two stations.
+	 * @param source Source of the packet.
+	 * @param excluded If this station would be chosen choose the second best one instead.
+	 * @param excluded2 Second station to be excluded, if != INVALID_STATION.
+	 * @return The chosen next hop or INVALID_STATION if none was found.
+	 */
+	inline StationID GetVia(StationID source, StationID excluded, StationID excluded2 = INVALID_STATION) const
+	{
+		FlowStatMap::const_iterator flow_it(this->flows.find(source));
+		return flow_it != this->flows.end() ? flow_it->second.GetVia(excluded, excluded2) : INVALID_STATION;
+	}
 };
 
 /** All airport-related information. Only valid if tile != INVALID_TILE. */
@@ -59,9 +306,9 @@ struct Airport : public TileArea {
 	Airport() : TileArea(INVALID_TILE, 0, 0) {}
 
 	uint64 flags;       ///< stores which blocks on the airport are taken. was 16 bit earlier on, then 32
-	byte type;          ///< Type of this airport, @see AirportTypes.
+	byte type;          ///< Type of this airport, @see AirportTypes
 	byte layout;        ///< Airport layout number.
-	Direction rotation; ///< How this airport is rotated.
+	DirectionByte rotation; ///< How this airport is rotated.
 
 	PersistentStorage *psa; ///< Persistent storage for NewGRF airports.
 
@@ -254,7 +501,7 @@ public:
 		return IsAirportTile(tile) && GetStationIndex(tile) == this->index;
 	}
 
-	/* virtual */ uint32 GetNewGRFVariable(const ResolverObject *object, byte variable, byte parameter, bool *available) const;
+	/* virtual */ uint32 GetNewGRFVariable(const ResolverObject &object, byte variable, byte parameter, bool *available) const;
 
 	/* virtual */ void GetTileArea(TileArea *ta, StationType type) const;
 };

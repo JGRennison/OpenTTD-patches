@@ -13,6 +13,7 @@
 #define SCRIPT_SUBSIDY_HPP
 
 #include "script_company.hpp"
+#include "script_date.hpp"
 
 /**
  * Class that handles all subsidy related functions.
@@ -26,7 +27,7 @@ public:
 	 */
 	enum SubsidyParticipantType {
 		/* Values are important, as they represent the internal state of the game.
-		 *  It is orignally named SourceType. ST_HEADQUARTERS is intentionally
+		 *  It is originally named SourceType. ST_HEADQUARTERS is intentionally
 		 *  left out, as it cannot be used for Subsidies. */
 		SPT_INDUSTRY =    0, ///< Subsidy participant is an industry
 		SPT_TOWN     =    1, ///< Subsidy participant is a town
@@ -83,7 +84,7 @@ public:
 	 * @note The return value of this function will change if the subsidy is
 	 *  awarded.
 	 */
-	static int32 GetExpireDate(SubsidyID subsidy_id);
+	static ScriptDate::Date GetExpireDate(SubsidyID subsidy_id);
 
 	/**
 	 * Get the cargo type that has to be transported in order to be awarded this

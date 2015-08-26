@@ -24,8 +24,11 @@
 #include "core/random_func.hpp"
 #include "game/game.hpp"
 #include "command_func.h"
+#include "string_func.h"
 
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 SubsidyPool _subsidy_pool("Subsidy"); ///< Pool for the subsidies.
 INSTANTIATE_POOL_METHODS(Subsidy)
@@ -45,7 +48,7 @@ void Subsidy::AwardTo(CompanyID company)
 	SetDParam(0, company);
 	GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
 
-	char *cn = strdup(company_name);
+	char *cn = stredup(company_name);
 
 	/* Add a news item */
 	Pair reftype = SetupSubsidyDecodeParam(this, false);
@@ -189,9 +192,9 @@ static bool CheckSubsidyDuplicate(CargoID cargo, SourceType src_type, SourceID s
 
 /**
  * Checks if the source and destination of a subsidy are inside the distance limit.
- * @param src_type Type of #src.
+ * @param src_type Type of \a src.
  * @param src      Index of source.
- * @param dst_type Type of #dst.
+ * @param dst_type Type of \a dst.
  * @param dst      Index of destination.
  * @return True if they are inside the distance limit.
  */
@@ -206,9 +209,9 @@ static bool CheckSubsidyDistance(SourceType src_type, SourceID src, SourceType d
 /**
  * Creates a subsidy with the given parameters.
  * @param cid      Subsidised cargo.
- * @param src_type Type of #src.
+ * @param src_type Type of \a src.
  * @param src      Index of source.
- * @param dst_type Type of #dst.
+ * @param dst_type Type of \a dst.
  * @param dst      Index of destination.
  */
 void CreateSubsidy(CargoID cid, SourceType src_type, SourceID src, SourceType dst_type, SourceID dst)
@@ -242,7 +245,7 @@ void CreateSubsidy(CargoID cid, SourceType src_type, SourceID src, SourceType ds
  * - p1 = (bit 24 - 31) - CargoID of subsidy.
  * @param p2 various bitstuffed elements
  * - p2 = (bit  0 -  7) - SourceType of destination.
- * - p2 = (bit  8 - 23) - SourceID of destionation.
+ * - p2 = (bit  8 - 23) - SourceID of destination.
  * @param text unused.
  * @return the cost of this operation or an error
  */
@@ -348,7 +351,10 @@ bool FindSubsidyTownCargoRoute()
 	}
 
 	/* Avoid using invalid NewGRF cargoes. */
-	if (!CargoSpec::Get(cid)->IsValid()) return false;
+	if (!CargoSpec::Get(cid)->IsValid() ||
+			_settings_game.linkgraph.GetDistributionType(cid) != DT_MANUAL) {
+		return false;
+	}
 
 	/* Quit if the percentage transported is large enough. */
 	if (src_town->GetPercentTransported(cid) > SUBSIDY_MAX_PCT_TRANSPORTED) return false;
@@ -388,8 +394,13 @@ bool FindSubsidyIndustryCargoRoute()
 	}
 
 	/* Quit if no production in this industry
-	 * or if the pct transported is already large enough */
-	if (total == 0 || trans > SUBSIDY_MAX_PCT_TRANSPORTED || cid == CT_INVALID) return false;
+	 * or if the pct transported is already large enough
+	 * or if the cargo is automatically distributed */
+	if (total == 0 || trans > SUBSIDY_MAX_PCT_TRANSPORTED ||
+			cid == CT_INVALID ||
+			_settings_game.linkgraph.GetDistributionType(cid) != DT_MANUAL) {
+		return false;
+	}
 
 	SourceID src = src_ind->index;
 
@@ -399,7 +410,7 @@ bool FindSubsidyIndustryCargoRoute()
 /**
  * Tries to find a suitable destination for the given source and cargo.
  * @param cid      Subsidized cargo.
- * @param src_type Type of #src.
+ * @param src_type Type of \a src.
  * @param src      Index of source.
  * @return True iff the subsidy was created.
  */
@@ -480,7 +491,16 @@ void SubsidyMonthlyLoop()
 		}
 	}
 
-	if (modified) RebuildSubsidisedSourceAndDestinationCache();
+	if (modified) {
+		RebuildSubsidisedSourceAndDestinationCache();
+	} else if (_settings_game.linkgraph.distribution_pax != DT_MANUAL &&
+			   _settings_game.linkgraph.distribution_mail != DT_MANUAL &&
+			   _settings_game.linkgraph.distribution_armoured != DT_MANUAL &&
+			   _settings_game.linkgraph.distribution_default != DT_MANUAL) {
+		/* Return early if there are no manually distributed cargoes and if we
+		 * don't need to invalidate the subsidies window. */
+		return;
+	}
 
 	bool passenger_subsidy = false;
 	bool town_subsidy = false;
@@ -488,7 +508,7 @@ void SubsidyMonthlyLoop()
 
 	int random_chance = RandomRange(16);
 
-	if (random_chance < 2) {
+	if (random_chance < 2 && _settings_game.linkgraph.distribution_pax == DT_MANUAL) {
 		/* There is a 1/8 chance each month of generating a passenger subsidy. */
 		int n = 1000;
 
@@ -520,7 +540,7 @@ void SubsidyMonthlyLoop()
  * Tests whether given delivery is subsidised and possibly awards the subsidy to delivering company
  * @param cargo_type type of cargo
  * @param company company delivering the cargo
- * @param src_type type of #src
+ * @param src_type type of \a src
  * @param src index of source
  * @param st station where the cargo is delivered to
  * @return is the delivery subsidised?

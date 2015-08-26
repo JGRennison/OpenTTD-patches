@@ -14,6 +14,9 @@
 #include "../../core/alloc_func.hpp"
 #include "../../debug.h"
 #include "../../window_func.h"
+#include "../../string_func.h"
+
+#include "../../safeguards.h"
 
 /* static */ void ScriptLog::Info(const char *message)
 {
@@ -51,7 +54,7 @@
 
 	/* Free last message, and write new message */
 	free(log->lines[log->pos]);
-	log->lines[log->pos] = strdup(message);
+	log->lines[log->pos] = stredup(message);
 	log->type[log->pos] = level;
 
 	/* Cut string after first \n */

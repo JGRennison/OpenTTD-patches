@@ -37,9 +37,13 @@ public:
 	~sqvector()
 	{
 		if(_allocated) {
-			for(SQUnsignedInteger i = 0; i < _size; i++)
+		        /* Break freeing loops, if this vector (indirectly) links to itself. */
+		        size_t allocated_size = _allocated * sizeof(T);
+		        _allocated = 0;
+
+			for(size_t i = 0; i < _size; i++)
 				_vals[i].~T();
-			SQ_FREE(_vals, (_allocated * sizeof(T)));
+			SQ_FREE(_vals, allocated_size);
 		}
 	}
 	void reserve(SQUnsignedInteger newsize) { _realloc(newsize); }
@@ -57,7 +61,7 @@ public:
 			for(SQUnsignedInteger i = newsize; i < _size; i++) {
 				_vals[i].~T();
 			}
-			_size = newsize;
+			_size = (size_t)newsize;
 		}
 	}
 	void shrinktofit() { if(_size > 4) { _realloc(_size); } }
@@ -86,7 +90,7 @@ public:
 	{
 		_vals[idx].~T();
 		if(idx < (_size - 1)) {
-			memmove(&_vals[idx], &_vals[idx+1], sizeof(T) * (_size - idx - 1));
+			memmove(&_vals[idx], &_vals[idx+1], sizeof(T) * (_size - (size_t)idx - 1));
 		}
 		_size--;
 	}
@@ -99,10 +103,10 @@ private:
 	{
 		newsize = (newsize > 0)?newsize:4;
 		_vals = (T*)SQ_REALLOC(_vals, _allocated * sizeof(T), newsize * sizeof(T));
-		_allocated = newsize;
+		_allocated = (size_t)newsize;
 	}
-	SQUnsignedInteger _size;
-	SQUnsignedInteger _allocated;
+	size_t _size;
+	size_t _allocated;
 };
 
 #endif //_SQUTILS_H_

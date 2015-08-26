@@ -59,9 +59,14 @@ DECLARE_POSTFIX_INCREMENT(Driver::Type)
 /** Base for all driver factories. */
 class DriverFactoryBase {
 private:
-	Driver::Type type; ///< The type of driver.
-	const char *name;  ///< The name of the drivers of this factory.
-	int priority;      ///< The priority of this factory.
+	friend class MusicDriver;
+	friend class SoundDriver;
+	friend class VideoDriver;
+
+	Driver::Type type;       ///< The type of driver.
+	int priority;            ///< The priority of this factory.
+	const char *name;        ///< The name of the drivers of this factory.
+	const char *description; ///< The description of this driver.
 
 	typedef std::map<const char *, DriverFactoryBase *, StringCompare> Drivers; ///< Type for a map of drivers.
 
@@ -96,16 +101,14 @@ private:
 		return driver_type_name[type];
 	}
 
-protected:
-	void RegisterDriver(const char *name, Driver::Type type, int priority);
+	static bool SelectDriverImpl(const char *name, Driver::Type type);
 
-public:
-	DriverFactoryBase() :
-		name(NULL)
-	{}
+protected:
+	DriverFactoryBase(Driver::Type type, int priority, const char *name, const char *description);
 
 	virtual ~DriverFactoryBase();
 
+public:
 	/**
 	 * Shuts down all active drivers
 	 */
@@ -117,20 +120,23 @@ public:
 		}
 	}
 
-	static Driver *SelectDriver(const char *name, Driver::Type type);
+	static void SelectDriver(const char *name, Driver::Type type);
 	static char *GetDriversInfo(char *p, const char *last);
 
 	/**
 	 * Get a nice description of the driver-class.
 	 * @return The description.
 	 */
-	virtual const char *GetDescription() = 0;
+	const char *GetDescription() const
+	{
+		return this->description;
+	}
 
 	/**
 	 * Create an instance of this driver-class.
 	 * @return The instance.
 	 */
-	virtual Driver *CreateInstance() = 0;
+	virtual Driver *CreateInstance() const = 0;
 };
 
 #endif /* DRIVER_H */
