@@ -1229,7 +1229,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (_settings_client.gui.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG), last, _settings_client.gui.date_with_time, next_substr_case_index);
 				} else {
-					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG) / DAY_TICKS, last, next_substr_case_index);
+					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG) / (DAY_TICKS * _settings_game.economy.day_length_factor), last, next_substr_case_index);
 				}
 				break;
 			}
@@ -1238,7 +1238,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (_settings_client.gui.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT), last, _settings_client.gui.date_with_time, next_substr_case_index);
 				} else {
-					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT) / DAY_TICKS, last, next_substr_case_index);
+					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT) / (DAY_TICKS * _settings_game.economy.day_length_factor), last, next_substr_case_index);
 				}
 				break;
 			}
@@ -1247,7 +1247,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (_settings_client.gui.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY), last, false, next_substr_case_index);
 				} else {
-					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY) / DAY_TICKS, STR_FORMAT_DATE_TINY, last);
+					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY) / (DAY_TICKS * _settings_game.economy.day_length_factor), STR_FORMAT_DATE_TINY, last);
 				}
 				break;
 			}
@@ -1256,7 +1256,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (_settings_client.gui.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO), last, false, next_substr_case_index);
 				} else {
-					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO) / DAY_TICKS, STR_FORMAT_DATE_ISO, last);
+					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO) / (DAY_TICKS * _settings_game.economy.day_length_factor), STR_FORMAT_DATE_ISO, last);
 				}
 				break;
 			}
