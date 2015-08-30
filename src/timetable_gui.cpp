@@ -51,10 +51,10 @@ void SetTimetableParams(int param1, int param2, Ticks ticks)
 		SetDParam(param2, ticks);
 		SetDParam(param1, STR_TIMETABLE_TICKS);
 	} else if (_settings_client.gui.time_in_minutes) {
-		SetDParam(param2, ticks / (DATE_UNIT_SIZE * _settings_game.economy.day_length_factor));
+		SetDParam(param2, ticks / DATE_UNIT_SIZE);
 		SetDParam(param1, STR_TIMETABLE_MINUTES);
 	} else {
-		SetDParam(param2, ticks / (DATE_UNIT_SIZE * _settings_game.economy.day_length_factor));
+		SetDParam(param2, ticks / DATE_UNIT_SIZE);
 		SetDParam(param1, STR_TIMETABLE_DAYS);
 	}
 }
@@ -98,7 +98,6 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	Ticks sum = offset;
 	VehicleOrderID i = start;
 	const Order *order = v->GetOrder(i);
-	uint8 day_len = _settings_game.economy.day_length_factor;
 
 	/* Pre-initialize with unknown time */
 	for (int i = 0; i < v->GetNumOrders(); ++i) {
@@ -115,12 +114,12 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 			if (travelling || i != start) {
 				if (!CanDetermineTimeTaken(order, true)) return;
 				sum += order->GetTimetabledTravel();
-				table[i].arrival = sum / day_len;
+				table[i].arrival = sum;
 			}
 
 			if (!CanDetermineTimeTaken(order, false)) return;
 			sum += order->GetTimetabledWait();
-			table[i].departure = sum / day_len;
+			table[i].departure = sum;
 		}
 
 		++i;
@@ -137,7 +136,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	if (!travelling) {
 		if (!CanDetermineTimeTaken(order, true)) return;
 		sum += order->GetTimetabledTravel();
-		table[i].arrival = sum / day_len;
+		table[i].arrival = sum;
 	}
 }
 
@@ -199,7 +198,7 @@ struct TimetableWindow : Window {
 		assert(HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED));
 
 		bool travelling = (!(v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_WAITING)) || v->current_order.GetNonStopType() == ONSF_STOP_EVERYWHERE);
-		Ticks start_time = _date_fract - (v->current_order_time / _settings_game.economy.day_length_factor);
+		Ticks start_time = -v->current_order_time;
 
 		FillTimetableArrivalDepartureTable(v, v->cur_real_order_index % v->GetNumOrders(), travelling, table, start_time);
 
@@ -463,7 +462,7 @@ struct TimetableWindow : Window {
 				int y = r.top + WD_FRAMERECT_TOP;
 
 				bool show_late = this->show_expected && v->lateness_counter > DATE_UNIT_SIZE;
-				Ticks offset = show_late ? 0 : -(v->lateness_counter / _settings_game.economy.day_length_factor);
+				Ticks offset = show_late ? 0 : -v->lateness_counter;
 
 				bool rtl = _current_text_dir == TD_RTL;
 				int abbr_left  = rtl ? r.right - WD_FRAMERECT_RIGHT - this->deparr_abbr_width : r.left + WD_FRAMERECT_LEFT;
@@ -479,10 +478,10 @@ struct TimetableWindow : Window {
 						if (arr_dep[i / 2].arrival != INVALID_TICKS) {
 							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_ARRIVAL_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
 							if (this->show_expected && i / 2 == earlyID) {
-								SetDParam(0, ((DateTicks)_date * DAY_TICKS) + arr_dep[i / 2].arrival);
+								SetDParam(0, CURRENT_SCALED_TICKS + arr_dep[i / 2].arrival);
 								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY, TC_GREEN);
 							} else {
-								SetDParam(0, ((DateTicks)_date * DAY_TICKS) + (arr_dep[i / 2].arrival + offset));
+								SetDParam(0, CURRENT_SCALED_TICKS + arr_dep[i / 2].arrival + offset);
 								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
 										show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
 							}
@@ -490,7 +489,7 @@ struct TimetableWindow : Window {
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
 							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
-							SetDParam(0, ((DateTicks)_date * DAY_TICKS) + (arr_dep[i/2].departure + offset));
+							SetDParam(0, CURRENT_SCALED_TICKS + arr_dep[i/2].departure + offset);
 							DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
 									show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
 						}
@@ -515,9 +514,9 @@ struct TimetableWindow : Window {
 					 * timetable at the given time. */
 					SetDParam(0, STR_JUST_DATE_WALLCLOCK_TINY);
 #if WALLCLOCK_NETWORK_COMPATIBLE
-					SetDParam(1, v->timetable_start * DAY_TICKS);
+					SetDParam(1, v->timetable_start * DAY_TICKS * _settings_game.economy.day_length_factor);
 #else
-					SetDParam(1, v->timetable_start);
+					SetDParam(1, v->timetable_start * _settings_game.economy.day_length_factor);
 #endif
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_TIMETABLE_STATUS_START_AT);
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
@@ -567,7 +566,7 @@ struct TimetableWindow : Window {
 			case WID_VT_START_DATE: // Change the date that the timetable starts.
 				if (_settings_client.gui.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					StringID str = STR_JUST_INT;
-					uint64 time = ((DateTicks)_date * DAY_TICKS) + _date_fract;
+					uint64 time = CURRENT_SCALED_TICKS;
 					time /= _settings_client.gui.ticks_per_minute;
 					time += _settings_client.gui.clock_offset;
 					time %= 24*60;
@@ -575,7 +574,8 @@ struct TimetableWindow : Window {
 					SetDParam(0, time);
 					ShowQueryString(str, STR_TIMETABLE_STARTING_DATE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index | (v->orders.list->IsCompleteTimetable() && _ctrl_pressed ? 1U << 20 : 0), _date, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
+					ShowSetDateWindow(this, v->index | (v->orders.list->IsCompleteTimetable() && _ctrl_pressed ? 1U << 20 : 0),
+							((DateTicks)_date * DAY_TICKS) + _date_fract, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
 				}
 				break;
 
@@ -590,7 +590,7 @@ struct TimetableWindow : Window {
 
 				if (order != NULL) {
 					uint time = (selected % 2 == 1) ? order->GetTravelTime() : order->GetWaitTime();
-					if (!_settings_client.gui.timetable_in_ticks) time /= (DATE_UNIT_SIZE * _settings_game.economy.day_length_factor);
+					if (!_settings_client.gui.timetable_in_ticks) time /= DATE_UNIT_SIZE;
 
 					if (time != 0) {
 						SetDParam(0, time);
@@ -684,7 +684,7 @@ struct TimetableWindow : Window {
 				if (this->query_is_speed_query) {
 					val = ConvertDisplaySpeedToKmhishSpeed(val);
 				} else {
-					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE * _settings_game.economy.day_length_factor;
+					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
 				}
 
 				uint32 p2 = minu(val, UINT16_MAX);
@@ -702,7 +702,8 @@ struct TimetableWindow : Window {
 					val -= _settings_client.gui.clock_offset;
 
 					if (val < (CURRENT_MINUTE - 60)) val += 60 * 24;
-					val *= DATE_UNIT_SIZE;
+					val *= _settings_client.gui.ticks_per_minute;
+					val /= _settings_game.economy.day_length_factor;
 					ChangeTimetableStartCallback(this, val);
 				}
 				break;
