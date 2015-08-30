@@ -1859,6 +1859,7 @@ static StringID _service_interval_dropdown[] = {
 struct VehicleDetailsWindow : Window {
 	TrainDetailsWindowTabs tab; ///< For train vehicles: which tab is displayed.
 	Scrollbar *vscroll;
+	bool vehicle_group_line_shown;
 
 	/** Initialize a newly created vehicle details window */
 	VehicleDetailsWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
@@ -1897,6 +1898,11 @@ struct VehicleDetailsWindow : Window {
 				this->ReInit();
 			}
 		}
+
+		/* If the presence of the group line changes, the size of the top details widget must change */
+		if (this->vehicle_group_line_shown != this->ShouldShowGroupLine(v)) {
+			this->ReInit();
+		}
 	}
 
 	/**
@@ -1920,23 +1926,41 @@ struct VehicleDetailsWindow : Window {
 		return desired_height;
 	}
 
+	bool ShouldShowGroupLine(const Vehicle *v) const
+	{
+		return (_settings_client.gui.show_vehicle_group_in_details && v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP);
+	}
+
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		switch (widget) {
 			case WID_VD_TOP_DETAILS: {
+				const Vehicle *v = Vehicle::Get(this->window_number);
 				Dimension dim = { 0, 0 };
-				size->height = WD_FRAMERECT_TOP + 4 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				this->vehicle_group_line_shown = ShouldShowGroupLine(v);
+				size->height = WD_FRAMERECT_TOP + (this->vehicle_group_line_shown ? 5 : 4) * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 
-				for (uint i = 0; i < 4; i++) SetDParamMaxValue(i, INT16_MAX);
+				for (uint i = 0; i < 5; i++) SetDParamMaxValue(i, INT16_MAX);
 				static const StringID info_strings[] = {
 					STR_VEHICLE_INFO_MAX_SPEED,
 					STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED,
 					STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE,
-					STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR,
 					STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS
 				};
 				for (uint i = 0; i < lengthof(info_strings); i++) {
 					dim = maxdim(dim, GetStringBoundingBox(info_strings[i]));
+				}
+				if (v->type == VEH_TRAIN && _settings_client.gui.show_train_length_in_details) {
+					SetDParamMaxValue(0, _settings_game.vehicle.max_train_length * 10);
+					SetDParam(1, 1);
+					SetDParam(2, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_TRAIN_LENGTH));
+				} else {
+					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR));
+				}
+				if (this->vehicle_group_line_shown) {
+					SetDParam(0, v->group_id);
+					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_GROUP));
 				}
 				SetDParam(0, STR_VEHICLE_INFO_AGE);
 				dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_AGE_RUNNING_COST_YR));
@@ -2073,15 +2097,35 @@ struct VehicleDetailsWindow : Window {
 				y += FONT_HEIGHT_NORMAL;
 
 				/* Draw profit */
-				SetDParam(0, v->GetDisplayProfitThisYear());
-				SetDParam(1, v->GetDisplayProfitLastYear());
-				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+				if (v->type == VEH_TRAIN && _settings_client.gui.show_train_length_in_details) {
+					const GroundVehicleCache *gcache = v->GetGroundVehicleCache();
+					SetDParam(0, CeilDiv(gcache->cached_total_length * 10, TILE_SIZE));
+					SetDParam(1, 1);
+					SetDParam(2, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(3, v->GetDisplayProfitThisYear());
+					SetDParam(4, v->GetDisplayProfitLastYear());
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_TRAIN_LENGTH);
+				} else {
+					SetDParam(0, v->GetDisplayProfitThisYear());
+					SetDParam(1, v->GetDisplayProfitLastYear());
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+				}
 				y += FONT_HEIGHT_NORMAL;
 
 				/* Draw breakdown & reliability */
 				SetDParam(0, ToPercent16(v->reliability));
 				SetDParam(1, v->breakdowns_since_last_service);
 				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS);
+				y += FONT_HEIGHT_NORMAL;
+
+				bool should_show_group = this->ShouldShowGroupLine(v);
+				if (should_show_group) {
+					SetDParam(0, v->group_id);
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_GROUP);
+				}
+				if (this->vehicle_group_line_shown != should_show_group) {
+					const_cast<VehicleDetailsWindow *>(this)->ReInit();
+				}
 				break;
 			}
 
