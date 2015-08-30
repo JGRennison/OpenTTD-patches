@@ -566,6 +566,9 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	uint departure = 0;
 	uint arrival = 0;
 
+	DateTicksScaled now_date = CURRENT_SCALED_TICKS;
+	DateTicksScaled max_date = now_date + (_settings_client.gui.max_departure_time * DAY_TICKS * _settings_game.economy.day_length_factor);
+
 	/* Draw each departure. */
 	for (uint i = 0; i < max_departures; ++i) {
 		const Departure *d;
@@ -591,8 +594,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		}
 
 		/* If for some reason the departure is too far in the future or is at a negative time, skip it. */
-		if ((d->scheduled_date / DAY_TICKS) > (_date + _settings_client.gui.max_departure_time) ||
-			d->scheduled_date < 0) {
+		if (d->scheduled_date > max_date || d->scheduled_date < 0) {
 			continue;
 		}
 
@@ -724,11 +726,11 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 				/* The vehicle has been cancelled. */
 				DrawString(status_left, status_right, y + 1, STR_DEPARTURES_CANCELLED);
 			} else{
-				if (d->lateness <= DAY_TICKS && d->scheduled_date > ((_date * DAY_TICKS) + _date_fract)) {
+				if (d->lateness <= DATE_UNIT_SIZE && d->scheduled_date > now_date) {
 					/* We have no evidence that the vehicle is late, so assume it is on time. */
 					DrawString(status_left, status_right, y + 1, STR_DEPARTURES_ON_TIME);
 				} else {
-					if ((d->scheduled_date + d->lateness) < ((_date * DAY_TICKS) + _date_fract)) {
+					if ((d->scheduled_date + d->lateness) < now_date) {
 						/* The vehicle was expected to have arrived by now, even if we knew it was going to be late. */
 						/* We assume that the train stays at least a day at a station so it won't accidentally be marked as delayed for a fraction of a day. */
 						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_DELAYED);

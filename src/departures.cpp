@@ -94,7 +94,10 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 	SmallVector<OrderDate*, 32> next_orders;
 
 	/* The maximum possible date for departures to be scheduled to occur. */
-	DateTicks max_date = _settings_client.gui.max_departure_time * DAY_TICKS;
+	DateTicksScaled max_date = _settings_client.gui.max_departure_time * DAY_TICKS * _settings_game.economy.day_length_factor;
+
+	DateTicksScaled date_only_scaled = ((DateTicksScaled)_date * DAY_TICKS * _settings_game.economy.day_length_factor);
+	DateTicksScaled date_fract_scaled = ((DateTicksScaled)_date_fract * _settings_game.economy.day_length_factor) + _tick_skip_counter;
 
 	/* The scheduled order in next_orders with the earliest expected_date field. */
 	OrderDate *least_order = NULL;
@@ -138,7 +141,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			}
 
 			const Order *order = (*v)->GetOrder((*v)->cur_implicit_order_index % (*v)->GetNumOrders());
-			DateTicks start_date = (DateTicks)_date_fract - ((*v)->current_order_time / _settings_game.economy.day_length_factor);
+			DateTicksScaled start_date = date_fract_scaled - (*v)->current_order_time;
 			DepartureStatus status = D_TRAVELLING;
 
 			/* If the vehicle is stopped in a depot, ignore it. */
@@ -280,7 +283,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 		/* We already know the least order and that it's a suitable departure, so make it into a departure. */
 		Departure *d = new Departure();
-		d->scheduled_date = (DateTicks)_date * DAY_TICKS + least_order->expected_date - least_order->lateness;
+		d->scheduled_date = date_only_scaled + least_order->expected_date - least_order->lateness;
 		d->lateness = least_order->lateness;
 		d->status = least_order->status;
 		d->vehicle = least_order->v;
@@ -643,16 +646,6 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 	for (uint i = 0; i < next_orders.Length(); ++i) {
 		OrderDate *od = *(next_orders.Get(i));
 		delete od;
-	}
-
-	uint8 day_len = _settings_game.economy.day_length_factor;
-	if (day_len > 1) {
-		DateTicks now = ((DateTicks)_date * DAY_TICKS) + _date_fract;
-		for (size_t i = 0; i < result->Length(); i++) {
-			Departure *dep = (*result)[i];
-			dep->scheduled_date = now + (dep->scheduled_date - now) / day_len;
-			dep->lateness /= day_len;
-		}
 	}
 
 	/* Done. Phew! */

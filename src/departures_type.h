@@ -65,11 +65,11 @@ typedef struct CallAt {
 
 /** A scheduled departure. */
 typedef struct Departure {
-	DateTicks scheduled_date;              ///< The date this departure is scheduled to finish on (i.e. when the vehicle leaves the station)
-	DateTicks lateness;                    ///< How delayed the departure is expected to be
-	CallAt terminus;                    ///< The station at which the vehicle will terminate following this departure
+	DateTicksScaled scheduled_date;        ///< The date this departure is scheduled to finish on (i.e. when the vehicle leaves the station)
+	Ticks lateness;                        ///< How delayed the departure is expected to be
+	CallAt terminus;                       ///< The station at which the vehicle will terminate following this departure
 	StationID via;                         ///< The station the departure should list as going via
-	SmallVector<CallAt, 32> calling_at; ///< The stations both called at and unloaded at by the vehicle after this departure before it terminates
+	SmallVector<CallAt, 32> calling_at;    ///< The stations both called at and unloaded at by the vehicle after this departure before it terminates
 	DepartureStatus status;                ///< Whether the vehicle has arrived yet for this departure
 	DepartureType type;                    ///< The type of the departure (departure or arrival)
 	const Vehicle *vehicle;                ///< The vehicle performing this departure
