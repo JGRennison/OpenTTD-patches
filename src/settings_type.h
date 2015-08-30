@@ -166,6 +166,8 @@ struct GUISettings {
 	uint32 last_newgrf_count;                ///< the numbers of NewGRFs we found during the last scan
 	byte   missing_strings_threshold;        ///< the number of missing strings before showing the warning
 	uint8  graph_line_thickness;             ///< the thickness of the lines in the various graph guis
+	bool   show_train_length_in_details;     ///< show train length in vehicle details window top widget
+	bool   show_vehicle_group_in_details;    ///< show vehicle group in vehicle details window top widget
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
 
