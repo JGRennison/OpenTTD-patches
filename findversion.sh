@@ -122,6 +122,30 @@ elif [ -d "$ROOT_DIR/.hg" ]; then
 		# No rev? Maybe it is a custom hgsubversion clone
 		REV_NR=`LC_ALL=C HGPLAIN= hg parent --template="{svnrev}"`
 	fi
+elif [ -f "$ROOT_DIR/.ottdrev-vc" ]; then
+	VERSION_DATA="`cat "$ROOT_DIR/.ottdrev-vc" | sed -n -e '1 p;'`"
+	HASH_DATA="`cat "$ROOT_DIR/.ottdrev-vc" | sed -n -e '2 p;'`"
+	REV="`echo "$VERSION_DATA" | cut -f 1 -d'	'`"
+	REV_NR="`echo "$VERSION_DATA" | cut -f 2 -d'	'`"
+	MODIFIED="`echo "$VERSION_DATA" | cut -f 3 -d'	'`"
+	CLEAN_REV="`echo "$VERSION_DATA" | cut -f 4 -d'	'`"
+	if [ "$MODIFIED" = "2" ]; then
+		CLEAN_REV="`echo "$CLEAN_REV" | sed -e 's/M$//'`"
+	fi
+	BRANCH="`echo "$REV" | sed -n -e "s|^${CLEAN_REV}M\?-\(.\+\)$|\1|p"`"
+	REV="$CLEAN_REV"
+	if ! $ROOT_DIR/version_utils.sh -o; then
+		MODIFIED="1"
+	else
+		CURRENT_HASH="`$ROOT_DIR/version_utils.sh -s`"
+		if [ "$CURRENT_HASH" != "$HASH_DATA" ]; then
+			MODIFIED="2"
+			if [ -n "$BRANCH" ]; then
+				BRANCH="$BRANCH-"
+			fi
+			BRANCH="${BRANCH}H`echo "$CURRENT_HASH" | cut -c 1-8`"
+		fi
+	fi
 elif [ -f "$ROOT_DIR/.ottdrev" ]; then
 	# We are an exported source bundle
 	cat $ROOT_DIR/.ottdrev
