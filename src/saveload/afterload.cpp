@@ -707,6 +707,14 @@ bool AfterLoadGame()
 	/* The value of _date_fract got divided, so make sure that old games are converted correctly. */
 	if (IsSavegameVersionBefore(11, 1) || (IsSavegameVersionBefore(147) && _date_fract > DAY_TICKS)) _date_fract /= 885;
 
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		assert(_settings_game.economy.day_length_factor >= 1);
+		_tick_skip_counter = _date_fract % _settings_game.economy.day_length_factor;
+		_date_fract /= _settings_game.economy.day_length_factor;
+		assert(_date_fract < DAY_TICKS);
+		assert(_tick_skip_counter < _settings_game.economy.day_length_factor);
+	}
+
 	/* Update current year
 	 * must be done before loading sprites as some newgrfs check it */
 	SetDate(_date, _date_fract);
