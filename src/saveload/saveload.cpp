@@ -1695,6 +1695,12 @@ static void SlLoadChunk(const ChunkHandler *ch)
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
 				len += SlReadUint16();
+				if (SlXvIsFeaturePresent(XSLFI_RIFF_HEADER_60_BIT)) {
+					if (len != 0) {
+						SlErrorCorrupt("RIFF chunk too large");
+					}
+					len = SlReadUint32();
+				}
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;
 				ch->load_proc();
@@ -1741,6 +1747,12 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
 				len += SlReadUint16();
+				if (SlXvIsFeaturePresent(XSLFI_RIFF_HEADER_60_BIT)) {
+					if (len != 0) {
+						SlErrorCorrupt("RIFF chunk too large");
+					}
+					len = SlReadUint32();
+				}
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;
 				if (ch && ch->load_check_proc) {

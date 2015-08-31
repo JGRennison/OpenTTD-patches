@@ -140,6 +140,40 @@ void SlXvCheckSpecialSavegameVersions()
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 1;
 	}
+
+	if (_sl_version == 220) { /* SL_SPRING_2013_v2_0_102 */
+		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.0.102 savegame version %d as version 187", _sl_version);
+
+		_sl_version = 187;
+		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 1;
+	} else if (_sl_version == 221) { /* SL_SPRING_2013_v2_1_108 */
+		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.1.108 savegame version %d as version 188", _sl_version);
+
+		_sl_version = 188;
+		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 2;
+	} else if (_sl_version == 222) { /* SL_SPRING_2013_v2_1_147 */
+		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.1.147 savegame version %d as version 194", _sl_version);
+
+		_sl_version = 194;
+		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 3;
+	}
+
+	if (_sl_xv_feature_versions[XSLFI_SPRINGPP]) {
+		_sl_xv_feature_versions[XSLFI_RIFF_HEADER_60_BIT] = 1;
+		_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 1;
+		_sl_xv_feature_versions[XSLFI_MIGHT_USE_PAX_SIGNALS] = 1;
+		_sl_xv_feature_versions[XSLFI_TRAFFIC_LIGHTS] = 1;
+		_sl_xv_feature_versions[XSLFI_RAIL_AGEING] = 1;
+
+		_sl_xv_feature_versions[XSLFI_TIMETABLES_START_TICKS] = 1;
+		_sl_xv_feature_versions[XSLFI_VEHICLE_REPAIR_COST] = 1;
+		_sl_xv_feature_versions[XSLFI_IMPROVED_BREAKDOWNS] = 1;
+		_sl_xv_feature_versions[XSLFI_INFRA_SHARING] = 1;
+		_sl_xv_feature_versions[XSLFI_AUTO_TIMETABLE] = 1;
+		_sl_xv_feature_versions[XSLFI_MORE_COND_ORDERS] = 1;
+
+		_sl_xv_discardable_chunk_ids.push_back('SNOW');
+	}
 }
 
 /**

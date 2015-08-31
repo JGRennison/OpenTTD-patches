@@ -559,7 +559,7 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItem
  * Sets the "signal has a trace restrict mapping" bit
  * This looks for mappings with that tile index
  */
-void SetIsSignalRestrictedBit(TileIndex t)
+void TraceRestrictSetIsSignalRestrictedBit(TileIndex t)
 {
 	// First mapping for this tile, or later
 	TraceRestrictMapping::iterator lower_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t, static_cast<Track>(0)));
@@ -590,7 +590,7 @@ void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProg
 
 	TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 	Track track = GetTraceRestrictRefIdTrack(ref);
-	SetIsSignalRestrictedBit(tile);
+	TraceRestrictSetIsSignalRestrictedBit(tile);
 	MarkTileDirtyByTile(tile);
 	YapfNotifyTrackLayoutChange(tile, track);
 }
@@ -614,7 +614,7 @@ void TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 
 		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 		Track track = GetTraceRestrictRefIdTrack(ref);
-		SetIsSignalRestrictedBit(tile);
+		TraceRestrictSetIsSignalRestrictedBit(tile);
 		MarkTileDirtyByTile(tile);
 		YapfNotifyTrackLayoutChange(tile, track);
 

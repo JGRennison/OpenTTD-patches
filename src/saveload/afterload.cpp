@@ -56,6 +56,7 @@
 #include "../order_backup.h"
 #include "../error.h"
 #include "../disaster_vehicle.h"
+#include "../tracerestrict.h"
 
 
 #include "saveload_internal.h"
@@ -584,12 +585,23 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionBefore(194)) {
+	if (IsSavegameVersionBefore(194) && SlXvIsFeatureMissing(XSLFI_HEIGHT_8_BIT)) {
 		_settings_game.construction.max_heightlevel = 15;
 
 		/* In old savegame versions, the heightlevel was coded in bits 0..3 of the type field */
 		for (TileIndex t = 0; t < map_size; t++) {
 			_m[t].height = GB(_m[t].type, 0, 4);
+			SB(_m[t].type, 0, 2, GB(_me[t].m6, 0, 2));
+			SB(_me[t].m6, 0, 2, 0);
+			if (MayHaveBridgeAbove(t)) {
+				SB(_m[t].type, 2, 2, GB(_me[t].m6, 6, 2));
+				SB(_me[t].m6, 6, 2, 0);
+			} else {
+				SB(_m[t].type, 2, 2, 0);
+			}
+		}
+	} else if (SlXvIsFeaturePresent(XSLFI_HEIGHT_8_BIT)) {
+		for (TileIndex t = 0; t < map_size; t++) {
 			SB(_m[t].type, 0, 2, GB(_me[t].m6, 0, 2));
 			SB(_me[t].m6, 0, 2, 0);
 			if (MayHaveBridgeAbove(t)) {
@@ -2943,6 +2955,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		// re-arrange vehicle_flags
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, GB(v->vehicle_flags, 6, 1));
+			SB(v->vehicle_flags, VF_STOP_LOADING, 4, GB(v->vehicle_flags, 7, 4));
+		}
+	}
+
 	if (IsSavegameVersionBefore(188)) {
 		/* Fix articulated road vehicles.
 		 * Some curves were shorter than other curves.
@@ -3033,6 +3054,110 @@ bool AfterLoadGame()
 		FOR_ALL_VEHICLES(v) {
 			if (v->timetable_start != 0) {
 				v->timetable_start *= DAY_TICKS;
+			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {
+		/*
+		 * Cost scaling changes:
+		 * SpringPP v2.0.102 divides all prices by the difficulty factor, effectively making things about 8 times cheaper.
+		 * Adjust the inflation factor to compensate for this, as otherwise the game is unplayable on load if inflation has been running for a while.
+		 * To avoid making things too cheap, clamp the price inflation factor to no lower than the payment inflation factor.
+		 */
+
+		DEBUG(sl, 3, "Inflation prices: %f", _economy.inflation_prices / 65536.0);
+		DEBUG(sl, 3, "Inflation payments: %f", _economy.inflation_payment / 65536.0);
+
+		_economy.inflation_prices >>= 3;
+		if (_economy.inflation_prices < _economy.inflation_payment) {
+			_economy.inflation_prices = _economy.inflation_payment;
+		}
+
+		DEBUG(sl, 3, "New inflation prices: %f", _economy.inflation_prices / 65536.0);
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		/*
+		 * Reject huge airports
+		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG,
+		 */
+		Station *st;
+		FOR_ALL_STATIONS(st) {
+			if (st->airport.tile == INVALID_TILE) continue;
+			StringID err = INVALID_STRING_ID;
+			if (st->airport.type == 9) {
+				if (st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
+					/* this airport is probably an oil rig, not a huge airport */
+				} else {
+					err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
+				}
+				st->airport.type = AT_OILRIG;
+			} else if (st->airport.type == 10) {
+				err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
+			}
+			if (err != INVALID_STRING_ID) {
+				SetSaveLoadError(err);
+				/* Restore the signals */
+				ResetSignalHandlers();
+				return false;
+			}
+		}
+	}
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {
+		/*
+		 * Reject helicopters aproaching oil rigs using the wrong aircraft movement data
+		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG
+		 */
+		Aircraft *v;
+		FOR_ALL_AIRCRAFT(v) {
+			Station *st = GetTargetAirportIfValid(v);
+			if (st != NULL && st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
+				/* aircraft is on approach to an oil rig, bail out now */
+				SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG);
+				/* Restore the signals */
+				ResetSignalHandlers();
+				return false;
+			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_MIGHT_USE_PAX_SIGNALS) || SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (HasStationTileRail(t)) {
+				/* clear station PAX bit */
+				ClrBit(_me[t].m6, 6);
+			}
+			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+				/*
+				 * tracerestrict uses same bit as 1st PAX signals bit
+				 * only conditionally clear the bit, don't bother checking for whether to set it
+				 */
+				if (IsRestrictedSignal(t)) {
+					TraceRestrictSetIsSignalRestrictedBit(t);
+				}
+
+				/* clear 2nd signal PAX bit */
+				ClrBit(_m[t].m2, 13);
+			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_TRAFFIC_LIGHTS)) {
+		/* remove traffic lights */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL)) {
+				DeleteAnimatedTile(t);
+				ClrBit(_me[t].m7, 4);
+			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_RAIL_AGEING)) {
+		/* remove rail aging data */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsPlainRailTile(t)) {
+				SB(_me[t].m7, 0, 8, 0);
 			}
 		}
 	}
