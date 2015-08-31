@@ -3147,6 +3147,7 @@ bool AfterLoadGame()
 		/* remove traffic lights */
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL)) {
+				DeleteAnimatedTile(t);
 				ClrBit(_me[t].m7, 4);
 			}
 		}
