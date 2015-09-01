@@ -807,7 +807,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 
 		case TRDCT_REMOVE_ITEM: {
 			TraceRestrictItem old_item = *TraceRestrictProgram::InstructionAt(items, offset);
-			if (IsTraceRestrictConditional(old_item)) {
+			if (IsTraceRestrictConditional(old_item) && GetTraceRestrictCondFlags(old_item) != TRCF_OR) {
 				bool remove_whole_block = false;
 				if (GetTraceRestrictCondFlags(old_item) == 0) {
 					if (GetTraceRestrictType(old_item) == TRIT_COND_ENDIF) {
