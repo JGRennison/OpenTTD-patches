@@ -3170,6 +3170,14 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		/* convert wait for cargo orders to ordinary load if possible */
+		Order *order;
+		FOR_ALL_ORDERS(order) {
+			if (order->GetLoadType() == static_cast<OrderLoadFlags>(1)) order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
+		}
+	}
+
 	/* Station acceptance is some kind of cache */
 	if (IsSavegameVersionBefore(127)) {
 		Station *st;
