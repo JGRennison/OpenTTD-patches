@@ -119,6 +119,7 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
 	STR_TRACE_RESTRICT_PF_DENY,
 	STR_TRACE_RESTRICT_PF_PENALTY,
+	STR_TRACE_RESTRICT_RESERVE_THROUGH,
 	INVALID_STRING_ID
 };
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
@@ -131,6 +132,7 @@ static const uint _program_insert_val[] = {
 	TRIT_COND_ENDIF | (TRCF_ELSE << 16),               // else block
 	TRIT_PF_DENY,                                      // deny
 	TRIT_PF_PENALTY,                                   // penalty
+	TRIT_RESERVE_THROUGH,                              // reserve through
 };
 
 /** insert drop down list strings and values */
@@ -151,6 +153,21 @@ static const uint _deny_value_val[] = {
 /** value drop down list for deny types strings and values */
 static const TraceRestrictDropDownListSet _deny_value = {
 	_deny_value_str, _deny_value_val,
+};
+
+static const StringID _reserve_through_value_str[] = {
+	STR_TRACE_RESTRICT_RESERVE_THROUGH,
+	STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL,
+	INVALID_STRING_ID
+};
+static const uint _reserve_through_value_val[] = {
+	0,
+	1,
+};
+
+/** value drop down list for deny types strings and values */
+static const TraceRestrictDropDownListSet _reserve_through_value = {
+	_reserve_through_value_str, _reserve_through_value_val,
 };
 
 static const StringID _direction_value_str[] = {
@@ -211,11 +228,13 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 	static const StringID str_action[] = {
 		STR_TRACE_RESTRICT_PF_DENY,
 		STR_TRACE_RESTRICT_PF_PENALTY,
+		STR_TRACE_RESTRICT_RESERVE_THROUGH,
 		INVALID_STRING_ID,
 	};
 	static const uint val_action[] = {
 		TRIT_PF_DENY,
 		TRIT_PF_PENALTY,
+		TRIT_RESERVE_THROUGH,
 	};
 	static const TraceRestrictDropDownListSet set_action = {
 		str_action, val_action,
@@ -642,6 +661,10 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 				break;
 
+			case TRIT_RESERVE_THROUGH:
+				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -841,6 +864,10 @@ public:
 
 					case TRVT_PF_PENALTY:
 						this->ShowDropDownListWithValue(&_pf_penalty_dropdown, GetPathfinderPenaltyDropdownIndex(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
+					case TRVT_RESERVE_THROUGH:
+						this->ShowDropDownListWithValue(&_reserve_through_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
 					default:
@@ -1579,6 +1606,13 @@ private:
 								this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
 										GetDropDownStringByValue(&_pf_penalty_dropdown, GetPathfinderPenaltyDropdownIndex(item));
 							}
+							break;
+
+						case TRVT_RESERVE_THROUGH:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
 							break;
 
 						default:

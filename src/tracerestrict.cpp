@@ -382,6 +382,14 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_RESERVE_THROUGH:
+						if (GetTraceRestrictValue(item)) {
+							out.flags &= ~TRPRF_RESERVE_THROUGH;
+						} else {
+							out.flags |= TRPRF_RESERVE_THROUGH;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -502,6 +510,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_DENY:
 		case TRVT_SPEED:
 		case TRVT_TILE_INDEX:
+		case TRVT_RESERVE_THROUGH:
 			SetTraceRestrictValue(item, 0);
 			SetTraceRestrictAuxField(item, 0);
 			break;

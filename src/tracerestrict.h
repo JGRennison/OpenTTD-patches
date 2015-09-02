@@ -97,6 +97,7 @@ enum TraceRestrictItemType {
 	TRIT_NULL                     = 0,    ///< Null-type, not in programs and not valid for execution, mainly used with TraceRestrictNullTypeSpecialValue for start/end
 	TRIT_PF_DENY                  = 1,    ///< Pathfinder deny/allow
 	TRIT_PF_PENALTY               = 2,    ///< Add to pathfinder penalty
+	TRIT_RESERVE_THROUGH          = 3,    ///< Reserve through PBS signal
 
 	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the save value as TRIT_COND_ENDIF
 	TRIT_COND_ENDIF               = 8,    ///< This is an endif block or an else block
@@ -192,6 +193,7 @@ enum TraceRestrictPathfinderPenaltyPresetIndex {
  */
 enum TraceRestrictProgramResultFlags {
 	TRPRF_DENY                    = 1 << 0,  ///< Pathfinder deny is set
+	TRPRF_RESERVE_THROUGH         = 1 << 1,  ///< Reserve through is set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -392,6 +394,7 @@ enum TraceRestrictValueType {
 	TRVT_DIRECTION                = 7, ///< takes a TraceRestrictDirectionTypeSpecialValue
 	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
 	TRVT_PF_PENALTY               = 9, ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
+	TRVT_RESERVE_THROUGH          = 10,///< takes a value 0 = reserve through, 1 = cancel previous reserve through
 };
 
 /**
@@ -463,6 +466,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_PF_PENALTY;
 		} else if (GetTraceRestrictType(item) == TRIT_PF_DENY) {
 			out.value_type = TRVT_DENY;
+		} else if (GetTraceRestrictType(item) == TRIT_RESERVE_THROUGH) {
+			out.value_type = TRVT_RESERVE_THROUGH;
 		} else {
 			out.value_type = TRVT_NONE;
 		}

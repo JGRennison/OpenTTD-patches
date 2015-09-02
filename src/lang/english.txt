@@ -2413,6 +2413,8 @@ STR_TRACE_RESTRICT_END                                          :End
 STR_TRACE_RESTRICT_PF_DENY                                      :Deny
 STR_TRACE_RESTRICT_PF_ALLOW                                     :Allow
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Allow (cancel previous Deny)
+STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserve through
+STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancel reserve through
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
