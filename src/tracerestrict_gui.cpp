@@ -1680,7 +1680,8 @@ private:
 			items.insert(items.begin() + array_offset, item);
 		}
 
-		return TraceRestrictProgram::Validate(items).Succeeded();
+		TraceRestrictProgramActionsUsedFlags actions_used_flags;
+		return TraceRestrictProgram::Validate(items, actions_used_flags).Succeeded();
 	}
 
 	/**

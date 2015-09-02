@@ -413,12 +413,14 @@ void TraceRestrictProgram::DecrementRefCount() {
 /**
  * Validate a instruction list
  * Returns successful result if program seems OK
- * This only validates that conditional nesting is correct, at present
+ * This only validates that conditional nesting is correct,
+ * and that all non-conditionals have a known type, at present
  */
-CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> &items) {
+CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags) {
 	// static to avoid needing to re-alloc/resize on each execution
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
+	actions_used_flags = static_cast<TraceRestrictProgramActionsUsedFlags>(0);
 
 	size_t size = items.size();
 	for (size_t i = 0; i < size; i++) {
@@ -461,6 +463,19 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				if (i >= size) {
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE); // instruction ran off end
 				}
+			}
+			switch (GetTraceRestrictType(item)) {
+				case TRIT_PF_DENY:
+				case TRIT_PF_PENALTY:
+					actions_used_flags |= TRPAUF_PF;
+					break;
+
+				case TRIT_RESERVE_THROUGH:
+					actions_used_flags |= TRPAUF_RESERVE_THROUGH;
+					break;
+
+				default:
+					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
 		}
 	}
@@ -887,7 +902,8 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			break;
 	}
 
-	CommandCost validation_result = TraceRestrictProgram::Validate(items);
+	TraceRestrictProgramActionsUsedFlags actions_used_flags;
+	CommandCost validation_result = TraceRestrictProgram::Validate(items, actions_used_flags);
 	if (validation_result.Failed()) {
 		return validation_result;
 	}
@@ -897,6 +913,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 
 		// move in modified program
 		prog->items.swap(items);
+		prog->actions_used_flags = actions_used_flags;
 
 		if (prog->items.size() == 0 && prog->refcount == 1) {
 			// program is empty, and this tile is the only reference to it

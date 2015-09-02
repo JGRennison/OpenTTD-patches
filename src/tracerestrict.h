@@ -198,6 +198,15 @@ enum TraceRestrictProgramResultFlags {
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
 /**
+ * Enumeration for TraceRestrictProgram::actions_used_flags
+ */
+enum TraceRestrictProgramActionsUsedFlags {
+	TRPAUF_PF                     = 1 << 0,  ///< Pathfinder deny or penalty are present
+	TRPAUF_RESERVE_THROUGH        = 1 << 1,  ///< Reserve through action is present
+};
+DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
+
+/**
  * Execution input of a TraceRestrictProgram
  */
 struct TraceRestrictProgramInput {
@@ -230,9 +239,10 @@ struct TraceRestrictProgramResult {
 struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrictprogram_pool> {
 	std::vector<TraceRestrictItem> items;
 	uint32 refcount;
+	TraceRestrictProgramActionsUsedFlags actions_used_flags;
 
 	TraceRestrictProgram()
-			: refcount(0) { }
+			: refcount(0), actions_used_flags(static_cast<TraceRestrictProgramActionsUsedFlags>(0)) { }
 
 	void Execute(const Train *v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult &out) const;
 
@@ -243,7 +253,7 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 
 	void DecrementRefCount();
 
-	static CommandCost Validate(const std::vector<TraceRestrictItem> &items);
+	static CommandCost Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags);
 
 	static size_t InstructionOffsetToArrayOffset(const std::vector<TraceRestrictItem> &items, size_t offset);
 
@@ -285,10 +295,11 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
 	}
 
-	/**
-	 * Call validation function on current program instruction list
-	 */
-	CommandCost Validate() const { return TraceRestrictProgram::Validate(items); }
+	/** Call validation function on current program instruction list and set actions_used_flags */
+	CommandCost Validate()
+	{
+		return TraceRestrictProgram::Validate(items, actions_used_flags);
+	}
 };
 
 /** Get TraceRestrictItem type field */
