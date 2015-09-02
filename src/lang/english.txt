@@ -2413,6 +2413,8 @@ STR_TRACE_RESTRICT_END                                          :End
 STR_TRACE_RESTRICT_PF_DENY                                      :Deny
 STR_TRACE_RESTRICT_PF_ALLOW                                     :Allow
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Allow (cancel previous Deny)
+STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserve through
+STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancel reserve through
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
@@ -2460,6 +2462,7 @@ STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :Validation fail
 STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :Validation failed: else/endif without opening if
 STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :Validation failed: duplicate else
 STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :Validation failed: else if without opening if
+STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :Validation failed: unknown instruction
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :Source and target signals are the same
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Can't reset signal
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Can't copy program

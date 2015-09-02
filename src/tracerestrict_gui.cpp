@@ -115,20 +115,24 @@ struct TraceRestrictDropDownListSet {
 static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_IF,
 	STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
+	STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
 	STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
 	STR_TRACE_RESTRICT_PF_DENY,
 	STR_TRACE_RESTRICT_PF_PENALTY,
+	STR_TRACE_RESTRICT_RESERVE_THROUGH,
 	INVALID_STRING_ID
 };
-static const uint _program_insert_else_flag = 0x100;           ///< flag to indicate that TRCF_ELSE should be set
-static const uint32 _program_insert_else_hide_mask = 4;        ///< disable bitmask for else
+static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
+static const uint32 _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for elif
 static const uint32 _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
-	TRIT_COND_UNDEFINED | _program_insert_else_flag,   // elif block
-	TRIT_COND_ENDIF | _program_insert_else_flag,       // else block
+	TRIT_COND_UNDEFINED | (TRCF_ELSE << 16),           // elif block
+	TRIT_COND_UNDEFINED | (TRCF_OR << 16),             // orif block
+	TRIT_COND_ENDIF | (TRCF_ELSE << 16),               // else block
 	TRIT_PF_DENY,                                      // deny
 	TRIT_PF_PENALTY,                                   // penalty
+	TRIT_RESERVE_THROUGH,                              // reserve through
 };
 
 /** insert drop down list strings and values */
@@ -149,6 +153,21 @@ static const uint _deny_value_val[] = {
 /** value drop down list for deny types strings and values */
 static const TraceRestrictDropDownListSet _deny_value = {
 	_deny_value_str, _deny_value_val,
+};
+
+static const StringID _reserve_through_value_str[] = {
+	STR_TRACE_RESTRICT_RESERVE_THROUGH,
+	STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL,
+	INVALID_STRING_ID
+};
+static const uint _reserve_through_value_val[] = {
+	0,
+	1,
+};
+
+/** value drop down list for deny types strings and values */
+static const TraceRestrictDropDownListSet _reserve_through_value = {
+	_reserve_through_value_str, _reserve_through_value_val,
 };
 
 static const StringID _direction_value_str[] = {
@@ -209,11 +228,13 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 	static const StringID str_action[] = {
 		STR_TRACE_RESTRICT_PF_DENY,
 		STR_TRACE_RESTRICT_PF_PENALTY,
+		STR_TRACE_RESTRICT_RESERVE_THROUGH,
 		INVALID_STRING_ID,
 	};
 	static const uint val_action[] = {
 		TRIT_PF_DENY,
 		TRIT_PF_PENALTY,
+		TRIT_RESERVE_THROUGH,
 	};
 	static const TraceRestrictDropDownListSet set_action = {
 		str_action, val_action,
@@ -640,6 +661,10 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 				break;
 
+			case TRIT_RESERVE_THROUGH:
+				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -732,7 +757,7 @@ public:
 					return;
 				}
 
-				uint32 disabled = 0;
+				uint32 disabled = _program_insert_or_if_hide_mask;
 				TraceRestrictItem item = this->GetSelected();
 				if (GetTraceRestrictType(item) == TRIT_COND_ENDIF ||
 						(IsTraceRestrictConditional(item) && GetTraceRestrictCondFlags(item) != 0)) {
@@ -743,6 +768,15 @@ public:
 				} else {
 					// can't insert else/end if here
 					disabled |= _program_insert_else_hide_mask | _program_insert_else_if_hide_mask;
+				}
+				if (this->selected_instruction > 1) {
+					TraceRestrictItem prev_item = this->GetItem(this->GetProgram(), this->selected_instruction - 1);
+					if (IsTraceRestrictConditional(prev_item) && GetTraceRestrictType(prev_item) != TRIT_COND_ENDIF) {
+						// previous item is either: an if, or an else/or if
+
+						// else if has same validation rules as or if, use it instead of creating another test function
+						if (ElseIfInsertionDryRun(false)) disabled &= ~_program_insert_or_if_hide_mask;
+					}
 				}
 
 				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, 0, 0);
@@ -832,6 +866,10 @@ public:
 						this->ShowDropDownListWithValue(&_pf_penalty_dropdown, GetPathfinderPenaltyDropdownIndex(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
+					case TRVT_RESERVE_THROUGH:
+						this->ShowDropDownListWithValue(&_reserve_through_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
 					default:
 						break;
 				}
@@ -914,13 +952,10 @@ public:
 			case TR_WIDGET_INSERT: {
 				TraceRestrictItem insert_item = 0;
 
-				bool have_else = false;
-				if (value & _program_insert_else_flag) {
-					value &= ~_program_insert_else_flag;
-					have_else = true;
-				}
+				TraceRestrictCondFlags cond_flags = static_cast<TraceRestrictCondFlags>(value >> 16);
+				value &= 0xFFFF;
 				SetTraceRestrictTypeAndNormalise(insert_item, static_cast<TraceRestrictItemType>(value));
-				if (have_else) SetTraceRestrictCondFlags(insert_item, TRCF_ELSE); // this needs to happen after calling SetTraceRestrictTypeAndNormalise
+				SetTraceRestrictCondFlags(insert_item, cond_flags); // this needs to happen after calling SetTraceRestrictTypeAndNormalise
 
 				this->expecting_inserted_item = insert_item;
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_INSERT_ITEM, this->selected_instruction - 1, insert_item, STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM);
@@ -1573,6 +1608,13 @@ private:
 							}
 							break;
 
+						case TRVT_RESERVE_THROUGH:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
+							break;
+
 						default:
 							break;
 					}
@@ -1638,7 +1680,8 @@ private:
 			items.insert(items.begin() + array_offset, item);
 		}
 
-		return TraceRestrictProgram::Validate(items).Succeeded();
+		TraceRestrictProgramActionsUsedFlags actions_used_flags;
+		return TraceRestrictProgram::Validate(items, actions_used_flags).Succeeded();
 	}
 
 	/**

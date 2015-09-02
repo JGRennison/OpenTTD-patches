@@ -97,6 +97,7 @@ enum TraceRestrictItemType {
 	TRIT_NULL                     = 0,    ///< Null-type, not in programs and not valid for execution, mainly used with TraceRestrictNullTypeSpecialValue for start/end
 	TRIT_PF_DENY                  = 1,    ///< Pathfinder deny/allow
 	TRIT_PF_PENALTY               = 2,    ///< Add to pathfinder penalty
+	TRIT_RESERVE_THROUGH          = 3,    ///< Reserve through PBS signal
 
 	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the save value as TRIT_COND_ENDIF
 	TRIT_COND_ENDIF               = 8,    ///< This is an endif block or an else block
@@ -192,8 +193,18 @@ enum TraceRestrictPathfinderPenaltyPresetIndex {
  */
 enum TraceRestrictProgramResultFlags {
 	TRPRF_DENY                    = 1 << 0,  ///< Pathfinder deny is set
+	TRPRF_RESERVE_THROUGH         = 1 << 1,  ///< Reserve through is set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
+
+/**
+ * Enumeration for TraceRestrictProgram::actions_used_flags
+ */
+enum TraceRestrictProgramActionsUsedFlags {
+	TRPAUF_PF                     = 1 << 0,  ///< Pathfinder deny or penalty are present
+	TRPAUF_RESERVE_THROUGH        = 1 << 1,  ///< Reserve through action is present
+};
+DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
 /**
  * Execution input of a TraceRestrictProgram
@@ -228,9 +239,10 @@ struct TraceRestrictProgramResult {
 struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrictprogram_pool> {
 	std::vector<TraceRestrictItem> items;
 	uint32 refcount;
+	TraceRestrictProgramActionsUsedFlags actions_used_flags;
 
 	TraceRestrictProgram()
-			: refcount(0) { }
+			: refcount(0), actions_used_flags(static_cast<TraceRestrictProgramActionsUsedFlags>(0)) { }
 
 	void Execute(const Train *v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult &out) const;
 
@@ -241,7 +253,7 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 
 	void DecrementRefCount();
 
-	static CommandCost Validate(const std::vector<TraceRestrictItem> &items);
+	static CommandCost Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags);
 
 	static size_t InstructionOffsetToArrayOffset(const std::vector<TraceRestrictItem> &items, size_t offset);
 
@@ -283,10 +295,11 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 		return items.begin() + TraceRestrictProgram::InstructionOffsetToArrayOffset(items, instruction_offset);
 	}
 
-	/**
-	 * Call validation function on current program instruction list
-	 */
-	CommandCost Validate() const { return TraceRestrictProgram::Validate(items); }
+	/** Call validation function on current program instruction list and set actions_used_flags */
+	CommandCost Validate()
+	{
+		return TraceRestrictProgram::Validate(items, actions_used_flags);
+	}
 };
 
 /** Get TraceRestrictItem type field */
@@ -392,6 +405,7 @@ enum TraceRestrictValueType {
 	TRVT_DIRECTION                = 7, ///< takes a TraceRestrictDirectionTypeSpecialValue
 	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
 	TRVT_PF_PENALTY               = 9, ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
+	TRVT_RESERVE_THROUGH          = 10,///< takes a value 0 = reserve through, 1 = cancel previous reserve through
 };
 
 /**
@@ -463,6 +477,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_PF_PENALTY;
 		} else if (GetTraceRestrictType(item) == TRIT_PF_DENY) {
 			out.value_type = TRVT_DENY;
+		} else if (GetTraceRestrictType(item) == TRIT_RESERVE_THROUGH) {
+			out.value_type = TRVT_RESERVE_THROUGH;
 		} else {
 			out.value_type = TRVT_NONE;
 		}
