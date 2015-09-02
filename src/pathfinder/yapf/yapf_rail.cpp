@@ -97,7 +97,7 @@ private:
 				m_res_fail_td = td;
 			}
 		} else {
-			if (!TryReserveRailTrack(tile, TrackdirToTrack(td))) {
+			if (!TryReserveRailTrackdir(tile, td)) {
 				/* Tile couldn't be reserved, undo. */
 				m_res_fail_tile = tile;
 				m_res_fail_td = td;

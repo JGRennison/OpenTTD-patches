@@ -382,6 +382,14 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_RESERVE_THROUGH:
+						if (GetTraceRestrictValue(item)) {
+							out.flags &= ~TRPRF_RESERVE_THROUGH;
+						} else {
+							out.flags |= TRPRF_RESERVE_THROUGH;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -405,17 +413,27 @@ void TraceRestrictProgram::DecrementRefCount() {
 /**
  * Validate a instruction list
  * Returns successful result if program seems OK
- * This only validates that conditional nesting is correct, at present
+ * This only validates that conditional nesting is correct,
+ * and that all instructions have a known type, at present
  */
-CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> &items) {
+CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags) {
 	// static to avoid needing to re-alloc/resize on each execution
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
+	actions_used_flags = static_cast<TraceRestrictProgramActionsUsedFlags>(0);
 
 	size_t size = items.size();
 	for (size_t i = 0; i < size; i++) {
 		TraceRestrictItem item = items[i];
 		TraceRestrictItemType type = GetTraceRestrictType(item);
+
+		// check multi-word instructions
+		if (IsTraceRestrictDoubleItem(item)) {
+			i++;
+			if (i >= size) {
+				return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE); // instruction ran off end
+			}
+		}
 
 		if (IsTraceRestrictConditional(item)) {
 			TraceRestrictCondFlags condflags = GetTraceRestrictCondFlags(item);
@@ -446,13 +464,36 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				}
 				HandleCondition(condstack, condflags, true);
 			}
+
+			switch (GetTraceRestrictType(item)) {
+				case TRIT_COND_ENDIF:
+				case TRIT_COND_UNDEFINED:
+				case TRIT_COND_TRAIN_LENGTH:
+				case TRIT_COND_MAX_SPEED:
+				case TRIT_COND_CURRENT_ORDER:
+				case TRIT_COND_NEXT_ORDER:
+				case TRIT_COND_LAST_STATION:
+				case TRIT_COND_CARGO:
+				case TRIT_COND_ENTRY_DIRECTION:
+				case TRIT_COND_PBS_ENTRY_SIGNAL:
+					break;
+
+				default:
+					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
+			}
 		} else {
-			// check multi-word instructions
-			if (IsTraceRestrictDoubleItem(item)) {
-				i++;
-				if (i >= size) {
-					return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE); // instruction ran off end
-				}
+			switch (GetTraceRestrictType(item)) {
+				case TRIT_PF_DENY:
+				case TRIT_PF_PENALTY:
+					actions_used_flags |= TRPAUF_PF;
+					break;
+
+				case TRIT_RESERVE_THROUGH:
+					actions_used_flags |= TRPAUF_RESERVE_THROUGH;
+					break;
+
+				default:
+					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
 		}
 	}
@@ -502,6 +543,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_DENY:
 		case TRVT_SPEED:
 		case TRVT_TILE_INDEX:
+		case TRVT_RESERVE_THROUGH:
 			SetTraceRestrictValue(item, 0);
 			SetTraceRestrictAuxField(item, 0);
 			break;
@@ -807,7 +849,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 
 		case TRDCT_REMOVE_ITEM: {
 			TraceRestrictItem old_item = *TraceRestrictProgram::InstructionAt(items, offset);
-			if (IsTraceRestrictConditional(old_item)) {
+			if (IsTraceRestrictConditional(old_item) && GetTraceRestrictCondFlags(old_item) != TRCF_OR) {
 				bool remove_whole_block = false;
 				if (GetTraceRestrictCondFlags(old_item) == 0) {
 					if (GetTraceRestrictType(old_item) == TRIT_COND_ENDIF) {
@@ -878,7 +920,8 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			break;
 	}
 
-	CommandCost validation_result = TraceRestrictProgram::Validate(items);
+	TraceRestrictProgramActionsUsedFlags actions_used_flags;
+	CommandCost validation_result = TraceRestrictProgram::Validate(items, actions_used_flags);
 	if (validation_result.Failed()) {
 		return validation_result;
 	}
@@ -888,6 +931,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 
 		// move in modified program
 		prog->items.swap(items);
+		prog->actions_used_flags = actions_used_flags;
 
 		if (prog->items.size() == 0 && prog->refcount == 1) {
 			// program is empty, and this tile is the only reference to it

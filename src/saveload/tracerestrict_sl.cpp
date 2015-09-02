@@ -11,9 +11,10 @@
 
 #include "../stdafx.h"
 #include "../tracerestrict.h"
+#include "../strings_func.h"
+#include "../string_func.h"
 #include "saveload.h"
 #include <vector>
-#include "saveload.h"
 
 static const SaveLoad _trace_restrict_mapping_desc[] = {
   SLE_VAR(TraceRestrictMappingItem, program_id, SLE_UINT32),
@@ -66,7 +67,20 @@ static void Load_TRRP()
 		SlObject(&stub, _trace_restrict_program_stub_desc);
 		prog->items.resize(stub.length);
 		SlArray(&(prog->items[0]), stub.length, SLE_UINT32);
-		assert(prog->Validate().Succeeded());
+		CommandCost validation_result = prog->Validate();
+		if (validation_result.Failed()) {
+			char str[4096];
+			char *strend = str + seprintf(str, lastof(str), "Trace restrict program %d: %s\nProgram dump:",
+					index, GetStringPtr(validation_result.GetErrorMessage()));
+			for (unsigned int i = 0; i < prog->items.size(); i++) {
+				if (i % 3) {
+					strend += seprintf(strend, lastof(str), " %08X", prog->items[i]);
+				} else {
+					strend += seprintf(strend, lastof(str), "\n%4u: %08X", i, prog->items[i]);
+				}
+			}
+			SlErrorCorrupt(str);
+		}
 	}
 }
 
