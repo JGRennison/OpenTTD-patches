@@ -427,6 +427,14 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 		TraceRestrictItem item = items[i];
 		TraceRestrictItemType type = GetTraceRestrictType(item);
 
+		// check multi-word instructions
+		if (IsTraceRestrictDoubleItem(item)) {
+			i++;
+			if (i >= size) {
+				return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE); // instruction ran off end
+			}
+		}
+
 		if (IsTraceRestrictConditional(item)) {
 			TraceRestrictCondFlags condflags = GetTraceRestrictCondFlags(item);
 
@@ -457,13 +465,6 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				HandleCondition(condstack, condflags, true);
 			}
 		} else {
-			// check multi-word instructions
-			if (IsTraceRestrictDoubleItem(item)) {
-				i++;
-				if (i >= size) {
-					return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE); // instruction ran off end
-				}
-			}
 			switch (GetTraceRestrictType(item)) {
 				case TRIT_PF_DENY:
 				case TRIT_PF_PENALTY:
