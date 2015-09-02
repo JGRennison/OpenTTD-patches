@@ -414,7 +414,7 @@ void TraceRestrictProgram::DecrementRefCount() {
  * Validate a instruction list
  * Returns successful result if program seems OK
  * This only validates that conditional nesting is correct,
- * and that all non-conditionals have a known type, at present
+ * and that all instructions have a known type, at present
  */
 CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags) {
 	// static to avoid needing to re-alloc/resize on each execution
@@ -463,6 +463,23 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					}
 				}
 				HandleCondition(condstack, condflags, true);
+			}
+
+			switch (GetTraceRestrictType(item)) {
+				case TRIT_COND_ENDIF:
+				case TRIT_COND_UNDEFINED:
+				case TRIT_COND_TRAIN_LENGTH:
+				case TRIT_COND_MAX_SPEED:
+				case TRIT_COND_CURRENT_ORDER:
+				case TRIT_COND_NEXT_ORDER:
+				case TRIT_COND_LAST_STATION:
+				case TRIT_COND_CARGO:
+				case TRIT_COND_ENTRY_DIRECTION:
+				case TRIT_COND_PBS_ENTRY_SIGNAL:
+					break;
+
+				default:
+					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
 		} else {
 			switch (GetTraceRestrictType(item)) {
