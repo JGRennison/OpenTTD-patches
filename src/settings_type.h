@@ -529,6 +529,7 @@ struct VehicleDefaultSettings {
 	uint16 servint_roadveh;                  ///< service interval for road vehicles
 	uint16 servint_aircraft;                 ///< service interval for aircraft
 	uint16 servint_ships;                    ///< service interval for ships
+	bool   auto_timetable_by_default;        ///< use automatic timetables by default
 };
 
 /** Settings that can be set per company. */
