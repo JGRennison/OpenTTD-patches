@@ -15,6 +15,7 @@
 #include "demands.h"
 #include "mcf.h"
 #include "flowmapper.h"
+#include "../command_func.h"
 
 #include "../safeguards.h"
 
@@ -52,6 +53,16 @@ void LinkGraphSchedule::SpawnNext()
 /**
  * Join the next finished job, if available.
  */
+bool LinkGraphSchedule::IsJoinWithUnfinishedJobDue() const
+{
+	if (this->running.empty()) return false;
+	const LinkGraphJob *next = this->running.front();
+	return next->IsFinished() && !next->IsJobCompleted();
+}
+
+/**
+ * Join the next finished job, if available.
+ */
 void LinkGraphSchedule::JoinNext()
 {
 	if (this->running.empty()) return;
@@ -78,6 +89,21 @@ void LinkGraphSchedule::JoinNext()
 	for (uint i = 0; i < lengthof(instance.handlers); ++i) {
 		instance.handlers[i]->Run(*job);
 	}
+
+	/*
+	 * Note that this it not guaranteed to be an atomic write and there are no memory barriers or other protections.
+	 * Readers of this variable in another thread may see an out of date value.
+	 * However this is OK as this will only happen just as a job is completing, and the real synchronisation is provided
+	 * by the thread join operation. In the worst case the main thread will be paused for longer than strictly necessary before
+	 * joining.
+	 * This is just a hint variable to avoid performing the join excessively early and blocking the main thread.
+	 */
+
+#if defined(__GNUC__) && (__cplusplus >= 201103L || defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__))
+	__atomic_store_n(&(job->job_completed), true, __ATOMIC_RELAXED);
+#else
+	job->job_completed = true;
+#endif
 }
 
 /**
@@ -137,6 +163,29 @@ LinkGraphSchedule::~LinkGraphSchedule()
 	this->Clear();
 	for (uint i = 0; i < lengthof(this->handlers); ++i) {
 		delete this->handlers[i];
+	}
+}
+
+/**
+ * Pause the game if on the next _date_fract tick, we would do a join with the next
+ * link graph job, but it is still running.
+ * If we previous paused, unpause if the job is now ready to be joined with
+ */
+void StateGameLoop_LinkGraphPauseControl()
+{
+	if (_pause_mode & PM_PAUSED_LINK_GRAPH) {
+		/* We are paused waiting on a job, check the job every tick */
+		if (!LinkGraphSchedule::instance.IsJoinWithUnfinishedJobDue()) {
+			DoCommandP(0, PM_PAUSED_LINK_GRAPH, 0, CMD_PAUSE);
+		}
+	} else if (_pause_mode == PM_UNPAUSED && _tick_skip_counter == 0 &&
+			_date_fract == LinkGraphSchedule::SPAWN_JOIN_TICK - 1) {
+		if (_date % _settings_game.linkgraph.recalc_interval == _settings_game.linkgraph.recalc_interval / 2) {
+			/* perform check one _date_fract tick before we would join */
+			if (LinkGraphSchedule::instance.IsJoinWithUnfinishedJobDue()) {
+				DoCommandP(0, PM_PAUSED_LINK_GRAPH, 1, CMD_PAUSE);
+			}
+		}
 	}
 }
 

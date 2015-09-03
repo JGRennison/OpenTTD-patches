@@ -63,6 +63,7 @@ protected:
 	Date join_date;                   ///< Date when the job is to be joined.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
 	EdgeAnnotationMatrix edges;       ///< Extra edge data necessary for link graph calculation.
+	bool job_completed;               ///< Is the job still running. This is accessed by multiple threads and is permitted to be spuriously incorrect.
 
 	void EraseFlows(NodeID from);
 	void JoinThread();
@@ -267,12 +268,14 @@ public:
 	 * settings have to be brutally const-casted in order to populate them.
 	 */
 	LinkGraphJob() : settings(_settings_game.linkgraph), thread(NULL),
-			join_date(INVALID_DATE) {}
+			join_date(INVALID_DATE), job_completed(false) {}
 
 	LinkGraphJob(const LinkGraph &orig);
 	~LinkGraphJob();
 
 	void Init();
+
+	bool IsJobCompleted() const;
 
 	/**
 	 * Check if job is supposed to be finished.

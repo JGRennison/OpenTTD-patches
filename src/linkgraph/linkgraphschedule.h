@@ -57,6 +57,7 @@ public:
 	static void Clear();
 
 	void SpawnNext();
+	bool IsJoinWithUnfinishedJobDue() const;
 	void JoinNext();
 	void SpawnAll();
 	void ShiftDates(int interval);

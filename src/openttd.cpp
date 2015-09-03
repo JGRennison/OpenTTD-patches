@@ -1356,6 +1356,11 @@ static void CheckCaches()
  */
 void StateGameLoop()
 {
+	if (!_networking || _network_server) {
+		extern void StateGameLoop_LinkGraphPauseControl();
+		StateGameLoop_LinkGraphPauseControl();
+	}
+
 	/* don't execute the state loop during pause */
 	if (_pause_mode != PM_UNPAUSED) {
 		UpdateLandscapingLimits();

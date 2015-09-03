@@ -40,7 +40,8 @@ LinkGraphJob::LinkGraphJob(const LinkGraph &orig) :
 		link_graph(orig),
 		settings(_settings_game.linkgraph),
 		thread(NULL),
-		join_date(_date + _settings_game.linkgraph.recalc_time)
+		join_date(_date + _settings_game.linkgraph.recalc_time),
+		job_completed(false)
 {
 }
 
@@ -169,6 +170,20 @@ LinkGraphJob::~LinkGraphJob()
 		ge.flows.insert(flows.begin(), flows.end());
 		InvalidateWindowData(WC_STATION_VIEW, st->index, this->Cargo());
 	}
+}
+
+/**
+ * Check if job has actually finished.
+ * This is allowed to spuriously return an incorrect value.
+ * @return True if job has actually finished.
+ */
+bool LinkGraphJob::IsJobCompleted() const
+{
+#if defined(__GNUC__) && (__cplusplus >= 201103L || defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__))
+	return __atomic_load_n(&job_completed, __ATOMIC_RELAXED);
+#else
+	return job_completed;
+#endif
 }
 
 /**
