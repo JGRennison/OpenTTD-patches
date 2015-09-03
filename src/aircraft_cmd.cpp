@@ -334,6 +334,8 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 		v->vehicle_flags = 0;
 		if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) SetBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE);
 		v->SetServiceIntervalIsPercent(Company::Get(_current_company)->settings.vehicle.servint_ispercent);
+		SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1,
+				_settings_game.order.timetable_automated && Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
 
 		v->InvalidateNewGRFCacheOfChain();
 
