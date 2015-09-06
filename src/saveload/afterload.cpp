@@ -698,12 +698,6 @@ bool AfterLoadGame()
 		return false;
 	}
 
-	switch (gcf_res) {
-		case GLC_COMPATIBLE: ShowErrorMessage(STR_NEWGRF_COMPATIBLE_LOAD_WARNING, INVALID_STRING_ID, WL_CRITICAL); break;
-		case GLC_NOT_FOUND:  ShowErrorMessage(STR_NEWGRF_DISABLED_WARNING, INVALID_STRING_ID, WL_CRITICAL); _pause_mode = PM_PAUSED_ERROR; break;
-		default: break;
-	}
-
 	/* The value of _date_fract got divided, so make sure that old games are converted correctly. */
 	if (IsSavegameVersionBefore(11, 1) || (IsSavegameVersionBefore(147) && _date_fract > DAY_TICKS)) _date_fract /= 885;
 
@@ -789,6 +783,55 @@ bool AfterLoadGame()
 		FOR_ALL_STATIONS(st) {
 			if (st->airport.tile != INVALID_TILE && st->airport.type == 15) {
 				st->airport.type = AT_OILRIG;
+			}
+		}
+	}
+
+
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+		/*
+		 * Reject huge airports
+		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG.
+		 * Do this here as AfterLoadVehicles might also check it indirectly via the newgrf code.
+		 */
+		Station *st;
+		FOR_ALL_STATIONS(st) {
+			if (st->airport.tile == INVALID_TILE) continue;
+			StringID err = INVALID_STRING_ID;
+			if (st->airport.type == 9) {
+				if (st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
+					/* this airport is probably an oil rig, not a huge airport */
+				} else {
+					err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
+				}
+				st->airport.type = AT_OILRIG;
+			} else if (st->airport.type == 10) {
+				err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
+			}
+			if (err != INVALID_STRING_ID) {
+				SetSaveLoadError(err);
+				/* Restore the signals */
+				ResetSignalHandlers();
+				return false;
+			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {
+		/*
+		 * Reject helicopters aproaching oil rigs using the wrong aircraft movement data
+		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG
+		 * Do this here as AfterLoadVehicles can also check it indirectly via the newgrf code.
+		 */
+		Aircraft *v;
+		FOR_ALL_AIRCRAFT(v) {
+			Station *st = GetTargetAirportIfValid(v);
+			if (st != NULL && ((st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) || st->airport.type == AT_OILRIG)) {
+				/* aircraft is on approach to an oil rig, bail out now */
+				SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG);
+				/* Restore the signals */
+				ResetSignalHandlers();
+				return false;
 			}
 		}
 	}
@@ -3085,51 +3128,6 @@ bool AfterLoadGame()
 		DEBUG(sl, 3, "New inflation prices: %f", _economy.inflation_prices / 65536.0);
 	}
 
-	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
-		/*
-		 * Reject huge airports
-		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG,
-		 */
-		Station *st;
-		FOR_ALL_STATIONS(st) {
-			if (st->airport.tile == INVALID_TILE) continue;
-			StringID err = INVALID_STRING_ID;
-			if (st->airport.type == 9) {
-				if (st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
-					/* this airport is probably an oil rig, not a huge airport */
-				} else {
-					err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
-				}
-				st->airport.type = AT_OILRIG;
-			} else if (st->airport.type == 10) {
-				err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
-			}
-			if (err != INVALID_STRING_ID) {
-				SetSaveLoadError(err);
-				/* Restore the signals */
-				ResetSignalHandlers();
-				return false;
-			}
-		}
-	}
-	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {
-		/*
-		 * Reject helicopters aproaching oil rigs using the wrong aircraft movement data
-		 * Annoyingly SpringPP v2.0.102 has a bug where it uses the same ID for AT_INTERCONTINENTAL2 and AT_OILRIG
-		 */
-		Aircraft *v;
-		FOR_ALL_AIRCRAFT(v) {
-			Station *st = GetTargetAirportIfValid(v);
-			if (st != NULL && st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
-				/* aircraft is on approach to an oil rig, bail out now */
-				SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG);
-				/* Restore the signals */
-				ResetSignalHandlers();
-				return false;
-			}
-		}
-	}
-
 	if (SlXvIsFeaturePresent(XSLFI_MIGHT_USE_PAX_SIGNALS) || SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT)) {
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (HasStationTileRail(t)) {
@@ -3199,6 +3197,14 @@ bool AfterLoadGame()
 	AfterLoadLinkGraphs();
 
 	AfterLoadTraceRestrict();
+
+	/* Show this message last to avoid covering up an error message if we bail out part way */
+	switch (gcf_res) {
+		case GLC_COMPATIBLE: ShowErrorMessage(STR_NEWGRF_COMPATIBLE_LOAD_WARNING, INVALID_STRING_ID, WL_CRITICAL); break;
+		case GLC_NOT_FOUND:  ShowErrorMessage(STR_NEWGRF_DISABLED_WARNING, INVALID_STRING_ID, WL_CRITICAL); _pause_mode = PM_PAUSED_ERROR; break;
+		default: break;
+	}
+
 	return true;
 }
 
