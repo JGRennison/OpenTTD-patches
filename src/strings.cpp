@@ -412,7 +412,7 @@ static char *FormatWallClockString(char *buff, DateTicks ticks, const char *last
 	seprintf(hour,   lastof(hour),   "%02i", MINUTES_HOUR(minutes)  );
 	seprintf(minute, lastof(minute), "%02i", MINUTES_MINUTE(minutes));
 	if (show_date) {
-		int64 args[3] = { (int64)hour, (int64)minute, (int64)ticks / DAY_TICKS };
+		int64 args[3] = { (int64)hour, (int64)minute, (int64)ticks / (DAY_TICKS * _settings_game.economy.day_length_factor) };
 		if (_settings_client.gui.date_with_time == 1) {
 			YearMonthDay ymd;
 			ConvertDateToYMD(args[2], &ymd);
