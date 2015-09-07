@@ -185,6 +185,7 @@ endif
 	$(Q)install -m 644 "$(BUNDLE_DIR)/lang/"* "$(INSTALL_DATA_DIR)/lang"
 	$(Q)install -m 644 "$(BUNDLE_DIR)/ai/"* "$(INSTALL_DATA_DIR)/ai"
 	$(Q)install -m 644 "$(BUNDLE_DIR)/baseset/"* "$(INSTALL_DATA_DIR)/baseset"
+	$(Q)install -m 644 "$(BUNDLE_DIR)/data/"* "$(INSTALL_DATA_DIR)/data"
 	$(Q)install -m 644 "$(BUNDLE_DIR)/scripts/"* "$(INSTALL_DATA_DIR)/scripts"
 ifndef DO_NOT_INSTALL_DOCS
 	$(Q)install -d "$(INSTALL_DOC_DIR)"
