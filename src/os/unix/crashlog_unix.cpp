@@ -22,6 +22,12 @@
 #if defined(__GLIBC__)
 /* Execinfo (and thus making stacktraces) is a GNU extension */
 #	include <execinfo.h>
+#if defined(WITH_DL)
+#   include <dlfcn.h>
+#endif
+#if defined(WITH_DEMANGLE)
+#   include <cxxabi.h>
+#endif
 #elif defined(SUNOS)
 #	include <ucontext.h>
 #	include <dlfcn.h>
@@ -114,6 +120,26 @@ class CrashLogUnix : public CrashLog {
 
 		char **messages = backtrace_symbols(trace, trace_size);
 		for (int i = 0; i < trace_size; i++) {
+#if defined(WITH_DL)
+			Dl_info info;
+			int dladdr_result = dladdr(trace[i], &info);
+			if (dladdr_result && info.dli_sname) {
+				int status = -1;
+				char *demangled = NULL;
+#if defined(WITH_DEMANGLE)
+				demangled = abi::__cxa_demangle(info.dli_sname, NULL, 0, &status);
+#endif
+				const char *name = (demangled != NULL && status == 0) ? demangled : info.dli_sname;
+				buffer += seprintf(buffer, last, " [%02i] %*p %-40s %s + 0x%zx\n", i, int(2 + sizeof(void*) * 2),
+						trace[i], info.dli_fname, name, (char *)trace[i] - (char *)info.dli_saddr);
+				free(demangled);
+				continue;
+			} else if (dladdr_result && info.dli_fname) {
+				buffer += seprintf(buffer, last, " [%02i] %*p %-40s + 0x%zx\n", i, int(2 + sizeof(void*) * 2),
+						trace[i], info.dli_fname, (char *)trace[i] - (char *)info.dli_fbase);
+				continue;
+			}
+#endif
 			buffer += seprintf(buffer, last, " [%02i] %s\n", i, messages[i]);
 		}
 		free(messages);

@@ -1554,6 +1554,37 @@ make_cflags_and_ldflags() {
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "OPENBSD" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
 		LIBS="$LIBS -lpthread"
 	fi
+	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
+		"$cc_host" -o /dev/null -x c++ - -ldl 2> /dev/null << EOL
+			#include <dlfcn.h>
+			int main() {
+				Dl_info info;
+				return dladdr(0, &info);
+			}
+EOL
+		if [ $? -ne 0 ]; then
+			log 1 "checking libdl... no"
+		else
+			log 1 "checking libdl... found"
+			LIBS="$LIBS -ldl"
+			CFLAGS="$CFLAGS -DWITH_DL"
+		fi
+
+		"$cc_host" -o /dev/null -x c++ - -lstdc++ 2> /dev/null << EOL
+			#include <cxxabi.h>
+			int main() {
+				int status = -1;
+				char *demangled = abi::__cxa_demangle("test", 0, 0, &status);
+				return 0;
+			}
+EOL
+		if [ $? -ne 0 ]; then
+			log 1 "checking abi::__cxa_demangle... no"
+		else
+			log 1 "checking abi::__cxa_demangle... found"
+			CFLAGS="$CFLAGS -DWITH_DEMANGLE"
+		fi
+	fi
 
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ]; then
 		LIBS="$LIBS -lc"
