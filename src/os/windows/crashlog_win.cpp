@@ -49,12 +49,13 @@ class CrashLogWindows : public CrashLog {
 	/* virtual */ char *LogRegisters(char *buffer, const char *last) const;
 	/* virtual */ char *LogModules(char *buffer, const char *last) const;
 public:
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(WITH_DBGHELP)
 	/* virtual */ int WriteCrashDump(char *filename, const char *filename_last) const;
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const;
 #else
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const { return buffer; }
-#endif /* _MSC_VER */
+#endif /* _MSC_VER || WITH_DBGHELP */
+
 
 	/** Buffer for the generated crash log */
 	char crashlog[65536];
@@ -321,10 +322,14 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 	return buffer + seprintf(buffer, last, "\n");
 }
 
+#if defined(_MSC_VER) || defined(WITH_DBGHELP)
 #if defined(_MSC_VER)
 #pragma warning(disable:4091)
+#endif
 #include <dbghelp.h>
+#if defined(_MSC_VER)
 #pragma warning(default:4091)
+#endif
 
 char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) const
 {
@@ -479,7 +484,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 	}
 	return ret;
 }
-#endif /* _MSC_VER */
+#endif /* _MSC_VER  || WITH_DBGHELP */
 
 extern bool CloseConsoleLogIfActive();
 static void ShowCrashlogWindow();

@@ -1612,6 +1612,27 @@ EOL
 		rm tmp.config.bfd
 	fi
 
+	if [ "$os" = "MINGW" ]; then
+		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.dbghelp -x c++ - 2> /dev/null << EOL
+			#include <windows.h>
+			#include <dbghelp.h>
+			int main() {
+				STACKFRAME64 frame;
+				IMAGEHLP_SYMBOL64 *sym_info;
+				IMAGEHLP_MODULE64 module;
+				IMAGEHLP_LINE64 line;
+				return 0;
+			}
+EOL
+		if [ $? -ne 0 ]; then
+			log 1 "checking dbghelp... no"
+		else
+			log 1 "checking dbghelp... found"
+			CFLAGS="$CFLAGS -DWITH_DBGHELP"
+		fi
+		rm -f tmp.config.dbghelp
+	fi
+
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ]; then
 		LIBS="$LIBS -lc"
 	fi
