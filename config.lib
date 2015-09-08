@@ -1605,6 +1605,9 @@ EOL
 			log 1 "checking libbfd... found"
 			LIBS="$LIBS -lbfd"
 			CFLAGS="$CFLAGS -DWITH_BFD"
+			if [ $enable_debug -lt 1 ]; then
+				CFLAGS="$CFLAGS -g1"
+			fi
 		fi
 		rm tmp.config.bfd
 	fi
