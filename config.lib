@@ -1555,7 +1555,7 @@ make_cflags_and_ldflags() {
 		LIBS="$LIBS -lpthread"
 	fi
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
-		"$cc_host" -o /dev/null -x c++ - -ldl 2> /dev/null << EOL
+		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.libdl -x c++ - -ldl 2> /dev/null << EOL
 			#include <dlfcn.h>
 			int main() {
 				Dl_info info;
@@ -1569,8 +1569,9 @@ EOL
 			LIBS="$LIBS -ldl"
 			CFLAGS="$CFLAGS -DWITH_DL"
 		fi
+		rm tmp.config.libdl
 
-		"$cc_host" -o /dev/null -x c++ - -lstdc++ 2> /dev/null << EOL
+		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL
 			#include <cxxabi.h>
 			int main() {
 				int status = -1;
@@ -1584,6 +1585,28 @@ EOL
 			log 1 "checking abi::__cxa_demangle... found"
 			CFLAGS="$CFLAGS -DWITH_DEMANGLE"
 		fi
+		rm tmp.config.demangle
+
+		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - -lbfd 2> /dev/null << EOL
+			#define PACKAGE 1
+			#define PACKAGE_VERSION 1
+			#include <bfd.h>
+			int main() {
+				bfd_init();
+				unsigned int size;
+				asymbol *syms = 0;
+				long symcount = bfd_read_minisymbols((bfd *) 0, false, (void**) &syms, &size);
+				return 0;
+			}
+EOL
+		if [ $? -ne 0 ]; then
+			log 1 "checking libbfd... no"
+		else
+			log 1 "checking libbfd... found"
+			LIBS="$LIBS -lbfd"
+			CFLAGS="$CFLAGS -DWITH_BFD"
+		fi
+		rm tmp.config.bfd
 	fi
 
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ]; then

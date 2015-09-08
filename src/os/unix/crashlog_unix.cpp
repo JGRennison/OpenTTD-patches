@@ -28,6 +28,9 @@
 #if defined(WITH_DEMANGLE)
 #   include <cxxabi.h>
 #endif
+#if defined(WITH_BFD)
+#   include <bfd.h>
+#endif
 #elif defined(SUNOS)
 #	include <ucontext.h>
 #	include <dlfcn.h>
@@ -38,6 +41,73 @@
 #endif
 
 #include "../../safeguards.h"
+
+#if defined(WITH_BFD)
+struct line_info {
+	bfd_vma addr;
+	bfd *abfd;
+	asymbol **syms;
+	long sym_count;
+	const char *file_name;
+	const char *function_name;
+	bfd_vma function_addr;
+	unsigned int line;
+	bool found;
+
+	line_info(bfd_vma addr_) : addr(addr_), abfd(NULL), syms(NULL), sym_count(0),
+			file_name(NULL), function_name(NULL), function_addr(0), line(0), found(false) {}
+
+	~line_info()
+	{
+		free(syms);
+		if (abfd != NULL) bfd_close(abfd);
+	}
+};
+
+static void find_address_in_section(bfd *abfd, asection *section, void *data)
+{
+	line_info *info = static_cast<line_info *>(data);
+	if (info->found) return;
+
+	if ((bfd_get_section_flags(abfd, section) & SEC_ALLOC) == 0) return;
+
+	bfd_vma vma = bfd_get_section_vma(abfd, section);
+	if (info->addr < vma) return;
+
+	bfd_size_type size = bfd_section_size(abfd, section);
+	if (info->addr >= vma + size) return;
+
+	info->found = bfd_find_nearest_line(abfd, section, info->syms, info->addr - vma,
+			&(info->file_name), &(info->function_name), &(info->line));
+
+	if (info->found) {
+		for (long i = 0; i < info->sym_count; i++) {
+			asymbol *sym = info->syms[i];
+			if (sym->flags & (BSF_LOCAL | BSF_GLOBAL) && strcmp(sym->name, info->function_name) == 0) {
+				info->function_addr = sym->value + vma;
+			}
+		}
+	}
+}
+
+void lookup_addr_bfd(const char *obj_file_name, line_info &info)
+{
+	info.abfd = bfd_openr(obj_file_name, NULL);
+
+	if (info.abfd == NULL) return;
+
+	if (!bfd_check_format(info.abfd, bfd_object) || (bfd_get_file_flags(info.abfd) & HAS_SYMS) == 0) return;
+
+	unsigned int size;
+	info.sym_count = bfd_read_minisymbols(info.abfd, false, (void**) &(info.syms), &size);
+	if (info.sym_count <= 0) {
+		info.sym_count = bfd_read_minisymbols(info.abfd, true, (void**) &(info.syms), &size);
+	}
+	if (info.sym_count <= 0) return;
+
+	bfd_map_over_sections(info.abfd, find_address_in_section, &info);
+}
+#endif
 
 /**
  * Unix implementation for the crash logger.
@@ -115,6 +185,9 @@ class CrashLogUnix : public CrashLog {
 	{
 		buffer += seprintf(buffer, last, "Stacktrace:\n");
 #if defined(__GLIBC__)
+#if defined(WITH_BFD)
+		bfd_init();
+#endif
 		void *trace[64];
 		int trace_size = backtrace(trace, lengthof(trace));
 
@@ -123,22 +196,43 @@ class CrashLogUnix : public CrashLog {
 #if defined(WITH_DL)
 			Dl_info info;
 			int dladdr_result = dladdr(trace[i], &info);
-			if (dladdr_result && info.dli_sname) {
+			const char *func_name = info.dli_sname;
+			void *func_addr = info.dli_saddr;
+			const char *file_name = NULL;
+			unsigned int line_num = 0;
+#if defined(WITH_BFD)
+			/* subtract one to get the line before the return address, i.e. the function call line */
+			line_info bfd_info(reinterpret_cast<bfd_vma>(trace[i]) - 1);
+			if (dladdr_result && info.dli_fname) {
+				lookup_addr_bfd(info.dli_fname, bfd_info);
+				if (bfd_info.file_name != NULL) file_name = bfd_info.file_name;
+				if (bfd_info.function_name != NULL) func_name = bfd_info.function_name;
+				if (bfd_info.function_addr != 0) func_addr = reinterpret_cast<void *>(bfd_info.function_addr);
+				line_num = bfd_info.line;
+			}
+#endif
+			bool ok = true;
+			const int ptr_str_size = (2 + sizeof(void*) * 2);
+			if (dladdr_result && func_name) {
 				int status = -1;
 				char *demangled = NULL;
 #if defined(WITH_DEMANGLE)
-				demangled = abi::__cxa_demangle(info.dli_sname, NULL, 0, &status);
+				demangled = abi::__cxa_demangle(func_name, NULL, 0, &status);
 #endif
-				const char *name = (demangled != NULL && status == 0) ? demangled : info.dli_sname;
-				buffer += seprintf(buffer, last, " [%02i] %*p %-40s %s + 0x%zx\n", i, int(2 + sizeof(void*) * 2),
-						trace[i], info.dli_fname, name, (char *)trace[i] - (char *)info.dli_saddr);
+				const char *name = (demangled != NULL && status == 0) ? demangled : func_name;
+				buffer += seprintf(buffer, last, " [%02i] %*p %-40s %s + 0x%zx\n", i, ptr_str_size,
+						trace[i], info.dli_fname, name, (char *)trace[i] - (char *)func_addr);
 				free(demangled);
-				continue;
 			} else if (dladdr_result && info.dli_fname) {
-				buffer += seprintf(buffer, last, " [%02i] %*p %-40s + 0x%zx\n", i, int(2 + sizeof(void*) * 2),
+				buffer += seprintf(buffer, last, " [%02i] %*p %-40s + 0x%zx\n", i, ptr_str_size,
 						trace[i], info.dli_fname, (char *)trace[i] - (char *)info.dli_fbase);
-				continue;
+			} else {
+				ok = false;
 			}
+			if (file_name != NULL) {
+				buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
+			}
+			if (ok) continue;
 #endif
 			buffer += seprintf(buffer, last, " [%02i] %s\n", i, messages[i]);
 		}
