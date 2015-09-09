@@ -613,11 +613,8 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				ShowBuildObjectPicker();
 				break;
 
-				case WID_ETT_PLACE_HOUSE: // Place house button
-				if (HandlePlacePushButton(this, WID_ETT_PLACE_HOUSE, SPR_CURSOR_TOWN, HT_RECT)) {
-					ShowBuildHousePicker(this);
-					this->last_user_action = widget;
-				}
+			case WID_ETT_PLACE_HOUSE: // Place house button
+				ShowBuildHousePicker(this);
 				break;
 
 			case WID_ETT_INCREASE_SIZE:

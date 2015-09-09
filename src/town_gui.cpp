@@ -1717,6 +1717,9 @@ static WindowDesc _house_picker_desc(
  */
 void ShowBuildHousePicker(Window *parent)
 {
+	if (BringWindowToFrontById(WC_BUILD_HOUSE, 0) != NULL) {
+		return;
+	}
 	new HousePickerWindow(&_house_picker_desc, parent);
 }
 
