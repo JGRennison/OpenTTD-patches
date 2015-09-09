@@ -95,6 +95,8 @@ set_default() {
 	with_nforenum="1"
 	with_grfcodec="1"
 	with_sse="1"
+	with_libbfd="1"
+	with_bfd_extra_debug="1"
 
 	save_params_array="
 		build
@@ -172,6 +174,8 @@ set_default() {
 		with_grfcodec
 		with_nforenum
 		with_sse
+		with_libbfd
+		with_bfd_extra_debug
 	CC CXX CFLAGS CXXFLAGS LDFLAGS CFLAGS_BUILD CXXFLAGS_BUILD LDFLAGS_BUILD"
 }
 
@@ -464,6 +468,14 @@ detect_params() {
 			--without-sse)                with_sse="0";;
 			--with-sse)                   with_sse="1";;
 			--with-sse=*)                 with_sse="$optarg";;
+
+			--without-libbfd)             with_libbfd="0";;
+			--with-libbfd)                with_libbfd="1";;
+			--with-libbfd=*)              with_libbfd="$optarg";;
+
+			--without-bfd-extra-debug)    with_bfd_extra_debug="0";;
+			--with-bfd-extra-debug)       with_bfd_extra_debug="1";;
+			--with-bfd-extra-debug=*)     with_bfd_extra_debug="$optarg";;
 
 			CC=* | --CC=*)                CC="$optarg";;
 			CXX=* | --CXX=*)              CXX="$optarg";;
@@ -1571,29 +1583,31 @@ EOL
 		fi
 		rm -f tmp.config.libdl
 
-		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - -lbfd 2> /dev/null << EOL
-			#define PACKAGE 1
-			#define PACKAGE_VERSION 1
-			#include <bfd.h>
-			int main() {
-				bfd_init();
-				unsigned int size;
-				asymbol *syms = 0;
-				long symcount = bfd_read_minisymbols((bfd *) 0, false, (void**) &syms, &size);
-				return 0;
-			}
+		if [ "$with_libbfd" = "1" ]; then
+			"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - -lbfd 2> /dev/null << EOL
+				#define PACKAGE 1
+				#define PACKAGE_VERSION 1
+				#include <bfd.h>
+				int main() {
+					bfd_init();
+					unsigned int size;
+					asymbol *syms = 0;
+					long symcount = bfd_read_minisymbols((bfd *) 0, false, (void**) &syms, &size);
+					return 0;
+				}
 EOL
-		if [ $? -ne 0 ]; then
-			log 1 "checking libbfd... no"
-		else
-			log 1 "checking libbfd... found"
-			LIBS="$LIBS -lbfd"
-			CFLAGS="$CFLAGS -DWITH_BFD"
-			if [ $enable_debug -lt 1 ]; then
-				CFLAGS="$CFLAGS -g1"
+			if [ $? -ne 0 ]; then
+				log 1 "checking libbfd... no"
+			else
+				log 1 "checking libbfd... found"
+				LIBS="$LIBS -lbfd"
+				CFLAGS="$CFLAGS -DWITH_BFD"
+				if [ $enable_debug -lt 1 ] && [ "$with_bfd_extra_debug" = "1" ]; then
+					CFLAGS="$CFLAGS -g1"
+				fi
 			fi
+			rm -f tmp.config.bfd
 		fi
-		rm -f tmp.config.bfd
 	fi
 
 	if [ "$os" = "MINGW" ]; then
@@ -1614,30 +1628,32 @@ EOL
 			log 1 "checking dbghelp... found"
 			CFLAGS="$CFLAGS -DWITH_DBGHELP"
 
-			"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - -lbfd -liberty -lintl 2> /dev/null << EOL
-				#define PACKAGE 1
-				#define PACKAGE_VERSION 1
-				#include <bfd.h>
-				int main() {
-					bfd_init();
-					unsigned int size;
-					asymbol *syms = 0;
-					long symcount = bfd_read_minisymbols((bfd *) 0, false, (void**) &syms, &size);
-					return 0;
-				}
+			if [ "$with_libbfd" = "1" ]; then
+				"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - -lbfd -liberty -lintl 2> /dev/null << EOL
+					#define PACKAGE 1
+					#define PACKAGE_VERSION 1
+					#include <bfd.h>
+					int main() {
+						bfd_init();
+						unsigned int size;
+						asymbol *syms = 0;
+						long symcount = bfd_read_minisymbols((bfd *) 0, false, (void**) &syms, &size);
+						return 0;
+					}
 EOL
-			if [ $? -ne 0 ]; then
-				log 1 "checking libbfd... no"
-			else
-				log 1 "checking libbfd... found"
-				LIBS="$LIBS -lbfd -liberty -lintl"
-				CFLAGS="$CFLAGS -DWITH_BFD"
+				if [ $? -ne 0 ]; then
+					log 1 "checking libbfd... no"
+				else
+					log 1 "checking libbfd... found"
+					LIBS="$LIBS -lbfd -liberty -lintl"
+					CFLAGS="$CFLAGS -DWITH_BFD"
 
-				if [ $enable_debug -lt 1 ]; then
-					CFLAGS="$CFLAGS -g1"
+					if [ $enable_debug -lt 1 ] && [ "$with_bfd_extra_debug" = "1" ]; then
+						CFLAGS="$CFLAGS -g1"
+					fi
 				fi
+				rm -f tmp.config.bfd
 			fi
-			rm -f tmp.config.bfd
 		fi
 		rm -f tmp.config.dbghelp
 	fi
@@ -3652,6 +3668,8 @@ showhelp() {
 	echo "  --without-grfcodec             disable usage of grfcodec and re-generation of base sets"
 	echo "  --without-threads              disable threading support"
 	echo "  --without-sse                  disable SSE support (x86/x86_64 only)"
+	echo "  --without-libbfd               disable libbfd support, used for improved crash logs (MinGW and Unix/glibc only)"
+	echo "  --without-bfd-extra-debug      disable extra debugging information when using libbfd (MinGW and Unix/glibc only)"
 	echo ""
 	echo "Some influential environment variables:"
 	echo "  CC                             C compiler command"
