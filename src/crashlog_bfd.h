@@ -1,0 +1,45 @@
+/* $Id$ */
+
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file crashlog_bfd.h Definitions for utility functions for using libbfd as part of logging a crash */
+
+#ifndef CRASHLOG_BFD_H
+#define CRASHLOG_BFD_H
+
+#if defined(WITH_BFD)
+/* this is because newer versions of libbfd insist on seeing these, even though they aren't used for anything */
+#define PACKAGE 1
+#define PACKAGE_VERSION 1
+#include <bfd.h>
+#undef PACKAGE
+#undef PACKAGE_VERSION
+#endif
+
+#if defined(WITH_BFD)
+struct sym_info_bfd;
+void lookup_addr_bfd(const char *obj_file_name, sym_info_bfd &info);
+
+struct sym_info_bfd {
+	bfd_vma addr;
+	bfd *abfd;
+	asymbol **syms;
+	long sym_count;
+	const char *file_name;
+	const char *function_name;
+	bfd_vma function_addr;
+	unsigned int line;
+	bool found;
+
+	sym_info_bfd(bfd_vma addr_);
+	~sym_info_bfd();
+};
+
+#endif
+
+#endif /* CRASHLOG_BFD_H */
