@@ -739,9 +739,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		this->RaiseButtons();
 		this->SetDirty();
-		DeleteWindowById(WC_BUILD_OBJECT, 0);
-		DeleteWindowById(WC_BUILD_HOUSE, 0);
-		DeleteWindowById(WC_SELECT_STATION, 0);
 	}
 
 	static HotkeyList hotkeys;
