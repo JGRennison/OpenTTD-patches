@@ -1306,76 +1306,75 @@ static const byte _breakdown_chances[4][4] = {
  * @param v the vehicle in question.
  * @param r the random number to use. (Note that bits 0..6 are already used)
  */
-void
-DetermineBreakdownType( Vehicle *v, uint32 r ) {
+void DetermineBreakdownType(Vehicle *v, uint32 r) {
 	/* if 'improved breakdowns' is off, just do the classic breakdown */
-	if ( !_settings_game.vehicle.improved_breakdowns ) {
+	if (!_settings_game.vehicle.improved_breakdowns) {
 		v->breakdown_type = BREAKDOWN_CRITICAL;
 		v->breakdown_severity = 40; //only used by aircraft (321 km/h)
 		return;
 	}
-	byte rand = GB( r, 8, 8 );
+	byte rand = GB(r, 8, 8);
 	const byte *breakdown_type_chance = _breakdown_chances[v->type];
 
-	if ( v->type == VEH_AIRCRAFT ) {
-		if ( rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_SPEED] ) {
+	if (v->type == VEH_AIRCRAFT) {
+		if (rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_SPEED]) {
 			v->breakdown_type = BREAKDOWN_AIRCRAFT_SPEED;
 			/* all speed values here are 1/8th of the real max speed in km/h */
-			byte max_speed = min( AircraftVehInfo( v->engine_type )->max_speed >> 3, 255 );
-			byte min_speed = min( 15 + ( max_speed >> 2 ), AircraftVehInfo( v->engine_type )->max_speed >> 4 );
-			v->breakdown_severity = min_speed + ( ( ( v->reliability + GB( r, 16, 16 ) ) * ( max_speed - min_speed ) ) >> 17 );
-		} else if ( rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_DEPOT] ) {
+			byte max_speed = min(AircraftVehInfo( v->engine_type )->max_speed >> 3, 255);
+			byte min_speed = min(15 + (max_speed >> 2), AircraftVehInfo(v->engine_type)->max_speed >> 4);
+			v->breakdown_severity = min_speed + (((v->reliability + GB(r, 16, 16)) * (max_speed - min_speed)) >> 17);
+		} else if (rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_DEPOT]) {
 			v->breakdown_type = BREAKDOWN_AIRCRAFT_DEPOT;
-		} else if ( rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_EM_LANDING] ) {
+		} else if (rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_EM_LANDING]) {
 			/* emergency landings only happen when reliability < 87% */
-			if ( v->reliability < 0xDDDD ) {
+			if (v->reliability < 0xDDDD) {
 				v->breakdown_type = BREAKDOWN_AIRCRAFT_EM_LANDING;
 			} else {
 				/* try again */
-				DetermineBreakdownType( v, Random( ) );
+				DetermineBreakdownType(v, Random());
 			}
 		} else {
-			NOT_REACHED( );
+			NOT_REACHED();
 		}
 		return;
 	}
 
-	if ( rand <= breakdown_type_chance[BREAKDOWN_CRITICAL] ) {
+	if (rand <= breakdown_type_chance[BREAKDOWN_CRITICAL]) {
 		v->breakdown_type = BREAKDOWN_CRITICAL;
-	} else if ( rand <= breakdown_type_chance[BREAKDOWN_EM_STOP] ) {
+	} else if (rand <= breakdown_type_chance[BREAKDOWN_EM_STOP]) {
 		/* Non-front engines cannot have emergency stops */
-		if ( v->type == VEH_TRAIN && !( Train::From( v )->IsFrontEngine( ) ) ) {
-			return DetermineBreakdownType( v, Random( ) );
+		if (v->type == VEH_TRAIN && !(Train::From(v)->IsFrontEngine())) {
+			return DetermineBreakdownType(v, Random());
 		}
 		v->breakdown_type = BREAKDOWN_EM_STOP;
 		v->breakdown_delay >>= 2; //emergency stops don't last long (1/4 of normal)
-	} else if ( rand <= breakdown_type_chance[BREAKDOWN_LOW_SPEED] ) {
+	} else if (rand <= breakdown_type_chance[BREAKDOWN_LOW_SPEED]) {
 		v->breakdown_type = BREAKDOWN_LOW_SPEED;
 		/* average of random and reliability */
-		uint16 rand2 = ( GB( r, 16, 16 ) + v->reliability ) >> 1;
+		uint16 rand2 = (GB(r, 16, 16) + v->reliability) >> 1;
 		uint16 max_speed =
-			( v->type == VEH_TRAIN ) ?
-			GetVehicleProperty( v, PROP_TRAIN_SPEED, RailVehInfo( v->engine_type )->max_speed ) :
-			( v->type == VEH_ROAD ) ?
-			GetVehicleProperty( v, PROP_ROADVEH_SPEED, RoadVehInfo( v->engine_type )->max_speed ) :
-			( v->type == VEH_SHIP ) ?
-			GetVehicleProperty( v, PROP_SHIP_SPEED, ShipVehInfo( v->engine_type )->max_speed ) :
-			GetVehicleProperty( v, PROP_AIRCRAFT_SPEED, AircraftVehInfo( v->engine_type )->max_speed );
-		byte min_speed = min( 41, max_speed >> 2 );
+			(v->type == VEH_TRAIN) ?
+			GetVehicleProperty(v, PROP_TRAIN_SPEED, RailVehInfo(v->engine_type)->max_speed) :
+			(v->type == VEH_ROAD ) ?
+			GetVehicleProperty(v, PROP_ROADVEH_SPEED, RoadVehInfo(v->engine_type)->max_speed) :
+			(v->type == VEH_SHIP) ?
+			GetVehicleProperty(v, PROP_SHIP_SPEED, ShipVehInfo(v->engine_type)->max_speed ) :
+			GetVehicleProperty(v, PROP_AIRCRAFT_SPEED, AircraftVehInfo(v->engine_type)->max_speed);
+		byte min_speed = min(41, max_speed >> 2);
 		/* we use the min() function here because we want to use the real value of max_speed for the min_speed calculation */
-		max_speed = min( max_speed, 255 );
-		v->breakdown_severity = Clamp( ( max_speed * rand2 ) >> 16, min_speed, max_speed );
-	} else if ( rand <= breakdown_type_chance[BREAKDOWN_LOW_POWER] ) {
+		max_speed = min(max_speed, 255);
+		v->breakdown_severity = Clamp((max_speed * rand2) >> 16, min_speed, max_speed);
+	} else if (rand <= breakdown_type_chance[BREAKDOWN_LOW_POWER]) {
 		v->breakdown_type = BREAKDOWN_LOW_POWER;
 		/** within this type there are two possibilities: (50/50)
 		 * power reduction (10-90%), or no power at all */
-		if ( GB( r, 7, 1 ) ) {
-			v->breakdown_severity = Clamp( ( GB( r, 16, 16 ) + v->reliability ) >> 9, 26, 231 );
+		if (GB(r, 7, 1)) {
+			v->breakdown_severity = Clamp((GB(r, 16, 16) + v->reliability) >> 9, 26, 231);
 		} else {
 			v->breakdown_severity = 0;
 		}
 	} else {
-		NOT_REACHED( );
+		NOT_REACHED();
 	}
 }
 
@@ -1413,10 +1412,10 @@ void CheckVehicleBreakdown(Vehicle *v)
 	 * However, because breakdowns are no longer by definition a complete stop,
 	 * their impact will be significantly less.
 	 */
-	if ( (uint32) ( 0xffff - v->reliability ) * _settings_game.difficulty.vehicle_breakdowns * chance > GB( r1, 0, 24 ) * 10 ) {
-		v->breakdown_ctr = GB( r1, 24, 6 ) + 0xF;
-		v->breakdown_delay = GB( r2, 0, 7 ) + 0x80;
-		DetermineBreakdownType( v, r2 );
+	if ((uint32) (0xffff - v->reliability) * _settings_game.difficulty.vehicle_breakdowns * chance > GB(r1, 0, 24) * 10) {
+		v->breakdown_ctr = GB(r1, 24, 6) + 0xF;
+		v->breakdown_delay = GB(r2, 0, 7) + 0x80;
+		DetermineBreakdownType(v, r2);
 	}
 }
 
@@ -1454,22 +1453,21 @@ bool Vehicle::HandleBreakdown()
 						(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN) &&
 						GetTargetAirportIfValid(Aircraft::From(this)) != NULL)) return false;
 				FindBreakdownDestination(Aircraft::From(this));
-
-			} else if ( this->type == VEH_TRAIN ) {
-				if ( this->breakdown_type == BREAKDOWN_LOW_POWER ||
-					this->First( )->cur_speed <= ( ( this->breakdown_type == BREAKDOWN_LOW_SPEED ) ? this->breakdown_severity : 0 ) ) {
-					switch ( this->breakdown_type ) {
+			} else if (this->type == VEH_TRAIN) {
+				if (this->breakdown_type == BREAKDOWN_LOW_POWER ||
+						this->First()->cur_speed <= ((this->breakdown_type == BREAKDOWN_LOW_SPEED) ? this->breakdown_severity : 0)) {
+					switch (this->breakdown_type) {
 						case BREAKDOWN_CRITICAL:
-				if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
-					bool train_or_ship = this->type == VEH_TRAIN || this->type == VEH_SHIP;
-					SndPlayVehicleFx((_settings_game.game_creation.landscape != LT_TOYLAND) ?
-						(train_or_ship ? SND_10_TRAIN_BREAKDOWN : SND_0F_VEHICLE_BREAKDOWN) :
-						(train_or_ship ? SND_3A_COMEDY_BREAKDOWN_2 : SND_35_COMEDY_BREAKDOWN), this);
-				}
-							if (!(this->vehstatus & VS_HIDDEN)) {
-					EffectVehicle *u = CreateEffectVehicleRel(this, 4, 4, 5, EV_BREAKDOWN_SMOKE);
-					if (u != NULL) u->animation_state = this->breakdown_delay * 2;
-				}
+							if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
+								bool train_or_ship = this->type == VEH_TRAIN || this->type == VEH_SHIP;
+								SndPlayVehicleFx((_settings_game.game_creation.landscape != LT_TOYLAND) ?
+										(train_or_ship ? SND_10_TRAIN_BREAKDOWN : SND_0F_VEHICLE_BREAKDOWN) :
+										(train_or_ship ? SND_3A_COMEDY_BREAKDOWN_2 : SND_35_COMEDY_BREAKDOWN), this);
+							}
+							if (!(this->vehstatus & VS_HIDDEN) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE) && this->breakdown_delay > 0) {
+								EffectVehicle *u = CreateEffectVehicleRel(this, 4, 4, 5, EV_BREAKDOWN_SMOKE);
+								if (u != NULL) u->animation_state = this->breakdown_delay * 2;
+							}
 							/* Max Speed reduction*/
 							if (_settings_game.vehicle.improved_breakdowns) {
 								if (!HasBit(Train::From(this)->flags,VRF_NEED_REPAIR)) {
@@ -1477,15 +1475,13 @@ bool Vehicle::HandleBreakdown()
 									const RailVehicleInfo *rvi = &e->u.rail;
 									if (rvi->max_speed > this->vcache.cached_max_speed)
 										this->vcache.cached_max_speed = rvi->max_speed;
-			}
-								this->vcache.cached_max_speed =
-									min(
-										this->vcache.cached_max_speed - (this->vcache.cached_max_speed >> 1) / Train::From(this->First())->tcache.cached_num_engines + 1,
-										this->vcache.cached_max_speed);
+								}
+								this->vcache.cached_max_speed = min(this->vcache.cached_max_speed -
+										(this->vcache.cached_max_speed >> 1) / Train::From(this->First())->tcache.cached_num_engines + 1, this->vcache.cached_max_speed);
 								SetBit(Train::From(this)->flags, VRF_NEED_REPAIR);
 								Train::From(this->First())->ConsistChanged(CCF_TRACK);
 							}
-			/* FALL THROUGH */
+						/* FALL THROUGH */
 						case BREAKDOWN_EM_STOP:
 							CheckBreakdownFlags(Train::From(this->First()));
 							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_STOPPED);
@@ -1498,27 +1494,28 @@ bool Vehicle::HandleBreakdown()
 							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_POWER);
 							break;
 						default: NOT_REACHED();
-				}
-
+					}
 					this->First()->MarkDirty();
 					SetWindowDirty(WC_VEHICLE_VIEW, this->index);
 					SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 				} else {
 					this->breakdown_ctr = 2; // wait until slowdown
 					this->breakdowns_since_last_service--;
-					SetBit( Train::From( this )->flags, VRF_BREAKDOWN_BRAKING );
+					SetBit(Train::From(this)->flags, VRF_BREAKDOWN_BRAKING);
 					return false;
-			}
-				if ( ( !( this->vehstatus & VS_HIDDEN ) ) && ( ( this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER ) && ( this->tick_counter & 0x1F ) == 0 ) ) {
-					CreateEffectVehicleRel( this, 0, 0, 2, EV_BREAKDOWN_SMOKE ); //some grey clouds to indicate a broken engine
-	}
+				}
+				if ((!(this->vehstatus & VS_HIDDEN)) && (this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER)
+						&& !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE)) {
+					EffectVehicle *u = CreateEffectVehicleRel(this, 0, 0, 2, EV_BREAKDOWN_SMOKE); //some grey clouds to indicate a broken engine
+					if (u != NULL) u->animation_state = 25;
+				}
 			} else {
-				switch ( this->breakdown_type ) {
+				switch (this->breakdown_type) {
 					case BREAKDOWN_CRITICAL:
-						if ( !PlayVehicleSound( this, VSE_BREAKDOWN ) ) {
-							SndPlayVehicleFx( ( _settings_game.game_creation.landscape != LT_TOYLAND ) ? SND_0F_VEHICLE_BREAKDOWN : SND_35_COMEDY_BREAKDOWN, this );
-}
-						if (!(this->vehstatus & VS_HIDDEN)) {
+						if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
+							SndPlayVehicleFx((_settings_game.game_creation.landscape != LT_TOYLAND) ? SND_0F_VEHICLE_BREAKDOWN : SND_35_COMEDY_BREAKDOWN, this);
+						}
+						if (!(this->vehstatus & VS_HIDDEN) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE) && this->breakdown_delay > 0) {
 							EffectVehicle *u = CreateEffectVehicleRel(this, 4, 4, 5, EV_BREAKDOWN_SMOKE);
 							if (u != NULL) u->animation_state = this->breakdown_delay * 2;
 						}
@@ -1530,18 +1527,18 @@ bool Vehicle::HandleBreakdown()
 					case BREAKDOWN_LOW_POWER:
 						/* do nothing */
 						break;
-					default: NOT_REACHED( );
+					default: NOT_REACHED();
 				}
-				if ( ( !( this->vehstatus & VS_HIDDEN ) ) && (
-						( this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER ) &&
-						( this->tick_counter & 0x1F ) == 0 ) ) {
+				if ((!(this->vehstatus & VS_HIDDEN)) &&
+						(this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER)) {
 					/* Some gray clouds to indicate a broken RV */
-					CreateEffectVehicleRel( this, 0, 0, 2, EV_BREAKDOWN_SMOKE );
+					EffectVehicle *u = CreateEffectVehicleRel(this, 0, 0, 2, EV_BREAKDOWN_SMOKE);
+					if (u != NULL) u->animation_state = 25;
 				}
 				this->First()->MarkDirty();
 				SetWindowDirty(WC_VEHICLE_VIEW, this->index);
 				SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-				return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP );
+				return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP);
 			}
 
 		/* FALL THROUGH */
@@ -1553,15 +1550,15 @@ bool Vehicle::HandleBreakdown()
 			if ((this->tick_counter & (this->type == VEH_TRAIN ? 3 : 1)) == 0) {
 				if (--this->breakdown_delay == 0) {
 					this->breakdown_ctr = 0;
-					if( this->type == VEH_TRAIN ) {
+					if(this->type == VEH_TRAIN) {
 						CheckBreakdownFlags(Train::From(this->First()));
 						this->First()->MarkDirty();
 						SetWindowDirty(WC_VEHICLE_VIEW, this->First()->index);
 					} else {
-					this->MarkDirty();
-					SetWindowDirty(WC_VEHICLE_VIEW, this->index);
+						this->MarkDirty();
+						SetWindowDirty(WC_VEHICLE_VIEW, this->index);
+					}
 				}
-			}
 			}
 			return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP);
 
