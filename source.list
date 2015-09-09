@@ -165,6 +165,7 @@ console_internal.h
 console_type.h
 cpu.h
 crashlog.h
+crashlog_bfd.h
 currency.h
 date_func.h
 date_gui.h

@@ -11,6 +11,7 @@
 
 #include "../../stdafx.h"
 #include "../../crashlog.h"
+#include "../../crashlog_bfd.h"
 #include "win32.h"
 #include "../../core/alloc_func.hpp"
 #include "../../core/math_func.hpp"
@@ -20,6 +21,9 @@
 #include "../../gamelog.h"
 #include "../../saveload/saveload.h"
 #include "../../video/video_driver.hpp"
+#if defined(WITH_DEMANGLE)
+#include <cxxabi.h>
+#endif
 
 #include <windows.h>
 #include <signal.h>
@@ -413,11 +417,13 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 
 			/* Get module name. */
 			const char *mod_name = "???";
+			const char *image_name = NULL;
 
 			IMAGEHLP_MODULE64 module;
 			module.SizeOfStruct = sizeof(module);
 			if (proc.pSymGetModuleInfo64(hCur, frame.AddrPC.Offset, &module)) {
 				mod_name = module.ModuleName;
+				image_name = module.ImageName;
 			}
 
 			/* Print module and instruction pointer. */
@@ -434,6 +440,35 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 				if (proc.pSymGetLineFromAddr64(hCur, frame.AddrPC.Offset, &line_offs, &line)) {
 					buffer += seprintf(buffer, last, " (%s:%d)", line.FileName, line.LineNumber);
 				}
+			} else if (image_name != NULL) {
+#if defined (WITH_BFD)
+				/* subtract one to get the line before the return address, i.e. the function call line */
+				sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(frame.AddrPC.Offset) - 1);
+				lookup_addr_bfd(image_name, bfd_info);
+				if (bfd_info.function_name != NULL) {
+					const char *func_name = bfd_info.function_name;
+#if defined(WITH_DEMANGLE)
+					int status = -1;
+					char *demangled = abi::__cxa_demangle(func_name, NULL, 0, &status);
+					if (demangled != NULL && status == 0) {
+						func_name = demangled;
+					}
+#endif
+					bool symbol_ok = strncmp(func_name, ".rdata$", 7) != 0 && strncmp(func_name, ".debug_loc", 10) != 0;
+					if (symbol_ok) {
+						buffer += seprintf(buffer, last, " %s", func_name);
+					}
+#if defined(WITH_DEMANGLE)
+					free(demangled);
+#endif
+					if (symbol_ok && bfd_info.function_addr) {
+						buffer += seprintf(buffer, last, " + %I64u", reinterpret_cast<bfd_vma>(frame.AddrPC.Offset) - bfd_info.function_addr);
+					}
+				}
+				if (bfd_info.file_name != NULL) {
+					buffer += seprintf(buffer, last, " (%s:%d)", bfd_info.file_name, bfd_info.line);
+				}
+#endif
 			}
 			buffer += seprintf(buffer, last, "\n");
 		}

@@ -11,6 +11,7 @@
 
 #include "stdafx.h"
 #include "crashlog.h"
+#include "crashlog_bfd.h"
 #include "gamelog.h"
 #include "date_func.h"
 #include "map_func.h"
@@ -493,3 +494,72 @@ bool CrashLog::MakeCrashLog() const
 	if (SoundDriver::GetInstance() != NULL) SoundDriver::GetInstance()->Stop();
 	if (VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
 }
+
+#if defined(WITH_BFD)
+sym_info_bfd::sym_info_bfd(bfd_vma addr_) : addr(addr_), abfd(NULL), syms(NULL), sym_count(0),
+		file_name(NULL), function_name(NULL), function_addr(0), line(0), found(false) {}
+
+sym_info_bfd::~sym_info_bfd()
+{
+	free(syms);
+	if (abfd != NULL) bfd_close(abfd);
+}
+
+static void find_address_in_section(bfd *abfd, asection *section, void *data)
+{
+	sym_info_bfd *info = static_cast<sym_info_bfd *>(data);
+	if (info->found) return;
+
+	if ((bfd_get_section_flags(abfd, section) & SEC_ALLOC) == 0) return;
+
+	bfd_vma vma = bfd_get_section_vma(abfd, section);
+	if (info->addr < vma) return;
+
+	bfd_size_type size = bfd_section_size(abfd, section);
+	if (info->addr >= vma + size) return;
+
+	info->found = bfd_find_nearest_line(abfd, section, info->syms, info->addr - vma,
+			&(info->file_name), &(info->function_name), &(info->line));
+
+	if (info->found && info->function_name) {
+		for (long i = 0; i < info->sym_count; i++) {
+			asymbol *sym = info->syms[i];
+			if (sym->flags & (BSF_LOCAL | BSF_GLOBAL) && strcmp(sym->name, info->function_name) == 0) {
+				info->function_addr = sym->value + vma;
+			}
+		}
+	} else if (info->found) {
+		bfd_vma target = info->addr - vma;
+		bfd_vma best_diff = size;
+		for (long i = 0; i < info->sym_count; i++) {
+			asymbol *sym = info->syms[i];
+			if (!(sym->flags & (BSF_LOCAL | BSF_GLOBAL))) continue;
+			if (sym->value > target) continue;
+			bfd_vma diff = target - sym->value;
+			if (diff < best_diff) {
+				best_diff = diff;
+				info->function_name = sym->name;
+				info->function_addr = sym->value + vma;
+			}
+		}
+	}
+}
+
+void lookup_addr_bfd(const char *obj_file_name, sym_info_bfd &info)
+{
+	info.abfd = bfd_openr(obj_file_name, NULL);
+
+	if (info.abfd == NULL) return;
+
+	if (!bfd_check_format(info.abfd, bfd_object) || (bfd_get_file_flags(info.abfd) & HAS_SYMS) == 0) return;
+
+	unsigned int size;
+	info.sym_count = bfd_read_minisymbols(info.abfd, false, (void**) &(info.syms), &size);
+	if (info.sym_count <= 0) {
+		info.sym_count = bfd_read_minisymbols(info.abfd, true, (void**) &(info.syms), &size);
+	}
+	if (info.sym_count <= 0) return;
+
+	bfd_map_over_sections(info.abfd, find_address_in_section, &info);
+}
+#endif
