@@ -1569,7 +1569,7 @@ EOL
 			LIBS="$LIBS -ldl"
 			CFLAGS="$CFLAGS -DWITH_DL"
 		fi
-		rm tmp.config.libdl
+		rm -f tmp.config.libdl
 
 		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - -lbfd 2> /dev/null << EOL
 			#define PACKAGE 1
@@ -1593,7 +1593,7 @@ EOL
 				CFLAGS="$CFLAGS -g1"
 			fi
 		fi
-		rm tmp.config.bfd
+		rm -f tmp.config.bfd
 	fi
 
 	if [ "$os" = "MINGW" ]; then
@@ -1657,7 +1657,7 @@ EOL
 			log 1 "checking abi::__cxa_demangle... found"
 			CFLAGS="$CFLAGS -DWITH_DEMANGLE"
 		fi
-		rm tmp.config.demangle
+		rm -f tmp.config.demangle
 	fi
 
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ]; then
