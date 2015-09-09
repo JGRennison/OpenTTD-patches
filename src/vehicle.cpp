@@ -1351,7 +1351,7 @@ bool Vehicle::HandleBreakdown()
 										(train_or_ship ? SND_10_TRAIN_BREAKDOWN : SND_0F_VEHICLE_BREAKDOWN) :
 										(train_or_ship ? SND_3A_COMEDY_BREAKDOWN_2 : SND_35_COMEDY_BREAKDOWN), this);
 							}
-							if (!(this->vehstatus & VS_HIDDEN) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE)) {
+							if (!(this->vehstatus & VS_HIDDEN) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE) && this->breakdown_delay > 0) {
 								EffectVehicle *u = CreateEffectVehicleRel(this, 4, 4, 5, EV_BREAKDOWN_SMOKE);
 								if (u != NULL) u->animation_state = this->breakdown_delay * 2;
 							}
@@ -1391,9 +1391,10 @@ bool Vehicle::HandleBreakdown()
 					SetBit(Train::From(this)->flags, VRF_BREAKDOWN_BRAKING);
 					return false;
 				}
-				if ((!(this->vehstatus & VS_HIDDEN)) && ((this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER) && (this->tick_counter & 0x1F) == 0)
+				if ((!(this->vehstatus & VS_HIDDEN)) && (this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER)
 						&& !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE)) {
-					CreateEffectVehicleRel(this, 0, 0, 2, EV_BREAKDOWN_SMOKE); //some grey clouds to indicate a broken engine
+					EffectVehicle *u = CreateEffectVehicleRel(this, 0, 0, 2, EV_BREAKDOWN_SMOKE); //some grey clouds to indicate a broken engine
+					if (u != NULL) u->animation_state = 25;
 				}
 			} else {
 				switch (this->breakdown_type) {
@@ -1401,7 +1402,7 @@ bool Vehicle::HandleBreakdown()
 						if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
 							SndPlayVehicleFx((_settings_game.game_creation.landscape != LT_TOYLAND) ? SND_0F_VEHICLE_BREAKDOWN : SND_35_COMEDY_BREAKDOWN, this);
 						}
-						if (!(this->vehstatus & VS_HIDDEN) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE)) {
+						if (!(this->vehstatus & VS_HIDDEN) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE) && this->breakdown_delay > 0) {
 							EffectVehicle *u = CreateEffectVehicleRel(this, 4, 4, 5, EV_BREAKDOWN_SMOKE);
 							if (u != NULL) u->animation_state = this->breakdown_delay * 2;
 						}
@@ -1416,10 +1417,10 @@ bool Vehicle::HandleBreakdown()
 					default: NOT_REACHED();
 				}
 				if ((!(this->vehstatus & VS_HIDDEN)) &&
-						((this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER) &&
-						(this->tick_counter & 0x1F) == 0)) {
+						(this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER)) {
 					/* Some gray clouds to indicate a broken RV */
-					CreateEffectVehicleRel(this, 0, 0, 2, EV_BREAKDOWN_SMOKE);
+					EffectVehicle *u = CreateEffectVehicleRel(this, 0, 0, 2, EV_BREAKDOWN_SMOKE);
+					if (u != NULL) u->animation_state = 25;
 				}
 				this->First()->MarkDirty();
 				SetWindowDirty(WC_VEHICLE_VIEW, this->index);
