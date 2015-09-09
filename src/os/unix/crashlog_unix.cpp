@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/utsname.h>
+#include <setjmp.h>
 
 #if defined(__GLIBC__)
 /* Execinfo (and thus making stacktraces) is a GNU extension */
@@ -42,6 +43,21 @@
 #endif
 
 #include "../../safeguards.h"
+
+#if defined(__GLIBC__) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
+#pragma GCC diagnostic ignored "-Wclobbered"
+#endif
+
+#if defined(__GLIBC__)
+static char *logStacktraceSavedBuffer;
+static jmp_buf logStacktraceJmpBuf;
+
+static void LogStacktraceSigSegvHandler(int  sig)
+{
+	signal(SIGSEGV, SIG_DFL);
+	longjmp(logStacktraceJmpBuf, 1);
+}
+#endif
 
 /**
  * Unix implementation for the crash logger.
@@ -115,17 +131,60 @@ class CrashLogUnix : public CrashLog {
 	}
 #endif
 
+	/**
+	 * Get a stack backtrace of the current thread's stack.
+	 *
+	 * This has several modes/options, the most full-featured/complex of which is GLIBC mode.
+	 *
+	 * This gets the backtrace using backtrace() and backtrace_symbols().
+	 * backtrace() is prone to crashing if the stack is invalid.
+	 * Also these functions freely use malloc which is not technically OK in a signal handler, as
+	 * malloc is not re-entrant.
+	 * For that reason, set up another SIGSEGV handler to handle the case where we trigger a SIGSEGV
+	 * during the course of getting the backtrace.
+	 *
+	 * If libdl is present, try to use that to get the section file name and possibly the symbol
+	 * name/address instead of using the string from backtrace_symbols().
+	 * If libdl and libbfd are present, try to use that to get the symbol name/address using the
+	 * section file name returned from libdl. This is becuase libbfd also does line numbers,
+	 * and knows about more symbols than libdl does.
+	 * If demangling support is available, try to demangle whatever symbol name we got back.
+	 * If we could find a symbol address from libdl or libbfd, show the offset from that to the frame address.
+	 *
+	 * Note that GCC complains about 'buffer' being clobbered by the longjmp.
+	 * This is not an issue as we save/restore it explicitly, so silence the warning.
+	 */
 	/* virtual */ char *LogStacktrace(char *buffer, const char *last) const
 	{
 		buffer += seprintf(buffer, last, "Stacktrace:\n");
+
 #if defined(__GLIBC__)
-#if defined(WITH_BFD)
-		bfd_init();
-#endif
+		logStacktraceSavedBuffer = buffer;
+
+		if (setjmp(logStacktraceJmpBuf) != 0) {
+			buffer = logStacktraceSavedBuffer;
+			buffer += seprintf(buffer, last, "\nSomething went seriously wrong when attempting to decode the stacktrace (SIGSEGV in signal handler)\n");
+			buffer += seprintf(buffer, last, "This is probably due to either: a crash caused by an attempt to call an invalid function\n");
+			buffer += seprintf(buffer, last, "pointer, some form of stack corruption, or an attempt was made to call malloc recursively.\n\n");
+			return buffer;
+		}
+
+		signal(SIGSEGV, LogStacktraceSigSegvHandler);
+		sigset_t sigs;
+		sigset_t oldsigs;
+		sigemptyset(&sigs);
+		sigaddset(&sigs, SIGSEGV);
+		sigprocmask(SIG_UNBLOCK, &sigs, &oldsigs);
+
 		void *trace[64];
 		int trace_size = backtrace(trace, lengthof(trace));
 
 		char **messages = backtrace_symbols(trace, trace_size);
+
+#if defined(WITH_BFD)
+		bfd_init();
+#endif /* WITH_BFD */
+
 		for (int i = 0; i < trace_size; i++) {
 #if defined(WITH_DL)
 			Dl_info info;
@@ -144,7 +203,7 @@ class CrashLogUnix : public CrashLog {
 				if (bfd_info.function_addr != 0) func_addr = reinterpret_cast<void *>(bfd_info.function_addr);
 				line_num = bfd_info.line;
 			}
-#endif
+#endif /* WITH_BFD */
 			bool ok = true;
 			const int ptr_str_size = (2 + sizeof(void*) * 2);
 			if (dladdr_result && func_name) {
@@ -152,7 +211,7 @@ class CrashLogUnix : public CrashLog {
 				char *demangled = NULL;
 #if defined(WITH_DEMANGLE)
 				demangled = abi::__cxa_demangle(func_name, NULL, 0, &status);
-#endif
+#endif /* WITH_DEMANGLE */
 				const char *name = (demangled != NULL && status == 0) ? demangled : func_name;
 				buffer += seprintf(buffer, last, " [%02i] %*p %-40s %s + 0x%zx\n", i, ptr_str_size,
 						trace[i], info.dli_fname, name, (char *)trace[i] - (char *)func_addr);
@@ -167,10 +226,15 @@ class CrashLogUnix : public CrashLog {
 				buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
 			}
 			if (ok) continue;
-#endif
+#endif /* WITH_DL */
 			buffer += seprintf(buffer, last, " [%02i] %s\n", i, messages[i]);
 		}
 		free(messages);
+
+		signal(SIGSEGV, SIG_DFL);
+		sigprocmask(SIG_SETMASK, &oldsigs, NULL);
+
+/* end of __GLIBC__ */
 #elif defined(SUNOS)
 		ucontext_t uc;
 		if (getcontext(&uc) != 0) {
@@ -180,6 +244,8 @@ class CrashLogUnix : public CrashLog {
 
 		StackWalkerParams wp = { &buffer, last, 0 };
 		walkcontext(&uc, &CrashLogUnix::SunOSStackWalker, &wp);
+
+/* end of SUNOS */
 #else
 		buffer += seprintf(buffer, last, " Not supported.\n");
 #endif
