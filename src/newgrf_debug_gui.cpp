@@ -699,6 +699,7 @@ static WindowDesc _newgrf_inspect_desc(
  */
 void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32 grfid)
 {
+	if (index >= (1 << 27)) return;
 	if (!IsNewGRFInspectable(feature, index)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
@@ -718,6 +719,7 @@ void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32 gr
 void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 {
 	if (feature == GSF_INVALID) return;
+	if (index >= (1 << 27)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
 	InvalidateWindowData(WC_NEWGRF_INSPECT, wno);
@@ -734,6 +736,7 @@ void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 {
 	if (feature == GSF_INVALID) return;
+	if (index >= (1 << 27)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
 	DeleteWindowById(WC_NEWGRF_INSPECT, wno);
@@ -755,6 +758,7 @@ void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
  */
 bool IsNewGRFInspectable(GrfSpecFeature feature, uint index)
 {
+	if (index >= (1 << 27)) return false;
 	const NIFeature *nif = GetFeature(GetInspectWindowNumber(feature, index));
 	if (nif == NULL) return false;
 	return nif->helper->IsInspectable(index);

@@ -723,11 +723,11 @@ void RunTileLoop()
 	 * shift register (LFSR). This allows a deterministic pseudorandom ordering, but
 	 * still with minimal state and fast iteration. */
 
-	/* Maximal length LFSR feedback terms, from 12-bit (for 64x64 maps) to 26-bit (for 8kx8k maps).
+	/* Maximal length LFSR feedback terms, from 12-bit (for 64x64 maps) to 28-bit (for 16kx16k maps).
 	 * Extracted from http://www.ece.cmu.edu/~koopman/lfsr/ */
 	static const uint32 feedbacks[] = {
 		0xD8F, 0x1296, 0x2496, 0x4357, 0x8679, 0x1030E, 0x206CD, 0x403FE, 0x807B8, 0x1004B2, 0x2006A8,
-		0x4004B2, 0x800B87, 0x10004F3, 0x200072D,
+		0x4004B2, 0x800B87, 0x10004F3, 0x200072D, 0x40006AE, 0x80009E3,
 	};
 	assert_compile(lengthof(feedbacks) == MAX_MAP_TILES_BITS - 2 * MIN_MAP_SIZE_BITS + 1);
 	const uint32 feedback = feedbacks[MapLogX() + MapLogY() - 2 * MIN_MAP_SIZE_BITS];
