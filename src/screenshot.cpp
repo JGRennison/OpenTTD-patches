@@ -924,7 +924,7 @@ static void MinimapOwnerCallback(void *userdata, void *buf, uint y, uint pitch, 
 /**
  * Saves the complete savemap in a PNG-file.
  */
-void SaveMinimap()
+void SaveMinimap(const char *name)
 {
 	/* setup owner table */
 	const Company *c;
@@ -940,6 +940,9 @@ void SaveMinimap()
 		_owner_colours[c->index] =
 			_colour_gradient[c->colour][5] * 0x01010101;
 	}
+
+	_screenshot_name[0] = '\0';
+	if (name != NULL) strecpy(_screenshot_name, name, lastof(_screenshot_name));
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	sf->proc(MakeScreenshotName("minimap", sf->extension), MinimapOwnerCallback, NULL, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);

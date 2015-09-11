@@ -49,8 +49,6 @@ static bool _script_running; ///< Script is running (used to abort execution whe
 #define DEF_CONSOLE_CMD(function) static bool function(byte argc, char *argv[])
 #define DEF_CONSOLE_HOOK(function) static ConsoleHookResult function(bool echo)
 
-void SaveMinimap();
-
 /****************
  * command hooks
  ****************/
@@ -1393,7 +1391,24 @@ DEF_CONSOLE_CMD(ConScreenShot)
 
 DEF_CONSOLE_CMD(ConMinimap)
 {
-	SaveMinimap();
+	if (argc == 0) {
+		IConsoleHelp("Create a flat image of the game minimap. Usage: 'minimap [owner] [file name]'");
+		IConsoleHelp("'owner' uses the tile owner to colour the minimap image, this is the only mode at present");
+		return true;
+	}
+
+	const char *name = NULL;
+	if (argc > 1) {
+		if (strcmp(argv[1], "owner") != 0) {
+			/* invalid mode */
+			return false;
+		}
+	}
+	if (argc > 2) {
+		name = argv[2];
+	}
+
+	SaveMinimap(name);
 	return true;
 }
 
