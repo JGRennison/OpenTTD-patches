@@ -2753,6 +2753,7 @@ STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Heightma
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Heightmap name:
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Size:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
+STR_MAPGEN_TOO_MANY_TILES_MESSAGE                               :{YELLOW}Too many tiles in map. Maximum number of tiles is {NUM}, you have selected {NUM}
 
 STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Change maximum map height
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Change snow line height
@@ -4940,6 +4941,7 @@ STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLA
 STR_TINY_GROUP                                                  :{TINY_FONT}{GROUP}
 STR_BLACK_INT                                                   :{BLACK}{NUM}
 STR_ORANGE_INT                                                  :{ORANGE}{NUM}
+STR_RED_INT                                                     :{RED}{NUM}
 STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
