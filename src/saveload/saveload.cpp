@@ -894,9 +894,20 @@ void SlSetLength(size_t length)
 				case CH_RIFF:
 					/* Ugly encoding of >16M RIFF chunks
 					 * The lower 24 bits are normal
-					 * The uppermost 4 bits are bits 24:27 */
-					assert(length < (1 << 28));
+					 * The uppermost 4 bits are bits 24:27
+					 *
+					 * If we have more than 28 bits, use an extra uint32 and
+					 * signal this using the extended chunk header */
+					assert(length < (1LL << 32));
+					if (length >= (1 << 28)) {
+						/* write out extended chunk header */
+						SlWriteByte(CH_EXT_HDR);
+						SlWriteUint32(static_cast<uint32>(SLCEHF_BIG_RIFF));
+					}
 					SlWriteUint32((uint32)((length & 0xFFFFFF) | ((length >> 24) << 28)));
+					if (length >= (1 << 28)) {
+						SlWriteUint32(length >> 28);
+					}
 					break;
 				case CH_ARRAY:
 					assert(_sl.last_array_index <= _sl.array_index);
@@ -1667,6 +1678,16 @@ void SlAutolength(AutolengthProc *proc, void *arg)
 	if (offs != _sl.dumper->GetSize()) SlErrorCorrupt("Invalid chunk size");
 }
 
+/*
+ * Notes on extended chunk header:
+ *
+ * If the chunk type is CH_EXT_HDR (15), then a u32 flags field follows.
+ * This flag field may define additional fields which follow the flags field in future.
+ * The standard chunk header follows, though it my be modified by the flags field.
+ * At present SLCEHF_BIG_RIFF increases the RIFF size limit to a theoretical 60 bits,
+ * by adding a further u32 field for the high bits after the existing RIFF size field.
+ */
+
 /**
  * Load a chunk of data (eg vehicles, stations, etc.)
  * @param ch The chunkhandler that will be used for the operation
@@ -1679,6 +1700,15 @@ static void SlLoadChunk(const ChunkHandler *ch)
 
 	_sl.block_mode = m;
 	_sl.obj_len = 0;
+
+	SaveLoadChunkExtHeaderFlags ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(0);
+	if ((m & 0xF) == CH_EXT_HDR) {
+		ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(SlReadUint32());
+
+		/* read in real header */
+		m = SlReadByte();
+		_sl.block_mode = m;
+	}
 
 	switch (m) {
 		case CH_ARRAY:
@@ -1701,6 +1731,10 @@ static void SlLoadChunk(const ChunkHandler *ch)
 					}
 					len = SlReadUint32();
 				}
+				if (ext_flags & SLCEHF_BIG_RIFF) {
+					len |= SlReadUint32() << 28;
+				}
+
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;
 				ch->load_proc();
@@ -1726,9 +1760,21 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 	_sl.block_mode = m;
 	_sl.obj_len = 0;
 
+	SaveLoadChunkExtHeaderFlags ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(0);
+	if ((m & 0xF) == CH_EXT_HDR) {
+		ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(SlReadUint32());
+
+		/* read in real header */
+		m = SlReadByte();
+		_sl.block_mode = m;
+	}
+
 	switch (m) {
 		case CH_ARRAY:
 			_sl.array_index = 0;
+			if (ext_flags) {
+				SlErrorCorruptFmt("CH_ARRAY does not take chunk header extension flags: 0x%X", ext_flags);
+			}
 			if (ch && ch->load_check_proc) {
 				ch->load_check_proc();
 			} else {
@@ -1736,6 +1782,9 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 			}
 			break;
 		case CH_SPARSE_ARRAY:
+			if (ext_flags) {
+				SlErrorCorruptFmt("CH_SPARSE_ARRAY does not take chunk header extension flags: 0x%X", ext_flags);
+			}
 			if (ch && ch->load_check_proc) {
 				ch->load_check_proc();
 			} else {
@@ -1744,6 +1793,9 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 			break;
 		default:
 			if ((m & 0xF) == CH_RIFF) {
+				if (ext_flags != (ext_flags & SLCEHF_BIG_RIFF)) {
+					SlErrorCorruptFmt("Unknown chunk header extension flags for CH_RIFF: 0x%X", ext_flags);
+				}
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
 				len += SlReadUint16();
@@ -1752,6 +1804,14 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 						SlErrorCorrupt("RIFF chunk too large");
 					}
 					len = SlReadUint32();
+					if (ext_flags & SLCEHF_BIG_RIFF) SlErrorCorrupt("XSLFI_RIFF_HEADER_60_BIT and SLCEHF_BIG_RIFF both present");
+				}
+				if (ext_flags & SLCEHF_BIG_RIFF) {
+					uint64 full_len = len | (static_cast<uint64>(SlReadUint32()) << 28);
+					if (full_len >= (1LL << 32)) {
+						SlErrorCorrupt("Chunk size too large: " OTTD_PRINTFHEX64, full_len);
+					}
+					len = static_cast<size_t>(full_len);
 				}
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;

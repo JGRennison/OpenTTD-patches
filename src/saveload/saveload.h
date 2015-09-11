@@ -99,9 +99,16 @@ enum ChunkType {
 	CH_ARRAY        =  1,
 	CH_SPARSE_ARRAY =  2,
 	CH_TYPE_MASK    =  3,
+	CH_EXT_HDR      = 15, ///< Extended chunk header
 	CH_LAST         =  8, ///< Last chunk in this array.
 	CH_AUTO_LENGTH  = 16,
 };
+
+/** Flags for chunk extended headers */
+enum SaveLoadChunkExtHeaderFlags {
+	SLCEHF_BIG_RIFF           = 1 << 0,  ///< This block uses a 60-bit RIFF chunk size
+};
+DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
 
 /**
  * VarTypes is the general bitmasked magic type that tells us

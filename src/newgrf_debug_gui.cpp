@@ -56,7 +56,7 @@ NewGrfDebugSpritePicker _newgrf_debug_sprite_picker = { SPM_NONE, NULL, 0, Small
  */
 static inline uint GetFeatureIndex(uint window_number)
 {
-	return GB(window_number, 0, 24);
+	return GB(window_number, 0, 27);
 }
 
 /**
@@ -68,8 +68,8 @@ static inline uint GetFeatureIndex(uint window_number)
  */
 static inline uint GetInspectWindowNumber(GrfSpecFeature feature, uint index)
 {
-	assert((index >> 24) == 0);
-	return (feature << 24) | index;
+	assert((index >> 27) == 0);
+	return (feature << 27) | index;
 }
 
 /**
@@ -246,7 +246,7 @@ struct NIFeature {
  */
 static inline GrfSpecFeature GetFeatureNum(uint window_number)
 {
-	return (GrfSpecFeature)GB(window_number, 24, 8);
+	return (GrfSpecFeature)GB(window_number, 27, 5);
 }
 
 /**
@@ -699,6 +699,7 @@ static WindowDesc _newgrf_inspect_desc(
  */
 void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32 grfid)
 {
+	if (index >= (1 << 27)) return;
 	if (!IsNewGRFInspectable(feature, index)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
@@ -718,6 +719,7 @@ void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32 gr
 void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 {
 	if (feature == GSF_INVALID) return;
+	if (index >= (1 << 27)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
 	InvalidateWindowData(WC_NEWGRF_INSPECT, wno);
@@ -734,6 +736,7 @@ void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 {
 	if (feature == GSF_INVALID) return;
+	if (index >= (1 << 27)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
 	DeleteWindowById(WC_NEWGRF_INSPECT, wno);
@@ -755,6 +758,7 @@ void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
  */
 bool IsNewGRFInspectable(GrfSpecFeature feature, uint index)
 {
+	if (index >= (1 << 27)) return false;
 	const NIFeature *nif = GetFeature(GetInspectWindowNumber(feature, index));
 	if (nif == NULL) return false;
 	return nif->helper->IsInspectable(index);
