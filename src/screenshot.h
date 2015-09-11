@@ -32,6 +32,7 @@ void SetupScreenshotViewport(ScreenshotType t, struct ViewPort *vp);
 bool MakeHeightmapScreenshot(const char *filename);
 bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWindow *window);
 bool MakeScreenshot(ScreenshotType t, const char *name);
+void SaveMinimap(const char *name);
 
 extern char _screenshot_format_name[8];
 extern uint _num_screenshot_formats;
