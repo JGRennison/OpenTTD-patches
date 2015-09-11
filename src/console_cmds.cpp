@@ -49,6 +49,7 @@ static bool _script_running; ///< Script is running (used to abort execution whe
 #define DEF_CONSOLE_CMD(function) static bool function(byte argc, char *argv[])
 #define DEF_CONSOLE_HOOK(function) static ConsoleHookResult function(bool echo)
 
+void SaveMinimap();
 
 /****************
  * command hooks
@@ -1390,6 +1391,12 @@ DEF_CONSOLE_CMD(ConScreenShot)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConMinimap)
+{
+	SaveMinimap();
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConInfoCmd)
 {
 	if (argc == 0) {
@@ -1920,6 +1927,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("reset_enginepool", ConResetEnginePool, ConHookNoNetwork);
 	IConsoleCmdRegister("return",       ConReturn);
 	IConsoleCmdRegister("screenshot",   ConScreenShot);
+	IConsoleCmdRegister("minimap",      ConMinimap);
 	IConsoleCmdRegister("script",       ConScript);
 	IConsoleCmdRegister("scrollto",     ConScrollToTile);
 	IConsoleCmdRegister("alias",        ConAlias);

@@ -68,6 +68,8 @@ struct ScreenshotFormat {
 	ScreenshotHandlerProc *proc; ///< Function for writing the screenshot.
 };
 
+#define MKCOLOUR(x) TO_LE32X(x)
+
 /*************************************************
  **** SCREENSHOT CODE FOR WINDOWS BITMAP (.BMP)
  *************************************************/
@@ -864,4 +866,81 @@ bool MakeScreenshot(ScreenshotType t, const char *name)
 	}
 
 	return ret;
+}
+
+static byte _owner_colours[OWNER_END + 1];
+
+/**
+ * Return the colour a tile would be displayed with in the small map in mode "Owner".
+ *
+ * @param tile The tile of which we would like to get the colour.
+ * @return The colour of tile in the small map in mode "Owner"
+ */
+static inline byte GetMinimapOwnerPixels(TileIndex tile)
+{
+	Owner o;
+
+	switch (GetTileType(tile)) {
+		case MP_INDUSTRY: o = OWNER_END;          break;
+		case MP_HOUSE:    o = OWNER_TOWN;         break;
+		default:          o = GetTileOwner(tile); break;
+		/* FIXME: For MP_ROAD there are multiple owners.
+		 * GetTileOwner returns the rail owner (level crossing) resp. the owner of ROADTYPE_ROAD (normal road),
+		 * even if there are no ROADTYPE_ROAD bits on the tile.
+		 */
+	}
+
+	return _owner_colours[o];
+}
+
+static void MinimapOwnerCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
+{
+	uint8 *ubuf = (uint8 *)buf;
+
+	uint num = (pitch * n);
+	uint row, col;
+	byte val;
+
+	for (uint i=0; i < num; i++) {
+		row = y + (int) (i / pitch);
+		col = (MapSizeX()-1) - (i % pitch);
+
+		TileIndex tile = TileXY(col, row);
+
+		if (IsTileType(tile, MP_VOID)) {
+			val = 0x00;
+		} else {
+			val = GetMinimapOwnerPixels(tile);
+		}
+
+		*ubuf = (uint8) _cur_palette.palette[val].b;
+		ubuf += sizeof(uint8); *ubuf = (uint8) _cur_palette.palette[val].g;
+		ubuf += sizeof(uint8); *ubuf = (uint8) _cur_palette.palette[val].r;
+		ubuf += sizeof(uint8);
+		ubuf += sizeof(uint8);
+	}
+}
+
+/**
+ * Saves the complete savemap in a PNG-file.
+ */
+void SaveMinimap()
+{
+	/* setup owner table */
+	const Company *c;
+
+	/* fill with some special colours */
+	_owner_colours[OWNER_TOWN]  = MKCOLOUR(0xB4);
+	_owner_colours[OWNER_NONE]  = MKCOLOUR(0x54);
+	_owner_colours[OWNER_WATER] = MKCOLOUR(0xCA);
+	_owner_colours[OWNER_END]   = MKCOLOUR(0x20); // industry
+
+	/* now fill with the company colours */
+	FOR_ALL_COMPANIES(c) {
+		_owner_colours[c->index] =
+			_colour_gradient[c->colour][5] * 0x01010101;
+	}
+
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	sf->proc(MakeScreenshotName("minimap", sf->extension), MinimapOwnerCallback, NULL, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
 }
