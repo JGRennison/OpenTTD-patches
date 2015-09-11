@@ -20,6 +20,7 @@
 #include "rail_gui.h"
 #include "linkgraph/linkgraph.h"
 #include "saveload/saveload.h"
+#include "console_func.h"
 
 #include "safeguards.h"
 
@@ -225,6 +226,7 @@ static void OnNewYear()
 	}
 
 	if (_settings_client.gui.auto_euro) CheckSwitchToEuro();
+	IConsoleCmdExec("exec scripts/on_newyear.scr 0");
 }
 
 /**
@@ -247,6 +249,7 @@ static void OnNewMonth()
 #ifdef ENABLE_NETWORK
 	if (_network_server) NetworkServerMonthlyLoop();
 #endif /* ENABLE_NETWORK */
+	IConsoleCmdExec("exec scripts/on_newmonth.scr 0");
 }
 
 /**
@@ -266,6 +269,7 @@ static void OnNewDay()
 
 	/* Refresh after possible snowline change */
 	SetWindowClassesDirty(WC_TOWN_VIEW);
+	IConsoleCmdExec("exec scripts/on_newday.scr 0");
 }
 
 /**
