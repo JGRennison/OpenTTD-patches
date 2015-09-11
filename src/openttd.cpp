@@ -902,6 +902,24 @@ static void MakeNewGameDone()
 	MarkWholeScreenDirty();
 }
 
+/*
+ * Too large size may be stored in settings (especially if switching between between OpenTTD
+ * versions with different map size limits), we have to check if it is valid before generating world.
+ * Simple separate checking of X and Y map sizes is not enough, as their sum is what counts for the limit.
+ * Check the size and decrease the larger of the sizes till the size is in limit.
+ */
+static void FixConfigMapSize()
+{
+	while (_settings_game.game_creation.map_x + _settings_game.game_creation.map_y > MAX_MAP_TILES_BITS) {
+		/* Repeat reducing larger of X/Y dimensions until the map size is within allowable limits */
+		if (_settings_game.game_creation.map_x > _settings_game.game_creation.map_y) {
+			_settings_game.game_creation.map_x--;
+		} else {
+			_settings_game.game_creation.map_y--;
+		}
+	}
+}
+
 static void MakeNewGame(bool from_heightmap, bool reset_settings)
 {
 	_game_mode = GM_NORMAL;
@@ -909,6 +927,7 @@ static void MakeNewGame(bool from_heightmap, bool reset_settings)
 	ResetGRFConfig(true);
 
 	GenerateWorldSetCallback(&MakeNewGameDone);
+	FixConfigMapSize();
 	GenerateWorld(from_heightmap ? GWM_HEIGHTMAP : GWM_NEWGAME, 1 << _settings_game.game_creation.map_x, 1 << _settings_game.game_creation.map_y, reset_settings);
 }
 
@@ -924,6 +943,7 @@ static void MakeNewEditorWorld()
 	ResetGRFConfig(true);
 
 	GenerateWorldSetCallback(&MakeNewEditorWorldDone);
+	FixConfigMapSize();
 	GenerateWorld(GWM_EMPTY, 1 << _settings_game.game_creation.map_x, 1 << _settings_game.game_creation.map_y);
 }
 
@@ -1068,6 +1088,7 @@ void SwitchToMode(SwitchMode new_mode)
 		case SM_LOAD_HEIGHTMAP: // Load heightmap from scenario editor
 			SetLocalCompany(OWNER_NONE);
 
+			FixConfigMapSize();
 			GenerateWorld(GWM_HEIGHTMAP, 1 << _settings_game.game_creation.map_x, 1 << _settings_game.game_creation.map_y);
 			MarkWholeScreenDirty();
 			break;
@@ -1110,6 +1131,7 @@ void SwitchToMode(SwitchMode new_mode)
 
 		case SM_GENRANDLAND: // Generate random land within scenario editor
 			SetLocalCompany(OWNER_NONE);
+			FixConfigMapSize();
 			GenerateWorld(GWM_RANDOM, 1 << _settings_game.game_creation.map_x, 1 << _settings_game.game_creation.map_y);
 			/* XXX: set date */
 			MarkWholeScreenDirty();
