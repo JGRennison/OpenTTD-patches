@@ -32,6 +32,25 @@ uint _map_tile_mask; ///< _map_size - 1 (to mask the mapsize)
 Tile *_m = NULL;          ///< Tiles of the map
 TileExtended *_me = NULL; ///< Extended Tiles of the map
 
+/**
+ * Validates whether a map with the given dimension is valid
+ * @param size_x the width of the map along the NE/SW edge
+ * @param size_y the 'height' of the map along the SE/NW edge
+ * @return true if valid, or false if not valid
+ */
+bool ValidateMapSize(uint size_x, uint size_y)
+{
+	/* Make sure that the map size is within the limits and that
+	 * size of both axes is a power of 2. */
+	if (size_x * size_y > MAX_MAP_TILES ||
+			size_x < MIN_MAP_SIZE ||
+			size_y < MIN_MAP_SIZE ||
+			(size_x & (size_x - 1)) != 0 ||
+			(size_y & (size_y - 1)) != 0) {
+		return false;
+	}
+	return true;
+}
 
 /**
  * (Re)allocates a map with the given dimension
@@ -43,13 +62,7 @@ void AllocateMap(uint size_x, uint size_y)
 	DEBUG(map, 2, "Min/max map size %d/%d, max map tiles %d", MIN_MAP_SIZE, MAX_MAP_SIZE, MAX_MAP_TILES);
 	DEBUG(map, 1, "Allocating map of size %dx%d", size_x, size_y);
 
-	/* Make sure that the map size is within the limits and that
-	 * size of both axes is a power of 2. */
-	if (size_x * size_y > MAX_MAP_TILES ||
-			size_x < MIN_MAP_SIZE ||
-			size_y < MIN_MAP_SIZE ||
-			(size_x & (size_x - 1)) != 0 ||
-			(size_y & (size_y - 1)) != 0) {
+	if (!ValidateMapSize(size_x, size_y)) {
 		error("Invalid map size");
 	}
 

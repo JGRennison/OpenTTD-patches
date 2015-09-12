@@ -43,6 +43,7 @@ extern Tile *_m;
  */
 extern TileExtended *_me;
 
+bool ValidateMapSize(uint size_x, uint size_y);
 void AllocateMap(uint size_x, uint size_y);
 
 /**
