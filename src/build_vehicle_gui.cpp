@@ -1327,10 +1327,15 @@ struct BuildVehicleWindow : Window {
 				EngineID sel_eng = this->sel_engine;
 				if (sel_eng != INVALID_ENGINE) {
 					CommandCallback *callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON) ? CcBuildWagon : CcBuildPrimaryVehicle;
-					if (DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback) &&
-							!this->IsWidgetDisabled(WID_BV_BUILD_REFIT) && this->build_and_refit) {
-								// refit to selected cargo filter
-						DoCommandP(this->window_number, _new_vehicle_id, this->cargo_filter[this->cargo_filter_criteria], GetCmdRefitVeh(this->vehicle_type));
+					if (!this->IsWidgetDisabled(WID_BV_BUILD_REFIT) && this->build_and_refit) {
+						/* build and refit */
+						char text_buffer[2];
+						text_buffer[0] = 'R';
+						text_buffer[1] = this->cargo_filter[this->cargo_filter_criteria];
+						DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback, text_buffer, true, 2);
+					} else {
+						/* build only */
+						DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback);
 					}
 				}
 				break;

@@ -71,6 +71,8 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **v);
 CommandCost CmdBuildShip       (TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **v);
 CommandCost CmdBuildAircraft   (TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **v);
+CommandCost CmdRefitVehicle    (TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
+static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID new_cid, byte new_subtype, bool *auto_refit_allowed);
 
 /**
  * Build a vehicle.
@@ -80,7 +82,7 @@ CommandCost CmdBuildAircraft   (TileIndex tile, DoCommandFlag flags, const Engin
  *  bits  0-15: vehicle type being built.
  *  bits 16-31: vehicle type specific bits passed on to the vehicle build functions.
  * @param p2 User
- * @param text unused
+ * @param text used for combined build and refit command
  * @return the cost of this operation or an error
  */
 CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
@@ -144,6 +146,20 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		if (v->IsPrimaryVehicle()) {
 			GroupStatistics::CountVehicle(v, 1);
 			OrderBackup::Restore(v, p2);
+		}
+	}
+
+	if (value.Succeeded() && text && text[0] == 'R') {
+		CargoID cargo = text[1];
+		if (cargo >= NUM_CARGO) return CMD_ERROR;
+		CargoID default_cargo = e->GetDefaultCargoType();
+		if (default_cargo != cargo) {
+			if (flags & DC_EXEC) {
+				value.AddCost(CmdRefitVehicle(tile, flags, v->index, cargo, NULL));
+			} else {
+				bool auto_refit_allowed = false;
+				value.AddCost(GetRefitCost(NULL, eid, cargo, 0, &auto_refit_allowed));
+			}
 		}
 	}
 
