@@ -21,6 +21,7 @@
  */
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
+	XSLFI_EXTRA_LARGE_MAP,                        ///< Extra large map
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
