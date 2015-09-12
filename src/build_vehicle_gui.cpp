@@ -81,6 +81,9 @@ static const NWidgetPart _nested_build_vehicle_widgets[] = {
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD), SetResize(1, 0), SetFill(1, 0),
 		EndContainer(),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_REFIT_SEL),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_BUILD_REFIT), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON, STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP),
+		EndContainer(),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_NULL),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME), SetResize(1, 0), SetFill(1, 0),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
@@ -96,6 +99,7 @@ byte _engine_sort_last_criteria[]       = {0, 0, 0, 0};                 ///< Las
 bool _engine_sort_last_order[]          = {false, false, false, false}; ///< Last set direction of the sort order, for each vehicle type.
 bool _engine_sort_show_hidden_engines[] = {false, false, false, false}; ///< Last set 'show hidden engines' setting for each vehicle type.
 static CargoID _engine_sort_last_cargo_criteria[] = {CF_ANY, CF_ANY, CF_ANY, CF_ANY}; ///< Last set filter criteria, for each vehicle type.
+static bool _refit_on_buy               = false;                        ///< to save user's choice for at least this game session
 
 /**
  * Determines order of engines by engineID
@@ -974,6 +978,7 @@ struct BuildVehicleWindow : Window {
 	byte cargo_filter_criteria;                 ///< Selected cargo filter
 	int details_height;                         ///< Minimal needed height of the details panels (found so far).
 	Scrollbar *vscroll;
+	bool build_and_refit;                       ///< Build and refit. This is beauty, but we need some persistence to save user choice for this game session at least
 
 	BuildVehicleWindow(WindowDesc *desc, TileIndex tile, VehicleType type) : Window(desc)
 	{
@@ -1006,7 +1011,10 @@ struct BuildVehicleWindow : Window {
 
 		/* If we are just viewing the list of vehicles, we do not need the Build button.
 		 * So we just hide it, and enlarge the Rename button by the now vacant place. */
-		if (this->listview_mode) this->GetWidget<NWidgetStacked>(WID_BV_BUILD_SEL)->SetDisplayedPlane(SZSP_NONE);
+		if (this->listview_mode) {
+			this->GetWidget<NWidgetStacked>(WID_BV_BUILD_SEL)->SetDisplayedPlane(SZSP_NONE);
+			this->GetWidget<NWidgetStacked>(WID_BV_BUILD_REFIT_SEL)->SetDisplayedPlane(SZSP_NONE);
+		}
 
 		/* disable renaming engines in network games if you are not the server */
 		this->SetWidgetDisabledState(WID_BV_RENAME, _networking && !_network_server);
@@ -1016,6 +1024,9 @@ struct BuildVehicleWindow : Window {
 
 		widget = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDE);
 		widget->tool_tip = STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + type;
+
+		this->build_and_refit = _refit_on_buy;
+		this->SetWidgetLoweredState(WID_BV_BUILD_REFIT, this->build_and_refit);
 
 		widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD);
 		widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + type;
@@ -1305,11 +1316,22 @@ struct BuildVehicleWindow : Window {
 				break;
 			}
 
+			case WID_BV_BUILD_REFIT: {
+				_refit_on_buy = this->build_and_refit = !this->build_and_refit;
+				this->SetWidgetLoweredState(WID_BV_BUILD_REFIT, this->build_and_refit);
+				this->SetDirty();
+				break;
+			}
+
 			case WID_BV_BUILD: {
 				EngineID sel_eng = this->sel_engine;
 				if (sel_eng != INVALID_ENGINE) {
 					CommandCallback *callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON) ? CcBuildWagon : CcBuildPrimaryVehicle;
-					DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback);
+					if (DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback) &&
+							!this->IsWidgetDisabled(WID_BV_BUILD_REFIT) && this->build_and_refit) {
+								// refit to selected cargo filter
+						DoCommandP(this->window_number, _new_vehicle_id, this->cargo_filter[this->cargo_filter_criteria], GetCmdRefitVeh(this->vehicle_type));
+					}
 				}
 				break;
 			}
@@ -1425,6 +1447,13 @@ struct BuildVehicleWindow : Window {
 		this->vscroll->SetCount(this->eng_list.Length());
 
 		this->SetWidgetDisabledState(WID_BV_SHOW_HIDE, this->sel_engine == INVALID_ENGINE);
+
+		// disable build and refit if all or none cargo type selected
+		if (this->cargo_filter[this->cargo_filter_criteria] == CF_ANY || this->cargo_filter[this->cargo_filter_criteria] == CF_NONE) {
+			this->DisableWidget(WID_BV_BUILD_REFIT);
+		} else {
+			this->EnableWidget(WID_BV_BUILD_REFIT);
+		}
 
 		this->DrawWidgets();
 
