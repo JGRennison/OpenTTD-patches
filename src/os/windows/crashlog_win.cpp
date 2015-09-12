@@ -443,7 +443,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 			} else if (image_name != NULL) {
 #if defined (WITH_BFD)
 				/* subtract one to get the line before the return address, i.e. the function call line */
-				sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(frame.AddrPC.Offset) - 1);
+				sym_info_bfd bfd_info(static_cast<bfd_vma>(frame.AddrPC.Offset) - 1);
 				lookup_addr_bfd(image_name, bfd_info);
 				if (bfd_info.function_name != NULL) {
 					const char *func_name = bfd_info.function_name;
@@ -462,7 +462,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 					free(demangled);
 #endif
 					if (symbol_ok && bfd_info.function_addr) {
-						buffer += seprintf(buffer, last, " + %I64u", reinterpret_cast<bfd_vma>(frame.AddrPC.Offset) - bfd_info.function_addr);
+						buffer += seprintf(buffer, last, " + %I64u", frame.AddrPC.Offset - static_cast<DWORD64>(bfd_info.function_addr));
 					}
 				}
 				if (bfd_info.file_name != NULL) {
