@@ -37,6 +37,9 @@ static void Save_MAPS()
 static void Load_MAPS()
 {
 	SlGlobList(_map_dimensions);
+	if (!ValidateMapSize(_map_dim_x, _map_dim_y)) {
+		SlErrorCorruptFmt("Invalid map size: %u x %u", _map_dim_x, _map_dim_y);
+	}
 	AllocateMap(_map_dim_x, _map_dim_y);
 }
 
