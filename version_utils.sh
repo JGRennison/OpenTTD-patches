@@ -14,7 +14,7 @@ function show_help {
 	echo "-n: Output the names of all files in the source tree without a hash" >&2
 	echo "-o: Return true (0) if SHA-256 utility can be found" >&2
 	echo "-w: Write ./.ottdrev-vc" >&2
-	echo "-r TAGNAME: Create a tag, write ./.ottdrev-vc referencing the tag," >&2
+	echo "-r TAGNAME: Create a tag, write ./.ottdrev-vc referencing the tag, possibly update README.md," >&2
 	echo "	commit it and move the tag to point to the new revision. Requires git." >&2
 	echo "-h: Show this help" >&2
 }
@@ -135,7 +135,10 @@ if [ -n "$RELEASETAG" ]; then
 	if ! ./version_utils.sh -w; then
 		exit 1
 	fi
-	git add .ottdrev-vc
+	if [ "${RELEASETAG:0:6}" = "jgrpp-" -a -n "${RELEASETAG:6}" ]; then
+		sed -i "1 s/^\(## JGR's Patchpack version \).\+/\1${RELEASETAG:6}/" README.md
+	fi
+	git add .ottdrev-vc README.md
 	git commit -m "Version: Committing version data for tag: $RELEASETAG"
 	git tag -f "$RELEASETAG"
 fi
