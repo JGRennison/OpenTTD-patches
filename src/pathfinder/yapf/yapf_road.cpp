@@ -16,6 +16,14 @@
 
 #include "../../safeguards.h"
 
+/**
+ * This used to be MAX_MAP_SIZE, but is now its own constant.
+ * This is due to the addition of the extra-large maps patch,
+ * which increases MAX_MAP_SIZE by several orders of magnitude.
+ * This is no longer a sensible value for pathfinding as it
+ * leads to major performace issues if a path is not found.
+ */
+const uint MAX_RV_PF_TILES = 1 << 11;
 
 template <class Types>
 class CYapfCostRoadT
@@ -152,7 +160,7 @@ public:
 			/* move to the next tile */
 			tile = F.m_new_tile;
 			trackdir = new_td;
-			if (tiles > MAX_MAP_SIZE) break;
+			if (tiles > MAX_RV_PF_TILES) break;
 		}
 
 		/* save end of segment back to the node */
