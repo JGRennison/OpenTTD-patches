@@ -614,7 +614,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_PLACE_HOUSE: // Place house button
-				ShowBuildHousePicker(this);
+				ShowBuildHousePicker();
 				break;
 
 			case WID_ETT_INCREASE_SIZE:
@@ -680,10 +680,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 			case WID_ETT_PLACE_DESERT: // Place desert button (in tropical climate)
 				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CREATE_DESERT);
-				break;
-
-			case WID_ETT_PLACE_HOUSE: // Place house button
-				PlaceProc_House(tile);
 				break;
 
 			default: NOT_REACHED();

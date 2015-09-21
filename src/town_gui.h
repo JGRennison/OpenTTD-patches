@@ -12,11 +12,6 @@
 #ifndef TOWN_GUI_H
 #define TOWN_GUI_H
 
-#include "tile_type.h"
-
-struct Window;
-
-void ShowBuildHousePicker(Window *parent);
-void PlaceProc_House(TileIndex tile);
+void ShowBuildHousePicker();
 
 #endif /* TOWN_GUI_H */
