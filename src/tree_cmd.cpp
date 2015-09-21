@@ -166,11 +166,11 @@ static void RecalculateArcticTreeOccuranceArray()
  * Get a random TreeType for the given tile based on a given seed
  *
  * This function returns a random TreeType which can be placed on the given tile.
- * The seed for randomness must be less or equal 256, use #GB on the value of Random()
+ * The seed for randomness must be less than 256, use #GB on the value of Random()
  * to get such a value.
  *
  * @param tile The tile to get a random TreeType from
- * @param seed The seed for randomness, must be less or equal 256
+ * @param seed The seed for randomness, must be less than 256
  * @return The random tree type
  */
 static TreeType GetRandomTreeType(TileIndex tile, uint seed)
