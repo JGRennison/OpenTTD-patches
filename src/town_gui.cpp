@@ -45,6 +45,8 @@
 
 typedef GUIList<const Town*> GUITownList;
 
+static void PlaceProc_House(TileIndex tile);
+
 static const NWidgetPart _nested_town_authority_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
@@ -1331,12 +1333,13 @@ public:
 static HouseID _cur_house = INVALID_HOUSE_ID; ///< house selected in the house picker window
 
 /** The window used for building houses. */
-class HousePickerWindow : public PickerWindowBase {
+class HousePickerWindow : public Window {
 protected:
 	GUIHouseList house_list; ///< list of houses and house sets
-	uint house_offset;       ///< index of selected house
+	int house_offset;        ///< index of selected house
 	uint house_set;          ///< index of selected house set
 	uint line_height;        ///< height of a single line in the list of house sets
+	HouseID display_house;   ///< house ID of currently displayed house
 
 	void RestoreSelectedHouseIndex()
 	{
@@ -1345,6 +1348,7 @@ protected:
 
 		if (this->house_list.Length() == 0) { // no houses at all?
 			_cur_house = INVALID_HOUSE_ID;
+			this->display_house = _cur_house;
 			return;
 		}
 
@@ -1360,6 +1364,16 @@ protected:
 			}
 		}
 		_cur_house = this->house_list.GetHouseAtOffset(this->house_set, this->house_offset);
+		this->display_house = _cur_house;
+	}
+
+	void SelectHouseIntl(uint new_house_set, int new_house_offset)
+	{
+		SetObjectToPlaceWnd(SPR_CURSOR_TOWN, PAL_NONE, HT_RECT, this);
+		this->house_set = new_house_set;
+		this->house_offset = new_house_offset;
+		_cur_house = this->house_list.GetHouseAtOffset(new_house_set, new_house_offset);
+		this->display_house = _cur_house;
 	}
 
 	/**
@@ -1367,14 +1381,13 @@ protected:
 	 * @param new_house_set index of the house set
 	 * @param new_house_offset offset of the house
 	 */
-	void SelectOtherHouse(uint new_house_set, uint new_house_offset)
+	void SelectOtherHouse(uint new_house_set, int new_house_offset)
 	{
 		assert(new_house_set < this->house_list.NumHouseSets());
-		assert(new_house_offset < this->house_list.NumHousesInHouseSet(new_house_set));
+		assert(new_house_offset < (int) this->house_list.NumHousesInHouseSet(new_house_set));
+		assert(new_house_offset >= 0);
 
-		_cur_house = this->house_list.GetHouseAtOffset(new_house_set, new_house_offset);
-		this->house_set = new_house_set;
-		this->house_offset = new_house_offset;
+		SelectHouseIntl(new_house_set, new_house_offset);
 
 		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_HP_HOUSE_SELECT_MATRIX);
 		matrix->SetCount(this->house_list.NumHousesInHouseSet(this->house_set));
@@ -1395,24 +1408,19 @@ protected:
 	}
 
 public:
-	HousePickerWindow(WindowDesc *desc, Window *w) : PickerWindowBase(desc, w)
+	HousePickerWindow(WindowDesc *desc, WindowNumber number) : Window(desc)
 	{
 		this->CreateNestedTree();
 		/* there is no shade box but we will shade the window if there is no house to show */
 		this->shade_select = this->GetWidget<NWidgetStacked>(WID_HP_MAIN_PANEL_SEL);
 		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_HP_HOUSE_SELECT_MATRIX);
 		matrix->SetScrollbar(this->GetScrollbar(WID_HP_HOUSE_SELECT_SCROLL));
-		this->FinishInitNested(0);
+		this->FinishInitNested(number);
 
 		if (_cur_house != INVALID_HOUSE_ID) matrix->SetClicked(this->house_offset); // set clicked item again to make it visible
 	}
 
-	~HousePickerWindow()
-	{
-		DeleteWindowById(WC_SELECT_TOWN, 0);
-	}
-
-	virtual void OnInit()
+	virtual void OnInit() override
 	{
 		this->house_list.Build();
 		this->RestoreSelectedHouseIndex();
@@ -1437,88 +1445,122 @@ public:
 			NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_HP_HOUSE_SELECT_MATRIX);
 			matrix->SetCount(this->house_list.NumHousesInHouseSet(this->house_set));
 			matrix->SetClicked(this->house_offset);
+			SelectHouseIntl(this->house_set, this->house_offset);
+		} else {
+			ResetObjectToPlace();
 		}
 	}
 
 	virtual void SetStringParameters(int widget) const
 	{
-		switch (widget) {
-			case WID_HP_CAPTION:
-				if (this->house_list.NumHouseSets() == 1) SetDParamStr(0, this->house_list.GetNameOfHouseSet(0));
-				break;
+		if (widget == WID_HP_CAPTION) {
+			if (this->house_list.NumHouseSets() == 1) SetDParamStr(0, this->house_list.GetNameOfHouseSet(0));
+		} else if (this->display_house == INVALID_HOUSE_ID) {
+			switch (widget) {
+				case WID_HP_CAPTION:
+					break;
 
-			case WID_HP_HOUSE_NAME:
-				SetDParam(0, GetHouseName(_cur_house));
-				break;
+				case WID_HP_HOUSE_ZONES:
+					for (int i = 0; i < HZB_END; i++) {
+						SetDParam(2 * i, STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED);
+						SetDParam(2 * i + 1, i + 1);
+					}
+					break;
 
-			case WID_HP_HISTORICAL_BUILDING:
-				SetDParam(0, HouseSpec::Get(_cur_house)->extra_flags & BUILDING_IS_HISTORICAL ? STR_HOUSE_BUILD_HISTORICAL_BUILDING : STR_EMPTY);
-				break;
+				case WID_HP_HOUSE_YEARS:
+					SetDParam(0, STR_HOUSE_BUILD_YEARS_BAD_YEAR);
+					SetDParam(1, 0);
+					SetDParam(2, STR_HOUSE_BUILD_YEARS_BAD_YEAR);
+					SetDParam(3, 0);
+					break;
 
-			case WID_HP_HOUSE_POPULATION:
-				SetDParam(0, HouseSpec::Get(_cur_house)->population);
-				break;
+				case WID_HP_HOUSE_ACCEPTANCE:
+					SetDParamStr(0, "");
+					break;
 
-			case WID_HP_HOUSE_ZONES: {
-				HouseZones zones = (HouseZones)(HouseSpec::Get(_cur_house)->building_availability & HZ_ZONALL);
-				for (int i = 0; i < HZB_END; i++) {
-					/* colour: gold(enabled)/grey(disabled)  */
-					SetDParam(2 * i, HasBit(zones, HZB_END - i - 1) ? STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED : STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED);
-					/* digit: 1(center)/2/3/4/5(edge) */
-					SetDParam(2 * i + 1, i + 1);
+				case WID_HP_HOUSE_SUPPLY:
+					SetDParam(0, 0);
+					break;
+
+				default:
+					SetDParam(0, STR_EMPTY);
+					break;
+			}
+		} else {
+			switch (widget) {
+				case WID_HP_HOUSE_NAME:
+					SetDParam(0, GetHouseName(this->display_house));
+					break;
+
+				case WID_HP_HISTORICAL_BUILDING:
+					SetDParam(0, HouseSpec::Get(this->display_house)->extra_flags & BUILDING_IS_HISTORICAL ? STR_HOUSE_BUILD_HISTORICAL_BUILDING : STR_EMPTY);
+					break;
+
+				case WID_HP_HOUSE_POPULATION:
+					SetDParam(0, HouseSpec::Get(this->display_house)->population);
+					break;
+
+				case WID_HP_HOUSE_ZONES: {
+					HouseZones zones = (HouseZones)(HouseSpec::Get(this->display_house)->building_availability & HZ_ZONALL);
+					for (int i = 0; i < HZB_END; i++) {
+						/* colour: gold(enabled)/grey(disabled)  */
+						SetDParam(2 * i, HasBit(zones, HZB_END - i - 1) ? STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED : STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED);
+						/* digit: 1(center)/2/3/4/5(edge) */
+						SetDParam(2 * i + 1, i + 1);
+					}
+					break;
 				}
-				break;
-			}
 
-			case WID_HP_HOUSE_LANDSCAPE: {
-				StringID info = STR_HOUSE_BUILD_LANDSCAPE_ABOVE_OR_BELOW_SNOWLINE;
-				switch (HouseSpec::Get(_cur_house)->building_availability & (HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW)) {
-					case HZ_SUBARTC_ABOVE: info = STR_HOUSE_BUILD_LANDSCAPE_ONLY_ABOVE_SNOWLINE; break;
-					case HZ_SUBARTC_BELOW: info = STR_HOUSE_BUILD_LANDSCAPE_ONLY_BELOW_SNOWLINE; break;
-					default: break;
+				case WID_HP_HOUSE_LANDSCAPE: {
+					StringID info = STR_HOUSE_BUILD_LANDSCAPE_ABOVE_OR_BELOW_SNOWLINE;
+					switch (HouseSpec::Get(this->display_house)->building_availability & (HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW)) {
+						case HZ_SUBARTC_ABOVE: info = STR_HOUSE_BUILD_LANDSCAPE_ONLY_ABOVE_SNOWLINE; break;
+						case HZ_SUBARTC_BELOW: info = STR_HOUSE_BUILD_LANDSCAPE_ONLY_BELOW_SNOWLINE; break;
+						default: break;
+					}
+					SetDParam(0, info);
+					break;
 				}
-				SetDParam(0, info);
-				break;
-			}
 
-			case WID_HP_HOUSE_YEARS: {
-				const HouseSpec *hs = HouseSpec::Get(_cur_house);
-				SetDParam(0, hs->min_year <= _cur_year ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
-				SetDParam(1, hs->min_year);
-				SetDParam(2, hs->max_year >= _cur_year ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
-				SetDParam(3, hs->max_year);
-				break;
-			}
-
-			case WID_HP_HOUSE_ACCEPTANCE: {
-				static char buff[DRAW_STRING_BUFFER] = "";
-				char *str = buff;
-				CargoArray cargo;
-				uint32 dummy = 0;
-				AddAcceptedHouseCargo(_cur_house, INVALID_TILE, cargo, &dummy);
-				for (uint i = 0; i < NUM_CARGO; i++) {
-					if (cargo[i] == 0) continue;
-					/* If the accepted value is less than 8, show it in 1/8:ths */
-					SetDParam(0, cargo[i] < 8 ? STR_HOUSE_BUILD_CARGO_VALUE_EIGHTS : STR_HOUSE_BUILD_CARGO_VALUE_JUST_NAME);
-					SetDParam(1, cargo[i]);
-					SetDParam(2, CargoSpec::Get(i)->name);
-					str = GetString(str, str == buff ? STR_HOUSE_BUILD_CARGO_FIRST : STR_HOUSE_BUILD_CARGO_SEPARATED, lastof(buff));
+				case WID_HP_HOUSE_YEARS: {
+					const HouseSpec *hs = HouseSpec::Get(this->display_house);
+					SetDParam(0, hs->min_year <= _cur_year ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
+					SetDParam(1, hs->min_year);
+					SetDParam(2, hs->max_year >= _cur_year ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
+					SetDParam(3, hs->max_year);
+					break;
 				}
-				if (str == buff) GetString(buff, STR_JUST_NOTHING, lastof(buff));
-				SetDParamStr(0, buff);
-				break;
-			}
 
-			case WID_HP_HOUSE_SUPPLY: {
-				CargoArray cargo;
-				AddProducedHouseCargo(_cur_house, INVALID_TILE, cargo);
-				uint32 cargo_mask = 0;
-				for (uint i = 0; i < NUM_CARGO; i++) if (cargo[i] != 0) SetBit(cargo_mask, i);
-				SetDParam(0, cargo_mask);
-				break;
-			}
+				case WID_HP_HOUSE_ACCEPTANCE: {
+					static char buff[DRAW_STRING_BUFFER] = "";
+					char *str = buff;
+					CargoArray cargo;
+					uint32 dummy = 0;
+					AddAcceptedHouseCargo(this->display_house, INVALID_TILE, cargo, &dummy);
+					for (uint i = 0; i < NUM_CARGO; i++) {
+						if (cargo[i] == 0) continue;
+						/* If the accepted value is less than 8, show it in 1/8:ths */
+						SetDParam(0, cargo[i] < 8 ? STR_HOUSE_BUILD_CARGO_VALUE_EIGHTS : STR_HOUSE_BUILD_CARGO_VALUE_JUST_NAME);
+						SetDParam(1, cargo[i]);
+						SetDParam(2, CargoSpec::Get(i)->name);
+						str = GetString(str, str == buff ? STR_HOUSE_BUILD_CARGO_FIRST : STR_HOUSE_BUILD_CARGO_SEPARATED, lastof(buff));
+					}
+					if (str == buff) GetString(buff, STR_JUST_NOTHING, lastof(buff));
+					SetDParamStr(0, buff);
+					break;
+				}
 
-			default: break;
+				case WID_HP_HOUSE_SUPPLY: {
+					CargoArray cargo;
+					AddProducedHouseCargo(this->display_house, INVALID_TILE, cargo);
+					uint32 cargo_mask = 0;
+					for (uint i = 0; i < NUM_CARGO; i++) if (cargo[i] != 0) SetBit(cargo_mask, i);
+					SetDParam(0, cargo_mask);
+					break;
+				}
+
+				default: break;
+			}
 		}
 	}
 
@@ -1612,7 +1654,9 @@ public:
 			}
 
 			case WID_HP_HOUSE_PREVIEW:
-				DrawHouseImage(_cur_house, r.left, r.top, r.right, r.bottom);
+				if (this->display_house != INVALID_HOUSE_ID) {
+					DrawHouseImage(this->display_house, r.left, r.top, r.right, r.bottom);
+				}
 				break;
 
 			case WID_HP_HOUSE_SELECT: {
@@ -1644,6 +1688,21 @@ public:
 				this->SelectOtherHouse(this->house_set, GB(widget, 16, 16));
 				break;
 		}
+	}
+
+	virtual void OnPlaceObject(Point pt, TileIndex tile) override
+	{
+		PlaceProc_House(tile);
+	}
+
+	virtual void OnPlaceObjectAbort() override
+	{
+		this->house_offset = -1;
+		_cur_house = INVALID_HOUSE_ID;
+		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_HP_HOUSE_SELECT_MATRIX);
+		matrix->SetClicked(-1);
+		this->UpdateSelectSize();
+		this->SetDirty();
 	}
 };
 
@@ -1715,12 +1774,9 @@ static WindowDesc _house_picker_desc(
  * Show our house picker.
  * @param parent The toolbar window we're associated with.
  */
-void ShowBuildHousePicker(Window *parent)
+void ShowBuildHousePicker()
 {
-	if (BringWindowToFrontById(WC_BUILD_HOUSE, 0) != NULL) {
-		return;
-	}
-	new HousePickerWindow(&_house_picker_desc, parent);
+	AllocateWindowDescFront<HousePickerWindow>(&_house_picker_desc, 0);
 }
 
 
@@ -1820,8 +1876,7 @@ static void ShowSelectTownWindow(const TownList &towns, const CommandContainer &
 	new SelectTownWindow(&_select_town_desc, towns, cmd);
 }
 
-
-void PlaceProc_House(TileIndex tile)
+static void PlaceProc_House(TileIndex tile)
 {
 	if (_town_pool.items == 0) {
 		ShowErrorMessage(STR_ERROR_CAN_T_BUILD_HOUSE_HERE, STR_ERROR_MUST_FOUND_TOWN_FIRST, WL_INFO);
