@@ -489,7 +489,17 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				if (flags & DC_EXEC) {
 					if (treetype == TREE_INVALID) {
 						treetype = GetRandomTreeType(tile, GB(Random(), 24, 8));
-						if (treetype == TREE_INVALID) treetype = TREE_CACTUS;
+						if (treetype == TREE_INVALID) {
+							if (_settings_game.construction.trees_around_snow_line_enabled && _settings_game.game_creation.landscape == LT_ARCTIC) {
+								if (GetTileZ(tile) <= (int)_settings_game.game_creation.snow_line_height) {
+									treetype = (TreeType)(GB(Random(), 24, 8) * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
+								} else {
+									treetype = (TreeType)(GB(Random(), 24, 8) * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
+								}
+							} else {
+								treetype = TREE_CACTUS;
+							}
+						}
 					}
 
 					/* Plant full grown trees in scenario editor */
