@@ -166,11 +166,11 @@ static void RecalculateArcticTreeOccuranceArray()
  * Get a random TreeType for the given tile based on a given seed
  *
  * This function returns a random TreeType which can be placed on the given tile.
- * The seed for randomness must be less or equal 256, use #GB on the value of Random()
+ * The seed for randomness must be less than 256, use #GB on the value of Random()
  * to get such a value.
  *
  * @param tile The tile to get a random TreeType from
- * @param seed The seed for randomness, must be less or equal 256
+ * @param seed The seed for randomness, must be less than 256
  * @return The random tree type
  */
 static TreeType GetRandomTreeType(TileIndex tile, uint seed)
@@ -489,7 +489,17 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				if (flags & DC_EXEC) {
 					if (treetype == TREE_INVALID) {
 						treetype = GetRandomTreeType(tile, GB(Random(), 24, 8));
-						if (treetype == TREE_INVALID) treetype = TREE_CACTUS;
+						if (treetype == TREE_INVALID) {
+							if (_settings_game.construction.trees_around_snow_line_enabled && _settings_game.game_creation.landscape == LT_ARCTIC) {
+								if (GetTileZ(tile) <= (int)_settings_game.game_creation.snow_line_height) {
+									treetype = (TreeType)(GB(Random(), 24, 8) * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
+								} else {
+									treetype = (TreeType)(GB(Random(), 24, 8) * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
+								}
+							} else {
+								treetype = TREE_CACTUS;
+							}
+						}
 					}
 
 					/* Plant full grown trees in scenario editor */
