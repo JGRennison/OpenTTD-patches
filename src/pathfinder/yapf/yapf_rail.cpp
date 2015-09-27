@@ -185,6 +185,41 @@ public:
 
 		return true;
 	}
+
+	static void stDesyncCheck(Tpf &pf1, Tpf &pf2, const char *name, bool check_res)
+	{
+		Node *n1 = pf1.GetBestNode();
+		Node *n2 = pf2.GetBestNode();
+		uint depth = 0;
+		for (;;) {
+			if ((n1 != NULL) != (n2 != NULL)) {
+				DEBUG(desync, 2, "%s: node nonnull state at %u = [%d, %d]", name, depth, (n1 != NULL), (n2 != NULL));
+				DumpState(pf1, pf2);
+				return;
+			}
+			if (n1 == NULL) break;
+
+			if (n1->GetTile() != n2->GetTile()) {
+				DEBUG(desync, 2, "%s tile mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTile(), n2->GetTile());
+				DumpState(pf1, pf2);
+				return;
+			}
+			if (n1->GetTrackdir() != n2->GetTrackdir()) {
+				DEBUG(desync, 2, "%s trackdir mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTrackdir(), n2->GetTrackdir());
+				DumpState(pf1, pf2);
+				return;
+			}
+			n1 = n1->m_parent;
+			n2 = n2->m_parent;
+			depth++;
+		}
+
+		if (check_res && (pf1.m_res_dest != pf2.m_res_dest || pf1.m_res_dest_td != pf2.m_res_dest_td)) {
+			DEBUG(desync, 2, "%s reservation target mismatch = [(0x%X, %d), (0x%X, %d)]", name, pf1.m_res_dest, pf1.m_res_dest_td, pf2.m_res_dest, pf2.m_res_dest_td);
+			DumpState(pf1, pf2);
+			return;
+		}
+	}
 };
 
 template <class Types>
@@ -329,6 +364,8 @@ public:
 			if (result1 != result2) {
 				DEBUG(desync, 2, "CACHE ERROR: FindSafeTile() = [%s, %s]", result2 ? "T" : "F", result1 ? "T" : "F");
 				DumpState(pf1, pf2);
+			} else if (result1) {
+				CYapfFollowAnySafeTileRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: FindSafeTile()", true);
 			}
 		}
 
@@ -413,6 +450,8 @@ public:
 			if (result1 != result2) {
 				DEBUG(desync, 2, "CACHE ERROR: ChooseRailTrack() = [%d, %d]", result1, result2);
 				DumpState(pf1, pf2);
+			} else if (result1 != INVALID_TRACKDIR) {
+				CYapfFollowRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: ChooseRailTrack()", true);
 			}
 		}
 
@@ -471,6 +510,8 @@ public:
 			if (result1 != result2) {
 				DEBUG(desync, 2, "CACHE ERROR: CheckReverseTrain() = [%s, %s]", result1 ? "T" : "F", result2 ? "T" : "F");
 				DumpState(pf1, pf2);
+			} else if (result1) {
+				CYapfFollowRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: CheckReverseTrain()", false);
 			}
 		}
 
