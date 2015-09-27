@@ -324,7 +324,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 
 	YearMonthDay ymd;
 	ConvertDateToYMD(_date, &ymd);
-	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i)\n\n", ymd.year, ymd.month + 1, ymd.day, _date_fract);
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i)\n\n", ymd.year, ymd.month + 1, ymd.day, _date_fract, _tick_skip_counter);
 
 	buffer = this->LogError(buffer, last, CrashLog::message);
 	buffer = this->LogOpenTTDVersion(buffer, last);
