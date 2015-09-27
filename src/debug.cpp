@@ -122,33 +122,34 @@ static void debug_print(const char *dbg, const char *buf)
 #endif /* ENABLE_NETWORK */
 	if (strcmp(dbg, "desync") == 0) {
 		static FILE *f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
-		if (f == NULL) return;
-
-		fprintf(f, "%s%s\n", GetLogPrefix(), buf);
-		fflush(f);
+		if (f != NULL) {
+			fprintf(f, "%s%s\n", GetLogPrefix(), buf);
+			fflush(f);
+		}
 #ifdef RANDOM_DEBUG
 	} else if (strcmp(dbg, "random") == 0) {
 		static FILE *f = FioFOpenFile("random-out.log", "wb", AUTOSAVE_DIR);
-		if (f == NULL) return;
-
-		fprintf(f, "%s\n", buf);
-		fflush(f);
+		if (f != NULL) {
+			fprintf(f, "%s\n", buf);
+			fflush(f);
+			return;
+		}
 #endif
-	} else {
-		char buffer[512];
-		seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
+	}
+
+	char buffer[512];
+	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
 #if defined(WINCE)
-		NKDbgPrintfW(OTTD2FS(buffer));
+	NKDbgPrintfW(OTTD2FS(buffer));
 #elif defined(WIN32) || defined(WIN64)
-		_fputts(OTTD2FS(buffer, true), stderr);
+	_fputts(OTTD2FS(buffer, true), stderr);
 #else
-		fputs(buffer, stderr);
+	fputs(buffer, stderr);
 #endif
 #ifdef ENABLE_NETWORK
-		NetworkAdminConsole(dbg, buf);
+	NetworkAdminConsole(dbg, buf);
 #endif /* ENABLE_NETWORK */
-		IConsoleDebug(dbg, buf);
-	}
+	IConsoleDebug(dbg, buf);
 }
 
 /**
