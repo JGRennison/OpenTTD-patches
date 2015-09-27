@@ -485,8 +485,13 @@ void Train::UpdateAcceleration()
 	assert(weight != 0);
 	this->acceleration = Clamp(power / weight * 4, 1, 255);
 
-	/* for non-realistic acceleration, breakdown chance is 128, corrected by the multiengine factor of 3/(n+2) */
-	this->breakdown_chance = min(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
+	if (_settings_game.vehicle.improved_breakdowns) {
+		if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
+			this->breakdown_chance = max(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
+		}
+	} else {
+		this->breakdown_chance = 128;
+	}
 }
 
 /**
