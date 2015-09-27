@@ -874,7 +874,7 @@ void NetworkGameLoop()
 
 	if (_network_server) {
 		/* Log the sync state to check for in-syncedness of replays. */
-		if (_date_fract == 0) {
+		if (_date_fract == 0 && _tick_skip_counter == 0) {
 			/* We don't want to log multiple times if paused. */
 			static Date last_log;
 			if (last_log != _date) {
