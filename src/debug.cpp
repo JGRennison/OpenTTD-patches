@@ -118,31 +118,32 @@ static void debug_print(const char *dbg, const char *buf)
 	}
 	if (strcmp(dbg, "desync") == 0) {
 		static FILE *f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
-		if (f == nullptr) return;
-
-		fprintf(f, "%s%s\n", GetLogPrefix(), buf);
-		fflush(f);
+		if (f != nullptr) {
+			fprintf(f, "%s%s\n", GetLogPrefix(), buf);
+			fflush(f);
+		}
 #ifdef RANDOM_DEBUG
 	} else if (strcmp(dbg, "random") == 0) {
 		static FILE *f = FioFOpenFile("random-out.log", "wb", AUTOSAVE_DIR);
-		if (f == nullptr) return;
-
-		fprintf(f, "%s\n", buf);
-		fflush(f);
+		if (f != nullptr) {
+			fprintf(f, "%s%s\n", GetLogPrefix(), buf);
+			fflush(f);
+			return;
+		}
 #endif
-	} else {
-		char buffer[512];
-		seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
-#if defined(_WIN32)
-		TCHAR system_buf[512];
-		convert_to_fs(buffer, system_buf, lengthof(system_buf), true);
-		_fputts(system_buf, stderr);
-#else
-		fputs(buffer, stderr);
-#endif
-		NetworkAdminConsole(dbg, buf);
-		IConsoleDebug(dbg, buf);
 	}
+
+	char buffer[512];
+	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
+#if defined(_WIN32)
+	TCHAR system_buf[512];
+	convert_to_fs(buffer, system_buf, lengthof(system_buf), true);
+	_fputts(system_buf, stderr);
+#else
+	fputs(buffer, stderr);
+#endif
+	NetworkAdminConsole(dbg, buf);
+	IConsoleDebug(dbg, buf);
 }
 
 /**
