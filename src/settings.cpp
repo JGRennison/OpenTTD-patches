@@ -1016,6 +1016,14 @@ static bool RoadVehAccelerationModelChanged(int32 p1)
 			}
 		}
 	}
+	if (_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL || !_settings_game.vehicle.improved_breakdowns) {
+		RoadVehicle *rv;
+		FOR_ALL_ROADVEHICLES(rv) {
+			if (rv->IsFrontEngine()) {
+				rv->breakdown_chance = 128;
+			}
+		}
+	}
 
 	/* These windows show acceleration values only when realistic acceleration is on. They must be redrawn after a setting change. */
 	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
