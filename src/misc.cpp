@@ -29,6 +29,7 @@
 #include "game/game.hpp"
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
+#include "programmable_signals.h"
 
 #include "safeguards.h"
 
@@ -76,6 +77,9 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	LinkGraphSchedule::Clear();
 	ClearTraceRestrictMapping();
 	PoolBase::Clean(PT_NORMAL);
+
+	FreeSignalPrograms();
+	FreeSignalDependencies();
 
 	ResetPersistentNewGRFData();
 
