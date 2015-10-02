@@ -129,7 +129,7 @@ SignalStateCondition::SignalStateCondition(SignalReference this_sig,
 bool SignalStateCondition::IsSignalValid()
 {
 	if (IsValidTile(this->sig_tile)) {
-		if (HasSignalOnTrackdir(this->sig_tile, this->sig_track)) {
+		if (IsTileType(this->sig_tile, MP_RAILWAY) && HasSignalOnTrackdir(this->sig_tile, this->sig_track)) {
 			return true;
 		} else {
 			Invalidate();
