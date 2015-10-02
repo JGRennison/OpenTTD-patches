@@ -220,15 +220,16 @@ static height_t TGPGetMaxHeight()
 	/**
 	 * Desired maximum height - indexed by:
 	 *  - _settings_game.difficulty.terrain_type
-	 *  - min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS
+	 *  - min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS, up to a maximum of 4096
 	 *
 	 * It is indexed by map size as well as terrain type since the map size limits the height of
 	 * a usable mountain. For example, on a 64x64 map a 24 high single peak mountain (as if you
 	 * raised land 24 times in the center of the map) will leave only a ring of about 10 tiles
 	 * around the mountain to build on. On a 4096x4096 map, it won't cover any major part of the map.
 	 */
-	static const int max_height[5][MAX_MAP_SIZE_BITS - MIN_MAP_SIZE_BITS + 1] = {
-		/* 64  128  256  512 1024 2048 4096 */
+	static const int max_height_array_size = 7;
+	static const int max_height[5][max_height_array_size] = {
+		/* 64  128  256  512 1024 2048 4096+ */
 		{   3,   3,   3,   3,   4,   5,   7 }, ///< Very flat
 		{   5,   7,   8,   9,  14,  19,  31 }, ///< Flat
 		{   8,   9,  10,  15,  23,  37,  61 }, ///< Hilly
@@ -236,7 +237,7 @@ static height_t TGPGetMaxHeight()
 		{  12,  19,  25,  31,  67,  75,  87 }, ///< Alpinist
 	};
 
-	int max_height_from_table = max_height[_settings_game.difficulty.terrain_type][min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS];
+	int max_height_from_table = max_height[_settings_game.difficulty.terrain_type][min<unsigned int>(max_height_array_size - 1, min(MapLogX(), MapLogY()) - MIN_MAP_SIZE_BITS)];
 	return I2H(min(max_height_from_table, _settings_game.construction.max_heightlevel));
 }
 
