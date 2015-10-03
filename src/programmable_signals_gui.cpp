@@ -137,10 +137,15 @@ static char *GetConditionString(SignalCondition *cond, char *buf, char *buflast,
 	} else {
 		string = _program_condvar[cond->ConditionCode()];
 		if (cond->ConditionCode() == PSC_SIGNAL_STATE) {
-			string = STR_PROGSIG_CONDVAR_SIGNAL_STATE;
-			SetDParam(0, static_cast<SignalStateCondition*>(cond)->IsSignalValid()
-				? STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED : STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED);
-			SetDParam(1, selected ? STR_WHITE : STR_BLACK);
+			SignalStateCondition *sig_cond = static_cast<SignalStateCondition*>(cond);
+			if (sig_cond->IsSignalValid()) {
+				string = STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED;
+				SetDParam(0, TileX(sig_cond->sig_tile));
+				SetDParam(1, TileY(sig_cond->sig_tile));
+			} else {
+				string = STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED;
+				SetDParam(0, selected ? STR_WHITE : STR_BLACK);
+			}
 		}
 	}
 	return GetString(buf, string, buflast);

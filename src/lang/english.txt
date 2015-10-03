@@ -2420,9 +2420,8 @@ STR_PROGSIG_COND_ALWAYS                                         :always
 STR_PROGSIG_COND_NEVER                                          :never
 STR_PROGSIG_COND_COMPARE                                        :{STRING} {STRING} {NUM}
 STR_PROGSIG_COND_SIGNAL_STATE                                   :signal state
-STR_PROGSIG_CONDVAR_SIGNAL_STATE                                :{STRING1} is green
-STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :specified signal
-STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}unspecified signal{STRING}
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :signal at {NUM} x {NUM} is green
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}unspecified signal{STRING} is green
 STR_PROGSIG_CONDVAR_NUM_RED                                     :red signals
 STR_PROGSIG_CONDVAR_NUM_GREEN                                   :green signals
 
