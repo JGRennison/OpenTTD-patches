@@ -802,12 +802,14 @@ void CheckRemoveSignalsFromTile(TileIndex tile)
 	}
 }
 
-static void NotifyRemovingDependentSignal(SignalReference on, SignalReference by)
+static void NotifyRemovingDependentSignal(SignalReference being_removed, SignalReference dependant)
 {
-    SignalType t = GetSignalType(by.tile, by.track);
-    if (IsProgrammableSignal(t)) {
-        RemoveProgramDependencies(by, on);
-    } else DEBUG(misc, 0, "Removing dependency held by non-programmable signal (Unexpected)");
+	SignalType t = GetSignalType(dependant.tile, dependant.track);
+	if (IsProgrammableSignal(t)) {
+		RemoveProgramDependencies(being_removed, dependant);
+	} else {
+		DEBUG(misc, 0, "Removing dependency held by non-programmable signal (Unexpected)");
+	}
 }
 
 void CheckRemoveSignal(TileIndex tile, Track track)

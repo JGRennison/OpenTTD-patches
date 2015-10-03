@@ -33,10 +33,10 @@ struct SignalProgram {
 	SignalProgram(TileIndex tile, Track track, bool raw = false);
 	~SignalProgram();
 	void DebugPrintProgram();
-	
+
 	TileIndex tile;
 	Track track;
-	
+
 	SignalSpecial *first_instruction;
 	SignalSpecial *last_instruction;
 	InstructionList instructions;
@@ -55,7 +55,7 @@ enum SignalOpcode {
 	PSO_IF_ELSE    = 3,     ///< If Else pseudo instruction
 	PSO_IF_ENDIF   = 4,     ///< If Endif pseudo instruction
 	PSO_SET_SIGNAL = 5,     ///< Set signal instruction
-	
+
 	PSO_END,
 	PSO_INVALID   = 0xFF
 };
@@ -66,22 +66,22 @@ class SignalInstruction {
 public:
 	/// Get the instruction's opcode
 	inline SignalOpcode Opcode() const { return this->opcode; }
-	
+
 	/// Get the previous instruction. If this is NULL, then this is the first
 	/// instruction.
 	inline SignalInstruction *Previous() const { return this->previous; }
-	
+
 	/// Get the Id of this instruction
-	inline int Id() const 
+	inline int Id() const
 	// Const cast is safe (perculiarity of SmallVector)
 	{ return program->instructions.FindIndex(const_cast<SignalInstruction*>(this)); }
-	
+
 	/// Insert this instruction, placing it before @p before_insn
 	virtual void Insert(SignalInstruction *before_insn);
-	
+
 	/// Evaluate the instruction. The instruction should update the VM state.
 	virtual void Evaluate(SignalVM &vm) = 0;
-	
+
 	/// Remove the instruction. When removing itself, an instruction should
 	/// <ul>
 	///   <li>Set next->previous to previous
@@ -89,20 +89,20 @@ public:
 	///   <li>Destroy any other children
 	/// </ul>
 	virtual void Remove() = 0;
-	
+
 	/// Gets a reference to the previous member. This is only intended for use by
 	/// the saveload code.
 	inline SignalInstruction *&GetPrevHandle()
 	{ return previous; }
-	
-	/// Sets the previous instruction of this instruction. This is only intended 
+
+	/// Sets the previous instruction of this instruction. This is only intended
 	/// to be used by instructions to update links during insertion and removal.
 	inline void SetPrevious(SignalInstruction *prev)
 	{ previous = prev; }
 	/// Set the next instruction. This is only intended to be used by instructions
 	/// to update links during insertion and removal
 	virtual void SetNext(SignalInstruction *next_insn) = 0;
-	
+
 protected:
 	/// Constructs an instruction
 	/// @param prog the program to add this instruction to
@@ -117,7 +117,7 @@ protected:
 
 /** Programmable Signal condition code.
  *
- * These discriminate conditions in much the same way that SignalOpcode 
+ * These discriminate conditions in much the same way that SignalOpcode
  * discriminates instructions.
  */
 enum SignalConditionCode {
@@ -126,7 +126,7 @@ enum SignalConditionCode {
 	PSC_NUM_GREEN = 2,    ///< Number of green signals behind this signal
 	PSC_NUM_RED = 3,      ///< Number of red signals behind this signal
 	PSC_SIGNAL_STATE = 4, ///< State of another signal
-	
+
 	PSC_MAX = PSC_SIGNAL_STATE
 };
 
@@ -134,16 +134,16 @@ class SignalCondition {
 public:
 	/// Get the condition's code
 	inline SignalConditionCode ConditionCode() const { return this->cond_code; }
-	
+
 	/// Evaluate the condition
 	virtual bool Evaluate(SignalVM& vm) = 0;
-	
+
 	/// Destroy the condition. Any children should also be destroyed
 	virtual ~SignalCondition();
-	
+
 protected:
 	SignalCondition(SignalConditionCode code) : cond_code(code) {}
-	
+
 	const SignalConditionCode cond_code;
 };
 
@@ -167,7 +167,7 @@ enum SignalComparator {
 	SGC_MORE_THAN_EQUALS = 5,  ///< the variable is grater than or equal to the specified value
 	SGC_IS_TRUE = 6,           ///< the variable is true (non-zero)
 	SGC_IS_FALSE = 7,          ///< the variable is false (zero)
-	
+
 	SGC_LAST = SGC_IS_FALSE
 };
 
@@ -188,10 +188,10 @@ public:
 	/// Constructs a condition refering to the value @p code refers to. Sets the
 	/// comparator and value to sane defaults.
 	SignalVariableCondition(SignalConditionCode code);
-	
+
 	SignalComparator comparator;
 	uint32 value;
-	
+
 	/// Evaluates the condition
 	virtual bool Evaluate(SignalVM &vm);
 };
@@ -200,14 +200,15 @@ public:
 class SignalStateCondition: public SignalCondition {
 	public:
 		SignalStateCondition(SignalReference this_sig, TileIndex sig_tile, Trackdir sig_track);
-		
+
 		void SetSignal(TileIndex tile, Trackdir track);
-		bool IsSignalValid();
+		bool IsSignalValid() const;
+		bool CheckSignalValid();
 		void Invalidate();
-		
+
 		virtual bool Evaluate(SignalVM& vm);
 		virtual ~SignalStateCondition();
-		
+
 		SignalReference this_sig;
 		TileIndex sig_tile;
 		Trackdir sig_track;
@@ -223,8 +224,8 @@ class SignalStateCondition: public SignalCondition {
  *   <li>They permit every other instruction to assume that there is another
  *       following it. This makes the code much simpler (and by extension less
  *       error prone)</li>
- *   <li>Particularly in the case of the End instruction, they provide an 
- *       instruction in the user interface that can be clicked on to add 
+ *   <li>Particularly in the case of the End instruction, they provide an
+ *       instruction in the user interface that can be clicked on to add
  *       instructions at the end of a program</li>
  * </ol>
  */
@@ -232,23 +233,23 @@ class SignalSpecial: public SignalInstruction {
 public:
 	/** Constructs a special signal of the opcode @p op in program @p prog.
 	 *
-	 * Generally you should not need to call this; it will be called by the 
+	 * Generally you should not need to call this; it will be called by the
 	 * program's constructor. An exception is in the saveload code, which needs
 	 * to construct raw objects to deserialize into
 	 */
 	SignalSpecial(SignalProgram *prog, SignalOpcode op);
-	
+
 	/** Evaluates the instruction. If this is an Start instruction, flow will be
 	 * vectored to the first instruction; if it is an End instruction, the program
 	 * will terminate and the signal will be left red.
 	 */
 	virtual void Evaluate(SignalVM &vm);
-	
+
 	/** Links the first and last instructions in the program. Generally only to be
 	 * called from the SignalProgram constructor.
 	 */
 	static void link(SignalSpecial *first, SignalSpecial *last);
-	
+
 	/** Removes this instruction. If this is the start instruction, then all of
 	 * the other instructions in the program will be successively removed,
 	 * (emptying it). If this is the End instruction, then it will do nothing.
@@ -257,12 +258,12 @@ public:
 	 * the instruction.
 	 */
 	virtual void Remove();
-	
-	/** The next instruction after this one. On the End instruction, this should 
+
+	/** The next instruction after this one. On the End instruction, this should
 	* be NULL.
 	*/
 	SignalInstruction *next;
-	
+
 	virtual void SetNext(SignalInstruction *next_insn);
 };
 
@@ -273,12 +274,12 @@ public:
  */
 class SignalIf: public SignalInstruction {
 public:
-	/** The If-Else and If-Endif pseudo instructions. The Else instruction 
+	/** The If-Else and If-Endif pseudo instructions. The Else instruction
 	 * follows the Then block, and the Endif instruction follows the Else block.
 	 *
 	 * These serve two purposes:
 	 * <ul>
-	 *  <li>They correctly vector the execution to after the if block 
+	 *  <li>They correctly vector the execution to after the if block
 	 *      (if needed)
 	 *  <li>They provide an instruction for the GUI to insert other instructions
 	 *      before.
@@ -286,55 +287,55 @@ public:
 	 */
 	class PseudoInstruction: public SignalInstruction {
 	public:
-		/** Normal constructor. The pseudo instruction will be constructed as 
+		/** Normal constructor. The pseudo instruction will be constructed as
 		 * belonging to @p block.
 		 */
 		PseudoInstruction(SignalProgram *prog, SignalIf *block, SignalOpcode op);
-		
+
 		/** Constructs an empty instruction of type @p op. This should only be used
 		 *  by the saveload code during deserialization. The instruction must have
 		 * its block field set correctly before the program is run.
 		 */
 		PseudoInstruction(SignalProgram *prog, SignalOpcode op);
-		
+
 		/** Removes the pseudo instruction. Unless you are also removing the If it
 		 * belongs to, this is nonsense and dangerous.
 		 */
 		virtual void Remove();
-		
+
 		/** Evaluate the pseudo instruction. This involves vectoring execution to
 		 * the instruction after the if.
 		 */
 		virtual void Evaluate(SignalVM &vm);
-		
+
 		/** The block to which this instruction belongs */
 		SignalIf *block;
 		virtual void SetNext(SignalInstruction *next_insn);
 	};
-	
+
 public:
-	/** Constructs an If instruction belonging to program @p prog. If @p raw is 
-	 * true, then the instruction is constructed raw (in order for the 
+	/** Constructs an If instruction belonging to program @p prog. If @p raw is
+	 * true, then the instruction is constructed raw (in order for the
 	 * deserializer to be able to correctly deserialize the instruction).
 	 */
 	SignalIf(SignalProgram *prog, bool raw = false);
-	
+
 	/** Sets the instruction's condition, and releases the old condition */
 	void SetCondition(SignalCondition *cond);
-	
+
 	/** Evaluates the If and takes the appropriate branch */
 	virtual void Evaluate(SignalVM &vm);
-	
+
 	virtual void Insert(SignalInstruction *before_insn);
-	
+
 	/** Removes the If and all of its children */
 	virtual void Remove();
-	
+
 	SignalCondition *condition;    ///< The if conditon
 	SignalInstruction *if_true;    ///< The branch to take if true
 	SignalInstruction *if_false;   ///< The branch to take if false
 	SignalInstruction *after;      ///< The branch to take after the If
-	
+
 	virtual void SetNext(SignalInstruction *next_insn);
 };
 
@@ -343,16 +344,16 @@ class SignalSet: public SignalInstruction {
 public:
 	/// Constructs the instruction and sets the state the signal is to be set to
 	SignalSet(SignalProgram *prog, SignalState = SIGNAL_STATE_RED);
-	
+
 	virtual void Evaluate(SignalVM &vm);
 	virtual void Remove();
-	
+
 	/// The state to set the signal to
 	SignalState to_state;
-	
+
 	/// The instruction following this one (for the editor)
 	SignalInstruction *next;
-	
+
 	virtual void SetNext(SignalInstruction *next_insn);
 };
 
@@ -369,7 +370,7 @@ static inline bool HasProgrammableSignals(SignalReference ref)
 	    && IsPresignalProgrammable(ref.tile, ref.track);
 }
 
-/// Shows the programming window for the signal identified by @p tile and 
+/// Shows the programming window for the signal identified by @p tile and
 /// @p track.
 void ShowSignalProgramWindow(SignalReference ref);
 
@@ -389,7 +390,7 @@ void FreeSignalPrograms();
 SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green);
 
 /// Remove dependencies on signal @p on from @p by
-void RemoveProgramDependencies(SignalReference by, SignalReference on);
+void RemoveProgramDependencies(SignalReference dependency_target, SignalReference signal_to_update);
 ///@}
 
 #endif
