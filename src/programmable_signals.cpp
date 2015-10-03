@@ -428,7 +428,7 @@ void RemoveProgramDependencies(SignalReference by, SignalReference on)
 			}
 		}
 
-		AddTrackToSignalBuffer(by.tile, by.track, GetTileOwner(by.tile));
+	AddTrackToSignalBuffer(by.tile, by.track, GetTileOwner(by.tile));
 	UpdateSignalsInBuffer();
 }
 
