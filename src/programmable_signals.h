@@ -202,7 +202,8 @@ class SignalStateCondition: public SignalCondition {
 		SignalStateCondition(SignalReference this_sig, TileIndex sig_tile, Trackdir sig_track);
 
 		void SetSignal(TileIndex tile, Trackdir track);
-		bool IsSignalValid();
+		bool IsSignalValid() const;
+		bool CheckSignalValid();
 		void Invalidate();
 
 		virtual bool Evaluate(SignalVM& vm);
@@ -389,7 +390,7 @@ void FreeSignalPrograms();
 SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green);
 
 /// Remove dependencies on signal @p on from @p by
-void RemoveProgramDependencies(SignalReference by, SignalReference on);
+void RemoveProgramDependencies(SignalReference dependency_target, SignalReference signal_to_update);
 ///@}
 
 #endif

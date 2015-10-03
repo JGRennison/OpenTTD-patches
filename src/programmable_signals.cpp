@@ -121,21 +121,23 @@ SignalStateCondition::SignalStateCondition(SignalReference this_sig,
 	: SignalCondition(PSC_SIGNAL_STATE), this_sig(this_sig), sig_tile(sig_tile)
 	, sig_track(sig_track)
 {
-	if (this->IsSignalValid())
+	if (this->CheckSignalValid())
 		AddSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)),
 																				this->this_sig);
 }
 
-bool SignalStateCondition::IsSignalValid()
+bool SignalStateCondition::IsSignalValid() const
 {
-	if (IsValidTile(this->sig_tile)) {
-		if (IsTileType(this->sig_tile, MP_RAILWAY) && HasSignalOnTrackdir(this->sig_tile, this->sig_track)) {
-			return true;
-		} else {
-			Invalidate();
-		}
+	return IsValidTile(this->sig_tile) && IsTileType(this->sig_tile, MP_RAILWAY) && HasSignalOnTrackdir(this->sig_tile, this->sig_track);
+}
+
+bool SignalStateCondition::CheckSignalValid()
+{
+	bool valid = this->IsSignalValid();
+	if (!valid) {
+		this->Invalidate();
 	}
-	return false;
+	return valid;
 }
 
 void SignalStateCondition::Invalidate()
@@ -151,7 +153,7 @@ void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 																					 this->this_sig);
 	this->sig_tile = tile;
 	this->sig_track = track;
-	if (this->IsSignalValid())
+	if (this->CheckSignalValid())
 		AddSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)),
 																				this->this_sig);
 }
@@ -165,7 +167,7 @@ void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 
 /*virtual*/ bool SignalStateCondition::Evaluate(SignalVM& vm)
 {
-	if (!this->IsSignalValid()) {
+	if (!this->CheckSignalValid()) {
 		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
 		return false;
 	}
@@ -412,9 +414,9 @@ SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green
 	return vm.state;
 }
 
-void RemoveProgramDependencies(SignalReference by, SignalReference on)
+void RemoveProgramDependencies(SignalReference dependency_target, SignalReference signal_to_update)
 {
-	SignalProgram *prog = GetSignalProgram(by);
+	SignalProgram *prog = GetSignalProgram(signal_to_update);
 	for (SignalInstruction **b = prog->instructions.Begin(), **i = b, **e = prog->instructions.End();
 			i != e; i++) {
 		SignalInstruction *insn = *i;
@@ -422,13 +424,14 @@ void RemoveProgramDependencies(SignalReference by, SignalReference on)
 			SignalIf* ifi = static_cast<SignalIf*>(insn);
 			if (ifi->condition->ConditionCode() == PSC_SIGNAL_STATE) {
 				SignalStateCondition* c = static_cast<SignalStateCondition*>(ifi->condition);
-				if(c->sig_tile == by.tile && TrackdirToTrack(c->sig_track) == by.track)
+				if(c->sig_tile == dependency_target.tile && TrackdirToTrack(c->sig_track) == dependency_target.track)
 					c->Invalidate();
 				}
 			}
 		}
 
-	AddTrackToSignalBuffer(by.tile, by.track, GetTileOwner(by.tile));
+	InvalidateWindowData(WC_SIGNAL_PROGRAM, (signal_to_update.tile << 3) | signal_to_update.track);
+	AddTrackToSignalBuffer(signal_to_update.tile, signal_to_update.track, GetTileOwner(signal_to_update.tile));
 	UpdateSignalsInBuffer();
 }
 
