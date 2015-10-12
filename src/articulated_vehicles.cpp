@@ -16,6 +16,7 @@
 #include "engine_func.h"
 #include "company_func.h"
 #include "newgrf.h"
+#include <vector>
 
 #include "table/strings.h"
 
@@ -95,6 +96,38 @@ uint CountArticulatedParts(EngineID engine_type, bool purchase_window)
 	delete v;
 
 	return i - 1;
+}
+
+/**
+ * Count the number of articulated parts of an engine.
+ * @param engine_type The engine to get the number of parts of.
+ * @param purchase_window Whether we are in the scope of the purchase window or not, i.e. whether we cannot allocate vehicles.
+ * @param ids [Out] The list of engine IDs.
+ */
+void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, std::vector<EngineID> &ids)
+{
+	ids.clear();
+	if (!HasBit(EngInfo(engine_type)->callback_mask, CBM_VEHICLE_ARTIC_ENGINE)) return;
+
+	/* If we can't allocate a vehicle now, we can't allocate it in the command
+	 * either, so it doesn't matter how many articulated parts there are. */
+	if (!Vehicle::CanAllocateItem()) return;
+
+	Vehicle *v = NULL;
+	if (!purchase_window) {
+		v = new Vehicle();
+		v->engine_type = engine_type;
+		v->owner = _current_company;
+	}
+
+	uint i;
+	for (i = 1; i < MAX_ARTICULATED_PARTS; i++) {
+		EngineID id = GetNextArticulatedPart(i, engine_type, v);
+		if (id == INVALID_ENGINE) break;
+		ids.push_back(id);
+	}
+
+	delete v;
 }
 
 

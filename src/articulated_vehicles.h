@@ -14,8 +14,10 @@
 
 #include "vehicle_type.h"
 #include "engine_type.h"
+#include <vector>
 
 uint CountArticulatedParts(EngineID engine_type, bool purchase_window);
+void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, std::vector<EngineID> &ids);
 CargoArray GetCapacityOfArticulatedParts(EngineID engine);
 void AddArticulatedParts(Vehicle *first);
 void GetArticulatedRefitMasks(EngineID engine, bool include_initial_cargo_type, uint32 *union_mask, uint32 *intersection_mask);

@@ -159,6 +159,16 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			} else {
 				bool auto_refit_allowed = false;
 				value.AddCost(GetRefitCost(NULL, eid, cargo, 0, &auto_refit_allowed));
+				if (type == VEH_TRAIN || type == VEH_ROAD) {
+					std::vector<EngineID> engine_ids;
+					GetArticulatedPartsEngineIDs(eid, false, engine_ids);
+					for (size_t i = 0; i < engine_ids.size(); i++) {
+						value.AddCost(GetRefitCost(NULL, engine_ids[i], cargo, 0, &auto_refit_allowed));
+					}
+				}
+				if (type == VEH_TRAIN && e->u.rail.railveh_type == RAILVEH_MULTIHEAD) {
+					value.AddCost(GetRefitCost(NULL, eid, cargo, 0, &auto_refit_allowed));
+				}
 			}
 		}
 	}
