@@ -1139,6 +1139,9 @@ void SwitchToMode(SwitchMode new_mode)
 				/* Update the local company for a loaded game. It is either always
 				 * company #1 (eg 0) or in the case of a dedicated server a spectator */
 				SetLocalCompany(_network_dedicated ? COMPANY_SPECTATOR : COMPANY_FIRST);
+				if (_ctrl_pressed && !_network_dedicated) {
+					DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
+				}
 				/* Execute the game-start script */
 				IConsoleCmdExec("exec scripts/game_start.scr 0");
 				/* Decrease pause counter (was increased from opening load dialog) */
