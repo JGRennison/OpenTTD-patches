@@ -23,6 +23,7 @@
 #include "station_func.h"
 #include "station_map.h"
 #include "town.h"
+#include "tracerestrict.h"
 #include "zoning.h"
 
 Zoning _zoning;
@@ -287,6 +288,22 @@ SpriteID TileZoneCheckUnservedIndustriesEvaluation(TileIndex tile, Owner owner)
 }
 
 /**
+ * Detect whether a tile is a restricted signal tile
+ *
+ * @param TileIndex tile
+ * @param Owner owner
+ * @return red if a restricted signal, nothing otherwise
+ */
+SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
+{
+	if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile) && IsRestrictedSignal(tile)) {
+		return SPR_ZONING_INNER_HIGHLIGHT_RED;
+	}
+
+	return ZONING_INVALID_SPRITE_ID;
+}
+
+/**
  * General evaluation function; calls all the other functions depending on
  * evaluation mode.
  *
@@ -306,6 +323,7 @@ SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, ZoningEvaluatio
 		case ZEM_STA_CATCH:  return TileZoneCheckStationCatchmentEvaluation(tile, owner);
 		case ZEM_BUL_UNSER:  return TileZoneCheckUnservedBuildingsEvaluation(tile, owner);
 		case ZEM_IND_UNSER:  return TileZoneCheckUnservedIndustriesEvaluation(tile, owner);
+		case ZEM_TRACERESTRICT:  return TileZoneCheckTraceRestrictEvaluation(tile, owner);
 		default:             return ZONING_INVALID_SPRITE_ID;
 	}
 }

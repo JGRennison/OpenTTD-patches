@@ -25,6 +25,7 @@ enum ZoningEvaluationMode {
 	ZEM_STA_CATCH,     ///< Check catchment area for stations
 	ZEM_BUL_UNSER,     ///< Check for unserved buildings
 	ZEM_IND_UNSER,     ///< Check for unserved industries
+	ZEM_TRACERESTRICT, ///< Check for restricted signals
 };
 
 /**

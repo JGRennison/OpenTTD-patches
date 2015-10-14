@@ -5531,3 +5531,4 @@ STR_ZONING_CAN_BUILD                                            :Where I can't b
 STR_ZONING_STA_CATCH                                            :Station catchment
 STR_ZONING_BUL_UNSER                                            :Unserved buildings
 STR_ZONING_IND_UNSER                                            :Unserved industries
+STR_ZONING_TRACERESTRICT                                        :Restricted signals
