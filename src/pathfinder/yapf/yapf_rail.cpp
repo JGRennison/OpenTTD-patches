@@ -193,19 +193,19 @@ public:
 		uint depth = 0;
 		for (;;) {
 			if ((n1 != NULL) != (n2 != NULL)) {
-				DEBUG(desync, 2, "%s: node nonnull state at %u = [%d, %d]", name, depth, (n1 != NULL), (n2 != NULL));
+				DEBUG(desync, 0, "%s: node nonnull state at %u = [%d, %d]", name, depth, (n1 != NULL), (n2 != NULL));
 				DumpState(pf1, pf2);
 				return;
 			}
 			if (n1 == NULL) break;
 
 			if (n1->GetTile() != n2->GetTile()) {
-				DEBUG(desync, 2, "%s tile mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTile(), n2->GetTile());
+				DEBUG(desync, 0, "%s tile mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTile(), n2->GetTile());
 				DumpState(pf1, pf2);
 				return;
 			}
 			if (n1->GetTrackdir() != n2->GetTrackdir()) {
-				DEBUG(desync, 2, "%s trackdir mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTrackdir(), n2->GetTrackdir());
+				DEBUG(desync, 0, "%s trackdir mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTrackdir(), n2->GetTrackdir());
 				DumpState(pf1, pf2);
 				return;
 			}
@@ -215,7 +215,7 @@ public:
 		}
 
 		if (check_res && (pf1.m_res_dest != pf2.m_res_dest || pf1.m_res_dest_td != pf2.m_res_dest_td)) {
-			DEBUG(desync, 2, "%s reservation target mismatch = [(0x%X, %d), (0x%X, %d)]", name, pf1.m_res_dest, pf1.m_res_dest_td, pf2.m_res_dest, pf2.m_res_dest_td);
+			DEBUG(desync, 0, "%s reservation target mismatch = [(0x%X, %d), (0x%X, %d)]", name, pf1.m_res_dest, pf1.m_res_dest_td, pf2.m_res_dest, pf2.m_res_dest_td);
 			DumpState(pf1, pf2);
 			return;
 		}
@@ -273,12 +273,12 @@ public:
 		if (max_penalty != 0) pf1.DisableCache(true);
 		FindDepotData result1 = pf1.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty);
 
-		if (_debug_desync_level >= 2) {
+		if (_debug_yapfdesync_level > 0 || _debug_desync_level >= 2) {
 			Tpf pf2;
 			pf2.DisableCache(true);
 			FindDepotData result2 = pf2.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty);
 			if (result1.tile != result2.tile || (result1.reverse != result2.reverse)) {
-				DEBUG(desync, 2, "CACHE ERROR: FindNearestDepotTwoWay() = [%s, %s]",
+				DEBUG(desync, 0, "CACHE ERROR: FindNearestDepotTwoWay() = [%s, %s]",
 						result1.tile != INVALID_TILE ? "T" : "F",
 						result2.tile != INVALID_TILE ? "T" : "F");
 				DumpState(pf1, pf2);
@@ -354,7 +354,7 @@ public:
 		/* Create pathfinder instance */
 		Tpf pf1;
 		bool result1;
-		if (_debug_desync_level < 2) {
+		if (_debug_yapfdesync_level < 1 && _debug_desync_level < 2) {
 			result1 = pf1.FindNearestSafeTile(v, t1, td, override_railtype, false);
 		} else {
 			bool result2 = pf1.FindNearestSafeTile(v, t1, td, override_railtype, true);
@@ -362,7 +362,7 @@ public:
 			pf2.DisableCache(true);
 			result1 = pf2.FindNearestSafeTile(v, t1, td, override_railtype, false);
 			if (result1 != result2) {
-				DEBUG(desync, 2, "CACHE ERROR: FindSafeTile() = [%s, %s]", result2 ? "T" : "F", result1 ? "T" : "F");
+				DEBUG(desync, 0, "CACHE ERROR: FindSafeTile() = [%s, %s]", result2 ? "T" : "F", result1 ? "T" : "F");
 				DumpState(pf1, pf2);
 			} else if (result1) {
 				CYapfFollowAnySafeTileRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: FindSafeTile()", true);
@@ -440,7 +440,7 @@ public:
 		Tpf pf1;
 		Trackdir result1;
 
-		if (_debug_desync_level < 2) {
+		if (_debug_yapfdesync_level < 1 && _debug_desync_level < 2) {
 			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target);
 		} else {
 			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, false, nullptr);
@@ -448,7 +448,7 @@ public:
 			pf2.DisableCache(true);
 			Trackdir result2 = pf2.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target);
 			if (result1 != result2) {
-				DEBUG(desync, 2, "CACHE ERROR: ChooseRailTrack() = [%d, %d]", result1, result2);
+				DEBUG(desync, 0, "CACHE ERROR: ChooseRailTrack() = [%d, %d]", result1, result2);
 				DumpState(pf1, pf2);
 			} else if (result1 != INVALID_TRACKDIR) {
 				CYapfFollowRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: ChooseRailTrack()", true);
@@ -503,7 +503,7 @@ public:
 		Tpf pf1;
 		bool result1 = pf1.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty);
 
-		if (_debug_desync_level >= 2) {
+		if (_debug_yapfdesync_level > 0 || _debug_desync_level >= 2) {
 			Tpf pf2;
 			pf2.DisableCache(true);
 			bool result2 = pf2.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty);

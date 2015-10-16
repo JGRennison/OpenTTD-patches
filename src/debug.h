@@ -48,6 +48,7 @@ extern int _debug_script_level;
 extern int _debug_sl_level;
 extern int _debug_gamelog_level;
 extern int _debug_desync_level;
+extern int _debug_yapfdesync_level;
 extern int _debug_console_level;
 #ifdef RANDOM_DEBUG
 extern int _debug_random_level;
