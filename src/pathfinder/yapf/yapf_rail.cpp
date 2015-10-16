@@ -357,14 +357,15 @@ public:
 		if (_debug_yapfdesync_level < 1 && _debug_desync_level < 2) {
 			result1 = pf1.FindNearestSafeTile(v, t1, td, override_railtype, false);
 		} else {
-			bool result2 = pf1.FindNearestSafeTile(v, t1, td, override_railtype, true);
+			bool found_path_1, found_path_2;
+			pf1.FindNearestSafeTile(v, t1, td, override_railtype, true, &found_path_1);
 			Tpf pf2;
 			pf2.DisableCache(true);
-			result1 = pf2.FindNearestSafeTile(v, t1, td, override_railtype, false);
-			if (result1 != result2) {
-				DEBUG(desync, 0, "CACHE ERROR: FindSafeTile() = [%s, %s]", result2 ? "T" : "F", result1 ? "T" : "F");
+			result1 = pf2.FindNearestSafeTile(v, t1, td, override_railtype, false, &found_path_2);
+			if (found_path_1 != found_path_2) {
+				DEBUG(desync, 0, "CACHE ERROR: FindSafeTile() = [%s, %s]", found_path_1 ? "T" : "F", found_path_2 ? "T" : "F");
 				DumpState(pf1, pf2);
-			} else if (result1) {
+			} else if (found_path_2) {
 				CYapfFollowAnySafeTileRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: FindSafeTile()", true);
 			}
 		}
@@ -372,13 +373,14 @@ public:
 		return result1;
 	}
 
-	bool FindNearestSafeTile(const Train *v, TileIndex t1, Trackdir td, bool override_railtype, bool dont_reserve)
+	bool FindNearestSafeTile(const Train *v, TileIndex t1, Trackdir td, bool override_railtype, bool dont_reserve, bool *found_path = NULL)
 	{
 		/* Set origin and destination. */
 		Yapf().SetOrigin(t1, td);
 		Yapf().SetDestination(v, override_railtype);
 
 		bool bFound = Yapf().FindPath(v);
+		if (found_path) *found_path = bFound;
 		if (!bFound) return false;
 
 		/* Found a destination, set as reservation target. */
