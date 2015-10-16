@@ -415,7 +415,7 @@ void GamelogRevision()
 	if (lc == NULL) return;
 
 	memset(lc->revision.text, 0, sizeof(lc->revision.text));
-	strecpy(lc->revision.text, _openttd_revision, lastof(lc->revision.text));
+	strecpy(lc->revision.text, _openttd_revision, lastof(lc->revision.text), true);
 	lc->revision.slver = SAVEGAME_VERSION;
 	lc->revision.modified = _openttd_revision_modified;
 	lc->revision.newgrf = _openttd_newgrf_version;

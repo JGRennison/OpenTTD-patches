@@ -87,8 +87,7 @@ char *strecat(char *dst, const char *src, const char *last)
  *
  * Copies the source string to the destination buffer with respect of the
  * terminating null-character and the last pointer to the last element in
- * the destination buffer. If the last pointer is set to NULL no boundary
- * check is performed.
+ * the destination buffer.
  *
  * @note usage: strecpy(dst, src, lastof(dst));
  * @note lastof() applies only to fixed size arrays
@@ -96,9 +95,10 @@ char *strecat(char *dst, const char *src, const char *last)
  * @param dst The destination buffer
  * @param src The buffer containing the string to copy
  * @param last The pointer to the last element of the destination buffer
+ * @param quiet_mode If set to true, emitted warning for truncating the input string is emitted at level 1 instead of 0
  * @return The pointer to the terminating null-character in the destination buffer
  */
-char *strecpy(char *dst, const char *src, const char *last)
+char *strecpy(char *dst, const char *src, const char *last, bool quiet_mode)
 {
 	assert(dst <= last);
 	while (dst != last && *src != '\0') {
@@ -110,7 +110,7 @@ char *strecpy(char *dst, const char *src, const char *last)
 #if defined(STRGEN) || defined(SETTINGSGEN)
 		error("String too long for destination buffer");
 #else /* STRGEN || SETTINGSGEN */
-		DEBUG(misc, 0, "String too long for destination buffer");
+		DEBUG(misc, quiet_mode ? 1 : 0, "String too long for destination buffer");
 #endif /* STRGEN || SETTINGSGEN */
 	}
 	return dst;
