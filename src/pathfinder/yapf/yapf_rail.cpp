@@ -21,13 +21,43 @@
 
 #include "../../safeguards.h"
 
+#if defined(UNIX) && defined(__GLIBC__)
+#include <unistd.h>
+#endif
+
 template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 {
 	DumpTarget dmp1, dmp2;
 	pf1.DumpBase(dmp1);
 	pf2.DumpBase(dmp2);
+
+#if defined(UNIX) && defined(__GLIBC__)
+	static unsigned int num = 0;
+	int pid = getpid();
+	const char *fn1 = NULL;
+	const char *fn2 = NULL;
+	FILE *f1 = NULL;
+	FILE *f2 = NULL;
+	for(;;) {
+		free(fn1);
+		fn1 = str_fmt("yapf-%d-%u-1.txt", pid, num);
+		f1 = fopen(fn1, "wx");
+		if (f1 == NULL && errno == EEXIST) {
+			num++;
+			continue;
+		}
+		fn2 = str_fmt("yapf-%d-%u-2.txt", pid, num);
+		f2 = fopen(fn2, "w");
+		num++;
+		break;
+	}
+	DEBUG(desync, 0, "Dumping YAPF state to %s and %s", fn1, fn2);
+	free(fn1);
+	free(fn2);
+#else
 	FILE *f1 = fopen("yapf1.txt", "wt");
 	FILE *f2 = fopen("yapf2.txt", "wt");
+#endif
 	fwrite(dmp1.m_out.Data(), 1, dmp1.m_out.Size(), f1);
 	fwrite(dmp2.m_out.Data(), 1, dmp2.m_out.Size(), f2);
 	fclose(f1);
