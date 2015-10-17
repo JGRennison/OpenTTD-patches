@@ -119,7 +119,13 @@ if [ -n "$WRITE" ]; then
 	mv .ottdrev-vc-tmp .ottdrev-vc
 fi
 
+function unignore_files {
+	git update-index --no-assume-unchanged README.md jgrpp-changelog.md
+}
+
 if [ -n "$RELEASETAG" ]; then
+	git update-index --assume-unchanged README.md jgrpp-changelog.md
+	trap unignore_files EXIT
 	if ! git diff-index --quiet HEAD; then
 		echo "Repo is dirty, aborting" >&2
 		exit 1
@@ -128,6 +134,12 @@ if [ -n "$RELEASETAG" ]; then
 		echo "Repo is dirty, aborting" >&2
 		exit 1
 	fi
+	if [ "${RELEASETAG:0:6}" = "jgrpp-" -a -n "${RELEASETAG:6}" ]; then
+		if ! grep -q -e "^### v${RELEASETAG:6} (" jgrpp-changelog.md; then
+			echo "v${RELEASETAG:6} is not in changelog, aborting" >&2
+			exit 1
+		fi
+	fi
 	if ! git tag "$RELEASETAG"; then
 		echo "Tag already exists or is not valid, aborting" >&2
 		exit 1
@@ -135,10 +147,12 @@ if [ -n "$RELEASETAG" ]; then
 	if ! ./version_utils.sh -w; then
 		exit 1
 	fi
+	unignore_files
+	trap '' EXIT
 	if [ "${RELEASETAG:0:6}" = "jgrpp-" -a -n "${RELEASETAG:6}" ]; then
 		sed -i "1 s/^\(## JGR's Patchpack version \).\+/\1${RELEASETAG:6}/" README.md
 	fi
-	git add .ottdrev-vc README.md
+	git add .ottdrev-vc README.md jgrpp-changelog.md
 	git commit -m "Version: Committing version data for tag: $RELEASETAG"
 	git tag -f "$RELEASETAG"
 fi
