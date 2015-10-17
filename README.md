@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.5.3
+## JGR's Patchpack version 0.6.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -37,7 +37,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Close adjacent level crossings: [imported](http://www.tt-forums.net/viewtopic.php?p=836749)
 
 * Zoning: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=33701)  
-  This is modified to remove unimplemented modes, implement station ownership checks and implement station facility checks for industries.
+  This is modified to remove unimplemented modes, implement station ownership checks and implement station facility checks for industries.  
+  As of v0.6.0, add a mode to show restricted signals.
 
 * Departure boards: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=49956)  
   Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
@@ -124,6 +125,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Build and refit: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=35805) (added in v0.5.0)  
   This has been modified to change the UI, and make it multiplayer safe.
+
+* Pause on savegame load if ctrl key is pressed. (added in v0.6.0)
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  

@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.6.0 (2015-10-17)
+* Zoning: Add mode to show restricted signals.
+* Pause on savegame load if ctrl key is pressed.
+* Fix build and refit with articulated/multihead vehicles with non-zero refit costs.
+* Fix YAPF pathfinder desync issue involving rail track type changes which where only passable by a subset of vehicles (trunk bug).
+* Add a changelog file to the repository.
+* Logging: Add debug category "yapfdesync" to enable desync checks for YAPF only. Save YAPF state dumps to new files on Unix platforms. Fix false positive in FindNearestSafeTile desync check. Log truncated revision strings at debug level 1 instead of 0.
+* Bump trunk base from r27403 to r27410
+
 ### v0.5.3 (2015-10-03)
 * Improved breakdowns patch: Fix non-determinism which caused desyncs in multiplayer.
 * Programmable signals patch:
