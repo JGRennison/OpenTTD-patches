@@ -312,7 +312,7 @@ static const SaveLoad _company_settings_desc[] = {
 	SLE_CONDVAR(Company, settings.vehicle.servint_roadveh,   SLE_UINT16,     120, SL_MAX_VERSION),
 	SLE_CONDVAR(Company, settings.vehicle.servint_aircraft,  SLE_UINT16,     120, SL_MAX_VERSION),
 	SLE_CONDVAR(Company, settings.vehicle.servint_ships,     SLE_UINT16,     120, SL_MAX_VERSION),
-	SLE_CONDVAR_X(Company, settings.vehicle.auto_timetable_by_default, SLE_BOOL, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2)),
+	SLE_CONDVAR_X(Company, settings.vehicle.auto_timetable_by_default, SLE_BOOL, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)),
 
 	SLE_CONDNULL(63, 2, 143), // old reserved space
 
@@ -335,7 +335,7 @@ static const SaveLoad _company_settings_skip_desc[] = {
 	SLE_CONDNULL(2, 120, SL_MAX_VERSION),    // settings.vehicle.servint_roadveh
 	SLE_CONDNULL(2, 120, SL_MAX_VERSION),    // settings.vehicle.servint_aircraft
 	SLE_CONDNULL(2, 120, SL_MAX_VERSION),    // settings.vehicle.servint_ships
-	SLE_CONDNULL_X(1, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2)), // settings.vehicle.auto_timetable_by_default
+	SLE_CONDNULL_X(1, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)), // settings.vehicle.auto_timetable_by_default
 
 	SLE_CONDNULL(63, 2, 143), // old reserved space
 
@@ -492,6 +492,11 @@ static void Load_PLYR()
 		SetDefaultCompanySettings(c->index);
 		SaveLoad_PLYR(c);
 		_company_colours[index] = (Colours)c->colour;
+
+		// setting moved from game settings to company settings
+		if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 2)) {
+			c->settings.auto_timetable_separation_rate = _settings_game.order.old_timetable_separation_rate;
+		}
 	}
 }
 
