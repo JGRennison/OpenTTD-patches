@@ -479,10 +479,10 @@ struct OrderSettings {
 	bool   no_servicing_if_no_breakdowns;    ///< don't send vehicles to depot when breakdowns are disabled
 	bool   timetable_automated;              ///< whether to automatically manage timetables
 	bool   timetable_separation;             ///< whether to perform automatic separation based on timetable
-	uint8  timetable_separation_rate;        ///< percentage of timetable separation change to apply
 	bool   serviceathelipad;                 ///< service helicopters at helipads automatically (no need to send to depot)
 
 	uint8  old_occupancy_smoothness;         ///< moved to company settings: percentage smoothness of occupancy measurement changes
+	uint8  old_timetable_separation_rate;    ///< moved to company settings: percentage of timetable separation change to apply
 };
 
 /** Settings related to vehicles. */
@@ -590,6 +590,7 @@ struct CompanySettings {
 	bool renew_keep_length;                  ///< sell some wagons if after autoreplace the train is longer than before
 	VehicleDefaultSettings vehicle;          ///< default settings for vehicles
 	uint8 order_occupancy_smoothness;        ///< percentage smoothness of occupancy measurement changes
+	uint8  auto_timetable_separation_rate;   ///< percentage of auto timetable separation change to apply
 };
 
 /** All settings together for the game. */

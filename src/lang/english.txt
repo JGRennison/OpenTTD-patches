@@ -1453,8 +1453,8 @@ STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :Enter timetable
 STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :Select whether timetable start times may be entered as text if time is being shown in minutes
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :Use timetable to ensure vehicle separation: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT                :Select whether to ensure separation of vehicles when using automatic timetables
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :Vehicle separation factor: {STRING2}
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :How much of the vehicle separation timetable change to apply at each step
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :Auto timetable vehicle separation factor: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :How much of the vehicle separation auto timetable change to apply at each step
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Show arrival and departure in timetables: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Display anticipated arrival and departure times in timetables
 STR_CONFIG_SETTING_QUICKGOTO                                    :Quick creation of vehicle orders: {STRING2}
