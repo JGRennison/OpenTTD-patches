@@ -377,6 +377,7 @@ STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Einstellungen
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :KI- / Skripteinstellungen
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF-Einstellungen
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Transparenzeinstellungen
+STR_SETTINGS_MENU_ZONING                                        :Bereiche anzeigen
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Städtenamen anzeigen
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Stationsnamen anzeigen
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :Wegpunktnamen anzeigen
@@ -4965,3 +4966,19 @@ STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+
+######## Zoning toolbar
+
+STR_ZONING_TOOLBAR                                              :{WHITE}Bereiche anzeigen
+STR_ZONING_OUTER                                                :{BLACK}Außenkante der Kachel:
+STR_ZONING_INNER                                                :{BLACK}Innenkante der Kachel:
+STR_ZONING_OUTER_INFO                                           :{BLACK}Wähle die Art des Bereichs, der auf der Außenkante der Kachel angezeigt wird.
+STR_ZONING_INNER_INFO                                           :{BLACK}Wähle die Art des Bereichs, der auf der Innenkante der Kachel angezeigt wird.
+
+STR_ZONING_NO_ZONING                                            :Nichts
+STR_ZONING_AUTHORITY                                            :Einflussbereich der Verwaltungen
+STR_ZONING_CAN_BUILD                                            :Bereiche, die nicht bebaut werden können
+STR_ZONING_STA_CATCH                                            :Einzugsgebiete der Stationen
+STR_ZONING_BUL_UNSER                                            :Nicht bediente Gebäude
+STR_ZONING_IND_UNSER                                            :Nicht bediente Industrien
+STR_ZONING_TRACERESTRICT                                        :Restriktierende Signale
