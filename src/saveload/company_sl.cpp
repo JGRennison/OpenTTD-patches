@@ -16,6 +16,7 @@
 #include "../tunnelbridge_map.h"
 #include "../tunnelbridge.h"
 #include "../station_base.h"
+#include "../settings_func.h"
 
 #include "saveload.h"
 
@@ -486,6 +487,7 @@ static void Load_PLYR()
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Company *c = new (index) Company();
+		SetDefaultCompanySettings(c->index);
 		SaveLoad_PLYR(c);
 		_company_colours[index] = (Colours)c->colour;
 	}
@@ -529,7 +531,25 @@ static void Ptrs_PLYR()
 	}
 }
 
+extern void LoadSettingsPlyx(bool skip);
+extern void SaveSettingsPlyx();
+
+static void Load_PLYX()
+{
+	LoadSettingsPlyx(false);
+}
+
+static void Check_PLYX()
+{
+	LoadSettingsPlyx(true);
+}
+
+static void Save_PLYX()
+{
+	SaveSettingsPlyx();
+}
 
 extern const ChunkHandler _company_chunk_handlers[] = {
-	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, CH_ARRAY | CH_LAST},
+	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, CH_ARRAY },
+	{ 'PLYX', Save_PLYX, Load_PLYX, NULL,      Check_PLYX, CH_RIFF | CH_LAST},
 };
