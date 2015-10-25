@@ -218,7 +218,7 @@ STR_UNITS_VOLUME_LONG_SI                                        :{COMMA}{NBSP}mÂ
 
 STR_UNITS_FORCE_IMPERIAL                                        :{COMMA}{NBSP}lbf
 STR_UNITS_FORCE_METRIC                                          :{COMMA}{NBSP}kp
-STR_UNITS_FORCE_SI                                              :{COMMA} kN
+STR_UNITS_FORCE_SI                                              :{COMMA}{NBSP}kN
 
 STR_UNITS_HEIGHT_IMPERIAL                                       :{COMMA}{NBSP}FuÃŸ
 STR_UNITS_HEIGHT_METRIC                                         :{COMMA}{NBSP}m
