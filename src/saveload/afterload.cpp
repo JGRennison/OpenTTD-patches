@@ -2975,6 +2975,14 @@ bool AfterLoadGame()
 		FOR_ALL_STATIONS(st) UpdateStationAcceptance(st, false);
 	}
 
+	// setting moved from game settings to company settings
+	if (SlXvIsFeaturePresent(XSLFI_ORDER_OCCUPANCY, 1, 1)) {
+		Company *c;
+		FOR_ALL_COMPANIES(c) {
+			c->settings.order_occupancy_smoothness = _settings_game.order.old_occupancy_smoothness;
+		}
+	}
+
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
 	AfterLoadLabelMaps();
