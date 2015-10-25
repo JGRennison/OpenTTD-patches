@@ -2456,9 +2456,11 @@ void Vehicle::LeaveStation()
 		if (old_occupancy == 0) {
 			new_occupancy = current_occupancy;
 		} else {
+			Company *owner = Company::GetIfValid(this->owner);
+			uint8 occupancy_smoothness = owner ? owner->settings.order_occupancy_smoothness : 0;
 			// Exponential weighted moving average using occupancy_smoothness
-			new_occupancy = (old_occupancy - 1) * _settings_game.order.occupancy_smoothness;
-			new_occupancy += current_occupancy * (100 - _settings_game.order.occupancy_smoothness);
+			new_occupancy = (old_occupancy - 1) * occupancy_smoothness;
+			new_occupancy += current_occupancy * (100 - occupancy_smoothness);
 			new_occupancy += 50; // round to nearest integer percent, rather than just floor
 			new_occupancy /= 100;
 		}

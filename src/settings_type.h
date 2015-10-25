@@ -481,7 +481,8 @@ struct OrderSettings {
 	bool   timetable_separation;             ///< whether to perform automatic separation based on timetable
 	uint8  timetable_separation_rate;        ///< percentage of timetable separation change to apply
 	bool   serviceathelipad;                 ///< service helicopters at helipads automatically (no need to send to depot)
-	uint8  occupancy_smoothness;             ///< percentage smoothness of occupancy measurement changes
+
+	uint8  old_occupancy_smoothness;         ///< moved to company settings: percentage smoothness of occupancy measurement changes
 };
 
 /** Settings related to vehicles. */
@@ -588,6 +589,7 @@ struct CompanySettings {
 	uint32 engine_renew_money;               ///< minimum amount of money before autorenew is used
 	bool renew_keep_length;                  ///< sell some wagons if after autoreplace the train is longer than before
 	VehicleDefaultSettings vehicle;          ///< default settings for vehicles
+	uint8 order_occupancy_smoothness;        ///< percentage smoothness of occupancy measurement changes
 };
 
 /** All settings together for the game. */
