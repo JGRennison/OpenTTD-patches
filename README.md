@@ -139,6 +139,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Changes to the crash log (added in v0.5.0)  
   Enable stack traces on MinGW, try to demangle C++ symbol names, try to use libbfd for better symbol lookup, handle SIGSEGV while backtracing.
 
+* Multiplayer desync fixes/changes  
+  * Fix YAPF pathfinder desync issue involving rail track type changes which where only passable by a subset of vehicles (trunk bug). (added in v0.6.0)  
+  * Logging: Various changes and improvements to desync-related logging and debugging, see changelog for details.
+
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  
 * This is not guaranteed to be bug free  
