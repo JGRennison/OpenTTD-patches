@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.7.0 (2015-10-29)
+* Fix timetable rounding depending on the client time display mode setting, which caused desyncs in multiplayer (departure boards patch bug).
+* Add reverse at waypoint orders.
+* Change the order occupancy smoothness and automated timetables vehicle lateness adjustment scale settings, to be company settings.
+* Fix compilation on some compilers/platforms.
+* Bump trunk base from r27410 to r27415
+
 ### v0.6.0 (2015-10-17)
 * Zoning: Add mode to show restricted signals.
 * Pause on savegame load if ctrl key is pressed.
