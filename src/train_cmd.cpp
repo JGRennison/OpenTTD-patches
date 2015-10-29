@@ -3352,6 +3352,7 @@ static void HandleSignalBehindTrain(Train *v, uint signal_number)
 		ClrBit(_m[v->tile].m2, signal_number);
 		MarkTileDirtyByTile(tile);
 	}
+}
 
 uint16 ReversingDistanceTargetSpeed(const Train *v)
 {
