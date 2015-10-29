@@ -1420,7 +1420,7 @@ public:
 		if (_cur_house != INVALID_HOUSE_ID) matrix->SetClicked(this->house_offset); // set clicked item again to make it visible
 	}
 
-	virtual void OnInit() override
+	virtual void OnInit() OVERRIDE
 	{
 		this->house_list.Build();
 		this->RestoreSelectedHouseIndex();
@@ -1690,12 +1690,12 @@ public:
 		}
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile) override
+	virtual void OnPlaceObject(Point pt, TileIndex tile) OVERRIDE
 	{
 		PlaceProc_House(tile);
 	}
 
-	virtual void OnPlaceObjectAbort() override
+	virtual void OnPlaceObjectAbort() OVERRIDE
 	{
 		this->house_offset = -1;
 		_cur_house = INVALID_HOUSE_ID;
