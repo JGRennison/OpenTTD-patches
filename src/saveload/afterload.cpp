@@ -3074,6 +3074,13 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_REVERSE_AT_WAYPOINT)) {
+		Train *t;
+		FOR_ALL_TRAINS(t) {
+			t->reverse_distance = 0;
+		}
+	}
+
 	/*
 	 * Only keep order-backups for network clients (and when replaying).
 	 * If we are a network server or not networking, then we just loaded a previously

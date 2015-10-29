@@ -64,6 +64,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_ORDER_OCCUPANCY,        XSCF_NULL,              2,                                    2, "order_occupancy",       NULL, NULL, NULL        },
 	{ XSLFI_MORE_COND_ORDERS,       XSCF_NULL,              1,                                    1, "more_cond_orders",      NULL, NULL, NULL        },
 	{ XSLFI_EXTRA_LARGE_MAP,        XSCF_NULL,              0,                                    1, "extra_large_map",       NULL, NULL, NULL        },
+	{ XSLFI_REVERSE_AT_WAYPOINT,    XSCF_NULL,              1,                                    1, "reverse_at_waypoint",   NULL, NULL, NULL        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 

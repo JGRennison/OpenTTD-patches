@@ -671,6 +671,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		v->owner = _current_company;
 		v->track = TRACK_BIT_DEPOT;
 		v->vehstatus = VS_HIDDEN | VS_DEFPAL;
+		v->reverse_distance = 0;
 
 		v->SetWagon();
 
@@ -805,6 +806,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->refit_cap = 0;
 		v->last_station_visited = INVALID_STATION;
 		v->last_loading_station = INVALID_STATION;
+		v->reverse_distance = 0;
 
 		v->engine_type = e->index;
 		v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
@@ -1901,6 +1903,8 @@ void ReverseTrainDirection(Train *v)
 	if (IsRailDepotTile(v->tile)) {
 		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 	}
+
+	v->reverse_distance = 0;
 
 	/* Clear path reservation in front if train is not stuck. */
 	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) FreeTrainTrackReservation(v);
@@ -3348,6 +3352,16 @@ static void HandleSignalBehindTrain(Train *v, uint signal_number)
 		ClrBit(_m[v->tile].m2, signal_number);
 		MarkTileDirtyByTile(tile);
 	}
+
+uint16 ReversingDistanceTargetSpeed(const Train *v)
+{
+	int target_speed;
+	if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC) {
+		target_speed = ((v->reverse_distance - 1) * 5) / 2;
+	} else {
+		target_speed = (v->reverse_distance - 1) * 10 - 5;
+	}
+	return max(0, target_speed);
 }
 
 /**
@@ -3363,6 +3377,15 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 	Train *prev;
 	bool direction_changed = false; // has direction of any part changed?
 
+	if (reverse && v->reverse_distance == 1) {
+		goto reverse_train_direction;
+	}
+
+	if (v->reverse_distance > 1) {
+		uint16 spd = ReversingDistanceTargetSpeed(v);
+		if (spd < v->cur_speed) v->cur_speed = spd;
+	}
+
 	/* For every vehicle after and including the given vehicle */
 	for (prev = v->Previous(); v != nomove; prev = v, v = v->Next()) {
 		DiagDirection enterdir = DIAGDIR_BEGIN;
@@ -3377,6 +3400,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					/* Inside depot */
 					gp.x = v->x_pos;
 					gp.y = v->y_pos;
+					v->reverse_distance = 0;
 				} else {
 					/* Not inside depot */
 
@@ -3688,6 +3712,9 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		v->x_pos = gp.x;
 		v->y_pos = gp.y;
 		v->UpdatePosition();
+		if (v->reverse_distance > 1) {
+			v->reverse_distance--;
+		}
 
 		/* update the Z position of the vehicle */
 		int old_z = v->UpdateInclination(gp.new_tile != gp.old_tile, false);
