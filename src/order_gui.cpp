@@ -802,11 +802,12 @@ private:
 		/* When networking, move one order lower */
 		int selected = this->selected_order + (int)_networking;
 
-		MarkAllRoutePathsDirty(this->vehicle);
 		MarkAllRouteStepsDirty(this);
 		if (DoCommandP(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), CMD_DELETE_ORDER | CMD_MSG(STR_ERROR_CAN_T_DELETE_THIS_ORDER))) {
 			this->selected_order = selected >= this->vehicle->GetNumOrders() ? -1 : selected;
 			this->UpdateButtonState();
+			MarkAllRoutePathsDirty(this->vehicle);
+			MarkAllRouteStepsDirty(this);
 		}
 	}
 
