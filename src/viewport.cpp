@@ -98,6 +98,7 @@
 #include "gui.h"
 
 #include <map>
+#include <vector>
 
 #include "table/strings.h"
 #include "table/string_colours.h"
@@ -161,7 +162,7 @@ typedef SmallVector<StringSpriteToDraw, 4> StringSpriteToDrawVector;
 typedef SmallVector<ParentSpriteToDraw, 64> ParentSpriteToDrawVector;
 typedef SmallVector<ChildScreenSpriteToDraw, 16> ChildScreenSpriteToDrawVector;
 
-typedef std::list<std::pair<int, OrderType>> RankOrderTypeList;
+typedef std::list<std::pair<int, OrderType> > RankOrderTypeList;
 typedef std::map<TileIndex, RankOrderTypeList> RouteStepsMap;
 
 /** Data structure storing rendering information */
@@ -196,6 +197,26 @@ uint _vp_route_step_height_top = 0;
 uint _vp_route_step_height_middle = 0;
 uint _vp_route_step_height_bottom = 0;
 SubSprite _vp_route_step_subsprite;
+
+struct DrawnPathRouteTileLine {
+	TileIndex from_tile;
+	TileIndex to_tile;
+
+	bool operator==(const DrawnPathRouteTileLine &other) const
+	{
+		return this->from_tile == other.from_tile && this->to_tile == other.to_tile;
+	}
+
+	bool operator!=(const DrawnPathRouteTileLine &other) const
+	{
+		return !(*this == other);
+	}
+};
+
+std::vector<DrawnPathRouteTileLine> _vp_route_paths_drawn_dirty;
+std::vector<DrawnPathRouteTileLine> _vp_route_paths_last_mark_dirty;
+
+static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines);
 
 TileHighlightData _thd;
 static TileInfo *_cur_ti;
@@ -1647,13 +1668,31 @@ static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 {
 	Order *order;
 	const Vehicle *veh = GetVehicleFromWindow(_focused_window);
-	if (!veh) return;
+	if (!veh) {
+		if (!_vp_route_paths_drawn_dirty.empty()) {
+			// make sure we remove any leftover paths
+			MarkRoutePathsDirty(_vp_route_paths_drawn_dirty);
+			_vp_route_paths_drawn_dirty.clear();
+			DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 0");
+		}
+		return;
+	}
 
 	switch (_settings_client.gui.show_vehicle_route) {
 		/* case 0: return; // No */
 		case 1: { // Simple
 			TileIndex from_tile = GetLastValidOrderLocation(veh);
-			if (from_tile == INVALID_TILE) return;
+			if (from_tile == INVALID_TILE) {
+				if (!_vp_route_paths_drawn_dirty.empty()) {
+					// make sure we remove any leftover paths
+					MarkRoutePathsDirty(_vp_route_paths_drawn_dirty);
+					_vp_route_paths_drawn_dirty.clear();
+					DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 1");
+				}
+				return;
+			}
+
+			std::vector<DrawnPathRouteTileLine> drawn_paths;
 
 			DrawPixelInfo *old_dpi = _cur_dpi;
 			_cur_dpi = &_dpi_for_text;
@@ -1677,9 +1716,25 @@ static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 				}
 				GfxDrawLine(from_x, from_y, to_x, to_y, (final_order == order) ? PC_WHITE : PC_YELLOW, line_width, _settings_client.gui.dash_level_of_route_lines);
 
+				DrawnPathRouteTileLine path = { from_tile, to_tile };
+				drawn_paths.push_back(path);
+
 				const OrderType ot = order->GetType();
 				if (ot == OT_GOTO_STATION || ot == OT_GOTO_DEPOT || ot == OT_GOTO_WAYPOINT || ot == OT_IMPLICIT) from_tile = to_tile;
 			}
+
+			if (!_vp_route_paths_drawn_dirty.empty() && _vp_route_paths_drawn_dirty != drawn_paths) {
+				// make sure we remove any leftover paths
+				MarkRoutePathsDirty(_vp_route_paths_drawn_dirty);
+				DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 2");
+			}
+			if (_vp_route_paths_last_mark_dirty != drawn_paths) {
+				// make sure we're not drawing a partial path
+				MarkRoutePathsDirty(drawn_paths);
+				DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 3");
+			}
+
+			_vp_route_paths_drawn_dirty.swap(drawn_paths); // move
 
 			_cur_dpi = old_dpi;
 			break;
@@ -2757,10 +2812,15 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)
 	assert(from_tile != INVALID_TILE);
 	assert(to_tile != INVALID_TILE);
 
-	int x1 = TileX(from_tile);
-	int y1 = TileY(from_tile);
-	const int x2 = TileX(to_tile);
-	const int y2 = TileY(to_tile);
+	const Point from_pt = RemapCoords2(TileX(from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(from_tile) * TILE_SIZE + TILE_SIZE / 2);
+	const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
+
+	const int block_radius = 20;
+
+	int x1 = from_pt.x / block_radius;
+	int y1 = from_pt.y / block_radius;
+	const int x2 = to_pt.x / block_radius;
+	const int y2 = to_pt.y / block_radius;
 
 	/* http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Simplification */
 	const int dx = abs(x2 - x1);
@@ -2769,7 +2829,13 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)
 	const int sy = (y1 < y2) ? 1 : -1;
 	int err = dx - dy;
 	for (;;) {
-		MarkTileDirtyByTile(TileXY(x1, y1));
+		MarkAllViewportsDirty(
+				(x1 - 1) * block_radius,
+				(y1 - 1) * block_radius,
+				(x1 + 1) * block_radius,
+				(y1 + 1) * block_radius,
+				ZOOM_LVL_END
+		);
 		if (x1 == x2 && y1 == y2) break;
 		const int e2 = 2 * err;
 		if (e2 > -dy) {
@@ -2783,6 +2849,13 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)
 	}
 }
 
+static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines)
+{
+	for (std::vector<DrawnPathRouteTileLine>::const_iterator it = lines.begin(); it != lines.end(); ++it) {
+		MarkTileLineDirty(it->from_tile, it->to_tile);
+	}
+}
+
 void MarkAllRoutePathsDirty(const Vehicle *veh)
 {
 	Order *order;
@@ -2792,6 +2865,9 @@ void MarkAllRoutePathsDirty(const Vehicle *veh)
 			return;
 
 		case 1: // Simple
+			MarkRoutePathsDirty(_vp_route_paths_drawn_dirty);
+			_vp_route_paths_drawn_dirty.clear();
+			std::vector<DrawnPathRouteTileLine> dirtied_paths;
 			from_tile = GetLastValidOrderLocation(veh);
 			if (from_tile == INVALID_TILE) return;
 			FOR_VEHICLE_ORDERS(veh, order) {
@@ -2800,8 +2876,11 @@ void MarkAllRoutePathsDirty(const Vehicle *veh)
 				if (to_tile == INVALID_TILE) continue;
 				MarkTileLineDirty(from_tile, to_tile);
 				const OrderType ot = order->GetType();
+				DrawnPathRouteTileLine path = { from_tile, to_tile };
+				dirtied_paths.push_back(path);
 				if (ot == OT_GOTO_STATION || ot == OT_GOTO_DEPOT || ot == OT_GOTO_WAYPOINT || ot == OT_IMPLICIT) from_tile = to_tile;
 			}
+			_vp_route_paths_last_mark_dirty.swap(dirtied_paths);
 			break;
 	}
 }
