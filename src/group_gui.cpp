@@ -548,18 +548,21 @@ public:
 					group_vehicles++;
 				}
 
-				DrawString(r.left + WD_FRAMERECT_LEFT + 8, r.right - WD_FRAMERECT_RIGHT - 16, r.top + WD_FRAMERECT_TOP + 1, STR_GROUP_PROFIT_THIS_YEAR, TC_BLACK);
+				const int left_edge  = r.left + WD_FRAMERECT_LEFT + 8;
+				const int right_edge = r.right - WD_FRAMERECT_RIGHT - 8;
+
+				DrawString(left_edge, right_edge, r.top + WD_FRAMERECT_TOP + 1, STR_GROUP_PROFIT_THIS_YEAR, TC_BLACK);
 				SetDParam(0, this_year);
-				DrawString(r.left + WD_FRAMERECT_LEFT + 8, r.right - WD_FRAMERECT_RIGHT - 16, r.top + WD_FRAMERECT_TOP + 1, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
+				DrawString(left_edge, right_edge, r.top + WD_FRAMERECT_TOP + 1, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
 
-				DrawString(r.left + WD_FRAMERECT_LEFT + 8, r.right - WD_FRAMERECT_RIGHT - 16, r.top + WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + 2, STR_GROUP_PROFIT_LAST_YEAR, TC_BLACK);
+				DrawString(left_edge, right_edge, r.top + WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + 2, STR_GROUP_PROFIT_LAST_YEAR, TC_BLACK);
 				SetDParam(0, last_year);
-				DrawString(r.left + WD_FRAMERECT_LEFT + 8, r.right - WD_FRAMERECT_RIGHT - 16, r.top + WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + 2, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
+				DrawString(left_edge, right_edge, r.top + WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + 2, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
 
-				DrawString(r.left + WD_FRAMERECT_LEFT + 8, r.right - WD_FRAMERECT_RIGHT - 16, r.top + WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + 3, STR_GROUP_OCCUPANCY, TC_BLACK);
+				DrawString(left_edge, right_edge, r.top + WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + 3, STR_GROUP_OCCUPANCY, TC_BLACK);
 				if (group_vehicles > 0) {
 					SetDParam(0, occupancy / group_vehicles);
-					DrawString(r.left + WD_FRAMERECT_LEFT + 8, r.right - WD_FRAMERECT_RIGHT - 16, r.top + WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + 3, STR_GROUP_OCCUPANCY_VALUE, TC_BLACK, SA_RIGHT);
+					DrawString(left_edge, right_edge, r.top + WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + 3, STR_GROUP_OCCUPANCY_VALUE, TC_BLACK, SA_RIGHT);
 				}
 
 				break;
