@@ -3203,6 +3203,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 	}
 	SigSegState seg_state = _settings_game.pf.reserve_paths ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
 	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !TryPathReserve(t))) {
+		t->vehstatus |= VS_TRAIN_SLOWING;
 		t->cur_speed = 0;
 		return true;
 	}
@@ -3423,6 +3424,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if (v->IsFrontEngine() && v->force_proceed == 0) {
 						if (IsTunnelBridgeWithSignRed(gp.new_tile)) {
 							v->cur_speed = 0;
+							v->vehstatus |= VS_TRAIN_SLOWING;
 							return false;
 						}
 						if (IsTunnelBridgeExit(gp.new_tile)) {
@@ -3511,6 +3513,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						if (IsToCloseBehindTrain(v, gp.new_tile, distance == 0)) {
 							if (distance == 0) v->wait_counter = 0;
 							v->cur_speed = 0;
+							v->vehstatus |= VS_TRAIN_SLOWING;
 							return false;
 						}
 						/* flip signal in front to red on bridges*/
