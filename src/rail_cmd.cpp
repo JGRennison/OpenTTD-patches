@@ -1038,7 +1038,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		}
 		if (flags & DC_EXEC) {
 			if (p2 == 0 && HasWormholeSignals(tile)) { // Toggle signal if already signals present.
-				if (IsTunnelBridgeEntrance (tile)) {
+				if (IsTunnelBridgeEntrance(tile)) {
 					ClrBitTunnelBridgeSignal(tile);
 					ClrBitTunnelBridgeExit(tile_exit);
 					SetBitTunnelBridgeExit(tile);
@@ -1049,7 +1049,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					SetBitTunnelBridgeExit(tile_exit);
 					SetBitTunnelBridgeSignal(tile);
 				}
-			} else{
+			} else {
 				/* Create one direction tunnel/bridge if required. */
 				if (p2 == 0) {
 					SetBitTunnelBridgeSignal(tile);
@@ -1069,7 +1069,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			}
 			MarkTileDirtyByTile(tile);
 			MarkTileDirtyByTile(tile_exit);
-			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, _current_company);
+			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
 		}
 		return cost;
@@ -1517,6 +1517,8 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			_m[end].m2 = 0;
 			MarkTileDirtyByTile(tile);
 			MarkTileDirtyByTile(end);
+			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+			YapfNotifyTrackLayoutChange(tile, track);
 			return CommandCost(EXPENSES_CONSTRUCTION, cost);
 		}
 
