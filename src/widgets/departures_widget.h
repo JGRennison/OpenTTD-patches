@@ -7,16 +7,16 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file waypoint_widget.h Types related to the waypoint widgets. */
+/** @file departures_widget.h Types related to the departures widgets. */
 
 #ifndef WIDGETS_DEPARTURES_WIDGET_H
 #define WIDGETS_DEPARTURES_WIDGET_H
 
 /** Widgets of the WC_DEPARTURES_BOARD. */
 enum DeparturesWindowWidgets {
-	WID_DB_CAPTION,		        ///< Window caption
-	WID_DB_LIST,			    ///< List of departures
-	WID_DB_SCROLLBAR,	        ///< List scrollbar
+	WID_DB_CAPTION,             ///< Window caption
+	WID_DB_LIST,                ///< List of departures
+	WID_DB_SCROLLBAR,           ///< List scrollbar
 	WID_DB_SHOW_DEPS,           ///< Toggle departures button
 	WID_DB_SHOW_ARRS,           ///< Toggle arrivals button
 	WID_DB_SHOW_VIA,            ///< Toggle via button

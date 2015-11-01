@@ -520,6 +520,7 @@ widgets/cheat_widget.h
 widgets/company_widget.h
 widgets/console_widget.h
 widgets/date_widget.h
+widgets/departures_widget.h
 widgets/depot_widget.h
 widgets/dock_widget.h
 widgets/dropdown.cpp
