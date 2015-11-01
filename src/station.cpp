@@ -291,13 +291,11 @@ uint Station::GetCatchmentRadius() const
  * Determines catchment rectangle of this station
  * @return clamped catchment rectangle
  */
-Rect Station::GetCatchmentRect() const
+Rect Station::GetCatchmentRectUsingRadius(uint catchment_radius) const
 {
 	assert(!this->rect.IsEmpty());
 
 	/* Compute acceptance rectangle */
-	int catchment_radius = this->GetCatchmentRadius();
-
 	Rect ret = {
 		max<int>(this->rect.left   - catchment_radius, 0),
 		max<int>(this->rect.top    - catchment_radius, 0),

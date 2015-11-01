@@ -489,7 +489,11 @@ public:
 	static void RecomputeIndustriesNearForAll();
 
 	uint GetCatchmentRadius() const;
-	Rect GetCatchmentRect() const;
+	Rect GetCatchmentRectUsingRadius(uint radius) const;
+	inline Rect GetCatchmentRect() const
+	{
+		return GetCatchmentRectUsingRadius(this->GetCatchmentRadius());
+	}
 
 	/* virtual */ inline bool TileBelongsToRailStation(TileIndex tile) const
 	{

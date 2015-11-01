@@ -330,3 +330,35 @@ void DrawTileZoning(const TileInfo *ti)
 		DrawZoningSprites(SPR_ZONING_INNER_HIGHLIGHT_BASE, TileZoningSpriteEvaluation(ti->tile, _local_company, _zoning.inner), ti);
 	}
 }
+
+static uint GetZoningModeDependantStationCoverageRadius(const Station *st, ZoningEvaluationMode ev_mode)
+{
+	switch (ev_mode) {
+		case ZEM_STA_CATCH:      return st->GetCatchmentRadius();
+		case ZEM_BUL_UNSER:      return st->GetCatchmentRadius();
+		case ZEM_IND_UNSER:      return st->GetCatchmentRadius() + 10; // this is to wholly update industries partially within the region
+		default:                 return 0;
+	}
+}
+
+/**
+ * Mark dirty the coverage area around a station if the current zoning mode depends on station coverage
+ *
+ * @param const Station *st
+ *        The station to use
+ */
+void ZoningMarkDirtyStationCoverageArea(const Station *st)
+{
+	if (st->rect.IsEmpty()) return;
+
+	uint radius = max<uint>(GetZoningModeDependantStationCoverageRadius(st, _zoning.outer), GetZoningModeDependantStationCoverageRadius(st, _zoning.inner));
+
+	if (radius > 0) {
+		Rect rect = st->GetCatchmentRectUsingRadius(radius);
+		for (int x = rect.left; x <= rect.right; x++) {
+			for (int y = rect.top; y <= rect.bottom; y++) {
+				MarkTileDirtyByTile(TileXY(x, y));
+			}
+		}
+	}
+}
