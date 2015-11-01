@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.7.0
+## JGR's Patchpack version 0.7.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -38,7 +38,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Zoning: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=33701)  
   This is modified to remove unimplemented modes, implement station ownership checks and implement station facility checks for industries.  
-  As of v0.6.0, add a mode to show restricted signals.
+  As of v0.6.0, add a mode to show restricted signals.  
+  As of v0.7.1, fix adding/removing station tiles not redrawing affected surrounding tiles when in the station catchment or unserved building/industry modes.
 
 * Departure boards: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=49956)  
   * Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
@@ -50,7 +51,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Vehicles visible in tunnels (transparency setting): [imported](http://dev.openttdcoop.org/projects/clientpatches/repository/changes/VehicelsInTunnels.diff)
 
-* Signals in tunnels and on bridges: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=41260)
+* Signals in tunnels and on bridges: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=41260)  
+  As of v0.7.1, fix various issues involving redrawing, updating of adjacent signals, and vehicles emitting smoke whilst stopped at a red signal.
 
 * Measurement tools: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49212)
 
@@ -72,12 +74,13 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Add setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
   * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
   * Add a company setting to enable automatic timetabling for new vehicles (added in v0.4.0).  
-  * As of v0.7.0, the setting to scale vehicle lateness adjustments is a company setting.
+  * As of v0.7.0, the setting to scale vehicle lateness adjustments is a company setting. As of v0.7.1 the default value has been changed to 40%.
 
 * Vehicle repair cost: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=45642)
 
 * Enhanced viewport: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=53394)  
-  Fixed crash when looking at aqueducts in viewport map mode.
+  Fixed crash when looking at aqueducts in viewport map mode.  
+  As of v0.7.1, fix flicker and render errors of bridge/tunnels in viewport map mode, and rendering/clearing errors of vehicle route lines.
 
 * Infrastructure sharing: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)  
   Fixed various issues with additions to the settings GUI.
@@ -145,8 +148,11 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   Enable stack traces on MinGW, try to demangle C++ symbol names, try to use libbfd for better symbol lookup, handle SIGSEGV while backtracing.
 
 * Multiplayer desync fixes/changes  
-  * Fix YAPF pathfinder desync issue involving rail track type changes which where only passable by a subset of vehicles (trunk bug). (added in v0.6.0)  
+  * Fix YAPF pathfinder desync issue involving rail track type changes which where only passable by a subset of vehicles (trunk bug). (added in v0.6.0, fixed in trunk as of v0.7.1)  
   * Logging: Various changes and improvements to desync-related logging and debugging, see changelog for details.
+
+* Translations  
+  * German (by Auge): including vehicle group info, vehicle details window, and the zoning toolbar.
 
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  

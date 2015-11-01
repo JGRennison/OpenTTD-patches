@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.7.1 (2015-11-01)
+* Enhanced viewports:
+  * Fix flicker and render errors of bridge/tunnels in viewport map mode.
+  * Fix rendering, clearing and timely update issues of vehicle route lines.
+* Zoning: Fix adding/removing station tiles not redrawing affected surrounding tiles when in the station catchment or unserved building/industry modes.
+* Bridges on signals and tunnels:
+  * Fix adjacent signals around bridge/tunnels not being updated when adding/updating (on the far side) and removing (on both sides) signals from the bridge/tunnel.
+  * Fix middle of bridge not being redrawn when adding/updating/removing signals to bridges.
+  * Fix vehicles continually emitting smoke when stopped at a red signal on a bridge.
+* Change the default for the auto timetable separation rate company setting to 40%. This is to improve jam-resistance by default.
+* Vehicle group info: make margins around text symmetric.
+* Fix compilation on some compilers/platforms
+* Add the changelog and readme to the bundle/install target.
+* Add German translations by Auge, including: vehicle group info, vehicle details window, and the zoning toolbar.
+* Bump trunk base from r27415 to r27428
+
 ### v0.7.0 (2015-10-29)
 * Fix timetable rounding depending on the client time display mode setting, which caused desyncs in multiplayer (departure boards patch bug).
 * Add reverse at waypoint orders.
