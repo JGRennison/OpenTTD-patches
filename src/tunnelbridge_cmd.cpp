@@ -80,6 +80,20 @@ void MarkBridgeDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_
 	MarkBridgeDirty(tile, GetOtherTunnelBridgeEnd(tile), GetTunnelBridgeDirection(tile), GetBridgeHeight(tile), mark_dirty_if_zoomlevel_is_below);
 }
 
+/**
+ * Mark bridge or tunnel tiles dirty.
+ * @param tile Bridge head or tunnel entrance.
+ */
+void MarkBridgeOrTunnelDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
+{
+	if (IsBridge(tile)) {
+		MarkBridgeDirty(tile, mark_dirty_if_zoomlevel_is_below);
+	} else {
+		MarkTileDirtyByTile(tile, mark_dirty_if_zoomlevel_is_below);
+		MarkTileDirtyByTile(GetOtherTunnelBridgeEnd(tile), mark_dirty_if_zoomlevel_is_below);
+	}
+}
+
 /** Reset the data been eventually changed by the grf loaded. */
 void ResetBridges()
 {
