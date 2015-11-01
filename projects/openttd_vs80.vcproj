@@ -2379,6 +2379,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\widgets\departures_widget.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\widgets\depot_widget.h"
 				>
 			</File>
