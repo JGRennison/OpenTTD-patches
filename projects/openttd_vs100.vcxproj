@@ -431,6 +431,7 @@
     <ClInclude Include="..\src\console_type.h" />
     <ClInclude Include="..\src\cpu.h" />
     <ClInclude Include="..\src\crashlog.h" />
+    <ClInclude Include="..\src\crashlog_bfd.h" />
     <ClInclude Include="..\src\currency.h" />
     <ClInclude Include="..\src\date_func.h" />
     <ClInclude Include="..\src\date_gui.h" />
@@ -642,6 +643,7 @@
     <ClInclude Include="..\src\timetable.h" />
     <ClInclude Include="..\src\toolbar_gui.h" />
     <ClInclude Include="..\src\town.h" />
+    <ClInclude Include="..\src\town_gui.h" />
     <ClInclude Include="..\src\town_type.h" />
     <ClInclude Include="..\src\townname_func.h" />
     <ClInclude Include="..\src\townname_type.h" />

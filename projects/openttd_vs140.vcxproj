@@ -349,6 +349,7 @@
     <ClCompile Include="..\src\ground_vehicle.cpp" />
     <ClCompile Include="..\src\heightmap.cpp" />
     <ClCompile Include="..\src\highscore.cpp" />
+    <ClCompile Include="..\src\infrastructure.cpp" />
     <ClCompile Include="..\src\hotkeys.cpp" />
     <ClCompile Include="..\src\ini.cpp" />
     <ClCompile Include="..\src\ini_load.cpp" />
@@ -375,6 +376,7 @@
     <ClCompile Include="..\src\openttd.cpp" />
     <ClCompile Include="..\src\order_backup.cpp" />
     <ClCompile Include="..\src\pbs.cpp" />
+    <ClCompile Include="..\src\plans.cpp" />
     <ClCompile Include="..\src\progress.cpp" />
     <ClCompile Include="..\src\rail.cpp" />
     <ClCompile Include="..\src\rev.cpp" />
@@ -384,6 +386,8 @@
     <ClCompile Include="..\src\sdl.cpp" />
     <ClCompile Include="..\src\settings.cpp" />
     <ClCompile Include="..\src\signal.cpp" />
+    <ClCompile Include="..\src\programmable_signals.cpp" />
+    <ClCompile Include="..\src\programmable_signals_gui.cpp" />
     <ClCompile Include="..\src\signs.cpp" />
     <ClCompile Include="..\src\sound.cpp" />
     <ClCompile Include="..\src\sprite.cpp" />
@@ -444,6 +448,7 @@
     <ClInclude Include="..\src\console_type.h" />
     <ClInclude Include="..\src\cpu.h" />
     <ClInclude Include="..\src\crashlog.h" />
+    <ClInclude Include="..\src\crashlog_bfd.h" />
     <ClInclude Include="..\src\currency.h" />
     <ClInclude Include="..\src\date_func.h" />
     <ClInclude Include="..\src\date_gui.h" />
@@ -502,6 +507,7 @@
     <ClInclude Include="..\src\industry.h" />
     <ClInclude Include="..\src\industry_type.h" />
     <ClInclude Include="..\src\industrytype.h" />
+    <ClInclude Include="..\src\infrastructure_func.h" />
     <ClInclude Include="..\src\ini_type.h" />
     <ClInclude Include="..\src\landscape.h" />
     <ClInclude Include="..\src\landscape_type.h" />
@@ -578,6 +584,9 @@
     <ClInclude Include="..\src\order_func.h" />
     <ClInclude Include="..\src\order_type.h" />
     <ClInclude Include="..\src\pbs.h" />
+    <ClInclude Include="..\src\plans_base.h" />
+    <ClInclude Include="..\src\plans_func.h" />
+    <ClInclude Include="..\src\plans_type.h" />
     <ClInclude Include="..\src\progress.h" />
     <ClInclude Include="..\src\querystring_gui.h" />
     <ClInclude Include="..\src\rail.h" />
@@ -603,11 +612,13 @@
     <ClInclude Include="..\src\ship.h" />
     <ClInclude Include="..\src\signal_func.h" />
     <ClInclude Include="..\src\signal_type.h" />
+    <ClInclude Include="..\src\programmable_signals.h" />
     <ClInclude Include="..\src\signs_base.h" />
     <ClInclude Include="..\src\signs_func.h" />
     <ClInclude Include="..\src\signs_type.h" />
     <ClInclude Include="..\src\slope_func.h" />
     <ClInclude Include="..\src\slope_type.h" />
+    <ClInclude Include="..\src\smallmap_colours.h" />
     <ClInclude Include="..\src\smallmap_gui.h" />
     <ClInclude Include="..\src\sortlist_type.h" />
     <ClInclude Include="..\src\sound_func.h" />
@@ -649,6 +660,7 @@
     <ClInclude Include="..\src\timetable.h" />
     <ClInclude Include="..\src\toolbar_gui.h" />
     <ClInclude Include="..\src\town.h" />
+    <ClInclude Include="..\src\town_gui.h" />
     <ClInclude Include="..\src\town_type.h" />
     <ClInclude Include="..\src\townname_func.h" />
     <ClInclude Include="..\src\townname_type.h" />
@@ -681,6 +693,7 @@
     <ClInclude Include="..\src\window_type.h" />
     <ClInclude Include="..\src\zoom_func.h" />
     <ClInclude Include="..\src\zoom_type.h" />
+    <ClInclude Include="..\src\zoning.h" />
     <ClCompile Include="..\src\core\alloc_func.cpp" />
     <ClInclude Include="..\src\core\alloc_func.hpp" />
     <ClInclude Include="..\src\core\alloc_type.hpp" />
@@ -745,6 +758,7 @@
     <ClCompile Include="..\src\object_gui.cpp" />
     <ClCompile Include="..\src\order_gui.cpp" />
     <ClCompile Include="..\src\osk_gui.cpp" />
+    <ClCompile Include="..\src\plans_gui.cpp" />
     <ClCompile Include="..\src\rail_gui.cpp" />
     <ClCompile Include="..\src\road_gui.cpp" />
     <ClCompile Include="..\src\roadveh_gui.cpp" />
@@ -767,6 +781,7 @@
     <ClCompile Include="..\src\vehicle_gui.cpp" />
     <ClCompile Include="..\src\viewport_gui.cpp" />
     <ClCompile Include="..\src\waypoint_gui.cpp" />
+    <ClCompile Include="..\src\zoning_gui.cpp" />
     <ClInclude Include="..\src\widgets\airport_widget.h" />
     <ClInclude Include="..\src\widgets\ai_widget.h" />
     <ClInclude Include="..\src\widgets\autoreplace_widget.h" />
@@ -807,6 +822,7 @@
     <ClInclude Include="..\src\widgets\object_widget.h" />
     <ClInclude Include="..\src\widgets\order_widget.h" />
     <ClInclude Include="..\src\widgets\osk_widget.h" />
+    <ClInclude Include="..\src\widgets\plans_widget.h" />
     <ClInclude Include="..\src\widgets\rail_widget.h" />
     <ClInclude Include="..\src\widgets\road_widget.h" />
     <ClInclude Include="..\src\widgets\settings_widget.h" />
@@ -835,6 +851,7 @@
     <ClCompile Include="..\src\misc_cmd.cpp" />
     <ClCompile Include="..\src\object_cmd.cpp" />
     <ClCompile Include="..\src\order_cmd.cpp" />
+    <ClCompile Include="..\src\plans_cmd.cpp" />
     <ClCompile Include="..\src\rail_cmd.cpp" />
     <ClCompile Include="..\src\road_cmd.cpp" />
     <ClCompile Include="..\src\roadveh_cmd.cpp" />
@@ -851,6 +868,7 @@
     <ClCompile Include="..\src\void_cmd.cpp" />
     <ClCompile Include="..\src\water_cmd.cpp" />
     <ClCompile Include="..\src\waypoint_cmd.cpp" />
+    <ClCompile Include="..\src\zoning_cmd.cpp" />
     <ClCompile Include="..\src\saveload\afterload.cpp" />
     <ClCompile Include="..\src\saveload\ai_sl.cpp" />
     <ClCompile Include="..\src\saveload\airport_sl.cpp" />
@@ -879,6 +897,7 @@
     <ClInclude Include="..\src\saveload\oldloader.h" />
     <ClCompile Include="..\src\saveload\oldloader_sl.cpp" />
     <ClCompile Include="..\src\saveload\order_sl.cpp" />
+    <ClCompile Include="..\src\saveload\plans_sl.cpp" />
     <ClCompile Include="..\src\saveload\saveload.cpp" />
     <ClInclude Include="..\src\saveload\saveload.h" />
     <ClInclude Include="..\src\saveload\saveload_filter.h" />
@@ -892,6 +911,7 @@
     <ClCompile Include="..\src\saveload\town_sl.cpp" />
     <ClCompile Include="..\src\saveload\vehicle_sl.cpp" />
     <ClCompile Include="..\src\saveload\waypoint_sl.cpp" />
+    <ClCompile Include="..\src\saveload\signal_sl.cpp" />
     <ClInclude Include="..\src\saveload\extended_ver_sl.h" />
     <ClCompile Include="..\src\saveload\extended_ver_sl.cpp" />
     <ClInclude Include="..\src\table\airport_defaults.h" />
@@ -905,6 +925,7 @@
     <ClInclude Include="..\src\table\cargo_const.h" />
     <ClInclude Include="..\src\table\clear_land.h" />
     <ClInclude Include="..\src\table\control_codes.h" />
+    <ClInclude Include="..\src\table\darklight_colours.h" />
     <ClInclude Include="..\src\table\elrail_data.h" />
     <ClInclude Include="..\src\table\engines.h" />
     <ClInclude Include="..\src\table\genland.h" />
@@ -1296,6 +1317,10 @@
     <ClCompile Include="..\src\os\windows\win32.cpp" />
     <ClInclude Include="..\src\thread\thread.h" />
     <ClCompile Include="..\src\thread\thread_win32.cpp" />
+    <ClInclude Include="..\src\tracerestrict.h" />
+    <ClCompile Include="..\src\tracerestrict.cpp" />
+    <ClCompile Include="..\src\tracerestrict_gui.cpp" />
+    <ClCompile Include="..\src\saveload\tracerestrict_sl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />

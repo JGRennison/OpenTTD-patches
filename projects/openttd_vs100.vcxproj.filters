@@ -522,6 +522,9 @@
     <ClInclude Include="..\src\crashlog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\crashlog_bfd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\currency.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1153,6 +1156,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\town.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\town_gui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\town_type.h">
