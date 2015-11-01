@@ -146,7 +146,9 @@ void VehicleServiceInDepot(Vehicle *v)
 					NOT_REACHED();
 			}
 			assert(type != INVALID_EXPENSES);
-			Money repair_cost = (v->breakdowns_since_last_service * v->repair_cost / _settings_game.vehicle.repair_cost) + 1;
+
+			// The static cast is to fix compilation on (old) MSVC as the overload for OverflowSafeInt operator / is ambiguous.
+			Money repair_cost = (v->breakdowns_since_last_service * v->repair_cost / static_cast<uint>(_settings_game.vehicle.repair_cost)) + 1;
 			CommandCost cost(type, repair_cost);
 			v->First()->profit_this_year -= cost.GetCost() << 8;
 			SubtractMoneyFromCompany(cost);
