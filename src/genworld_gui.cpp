@@ -37,7 +37,7 @@
 extern void MakeNewgameSettingsLive();
 
 /** Enum for the modes we can generate in. */
-enum GenenerateLandscapeWindowMode {
+enum GenerateLandscapeWindowMode {
 	GLWM_GENERATE,  ///< Generate new game.
 	GLWM_HEIGHTMAP, ///< Load from heightmap.
 	GLWM_SCENARIO,  ///< Generate flat land.
@@ -139,8 +139,7 @@ static const NWidgetPart _nested_generate_landscape_widgets[] = {
 						NWidget(WWT_DROPDOWN, COLOUR_ORANGE, WID_GL_RIVER_PULLDOWN), SetDataTip(STR_JUST_STRING, STR_NULL), SetFill(1, 0),
 					EndContainer(),
 				EndContainer(),
-				NWidget(NWID_SPACER), SetFill(1, 1),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREEN, WID_GL_GENERATE_BUTTON), SetMinimalSize(84, 30), SetDataTip(STR_MAPGEN_GENERATE, STR_NULL), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREEN, WID_GL_GENERATE_BUTTON), SetMinimalSize(84, 0), SetDataTip(STR_MAPGEN_GENERATE, STR_NULL), SetFill(1, 1),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_SPACER), SetMinimalSize(0, 4),
@@ -250,8 +249,7 @@ static const NWidgetPart _nested_heightmap_load_widgets[] = {
 								EndContainer(),
 							EndContainer(),
 						EndContainer(),
-						NWidget(NWID_SPACER), SetFill(1, 1),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREEN, WID_GL_GENERATE_BUTTON), SetMinimalSize(84, 30), SetDataTip(STR_MAPGEN_GENERATE, STR_NULL), SetFill(1, 0),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREEN, WID_GL_GENERATE_BUTTON), SetMinimalSize(84, 0), SetDataTip(STR_MAPGEN_GENERATE, STR_NULL), SetFill(1, 1),
 					EndContainer(),
 				EndContainer(),
 			EndContainer(),
@@ -260,7 +258,7 @@ static const NWidgetPart _nested_heightmap_load_widgets[] = {
 	EndContainer(),
 };
 
-static void StartGeneratingLandscape(GenenerateLandscapeWindowMode mode)
+static void StartGeneratingLandscape(GenerateLandscapeWindowMode mode)
 {
 	DeleteAllNonVitalWindows();
 	ClearErrorMessages();
@@ -280,7 +278,7 @@ static void StartGeneratingLandscape(GenenerateLandscapeWindowMode mode)
 
 static void LandscapeGenerationCallback(Window *w, bool confirmed)
 {
-	if (confirmed) StartGeneratingLandscape((GenenerateLandscapeWindowMode)w->window_number);
+	if (confirmed) StartGeneratingLandscape((GenerateLandscapeWindowMode)w->window_number);
 }
 
 static DropDownList *BuildMapsizeDropDown()
@@ -314,7 +312,7 @@ struct GenerateLandscapeWindow : public Window {
 	uint x;
 	uint y;
 	char name[64];
-	GenenerateLandscapeWindowMode mode;
+	GenerateLandscapeWindowMode mode;
 
 	GenerateLandscapeWindow(WindowDesc *desc, WindowNumber number = 0) : Window(desc)
 	{
@@ -322,7 +320,7 @@ struct GenerateLandscapeWindow : public Window {
 
 		this->LowerWidget(_settings_newgame.game_creation.landscape + WID_GL_TEMPERATE);
 
-		this->mode = (GenenerateLandscapeWindowMode)this->window_number;
+		this->mode = (GenerateLandscapeWindowMode)this->window_number;
 
 		/* Disable town, industry and trees in SE */
 		this->SetWidgetDisabledState(WID_GL_TOWN_PULLDOWN,     _game_mode == GM_EDITOR);
@@ -405,10 +403,10 @@ struct GenerateLandscapeWindow : public Window {
 
 		/* You can't select smoothness / non-water borders if not terragenesis */
 		if (mode == GLWM_GENERATE) {
-			this->SetWidgetDisabledState(WID_GL_SMOOTHNESS_PULLDOWN, _settings_newgame.game_creation.land_generator == 0);
-			this->SetWidgetDisabledState(WID_GL_VARIETY_PULLDOWN, _settings_newgame.game_creation.land_generator == 0);
-			this->SetWidgetDisabledState(WID_GL_BORDERS_RANDOM, _settings_newgame.game_creation.land_generator == 0 || !_settings_newgame.construction.freeform_edges);
-			this->SetWidgetsDisabledState(_settings_newgame.game_creation.land_generator == 0 || !_settings_newgame.construction.freeform_edges || _settings_newgame.game_creation.water_borders == BORDERS_RANDOM,
+			this->SetWidgetDisabledState(WID_GL_SMOOTHNESS_PULLDOWN, _settings_newgame.game_creation.land_generator == LG_ORIGINAL);
+			this->SetWidgetDisabledState(WID_GL_VARIETY_PULLDOWN, _settings_newgame.game_creation.land_generator == LG_ORIGINAL);
+			this->SetWidgetDisabledState(WID_GL_BORDERS_RANDOM, _settings_newgame.game_creation.land_generator == LG_ORIGINAL || !_settings_newgame.construction.freeform_edges);
+			this->SetWidgetsDisabledState(_settings_newgame.game_creation.land_generator == LG_ORIGINAL || !_settings_newgame.construction.freeform_edges || _settings_newgame.game_creation.water_borders == BORDERS_RANDOM,
 					WID_GL_WATER_NW, WID_GL_WATER_NE, WID_GL_WATER_SE, WID_GL_WATER_SW, WIDGET_LIST_END);
 
 			this->SetWidgetLoweredState(WID_GL_BORDERS_RANDOM, _settings_newgame.game_creation.water_borders == BORDERS_RANDOM);
@@ -418,7 +416,7 @@ struct GenerateLandscapeWindow : public Window {
 			this->SetWidgetLoweredState(WID_GL_WATER_SE, HasBit(_settings_newgame.game_creation.water_borders, BORDER_SE));
 			this->SetWidgetLoweredState(WID_GL_WATER_SW, HasBit(_settings_newgame.game_creation.water_borders, BORDER_SW));
 
-			this->SetWidgetsDisabledState(_settings_newgame.game_creation.land_generator == 0 && (_settings_newgame.game_creation.landscape == LT_ARCTIC || _settings_newgame.game_creation.landscape == LT_TROPIC),
+			this->SetWidgetsDisabledState(_settings_newgame.game_creation.land_generator == LG_ORIGINAL && (_settings_newgame.game_creation.landscape == LT_ARCTIC || _settings_newgame.game_creation.landscape == LT_TROPIC),
 					WID_GL_TERRAIN_PULLDOWN, WID_GL_WATER_PULLDOWN, WIDGET_LIST_END);
 		}
 
@@ -434,7 +432,7 @@ struct GenerateLandscapeWindow : public Window {
 		this->SetWidgetDisabledState(WID_GL_SNOW_LEVEL_UP,   _settings_newgame.game_creation.snow_line_height >= MAX_SNOWLINE_HEIGHT || _settings_newgame.game_creation.landscape != LT_ARCTIC);
 
 		/* Do not allow a custom sea level with the original land generator. */
-		if (_settings_newgame.game_creation.land_generator == 0 &&
+		if (_settings_newgame.game_creation.land_generator == LG_ORIGINAL &&
 				_settings_newgame.difficulty.quantity_sea_lakes == CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY) {
 			_settings_newgame.difficulty.quantity_sea_lakes = CUSTOM_SEA_LEVEL_MIN_PERCENTAGE;
 		}
@@ -657,7 +655,7 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_WATER_PULLDOWN: { // Water quantity
 				uint32 hidden_mask = 0;
 				/* Disable custom water level when the original map generator is active. */
-				if (_settings_newgame.game_creation.land_generator == 0) {
+				if (_settings_newgame.game_creation.land_generator == LG_ORIGINAL) {
 					SetBit(hidden_mask, CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY);
 				}
 				ShowDropDownMenu(this, _sea_lakes, _settings_newgame.difficulty.quantity_sea_lakes, WID_GL_WATER_PULLDOWN, 0, hidden_mask);
@@ -822,7 +820,7 @@ static WindowDesc _heightmap_load_desc(
 	_nested_heightmap_load_widgets, lengthof(_nested_heightmap_load_widgets)
 );
 
-static void _ShowGenerateLandscape(GenenerateLandscapeWindowMode mode)
+static void _ShowGenerateLandscape(GenerateLandscapeWindowMode mode)
 {
 	uint x = 0;
 	uint y = 0;

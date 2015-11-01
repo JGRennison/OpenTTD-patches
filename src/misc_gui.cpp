@@ -632,7 +632,7 @@ static const NWidgetPart _nested_tooltips_widgets[] = {
 static WindowDesc _tool_tips_desc(
 	WDP_MANUAL, NULL, 0, 0, // Coordinates and sizes are not used,
 	WC_TOOLTIPS, WC_NONE,
-	0,
+	WDF_NO_FOCUS,
 	_nested_tooltips_widgets, lengthof(_nested_tooltips_widgets)
 );
 
@@ -684,7 +684,7 @@ struct TooltipsWindow : public Window
 		/* There is only one widget. */
 		for (uint i = 0; i != this->paramcount; i++) SetDParam(i, this->params[i]);
 
-		size->width  = min(GetStringBoundingBox(this->string_id).width, UnScaleByZoom(4 * 194, ZOOM_LVL_GUI));
+		size->width  = min(GetStringBoundingBox(this->string_id).width, ScaleGUITrad(194));
 		size->height = GetStringHeight(this->string_id, size->width);
 
 		/* Increase slightly to have some space around the box. */
@@ -825,7 +825,7 @@ Point QueryString::GetCaretPosition(const Window *w, int wid) const
 	int delta = min(0, (right - left) - tb->pixels - 10);
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
-	Point pt = {left + WD_FRAMERECT_LEFT + tb->caretxoffs + delta, wi->pos_y + WD_FRAMERECT_TOP};
+	Point pt = {left + WD_FRAMERECT_LEFT + tb->caretxoffs + delta, (int)wi->pos_y + WD_FRAMERECT_TOP};
 	return pt;
 }
 

@@ -580,7 +580,7 @@ STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}화물 �
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}통과시간
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}10 단위(1만 리터)의 화물을 20칸 거리만큼 운송할 때의 운송비 지급량
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}모두 사용
-STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}모두 사용 안함
+STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}모두 사용 안 함
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}화물 운송단가 비율 그래프에서 모든 화물을 표시
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}화물 운송단가 비율 그래프에서 모든 화물을 표시 안 함
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}이 화물에 대한 그래프 켜기/끄기
@@ -754,7 +754,7 @@ STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STR
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
 STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHITE}{TOWN}
-STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}모두 사용 안함
+STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}모두 사용 안 함
 STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}모두 사용
 STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}고도 표시
 STR_SMALLMAP_TOOLTIP_DISABLE_ALL_INDUSTRIES                     :{BLACK}지도 상의 모든 산업시설을 숨깁니다.
@@ -807,7 +807,7 @@ STR_NEWS_COMPANY_IN_TROUBLE_DESCRIPTION                         :{BIG_FONT}{BLAC
 STR_NEWS_COMPANY_MERGER_TITLE                                   :{BIG_FONT}{BLACK}운송 회사 합병!
 STR_NEWS_COMPANY_MERGER_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING} 회사가 {STRING} 회사에게 {CURRENCY_LONG}의 가격으로 인수합병되었습니다!
 STR_NEWS_COMPANY_BANKRUPT_TITLE                                 :{BIG_FONT}{BLACK}파산!
-STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING}가 채권자에 의해 파산되고 모든 자산이 팔렸습니다!
+STR_NEWS_COMPANY_BANKRUPT_DESCRIPTION                           :{BIG_FONT}{BLACK}{STRING} 회사가 채권자에 의해 모든 자산이 팔려 파산하였습니다!
 STR_NEWS_COMPANY_LAUNCH_TITLE                                   :{BIG_FONT}{BLACK}새로운 운송회사 등장!
 STR_NEWS_COMPANY_LAUNCH_DESCRIPTION                             :{BIG_FONT}{BLACK}{STRING}{G 0 "이" "가"} {TOWN}에서 공사를 시작했습니다!
 STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLACK}{STRING}의 관리권이 {STRING}(으)로 넘어갔습니다!
@@ -850,12 +850,12 @@ STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} : 차량이 낡았습니다.
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} : 차량이 매우 낡았습니다.
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD_AND                        :{WHITE}{VEHICLE} : 차량이 매우 낡아 교체가 시급합니다
-STR_NEWS_TRAIN_IS_STUCK                                         :{WHITE}{VEHICLE} : 다음 목적지로의 경로를 찾을 수 없습니다.
+STR_NEWS_TRAIN_IS_STUCK                                         :{WHITE}{VEHICLE} : 다음 목적지로 가는 경로를 찾을 수 없습니다.
 STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} : 아직 다음 목적지에 도착하지 못했습니다.
 STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :{WHITE}{VEHICLE}의 작년 수익이 {CURRENCY_LONG} 입니다.
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}거리가 너무 멀어서 {VEHICLE}이 다음 목적지에 도착할 수 없습니다
 
-STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}경로상에 계획된 개조에 실패하여 {VEHICLE}{P "가" "이"} 운행을 멈췄습니다.
+STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}경로 상에 있던 개조에 실패하여 {VEHICLE}의 운행을 멈췄습니다.
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}{VEHICLE}의 자동 교체에 실패하였습니다{}{STRING}
 
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}신형 {STRING}{G 0 "을" "를"} 사용할 수 있습니다!
@@ -928,10 +928,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :그루지야 �
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :이란 리알 (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}차량 통행 방식
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}차량 통행 방법 선택
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :좌측통행
@@ -968,7 +964,7 @@ STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}자동 �
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}게임 자동 저장 간격을 선택
 
 ############ start of autosave dropdown
-STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :사용 안함
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF                          :사용 안 함
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :매달
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :3개월마다
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :6개월마다
@@ -1026,7 +1022,7 @@ STR_CURRENCY_SUFFIX                                             :{LTBLUE}접미�
 STR_CURRENCY_SET_CUSTOM_CURRENCY_SUFFIX_TOOLTIP                 :{BLACK}사용자 화폐 단위 뒤에 붙는 문구를 설정하십시오.
 
 STR_CURRENCY_SWITCH_TO_EURO                                     :{LTBLUE}유로화로 전환: {ORANGE}{NUM}
-STR_CURRENCY_SWITCH_TO_EURO_NEVER                               :{LTBLUE}유로화로 전환: {ORANGE}안함
+STR_CURRENCY_SWITCH_TO_EURO_NEVER                               :{LTBLUE}유로화로 전환: {ORANGE}전환하지 않음
 STR_CURRENCY_SET_CUSTOM_CURRENCY_TO_EURO_TOOLTIP                :{BLACK}유로화(€) 전환 연도를 설정하십시오.
 STR_CURRENCY_DECREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP           :{BLACK}유로화(€) 전환 연도를 앞으로 당깁니다.
 STR_CURRENCY_INCREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP           :{BLACK}유로화(€) 전환 연도를 늦춥니다.
@@ -1218,7 +1214,7 @@ STR_CONFIG_SETTING_SIGNALSIDE_DRIVING_SIDE                      :진행 방향�
 STR_CONFIG_SETTING_SIGNALSIDE_RIGHT                             :오른쪽에
 STR_CONFIG_SETTING_SHOWFINANCES                                 :연말에 자동으로 재정 창을 띄움: {STRING}
 STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :이 옵션을 켜면 회사의 재정 상태를 확인하기 쉽도록 매년 말에 재정 창이 자동으로 뜹니다.
-STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :새로 지정하는 경로는 기본적으로 '직통'으로 처리: {STRING}
+STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :새로 지정하는 경로는 기본적으로 '직행'으로 처리: {STRING}
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :일반적으로 차량은 경로 상에 있는 모든 역에 정차하게 되어있습니다. 이 옵션을 켜면 차량이 마지막 목적지까지 정차없이 모든 역을 통과할 것입니다. 이 옵션은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
 STR_CONFIG_SETTING_STOP_LOCATION                                :새로 지정하는 역 정차 경로는 기본적으로 역의 {STRING}에 정지하도록 설정
 STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :열차가 기본적으로 정거장의 어느 위치에 정차할 것인지를 설정합니다. '가까운 쪽'은 역에 진입하는 곳과 가까운 곳에, '중간'은 역 중앙에, '먼쪽'은 진입하는 곳과 먼 곳에 정차합니다. 이 옵션은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
@@ -1235,7 +1231,7 @@ STR_CONFIG_SETTING_BRIBE                                        :지역 당국�
 STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :회사가 지역 도시 당국에 뇌물을 주는 것을 허용합니다. 뇌물 행위가 적발되는 경우, 회사는 해당 도시에서 6개월간 아무 행동도 할 수 없습니다.
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE                              :독점 운송권 구입 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT                     :한 회사가 어떤 도시의 독점수송권을 구매하면, 그 도시에 있는 상대편의 역에서는 그 해 동안 (승객을 포함한) 그 어떠한 화물도 받을 수 없습니다.
-STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS                         :도시 상업 건물 건설에 투자하는 행위 허용: {STRING}
+STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS                         :도시 상업 건물 건설에 투자하는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS_HELPTEXT                :회사가 도시가 새로운 건물에 투자할 수 있도록 자금을 주는 것을 허용합니다.
 STR_CONFIG_SETTING_ALLOW_FUND_ROAD                              :도시 도로 보수공사 시행을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_FUND_ROAD_HELPTEXT                     :도로 기반의 수송 체계를 갖추고 있는 다른 회사를 방해하기 위해 해당 도시가 도로 재건축을 시작하도록 회사가 도시에 돈을 지불하는 행위를 허용합니다.
@@ -1322,7 +1318,7 @@ STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :지도의 나�
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :없음
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :오리지널
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :향상됨
-STR_CONFIG_SETTING_ROAD_SIDE                                    :자동차/전차: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE                                    :자동차 통행 방향: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :통행방향을 선택하세요.
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :높이맵 회전: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :반시계방향
@@ -1498,9 +1494,9 @@ STR_CONFIG_SETTING_NEWS_INDUSTRY_CLOSE                          :산업시설 �
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CLOSE_HELPTEXT                 :산업시설이 폐쇄될 때 메시지로 알려줍니다.
 STR_CONFIG_SETTING_NEWS_ECONOMY_CHANGES                         :경제 변화: {STRING}
 STR_CONFIG_SETTING_NEWS_ECONOMY_CHANGES_HELPTEXT                :거시적인 경제에 변화가 생기면 뉴스 메시지로 알려줍니다.
-STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_COMPANY                :내 회사가 달성한 산업시설의 생산량 변동: {STRING}
+STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_COMPANY                :내 회사에 의한 산업시설의 생산량 변동: {STRING}
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_COMPANY_HELPTEXT       :내 회사가 수송하는 산업시설의 생산량이 변하면 소식으로 알려줍니다.
-STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_OTHER                  :경쟁자에 의한 산업시설의 생산 변화: {STRING}
+STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_OTHER                  :경쟁사에 의한 산업시설의 생산량 변동: {STRING}
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_OTHER_HELPTEXT         :경쟁사가 수송하고 있는 산업 시설의 생산량이 변하면 메시지로 알려줍니다.
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_UNSERVED               :다른 산업 생산물 변화: {STRING}
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_UNSERVED_HELPTEXT      :아무도 수송하지 않는 산업시설의 생산량이 변하면 소식으로 알려줍니다.
@@ -1695,7 +1691,7 @@ STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}컴퓨�
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :오리지널
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(추천)
+STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(권장)
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :열차에 사용할 경로 탐색법: {STRING}
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :열차에 사용할 경로 탐색 방법을 선택합니다.
@@ -1711,7 +1707,7 @@ STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}설정�
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}설정 파일에서 오류 발생
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... 배열 '{STRING}'에서 오류 발생
-STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... '{1:STRING}'{G 0 "은" "는"} '{0:STRING}'에 사용할 수 없습니다
+STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... '{1:STRING}'에 잘못된 값('{0:STRING}')이 지정되었습니다.
 STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :{WHITE}... 설정 '{STRING}' 끝에 후행문자(??)
 STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... NewGRF '{STRING}' 무시중: '{STRING}'{G 1 "과" "와"} GRF ID가 겹침
 STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... 유효하지 않은 NewGRF '{STRING}' 무시중: {STRING}
@@ -1802,10 +1798,10 @@ STR_CHEAT_CROSSINGTUNNELS                                       :{LTBLUE}터널 
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}대형 항공기가 소형 공항에서 (자주) 충돌하지 않게 함: {ORANGE}{STRING}
 STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}최대 지형 고도값 수정: {ORANGE}{NUM}
 STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}최대 지형 높이값을 수정합니다.
-STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :온대 기후 지형
-STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :아한대 지형
-STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :아열대 기후 지형
-STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :장난감나라 지형
+STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :온대 기후
+STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :아한대 기후
+STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :아열대 기후
+STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :장난감나라
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}날짜 변경: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}현재의 연도를 변경
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}1차 산업시설 생산량 조절 허용: {ORANGE}{STRING}
@@ -1961,7 +1957,7 @@ STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}이름�
 STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}호스트(IP) 주소 입력
 
 # Start new multiplayer server
-STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}새로운 멀티플레이 게임을 시작
+STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}새 멀티플레이 게임 시작하기
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME                          :{BLACK}게임 이름:
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}멀티플레이 게임 선택 메뉴에서 보여질 게임 제목입니다.
@@ -2017,15 +2013,15 @@ STR_NETWORK_LANG_TURKISH                                        :터키어
 STR_NETWORK_LANG_UKRAINIAN                                      :우크라이나어
 STR_NETWORK_LANG_AFRIKAANS                                      :아프리카어
 STR_NETWORK_LANG_CROATIAN                                       :크로아티아어
-STR_NETWORK_LANG_CATALAN                                        :카탈로니아
-STR_NETWORK_LANG_ESTONIAN                                       :에스토니아
-STR_NETWORK_LANG_GALICIAN                                       :갈리시아
-STR_NETWORK_LANG_GREEK                                          :그리스
-STR_NETWORK_LANG_LATVIAN                                        :라트비아
+STR_NETWORK_LANG_CATALAN                                        :카탈로니아어
+STR_NETWORK_LANG_ESTONIAN                                       :에스토니아어
+STR_NETWORK_LANG_GALICIAN                                       :갈리시아어
+STR_NETWORK_LANG_GREEK                                          :그리스어
+STR_NETWORK_LANG_LATVIAN                                        :라트비아어
 ############ End of leave-in-this-order
 
 # Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}멀티플레이 준비
+STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}멀티플레이 게임 대기실
 
 STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}참가 준비중: {ORANGE}{STRING}
 STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}이 게임에 있는 회사의 목록입니다. 다른 회사에 같이 참가하거나 (빈 슬롯이 있을 경우) 새로운 회사로 시작할 수 있습니다.
@@ -2065,7 +2061,7 @@ STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}회사 �
 ############ End of leave-in-this-order
 STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM}명의 접속자가 먼저 기다리고 있습니다
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}지금까지 {BYTES}를 다운로드하였습니다
-STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} 다운로드
+STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} 다운로드 완료
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}접속 끊기
 
@@ -2161,7 +2157,7 @@ STR_NETWORK_ERROR_CLIENT_CHEATER                                :치트 사용 �
 STR_NETWORK_ERROR_CLIENT_SERVER_FULL                            :서버 꽉참
 STR_NETWORK_ERROR_CLIENT_TOO_MANY_COMMANDS                      :너무 많은 명령 전송
 STR_NETWORK_ERROR_CLIENT_TIMEOUT_PASSWORD                       :제 시간에 비밀번호를 입력하십시오
-STR_NETWORK_ERROR_CLIENT_TIMEOUT_COMPUTER                       :일반적인 시간 초과
+STR_NETWORK_ERROR_CLIENT_TIMEOUT_COMPUTER                       :반응 시간 초과
 STR_NETWORK_ERROR_CLIENT_TIMEOUT_MAP                            :지도 다운로드 시간 초과
 STR_NETWORK_ERROR_CLIENT_TIMEOUT_JOIN                           :지도 생성 / 입장 시간 초과
 ############ End of leave-in-this-order
@@ -2178,7 +2174,7 @@ STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_2                  :게임이 아�
 STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_3                  :게임이 아직 일시 정지된 상태입니다. ({STRING}, {STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_4                  :게임이 아직 일시 정지된 상태입니다. ({STRING}, {STRING}, {STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_UNPAUSED                        :게임이 재개되었습니다. ({STRING})
-STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS       :충분한 플레이어가 없습니다
+STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS       :플레이하는 사람 수
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS       :접속자와 연결중
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL                   :수동
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :게임 스크립트
@@ -2188,9 +2184,9 @@ STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} �
 STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} 님이 입장하셨습니다. ({2:NUM}번 접속자)
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} 님이 {2:NUM}번 회사에 참여하셨습니다.
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} 님이 관전을 시작하셨습니다.
-STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} 님이 새로운 회사(({2:NUM}번)를 창설하셨습니다.
+STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} 님이 새로운 회사({2:NUM}번)를 창설하셨습니다.
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} 님이 퇴장하셨습니다. (사유: {2:STRING})
-STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} 님이 이름을 {STRING}(으)로 바꿨습니다
+STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} 님의 이름이 {STRING}(으)로 바뀌었습니다.
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} 님이 당신에게 {2:CURRENCY_LONG}만큼의 돈을 보내셨습니다.
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** {1:STRING} 님에게 {2:CURRENCY_LONG}만큼의 돈을 보냈습니다.
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}서버가 게임을 종료하였습니다.
@@ -2236,7 +2232,7 @@ STR_CONTENT_DETAIL_SELECTED_BECAUSE_OF                          :{WHITE}{STRING}
 STR_CONTENT_DETAIL_DEPENDENCIES                                 :{SILVER}필요한 요소: {WHITE}{STRING}
 STR_CONTENT_DETAIL_TAGS                                         :{SILVER}태그: {WHITE}{STRING}
 STR_CONTENT_NO_ZLIB                                             :{WHITE}OpenTTD가 "zlib" 지원 기능을 포함하지 않고 만들어졌습니다...
-STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... 콘텐츠 다운로드가 불가능합니다!
+STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... 콘텐츠를 다운로드 할 수 없습니다!
 
 # Order of these is important!
 STR_CONTENT_TYPE_BASE_GRAPHICS                                  :{G=m}기본 그래픽
@@ -2360,17 +2356,17 @@ STR_STATION_CLASS_WAYP                                          :{G=f}경유지
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}신호기 선택
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}폐색 신호기 (구식){}가장 기본적인 신호기 형식입니다. 단 한 대의 열차만이 이 폐색 구간을 통과할 수 있습니다.
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}입구 신호기 (구식){}다음 폐색 구간에 있는 출구 신호기가 하나라도 파란불이면 파란불이 되며, 그렇지 않은 경우에는 빨간불이 됩니다.
-STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}출구 신호기 (구식){}일반 신호기와 기능이 똑같지만, 입구 & 콤보 신호기와 올바르게 연계되어야 합니다.
-STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}콤보 신호기 (구식){}콤보 신호기는 입구 신호기와 출구 신호기의 역할을 동시에 합니다. 이 신호기는 사전 신호기의 거대한 "나뭇가지 구조"를 건설할 수 있도록 도와줍니다.
+STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}출구 신호기 (구식){}일반 신호기와 기능이 똑같지만, 입구 & 복합 신호기와 올바르게 연계되어야 합니다.
+STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}복합 신호기 (구식){}복합 신호기는 입구 신호기와 출구 신호기의 역할을 동시에 합니다. 이 신호기는 사전 신호기의 거대한 "나뭇가지 구조"를 건설할 수 있도록 도와줍니다.
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}경로 신호기 (구식){}경로 신호기는 경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해줍니다. 경로 신호기는 반대편에서 통과가 가능합니다.
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}단방향 경로 신호기 (구식){}경로 신호기는 경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해줍니다. 단방향 경로 신호기는 반대편에서 통과가 불가능합니다.
 STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}폐색 신호기 (전자식){}가장 기본적인 신호기 형식입니다. 단 한 대의 열차만이 이 폐색 구간을 통과할 수 있습니다.
 STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}입구 신호기 (전자식){}다음 폐색 구간에 있는 출구 신호기가 하나라도 파란불이면 파란불이 되며, 그렇지 않은 경우에는 빨간불이 됩니다.
-STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}출구 신호기 (전자식){}일반 신호기와 기능이 똑같지만, 입구 & 콤보 신호기와 올바르게 연계되어야 합니다.
-STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}콤보 신호기 (전자식){}콤보 신호기는 입구 신호기와 출구 신호기의 역할을 동시에 합니다. 이 신호기는 사전 신호기의 거대한 "나뭇가지식 구조"를 건설할 수 있도록 도와줍니다.
+STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}출구 신호기 (전자식){}일반 신호기와 기능이 똑같지만, 입구 & 복합 신호기와 올바르게 연계되어야 합니다.
+STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}복합 신호기 (전자식){}복합 신호기는 입구 신호기와 출구 신호기의 역할을 동시에 합니다. 이 신호기는 사전 신호기의 거대한 "나뭇가지식 구조"를 건설할 수 있도록 도와줍니다.
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}경로 신호기 (전자식){}경로 신호기는 경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해줍니다. 경로 신호기는 반대편에서 통과가 가능합니다.
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}단방향 경로 신호기 (전자식){}경로 신호기는 경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해줍니다. 단방향 경로 신호기는 반대편에서 통과가 불가능합니다.
-STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}신호기 변환{}이 버튼을 선택한 뒤 이미 설치된 신호기를 클릭하면, 신호기의 종류(일반/입구/출구/콤보/경로)와 형식(구식↔전자식)을 변경하고, CTRL+클릭하면 신호기의 형식을 변경합니다. SHIFT+클릭을 사용하면 예상 가격을 볼 수 있습니다.
+STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}신호기 변환{}이 버튼을 선택한 뒤 이미 설치된 신호기를 클릭하면, 신호기의 종류(일반/입구/출구/복합/경로)와 형식(구식↔전자식)을 변경하고, CTRL+클릭하면 신호기의 형식을 변경합니다. SHIFT+클릭을 사용하면 예상 가격을 볼 수 있습니다.
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}드래그시 신호기 간격
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}드래그시 신호기 간격 감소
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}드래그시 신호기 증가
@@ -2461,7 +2457,7 @@ STR_AIRPORT_SMALL                                               :소형 공항
 STR_AIRPORT_CITY                                                :도시 공항
 STR_AIRPORT_METRO                                               :대도시 공항
 STR_AIRPORT_INTERNATIONAL                                       :국제 공항
-STR_AIRPORT_COMMUTER                                            :국내 공항
+STR_AIRPORT_COMMUTER                                            :통근용 공항
 STR_AIRPORT_INTERCONTINENTAL                                    :대륙간 공항
 STR_AIRPORT_HELIPORT                                            :헬리콥터 탑승장
 STR_AIRPORT_HELIDEPOT                                           :헬리콥터 격납고
@@ -2563,7 +2559,7 @@ STR_INDUSTRY_CARGOES_CUSTOMERS                                  :{WHITE}소비 �
 STR_INDUSTRY_CARGOES_HOUSES                                     :{WHITE}도시 가구
 STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP                           :{BLACK}이 산업시설의 공급자와 고객을 보려면 클릭하세요.
 STR_INDUSTRY_CARGOES_CARGO_TOOLTIP                              :{BLACK}{STRING}{}이 화물의 공급자와 고객을 보려면 클릭하세요.
-STR_INDUSTRY_DISPLAY_CHAIN                                      :{BLACK}산업망 표시
+STR_INDUSTRY_DISPLAY_CHAIN                                      :{BLACK}산업시설 연계도 보기
 STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :{BLACK}이 산업시설에서 생산/소비하는 화물을 보여줍니다.
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :{BLACK}지도에 표시
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :{BLACK}위 산업망에 표시된 산업을 소형지도에서 볼 수 있게 합니다.
@@ -2610,23 +2606,23 @@ STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :일반 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :입구 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :출구 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :콤보 신호기가 설치된 {STRING} 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :복합 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :경로 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :단방향 경로 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :일반 신호기와 입구 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :일반 신호기와 출구 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :일반 신호기와 콤보 신호기가 설치된 {STRING} 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :일반 신호기와 복합 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :일반 신호기와 경로 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :일반 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :입구 신호기와 출구 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :입구 신호기와 콤보 신호기가 설치된 {STRING} 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :입구 신호기와 복합 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :입구 신호기와 경로 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :입구 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :출구 신호기와 콤보 신호기가 설치된 {STRING} 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :출구 신호기와 복합 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :출구 신호기와 경로 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :출구 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :콤보 신호기와 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :콤보 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :복합 신호기와 경로 신호기가 설치된 {STRING} 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :복합 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :경로 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} 차량기지
 
@@ -2880,7 +2876,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}이전 �
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}(위조/재색상/글씨 스프라이트를 제외한) 이전 보통 스프라이트로 이동하고, 첫 번째 스프라이트에 다다르면 마지막으로 돌아갑니다.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}현재 선택된 스프라이트를 표시합니다. 이 스프라이트가 그려졌을때의 정렬은 무시합니다.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}X축이나 Y축 방향으로 스프라이트를 이동시킵니다.
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}X축: {NUM}, Y축: {NUM}
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}상대값 초기화
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}현재 상대값 좌표를 초기화
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X 좌표: {NUM}, Y 좌표: {NUM} (절댓값)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X 좌표: {NUM}, Y 좌표: {NUM} (상대값)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}스프라이트 선택
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}화면에서 스프라이트를 골라 냅니다.
 
@@ -2934,7 +2933,7 @@ STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}호환�
 STR_NEWGRF_LIST_MISSING                                         :{RED}파일 없음
 
 # NewGRF 'it's broken' warnings
-STR_NEWGRF_BROKEN                                               :{WHITE}'{STRING}' NewGRF이 하려는 행위는 비동기화 혹은 충돌을 일으킬 수 있습니다.
+STR_NEWGRF_BROKEN                                               :{WHITE}'{0:STRING}' NewGRF이 적용되는 과정에서 비동기화나 충돌이 일어날 수 있습니다.
 STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}차고지 안에 있지 않은 '{1:ENGINE}'에 대한 동력 차량 상태가 바뀌었습니다.
 STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}'{1:ENGINE}'{G 1 "이" "가"} 차고지 안에 있지 않으면 차량 길이가 바뀝니다.
 STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}차량이 기지 안에 있지 않거나 개조가 불가능한 상태에서 '{1:ENGINE}'의 수송량이 변경되었습니다.
@@ -2956,10 +2955,10 @@ STR_NEWGRF_INVALID_INDUSTRYTYPE                                 :<알 수 없는
 STR_INVALID_VEHICLE                                             :<알 수 없는 차량>
 
 # NewGRF scanning window
-STR_NEWGRF_SCAN_CAPTION                                         :{WHITE}NewGRF 검색
+STR_NEWGRF_SCAN_CAPTION                                         :{WHITE}NewGRF 검색 중
 STR_NEWGRF_SCAN_MESSAGE                                         :{BLACK}NewGRF을 검색하는 중입니다. 파일 개수에 따라 시간이 조금 걸릴 수 있습니다...
 STR_NEWGRF_SCAN_STATUS                                          :{BLACK}약 {1:NUM}개의 NewGRF 중에서 {0:NUM}개의 NewGRF을 찾았습니다
-STR_NEWGRF_SCAN_ARCHIVES                                        :자료 검색
+STR_NEWGRF_SCAN_ARCHIVES                                        :자료 검색 중
 
 # Sign list window
 STR_SIGN_LIST_CAPTION                                           :{WHITE}팻말 목록 - 팻말 {COMMA}개
@@ -2989,7 +2988,7 @@ STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}지난�
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}도시가 성장하기 위해 필요한 화물:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED}{G 0 "이" "가"} 필요함
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :겨울에는 {ORANGE}{STRING}{BLACK}{G 0 "이" "가"} 필요함
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} 수송됨
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN}{G 0 "이" "가"} 수송됨
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{1:CARGO_LONG} ＼ {0:CARGO_TINY}{RED} (더 필요함)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{1:CARGO_LONG} ＼ {0:CARGO_TINY}{GREEN} (수송됨)
 STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}도시가 {ORANGE}{COMMA}{BLACK}일마다 성장합니다.
@@ -3010,7 +3009,7 @@ STR_TOWN_VIEW_RENAME_TOWN_BUTTON                                :도시 이름 �
 
 # Town local authority window
 STR_LOCAL_AUTHORITY_CAPTION                                     :{WHITE}{TOWN} 지역 당국
-STR_LOCAL_AUTHORITY_COMPANY_RATINGS                             :{BLACK}회사 운송 성취도:
+STR_LOCAL_AUTHORITY_COMPANY_RATINGS                             :{BLACK}회사에 대한 이 도시의 평판:
 STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
 STR_LOCAL_AUTHORITY_ACTIONS_TITLE                               :{BLACK}가능한 행동:
 STR_LOCAL_AUTHORITY_ACTIONS_TOOLTIP                             :{BLACK}이 도시에 할 수 있는 일 목록 - 상세 정보를 보시려면 클릭하세요
@@ -3053,7 +3052,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{G=f}정보
 STR_GOAL_QUESTION_CAPTION_WARNING                               :{G=f}경고
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :오류
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :취소
 STR_GOAL_QUESTION_BUTTON_OK                                     :{G=m}확인
 STR_GOAL_QUESTION_BUTTON_NO                                     :아니요
@@ -3072,6 +3071,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :재시작
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :연기
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :양도
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :닫기
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}보조금
@@ -3137,7 +3137,7 @@ STR_STATION_VIEW_VIA_ANY                                        :{RED}어디든 
 STR_STATION_VIEW_FROM_HERE                                      :{GREEN}여기에서 출발하는 {CARGO_SHORT}
 STR_STATION_VIEW_VIA_HERE                                       :{GREEN}이 역을 경유하는 {CARGO_SHORT}
 STR_STATION_VIEW_TO_HERE                                        :{GREEN}이 역에 도착하는 {CARGO_SHORT}
-STR_STATION_VIEW_NONSTOP                                        :{YELLOW}직통 {CARGO_SHORT}
+STR_STATION_VIEW_NONSTOP                                        :{YELLOW}직행 {CARGO_SHORT}
 
 STR_STATION_VIEW_GROUP_S_V_D                                    :출발-경유-도착
 STR_STATION_VIEW_GROUP_S_D_V                                    :출발-도착-경유
@@ -3217,17 +3217,17 @@ STR_COMPANY_VIEW_INAUGURATED_TITLE                              :{GOLD}설립: {
 STR_COMPANY_VIEW_COLOUR_SCHEME_TITLE                            :{GOLD}색상:
 STR_COMPANY_VIEW_VEHICLES_TITLE                                 :{GOLD}차량:
 STR_COMPANY_VIEW_TRAINS                                         :{WHITE}열차 {COMMA}대
-STR_COMPANY_VIEW_ROAD_VEHICLES                                  :{WHITE}차량 {COMMA}대
+STR_COMPANY_VIEW_ROAD_VEHICLES                                  :{WHITE}자동차/전차 {COMMA}대
 STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}항공기 {COMMA}대
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}선박 {COMMA}대
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}없음
 STR_COMPANY_VIEW_COMPANY_VALUE                                  :{GOLD}회사가치: {WHITE}{CURRENCY_LONG}
 STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% {COMPANY}의 소유)
 STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}기반시설:
-STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}철도 {COMMA}칸
+STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}선로 {COMMA}칸
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}도로 {COMMA}칸
-STR_COMPANY_VIEW_INFRASTRUCTURE_WATER                           :{WHITE}운하시설 {COMMA}칸
-STR_COMPANY_VIEW_INFRASTRUCTURE_STATION                         :{WHITE}정거장 {COMMA}칸
+STR_COMPANY_VIEW_INFRASTRUCTURE_WATER                           :{WHITE}항만시설 {COMMA}칸
+STR_COMPANY_VIEW_INFRASTRUCTURE_STATION                         :{WHITE}역 {COMMA}칸
 STR_COMPANY_VIEW_INFRASTRUCTURE_AIRPORT                         :{WHITE}공항 {COMMA}개
 STR_COMPANY_VIEW_INFRASTRUCTURE_NONE                            :{WHITE}없음
 
@@ -3367,7 +3367,7 @@ STR_GROUP_RENAME_CAPTION                                        :{BLACK}그룹 �
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :새 열차
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :새 전기 열차
-STR_BUY_VEHICLE_TRAIN_MONORAIL_CAPTION                          :새 모노레일
+STR_BUY_VEHICLE_TRAIN_MONORAIL_CAPTION                          :새 모노레일 열차
 STR_BUY_VEHICLE_TRAIN_MAGLEV_CAPTION                            :새 자기부상열차
 
 STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :새 열차
@@ -4108,7 +4108,7 @@ STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}스크�
 
 # Error message titles
 STR_ERROR_MESSAGE_CAPTION                                       :{YELLOW}알림
-STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY                         :{YELLOW}{STRING}{G 0 "이" "가"} 보낸 메시지
+STR_ERROR_MESSAGE_CAPTION_OTHER_COMPANY                         :{YELLOW}{STRING} 회사가 보낸 메시지
 
 # Generic construction errors
 STR_ERROR_OFF_EDGE_OF_MAP                                       :{WHITE}지도 가장자리에서 너무 멉니다!
@@ -4131,7 +4131,7 @@ STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}중간�
 STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}일시 정지 중에는 할 수 없습니다
 
 # Local authority errors
-STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}{TOWN}에 대한 회사의 낮은 성취도로 인해 지역 당국이 이 행위를 거절했습니다!
+STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}{TOWN} 지역 당국이 이 행동을 거부했습니다.
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :{WHITE}{TOWN} 지역 당국이 이 도시에 다른 공항이 들어서는 것을 거부하였습니다!
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :{WHITE}{TOWN} 지역 당국이 소음 문제로 인해 공항 건설을 거부하였습니다
 STR_ERROR_BRIBE_FAILED                                          :{WHITE}당신의 뇌물 수수 행위가 지역 당국에 의해 발각되었습니다!
@@ -4395,7 +4395,7 @@ STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR                         :{WHITE}항공�
 STR_ERROR_CAN_T_BUY_TRAIN                                       :{WHITE}열차를 구입할 수 없습니다...
 STR_ERROR_CAN_T_BUY_ROAD_VEHICLE                                :{WHITE}차량을 구입할 수 없습니다...
 STR_ERROR_CAN_T_BUY_SHIP                                        :{WHITE}선박을 구입할 수 없습니다...
-STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :{WHITE}항공기를 구입 할 수 없습니다...
+STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :{WHITE}항공기를 구입할 수 없습니다...
 
 STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :{WHITE}열차의 차량 이름을 다시 지정할 수 없습니다...
 STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :{WHITE}차종명을 다시 지정할 수 없습니다...

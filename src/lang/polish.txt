@@ -1307,10 +1307,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari gruziński
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial irański (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Pojazdy drogowe
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Wybierz stronę, po której będą jeździć samochody
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Jazda po lewej
@@ -1988,9 +1984,9 @@ STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Żadne
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Początkowy mnożnik rozmiarów metropolii: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Średni rozmiar dużych miast w porównaniu do normalnych miast na początku gry
 
-STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Aktualizuj wykres dystrybucji co {STRING}{NBSP}{P dzień dni dni}
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Aktualizuj wykres dystrybucji co {STRING}{NBSP}{P 0:2 dzień dni dni}
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Czas pomiędzy kolejnymi rekalkulacjami komonentów wykresu połączeń. Każda rekalkulacja oblicza plany dla jednego komponentu wykresu. To oznacza, że wartość X dla tego ustawienia nie oznacza, że cały wykres będzie aktualizowany co X dni, tylko że niektóre komponenty będą. Im krótszy czas ustawisz, tym więcej czasu obliczeniowego (CPU) będzie potrzebne na te obliczenia. Im dłuższy czas ustawisz, tym więcej czasu minie zanim dystrybucja towarów rozpocznie się na nowych trasach.
-STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Przekalkulowanie wykresu dystrybucji zajmuje {STRING}{NBSP}{P dzień dni dni}
+STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Przekalkulowanie wykresu dystrybucji zajmuje {STRING}{NBSP}{P 0:2 dzień dni dni}
 STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :Czas potrzebny na każdą rekalkulację komponentu wykresu połączeń. Kiedy rekalkulacja startuje, powstaje proces, który może trwać określoną liczbę dni. Im krótszy czas ustawisz, tym większe prawdopodobieństwo, że ten proces nie zakończy się wtedy, kiedy powinien. Wtedy gra zatrzymuje się do czasu jego zakończenia ("lag"). Im dłuższy czas ustawisz, tym dłużej trwa aktualizacja dystrybucji, gdy zmieniają się trasy.
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manualnie
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymetrycznie
@@ -3259,7 +3255,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Poprzedn
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Idź do poprzedniego normalnego obrazka, pomijając jakiekolwiek pseudo/kolorowe/znakowe obrazki i zawijaj je od pierwszego do ostatniego
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Przedstawienie wybranego orbazka. Dostosowanie jest ignorowane podczas rysowania tego obrazka
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Poruszaj obrazkiem, zmieniając przesunięcia X i Y
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}Przesunięcie X: {NUM}, Przesunięcie Y: {NUM}
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Resetuj zależność
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Resetuj aktualne offsety zależne
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Całkowity)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Zależny)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Wybierz obrazek
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Wybierz obrazek z dowolnego miejsca na ekranie
 
@@ -3432,7 +3431,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Informacja
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Ostrzeżenie
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Błąd
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Anuluj
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Nie
@@ -3451,6 +3450,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Restartuj
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Odłóż
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Poddaj się
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Zamknij
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subsydia
@@ -4235,10 +4235,10 @@ STR_ORDER_UNLOAD                                                :(Rozładuj i za
 STR_ORDER_UNLOAD_FULL_LOAD                                      :(Rozładuj i czekaj na pełny załadunek)
 STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :(Rozładuj i czekaj na pełny załadunek któregoś z towarów)
 STR_ORDER_UNLOAD_NO_LOAD                                        :(Rozładuj i pozostaw pusty)
-STR_ORDER_TRANSFER                                              :(Przeładuj i zabierz ładunek)
-STR_ORDER_TRANSFER_FULL_LOAD                                    :(Przeładuj i czekaj na pełny załadunek)
-STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :(Przeładuj i czekaj na pełny załadunek któregoś z towarów)
-STR_ORDER_TRANSFER_NO_LOAD                                      :(Przeładuj i pozostaw pusty)
+STR_ORDER_TRANSFER                                              :(Przeładunek i zabranie ładunku)
+STR_ORDER_TRANSFER_FULL_LOAD                                    :(Przeładunek i oczekiwanie na pełny załadunek)
+STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :(Przeładunek i oczekiwanie na pełny załadunek któregoś z towarów)
+STR_ORDER_TRANSFER_NO_LOAD                                      :(Przeładunek, pozostaw pusty)
 STR_ORDER_NO_UNLOAD                                             :(Nie rozładowuj i zabierz ładunek)
 STR_ORDER_NO_UNLOAD_FULL_LOAD                                   :(Nie rozładowuj i czekaj na pełny załadunek)
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY                               :(Nie rozładowuj i czekaj na pełny załadunek któregoś z towarów)
@@ -4250,9 +4250,9 @@ STR_ORDER_FULL_LOAD_ANY_REFIT                                   :(Przebuduj na {
 STR_ORDER_UNLOAD_REFIT                                          :(Rozładuj, przebuduj na {STRING.b} i zabierz ładunek)
 STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :(Rozładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek)
 STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :(Rozładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek któregoś z towarów)
-STR_ORDER_TRANSFER_REFIT                                        :(Przeładuj, przebuduj na {STRING.b} i zabierz ładunek)
-STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :(Przeładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek)
-STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :(Przeładuj, przebuduj na {STRING.b} i czekaj na dowolny pełny załadunek)
+STR_ORDER_TRANSFER_REFIT                                        :(Przeładunek, przebudowa na {STRING.b} i zabranie ładunku)
+STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :(Przeładunek, przebudowa na {STRING.b} i oczekiwanie na pełny załadunek)
+STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :(Przeładunek, przebudowa na {STRING.b} i oczekiwanie na dowolny pełny załadunek)
 STR_ORDER_NO_UNLOAD_REFIT                                       :(Nie rozładowuj, przebuduj na {STRING.b} i zabierz ładunek)
 STR_ORDER_NO_UNLOAD_FULL_LOAD_REFIT                             :(Nie rozładowuj, przebuduj na {STRING.b} i czekaj na pełny załadunek)
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT                         :(Nie rozładowuj, przebuduj na {STRING.b} i czekaj na dowolny pełny załadunek)

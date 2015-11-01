@@ -14,13 +14,13 @@
 #include "../../gfx_func.h"
 #include "../../textbuf_gui.h"
 #include "../../fileio_func.h"
-#include "../../fios.h"
 #include <windows.h>
 #include <fcntl.h>
 #include <regstr.h>
 #include <shlobj.h> /* SHGetFolderPath */
 #include <shellapi.h>
 #include "win32.h"
+#include "../../fios.h"
 #include "../../core/alloc_func.hpp"
 #include "../../openttd.h"
 #include "../../core/random_func.hpp"
@@ -452,6 +452,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	SetRandomSeed(GetTickCount());
 
 	argc = ParseCommandLine(cmdline, argv, lengthof(argv));
+
+	/* Make sure our arguments contain only valid UTF-8 characters. */
+	for (int i = 0; i < argc; i++) ValidateString(argv[i]);
 
 	openttd_main(argc, argv);
 	free(cmdline);

@@ -82,7 +82,7 @@ static const NWidgetPart _nested_dropdown_menu_widgets[] = {
 static WindowDesc _dropdown_desc(
 	WDP_MANUAL, NULL, 0, 0,
 	WC_DROPDOWN_MENU, WC_NONE,
-	0,
+	WDF_NO_FOCUS,
 	_nested_dropdown_menu_widgets, lengthof(_nested_dropdown_menu_widgets)
 );
 
@@ -380,8 +380,8 @@ void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int b
 
 	if (auto_width) width = max(width, max_item_width);
 
-	Point dw_pos = { w->left + (_current_text_dir == TD_RTL ? wi_rect.right + 1 - width : wi_rect.left), top};
-	Dimension dw_size = {width, height};
+	Point dw_pos = { w->left + (_current_text_dir == TD_RTL ? wi_rect.right + 1 - (int)width : wi_rect.left), top};
+	Dimension dw_size = {width, (uint)height};
 	new DropdownWindow(w, list, selected, button, instant_close, dw_pos, dw_size, wi_colour, scroll);
 }
 

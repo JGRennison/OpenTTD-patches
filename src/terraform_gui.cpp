@@ -210,12 +210,7 @@ struct TerraformToolbarWindow : Window {
 				break;
 
 			case WID_TT_PLACE_OBJECT: // Place object button
-				/* Don't show the place object button when there are no objects to place. */
-				if (ObjectClass::GetUIClassCount() == 0) return;
-				if (HandlePlacePushButton(this, WID_TT_PLACE_OBJECT, SPR_CURSOR_TRANSMITTER, HT_RECT)) {
-					ShowBuildObjectPicker(this);
-					this->last_user_action = widget;
-				}
+				ShowBuildObjectPicker();
 				break;
 
 			default: NOT_REACHED();
@@ -247,10 +242,6 @@ struct TerraformToolbarWindow : Window {
 
 			case WID_TT_PLACE_SIGN: // Place sign button
 				PlaceProc_Sign(tile);
-				break;
-
-			case WID_TT_PLACE_OBJECT: // Place object button
-				PlaceProc_Object(tile);
 				break;
 
 			default: NOT_REACHED();
@@ -286,7 +277,6 @@ struct TerraformToolbarWindow : Window {
 
 	virtual void OnPlaceObjectAbort()
 	{
-		DeleteWindowById(WC_BUILD_OBJECT, 0);
 		this->RaiseButtons();
 	}
 
@@ -344,7 +334,7 @@ static const NWidgetPart _nested_terraform_widgets[] = {
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_TT_PLACE_SIGN), SetMinimalSize(22, 22),
 								SetFill(0, 1), SetDataTip(SPR_IMG_SIGN, STR_SCENEDIT_TOOLBAR_PLACE_SIGN),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TT_SHOW_PLACE_OBJECT),
-			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_TT_PLACE_OBJECT), SetMinimalSize(22, 22),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_DARK_GREEN, WID_TT_PLACE_OBJECT), SetMinimalSize(22, 22),
 								SetFill(0, 1), SetDataTip(SPR_IMG_TRANSMITTER, STR_SCENEDIT_TOOLBAR_PLACE_OBJECT),
 		EndContainer(),
 	EndContainer(),
@@ -472,7 +462,7 @@ static const NWidgetPart _nested_scen_edit_land_gen_widgets[] = {
 				NWidget(WWT_IMGBTN, COLOUR_GREY, WID_ETT_PLACE_DESERT), SetMinimalSize(22, 22),
 											SetFill(0, 1), SetDataTip(SPR_IMG_DESERT, STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA),
 			EndContainer(),
-			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_ETT_PLACE_OBJECT), SetMinimalSize(23, 22),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_ETT_PLACE_OBJECT), SetMinimalSize(23, 22),
 										SetFill(0, 1), SetDataTip(SPR_IMG_TRANSMITTER, STR_SCENEDIT_TOOLBAR_PLACE_OBJECT),
 			NWidget(NWID_SPACER), SetFill(1, 0),
 		EndContainer(),
@@ -559,8 +549,8 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		if (widget != WID_ETT_DOTS) return;
 
-		size->width  = max<uint>(size->width,  UnScaleByZoom(4 * 59, ZOOM_LVL_GUI));
-		size->height = max<uint>(size->height, UnScaleByZoom(4 * 31, ZOOM_LVL_GUI));
+		size->width  = max<uint>(size->width,  ScaleGUITrad(59));
+		size->height = max<uint>(size->height, ScaleGUITrad(31));
 	}
 
 	virtual void DrawWidget(const Rect &r, int widget) const
@@ -575,7 +565,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 		assert(n != 0);
 		do {
-			DrawSprite(SPR_WHITE_POINT, PAL_NONE, center_x + UnScaleByZoom(4 * coords[0], ZOOM_LVL_GUI), center_y + UnScaleByZoom(4 * coords[1], ZOOM_LVL_GUI));
+			DrawSprite(SPR_WHITE_POINT, PAL_NONE, center_x + ScaleGUITrad(coords[0]), center_y + ScaleGUITrad(coords[1]));
 			coords += 2;
 		} while (--n);
 	}
@@ -616,10 +606,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_PLACE_OBJECT: // Place transmitter button
-				if (HandlePlacePushButton(this, WID_ETT_PLACE_OBJECT, SPR_CURSOR_TRANSMITTER, HT_RECT)) {
-					ShowBuildObjectPicker(this);
-					this->last_user_action = widget;
-				}
+				ShowBuildObjectPicker();
 				break;
 
 			case WID_ETT_INCREASE_SIZE:
@@ -687,10 +674,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CREATE_DESERT);
 				break;
 
-			case WID_ETT_PLACE_OBJECT: // Place transmitter button
-				PlaceProc_Object(tile);
-				break;
-
 			default: NOT_REACHED();
 		}
 	}
@@ -721,7 +704,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		this->RaiseButtons();
 		this->SetDirty();
-		DeleteWindowById(WC_BUILD_OBJECT, 0);
 	}
 
 	static HotkeyList hotkeys;

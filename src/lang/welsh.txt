@@ -284,8 +284,8 @@ STR_SORT_BY_PRODUCTION                                          :Cynyrch
 STR_SORT_BY_TYPE                                                :Math
 STR_SORT_BY_TRANSPORTED                                         :Wedi'i gludo
 STR_SORT_BY_NUMBER                                              :Rhif
-STR_SORT_BY_PROFIT_LAST_YEAR                                    :Elw eleni
-STR_SORT_BY_PROFIT_THIS_YEAR                                    :Elw llynedd
+STR_SORT_BY_PROFIT_LAST_YEAR                                    :Elw llynedd
+STR_SORT_BY_PROFIT_THIS_YEAR                                    :Elw eleni
 STR_SORT_BY_AGE                                                 :Oed
 STR_SORT_BY_RELIABILITY                                         :Dibynadwyedd
 STR_SORT_BY_TOTAL_CAPACITY_PER_CARGOTYPE                        :Cyfanswm Gallu Cludo fesul y math o lwyth
@@ -926,10 +926,6 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Addasedig...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Georgia (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iran (IRR)
 ############ end of currency region
-
-
-############ start of measuring units region
-############ end of measuring units region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Cerbydau Ffordd
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Dewiswch ar ba ochr i'r ffordd y dylai cerbydau yrru
@@ -2879,7 +2875,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Corlun b
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Mynd i'r corlun cyffredin blaenorol, gan hepgor unrhyw gorluniau ailliwio/ffont/llidgorluniau, ac amlapio o'r corlun cyntaf i'r olaf
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Cynrychioliad o'r corlun a ddewiswyd. Fe anwybyddir yr aliniad wrth lunio'r corlun
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Symud y corlun, gan newid yr atredau X ac Y
-STR_SPRITE_ALIGNER_OFFSETS                                      :{BLACK}Atred X: {NUM}, Atred Y: {NUM}
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Ailosod perthyniad
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Ailosod y dodiadau perthynol
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Dodiad X: {NUM}, Dodiad Y: {NUM} (Absoliwt)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}Dodiad X: {NUM}, Dodiad Y: {NUM} (Perthynol)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Dewis corlun
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Dewis corlun o ynrhyw fan ar y sgrïn
 
@@ -3052,7 +3051,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Gwybodaeth
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Rhybudd
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Gwall
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Canslo
 STR_GOAL_QUESTION_BUTTON_OK                                     :Iawn
 STR_GOAL_QUESTION_BUTTON_NO                                     :Na
@@ -3071,6 +3070,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Ailddechrau
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Gohirio
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Ildio
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Cau
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Cymorthdaliadau
