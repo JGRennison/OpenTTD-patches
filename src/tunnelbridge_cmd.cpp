@@ -80,6 +80,20 @@ void MarkBridgeDirty(TileIndex tile)
 	MarkBridgeDirty(tile, GetOtherTunnelBridgeEnd(tile), GetTunnelBridgeDirection(tile), GetBridgeHeight(tile));
 }
 
+/**
+ * Mark bridge or tunnel tiles dirty.
+ * @param tile Bridge head or tunnel entrance.
+ */
+void MarkBridgeOrTunnelDirty(TileIndex tile)
+{
+	if (IsBridge(tile)) {
+		MarkBridgeDirty(tile);
+	} else {
+		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(GetOtherTunnelBridgeEnd(tile));
+	}
+}
+
 /** Reset the data been eventually changed by the grf loaded. */
 void ResetBridges()
 {
