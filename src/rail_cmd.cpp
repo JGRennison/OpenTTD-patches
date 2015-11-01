@@ -44,6 +44,8 @@
 typedef SmallVector<Train *, 16> TrainList;
 
 RailtypeInfo _railtypes[RAILTYPE_END];
+RailType _sorted_railtypes[RAILTYPE_END];
+uint8 _sorted_railtypes_size;
 
 assert_compile(sizeof(_original_railtypes) <= sizeof(_railtypes));
 
@@ -110,6 +112,17 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
 }
 
 /**
+ * Compare railtypes based on their sorting order.
+ * @param first  The railtype to compare to.
+ * @param second The railtype to compare.
+ * @return True iff the first should be sorted before the second.
+ */
+static int CDECL CompareRailTypes(const RailType *first, const RailType *second)
+{
+	return GetRailTypeInfo(*first)->sorting_order - GetRailTypeInfo(*second)->sorting_order;
+}
+
+/**
  * Resolve sprites of custom rail types
  */
 void InitRailTypes()
@@ -118,6 +131,14 @@ void InitRailTypes()
 		RailtypeInfo *rti = &_railtypes[rt];
 		ResolveRailTypeGUISprites(rti);
 	}
+
+	_sorted_railtypes_size = 0;
+	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+		if (_railtypes[rt].label != 0) {
+			_sorted_railtypes[_sorted_railtypes_size++] = rt;
+		}
+	}
+	QSortT(_sorted_railtypes, _sorted_railtypes_size, CompareRailTypes);
 }
 
 /**
@@ -1069,10 +1090,11 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					}
 				}
 			}
-			MarkTileDirtyByTile(tile);
-			MarkTileDirtyByTile(tile_exit);
+			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
+			YapfNotifyTrackLayoutChange(tile_exit, track);
 		}
 		return cost;
 	}
@@ -1517,10 +1539,11 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			ClrBitTunnelBridgeSignal(end);
 			_m[tile].m2 = 0;
 			_m[end].m2 = 0;
-			MarkTileDirtyByTile(tile);
-			MarkTileDirtyByTile(end);
+			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+			AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
+			YapfNotifyTrackLayoutChange(end, track);
 			return CommandCost(EXPENSES_CONSTRUCTION, cost);
 		}
 
