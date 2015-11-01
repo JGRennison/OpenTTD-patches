@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.6.0
+## JGR's Patchpack version 0.7.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -41,9 +41,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   As of v0.6.0, add a mode to show restricted signals.
 
 * Departure boards: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=49956)  
-  Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
-  Fixed memory leak.  
-  Made modifications to work with day length greater than 1.
+  * Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
+  * Fixed memory leak.  
+  * Made modifications to work with day length greater than 1.  
+  * As of v0.7.0, fixed a multiplayer desync caused by the timetable rounding depending on the client time display mode setting.
 
 * Town cargo generation factor: [imported](http://www.tt-forums.net/viewtopic.php?t=46399)
 
@@ -70,7 +71,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Auto timetabling: Bias timetable adjustment to favour negative adjustments; this is to avoid positive feedback between congestion delays and increased timetable length. Reduce jam detection threshold.  
   * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Add setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
   * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
-  * Add a company setting to enable automatic timetabling for new vehicles (added in v0.4.0).
+  * Add a company setting to enable automatic timetabling for new vehicles (added in v0.4.0).  
+  * As of v0.7.0, the setting to scale vehicle lateness adjustments is a company setting.
 
 * Vehicle repair cost: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=45642)
 
@@ -91,7 +93,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * As of v0.5.0, fix status bar date when time in minutes and show date with time are both on.
 
 * Order occupancy  
-  Add column to orders GUI to show occupancy running average.
+  Add column to orders GUI to show occupancy running average.  
+  As of v0.7.0, the smoothness setting is company setting.
 
 * Servicing  
   Send vehicles which need auto-renewing due to age for servicing, even if breakdowns are off and no servicing if no breakdowns is on.
@@ -128,6 +131,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Pause on savegame load if ctrl key is pressed. (added in v0.6.0)
 
+* Reverse at waypoint orders (added in v0.7.0)
+
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
   * Savegames from this patchpack are not loadable in trunk.  
@@ -138,6 +143,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Changes to the crash log (added in v0.5.0)  
   Enable stack traces on MinGW, try to demangle C++ symbol names, try to use libbfd for better symbol lookup, handle SIGSEGV while backtracing.
+
+* Multiplayer desync fixes/changes  
+  * Fix YAPF pathfinder desync issue involving rail track type changes which where only passable by a subset of vehicles (trunk bug). (added in v0.6.0)  
+  * Logging: Various changes and improvements to desync-related logging and debugging, see changelog for details.
 
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  

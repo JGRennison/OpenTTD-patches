@@ -17,6 +17,7 @@
 #include "vehicle_base.h"
 #include "settings_type.h"
 #include "cmd_helper.h"
+#include "company_base.h"
 #include "core/sort_func.hpp"
 #include "settings_type.h"
 
@@ -322,7 +323,11 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
+#if WALLCLOCK_NETWORK_COMPATIBLE
 			w->timetable_start = start_date + idx * total_duration / num_vehs / DAY_TICKS;
+#else
+			w->timetable_start = start_date + idx * total_duration / num_vehs;
+#endif
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
 		}
 
@@ -558,9 +563,11 @@ void UpdateSeparationOrder(Vehicle *v_start)
 			int separation_ahead = SeparationBetween(v, v->AheadSeparation());
 			int separation_behind = SeparationBetween(v->BehindSeparation(), v);
 			if (separation_ahead != -1 && separation_behind != -1) {
+				Company *owner = Company::GetIfValid(v->owner);
+				uint8 timetable_separation_rate = owner ? owner->settings.auto_timetable_separation_rate : 100;
 				int new_lateness = (separation_ahead - separation_behind) / 2;
-				v->lateness_counter = (new_lateness * _settings_game.order.timetable_separation_rate +
-						v->lateness_counter * (100 - _settings_game.order.timetable_separation_rate)) / 100;
+				v->lateness_counter = (new_lateness * timetable_separation_rate +
+						v->lateness_counter * (100 - timetable_separation_rate)) / 100;
 			}
 			v = v->AheadSeparation();
 		} while (v != v_start);

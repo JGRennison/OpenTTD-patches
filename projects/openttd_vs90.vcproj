@@ -996,6 +996,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\crashlog_bfd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\currency.h"
 				>
 			</File>
@@ -1840,6 +1844,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\town_gui.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\town_type.h"
 				>
 			</File>
@@ -2373,6 +2381,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\widgets\date_widget.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\widgets\departures_widget.h"
 				>
 			</File>
 			<File

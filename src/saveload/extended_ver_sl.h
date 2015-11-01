@@ -45,6 +45,7 @@ enum SlXvFeatureIndex {
 	XSLFI_RAIL_AGEING,                            ///< This save game uses the rail aging patch
 	XSLFI_SPRINGPP,                               ///< This is a SpringPP game, use this for loading some settings
 	XSLFI_EXTRA_LARGE_MAP,                        ///< Extra large map
+	XSLFI_REVERSE_AT_WAYPOINT,                    ///< Reverse at waypoint orders
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };

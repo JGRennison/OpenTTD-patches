@@ -146,7 +146,9 @@ void VehicleServiceInDepot(Vehicle *v)
 					NOT_REACHED();
 			}
 			assert(type != INVALID_EXPENSES);
-			Money repair_cost = (v->breakdowns_since_last_service * v->repair_cost / _settings_game.vehicle.repair_cost) + 1;
+
+			// The static cast is to fix compilation on (old) MSVC as the overload for OverflowSafeInt operator / is ambiguous.
+			Money repair_cost = (v->breakdowns_since_last_service * v->repair_cost / static_cast<uint>(_settings_game.vehicle.repair_cost)) + 1;
 			CommandCost cost(type, repair_cost);
 			v->First()->profit_this_year -= cost.GetCost() << 8;
 			SubtractMoneyFromCompany(cost);
@@ -1611,6 +1613,9 @@ void AgeVehicle(Vehicle *v)
  * @param front The front vehicle of the consist to check.
  * @param colour The string to show depending on if we are unloading or loading
  * @return A percentage of how full the Vehicle is.
+ *         Percentages are rounded towards 50%, so that 0% and 100% are only returned
+ *         if the vehicle is completely empty or full.
+ *         This is useful for both display and conditional orders.
  */
 uint8 CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 {
@@ -1658,7 +1663,13 @@ uint8 CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 	if (max == 0) return 100;
 
 	/* Return the percentage */
-	return (count * 100) / max;
+	if (count * 2 < max) {
+		/* Less than 50%; round up, so that 0% means really empty. */
+		return CeilDiv(count * 100, max);
+	} else {
+		/* More than 50%; round down, so that 100% means really full. */
+		return (count * 100) / max;
+	}
 }
 
 /**
@@ -1683,6 +1694,7 @@ void VehicleEnterDepot(Vehicle *v)
 			t->force_proceed = TFP_NONE;
 			ClrBit(t->flags, VRF_TOGGLE_REVERSE);
 			t->ConsistChanged(CCF_ARRANGE);
+			t->reverse_distance = 0;
 			break;
 		}
 
@@ -2456,9 +2468,11 @@ void Vehicle::LeaveStation()
 		if (old_occupancy == 0) {
 			new_occupancy = current_occupancy;
 		} else {
+			Company *owner = Company::GetIfValid(this->owner);
+			uint8 occupancy_smoothness = owner ? owner->settings.order_occupancy_smoothness : 0;
 			// Exponential weighted moving average using occupancy_smoothness
-			new_occupancy = (old_occupancy - 1) * _settings_game.order.occupancy_smoothness;
-			new_occupancy += current_occupancy * (100 - _settings_game.order.occupancy_smoothness);
+			new_occupancy = (old_occupancy - 1) * occupancy_smoothness;
+			new_occupancy += current_occupancy * (100 - occupancy_smoothness);
 			new_occupancy += 50; // round to nearest integer percent, rather than just floor
 			new_occupancy /= 100;
 		}
@@ -2799,6 +2813,8 @@ static void SpawnAdvancedVisualEffect(const Vehicle *v)
 	}
 }
 
+uint16 ReversingDistanceTargetSpeed(const Train *v);
+
 /**
  * Draw visual effects (smoke and/or sparks) for a vehicle chain.
  * @pre this->IsPrimaryVehicle()
@@ -2827,10 +2843,12 @@ void Vehicle::ShowVisualEffect() const
 		/* For trains, do not show any smoke when:
 		 * - the train is reversing
 		 * - is entering a station with an order to stop there and its speed is equal to maximum station entering speed
+		 * - is approaching a reversing point and its speed is equal to maximum approach speed
 		 */
 		if (HasBit(t->flags, VRF_REVERSING) ||
 				(IsRailStationTile(t->tile) && t->IsFrontEngine() && t->current_order.ShouldStopAtStation(t, GetStationIndex(t->tile)) &&
-				t->cur_speed >= max_speed)) {
+				t->cur_speed >= max_speed) ||
+				(t->reverse_distance >= 1 && t->cur_speed >= ReversingDistanceTargetSpeed(t))) {
 			return;
 		}
 	}

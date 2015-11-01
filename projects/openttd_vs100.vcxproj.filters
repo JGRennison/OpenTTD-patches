@@ -159,6 +159,9 @@
     <ClCompile Include="..\src\dedicated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\departures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\depot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -519,6 +522,9 @@
     <ClInclude Include="..\src\crashlog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\crashlog_bfd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\currency.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -535,6 +541,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\video\dedicated_v.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\departures_func.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\departures_gui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\departures_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\depot_base.h">
@@ -1143,6 +1158,9 @@
     <ClInclude Include="..\src\town.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\town_gui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\town_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1356,6 +1374,9 @@
     <ClCompile Include="..\src\date_gui.cpp">
       <Filter>GUI Source Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\departures_gui.cpp">
+      <Filter>GUI Source Code</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\depot_gui.cpp">
       <Filter>GUI Source Code</Filter>
     </ClCompile>
@@ -1531,6 +1552,9 @@
       <Filter>Widgets</Filter>
     </ClInclude>
     <ClInclude Include="..\src\widgets\date_widget.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\widgets\departures_widget.h">
       <Filter>Widgets</Filter>
     </ClInclude>
     <ClInclude Include="..\src\widgets\depot_widget.h">

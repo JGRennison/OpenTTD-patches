@@ -570,7 +570,7 @@ void NORETURN SlError(StringID string, const char *extra_msg, bool already_mallo
 /**
  * As SlError, except that it takes a format string and additional parameters
  */
-void CDECL NORETURN SlErrorFmt(StringID string, const char *msg, ...)
+void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...)
 {
 	va_list va;
 	va_start(va, msg);
@@ -594,7 +594,7 @@ void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced)
 /**
  * As SlErrorCorruptFmt, except that it takes a format string and additional parameters
  */
-void CDECL NORETURN SlErrorCorruptFmt(const char *msg, ...)
+void NORETURN CDECL SlErrorCorruptFmt(const char *msg, ...)
 {
 	va_list va;
 	va_start(va, msg);

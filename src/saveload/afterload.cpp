@@ -3074,6 +3074,13 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_REVERSE_AT_WAYPOINT)) {
+		Train *t;
+		FOR_ALL_TRAINS(t) {
+			t->reverse_distance = 0;
+		}
+	}
+
 	/*
 	 * Only keep order-backups for network clients (and when replaying).
 	 * If we are a network server or not networking, then we just loaded a previously
@@ -3180,6 +3187,14 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(127)) {
 		Station *st;
 		FOR_ALL_STATIONS(st) UpdateStationAcceptance(st, false);
+	}
+
+	// setting moved from game settings to company settings
+	if (SlXvIsFeaturePresent(XSLFI_ORDER_OCCUPANCY, 1, 1)) {
+		Company *c;
+		FOR_ALL_COMPANIES(c) {
+			c->settings.order_occupancy_smoothness = _settings_game.order.old_occupancy_smoothness;
+		}
 	}
 
 	/* Road stops is 'only' updating some caches */

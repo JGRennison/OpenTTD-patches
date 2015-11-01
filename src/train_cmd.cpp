@@ -671,6 +671,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		v->owner = _current_company;
 		v->track = TRACK_BIT_DEPOT;
 		v->vehstatus = VS_HIDDEN | VS_DEFPAL;
+		v->reverse_distance = 0;
 
 		v->SetWagon();
 
@@ -805,6 +806,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->refit_cap = 0;
 		v->last_station_visited = INVALID_STATION;
 		v->last_loading_station = INVALID_STATION;
+		v->reverse_distance = 0;
 
 		v->engine_type = e->index;
 		v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
@@ -1437,12 +1439,14 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 		return ret;
 	}
 
-	CommandCost cost(EXPENSES_NEW_VEHICLES);
-	for (Train *t = sell_head; t != NULL; t = t->Next()) cost.AddCost(-t->value);
-
 	if (first->orders.list == NULL && !OrderList::CanAllocateItem()) {
+		/* Restore the train we had. */
+		RestoreTrainBackup(original);
 		return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 	}
+
+	CommandCost cost(EXPENSES_NEW_VEHICLES);
+	for (Train *t = sell_head; t != NULL; t = t->Next()) cost.AddCost(-t->value);
 
 	/* do it? */
 	if (flags & DC_EXEC) {
@@ -1901,6 +1905,8 @@ void ReverseTrainDirection(Train *v)
 	if (IsRailDepotTile(v->tile)) {
 		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 	}
+
+	v->reverse_distance = 0;
 
 	/* Clear path reservation in front if train is not stuck. */
 	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) FreeTrainTrackReservation(v);
@@ -3320,6 +3326,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 	}
 	SigSegState seg_state = _settings_game.pf.reserve_paths ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
 	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !TryPathReserve(t))) {
+		t->vehstatus |= VS_TRAIN_SLOWING;
 		t->cur_speed = 0;
 		return true;
 	}
@@ -3350,6 +3357,17 @@ static void HandleSignalBehindTrain(Train *v, uint signal_number)
 	}
 }
 
+uint16 ReversingDistanceTargetSpeed(const Train *v)
+{
+	int target_speed;
+	if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC) {
+		target_speed = ((v->reverse_distance - 1) * 5) / 2;
+	} else {
+		target_speed = (v->reverse_distance - 1) * 10 - 5;
+	}
+	return max(0, target_speed);
+}
+
 /**
  * Move a vehicle chain one movement stop forwards.
  * @param v First vehicle to move.
@@ -3362,6 +3380,15 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 	Train *first = v->First();
 	Train *prev;
 	bool direction_changed = false; // has direction of any part changed?
+
+	if (reverse && v->reverse_distance == 1) {
+		goto reverse_train_direction;
+	}
+
+	if (v->reverse_distance > 1) {
+		uint16 spd = ReversingDistanceTargetSpeed(v);
+		if (spd < v->cur_speed) v->cur_speed = spd;
+	}
 
 	/* For every vehicle after and including the given vehicle */
 	for (prev = v->Previous(); v != nomove; prev = v, v = v->Next()) {
@@ -3377,6 +3404,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					/* Inside depot */
 					gp.x = v->x_pos;
 					gp.y = v->y_pos;
+					v->reverse_distance = 0;
 				} else {
 					/* Not inside depot */
 
@@ -3540,6 +3568,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if (v->IsFrontEngine() && v->force_proceed == 0) {
 						if (IsTunnelBridgeWithSignRed(gp.new_tile)) {
 							v->cur_speed = 0;
+							v->vehstatus |= VS_TRAIN_SLOWING;
 							return false;
 						}
 						if (IsTunnelBridgeExit(gp.new_tile)) {
@@ -3628,6 +3657,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						if (IsToCloseBehindTrain(v, gp.new_tile, distance == 0)) {
 							if (distance == 0) v->wait_counter = 0;
 							v->cur_speed = 0;
+							v->vehstatus |= VS_TRAIN_SLOWING;
 							return false;
 						}
 						/* flip signal in front to red on bridges*/
@@ -3688,6 +3718,9 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		v->x_pos = gp.x;
 		v->y_pos = gp.y;
 		v->UpdatePosition();
+		if (v->reverse_distance > 1) {
+			v->reverse_distance--;
+		}
 
 		/* update the Z position of the vehicle */
 		int old_z = v->UpdateInclination(gp.new_tile != gp.old_tile, false);
