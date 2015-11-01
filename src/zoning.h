@@ -46,4 +46,7 @@ void DrawTileZoning(const TileInfo *ti);
 
 void ShowZoningToolbar();
 
+void ZoningMarkDirtyStationCoverageArea(const Station *st);
+inline void ZoningMarkDirtyStationCoverageArea(const Waypoint *st) { } // no-op
+
 #endif /* ZONING_H */

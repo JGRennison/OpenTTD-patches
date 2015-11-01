@@ -53,6 +53,7 @@
 #include "linkgraph/linkgraph_base.h"
 #include "linkgraph/refresh.h"
 #include "widgets/station_widget.h"
+#include "zoning.h"
 
 #include "table/strings.h"
 
@@ -1425,6 +1426,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 		st->UpdateVirtCoord();
 		UpdateStationAcceptance(st, false);
 		st->RecomputeIndustriesNear();
+		ZoningMarkDirtyStationCoverageArea(st);
 		InvalidateWindowData(WC_SELECT_STATION, 0, 0);
 		InvalidateWindowData(WC_STATION_LIST, st->owner, 0);
 		SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_TRAINS);
@@ -1537,6 +1539,9 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected
 		}
 
 		if (flags & DC_EXEC) {
+			bool already_affected = affected_stations.Include(st);
+			if (!already_affected) ZoningMarkDirtyStationCoverageArea(st);
+
 			/* read variables before the station tile is removed */
 			uint specindex = GetCustomStationSpecIndex(tile);
 			Track track = GetRailStationTrack(tile);
@@ -1570,8 +1575,6 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected
 			YapfNotifyTrackLayoutChange(tile, track);
 
 			DeallocateSpecFromStation(st, specindex);
-
-			affected_stations.Include(st);
 
 			if (v != NULL) {
 				/* Restore station reservation. */
@@ -1716,6 +1719,9 @@ static CommandCost RemoveRailStation(TileIndex tile, DoCommandFlag flags)
 	}
 
 	Station *st = Station::GetByTile(tile);
+
+	if (flags & DC_EXEC) ZoningMarkDirtyStationCoverageArea(st);
+
 	CommandCost cost = RemoveRailStation(st, flags, _price[PR_CLEAR_STATION_RAIL]);
 
 	if (flags & DC_EXEC) st->RecomputeIndustriesNear();
@@ -1905,6 +1911,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 
 			MarkTileDirtyByTile(cur_tile);
 		}
+		ZoningMarkDirtyStationCoverageArea(st);
 	}
 
 	if (st != NULL) {
@@ -1975,6 +1982,7 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 	}
 
 	if (flags & DC_EXEC) {
+		ZoningMarkDirtyStationCoverageArea(st);
 		if (*primary_stop == cur_stop) {
 			/* removed the first stop in the list */
 			*primary_stop = cur_stop->next;
@@ -2432,6 +2440,7 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 
 		UpdateStationAcceptance(st, false);
 		st->RecomputeIndustriesNear();
+		ZoningMarkDirtyStationCoverageArea(st);
 		InvalidateWindowData(WC_SELECT_STATION, 0, 0);
 		InvalidateWindowData(WC_STATION_LIST, st->owner, 0);
 		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
@@ -2463,6 +2472,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 	if (cost.Failed()) return cost;
 
 	if (flags & DC_EXEC) {
+		ZoningMarkDirtyStationCoverageArea(st);
 		const AirportSpec *as = st->airport.GetSpec();
 		/* The noise level is the noise from the airport and reduce it to account for the distance to the town center.
 		 * And as for construction, always remove it, even if the setting is not set, in order to avoid the
@@ -2654,6 +2664,7 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		st->UpdateVirtCoord();
 		UpdateStationAcceptance(st, false);
 		st->RecomputeIndustriesNear();
+		ZoningMarkDirtyStationCoverageArea(st);
 		InvalidateWindowData(WC_SELECT_STATION, 0, 0);
 		InvalidateWindowData(WC_STATION_LIST, st->owner, 0);
 		SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_SHIPS);
@@ -2684,6 +2695,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 	if (ret.Failed()) return ret;
 
 	if (flags & DC_EXEC) {
+		ZoningMarkDirtyStationCoverageArea(st);
 		DoClearSquare(tile1);
 		MarkTileDirtyByTile(tile1);
 		MakeWaterKeepingClass(tile2, st->owner);
@@ -4023,11 +4035,13 @@ void BuildOilRig(TileIndex tile)
 	st->UpdateVirtCoord();
 	UpdateStationAcceptance(st, false);
 	st->RecomputeIndustriesNear();
+	ZoningMarkDirtyStationCoverageArea(st);
 }
 
 void DeleteOilRig(TileIndex tile)
 {
 	Station *st = Station::GetByTile(tile);
+	ZoningMarkDirtyStationCoverageArea(st);
 
 	MakeWaterKeepingClass(tile, OWNER_NONE);
 
