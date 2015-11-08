@@ -1548,8 +1548,17 @@ static void ViewportMapStoreBridgeTunnel(const ViewPort * const vp, const TileIn
 
 	/* It's a new one, add it to the list */
 	tbtm = tbtmv->Append();
-	tbtm->from_tile = tile;
-	tbtm->to_tile = GetOtherTunnelBridgeEnd(tile);
+	TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
+
+	/* ensure deterministic ordering, to avoid render flicker */
+	if (other_end > tile) {
+		tbtm->from_tile = other_end;
+		tbtm->to_tile = tile;
+	} else {
+		tbtm->from_tile = tile;
+		tbtm->to_tile = other_end;
+	}
+
 	if (vp->map_type == VPMT_OWNER && _settings_client.gui.use_owner_colour_for_tunnelbridge && o < MAX_COMPANIES) {
 		const uint8 colour = _legend_land_owners[_company_to_list_pos[o]].colour;
 		tbtm->colour = tile_is_tunnel ? _darken_colour[colour] : _lighten_colour[colour];
@@ -2086,6 +2095,31 @@ static inline uint32 ViewportMapGetColourOwner(const TileIndex tile, TileType t,
 	return colour;
 }
 
+static inline void ViewportMapStoreBridgeAboveTile(const ViewPort * const vp, const TileIndex tile)
+{
+	/* No need to bother for hidden things */
+	if (!_settings_client.gui.show_bridges_on_map) return;
+
+	/* Check existing stored bridges */
+	TunnelBridgeToMap *tbtm = _vd.tunnel_bridge_to_map.Begin();
+	TunnelBridgeToMap *tbtm_end = _vd.tunnel_bridge_to_map.End();
+	for (; tbtm != tbtm_end; ++tbtm) {
+		if (!IsBridge(tbtm->from_tile)) continue;
+
+		TileIndex from = tbtm->from_tile;
+		TileIndex to = tbtm->to_tile;
+		if (TileX(from) == TileX(to) && TileX(from) == TileX(tile)) {
+			if (TileY(from) > TileY(to)) std::swap(from, to);
+			if (TileY(from) <= TileY(tile) && TileY(tile) <= TileY(to)) return; /* already covered */
+		} else if (TileY(from) == TileY(to) && TileY(from) == TileY(tile)) {
+			if (TileX(from) > TileX(to)) std::swap(from, to);
+			if (TileX(from) <= TileX(tile) && TileX(tile) <= TileX(to)) return; /* already covered */
+		}
+	}
+
+	ViewportMapStoreBridgeTunnel(vp, GetSouthernBridgeEnd(tile));
+}
+
 static inline TileIndex ViewportMapGetMostSignificantTileType(const ViewPort * const vp, const TileIndex from_tile, TileType * const tile_type)
 {
 	if (vp->zoom <= ZOOM_LVL_OUT_128X || !_settings_client.gui.viewport_map_scan_surroundings) {
@@ -2093,6 +2127,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const ViewPort * c
 		/* Store bridges and tunnels. */
 		if (ttype != MP_TUNNELBRIDGE) {
 			*tile_type = ttype;
+			if (IsBridgeAbove(from_tile)) ViewportMapStoreBridgeAboveTile(vp, from_tile);
 		} else {
 			ViewportMapStoreBridgeTunnel(vp, from_tile);
 			switch (GetTunnelBridgeTransportType(from_tile)) {
@@ -2118,6 +2153,9 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const ViewPort * c
 		if (tile_importance > importance) {
 			importance = tile_importance;
 			result = tile;
+		}
+		if (ttype != MP_TUNNELBRIDGE && IsBridgeAbove(tile)) {
+			ViewportMapStoreBridgeAboveTile(vp, tile);
 		}
 	}
 
@@ -2303,7 +2341,7 @@ void ViewportMapDraw(const ViewPort * const vp)
 		const TunnelBridgeToMap * const tbtm_end = _vd.tunnel_bridge_to_map.End();
 		for (const TunnelBridgeToMap *tbtm = _vd.tunnel_bridge_to_map.Begin(); tbtm != tbtm_end; tbtm++) { // For each bridge or tunnel
 			TileIndex tile = tbtm->from_tile;
-			const int z = TileHeight(tile) * 4;
+			const int z = (IsBridge(tile) ? GetBridgeHeight(tile) : GetTileZ(tile)) * TILE_HEIGHT;
 			TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
 			for (; tile != tbtm->to_tile; tile += delta) { // For each tile
 				const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);

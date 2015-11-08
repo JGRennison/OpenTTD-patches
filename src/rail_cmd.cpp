@@ -1091,10 +1091,11 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					}
 				}
 			}
-			MarkTileDirtyByTile(tile);
-			MarkTileDirtyByTile(tile_exit);
+			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
+			YapfNotifyTrackLayoutChange(tile_exit, track);
 		}
 		return cost;
 	}
@@ -1545,10 +1546,11 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			ClrBitTunnelBridgeSignal(end);
 			_m[tile].m2 = 0;
 			_m[end].m2 = 0;
-			MarkTileDirtyByTile(tile);
-			MarkTileDirtyByTile(end);
+			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+			AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
+			YapfNotifyTrackLayoutChange(end, track);
 			return CommandCost(EXPENSES_CONSTRUCTION, cost);
 		}
 
