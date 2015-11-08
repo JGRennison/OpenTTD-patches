@@ -1709,6 +1709,9 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Erlaube Zügen,
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Wert der Einstellung ändern
 
+STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Schließe benachbarte Bahnübergänge: {STRING2}
+STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Schließt alle Bahnübergänge benachbarter paralleler Gleise wenn eines oder mehrere der Gleise befahren werden
+
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Fehler in der Konfigurations-Datei...
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... Fehler im Array '{STRING}'
