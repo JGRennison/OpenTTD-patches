@@ -2338,7 +2338,7 @@ void ViewportMapDraw(const ViewPort * const vp)
 		const TunnelBridgeToMap * const tbtm_end = _vd.tunnel_bridge_to_map.End();
 		for (const TunnelBridgeToMap *tbtm = _vd.tunnel_bridge_to_map.Begin(); tbtm != tbtm_end; tbtm++) { // For each bridge or tunnel
 			TileIndex tile = tbtm->from_tile;
-			const int z = (IsBridge(tile) ? GetBridgeHeight(tile) : GetTileZ(tile)) * TILE_HEIGHT;
+			const int z = (IsBridge(tile) ? GetBridgeHeight(tile) - 1 : GetTileZ(tile)) * TILE_HEIGHT;
 			TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
 			for (; tile != tbtm->to_tile; tile += delta) { // For each tile
 				const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
