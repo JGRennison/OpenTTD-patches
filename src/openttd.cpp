@@ -64,6 +64,7 @@
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
 #include "smallmap_gui.h"
+#include "viewport_func.h"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -312,6 +313,8 @@ static void ShutdownGame()
 	FioCloseAll();
 
 	UninitFreeType();
+
+	ViewportMapClearTunnelCache();
 }
 
 /**

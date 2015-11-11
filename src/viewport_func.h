@@ -94,4 +94,7 @@ Point GetViewportStationMiddle(const ViewPort *vp, const Station *st);
 
 void ShowTooltipForTile(Window *w, const TileIndex tile);
 
+void ViewportMapClearTunnelCache();
+void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile);
+
 #endif /* VIEWPORT_FUNC_H */
