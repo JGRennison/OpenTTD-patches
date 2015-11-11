@@ -44,7 +44,6 @@ void BuildLinkStatsLegend();
 struct TunnelBridgeToMap {
 	TileIndex from_tile;
 	TileIndex to_tile;
-	uint8 colour;
 };
 typedef SmallVector<TunnelBridgeToMap, 64> TunnelBridgeToMapVector;
 

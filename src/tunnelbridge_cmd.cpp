@@ -41,6 +41,7 @@
 #include "object_base.h"
 #include "water.h"
 #include "company_gui.h"
+#include "viewport_func.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -881,6 +882,8 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 			DoClearSquare(tile);
 			DoClearSquare(endtile);
 		}
+		ViewportMapInvalidateTunnelCacheByTile(tile);
+		ViewportMapInvalidateTunnelCacheByTile(endtile);
 	}
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_TUNNEL] * len);
 }
