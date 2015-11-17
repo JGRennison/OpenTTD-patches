@@ -39,6 +39,7 @@ STRIP       = !!STRIP!!
 TTD         = !!TTD!!
 TTDS        = $(SRC_DIRS:%=%/$(TTD))
 OS          = !!OS!!
+CPU_TYPE    = !!CPU_TYPE!!
 OSXAPP      = !!OSXAPP!!
 LIPO        = !!LIPO!!
 AWK         = !!AWK!!

@@ -21,6 +21,9 @@ endif
 
 ifndef BUNDLE_NAME
 BUNDLE_NAME = openttd-custom-$(REV)-$(OS)
+ifeq ($(OS),MINGW)
+BUNDLE_NAME := $(BUNDLE_NAME)-win$(CPU_TYPE)
+endif
 endif
 
 # An OSX application bundle needs the data files, lang files and openttd executable in a different location.

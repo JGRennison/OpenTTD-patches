@@ -3362,6 +3362,7 @@ make_sed() {
 		s@!!OBJS_RC!!@$OBJS_RC@g;
 		s@!!SRCS!!@$SRCS@g;
 		s@!!OS!!@$os@g;
+		s@!!CPU_TYPE!!@$cpu_type@g;
 		s@!!CONFIGURE_FILES!!@$CONFIGURE_FILES@g;
 		s@!!AWK!!@$awk@g;
 		s@!!DISTCC!!@$distcc@g;
