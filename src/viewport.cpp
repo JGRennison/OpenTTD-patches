@@ -1533,7 +1533,7 @@ static void ViewportMapStoreBridgeTunnel(const ViewPort * const vp, const TileIn
 		if (!_settings_client.gui.show_bridges_on_map) return;
 	}
 	const Owner o = GetTileOwner(tile);
-	if (!_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
+	if (o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
 
 	/* Check if already stored */
 	TunnelBridgeToMapVector * const tbtmv = tile_is_tunnel ? &_vd.tunnel_to_map : &_vd.bridge_to_map;
