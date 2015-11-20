@@ -1754,6 +1754,7 @@ static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 			if (_vp_route_paths_last_mark_dirty != drawn_paths) {
 				// make sure we're not drawing a partial path
 				MarkRoutePathsDirty(drawn_paths);
+				_vp_route_paths_last_mark_dirty = drawn_paths;
 				DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 3");
 			}
 
