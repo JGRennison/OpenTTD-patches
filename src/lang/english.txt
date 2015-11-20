@@ -1377,6 +1377,8 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Double click
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Single click (when focussed)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Single click (immediately)
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :Show the vehicle's route steps: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :Mark other companies' vehicles in lists with their company colour: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :Vehicles in a vehicle list window which are owned by a different company than the owner of the vehicle list are marked with a coloured square in the vehicle's company colour.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :Scan surroundings (better for high zoom out levels): {STRING2}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Show slopes: {STRING2}
