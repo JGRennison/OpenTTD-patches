@@ -1453,13 +1453,13 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 		DrawString(text_left, text_right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 1, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
 
 		/* company colour stripe along vehicle description row */
-		if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN] || _settings_game.economy.infrastructure_sharing[VEH_ROAD] || _settings_game.economy.infrastructure_sharing[VEH_SHIP] || _settings_game.economy.infrastructure_sharing[VEH_AIRCRAFT]) {
+		if (_settings_client.gui.show_vehicle_list_company_colour && v->owner != this->vli.company) {
 			byte ccolour = 0;
 			Company *c = Company::Get(v->owner);
 			if (c != NULL) {
 				ccolour = _colour_gradient[c->colour][6];
 			}
-			GfxFillRect(text_left, y, text_right, y + FONT_HEIGHT_SMALL - 2, ccolour, FILLRECT_OPAQUE);
+			GfxFillRect((text_right - 1) - (FONT_HEIGHT_SMALL - 2), y + 1, text_right - 1, (y + 1) + (FONT_HEIGHT_SMALL - 2), ccolour, FILLRECT_OPAQUE);
 		}
 
 		if (v->name != NULL) {

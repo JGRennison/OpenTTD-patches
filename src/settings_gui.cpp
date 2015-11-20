@@ -1590,6 +1590,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.expenses_layout"));
 			interface->Add(new SettingEntry("gui.show_train_length_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
+			interface->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
