@@ -2297,7 +2297,7 @@ static void ViewportMapDrawBridgeTunnel(const ViewPort * const vp, const TunnelB
 
 	TileIndex tile = tbtm->from_tile;
 	const Owner o = GetTileOwner(tile);
-	if (!_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
+	if (o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
 
 	uint8 colour;
 	if (vp->map_type == VPMT_OWNER && _settings_client.gui.use_owner_colour_for_tunnelbridge && o < MAX_COMPANIES) {
