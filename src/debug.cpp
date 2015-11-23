@@ -141,13 +141,18 @@ static void debug_print(const char *dbg, const char *buf)
 
 	char buffer[512];
 	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
+
+	/* do not write desync messages to the console on Windows platforms, as they do
+	 * not seem able to handle text direction change characters in a console without
+	 * crashing, and NetworkTextMessage includes these */
 #if defined(WINCE)
-	NKDbgPrintfW(OTTD2FS(buffer));
+	if (strcmp(dbg, "desync") != 0) NKDbgPrintfW(OTTD2FS(buffer));
 #elif defined(WIN32) || defined(WIN64)
-	_fputts(OTTD2FS(buffer, true), stderr);
+	if (strcmp(dbg, "desync") != 0) _fputts(OTTD2FS(buffer, true), stderr);
 #else
 	fputs(buffer, stderr);
 #endif
+
 #ifdef ENABLE_NETWORK
 	NetworkAdminConsole(dbg, buf);
 #endif /* ENABLE_NETWORK */
