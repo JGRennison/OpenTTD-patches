@@ -1179,6 +1179,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 
 	NetworkAdminClientError(this->client_id, errorno);
 
+	if (errorno == NETWORK_ERROR_DESYNC) {
+		// have the server and all clients run some sanity checks
+		NetworkSendCommand(0, 0, 0, CMD_DESYNC_CHECK, NULL, NULL, _local_company, 0);
+	}
+
 	return this->CloseConnection(NETWORK_RECV_STATUS_CONN_LOST);
 }
 

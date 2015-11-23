@@ -212,6 +212,8 @@ CommandProc CmdRemovePlan;
 CommandProc CmdRemovePlanLine;
 CommandProc CmdChangePlanVisibility;
 
+CommandProc CmdDesyncCheck;
+
 #define DEF_CMD(proc, flags, type) {proc, #proc, (CommandFlags)flags, type}
 
 /**
@@ -382,6 +384,8 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdRemovePlan,                                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN
 	DEF_CMD(CmdRemovePlanLine,                                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN_LINE
 	DEF_CMD(CmdChangePlanVisibility,                           0, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_VISIBILITY
+
+	DEF_CMD(CmdDesyncCheck,                           CMD_SERVER, CMDT_SERVER_SETTING        ), // CMD_DESYNC_CHECK
 };
 
 /*!
