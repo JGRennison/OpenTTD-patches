@@ -138,9 +138,14 @@ static void debug_print(const char *dbg, const char *buf)
 	char buffer[512];
 	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
 #if defined(_WIN32)
-	TCHAR system_buf[512];
-	convert_to_fs(buffer, system_buf, lengthof(system_buf), true);
-	_fputts(system_buf, stderr);
+	/* do not write desync messages to the console on Windows platforms, as they do
+	 * not seem able to handle text direction change characters in a console without
+	 * crashing, and NetworkTextMessage includes these */
+	if (strcmp(dbg, "desync") != 0) {
+		TCHAR system_buf[512];
+		convert_to_fs(buffer, system_buf, lengthof(system_buf), true);
+		_fputts(system_buf, stderr);
+	}
 #else
 	fputs(buffer, stderr);
 #endif
