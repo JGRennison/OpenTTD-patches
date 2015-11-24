@@ -34,6 +34,7 @@
 #include "company_gui.h"
 #include "object_map.h"
 #include "tracerestrict.h"
+#include "spritecache.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -1870,6 +1871,8 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 		sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
 		sprite += type * 16 + variant * 64 + image * 2 + condition + (type > SIGTYPE_LAST_NOPBS ? 64 : 0);
 	}
+	extern uint _first_user_grf_file_index;
+	if (!is_custom_sprite) is_custom_sprite = (GetOriginFileSlot(sprite) >= _first_user_grf_file_index);
 
 	if (!is_custom_sprite && variant == SIG_ELECTRIC && IsRestrictedSignal(tile) && GetExistingTraceRestrictProgram(tile, track) != NULL) {
 		if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
