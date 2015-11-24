@@ -205,6 +205,7 @@ CommandProc CmdProgramSignalTraceRestrict;
 CommandProc CmdInsertSignalInstruction;
 CommandProc CmdModifySignalInstruction;
 CommandProc CmdRemoveSignalInstruction;
+CommandProc CmdSignalProgramMgmt;
 
 CommandProc CmdAddPlan;
 CommandProc CmdAddPlanLine;
@@ -378,6 +379,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdInsertSignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_INSERT_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdModifySignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_MODIFY_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdRemoveSignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_SIGNAL_INSTRUCTION
+	DEF_CMD(CmdSignalProgramMgmt,                              0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_SIGNAL_PROGRAM_MGMT
 
 	DEF_CMD(CmdAddPlan,                                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN
 	DEF_CMD(CmdAddPlanLine,                                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN_LINE
