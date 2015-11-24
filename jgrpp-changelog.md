@@ -2,6 +2,27 @@
 
 * * *
 
+### v0.8.0 (2015-11-24)
+* Enhanced viewports:
+  * Fix flicker and render errors of tunnels in viewport map mode.
+  * Fix displayed height of bridges in viewport map mode.
+  * Fix companies with a green colour scheme having sloping tiles and tunnels appearing as flashing yellow in viewport map mode (owner mode).
+  * Fix out of bounds memory reads for bridges/tunnels in viewport map mode.
+  * Fix a severe performance regression from v0.7.1 involving redrawing of modified vehicle route lines.
+* Routing restrictions: Fix non-default signal sprites being recoloured blue for restricted signals.
+* Programmable signals:
+  * Fix the remove program button not working at all in multiplayer, causing desyncs.
+  * Fix the copy program button only working correctly in the most trivial cases, and sometimes crashing.
+* Build: Change file names of bundles when building on MinGW.
+* Fixes to avoid potentially problematic undefined behaviour.
+* Add a setting to add a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match list owner (default on). Patch by McZapkie (modified).
+* Desync debugging:
+  * If a clients desyncs, the ejected client, the server and all remaining clients run some desync checks.
+  * Changes to desync checks and debug levels.
+  * No longer write desync messages to the console on Windows, as this can cause crashes, this is now only written to the file.
+* Add German translations by Auge, for the adjacent level crossings patch.
+* Bump trunk base from r27428 to r27455
+
 ### v0.7.1 (2015-11-01)
 * Enhanced viewports:
   * Fix flicker and render errors of bridge/tunnels in viewport map mode.

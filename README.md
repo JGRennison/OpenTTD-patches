@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.7.1
+## JGR's Patchpack version 0.8.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -28,7 +28,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)
 
 * Programmable signals: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=47690)  
-  This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)
+  This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)  
+  As of v0.8.0, fix the remove and copy program buttons.
 
 * Upgrade airports: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=35867)
 
@@ -59,7 +60,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * 255 GRFs in single player mode: [imported](http://www.tt-forums.net/viewtopic.php?p=894743#p894743)
 
 * Improved breakdowns: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=39518)  
-  Fixed minor bugs involving breakdown smoke.
+  Fixed minor bugs involving breakdown smoke.  
+  As of v0.5.3, fix multiplayer desync issues.
 
 * Timetabling waiting time in depots: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=70969)
 
@@ -80,7 +82,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Enhanced viewport: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=53394)  
   Fixed crash when looking at aqueducts in viewport map mode.  
-  As of v0.7.1, fix flicker and render errors of bridge/tunnels in viewport map mode, and rendering/clearing errors of vehicle route lines.
+  As of v0.7.1 and v0.8.0, fix flicker and render errors of bridge/tunnels in viewport map mode, and rendering/clearing errors of vehicle route lines.  
+  As of v0.8.0, fix companies with a green colour scheme appearing as flashing yellow in viewport map owner mode.
 
 * Infrastructure sharing: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)  
   Fixed various issues with additions to the settings GUI.
@@ -136,6 +139,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Reverse at waypoint orders (added in v0.7.0)
 
+* Show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match list owner (imported: by McZapkie) (added in v0.8.0)  
+  This has been  modified to change the mark and be controlled by a setting (on by default).
+
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
   * Savegames from this patchpack are not loadable in trunk.  
@@ -152,7 +158,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Logging: Various changes and improvements to desync-related logging and debugging, see changelog for details.
 
 * Translations  
-  * German (by Auge): including vehicle group info, vehicle details window, and the zoning toolbar.
+  * German (by Auge): including vehicle group info, vehicle details window, the zoning toolbar, and settings for adjacent level crossings.
 
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  
