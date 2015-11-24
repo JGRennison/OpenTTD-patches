@@ -46,6 +46,9 @@ static const SpriteID * const _landscape_spriteindexes[] = {
 	_landscape_spriteindexes_toyland,
 };
 
+/** file index of first user-added GRF file */
+int _first_user_grf_file_index;
+
 /**
  * Load an old fashioned GRF file.
  * @param filename   The name of the file to open.
@@ -237,6 +240,8 @@ static void LoadSpriteTables()
 	_grfconfig = master;
 
 	LoadNewGRF(SPR_NEWGRFS_BASE, i);
+
+	_first_user_grf_file_index = i + 1;
 
 	/* Free and remove the top element. */
 	delete master;
