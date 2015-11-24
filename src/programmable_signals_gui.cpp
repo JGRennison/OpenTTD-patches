@@ -256,8 +256,7 @@ public:
 
 			case PROGRAM_WIDGET_REMOVE: {
 				SignalInstruction *ins = GetSelected();
-				if (this->GetOwner() != _local_company || !ins)
-					return;
+				if (ins == NULL) return;
 
 				uint32 p1 = 0;
 				SB(p1, 0, 3, this->track);
@@ -336,15 +335,13 @@ public:
 				ScrollMainWindowToTile(this->tile);
 				// this->RaiseWidget(PROGRAM_WIDGET_GOTO_SIGNAL);
 			} break;
-			case PROGRAM_WIDGET_REMOVE_PROGRAM: {
-				if (this->GetOwner() != _local_company)
-					return;
-				program->first_instruction->Remove();
 
+			case PROGRAM_WIDGET_REMOVE_PROGRAM: {
+				DoCommandP(this->tile, this->track | (SPMC_REMOVE << 3), 0, CMD_SIGNAL_PROGRAM_MGMT | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 				this->RebuildInstructionList();
 			} break;
-			case PROGRAM_WIDGET_COPY_PROGRAM: {
 
+			case PROGRAM_WIDGET_COPY_PROGRAM: {
 				this->ToggleWidgetLoweredState(PROGRAM_WIDGET_COPY_PROGRAM);
 				this->SetWidgetDirty(PROGRAM_WIDGET_COPY_PROGRAM);
 				if (this->IsWidgetLowered(PROGRAM_WIDGET_COPY_PROGRAM)) {
@@ -353,62 +350,6 @@ public:
 					ResetObjectToPlace();
 				}
 			} break;
-		}
-	}
-
-	void InsertInstruction(SignalInstruction *si, uint32 next)
-	{
-		uint64 p1 = 0;
-		while(true) {
-			if(si == NULL) break;
-			switch(si->Opcode()) {
-				case PSO_SET_SIGNAL: {
-					SB(p1, 0, 3, this->track);
-					SB(p1, 3, 16, next);
-					SB(p1, 19, 8, si->Opcode());
-
-					DoCommandP(this->tile, p1, 0, CMD_INSERT_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_INSERT_INSTRUCTION));
-					this->RebuildInstructionList();
-					si = ((SignalSet*)si)->next;
-				} break;
-
-				case PSO_IF: {
-					SB(p1, 0, 3, this->track);
-					SB(p1, 3, 16, next);
-					SB(p1, 19, 8, si->Opcode());
-
-					DoCommandP(this->tile, p1, 0, CMD_INSERT_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_INSERT_INSTRUCTION));
-					this->RebuildInstructionList();
-
-					SignalInstruction *s = ((SignalIf*)si)->if_true;
-					while(s->Opcode() != PSO_IF_ELSE) {
-						if(s->Opcode() == PSO_IF) s = ((SignalIf*)s)->after;
-						if(s->Opcode() == PSO_SET_SIGNAL) s = ((SignalSet*)s)->next;
-						else break;
-					}
-					InsertInstruction(((SignalIf*)si)->if_true, s->Id());
-					this->RebuildInstructionList();
-
-					s = ((SignalIf*)si)->if_false;
-					while(s->Opcode() != PSO_IF_ENDIF) {
-						if(s->Opcode() == PSO_IF) s = ((SignalIf*)s)->after;
-						if(s->Opcode() == PSO_SET_SIGNAL) s = ((SignalSet*)s)->next;
-						else break;
-					}
-					InsertInstruction(((SignalIf*)si)->if_false, s->Id());
-					this->RebuildInstructionList();
-
-					si = ((SignalIf*)si)->after;
-				} break;
-
-				case PSO_LAST:
-				case PSO_IF_ELSE:
-				case PSO_IF_ENDIF:
-					return;
-
-				default:
-					NOT_REACHED();
-			}
 		}
 	}
 
@@ -446,13 +387,10 @@ public:
 				ShowErrorMessage(STR_ERROR_INVALID_SIGNAL, STR_ERROR_NOT_AN_EXIT_SIGNAL, WL_INFO);
 				return;
 			}
-			program->first_instruction->Remove();
-			this->RebuildInstructionList();
-
-			SignalInstruction *si = ((SignalSpecial*)sp->first_instruction)->next;
-			InsertInstruction(si, program->last_instruction->Id());
+			DoCommandP(this->tile, this->track | (SPMC_CLONE << 3) | (track1 << 7), tile1, CMD_SIGNAL_PROGRAM_MGMT | CMD_MSG(STR_ERROR_CAN_T_INSERT_INSTRUCTION));
 			ResetObjectToPlace();
 			this->RaiseWidget(PROGRAM_WIDGET_COPY_PROGRAM);
+			this->RebuildInstructionList();
 			//OnPaint(); // this appears to cause visual artefacts
 			return;
 		}
