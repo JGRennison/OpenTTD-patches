@@ -30,7 +30,7 @@ RawText::~RawText()
 
 
 ScriptText::ScriptText(HSQUIRRELVM vm) :
-	ZeroedMemoryAllocator()
+	string(STR_NULL), params(), parami(), paramt(), paramc(0)
 {
 	int nparam = sq_gettop(vm) - 1;
 	if (nparam < 1) {
