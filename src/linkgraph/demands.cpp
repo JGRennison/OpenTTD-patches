@@ -2,11 +2,11 @@
 
 #include "../stdafx.h"
 #include "demands.h"
-#include <list>
+#include <deque>
 
 #include "../safeguards.h"
 
-typedef std::list<NodeID> NodeList;
+typedef std::deque<NodeID> NodeList;
 
 /**
  * Scale various things according to symmetric/asymmetric distribution.
