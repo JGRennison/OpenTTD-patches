@@ -123,7 +123,9 @@ struct PacketReader : LoadFilter {
  * Create a new socket for the client side of the game connection.
  * @param s The socket to connect with.
  */
-ClientNetworkGameSocketHandler::ClientNetworkGameSocketHandler(SOCKET s) : NetworkGameSocketHandler(s), savegame(NULL), status(STATUS_INACTIVE)
+ClientNetworkGameSocketHandler::ClientNetworkGameSocketHandler (SOCKET s)
+	: NetworkGameSocketHandler (s),
+	  savegame (NULL), token (0), status (STATUS_INACTIVE)
 {
 	assert(ClientNetworkGameSocketHandler::my_client == NULL);
 	ClientNetworkGameSocketHandler::my_client = this;
