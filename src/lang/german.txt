@@ -1222,6 +1222,7 @@ STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Die Position, a
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :am Anfang
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :in der Mitte
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :am Ende
+STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :aktiviere verbesserte Pannen: {STRING}
 STR_CONFIG_SETTING_AUTOSCROLL                                   :Spielfeld scrollen, wenn die Maus am Bildrand anstößt: {STRING}
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :Falls aktiv wird der Kartenausschnit scrollen, wenn die Maus nahe dem Fensterrand ist
 STR_CONFIG_SETTING_AUTOSCROLL_DISABLED                          :Ausgeschaltet
@@ -3631,10 +3632,19 @@ STR_VEHICLE_STATUS_LEAVING                                      :{LTBLUE}Abfahrt
 STR_VEHICLE_STATUS_CRASHED                                      :{RED}Unfall!
 STR_VEHICLE_STATUS_BROKEN_DOWN                                  :{RED}Panne
 STR_VEHICLE_STATUS_STOPPED                                      :{RED}Angehalten
+STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}Panne - {STRING}, {LTBLUE} {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL                           :{RED}Halte an, {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}Keine Energie
 STR_VEHICLE_STATUS_TRAIN_STUCK                                  :{ORANGE}Warte auf freie Wege
 STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR                             :{ORANGE}Zu weit zum nächsten Ziel
+
+STR_BREAKDOWN_TYPE_CRITICAL                                     :Mechanische Störung
+STR_BREAKDOWN_TYPE_EM_STOP                                      :Nothalt
+STR_BREAKDOWN_TYPE_LOW_SPEED                                    :Auf {VELOCITY} beschränkte Geschwindigkeit
+STR_BREAKDOWN_TYPE_LOW_POWER                                    :{COMMA}% Leistung
+STR_BREAKDOWN_TYPE_DEPOT                                        :Unterwegs nach {STATION} Hangar für Reparaturen
+STR_BREAKDOWN_TYPE_LANDING                                      :Unterwegs nach {STATION} zur Notlandung
+STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE} ist zu schwer
 
 STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL                      :{LTBLUE}Unterwegs nach {STATION}, {VELOCITY}
 STR_VEHICLE_STATUS_NO_ORDERS_VEL                                :{LTBLUE}Keine Aufträge, {VELOCITY}
