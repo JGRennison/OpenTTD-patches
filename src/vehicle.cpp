@@ -209,7 +209,7 @@ uint Vehicle::Crash(bool flooded)
 		v->MarkAllViewportsDirty();
 	}
 
-	if (_settings_game.order.timetable_separation) this->ClearSeparation();
+	this->ClearSeparation();
 	if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 
 	/* Dirty some windows */
@@ -1293,6 +1293,9 @@ void AgeVehicle(Vehicle *v)
  * @param front The front vehicle of the consist to check.
  * @param colour The string to show depending on if we are unloading or loading
  * @return A percentage of how full the Vehicle is.
+ *         Percentages are rounded towards 50%, so that 0% and 100% are only returned
+ *         if the vehicle is completely empty or full.
+ *         This is useful for both display and conditional orders.
  */
 uint8 CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 {
@@ -1340,7 +1343,13 @@ uint8 CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 	if (max == 0) return 100;
 
 	/* Return the percentage */
-	return (count * 100) / max;
+	if (count * 2 < max) {
+		/* Less than 50%; round up, so that 0% means really empty. */
+		return CeilDiv(count * 100, max);
+	} else {
+		/* More than 50%; round down, so that 100% means really full. */
+		return (count * 100) / max;
+	}
 }
 
 /**
@@ -2221,7 +2230,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 			if (flags & DC_EXEC) {
 				this->current_order.SetDepotOrderType(ODTF_MANUAL);
 				this->current_order.SetDepotActionType(halt_in_depot ? ODATF_SERVICE_ONLY : ODATFB_HALT);
-				if (_settings_game.order.timetable_separation) this->ClearSeparation();
+				this->ClearSeparation();
 				if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			}
@@ -2239,7 +2248,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 				SetBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 			}
 
-			if (_settings_game.order.timetable_separation) this->ClearSeparation();
+			this->ClearSeparation();
 			if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 
 			this->current_order.MakeDummy();
@@ -2692,7 +2701,7 @@ void Vehicle::RemoveFromShared()
 	this->next_shared     = NULL;
 	this->previous_shared = NULL;
 
-	if (_settings_game.order.timetable_separation) this->ClearSeparation();
+	this->ClearSeparation();
 	if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 

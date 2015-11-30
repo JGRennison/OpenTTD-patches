@@ -264,9 +264,9 @@ static int CDECL VehicleTimetableSorter(Vehicle * const *ap, Vehicle * const *bp
  * Set the start date of the timetable.
  * @param tile Not used.
  * @param flags Operation to perform.
- * @param p2 Various bitstuffed elements
- * - p2 = (bit 0-19) - Vehicle ID.
- * - p2 = (bit 20)   - Set to 1 to set timetable start for all vehicles sharing this order
+ * @param p1 Various bitstuffed elements
+ * - p1 = (bit 0-19) - Vehicle ID.
+ * - p1 = (bit 20)   - Set to 1 to set timetable start for all vehicles sharing this order
  * @param p2 The timetable start date.
  * @param text Not used.
  * @return The error or cost of the operation.
@@ -433,8 +433,8 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 					OrderList *orders = v2->orders.list;
 					if (orders != NULL) {
 						for (int i = 0; i < orders->GetNumOrders(); i++) {
-							ChangeTimetable(v2, i, 0, MTF_WAIT_TIME, true);
-							ChangeTimetable(v2, i, 0, MTF_TRAVEL_TIME, true);
+							ChangeTimetable(v2, i, 0, MTF_WAIT_TIME, false);
+							ChangeTimetable(v2, i, 0, MTF_TRAVEL_TIME, false);
 						}
 					}
 				}
@@ -594,7 +594,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 
 	/* Start automated timetables at first opportunity */
 	if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED) && HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
-		if (_settings_game.order.timetable_separation) v->ClearSeparation();
+		v->ClearSeparation();
 		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 		v->lateness_counter = 0;
 		if (_settings_game.order.timetable_separation) UpdateSeparationOrder(v);
@@ -683,7 +683,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			 * Otherwise we risk trains blocking 1-lane stations for long times. */
 			ChangeTimetable(v, v->cur_real_order_index, 0, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
 			for (Vehicle *v2 = v->FirstShared(); v2 != NULL; v2 = v2->NextShared()) {
-				if (_settings_game.order.timetable_separation) v2->ClearSeparation();
+				v2->ClearSeparation();
 				ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 			}
