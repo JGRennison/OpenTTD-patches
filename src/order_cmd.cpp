@@ -1161,7 +1161,7 @@ CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		InvalidateVehicleOrder(v, VIWD_MODIFY_ORDERS);
 
-		if (_settings_game.order.timetable_separation) v->ClearSeparation();
+		v->ClearSeparation();
 		if (_settings_game.order.timetable_separation) ClrBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 	}
 
@@ -1626,7 +1626,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					SetBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
 				}
 
-				if (_settings_game.order.timetable_separation) dst->ClearSeparation();
+				dst->ClearSeparation();
 				if (_settings_game.order.timetable_separation) ClrBit(dst->vehicle_flags, VF_TIMETABLE_STARTED);
 
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
