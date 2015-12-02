@@ -188,11 +188,13 @@ struct ViewportDrawer {
 };
 
 static void MarkViewportDirty(const ViewPort * const vp, int left, int top, int right, int bottom);
+static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 
 static DrawPixelInfo _dpi_for_text;
 static ViewportDrawer _vd;
 
 RouteStepsMap _vp_route_steps;
+RouteStepsMap _vp_route_steps_last_mark_dirty;
 uint _vp_route_step_width = 0;
 uint _vp_route_step_height_top = 0;
 uint _vp_route_step_height_middle = 0;
@@ -1837,6 +1839,12 @@ static void ViewportDrawVehicleRouteSteps(const ViewPort * const vp)
 {
 	const Vehicle * const veh = GetVehicleFromWindow(_focused_window);
 	if (veh && ViewportPrepareVehicleRouteSteps(veh)) {
+		if (_vp_route_steps != _vp_route_steps_last_mark_dirty) {
+			for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
+				MarkRouteStepDirty(cit->first, (uint) cit->second.size());
+			}
+			_vp_route_steps_last_mark_dirty = _vp_route_steps;
+		}
 		for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
 			DrawRouteStep(vp, cit->first, cit->second);
 		}
@@ -2824,6 +2832,7 @@ void MarkAllRouteStepsDirty(Window *vehicle_window)
 	for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
 		MarkRouteStepDirty(cit->first, (uint) cit->second.size());
 	}
+	_vp_route_steps_last_mark_dirty.swap(_vp_route_steps);
 	_vp_route_steps.clear();
 }
 
