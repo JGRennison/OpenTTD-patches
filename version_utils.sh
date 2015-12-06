@@ -90,7 +90,7 @@ function read_source {
 	handle_source "Makefile.src.in" "$1"
 	while IFS=$'\n' read -r line; do
 		handle_source "src/$line" "$1"
-	done < <( sed -e 's/^[ \t]*//; s/[ \t]*$//;' -e '/^$/ d;' -e '/^#/ d;' -e '/^..\// d;' "source.list" )
+	done < <( sed -e 's/^[ \t]*//; s/[ \t]*$//;' -e '/^$/ d;' -e '/^#/ d;' -e '/^..\// d;' -e 's/^rev.cpp$/rev.cpp.in/;' "source.list" )
 }
 
 if [ -z "$HASH" -a -z "$NAMES" -a -z "$HASHLIST" -a -z "$TESTOK" -a -z "$WRITE" -a -z "$RELEASETAG" ]; then

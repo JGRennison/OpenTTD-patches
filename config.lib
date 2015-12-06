@@ -1064,6 +1064,8 @@ check_params() {
 		log 1 "checking revision... git detection"
 	elif [ -d "$ROOT_DIR/.hg" ] && [ -n "`HGPLAIN= hg help 2>/dev/null`" ]; then
 		log 1 "checking revision... hg detection"
+	elif [ -f "$ROOT_DIR/.ottdrev-vc" ]; then
+		log 1 "checking revision... source release version"
 	elif [ -f "$ROOT_DIR/.ottdrev" ]; then
 		log 1 "checking revision... source tarball"
 	else
