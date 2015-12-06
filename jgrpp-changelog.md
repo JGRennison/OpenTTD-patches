@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.8.1 (2015-12-06)
+* Fix crash when a station is deleted with its departure boards window open.
+* Enhanced viewports: Fix new/enlarged route step markers not being redrawn.
+* Fix version detection of when git support is missing.
+* Label threads with a descriptive name on supported Unixy platforms.
+* Performance improvements:
+  * Improve dedicated server performance by between 0% and approximately 60%.
+  * Improve cargodest link graph calculation performance by between 0% and approximately 25%.
+* Add German translations by Auge, for the improved breakdowns patch.
+* Desync debugging: Changes to debug random logging.
+* Bump trunk base from r27455 to r27466
+
 ### v0.8.0 (2015-11-24)
 * Enhanced viewports:
   * Fix flicker and render errors of tunnels in viewport map mode.
@@ -104,7 +116,7 @@
 * Pause the game instead of blocking when cargo dest link graph jobs lag.
 * Update routing restrictions patch:
   * Program GUI changes to make 'or if' conditions easier to add, remove and use.
-  * Add a 'reserve through' program command.  
+  * Add a 'reserve through' program command.
     If a restricted PBS signal uses this command, PBS reservations which would otherwise stop at this signal instead continue through it to the next signal/waiting point. In effect this allows the 'safe waiting point' property of a PBS signal to be conditionally turned off.
   * Improvements to the correctness and thoroughness of the program validator.
 * Bump trunk base from r27389 to r27394
