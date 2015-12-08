@@ -1871,8 +1871,11 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 		sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
 		sprite += type * 16 + variant * 64 + image * 2 + condition + (type > SIGTYPE_LAST_NOPBS ? 64 : 0);
 	}
+
+	uint origin_slot = GetOriginFileSlot(sprite);
 	extern uint _first_user_grf_file_index;
-	if (!is_custom_sprite) is_custom_sprite = (GetOriginFileSlot(sprite) >= _first_user_grf_file_index);
+	extern uint _opengfx_grf_file_index;
+	if (!is_custom_sprite) is_custom_sprite = origin_slot != _opengfx_grf_file_index && (origin_slot >= _first_user_grf_file_index);
 
 	if (!is_custom_sprite && variant == SIG_ELECTRIC && IsRestrictedSignal(tile) && GetExistingTraceRestrictProgram(tile, track) != NULL) {
 		if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {

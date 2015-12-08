@@ -42,6 +42,7 @@ static const SpriteID * const _landscape_spriteindexes[] = {
 
 /** file index of first user-added GRF file */
 int _first_user_grf_file_index;
+int _opengfx_grf_file_index;
 
 /**
  * Load an old fashioned GRF file.
@@ -228,6 +229,16 @@ static void LoadSpriteTables()
 	LoadNewGRF(SPR_NEWGRFS_BASE, i);
 
 	_first_user_grf_file_index = i + 1;
+	_opengfx_grf_file_index = -1;
+	uint index = i;
+	for (GRFConfig *c = master; c != NULL; c = c->next, index++) {
+		if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND || HasBit(c->flags, GCF_INIT_ONLY)) continue;
+		if (c->ident.grfid == BSWAP32(0xFF4F4701)) {
+			/* Detect OpenGFX GRF ID */
+			_opengfx_grf_file_index = index;
+			break;
+		}
+	}
 
 	/* Free and remove the top element. */
 	delete master;
