@@ -168,6 +168,7 @@ struct GUISettings {
 	uint8  graph_line_thickness;             ///< the thickness of the lines in the various graph guis
 	bool   show_train_length_in_details;     ///< show train length in vehicle details window top widget
 	bool   show_vehicle_group_in_details;    ///< show vehicle group in vehicle details window top widget
+	bool   show_restricted_signal_default;   ///< Show restricted electric signals using the default sprite
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
 	bool   show_vehicle_list_company_colour; ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
