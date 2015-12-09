@@ -177,6 +177,11 @@ static void LoadSpriteTables()
 	/* Tracerestrict sprites. */
 	LoadGrfFile("tracerestrict.grf", SPR_TRACERESTRICT_BASE, i++);
 
+	/* Fill duplicate original signal graphics sprite block */
+	for (uint i = 0; i < DUP_ORIGINAL_SIGNALS_SPRITE_COUNT; i++) {
+		DupSprite(SPR_ORIGINAL_SIGNALS_BASE + i, SPR_DUP_ORIGINAL_SIGNALS_BASE + i);
+	}
+
 	/*
 	 * The second basic file always starts at the given location and does
 	 * contain a different amount of sprites depending on the "type"; DOS
