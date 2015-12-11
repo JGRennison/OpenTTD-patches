@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.8.0
+## JGR's Patchpack version 0.8.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -46,7 +46,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
   * Fixed memory leak.  
   * Made modifications to work with day length greater than 1.  
-  * As of v0.7.0, fixed a multiplayer desync caused by the timetable rounding depending on the client time display mode setting.
+  * As of v0.7.0, fixed a multiplayer desync caused by the timetable rounding depending on the client time display mode setting.  
+  * As of v0.8.1, fixed crash when a station is deleted with its departure boards window open.
 
 * Town cargo generation factor: [imported](http://www.tt-forums.net/viewtopic.php?t=46399)
 
@@ -82,7 +83,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Enhanced viewport: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=53394)  
   Fixed crash when looking at aqueducts in viewport map mode.  
-  As of v0.7.1 and v0.8.0, fix flicker and render errors of bridge/tunnels in viewport map mode, and rendering/clearing errors of vehicle route lines.  
+  As of v0.7.1 to v0.8.1, fix flicker and render errors of bridge/tunnels in viewport map mode, and rendering/clearing errors of vehicle route lines.  
   As of v0.8.0, fix companies with a green colour scheme appearing as flashing yellow in viewport map owner mode.
 
 * Infrastructure sharing: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)  
@@ -158,7 +159,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Logging: Various changes and improvements to desync-related logging and debugging, see changelog for details.
 
 * Translations  
-  * German (by Auge): including vehicle group info, vehicle details window, the zoning toolbar, and settings for adjacent level crossings.
+  * German (by Auge): including vehicle group info, vehicle details window, the zoning toolbar, and settings for improved breakdowns and adjacent level crossings.
 
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  

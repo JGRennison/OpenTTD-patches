@@ -261,6 +261,7 @@ bool CapacityAnnotation::IsBetter(const CapacityAnnotation *base, uint cap,
 	}
 }
 
+#ifdef CUSTOM_ALLOCATOR
 /**
  * Storage for AnnoSetAllocator instances
  */
@@ -340,6 +341,7 @@ struct AnnoSetAllocator {
 		store.last_freed = p;
 	}
 };
+#endif
 
 /**
  * Annotation wrapper class which also stores an iterator to the AnnoSet node which points to this annotation
@@ -347,7 +349,12 @@ struct AnnoSetAllocator {
  */
 template<class Tannotation>
 struct AnnosWrapper : public Tannotation {
+#ifdef CUSTOM_ALLOCATOR
 	typename std::set<AnnoSetItem<Tannotation>, typename Tannotation::Comparator, AnnoSetAllocator<AnnoSetItem<Tannotation> > >::iterator self_iter;
+#else
+	typename std::set<AnnoSetItem<Tannotation>, typename Tannotation::Comparator>::iterator self_iter;
+#endif
+
 
 	AnnosWrapper(NodeID n, bool source = false) : Tannotation(n, source) {}
 };
@@ -364,11 +371,16 @@ struct AnnosWrapper : public Tannotation {
 template<class Tannotation, class Tedge_iterator>
 void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 {
+#ifdef CUSTOM_ALLOCATOR
 	typedef std::set<AnnoSetItem<Tannotation>, typename Tannotation::Comparator, AnnoSetAllocator<AnnoSetItem<Tannotation> > > AnnoSet;
-	Tedge_iterator iter(this->job);
-	uint size = this->job.Size();
 	AnnoSetAllocatorStore annos_store;
 	AnnoSet annos = AnnoSet(typename Tannotation::Comparator(), AnnoSetAllocator<Tannotation *>(annos_store));
+#else
+	typedef std::set<AnnoSetItem<Tannotation>, typename Tannotation::Comparator> AnnoSet;
+	AnnoSet annos = AnnoSet(typename Tannotation::Comparator());
+#endif
+	Tedge_iterator iter(this->job);
+	uint size = this->job.Size();
 	paths.resize(size, NULL);
 	for (NodeID node = 0; node < size; ++node) {
 		AnnosWrapper<Tannotation> *anno = new AnnosWrapper<Tannotation>(node, node == source_node);
