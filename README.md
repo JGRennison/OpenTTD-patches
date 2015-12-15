@@ -33,7 +33,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Upgrade airports: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=35867)
 
-* Vehicle group info: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=35867)
+* Vehicle group info: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=72855)
 
 * Close adjacent level crossings: [imported](http://www.tt-forums.net/viewtopic.php?p=836749)
 

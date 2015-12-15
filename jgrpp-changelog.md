@@ -116,7 +116,7 @@
 * Pause the game instead of blocking when cargo dest link graph jobs lag.
 * Update routing restrictions patch:
   * Program GUI changes to make 'or if' conditions easier to add, remove and use.
-  * Add a 'reserve through' program command.
+  * Add a 'reserve through' program command.  
     If a restricted PBS signal uses this command, PBS reservations which would otherwise stop at this signal instead continue through it to the next signal/waiting point. In effect this allows the 'safe waiting point' property of a PBS signal to be conditionally turned off.
   * Improvements to the correctness and thoroughness of the program validator.
 * Bump trunk base from r27389 to r27394
