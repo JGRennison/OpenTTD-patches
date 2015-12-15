@@ -169,6 +169,11 @@ public:
 	}
 };
 
+DropDownListItem *MakeCompanyDropDownListItem(CompanyID cid)
+{
+	return new DropDownListCompanyItem(cid, false, false);
+}
+
 /**
  * Pop up a generic text only menu.
  * @param w Toolbar

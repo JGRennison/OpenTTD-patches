@@ -22,6 +22,7 @@
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
 	XSLFI_TRACE_RESTRICT,                         ///< Trace restrict
+	XSLFI_TRACE_RESTRICT_OWNER,                   ///< Trace restrict: train owner test
 	XSLFI_PROG_SIGS,                              ///< programmable signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_DEPARTURE_BOARDS,                       ///< Departure boards patch, in ticks mode

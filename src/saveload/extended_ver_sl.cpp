@@ -48,6 +48,7 @@ static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,              3,                                    3, "tracerestrict",         NULL, NULL, "TRRM,TRRP" },
+	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,              1,                                    1, "tracerestrict_owner",   NULL, NULL, NULL        },
 	{ XSLFI_PROG_SIGS,              XSCF_NULL,              1,                                    1, "programmable_signals",  NULL, NULL, "SPRG"      },
 	{ XSLFI_ADJACENT_CROSSINGS,     XSCF_NULL,              1,                                    1, "adjacent_crossings",    NULL, NULL, NULL        },
 	{ XSLFI_DEPARTURE_BOARDS,       XSCF_IGNORABLE_UNKNOWN, 1,                                    1, "departure_boards",      NULL, NULL, NULL        },

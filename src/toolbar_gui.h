@@ -12,9 +12,14 @@
 #ifndef TOOLBAR_GUI_H
 #define TOOLBAR_GUI_H
 
+#include "company_type.h"
+#include "widgets/dropdown_type.h"
+
 void AllocateToolbar();
 void ToggleBoundingBoxes();
 void ToggleDirtyBlocks();
+
+DropDownListItem *MakeCompanyDropDownListItem(CompanyID cid);
 
 extern uint _toolbar_width;
 

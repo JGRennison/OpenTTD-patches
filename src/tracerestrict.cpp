@@ -348,6 +348,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_TRAIN_OWNER: {
+						result = TestBinaryConditionCommon(item, v->owner == condvalue);
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -476,6 +481,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_CARGO:
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
+				case TRIT_COND_TRAIN_OWNER:
 					break;
 
 				default:
@@ -567,6 +573,11 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_PF_PENALTY:
 			SetTraceRestrictValue(item, TRPPPI_SMALL);
 			SetTraceRestrictAuxField(item, TRPPAF_PRESET);
+			break;
+
+		case TRVT_OWNER:
+			SetTraceRestrictValue(item, INVALID_OWNER);
+			SetTraceRestrictAuxField(item, 0);
 			break;
 
 		default:
@@ -1082,6 +1093,30 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 					GetTraceRestrictType(item) == TRIT_COND_LAST_STATION) {
 				if (GetTraceRestrictAuxField(item) == type && GetTraceRestrictValue(item) == index) {
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
+				}
+			}
+			if (IsTraceRestrictDoubleItem(item)) i++;
+		}
+	}
+
+	// update windows
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+}
+
+/**
+ * This is called when a company is about to be deleted or taken over
+ * Scan program pool and change any references to it to the new company ID, to avoid dangling references
+ */
+void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
+{
+	TraceRestrictProgram *prog;
+
+	FOR_ALL_TRACE_RESTRICT_PROGRAMS(prog) {
+		for (size_t i = 0; i < prog->items.size(); i++) {
+			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
+			if (GetTraceRestrictType(item) == TRIT_COND_TRAIN_OWNER) {
+				if (GetTraceRestrictValue(item) == old_company) {
+					SetTraceRestrictValue(item, new_company); // this updates the instruction in-place
 				}
 			}
 			if (IsTraceRestrictDoubleItem(item)) i++;

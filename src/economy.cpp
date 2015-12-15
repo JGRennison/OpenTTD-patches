@@ -51,6 +51,7 @@
 #include "goal_base.h"
 #include "story_base.h"
 #include "linkgraph/refresh.h"
+#include "tracerestrict.h"
 
 #include "table/strings.h"
 #include "table/pricebase.h"
@@ -486,10 +487,11 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 		if (new_owner != INVALID_OWNER) GroupStatistics::UpdateAutoreplace(new_owner);
 	} else {
-	/* Depending on sharing settings, other companies could be affected too.
-	 * Let the infrastructure sharing code handle this. */
-	HandleSharingCompanyDeletion(old_owner);
+		/* Depending on sharing settings, other companies could be affected too.
+		 * Let the infrastructure sharing code handle this. */
+		HandleSharingCompanyDeletion(old_owner);
 	}
+	TraceRestrictUpdateCompanyID(old_owner, new_owner);
 
 	/*  Change ownership of tiles */
 	{
@@ -509,7 +511,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			/* tracks are being removed while sharing is enabled.
 			 * Thus, update all signals and crossings. */
 			UpdateAllBlockSignals();
-				}
+		}
 		/* Update any signals in the buffer */
 		UpdateSignalsInBuffer();
 	}
