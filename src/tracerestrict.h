@@ -110,6 +110,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_CARGO               = 15,   ///< Test if train can carry cargo type
 	TRIT_COND_ENTRY_DIRECTION     = 16,   ///< Test which side of signal/signal tile is being entered from
 	TRIT_COND_PBS_ENTRY_SIGNAL    = 17,   ///< Test tile and PBS-state of previous signal
+	//TRIT_COND_TRAIN_OWNER       = 24,   ///< Test train owner: reserved for future use
 	/* space up to 31 */
 };
 
