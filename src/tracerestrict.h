@@ -99,7 +99,7 @@ enum TraceRestrictItemType {
 	TRIT_PF_PENALTY               = 2,    ///< Add to pathfinder penalty
 	TRIT_RESERVE_THROUGH          = 3,    ///< Reserve through PBS signal
 
-	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the save value as TRIT_COND_ENDIF
+	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the same value as TRIT_COND_ENDIF
 	TRIT_COND_ENDIF               = 8,    ///< This is an endif block or an else block
 	TRIT_COND_UNDEFINED           = 9,    ///< This condition has no type defined (evaluate as false)
 	TRIT_COND_TRAIN_LENGTH        = 10,   ///< Test train length
@@ -110,6 +110,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_CARGO               = 15,   ///< Test if train can carry cargo type
 	TRIT_COND_ENTRY_DIRECTION     = 16,   ///< Test which side of signal/signal tile is being entered from
 	TRIT_COND_PBS_ENTRY_SIGNAL    = 17,   ///< Test tile and PBS-state of previous signal
+	//TRIT_COND_TRAIN_OWNER       = 24,   ///< Test train owner: reserved for future use
 	/* space up to 31 */
 };
 
