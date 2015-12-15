@@ -123,7 +123,7 @@ static const StringID _program_insert_str[] = {
 	INVALID_STRING_ID
 };
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
-static const uint32 _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for elif
+static const uint32 _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for orif
 static const uint32 _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
@@ -1418,7 +1418,7 @@ private:
 		this->RaiseWidget(TR_WIDGET_VALUE_DEST);
 		this->RaiseWidget(TR_WIDGET_VALUE_SIGNAL);
 
-		NWidgetStacked *left_2_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_2);
+		NWidgetStacked *left_2_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_2);
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT);
 		NWidgetStacked *middle_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_MIDDLE);
 		NWidgetStacked *right_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_RIGHT);

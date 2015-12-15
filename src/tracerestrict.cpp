@@ -1084,6 +1084,7 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
 				}
 			}
+			if (IsTraceRestrictDoubleItem(item)) i++;
 		}
 	}
 
