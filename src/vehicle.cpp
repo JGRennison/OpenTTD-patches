@@ -100,6 +100,7 @@ void VehicleServiceInDepot(Vehicle *v)
 	do {
 		v->date_of_last_service = _date;
 		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
+			CompanyID old = _current_company;
 			ExpensesType type = INVALID_EXPENSES;
 			_current_company = v->owner;
 			switch (v->type) {
@@ -130,6 +131,7 @@ void VehicleServiceInDepot(Vehicle *v)
 			v->First()->profit_this_year -= cost.GetCost() << 8;
 			SubtractMoneyFromCompany(cost);
 			ShowCostOrIncomeAnimation(v->x_pos, v->y_pos, v->z_pos, cost.GetCost());
+			_current_company = old;
 		}
 
 		v->breakdowns_since_last_service = 0;
