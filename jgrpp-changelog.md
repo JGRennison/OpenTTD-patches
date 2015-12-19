@@ -8,8 +8,8 @@
 * Fix version detection of when git support is missing.
 * Label threads with a descriptive name on supported Unixy platforms.
 * Performance improvements:
-  * Improve dedicated server performance by between 0% and approximately 60%.
-  * Improve cargodest link graph calculation performance by between 0% and approximately 25%.
+  * Improve dedicated server performance. Up to approximately 2.5x faster.
+  * Improve cargodest link graph calculation performance. Up to approximately 33% faster.
 * Add German translations by Auge, for the improved breakdowns patch.
 * Desync debugging: Changes to debug random logging.
 * Bump trunk base from r27455 to r27466
