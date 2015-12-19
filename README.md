@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.8.1
+## JGR's Patchpack version 0.9.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -25,7 +25,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Routing restrictions: [thread](http://www.tt-forums.net/viewtopic.php?f=33&t=73397)  
   This is developed in the *tracerestrict* branch.  
-  A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)
+  A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)  
+  As of v0.9.0, add a conditional to test which company owns the train.
 
 * Programmable signals: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=47690)  
   This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)  
@@ -62,7 +63,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Improved breakdowns: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=39518)  
   Fixed minor bugs involving breakdown smoke.  
-  As of v0.5.3, fix multiplayer desync issues.
+  As of v0.5.3 and v0.9.0, fix multiplayer desync issues.
 
 * Timetabling waiting time in depots: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=70969)
 
@@ -145,7 +146,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
-  * Improve cargodest link graph calculation performance. Up to approximately 33% faster. (added in v0.8.1)
+  * Improve cargodest link graph calculation performance. Up to approximately 33% faster. (added in v0.8.1)  
+  * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator. (added in v0.9.0)
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  

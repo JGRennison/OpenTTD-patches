@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.9.0 (2015-12-19)
+* Improved breakdowns: Fix desync which occured when issuing a "train too heavy" advice message.
+* Routing restrictions:
+  * Add a conditional to test which company owns the train.
+  * OpenGFX electric signal sprites are now considered "default", so can be recoloured blue when restricted.
+  * Add a setting to show restricted electric signals using the default sprites (recoloured blue).
+* Increase maximum value of max loan difficulty setting.
+* Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator.
+* Version detection: git and the .ottdrev-vc file now override SVN and Hg.
+* Bump trunk base from r27466 to r27472
+
 ### v0.8.1 (2015-12-06)
 * Fix crash when a station is deleted with its departure boards window open.
 * Enhanced viewports: Fix new/enlarged route step markers not being redrawn.
