@@ -2,14 +2,25 @@
 
 * * *
 
+### v0.9.0 (2015-12-19)
+* Improved breakdowns: Fix desync which occured when issuing a "train too heavy" advice message.
+* Routing restrictions:
+  * Add a conditional to test which company owns the train.
+  * OpenGFX electric signal sprites are now considered "default", so can be recoloured blue when restricted.
+  * Add a setting to show restricted electric signals using the default sprites (recoloured blue).
+* Increase maximum value of max loan difficulty setting.
+* Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator.
+* Version detection: git and the .ottdrev-vc file now override SVN and Hg.
+* Bump trunk base from r27466 to r27472
+
 ### v0.8.1 (2015-12-06)
 * Fix crash when a station is deleted with its departure boards window open.
 * Enhanced viewports: Fix new/enlarged route step markers not being redrawn.
 * Fix version detection of when git support is missing.
 * Label threads with a descriptive name on supported Unixy platforms.
 * Performance improvements:
-  * Improve dedicated server performance by between 0% and approximately 60%.
-  * Improve cargodest link graph calculation performance by between 0% and approximately 25%.
+  * Improve dedicated server performance. Up to approximately 2.5x faster.
+  * Improve cargodest link graph calculation performance. Up to approximately 33% faster.
 * Add German translations by Auge, for the improved breakdowns patch.
 * Desync debugging: Changes to debug random logging.
 * Bump trunk base from r27455 to r27466
@@ -116,7 +127,7 @@
 * Pause the game instead of blocking when cargo dest link graph jobs lag.
 * Update routing restrictions patch:
   * Program GUI changes to make 'or if' conditions easier to add, remove and use.
-  * Add a 'reserve through' program command.
+  * Add a 'reserve through' program command.  
     If a restricted PBS signal uses this command, PBS reservations which would otherwise stop at this signal instead continue through it to the next signal/waiting point. In effect this allows the 'safe waiting point' property of a PBS signal to be conditionally turned off.
   * Improvements to the correctness and thoroughness of the program validator.
 * Bump trunk base from r27389 to r27394

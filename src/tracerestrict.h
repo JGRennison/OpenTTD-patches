@@ -99,7 +99,7 @@ enum TraceRestrictItemType {
 	TRIT_PF_PENALTY               = 2,    ///< Add to pathfinder penalty
 	TRIT_RESERVE_THROUGH          = 3,    ///< Reserve through PBS signal
 
-	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the save value as TRIT_COND_ENDIF
+	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the same value as TRIT_COND_ENDIF
 	TRIT_COND_ENDIF               = 8,    ///< This is an endif block or an else block
 	TRIT_COND_UNDEFINED           = 9,    ///< This condition has no type defined (evaluate as false)
 	TRIT_COND_TRAIN_LENGTH        = 10,   ///< Test train length
@@ -110,6 +110,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_CARGO               = 15,   ///< Test if train can carry cargo type
 	TRIT_COND_ENTRY_DIRECTION     = 16,   ///< Test which side of signal/signal tile is being entered from
 	TRIT_COND_PBS_ENTRY_SIGNAL    = 17,   ///< Test tile and PBS-state of previous signal
+	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
 	/* space up to 31 */
 };
 
@@ -406,6 +407,7 @@ enum TraceRestrictValueType {
 	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
 	TRVT_PF_PENALTY               = 9, ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
 	TRVT_RESERVE_THROUGH          = 10,///< takes a value 0 = reserve through, 1 = cancel previous reserve through
+	TRVT_OWNER                    = 11,///< takes a CompanyID
 };
 
 /**
@@ -464,6 +466,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_PBS_ENTRY_SIGNAL:
 				out.value_type = TRVT_TILE_INDEX;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_TRAIN_OWNER:
+				out.value_type = TRVT_OWNER;
 				out.cond_type = TRCOT_BINARY;
 				break;
 
@@ -559,5 +566,6 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
 
 void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16 index);
+void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company);
 
 #endif /* TRACERESTRICT_H */

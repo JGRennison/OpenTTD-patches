@@ -123,6 +123,7 @@ void VehicleServiceInDepot(Vehicle *v)
 	do {
 		v->date_of_last_service = _date;
 		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
+			CompanyID old = _current_company;
 			ExpensesType type = INVALID_EXPENSES;
 			_current_company = v->owner;
 			switch (v->type) {
@@ -153,6 +154,7 @@ void VehicleServiceInDepot(Vehicle *v)
 			v->First()->profit_this_year -= cost.GetCost() << 8;
 			SubtractMoneyFromCompany(cost);
 			ShowCostOrIncomeAnimation(v->x_pos, v->y_pos, v->z_pos, cost.GetCost());
+			_current_company = old;
 		}
 
 		v->breakdowns_since_last_service = 0;
@@ -970,15 +972,14 @@ void CallVehicleTicks()
 
 			case VEH_TRAIN:
 				if (HasBit(Train::From(v)->flags, VRF_TOO_HEAVY)) {
-					_current_company = v->owner;
-					if (IsLocalCompany()) {
+					if (v->owner == _local_company) {
 						SetDParam(0, v->index);
 						SetDParam(1, STR_ERROR_TRAIN_TOO_HEAVY);
 						AddVehicleNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, v->index);
-						ClrBit(Train::From(v)->flags, VRF_TOO_HEAVY);
 					}
-					_current_company = OWNER_NONE;
+					ClrBit(Train::From(v)->flags, VRF_TOO_HEAVY);
 				}
+				/* FALL THROUGH */
 			case VEH_ROAD:
 			case VEH_AIRCRAFT:
 			case VEH_SHIP: {
