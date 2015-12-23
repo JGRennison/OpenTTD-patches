@@ -1450,8 +1450,8 @@ make_compiler_cflags() {
 }
 
 test_compile_libbfd() {
-	log 2 "executing $cc_host $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - $1"
-	"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - $1 2> /dev/null << EOL
+	log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.bfd -x c++ - $1"
+	"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.bfd -x c++ - $1 2> /dev/null << EOL
 		#define PACKAGE 1
 		#define PACKAGE_VERSION 1
 		#include <bfd.h>
@@ -1502,6 +1502,12 @@ make_cflags_and_ldflags() {
 
 	CFLAGS="$CFLAGS -D$os"
 	CFLAGS_BUILD="$CFLAGS_BUILD -D$os"
+
+	if [ "$enable_static" != "0" ]; then
+		STATIC_FLAGS="--static"
+	else
+		STATIC_FLAGS=""
+	fi
 
 	if [ "$enable_debug" = "0" ]; then
 		# No debug, add default stuff
@@ -1602,8 +1608,8 @@ make_cflags_and_ldflags() {
 		LIBS="$LIBS -lpthread"
 	fi
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS -o tmp.config.libdl -x c++ - -ldl"
-		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.libdl -x c++ - -ldl 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.libdl -x c++ - -ldl"
+		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.libdl -x c++ - -ldl 2> /dev/null << EOL
 			#include <dlfcn.h>
 			int main() {
 				Dl_info info;
@@ -1684,8 +1690,8 @@ EOL
 	fi
 
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS -o tmp.config.demangle -x c++ - -lstdc++"
-		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.demangle -x c++ - -lstdc++"
+		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL
 			#include <cxxabi.h>
 			int main() {
 				int status = -1;
