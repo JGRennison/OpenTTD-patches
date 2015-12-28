@@ -1419,6 +1419,9 @@ STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Die Bauwerkzeug
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Zwischensummen für Kategorien bei Firmenausgaben:{STRING}
 STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Lege das Layout für das Fenster mit den Firmenausgaben fest
 
+STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :Aktiviere das Bauen von Flüssen: {STRING}
+STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :Aktiviere das Bauen von Flüssen außerhalb des Szenarioeditors
+
 STR_CONFIG_SETTING_SOUND_TICKER                                 :Nachrichtenticker: {STRING}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Soundeffekte für Kurzfassungen von Nachrichten abspielen (Ticker)
 STR_CONFIG_SETTING_SOUND_NEWS                                   :Zeitung: {STRING}
