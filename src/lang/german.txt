@@ -2383,6 +2383,81 @@ STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Signalab
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Signalabstand verringern
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Signalabstand erhöhen
 
+# Tracerestrict GUI
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_EQUALS                :ist
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_NOT_EQUALS            :ist nicht
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_THAN             :<
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_EQUALS           :<=
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_THAN             :>
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_EQUALS           :>=
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS          :kann befördern
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS      :kann nicht befördern
+STR_TRACE_RESTRICT_CONDITIONAL_IF                               :Wenn
+STR_TRACE_RESTRICT_CONDITIONAL_ELIF                             :Sonst Wenn
+STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :Oder Wenn
+STR_TRACE_RESTRICT_CONDITIONAL_ELSE                             :Sonst
+STR_TRACE_RESTRICT_CONDITIONAL_ENDIF                            :Ende Wenn
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH                        :Fahrzeuglänge
+STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :Höchstgeschwindigkeit
+STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :momentaner Auftrag
+STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :nächster Auftrag
+STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :zuletzt besuchte Station
+STR_TRACE_RESTRICT_VARIABLE_CARGO                               :Fracht
+STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :Einfahrtrichtung
+
+STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefiniert
+
+STR_TRACE_RESTRICT_START                                        :Start
+STR_TRACE_RESTRICT_END                                          :Ende
+STR_TRACE_RESTRICT_PF_DENY                                      :Verbiete
+STR_TRACE_RESTRICT_PF_ALLOW                                     :Erlaube
+STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Erlaube (übergehe vorheriges Verbot)
+STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserviere durch
+STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Übergehe Reservierung durch
+STR_TRACE_RESTRICT_PF_PENALTY                                   :Strafe
+STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :klein
+STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :mittel
+STR_TRACE_RESTRICT_PF_VALUE_LARGE                               :groß
+STR_TRACE_RESTRICT_PF_VALUE_CUSTOM                              :selbstdefiniert
+STR_TRACE_RESTRICT_DIRECTION_FRONT                              :Vorderseite
+STR_TRACE_RESTRICT_DIRECTION_BACK                               :Rückseite
+STR_TRACE_RESTRICT_DIRECTION_NE                                 :nord-ost
+STR_TRACE_RESTRICT_DIRECTION_SE                                 :süd-ost
+STR_TRACE_RESTRICT_DIRECTION_SW                                 :süd-west
+STR_TRACE_RESTRICT_DIRECTION_NW                                 :nord-west
+
+STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}Typ
+STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}Vergleichsoperator
+STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}Wert
+STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}Bedingungstyp
+
+STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Einfügen
+STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Entfernen
+STR_TRACE_RESTRICT_RESET                                        :{BLACK}Zurücksetzen
+STR_TRACE_RESTRICT_COPY                                         :{BLACK}Kopieren
+STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Teilen
+STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Teilen zurücknehmen
+STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Wähle Ziel
+STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}Wähle Signal
+STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Füge eine Anweisung ein
+STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Entferne die ausgewählte Anweisung
+
+STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Kopiere die Anweisungen von einem anderen Signal
+STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Teile die Anweisungen mit einem anderen Signal
+STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Beende das Teilen der Anweisungen mit einem anderen Signal und erstelle stattdessen eine Kopie der Anweisungen
+
+STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Kann die Anweisung nicht einfügen
+STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Kann die Anweisung nicht ändern
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Kann die Anweisung nicht entfernen
+STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Wert zu groß, der größtmögiche Wert ist {COMMA}
+
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :Ein 'Ende Wenn' kann nicht entfernt werden
+
+STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Kann das Signal nicht zurücksetzen
+STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Kann die Anweisungen nicht kopieren
+STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}Kann die Anweisungen nicht teilen
+STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}Kann ddas Teilen der Anweisungen nicht aufheben
+
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Eisenbahnbrücke auswählen
 STR_SELECT_ROAD_BRIDGE_CAPTION                                  :{WHITE}Straßenbrücke wählen
