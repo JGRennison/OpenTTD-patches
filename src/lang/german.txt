@@ -3671,6 +3671,11 @@ STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Schiffsn
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Flugzeugname
 
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Alter: {LTBLUE}{STRING}{BLACK}   Betriebskosten: {LTBLUE}{CURRENCY_LONG}/Jahr
+
+STR_RUNNING                                                     :{LTBLUE}Funktionierend
+STR_NEED_REPAIR                                                 :{ORANGE}Der Zug ist reparaturbedürftig - die Höchstgeschwindigkeit ist auf {VELOCITY} reduziert
+STR_CURRENT_STATUS                                              :{BLACK}Momentaner Status: {STRING}
+
 # The next two need to stay in this order
 STR_VEHICLE_INFO_AGE                                            :{COMMA} Jahr{P "" e} ({COMMA})
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} Jahr{P "" e} ({COMMA})
