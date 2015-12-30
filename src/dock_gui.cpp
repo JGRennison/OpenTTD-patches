@@ -101,7 +101,7 @@ struct BuildDocksToolbarWindow : Window {
 		this->InitNested(window_number);
 		this->OnInvalidateData();
 		if (_settings_client.gui.link_terraform_toolbar) ShowTerraformToolbar(this);
-		SetWidgetDisabledState(WID_DT_RIVER, !_settings_game.construction.enable_build_river);
+		SetWidgetDisabledState(WID_DT_RIVER, _game_mode != GM_EDITOR && !_settings_game.construction.enable_build_river);
 	}
 
 	~BuildDocksToolbarWindow()
