@@ -2975,6 +2975,12 @@ bool AfterLoadGame()
 		FOR_ALL_STATIONS(st) UpdateStationAcceptance(st, false);
 	}
 
+	/* Set lifetime vehicle profit to 0 if save game before 195 */
+	if (IsSavegameVersionBefore(195)) {
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) v->profit_lifetime = 0;
+	}
+
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
 	AfterLoadLabelMaps();
