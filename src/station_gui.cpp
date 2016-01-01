@@ -33,6 +33,7 @@
 #include "town.h"
 #include "linkgraph/linkgraph.h"
 #include "zoom_func.h"
+#include "zoning.h"
 
 #include "widgets/station_widget.h"
 
@@ -1307,10 +1308,12 @@ struct StationViewWindow : public Window {
 		this->sort_orders[0] = SO_ASCENDING;
 		this->SelectSortOrder((SortOrder)_settings_client.gui.station_gui_sort_order);
 		this->owner = Station::Get(window_number)->owner;
+		ZoningStationWindowOpenClose(Station::Get(window_number));
 	}
 
 	~StationViewWindow()
 	{
+		ZoningStationWindowOpenClose(Station::Get(window_number));
 		DeleteWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    this->owner, this->window_number).Pack(), false);
 		DeleteWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     this->owner, this->window_number).Pack(), false);
 		DeleteWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     this->owner, this->window_number).Pack(), false);
