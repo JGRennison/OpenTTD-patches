@@ -19,6 +19,8 @@
 typedef uint32 GlyphID;
 static const GlyphID SPRITE_GLYPH = 1U << 30;
 
+extern int font_height_cache[FS_END]; ///< Cache of font heights
+
 /** Font cache for basic fonts. */
 class FontCache {
 private:
