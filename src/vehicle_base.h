@@ -518,7 +518,7 @@ public:
 	 * Gets the lifetime profit of vehicle. It can be sent into SetDParam for string processing.
 	 * @return the vehicle's lifetime profit
 	 */
-	Money GetDisplayProfitLifetime() const { return (this->profit_lifetime >> 8); }
+	Money GetDisplayProfitLifetime() const { return ((this->profit_lifetime + this->profit_this_year) >> 8); }
 
 	void SetNext(Vehicle *next);
 
