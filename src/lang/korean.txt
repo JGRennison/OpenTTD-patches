@@ -595,13 +595,13 @@ STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP                         :{BLACK}특정 �
 # Company league window
 STR_COMPANY_LEAGUE_TABLE_CAPTION                                :{WHITE}회사 성취도 순위
 STR_COMPANY_LEAGUE_COMPANY_NAME                                 :{ORANGE}{COMPANY} {BLACK}{COMPANY_NUM} '{STRING}'
-STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_ENGINEER                   :{G=f}엔지니어
-STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRAFFIC_MANAGER            :{G=f}교통망 관리자
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_ENGINEER                   :{G=f}기사
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRAFFIC_MANAGER            :{G=f}교통 매니저
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRANSPORT_COORDINATOR      :{G=f}수송 조정자
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_ROUTE_SUPERVISOR           :{G=f}노선 관리자
-STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_DIRECTOR                   :{G=f}이사
-STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_CHIEF_EXECUTIVE            :{G=m}이사장
-STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_CHAIRMAN                   :{G=m}회장
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_DIRECTOR                   :{G=m}임원
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_CHIEF_EXECUTIVE            :{G=m}최고 경영자
+STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_CHAIRMAN                   :{G=m}사장
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_PRESIDENT                  :{G=m}회장
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TYCOON                     :{G=m}타이쿤!
 
@@ -687,8 +687,8 @@ STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED                         :{BIG_FONT}{BLAC
 STR_HIGHSCORE_TOP_COMPANIES_NETWORK_GAME                        :{BIG_FONT}{BLACK}{NUM}의 회사 성취도 목록
 STR_HIGHSCORE_POSITION                                          :{BIG_FONT}{BLACK}{COMMA}.
 STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN                     :{G=f}초보자
-STR_HIGHSCORE_PERFORMANCE_TITLE_ENTREPRENEUR                    :{G=f}사업주
-STR_HIGHSCORE_PERFORMANCE_TITLE_INDUSTRIALIST                   :{G=f}공업가
+STR_HIGHSCORE_PERFORMANCE_TITLE_ENTREPRENEUR                    :{G=f}사업가
+STR_HIGHSCORE_PERFORMANCE_TITLE_INDUSTRIALIST                   :{G=f}기업가
 STR_HIGHSCORE_PERFORMANCE_TITLE_CAPITALIST                      :{G=f}자본가
 STR_HIGHSCORE_PERFORMANCE_TITLE_MAGNATE                         :{G=f}권력자
 STR_HIGHSCORE_PERFORMANCE_TITLE_MOGUL                           :{G=m}거물
@@ -1119,9 +1119,9 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :게임 설정 (
 STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :게임 설정 (게임 저장 파일에 저장됨; 현재 게임에만 적용됨)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :회사 설정 (게임 저장 파일에 저장됨; 새 게임에만 적용됨)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :회사 설정 (게임 저장 파일에 저장됨; 현재 회사에만 적용됨)
-STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}검색 결과를 전부 보시려면 {}{SILVER}분류 {BLACK}설정을 {WHITE}{STRING}{BLACK}으로 바꾸십시오.
-STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}검색 결과를 전부 보시려면 {}{SILVER}종류 {BLACK}설정을 {WHITE}모든 설정{BLACK}으로 바꾸십시오.
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}검색 결과를 전부 보시려면 {}{SILVER}분류 {BLACK}설정을 {WHITE}{STRING}{BLACK}으로, {SILVER}종류 {BLACK}설정을 {WHITE}모든 설정{BLACK}으로 바꾸십시오.
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}검색 결과를 전부 보시려면{}{SILVER}분류 {BLACK}설정을 {WHITE}{STRING}{BLACK}으로 바꾸십시오.
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}검색 결과를 전부 보시려면{}{SILVER}종류 {BLACK}설정을 {WHITE}모든 설정{BLACK}으로 바꾸십시오.
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}검색 결과를 전부 보시려면{}{SILVER}분류 {BLACK}설정을 {WHITE}{STRING}{BLACK}으로, {SILVER}종류 {BLACK}설정을 {WHITE}모든 설정{BLACK}으로 바꾸십시오.
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- 없음 -
 
 STR_CONFIG_SETTING_OFF                                          :아니요
@@ -2890,7 +2890,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}경고: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}오류: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}치명적 오류: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}치명적인 NewGRF 오류가 발생했습니다: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}치명적인 NewGRF 오류가 발생했습니다:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING}은 OpenTTD에서 보고된 TTD패치 버전에서 작동하지 않을 것입니다.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING}{G 1 "은" "는"} {STRING} 버전의 TTD를 위한 것입니다.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING}{G 1 "은" "는"} {STRING}{G 1 "와" "과"} 같이 사용해야 합니다
