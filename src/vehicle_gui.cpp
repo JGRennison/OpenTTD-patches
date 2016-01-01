@@ -50,6 +50,7 @@ static GUIVehicleList::SortFunction VehicleNumberSorter;
 static GUIVehicleList::SortFunction VehicleNameSorter;
 static GUIVehicleList::SortFunction VehicleAgeSorter;
 static GUIVehicleList::SortFunction VehicleProfitThisYearSorter;
+static GUIVehicleList::SortFunction VehicleProfitLifetimeSorter;
 static GUIVehicleList::SortFunction VehicleProfitLastYearSorter;
 static GUIVehicleList::SortFunction VehicleCargoSorter;
 static GUIVehicleList::SortFunction VehicleReliabilitySorter;
@@ -66,6 +67,7 @@ GUIVehicleList::SortFunction * const BaseVehicleListWindow::vehicle_sorter_funcs
 	&VehicleAgeSorter,
 	&VehicleProfitThisYearSorter,
 	&VehicleProfitLastYearSorter,
+	&VehicleProfitLifetimeSorter,
 	&VehicleCargoSorter,
 	&VehicleReliabilitySorter,
 	&VehicleMaxSpeedSorter,
@@ -82,6 +84,7 @@ const StringID BaseVehicleListWindow::vehicle_sorter_names[] = {
 	STR_SORT_BY_AGE,
 	STR_SORT_BY_PROFIT_THIS_YEAR,
 	STR_SORT_BY_PROFIT_LAST_YEAR,
+	STR_SORT_BY_PROFIT_LIFETIME,
 	STR_SORT_BY_TOTAL_CAPACITY_PER_CARGOTYPE,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_MAX_SPEED,
@@ -1185,6 +1188,13 @@ static int CDECL VehicleProfitLastYearSorter(const Vehicle * const *a, const Veh
 	return (r != 0) ? r : VehicleNumberSorter(a, b);
 }
 
+/** Sort vehicles by lifetime profit */
+static int CDECL VehicleProfitLifetimeSorter(const Vehicle * const *a, const Vehicle * const *b)
+{
+	int r = ClampToI32((*a)->GetDisplayProfitLifetime() - (*b)->GetDisplayProfitLifetime());
+	return (r != 0) ? r : VehicleNumberSorter(a, b);
+}
+
 /** Sort vehicles by their cargo */
 static int CDECL VehicleCargoSorter(const Vehicle * const *a, const Vehicle * const *b)
 {
@@ -2033,10 +2043,14 @@ struct VehicleDetailsWindow : Window {
 				if (v->type == VEH_TRAIN && _settings_client.gui.show_train_length_in_details) {
 					SetDParamMaxValue(0, _settings_game.vehicle.max_train_length * 10);
 					SetDParam(1, 1);
-					SetDParam(2, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(2, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME);
+					SetDParam(3, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					for (uint i = 4; i < 7; i++) SetDParamMaxValue(i, 1 << 24);
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_TRAIN_LENGTH));
 				} else {
-					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR));
+					SetDParam(0, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					for (uint i = 1; i < 4; i++) SetDParamMaxValue(i, 1 << 24);
+					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME));
 				}
 				if (this->vehicle_group_line_shown) {
 					SetDParam(0, v->group_id);
@@ -2181,14 +2195,18 @@ struct VehicleDetailsWindow : Window {
 					const GroundVehicleCache *gcache = v->GetGroundVehicleCache();
 					SetDParam(0, CeilDiv(gcache->cached_total_length * 10, TILE_SIZE));
 					SetDParam(1, 1);
-					SetDParam(2, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
-					SetDParam(3, v->GetDisplayProfitThisYear());
-					SetDParam(4, v->GetDisplayProfitLastYear());
+					SetDParam(2, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME);
+					SetDParam(3, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(4, v->GetDisplayProfitThisYear());
+					SetDParam(5, v->GetDisplayProfitLastYear());
+					SetDParam(6, v->GetDisplayProfitLifetime());
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_TRAIN_LENGTH);
 				} else {
-					SetDParam(0, v->GetDisplayProfitThisYear());
-					SetDParam(1, v->GetDisplayProfitLastYear());
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(0, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(1, v->GetDisplayProfitThisYear());
+					SetDParam(2, v->GetDisplayProfitLastYear());
+					SetDParam(3, v->GetDisplayProfitLifetime());
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME);
 				}
 				y += FONT_HEIGHT_NORMAL;
 
