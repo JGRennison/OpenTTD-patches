@@ -2975,8 +2975,8 @@ bool AfterLoadGame()
 		FOR_ALL_STATIONS(st) UpdateStationAcceptance(st, false);
 	}
 
-	/* Set lifetime vehicle profit to 0 if save game before 195 */
-	if (IsSavegameVersionBefore(195)) {
+	/* Set lifetime vehicle profit to 0 if lifetime profit feature is missing */
+	if (SlXvIsFeatureMissing(XSLFI_VEH_LIFETIME_PROFIT)) {
 		Vehicle *v;
 		FOR_ALL_VEHICLES(v) v->profit_lifetime = 0;
 	}
