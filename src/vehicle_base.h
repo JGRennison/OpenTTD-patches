@@ -180,6 +180,7 @@ public:
 
 	Money profit_this_year;             ///< Profit this year << 8, low 8 bits are fract
 	Money profit_last_year;             ///< Profit last year << 8, low 8 bits are fract
+	Money profit_lifetime;              ///< Profit lifetime << 8, low 8 bits are fract
 	Money value;                        ///< Value of the vehicle
 
 	CargoPayment *cargo_payment;        ///< The cargo payment we're currently in
@@ -512,6 +513,12 @@ public:
 	 * @return the vehicle's profit last year
 	 */
 	Money GetDisplayProfitLastYear() const { return (this->profit_last_year >> 8); }
+
+	/**
+	 * Gets the lifetime profit of vehicle. It can be sent into SetDParam for string processing.
+	 * @return the vehicle's lifetime profit
+	 */
+	Money GetDisplayProfitLifetime() const { return (this->profit_lifetime >> 8); }
 
 	void SetNext(Vehicle *next);
 
