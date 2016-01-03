@@ -189,6 +189,13 @@ bool SpriteFontCache::GetDrawGlyphShadow()
 /* static */ FontCache *FontCache::caches[FS_END] = { new SpriteFontCache(FS_NORMAL), new SpriteFontCache(FS_SMALL), new SpriteFontCache(FS_LARGE), new SpriteFontCache(FS_MONO) };
 int font_height_cache[FS_END];
 
+void UpdateFontHeightCache()
+{
+	for (int i = 0; i < FS_END; i++) {
+		font_height_cache[i] = FontCache::Get((FontSize) i)->GetHeight();
+	}
+}
+
 #ifdef WITH_FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H

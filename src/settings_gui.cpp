@@ -528,9 +528,11 @@ struct GameOptionsWindow : Window {
 				break;
 
 			case WID_GO_GUI_ZOOM_DROPDOWN:
+				extern void UpdateFontHeightCache();
 				GfxClearSpriteCache();
 				_gui_zoom = (ZoomLevel)(ZOOM_LVL_OUT_4X - index);
 				UpdateCursorSize();
+				UpdateFontHeightCache();
 				LoadStringWidthTable();
 				break;
 
