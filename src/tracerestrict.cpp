@@ -1012,6 +1012,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 			if (source_prog) {
 				prog->items = source_prog->items; // copy
 			}
+			prog->Validate();
 			break;
 		}
 
@@ -1046,6 +1047,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				}
 
 				new_prog->items.swap(items);
+				new_prog->Validate();
 			}
 			break;
 		}
