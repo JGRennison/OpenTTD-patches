@@ -1469,14 +1469,16 @@ bool Vehicle::HandleBreakdown()
 							}
 							/* Max Speed reduction*/
 							if (_settings_game.vehicle.improved_breakdowns) {
+								const Engine *e = Engine::Get(this->engine_type);
+								const RailVehicleInfo *rvi = &e->u.rail;
 								if (!HasBit(Train::From(this)->flags,VRF_NEED_REPAIR)) {
-									const Engine *e = Engine::Get(this->engine_type);
-									const RailVehicleInfo *rvi = &e->u.rail;
-									if (rvi->max_speed > this->vcache.cached_max_speed)
+									if (rvi->max_speed > this->vcache.cached_max_speed) {
 										this->vcache.cached_max_speed = rvi->max_speed;
+									}
 								}
-								this->vcache.cached_max_speed = min(this->vcache.cached_max_speed -
+								uint16 target_max_speed = min(this->vcache.cached_max_speed -
 										(this->vcache.cached_max_speed >> 1) / Train::From(this->First())->tcache.cached_num_engines + 1, this->vcache.cached_max_speed);
+								this->vcache.cached_max_speed = max(target_max_speed, min<uint16>(rvi->max_speed / 4, 28));
 								SetBit(Train::From(this)->flags, VRF_NEED_REPAIR);
 								Train::From(this->First())->ConsistChanged(CCF_TRACK);
 							}
