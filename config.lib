@@ -1394,10 +1394,12 @@ make_compiler_cflags() {
 			flags="$flags -Wnon-virtual-dtor"
 		fi
 
-		if [ $cc_version -ge 43 ]; then
+		if [ $cc_version -ge 47 ]; then
+			cxxflags="$cxxflags -std=gnu++11"
+		elif [ $cc_version -ge 43 ]; then
 			# Use gnu++0x mode so static_assert() is available.
 			# Don't use c++0x, it breaks mingw (with gcc 4.4.0).
-			cxxflags="$cxxflags -std=gnu++0x"
+			cxxflags="$cxxflags -std=gnu++0x -DDISABLE_OVERRIDE"
 		fi
 
 		if [ $cc_version -eq 45 ]; then
