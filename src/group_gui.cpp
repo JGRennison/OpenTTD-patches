@@ -34,6 +34,8 @@
 
 static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
 
+static std::map<GroupID, bool> _collapsed_groups;  ///< Map of collapsed groups
+
 typedef GUIList<const Group*> GUIGroupList;
 
 static const NWidgetPart _nested_group_widgets[] = {
@@ -62,6 +64,7 @@ static const NWidgetPart _nested_group_widgets[] = {
 						SetDataTip(SPR_GROUP_DELETE_TRAIN, STR_GROUP_DELETE_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_RENAME_GROUP), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_RENAME_TRAIN, STR_GROUP_RENAME_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_COLLAPSE_EXPAND_GROUP), SetFill(0, 1),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), EndContainer(),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_REPLACE_PROTECTION), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_REPLACE_OFF_TRAIN, STR_GROUP_REPLACE_PROTECTION_TOOLTIP),
@@ -123,6 +126,8 @@ private:
 
 	void AddParents(GUIGroupList *source, GroupID parent, int indent)
 	{
+		if (_collapsed_groups[parent]) return;
+
 		for (const Group **g = source->Begin(); g != source->End(); g++) {
 			if ((*g)->parent == parent) {
 				*this->groups.Append() = *g;
@@ -155,6 +160,15 @@ private:
 		return r;
 	}
 
+	static void ToogleGroupCollapse(GroupID group)
+	{
+		if (_collapsed_groups.find(group) == _collapsed_groups.end()) {
+			_collapsed_groups[group] = false;
+		}
+
+		_collapsed_groups[group] = !_collapsed_groups[group];
+	}
+
 	/**
 	 * (Re)Build the group list.
 	 *
@@ -173,6 +187,11 @@ private:
 		FOR_ALL_GROUPS(g) {
 			if (g->owner == owner && g->vehicle_type == this->vli.vtype) {
 				*list.Append() = g;
+
+				if (g->index != ALL_GROUP && g->index != DEFAULT_GROUP && g->index != INVALID_GROUP &&
+					_collapsed_groups.find(g->index) == _collapsed_groups.end()) {
+					_collapsed_groups[g->index] = false;
+				}
 			}
 		}
 
@@ -340,6 +359,9 @@ public:
 
 		this->GetWidget<NWidgetCore>(WID_GL_CAPTION)->widget_data = STR_VEHICLE_LIST_TRAIN_CAPTION + this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_LIST_VEHICLE)->tool_tip = STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype;
+
+		this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->widget_data = STR_GROUP_COLLAPSE;
+		this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->tool_tip = STR_GROUP_COLLAPSE_TOOLTIP;
 
 		this->GetWidget<NWidgetCore>(WID_GL_CREATE_GROUP)->widget_data += this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_RENAME_GROUP)->widget_data += this->vli.vtype;
@@ -513,6 +535,22 @@ public:
 		/* Set text of sort by dropdown */
 		this->GetWidget<NWidgetCore>(WID_GL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
 
+
+		bool is_non_collapsable_group = (this->vli.index == ALL_GROUP) || (this->vli.index == DEFAULT_GROUP) || (this->vli.index == INVALID_GROUP);
+
+		this->SetWidgetDisabledState(WID_GL_COLLAPSE_EXPAND_GROUP, is_non_collapsable_group);
+
+		NWidgetCore *widget = this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP);
+
+		if (is_non_collapsable_group || _collapsed_groups.find(this->vli.index) == _collapsed_groups.end() || !_collapsed_groups[this->vli.index]) {
+			this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->widget_data = STR_GROUP_COLLAPSE;
+			this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->tool_tip = STR_GROUP_COLLAPSE_TOOLTIP;
+		}
+		else {
+			this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->widget_data = STR_GROUP_EXPAND;
+			this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->tool_tip = STR_GROUP_EXPAND_TOOLTIP;
+		}
+
 		this->DrawWidgets();
 	}
 
@@ -611,6 +649,11 @@ public:
 
 				this->group_sel = this->vli.index = this->groups[id_g]->index;
 
+				if (click_count % 2 == 0) {
+					ToogleGroupCollapse(this->vli.index);
+					OnInvalidateData();
+				}
+
 				SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 
 				this->vehicles.ForceRebuild();
@@ -648,6 +691,12 @@ public:
 
 			case WID_GL_RENAME_GROUP: // Rename the selected roup
 				this->ShowRenameGroupWindow(this->vli.index, false);
+				break;
+
+			case WID_GL_COLLAPSE_EXPAND_GROUP: // Toggle collapse/expand
+				ToogleGroupCollapse(this->vli.index);
+				OnInvalidateData();
+				this->SetDirty();
 				break;
 
 			case WID_GL_AVAILABLE_VEHICLES:
@@ -698,6 +747,7 @@ public:
 
 				if (this->group_sel != new_g && g->parent != new_g) {
 					DoCommandP(0, this->group_sel | (1 << 16), new_g, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
+					_collapsed_groups[new_g] = false;
 				}
 
 				this->group_sel = INVALID_GROUP;
