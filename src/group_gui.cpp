@@ -31,6 +31,7 @@
 #include "table/sprites.h"
 
 #include "safeguards.h"
+#include <algorithm>
 
 static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
 
@@ -65,6 +66,10 @@ static const NWidgetPart _nested_group_widgets[] = {
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_RENAME_GROUP), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_RENAME_TRAIN, STR_GROUP_RENAME_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_COLLAPSE_EXPAND_GROUP), SetFill(0, 1),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_COLLAPSE_ALL_GROUPS), SetFill(0, 1),
+						SetDataTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_EXPAND_ALL_GROUPS), SetFill(0, 1),
+						SetDataTip(STR_GROUP_EXPAND_ALL, STR_GROUP_EXPAND_ALL),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), EndContainer(),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_REPLACE_PROTECTION), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_REPLACE_OFF_TRAIN, STR_GROUP_REPLACE_PROTECTION_TOOLTIP),
@@ -698,6 +703,28 @@ public:
 				OnInvalidateData();
 				this->SetDirty();
 				break;
+
+			case WID_GL_COLLAPSE_ALL_GROUPS: {				
+				std::for_each(_collapsed_groups.begin(), _collapsed_groups.end(), [](std::pair<const GroupID, bool> &key_value_pair) {
+					if (key_value_pair.first != ALL_GROUP && key_value_pair.first != DEFAULT_GROUP && key_value_pair.first != INVALID_GROUP) {
+						key_value_pair.second = true;
+					}
+				});
+				OnInvalidateData();
+				this->SetDirty();
+				break;
+			}
+
+			case WID_GL_EXPAND_ALL_GROUPS: {				
+				std::for_each(_collapsed_groups.begin(), _collapsed_groups.end(), [](std::pair<const GroupID, bool> &key_value_pair) {
+					if (key_value_pair.first != ALL_GROUP && key_value_pair.first != DEFAULT_GROUP && key_value_pair.first != INVALID_GROUP) {
+						key_value_pair.second = false;
+					}
+				});
+				OnInvalidateData();
+				this->SetDirty();
+				break;
+			}
 
 			case WID_GL_AVAILABLE_VEHICLES:
 				ShowBuildVehicleWindow(INVALID_TILE, this->vli.vtype);
