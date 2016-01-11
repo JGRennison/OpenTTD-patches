@@ -38,6 +38,9 @@ enum SlXvFeatureIndex {
 	XSLFI_VARIABLE_DAY_LENGTH,                    ///< Variable day length patch
 	XSLFI_ORDER_OCCUPANCY,                        ///< Running average of order occupancy
 	XSLFI_MORE_COND_ORDERS,                       ///< More conditional orders patch
+	XSLFI_EXTRA_LARGE_MAP,                        ///< Extra large map
+	XSLFI_REVERSE_AT_WAYPOINT,                    ///< Reverse at waypoint orders
+	XSLFI_VEH_LIFETIME_PROFIT,                    ///< Vehicle lifetime profit patch
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
@@ -45,8 +48,6 @@ enum SlXvFeatureIndex {
 	XSLFI_TRAFFIC_LIGHTS,                         ///< This save game uses road traffic lights
 	XSLFI_RAIL_AGEING,                            ///< This save game uses the rail aging patch
 	XSLFI_SPRINGPP,                               ///< This is a SpringPP game, use this for loading some settings
-	XSLFI_EXTRA_LARGE_MAP,                        ///< Extra large map
-	XSLFI_REVERSE_AT_WAYPOINT,                    ///< Reverse at waypoint orders
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };

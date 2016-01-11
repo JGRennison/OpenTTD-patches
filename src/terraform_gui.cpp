@@ -321,7 +321,7 @@ static Hotkey terraform_hotkeys[] = {
 	Hotkey('D' | WKC_GLOBAL_HOTKEY, "dynamite", WID_TT_DEMOLISH),
 	Hotkey('U', "buyland", WID_TT_BUY_LAND),
 	Hotkey('I', "trees", WID_TT_PLANT_TREES),
-	Hotkey('R', "ruler", WID_TT_MEASUREMENT_TOOL),
+	Hotkey('R' | WKC_SHIFT, "ruler", WID_TT_MEASUREMENT_TOOL),
 	Hotkey('O', "placesign", WID_TT_PLACE_SIGN),
 	Hotkey('P', "placeobject", WID_TT_PLACE_OBJECT),
 	HOTKEY_LIST_END
