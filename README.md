@@ -25,12 +25,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Routing restrictions: [thread](http://www.tt-forums.net/viewtopic.php?f=33&t=73397)  
   This is developed in the *tracerestrict* branch.  
-  A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)  
-  As of v0.9.0, add a conditional to test which company owns the train.
+  A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)
 
 * Programmable signals: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=47690)  
-  This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)  
-  As of v0.8.0, fix the remove and copy program buttons.
+  This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)
 
 * Upgrade airports: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=35867)
 
@@ -39,70 +37,50 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Close adjacent level crossings: [imported](http://www.tt-forums.net/viewtopic.php?p=836749)
 
 * Zoning: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=33701)  
-  This is modified to remove unimplemented modes, implement station ownership checks and implement station facility checks for industries.  
-  As of v0.6.0, add a mode to show restricted signals.  
-  As of v0.7.1, fix adding/removing station tiles not redrawing affected surrounding tiles when in the station catchment or unserved building/industry modes.
+  * This is modified to remove unimplemented modes, implement station ownership checks and implement station facility checks for industries.  
+  * Add a mode to show restricted signals.
 
 * Departure boards: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=49956)  
   * Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
-  * Fixed memory leak.  
-  * Made modifications to work with day length greater than 1.  
-  * As of v0.7.0, fixed a multiplayer desync caused by the timetable rounding depending on the client time display mode setting.  
-  * As of v0.8.1, fixed crash when a station is deleted with its departure boards window open.
+  * Made modifications to work with day length greater than 1.
 
 * Town cargo generation factor: [imported](http://www.tt-forums.net/viewtopic.php?t=46399)
 
 * Vehicles visible in tunnels (transparency setting): [imported](http://dev.openttdcoop.org/projects/clientpatches/repository/changes/VehicelsInTunnels.diff)
 
-* Signals in tunnels and on bridges: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=41260)  
-  As of v0.7.1, fix various issues involving redrawing, updating of adjacent signals, and vehicles emitting smoke whilst stopped at a red signal.
+* Signals in tunnels and on bridges: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=41260)
 
 * Measurement tools: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49212)
 
 * 255 GRFs in single player mode: [imported](http://www.tt-forums.net/viewtopic.php?p=894743#p894743)
 
-* Improved breakdowns: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=39518)  
-  Fixed minor bugs involving breakdown smoke.  
-  As of v0.5.3 and v0.9.0, fix multiplayer desync issues.
+* Improved breakdowns: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=39518)
 
 * Timetabling waiting time in depots: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=70969)
 
-* Picking and placing single houses in scenario editor: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=68894)  
-  As of v0.5.0, allow only one instance of house picker window.
+* Picking and placing single houses in scenario editor: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=68894)
 
 * Smallmap screenshots: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=44596)  
   This is modified to use an extra button in the smallmap window, instead of a console command, and use the current zoom level and display mode of the smallmap window.
 
 * Automated timetables and separation: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=46391)  
   * Auto timetabling: Bias timetable adjustment to favour negative adjustments; this is to avoid positive feedback between congestion delays and increased timetable length. Reduce jam detection threshold.  
-  * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Add setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
+  * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Add a company setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
   * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
-  * Add a company setting to enable automatic timetabling for new vehicles (added in v0.4.0).  
-  * As of v0.7.0, the setting to scale vehicle lateness adjustments is a company setting. As of v0.7.1 the default value has been changed to 40%.
+  * Add a company setting to enable automatic timetabling for new vehicles.
 
 * Vehicle repair cost: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=45642)
 
-* Enhanced viewport: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=53394)  
-  Fixed crash when looking at aqueducts in viewport map mode.  
-  As of v0.7.1 to v0.8.1, fix flicker and render errors of bridge/tunnels in viewport map mode, and rendering/clearing errors of vehicle route lines.  
-  As of v0.8.0, fix companies with a green colour scheme appearing as flashing yellow in viewport map owner mode.
+* Enhanced viewport: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=53394)
 
-* Infrastructure sharing: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)  
-  Fixed various issues with additions to the settings GUI.
-  
-* Rating in town label: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42598)  
-  Fixed small labels using wrong colour.
+* Infrastructure sharing: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)
 
-* Day length: [imported](http://www.tt-forums.net/viewtopic.php?p=1148227#p1148227)  
-  * Minor tweak to timetable lateness calculation.  
-  * Fixed dates/times in timetable window.  
-  * As of v0.3.0, time in minutes is no longer scaled by the day length factor.  
-  * As of v0.5.0, cargodest link graph timeout and compression intervals are scaled by the day length factor.  
-  * As of v0.5.0, fix status bar date when time in minutes and show date with time are both on.
+* Rating in town label: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42598)
+
+* Day length: [imported](http://www.tt-forums.net/viewtopic.php?p=1148227#p1148227)
 
 * Order occupancy  
-  Add column to orders GUI to show occupancy running average.  
-  As of v0.7.0, the smoothness setting is company setting.
+  Add column to orders GUI to show occupancy running average.
 
 * Servicing  
   Send vehicles which need auto-renewing due to age for servicing, even if breakdowns are off and no servicing if no breakdowns is on.
@@ -116,8 +94,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Enable building rivers in game (added in v0.3.0)  
   This is controlled by a setting (off by default).
 
-* More conditional orders: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=38317) (added in v0.3.0)  
-  As of v0.5.0, fix selecting/editing conditional orders in non-train orders window.
+* More conditional orders: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=38317) (added in v0.3.0)
 
 * Include the train length and group name in the vehicle details window (added in v0.3.0)  
   This are each controlled by a setting (on by default).
@@ -147,7 +124,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 33% faster. (added in v0.8.1)  
-  * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator. (added in v0.9.0)
+  * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator. (added in v0.9.0)  
+  * Various minor changes (see changelog).
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
@@ -155,14 +133,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Savegames from trunk up to the last savegame version which has been merged into this branch (*jgrpp*) should be loadable in this patchpack.  
   * Savegames from other branches which use the save/load code in the *save_ext* branch (usually suffixed: *-sx*) which are also merged into this branch (*jgrpp*), or where the added feature is marked as discardable/ignorable, should be loadable in this patchpack.  
   * Savegames from other patched versions are not loadable in this patchpack except for savegames from the *tracerestrict* branch ([routing restrictions patch](http://www.tt-forums.net/viewtopic.php?f=33&t=73397)),
-    and as of v0.3.0 savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892) v2.0, v2.1, v2.2 (subject to caveats, see below).
+    savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892) v2.0, v2.1, v2.2 (subject to caveats, see below).
 
 * Changes to the crash log (added in v0.5.0)  
   Enable stack traces on MinGW, try to demangle C++ symbol names, try to use libbfd for better symbol lookup, handle SIGSEGV while backtracing.
-
-* Multiplayer desync fixes/changes  
-  * Fix YAPF pathfinder desync issue involving rail track type changes which where only passable by a subset of vehicles (trunk bug). (added in v0.6.0, fixed in trunk as of v0.7.1)  
-  * Logging: Various changes and improvements to desync-related logging and debugging, see changelog for details.
 
 * Miscellaneous  
   * Label threads with a descriptive name on supported Unixy platforms. (added in v0.8.1)
