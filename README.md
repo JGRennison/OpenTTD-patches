@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.9.0
+## JGR's Patchpack version 0.10.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -39,6 +39,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Zoning: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=33701)  
   * This is modified to remove unimplemented modes, implement station ownership checks and implement station facility checks for industries.  
   * Add a mode to show restricted signals.
+  * Add a mode to show station catchment only where station window open.
 
 * Departure boards: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=49956)  
   * Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
@@ -54,7 +55,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * 255 GRFs in single player mode: [imported](http://www.tt-forums.net/viewtopic.php?p=894743#p894743)
 
-* Improved breakdowns: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=39518)
+* Improved breakdowns: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=39518)  
+  Add a lower limit for low speed breakdowns.
 
 * Timetabling waiting time in depots: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=70969)
 
@@ -120,6 +122,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match list owner (imported: by McZapkie) (added in v0.8.0)  
   This has been  modified to change the mark and be controlled by a setting (on by default).
+
+* Vehicle lifetime profit patch [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=72844) (added in v0.10.0)  
+  This has been modified to show current lifetime profit, instead of the yearly-updated value.
 
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
