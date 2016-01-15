@@ -1645,6 +1645,9 @@ private:
 	 */
 	void SetObjectToPlaceAction(int widget, CursorID cursor)
 	{
+		if (this->current_placement_widget != -1 && widget != this->current_placement_widget) {
+			ResetObjectToPlace();
+		}
 		this->ToggleWidgetLoweredState(widget);
 		this->SetWidgetDirty(widget);
 		if (this->IsWidgetLowered(widget)) {
