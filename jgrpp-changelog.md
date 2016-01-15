@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.10.1 (2016-01-15)
+* Fix FreeType fonts having an incorrect height (regression from v0.10.0).
+* Routing restrictions:
+  * Fix copying a signal without a program creating an empty program and marking the signal as restricted, instead of not creating a program.
+  * Fix GUI issue where if a picker button was clicked when another picker button was already lowered/active, both would be raised.
+
 ### v0.10.0 (2016-01-13)
 * Fix building rivers being disabled in scenario editor mode.
 * Fix minor visual issue with SSE2 palette animator.
