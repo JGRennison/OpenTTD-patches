@@ -1013,15 +1013,16 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 	switch (type) {
 		case TRDCT_PROG_COPY: {
 			TraceRestrictRemoveProgramMapping(self);
-			TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
-			if (!prog) {
-				// allocation failed
-				return CMD_ERROR;
-			}
 
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
-			if (source_prog) {
+			if (source_prog && !source_prog->items.empty()) {
+				TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
+				if (!prog) {
+					// allocation failed
+					return CMD_ERROR;
+				}
 				prog->items = source_prog->items; // copy
+				prog->Validate();
 			}
 			break;
 		}
@@ -1057,6 +1058,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				}
 
 				new_prog->items.swap(items);
+				new_prog->Validate();
 			}
 			break;
 		}

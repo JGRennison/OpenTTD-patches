@@ -1304,12 +1304,31 @@ void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const Vie
 	}
 }
 
+struct ViewportAddStringApproxBoundsChecker {
+	int top;
+	int bottom;
+
+	ViewportAddStringApproxBoundsChecker(const DrawPixelInfo *dpi)
+	{
+		this->top    = dpi->top - ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM, dpi->zoom);
+		this->bottom = dpi->top + dpi->height;
+	}
+
+	bool IsSignMaybeOnScreen(const ViewportSign *sign) const
+	{
+		return !(this->bottom < sign->top || this->top > sign->top);
+	}
+};
+
 static void ViewportAddTownNames(DrawPixelInfo *dpi)
 {
 	if (!HasBit(_display_opt, DO_SHOW_TOWN_NAMES) || _game_mode == GM_MENU) return;
 
+	ViewportAddStringApproxBoundsChecker checker(dpi);
+
 	const Town *t;
 	FOR_ALL_TOWNS(t) {
+		if (!checker.IsSignMaybeOnScreen(&t->cache.sign)) continue;
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
 				t->Label(), t->SmallLabel(), STR_VIEWPORT_TOWN_TINY_BLACK,
 				t->index, t->cache.population);
@@ -1321,6 +1340,8 @@ static void ViewportAddStationNames(DrawPixelInfo *dpi)
 {
 	if (!(HasBit(_display_opt, DO_SHOW_STATION_NAMES) || HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)) || _game_mode == GM_MENU) return;
 
+	ViewportAddStringApproxBoundsChecker checker(dpi);
+
 	const BaseStation *st;
 	FOR_ALL_BASE_STATIONS(st) {
 		/* Check whether the base station is a station or a waypoint */
@@ -1331,6 +1352,8 @@ static void ViewportAddStationNames(DrawPixelInfo *dpi)
 
 		/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != st->owner && st->owner != OWNER_NONE) continue;
+
+		if (!checker.IsSignMaybeOnScreen(&st->sign)) continue;
 
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
 				is_station ? STR_VIEWPORT_STATION : STR_VIEWPORT_WAYPOINT,
@@ -1345,12 +1368,16 @@ static void ViewportAddSigns(DrawPixelInfo *dpi)
 	/* Signs are turned off or are invisible */
 	if (!HasBit(_display_opt, DO_SHOW_SIGNS) || IsInvisibilitySet(TO_SIGNS)) return;
 
+	ViewportAddStringApproxBoundsChecker checker(dpi);
+
 	const Sign *si;
 	FOR_ALL_SIGNS(si) {
 		/* Don't draw if sign is owned by another company and competitor signs should be hidden.
 		 * Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
 		 * companies can leave OWNER_NONE signs after them. */
 		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != si->owner && si->owner != OWNER_DEITY) continue;
+
+		if (!checker.IsSignMaybeOnScreen(&si->sign)) continue;
 
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &si->sign,
 				STR_WHITE_SIGN,
