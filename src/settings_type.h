@@ -462,7 +462,7 @@ struct VehicleSettings {
 	byte   extend_vehicle_life;              ///< extend vehicle life by this many years
 	byte   road_side;                        ///< the side of the road vehicles drive on
 	uint8  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
-	bool   improved_breakdowns;		 ///< different types, chances and serverities of breakdowns
+	bool   improved_breakdowns;              ///< different types, chances and severities of breakdowns
 };
 
 /** Settings related to the economy. */
