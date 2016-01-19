@@ -512,6 +512,7 @@ struct VehicleSettings {
 	bool   improved_breakdowns;              ///< different types, chances and severities of breakdowns
 	bool   pay_for_repair;                   ///< pay for repairing vehicle
 	uint8  repair_cost;                      ///< cost of repairing vehicle
+	bool   ship_collision_avoidance;         ///< ships try to avoid colliding with each other
 };
 
 /** Settings related to the economy. */

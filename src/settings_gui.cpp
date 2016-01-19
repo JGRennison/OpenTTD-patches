@@ -1668,6 +1668,7 @@ static SettingsContainer &GetSettingsTree()
 				physics->Add(new SettingEntry("vehicle.roadveh_slope_steepness"));
 				physics->Add(new SettingEntry("vehicle.smoke_amount"));
 				physics->Add(new SettingEntry("vehicle.plane_speed"));
+				physics->Add(new SettingEntry("vehicle.ship_collision_avoidance"));
 			}
 
 			SettingsPage *routing = vehicles->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLES_ROUTING));
