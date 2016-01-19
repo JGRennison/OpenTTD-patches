@@ -509,6 +509,24 @@ static const byte _ship_subcoord[4][6][3] = {
 	}
 };
 
+/* Used to find DiagDirection from tile to next tile if track is followed */
+static const DiagDirection _diagdir_to_next_tile[6][4] = {
+	{ DIAGDIR_NE, DIAGDIR_SE, DIAGDIR_SW, DIAGDIR_NW },
+	{ DIAGDIR_NE, DIAGDIR_SE, DIAGDIR_SW, DIAGDIR_NW },
+	{ DIAGDIR_SE, DIAGDIR_NE, DIAGDIR_NW, DIAGDIR_SW },
+	{ DIAGDIR_SE, DIAGDIR_NW, DIAGDIR_NE, DIAGDIR_SW },
+	{ DIAGDIR_NW, DIAGDIR_SW, DIAGDIR_SE, DIAGDIR_NE },
+	{ DIAGDIR_SW, DIAGDIR_NW, DIAGDIR_SE, DIAGDIR_NE }
+};
+
+/** Helper function for collision avoidance. */
+static Vehicle *FindShipOnTile(Vehicle *v, void *data)
+{
+	if (v->type != VEH_SHIP || v->vehstatus & VS_STOPPED) return NULL;
+
+	return v;
+}
+
 static void ShipController(Ship *v)
 {
 	uint32 r;
@@ -600,6 +618,25 @@ static void ShipController(Ship *v)
 			/* Choose a direction, and continue if we find one */
 			track = ChooseShipTrack(v, gp.new_tile, diagdir, tracks);
 			if (track == INVALID_TRACK) goto reverse_direction;
+
+			/* Try to avoid collision and keep distance between each other. */
+			if (_settings_game.pf.forbid_90_deg && DistanceManhattan(v->dest_tile, gp.new_tile) > 3) {
+				if (HasVehicleOnPos(gp.new_tile, NULL, &FindShipOnTile) ||
+						HasVehicleOnPos(TileAddByDiagDir(gp.new_tile, _diagdir_to_next_tile[track][diagdir]), NULL, &FindShipOnTile)) {
+
+					v->cur_speed /= 4; // Go quarter speed.
+
+					Track old = track;
+					switch (tracks) {
+						default: break;
+						case TRACK_BIT_3WAY_NE: track == TRACK_RIGHT ? track = TRACK_X : track = TRACK_UPPER; break;
+						case TRACK_BIT_3WAY_SE: track == TRACK_LOWER ? track = TRACK_Y : track = TRACK_RIGHT; break;
+						case TRACK_BIT_3WAY_SW: track == TRACK_LEFT  ? track = TRACK_X : track = TRACK_LOWER; break;
+						case TRACK_BIT_3WAY_NW: track == TRACK_UPPER ? track = TRACK_Y : track = TRACK_LEFT;  break;
+					}
+					if (!IsWaterTile(gp.new_tile) || !IsWaterTile(TileAddByDiagDir(gp.new_tile, _diagdir_to_next_tile[track][diagdir]))) track = old; // Don't bump in coast, don't get stuck.
+				}
+			}
 
 			b = _ship_subcoord[diagdir][track];
 
