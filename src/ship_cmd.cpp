@@ -620,7 +620,7 @@ static void ShipController(Ship *v)
 			if (track == INVALID_TRACK) goto reverse_direction;
 
 			/* Try to avoid collision and keep distance between each other. */
-			if (_settings_game.pf.forbid_90_deg && DistanceManhattan(v->dest_tile, gp.new_tile) > 3) {
+			if (_settings_game.pf.forbid_90_deg && _settings_game.vehicle.ship_collision_avoidance && DistanceManhattan(v->dest_tile, gp.new_tile) > 3) {
 				if (HasVehicleOnPos(gp.new_tile, NULL, &FindShipOnTile) ||
 						HasVehicleOnPos(TileAddByDiagDir(gp.new_tile, _diagdir_to_next_tile[track][diagdir]), NULL, &FindShipOnTile)) {
 
