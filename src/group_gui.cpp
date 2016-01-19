@@ -122,23 +122,30 @@ private:
 	GUIGroupList groups;   ///< List of groups
 	uint tiny_step_height; ///< Step height for the group list
 	Scrollbar *group_sb;
-	SmallVector<GroupID, 16> collapsed_groups;  ///< List of collapsed groups
+	SmallVector<GroupID, 16> collapsed_groups;    ///< List of collapsed groups
+	SmallVector<GroupID, 16> collapsable_groups;  ///< List of collapsable groups
 
 	SmallVector<int, 16> indents; ///< Indentation levels
 
 	Dimension column_size[VGC_END]; ///< Size of the columns in the group list.
 
-	void AddParents(GUIGroupList *source, GroupID parent, int indent)
+	/** return true if group has children */
+	bool AddParents(GUIGroupList *source, GroupID parent, int indent)
 	{
-		if (this->collapsed_groups.Contains(parent)) return;
+		bool is_collapsed = this->collapsed_groups.Contains(parent);
+		bool has_children = false;
 
 		for (const Group **g = source->Begin(); g != source->End(); g++) {
 			if ((*g)->parent == parent) {
+				has_children = true;
+				if (is_collapsed) return has_children;
 				*this->groups.Append() = *g;
 				*this->indents.Append() = indent;
-				AddParents(source, (*g)->index, indent + 1);
+				bool child_has_children = AddParents(source, (*g)->index, indent + 1);
+				if (child_has_children) *this->collapsable_groups.Append() = (*g)->index;
 			}
 		}
+		return has_children;
 	}
 
 	/** Sort the groups by their name */
@@ -185,6 +192,7 @@ private:
 
 		this->groups.Clear();
 		this->indents.Clear();
+		this->collapsable_groups.Clear();
 
 		GUIGroupList list;
 
@@ -544,7 +552,8 @@ public:
 		this->GetWidget<NWidgetCore>(WID_GL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
 
 
-		bool is_non_collapsable_group = (this->vli.index == ALL_GROUP) || (this->vli.index == DEFAULT_GROUP) || (this->vli.index == INVALID_GROUP);
+		bool is_non_collapsable_group = (this->vli.index == ALL_GROUP) || (this->vli.index == DEFAULT_GROUP)
+				|| (this->vli.index == INVALID_GROUP) || !this->collapsable_groups.Contains(this->vli.index);
 
 		this->SetWidgetDisabledState(WID_GL_COLLAPSE_EXPAND_GROUP, is_non_collapsable_group);
 
@@ -557,6 +566,9 @@ public:
 			collapse_widget->widget_data = STR_GROUP_EXPAND;
 			collapse_widget->tool_tip = STR_GROUP_EXPAND_TOOLTIP;
 		}
+
+		this->SetWidgetDisabledState(WID_GL_EXPAND_ALL_GROUPS, this->collapsed_groups.Length() == 0);
+		this->SetWidgetDisabledState(WID_GL_COLLAPSE_ALL_GROUPS, this->collapsable_groups.Length() == 0 || this->collapsed_groups.Length() == this->collapsable_groups.Length());
 
 		this->DrawWidgets();
 	}
@@ -710,7 +722,7 @@ public:
 				this->collapsed_groups.Clear();
 				for (const Group **group = this->groups.Begin(); group != this->groups.End(); ++group) {
 					GroupID id = (*group)->index;
-					if (id != ALL_GROUP && id != DEFAULT_GROUP && id != INVALID_GROUP) {
+					if (id != ALL_GROUP && id != DEFAULT_GROUP && id != INVALID_GROUP && this->collapsable_groups.Contains(id)) {
 						*this->collapsed_groups.Append() = id;
 					}
 				}
