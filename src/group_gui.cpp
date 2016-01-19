@@ -105,6 +105,7 @@ private:
 	/* Columns in the group list */
 	enum ListColumns {
 		VGC_NAME,          ///< Group name.
+		VGC_COLLAPSED,     ///< Collapsed icon
 		VGC_PROTECT,       ///< Autoreplace protect icon.
 		VGC_AUTOREPLACE,   ///< Autoreplace active icon.
 		VGC_PROFIT,        ///< Profit icon.
@@ -213,6 +214,9 @@ private:
 		this->column_size[VGC_NAME].width = max(170u, this->column_size[VGC_NAME].width);
 		this->tiny_step_height = this->column_size[VGC_NAME].height;
 
+		this->column_size[VGC_COLLAPSED] = GetSpriteSize(SPR_WINDOW_UNSHADE);
+		this->tiny_step_height = max(this->tiny_step_height, this->column_size[VGC_COLLAPSED].height);
+
 		this->column_size[VGC_PROTECT] = GetSpriteSize(SPR_GROUP_REPLACE_PROTECT);
 		this->tiny_step_height = max(this->tiny_step_height, this->column_size[VGC_PROTECT].height);
 
@@ -236,6 +240,7 @@ private:
 
 		return WD_FRAMERECT_LEFT + 8 +
 			this->column_size[VGC_NAME].width + 8 +
+			this->column_size[VGC_COLLAPSED].width + 2 +
 			this->column_size[VGC_PROTECT].width + 2 +
 			this->column_size[VGC_AUTOREPLACE].width + 2 +
 			this->column_size[VGC_PROFIT].width + 2 +
@@ -279,8 +284,12 @@ private:
 		int x = rtl ? right - WD_FRAMERECT_RIGHT - 8 - this->column_size[VGC_NAME].width + 1 : left + WD_FRAMERECT_LEFT + 8;
 		DrawString(x + indent * LEVEL_WIDTH, x + this->column_size[VGC_NAME].width - 1, y + (this->tiny_step_height - this->column_size[VGC_NAME].height) / 2, str, colour);
 
+		/* draw collapse state */
+		x = rtl ? x - 8 - this->column_size[VGC_COLLAPSED].width : x + 8 + this->column_size[VGC_NAME].width;
+		if (this->collapsed_groups.Contains(g_id)) DrawSprite(SPR_WINDOW_UNSHADE, PAL_NONE, x, y + (this->tiny_step_height - this->column_size[VGC_COLLAPSED].height) / 2);
+
 		/* draw autoreplace protection */
-		x = rtl ? x - 8 - this->column_size[VGC_PROTECT].width : x + 8 + this->column_size[VGC_NAME].width;
+		x = rtl ? x - 2 - this->column_size[VGC_PROTECT].width : x + 2 + this->column_size[VGC_COLLAPSED].width;
 		if (protection) DrawSprite(SPR_GROUP_REPLACE_PROTECT, PAL_NONE, x, y + (this->tiny_step_height - this->column_size[VGC_PROTECT].height) / 2);
 
 		/* draw autoreplace status */
