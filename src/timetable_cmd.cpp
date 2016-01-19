@@ -314,11 +314,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
-#if WALLCLOCK_NETWORK_COMPATIBLE
 			w->timetable_start = start_date + idx * total_duration / num_vehs / DAY_TICKS;
-#else
-			w->timetable_start = start_date + idx * total_duration / num_vehs;
-#endif
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
 		}
 
