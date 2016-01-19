@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.10.2 (2016-01-19)
+* Improved breakdowns:
+  * Fix incorrect train speed limits after a save/load or network join (causing desync issues) after critical/mechanical breakdowns.
+  * Reduce severity of train speed limit reduction after critical/mechanical breakdowns, remove reduction limit.
+
 ### v0.10.1 (2016-01-15)
 * Fix FreeType fonts having an incorrect height (regression from v0.10.0).
 * Routing restrictions:
