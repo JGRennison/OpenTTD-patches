@@ -25,17 +25,14 @@
 #include "vehicle_gui_base.h"
 #include "core/geometry_func.hpp"
 #include "company_base.h"
-
 #include "widgets/group_widget.h"
+#include "core/smallvec_type.hpp"
 
 #include "table/sprites.h"
 
 #include "safeguards.h"
-#include <algorithm>
 
 static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
-
-static std::map<GroupID, bool> _collapsed_groups;  ///< Map of collapsed groups
 
 typedef GUIList<const Group*> GUIGroupList;
 
@@ -124,6 +121,7 @@ private:
 	GUIGroupList groups;   ///< List of groups
 	uint tiny_step_height; ///< Step height for the group list
 	Scrollbar *group_sb;
+	SmallVector<GroupID, 16> collapsed_groups;  ///< List of collapsed groups
 
 	SmallVector<int, 16> indents; ///< Indentation levels
 
@@ -131,7 +129,7 @@ private:
 
 	void AddParents(GUIGroupList *source, GroupID parent, int indent)
 	{
-		if (_collapsed_groups[parent]) return;
+		if (this->collapsed_groups.Contains(parent)) return;
 
 		for (const Group **g = source->Begin(); g != source->End(); g++) {
 			if ((*g)->parent == parent) {
@@ -165,13 +163,14 @@ private:
 		return r;
 	}
 
-	static void ToogleGroupCollapse(GroupID group)
+	void ToogleGroupCollapse(GroupID group)
 	{
-		if (_collapsed_groups.find(group) == _collapsed_groups.end()) {
-			_collapsed_groups[group] = false;
+		GroupID *item = this->collapsed_groups.Find(group);
+		if (item == this->collapsed_groups.End()) {
+			*(this->collapsed_groups.Append()) = group;
+		} else {
+			this->collapsed_groups.Erase(item);
 		}
-
-		_collapsed_groups[group] = !_collapsed_groups[group];
 	}
 
 	/**
@@ -192,11 +191,6 @@ private:
 		FOR_ALL_GROUPS(g) {
 			if (g->owner == owner && g->vehicle_type == this->vli.vtype) {
 				*list.Append() = g;
-
-				if (g->index != ALL_GROUP && g->index != DEFAULT_GROUP && g->index != INVALID_GROUP &&
-					_collapsed_groups.find(g->index) == _collapsed_groups.end()) {
-					_collapsed_groups[g->index] = false;
-				}
 			}
 		}
 
@@ -545,15 +539,14 @@ public:
 
 		this->SetWidgetDisabledState(WID_GL_COLLAPSE_EXPAND_GROUP, is_non_collapsable_group);
 
-		NWidgetCore *widget = this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP);
+		NWidgetCore *collapse_widget = this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP);
 
-		if (is_non_collapsable_group || _collapsed_groups.find(this->vli.index) == _collapsed_groups.end() || !_collapsed_groups[this->vli.index]) {
-			this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->widget_data = STR_GROUP_COLLAPSE;
-			this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->tool_tip = STR_GROUP_COLLAPSE_TOOLTIP;
-		}
-		else {
-			this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->widget_data = STR_GROUP_EXPAND;
-			this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->tool_tip = STR_GROUP_EXPAND_TOOLTIP;
+		if (is_non_collapsable_group || !this->collapsed_groups.Contains(this->vli.index)) {
+			collapse_widget->widget_data = STR_GROUP_COLLAPSE;
+			collapse_widget->tool_tip = STR_GROUP_COLLAPSE_TOOLTIP;
+		} else {
+			collapse_widget->widget_data = STR_GROUP_EXPAND;
+			collapse_widget->tool_tip = STR_GROUP_EXPAND_TOOLTIP;
 		}
 
 		this->DrawWidgets();
@@ -655,7 +648,7 @@ public:
 				this->group_sel = this->vli.index = this->groups[id_g]->index;
 
 				if (click_count % 2 == 0) {
-					ToogleGroupCollapse(this->vli.index);
+					this->ToogleGroupCollapse(this->vli.index);
 					OnInvalidateData();
 				}
 
@@ -699,28 +692,26 @@ public:
 				break;
 
 			case WID_GL_COLLAPSE_EXPAND_GROUP: // Toggle collapse/expand
-				ToogleGroupCollapse(this->vli.index);
+				this->ToogleGroupCollapse(this->vli.index);
 				OnInvalidateData();
 				this->SetDirty();
 				break;
 
-			case WID_GL_COLLAPSE_ALL_GROUPS: {				
-				std::for_each(_collapsed_groups.begin(), _collapsed_groups.end(), [](std::pair<const GroupID, bool> &key_value_pair) {
-					if (key_value_pair.first != ALL_GROUP && key_value_pair.first != DEFAULT_GROUP && key_value_pair.first != INVALID_GROUP) {
-						key_value_pair.second = true;
+			case WID_GL_COLLAPSE_ALL_GROUPS: {
+				this->collapsed_groups.Clear();
+				for (const Group **group = this->groups.Begin(); group != this->groups.End(); ++group) {
+					GroupID id = (*group)->index;
+					if (id != ALL_GROUP && id != DEFAULT_GROUP && id != INVALID_GROUP) {
+						*this->collapsed_groups.Append() = id;
 					}
-				});
+				}
 				OnInvalidateData();
 				this->SetDirty();
 				break;
 			}
 
-			case WID_GL_EXPAND_ALL_GROUPS: {				
-				std::for_each(_collapsed_groups.begin(), _collapsed_groups.end(), [](std::pair<const GroupID, bool> &key_value_pair) {
-					if (key_value_pair.first != ALL_GROUP && key_value_pair.first != DEFAULT_GROUP && key_value_pair.first != INVALID_GROUP) {
-						key_value_pair.second = false;
-					}
-				});
+			case WID_GL_EXPAND_ALL_GROUPS: {
+				this->collapsed_groups.Clear();
 				OnInvalidateData();
 				this->SetDirty();
 				break;
@@ -774,7 +765,8 @@ public:
 
 				if (this->group_sel != new_g && g->parent != new_g) {
 					DoCommandP(0, this->group_sel | (1 << 16), new_g, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
-					_collapsed_groups[new_g] = false;
+					GroupID *group = this->collapsed_groups.Find(new_g);
+					if (group != this->collapsed_groups.End()) this->collapsed_groups.Erase(group);
 				}
 
 				this->group_sel = INVALID_GROUP;
