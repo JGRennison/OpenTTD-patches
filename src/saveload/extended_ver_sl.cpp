@@ -170,7 +170,6 @@ static void Save_SLXI()
 	SlXvSetCurrentState();
 
 	static const SaveLoad _xlsi_sub_chunk_desc[] = {
-		SLE_VAR(SlxiSubChunkInfo, save_version,   SLE_UINT16),
 		SLE_STR(SlxiSubChunkInfo, name,           SLE_STR, 0),
 		SLE_END()
 	};
@@ -184,9 +183,9 @@ static void Save_SLXI()
 	chunk_counts.resize(XSLFI_SIZE);
 	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
 	for (; info->index != XSLFI_NULL; ++info) {
-		if (info->save_version > 0) {
+		if (_sl_xv_feature_versions[info->index] > 0) {
 			item_count++;
-			length += 4;
+			length += 6;
 			length += SlCalcObjLength(info, _xlsi_sub_chunk_desc);
 			if (info->save_proc) {
 				uint32 extra_data_length = info->save_proc(info, true);
@@ -214,7 +213,8 @@ static void Save_SLXI()
 	// write data
 	info = _sl_xv_sub_chunk_infos;
 	for (; info->index != XSLFI_NULL; ++info) {
-		if (info->save_version > 0) {
+		uint16 save_version = _sl_xv_feature_versions[info->index];
+		if (save_version > 0) {
 			SlxiSubChunkFlags flags = info->flags;
 			assert(!(flags & (XSCF_EXTRA_DATA_PRESENT | XSCF_CHUNK_ID_LIST_PRESENT)));
 			uint32 extra_data_length = extra_data_lengths[info->index];
@@ -222,6 +222,7 @@ static void Save_SLXI()
 			if (extra_data_length > 0) flags |= XSCF_EXTRA_DATA_PRESENT;
 			if (chunk_count > 0) flags |= XSCF_CHUNK_ID_LIST_PRESENT;
 			SlWriteUint32(flags);
+			SlWriteUint16(save_version);
 			SlObject(const_cast<SlxiSubChunkInfo *>(info), _xlsi_sub_chunk_desc);
 
 			if (extra_data_length > 0) {
