@@ -2130,6 +2130,7 @@ void Vehicle::LeaveStation()
 			new_occupancy /= 100;
 		}
 		if (new_occupancy + 1 != old_occupancy) {
+			this->order_occupancy_average = 0;
 			real_current_order->SetOccupancy(static_cast<uint8>(new_occupancy + 1));
 			for (const Vehicle *v = this->FirstShared(); v != NULL; v = v->NextShared()) {
 				SetWindowDirty(WC_VEHICLE_ORDERS, v->index);
@@ -2138,6 +2139,25 @@ void Vehicle::LeaveStation()
 	}
 
 	this->MarkDirty();
+}
+
+void Vehicle::RecalculateOrderOccupancyAverage()
+{
+	uint num_valid = 0;
+	uint total = 0;
+	uint order_count = this->GetNumOrders();
+	for (uint i = 0; i < order_count; i++) {
+		uint occupancy = this->GetOrder(i)->GetOccupancy();
+		if (occupancy > 0) {
+			num_valid++;
+			total += (occupancy - 1);
+		}
+	}
+	if (num_valid > 0) {
+		this->order_occupancy_average = 16 + ((total + (num_valid / 2)) / num_valid);
+	} else {
+		this->order_occupancy_average = 1;
+	}
 }
 
 /**
