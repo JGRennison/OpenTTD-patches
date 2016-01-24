@@ -297,6 +297,7 @@ STR_SORT_BY_VALUE                                               :Value
 STR_SORT_BY_LENGTH                                              :Length
 STR_SORT_BY_LIFE_TIME                                           :Remaining lifetime
 STR_SORT_BY_TIMETABLE_DELAY                                     :Timetable delay
+STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :Average order occupancy
 STR_SORT_BY_FACILITY                                            :Station type
 STR_SORT_BY_WAITING_TOTAL                                       :Total waiting cargo
 STR_SORT_BY_WAITING_AVAILABLE                                   :Available waiting cargo
@@ -4314,9 +4315,9 @@ STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Insert a
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}Show all vehicles that share this schedule
 
-STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}%
-STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages
-STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Order occupancy - this shows runnings averages of recent occupancy levels when leaving a station, for all vehicles sharing these orders
+STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING2}%
+STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages{}The percentage shown is the overall average of the order occupancies
+STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Order occupancy - this shows running averages of recent occupancy levels when leaving a station, for all vehicles sharing these orders
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 # String parts to build the order string
