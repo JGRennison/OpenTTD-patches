@@ -359,6 +359,7 @@ struct ConstructionSettings {
 	uint16 clear_frame_burst;                ///< how many tiles may, over a short period, be cleared?
 	uint32 tree_per_64k_frames;              ///< how many trees may, over a long period, be planted per 65536 frames?
 	uint16 tree_frame_burst;                 ///< how many trees may, over a short period, be planted?
+	uint8  tree_growth_rate;                 ///< tree growth rate
 };
 
 /** Settings related to the AI. */

@@ -1663,6 +1663,13 @@ STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Adjust placemen
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Arctic tree range: {STRING2}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Approximate range of arctic trees around snow line
 
+STR_CONFIG_SETTING_TREE_GROWTH                                  :Tree growth speed: {STRING2}
+STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Control rate at which trees grow during the game. This might affect industries which rely on tree growth, for example lumber mills
+STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
+STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Slow
+STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Very slow
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extremly slow
+
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position of main toolbar: {STRING2}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontal position of the main toolbar at the top of the screen
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Position of status bar: {STRING2}
