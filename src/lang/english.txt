@@ -297,6 +297,7 @@ STR_SORT_BY_VALUE                                               :Value
 STR_SORT_BY_LENGTH                                              :Length
 STR_SORT_BY_LIFE_TIME                                           :Remaining lifetime
 STR_SORT_BY_TIMETABLE_DELAY                                     :Timetable delay
+STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :Average order occupancy
 STR_SORT_BY_FACILITY                                            :Station type
 STR_SORT_BY_WAITING_TOTAL                                       :Total waiting cargo
 STR_SORT_BY_WAITING_AVAILABLE                                   :Available waiting cargo
@@ -1261,6 +1262,8 @@ STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Allow construct
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Changing this setting is not possible when there are vehicles
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Infrastructure maintenance: {STRING2}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :When enabled, infrastructure causes maintenance costs. The cost grows over-proportional with the network size, thus affecting bigger companies more than smaller ones
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Ships avoid collisions: {STRING2}
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :When enabled, ships try to avoid passing through each other. Requires 90° turns to be forbidden.
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Airports never expire: {STRING2}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Enabling this setting makes each airport type stay available forever after its introduction
@@ -1659,6 +1662,13 @@ STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Adjusted arctic
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Adjust placement of trees around snow line in artic climate. Trees thin out above snowline. Trees are a mix of arctic and temperate just below snowline. Below that trees are temperate.
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Arctic tree range: {STRING2}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Approximate range of arctic trees around snow line
+
+STR_CONFIG_SETTING_TREE_GROWTH                                  :Tree growth speed: {STRING2}
+STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Control rate at which trees grow during the game. This might affect industries which rely on tree growth, for example lumber mills
+STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
+STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Slow
+STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Very slow
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extremly slow
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position of main toolbar: {STRING2}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontal position of the main toolbar at the top of the screen
@@ -2534,6 +2544,8 @@ STR_TRACE_RESTRICT_PF_ALLOW                                     :Allow
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Allow (cancel previous Deny)
 STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserve through
 STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancel reserve through
+STR_TRACE_RESTRICT_LONG_RESERVE                                 :Long reserve
+STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Cancel long reserve
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
@@ -3784,6 +3796,12 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Groups -
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Click to create a group
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Delete the selected group
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Rename the selected group
+STR_GROUP_COLLAPSE                                              :{BLACK}Collapse
+STR_GROUP_EXPAND                                                :{BLACK}Expand
+STR_GROUP_EXPAND_ALL                                            :{BLACK}Expand all
+STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Collapse all
+STR_GROUP_COLLAPSE_TOOLTIP                                      :{BLACK}Click to collapse the selected group
+STR_GROUP_EXPAND_TOOLTIP                                        :{BLACK}Click to expand the selected group
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Click to protect this group from global autoreplace
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Delete Group
@@ -4304,9 +4322,9 @@ STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Insert a
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}Show all vehicles that share this schedule
 
-STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}%
-STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages
-STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Order occupancy - this shows runnings averages of recent occupancy levels when leaving a station, for all vehicles sharing these orders
+STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING2}%
+STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages{}The percentage shown is the overall average of the order occupancies
+STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Order occupancy - this shows running averages of recent occupancy levels when leaving a station, for all vehicles sharing these orders
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 # String parts to build the order string

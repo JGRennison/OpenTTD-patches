@@ -278,6 +278,8 @@ public:
 	byte running_ticks;                 ///< Number of ticks this vehicle was not stopped this day
 
 	byte vehstatus;                     ///< Status
+
+	uint8 order_occupancy_average;      ///< NOSAVE: order occupancy average. 0 = invalid, 1 = n/a, 16-116 = 0-100%
 	Order current_order;                ///< The current order (+ status, like: loading)
 
 	union {
@@ -702,6 +704,14 @@ public:
 	inline StationIDStack GetNextStoppingStation() const
 	{
 		return (this->orders.list == NULL) ? INVALID_STATION : this->orders.list->GetNextStoppingStation(this);
+	}
+
+	void RecalculateOrderOccupancyAverage();
+
+	inline uint8 GetOrderOccupancyAverage() const
+	{
+		if (order_occupancy_average == 0) const_cast<Vehicle *>(this)->RecalculateOrderOccupancyAverage();
+		return this->order_occupancy_average;
 	}
 
 	void ResetRefitCaps();

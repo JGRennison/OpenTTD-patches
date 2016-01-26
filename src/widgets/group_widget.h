@@ -31,6 +31,9 @@ enum GroupListWidgets {
 	WID_GL_CREATE_GROUP,             ///< Create group button.
 	WID_GL_DELETE_GROUP,             ///< Delete group button.
 	WID_GL_RENAME_GROUP,             ///< Rename group button.
+	WID_GL_COLLAPSE_EXPAND_GROUP,    ///< Collapse/expand group button.
+	WID_GL_COLLAPSE_ALL_GROUPS,      ///< Collapse all groups button.
+	WID_GL_EXPAND_ALL_GROUPS,        ///< Expand all groups button.
 	WID_GL_REPLACE_PROTECTION,       ///< Replace protection button.
 	WID_GL_INFO,                     ///< Group info.
 };

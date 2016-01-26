@@ -1668,6 +1668,7 @@ static SettingsContainer &GetSettingsTree()
 				physics->Add(new SettingEntry("vehicle.roadveh_slope_steepness"));
 				physics->Add(new SettingEntry("vehicle.smoke_amount"));
 				physics->Add(new SettingEntry("vehicle.plane_speed"));
+				physics->Add(new SettingEntry("vehicle.ship_collision_avoidance"));
 			}
 
 			SettingsPage *routing = vehicles->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLES_ROUTING));
@@ -1787,6 +1788,7 @@ static SettingsContainer &GetSettingsTree()
 				treedist->Add(new SettingEntry("construction.extra_tree_placement"));
 				treedist->Add(new SettingEntry("construction.trees_around_snow_line_enabled"));
 				treedist->Add(new SettingEntry("construction.trees_around_snow_line_range"));
+				treedist->Add(new SettingEntry("construction.tree_growth_rate"));
 			}
 
 			environment->Add(new SettingEntry("station.modified_catchment"));

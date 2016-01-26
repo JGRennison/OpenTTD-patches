@@ -98,6 +98,7 @@ enum TraceRestrictItemType {
 	TRIT_PF_DENY                  = 1,    ///< Pathfinder deny/allow
 	TRIT_PF_PENALTY               = 2,    ///< Add to pathfinder penalty
 	TRIT_RESERVE_THROUGH          = 3,    ///< Reserve through PBS signal
+	TRIT_LONG_RESERVE             = 4,    ///< Long reserve PBS signal
 
 	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the same value as TRIT_COND_ENDIF
 	TRIT_COND_ENDIF               = 8,    ///< This is an endif block or an else block
@@ -195,6 +196,7 @@ enum TraceRestrictPathfinderPenaltyPresetIndex {
 enum TraceRestrictProgramResultFlags {
 	TRPRF_DENY                    = 1 << 0,  ///< Pathfinder deny is set
 	TRPRF_RESERVE_THROUGH         = 1 << 1,  ///< Reserve through is set
+	TRPRF_LONG_RESERVE            = 1 << 2,  ///< Long reserve is set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -204,6 +206,7 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_PF                     = 1 << 0,  ///< Pathfinder deny or penalty are present
 	TRPAUF_RESERVE_THROUGH        = 1 << 1,  ///< Reserve through action is present
+	TRPAUF_LONG_RESERVE           = 1 << 2,  ///< Long reserve action is present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -407,7 +410,8 @@ enum TraceRestrictValueType {
 	TRVT_TILE_INDEX               = 8, ///< takes a TileIndex in the next item slot
 	TRVT_PF_PENALTY               = 9, ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
 	TRVT_RESERVE_THROUGH          = 10,///< takes a value 0 = reserve through, 1 = cancel previous reserve through
-	TRVT_OWNER                    = 11,///< takes a CompanyID
+	TRVT_LONG_RESERVE             = 11,///< takes a value 0 = long reserve, 1 = cancel previous long reserve
+	TRVT_OWNER                    = 12,///< takes a CompanyID
 };
 
 /**
@@ -486,6 +490,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_DENY;
 		} else if (GetTraceRestrictType(item) == TRIT_RESERVE_THROUGH) {
 			out.value_type = TRVT_RESERVE_THROUGH;
+		} else if (GetTraceRestrictType(item) == TRIT_LONG_RESERVE) {
+			out.value_type = TRVT_LONG_RESERVE;
 		} else {
 			out.value_type = TRVT_NONE;
 		}

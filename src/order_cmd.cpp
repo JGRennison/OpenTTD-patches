@@ -1714,7 +1714,11 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				/* Set automation bit if target has it. */
 				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
 					SetBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+				} else {
+					ClrBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
 				}
+				ClrBit(dst->vehicle_flags, VF_AUTOFILL_TIMETABLE);
+				ClrBit(dst->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 
 				dst->ClearSeparation();
 				if (_settings_game.order.timetable_separation) ClrBit(dst->vehicle_flags, VF_TIMETABLE_STARTED);
@@ -1781,6 +1785,15 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					delete dst->orders.list;
 					assert(OrderList::CanAllocateItem());
 					dst->orders.list = new OrderList(first, dst);
+				}
+
+				/* Set automation bit if target has it. */
+				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
+					SetBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+					ClrBit(dst->vehicle_flags, VF_AUTOFILL_TIMETABLE);
+					ClrBit(dst->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
+				} else {
+					ClrBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
 				}
 
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
@@ -2170,7 +2183,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v)
 		case OCV_UNCONDITIONALLY:    skip_order = true; break;
 		case OCV_CARGO_WAITING: {
 			StationID next_station = GetNextRealStation(v, order);
-			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, !Station::Get(next_station)->goods[value].cargo.AvailableCount() > 0, value);
+			if (Station::IsValidID(next_station)) skip_order = OrderConditionCompare(occ, !(Station::Get(next_station)->goods[value].cargo.AvailableCount() > 0), value);
 				break;
 		}
 		case OCV_CARGO_ACCEPTANCE: {
