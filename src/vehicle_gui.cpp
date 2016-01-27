@@ -150,7 +150,7 @@ void BaseVehicleListWindow::BuildVehicleList()
  * @param show_group If true include group-related stuff.
  * @return Required size.
  */
-Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bool show_group)
+Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bool show_group, StringID change_order_str)
 {
 	Dimension d = {0, 0};
 
@@ -163,6 +163,10 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
 		d = maxdim(d, GetStringBoundingBox(STR_GROUP_REMOVE_ALL_VEHICLES));
 	}
 
+	if (change_order_str != 0) {
+		d = maxdim(d, GetStringBoundingBox(change_order_str));
+	}
+
 	return d;
 }
 
@@ -172,7 +176,7 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
  * @param show_group If true include group-related stuff.
  * @return Itemlist for dropdown
  */
-DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group)
+DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group, StringID change_order_str)
 {
 	DropDownList *list = new DropDownList();
 
@@ -183,6 +187,9 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 	if (show_group) {
 		*list->Append() = new DropDownListStringItem(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, false);
 		*list->Append() = new DropDownListStringItem(STR_GROUP_REMOVE_ALL_VEHICLES, ADI_REMOVE_ALL, false);
+	}
+	if (change_order_str != 0) {
+		*list->Append() = new DropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, false);
 	}
 
 	return list;
@@ -1526,6 +1533,17 @@ private:
 		BP_HIDE_BUTTONS, ///< Show the empty panel.
 	};
 
+	StringID GetChangeOrderStringID() const
+	{
+		if (VehicleListIdentifier(this->window_number).type == VL_STATION_LIST) {
+			return (Station::Get(this->vli.index)->facilities & FACIL_WAYPOINT) ? STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT : STR_VEHICLE_LIST_CHANGE_ORDER_STATION;
+		} else if (VehicleListIdentifier(this->window_number).type == VL_DEPOT_LIST) {
+			return STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT + this->vli.vtype;
+		} else {
+			return 0;
+		}
+	}
+
 public:
 	VehicleListWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
@@ -1596,7 +1614,7 @@ public:
 			}
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
-				Dimension d = this->GetActionDropdownSize(this->vli.type == VL_STANDARD, false);
+				Dimension d = this->GetActionDropdownSize(this->vli.type == VL_STANDARD, false, this->GetChangeOrderStringID());
 				d.height += padding.height;
 				d.width  += padding.width;
 				*size = maxdim(*size, d);
@@ -1721,7 +1739,8 @@ public:
 				break;
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
-				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier(this->window_number).type == VL_STANDARD, false);
+				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier(this->window_number).type == VL_STANDARD, false,
+						this->GetChangeOrderStringID());
 				ShowDropDownList(this, list, 0, WID_VL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
@@ -1751,12 +1770,59 @@ public:
 						DoCommandP(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : (DepotCommand)0), this->window_number, GetCmdSendToDepot(this->vli.vtype));
 						break;
 
+					case ADI_CHANGE_ORDER:
+						SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT, this);
+						break;
+
 					default: NOT_REACHED();
 				}
 				break;
 			default: NOT_REACHED();
 		}
 		this->SetDirty();
+	}
+
+	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	{
+		/* check depot first */
+		if (IsDepotTile(tile) && GetDepotVehicleType(tile) == this->vli.vtype) {
+			if (this->vli.type != VL_DEPOT_LIST) return;
+			if (!IsInfraTileUsageAllowed(this->vli.vtype, this->vli.company, tile)) return;
+
+			DestinationID dest = (this->vli.vtype == VEH_AIRCRAFT) ? GetStationIndex(tile) : GetDepotIndex(tile);
+			DoCommandP(0, this->vli.index | (this->vli.vtype << 16) | (OT_GOTO_DEPOT << 20), dest, CMD_MASS_CHANGE_ORDER);
+			ResetObjectToPlace();
+			return;
+		}
+
+		/* check rail waypoint or buoy (no ownership) */
+		if ((IsRailWaypointTile(tile) && this->vli.vtype == VEH_TRAIN && !IsInfraTileUsageAllowed(VEH_TRAIN, this->vli.company, tile))
+				|| (IsBuoyTile(tile) && this->vli.vtype == VEH_SHIP)) {
+			if (this->vli.type != VL_STATION_LIST) return;
+			if (!(Station::Get(this->vli.index)->facilities & FACIL_WAYPOINT)) return;
+			DoCommandP(0, this->vli.index | (this->vli.vtype << 16) | (OT_GOTO_WAYPOINT << 20), GetStationIndex(tile), CMD_MASS_CHANGE_ORDER);
+			ResetObjectToPlace();
+			return;
+		}
+
+		if (IsTileType(tile, MP_STATION)) {
+			if (this->vli.type != VL_STATION_LIST) return;
+			if (Station::Get(this->vli.index)->facilities & FACIL_WAYPOINT) return;
+
+			StationID st_index = GetStationIndex(tile);
+			const Station *st = Station::Get(st_index);
+
+			if (!IsInfraUsageAllowed(this->vli.vtype, this->vli.company, st->owner)) return;
+
+			if ((this->vli.vtype == VEH_SHIP && st->facilities & FACIL_DOCK) ||
+					(this->vli.vtype == VEH_TRAIN && st->facilities & FACIL_TRAIN) ||
+					(this->vli.vtype == VEH_AIRCRAFT && st->facilities & FACIL_AIRPORT) ||
+					(this->vli.vtype == VEH_ROAD && st->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP))) {
+				DoCommandP(0, this->vli.index | (this->vli.vtype << 16) | (OT_GOTO_STATION << 20), GetStationIndex(tile), CMD_MASS_CHANGE_ORDER);
+				ResetObjectToPlace();
+				return;
+			}
+		}
 	}
 
 	virtual void OnTick()

@@ -3781,6 +3781,13 @@ STR_VEHICLE_LIST_MASS_START_LIST_TOOLTIP                        :{BLACK}Click to
 
 STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION                     :{WHITE}Shared orders of {COMMA} Vehicle{P "" s}
 
+STR_VEHICLE_LIST_CHANGE_ORDER_STATION                           :Move order to another station
+STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT                          :Move order to another waypoint
+STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT                       :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Move order to another hangar
+
 # Group window
 STR_GROUP_ALL_TRAINS                                            :All trains
 STR_GROUP_ALL_ROAD_VEHICLES                                     :All road vehicles
