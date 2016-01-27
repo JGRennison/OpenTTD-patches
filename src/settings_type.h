@@ -168,8 +168,10 @@ struct GUISettings {
 	uint8  graph_line_thickness;             ///< the thickness of the lines in the various graph guis
 	bool   show_train_length_in_details;     ///< show train length in vehicle details window top widget
 	bool   show_vehicle_group_in_details;    ///< show vehicle group in vehicle details window top widget
+	bool   show_restricted_signal_default;   ///< Show restricted electric signals using the default sprite
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
+	bool   show_vehicle_list_company_colour; ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.
@@ -357,6 +359,7 @@ struct ConstructionSettings {
 	uint16 clear_frame_burst;                ///< how many tiles may, over a short period, be cleared?
 	uint32 tree_per_64k_frames;              ///< how many trees may, over a long period, be planted per 65536 frames?
 	uint16 tree_frame_burst;                 ///< how many trees may, over a short period, be planted?
+	uint8  tree_growth_rate;                 ///< tree growth rate
 };
 
 /** Settings related to the AI. */
@@ -507,9 +510,10 @@ struct VehicleSettings {
 	byte   road_side;                        ///< the side of the road vehicles drive on
 	uint8  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
 	bool   adjacent_crossings;               ///< enable closing of adjacent level crossings
-	bool   improved_breakdowns;              ///< different types, chances and serverities of breakdowns
+	bool   improved_breakdowns;              ///< different types, chances and severities of breakdowns
 	bool   pay_for_repair;                   ///< pay for repairing vehicle
 	uint8  repair_cost;                      ///< cost of repairing vehicle
+	bool   ship_collision_avoidance;         ///< ships try to avoid colliding with each other
 };
 
 /** Settings related to the economy. */

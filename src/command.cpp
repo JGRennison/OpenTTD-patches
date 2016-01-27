@@ -205,12 +205,15 @@ CommandProc CmdProgramSignalTraceRestrict;
 CommandProc CmdInsertSignalInstruction;
 CommandProc CmdModifySignalInstruction;
 CommandProc CmdRemoveSignalInstruction;
+CommandProc CmdSignalProgramMgmt;
 
 CommandProc CmdAddPlan;
 CommandProc CmdAddPlanLine;
 CommandProc CmdRemovePlan;
 CommandProc CmdRemovePlanLine;
 CommandProc CmdChangePlanVisibility;
+
+CommandProc CmdDesyncCheck;
 
 #define DEF_CMD(proc, flags, type) {proc, #proc, (CommandFlags)flags, type}
 
@@ -366,7 +369,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdChangeTimetable,                                0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CHANGE_TIMETABLE
 	DEF_CMD(CmdSetVehicleOnTime,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_VEHICLE_ON_TIME
 	DEF_CMD(CmdAutofillTimetable,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_AUTOFILL_TIMETABLE
-	DEF_CMD(CmdAutomateTimetable,				   0, CMDT_ROUTE_MANAGEMENT	 ), // CMD_AUTOMATE_TIMETABLE]
+	DEF_CMD(CmdAutomateTimetable,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_AUTOMATE_TIMETABLE
 	DEF_CMD(CmdSetTimetableStart,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_TIMETABLE_START
 
 	DEF_CMD(CmdOpenCloseAirport,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_OPEN_CLOSE_AIRPORT
@@ -376,12 +379,15 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdInsertSignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_INSERT_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdModifySignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_MODIFY_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdRemoveSignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_SIGNAL_INSTRUCTION
+	DEF_CMD(CmdSignalProgramMgmt,                              0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_SIGNAL_PROGRAM_MGMT
 
 	DEF_CMD(CmdAddPlan,                                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN
 	DEF_CMD(CmdAddPlanLine,                                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN_LINE
 	DEF_CMD(CmdRemovePlan,                                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN
 	DEF_CMD(CmdRemovePlanLine,                                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN_LINE
 	DEF_CMD(CmdChangePlanVisibility,                           0, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_VISIBILITY
+
+	DEF_CMD(CmdDesyncCheck,                           CMD_SERVER, CMDT_SERVER_SETTING        ), // CMD_DESYNC_CHECK
 };
 
 /*!

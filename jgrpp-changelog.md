@@ -2,6 +2,77 @@
 
 * * *
 
+### v0.10.2 (2016-01-19)
+* Improved breakdowns:
+  * Fix incorrect train speed limits after a save/load or network join (causing desync issues) after critical/mechanical breakdowns.
+  * Reduce severity of train speed limit reduction after critical/mechanical breakdowns, remove reduction limit.
+
+### v0.10.1 (2016-01-15)
+* Fix FreeType fonts having an incorrect height (regression from v0.10.0).
+* Routing restrictions:
+  * Fix copying a signal without a program creating an empty program and marking the signal as restricted, instead of not creating a program.
+  * Fix GUI issue where if a picker button was clicked when another picker button was already lowered/active, both would be raised.
+
+### v0.10.0 (2016-01-13)
+* Fix building rivers being disabled in scenario editor mode.
+* Fix minor visual issue with SSE2 palette animator.
+* Fix group info window when GUI/font is scaled to a larger size.
+* Fix cargo dest overlay not being updated after a zoom change.
+* Fix newly cloned routing restrictions not being activated.
+* Fix compilation on gcc 4.3 to 4.6.
+* Improved breakdowns: Limit low speed breakdowns to lower of 1/4 max speed or 28km/h.
+* Zoning: Add mode to show station catchment only where station window open.
+* Add vehicle lifetime profit patch, modified to show current lifetime profit, instead of the yearly-updated value.
+* Change default measurement tool hotkey to shift-R.
+* Minor performance improvement in fonts and viewport text labels.
+* Minor configure script library detection changes.
+* Add German translations by Auge, for the building rivers in game and improved breakdowns patches.
+* Bump trunk base from r27472 to r27495
+
+### v0.9.0 (2015-12-19)
+* Improved breakdowns: Fix desync which occured when issuing a "train too heavy" advice message.
+* Routing restrictions:
+  * Add a conditional to test which company owns the train.
+  * OpenGFX electric signal sprites are now considered "default", so can be recoloured blue when restricted.
+  * Add a setting to show restricted electric signals using the default sprites (recoloured blue).
+* Increase maximum value of max loan difficulty setting.
+* Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator.
+* Version detection: git and the .ottdrev-vc file now override SVN and Hg.
+* Bump trunk base from r27466 to r27472
+
+### v0.8.1 (2015-12-06)
+* Fix crash when a station is deleted with its departure boards window open.
+* Enhanced viewports: Fix new/enlarged route step markers not being redrawn.
+* Fix version detection of when git support is missing.
+* Label threads with a descriptive name on supported Unixy platforms.
+* Performance improvements:
+  * Improve dedicated server performance. Up to approximately 2.5x faster.
+  * Improve cargodest link graph calculation performance. Up to approximately 33% faster.
+* Add German translations by Auge, for the improved breakdowns patch.
+* Desync debugging: Changes to debug random logging.
+* Bump trunk base from r27455 to r27466
+
+### v0.8.0 (2015-11-24)
+* Enhanced viewports:
+  * Fix flicker and render errors of tunnels in viewport map mode.
+  * Fix displayed height of bridges in viewport map mode.
+  * Fix companies with a green colour scheme having sloping tiles and tunnels appearing as flashing yellow in viewport map mode (owner mode).
+  * Fix out of bounds memory reads for bridges/tunnels in viewport map mode.
+  * Fix a severe performance regression from v0.7.1 involving redrawing of modified vehicle route lines.
+* Routing restrictions: Fix non-default signal sprites being recoloured blue for restricted signals.
+* Programmable signals:
+  * Fix the remove program button not working at all in multiplayer, causing desyncs.
+  * Fix the copy program button only working correctly in the most trivial cases, and sometimes crashing.
+* Build: Change file names of bundles when building on MinGW.
+* Fixes to avoid potentially problematic undefined behaviour.
+* Add a setting to add a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match list owner (default on). Patch by McZapkie (modified).
+* Desync debugging:
+  * If a clients desyncs, the ejected client, the server and all remaining clients run some desync checks.
+  * Changes to desync checks and debug levels.
+  * No longer write desync messages to the console on Windows, as this can cause crashes, this is now only written to the file.
+* Add German translations by Auge, for the adjacent level crossings patch.
+* Bump trunk base from r27428 to r27455
+
 ### v0.7.1 (2015-11-01)
 * Enhanced viewports:
   * Fix flicker and render errors of bridge/tunnels in viewport map mode.

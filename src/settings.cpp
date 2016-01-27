@@ -1080,12 +1080,14 @@ static bool InvalidateVehTimetableWindow(int32 p1)
 static bool ZoomMinMaxChanged(int32 p1)
 {
 	extern void ConstrainAllViewportsZoom();
+	extern void UpdateFontHeightCache();
 	ConstrainAllViewportsZoom();
 	GfxClearSpriteCache();
 	if (_settings_client.gui.zoom_min > _gui_zoom) {
 		/* Restrict GUI zoom if it is no longer available. */
 		_gui_zoom = _settings_client.gui.zoom_min;
 		UpdateCursorSize();
+		UpdateFontHeightCache();
 		LoadStringWidthTable();
 	}
 	return true;

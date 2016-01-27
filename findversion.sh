@@ -70,21 +70,7 @@ ROOT_DIR=`pwd`
 # Determine if we are using a modified version
 # Assume the dir is not modified
 MODIFIED="0"
-if [ -d "$ROOT_DIR/.svn" ] || [ -d "$ROOT_DIR/../.svn" ]; then
-	# We are an svn checkout
-	if [ -n "`svnversion | grep 'M'`" ]; then
-		MODIFIED="2"
-	fi
-	# Find the revision like: rXXXXM-branch
-	BRANCH=`LC_ALL=C svn info | "$AWK" '/^URL:.*branches/ { split($2, a, "/"); for(i in a) if (a[i]=="branches") { print a[i+1]; break } }'`
-	TAG=`LC_ALL=C svn info | "$AWK" '/^URL:.*tags/ { split($2, a, "/"); for(i in a) if (a[i]=="tags") { print a[i+1]; break } }'`
-	REV_NR=`LC_ALL=C svn info | "$AWK" '/^Last Changed Rev:/ { print $4 }'`
-	if [ -n "$TAG" ]; then
-		REV=$TAG
-	else
-		REV="r$REV_NR"
-	fi
-elif [ -d "$ROOT_DIR/.git" ]; then
+if [ -d "$ROOT_DIR/.git" ]; then
 	# We are a git checkout
 	# Refresh the index to make sure file stat info is in sync, then look for modifications
 	git update-index --refresh >/dev/null
@@ -103,24 +89,6 @@ elif [ -d "$ROOT_DIR/.git" ]; then
 	if [ -n "$TAG" ]; then
 		BRANCH=""
 		REV="$TAG"
-	fi
-elif [ -d "$ROOT_DIR/.hg" ]; then
-	# We are a hg checkout
-	if [ -n "`HGPLAIN= hg status | grep -v '^?'`" ]; then
-		MODIFIED="2"
-	fi
-	HASH=`LC_ALL=C HGPLAIN= hg id -i | cut -c1-12`
-	REV="h`echo $HASH | cut -c1-8`"
-	BRANCH="`HGPLAIN= hg branch | sed 's@^default$@@'`"
-	TAG="`HGPLAIN= hg id -t | grep -v 'tip$'`"
-	if [ -n "$TAG" ]; then
-		BRANCH=""
-		REV="$TAG"
-	fi
-	REV_NR=`LC_ALL=C HGPLAIN= hg log -f -k "(svn r" -l 1 --template "{desc|firstline}\n" | grep "^(svn r[0-9]*)" | sed "s@.*(svn r\([0-9]*\)).*@\1@"`
-	if [ -z "$REV_NR" ]; then
-		# No rev? Maybe it is a custom hgsubversion clone
-		REV_NR=`LC_ALL=C HGPLAIN= hg parent --template="{svnrev}"`
 	fi
 elif [ -f "$ROOT_DIR/.ottdrev-vc" ]; then
 	VERSION_DATA="`cat "$ROOT_DIR/.ottdrev-vc" | sed -n -e '1 p;'`"
@@ -145,6 +113,38 @@ elif [ -f "$ROOT_DIR/.ottdrev-vc" ]; then
 			fi
 			BRANCH="${BRANCH}H`echo "$CURRENT_HASH" | cut -c 1-8`"
 		fi
+	fi
+elif [ -d "$ROOT_DIR/.svn" ] || [ -d "$ROOT_DIR/../.svn" ]; then
+	# We are an svn checkout
+	if [ -n "`svnversion | grep 'M'`" ]; then
+		MODIFIED="2"
+	fi
+	# Find the revision like: rXXXXM-branch
+	BRANCH=`LC_ALL=C svn info | "$AWK" '/^URL:.*branches/ { split($2, a, "/"); for(i in a) if (a[i]=="branches") { print a[i+1]; break } }'`
+	TAG=`LC_ALL=C svn info | "$AWK" '/^URL:.*tags/ { split($2, a, "/"); for(i in a) if (a[i]=="tags") { print a[i+1]; break } }'`
+	REV_NR=`LC_ALL=C svn info | "$AWK" '/^Last Changed Rev:/ { print $4 }'`
+	if [ -n "$TAG" ]; then
+		REV=$TAG
+	else
+		REV="r$REV_NR"
+	fi
+elif [ -d "$ROOT_DIR/.hg" ]; then
+	# We are a hg checkout
+	if [ -n "`HGPLAIN= hg status | grep -v '^?'`" ]; then
+		MODIFIED="2"
+	fi
+	HASH=`LC_ALL=C HGPLAIN= hg id -i | cut -c1-12`
+	REV="h`echo $HASH | cut -c1-8`"
+	BRANCH="`HGPLAIN= hg branch | sed 's@^default$@@'`"
+	TAG="`HGPLAIN= hg id -t | grep -v 'tip$'`"
+	if [ -n "$TAG" ]; then
+		BRANCH=""
+		REV="$TAG"
+	fi
+	REV_NR=`LC_ALL=C HGPLAIN= hg log -f -k "(svn r" -l 1 --template "{desc|firstline}\n" | grep "^(svn r[0-9]*)" | sed "s@.*(svn r\([0-9]*\)).*@\1@"`
+	if [ -z "$REV_NR" ]; then
+		# No rev? Maybe it is a custom hgsubversion clone
+		REV_NR=`LC_ALL=C HGPLAIN= hg parent --template="{svnrev}"`
 	fi
 elif [ -f "$ROOT_DIR/.ottdrev" ]; then
 	# We are an exported source bundle

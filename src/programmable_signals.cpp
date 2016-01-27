@@ -476,7 +476,7 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
 	if (!prog)
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-	if (instruction_id > prog->instructions.Length())
+	if (instruction_id >= prog->instructions.Length())
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
 
 	bool exec = (flags & DC_EXEC) != 0;
@@ -698,5 +698,132 @@ CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 	UpdateSignalsInBuffer();
 	InvalidateWindowData(WC_SIGNAL_PROGRAM, (tile << 3) | track);
+	return CommandCost();
+}
+
+static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_before, SignalInstruction *si)
+{
+	while(true) {
+		if(si == NULL) break;
+		switch(si->Opcode()) {
+			case PSO_SET_SIGNAL: {
+				SignalSet *set = new SignalSet(prog, ((SignalSet*)si)->to_state);
+				set->Insert(insert_before);
+
+				si = ((SignalSet*)si)->next;
+				break;
+			}
+
+			case PSO_IF: {
+				SignalIf *if_ins = new SignalIf(prog);
+				if_ins->Insert(insert_before);
+
+				CloneInstructions(prog, if_ins->if_true, ((SignalIf*)si)->if_true);
+				CloneInstructions(prog, if_ins->if_false, ((SignalIf*)si)->if_false);
+
+				SignalCondition *src_cond = ((SignalIf *) si)->condition;
+				SignalConditionCode code = src_cond->ConditionCode();
+				switch (code) {
+					case PSC_ALWAYS:
+					case PSC_NEVER:
+						if_ins->SetCondition(new SignalSimpleCondition(code));
+						break;
+
+					case PSC_NUM_GREEN:
+					case PSC_NUM_RED: {
+						SignalVariableCondition *cond = new SignalVariableCondition(code);
+						cond->comparator = ((SignalVariableCondition *) src_cond)->comparator;
+						cond->value = ((SignalVariableCondition *) src_cond)->value;
+						if_ins->SetCondition(cond);
+						break;
+					}
+
+					case PSC_SIGNAL_STATE: {
+						SignalStateCondition *src = ((SignalStateCondition *) src_cond);
+						if_ins->SetCondition(new SignalStateCondition(SignalReference(prog->tile, prog->track), src->sig_tile, src->sig_track));
+						break;
+					}
+
+					default: NOT_REACHED();
+				}
+
+				si = ((SignalIf*)si)->after;
+				break;
+			}
+
+			case PSO_LAST:
+			case PSO_IF_ELSE:
+			case PSO_IF_ENDIF:
+				return;
+
+			default:
+				NOT_REACHED();
+		}
+	}
+}
+
+/** Insert a signal instruction into the signal program.
+ *
+ * @param tile The Tile on which to perform the operation
+ * @param p1 Flags and information
+ *   - Bits 0-2    Which track the signal sits on
+ *   - Bits 3-6    Management code
+ *   For clone action:
+ *   - Bits 7-9    Which track the clone source signal sits on
+ * @param p2
+ *   For clone action:
+ *   - Tile of clone source signal
+ * @param text unused
+ */
+CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	bool exec = (flags & DC_EXEC) != 0;
+
+	Track track = Extract<Track, 0, 3>(p1);
+	SignalProgramMgmtCode mgmt = static_cast<SignalProgramMgmtCode>(GB(p1, 3, 4));
+
+	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
+		return CMD_ERROR;
+	}
+
+	if (!IsTileOwner(tile, _current_company)) return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+
+	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
+	if (!prog) return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+
+	switch (mgmt) {
+		case SPMC_REMOVE:
+			if (exec) {
+				prog->first_instruction->Remove();
+			}
+			break;
+
+		case SPMC_CLONE: {
+			TileIndex src_tile = p2;
+			Track src_track = Extract<Track, 7, 3>(p1);
+			if (!IsValidTrack(src_track) || !IsPlainRailTile(src_tile) || !HasTrack(src_tile, src_track)) {
+				return CMD_ERROR;
+			}
+
+			if (!IsTileOwner(src_tile, _current_company)) return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+
+			SignalProgram *src_prog = GetExistingSignalProgram(SignalReference(src_tile, src_track));
+			if (!src_prog) return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+
+			if (exec) {
+				prog->first_instruction->Remove();
+				CloneInstructions(prog, prog->last_instruction, ((SignalSpecial*) src_prog->first_instruction)->next);
+			}
+			break;
+		}
+
+		default:
+			return CMD_ERROR;
+	}
+	if (exec) {
+		AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
+		UpdateSignalsInBuffer();
+		InvalidateWindowData(WC_SIGNAL_PROGRAM, (tile << 3) | track);
+	}
 	return CommandCost();
 }

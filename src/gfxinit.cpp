@@ -46,6 +46,10 @@ static const SpriteID * const _landscape_spriteindexes[] = {
 	_landscape_spriteindexes_toyland,
 };
 
+/** file index of first user-added GRF file */
+int _first_user_grf_file_index;
+int _opengfx_grf_file_index;
+
 /**
  * Load an old fashioned GRF file.
  * @param filename   The name of the file to open.
@@ -182,6 +186,11 @@ static void LoadSpriteTables()
 	/* Tracerestrict sprites. */
 	LoadGrfFile("tracerestrict.grf", SPR_TRACERESTRICT_BASE, i++);
 
+	/* Fill duplicate original signal graphics sprite block */
+	for (uint i = 0; i < DUP_ORIGINAL_SIGNALS_SPRITE_COUNT; i++) {
+		DupSprite(SPR_ORIGINAL_SIGNALS_BASE + i, SPR_DUP_ORIGINAL_SIGNALS_BASE + i);
+	}
+
 	/*
 	 * The second basic file always starts at the given location and does
 	 * contain a different amount of sprites depending on the "type"; DOS
@@ -238,6 +247,18 @@ static void LoadSpriteTables()
 
 	LoadNewGRF(SPR_NEWGRFS_BASE, i);
 
+	_first_user_grf_file_index = i + 1;
+	_opengfx_grf_file_index = -1;
+	uint index = i;
+	for (GRFConfig *c = master; c != NULL; c = c->next, index++) {
+		if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND || HasBit(c->flags, GCF_INIT_ONLY)) continue;
+		if (c->ident.grfid == BSWAP32(0xFF4F4701)) {
+			/* Detect OpenGFX GRF ID */
+			_opengfx_grf_file_index = index;
+			break;
+		}
+	}
+
 	/* Free and remove the top element. */
 	delete master;
 	_grfconfig = top;
@@ -283,6 +304,9 @@ static bool SwitchNewGRFBlitter()
 #endif
 		{ "8bpp-optimized",  2,  8,  8,  8,  8 },
 		{ "32bpp-optimized", 0,  8, 32,  8, 32 },
+#ifdef WITH_SSE
+		{ "32bpp-sse2-anim", 1,  8, 32,  8, 32 },
+#endif
 		{ "32bpp-anim",      1,  8, 32,  8, 32 },
 	};
 

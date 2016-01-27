@@ -24,6 +24,10 @@
 SOCKET _debug_socket = INVALID_SOCKET;
 #endif /* ENABLE_NETWORK */
 
+#if defined(RANDOM_DEBUG) && defined(UNIX) && defined(__GLIBC__)
+#include <unistd.h>
+#endif
+
 #include "safeguards.h"
 
 int _debug_driver_level;
@@ -130,10 +134,32 @@ static void debug_print(const char *dbg, const char *buf)
 		}
 #ifdef RANDOM_DEBUG
 	} else if (strcmp(dbg, "random") == 0) {
+#if defined(UNIX) && defined(__GLIBC__)
+		static bool have_inited = false;
+		static FILE *f = NULL;
+
+		if (!have_inited) {
+			have_inited = true;
+			unsigned int num = 0;
+			int pid = getpid();
+			const char *fn = NULL;
+			for(;;) {
+				free(fn);
+				fn = str_fmt("random-out-%d-%u.log", pid, num);
+				f = FioFOpenFile(fn, "wx", AUTOSAVE_DIR);
+				if (f == NULL && errno == EEXIST) {
+					num++;
+					continue;
+				}
+				break;
+			}
+			free(fn);
+		}
+#else
 		static FILE *f = FioFOpenFile("random-out.log", "wb", AUTOSAVE_DIR);
+#endif
 		if (f != NULL) {
 			fprintf(f, "%s\n", buf);
-			fflush(f);
 			return;
 		}
 #endif
@@ -141,13 +167,18 @@ static void debug_print(const char *dbg, const char *buf)
 
 	char buffer[512];
 	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
+
+	/* do not write desync messages to the console on Windows platforms, as they do
+	 * not seem able to handle text direction change characters in a console without
+	 * crashing, and NetworkTextMessage includes these */
 #if defined(WINCE)
-	NKDbgPrintfW(OTTD2FS(buffer));
+	if (strcmp(dbg, "desync") != 0) NKDbgPrintfW(OTTD2FS(buffer));
 #elif defined(WIN32) || defined(WIN64)
-	_fputts(OTTD2FS(buffer, true), stderr);
+	if (strcmp(dbg, "desync") != 0) _fputts(OTTD2FS(buffer, true), stderr);
 #else
 	fputs(buffer, stderr);
 #endif
+
 #ifdef ENABLE_NETWORK
 	NetworkAdminConsole(dbg, buf);
 #endif /* ENABLE_NETWORK */

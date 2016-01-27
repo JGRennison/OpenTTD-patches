@@ -1052,7 +1052,11 @@ check_params() {
 		fi
 	fi
 
-	if [ -d "$ROOT_DIR/.svn" ] && [ -n "`svn help 2>/dev/null`" ]; then
+	if [ -d "$ROOT_DIR/.git" ] && [ -n "`git help 2>/dev/null`" ]; then
+		log 1 "checking revision... git detection"
+	elif [ -f "$ROOT_DIR/.ottdrev-vc" ]; then
+		log 1 "checking revision... source release version"
+	elif [ -d "$ROOT_DIR/.svn" ] && [ -n "`svn help 2>/dev/null`" ]; then
 		log 1 "checking revision... svn detection"
 	elif [ -d "$ROOT_DIR/../.svn" ] && [ -n "`svn help 2>/dev/null`" ] && [ -n "`LC_ALL=C svn info $ROOT_DIR/.. | grep '^URL:.*tags$'`" ]; then
 		# subversion changed its behaviour; now not all folders have a .svn folder,
@@ -1060,8 +1064,6 @@ check_params() {
 		# of the tags folder, the folder of the tag does not have a .svn folder
 		# anymore and this fails to detect the subversion repository checkout.
 		log 1 "checking revision... svn detection (tag)"
-	elif [ -d "$ROOT_DIR/.git" ] && [ -n "`git help 2>/dev/null`" ]; then
-		log 1 "checking revision... git detection"
 	elif [ -d "$ROOT_DIR/.hg" ] && [ -n "`HGPLAIN= hg help 2>/dev/null`" ]; then
 		log 1 "checking revision... hg detection"
 	elif [ -f "$ROOT_DIR/.ottdrev" ]; then
@@ -1392,10 +1394,12 @@ make_compiler_cflags() {
 			flags="$flags -Wnon-virtual-dtor"
 		fi
 
-		if [ $cc_version -ge 43 ]; then
+		if [ $cc_version -ge 47 ]; then
+			cxxflags="$cxxflags -std=gnu++11"
+		elif [ $cc_version -ge 43 ]; then
 			# Use gnu++0x mode so static_assert() is available.
 			# Don't use c++0x, it breaks mingw (with gcc 4.4.0).
-			cxxflags="$cxxflags -std=gnu++0x"
+			cxxflags="$cxxflags -std=gnu++0x -DDISABLE_OVERRIDE"
 		fi
 
 		if [ $cc_version -eq 45 ]; then
@@ -1411,6 +1415,11 @@ make_compiler_cflags() {
 			cxxflags="$cxxflags -Wno-narrowing"
 			# Disable bogus 'attempt to free a non-heap object' warning
 			flags="$flags -Wno-free-nonheap-object"
+		fi
+
+		if [ $cc_version -ge 49 ]; then
+			# Enable use of C++11 custom allocators
+			CFLAGS="$CFLAGS -DCUSTOM_ALLOCATOR"
 		fi
 
 		if [ "$enable_lto" != "0" ]; then
@@ -1443,8 +1452,8 @@ make_compiler_cflags() {
 }
 
 test_compile_libbfd() {
-	log 2 "executing $cc_host $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - $1"
-	"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.bfd -x c++ - $1 2> /dev/null << EOL
+	log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.bfd -x c++ - $1"
+	"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.bfd -x c++ - $1 2> /dev/null << EOL
 		#define PACKAGE 1
 		#define PACKAGE_VERSION 1
 		#include <bfd.h>
@@ -1495,6 +1504,12 @@ make_cflags_and_ldflags() {
 
 	CFLAGS="$CFLAGS -D$os"
 	CFLAGS_BUILD="$CFLAGS_BUILD -D$os"
+
+	if [ "$enable_static" != "0" ]; then
+		STATIC_FLAGS="--static"
+	else
+		STATIC_FLAGS=""
+	fi
 
 	if [ "$enable_debug" = "0" ]; then
 		# No debug, add default stuff
@@ -1595,8 +1610,8 @@ make_cflags_and_ldflags() {
 		LIBS="$LIBS -lpthread"
 	fi
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS -o tmp.config.libdl -x c++ - -ldl"
-		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.libdl -x c++ - -ldl 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.libdl -x c++ - -ldl"
+		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.libdl -x c++ - -ldl 2> /dev/null << EOL
 			#include <dlfcn.h>
 			int main() {
 				Dl_info info;
@@ -1677,8 +1692,8 @@ EOL
 	fi
 
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS -o tmp.config.demangle -x c++ - -lstdc++"
-		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.demangle -x c++ - -lstdc++"
+		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL
 			#include <cxxabi.h>
 			int main() {
 				int status = -1;
@@ -2752,10 +2767,13 @@ detect_library() {
 			fi
 		fi
 		if [ -z "$res" ] && [ "$os" = "HAIKU" ]; then
-			eval "$2=`ls -1 /boot/common/include/$4*.h 2>/dev/null | egrep \"\/$5\$\"`"
+			if [ -z "$includeDir" ]; then
+				includeDir=`finddir B_SYSTEM_HEADERS_DIRECTORY`
+			fi
+			eval "$2=`ls -1 $includeDir/$4*.h 2>/dev/null | egrep \"\/$5\$\"`"
 			eval "res=\$$2"
 			if [ -z "$res" ]; then
-				log 2 "  trying /boot/common/include/$4$5... no"
+				log 2 "  trying $includeDir/$4$5... no"
 			fi
 		fi
 
@@ -3362,6 +3380,7 @@ make_sed() {
 		s@!!OBJS_RC!!@$OBJS_RC@g;
 		s@!!SRCS!!@$SRCS@g;
 		s@!!OS!!@$os@g;
+		s@!!CPU_TYPE!!@$cpu_type@g;
 		s@!!CONFIGURE_FILES!!@$CONFIGURE_FILES@g;
 		s@!!AWK!!@$awk@g;
 		s@!!DISTCC!!@$distcc@g;

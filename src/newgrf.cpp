@@ -5671,9 +5671,17 @@ static void GraphicsNew(ByteReader *buf)
 	/* Load <num> sprites starting from <replace>, then skip <skip_num> sprites. */
 	grfmsg(2, "GraphicsNew: Replacing sprites %d to %d of %s (type 0x%02X) at SpriteID 0x%04X", offset, offset + num - 1, action5_type->name, type, replace);
 
-	for (; num > 0; num--) {
+	for (uint16 n = num; n > 0; n--) {
 		_cur.nfo_line++;
 		LoadNextSprite(replace == 0 ? _cur.spriteid++ : replace++, _cur.file_index, _cur.nfo_line, _cur.grf_container_ver);
+	}
+
+	if (type == 0x04 && (_cur.grffile->is_ottdfile || _cur.grfconfig->ident.grfid == BSWAP32(0xFF4F4701))) {
+		/* Signal graphics action 5: Fill duplicate signal sprite block if this is a baseset GRF or OpenGFX */
+		const SpriteID end = offset + num;
+		for (SpriteID i = offset; i < end; i++) {
+			DupSprite(SPR_SIGNALS_BASE + i, SPR_DUP_SIGNALS_BASE + i);
+		}
 	}
 
 	if (type == 0x0D) _loaded_newgrf_features.shore = SHORE_REPLACE_ACTION_5;
@@ -6421,8 +6429,8 @@ static void SafeParamSet(ByteReader *buf)
 {
 	uint8 target = buf->ReadByte();
 
-	/* Only writing GRF parameters is considered safe */
-	if (target < 0x80) return;
+	/* Writing GRF parameters and some bits of 'misc GRF features' are safe. */
+	if (target < 0x80 || target == 0x9E) return;
 
 	/* GRM could be unsafe, but as here it can only happen after other GRFs
 	 * are loaded, it should be okay. If the GRF tried to use the slots it
@@ -6838,7 +6846,15 @@ static void ParamSet(ByteReader *buf)
 			/* Remove the local flags from the global flags */
 			ClrBit(res, GMB_TRAIN_WIDTH_32_PIXELS);
 
-			_misc_grf_features = res;
+			/* Only copy safe bits for static grfs */
+			if (HasBit(_cur.grfconfig->flags, GCF_STATIC)) {
+				uint32 safe_bits = 0;
+				SetBit(safe_bits, GMB_SECOND_ROCKY_TILE_SET);
+
+				_misc_grf_features = (_misc_grf_features & ~safe_bits) | (res & safe_bits);
+			} else {
+				_misc_grf_features = res;
+			}
 			break;
 
 		case 0x9F: // locale-dependent settings
@@ -8322,7 +8338,7 @@ static void CalculateRefitMasks()
 		}
 
 		/* Clear invalid cargoslots (from default vehicles or pre-NewCargo GRFs) */
-		if (!HasBit(_cargo_mask, ei->cargo_type)) ei->cargo_type = CT_INVALID;
+		if (ei->cargo_type != CT_INVALID && !HasBit(_cargo_mask, ei->cargo_type)) ei->cargo_type = CT_INVALID;
 
 		/* Ensure that the vehicle is either not refittable, or that the default cargo is one of the refittable cargoes.
 		 * Note: Vehicles refittable to no cargo are handle differently to vehicle refittable to a single cargo. The latter might have subtypes. */

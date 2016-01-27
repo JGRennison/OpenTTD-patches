@@ -35,6 +35,7 @@
 #include "object_map.h"
 #include "tracerestrict.h"
 #include "programmable_signals.h"
+#include "spritecache.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -1986,6 +1987,8 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 	SignalType type       = GetSignalType(tile, track);
 	SignalVariant variant = GetSignalVariant(tile, track);
 
+	bool show_restricted = (variant == SIG_ELECTRIC) && IsRestrictedSignal(tile) && (GetExistingTraceRestrictProgram(tile, track) != NULL);
+
 	SpriteID sprite = GetCustomSignalSprite(rti, tile, type, variant, condition);
 	bool is_custom_sprite = (sprite != 0);
 	if (sprite != 0) {
@@ -2002,9 +2005,21 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 	} else if (type == SIGTYPE_PROG && variant == SIG_ELECTRIC) {
 		sprite = SPR_PROGSIGNAL_BASE + 16 + image * 2 + condition;
 		is_custom_sprite = false;
+	} else {
+		uint origin_slot = GetOriginFileSlot(sprite);
+		extern uint _first_user_grf_file_index;
+		extern uint _opengfx_grf_file_index;
+		if (!is_custom_sprite) is_custom_sprite = origin_slot != _opengfx_grf_file_index && (origin_slot >= _first_user_grf_file_index);
 	}
 
-	if (!is_custom_sprite && variant == SIG_ELECTRIC && IsRestrictedSignal(tile) && GetExistingTraceRestrictProgram(tile, track) != NULL) {
+	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default) {
+		/* Use duplicate sprite block, instead of GRF-specified signals */
+		sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16;
+		sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
+		is_custom_sprite = false;
+	}
+
+	if (!is_custom_sprite && show_restricted) {
 		if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
 			static const SubSprite lower_part = { -50, -10, 50, 50 };
 			static const SubSprite upper_part = { -50, -50, 50, -11 };

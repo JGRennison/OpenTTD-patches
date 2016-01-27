@@ -20,6 +20,7 @@
 #include "string_func.h"
 #include "viewport_func.h"
 #include "textbuf_gui.h"
+#include "company_base.h"
 #include "company_func.h"
 #include "tilehighlight_func.h"
 #include "widgets/dropdown_func.h"
@@ -34,6 +35,7 @@
 #include "error.h"
 #include "cargotype.h"
 #include "table/sprites.h"
+#include "toolbar_gui.h"
 
 extern uint ConvertSpeedToDisplaySpeed(uint speed);
 extern uint ConvertDisplaySpeedToSpeed(uint speed);
@@ -120,10 +122,11 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_PF_DENY,
 	STR_TRACE_RESTRICT_PF_PENALTY,
 	STR_TRACE_RESTRICT_RESERVE_THROUGH,
+	STR_TRACE_RESTRICT_LONG_RESERVE,
 	INVALID_STRING_ID
 };
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
-static const uint32 _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for elif
+static const uint32 _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for orif
 static const uint32 _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
@@ -133,6 +136,7 @@ static const uint _program_insert_val[] = {
 	TRIT_PF_DENY,                                      // deny
 	TRIT_PF_PENALTY,                                   // penalty
 	TRIT_RESERVE_THROUGH,                              // reserve through
+	TRIT_LONG_RESERVE,                                 // long reserve
 };
 
 /** insert drop down list strings and values */
@@ -168,6 +172,21 @@ static const uint _reserve_through_value_val[] = {
 /** value drop down list for deny types strings and values */
 static const TraceRestrictDropDownListSet _reserve_through_value = {
 	_reserve_through_value_str, _reserve_through_value_val,
+};
+
+static const StringID _long_reserve_value_str[] = {
+	STR_TRACE_RESTRICT_LONG_RESERVE,
+	STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL,
+	INVALID_STRING_ID
+};
+static const uint _long_reserve_value_val[] = {
+	0,
+	1,
+};
+
+/** value drop down list for long reserve types strings and values */
+static const TraceRestrictDropDownListSet _long_reserve_value = {
+	_long_reserve_value_str, _long_reserve_value_val,
 };
 
 static const StringID _direction_value_str[] = {
@@ -229,12 +248,14 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		STR_TRACE_RESTRICT_PF_DENY,
 		STR_TRACE_RESTRICT_PF_PENALTY,
 		STR_TRACE_RESTRICT_RESERVE_THROUGH,
+		STR_TRACE_RESTRICT_LONG_RESERVE,
 		INVALID_STRING_ID,
 	};
 	static const uint val_action[] = {
 		TRIT_PF_DENY,
 		TRIT_PF_PENALTY,
 		TRIT_RESERVE_THROUGH,
+		TRIT_LONG_RESERVE,
 	};
 	static const TraceRestrictDropDownListSet set_action = {
 		str_action, val_action,
@@ -249,6 +270,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		STR_TRACE_RESTRICT_VARIABLE_CARGO,
 		STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION,
 		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
+		STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -261,6 +283,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		TRIT_COND_CARGO,
 		TRIT_COND_ENTRY_DIRECTION,
 		TRIT_COND_PBS_ENTRY_SIGNAL,
+		TRIT_COND_TRAIN_OWNER,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -614,6 +637,22 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					break;
 				}
 
+				case TRVT_OWNER: {
+					assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
+					CompanyID cid = static_cast<CompanyID>(GetTraceRestrictValue(item));
+					if (cid == INVALID_COMPANY) {
+						DrawInstructionStringConditionalInvalidValue(item, properties, instruction_string, selected);
+					} else {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_OWNER;
+						SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+						SetDParam(1, GetTypeString(GetTraceRestrictType(item)));
+						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+						SetDParam(3, cid);
+						SetDParam(4, cid);
+					}
+					break;
+				}
+
 				default:
 					NOT_REACHED();
 					break;
@@ -665,6 +704,10 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
 				break;
 
+			case TRIT_LONG_RESERVE:
+				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL : STR_TRACE_RESTRICT_LONG_RESERVE;
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -681,6 +724,7 @@ class TraceRestrictWindow: public Window {
 	int selected_instruction;                                                   ///< selected instruction index, this is offset by one due to the display of the "start" item
 	Scrollbar *vscroll;                                                         ///< scrollbar widget
 	std::map<int, const TraceRestrictDropDownListSet *> drop_down_list_mapping; ///< mapping of widget IDs to drop down list sets
+	bool value_drop_down_is_company;                                            ///< TR_WIDGET_VALUE_DROPDOWN is a company list
 	TraceRestrictItem expecting_inserted_item;                                  ///< set to instruction when performing an instruction insertion, used to handle selection update on insertion
 	int current_placement_widget;                                               ///< which widget has a SetObjectToPlaceWnd, if any
 
@@ -870,6 +914,14 @@ public:
 						this->ShowDropDownListWithValue(&_reserve_through_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
+					case TRVT_LONG_RESERVE:
+						this->ShowDropDownListWithValue(&_long_reserve_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
+					case TRVT_OWNER:
+						this->ShowCompanyDropDownListWithValue(static_cast<CompanyID>(GetTraceRestrictValue(item)), false, TR_WIDGET_VALUE_DROPDOWN);
+						break;
+
 					default:
 						break;
 				}
@@ -938,6 +990,13 @@ public:
 	{
 		TraceRestrictItem item = GetSelected();
 		if (item == 0 || index < 0 || this->selected_instruction < 1) {
+			return;
+		}
+
+		if (widget == TR_WIDGET_VALUE_DROPDOWN && this->value_drop_down_is_company) {
+			// this is a special company drop-down
+			SetTraceRestrictValue(item, index);
+			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 			return;
 		}
 
@@ -1418,7 +1477,7 @@ private:
 		this->RaiseWidget(TR_WIDGET_VALUE_DEST);
 		this->RaiseWidget(TR_WIDGET_VALUE_SIGNAL);
 
-		NWidgetStacked *left_2_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_2);
+		NWidgetStacked *left_2_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_2);
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT);
 		NWidgetStacked *middle_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_MIDDLE);
 		NWidgetStacked *right_sel  = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_RIGHT);
@@ -1615,6 +1674,19 @@ private:
 									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL : STR_TRACE_RESTRICT_RESERVE_THROUGH;
 							break;
 
+						case TRVT_LONG_RESERVE:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL : STR_TRACE_RESTRICT_LONG_RESERVE;
+							break;
+
+						case TRVT_OWNER:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_COMPANY;
+							break;
+
 						default:
 							break;
 					}
@@ -1637,7 +1709,31 @@ private:
 	{
 		drop_down_list_mapping[button] = list_set;
 		int selected = GetDropDownListIndexByValue(list_set, value, missing_ok);
+		if (button == TR_WIDGET_VALUE_DROPDOWN) this->value_drop_down_is_company = false;
 		ShowDropDownMenu(this, list_set->string_array, selected, button, disabled_mask, hidden_mask, width);
+	}
+
+	/**
+	 * Show a drop down list using @p list_set, setting the pre-selected item to the one corresponding to @p value
+	 * This asserts if @p value is not in @p list_set, and @p missing_ok is false
+	 */
+	void ShowCompanyDropDownListWithValue(CompanyID value, bool missing_ok, int button)
+	{
+		DropDownList *list = new DropDownList();
+
+		Company *c;
+		FOR_ALL_COMPANIES(c) {
+			*(list->Append()) = MakeCompanyDropDownListItem(c->index);
+			if (c->index == value) missing_ok = true;
+		}
+		*(list->Append()) = new DropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY, false);
+		if (INVALID_COMPANY == value) missing_ok = true;
+
+		assert(missing_ok == true);
+		assert(button == TR_WIDGET_VALUE_DROPDOWN);
+		this->value_drop_down_is_company = true;
+
+		ShowDropDownList(this, list, value, button, 0, true, false);
 	}
 
 	/**
@@ -1645,6 +1741,9 @@ private:
 	 */
 	void SetObjectToPlaceAction(int widget, CursorID cursor)
 	{
+		if (this->current_placement_widget != -1 && widget != this->current_placement_widget) {
+			ResetObjectToPlace();
+		}
 		this->ToggleWidgetLoweredState(widget);
 		this->SetWidgetDirty(widget);
 		if (this->IsWidgetLowered(widget)) {

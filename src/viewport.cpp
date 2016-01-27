@@ -175,7 +175,8 @@ struct ViewportDrawer {
 	ParentSpriteToDrawVector parent_sprites_to_draw;
 	ParentSpriteToSortVector parent_sprites_to_sort; ///< Parent sprite pointer array used for sorting
 	ChildScreenSpriteToDrawVector child_screen_sprites_to_draw;
-	TunnelBridgeToMapVector tunnel_bridge_to_map;
+	TunnelBridgeToMapVector tunnel_to_map;
+	TunnelBridgeToMapVector bridge_to_map;
 
 	int *last_child;
 
@@ -188,11 +189,13 @@ struct ViewportDrawer {
 };
 
 static void MarkViewportDirty(const ViewPort * const vp, int left, int top, int right, int bottom);
+static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 
 static DrawPixelInfo _dpi_for_text;
 static ViewportDrawer _vd;
 
 RouteStepsMap _vp_route_steps;
+RouteStepsMap _vp_route_steps_last_mark_dirty;
 uint _vp_route_step_width = 0;
 uint _vp_route_step_height_top = 0;
 uint _vp_route_step_height_middle = 0;
@@ -1301,12 +1304,31 @@ void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const Vie
 	}
 }
 
+struct ViewportAddStringApproxBoundsChecker {
+	int top;
+	int bottom;
+
+	ViewportAddStringApproxBoundsChecker(const DrawPixelInfo *dpi)
+	{
+		this->top    = dpi->top - ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM, dpi->zoom);
+		this->bottom = dpi->top + dpi->height;
+	}
+
+	bool IsSignMaybeOnScreen(const ViewportSign *sign) const
+	{
+		return !(this->bottom < sign->top || this->top > sign->top);
+	}
+};
+
 static void ViewportAddTownNames(DrawPixelInfo *dpi)
 {
 	if (!HasBit(_display_opt, DO_SHOW_TOWN_NAMES) || _game_mode == GM_MENU) return;
 
+	ViewportAddStringApproxBoundsChecker checker(dpi);
+
 	const Town *t;
 	FOR_ALL_TOWNS(t) {
+		if (!checker.IsSignMaybeOnScreen(&t->cache.sign)) continue;
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
 				t->Label(), t->SmallLabel(), STR_VIEWPORT_TOWN_TINY_BLACK,
 				t->index, t->cache.population);
@@ -1318,6 +1340,8 @@ static void ViewportAddStationNames(DrawPixelInfo *dpi)
 {
 	if (!(HasBit(_display_opt, DO_SHOW_STATION_NAMES) || HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)) || _game_mode == GM_MENU) return;
 
+	ViewportAddStringApproxBoundsChecker checker(dpi);
+
 	const BaseStation *st;
 	FOR_ALL_BASE_STATIONS(st) {
 		/* Check whether the base station is a station or a waypoint */
@@ -1328,6 +1352,8 @@ static void ViewportAddStationNames(DrawPixelInfo *dpi)
 
 		/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != st->owner && st->owner != OWNER_NONE) continue;
+
+		if (!checker.IsSignMaybeOnScreen(&st->sign)) continue;
 
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
 				is_station ? STR_VIEWPORT_STATION : STR_VIEWPORT_WAYPOINT,
@@ -1342,12 +1368,16 @@ static void ViewportAddSigns(DrawPixelInfo *dpi)
 	/* Signs are turned off or are invisible */
 	if (!HasBit(_display_opt, DO_SHOW_SIGNS) || IsInvisibilitySet(TO_SIGNS)) return;
 
+	ViewportAddStringApproxBoundsChecker checker(dpi);
+
 	const Sign *si;
 	FOR_ALL_SIGNS(si) {
 		/* Don't draw if sign is owned by another company and competitor signs should be hidden.
 		 * Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
 		 * companies can leave OWNER_NONE signs after them. */
 		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != si->owner && si->owner != OWNER_DEITY) continue;
+
+		if (!checker.IsSignMaybeOnScreen(&si->sign)) continue;
 
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &si->sign,
 				STR_WHITE_SIGN,
@@ -1535,10 +1565,10 @@ static void ViewportMapStoreBridgeTunnel(const ViewPort * const vp, const TileIn
 		if (!_settings_client.gui.show_bridges_on_map) return;
 	}
 	const Owner o = GetTileOwner(tile);
-	if (!_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
+	if (o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
 
 	/* Check if already stored */
-	TunnelBridgeToMapVector * const tbtmv = &_vd.tunnel_bridge_to_map;
+	TunnelBridgeToMapVector * const tbtmv = tile_is_tunnel ? &_vd.tunnel_to_map : &_vd.bridge_to_map;
 	TunnelBridgeToMap *tbtm = tbtmv->Begin();
 	const TunnelBridgeToMap * const tbtm_end = tbtmv->End();
 	while (tbtm != tbtm_end) {
@@ -1558,12 +1588,22 @@ static void ViewportMapStoreBridgeTunnel(const ViewPort * const vp, const TileIn
 		tbtm->from_tile = tile;
 		tbtm->to_tile = other_end;
 	}
+}
 
-	if (vp->map_type == VPMT_OWNER && _settings_client.gui.use_owner_colour_for_tunnelbridge && o < MAX_COMPANIES) {
-		const uint8 colour = _legend_land_owners[_company_to_list_pos[o]].colour;
-		tbtm->colour = tile_is_tunnel ? _darken_colour[colour] : _lighten_colour[colour];
-	} else
-		tbtm->colour = tile_is_tunnel ? PC_BLACK : PC_VERY_LIGHT_YELLOW;
+void ViewportMapClearTunnelCache()
+{
+	_vd.tunnel_to_map.Clear();
+}
+
+void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile)
+{
+	TunnelBridgeToMapVector * const tbtmv = &_vd.tunnel_to_map;
+	for (TunnelBridgeToMap *tbtm = tbtmv->Begin(); tbtm != tbtmv->End(); tbtm++) {
+		if (tbtm->from_tile == tile || tbtm->to_tile == tile) {
+			tbtmv->Erase(tbtm);
+			tbtm--;
+		}
+	}
 }
 
 /**
@@ -1743,6 +1783,7 @@ static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 			if (_vp_route_paths_last_mark_dirty != drawn_paths) {
 				// make sure we're not drawing a partial path
 				MarkRoutePathsDirty(drawn_paths);
+				_vp_route_paths_last_mark_dirty = drawn_paths;
 				DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 3");
 			}
 
@@ -1828,6 +1869,12 @@ static void ViewportDrawVehicleRouteSteps(const ViewPort * const vp)
 {
 	const Vehicle * const veh = GetVehicleFromWindow(_focused_window);
 	if (veh && ViewportPrepareVehicleRouteSteps(veh)) {
+		if (_vp_route_steps != _vp_route_steps_last_mark_dirty) {
+			for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
+				MarkRouteStepDirty(cit->first, (uint) cit->second.size());
+			}
+			_vp_route_steps_last_mark_dirty = _vp_route_steps;
+		}
 		for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
 			DrawRouteStep(vp, cit->first, cit->second);
 		}
@@ -2101,8 +2148,8 @@ static inline void ViewportMapStoreBridgeAboveTile(const ViewPort * const vp, co
 	if (!_settings_client.gui.show_bridges_on_map) return;
 
 	/* Check existing stored bridges */
-	TunnelBridgeToMap *tbtm = _vd.tunnel_bridge_to_map.Begin();
-	TunnelBridgeToMap *tbtm_end = _vd.tunnel_bridge_to_map.End();
+	TunnelBridgeToMap *tbtm = _vd.bridge_to_map.Begin();
+	TunnelBridgeToMap *tbtm_end = _vd.bridge_to_map.End();
 	for (; tbtm != tbtm_end; ++tbtm) {
 		if (!IsBridge(tbtm->from_tile)) continue;
 
@@ -2280,6 +2327,35 @@ static void ViewportMapDrawScrollingViewportBox(const ViewPort * const vp)
 
 uint32 *_vp_map_line; ///< Buffer for drawing the map of a viewport.
 
+static void ViewportMapDrawBridgeTunnel(const ViewPort * const vp, const TunnelBridgeToMap * const tbtm, const int z,
+		const bool is_tunnel, const int w, const int h, Blitter * const blitter)
+{
+	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
+	extern uint _company_to_list_pos[MAX_COMPANIES];
+
+	TileIndex tile = tbtm->from_tile;
+	const Owner o = GetTileOwner(tile);
+	if (o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
+
+	uint8 colour;
+	if (vp->map_type == VPMT_OWNER && _settings_client.gui.use_owner_colour_for_tunnelbridge && o < MAX_COMPANIES) {
+		colour = _legend_land_owners[_company_to_list_pos[o]].colour;
+		colour = is_tunnel ? _darken_colour[colour] : _lighten_colour[colour];
+	} else {
+		colour = is_tunnel ? PC_BLACK : PC_VERY_LIGHT_YELLOW;
+	}
+
+	TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
+	for (; tile != tbtm->to_tile; tile += delta) { // For each tile
+		const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
+		const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
+		if (IsInsideMM(x, 0, w)) {
+			const int y = UnScaleByZoomLower(pt.y - _vd.dpi.top, _vd.dpi.zoom);
+			if (IsInsideMM(y, 0, h)) blitter->SetPixel(_vd.dpi.dst_ptr, x, y, colour);
+		}
+	}
+}
+
 /** Draw the map on a viewport. */
 template <bool is_32bpp, bool show_slope>
 void ViewportMapDraw(const ViewPort * const vp)
@@ -2336,21 +2412,31 @@ void ViewportMapDraw(const ViewPort * const vp)
 		b += incr_b;
 	} while (++j < h);
 
-	/* Render bridges and tunnels */
-	if (_vd.tunnel_bridge_to_map.Length() != 0) {
-		const TunnelBridgeToMap * const tbtm_end = _vd.tunnel_bridge_to_map.End();
-		for (const TunnelBridgeToMap *tbtm = _vd.tunnel_bridge_to_map.Begin(); tbtm != tbtm_end; tbtm++) { // For each bridge or tunnel
-			TileIndex tile = tbtm->from_tile;
-			const int z = (IsBridge(tile) ? GetBridgeHeight(tile) : GetTileZ(tile)) * TILE_HEIGHT;
-			TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
-			for (; tile != tbtm->to_tile; tile += delta) { // For each tile
-				const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
-				const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
-				if (IsInsideMM(x, 0, w)) {
-					const int y = UnScaleByZoomLower(pt.y - _vd.dpi.top, _vd.dpi.zoom);
-					if (IsInsideMM(y, 0, h)) blitter->SetPixel(_vd.dpi.dst_ptr, x, y, tbtm->colour);
-				}
-			}
+	/* Render tunnels */
+	if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map.Length() != 0) {
+		const TunnelBridgeToMap * const tbtm_end = _vd.tunnel_to_map.End();
+		for (const TunnelBridgeToMap *tbtm = _vd.tunnel_to_map.Begin(); tbtm != tbtm_end; tbtm++) { // For each tunnel
+			const int tunnel_z = GetTileZ(tbtm->from_tile) * TILE_HEIGHT;
+			const Point pt_from = RemapCoords(TileX(tbtm->from_tile) * TILE_SIZE, TileY(tbtm->from_tile) * TILE_SIZE, tunnel_z);
+			const Point pt_to = RemapCoords(TileX(tbtm->to_tile) * TILE_SIZE, TileY(tbtm->to_tile) * TILE_SIZE, tunnel_z);
+
+			/* check if tunnel is wholly outside redrawing area */
+			const int x_from = UnScaleByZoomLower(pt_from.x - _vd.dpi.left, _vd.dpi.zoom);
+			const int x_to = UnScaleByZoomLower(pt_to.x - _vd.dpi.left, _vd.dpi.zoom);
+			if ((x_from < 0 && x_to < 0) || (x_from > w && x_to > w)) continue;
+			const int y_from = UnScaleByZoomLower(pt_from.y - _vd.dpi.top, _vd.dpi.zoom);
+			const int y_to = UnScaleByZoomLower(pt_to.y - _vd.dpi.top, _vd.dpi.zoom);
+			if ((y_from < 0 && y_to < 0) || (y_from > h && y_to > h)) continue;
+
+			ViewportMapDrawBridgeTunnel(vp, tbtm, tunnel_z, true, w, h, blitter);
+		}
+	}
+
+	/* Render bridges */
+	if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map.Length() != 0) {
+		const TunnelBridgeToMap * const tbtm_end = _vd.bridge_to_map.End();
+		for (const TunnelBridgeToMap *tbtm = _vd.bridge_to_map.Begin(); tbtm != tbtm_end; tbtm++) { // For each bridge
+			ViewportMapDrawBridgeTunnel(vp, tbtm, (GetBridgeHeight(tbtm->from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
 		}
 	}
 }
@@ -2448,7 +2534,7 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 
 	_cur_dpi = old_dpi;
 
-	_vd.tunnel_bridge_to_map.Clear();
+	_vd.bridge_to_map.Clear();
 	_vd.string_sprites_to_draw.Clear();
 	_vd.tile_sprites_to_draw.Clear();
 	_vd.parent_sprites_to_draw.Clear();
@@ -2776,6 +2862,7 @@ void MarkAllRouteStepsDirty(Window *vehicle_window)
 	for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
 		MarkRouteStepDirty(cit->first, (uint) cit->second.size());
 	}
+	_vp_route_steps_last_mark_dirty.swap(_vp_route_steps);
 	_vp_route_steps.clear();
 }
 

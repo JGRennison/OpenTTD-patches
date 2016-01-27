@@ -521,7 +521,7 @@ static inline void free(const void *ptr)
  * Use of the override keyword can prevent various types of problems when the base method signature is changed, but derived overriding methods are not
  * This is conditional to maintain compatibility with legacy compilers
  */
-#if __cplusplus >= 201103L || defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__)
+#if !defined(DISABLE_OVERRIDE) && (__cplusplus >= 201103L || defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__))
 	#define OVERRIDE override
 #else
 	#define OVERRIDE
@@ -540,6 +540,14 @@ static inline void free(const void *ptr)
 #else
 	#define INCLUDE_FOR_PREFETCH_NTA "stdafx.h"
 	#define PREFETCH_NTA(address)
+#endif
+
+#ifdef __GNUC__
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+#else
+#define likely(x)       (x)
+#define unlikely(x)     (x)
 #endif
 
 #endif /* STDAFX_H */

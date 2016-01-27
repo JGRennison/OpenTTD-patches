@@ -528,9 +528,11 @@ struct GameOptionsWindow : Window {
 				break;
 
 			case WID_GO_GUI_ZOOM_DROPDOWN:
+				extern void UpdateFontHeightCache();
 				GfxClearSpriteCache();
 				_gui_zoom = (ZoomLevel)(ZOOM_LVL_OUT_4X - index);
 				UpdateCursorSize();
+				UpdateFontHeightCache();
 				LoadStringWidthTable();
 				break;
 
@@ -1480,6 +1482,7 @@ static SettingsContainer &GetSettingsTree()
 			graphics->Add(new SettingEntry("gui.show_vehicle_route_steps"));
 			graphics->Add(new SettingEntry("gui.show_vehicle_route"));
 			graphics->Add(new SettingEntry("gui.dash_level_of_route_lines"));
+			graphics->Add(new SettingEntry("gui.show_restricted_signal_default"));
 		}
 
 		SettingsPage *sound = main->Add(new SettingsPage(STR_CONFIG_SETTING_SOUND));
@@ -1590,6 +1593,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.expenses_layout"));
 			interface->Add(new SettingEntry("gui.show_train_length_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
+			interface->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
@@ -1664,6 +1668,7 @@ static SettingsContainer &GetSettingsTree()
 				physics->Add(new SettingEntry("vehicle.roadveh_slope_steepness"));
 				physics->Add(new SettingEntry("vehicle.smoke_amount"));
 				physics->Add(new SettingEntry("vehicle.plane_speed"));
+				physics->Add(new SettingEntry("vehicle.ship_collision_avoidance"));
 			}
 
 			SettingsPage *routing = vehicles->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLES_ROUTING));
@@ -1783,6 +1788,7 @@ static SettingsContainer &GetSettingsTree()
 				treedist->Add(new SettingEntry("construction.extra_tree_placement"));
 				treedist->Add(new SettingEntry("construction.trees_around_snow_line_enabled"));
 				treedist->Add(new SettingEntry("construction.trees_around_snow_line_range"));
+				treedist->Add(new SettingEntry("construction.tree_growth_rate"));
 			}
 
 			environment->Add(new SettingEntry("station.modified_catchment"));

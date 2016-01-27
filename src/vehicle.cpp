@@ -106,6 +106,7 @@ void VehicleServiceInDepot(Vehicle *v)
 		if (v->Next() != NULL) VehicleServiceInDepot(v->Next());
 		if (!(Train::From(v)->IsEngine()) && !(Train::From(v)->IsRearDualheaded())) return;
 		ClrBit(Train::From(v)->flags,VRF_NEED_REPAIR);
+		Train::From(v)->critical_breakdown_count = 0;
 		const RailVehicleInfo *rvi = &e->u.rail;
 		v->vcache.cached_max_speed = rvi->max_speed;
 		if (Train::From(v)->IsFrontEngine()) {
@@ -123,6 +124,7 @@ void VehicleServiceInDepot(Vehicle *v)
 	do {
 		v->date_of_last_service = _date;
 		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
+			CompanyID old = _current_company;
 			ExpensesType type = INVALID_EXPENSES;
 			_current_company = v->owner;
 			switch (v->type) {
@@ -153,6 +155,7 @@ void VehicleServiceInDepot(Vehicle *v)
 			v->First()->profit_this_year -= cost.GetCost() << 8;
 			SubtractMoneyFromCompany(cost);
 			ShowCostOrIncomeAnimation(v->x_pos, v->y_pos, v->z_pos, cost.GetCost());
+			_current_company = old;
 		}
 
 		v->breakdowns_since_last_service = 0;
@@ -265,8 +268,8 @@ uint Vehicle::Crash(bool flooded)
 		v->MarkAllViewportsDirty();
 	}
 
+	this->ClearSeparation();
 	if (_settings_game.order.timetable_separation) {
-		this->ClearSeparation();
 		ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 	}
 
@@ -970,15 +973,14 @@ void CallVehicleTicks()
 
 			case VEH_TRAIN:
 				if (HasBit(Train::From(v)->flags, VRF_TOO_HEAVY)) {
-					_current_company = v->owner;
-					if (IsLocalCompany()) {
+					if (v->owner == _local_company) {
 						SetDParam(0, v->index);
 						SetDParam(1, STR_ERROR_TRAIN_TOO_HEAVY);
 						AddVehicleNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, v->index);
-						ClrBit(Train::From(v)->flags, VRF_TOO_HEAVY);
 					}
-					_current_company = OWNER_NONE;
+					ClrBit(Train::From(v)->flags, VRF_TOO_HEAVY);
 				}
+				/* FALL THROUGH */
 			case VEH_ROAD:
 			case VEH_AIRCRAFT:
 			case VEH_SHIP: {
@@ -1468,15 +1470,12 @@ bool Vehicle::HandleBreakdown()
 							}
 							/* Max Speed reduction*/
 							if (_settings_game.vehicle.improved_breakdowns) {
-								if (!HasBit(Train::From(this)->flags,VRF_NEED_REPAIR)) {
-									const Engine *e = Engine::Get(this->engine_type);
-									const RailVehicleInfo *rvi = &e->u.rail;
-									if (rvi->max_speed > this->vcache.cached_max_speed)
-										this->vcache.cached_max_speed = rvi->max_speed;
+								if (!HasBit(Train::From(this)->flags, VRF_NEED_REPAIR)) {
+									SetBit(Train::From(this)->flags, VRF_NEED_REPAIR);
+									Train::From(this)->critical_breakdown_count = 1;
+								} else if (Train::From(this)->critical_breakdown_count != 255) {
+									Train::From(this)->critical_breakdown_count++;
 								}
-								this->vcache.cached_max_speed = min(this->vcache.cached_max_speed -
-										(this->vcache.cached_max_speed >> 1) / Train::From(this->First())->tcache.cached_num_engines + 1, this->vcache.cached_max_speed);
-								SetBit(Train::From(this)->flags, VRF_NEED_REPAIR);
 								Train::From(this->First())->ConsistChanged(CCF_TRACK);
 							}
 						/* FALL THROUGH */
@@ -2477,6 +2476,7 @@ void Vehicle::LeaveStation()
 			new_occupancy /= 100;
 		}
 		if (new_occupancy + 1 != old_occupancy) {
+			this->order_occupancy_average = 0;
 			real_current_order->SetOccupancy(static_cast<uint8>(new_occupancy + 1));
 			for (const Vehicle *v = this->FirstShared(); v != NULL; v = v->NextShared()) {
 				SetWindowDirty(WC_VEHICLE_ORDERS, v->index);
@@ -2485,6 +2485,25 @@ void Vehicle::LeaveStation()
 	}
 
 	this->MarkDirty();
+}
+
+void Vehicle::RecalculateOrderOccupancyAverage()
+{
+	uint num_valid = 0;
+	uint total = 0;
+	uint order_count = this->GetNumOrders();
+	for (uint i = 0; i < order_count; i++) {
+		uint occupancy = this->GetOrder(i)->GetOccupancy();
+		if (occupancy > 0) {
+			num_valid++;
+			total += (occupancy - 1);
+		}
+	}
+	if (num_valid > 0) {
+		this->order_occupancy_average = 16 + ((total + (num_valid / 2)) / num_valid);
+	} else {
+		this->order_occupancy_average = 1;
+	}
 }
 
 /**
@@ -2618,8 +2637,8 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 			if (flags & DC_EXEC) {
 				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
 				this->current_order.SetDepotActionType(halt_in_depot ? ODATF_SERVICE_ONLY : ODATFB_HALT);
+				this->ClearSeparation();
 				if (_settings_game.order.timetable_separation) {
-					this->ClearSeparation();
 					ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 				}
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -2642,8 +2661,8 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 			if (this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN) {
 				this->current_order.SetDepotActionType(this->current_order.GetDepotActionType() == ODATFB_HALT ? ODATF_SERVICE_ONLY : ODATFB_HALT);
 			} else {
+				this->ClearSeparation();
 				if (_settings_game.order.timetable_separation) {
-					this->ClearSeparation();
 					ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 				}
 
@@ -3102,7 +3121,7 @@ void Vehicle::RemoveFromShared()
 	this->next_shared     = NULL;
 	this->previous_shared = NULL;
 
-	if (_settings_game.order.timetable_separation) this->ClearSeparation();
+	this->ClearSeparation();
 	if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 
@@ -3123,6 +3142,7 @@ void VehiclesYearlyLoop()
 			}
 
 			v->profit_last_year = v->profit_this_year;
+			v->profit_lifetime += v->profit_this_year;
 			v->profit_this_year = 0;
 			SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 		}

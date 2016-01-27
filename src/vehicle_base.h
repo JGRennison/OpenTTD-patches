@@ -24,6 +24,7 @@
 #include "group_type.h"
 #include "timetable.h"
 #include "base_consist.h"
+#include "network/network.h"
 #include <list>
 #include <map>
 
@@ -189,6 +190,7 @@ public:
 
 	Money profit_this_year;             ///< Profit this year << 8, low 8 bits are fract
 	Money profit_last_year;             ///< Profit last year << 8, low 8 bits are fract
+	Money profit_lifetime;              ///< Profit lifetime << 8, low 8 bits are fract
 	Money value;                        ///< Value of the vehicle
 	Money repair_cost;                  ///< Cost to repair one breakdown
 
@@ -276,6 +278,8 @@ public:
 	byte running_ticks;                 ///< Number of ticks this vehicle was not stopped this day
 
 	byte vehstatus;                     ///< Status
+
+	uint8 order_occupancy_average;      ///< NOSAVE: order occupancy average. 0 = invalid, 1 = n/a, 16-116 = 0-100%
 	Order current_order;                ///< The current order (+ status, like: loading)
 
 	union {
@@ -535,6 +539,12 @@ public:
 	 */
 	Money GetDisplayProfitLastYear() const { return (this->profit_last_year >> 8); }
 
+	/**
+	 * Gets the lifetime profit of vehicle. It can be sent into SetDParam for string processing.
+	 * @return the vehicle's lifetime profit
+	 */
+	Money GetDisplayProfitLifetime() const { return ((this->profit_lifetime + this->profit_this_year) >> 8); }
+
 	void SetNext(Vehicle *next);
 
 	/**
@@ -694,6 +704,14 @@ public:
 	inline StationIDStack GetNextStoppingStation() const
 	{
 		return (this->orders.list == NULL) ? INVALID_STATION : this->orders.list->GetNextStoppingStation(this);
+	}
+
+	void RecalculateOrderOccupancyAverage();
+
+	inline uint8 GetOrderOccupancyAverage() const
+	{
+		if (order_occupancy_average == 0) const_cast<Vehicle *>(this)->RecalculateOrderOccupancyAverage();
+		return this->order_occupancy_average;
 	}
 
 	void ResetRefitCaps();
@@ -1138,6 +1156,8 @@ struct SpecializedVehicle : public Vehicle {
 	 */
 	inline void UpdateViewport(bool force_update, bool update_delta)
 	{
+		if (_network_dedicated) return;
+
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);

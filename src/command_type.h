@@ -336,12 +336,15 @@ enum Commands {
 	CMD_INSERT_SIGNAL_INSTRUCTION,    ///< insert a signal instruction
 	CMD_MODIFY_SIGNAL_INSTRUCTION,    ///< modifies a signal instruction
 	CMD_REMOVE_SIGNAL_INSTRUCTION,    ///< removes a signal instruction
+	CMD_SIGNAL_PROGRAM_MGMT,          ///< removes a signal program management command
 
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,
 	CMD_REMOVE_PLAN,
 	CMD_REMOVE_PLAN_LINE,
 	CMD_CHANGE_PLAN_VISIBILITY,
+
+	CMD_DESYNC_CHECK,                 ///< Force desync checks to be run
 
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };

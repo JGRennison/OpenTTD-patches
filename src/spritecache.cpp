@@ -269,7 +269,7 @@ static bool PadSingleSprite(SpriteLoader::Sprite *sprite, ZoomLevel zoom, uint p
 	return true;
 }
 
-static bool PadSprites(SpriteLoader::Sprite *sprite, uint8 sprite_avail)
+static bool PadSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail)
 {
 	/* Get minimum top left corner coordinates. */
 	int min_xoffs = INT32_MAX;
@@ -310,7 +310,7 @@ static bool PadSprites(SpriteLoader::Sprite *sprite, uint8 sprite_avail)
 	return true;
 }
 
-static bool ResizeSprites(SpriteLoader::Sprite *sprite, uint8 sprite_avail, uint32 file_slot, uint32 file_pos)
+static bool ResizeSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, uint32 file_slot, uint32 file_pos)
 {
 	/* Create a fully zoomed image if it does not exist */
 	ZoomLevel first_avail = static_cast<ZoomLevel>(FIND_FIRST_BIT(sprite_avail));

@@ -138,7 +138,7 @@ IGNORE_UNINITIALIZED_WARNING_STOP
 static inline Colour AdjustBrightneSSE(Colour colour, uint8 brightness)
 {
 	/* Shortcut for normal brightness. */
-	if (brightness == Blitter_32bppBase::DEFAULT_BRIGHTNESS) return colour;
+	if (likely(brightness == Blitter_32bppBase::DEFAULT_BRIGHTNESS)) return colour;
 
 	return ReallyAdjustBrightness(colour, brightness);
 }

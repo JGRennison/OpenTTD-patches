@@ -706,6 +706,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Vehicle, profit_this_year,      SLE_INT64,                   65, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, profit_last_year,      SLE_FILE_I32 | SLE_VAR_I64,   0,  64),
 		 SLE_CONDVAR(Vehicle, profit_last_year,      SLE_INT64,                   65, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle,profit_lifetime,       SLE_INT64,                    0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEH_LIFETIME_PROFIT)),
 		SLEG_CONDVAR(         _cargo_feeder_share,   SLE_FILE_I32 | SLE_VAR_I64,  51,  64),
 		SLEG_CONDVAR(         _cargo_feeder_share,   SLE_INT64,                   65,  67),
 		SLEG_CONDVAR(         _cargo_loaded_at_xy,   SLE_UINT32,                  51,  67),
@@ -759,7 +760,8 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL(2, 2, 19),
 		 SLE_CONDVAR(Train, gv_flags,            SLE_UINT16,                 139, SL_MAX_VERSION),
 		SLE_CONDNULL(11, 2, 143), // old reserved space
-		SLE_CONDVAR_X(Train, reverse_distance,    SLE_UINT16,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REVERSE_AT_WAYPOINT)),
+		SLE_CONDVAR_X(Train, reverse_distance,    SLE_UINT16,                  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REVERSE_AT_WAYPOINT)),
+		SLE_CONDVAR_X(Train, critical_breakdown_count, SLE_UINT8,              0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 2)),
 
 		     SLE_END()
 	};

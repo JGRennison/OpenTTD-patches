@@ -24,6 +24,7 @@
 #include "station_map.h"
 #include "town.h"
 #include "tracerestrict.h"
+#include "window_func.h"
 #include "zoning.h"
 
 Zoning _zoning;
@@ -83,9 +84,11 @@ bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner, StationFaci
  *        the owner of the stations
  * @param StationFacility facility_mask
  *        one or more facilities in the mask must be present for a station to be used
+ * @param open_window_only
+ *        only use stations which have their station window open
  * @return true if a station is found
  */
-bool IsTileWithinAcceptanceZoneOfStation(TileIndex tile, Owner owner, StationFacility facility_mask)
+bool IsTileWithinAcceptanceZoneOfStation(TileIndex tile, Owner owner, StationFacility facility_mask, bool open_window_only)
 {
 	int catchment = _settings_game.station.station_spread + (_settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED);
 
@@ -98,7 +101,9 @@ bool IsTileWithinAcceptanceZoneOfStation(TileIndex tile, Owner owner, StationFac
 		Rect rect = st->GetCatchmentRect();
 		if ((uint)rect.left <= TileX(tile) && TileX(tile) <= (uint)rect.right
 				&& (uint)rect.top <= TileY(tile) && TileY(tile) <= (uint)rect.bottom) {
-			return true;
+			if (!open_window_only || FindWindowById(WC_STATION_VIEW, st->index) != NULL) {
+				return true;
+			}
 		}
 	}
 
@@ -183,10 +188,12 @@ SpriteID TileZoneCheckOpinionEvaluation(TileIndex tile, Owner owner)
  *
  * @param TileIndex tile
  * @param Owner owner
+ * @param open_window_only
+ *        only use stations which have their station window open
  * @return black if within, light blue if only in acceptance zone
  *         and nothing if no nearby station.
  */
-SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner)
+SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner, bool open_window_only)
 {
 	// Never on a station.
 	if (IsTileType(tile, MP_STATION)) {
@@ -199,12 +206,14 @@ SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner)
 	for (Station * const *st_iter = stations.GetStations()->Begin(); st_iter != stations.GetStations()->End(); ++st_iter) {
 		const Station *st = *st_iter;
 		if (st->owner == owner) {
-			return SPR_ZONING_INNER_HIGHLIGHT_BLACK;
+			if (!open_window_only || FindWindowById(WC_STATION_VIEW, st->index) != NULL) {
+				return SPR_ZONING_INNER_HIGHLIGHT_BLACK;
+			}
 		}
 	}
 
 	// For accepted goods
-	if (IsTileWithinAcceptanceZoneOfStation(tile, owner, ~FACIL_NONE)) {
+	if (IsTileWithinAcceptanceZoneOfStation(tile, owner, ~FACIL_NONE, open_window_only)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
 	}
 
@@ -248,7 +257,7 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 	}
 
 	// For accepted goods
-	if (IsTileWithinAcceptanceZoneOfStation(tile, owner, ~FACIL_NONE)) {
+	if (IsTileWithinAcceptanceZoneOfStation(tile, owner, ~FACIL_NONE, false)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
 	}
 
@@ -318,13 +327,14 @@ SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
 SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, ZoningEvaluationMode ev_mode)
 {
 	switch (ev_mode) {
-		case ZEM_CAN_BUILD:  return TileZoneCheckBuildEvaluation(tile, owner);
-		case ZEM_AUTHORITY:  return TileZoneCheckOpinionEvaluation(tile, owner);
-		case ZEM_STA_CATCH:  return TileZoneCheckStationCatchmentEvaluation(tile, owner);
-		case ZEM_BUL_UNSER:  return TileZoneCheckUnservedBuildingsEvaluation(tile, owner);
-		case ZEM_IND_UNSER:  return TileZoneCheckUnservedIndustriesEvaluation(tile, owner);
-		case ZEM_TRACERESTRICT:  return TileZoneCheckTraceRestrictEvaluation(tile, owner);
-		default:             return ZONING_INVALID_SPRITE_ID;
+		case ZEM_CAN_BUILD:     return TileZoneCheckBuildEvaluation(tile, owner);
+		case ZEM_AUTHORITY:     return TileZoneCheckOpinionEvaluation(tile, owner);
+		case ZEM_STA_CATCH:     return TileZoneCheckStationCatchmentEvaluation(tile, owner, false);
+		case ZEM_STA_CATCH_WIN: return TileZoneCheckStationCatchmentEvaluation(tile, owner, true);
+		case ZEM_BUL_UNSER:     return TileZoneCheckUnservedBuildingsEvaluation(tile, owner);
+		case ZEM_IND_UNSER:     return TileZoneCheckUnservedIndustriesEvaluation(tile, owner);
+		case ZEM_TRACERESTRICT: return TileZoneCheckTraceRestrictEvaluation(tile, owner);
+		default:                return ZONING_INVALID_SPRITE_ID;
 	}
 }
 
@@ -353,6 +363,7 @@ static uint GetZoningModeDependantStationCoverageRadius(const Station *st, Zonin
 {
 	switch (ev_mode) {
 		case ZEM_STA_CATCH:      return st->GetCatchmentRadius();
+		case ZEM_STA_CATCH_WIN:  return st->GetCatchmentRadius();
 		case ZEM_BUL_UNSER:      return st->GetCatchmentRadius();
 		case ZEM_IND_UNSER:      return st->GetCatchmentRadius() + 10; // this is to wholly update industries partially within the region
 		default:                 return 0;

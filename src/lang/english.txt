@@ -287,6 +287,7 @@ STR_SORT_BY_TRANSPORTED                                         :Transported
 STR_SORT_BY_NUMBER                                              :Number
 STR_SORT_BY_PROFIT_LAST_YEAR                                    :Profit last year
 STR_SORT_BY_PROFIT_THIS_YEAR                                    :Profit this year
+STR_SORT_BY_PROFIT_LIFETIME                                     :Lifetime profit
 STR_SORT_BY_AGE                                                 :Age
 STR_SORT_BY_RELIABILITY                                         :Reliability
 STR_SORT_BY_TOTAL_CAPACITY_PER_CARGOTYPE                        :Total capacity per cargo type
@@ -296,6 +297,7 @@ STR_SORT_BY_VALUE                                               :Value
 STR_SORT_BY_LENGTH                                              :Length
 STR_SORT_BY_LIFE_TIME                                           :Remaining lifetime
 STR_SORT_BY_TIMETABLE_DELAY                                     :Timetable delay
+STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :Average order occupancy
 STR_SORT_BY_FACILITY                                            :Station type
 STR_SORT_BY_WAITING_TOTAL                                       :Total waiting cargo
 STR_SORT_BY_WAITING_AVAILABLE                                   :Available waiting cargo
@@ -1260,6 +1262,8 @@ STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Allow construct
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Changing this setting is not possible when there are vehicles
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Infrastructure maintenance: {STRING2}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :When enabled, infrastructure causes maintenance costs. The cost grows over-proportional with the network size, thus affecting bigger companies more than smaller ones
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Ships avoid collisions: {STRING2}
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :When enabled, ships try to avoid passing through each other. Requires 90° turns to be forbidden.
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Airports never expire: {STRING2}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Enabling this setting makes each airport type stay available forever after its introduction
@@ -1298,6 +1302,8 @@ STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :Show train leng
 STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :Show train length in the vehicle details window
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS                :Show vehicle group in details: {STRING2}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :Show vehicle group name in the vehicle details window
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Show restricted electric signals using default graphics: {STRING2}
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Show electric signals with routing restriction programs using the default signal graphics with a blue signal post, instead of using any NewGRF signal graphics. This is to make it easier to visually distinguish restricted signals.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :Landscape: {STRING2}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Landscapes define basic gameplay scenarios with different cargos and town growth requirements. NewGRF and Game Scripts allow finer control though
@@ -1377,6 +1383,8 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Double click
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Single click (when focussed)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Single click (immediately)
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :Show the vehicle's route steps: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :Mark other companies' vehicles in lists with their company colour: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :Vehicles in a vehicle list window which are owned by a different company than the owner of the vehicle list are marked with a coloured square in the vehicle's company colour.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :Scan surroundings (better for high zoom out levels): {STRING2}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Show slopes: {STRING2}
@@ -1654,6 +1662,13 @@ STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Adjusted arctic
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Adjust placement of trees around snow line in artic climate. Trees thin out above snowline. Trees are a mix of arctic and temperate just below snowline. Below that trees are temperate.
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Arctic tree range: {STRING2}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Approximate range of arctic trees around snow line
+
+STR_CONFIG_SETTING_TREE_GROWTH                                  :Tree growth speed: {STRING2}
+STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Control rate at which trees grow during the game. This might affect industries which rely on tree growth, for example lumber mills
+STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
+STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Slow
+STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Very slow
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extremly slow
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position of main toolbar: {STRING2}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontal position of the main toolbar at the top of the screen
@@ -2505,6 +2520,7 @@ STR_TRACE_RESTRICT_VARIABLE_CARGO                               :cargo
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :PBS entry signal
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :entered signal of PBS block
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :train owner
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} then
@@ -2515,6 +2531,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} train 
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} train {STRING} entering from {STRING} tile edge then
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} train {STRING} entering from {STRING} of signal then
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} at {NUM} x {NUM} then
+STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} then
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
@@ -2527,6 +2544,8 @@ STR_TRACE_RESTRICT_PF_ALLOW                                     :Allow
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Allow (cancel previous Deny)
 STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserve through
 STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancel reserve through
+STR_TRACE_RESTRICT_LONG_RESERVE                                 :Long reserve
+STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Cancel long reserve
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
@@ -2538,6 +2557,8 @@ STR_TRACE_RESTRICT_DIRECTION_NE                                 :north-east
 STR_TRACE_RESTRICT_DIRECTION_SE                                 :south-east
 STR_TRACE_RESTRICT_DIRECTION_SW                                 :south-west
 STR_TRACE_RESTRICT_DIRECTION_NW                                 :north-west
+STR_TRACE_RESTRICT_COMPANY                                      :Company
+STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :Undefined company
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
@@ -3191,7 +3212,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Go to th
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Previous sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Proceed to the previous normal sprite, skipping any pseudo/recolour/font sprites and wrapping around from the first sprite to the last
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representation of the currently selected sprite. The alignment is ignored when drawing this sprite
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Move the sprite around, changing the X and Y offsets
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Move the sprite around, changing the X and Y offsets. Ctrl+Click to move the sprite eight units at a time
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Reset relative
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Reset the current relative offsets
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Absolute)
@@ -3775,6 +3796,12 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Groups -
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Click to create a group
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Delete the selected group
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Rename the selected group
+STR_GROUP_COLLAPSE                                              :{BLACK}Collapse
+STR_GROUP_EXPAND                                                :{BLACK}Expand
+STR_GROUP_EXPAND_ALL                                            :{BLACK}Expand all
+STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Collapse all
+STR_GROUP_COLLAPSE_TOOLTIP                                      :{BLACK}Click to collapse the selected group
+STR_GROUP_EXPAND_TOOLTIP                                        :{BLACK}Click to expand the selected group
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Click to protect this group from global autoreplace
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Delete Group
@@ -4101,9 +4128,10 @@ STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. spe
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Weight: {LTBLUE}{WEIGHT_SHORT} {BLACK}Power: {LTBLUE}{POWER}{BLACK} Max. speed: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Weight: {LTBLUE}{WEIGHT_SHORT} {BLACK}Power: {LTBLUE}{POWER}{BLACK} Max. speed: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 
-STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}Train length {LTBLUE}{DECIMAL} tile{P "" s} {STRING3}
+STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}Train length {LTBLUE}{DECIMAL} tile{P "" s} {STRING4}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Profit this year: {LTBLUE}{CURRENCY_LONG} (last year: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING2} (lifetime: {CURRENCY_LONG})
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Reliability: {LTBLUE}{COMMA}%  {BLACK}Breakdowns since last service: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}Group: {LTBLUE}{GROUP}
@@ -4294,9 +4322,9 @@ STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Insert a
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}Show all vehicles that share this schedule
 
-STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}%
-STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages
-STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Order occupancy - this shows runnings averages of recent occupancy levels when leaving a station, for all vehicles sharing these orders
+STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING2}%
+STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occupancy running averages{}The percentage shown is the overall average of the order occupancies
+STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Order occupancy - this shows running averages of recent occupancy levels when leaving a station, for all vehicles sharing these orders
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 # String parts to build the order string
@@ -4422,7 +4450,7 @@ STR_TIMETABLE_AUTOFILL                                          :{BLACK}Autofill
 STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}Fill the timetable automatically with the values from the next journey (Ctrl+Click to try to keep waiting times)
 
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automate
-STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Manage the timetables automatically by updating the values for each journey
+STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Manage the timetables automatically by updating the values for each journey (Ctrl+Click when disabling to keep the current timetable)
 
 STR_TIMETABLE_EXPECTED                                          :{BLACK}Expected
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Scheduled
@@ -5534,6 +5562,7 @@ STR_ZONING_NO_ZONING                                            :Nothing
 STR_ZONING_AUTHORITY                                            :Authority
 STR_ZONING_CAN_BUILD                                            :Where I can't build
 STR_ZONING_STA_CATCH                                            :Station catchment
+STR_ZONING_STA_CATCH_OPEN                                       :Station catchment (window open)
 STR_ZONING_BUL_UNSER                                            :Unserved buildings
 STR_ZONING_IND_UNSER                                            :Unserved industries
 STR_ZONING_TRACERESTRICT                                        :Restricted signals

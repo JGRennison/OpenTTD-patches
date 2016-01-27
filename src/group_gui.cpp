@@ -25,8 +25,8 @@
 #include "vehicle_gui_base.h"
 #include "core/geometry_func.hpp"
 #include "company_base.h"
-
 #include "widgets/group_widget.h"
+#include "core/smallvec_type.hpp"
 
 #include "table/sprites.h"
 
@@ -63,6 +63,11 @@ static const NWidgetPart _nested_group_widgets[] = {
 						SetDataTip(SPR_GROUP_DELETE_TRAIN, STR_GROUP_DELETE_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_RENAME_GROUP), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_RENAME_TRAIN, STR_GROUP_RENAME_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_COLLAPSE_EXPAND_GROUP), SetFill(0, 1),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_COLLAPSE_ALL_GROUPS), SetFill(0, 1),
+						SetDataTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_EXPAND_ALL_GROUPS), SetFill(0, 1),
+						SetDataTip(STR_GROUP_EXPAND_ALL, STR_GROUP_EXPAND_ALL),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), EndContainer(),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_REPLACE_PROTECTION), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_REPLACE_OFF_TRAIN, STR_GROUP_REPLACE_PROTECTION_TOOLTIP),
@@ -101,6 +106,7 @@ private:
 	/* Columns in the group list */
 	enum ListColumns {
 		VGC_NAME,          ///< Group name.
+		VGC_COLLAPSED,     ///< Collapsed icon
 		VGC_PROTECT,       ///< Autoreplace protect icon.
 		VGC_AUTOREPLACE,   ///< Autoreplace active icon.
 		VGC_PROFIT,        ///< Profit icon.
@@ -117,20 +123,30 @@ private:
 	GUIGroupList groups;   ///< List of groups
 	uint tiny_step_height; ///< Step height for the group list
 	Scrollbar *group_sb;
+	SmallVector<GroupID, 16> collapsed_groups;    ///< List of collapsed groups
+	SmallVector<GroupID, 16> collapsable_groups;  ///< List of collapsable groups
 
 	SmallVector<int, 16> indents; ///< Indentation levels
 
 	Dimension column_size[VGC_END]; ///< Size of the columns in the group list.
 
-	void AddParents(GUIGroupList *source, GroupID parent, int indent)
+	/** return true if group has children */
+	bool AddParents(GUIGroupList *source, GroupID parent, int indent)
 	{
+		bool is_collapsed = this->collapsed_groups.Contains(parent);
+		bool has_children = false;
+
 		for (const Group **g = source->Begin(); g != source->End(); g++) {
 			if ((*g)->parent == parent) {
+				has_children = true;
+				if (is_collapsed) return has_children;
 				*this->groups.Append() = *g;
 				*this->indents.Append() = indent;
-				AddParents(source, (*g)->index, indent + 1);
+				bool child_has_children = AddParents(source, (*g)->index, indent + 1);
+				if (child_has_children) *this->collapsable_groups.Append() = (*g)->index;
 			}
 		}
+		return has_children;
 	}
 
 	/** Sort the groups by their name */
@@ -156,6 +172,16 @@ private:
 		return r;
 	}
 
+	void ToogleGroupCollapse(GroupID group)
+	{
+		GroupID *item = this->collapsed_groups.Find(group);
+		if (item == this->collapsed_groups.End()) {
+			*(this->collapsed_groups.Append()) = group;
+		} else {
+			this->collapsed_groups.Erase(item);
+		}
+	}
+
 	/**
 	 * (Re)Build the group list.
 	 *
@@ -167,6 +193,7 @@ private:
 
 		this->groups.Clear();
 		this->indents.Clear();
+		this->collapsable_groups.Clear();
 
 		GUIGroupList list;
 
@@ -193,8 +220,11 @@ private:
 	uint ComputeGroupInfoSize()
 	{
 		this->column_size[VGC_NAME] = maxdim(GetStringBoundingBox(STR_GROUP_DEFAULT_TRAINS + this->vli.vtype), GetStringBoundingBox(STR_GROUP_ALL_TRAINS + this->vli.vtype));
-		this->column_size[VGC_NAME].width = max(170u, this->column_size[VGC_NAME].width);
+		this->column_size[VGC_NAME].width = max((170u * FONT_HEIGHT_NORMAL) / 10u, this->column_size[VGC_NAME].width);
 		this->tiny_step_height = this->column_size[VGC_NAME].height;
+
+		this->column_size[VGC_COLLAPSED] = GetSpriteSize(SPR_WINDOW_UNSHADE);
+		this->tiny_step_height = max(this->tiny_step_height, this->column_size[VGC_COLLAPSED].height);
 
 		this->column_size[VGC_PROTECT] = GetSpriteSize(SPR_GROUP_REPLACE_PROTECT);
 		this->tiny_step_height = max(this->tiny_step_height, this->column_size[VGC_PROTECT].height);
@@ -219,6 +249,7 @@ private:
 
 		return WD_FRAMERECT_LEFT + 8 +
 			this->column_size[VGC_NAME].width + 8 +
+			this->column_size[VGC_COLLAPSED].width + 2 +
 			this->column_size[VGC_PROTECT].width + 2 +
 			this->column_size[VGC_AUTOREPLACE].width + 2 +
 			this->column_size[VGC_PROFIT].width + 2 +
@@ -262,8 +293,12 @@ private:
 		int x = rtl ? right - WD_FRAMERECT_RIGHT - 8 - this->column_size[VGC_NAME].width + 1 : left + WD_FRAMERECT_LEFT + 8;
 		DrawString(x + indent * LEVEL_WIDTH, x + this->column_size[VGC_NAME].width - 1, y + (this->tiny_step_height - this->column_size[VGC_NAME].height) / 2, str, colour);
 
+		/* draw collapse state */
+		x = rtl ? x - 8 - this->column_size[VGC_COLLAPSED].width : x + 8 + this->column_size[VGC_NAME].width;
+		if (this->collapsed_groups.Contains(g_id)) DrawSprite(SPR_WINDOW_UNSHADE, PAL_NONE, x, y + (this->tiny_step_height - this->column_size[VGC_COLLAPSED].height) / 2);
+
 		/* draw autoreplace protection */
-		x = rtl ? x - 8 - this->column_size[VGC_PROTECT].width : x + 8 + this->column_size[VGC_NAME].width;
+		x = rtl ? x - 2 - this->column_size[VGC_PROTECT].width : x + 2 + this->column_size[VGC_COLLAPSED].width;
 		if (protection) DrawSprite(SPR_GROUP_REPLACE_PROTECT, PAL_NONE, x, y + (this->tiny_step_height - this->column_size[VGC_PROTECT].height) / 2);
 
 		/* draw autoreplace status */
@@ -342,6 +377,9 @@ public:
 		this->GetWidget<NWidgetCore>(WID_GL_CAPTION)->widget_data = STR_VEHICLE_LIST_TRAIN_CAPTION + this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_LIST_VEHICLE)->tool_tip = STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype;
 
+		this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->widget_data = STR_GROUP_COLLAPSE;
+		this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP)->tool_tip = STR_GROUP_COLLAPSE_TOOLTIP;
+
 		this->GetWidget<NWidgetCore>(WID_GL_CREATE_GROUP)->widget_data += this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_RENAME_GROUP)->widget_data += this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_DELETE_GROUP)->widget_data += this->vli.vtype;
@@ -373,7 +411,7 @@ public:
 				max_icon_height = max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_GL_REPLACE_PROTECTION)->widget_data).height);
 
 				/* ... minus the height of the group info ... */
-				max_icon_height += 37;
+				max_icon_height += (FONT_HEIGHT_NORMAL * 3) + 7;
 
 				/* Get a multiple of tiny_step_height of that amount */
 				size->height = Ceil(size->height - max_icon_height, tiny_step_height);
@@ -405,6 +443,11 @@ public:
 				d.height += padding.height;
 				d.width  += padding.width;
 				*size = maxdim(*size, d);
+				break;
+			}
+
+			case WID_GL_INFO: {
+				size->height = (FONT_HEIGHT_NORMAL * 3) + 7;
 				break;
 			}
 		}
@@ -516,6 +559,25 @@ public:
 
 		/* Set text of sort by dropdown */
 		this->GetWidget<NWidgetCore>(WID_GL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
+
+
+		bool is_non_collapsable_group = (this->vli.index == ALL_GROUP) || (this->vli.index == DEFAULT_GROUP)
+				|| (this->vli.index == INVALID_GROUP) || !this->collapsable_groups.Contains(this->vli.index);
+
+		this->SetWidgetDisabledState(WID_GL_COLLAPSE_EXPAND_GROUP, is_non_collapsable_group);
+
+		NWidgetCore *collapse_widget = this->GetWidget<NWidgetCore>(WID_GL_COLLAPSE_EXPAND_GROUP);
+
+		if (is_non_collapsable_group || !this->collapsed_groups.Contains(this->vli.index)) {
+			collapse_widget->widget_data = STR_GROUP_COLLAPSE;
+			collapse_widget->tool_tip = STR_GROUP_COLLAPSE_TOOLTIP;
+		} else {
+			collapse_widget->widget_data = STR_GROUP_EXPAND;
+			collapse_widget->tool_tip = STR_GROUP_EXPAND_TOOLTIP;
+		}
+
+		this->SetWidgetDisabledState(WID_GL_EXPAND_ALL_GROUPS, this->collapsed_groups.Length() == 0);
+		this->SetWidgetDisabledState(WID_GL_COLLAPSE_ALL_GROUPS, this->collapsable_groups.Length() == 0 || this->collapsed_groups.Length() == this->collapsable_groups.Length());
 
 		this->DrawWidgets();
 	}
@@ -652,6 +714,11 @@ public:
 
 				this->group_sel = this->vli.index = this->groups[id_g]->index;
 
+				if (click_count % 2 == 0) {
+					this->ToogleGroupCollapse(this->vli.index);
+					OnInvalidateData();
+				}
+
 				SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 
 				this->vehicles.ForceRebuild();
@@ -690,6 +757,32 @@ public:
 			case WID_GL_RENAME_GROUP: // Rename the selected roup
 				this->ShowRenameGroupWindow(this->vli.index, false);
 				break;
+
+			case WID_GL_COLLAPSE_EXPAND_GROUP: // Toggle collapse/expand
+				this->ToogleGroupCollapse(this->vli.index);
+				OnInvalidateData();
+				this->SetDirty();
+				break;
+
+			case WID_GL_COLLAPSE_ALL_GROUPS: {
+				this->collapsed_groups.Clear();
+				for (const Group **group = this->groups.Begin(); group != this->groups.End(); ++group) {
+					GroupID id = (*group)->index;
+					if (id != ALL_GROUP && id != DEFAULT_GROUP && id != INVALID_GROUP && this->collapsable_groups.Contains(id)) {
+						*this->collapsed_groups.Append() = id;
+					}
+				}
+				OnInvalidateData();
+				this->SetDirty();
+				break;
+			}
+
+			case WID_GL_EXPAND_ALL_GROUPS: {
+				this->collapsed_groups.Clear();
+				OnInvalidateData();
+				this->SetDirty();
+				break;
+			}
 
 			case WID_GL_AVAILABLE_VEHICLES:
 				ShowBuildVehicleWindow(INVALID_TILE, this->vli.vtype);
@@ -739,6 +832,8 @@ public:
 
 				if (this->group_sel != new_g && g->parent != new_g) {
 					DoCommandP(0, this->group_sel | (1 << 16), new_g, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_SET_PARENT));
+					GroupID *group = this->collapsed_groups.Find(new_g);
+					if (group != this->collapsed_groups.End()) this->collapsed_groups.Erase(group);
 				}
 
 				this->group_sel = INVALID_GROUP;

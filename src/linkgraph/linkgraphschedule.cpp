@@ -99,7 +99,7 @@ void LinkGraphSchedule::JoinNext()
 	 * This is just a hint variable to avoid performing the join excessively early and blocking the main thread.
 	 */
 
-#if defined(__GNUC__) && (__cplusplus >= 201103L || defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__))
+#if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7))
 	__atomic_store_n(&(job->job_completed), true, __ATOMIC_RELAXED);
 #else
 	job->job_completed = true;

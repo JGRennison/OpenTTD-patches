@@ -158,7 +158,17 @@ byte GetCharacterWidth(FontSize size, uint32 key);
 byte GetDigitWidth(FontSize size = FS_NORMAL);
 void GetBroadestDigit(uint *front, uint *next, FontSize size = FS_NORMAL);
 
-int GetCharacterHeight(FontSize size);
+extern int font_height_cache[FS_END];
+
+/**
+ * Get height of a character for a given font size.
+ * @param size Font size to get height of
+ * @return     Height of characters in the given font (pixels)
+ */
+inline int GetCharacterHeight(FontSize size)
+{
+	return font_height_cache[size];
+}
 
 /** Height of characters in the small (#FS_SMALL) font. */
 #define FONT_HEIGHT_SMALL  (GetCharacterHeight(FS_SMALL))

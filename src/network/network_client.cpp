@@ -256,6 +256,9 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				DEBUG(desync, 1, "sync_err: %08x; %02x; %02X", _date, _date_fract, _tick_skip_counter);
 				DEBUG(net, 0, "Sync error detected!");
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
+
+				extern void CheckCaches(bool force_check);
+				CheckCaches(true);
 				return false;
 			}
 

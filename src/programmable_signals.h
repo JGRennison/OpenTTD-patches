@@ -28,6 +28,11 @@ class SignalInstruction;
 class SignalSpecial;
 typedef SmallVector<SignalInstruction*, 4> InstructionList;
 
+enum SignalProgramMgmtCode {
+	SPMC_REMOVE,      ///< Remove program
+	SPMC_CLONE,       ///< Clone program
+};
+
 /** The actual programmable signal information */
 struct SignalProgram {
 	SignalProgram(TileIndex tile, Track track, bool raw = false);
@@ -212,7 +217,6 @@ class SignalStateCondition: public SignalCondition {
 		SignalReference this_sig;
 		TileIndex sig_tile;
 		Trackdir sig_track;
-		SignalState state;
 };
 
 // -- Instructions

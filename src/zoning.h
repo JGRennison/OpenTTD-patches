@@ -23,6 +23,7 @@ enum ZoningEvaluationMode {
 	ZEM_AUTHORITY,     ///< Check the local authority's opinion.
 	ZEM_CAN_BUILD,     ///< Check wither or not the player can build.
 	ZEM_STA_CATCH,     ///< Check catchment area for stations
+	ZEM_STA_CATCH_WIN, ///< Check catchment area for stations with their station windows open
 	ZEM_BUL_UNSER,     ///< Check for unserved buildings
 	ZEM_IND_UNSER,     ///< Check for unserved industries
 	ZEM_TRACERESTRICT, ///< Check for restricted signals
@@ -48,5 +49,10 @@ void ShowZoningToolbar();
 
 void ZoningMarkDirtyStationCoverageArea(const Station *st);
 inline void ZoningMarkDirtyStationCoverageArea(const Waypoint *st) { } // no-op
+
+inline void ZoningStationWindowOpenClose(const Station *st)
+{
+	if (_zoning.inner == ZEM_STA_CATCH_WIN || _zoning.outer == ZEM_STA_CATCH_WIN) ZoningMarkDirtyStationCoverageArea(st);
+}
 
 #endif /* ZONING_H */

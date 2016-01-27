@@ -348,6 +348,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_TRAIN_OWNER: {
+						result = TestBinaryConditionCommon(item, v->owner == condvalue);
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -387,6 +392,14 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 							out.flags &= ~TRPRF_RESERVE_THROUGH;
 						} else {
 							out.flags |= TRPRF_RESERVE_THROUGH;
+						}
+						break;
+
+					case TRIT_LONG_RESERVE:
+						if (GetTraceRestrictValue(item)) {
+							out.flags &= ~TRPRF_LONG_RESERVE;
+						} else {
+							out.flags |= TRPRF_LONG_RESERVE;
 						}
 						break;
 
@@ -476,6 +489,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_CARGO:
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
+				case TRIT_COND_TRAIN_OWNER:
 					break;
 
 				default:
@@ -490,6 +504,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 				case TRIT_RESERVE_THROUGH:
 					actions_used_flags |= TRPAUF_RESERVE_THROUGH;
+					break;
+
+				case TRIT_LONG_RESERVE:
+					actions_used_flags |= TRPAUF_LONG_RESERVE;
 					break;
 
 				default:
@@ -544,6 +562,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_SPEED:
 		case TRVT_TILE_INDEX:
 		case TRVT_RESERVE_THROUGH:
+		case TRVT_LONG_RESERVE:
 			SetTraceRestrictValue(item, 0);
 			SetTraceRestrictAuxField(item, 0);
 			break;
@@ -567,6 +586,11 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_PF_PENALTY:
 			SetTraceRestrictValue(item, TRPPPI_SMALL);
 			SetTraceRestrictAuxField(item, TRPPAF_PRESET);
+			break;
+
+		case TRVT_OWNER:
+			SetTraceRestrictValue(item, INVALID_OWNER);
+			SetTraceRestrictAuxField(item, 0);
 			break;
 
 		default:
@@ -1002,15 +1026,16 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 	switch (type) {
 		case TRDCT_PROG_COPY: {
 			TraceRestrictRemoveProgramMapping(self);
-			TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
-			if (!prog) {
-				// allocation failed
-				return CMD_ERROR;
-			}
 
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
-			if (source_prog) {
+			if (source_prog && !source_prog->items.empty()) {
+				TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
+				if (!prog) {
+					// allocation failed
+					return CMD_ERROR;
+				}
 				prog->items = source_prog->items; // copy
+				prog->Validate();
 			}
 			break;
 		}
@@ -1046,6 +1071,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				}
 
 				new_prog->items.swap(items);
+				new_prog->Validate();
 			}
 			break;
 		}
@@ -1084,6 +1110,31 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
 				}
 			}
+			if (IsTraceRestrictDoubleItem(item)) i++;
+		}
+	}
+
+	// update windows
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+}
+
+/**
+ * This is called when a company is about to be deleted or taken over
+ * Scan program pool and change any references to it to the new company ID, to avoid dangling references
+ */
+void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
+{
+	TraceRestrictProgram *prog;
+
+	FOR_ALL_TRACE_RESTRICT_PROGRAMS(prog) {
+		for (size_t i = 0; i < prog->items.size(); i++) {
+			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
+			if (GetTraceRestrictType(item) == TRIT_COND_TRAIN_OWNER) {
+				if (GetTraceRestrictValue(item) == old_company) {
+					SetTraceRestrictValue(item, new_company); // this updates the instruction in-place
+				}
+			}
+			if (IsTraceRestrictDoubleItem(item)) i++;
 		}
 	}
 
