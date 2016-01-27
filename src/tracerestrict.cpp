@@ -395,6 +395,14 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_LONG_RESERVE:
+						if (GetTraceRestrictValue(item)) {
+							out.flags &= ~TRPRF_LONG_RESERVE;
+						} else {
+							out.flags |= TRPRF_LONG_RESERVE;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -498,6 +506,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					actions_used_flags |= TRPAUF_RESERVE_THROUGH;
 					break;
 
+				case TRIT_LONG_RESERVE:
+					actions_used_flags |= TRPAUF_LONG_RESERVE;
+					break;
+
 				default:
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
@@ -550,6 +562,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_SPEED:
 		case TRVT_TILE_INDEX:
 		case TRVT_RESERVE_THROUGH:
+		case TRVT_LONG_RESERVE:
 			SetTraceRestrictValue(item, 0);
 			SetTraceRestrictAuxField(item, 0);
 			break;
@@ -1013,17 +1026,17 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 	switch (type) {
 		case TRDCT_PROG_COPY: {
 			TraceRestrictRemoveProgramMapping(self);
-			TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
-			if (!prog) {
-				// allocation failed
-				return CMD_ERROR;
-			}
 
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
-			if (source_prog) {
+			if (source_prog && !source_prog->items.empty()) {
+				TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
+				if (!prog) {
+					// allocation failed
+					return CMD_ERROR;
+				}
 				prog->items = source_prog->items; // copy
+				prog->Validate();
 			}
-			prog->Validate();
 			break;
 		}
 

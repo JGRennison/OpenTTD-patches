@@ -943,6 +943,11 @@ public:
 				*size = maxdim(*size, d);
 				break;
 			}
+
+			case WID_O_OCCUPANCY_TOGGLE:
+				SetDParamMaxValue(0, 100);
+				size->width = WD_FRAMERECT_LEFT + GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WD_FRAMERECT_RIGHT;
+				break;
 		}
 
 
@@ -1330,6 +1335,17 @@ public:
 
 			case WID_O_CAPTION:
 				SetDParam(0, this->vehicle->index);
+				break;
+
+			case WID_O_OCCUPANCY_TOGGLE:
+				const_cast<Vehicle *>(this->vehicle)->RecalculateOrderOccupancyAverage();
+				if (this->vehicle->order_occupancy_average >= 16) {
+					SetDParam(0, STR_JUST_INT);
+					SetDParam(1, this->vehicle->order_occupancy_average - 16);
+				} else {
+					SetDParam(0, STR_EMPTY);
+					SetDParam(1, 0);
+				}
 				break;
 		}
 	}
@@ -1821,7 +1837,7 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(12, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
 	EndContainer(),
 
@@ -1905,7 +1921,7 @@ static const NWidgetPart _nested_orders_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(12, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
 	EndContainer(),
 

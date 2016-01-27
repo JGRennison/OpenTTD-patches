@@ -47,7 +47,7 @@ std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version os SLXI chunk
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
-	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,              3,                                    3, "tracerestrict",         NULL, NULL, "TRRM,TRRP" },
+	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,              4,                                    4, "tracerestrict",         NULL, NULL, "TRRM,TRRP" },
 	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,              1,                                    1, "tracerestrict_owner",   NULL, NULL, NULL        },
 	{ XSLFI_PROG_SIGS,              XSCF_NULL,              1,                                    1, "programmable_signals",  NULL, NULL, "SPRG"      },
 	{ XSLFI_ADJACENT_CROSSINGS,     XSCF_NULL,              1,                                    1, "adjacent_crossings",    NULL, NULL, NULL        },
@@ -55,7 +55,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TIMETABLES_START_TICKS, XSCF_NULL,              WALLCLOCK_NETWORK_COMPATIBLE ? 0 : 1, 1, "timetable_start_ticks", NULL, NULL, NULL        },
 	{ XSLFI_TOWN_CARGO_ADJ,         XSCF_IGNORABLE_UNKNOWN, 1,                                    1, "town_cargo_adj",        NULL, NULL, NULL        },
 	{ XSLFI_SIG_TUNNEL_BRIDGE,      XSCF_NULL,              1,                                    1, "signal_tunnel_bridge",  NULL, NULL, NULL        },
-	{ XSLFI_IMPROVED_BREAKDOWNS,    XSCF_NULL,              1,                                    1, "improved_breakdowns",   NULL, NULL, NULL        },
+	{ XSLFI_IMPROVED_BREAKDOWNS,    XSCF_NULL,              2,                                    2, "improved_breakdowns",   NULL, NULL, NULL        },
 	{ XSLFI_TT_WAIT_IN_DEPOT,       XSCF_NULL,              1,                                    1, "tt_wait_in_depot",      NULL, NULL, NULL        },
 	{ XSLFI_AUTO_TIMETABLE,         XSCF_NULL,              3,                                    3, "auto_timetables",       NULL, NULL, NULL        },
 	{ XSLFI_VEHICLE_REPAIR_COST,    XSCF_NULL,              1,                                    1, "vehicle_repair_cost",   NULL, NULL, NULL        },

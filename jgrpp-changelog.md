@@ -2,6 +2,33 @@
 
 * * *
 
+### v0.10.2 (2016-01-19)
+* Improved breakdowns:
+  * Fix incorrect train speed limits after a save/load or network join (causing desync issues) after critical/mechanical breakdowns.
+  * Reduce severity of train speed limit reduction after critical/mechanical breakdowns, remove reduction limit.
+
+### v0.10.1 (2016-01-15)
+* Fix FreeType fonts having an incorrect height (regression from v0.10.0).
+* Routing restrictions:
+  * Fix copying a signal without a program creating an empty program and marking the signal as restricted, instead of not creating a program.
+  * Fix GUI issue where if a picker button was clicked when another picker button was already lowered/active, both would be raised.
+
+### v0.10.0 (2016-01-13)
+* Fix building rivers being disabled in scenario editor mode.
+* Fix minor visual issue with SSE2 palette animator.
+* Fix group info window when GUI/font is scaled to a larger size.
+* Fix cargo dest overlay not being updated after a zoom change.
+* Fix newly cloned routing restrictions not being activated.
+* Fix compilation on gcc 4.3 to 4.6.
+* Improved breakdowns: Limit low speed breakdowns to lower of 1/4 max speed or 28km/h.
+* Zoning: Add mode to show station catchment only where station window open.
+* Add vehicle lifetime profit patch, modified to show current lifetime profit, instead of the yearly-updated value.
+* Change default measurement tool hotkey to shift-R.
+* Minor performance improvement in fonts and viewport text labels.
+* Minor configure script library detection changes.
+* Add German translations by Auge, for the building rivers in game and improved breakdowns patches.
+* Bump trunk base from r27472 to r27495
+
 ### v0.9.0 (2015-12-19)
 * Improved breakdowns: Fix desync which occured when issuing a "train too heavy" advice message.
 * Routing restrictions:

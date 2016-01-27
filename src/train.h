@@ -108,6 +108,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	TrackBitsByte track;
 	TrainForceProceedingByte force_proceed;
 	RailTypeByte railtype;
+	byte critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
 	RailTypes compatible_railtypes;
 
 	/** Ticks waiting in front of a signal, ticks being stuck or a counter for forced proceeding through signals. */

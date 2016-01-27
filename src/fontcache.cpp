@@ -240,7 +240,13 @@ public:
 	~FreeTypeFontCache();
 	virtual SpriteID GetUnicodeGlyph(WChar key) { return this->parent->GetUnicodeGlyph(key); }
 	virtual void SetUnicodeGlyph(WChar key, SpriteID sprite) { this->parent->SetUnicodeGlyph(key, sprite); }
-	virtual void InitializeUnicodeGlyphMap() { this->parent->InitializeUnicodeGlyphMap(); }
+
+	virtual void InitializeUnicodeGlyphMap()
+	{
+		this->parent->InitializeUnicodeGlyphMap();
+		font_height_cache[this->fs] = this->GetHeight();
+	}
+
 	virtual void ClearFontCache();
 	virtual const Sprite *GetGlyph(GlyphID key);
 	virtual uint GetGlyphWidth(GlyphID key);

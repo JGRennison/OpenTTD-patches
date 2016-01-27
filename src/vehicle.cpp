@@ -106,6 +106,7 @@ void VehicleServiceInDepot(Vehicle *v)
 		if (v->Next() != NULL) VehicleServiceInDepot(v->Next());
 		if (!(Train::From(v)->IsEngine()) && !(Train::From(v)->IsRearDualheaded())) return;
 		ClrBit(Train::From(v)->flags,VRF_NEED_REPAIR);
+		Train::From(v)->critical_breakdown_count = 0;
 		const RailVehicleInfo *rvi = &e->u.rail;
 		v->vcache.cached_max_speed = rvi->max_speed;
 		if (Train::From(v)->IsFrontEngine()) {
@@ -1469,17 +1470,12 @@ bool Vehicle::HandleBreakdown()
 							}
 							/* Max Speed reduction*/
 							if (_settings_game.vehicle.improved_breakdowns) {
-								const Engine *e = Engine::Get(this->engine_type);
-								const RailVehicleInfo *rvi = &e->u.rail;
-								if (!HasBit(Train::From(this)->flags,VRF_NEED_REPAIR)) {
-									if (rvi->max_speed > this->vcache.cached_max_speed) {
-										this->vcache.cached_max_speed = rvi->max_speed;
-									}
+								if (!HasBit(Train::From(this)->flags, VRF_NEED_REPAIR)) {
+									SetBit(Train::From(this)->flags, VRF_NEED_REPAIR);
+									Train::From(this)->critical_breakdown_count = 1;
+								} else if (Train::From(this)->critical_breakdown_count != 255) {
+									Train::From(this)->critical_breakdown_count++;
 								}
-								uint16 target_max_speed = min(this->vcache.cached_max_speed -
-										(this->vcache.cached_max_speed >> 1) / Train::From(this->First())->tcache.cached_num_engines + 1, this->vcache.cached_max_speed);
-								this->vcache.cached_max_speed = max(target_max_speed, min<uint16>(rvi->max_speed / 4, 28));
-								SetBit(Train::From(this)->flags, VRF_NEED_REPAIR);
 								Train::From(this->First())->ConsistChanged(CCF_TRACK);
 							}
 						/* FALL THROUGH */
@@ -2480,6 +2476,7 @@ void Vehicle::LeaveStation()
 			new_occupancy /= 100;
 		}
 		if (new_occupancy + 1 != old_occupancy) {
+			this->order_occupancy_average = 0;
 			real_current_order->SetOccupancy(static_cast<uint8>(new_occupancy + 1));
 			for (const Vehicle *v = this->FirstShared(); v != NULL; v = v->NextShared()) {
 				SetWindowDirty(WC_VEHICLE_ORDERS, v->index);
@@ -2488,6 +2485,25 @@ void Vehicle::LeaveStation()
 	}
 
 	this->MarkDirty();
+}
+
+void Vehicle::RecalculateOrderOccupancyAverage()
+{
+	uint num_valid = 0;
+	uint total = 0;
+	uint order_count = this->GetNumOrders();
+	for (uint i = 0; i < order_count; i++) {
+		uint occupancy = this->GetOrder(i)->GetOccupancy();
+		if (occupancy > 0) {
+			num_valid++;
+			total += (occupancy - 1);
+		}
+	}
+	if (num_valid > 0) {
+		this->order_occupancy_average = 16 + ((total + (num_valid / 2)) / num_valid);
+	} else {
+		this->order_occupancy_average = 1;
+	}
 }
 
 /**

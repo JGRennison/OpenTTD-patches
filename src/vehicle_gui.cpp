@@ -60,6 +60,7 @@ static GUIVehicleList::SortFunction VehicleValueSorter;
 static GUIVehicleList::SortFunction VehicleLengthSorter;
 static GUIVehicleList::SortFunction VehicleTimeToLiveSorter;
 static GUIVehicleList::SortFunction VehicleTimetableDelaySorter;
+static GUIVehicleList::SortFunction VehicleAverageOrderOccupancySorter;
 
 GUIVehicleList::SortFunction * const BaseVehicleListWindow::vehicle_sorter_funcs[] = {
 	&VehicleNumberSorter,
@@ -76,6 +77,7 @@ GUIVehicleList::SortFunction * const BaseVehicleListWindow::vehicle_sorter_funcs
 	&VehicleLengthSorter,
 	&VehicleTimeToLiveSorter,
 	&VehicleTimetableDelaySorter,
+	&VehicleAverageOrderOccupancySorter,
 };
 
 const StringID BaseVehicleListWindow::vehicle_sorter_names[] = {
@@ -93,6 +95,7 @@ const StringID BaseVehicleListWindow::vehicle_sorter_names[] = {
 	STR_SORT_BY_LENGTH,
 	STR_SORT_BY_LIFE_TIME,
 	STR_SORT_BY_TIMETABLE_DELAY,
+	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
 	INVALID_STRING_ID
 };
 
@@ -1266,6 +1269,13 @@ static int CDECL VehicleTimeToLiveSorter(const Vehicle * const *a, const Vehicle
 static int CDECL VehicleTimetableDelaySorter(const Vehicle * const *a, const Vehicle * const *b)
 {
 	int r = (*a)->lateness_counter - (*b)->lateness_counter;
+	return (r != 0) ? r : VehicleNumberSorter(a, b);
+}
+
+/** Sort vehicles by the average order occupancy */
+static int CDECL VehicleAverageOrderOccupancySorter(const Vehicle * const *a, const Vehicle * const *b)
+{
+	int r = (*a)->GetOrderOccupancyAverage() - (*b)->GetOrderOccupancyAverage();
 	return (r != 0) ? r : VehicleNumberSorter(a, b);
 }
 

@@ -359,6 +359,7 @@ struct ConstructionSettings {
 	uint16 clear_frame_burst;                ///< how many tiles may, over a short period, be cleared?
 	uint32 tree_per_64k_frames;              ///< how many trees may, over a long period, be planted per 65536 frames?
 	uint16 tree_frame_burst;                 ///< how many trees may, over a short period, be planted?
+	uint8  tree_growth_rate;                 ///< tree growth rate
 };
 
 /** Settings related to the AI. */
@@ -509,9 +510,10 @@ struct VehicleSettings {
 	byte   road_side;                        ///< the side of the road vehicles drive on
 	uint8  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
 	bool   adjacent_crossings;               ///< enable closing of adjacent level crossings
-	bool   improved_breakdowns;              ///< different types, chances and serverities of breakdowns
+	bool   improved_breakdowns;              ///< different types, chances and severities of breakdowns
 	bool   pay_for_repair;                   ///< pay for repairing vehicle
 	uint8  repair_cost;                      ///< cost of repairing vehicle
+	bool   ship_collision_avoidance;         ///< ships try to avoid colliding with each other
 };
 
 /** Settings related to the economy. */

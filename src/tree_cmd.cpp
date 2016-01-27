@@ -732,7 +732,16 @@ static void TileLoop_Trees(TileIndex tile)
 		}
 	}
 	if (GetTreeCounter(tile) < 15) {
-		AddTreeCounter(tile, 1);
+		if (_settings_game.construction.tree_growth_rate > 0) {
+			/* slow, very slow, extremely slow */
+			uint16 grow_slowing_values[3] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120 };
+
+			if (GB(Random(), 0, 16) < grow_slowing_values[_settings_game.construction.tree_growth_rate - 1]) {
+				AddTreeCounter(tile, 1);
+			}
+		} else {
+			AddTreeCounter(tile, 1);
+		}
 		return;
 	}
 	SetTreeCounter(tile, 0);
