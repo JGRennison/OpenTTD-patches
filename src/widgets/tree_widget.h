@@ -28,6 +28,7 @@ enum BuildTreesWidgets {
 	WID_BT_TYPE_34,         ///< Tree 3st column 4th row.
 	WID_BT_TYPE_RANDOM,     ///< Button to build random type of tree.
 	WID_BT_MANY_RANDOM,     ///< Button to build many random trees.
+	WID_BT_REMOVE_ALL,      ///< Button to remove all trees.
 };
 
 #endif /* WIDGETS_TREE_WIDGET_H */
