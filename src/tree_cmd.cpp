@@ -357,6 +357,24 @@ void PlaceTreesRandomly()
 }
 
 /**
+ * Remove all trees
+ *
+ * This function remove all trees on the map.
+ */
+void RemoveAllTrees()
+{
+	for(uint i = 0; i < MapSizeX(); i++) {
+		for(uint j = 0; j < MapSizeY(); j++) {
+			TileIndex tile = TileXY(i, j);
+			if(GetTileType(tile) == MP_TREES) {
+				DoCommandP(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound10);
+			}
+		}
+	}
+}
+
+
+/**
  * Place new trees.
  *
  * This function takes care of the selected tree placer algorithm and

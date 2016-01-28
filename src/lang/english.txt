@@ -2819,6 +2819,8 @@ STR_TREES_RANDOM_TYPE                                           :{BLACK}Trees of
 STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}Place trees of random type. Shift toggles building/showing cost estimate
 STR_TREES_RANDOM_TREES_BUTTON                                   :{BLACK}Random Trees
 STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK}Plant trees randomly throughout the landscape
+STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Remove all Trees
+STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Remove all Trees over landscape
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Land Generation
@@ -3780,6 +3782,13 @@ STR_VEHICLE_LIST_MASS_STOP_LIST_TOOLTIP                         :{BLACK}Click to
 STR_VEHICLE_LIST_MASS_START_LIST_TOOLTIP                        :{BLACK}Click to start all the vehicles in the list
 
 STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION                     :{WHITE}Shared orders of {COMMA} Vehicle{P "" s}
+
+STR_VEHICLE_LIST_CHANGE_ORDER_STATION                           :Move order to another station
+STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT                          :Move order to another waypoint
+STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT                       :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Move order to another hangar
 
 # Group window
 STR_GROUP_ALL_TRAINS                                            :All trains
