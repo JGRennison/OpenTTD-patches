@@ -55,9 +55,17 @@ void LinkGraphSchedule::SpawnNext()
  */
 bool LinkGraphSchedule::IsJoinWithUnfinishedJobDue() const
 {
-	if (this->running.empty()) return false;
-	const LinkGraphJob *next = this->running.front();
-	return next->IsFinished() && !next->IsJobCompleted();
+	for (JobList::const_iterator it = this->running.begin(); it != this->running.end(); ++it) {
+		if (!((*it)->IsFinished())) {
+			/* job is not due to be joined yet */
+			return false;
+		}
+		if (!((*it)->IsJobCompleted())) {
+			/* job is due to be joined, but is not completed */
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -65,16 +73,17 @@ bool LinkGraphSchedule::IsJoinWithUnfinishedJobDue() const
  */
 void LinkGraphSchedule::JoinNext()
 {
-	if (this->running.empty()) return;
-	LinkGraphJob *next = this->running.front();
-	if (!next->IsFinished()) return;
-	this->running.pop_front();
-	LinkGraphID id = next->LinkGraphIndex();
-	delete next; // implicitly joins the thread
-	if (LinkGraph::IsValidID(id)) {
-		LinkGraph *lg = LinkGraph::Get(id);
-		this->Unqueue(lg); // Unqueue to avoid double-queueing recycled IDs.
-		this->Queue(lg);
+	while (!(this->running.empty())) {
+		LinkGraphJob *next = this->running.front();
+		if (!next->IsFinished()) return;
+		this->running.pop_front();
+		LinkGraphID id = next->LinkGraphIndex();
+		delete next; // implicitly joins the thread
+		if (LinkGraph::IsValidID(id)) {
+			LinkGraph *lg = LinkGraph::Get(id);
+			this->Unqueue(lg); // Unqueue to avoid double-queueing recycled IDs.
+			this->Queue(lg);
+		}
 	}
 }
 
