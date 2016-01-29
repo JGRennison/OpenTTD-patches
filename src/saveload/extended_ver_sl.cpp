@@ -67,6 +67,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_EXTRA_LARGE_MAP,        XSCF_NULL,              0,                                    1, "extra_large_map",       NULL, NULL, NULL        },
 	{ XSLFI_REVERSE_AT_WAYPOINT,    XSCF_NULL,              1,                                    1, "reverse_at_waypoint",   NULL, NULL, NULL        },
 	{ XSLFI_VEH_LIFETIME_PROFIT,    XSCF_NULL,              1,                                    1, "veh_lifetime_profit",   NULL, NULL, NULL        },
+	{ XSLFI_LINKGRAPH_DAY_SCALE,    XSCF_NULL,              1,                                    1, "linkgraph_day_scale",   NULL, NULL, NULL        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 

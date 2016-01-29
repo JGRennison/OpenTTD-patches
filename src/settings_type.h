@@ -550,6 +550,7 @@ struct EconomySettings {
 struct LinkGraphSettings {
 	uint16 recalc_time;                         ///< time (in days) for recalculating each link graph component.
 	uint16 recalc_interval;                     ///< time (in days) between subsequent checks for link graphs to be calculated.
+	bool recalc_not_scaled_by_daylength;        ///< whether the time should be in daylength-scaled days (false) or unscaled days (true)
 	DistributionTypeByte distribution_pax;      ///< distribution type for passengers
 	DistributionTypeByte distribution_mail;     ///< distribution type for mail
 	DistributionTypeByte distribution_armoured; ///< distribution type for armoured cargo class

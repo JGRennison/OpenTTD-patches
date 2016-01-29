@@ -41,6 +41,7 @@ enum SlXvFeatureIndex {
 	XSLFI_EXTRA_LARGE_MAP,                        ///< Extra large map
 	XSLFI_REVERSE_AT_WAYPOINT,                    ///< Reverse at waypoint orders
 	XSLFI_VEH_LIFETIME_PROFIT,                    ///< Vehicle lifetime profit patch
+	XSLFI_LINKGRAPH_DAY_SCALE,                    ///< Linkgraph job duration & interval may be in non-scaled days
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

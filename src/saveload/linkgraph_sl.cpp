@@ -40,6 +40,13 @@ const SaveLoad *GetLinkGraphDesc()
 	return link_graph_desc;
 }
 
+void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj)
+{
+	lgj->join_date_ticks *= DAY_TICKS;
+	lgj->join_date_ticks += LinkGraphSchedule::SPAWN_JOIN_TICK;
+	lgj->start_date_ticks = lgj->join_date_ticks - (lgj->Settings().recalc_time * DAY_TICKS);
+}
+
 /**
  * Get a SaveLoad array for a link graph job. The settings struct is derived from
  * the global settings saveload array. The exact entries are calculated when the function
@@ -75,7 +82,8 @@ const SaveLoad *GetLinkGraphJobDesc()
 		}
 
 		const SaveLoad job_desc[] = {
-			SLE_VAR(LinkGraphJob, join_date,        SLE_INT32),
+			SLE_VAR(LinkGraphJob, join_date_ticks,  SLE_INT32),
+			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks,  SLE_INT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE)),
 			SLE_VAR(LinkGraphJob, link_graph.index, SLE_UINT16),
 			SLE_END()
 		};
@@ -208,6 +216,9 @@ static void Load_LGRJ()
 		}
 		LinkGraphJob *lgj = new (index) LinkGraphJob();
 		SlObject(lgj, GetLinkGraphJobDesc());
+		if (SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE)) {
+			GetLinkGraphJobDayLengthScaleAfterLoad(lgj);
+		}
 		LinkGraph &lg = const_cast<LinkGraph &>(lgj->Graph());
 		SlObject(&lg, GetLinkGraphDesc());
 		lg.Init(_num_nodes);
