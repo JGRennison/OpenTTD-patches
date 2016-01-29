@@ -56,7 +56,7 @@ void LinkGraphSchedule::SpawnNext()
 bool LinkGraphSchedule::IsJoinWithUnfinishedJobDue() const
 {
 	for (JobList::const_iterator it = this->running.begin(); it != this->running.end(); ++it) {
-		if (!((*it)->IsFinished())) {
+		if (!((*it)->IsFinished(1))) {
 			/* job is not due to be joined yet */
 			return false;
 		}
@@ -187,13 +187,19 @@ void StateGameLoop_LinkGraphPauseControl()
 		if (!LinkGraphSchedule::instance.IsJoinWithUnfinishedJobDue()) {
 			DoCommandP(0, PM_PAUSED_LINK_GRAPH, 0, CMD_PAUSE);
 		}
-	} else if (_pause_mode == PM_UNPAUSED && _tick_skip_counter == 0 &&
-			_date_fract == LinkGraphSchedule::SPAWN_JOIN_TICK - 1) {
-		if (_date % _settings_game.linkgraph.recalc_interval == _settings_game.linkgraph.recalc_interval / 2) {
-			/* perform check one _date_fract tick before we would join */
-			if (LinkGraphSchedule::instance.IsJoinWithUnfinishedJobDue()) {
-				DoCommandP(0, PM_PAUSED_LINK_GRAPH, 1, CMD_PAUSE);
-			}
+	} else if (_pause_mode == PM_UNPAUSED && _tick_skip_counter == 0) {
+		if (!_settings_game.linkgraph.recalc_not_scaled_by_daylength || _settings_game.economy.day_length_factor == 1) {
+			if (_date_fract != LinkGraphSchedule::SPAWN_JOIN_TICK - 1) return;
+			if (_date % _settings_game.linkgraph.recalc_interval != _settings_game.linkgraph.recalc_interval / 2) return;
+		} else {
+			int date_ticks = ((_date * DAY_TICKS) + _date_fract - (LinkGraphSchedule::SPAWN_JOIN_TICK - 1));
+			int interval = (_settings_game.linkgraph.recalc_interval * DAY_TICKS / _settings_game.economy.day_length_factor);
+			if (date_ticks % interval != interval / 2) return;
+		}
+
+		/* perform check one _date_fract tick before we would join */
+		if (LinkGraphSchedule::instance.IsJoinWithUnfinishedJobDue()) {
+			DoCommandP(0, PM_PAUSED_LINK_GRAPH, 1, CMD_PAUSE);
 		}
 	}
 }
@@ -204,11 +210,19 @@ void StateGameLoop_LinkGraphPauseControl()
  */
 void OnTick_LinkGraph()
 {
-	if (_date_fract != LinkGraphSchedule::SPAWN_JOIN_TICK) return;
-	Date offset = _date % _settings_game.linkgraph.recalc_interval;
+	int offset;
+	int interval;
+	if (!_settings_game.linkgraph.recalc_not_scaled_by_daylength || _settings_game.economy.day_length_factor == 1) {
+		if (_date_fract != LinkGraphSchedule::SPAWN_JOIN_TICK) return;
+		interval = _settings_game.linkgraph.recalc_interval;
+		offset = _date % interval;
+	} else {
+		interval = (_settings_game.linkgraph.recalc_interval * DAY_TICKS / _settings_game.economy.day_length_factor);
+		offset = ((_date * DAY_TICKS) + _date_fract - LinkGraphSchedule::SPAWN_JOIN_TICK) % interval;
+	}
 	if (offset == 0) {
 		LinkGraphSchedule::instance.SpawnNext();
-	} else if (offset == _settings_game.linkgraph.recalc_interval / 2) {
+	} else if (offset == interval / 2) {
 		LinkGraphSchedule::instance.JoinNext();
 	}
 }
