@@ -140,6 +140,15 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	}
 }
 
+/**
+ * Callback for when a time has been chosen to start the time table
+ * @param p1 The p1 parameter to send to CmdSetTimetableStart
+ * @param date the actually chosen date
+ */
+static void ChangeTimetableStartIntl(uint32 p1, DateTicks date)
+{
+	DoCommandP(0, p1, (Ticks)(date - (((DateTicks)_date * DAY_TICKS) + _date_fract)), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+}
 
 /**
  * Callback for when a time has been chosen to start the time table
@@ -148,13 +157,8 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
  */
 static void ChangeTimetableStartCallback(const Window *w, DateTicks date)
 {
-#if WALLCLOCK_NETWORK_COMPATIBLE
-	DoCommandP(0, w->window_number, (Date)(date / DAY_TICKS), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
-#else
-	DoCommandP(0, w->window_number, (Ticks)(date - (((DateTicks)_date * DAY_TICKS) + _date_fract)), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
-#endif
+	ChangeTimetableStartIntl(w->window_number, date);
 }
-
 
 struct TimetableWindow : Window {
 	int sel_index;
@@ -162,9 +166,10 @@ struct TimetableWindow : Window {
 	bool show_expected;     ///< Whether we show expected arrival or scheduled
 	uint deparr_time_width; ///< The width of the departure/arrival time
 	uint deparr_abbr_width; ///< The width of the departure/arrival abbreviation
-    int clicked_widget;     ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
+	int clicked_widget;     ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
 	Scrollbar *vscroll;
 	bool query_is_speed_query; ///< The currently open query window is a speed query and not a time query.
+	bool set_start_date_all;   ///< Set start date using minutes text entry: this is a set all vehicle (ctrl-click) action
 
 	TimetableWindow(WindowDesc *desc, WindowNumber window_number) :
 			Window(desc),
@@ -513,11 +518,7 @@ struct TimetableWindow : Window {
 					/* We are running towards the first station so we can start the
 					 * timetable at the given time. */
 					SetDParam(0, STR_JUST_DATE_WALLCLOCK_TINY);
-#if WALLCLOCK_NETWORK_COMPATIBLE
-					SetDParam(1, v->timetable_start * DAY_TICKS * _settings_game.economy.day_length_factor);
-#else
 					SetDParam(1, v->timetable_start * _settings_game.economy.day_length_factor);
-#endif
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_TIMETABLE_STATUS_START_AT);
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"
@@ -548,7 +549,7 @@ struct TimetableWindow : Window {
 	{
 		const Vehicle *v = this->vehicle;
 
-        this->clicked_widget = widget;
+		this->clicked_widget = widget;
 
 		switch (widget) {
 			case WID_VT_ORDER_VIEW: // Order view button
@@ -565,11 +566,12 @@ struct TimetableWindow : Window {
 
 			case WID_VT_START_DATE: // Change the date that the timetable starts.
 				if (_settings_client.gui.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
+					this->set_start_date_all = v->orders.list->IsCompleteTimetable() && _ctrl_pressed;
 					StringID str = STR_JUST_INT;
 					uint64 time = CURRENT_SCALED_TICKS;
 					time /= _settings_client.gui.ticks_per_minute;
 					time += _settings_client.gui.clock_offset;
-					time %= 24*60;
+					time %= (24 * 60);
 					time = (time % 60) + (((time / 60) % 24) * 100);
 					SetDParam(0, time);
 					ShowQueryString(str, STR_TIMETABLE_STARTING_DATE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
@@ -704,7 +706,7 @@ struct TimetableWindow : Window {
 					if (val < (CURRENT_MINUTE - 60)) val += 60 * 24;
 					val *= _settings_client.gui.ticks_per_minute;
 					val /= _settings_game.economy.day_length_factor;
-					ChangeTimetableStartCallback(this, val);
+					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), val);
 				}
 				break;
 			}
