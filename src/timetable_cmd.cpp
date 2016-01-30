@@ -315,7 +315,10 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
-			w->timetable_start = start_date + idx * total_duration / num_vehs;
+			w->timetable_start = start_date + idx * total_duration / (num_vehs * _settings_game.economy.day_length_factor);
+			if (w->timetable_start < (((DateTicks)_date * DAY_TICKS) + _date_fract) && idx < 0) {
+				w->timetable_start += (total_duration / _settings_game.economy.day_length_factor);
+			}
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
 		}
 
@@ -697,14 +700,16 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		}
 
 		if (new_time < 1) new_time = 1;
-		if (new_time != (int32)timetabled)
+		if (new_time != (int32)timetabled) {
 			ChangeTimetable(v, v->cur_real_order_index, new_time, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+		}
 	} else if (timetabled == 0 && HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
 		/* Add times for orders that are not yet timetabled, even while not autofilling */
-		if (travelling)
-			ChangeTimetable(v, v->cur_real_order_index, time_taken, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
-		else
-			ChangeTimetable(v, v->cur_real_order_index, time_loading, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+		if (travelling) {
+			ChangeTimetable(v, v->cur_real_order_index, time_taken, MTF_TRAVEL_TIME, true);
+		} else {
+			ChangeTimetable(v, v->cur_real_order_index, time_loading, MTF_WAIT_TIME, true);
+		}
 	}
 
 	/* Vehicles will wait at stations if they arrive early even if they are not
