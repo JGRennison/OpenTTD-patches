@@ -188,12 +188,8 @@ public:
 
 	CargoPayment *cargo_payment;        ///< The cargo payment we're currently in
 
-
 	/* Used for timetabling. */
-	uint32 current_order_time;          ///< How many ticks have passed since this order started.
 	uint32 current_loading_time;        ///< How long loading took. Less than current_order_time if vehicle is early.
-	int32 lateness_counter;             ///< How many ticks late (or early if negative) this vehicle is.
-	Date timetable_start;               ///< When the vehicle is supposed to start the timetable.
 
 	Rect coord;                         ///< NOSAVE: Graphical bounding box of the vehicle, i.e. what to redraw on moves.
 
@@ -705,10 +701,7 @@ public:
 		this->profit_this_year = src->profit_this_year;
 		this->profit_last_year = src->profit_last_year;
 
-		this->current_order_time = src->current_order_time;
 		this->current_loading_time = src->current_loading_time;
-		this->lateness_counter = src->lateness_counter;
-		this->timetable_start = src->timetable_start;
 
 		if (HasBit(src->vehicle_flags, VF_TIMETABLE_STARTED)) SetBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 		if (HasBit(src->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);
