@@ -254,15 +254,15 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte
 			case 2:
 				if (v->breakdown_ctr == 1) {
 					if (_settings_game.vehicle.improved_breakdowns) {
-						SetDParam(0, STR_VEHICLE_STATUS_BROKEN_DOWN_VEL);
+						SetDParam(0, STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT);
 						SetDParam(1, STR_BREAKDOWN_TYPE_CRITICAL + v->breakdown_type);
 						if (v->breakdown_type == BREAKDOWN_LOW_SPEED) {
-							SetDParam(2, min( v->First()->GetCurrentMaxSpeed(), v->breakdown_severity));
+							SetDParam(2, min(v->First()->GetCurrentMaxSpeed(), v->breakdown_severity));
 						} else if (v->breakdown_type == BREAKDOWN_LOW_POWER) {
-							SetDParam(2, v->breakdown_severity * 100 / 256 );
+							SetDParam(2, v->breakdown_severity * 100 / 256);
 						}
 					} else {
-						SetDParam( 0, STR_VEHICLE_STATUS_BROKEN_DOWN );
+						SetDParam(0, STR_VEHICLE_STATUS_BROKEN_DOWN);
 					}
 				} else {
 					if (HasBit(v->flags, VRF_NEED_REPAIR)) {

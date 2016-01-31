@@ -78,14 +78,15 @@ void GroundVehicle<T, Type>::CalculatePower(uint32& total_power, uint32& max_te,
 
 	for (const T *u = v; u != NULL; u = u->Next()) {
 		uint32 current_power = u->GetPower() + u->GetPoweredPartPower(u);
+
+		if (breakdowns && u->breakdown_ctr == 1 && u->breakdown_type == BREAKDOWN_LOW_POWER) {
+			current_power = current_power * u->breakdown_severity / 256;
+		}
+
 		total_power += current_power;
 
 		/* Only powered parts add tractive effort. */
 		if (current_power > 0) max_te += u->GetWeight() * u->GetTractiveEffort();
-
-		if (breakdowns && u->breakdown_ctr == 1 && u->breakdown_type == BREAKDOWN_LOW_POWER) {
-			total_power = total_power * u->breakdown_severity / 256;
-                }
 	}
 
 	max_te *= 10000; // Tractive effort in (tonnes * 1000 * 10 =) N.
@@ -138,7 +139,6 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	 * and km/h to m/s conversion below result in a maxium of
 	 * about 1.1E11, way more than 4.3E9 of int32. */
 	int64 power = this->gcache.cached_power * 746ll;
-	uint32 max_te = this->gcache.cached_max_te; // [N]
 
 	/* This is constructed from:
 	 *  - axle resistance:  U16 power * 10 for 128 vehicles.
@@ -171,8 +171,8 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	AccelStatus mode = v->GetAccelerationStatus();
 
 	/* handle breakdown power reduction */
-	//TODO
-	if(  Type == VEH_TRAIN  && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
+	uint32 max_te = this->gcache.cached_max_te; // [N]
+	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
 		/* We'd like to cache this, but changing cached_power has too many unwanted side-effects */
 		uint32 power_temp;
 		this->CalculatePower(power_temp, max_te, true);
@@ -198,7 +198,7 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
-	if ( Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER) && power == 0) {
+	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER) && power == 0) {
 		force = 0;
 	}
 
@@ -214,15 +214,13 @@ int GroundVehicle<T, Type>::GetAcceleration()
 		uint64 breakdown_factor = (uint64)abs(resistance) * (uint64)(this->cur_speed << 16);
 		breakdown_factor /= (max(force, (int64)100) * this->gcache.cached_max_track_speed);
 		breakdown_factor = min((64 << 16) + (breakdown_factor * 128), 255 << 16);
-		if ( Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
+		if (Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
 			/* For multiengine trains, breakdown chance is multiplied by 3 / (num_engines + 2) */
 			breakdown_factor *= 3;
 			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
 		}
 		/* breakdown_chance is at least 5 (5 / 128 = ~4% of the normal chance) */
-		this->breakdown_chance = max(breakdown_factor >> 16, (uint64)5);
-	} else {
-		this->breakdown_chance = 128;
+		this->breakdown_chance_factor = max(breakdown_factor >> 16, (uint64)5);
 	}
 
 	if (mode == AS_ACCEL) {
@@ -236,9 +234,9 @@ int GroundVehicle<T, Type>::GetAcceleration()
 		 * same (maximum) speed. */
 		int accel = ClampToI32((force - resistance) / (mass * 4));
 		accel = force < resistance ? min(-1, accel) : max(1, accel);
-		if (this->type == VEH_TRAIN ) {
+		if (this->type == VEH_TRAIN) {
 			if(_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
-				HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
+					HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
 				/* We need to apply the power reducation for non-realistic acceleration here */
 				uint32 power;
 				CalculatePower(power, max_te, true);
@@ -246,11 +244,10 @@ int GroundVehicle<T, Type>::GetAcceleration()
 				accel -= this->acceleration >> 1;
 			}
 
-
-			if ( this->IsFrontEngine() && !(this->current_order_time & 0x1FF) &&
-				!(this->current_order.IsType(OT_LOADING)) &&
-				!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
-				this->cur_speed < 3 && accel < 5) {
+			if (this->IsFrontEngine() && !(this->current_order_time & 0x1FF) &&
+					!(this->current_order.IsType(OT_LOADING)) &&
+					!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
+					this->cur_speed < 3 && accel < 5) {
 				SetBit(Train::From(this)->flags, VRF_TOO_HEAVY);
 			}
 		}

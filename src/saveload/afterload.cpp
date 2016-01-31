@@ -2820,31 +2820,34 @@ bool AfterLoadGame()
 
 	/* Set some breakdown-related variables to the correct values. */
 	if (SlXvIsFeatureMissing(XSLFI_IMPROVED_BREAKDOWNS)) {
+		Train *v;
+		FOR_ALL_TRAINS(v) {
+			if (v->IsFrontEngine()) {
+				if (v->breakdown_ctr == 1) SetBit(v->flags, VRF_BREAKDOWN_STOPPED);
+			} else if (v->IsEngine() || v->IsMultiheaded()) {
+				/** Non-front engines could have a reliability of 0.
+				 * Set it to the reliability of the front engine or the maximum, whichever is lower. */
+				const Engine *e = Engine::Get(v->engine_type);
+				v->reliability_spd_dec = e->reliability_spd_dec;
+				v->reliability = min(v->First()->reliability, e->reliability);
+			}
+		}
+	}
+	if (!SlXvIsFeaturePresent(XSLFI_IMPROVED_BREAKDOWNS, 3)) {
 		Vehicle *v;
 		FOR_ALL_VEHICLES(v) {
 			switch(v->type) {
-				case VEH_TRAIN: {
-					if (Train::From(v)->IsFrontEngine()) {
-						if (v->breakdown_ctr == 1) SetBit(Train::From(v)->flags, VRF_BREAKDOWN_STOPPED);
-					} else if (Train::From(v)->IsEngine() || Train::From(v)->IsMultiheaded()) {
-						/** Non-front engines could have a reliability of 0.
-						 * Set it to the reliability of the front engine or the maximum, whichever is lower. */
-						const Engine *e = Engine::Get(v->engine_type);
-						v->reliability_spd_dec = e->reliability_spd_dec;
-						v->reliability = min(v->First()->reliability, e->reliability);
-					}
-				}
-				/* FALL THROUGH */
+				case VEH_TRAIN:
 				case VEH_ROAD:
-					v->breakdown_chance = 128;
+					v->breakdown_chance_factor = 128;
 					break;
 
 				case VEH_SHIP:
-					v->breakdown_chance = 64;
+					v->breakdown_chance_factor = 64;
 					break;
 
 				case VEH_AIRCRAFT:
-					v->breakdown_chance = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
+					v->breakdown_chance_factor = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
 					v->breakdown_severity = 40;
 					break;
 

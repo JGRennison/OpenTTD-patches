@@ -382,15 +382,15 @@ static bool ShipAccelerate(Vehicle *v)
 	spd = min(v->cur_speed + 1, v->vcache.cached_max_speed);
 	spd = min(spd, v->current_order.GetMaxSpeed() * 2);
 
-	if(v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_LOW_POWER && v->cur_speed > (v->breakdown_severity * ShipVehInfo(v->engine_type)->max_speed) >> 8) {
-		if((v->tick_counter & 0x7) == 0 && v->cur_speed > 0) {
+	if (v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_LOW_POWER && v->cur_speed > (v->breakdown_severity * ShipVehInfo(v->engine_type)->max_speed) >> 8) {
+		if ((v->tick_counter & 0x7) == 0 && v->cur_speed > 0) {
 			spd = v->cur_speed - 1;
 		} else {
 			spd = v->cur_speed;
 		}
 	}
 
-	if(v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_LOW_SPEED) {
+	if (v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_LOW_SPEED) {
 		spd = min(spd, v->breakdown_severity);
 	}
 
@@ -714,7 +714,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, u
 
 		v->reliability = e->reliability;
 		v->reliability_spd_dec = e->reliability_spd_dec;
-		v->breakdown_chance = 64; // ships have a 50% lower breakdown chance than normal
+		v->breakdown_chance_factor = 64; // ships have a 50% lower breakdown chance than normal
 		v->max_age = e->GetLifeLengthInDays();
 		_new_vehicle_id = v->index;
 

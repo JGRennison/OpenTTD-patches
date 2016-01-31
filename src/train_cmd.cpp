@@ -129,7 +129,7 @@ void CheckTrainsLengths()
 void CheckBreakdownFlags(Train *v)
 {
 	assert(v->IsFrontEngine());
-	/* clear the flags we're gonna check first, we'll set them again later (if applicable ) */
+	/* clear the flags we're gonna check first, we'll set them again later (if applicable) */
 	CLRBITS(v->flags, (1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
 
 	for (const Train *w = v; w != NULL; w = w->Next()) {
@@ -492,10 +492,8 @@ void Train::UpdateAcceleration()
 
 	if (_settings_game.vehicle.improved_breakdowns) {
 		if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
-			this->breakdown_chance = max(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
+			this->breakdown_chance_factor = max(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
 		}
-	} else {
-		this->breakdown_chance = 128;
 	}
 }
 
@@ -4055,7 +4053,6 @@ void Train::OnNewDay()
 	if ((++this->day_counter & 7) == 0) DecreaseVehicleValue(this);
 
 	if (this->IsFrontEngine()) {
-
 		CheckIfTrainNeedsService(this);
 
 		CheckOrders(this);
@@ -4079,7 +4076,7 @@ void Train::OnNewDay()
 			SetWindowClassesDirty(WC_TRAINS_LIST);
 		}
 	}
-	if(IsEngine() || IsMultiheaded()) {
+	if (IsEngine() || IsMultiheaded()) {
 		CheckVehicleBreakdown(this);
 	}
 }

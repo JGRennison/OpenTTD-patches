@@ -370,22 +370,24 @@ protected:
 		uint spd = this->subspeed + accel;
 		this->subspeed = (byte)spd;
 
+		int tempmax = max_speed;
+
 		/* When we are going faster than the maximum speed, reduce the speed
 		 * somewhat gradually. But never lower than the maximum speed. */
-		int tempmax = ((this->breakdown_ctr == 1) ? this->cur_speed : max_speed);
-
 		if (this->breakdown_ctr == 1) {
 			if (this->breakdown_type == BREAKDOWN_LOW_POWER) {
-				if((this->tick_counter & 0x7) == 0) {
-					if(this->cur_speed > (this->breakdown_severity * max_speed) >> 8) {
+				if ((this->tick_counter & 0x7) == 0 && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
+					if (this->cur_speed > (this->breakdown_severity * max_speed) >> 8) {
 						tempmax = this->cur_speed - (this->cur_speed / 10) - 1;
 					} else {
 						tempmax = (this->breakdown_severity * max_speed) >> 8;
 					}
 				}
-			}
-			if(this->breakdown_type == BREAKDOWN_LOW_SPEED)
+			} else if (this->breakdown_type == BREAKDOWN_LOW_SPEED) {
 				tempmax = min(max_speed, this->breakdown_severity);
+			} else {
+				tempmax = this->cur_speed;
+			}
 		}
 
 		if (this->cur_speed > max_speed) {
