@@ -404,7 +404,13 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		FOR_ALL_VEHICLES(v) {
 			if (v->owner == old_owner && IsCompanyBuildableVehicleType(v->type)) {
 				if (new_owner == INVALID_OWNER) {
-					if (v->Previous() == NULL) delete v;
+					if (v->Previous() == NULL) {
+						if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN] && v->type == VEH_TRAIN && Train::From(v)->IsFrontEngine()) {
+							DeleteVisibleTrain(Train::From(v));
+						} else {
+							delete v;
+						}
+					}
 				} else {
 					if (v->IsEngineCountable()) GroupStatistics::CountEngine(v, -1);
 					if (v->IsPrimaryVehicle()) GroupStatistics::CountVehicle(v, -1);
