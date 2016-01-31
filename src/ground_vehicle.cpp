@@ -171,8 +171,7 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	AccelStatus mode = v->GetAccelerationStatus();
 
 	/* handle breakdown power reduction */
-	//TODO
-	if(  Type == VEH_TRAIN  && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
+	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
 		/* We'd like to cache this, but changing cached_power has too many unwanted side-effects */
 		uint32 power_temp;
 		this->CalculatePower(power_temp, max_te, true);
@@ -198,7 +197,7 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
-	if ( Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER) && power == 0) {
+	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER) && power == 0) {
 		force = 0;
 	}
 
@@ -214,7 +213,7 @@ int GroundVehicle<T, Type>::GetAcceleration()
 		uint64 breakdown_factor = (uint64)abs(resistance) * (uint64)(this->cur_speed << 16);
 		breakdown_factor /= (max(force, (int64)100) * this->gcache.cached_max_track_speed);
 		breakdown_factor = min((64 << 16) + (breakdown_factor * 128), 255 << 16);
-		if ( Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
+		if (Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
 			/* For multiengine trains, breakdown chance is multiplied by 3 / (num_engines + 2) */
 			breakdown_factor *= 3;
 			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
@@ -238,7 +237,7 @@ int GroundVehicle<T, Type>::GetAcceleration()
 		accel = force < resistance ? min(-1, accel) : max(1, accel);
 		if (this->type == VEH_TRAIN ) {
 			if(_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
-				HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
+					HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
 				/* We need to apply the power reducation for non-realistic acceleration here */
 				uint32 power;
 				CalculatePower(power, max_te, true);
@@ -246,11 +245,10 @@ int GroundVehicle<T, Type>::GetAcceleration()
 				accel -= this->acceleration >> 1;
 			}
 
-
-			if ( this->IsFrontEngine() && !(this->current_order_time & 0x1FF) &&
-				!(this->current_order.IsType(OT_LOADING)) &&
-				!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
-				this->cur_speed < 3 && accel < 5) {
+			if (this->IsFrontEngine() && !(this->current_order_time & 0x1FF) &&
+					!(this->current_order.IsType(OT_LOADING)) &&
+					!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
+					this->cur_speed < 3 && accel < 5) {
 				SetBit(Train::From(this)->flags, VRF_TOO_HEAVY);
 			}
 		}

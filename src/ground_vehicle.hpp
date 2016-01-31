@@ -376,16 +376,17 @@ protected:
 
 		if (this->breakdown_ctr == 1) {
 			if (this->breakdown_type == BREAKDOWN_LOW_POWER) {
-				if((this->tick_counter & 0x7) == 0) {
-					if(this->cur_speed > (this->breakdown_severity * max_speed) >> 8) {
+				if ((this->tick_counter & 0x7) == 0) {
+					if (this->cur_speed > (this->breakdown_severity * max_speed) >> 8) {
 						tempmax = this->cur_speed - (this->cur_speed / 10) - 1;
 					} else {
 						tempmax = (this->breakdown_severity * max_speed) >> 8;
 					}
 				}
 			}
-			if(this->breakdown_type == BREAKDOWN_LOW_SPEED)
+			if (this->breakdown_type == BREAKDOWN_LOW_SPEED) {
 				tempmax = min(max_speed, this->breakdown_severity);
+			}
 		}
 
 		if (this->cur_speed > max_speed) {

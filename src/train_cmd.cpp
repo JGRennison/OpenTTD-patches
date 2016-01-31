@@ -4079,7 +4079,7 @@ void Train::OnNewDay()
 			SetWindowClassesDirty(WC_TRAINS_LIST);
 		}
 	}
-	if(IsEngine() || IsMultiheaded()) {
+	if (IsEngine() || IsMultiheaded()) {
 		CheckVehicleBreakdown(this);
 	}
 }

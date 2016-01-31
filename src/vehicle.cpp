@@ -1430,7 +1430,7 @@ bool Vehicle::HandleBreakdown()
 			if ((this->tick_counter & (this->type == VEH_TRAIN ? 3 : 1)) == 0) {
 				if (--this->breakdown_delay == 0) {
 					this->breakdown_ctr = 0;
-					if(this->type == VEH_TRAIN) {
+					if (this->type == VEH_TRAIN) {
 						CheckBreakdownFlags(Train::From(this->First()));
 						this->First()->MarkDirty();
 						SetWindowDirty(WC_VEHICLE_VIEW, this->First()->index);
