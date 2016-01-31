@@ -298,7 +298,7 @@ CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 
 		v->reliability = e->reliability;
 		v->reliability_spd_dec = e->reliability_spd_dec;
-		v->breakdown_chance = 128;
+		v->breakdown_chance_factor = 128;
 		v->max_age = e->GetLifeLengthInDays();
 		_new_vehicle_id = v->index;
 

@@ -2835,14 +2835,15 @@ bool AfterLoadGame()
 						v->reliability = min(v->First()->reliability, e->reliability);
 					}
 				}
+				/* FALL THROUGH */
 				case VEH_ROAD:
-					v->breakdown_chance = 128;
+					v->breakdown_chance_factor = 128;
 					break;
 				case VEH_SHIP:
-					v->breakdown_chance = 64;
+					v->breakdown_chance_factor = 64;
 					break;
 				case VEH_AIRCRAFT:
-					v->breakdown_chance = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
+					v->breakdown_chance_factor = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
 					v->breakdown_severity = 40;
 					break;
 				default: break;

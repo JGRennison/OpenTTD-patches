@@ -671,6 +671,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		     SLE_VAR(Vehicle, breakdown_delay,       SLE_UINT8),
 		     SLE_VAR(Vehicle, breakdowns_since_last_service, SLE_UINT8),
 		     SLE_VAR(Vehicle, breakdown_chance,      SLE_UINT8),
+		 SLE_CONDVAR(Vehicle, breakdown_chance_factor, SLE_UINT8,              SL_IB, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, breakdown_type,        SLE_UINT8,                SL_IB, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, breakdown_severity,    SLE_UINT8,                SL_IB, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, build_year,            SLE_FILE_U8 | SLE_VAR_I32,    0,  30),

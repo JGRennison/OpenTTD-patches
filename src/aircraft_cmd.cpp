@@ -308,7 +308,7 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 		v->reliability_spd_dec = e->reliability_spd_dec;
 		/* higher speed means higher breakdown chance */
 		/* to somewhat compensate for the fact that fast aircraft spend less time in the air */
-		v->breakdown_chance = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
+		v->breakdown_chance_factor = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
 		v->max_age = e->GetLifeLengthInDays();
 
 		_new_vehicle_id = v->index;
@@ -1333,18 +1333,18 @@ static void MaybeCrashAirplane(Aircraft *v)
 	Station *st = Station::Get(v->targetairport);
 
 	/* FIXME -- MaybeCrashAirplane -> increase crashing chances of very modern airplanes on smaller than AT_METROPOLITAN airports */
-	uint32 prob = (_settings_game.vehicle.improved_breakdowns && _settings_game.difficulty.vehicle_breakdowns) ?
-            0x10000 / 10000 : 0x4000 << _settings_game.vehicle.plane_crashes;
+	uint32 prob = (0x4000 << _settings_game.vehicle.plane_crashes);
 
 	if ((st->airport.GetFTA()->flags & AirportFTAClass::SHORT_STRIP) &&
 			(AircraftVehInfo(v->engine_type)->subtype & AIR_FAST) &&
 			!_cheats.no_jetcrash.value) {
 		prob /= 20;
-	} else if (!_settings_game.vehicle.improved_breakdowns) {
+	} else {
 		prob /= 1500;
-	} else if (v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_AIRCRAFT_EM_LANDING) {
-                /* Airplanes that are attempting an emergency landing have a 2% chance to crash */
-		prob = 0x10000 / 50;
+	}
+	if (_settings_game.vehicle.improved_breakdowns && v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_AIRCRAFT_EM_LANDING) {
+		/* Airplanes that are attempting an emergency landing have a 2% chance to crash */
+		prob = max<uint32>(prob, 0x10000 / 50);
 	}
 
 	if (GB(Random(), 0, 22) > prob) return;

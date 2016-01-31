@@ -195,6 +195,7 @@ public:
 
 	byte breakdown_severity;            ///< severity of the breakdown. Note that lower means more severe
 	byte breakdown_type;                ///< Type of breakdown
+	byte breakdown_chance_factor;       ///< Improved breakdowns: current multiplier for breakdown_chance * 128, used for head vehicle only
 	SpriteID colourmap;                 ///< NOSAVE: cached colour mapping
 
 	/* Related to age and service time */

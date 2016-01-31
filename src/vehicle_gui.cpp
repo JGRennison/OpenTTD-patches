@@ -2632,7 +2632,15 @@ public:
 				if (w->breakdown_type == BREAKDOWN_LOW_SPEED) {
 					SetDParam(1, min( w->First()->GetDisplayMaxSpeed(), w->breakdown_severity >> ((v->type == VEH_TRAIN) ? 0 : 1)));
 				} else if (w->breakdown_type == BREAKDOWN_LOW_POWER) {
-					SetDParam(1, w->breakdown_severity * 100 / 256);
+					int percent;
+					if (v->type == VEH_TRAIN) {
+						uint32 power, te;
+						Train::From(v)->CalculatePower(power, te, true);
+						percent = (100 * power) / Train::From(v)->gcache.cached_power;
+					} else {
+						percent = w->breakdown_severity * 100 / 256;
+					}
+					SetDParam(1, percent);
 				}
 			}
 		} else if (v->vehstatus & VS_STOPPED) {
