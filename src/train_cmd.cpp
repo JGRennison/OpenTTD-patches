@@ -148,6 +148,17 @@ void CheckBreakdownFlags(Train *v)
 	}
 }
 
+uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, const Train *front)
+{
+	uint16 speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u->max_speed);
+	if (HasBit(u->flags, VRF_NEED_REPAIR) && front->IsFrontEngine()) {
+		for (uint i = 0; i < u->critical_breakdown_count; i++) {
+			speed = min(speed - (speed / (front->tcache.cached_num_engines + 2)) + 1, speed);
+		}
+	}
+	return speed;
+}
+
 /**
  * Recalculates the cached stuff of a train. Should be called each time a vehicle is added
  * to/removed from the chain, and when the game is loaded.
@@ -238,12 +249,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 			/* max speed is the minimum of the speed limits of all vehicles in the consist */
 			if ((rvi_u->railveh_type != RAILVEH_WAGON || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
-				uint16 speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u->max_speed);
-				if (HasBit(u->flags, VRF_NEED_REPAIR) && this->IsFrontEngine()) {
-					for (uint i = 0; i < u->critical_breakdown_count; i++) {
-						speed = min(speed - (speed / (this->tcache.cached_num_engines + 2)) + 1, speed);
-					}
-				}
+				uint16 speed = GetTrainVehicleMaxSpeed(u, rvi_u, this);
 				if (speed != 0) max_speed = min(speed, max_speed);
 			}
 		}

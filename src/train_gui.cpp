@@ -21,6 +21,8 @@
 
 #include "safeguards.h"
 
+uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, const Train *front);
+
 /**
  * Callback for building wagons.
  * @param result The result of the command.
@@ -267,7 +269,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte
 				} else {
 					if (HasBit(v->flags, VRF_NEED_REPAIR)) {
 						SetDParam(0, STR_NEED_REPAIR);
-						SetDParam(1, v->vcache.cached_max_speed);
+						SetDParam(1, GetTrainVehicleMaxSpeed(v, &(v->GetEngine()->u.rail), v->First()));
 					} else {
 						SetDParam(0, STR_RUNNING);
 					}
