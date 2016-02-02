@@ -160,6 +160,8 @@ void VehicleServiceInDepot(Vehicle *v)
 
 		v->breakdowns_since_last_service = 0;
 		v->reliability = v->GetEngine()->reliability;
+		/* Prevent vehicles from breaking down directly after exiting the depot. */
+		v->breakdown_chance = 0;
 		v = v->Next();
 	} while (v != NULL && v->HasEngineType());
 }
@@ -181,7 +183,7 @@ bool Vehicle::NeedsServicing() const
 	if ((this->ServiceIntervalIsPercent() ?
 			(this->reliability >= this->GetEngine()->reliability * (100 - this->service_interval) / 100) :
 			(this->date_of_last_service + this->service_interval >= _date))
-			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags ,VRF_NEED_REPAIR))) {
+			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_NEED_REPAIR))) {
 		return false;
 	}
 
@@ -1394,15 +1396,21 @@ void CheckVehicleBreakdown(Vehicle *v)
 		return;
 	}
 
-	uint32 r1 = Random();
-	uint32 r2 = Random();
+	uint32 r = Random();
 
-	byte chance = 128;
+	/* increase chance of failure */
+	int chance = v->breakdown_chance + 1;
+	if (Chance16I(1, 25, r)) chance += 25;
+	chance = min(255, chance);
+	v->breakdown_chance = chance;
+
 	if (_settings_game.vehicle.improved_breakdowns) {
-		/* Dual engines have their breakdown chances reduced to 70% of the normal value */
-		chance = (v->type == VEH_TRAIN && Train::From(v)->IsMultiheaded()) ? v->First()->breakdown_chance * 7 / 10 : v->First()->breakdown_chance;
-	} else if(v->type == VEH_SHIP) {
-		chance = 64;
+		if (v->type == VEH_TRAIN && Train::From(v)->IsMultiheaded()) {
+			/* Dual engines have their breakdown chances reduced to 70% of the normal value */
+			chance = chance * 7 / 10;
+		}
+		chance *= v->First()->breakdown_chance_factor;
+		chance >>= 7;
 	}
 	/**
 	 * Chance is (1 - reliability) * breakdown_setting * breakdown_chance / 10.
@@ -1412,9 +1420,12 @@ void CheckVehicleBreakdown(Vehicle *v)
 	 * However, because breakdowns are no longer by definition a complete stop,
 	 * their impact will be significantly less.
 	 */
+	uint32 r1 = Random();
 	if ((uint32) (0xffff - v->reliability) * _settings_game.difficulty.vehicle_breakdowns * chance > GB(r1, 0, 24) * 10) {
+		uint32 r2 = Random();
 		v->breakdown_ctr = GB(r1, 24, 6) + 0xF;
 		v->breakdown_delay = GB(r2, 0, 7) + 0x80;
+		v->breakdown_chance = 0;
 		DetermineBreakdownType(v, r2);
 	}
 }
@@ -1547,7 +1558,7 @@ bool Vehicle::HandleBreakdown()
 			if ((this->tick_counter & (this->type == VEH_TRAIN ? 3 : 1)) == 0) {
 				if (--this->breakdown_delay == 0) {
 					this->breakdown_ctr = 0;
-					if(this->type == VEH_TRAIN) {
+					if (this->type == VEH_TRAIN) {
 						CheckBreakdownFlags(Train::From(this->First()));
 						this->First()->MarkDirty();
 						SetWindowDirty(WC_VEHICLE_VIEW, this->First()->index);
