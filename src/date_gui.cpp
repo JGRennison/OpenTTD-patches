@@ -264,7 +264,7 @@ struct SetMinutesWindow : SetDateWindow
 
 			case WID_SD_SET_DATE:
 				if (this->callback != NULL) {
-					this->callback(this->parent, (((DateTicks)minutes - _settings_client.gui.clock_offset) * _settings_client.gui.ticks_per_minute)
+					this->callback(this, (((DateTicks)minutes - _settings_client.gui.clock_offset) * _settings_client.gui.ticks_per_minute)
 							/ _settings_game.economy.day_length_factor);
 				}
 				delete this;

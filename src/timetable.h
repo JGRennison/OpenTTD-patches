@@ -15,8 +15,6 @@
 #include "date_type.h"
 #include "vehicle_type.h"
 
-#define WALLCLOCK_NETWORK_COMPATIBLE 0 ///< Whether wallclock should preserve network compatibility. If so, then timetable start dates cannot be set exactly using minutes.
-
 void ShowTimetableWindow(const Vehicle *v);
 void UpdateVehicleTimetable(Vehicle *v, bool travelling);
 void SetTimetableParams(int param1, int param2, Ticks ticks);

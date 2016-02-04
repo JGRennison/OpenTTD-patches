@@ -1195,6 +1195,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 						SetPresentSignals(tile, (GetPresentSignals(tile) & ~SignalOnTrack(track)) | KillFirstBit(SignalOnTrack(track)));
 					}
 				} else {
+					/* programmable signal dependencies are invalidated when the signal direction is changed */
+					CheckRemoveSignal(tile, track);
 					/* cycle the signal side: both -> left -> right -> both -> ... */
 					CycleSignalSide(tile, track);
 					/* Query current signal type so the check for PBS signals below works. */

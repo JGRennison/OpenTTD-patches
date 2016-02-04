@@ -2840,7 +2840,7 @@ public:
 		} else if (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN)) {
 			if (_settings_game.vehicle.improved_breakdowns) {
 				str = STR_VEHICLE_STATUS_BROKEN_DOWN_VEL;
-				SetDParam(2, v->GetDisplaySpeed());
+				SetDParam(3, v->GetDisplaySpeed());
 			} else {
 				str = STR_VEHICLE_STATUS_BROKEN_DOWN;
 			}
@@ -2857,9 +2857,17 @@ public:
 				SetDParam(0, STR_BREAKDOWN_TYPE_CRITICAL + w->breakdown_type);
 
 				if (w->breakdown_type == BREAKDOWN_LOW_SPEED) {
-					SetDParam(1, min( w->First()->GetDisplayMaxSpeed(), w->breakdown_severity >> ((v->type == VEH_TRAIN) ? 0 : 1)));
+					SetDParam(1, min(w->First()->GetDisplayMaxSpeed(), w->breakdown_severity >> ((v->type == VEH_TRAIN) ? 0 : 1)));
 				} else if (w->breakdown_type == BREAKDOWN_LOW_POWER) {
-					SetDParam(1, w->breakdown_severity * 100 / 256);
+					int percent;
+					if (v->type == VEH_TRAIN) {
+						uint32 power, te;
+						Train::From(v)->CalculatePower(power, te, true);
+						percent = (100 * power) / Train::From(v)->gcache.cached_power;
+					} else {
+						percent = w->breakdown_severity * 100 / 256;
+					}
+					SetDParam(1, percent);
 				}
 			}
 		} else if (v->vehstatus & VS_STOPPED) {

@@ -132,7 +132,7 @@ void CheckTrainsLengths()
 void CheckBreakdownFlags(Train *v)
 {
 	assert(v->IsFrontEngine());
-	/* clear the flags we're gonna check first, we'll set them again later (if applicable ) */
+	/* clear the flags we're gonna check first, we'll set them again later (if applicable) */
 	CLRBITS(v->flags, (1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
 
 	for (const Train *w = v; w != NULL; w = w->Next()) {
@@ -149,6 +149,17 @@ void CheckBreakdownFlags(Train *v)
 			}
 		}
 	}
+}
+
+uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, const Train *front)
+{
+	uint16 speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u->max_speed);
+	if (HasBit(u->flags, VRF_NEED_REPAIR) && front->IsFrontEngine()) {
+		for (uint i = 0; i < u->critical_breakdown_count; i++) {
+			speed = min(speed - (speed / (front->tcache.cached_num_engines + 2)) + 1, speed);
+		}
+	}
+	return speed;
 }
 
 /**
@@ -241,12 +252,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 			/* max speed is the minimum of the speed limits of all vehicles in the consist */
 			if ((rvi_u->railveh_type != RAILVEH_WAGON || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
-				uint16 speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u->max_speed);
-				if (HasBit(u->flags, VRF_NEED_REPAIR) && this->IsFrontEngine()) {
-					for (uint i = 0; i < u->critical_breakdown_count; i++) {
-						speed = min(speed - (speed / (this->tcache.cached_num_engines + 2)) + 1, speed);
-					}
-				}
+				uint16 speed = GetTrainVehicleMaxSpeed(u, rvi_u, this);
 				if (speed != 0) max_speed = min(speed, max_speed);
 			}
 		}
@@ -495,10 +501,8 @@ void Train::UpdateAcceleration()
 
 	if (_settings_game.vehicle.improved_breakdowns) {
 		if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
-			this->breakdown_chance = max(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
+			this->breakdown_chance_factor = max(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
 		}
-	} else {
-		this->breakdown_chance = 128;
 	}
 }
 
@@ -2688,7 +2692,7 @@ static bool HasLongReservePbsSignalOnTrackdir(Train* v, TileIndex tile, Trackdir
 			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
 			if (prog && prog->actions_used_flags & TRPAUF_LONG_RESERVE) {
 				TraceRestrictProgramResult out;
-				prog->Execute(v, TraceRestrictProgramInput(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr), out);
+				prog->Execute(v, TraceRestrictProgramInput(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, NULL), out);
 				if (out.flags & TRPRF_LONG_RESERVE) {
 					return true;
 				}
@@ -3247,9 +3251,6 @@ static Vehicle *FindTrainCollideEnum(Vehicle *v, void *data)
 
 	/* not a train or in depot */
 	if (v->type != VEH_TRAIN || Train::From(v)->track == TRACK_BIT_DEPOT) return NULL;
-
-	/* do not crash into trains of another company. */
-	if (v->owner != tcc->v->owner) return NULL;
 
 	/* get first vehicle now to make most usual checks faster */
 	Train *coll = Train::From(v)->First();
@@ -4443,7 +4444,6 @@ void Train::OnNewDay()
 	if ((++this->day_counter & 7) == 0) DecreaseVehicleValue(this);
 
 	if (this->IsFrontEngine()) {
-
 		CheckIfTrainNeedsService(this);
 
 		CheckOrders(this);
@@ -4470,7 +4470,7 @@ void Train::OnNewDay()
 			SetWindowClassesDirty(WC_TRAINS_LIST);
 		}
 	}
-	if(IsEngine() || IsMultiheaded()) {
+	if (IsEngine() || IsMultiheaded()) {
 		CheckVehicleBreakdown(this);
 	}
 }
