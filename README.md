@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.10.2
+## JGR's Patchpack version 0.11.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -24,7 +24,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 #### This patchpack contains the following
 
 * Routing restrictions: [thread](http://www.tt-forums.net/viewtopic.php?f=33&t=73397)  
-  This is developed in the *tracerestrict* branch.  
+  As of v0.11.0 this includes the Long Reserve feature from [here](http://www.tt-forums.net/viewtopic.php?f=33&t=74365).  
   A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)
 
 * Programmable signals: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=47690)  
@@ -79,10 +79,11 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Rating in town label: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42598)
 
-* Day length: [imported](http://www.tt-forums.net/viewtopic.php?p=1148227#p1148227)
+* Day length: [imported](http://www.tt-forums.net/viewtopic.php?p=1148227#p1148227)  
+  * Add a setting to use non day length scaled days for cargo dest link graph calculation times (added in v0.11.0)
 
 * Order occupancy  
-  Add column to orders GUI to show occupancy running average.
+  Add column to orders GUI to show occupancy running average, show the average order occupancy, and add a vehicle sort mode.
 
 * Servicing  
   Send vehicles which need auto-renewing due to age for servicing, even if breakdowns are off and no servicing if no breakdowns is on.
@@ -121,10 +122,21 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Reverse at waypoint orders (added in v0.7.0)
 
 * Show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match list owner (imported: by McZapkie) (added in v0.8.0)  
-  This has been  modified to change the mark and be controlled by a setting (on by default).
+  This has been modified to change the mark and be controlled by a setting (on by default).
 
-* Vehicle lifetime profit patch [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=72844) (added in v0.10.0)  
+* Vehicle lifetime profit: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=72844) (added in v0.10.0)  
   This has been modified to show current lifetime profit, instead of the yearly-updated value.
+
+* Hierarchical group collapse: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.11.0)  
+  This has been modified to show an icon for collapsed groups, and only the enable the collapse/(un)collapse all buttons where useful.
+
+* Ship collision avoidance: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.11.0)
+
+* Reduced tree growth: [imported](http://www.tt-forums.net/viewtopic.php?p=890778#p890778) (added in v0.11.0)
+
+* Remove all trees in scenario editor: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49326) (added in v0.11.0)
+
+* Add a menu item to the vehicle list to change order target (added in v0.11.0)
 
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  

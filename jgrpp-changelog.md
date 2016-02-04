@@ -2,6 +2,37 @@
 
 * * *
 
+### v0.11.0 (2016-02-04)
+* Programmable signals: Fix crash when a programmable signal referenced a signal which was then turned to face the other way, and the programmable signal and then the other signal were then deleted.
+* Improved breakdowns:
+  * Change the breakdown probability calculation to more closely resemble the original behaviour.
+  * Revert airport crash probabilities back to original behaviour, with modified behaviour only during emergency landings.
+  * Low power breakdowns now only reduce the power of the engine which has broken down.
+  * Low power breakdowns no longer reduce speed directly when using realistic acceleration, trains can coast or accelerate more slowly instead of actively braking.
+  * Fix vehicle needs repair speed limits being incorrect in vehicle details.
+* Auto timetables:
+  * Fix timetable auto not being unset when sharing orders. Clear autofill when sharing/copying orders with timetable auto enabled.
+  * Copy timetable auto state when copying orders.
+  * Fix set distributed timetable start not working when using minutes.
+  * Avoid set distributed timetable start setting start dates in the past.
+* Add the hierarchical group collapse patch, with various modifications:
+  * Make group collapsing per-window.
+  * Add icon for collapsed groups.
+  * Only enable collapse & (un)collapse all buttons where useful. Disable collapse button for leaf groups. Disable (un)collapse all button when all non-leaf groups already (un)collapsed.
+* Add the ship collision avoidance patch. Add an on/off setting.
+* Add the reduced tree growth patch.
+* Add the remove all trees in scenario editor patch.
+* Add a menu item to the vehicle list to change order target, e.g. for moving depot orders to a different depot.
+* Show the average of the order occupancies in the orders window, and add a vehicle sort mode.
+* Routing restrictions: Add Long Reserve feature.
+* Infrastructure sharing:
+  * Trains can now be crashed with trains from other companies
+  * PBS reservations are now cleared when other companies' trains are removed due to the company being deleted/bankrupt.
+* Cargo dest link graph:
+  * Join more than one link graph job at once where possible. This is to prevent a backlog of jobs if the link graph settings are changed mid game.
+  * Add setting for link graph times to be in non day length scaled days.
+  * Bump trunk base from r27495 to r27505
+
 ### v0.10.2 (2016-01-19)
 * Improved breakdowns:
   * Fix incorrect train speed limits after a save/load or network join (causing desync issues) after critical/mechanical breakdowns.
