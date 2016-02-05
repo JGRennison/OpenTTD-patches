@@ -66,11 +66,6 @@ INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
 TraceRestrictMapping _tracerestrictprogram_mapping;
 
 /**
- * Default value for pathfinder penalty instructions
- */
-static const uint16 _tracerestrict_penalty_item_default_value = 500;
-
-/**
  * List of pre-defined pathfinder penalty values
  * This is indexed by TraceRestrictPathfinderPenaltyPresetIndex
  */
