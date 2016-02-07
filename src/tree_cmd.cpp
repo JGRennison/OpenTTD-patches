@@ -363,6 +363,8 @@ void PlaceTreesRandomly()
  */
 void RemoveAllTrees()
 {
+	if (_game_mode != GM_EDITOR) return;
+
 	for(uint i = 0; i < MapSizeX(); i++) {
 		for(uint j = 0; j < MapSizeY(); j++) {
 			TileIndex tile = TileXY(i, j);
