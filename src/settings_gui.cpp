@@ -1586,6 +1586,10 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("vehicle.servint_roadveh"));
 			company->Add(new SettingEntry("vehicle.servint_ships"));
 			company->Add(new SettingEntry("vehicle.servint_aircraft"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[0]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[1]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[2]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[3]"));
 		}
 
 		SettingsPage *accounting = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCOUNTING));
