@@ -88,9 +88,15 @@ static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID 
 CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	/* Elementary check for valid location. */
-	if (!IsDepotTile(tile) || !IsTileOwner(tile, _current_company)) return CMD_ERROR;
+	if (!IsDepotTile(tile)) return CMD_ERROR;
 
 	VehicleType type = GetDepotVehicleType(tile);
+	if (!IsTileOwner(tile, _current_company)) {
+		if (!_settings_game.economy.infrastructure_sharing[type]) return CMD_ERROR;
+
+		const Company *c = Company::GetIfValid(GetTileOwner(tile));
+		if (c == NULL || !c->settings.infra_others_buy_in_depot[type]) return CMD_ERROR;
+	}
 
 	/* Validate the engine type. */
 	EngineID eid = GB(p1, 0, 16);

@@ -1641,6 +1641,10 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("vehicle.auto_timetable_by_default"));
 			company->Add(new SettingEntry("auto_timetable_separation_rate"));
 			company->Add(new SettingEntry("order_occupancy_smoothness"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[0]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[1]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[2]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[3]"));
 		}
 
 		SettingsPage *accounting = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCOUNTING));

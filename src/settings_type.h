@@ -596,6 +596,7 @@ struct CompanySettings {
 	VehicleDefaultSettings vehicle;          ///< default settings for vehicles
 	uint8 order_occupancy_smoothness;        ///< percentage smoothness of occupancy measurement changes
 	uint8  auto_timetable_separation_rate;   ///< percentage of auto timetable separation change to apply
+	bool infra_others_buy_in_depot[4];       ///< other companies can buy/autorenew in this companies depots (where infra sharing enabled)
 };
 
 /** All settings together for the game. */
