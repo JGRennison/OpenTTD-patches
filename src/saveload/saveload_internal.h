@@ -28,6 +28,7 @@ const SaveLoad *GetBaseStationDescription();
 
 void AfterLoadVehicles(bool part_of_load);
 void FixupTrainLengths();
+void AfterLoadTemplateVehicles();
 void AfterLoadStations();
 void AfterLoadRoadStops();
 void AfterLoadLabelMaps();

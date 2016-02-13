@@ -57,6 +57,8 @@
 
 #include "safeguards.h"
 
+#include "tbtr_template_vehicle_func.h"
+
 #define GEN_HASH(x, y) ((GB((y), 6 + ZOOM_LVL_SHIFT, 6) << 6) + GB((x), 7 + ZOOM_LVL_SHIFT, 6))
 
 VehicleID _new_vehicle_id;
@@ -626,6 +628,13 @@ void ResetVehicleColourMap()
 typedef SmallMap<Vehicle *, bool, 4> AutoreplaceMap;
 static AutoreplaceMap _vehicles_to_autoreplace;
 
+/**
+ * List of vehicles that are issued for template replacement this tick.
+ * Mapping is {vehicle : leave depot after replacement}
+ */
+typedef SmallMap<Train *, bool, 4> TemplateReplacementMap;
+static TemplateReplacementMap _vehicles_to_templatereplace;
+
 void InitializeVehicles()
 {
 	_vehicles_to_autoreplace.Reset();
@@ -828,14 +837,25 @@ Vehicle::~Vehicle()
  */
 void VehicleEnteredDepotThisTick(Vehicle *v)
 {
-	/* Vehicle should stop in the depot if it was in 'stopping' state */
-	_vehicles_to_autoreplace[v] = !(v->vehstatus & VS_STOPPED);
+	/* Template Replacement Setup stuff */
+	bool stayInDepot = v->current_order.GetDepotActionType();
+	TemplateReplacement *tr = GetTemplateReplacementByGroupID(v->group_id);
+	if ( tr ) {
+		if ( stayInDepot )	_vehicles_to_templatereplace[(Train*)v] = true;
+		else				_vehicles_to_templatereplace[(Train*)v] = false;
+	}
+	/* Moved the assignment for auto replacement here to prevent auto replacement
+	 * from happening if template replacement is also scheduled */
+	else
+		/* Vehicle should stop in the depot if it was in 'stopping' state */
+		_vehicles_to_autoreplace[v] = !(v->vehstatus & VS_STOPPED);
 
 	/* We ALWAYS set the stopped state. Even when the vehicle does not plan on
 	 * stopping in the depot, so we stop it to ensure that it will not reserve
 	 * the path out of the depot before we might autoreplace it to a different
 	 * engine. The new engine would not own the reserved path we store that we
 	 * stopped the vehicle, so autoreplace can start it again */
+
 	v->vehstatus |= VS_STOPPED;
 }
 
@@ -877,6 +897,7 @@ static void RunVehicleDayProc()
 void CallVehicleTicks()
 {
 	_vehicles_to_autoreplace.Clear();
+	_vehicles_to_templatereplace.Clear();
 
 	RunVehicleDayProc();
 
@@ -953,6 +974,7 @@ void CallVehicleTicks()
 		}
 	}
 
+	/* do Auto Replacement */
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
 	for (AutoreplaceMap::iterator it = _vehicles_to_autoreplace.Begin(); it != _vehicles_to_autoreplace.End(); it++) {
 		v = it->first;
@@ -997,8 +1019,24 @@ void CallVehicleTicks()
 		SetDParam(1, error_message);
 		AddVehicleAdviceNewsItem(message, v->index);
 	}
-
 	cur_company.Restore();
+
+	/* do Template Replacement */
+	Backup<CompanyByte> tmpl_cur_company(_current_company, FILE_LINE);
+	for (TemplateReplacementMap::iterator it = _vehicles_to_templatereplace.Begin(); it != _vehicles_to_templatereplace.End(); it++) {
+
+		Train *t = it->first;
+
+		tmpl_cur_company.Change(t->owner);
+
+		bool stayInDepot = it->second;
+
+		it->first->vehstatus |= VS_STOPPED;
+		CmdTemplateReplaceVehicle(t, stayInDepot, DC_EXEC);
+		/* Redraw main gui for changed statistics */
+		SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
+	}
+	tmpl_cur_company.Restore();
 }
 
 /**

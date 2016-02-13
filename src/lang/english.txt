@@ -4968,3 +4968,62 @@ STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+
+STR_TMPL_RPL_TITLE												:{WHITE}Template Replacement
+STR_TMPL_TEMPLATE_REPLACEMENT									:Template Replacement
+STR_TMPL_TRAINS_IN_GROUP										:{BLACK}Trains in group
+STR_TMPL_AVAILABLE_TEMPLATES									:{BLACK}Available Templates
+STR_TMPL_DEFINE_TEMPLATE										:{BLACK}New
+STR_TMPL_EDIT_TEMPLATE											:{BLACK}Edit
+STR_TMPL_CREATE_CLONE_VEH										:{BLACK}Clone
+STR_TMPL_DELETE_TEMPLATE										:{BLACK}Delete
+STR_TMPL_RPL_ALL_TMPL											:{BLACK}Replace All Templates
+STR_TMPL_NEW_VEHICLE											:{BLACK}New Vehicle
+STR_TMPL_CONFIRM												:{BLACK}Ok
+STR_TMPL_CANCEL													:{BLACK}Cancel
+STR_TMPL_NEW													:{BLACK}New Template Vehicle
+STR_TMPL_REFIT													:{BLACK}Refit
+STR_TMPL_GROUP_INFO												:{BLACK}Group Info: {ORANGE}
+STR_TMPL_TEMPLATE_INFO											:{BLACK}Template Info: {ORANGE}
+STR_TMPL_RPL_START												:{BLACK}Start replacing
+STR_TMPL_RPL_STOP												:{BLACK}Stop replacing
+STR_TMPL_TRAIN_OVR_VALUE										:{TINY_FONT}{BLACK}Train Value: {CURRENCY_SHORT}
+STR_TMPL_TEMPLATE_OVR_VALUE										:{TINY_FONT}{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_nogold								:{TINY_FONT}{BLACK}Buying Cost: {CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_nogoldandcurrency					:{TINY_FONT}{BLACK}Buying Cost:
+STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont							:{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_notinyfontandblack					:Buying Cost: {GOLD}{CURRENCY_LONG}
+STR_TMPL_WARNING_FREE_WAGON										:{RED}Free Chain: not runnable!
+STR_TMPL_TEST													:{ORANGE}Test String: {RAW_STRING} {RAW_STRING}
+STR_TMPL_GROUP_USES_TEMPLATE									:{BLACK}Template in use: {NUM}
+STR_TMP_TEMPLATE_IN_USE											:Template is in use
+STR_TMPL_GROUP_NUM_TRAINS										:{BLACK}{NUM}
+STR_TMPL_CREATEGUI_TITLE										:{WHITE}Create/Edit Template Vehicle
+STR_TMPL_MAINGUI_DEFINEDGROUPS									:{BLACK}Defined Groups for Company
+STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE								:Uses Template of different rail type
+
+STR_TMPL_SET_USEDEPOT											:{BLACK}Use vehicles in depot
+STR_TMPL_SET_USEDEPOT_TIP										:{BLACK}Use vehicles inside the depot that are in a neutral and idle state to compose trains on template replacement in order to reduce buying costs
+STR_TMPL_SET_KEEPREMAINDERS										:{BLACK}Keep remainders
+STR_TMPL_SET_KEEPREMAINDERS_TIP									:{BLACK}After finishing template replacement keep all remaining vehicles from the old train in a neutral and idle state for later use
+STR_TMPL_SET_REFIT												:{BLACK}Use Refit
+STR_TMPL_SET_REFIT_TIP											:{BLACK}If set, the train will use exactly the cargo refit specified by the template. If not every wagon that is to be newly bought or retrieved from the depot, will *attempt* to be refitted as the old one was. Standard refit if this is impossible.
+
+STR_TMPL_CONFIG_USEDEPOT										:use depot
+STR_TMPL_CONFIG_KEEPREMAINDERS									:keep rem
+STR_TMPL_CONFIG_REFIT											:refit
+
+STR_TMPL_NUM_TRAINS_NEED_RPL									:# trains to replace:
+
+STR_TMPL_CARGO_SUMMARY											:{CARGO_LONG}
+STR_TMPL_CARGO_SUMMARY_MULTI									:{CARGO_LONG} (x{NUM})
+
+STR_TMPL_RPLALLGUI_TITLE										:{WHITE}Replace all Templace Vehicles
+STR_TMPL_RPLALLGUI_INSET_TOP									:{BLACK}Choose Vehicle Type and Replacement
+STR_TMPL_RPLALLGUI_INSET_TOP_1									:{BLACK}Template Engines
+STR_TMPL_RPLALLGUI_INSET_TOP_2									:{BLACK}Buyable Engines
+STR_TMPL_RPLALLGUI_INSET_BOTTOM									:{BLACK}Current Template List (updated only after replacement)
+STR_TMPL_RPLALLGUI_BUTTON_RPLALL								:{BLACK}Replace All
+STR_TMPL_RPLALLGUI_BUTTON_APPLY									:{BLACK}Apply
+STR_TMPL_RPLALLGUI_BUTTON_CANCEL								:{BLACK}Cancel
+STR_TMPL_RPLALLGUI_USE_TIP										:{BLACK}Select a vehicle type from each list and press 'Replace All'. If you are happy with the result displayed in the template list, press 'Apply' to actually apply these changes.

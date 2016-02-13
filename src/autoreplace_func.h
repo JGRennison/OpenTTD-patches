@@ -99,4 +99,6 @@ static inline CommandCost RemoveEngineReplacementForCompany(Company *c, EngineID
 
 bool CheckAutoreplaceValidity(EngineID from, EngineID to, CompanyID company);
 
+CommandCost CopyHeadSpecificThings(Vehicle*, Vehicle*, DoCommandFlag);
+
 #endif /* AUTOREPLACE_FUNC_H */

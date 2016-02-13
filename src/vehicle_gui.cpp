@@ -37,10 +37,10 @@
 #include "engine_func.h"
 #include "station_base.h"
 #include "tilehighlight_func.h"
+#include "tbtr_template_gui_main.h"
 #include "zoom_func.h"
 
 #include "safeguards.h"
-
 
 Sorting _sorting;
 
@@ -168,6 +168,7 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 {
 	DropDownList *list = new DropDownList();
 
+	*list->Append() = new DropDownListStringItem(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, false);
 	if (show_autoreplace) *list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, false);
 	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, false);
 	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, false);
@@ -400,6 +401,7 @@ struct RefitWindow : public Window {
 	VehicleID selected_vehicle;  ///< First vehicle in the current selection.
 	uint8 num_vehicles;          ///< Number of selected vehicles.
 	bool auto_refit;             ///< Select cargo for auto-refitting.
+	bool is_virtual_train;       ///< TemplateReplacement, whether the selected vehicle is virtual
 
 	/**
 	 * Collects all (cargo, subcargo) refit options of a vehicle chain.
@@ -581,11 +583,12 @@ struct RefitWindow : public Window {
 		return &l[this->sel[1]];
 	}
 
-	RefitWindow(WindowDesc *desc, const Vehicle *v, VehicleOrderID order, bool auto_refit) : Window(desc)
+	RefitWindow(WindowDesc *desc, const Vehicle *v, VehicleOrderID order, bool auto_refit, bool is_virtual) : Window(desc)
 	{
 		this->sel[0] = -1;
 		this->sel[1] = 0;
 		this->auto_refit = auto_refit;
+		this->is_virtual_train = is_virtual;
 		this->order = order;
 		this->CreateNestedTree();
 
@@ -949,9 +952,9 @@ struct RefitWindow : public Window {
 
 					if (this->order == INVALID_VEH_ORDER_ID) {
 						bool delete_window = this->selected_vehicle == v->index && this->num_vehicles == UINT8_MAX;
-						if (DoCommandP(v->tile, this->selected_vehicle, this->cargo->cargo | this->cargo->subtype << 8 | this->num_vehicles << 16, GetCmdRefitVeh(v)) && delete_window) delete this;
+						if (DoCommandP(v->tile, this->selected_vehicle, this->cargo->cargo | this->cargo->subtype << 8 | this->num_vehicles << 16 | this->is_virtual_train << 5, GetCmdRefitVeh(v)) && delete_window) delete this;
 					} else {
-						if (DoCommandP(v->tile, v->index, this->cargo->cargo | this->order << 16, CMD_ORDER_REFIT)) delete this;
+						if (DoCommandP(v->tile, v->index, this->cargo->cargo | this->cargo->subtype << 8 | this->order << 16 | this->is_virtual_train << 5, CMD_ORDER_REFIT)) delete this;
 					}
 				}
 				break;
@@ -1032,10 +1035,10 @@ static WindowDesc _vehicle_refit_desc(
  * @param parent the parent window of the refit window
  * @param auto_refit Choose cargo for auto-refitting
  */
-void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit)
+void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit, bool is_virtual_train)
 {
 	DeleteWindowById(WC_VEHICLE_REFIT, v->index);
-	RefitWindow *w = new RefitWindow(&_vehicle_refit_desc, v, order, auto_refit);
+	RefitWindow *w = new RefitWindow(&_vehicle_refit_desc, v, order, auto_refit, is_virtual_train);
 	w->parent = parent;
 }
 
@@ -1662,6 +1665,9 @@ public:
 				switch (index) {
 					case ADI_REPLACE: // Replace window
 						ShowReplaceGroupVehicleWindow(ALL_GROUP, this->vli.vtype);
+						break;
+					case ADI_TEMPLATE_REPLACE:
+						ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
 						break;
 					case ADI_SERVICE: // Send for servicing
 					case ADI_DEPOT: // Send to Depots

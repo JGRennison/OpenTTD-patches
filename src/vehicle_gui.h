@@ -19,7 +19,7 @@
 #include "engine_type.h"
 #include "company_type.h"
 
-void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit = false);
+void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit = false, bool is_virtual_train = false);
 
 /** The tabs in the train details window */
 enum TrainDetailsWindowTabs {

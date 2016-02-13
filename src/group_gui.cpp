@@ -34,6 +34,8 @@
 
 static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
 
+#include "tbtr_template_gui_main.h"
+
 typedef GUIList<const Group*> GUIGroupList;
 
 static const NWidgetPart _nested_group_widgets[] = {
@@ -643,6 +645,7 @@ public:
 			case WID_GL_DELETE_GROUP: { // Delete the selected group
 				this->group_confirm = this->vli.index;
 				ShowQuery(STR_QUERY_GROUP_DELETE_CAPTION, STR_GROUP_DELETE_QUERY_TEXT, this, DeleteGroupCallback);
+				InvalidateWindowData(WC_TEMPLATEGUI_MAIN, 0, 0, 0);
 				break;
 			}
 
@@ -762,6 +765,7 @@ public:
 	virtual void OnQueryTextFinished(char *str)
 	{
 		if (str != NULL) DoCommandP(0, this->group_rename, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), NULL, str);
+		InvalidateWindowData(WC_TEMPLATEGUI_MAIN, 0, 0, 0);
 		this->group_rename = INVALID_GROUP;
 	}
 
@@ -782,6 +786,10 @@ public:
 				assert(this->vehicles.Length() != 0);
 
 				switch (index) {
+					case ADI_TEMPLATE_REPLACE: // TemplateReplace Window
+						if ( vli.vtype == VEH_TRAIN )
+							ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
+						break;
 					case ADI_REPLACE: // Replace window
 						ShowReplaceGroupVehicleWindow(this->vli.index, this->vli.vtype);
 						break;

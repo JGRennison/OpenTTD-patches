@@ -41,6 +41,8 @@
 
 #include "safeguards.h"
 
+#include "engine_func.h"
+
 static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool force_res, bool *got_reservation, bool mark_stuck);
 static bool TrainCheckIfLineEnds(Train *v, bool reverse = true);
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // Also used in vehicle_sl.cpp.
@@ -259,7 +261,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	if (this->IsFrontEngine()) {
 		this->UpdateAcceleration();
-		SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
+		if ( !HasBit(this->subtype, GVSF_VIRTUAL) ) SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 		InvalidateWindowData(WC_VEHICLE_REFIT, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateWindowData(WC_VEHICLE_ORDERS, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateNewGRFInspectWindow(GSF_TRAINS, this->index);
@@ -1158,6 +1160,7 @@ static void NormaliseTrainHead(Train *head)
  * @param p1 various bitstuffed elements
  * - p1 (bit  0 - 19) source vehicle index
  * - p1 (bit      20) move all vehicles following the source vehicle
+ * - p1 (bit	  21) this is a virtual vehicle (for creating TemplateVehicles)
  * @param p2 what wagon to put the source wagon AFTER, XXX - INVALID_VEHICLE to make a new line
  * @param text unused
  * @return the cost of this operation or an error
@@ -1222,10 +1225,14 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	if (!move_chain && dst != NULL && dst->IsRearDualheaded() && src == dst->other_multiheaded_part) return CommandCost();
 
 	/* Check if all vehicles in the source train are stopped inside a depot. */
-	if (!src_head->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
+	/* Do this check only if the vehicle to be moved is non-virtual */
+	if ( !HasBit(p1, 21) )
+		if (!src_head->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
 
 	/* Check if all vehicles in the destination train are stopped inside a depot. */
-	if (dst_head != NULL && !dst_head->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
+	/* Do this check only if the destination vehicle is non-virtual */
+	if ( !HasBit(p1, 21) )
+		if (dst_head != NULL && !dst_head->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
 
 	/* First make a backup of the order of the trains. That way we can do
 	 * whatever we want with the order and later on easily revert. */
@@ -1334,8 +1341,11 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		if (dst_head != NULL) dst_head->First()->MarkDirty();
 
 		/* We are undoubtedly changing something in the depot and train list. */
-		InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile);
-		InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+		/* But only if the moved vehicle is not virtual */
+		if ( !HasBit(src->subtype, GVSF_VIRTUAL) ) {
+			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile);
+			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+		}
 	} else {
 		/* We don't want to execute what we're just tried. */
 		RestoreTrainBackup(original_src);
@@ -1418,8 +1428,11 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 		NormaliseTrainHead(new_head);
 
 		/* We are undoubtedly changing something in the depot and train list. */
-		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
-		InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+		/* Unless its a virtual train */
+		if ( !HasBit(v->subtype, GVSF_VIRTUAL) ) {
+			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+		}
 
 		/* Actually delete the sold 'goods' */
 		delete sell_head;
@@ -3741,6 +3754,16 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 	return true;
 }
 
+/* Calculate the summed up value of all parts of a train */
+Money Train::CalculateCurrentOverallValue() const
+{
+	Money ovr_value = 0;
+	const Train *v = this;
+	do {
+		ovr_value += v->value;
+	} while ( (v=v->GetNextVehicle()) != NULL );
+	return ovr_value;
+}
 
 static bool TrainLocoHandler(Train *v, bool mode)
 {
@@ -4034,4 +4057,159 @@ Trackdir Train::GetVehicleTrackdir() const
 	}
 
 	return TrackDirectionToTrackdir(FindFirstTrack(this->track), this->direction);
+}
+
+
+/* Get the pixel-width of the image that is used for the train vehicle
+ * @return:	the image width number in pixel
+ */
+int GetDisplayImageWidth(Train *t, Point *offset)
+{
+	int reference_width = TRAININFO_DEFAULT_VEHICLE_WIDTH;
+	int vehicle_pitch = 0;
+
+	const Engine *e = Engine::Get(t->engine_type);
+	if (e->grf_prop.grffile != NULL && is_custom_sprite(e->u.rail.image_index)) {
+		reference_width = e->grf_prop.grffile->traininfo_vehicle_width;
+		vehicle_pitch = e->grf_prop.grffile->traininfo_vehicle_pitch;
+	}
+
+	if (offset != NULL) {
+		offset->x = reference_width / 2;
+		offset->y = vehicle_pitch;
+	}
+	//printf("  refwid:%d  gdiw.cachedvehlen(%d):%d  ", reference_width, this->engine_type, this->gcache.cached_veh_length);
+	return t->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH;
+}
+
+Train* CmdBuildVirtualRailWagon(const Engine *e)
+{
+	const RailVehicleInfo *rvi = &e->u.rail;
+
+	Train *v = new Train();
+
+	v->x_pos = 0;
+	v->y_pos = 0;
+
+	v->spritenum = rvi->image_index;
+
+	v->engine_type = e->index;
+	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
+
+	v->direction = DIR_W;
+	v->tile = 0;//INVALID_TILE;
+
+	v->owner = _current_company;
+	v->track = TRACK_BIT_DEPOT;
+	v->vehstatus = VS_HIDDEN | VS_DEFPAL;
+
+	v->SetWagon();
+	v->SetFreeWagon();
+
+	v->cargo_type = e->GetDefaultCargoType();
+	v->cargo_cap = rvi->capacity;
+
+	v->railtype = rvi->railtype;
+
+	v->build_year = _cur_year;
+	v->cur_image = SPR_IMG_QUERY;
+	v->random_bits = VehicleRandomBits();
+
+	v->group_id = DEFAULT_GROUP;
+
+	AddArticulatedParts(v);
+
+	_new_vehicle_id = v->index;
+
+	// from revision r22xxx
+	// VehicleMove(v, false);
+	// new
+	v->UpdateViewport(true, false);
+
+	v->First()->ConsistChanged(ConsistChangeFlags::CCF_ARRANGE);
+	//UpdateTrainGroupID(v->First());
+
+	CheckConsistencyOfArticulatedVehicle(v);
+
+	/* The GVSF_VIRTUAL flag is used to prevent depot-tile sanity checks */
+	SetBit(v->subtype, GVSF_VIRTUAL);
+
+// 	GroupStatistics::CountVehicle( v, -1 );
+
+	return v;
+}
+
+/**
+ * Build a railroad vehicle.
+ * @param tile     tile of the depot where rail-vehicle is built.
+ * @param flags    type of operation.
+ * @param e        the engine to build.
+ * @param data     bit 0 prevents any free cars from being added to the train.
+ * @param ret[out] the vehicle that has been built.
+ * @return the cost of this operation or an error.
+ */
+Train* CmdBuildVirtualRailVehicle(EngineID eid)
+{
+	if ( !IsEngineBuildable(eid, VEH_TRAIN, _current_company) ) return 0;
+	const Engine* e = Engine::Get(eid);
+	const RailVehicleInfo *rvi = &e->u.rail;
+
+	int num_vehicles = (e->u.rail.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid, false);
+	if ( !Train::CanAllocateItem(num_vehicles) ) return 0;
+	if (rvi->railveh_type == RAILVEH_WAGON) return CmdBuildVirtualRailWagon(e);
+
+	Train *v = new Train();
+
+	v->x_pos = 0;
+	v->y_pos = 0;
+
+	v->direction = DIR_W;
+	v->tile = 0;//INVALID_TILE;
+	v->owner = _current_company;
+	v->track = TRACK_BIT_DEPOT;
+	v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
+	v->spritenum = rvi->image_index;
+	v->cargo_type = e->GetDefaultCargoType();
+	v->cargo_cap = rvi->capacity;
+	v->last_station_visited = INVALID_STATION;
+
+	v->engine_type = e->index;
+	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
+
+	v->reliability = e->reliability;
+	v->reliability_spd_dec = e->reliability_spd_dec;
+	v->max_age = e->GetLifeLengthInDays();
+
+	v->railtype = rvi->railtype;
+	_new_vehicle_id = v->index;
+
+	v->cur_image = SPR_IMG_QUERY;
+	v->random_bits = VehicleRandomBits();
+
+	v->group_id = DEFAULT_GROUP;
+
+	v->SetFrontEngine();
+	v->SetEngine();
+
+	// from revision r22xxx
+//	VehicleMove(v, false);
+	//	new
+	v->UpdateViewport(true, false);
+
+	if (rvi->railveh_type == RAILVEH_MULTIHEAD) {
+		AddRearEngineToMultiheadedTrain(v);
+	} else {
+		AddArticulatedParts(v);
+	}
+
+	v->ConsistChanged(ConsistChangeFlags::CCF_ARRANGE);
+	//UpdateTrainGroupID(v);
+
+	CheckConsistencyOfArticulatedVehicle(v);
+
+	SetBit(v->subtype, GVSF_VIRTUAL);
+
+// 	GroupStatistics::CountVehicle( v, -1 );
+
+	return v;
 }

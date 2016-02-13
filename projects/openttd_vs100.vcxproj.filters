@@ -102,6 +102,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\tbtr_template_gui_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tbtr_template_gui_create.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tbtr_template_gui_create_virtualtrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tbtr_template_gui_replaceall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tbtr_template_vehicle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tbtr_template_vehicle_func.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\src\tbtr_template_gui_main.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tbtr_template_gui_create.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tbtr_template_gui_create_virtualtrain.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tbtr_template_gui_replaceall.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tbtr_template_vehicle.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tbtr_template_vehicle_func.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClCompile Include="..\src\airport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1834,6 +1870,12 @@
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\saveload\waypoint_sl.cpp">
+      <Filter>Save/Load handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\saveload\tbtr_template_replacement_sl.cpp">
+      <Filter>Save/Load handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\saveload\tbtr_template_veh_sl.cpp">
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
     <ClInclude Include="..\src\table\airport_defaults.h">
