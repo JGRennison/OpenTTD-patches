@@ -398,7 +398,7 @@ public:
 				break;
 
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN: {
-				Dimension d = this->GetActionDropdownSize(true, true);
+				Dimension d = this->GetActionDropdownSize(true, true, this->vli.vtype == VEH_TRAIN);
 				d.height += padding.height;
 				d.width  += padding.width;
 				*size = maxdim(*size, d);
@@ -657,7 +657,7 @@ public:
 				break;
 
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN: {
-				DropDownList *list = this->BuildActionDropdownList(true, Group::IsValidID(this->vli.index));
+				DropDownList *list = this->BuildActionDropdownList(true, Group::IsValidID(this->vli.index), this->vli.vtype == VEH_TRAIN);
 				ShowDropDownList(this, list, 0, WID_GL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}

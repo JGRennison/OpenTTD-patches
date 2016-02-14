@@ -143,11 +143,14 @@ void BaseVehicleListWindow::BuildVehicleList()
  * @param show_group If true include group-related stuff.
  * @return Required size.
  */
-Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bool show_group)
+Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace)
 {
 	Dimension d = {0, 0};
 
 	if (show_autoreplace) d = maxdim(d, GetStringBoundingBox(STR_VEHICLE_LIST_REPLACE_VEHICLES));
+	if (show_autoreplace && show_template_replace) {
+		d = maxdim(d, GetStringBoundingBox(STR_TMPL_TEMPLATE_REPLACEMENT));
+	}
 	d = maxdim(d, GetStringBoundingBox(STR_VEHICLE_LIST_SEND_FOR_SERVICING));
 	d = maxdim(d, GetStringBoundingBox(this->vehicle_depot_name[this->vli.vtype]));
 
@@ -165,12 +168,14 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
  * @param show_group If true include group-related stuff.
  * @return Itemlist for dropdown
  */
-DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group)
+DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace)
 {
 	DropDownList *list = new DropDownList();
 
-	*list->Append() = new DropDownListStringItem(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, false);
 	if (show_autoreplace) *list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, false);
+	if (show_autoreplace && show_template_replace) {
+		*list->Append() = new DropDownListStringItem(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, false);
+	}
 	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, false);
 	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, false);
 
@@ -1520,7 +1525,7 @@ public:
 			}
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
-				Dimension d = this->GetActionDropdownSize(this->vli.type == VL_STANDARD, false);
+				Dimension d = this->GetActionDropdownSize(this->vli.type == VL_STANDARD, false, this->vli.vtype == VEH_TRAIN);
 				d.height += padding.height;
 				d.width  += padding.width;
 				*size = maxdim(*size, d);
@@ -1645,7 +1650,8 @@ public:
 				break;
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
-				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier(this->window_number).type == VL_STANDARD, false);
+				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier(this->window_number).type == VL_STANDARD,
+						false, this->vli.vtype == VEH_TRAIN);
 				ShowDropDownList(this, list, 0, WID_VL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
@@ -1671,7 +1677,9 @@ public:
 						ShowReplaceGroupVehicleWindow(ALL_GROUP, this->vli.vtype);
 						break;
 					case ADI_TEMPLATE_REPLACE:
-						ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
+						if (vli.vtype == VEH_TRAIN) {
+							ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
+						}
 						break;
 					case ADI_SERVICE: // Send for servicing
 					case ADI_DEPOT: // Send to Depots

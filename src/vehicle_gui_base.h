@@ -47,8 +47,8 @@ struct BaseVehicleListWindow : public Window {
 	void DrawVehicleListItems(VehicleID selected_vehicle, int line_height, const Rect &r) const;
 	void SortVehicleList();
 	void BuildVehicleList();
-	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group);
-	DropDownList *BuildActionDropdownList(bool show_autoreplace, bool show_group);
+	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace);
+	DropDownList *BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace);
 };
 
 uint GetVehicleListHeight(VehicleType type, uint divisor = 1);
