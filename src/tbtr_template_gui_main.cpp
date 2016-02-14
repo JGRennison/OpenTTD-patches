@@ -710,13 +710,13 @@ public:
 			TextColour color;
 
 			color = v->IsSetReuseDepotVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(left + 300, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
+			DrawString(right - 225, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
 
 			color = v->IsSetKeepRemainingVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(left + 400, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
+			DrawString(right - 150, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
 
 			color = v->IsSetRefitAsTemplate() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(left + 500, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
+			DrawString(right - 75, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
 
 			y += line_height;
 		}
