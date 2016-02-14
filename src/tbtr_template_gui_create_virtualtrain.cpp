@@ -650,8 +650,7 @@ struct BuildVirtualTrainWindow : Window {
 			case WID_BV_BUILD: {
 				EngineID sel_eng = this->sel_engine;
 				if (sel_eng != INVALID_ENGINE) {
-					Train *tmp = CmdBuildVirtualRailVehicle(sel_eng);
-					if (tmp) AddVirtualEngine(tmp);
+					DoCommandP(0, sel_engine, 0, CMD_BUILD_VIRTUAL_RAIL_VEHICLE, CcAddVirtualEngine);
 				}
 				break;
 			}
@@ -667,12 +666,7 @@ struct BuildVirtualTrainWindow : Window {
 	{
 		if (!gui_scope) return;
 		/* When switching to original acceleration model for road vehicles, clear the selected sort criteria if it is not available now. */
-		if (this->vehicle_type == VEH_ROAD &&
-				_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL &&
-				this->sort_criteria > 7) {
-			this->sort_criteria = 0;
-			_last_sort_criteria[VEH_ROAD] = 0;
-		}
+
 		this->eng_list.ForceRebuild();
 	}
 
@@ -796,17 +790,28 @@ struct BuildVirtualTrainWindow : Window {
 
 	void AddVirtualEngine(Train *toadd)
 	{
-		if ( !*virtual_train ) {
+		if (*virtual_train == NULL) {
 			*virtual_train = toadd;
-		}
-		else {
+		} else {
 			VehicleID target = (*(this->virtual_train))->GetLastUnit()->index;
-			CommandCost movec;
-			movec = CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, (1<<21) | toadd->index, target, 0);
+
+			DoCommandP(0, (1<<21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE);
 		}
 		*noticeParent = true;
 	}
 };
+
+void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
+{
+	if (result.Failed()) return;
+
+	Window* window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
+	if (window) {
+		Train* train = Train::From(Vehicle::Get(_new_vehicle_id));
+		((BuildVirtualTrainWindow*)window)->AddVirtualEngine(train);
+		window->InvalidateData();
+	}
+}
 
 static WindowDesc _build_vehicle_desc(
 	WDP_AUTO,						// window position

@@ -145,8 +145,7 @@ private:
 public:
 	TemplateReplacementReplaceAllWindow(WindowDesc *wdesc) : Window(wdesc)
 	{
-
-		this->CreateNestedTree(wdesc);
+		this->CreateNestedTree(wdesc != nullptr);
 
 		this->vscroll_tl = this->GetScrollbar(RPLALL_GUI_SCROLL_TL);
 		this->vscroll_tr = this->GetScrollbar(RPLALL_GUI_SCROLL_TR);
@@ -193,7 +192,7 @@ public:
 
 	virtual void OnPaint()
 	{
- 		this->GetWidget<NWidgetCore>(RPLALL_GUI_PANEL_BUTTONFLUFF_3)->colour  = _company_colours[_local_company];
+		this->GetWidget<NWidgetCore>(RPLALL_GUI_PANEL_BUTTONFLUFF_3)->colour  = _company_colours[_local_company];
 
 		this->DrawWidgets();
 	}

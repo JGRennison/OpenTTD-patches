@@ -27,8 +27,6 @@
 struct TemplateVehicle;
 struct TemplateReplacement;
 
-CommandCost CmdBuildTemplateVehicle(uint i, DoCommandFlag flags, uint p1, uint p2, char const* text);
-CommandCost CmdTemplateReplaceVehicle(uint i, DoCommandFlag flags, uint p1, uint p2, char const* text);
 typedef uint16 TemplateID;
 
 
@@ -171,11 +169,11 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	inline GroupID Group() { return this->group; }
 	inline GroupID Template() { return this->sel_template; }
 
- 	inline void SetGroup(GroupID gid) { this->group = gid; }
- 	inline void SetTemplate(TemplateID tid) { this->sel_template = tid; }
+	inline void SetGroup(GroupID gid) { this->group = gid; }
+	inline void SetTemplate(TemplateID tid) { this->sel_template = tid; }
 
- 	inline TemplateID GetTemplateVehicleID() { return sel_template; }
- 	inline const TemplateVehicle* GetTemplateVehicle() {
+	inline TemplateID GetTemplateVehicleID() { return sel_template; }
+	inline const TemplateVehicle* GetTemplateVehicle() {
 		const TemplateVehicle *tv;
 		FOR_ALL_TEMPLATES(tv) {
 			if ( tv->index == this->sel_template )

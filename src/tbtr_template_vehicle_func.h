@@ -8,6 +8,10 @@
 #include "tbtr_template_vehicle.h"
 
 //void DrawTemplateVehicle(TemplateVehicle*, int, const Rect&);
+
+
+Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv);
+
 void DrawTemplateVehicle(const TemplateVehicle*, int, int, int, VehicleID, int, VehicleID);
 
 void BuildTemplateGuiList(GUITemplateList*, Scrollbar*, Owner, RailType);
@@ -26,9 +30,9 @@ TemplateVehicle *CreateNewTemplateVehicle(EngineID);
 
 void setupVirtTrain(const TemplateVehicle*, Train*);
 
-TemplateVehicle* TemplateVehicleFromVirtualTrain(Train*);
+TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt);
 
-Train* VirtualTrainFromTemplateVehicle(TemplateVehicle*);
+//Train* VirtualTrainFromTemplateVehicle(TemplateVehicle*);
 
 inline TemplateVehicle* Last(TemplateVehicle*);
 
@@ -51,16 +55,21 @@ Train* DepotContainsEngine(TileIndex, EngineID, Train*);
 
 int NumTrainsNeedTemplateReplacement(GroupID, TemplateVehicle*);
 
-CommandCost TestBuyAllTemplateVehiclesInChain(Train*);
 CommandCost CalculateTemplateReplacementCost(Train*);
+CommandCost TestBuyAllTemplateVehiclesInChain(TemplateVehicle *tv, TileIndex tile);
+
+void CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag);
+void BreakUpRemainders(Train *t);
 
 short CountEnginesInChain(Train*);
 
 bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle*, RailType);
 
-Train* CloneVirtualTrainFromTrain(const Train *);
-TemplateVehicle* CloneTemplateVehicleFromTrain(const Train *);
-
 void TransferCargoForTrain(Train*, Train*);
+
+void NeutralizeStatus(Train *t);
+
+bool TrainMatchesTemplate(const Train *t, TemplateVehicle *tv);
+bool TrainMatchesTemplateRefit(const Train *t, TemplateVehicle *tv);
 
 #endif
