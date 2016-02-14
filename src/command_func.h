@@ -125,4 +125,12 @@ CommandCallback CcFoundRandomTown;
 CommandCallback CcBuildPrimaryVehicle;
 CommandCallback CcStartStopVehicle;
 
+/* tbtr_template_gui_create.cpp */
+CommandCallback CcSetVirtualTrain;
+CommandCallback CcVirtualTrainWaggonsMoved;
+CommandCallback CcDeleteVirtualTrain;
+
+/* tbtr_template_gui_create_virtualtrain.cpp */
+CommandCallback CcAddVirtualEngine;
+
 #endif /* COMMAND_FUNC_H */

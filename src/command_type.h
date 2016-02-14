@@ -240,6 +240,8 @@ enum Commands {
 
 	CMD_WANT_ENGINE_PREVIEW,          ///< confirm the preview of an engine
 
+	CMD_SET_VEHICLE_UNIT_NUMBER,      ///< sets the unit number of a vehicle
+
 	CMD_RENAME_VEHICLE,               ///< rename a whole vehicle
 	CMD_RENAME_ENGINE,                ///< rename a engine (in the engine list)
 	CMD_RENAME_COMPANY,               ///< change the company name
@@ -306,10 +308,27 @@ enum Commands {
 
 	CMD_SET_AUTOREPLACE,              ///< set an autoreplace entry
 
+	CMD_TOGGLE_REUSE_DEPOT_VEHICLES,  ///< toggle 'reuse depot vehicles' on template
+	CMD_TOGGLE_KEEP_REMAINING_VEHICLES, ///< toggle 'keep remaining vehicles' on template
+	CMD_TOGGLE_REFIT_AS_TEMPLATE,     ///< toggle 'refit as template' on template
+
+	CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE, ///< Creates a virtual train from a template
+	CMD_VIRTUAL_TRAIN_FROM_TRAIN,     ///< Creates a virtual train from a regular train
+	CMD_DELETE_VIRTUAL_TRAIN,         ///< Delete a virtual train
+	CMD_BUILD_VIRTUAL_RAIL_VEHICLE,   ///< Build a virtual train
+	CMD_REPLACE_TEMPLATE_VEHICLE,     ///< Replace a template vehicle with another one based on a virtual train
+
+	CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN, ///< clone a train and create a new template vehicle based on it
+	CMD_DELETE_TEMPLATE_VEHICLE,      ///< delete a template vehicle
+
+	CMD_ISSUE_TEMPLATE_REPLACEMENT,   ///< issue a template replacement for a vehicle group
+	CMD_DELETE_TEMPLATE_REPLACEMENT,  ///< delete a template replacement from a vehicle group
+
 	CMD_CLONE_VEHICLE,                ///< clone a vehicle
 	CMD_START_STOP_VEHICLE,           ///< start or stop a vehicle
 	CMD_MASS_START_STOP,              ///< start/stop all vehicles (in a depot)
 	CMD_AUTOREPLACE_VEHICLE,          ///< replace/renew a vehicle while it is in a depot
+	CMD_TEMPLATE_REPLACE_VEHICLE,     ///< template replace a vehicle while it is in a depot
 	CMD_DEPOT_SELL_ALL_VEHICLES,      ///< sell all vehicles which are in a given depot
 	CMD_DEPOT_MASS_AUTOREPLACE,       ///< force the autoreplace to take action in a given depot
 

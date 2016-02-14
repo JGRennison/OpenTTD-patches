@@ -196,4 +196,6 @@ bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile);
 StringID MapGRFStringID(uint32 grfid, StringID str);
 void ShowNewGRFError();
 
+struct TemplateVehicle;
+
 #endif /* NEWGRF_H */

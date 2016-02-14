@@ -21,6 +21,7 @@
 #include "company_func.h"
 #include "core/pool_func.hpp"
 #include "order_backup.h"
+#include "tbtr_template_vehicle.h"
 
 #include "table/strings.h"
 
@@ -137,6 +138,9 @@ void GroupStatistics::Clear()
  */
 /* static */ void GroupStatistics::CountVehicle(const Vehicle *v, int delta)
 {
+	/* make virtual trains group-neutral */
+	if ( HasBit(v->subtype, GVSF_VIRTUAL) ) return;
+
 	assert(delta == 1 || delta == -1);
 
 	GroupStatistics &stats_all = GroupStatistics::GetAllGroup(v);
@@ -340,6 +344,9 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		}
 
 		VehicleType vt = g->vehicle_type;
+
+		/* Delete all template replacements using the just deleted group */
+		deleteIllegalTemplateReplacements(g->index);
 
 		/* Delete the Replace Vehicle Windows */
 		DeleteWindowById(WC_REPLACE_VEHICLE, g->vehicle_type);

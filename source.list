@@ -1,4 +1,15 @@
 # Source Files
+tbtr_template_gui_main.cpp
+tbtr_template_gui_create.cpp
+tbtr_template_gui_create_virtualtrain.cpp
+tbtr_template_vehicle.cpp
+tbtr_template_vehicle_func.cpp
+tbtr_template_gui_main.h
+tbtr_template_gui_create.h
+tbtr_template_gui_create_virtualtrain.h
+tbtr_template_vehicle.h
+tbtr_template_vehicle_func.h
+
 airport.cpp
 animated_tile.cpp
 articulated_vehicles.cpp
@@ -635,6 +646,8 @@ saveload/vehicle_sl.cpp
 saveload/waypoint_sl.cpp
 saveload/extended_ver_sl.h
 saveload/extended_ver_sl.cpp
+saveload/tbtr_template_replacement_sl.cpp
+saveload/tbtr_template_veh_sl.cpp
 
 # Tables
 table/airport_defaults.h
