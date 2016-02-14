@@ -1,3 +1,14 @@
+/* $Id$ */
+
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file tbtr_template_gui_create.cpp Template-based train replacement: template creation GUI. */
+
 #include "stdafx.h"
 
 #include "gfx_func.h"
@@ -29,12 +40,13 @@
 #include "order_backup.h"
 #include "group.h"
 #include "company_base.h"
+#include "train.h"
 
 #include "tbtr_template_gui_create.h"
 #include "tbtr_template_vehicle.h"
 #include "tbtr_template_vehicle_func.h"
 
-#include "train.h"
+#include "safeguards.h"
 
 class TemplateReplaceWindow;
 
@@ -83,13 +95,13 @@ static const NWidgetPart _widgets[] = {
 };
 
 static WindowDesc _template_create_window_desc(
-	WDP_AUTO,						// window position
-	"template create window",		// const char* ini_key
-	456, 100,						// window size
-	WC_CREATE_TEMPLATE,				// window class
-	WC_NONE,			            // parent window class
-	WDF_CONSTRUCTION,				// window flags
-	_widgets, lengthof(_widgets)	// widgets + num widgets
+	WDP_AUTO,                       // window position
+	"template create window",       // const char* ini_key
+	456, 100,                       // window size
+	WC_CREATE_TEMPLATE,             // window class
+	WC_TEMPLATEGUI_MAIN,            // parent window class
+	WDF_CONSTRUCTION,               // window flags
+	_widgets, lengthof(_widgets)    // widgets + num widgets
 );
 
 static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Vehicle *head)
@@ -107,7 +119,8 @@ static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Veh
 
 	if (wagon == v) return;
 
-	DoCommandP(v->tile, v->index | (_ctrl_pressed ? 1 : 0) << 20 | 1 << 21, wagon == NULL ? INVALID_VEHICLE : wagon->index, CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcVirtualTrainWaggonsMoved);
+	DoCommandP(v->tile, v->index | ((_ctrl_pressed ? 1 : 0) << 20) | (1 << 21) , wagon == NULL ? INVALID_VEHICLE : wagon->index,
+			CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcVirtualTrainWaggonsMoved);
 }
 
 class TemplateCreateWindow : public Window {
@@ -118,7 +131,7 @@ private:
 	Train* virtual_train;
 	bool editMode;
 	bool *noticeParent;
-	bool *createWindowOpen;			/// used to notify main window of progress (dummy way of disabling 'delete' while editing a template)
+	bool *createWindowOpen;         /// used to notify main window of progress (dummy way of disabling 'delete' while editing a template)
 	bool virtualTrainChangedNotice;
 	VehicleID sel;
 	VehicleID vehicle_over;
@@ -142,8 +155,7 @@ public:
 		virtualTrainChangedNotice = false;
 		this->editTemplate = to_edit;
 
-		if (to_edit) editMode = true;
-		else editMode = false;
+		editMode = (to_edit != NULL);
 
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
@@ -157,9 +169,9 @@ public:
 
 	~TemplateCreateWindow()
 	{
-		if (virtual_train != nullptr) {
+		if (virtual_train != NULL) {
 			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
-			virtual_train = nullptr;
+			virtual_train = NULL;
 		}
 
 		SetWindowClassesDirty(WC_TRAINS_LIST);
@@ -167,12 +179,11 @@ public:
 		/* more cleanup */
 		*createWindowOpen = false;
 		DeleteWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);
-
 	}
 
 	void SetVirtualTrain(Train* const train)
 	{
-		if (virtual_train != nullptr) {
+		if (virtual_train != NULL) {
 			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
 		}
 
@@ -210,19 +221,18 @@ public:
 				this->SetWidgetDirty(TCW_CLONE);
 				this->ToggleWidgetLoweredState(TCW_CLONE);
 				if (this->IsWidgetLowered(TCW_CLONE)) {
-					static const CursorID clone_icon =	SPR_CURSOR_CLONE_TRAIN;
-					SetObjectToPlaceWnd(clone_icon, PAL_NONE, HT_VEHICLE, this);
+					SetObjectToPlaceWnd(SPR_CURSOR_CLONE_TRAIN, PAL_NONE, HT_VEHICLE, this);
 				} else {
 					ResetObjectToPlace();
 				}
 				break;
 			}
 			case TCW_OK: {
-				uint32 templateIndex = (editTemplate != nullptr) ? editTemplate->index : INVALID_VEHICLE;
-				
-				if (virtual_train != nullptr) {
+				uint32 templateIndex = (editTemplate != NULL) ? editTemplate->index : INVALID_VEHICLE;
+
+				if (virtual_train != NULL) {
 					DoCommandP(0, templateIndex, virtual_train->index, CMD_REPLACE_TEMPLATE_VEHICLE);
-					virtual_train = nullptr;
+					virtual_train = NULL;
 				} else if (templateIndex != INVALID_VEHICLE) {
 					DoCommandP(0, templateIndex, 0, CMD_DELETE_TEMPLATE_VEHICLE);
 				}
@@ -243,9 +253,9 @@ public:
 	virtual bool OnVehicleSelect(const Vehicle *v)
 	{
 		// throw away the current virtual train
-		if (virtual_train != nullptr) {
+		if (virtual_train != NULL) {
 			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
-			virtual_train = nullptr;
+			virtual_train = NULL;
 		}
 
 		// create a new one
@@ -261,8 +271,8 @@ public:
 	{
 		switch(widget) {
 			case TCW_NEW_TMPL_PANEL: {
-				if ( this->virtual_train ) {
-					DrawTrainImage(virtual_train, r.left+TRAIN_FRONT_SPACE, r.right-25, r.top+2, this->sel, EIT_PURCHASE, this->hscroll->GetPosition(), this->vehicle_over);
+				if (this->virtual_train) {
+					DrawTrainImage(virtual_train, r.left+TRAIN_FRONT_SPACE, r.right - 25, r.top + 2, this->sel, EIT_PURCHASE, this->hscroll->GetPosition(), this->vehicle_over);
 					SetDParam(0, CeilDiv(virtual_train->gcache.cached_total_length * 10, TILE_SIZE));
 					SetDParam(1, 1);
 					DrawString(r.left, r.right, r.top, STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
@@ -270,7 +280,7 @@ public:
 				break;
 			}
 			case TCW_INFO_PANEL: {
-				if ( this->virtual_train ) {
+				if (this->virtual_train) {
 					DrawPixelInfo tmp_dpi, *old_dpi;
 
 					if (!FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.right - r.left, r.bottom - r.top)) break;
@@ -287,16 +297,16 @@ public:
 					DrawString(8, r.right, 4 - this->vscroll->GetPosition(), STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
 					/* Draw cargo summary */
 					CargoArray cargo_caps;
-					for ( const Train *tmp=this->virtual_train; tmp; tmp=tmp->Next() )
+					for (const Train *tmp = this->virtual_train; tmp != NULL; tmp = tmp->Next()) {
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
+					}
 					int y = 30 - this->vscroll->GetPosition();
 					for (CargoID i = 0; i < NUM_CARGO; ++i) {
-						if ( cargo_caps[i] > 0 ) {
+						if (cargo_caps[i] > 0) {
 							SetDParam(0, i);
 							SetDParam(1, cargo_caps[i]);
-							SetDParam(2, _settings_game.vehicle.freight_trains);
 							DrawString(8, r.right, y, STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
-							y += this->line_height/3;
+							y += this->line_height / 3;
 						}
 					}
 
@@ -308,6 +318,7 @@ public:
 				break;
 		}
 	}
+
 	virtual void OnTick()
 	{
 		if (virtualTrainChangedNotice) {
@@ -315,6 +326,7 @@ public:
 			virtualTrainChangedNotice = false;
 		}
 	}
+
 	virtual void OnDragDrop(Point pt, int widget)
 	{
 		switch (widget) {
@@ -344,10 +356,11 @@ public:
 
 				Train* train_to_delete = Train::Get(this->sel);
 
-				if (virtual_train == train_to_delete)
-					virtual_train = (_ctrl_pressed) ? nullptr : virtual_train->GetNextUnit();
+				if (virtual_train == train_to_delete) {
+					virtual_train = (_ctrl_pressed) ? NULL : virtual_train->GetNextUnit();
+				}
 
-				DoCommandP(0, this->sel | sell_cmd << 20 | 1 << 21, 0, GetCmdSellVeh(VEH_TRAIN));
+				DoCommandP(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, GetCmdSellVeh(VEH_TRAIN));
 
 				this->sel = INVALID_VEHICLE;
 
@@ -357,6 +370,7 @@ public:
 			default:
 				this->sel = INVALID_VEHICLE;
 				this->SetDirty();
+				break;
 		}
 		_cursor.vehchain = false;
 		this->sel = INVALID_VEHICLE;
@@ -408,15 +422,15 @@ public:
 		uint height = 30;
 		CargoArray cargo_caps;
 
-		if (virtual_train != nullptr) {
-			for (Train *train = virtual_train; train != nullptr; train = train->Next()) {
+		if (virtual_train != NULL) {
+			for (Train *train = virtual_train; train != NULL; train = train->Next()) {
 				width += train->GetDisplayImageWidth();
 				cargo_caps[train->cargo_type] += train->cargo_cap;
 			}
 
 			for (CargoID i = 0; i < NUM_CARGO; ++i) {
-				if ( cargo_caps[i] > 0 ) {
-					height += this->line_height/3;
+				if (cargo_caps[i] > 0) {
+					height += this->line_height / 3;
 				}
 			}
 		}
@@ -429,6 +443,7 @@ public:
 
 		this->DrawWidgets();
 	}
+
 	struct GetDepotVehiclePtData {
 		const Vehicle *head;
 		const Vehicle *wagon;
@@ -449,7 +464,7 @@ public:
 		const NWidgetCore *matrix_widget = this->GetWidget<NWidgetCore>(TCW_NEW_TMPL_PANEL);
 		/* In case of RTL the widgets are swapped as a whole */
 		if (_current_text_dir == TD_RTL) x = matrix_widget->current_x - x;
-		
+
 		x -= TRAIN_FRONT_SPACE;
 
 		uint xm = x;
@@ -461,7 +476,6 @@ public:
 		d->head = d->wagon = v;
 
 		if (xm <= this->header_width) {
-
 			if (wagon) return MODE_ERROR;
 
 			return MODE_SHOW_VEHICLE;
@@ -494,7 +508,7 @@ public:
 
 		if (sel != INVALID_VEHICLE) {
 			this->sel = INVALID_VEHICLE;
-			TrainDepotMoveVehicle(v, sel, gdvp.head);			
+			TrainDepotMoveVehicle(v, sel, gdvp.head);
 		} else if (v != NULL) {
 			int image = v->GetImage(_current_text_dir == TD_RTL ? DIR_E : DIR_W, EIT_PURCHASE);
 			SetObjectToPlaceWnd(image, GetVehiclePalette(v), HT_DRAG, this);
@@ -515,7 +529,7 @@ public:
 
 void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *noticeParent, bool *createWindowOpen, int step_h)
 {
-	if ( BringWindowToFrontById(WC_CREATE_TEMPLATE, VEH_TRAIN) != NULL ) return;
+	if (BringWindowToFrontById(WC_CREATE_TEMPLATE, VEH_TRAIN) != NULL) return;
 	new TemplateCreateWindow(&_template_create_window_desc, to_edit, noticeParent, createWindowOpen, step_h);
 }
 

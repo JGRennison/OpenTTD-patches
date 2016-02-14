@@ -1,3 +1,14 @@
+/* $Id$ */
+
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file tbtr_template_vehicle.h Template-based train replacement: template vehicle header. */
+
 #ifndef TEMPLATE_VEH_H
 #define TEMPLATE_VEH_H
 
@@ -56,7 +67,7 @@ public:
 	bool refit_as_template;
 
 	// Things derived from a virtual train
-	TemplateVehicle *other_multiheaded_part;	///< Multiheaded Engine support
+	TemplateVehicle *other_multiheaded_part; ///< Multiheaded Engine support
 	Money value;                        ///< Value of the vehicle
 	Owner owner;
 	OwnerByte owner_b;
@@ -83,17 +94,20 @@ public:
 	uint32 image_width;
 	const SpriteGroup *sgroup;
 
-	TemplateVehicle(VehicleType type=VEH_INVALID,  EngineID e=INVALID_ENGINE, byte B=0, Owner=_local_company);
+	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, byte B = 0, Owner = _local_company);
 	TemplateVehicle(EngineID, RailVehicleInfo*);
-	TemplateVehicle(EngineID eid) {
-		next=0;
-		previous=0;
-		first=this;
-		engine_type=eid;
+
+	TemplateVehicle(EngineID eid)
+	{
+		next = NULL;
+		previous = NULL;
+		first = this;
+		engine_type = eid;
 		this->reuse_depot_vehicles = true;
 		this->keep_remaining_vehicles = true;
 		this->refit_as_template = true;
 	}
+
 	~TemplateVehicle();
 
 	inline TemplateVehicle* Next() const { return this->next; }
@@ -124,10 +138,10 @@ public:
 	inline bool IsFreeWagonChain() const { return HasBit(this->subtype, GVSF_FREE_WAGON); }
 
 	// since CmdBuildTemplateVehicle(...)
-	inline void SetFrontEngine() 		{ SetBit(this->subtype, GVSF_FRONT); }
-	inline void SetEngine()			{ SetBit(this->subtype, GVSF_ENGINE); }
-	inline void SetArticulatedPart()	{ SetBit(this->subtype, GVSF_ARTICULATED_PART); }
-	inline void SetMultiheaded()	 	{ SetBit(this->subtype, GVSF_MULTIHEADED); }
+	inline void SetFrontEngine()     { SetBit(this->subtype, GVSF_FRONT); }
+	inline void SetEngine()          { SetBit(this->subtype, GVSF_ENGINE); }
+	inline void SetArticulatedPart() { SetBit(this->subtype, GVSF_ARTICULATED_PART); }
+	inline void SetMultiheaded()     { SetBit(this->subtype, GVSF_MULTIHEADED); }
 
 	inline void SetWagon() { SetBit(this->subtype, GVSF_WAGON); }
 	inline void SetFreeWagon() { SetBit(this->subtype, GVSF_FREE_WAGON); }
@@ -138,7 +152,6 @@ public:
 	int Length() const;
 
 	SpriteID GetImage(Direction) const;
-	//int GetDisplayImageWidth(Point *offset = NULL) const;
 	SpriteID GetSpriteID() const;
 
 	short NumGroupsUsingTemplate() const;
@@ -173,11 +186,14 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	inline void SetTemplate(TemplateID tid) { this->sel_template = tid; }
 
 	inline TemplateID GetTemplateVehicleID() { return sel_template; }
-	inline const TemplateVehicle* GetTemplateVehicle() {
+
+	inline const TemplateVehicle* GetTemplateVehicle()
+	{
 		const TemplateVehicle *tv;
 		FOR_ALL_TEMPLATES(tv) {
-			if ( tv->index == this->sel_template )
+			if (tv->index == this->sel_template) {
 				return tv;
+			}
 		}
 		return NULL;
 	}
@@ -190,4 +206,3 @@ bool IssueTemplateReplacement(GroupID, TemplateID);
 short deleteIllegalTemplateReplacements(GroupID);
 
 #endif /* TEMPLATE_VEH_H */
-

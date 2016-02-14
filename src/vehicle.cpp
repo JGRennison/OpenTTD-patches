@@ -52,12 +52,11 @@
 #include "gamelog.h"
 #include "linkgraph/linkgraph.h"
 #include "linkgraph/refresh.h"
+#include "tbtr_template_vehicle_func.h"
 
 #include "table/strings.h"
 
 #include "safeguards.h"
-
-#include "tbtr_template_vehicle_func.h"
 
 #define GEN_HASH(x, y) ((GB((y), 6 + ZOOM_LVL_SHIFT, 6) << 6) + GB((x), 7 + ZOOM_LVL_SHIFT, 6))
 
@@ -840,22 +839,21 @@ void VehicleEnteredDepotThisTick(Vehicle *v)
 	/* Template Replacement Setup stuff */
 	bool stayInDepot = v->current_order.GetDepotActionType();
 	TemplateReplacement *tr = GetTemplateReplacementByGroupID(v->group_id);
-	if ( tr ) {
-		if ( stayInDepot )	_vehicles_to_templatereplace[(Train*)v] = true;
-		else				_vehicles_to_templatereplace[(Train*)v] = false;
-	}
-	/* Moved the assignment for auto replacement here to prevent auto replacement
-	 * from happening if template replacement is also scheduled */
-	else
+	if (tr != NULL) {
+		_vehicles_to_templatereplace[(Train*) v] = stayInDepot;
+	} else {
+		/* Moved the assignment for auto replacement here to prevent auto replacement
+		 * from happening if template replacement is also scheduled */
+
 		/* Vehicle should stop in the depot if it was in 'stopping' state */
 		_vehicles_to_autoreplace[v] = !(v->vehstatus & VS_STOPPED);
+	}
 
 	/* We ALWAYS set the stopped state. Even when the vehicle does not plan on
 	 * stopping in the depot, so we stop it to ensure that it will not reserve
 	 * the path out of the depot before we might autoreplace it to a different
 	 * engine. The new engine would not own the reserved path we store that we
 	 * stopped the vehicle, so autoreplace can start it again */
-
 	v->vehstatus |= VS_STOPPED;
 }
 
@@ -1024,7 +1022,6 @@ void CallVehicleTicks()
 	/* do Template Replacement */
 	Backup<CompanyByte> tmpl_cur_company(_current_company, FILE_LINE);
 	for (TemplateReplacementMap::iterator it = _vehicles_to_templatereplace.Begin(); it != _vehicles_to_templatereplace.End(); it++) {
-
 		Train *t = it->first;
 
 		tmpl_cur_company.Change(t->owner);

@@ -1,10 +1,13 @@
-// mygui.c
+/* $Id$ */
 
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-//#include "tbtr_mygui.h"
-#include <iostream>
-#include <stdio.h>
-
+/** @file tbtr_template_gui_main.cpp Template-based train replacement: main GUI. */
 
 #include "stdafx.h"
 #include "command_func.h"
@@ -47,7 +50,11 @@
 #include "tbtr_template_gui_main.h"
 #include "tbtr_template_gui_create.h"
 #include "tbtr_template_vehicle.h"
-//#include "tbtr_template_vehicle_func.h"
+
+#include <iostream>
+#include <stdio.h>
+
+#include "safeguards.h"
 
 
 typedef GUIList<const Group*> GUIGroupList;
@@ -168,7 +175,7 @@ static WindowDesc _replace_rail_vehicle_desc(
 	"template replace window",
 	456, 156,
 	WC_TEMPLATEGUI_MAIN,
-	WC_NONE,					// parent window class
+	WC_NONE,                     // parent window class
 	WDF_CONSTRUCTION,
 	_widgets, lengthof(_widgets)
 );
@@ -176,7 +183,7 @@ static WindowDesc _replace_rail_vehicle_desc(
 class TemplateReplaceWindow : public Window {
 private:
 
-	GUIGroupList groups;  		 ///< List of groups
+	GUIGroupList groups;          ///< List of groups
 	byte unitnumber_digits;
 
 	SmallVector<int, 16> indents; ///< Indentation levels
@@ -207,7 +214,7 @@ public:
 		this->unitnumber_digits = dig;
 
 		this->sel_railtype = RAILTYPE_BEGIN;
-		this->details_height   = 10 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+		this->details_height = 10 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 
 		this->line_height = step_h;
 
@@ -311,7 +318,7 @@ public:
 
 		this->BuildGroupList(_local_company);
 
-		if ( templateNotice ) {
+		if (templateNotice) {
 			BuildTemplateGuiList(&this->templates, vscroll[1], _local_company, this->sel_railtype);
 			templateNotice = false;
 			this->SetDirty();
@@ -333,14 +340,14 @@ public:
 			short count_columns = 0;
 			short max_columns = 2;
 
-			for ( ; tmp; tmp=tmp->Next()) {
+			for (; tmp != NULL; tmp = tmp->Next()) {
 				cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 			}
 
 			for (CargoID i = 0; i < NUM_CARGO; ++i) {
-				if ( cargo_caps[i] > 0 ) {
+				if (cargo_caps[i] > 0) {
 					if (count_columns % max_columns == 0) {
-						height += this->line_height/3;
+						height += this->line_height / 3;
 					}
 
 					++count_columns;
@@ -356,7 +363,7 @@ public:
 
 	virtual void OnClick(Point pt, int widget, int click_count)
 	{
-		if ( this->editInProgress ) return;
+		if (this->editInProgress) return;
 
 		switch (widget) {
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE: {
@@ -424,28 +431,26 @@ public:
 				ShowDropDownList(this, GetRailTypeDropDownList(true), sel_railtype, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN);
 				break;
 			case TRW_WIDGET_TOP_MATRIX: {
-				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (this->line_height/2) ) + this->vscroll[0]->GetPosition();
-				if ( newindex == this->selected_group_index || newindex >= this->groups.Length() ) {
+				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (this->line_height / 2) ) + this->vscroll[0]->GetPosition();
+				if (newindex == this->selected_group_index || newindex >= this->groups.Length()) {
 					this->selected_group_index = -1;
-				}
-				else if ((newindex >= 0) && (newindex < this->groups.Length())) {
+				} else if (newindex < this->groups.Length()) {
 					this->selected_group_index = newindex;
 				}
 				break;
 			}
 			case TRW_WIDGET_BOTTOM_MATRIX: {
 				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_BOTTOM_MATRIX]->pos_y) / this->line_height) + this->vscroll[1]->GetPosition();
-				if ( newindex == this->selected_template_index || newindex >= templates.Length() ) {
+				if (newindex == this->selected_template_index || newindex >= templates.Length()) {
 					this->selected_template_index = -1;
-				}
-				else if ((newindex >= 0) && (newindex < templates.Length())) {
+				} else if (newindex < templates.Length()) {
 					this->selected_template_index = newindex;
 				}
 				break;
 			}
 			case TRW_WIDGET_START: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length()) &&
-				    (this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.Length())) {
+						(this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.Length())) {
 					uint32 tv_index = ((this->templates)[selected_template_index])->index;
 					int current_group_index = (this->groups)[this->selected_group_index]->index;
 
@@ -454,8 +459,9 @@ public:
 				break;
 			}
 			case TRW_WIDGET_STOP:
-				if ((this->selected_group_index < 0) || (this->selected_group_index >= (short)this->groups.Length()))
+				if ((this->selected_group_index < 0) || (this->selected_group_index >= (short)this->groups.Length())) {
 					return;
+				}
 
 				int current_group_index = (this->groups)[this->selected_group_index]->index;
 
@@ -481,7 +487,7 @@ public:
 
 	virtual void OnDropdownSelect(int widget, int index)
 	{
-		RailType temp = (RailType)index;
+		RailType temp = (RailType) index;
 		if (temp == this->sel_railtype) return; // we didn't select a new one. No need to change anything
 		this->sel_railtype = temp;
 		/* Reset scrollbar positions */
@@ -508,7 +514,7 @@ public:
 
 	virtual void OnTick()
 	{
-		if ( templateNotice ) {
+		if (templateNotice) {
 			BuildTemplateGuiList(&this->templates, this->vscroll[1], this->owner, this->sel_railtype);
 			this->SetDirty();
 			templateNotice = false;
@@ -527,12 +533,13 @@ public:
 	short FindTemplateIndexForGroup(short gid) const
 	{
 		TemplateReplacement *tr = GetTemplateReplacementByGroupID(gid);
-		if ( !tr )
-			return -1;
+		if (!tr) return -1;
 
-		for ( uint32 i=0; i<this->templates.Length(); ++i )
-			if ( templates[i]->index == tr->sel_template )
+		for (uint32 i = 0; i < this->templates.Length(); ++i) {
+			if (templates[i]->index == tr->sel_template) {
 				return i;
+			}
+		}
 		return -1;
 	}
 
@@ -604,47 +611,48 @@ public:
 		int max = min(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.Length());
 
 		/* Then treat all groups defined by/for the current company */
-		for ( int i=this->vscroll[0]->GetPosition(); i<max; ++i ) {
+		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
 			const Group *g = (this->groups)[i];
 			short g_id = g->index;
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
-			if ( this->selected_group_index == i ) {
-				GfxFillRect(left, y, right, y+(this->line_height)/2, _colour_gradient[COLOUR_GREY][3]);
+			if (this->selected_group_index == i) {
+				GfxFillRect(left, y, right, y+(this->line_height) / 2, _colour_gradient[COLOUR_GREY][3]);
 			}
 
 			SetDParam(0, g_id);
 			StringID str = STR_GROUP_NAME;
-			DrawString(left+30+ this->indents[i] * 10, right, y+2, str, TC_BLACK);
+			DrawString(left + 30 + this->indents[i] * 10, right, y + 2, str, TC_BLACK);
 
 			/* Draw the template in use for this group, if there is one */
 			short template_in_use = FindTemplateIndexForGroup(g_id);
-			if ( template_in_use >= 0 ) {
+			if (template_in_use >= 0) {
 				SetDParam(0, template_in_use);
-				DrawString ( left, right, y+2, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
-			}
-			/* If there isn't a template applied from the current group, check if there is one for another rail type */
-			else if ( GetTemplateReplacementByGroupID(g_id) ) {
-				DrawString ( left, right, y+2, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
+				DrawString (left, right, y + 2, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
+			} else if (GetTemplateReplacementByGroupID(g_id)) { /* If there isn't a template applied from the current group, check if there is one for another rail type */
+				DrawString (left, right, y + 2, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
 			}
 
 			/* Draw the number of trains that still need to be treated by the currently selected template replacement */
 			TemplateReplacement *tr = GetTemplateReplacementByGroupID(g_id);
-			if ( tr ) {
+			if (tr) {
 				TemplateVehicle *tv = TemplateVehicle::Get(tr->sel_template);
 				int num_trains = NumTrainsNeedTemplateReplacement(g_id, tv);
 				// Draw text
 				TextColour color = TC_GREY;
-				if ( num_trains ) color = TC_BLACK;
-				DrawString(left, right-16, y+2, STR_TMPL_NUM_TRAINS_NEED_RPL, color, SA_RIGHT);
+				if (num_trains) color = TC_BLACK;
+				DrawString(left, right - 16, y + 2, STR_TMPL_NUM_TRAINS_NEED_RPL, color, SA_RIGHT);
 				// Draw number
-				if ( num_trains ) color = TC_ORANGE;
-				else color = TC_GREY;
+				if (num_trains ) {
+					color = TC_ORANGE;
+				} else {
+					color = TC_GREY;
+				}
 				SetDParam(0, num_trains);
-				DrawString(left, right-4, y+2, STR_JUST_INT, color, SA_RIGHT);
+				DrawString(left, right - 4, y + 2, STR_JUST_INT, color, SA_RIGHT);
 			}
 
-			y+=line_height / 2;
+			y += line_height / 2;
 		}
 	}
 
@@ -658,52 +666,51 @@ public:
 		uint max = min(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.Length());
 
 		const TemplateVehicle *v;
-		for ( uint i = draw_vscroll->GetPosition(); i < max; ++i) {
-
+		for (uint i = draw_vscroll->GetPosition(); i < max; ++i) {
 			v = (this->templates)[i];
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
-			if ( this->selected_template_index == (int32)i ) {
-				GfxFillRect(left, y, right, y+this->line_height, _colour_gradient[COLOUR_GREY][3]);
+			if (this->selected_template_index == (int32) i) {
+				GfxFillRect(left, y, right, y + this->line_height, _colour_gradient[COLOUR_GREY][3]);
 			}
 
 			/* Draw a notification string for chains that are not runnable */
-			if ( v->IsFreeWagonChain() ) {
-				DrawString(left, right-2, y+line_height-FONT_HEIGHT_SMALL-WD_FRAMERECT_BOTTOM - 2, STR_TMPL_WARNING_FREE_WAGON, TC_RED, SA_RIGHT);
+			if (v->IsFreeWagonChain()) {
+				DrawString(left, right - 2, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_WARNING_FREE_WAGON, TC_RED, SA_RIGHT);
 			}
 
 			/* Draw the template's length in tile-units */
 			SetDParam(0, v->GetRealLength());
 			SetDParam(1, 1);
-			DrawString(left, right-4, y+2, STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
+			DrawString(left, right - 4, y + 2, STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
 
 			/* Draw the template */
-			DrawTemplate(v, left+50, right, y);
+			DrawTemplate(v, left + 50, right, y);
 
 			/* Buying cost */
 			SetDParam(0, CalculateOverallTemplateCost(v));
-			DrawString(left+35, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont, TC_BLUE, SA_LEFT);
+			DrawString(left + 35, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont, TC_BLUE, SA_LEFT);
 
 			/* Index of current template vehicle in the list of all templates for its company */
 			SetDParam(0, i);
-			DrawString(left+5, left+25, y + 2, STR_BLACK_INT, TC_BLACK, SA_RIGHT);
+			DrawString(left + 5, left + 25, y + 2, STR_BLACK_INT, TC_BLACK, SA_RIGHT);
 
 			/* Draw whether the current template is in use by any group */
-			if ( v->NumGroupsUsingTemplate() > 0 ) {
-				DrawString(left+35, right, y + line_height - FONT_HEIGHT_SMALL * 2 - 4 - WD_FRAMERECT_BOTTOM - 2, STR_TMP_TEMPLATE_IN_USE, TC_GREEN, SA_LEFT);
+			if (v->NumGroupsUsingTemplate() > 0) {
+				DrawString(left + 35, right, y + line_height - FONT_HEIGHT_SMALL * 2 - 4 - WD_FRAMERECT_BOTTOM - 2, STR_TMP_TEMPLATE_IN_USE, TC_GREEN, SA_LEFT);
 			}
 
 			/* Draw information about template configuration settings */
 			TextColour color;
-			if ( v->IsSetReuseDepotVehicles() ) color = TC_LIGHT_BLUE;
-			else color = TC_GREY;
-			DrawString(left+300, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
-			if ( v->IsSetKeepRemainingVehicles() ) color = TC_LIGHT_BLUE;
-			else color = TC_GREY;
-			DrawString(left+400, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
-			if ( v->IsSetRefitAsTemplate() ) color = TC_LIGHT_BLUE;
-			else color = TC_GREY;
-			DrawString(left+500, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
+
+			color = v->IsSetReuseDepotVehicles() ? TC_LIGHT_BLUE : TC_GREY;
+			DrawString(left + 300, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
+
+			color = v->IsSetKeepRemainingVehicles() ? TC_LIGHT_BLUE : TC_GREY;
+			DrawString(left + 400, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
+
+			color = v->IsSetRefitAsTemplate() ? TC_LIGHT_BLUE : TC_GREY;
+			DrawString(left + 500, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
 
 			y += line_height;
 		}
@@ -711,13 +718,15 @@ public:
 
 	void DrawTemplateInfo(int line_height, const Rect &r) const
 	{
-		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.Length()))
+		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.Length())) {
 			return;
+		}
 
 		DrawPixelInfo tmp_dpi, *old_dpi;
 
-		if (!FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.right - r.left, r.bottom - r.top))
+		if (!FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.right - r.left, r.bottom - r.top)) {
 			return;
+		}
 
 		old_dpi = _cur_dpi;
 		_cur_dpi = &tmp_dpi;
@@ -738,20 +747,21 @@ public:
 		short max_columns = 2;
 
 		CargoArray cargo_caps;
-		for ( ; tmp; tmp=tmp->Next() )
+		for (; tmp != NULL; tmp = tmp->Next()) {
 			cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
+		}
 		int x = left;
 		for (CargoID i = 0; i < NUM_CARGO; ++i) {
-			if ( cargo_caps[i] > 0 ) {
+			if (cargo_caps[i] > 0) {
 				count_columns++;
 				SetDParam(0, i);
 				SetDParam(1, cargo_caps[i]);
 				SetDParam(2, _settings_game.vehicle.freight_trains);
 				DrawString(x, r.right, top, FreightWagonMult(i) > 1 ? STR_TMPL_CARGO_SUMMARY_MULTI : STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
 				x += 250;
-				if ( count_columns % max_columns == 0 ) {
+				if (count_columns % max_columns == 0) {
 					x = left;
-					top += this->line_height/3;
+					top += this->line_height / 3;
 				}
 			}
 		}
@@ -764,4 +774,3 @@ void ShowTemplateReplaceWindow(byte dig, int step_h)
 {
 	new TemplateReplaceWindow(&_replace_rail_vehicle_desc, dig, step_h);
 }
-

@@ -426,8 +426,8 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8 num_vehicles, 
  * @param p1 vehicle ID to refit
  * @param p2 various bitstuffed elements
  * - p2 = (bit 0-4)   - New cargo type to refit to.
+ * - p2 = (bit 5)     - Is a virtual train (used by template replacement to allow refitting without stopped-in-depot checks)
  * - p2 = (bit 6)     - Automatic refitting.
- * - p2 = (bit 5)	  - Is a virtual train (used by template replacement to allow refitting without stopped-in-depot checks)
  * - p2 = (bit 7)     - Refit only this vehicle. Used only for cloning vehicles.
  * - p2 = (bit 8-15)  - New cargo subtype to refit to. 0xFF means to try keeping the same subtype according to GetBestFittingSubType().
  * - p2 = (bit 16-23) - Number of vehicles to refit (not counting articulated parts). Zero means all vehicles.
@@ -457,8 +457,10 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	if (v != front && (v->type == VEH_SHIP || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
 
 	/* Allow auto-refitting only during loading and normal refitting only in a depot. */
-	if ( ! is_virtual_train ) {
-		if (!free_wagon && (!auto_refit || !front->current_order.IsType(OT_LOADING)) && !front->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT + front->type);
+	if (!is_virtual_train) {
+		if (!free_wagon && (!auto_refit || !front->current_order.IsType(OT_LOADING)) && !front->IsStoppedInDepot()) {
+			return_cmd_error(STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT + front->type);
+		}
 		if (front->vehstatus & VS_CRASHED) return_cmd_error(STR_ERROR_VEHICLE_IS_DESTROYED);
 	}
 	if ((flags & DC_QUERY_COST) == 0 && // used by the refit GUI, including the order refit GUI.
@@ -511,8 +513,11 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
 		}
 		/* virtual vehicles get their cargo changed by the TemplateCreateWindow, so set this dirty instead of a depot window */
-		if ( HasBit(v->subtype, GVSF_VIRTUAL) ) SetWindowClassesDirty(WC_CREATE_TEMPLATE);
-		else SetWindowDirty(WC_VEHICLE_DEPOT, front->tile);
+		if (HasBit(v->subtype, GVSF_VIRTUAL)) {
+			SetWindowClassesDirty(WC_CREATE_TEMPLATE);
+		} else {
+			SetWindowDirty(WC_VEHICLE_DEPOT, front->tile);
+		}
 	} else {
 		/* Always invalidate the cache; querycost might have filled it. */
 		v->InvalidateNewGRFCacheOfChain();
@@ -825,8 +830,9 @@ CommandCost CmdToggleReuseDepotVehicles(TileIndex tile, DoCommandFlag flags, uin
 	// Identify template to toggle
 	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
 
-	if (template_vehicle == NULL)
+	if (template_vehicle == NULL) {
 		return CMD_ERROR;
+	}
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -853,8 +859,9 @@ CommandCost CmdToggleKeepRemainingVehicles(TileIndex tile, DoCommandFlag flags, 
 	// Identify template to toggle
 	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
 
-	if (template_vehicle == NULL)
+	if (template_vehicle == NULL) {
 		return CMD_ERROR;
+	}
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -881,8 +888,9 @@ CommandCost CmdToggleRefitAsTemplate(TileIndex tile, DoCommandFlag flags, uint32
 	// Identify template to toggle
 	TemplateVehicle *template_vehicle = TemplateVehicle::GetIfValid(p1);
 
-	if (template_vehicle == NULL)
+	if (template_vehicle == NULL) {
 		return CMD_ERROR;
+	}
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -910,16 +918,18 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 
 	TemplateVehicle* tv = TemplateVehicle::GetIfValid(template_vehicle_id);
 
-	if (tv == NULL)
+	if (tv == NULL) {
 		return CMD_ERROR;
+	}
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
 		Train* train = VirtualTrainFromTemplateVehicle(tv);
 
-		if (train == nullptr)
+		if (train == NULL) {
 			return CMD_ERROR;
+		}
 	}
 
 	return CommandCost();
@@ -931,16 +941,16 @@ Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv)
 	Train *tmp, *head, *tail;
 
 	head = CmdBuildVirtualRailVehicle(tv->engine_type);
-	if ( !head ) return nullptr;
+	if (!head) return NULL;
 
 	tail = head;
 	tv = tv->GetNextUnit();
-	while ( tv ) {
+	while (tv) {
 		tmp = CmdBuildVirtualRailVehicle(tv->engine_type);
-		if ( tmp ) {
+		if (tmp) {
 			tmp->cargo_type = tv->cargo_type;
 			tmp->cargo_subtype = tv->cargo_subtype;
-			CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, (1<<21) | tmp->index, tail->index, 0);
+			CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, (1 << 21) | tmp->index, tail->index, 0);
 			tail = tmp;
 		}
 		tv = tv->GetNextUnit();
@@ -965,8 +975,9 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 	VehicleID vehicle_id = p1;
 	Vehicle* vehicle = Vehicle::GetIfValid(vehicle_id);
 
-	if (vehicle == nullptr || vehicle->type != VEH_TRAIN)
+	if (vehicle == NULL || vehicle->type != VEH_TRAIN) {
 		return CMD_ERROR;
+	}
 
 	Train* train = Train::From(vehicle);
 
@@ -977,16 +988,16 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 		Train *tmp, *head, *tail;
 
 		head = CmdBuildVirtualRailVehicle(train->engine_type);
-		if ( !head ) return CMD_ERROR;
+		if (!head) return CMD_ERROR;
 
 		tail = head;
 		train = train->GetNextUnit();
-		while ( train ) {
+		while (train) {
 			tmp = CmdBuildVirtualRailVehicle(train->engine_type);
-			if ( tmp ) {
+			if (tmp) {
 				tmp->cargo_type = train->cargo_type;
 				tmp->cargo_subtype = train->cargo_subtype;
-				CmdMoveRailVehicle(0, DC_EXEC, (1<<21) | tmp->index, tail->index, 0);
+				CmdMoveRailVehicle(0, DC_EXEC, (1 << 21) | tmp->index, tail->index, 0);
 				tail = tmp;
 			}
 			train = train->GetNextUnit();
@@ -1013,8 +1024,9 @@ CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32 p1
 
 	Vehicle* vehicle = Vehicle::GetIfValid(vehicle_id);
 
-	if (vehicle == nullptr || vehicle->type != VEH_TRAIN)
+	if (vehicle == NULL || vehicle->type != VEH_TRAIN) {
 		return CMD_ERROR;
+	}
 
 	Train* train = Train::From(vehicle);
 
@@ -1044,8 +1056,9 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	TemplateVehicle* template_vehicle = TemplateVehicle::GetIfValid(template_vehicle_id);
 	Vehicle* vehicle = Vehicle::GetIfValid(virtual_train_id);
 
-	if (vehicle == nullptr || vehicle->type != VEH_TRAIN)
+	if (vehicle == NULL || vehicle->type != VEH_TRAIN) {
 		return CMD_ERROR;
+	}
 
 	Train* train = Train::From(vehicle);
 
@@ -1054,16 +1067,17 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	if (should_execute) {
 		VehicleID old_ID = INVALID_VEHICLE;
 
-		if (template_vehicle != nullptr) {
+		if (template_vehicle != NULL) {
 			old_ID = template_vehicle->index;
 			delete template_vehicle;
-			template_vehicle = nullptr;
+			template_vehicle = NULL;
 		}
 
 		template_vehicle = TemplateVehicleFromVirtualTrain(train);
 
-		if (template_vehicle == nullptr)
+		if (template_vehicle == NULL) {
 			return CMD_ERROR;
+		}
 
 		// Make sure our replacements still point to the correct thing.
 		if (old_ID != template_vehicle->index) {
@@ -1098,20 +1112,21 @@ CommandCost CmdTemplateVehicleFromTrain(TileIndex tile, DoCommandFlag flags, uin
 	Vehicle *t = Vehicle::GetIfValid(p1);
 
 	Train *clicked = Train::GetIfValid(t->index);
-	if (!clicked)
-		return CMD_ERROR;
+	if (!clicked) return CMD_ERROR;
 
 	Train *init_clicked = clicked;
 
 	int len = CountVehiclesInChain(clicked);
-	if (!TemplateVehicle::CanAllocateItem(len))
+	if (!TemplateVehicle::CanAllocateItem(len)) {
 		return CMD_ERROR;
+	}
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
-		TemplateVehicle *tmp, *prev=0;
-		for (; clicked; clicked=clicked->Next()) {
+		TemplateVehicle *tmp;
+		TemplateVehicle *prev = NULL;
+		for (; clicked != NULL; clicked = clicked->Next()) {
 			tmp = new TemplateVehicle(clicked->engine_type);
 			SetupTemplateVehicleFromVirtual(tmp, prev, clicked);
 			prev = tmp;
@@ -1120,7 +1135,7 @@ CommandCost CmdTemplateVehicleFromTrain(TileIndex tile, DoCommandFlag flags, uin
 		tmp->First()->SetRealLength(CeilDiv(init_clicked->gcache.cached_total_length * 10, TILE_SIZE));
 		tv = tmp->First();
 
-		if (!tv)	return CMD_ERROR;
+		if (!tv) return CMD_ERROR;
 
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
 	}
@@ -1142,8 +1157,7 @@ CommandCost CmdDeleteTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint32
 	// Identify template to delete
 	TemplateVehicle *del = TemplateVehicle::GetIfValid(p1);
 
-	if (del == NULL)
-		return CMD_ERROR;
+	if (del == NULL) return CMD_ERROR;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -1181,8 +1195,9 @@ CommandCost CmdIssueTemplateReplacement(TileIndex tile, DoCommandFlag flags, uin
 	if (should_execute) {
 		bool succeeded = IssueTemplateReplacement(group_id, template_id);
 
-		if (!succeeded)
+		if (!succeeded) {
 			return CMD_ERROR;
+		}
 
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
 	}
@@ -1207,8 +1222,9 @@ CommandCost CmdDeleteTemplateReplacement(TileIndex tile, DoCommandFlag flags, ui
 
 	if (should_execute) {
 		TemplateReplacement* tr = GetTemplateReplacementByGroupID(group_id);
-		if (tr != NULL)
+		if (tr != NULL) {
 			delete tr;
+		}
 
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
 	}

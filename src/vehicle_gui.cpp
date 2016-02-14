@@ -42,6 +42,7 @@
 
 #include "safeguards.h"
 
+
 Sorting _sorting;
 
 static GUIVehicleList::SortFunction VehicleNumberSorter;
@@ -952,7 +953,10 @@ struct RefitWindow : public Window {
 
 					if (this->order == INVALID_VEH_ORDER_ID) {
 						bool delete_window = this->selected_vehicle == v->index && this->num_vehicles == UINT8_MAX;
-						if (DoCommandP(v->tile, this->selected_vehicle, this->cargo->cargo | this->cargo->subtype << 8 | this->num_vehicles << 16 | this->is_virtual_train << 5, GetCmdRefitVeh(v)) && delete_window) delete this;
+						if (DoCommandP(v->tile, this->selected_vehicle, this->cargo->cargo | this->cargo->subtype << 8 | this->num_vehicles << 16 | this->is_virtual_train << 5,
+								GetCmdRefitVeh(v)) && delete_window) {
+							delete this;
+						}
 					} else {
 						if (DoCommandP(v->tile, v->index, this->cargo->cargo | this->cargo->subtype << 8 | this->order << 16 | this->is_virtual_train << 5, CMD_ORDER_REFIT)) delete this;
 					}

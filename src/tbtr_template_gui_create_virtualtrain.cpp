@@ -1,4 +1,4 @@
-/* $Id: build_vehicle_gui.cpp 23792 2012-01-12 19:23:00Z yexo $ */
+/* $Id$ */
 
 /*
  * This file is part of OpenTTD.
@@ -7,7 +7,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file build_vehicle_gui.cpp GUI for building vehicles. */
+/** @file tbtr_template_gui_create_virtualtrain.cpp Template-based train replacement: template creation vehicle build GUI. */
 
 #include "stdafx.h"
 #include "engine_base.h"
@@ -30,14 +30,14 @@
 #include "engine_gui.h"
 #include "cargotype.h"
 #include "core/geometry_func.hpp"
+#include "vehicle_gui.h"
+#include "tbtr_template_gui_create_virtualtrain.h"
 
 #include "widgets/build_vehicle_widget.h"
 
 #include "table/strings.h"
 
-#include "tbtr_template_gui_create_virtualtrain.h"
-
-#include "vehicle_gui.h"
+#include "safeguards.h"
 
 static const NWidgetPart _nested_build_vehicle_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
@@ -425,13 +425,13 @@ struct BuildVirtualTrainWindow : Window {
 	byte cargo_filter_criteria;                 ///< Selected cargo filter
 	int details_height;                         ///< Minimal needed height of the details panels (found so far).
 	Scrollbar *vscroll;
-	Train **virtual_train;						///< the virtual train that is currently being created
+	Train **virtual_train;                      ///< the virtual train that is currently being created
 	bool *noticeParent;
 
 	BuildVirtualTrainWindow(WindowDesc *desc, Train **vt, bool *notice) : Window(desc)
 	{
 		this->vehicle_type = VEH_TRAIN;
-		this->window_number = 0;//tile == INVALID_TILE ? (int)type : tile;
+		this->window_number = 0;
 
 		this->sel_engine      = INVALID_ENGINE;
 
@@ -688,6 +688,7 @@ struct BuildVirtualTrainWindow : Window {
 
 			case WID_BV_CARGO_FILTER_DROPDOWN:
 				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
+				break;
 		}
 	}
 
@@ -717,7 +718,9 @@ struct BuildVirtualTrainWindow : Window {
 	{
 		switch (widget) {
 			case WID_BV_LIST:
-				DrawEngineList(this->vehicle_type, r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, &this->eng_list, this->vscroll->GetPosition(), min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->eng_list.Length()), this->sel_engine, false, DEFAULT_GROUP);
+				DrawEngineList(this->vehicle_type, r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP,
+						&this->eng_list, this->vscroll->GetPosition(), min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(),
+						this->eng_list.Length()), this->sel_engine, false, DEFAULT_GROUP);
 				break;
 
 			case WID_BV_SORT_ASCENDING_DESCENDING:
@@ -795,7 +798,7 @@ struct BuildVirtualTrainWindow : Window {
 		} else {
 			VehicleID target = (*(this->virtual_train))->GetLastUnit()->index;
 
-			DoCommandP(0, (1<<21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE);
+			DoCommandP(0, (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE);
 		}
 		*noticeParent = true;
 	}
@@ -814,13 +817,13 @@ void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, ui
 }
 
 static WindowDesc _build_vehicle_desc(
-	WDP_AUTO,						// window position
-	"template create virtual train",// const char* ini_key
-	240, 268,						// window size
-	WC_BUILD_VIRTUAL_TRAIN,			// window class
-	WC_CREATE_TEMPLATE,				// parent window class
-	WDF_CONSTRUCTION,				// window flags
-	_nested_build_vehicle_widgets, lengthof(_nested_build_vehicle_widgets)	// widgets + num widgets
+	WDP_AUTO,                        // window position
+	"template create virtual train", // const char* ini_key
+	240, 268,                        // window size
+	WC_BUILD_VIRTUAL_TRAIN,          // window class
+	WC_CREATE_TEMPLATE,              // parent window class
+	WDF_CONSTRUCTION,                // window flags
+	_nested_build_vehicle_widgets, lengthof(_nested_build_vehicle_widgets)  // widgets + num widgets
 );
 
 void ShowBuildVirtualTrainWindow(Train **vt, bool *noticeParent)

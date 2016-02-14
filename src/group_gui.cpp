@@ -25,6 +25,7 @@
 #include "vehicle_gui_base.h"
 #include "core/geometry_func.hpp"
 #include "company_base.h"
+#include "tbtr_template_gui_main.h"
 
 #include "widgets/group_widget.h"
 
@@ -33,8 +34,6 @@
 #include "safeguards.h"
 
 static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
-
-#include "tbtr_template_gui_main.h"
 
 typedef GUIList<const Group*> GUIGroupList;
 
@@ -787,8 +786,9 @@ public:
 
 				switch (index) {
 					case ADI_TEMPLATE_REPLACE: // TemplateReplace Window
-						if ( vli.vtype == VEH_TRAIN )
+						if (vli.vtype == VEH_TRAIN) {
 							ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
+						}
 						break;
 					case ADI_REPLACE: // Replace window
 						ShowReplaceGroupVehicleWindow(this->vli.index, this->vli.vtype);

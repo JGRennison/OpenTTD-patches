@@ -169,7 +169,9 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	 */
 	inline Train *GetLastUnit() {
 		Train *tmp = this;
-		while ( tmp->GetNextUnit() ) tmp = tmp->GetNextUnit();
+		while (tmp->GetNextUnit()) {
+			tmp = tmp->GetNextUnit();
+		}
 		return tmp;
 	}
 

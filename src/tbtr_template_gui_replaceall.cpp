@@ -1,8 +1,37 @@
-// replace all gui impl
+/* $Id$ */
 
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file tbtr_template_gui_replaceall.cpp Template-based train replacement: replace all GUI. */
+
+#include "stdafx.h"
+#include "window_gui.h"
+#include "window_func.h"
+
+#include "company_func.h"
+#include "engine_base.h"
+#include "engine_func.h"
+#include "engine_gui.h"
+#include "train.h"
+#include "strings_func.h"
+#include "vehicle_base.h"
+#include "vehicle_func.h"
+
+#include "tbtr_template_vehicle.h"
+#include "tbtr_template_vehicle_func.h"
+
+#include "core/math_func.hpp"
+#include "table/strings.h"
 #include "tbtr_template_gui_replaceall.h"
 
 #include <stdio.h>
+
+#include "safeguards.h"
 
 /*
  * A wrapper which contains a virtual train and additional info of the template vehicle it is replacing
@@ -15,9 +44,9 @@ struct VirtTrainInfo {
 	// additional info from the template
 	VehicleID original_index;
 
-	bool	reuse_depot_vehicles,
-			keep_remaining_vehicles,
-			refit_as_template;
+	bool reuse_depot_vehicles;
+	bool keep_remaining_vehicles;
+	bool refit_as_template;
 
 	CargoID cargo_type;
 	byte cargo_subtype;
@@ -133,19 +162,19 @@ static int CDECL TrainEnginesThenWagonsSorter(const EngineID *a, const EngineID 
 class TemplateReplacementReplaceAllWindow : public Window {
 private:
 	uint16 line_height;
-	Scrollbar	*vscroll_tl,
-				*vscroll_tr,
-				*vscroll_bo;
-	GUIEngineList *engines_left,
-				  *engines_right;
-	short	selected_left,
-			selected_right;
+	Scrollbar *vscroll_tl;
+	Scrollbar *vscroll_tr;
+	Scrollbar *vscroll_bo;
+	GUIEngineList *engines_left;
+	GUIEngineList *engines_right;
+	short selected_left;
+	short selected_right;
 	VirtTrainList *virtualTrains;
 
 public:
 	TemplateReplacementReplaceAllWindow(WindowDesc *wdesc) : Window(wdesc)
 	{
-		this->CreateNestedTree(wdesc != nullptr);
+		this->CreateNestedTree(wdesc != NULL);
 
 		this->vscroll_tl = this->GetScrollbar(RPLALL_GUI_SCROLL_TL);
 		this->vscroll_tr = this->GetScrollbar(RPLALL_GUI_SCROLL_TR);
@@ -172,14 +201,15 @@ public:
 
 	~TemplateReplacementReplaceAllWindow()
 	{
-		for ( uint i=0; i<this->virtualTrains->Length(); ++i )
+		for (uint i = 0; i<this->virtualTrains->Length(); ++i) {
 			delete (*this->virtualTrains)[i]->vt;
+		}
 		SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
-		switch ( widget ) {
+		switch (widget) {
 			case RPLALL_GUI_MATRIX_TOPLEFT:
 			case RPLALL_GUI_MATRIX_TOPRIGHT:
 			case RPLALL_GUI_MATRIX_BOTTOM: {
@@ -235,19 +265,21 @@ public:
 		switch(widget) {
 			case RPLALL_GUI_MATRIX_TOPLEFT: {
 				uint16 newindex = (uint16)((pt.y - this->nested_array[RPLALL_GUI_MATRIX_TOPLEFT]->pos_y) / this->line_height) + this->vscroll_tl->GetPosition();
-				if ( newindex >= this->engines_left->Length() || newindex==this->selected_left )
+				if (newindex >= this->engines_left->Length() || newindex == this->selected_left) {
 					this->selected_left = -1;
-				else
+				} else {
 					this->selected_left = newindex;
+				}
 				this->SetDirty();
 				break;
 			}
 			case RPLALL_GUI_MATRIX_TOPRIGHT: {
 				uint16 newindex = (uint16)((pt.y - this->nested_array[RPLALL_GUI_MATRIX_TOPRIGHT]->pos_y) / this->line_height) + this->vscroll_tr->GetPosition();
-				if ( newindex > this->engines_right->Length() || newindex==this->selected_right )
+				if (newindex > this->engines_right->Length() || newindex==this->selected_right) {
 					this->selected_right = -1;
-				else
+				} else {
 					this->selected_right = newindex;
+				}
 				this->SetDirty();
 				break;
 			}
@@ -257,12 +289,13 @@ public:
 			}
 			case RPLALL_GUI_BUTTON_APPLY: {
 				// check if we actually did anything so far, if not, applying is forbidden
-				if ( this->virtualTrains->Length() == 0 )
+				if (this->virtualTrains->Length() == 0) {
 					return;
+				}
 				// first delete all current templates
 				this->DeleteAllTemplateTrains();
 				// then build a new list from the current virtual trains
-				for ( uint i=0; i<this->virtualTrains->Length(); ++i ) {
+				for (uint i = 0; i < this->virtualTrains->Length(); ++i) {
 					// the relevant info struct
 					VirtTrainInfo *vti = (*this->virtualTrains)[i];
 					// setup template from contained train
@@ -276,8 +309,9 @@ public:
 					tv->cargo_subtype				= vti->cargo_subtype;
 					// use the original_index information to repoint the relevant TemplateReplacement if existing
 					TemplateReplacement *tr = GetTemplateReplacementByTemplateID(vti->original_index);
-					if ( tr )
+					if (tr) {
 						tr->sel_template = tv->index;
+					}
 				}
 				// then close this window and return to parent
 				delete this;
@@ -294,10 +328,11 @@ public:
 	{
 		const TemplateVehicle *tv;
 		FOR_ALL_TEMPLATES(tv) {
-			if ( tv->Prev() || tv->owner != _local_company ) continue;
-			for ( const TemplateVehicle *tmp=tv; tmp; tmp=tmp->GetNextUnit() ) {
-				if ( tmp->engine_type == eid )
+			if (tv->Prev() || tv->owner != _local_company) continue;
+			for (const TemplateVehicle *tmp = tv; tmp != NULL; tmp = tmp->GetNextUnit()) {
+				if (tmp->engine_type == eid) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -309,17 +344,17 @@ public:
 
 		TemplateVehicle *tv;
 		FOR_ALL_TEMPLATES(tv) {
-			if ( !tv->Prev() && tv->owner==this->owner ) {
+			if (!tv->Prev() && tv->owner == this->owner) {
 				// setup template train
 				Train *newtrain = VirtualTrainFromTemplateVehicle(tv);
 				VirtTrainInfo *vti = new VirtTrainInfo(newtrain);
 				// store template specific stuff
-				vti->original_index				= tv->index;
-				vti->reuse_depot_vehicles		= tv->reuse_depot_vehicles;
-				vti->keep_remaining_vehicles	= tv->keep_remaining_vehicles;
-				vti->refit_as_template			= tv->refit_as_template;
-				vti->cargo_type					= tv->cargo_type;
-				vti->cargo_subtype				= tv->cargo_subtype;
+				vti->original_index             = tv->index;
+				vti->reuse_depot_vehicles       = tv->reuse_depot_vehicles;
+				vti->keep_remaining_vehicles    = tv->keep_remaining_vehicles;
+				vti->refit_as_template          = tv->refit_as_template;
+				vti->cargo_type                 = tv->cargo_type;
+				vti->cargo_subtype              = tv->cargo_subtype;
 				// add new info struct
 				*this->virtualTrains->Append() = vti;
 			}
@@ -333,8 +368,9 @@ public:
 		TemplateVehicle *tv, *tmp;
 		FOR_ALL_TEMPLATES(tv) {
 			tmp = tv;
-			if ( tmp->Prev()==0 && tmp->owner==this->owner )
+			if (tmp->Prev() == NULL && tmp->owner == this->owner) {
 				delete tmp;
+			}
 		}
 	}
 
@@ -350,7 +386,7 @@ public:
 			EngineID eid = e->index;
 			const RailVehicleInfo*rvi = &e->u.rail;
 
-			if ( !HasTemplateWithEngine(eid) ) continue;
+			if (!HasTemplateWithEngine(eid)) continue;
 
 			*this->engines_left->Append() = eid;
 
@@ -366,11 +402,13 @@ public:
 	bool VirtualTrainHasEngineID(EngineID eid)
 	{
 
-		for ( uint i=0; i<this->virtualTrains->Length(); ++i ) {
+		for (uint i = 0; i < this->virtualTrains->Length(); ++i) {
 			const Train *tmp = (*this->virtualTrains)[i]->vt;
-			for ( ; tmp; tmp=tmp->Next() )
-				if ( tmp->engine_type == eid )
+			for (; tmp != NULL; tmp = tmp->Next()) {
+				if (tmp->engine_type == eid) {
 					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -378,44 +416,43 @@ public:
 	// after 'replace all' we need to replace the currently used templates as well
 	void RebuildIncludedTemplateList() {
 		// first remove all engine ids
-		for ( uint i=0; i<this->engines_left->Length(); ++i ) {
+		for (uint i = 0; i < this->engines_left->Length(); ++i) {
 			EngineID entry = (*this->engines_left)[i];
-			if ( !VirtualTrainHasEngineID(entry) )
+			if (!VirtualTrainHasEngineID(entry)) {
 				this->engines_left->Erase(&((*this->engines_left)[i]));
+			}
 		}
 	}
 
 	void ReplaceAll()
 	{
-
-		if ( this->selected_left==-1 || this->selected_right==-1 )
-			return;
+		if (this->selected_left == -1 || this->selected_right == -1) return;
 
 		EngineID eid_orig = (*this->engines_left)[this->selected_left];
 		EngineID eid_repl = (*this->engines_right)[this->selected_right];
 
-		if ( eid_orig == eid_repl )
-			return;
+		if (eid_orig == eid_repl) return;
 
-		if ( this->virtualTrains->Length() == 0 )
+		if (this->virtualTrains->Length() == 0) {
 			this->GenerateVirtualTrains();
+		}
 
-		for ( uint i=0; i<this->virtualTrains->Length(); ++i ) {
+		for (uint i = 0; i < this->virtualTrains->Length(); ++i) {
 			Train *tmp = (*this->virtualTrains)[i]->vt;
-			while ( tmp ) {
-				if ( tmp->engine_type == eid_orig ) {
+			while (tmp) {
+				if (tmp->engine_type == eid_orig) {
 					// build a new virtual rail vehicle and test for success
 					Train *nt = CmdBuildVirtualRailVehicle(eid_repl);
-					if ( !nt ) continue;
+					if (!nt) continue;
 					// include the (probably) new engine into the 'included'-list
-					this->engines_left->Include( nt->engine_type );
+					this->engines_left->Include(nt->engine_type);
 					// advance the tmp pointer in the chain, otherwise it would get deleted later on
 					Train *to_del = tmp;
 					tmp = tmp->GetNextUnit();
 					// first move the new virtual rail vehicle behind to_del
-					CommandCost move = CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, nt->index|(1<<21), to_del->index, 0);
+					CommandCost move = CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, nt->index | (1 << 21), to_del->index, 0);
 					// then move to_del away from the chain and delete it
-					move = CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, to_del->index|(1<<21), INVALID_VEHICLE, 0);
+					move = CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, to_del->index | (1 << 21), INVALID_VEHICLE, 0);
 					(*this->virtualTrains)[i]->vt = nt->First();
 					delete to_del;
 				} else {
@@ -458,7 +495,7 @@ public:
 		this->vscroll_tr->SetCount(this->engines_right->Length());
 	}
 
-	void DrawEngineList(const Rect &r, bool left) const//, GUIEngineList el, Scrollbar* sb) const
+	void DrawEngineList(const Rect &r, bool left) const
 	{
 		uint16 y = r.top;
 		uint32 eid;
@@ -466,7 +503,7 @@ public:
 		Scrollbar *sb;
 		const GUIEngineList *el;
 
-		if ( left ) {
+		if (left) {
 			sb = this->vscroll_tl;
 			el = this->engines_left;
 		} else {
@@ -474,22 +511,22 @@ public:
 			el = this->engines_right;
 		}
 
-		int maximum = min((int)sb->GetCapacity(), (int)el->Length()) + sb->GetPosition();
+		int maximum = min((int) sb->GetCapacity(), (int) el->Length()) + sb->GetPosition();
 
-		for ( int i=sb->GetPosition(); i<maximum; ++i ) {
-
+		for (int i = sb->GetPosition(); i < maximum; ++i) {
 			eid = (*el)[i];
 
 			/* Draw a grey background rectangle if the current line is the selected one */
-			if ( (left && this->selected_left == i) || (!left && this->selected_right == i) )
-				GfxFillRect(r.left, y, r.right, y+this->line_height, _colour_gradient[COLOUR_GREY][3]);
+			if ((left && this->selected_left == i) || (!left && this->selected_right == i)) {
+				GfxFillRect(r.left, y, r.right, y + this->line_height, _colour_gradient[COLOUR_GREY][3]);
+			}
 
 			/* Draw a description string of the current engine */
 			SetDParam(0, eid);
-			DrawString(r.left+100, r.right, y+4, STR_ENGINE_NAME, TC_BLACK);
+			DrawString(r.left + 100, r.right, y + 4, STR_ENGINE_NAME, TC_BLACK);
 
 			/* Draw the engine */
-			DrawVehicleEngine( r.left, r.right, r.left+29, y+8, eid, GetEnginePalette(eid, _local_company), EIT_PURCHASE );
+			DrawVehicleEngine(r.left, r.right, r.left + 29, y + 8, eid, GetEnginePalette(eid, _local_company), EIT_PURCHASE);
 
 			y += this->line_height;
 		}
@@ -501,11 +538,11 @@ public:
 
 		uint16 max = min(virtualTrains->Length(), this->vscroll_bo->GetCapacity());
 
-		for ( uint16 i=vscroll_bo->GetPosition(); i<max+vscroll_bo->GetPosition(); ++i ) {
+		for (uint16 i = vscroll_bo->GetPosition(); i < max + vscroll_bo->GetPosition(); ++i) {
 			/* Draw a virtual train*/
-			DrawTrainImage( (*this->virtualTrains)[i]->vt, r.left+32, r.right, y, INVALID_VEHICLE, EIT_PURCHASE, 0, -1 );
+			DrawTrainImage((*this->virtualTrains)[i]->vt, r.left + 32, r.right, y, INVALID_VEHICLE, EIT_PURCHASE, 0, -1);
 
-			y+= this->line_height;
+			y += this->line_height;
 		}
 	}
 };

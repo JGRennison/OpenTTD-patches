@@ -1,4 +1,14 @@
-// template_vehicle_func.h
+/* $Id$ */
+
+/*
+ * This file is part of OpenTTD.
+ * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
+ * OpenTTD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file tbtr_template_vehicle_func.h Template-based train replacement: template vehicle functions headers. */
+
 #ifndef TEMPLATE_VEHICLE_FUNC_H
 #define TEMPLATE_VEHICLE_FUNC_H
 
@@ -6,9 +16,6 @@
 #include "window_gui.h"
 
 #include "tbtr_template_vehicle.h"
-
-//void DrawTemplateVehicle(TemplateVehicle*, int, const Rect&);
-
 
 Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv);
 
@@ -31,8 +38,6 @@ TemplateVehicle *CreateNewTemplateVehicle(EngineID);
 void setupVirtTrain(const TemplateVehicle*, Train*);
 
 TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt);
-
-//Train* VirtualTrainFromTemplateVehicle(TemplateVehicle*);
 
 inline TemplateVehicle* Last(TemplateVehicle*);
 
