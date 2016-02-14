@@ -892,6 +892,25 @@ static void RunVehicleDayProc()
 	}
 }
 
+static void ShowAutoReplaceAdviceMessage(const CommandCost &res, const Vehicle *v)
+{
+	StringID error_message = res.GetErrorMessage();
+	if (error_message == STR_ERROR_AUTOREPLACE_NOTHING_TO_DO || error_message == INVALID_STRING_ID) return;
+
+	if (error_message == STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY) error_message = STR_ERROR_AUTOREPLACE_MONEY_LIMIT;
+
+	StringID message;
+	if (error_message == STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT) {
+		message = error_message;
+	} else {
+		message = STR_NEWS_VEHICLE_AUTORENEW_FAILED;
+	}
+
+	SetDParam(0, v->index);
+	SetDParam(1, error_message);
+	AddVehicleAdviceNewsItem(message, v->index);
+}
+
 void CallVehicleTicks()
 {
 	_vehicles_to_autoreplace.Clear();
@@ -1001,21 +1020,7 @@ void CallVehicleTicks()
 			continue;
 		}
 
-		StringID error_message = res.GetErrorMessage();
-		if (error_message == STR_ERROR_AUTOREPLACE_NOTHING_TO_DO || error_message == INVALID_STRING_ID) continue;
-
-		if (error_message == STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY) error_message = STR_ERROR_AUTOREPLACE_MONEY_LIMIT;
-
-		StringID message;
-		if (error_message == STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT) {
-			message = error_message;
-		} else {
-			message = STR_NEWS_VEHICLE_AUTORENEW_FAILED;
-		}
-
-		SetDParam(0, v->index);
-		SetDParam(1, error_message);
-		AddVehicleAdviceNewsItem(message, v->index);
+		ShowAutoReplaceAdviceMessage(res, v);
 	}
 	cur_company.Restore();
 
@@ -1024,12 +1029,28 @@ void CallVehicleTicks()
 	for (TemplateReplacementMap::iterator it = _vehicles_to_templatereplace.Begin(); it != _vehicles_to_templatereplace.End(); it++) {
 		Train *t = it->first;
 
+		/* Store the position of the effect as the vehicle pointer will become invalid later */
+		int x = t->x_pos;
+		int y = t->y_pos;
+		int z = t->z_pos;
+
 		tmpl_cur_company.Change(t->owner);
 
 		bool stayInDepot = it->second;
 
 		it->first->vehstatus |= VS_STOPPED;
-		DoCommand(t->tile, t->index, stayInDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
+		CommandCost res = DoCommand(t->tile, t->index, stayInDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
+
+		if (!IsLocalCompany()) continue;
+
+		if (res.Succeeded()) {
+			if (res.GetCost() != 0) {
+				ShowCostOrIncomeAnimation(x, y, z, res.GetCost());
+			}
+			continue;
+		}
+
+		ShowAutoReplaceAdviceMessage(res, t);
 	}
 	tmpl_cur_company.Restore();
 }

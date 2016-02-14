@@ -4290,11 +4290,12 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	short store_refit_csubt = 0;
 	// if a train shall keep its old refit, store the refit setting of its first vehicle
 	if (!use_refit) {
-		for (Train *getc = incoming; getc != NULL; getc = getc->GetNextUnit())
+		for (Train *getc = incoming; getc != NULL; getc = getc->GetNextUnit()) {
 			if (getc->cargo_type != CT_INVALID) {
 				store_refit_ct = getc->cargo_type;
 				break;
 			}
+		}
 	}
 
 	// TODO: set result status to success/no success before returning
@@ -4308,7 +4309,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		CommandCost buyCost = TestBuyAllTemplateVehiclesInChain(tv, tile);
 		if (!buyCost.Succeeded() || !CheckCompanyHasMoney(buyCost)) {
 			if (!stayInDepot) incoming->vehstatus &= ~VS_STOPPED;
-			return buy;
+			return_cmd_error(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
 		}
 	}
 
@@ -4388,8 +4389,9 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			// 3. must buy new engine
 			else {
 				tmp_result = DoCommand(tile, cur_tmpl->engine_type, 0, flags, CMD_BUILD_VEHICLE);
-				if (!tmp_result.Succeeded())
+				if (!tmp_result.Succeeded()) {
 					return tmp_result;
+				}
 				buy.AddCost(tmp_result);
 				tmp_chain = Train::Get(_new_vehicle_id);
 				move_cost.AddCost(CmdMoveRailVehicle(tile, flags, tmp_chain->index, last_veh->index, 0));
@@ -4399,8 +4401,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 				if (use_refit) {
 					uint32 cb = GetCmdRefitVeh(tmp_chain);
 					DoCommand(tmp_chain->tile, tmp_chain->index, cur_tmpl->cargo_type | (cur_tmpl->cargo_subtype << 8) | (1 << 16) | (1 << 5), flags, cb);
-				}
-				else {
+				} else {
 					uint32 cb = GetCmdRefitVeh(tmp_chain);
 					DoCommand(tmp_chain->tile, tmp_chain->index, store_refit_ct | (store_refit_csubt << 8) | (1 << 16) | (1 << 5), flags, cb);
 				}
