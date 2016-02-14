@@ -165,6 +165,8 @@ public:
 		}
 
 		this->resize.step_height = 1;
+
+		UpdateButtonState();
 	}
 
 	~TemplateCreateWindow()
@@ -188,6 +190,7 @@ public:
 		}
 
 		virtual_train = train;
+		UpdateButtonState();
 	}
 
 	virtual void OnResize()
@@ -203,6 +206,7 @@ public:
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
 	{
 		virtualTrainChangedNotice = true;
+		UpdateButtonState();
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)
@@ -326,6 +330,7 @@ public:
 		if (virtualTrainChangedNotice) {
 			this->SetDirty();
 			virtualTrainChangedNotice = false;
+			UpdateButtonState();
 		}
 	}
 
@@ -367,6 +372,7 @@ public:
 				this->sel = INVALID_VEHICLE;
 
 				this->SetDirty();
+				UpdateButtonState();
 				break;
 			}
 			default:
@@ -526,6 +532,12 @@ public:
 	void RearrangeVirtualTrain()
 	{
 		virtual_train = virtual_train->First();
+	}
+
+
+	void UpdateButtonState()
+	{
+		this->SetWidgetDisabledState(TCW_REFIT, virtual_train == NULL);
 	}
 };
 
