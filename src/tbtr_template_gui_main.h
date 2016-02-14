@@ -20,7 +20,6 @@
 
 #include "tbtr_template_vehicle.h"
 #include "tbtr_template_vehicle_func.h"
-#include "tbtr_template_gui_replaceall.h"
 
 typedef GUIList<const Group*> GUIGroupList;
 

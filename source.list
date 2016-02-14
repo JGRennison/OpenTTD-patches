@@ -2,13 +2,11 @@
 tbtr_template_gui_main.cpp
 tbtr_template_gui_create.cpp
 tbtr_template_gui_create_virtualtrain.cpp
-tbtr_template_gui_replaceall.cpp
 tbtr_template_vehicle.cpp
 tbtr_template_vehicle_func.cpp
 tbtr_template_gui_main.h
 tbtr_template_gui_create.h
 tbtr_template_gui_create_virtualtrain.h
-tbtr_template_gui_replaceall.h
 tbtr_template_vehicle.h
 tbtr_template_vehicle_func.h
 

@@ -111,9 +111,6 @@
     <ClCompile Include="..\src\tbtr_template_gui_create_virtualtrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tbtr_template_gui_replaceall.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tbtr_template_vehicle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -127,9 +124,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tbtr_template_gui_create_virtualtrain.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tbtr_template_gui_replaceall.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tbtr_template_vehicle.h">

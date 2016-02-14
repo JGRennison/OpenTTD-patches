@@ -444,10 +444,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\..\src\tbtr_template_gui_replaceall.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\..\src\tbtr_template_vehicle.cpp"
 				>
 			</File>
@@ -465,10 +461,6 @@
 			</File>
 			<File
 				RelativePath=".\..\src\tbtr_template_gui_create_virtualtrain.h"
-				>
-			</File>
-			<File
-				RelativePath=".\..\src\tbtr_template_gui_replaceall.h"
 				>
 			</File>
 			<File
