@@ -299,6 +299,16 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	inline void ClearFreeWagon() { ClrBit(this->subtype, GVSF_FREE_WAGON); }
 
 	/**
+	 * Set a vehicle as a virtual vehicle.
+	 */
+	inline void SetVirtual() { SetBit(this->subtype, GVSF_VIRTUAL); }
+
+	/**
+	 * Clear a vehicle from being a virtual vehicle.
+	 */
+	inline void ClearVirtual() { ClrBit(this->subtype, GVSF_VIRTUAL); }
+
+	/**
 	 * Set a vehicle as a multiheaded engine.
 	 */
 	inline void SetMultiheaded() { SetBit(this->subtype, GVSF_MULTIHEADED); }
@@ -331,6 +341,12 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	 * @return Returns true if the vehicle is a multiheaded engine.
 	 */
 	inline bool IsMultiheaded() const { return HasBit(this->subtype, GVSF_MULTIHEADED); }
+
+	/**
+	* Tell if we are dealing with a virtual vehicle (used for templates).
+	* @return True if the vehicle is a virtual vehicle.
+	*/
+	inline bool IsVirtual() const { return HasBit(this->subtype, GVSF_VIRTUAL); }
 
 	/**
 	 * Tell if we are dealing with the rear end of a multiheaded engine.

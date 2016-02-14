@@ -1887,7 +1887,8 @@ void CheckOrders(const Vehicle *v)
 	if (v->FirstShared() != v) return;
 
 	/* Only check every 20 days, so that we don't flood the message log */
-	if (v->owner == _local_company && v->day_counter % 20 == 0) {
+	/* The check is skipped entirely in case the current vehicle is virtual (a.k.a a 'template train') */
+	if (v->owner == _local_company && v->day_counter % 20 == 0 && !HasBit(v->subtype, GVSF_VIRTUAL)) {
 		const Order *order;
 		StringID message = INVALID_STRING_ID;
 

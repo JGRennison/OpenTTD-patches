@@ -108,6 +108,8 @@ CommandProc CmdDecreaseLoan;
 
 CommandProc CmdWantEnginePreview;
 
+CommandProc CmdSetVehicleUnitNumber;
+
 CommandProc CmdRenameVehicle;
 CommandProc CmdRenameEngine;
 
@@ -177,10 +179,27 @@ CommandProc CmdRemoveSignalTrack;
 
 CommandProc CmdSetAutoReplace;
 
+CommandProc CmdToggleReuseDepotVehicles;
+CommandProc CmdToggleKeepRemainingVehicles;
+CommandProc CmdToggleRefitAsTemplate;
+
+CommandProc CmdVirtualTrainFromTemplateVehicle;
+CommandProc CmdVirtualTrainFromTrain;
+CommandProc CmdDeleteVirtualTrain;
+CommandProc CmdBuildVirtualRailVehicle;
+CommandProc CmdReplaceTemplateVehicle;
+
+CommandProc CmdTemplateVehicleFromTrain;
+CommandProc CmdDeleteTemplateVehicle;
+
+CommandProc CmdIssueTemplateReplacement;
+CommandProc CmdDeleteTemplateReplacement;
+
 CommandProc CmdCloneVehicle;
 CommandProc CmdStartStopVehicle;
 CommandProc CmdMassStartStopVehicle;
 CommandProc CmdAutoreplaceVehicle;
+CommandProc CmdTemplateReplaceVehicle;
 CommandProc CmdDepotSellAllVehicles;
 CommandProc CmdDepotMassAutoReplace;
 
@@ -287,6 +306,8 @@ static const Command _command_proc_table[] = {
 
 	DEF_CMD(CmdWantEnginePreview,                              0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_WANT_ENGINE_PREVIEW
 
+	DEF_CMD(CmdSetVehicleUnitNumber,                           0, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_VEHICLE_UNIT_NUMBER
+
 	DEF_CMD(CmdRenameVehicle,                                  0, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_VEHICLE
 	DEF_CMD(CmdRenameEngine,                          CMD_SERVER, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_ENGINE
 
@@ -354,10 +375,28 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdChangeSetting,                         CMD_SERVER, CMDT_SERVER_SETTING        ), // CMD_CHANGE_SETTING
 	DEF_CMD(CmdChangeCompanySetting,                           0, CMDT_COMPANY_SETTING       ), // CMD_CHANGE_COMPANY_SETTING
 	DEF_CMD(CmdSetAutoReplace,                                 0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_SET_AUTOREPLACE
+
+	DEF_CMD(CmdToggleReuseDepotVehicles,           CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_TOGGLE_REUSE_DEPOT_VEHICLES
+	DEF_CMD(CmdToggleKeepRemainingVehicles,        CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_TOGGLE_KEEP_REMAINING_VEHICLES
+	DEF_CMD(CmdToggleRefitAsTemplate,              CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_TOGGLE_REFIT_AS_TEMPLATE
+
+	DEF_CMD(CmdVirtualTrainFromTemplateVehicle,    CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE
+	DEF_CMD(CmdVirtualTrainFromTrain,              CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_VIRTUAL_TRAIN_FROM_TRAIN
+	DEF_CMD(CmdDeleteVirtualTrain,                 CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_DELETE_VIRTUAL_TRAIN
+	DEF_CMD(CmdBuildVirtualRailVehicle,            CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_BUILD_VIRTUAL_RAIL_VEHICLE
+	DEF_CMD(CmdReplaceTemplateVehicle,             CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_REPLACE_TEMPLATE_VEHICLE
+
+	DEF_CMD(CmdTemplateVehicleFromTrain,           CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN
+	DEF_CMD(CmdDeleteTemplateVehicle,              CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_DELETE_TEMPLATE_VEHICLE
+
+	DEF_CMD(CmdIssueTemplateReplacement,           CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_ISSUE_TEMPLATE_REPLACEMENT
+	DEF_CMD(CmdDeleteTemplateReplacement,          CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_DELETE_TEMPLATE_REPLACEMENT
+
 	DEF_CMD(CmdCloneVehicle,                         CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_CLONE_VEHICLE; NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
 	DEF_CMD(CmdStartStopVehicle,                               0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_START_STOP_VEHICLE
 	DEF_CMD(CmdMassStartStopVehicle,                           0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_MASS_START_STOP
 	DEF_CMD(CmdAutoreplaceVehicle,                             0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_AUTOREPLACE_VEHICLE
+	DEF_CMD(CmdTemplateReplaceVehicle,                         0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_TEMPLATE_REPLACE_VEHICLE
 	DEF_CMD(CmdDepotSellAllVehicles,                           0, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_DEPOT_SELL_ALL_VEHICLES
 	DEF_CMD(CmdDepotMassAutoReplace,                           0, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_DEPOT_MASS_AUTOREPLACE
 	DEF_CMD(CmdCreateGroup,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CREATE_GROUP

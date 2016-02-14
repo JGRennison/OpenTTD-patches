@@ -291,6 +291,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\tbtr_template_gui_main.cpp" />
+    <ClCompile Include="..\src\tbtr_template_gui_create.cpp" />
+    <ClCompile Include="..\src\tbtr_template_gui_create_virtualtrain.cpp" />
+    <ClCompile Include="..\src\tbtr_template_vehicle.cpp" />
+    <ClCompile Include="..\src\tbtr_template_vehicle_func.cpp" />
+    <ClInclude Include="..\src\tbtr_template_gui_main.h" />
+    <ClInclude Include="..\src\tbtr_template_gui_create.h" />
+    <ClInclude Include="..\src\tbtr_template_gui_create_virtualtrain.h" />
+    <ClInclude Include="..\src\tbtr_template_vehicle.h" />
+    <ClInclude Include="..\src\tbtr_template_vehicle_func.h" />
     <ClCompile Include="..\src\airport.cpp" />
     <ClCompile Include="..\src\animated_tile.cpp" />
     <ClCompile Include="..\src\articulated_vehicles.cpp" />
@@ -897,6 +907,8 @@
     <ClCompile Include="..\src\saveload\signal_sl.cpp" />
     <ClInclude Include="..\src\saveload\extended_ver_sl.h" />
     <ClCompile Include="..\src\saveload\extended_ver_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tbtr_template_replacement_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tbtr_template_veh_sl.cpp" />
     <ClInclude Include="..\src\table\airport_defaults.h" />
     <ClInclude Include="..\src\table\airport_movement.h" />
     <ClInclude Include="..\src\table\airporttile_ids.h" />

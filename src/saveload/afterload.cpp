@@ -839,6 +839,9 @@ bool AfterLoadGame()
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
 
+	/* Update template vehicles */
+	AfterLoadTemplateVehicles();
+
 	/* Make sure there is an AI attached to an AI company */
 	{
 		Company *c;

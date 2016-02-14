@@ -27,6 +27,7 @@ struct BaseVehicleListWindow : public Window {
 	VehicleListIdentifier vli; ///< Identifier of the vehicle list we want to currently show.
 
 	enum ActionDropdownItem {
+		ADI_TEMPLATE_REPLACE,
 		ADI_REPLACE,
 		ADI_SERVICE,
 		ADI_DEPOT,
@@ -47,8 +48,8 @@ struct BaseVehicleListWindow : public Window {
 	void DrawVehicleListItems(VehicleID selected_vehicle, int line_height, const Rect &r) const;
 	void SortVehicleList();
 	void BuildVehicleList();
-	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, StringID change_order_str = 0);
-	DropDownList *BuildActionDropdownList(bool show_autoreplace, bool show_group, StringID change_order_str = 0);
+	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
+	DropDownList *BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
 };
 
 uint GetVehicleListHeight(VehicleType type, uint divisor = 1);

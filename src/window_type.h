@@ -715,6 +715,11 @@ enum WindowClass {
 	 */
 	WC_PLANS,
 
+	WC_TEMPLATEGUI_MAIN,
+	WC_TEMPLATEGUI_RPLALL,
+	WC_BUILD_VIRTUAL_TRAIN,
+	WC_CREATE_TEMPLATE,
+
 	WC_INVALID = 0xFFFF, ///< Invalid window.
 };
 

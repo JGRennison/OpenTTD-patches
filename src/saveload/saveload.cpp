@@ -44,6 +44,8 @@
 #include "../fios.h"
 #include "../error.h"
 
+#include "../tbtr_template_vehicle.h"
+
 #include "table/strings.h"
 
 #include "saveload_internal.h"
@@ -457,6 +459,8 @@ extern const ChunkHandler _persistent_storage_chunk_handlers[];
 extern const ChunkHandler _trace_restrict_chunk_handlers[];
 extern const ChunkHandler _signal_chunk_handlers[];
 extern const ChunkHandler _plan_chunk_handlers[];
+extern const ChunkHandler _template_replacement_chunk_handlers[];
+extern const ChunkHandler _template_vehicle_chunk_handlers[];
 
 /** Array of all chunks in a savegame, \c NULL terminated. */
 static const ChunkHandler * const _chunk_handlers[] = {
@@ -497,6 +501,8 @@ static const ChunkHandler * const _chunk_handlers[] = {
 	_trace_restrict_chunk_handlers,
 	_signal_chunk_handlers,
 	_plan_chunk_handlers,
+	_template_replacement_chunk_handlers,
+	_template_vehicle_chunk_handlers,
 	NULL,
 };
 
@@ -1271,6 +1277,7 @@ static size_t ReferenceToInt(const void *obj, SLRefType rt)
 	switch (rt) {
 		case REF_VEHICLE_OLD: // Old vehicles we save as new ones
 		case REF_VEHICLE:   return ((const  Vehicle*)obj)->index + 1;
+		case REF_TEMPLATE_VEHICLE: return ((const TemplateVehicle*)obj)->index + 1;
 		case REF_STATION:   return ((const  Station*)obj)->index + 1;
 		case REF_TOWN:      return ((const     Town*)obj)->index + 1;
 		case REF_ORDER:     return ((const    Order*)obj)->index + 1;
@@ -1329,6 +1336,10 @@ static void *IntToReference(size_t index, SLRefType rt)
 		case REF_VEHICLE:
 			if (Vehicle::IsValidID(index)) return Vehicle::Get(index);
 			SlErrorCorrupt("Referencing invalid Vehicle");
+
+		case REF_TEMPLATE_VEHICLE:
+			if (TemplateVehicle::IsValidID(index)) return TemplateVehicle::Get(index);
+			SlErrorCorrupt("Referencing invalid TemplateVehicle");
 
 		case REF_STATION:
 			if (Station::IsValidID(index)) return Station::Get(index);
