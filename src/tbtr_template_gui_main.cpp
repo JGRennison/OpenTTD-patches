@@ -28,6 +28,7 @@
 #include "core/geometry_func.hpp"
 #include "rail_gui.h"
 #include "network/network.h"
+#include "zoom_func.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -269,6 +270,9 @@ public:
 				*size = maxdim(*size, d);
 				break;
 			}
+			default:
+				size->width = ScaleGUITrad(size->width);
+				break;
 		}
 	}
 
@@ -615,20 +619,22 @@ public:
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
 			if (this->selected_group_index == i) {
-				GfxFillRect(left, y, right, y+(this->line_height) / 2, _colour_gradient[COLOUR_GREY][3]);
+				GfxFillRect(r.left + 1, y, r.right, y + (this->line_height) / 2, _colour_gradient[COLOUR_GREY][3]);
 			}
+
+			int text_y = y + ScaleGUITrad(3);
 
 			SetDParam(0, g_id);
 			StringID str = STR_GROUP_NAME;
-			DrawString(left + 30 + this->indents[i] * 10, right, y + 2, str, TC_BLACK);
+			DrawString(left + ScaleGUITrad(30 + this->indents[i] * 10), right, text_y, str, TC_BLACK);
 
 			/* Draw the template in use for this group, if there is one */
 			short template_in_use = FindTemplateIndexForGroup(g_id);
 			if (template_in_use >= 0) {
 				SetDParam(0, template_in_use);
-				DrawString (left, right, y + 2, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
+				DrawString (left, right, text_y, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
 			} else if (GetTemplateReplacementByGroupID(g_id)) { /* If there isn't a template applied from the current group, check if there is one for another rail type */
-				DrawString (left, right, y + 2, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
+				DrawString (left, right, text_y, STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE, TC_SILVER, SA_HOR_CENTER);
 			}
 
 			/* Draw the number of trains that still need to be treated by the currently selected template replacement */
@@ -639,7 +645,7 @@ public:
 				// Draw text
 				TextColour color = TC_GREY;
 				if (num_trains) color = TC_BLACK;
-				DrawString(left, right - 16, y + 2, STR_TMPL_NUM_TRAINS_NEED_RPL, color, SA_RIGHT);
+				DrawString(left, right - ScaleGUITrad(16), text_y, STR_TMPL_NUM_TRAINS_NEED_RPL, color, SA_RIGHT);
 				// Draw number
 				if (num_trains ) {
 					color = TC_ORANGE;
@@ -647,7 +653,7 @@ public:
 					color = TC_GREY;
 				}
 				SetDParam(0, num_trains);
-				DrawString(left, right - 4, y + 2, STR_JUST_INT, color, SA_RIGHT);
+				DrawString(left, right - ScaleGUITrad(4), text_y, STR_JUST_INT, color, SA_RIGHT);
 			}
 
 			y += line_height / 2;
@@ -669,46 +675,49 @@ public:
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
 			if (this->selected_template_index == (int32) i) {
-				GfxFillRect(left, y, right, y + this->line_height, _colour_gradient[COLOUR_GREY][3]);
+				GfxFillRect(left + 1, y, right, y + this->line_height, _colour_gradient[COLOUR_GREY][3]);
 			}
+
+			/* Draw the template */
+			DrawTemplate(v, left + ScaleGUITrad(50), right, y);
 
 			/* Draw a notification string for chains that are not runnable */
 			if (v->IsFreeWagonChain()) {
-				DrawString(left, right - 2, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_WARNING_FREE_WAGON, TC_RED, SA_RIGHT);
+				DrawString(left, right - ScaleGUITrad(24), y + ScaleGUITrad(2), STR_TMPL_WARNING_FREE_WAGON, TC_RED, SA_RIGHT);
 			}
 
 			/* Draw the template's length in tile-units */
 			SetDParam(0, v->GetRealLength());
 			SetDParam(1, 1);
-			DrawString(left, right - 4, y + 2, STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
+			DrawString(left, right - ScaleGUITrad(4), y + ScaleGUITrad(2), STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
 
-			/* Draw the template */
-			DrawTemplate(v, left + 50, right, y);
+			int bottom_edge = y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - ScaleGUITrad(4);
 
 			/* Buying cost */
 			SetDParam(0, CalculateOverallTemplateCost(v));
-			DrawString(left + 35, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont, TC_BLUE, SA_LEFT);
+			DrawString(left + ScaleGUITrad(35), right, bottom_edge, STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont, TC_BLUE, SA_LEFT);
 
 			/* Index of current template vehicle in the list of all templates for its company */
 			SetDParam(0, i);
-			DrawString(left + 5, left + 25, y + 2, STR_BLACK_INT, TC_BLACK, SA_RIGHT);
+			DrawString(left + ScaleGUITrad(5), left + ScaleGUITrad(25), y + ScaleGUITrad(2), STR_BLACK_INT, TC_BLACK, SA_RIGHT);
 
 			/* Draw whether the current template is in use by any group */
 			if (v->NumGroupsUsingTemplate() > 0) {
-				DrawString(left + 35, right, y + line_height - FONT_HEIGHT_SMALL * 2 - 4 - WD_FRAMERECT_BOTTOM - 2, STR_TMP_TEMPLATE_IN_USE, TC_GREEN, SA_LEFT);
+				DrawString(left + ScaleGUITrad(35), right, bottom_edge - FONT_HEIGHT_SMALL - ScaleGUITrad(3),
+						STR_TMP_TEMPLATE_IN_USE, TC_GREEN, SA_LEFT);
 			}
 
 			/* Draw information about template configuration settings */
 			TextColour color;
 
 			color = v->IsSetReuseDepotVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - 225, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
+			DrawString(right - ScaleGUITrad(225), right, bottom_edge, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
 
 			color = v->IsSetKeepRemainingVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - 150, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
+			DrawString(right - ScaleGUITrad(150), right, bottom_edge, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
 
 			color = v->IsSetRefitAsTemplate() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - 75, right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 2, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
+			DrawString(right - ScaleGUITrad(75), right, bottom_edge, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
 
 			y += line_height;
 		}
@@ -736,11 +745,11 @@ public:
 		SetDParam(1, tmp->power);
 		SetDParam(0, tmp->weight);
 		SetDParam(3, tmp->max_te);
-		DrawString(8, r.right, 4 - this->vscroll[2]->GetPosition(), STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
+		DrawString(8, r.right, ScaleGUITrad(4) - this->vscroll[2]->GetPosition(), STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
 
 		/* Draw cargo summary */
-		short top = 30 - this->vscroll[2]->GetPosition();
-		short left = 8;
+		short top = ScaleGUITrad(30) - this->vscroll[2]->GetPosition();
+		short left = ScaleGUITrad(8);
 		short count_columns = 0;
 		short max_columns = 2;
 
@@ -756,7 +765,7 @@ public:
 				SetDParam(1, cargo_caps[i]);
 				SetDParam(2, _settings_game.vehicle.freight_trains);
 				DrawString(x, r.right, top, FreightWagonMult(i) > 1 ? STR_TMPL_CARGO_SUMMARY_MULTI : STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
-				x += 250;
+				x += ScaleGUITrad(250);
 				if (count_columns % max_columns == 0) {
 					x = left;
 					top += this->line_height / 3;
