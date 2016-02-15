@@ -1186,6 +1186,7 @@ CommandCost CmdDeleteTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint32
 
 		delete del;
 
+		InvalidateWindowClassesData(WC_CREATE_TEMPLATE, 0);
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
 	}
 
