@@ -273,6 +273,11 @@ public:
 		return true;
 	}
 
+	virtual void OnPlaceObjectAbort()
+	{
+		this->RaiseButtons();
+	}
+
 	virtual void DrawWidget(const Rect &r, int widget) const
 	{
 		switch(widget) {

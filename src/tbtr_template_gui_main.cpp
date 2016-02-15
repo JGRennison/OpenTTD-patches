@@ -490,6 +490,11 @@ public:
 		return true;
 	}
 
+	virtual void OnPlaceObjectAbort()
+	{
+		this->RaiseButtons();
+	}
+
 	virtual void OnDropdownSelect(int widget, int index)
 	{
 		RailType temp = (RailType) index;
