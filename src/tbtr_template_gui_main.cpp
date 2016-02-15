@@ -200,7 +200,6 @@ private:
 	short selected_template_index;
 	short selected_group_index;
 
-	bool templateNotice;
 	bool editInProgress;
 
 public:
@@ -235,7 +234,6 @@ public:
 
 		this->UpdateButtonState();
 
-		this->templateNotice = false;
 		this->editInProgress = false;
 
 		this->templates.ForceRebuild();
@@ -319,11 +317,6 @@ public:
 
 		this->BuildGroupList(_local_company);
 
-		if (templateNotice) {
-			BuildTemplateGuiList(&this->templates, vscroll[1], _local_company, this->sel_railtype);
-			templateNotice = false;
-			this->SetDirty();
-		}
 		/* sets the colour of that art thing */
 		this->GetWidget<NWidgetCore>(TRW_WIDGET_TRAIN_FLUFF_LEFT)->colour  = _company_colours[_local_company];
 		this->GetWidget<NWidgetCore>(TRW_WIDGET_TRAIN_FLUFF_RIGHT)->colour = _company_colours[_local_company];
@@ -392,14 +385,17 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_DEFINE: {
-				ShowTemplateCreateWindow(0, &templateNotice, &editInProgress, this->line_height);
+				editInProgress = true;
+				ShowTemplateCreateWindow(0, &editInProgress, this->line_height);
+				UpdateButtonState();
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_EDIT: {
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length())) {
 					editInProgress = true;
 					TemplateVehicle *sel = TemplateVehicle::Get(((this->templates)[selected_template_index])->index);
-					ShowTemplateCreateWindow(sel, &templateNotice, &editInProgress, this->line_height);
+					ShowTemplateCreateWindow(sel, &editInProgress, this->line_height);
+					UpdateButtonState();
 				}
 				break;
 			}
@@ -522,21 +518,12 @@ public:
 		this->vscroll[2]->SetCapacity(nwi3->current_y);
 	}
 
-	virtual void OnTick()
-	{
-		if (templateNotice) {
-			BuildTemplateGuiList(&this->templates, this->vscroll[1], this->owner, this->sel_railtype);
-			this->SetDirty();
-			templateNotice = false;
-		}
-
-	}
-
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
 	{
 		this->groups.ForceRebuild();
 		this->templates.ForceRebuild();
 		this->UpdateButtonState();
+		this->SetDirty();
 	}
 
 	/** For a given group (id) find the template that is issued for template replacement for this group and return this template's index
@@ -791,14 +778,18 @@ public:
 			g_id = g->index;
 		}
 
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_EDIT, !selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DELETE, !selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE, !selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP, !selected_ok);
-		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT, !selected_ok);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_EDIT, this->editInProgress || !selected_ok);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DELETE, this->editInProgress || !selected_ok);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE, this->editInProgress || !selected_ok);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP, this->editInProgress ||!selected_ok);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT, this->editInProgress ||!selected_ok);
 
-		this->SetWidgetDisabledState(TRW_WIDGET_START, !(selected_ok && group_ok && FindTemplateIndexForGroup(g_id) != this->selected_template_index));
-		this->SetWidgetDisabledState(TRW_WIDGET_STOP, !(group_ok && GetTemplateReplacementByGroupID(g_id) != NULL));
+		this->SetWidgetDisabledState(TRW_WIDGET_START, this->editInProgress || !(selected_ok && group_ok && FindTemplateIndexForGroup(g_id) != this->selected_template_index));
+		this->SetWidgetDisabledState(TRW_WIDGET_STOP, this->editInProgress || !(group_ok && GetTemplateReplacementByGroupID(g_id) != NULL));
+
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DEFINE, this->editInProgress);
+		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CLONE, this->editInProgress);
+		this->SetWidgetDisabledState(TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN, this->editInProgress);
 	}
 };
 

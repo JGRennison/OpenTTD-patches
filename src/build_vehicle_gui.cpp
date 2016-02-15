@@ -32,6 +32,7 @@
 #include "cargotype.h"
 #include "core/geometry_func.hpp"
 #include "autoreplace_func.h"
+#include "train.h"
 
 #include "widgets/build_vehicle_widget.h"
 
@@ -974,11 +975,16 @@ struct BuildVehicleWindow : Window {
 	byte cargo_filter_criteria;                 ///< Selected cargo filter
 	int details_height;                         ///< Minimal needed height of the details panels (found so far).
 	Scrollbar *vscroll;
+	bool virtual_train_mode;                    ///< Are we building a virtual train?
+	Train **virtual_train_out;                  ///< Virtual train ptr
 
-	BuildVehicleWindow(WindowDesc *desc, TileIndex tile, VehicleType type) : Window(desc)
+	BuildVehicleWindow(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
 	{
 		this->vehicle_type = type;
 		this->window_number = tile == INVALID_TILE ? (int)type : tile;
+		this->virtual_train_out = virtual_train_out;
+		this->virtual_train_mode = (virtual_train_out != NULL);
+		if (this->virtual_train_mode) this->window_number = 0;
 
 		this->sel_engine = INVALID_ENGINE;
 
@@ -998,7 +1004,7 @@ struct BuildVehicleWindow : Window {
 				break;
 		}
 
-		this->listview_mode = (this->window_number <= VEH_END);
+		this->listview_mode = !(this->virtual_train_mode) && (this->window_number <= VEH_END);
 
 		this->CreateNestedTree();
 
@@ -1018,8 +1024,13 @@ struct BuildVehicleWindow : Window {
 		widget->tool_tip = STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + type;
 
 		widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD);
-		widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + type;
-		widget->tool_tip    = STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP + type;
+		if (this->virtual_train_mode) {
+			widget->widget_data = STR_TMPL_CONFIRM;
+			widget->tool_tip    = STR_TMPL_CONFIRM;
+		} else {
+			widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + type;
+			widget->tool_tip    = STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP + type;
+		}
 
 		widget = this->GetWidget<NWidgetCore>(WID_BV_RENAME);
 		widget->widget_data = STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON + type;
@@ -1032,7 +1043,7 @@ struct BuildVehicleWindow : Window {
 
 		this->details_height = ((this->vehicle_type == VEH_TRAIN) ? 10 : 9) * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 
-		this->FinishInitNested(tile == INVALID_TILE ? (int)type : tile);
+		this->FinishInitNested(this->window_number);
 
 		this->owner = (tile != INVALID_TILE) ? GetTileOwner(tile) : _local_company;
 
@@ -1116,7 +1127,7 @@ struct BuildVehicleWindow : Window {
 		int num_engines = 0;
 		int num_wagons  = 0;
 
-		this->filter.railtype = (this->listview_mode) ? RAILTYPE_END : GetRailType(this->window_number);
+		this->filter.railtype = (this->listview_mode || this->virtual_train_mode) ? RAILTYPE_END : GetRailType(this->window_number);
 
 		this->eng_list.Clear();
 
@@ -1308,8 +1319,13 @@ struct BuildVehicleWindow : Window {
 			case WID_BV_BUILD: {
 				EngineID sel_eng = this->sel_engine;
 				if (sel_eng != INVALID_ENGINE) {
-					CommandCallback *callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON) ? CcBuildWagon : CcBuildPrimaryVehicle;
-					DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback);
+					if (this->virtual_train_mode) {
+						DoCommandP(0, sel_eng, 0, CMD_BUILD_VIRTUAL_RAIL_VEHICLE, CcAddVirtualEngine);
+					} else {
+						CommandCallback *callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON)
+								? CcBuildWagon : CcBuildPrimaryVehicle;
+						DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback);
+					}
 				}
 				break;
 			}
@@ -1348,7 +1364,7 @@ struct BuildVehicleWindow : Window {
 	{
 		switch (widget) {
 			case WID_BV_CAPTION:
-				if (this->vehicle_type == VEH_TRAIN && !this->listview_mode) {
+				if (this->vehicle_type == VEH_TRAIN && !this->listview_mode && !this->virtual_train_mode) {
 					const RailtypeInfo *rti = GetRailTypeInfo(this->filter.railtype);
 					SetDParam(0, rti->strings.build_caption);
 				} else {
@@ -1481,11 +1497,44 @@ struct BuildVehicleWindow : Window {
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_BV_LIST);
 	}
+
+	void AddVirtualEngine(Train *toadd)
+	{
+		if (this->virtual_train_out == NULL) return;
+
+		if (*(this->virtual_train_out) == NULL) {
+			*(this->virtual_train_out) = toadd;
+		} else {
+			VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
+
+			DoCommandP(0, (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE);
+		}
+		InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+	}
 };
+
+void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
+{
+	if (result.Failed()) return;
+
+	Window* window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
+	if (window) {
+		Train* train = Train::From(Vehicle::Get(_new_vehicle_id));
+		((BuildVehicleWindow*) window)->AddVirtualEngine(train);
+	}
+}
 
 static WindowDesc _build_vehicle_desc(
 	WDP_AUTO, "build_vehicle", 240, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
+	WDF_CONSTRUCTION,
+	_nested_build_vehicle_widgets, lengthof(_nested_build_vehicle_widgets)
+);
+
+static WindowDesc _build_template_vehicle_desc(
+	WDP_AUTO, "build_vehicle", 240, 268,
+	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
 	_nested_build_vehicle_widgets, lengthof(_nested_build_vehicle_widgets)
 );
@@ -1502,5 +1551,14 @@ void ShowBuildVehicleWindow(TileIndex tile, VehicleType type)
 
 	DeleteWindowById(WC_BUILD_VEHICLE, num);
 
-	new BuildVehicleWindow(&_build_vehicle_desc, tile, type);
+	new BuildVehicleWindow(&_build_vehicle_desc, tile, type, NULL);
+}
+
+void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train)
+{
+	assert(IsCompanyBuildableVehicleType(VEH_TRAIN));
+
+	DeleteWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
+
+	new BuildVehicleWindow(&_build_template_vehicle_desc, INVALID_TILE, VEH_TRAIN, virtual_train);
 }
