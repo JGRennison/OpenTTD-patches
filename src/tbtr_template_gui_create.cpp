@@ -365,7 +365,7 @@ public:
 					virtual_train = (_ctrl_pressed) ? NULL : virtual_train->GetNextUnit();
 				}
 
-				DoCommandP(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, GetCmdSellVeh(VEH_TRAIN));
+				DoCommandP(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, GetCmdSellVeh(VEH_TRAIN), CcDeleteVirtualTrain);
 
 				this->sel = INVALID_VEHICLE;
 
@@ -570,6 +570,10 @@ void CcVirtualTrainWaggonsMoved(const CommandCost &result, TileIndex tile, uint3
 
 void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
 {
-	VehicleID virtual_train_id = p2;
-	DoCommandP(0, virtual_train_id, 0, CMD_DELETE_VIRTUAL_TRAIN);
+	if (result.Failed()) return;
+
+	Window* window = FindWindowById(WC_CREATE_TEMPLATE, 0);
+	if (window) {
+		window->InvalidateData();
+	}
 }
