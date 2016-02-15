@@ -478,7 +478,7 @@ public:
 
 	virtual bool OnVehicleSelect(const Vehicle *v)
 	{
-		bool succeeded = DoCommandP(0, v->index, 0, CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN, NULL);
+		bool succeeded = DoCommandP(0, v->index, 0, CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), NULL);
 
 		if (!succeeded)	return false;
 

@@ -5027,3 +5027,5 @@ STR_TMPL_RPLALLGUI_BUTTON_RPLALL                                :{BLACK}Replace 
 STR_TMPL_RPLALLGUI_BUTTON_APPLY                                 :{BLACK}Apply
 STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}Cancel
 STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}Select a vehicle type from each list and press 'Replace All'. If you are happy with the result displayed in the template list, press 'Apply' to actually apply these changes.
+
+STR_TMPL_CANT_CREATE                                            :{WHITE}Can't create template or virtual vehicle...

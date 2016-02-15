@@ -161,7 +161,7 @@ public:
 		this->vehicle_over = INVALID_VEHICLE;
 
 		if (to_edit) {
-			DoCommandP(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE, CcSetVirtualTrain);
+			DoCommandP(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
 		}
 
 		this->resize.step_height = 1;
@@ -265,7 +265,7 @@ public:
 		}
 
 		// create a new one
-		DoCommandP(0, v->index, 0, CMD_VIRTUAL_TRAIN_FROM_TRAIN, CcSetVirtualTrain);
+		DoCommandP(0, v->index, 0, CMD_VIRTUAL_TRAIN_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
 		this->ToggleWidgetLoweredState(TCW_CLONE);
 		ResetObjectToPlace();
 		this->SetDirty();
