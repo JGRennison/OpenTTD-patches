@@ -479,12 +479,17 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 
 	Vehicle *front = v->First();
 
-	CommandCost ret = CheckVehicleControlAllowed(v);
-	if (ret.Failed()) return ret;
-
 	bool auto_refit = HasBit(p2, 6);
 	bool is_virtual_train = HasBit(p2, 5);
 	bool free_wagon = v->type == VEH_TRAIN && Train::From(front)->IsFreeWagon(); // used by autoreplace/renew
+
+	if (is_virtual_train || (v->type == VEH_TRAIN && Train::From(front)->IsVirtual())) {
+		CommandCost ret = CheckOwnership(front->owner);
+		if (ret.Failed()) return ret;
+	} else {
+		CommandCost ret = CheckVehicleControlAllowed(v);
+		if (ret.Failed()) return ret;
+	}
 
 	/* Don't allow shadows and such to be refitted. */
 	if (v != front && (v->type == VEH_SHIP || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
