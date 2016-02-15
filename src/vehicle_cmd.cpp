@@ -810,8 +810,7 @@ inline void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicl
 
 	tmp->spritenum = virt->spritenum;
 	tmp->cur_image = virt->GetImage(DIR_W, EIT_PURCHASE);
-	Point *p = new Point();
-	tmp->image_width = virt->GetDisplayImageWidth(p);
+	tmp->image_width = virt->GetDisplayImageWidth();
 }
 
 /**

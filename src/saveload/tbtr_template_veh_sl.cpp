@@ -1,6 +1,8 @@
 #include "../stdafx.h"
 
 #include "../tbtr_template_vehicle.h"
+#include "../tbtr_template_vehicle_func.h"
+#include "../train.h"
 
 #include "saveload.h"
 
@@ -89,6 +91,37 @@ void AfterLoadTemplateVehicles()
 		if (tv->previous == NULL) {
 			for (TemplateVehicle *u = tv; u != NULL; u = u->Next()) {
 				u->first = tv;
+			}
+		}
+	}
+}
+
+void AfterLoadTemplateVehiclesUpdateImage()
+{
+	TemplateVehicle *tv;
+
+	FOR_ALL_TEMPLATES(tv) {
+		if (tv->Prev() == NULL) {
+			StringID err;
+			Train* t = VirtualTrainFromTemplateVehicle(tv, err);
+			if (t != NULL) {
+				int tv_len = 0;
+				for (TemplateVehicle *u = tv; u != NULL; u = u->Next()) {
+					tv_len++;
+				}
+				int t_len = 0;
+				for (Train *u = t; u != NULL; u = u->Next()) {
+					t_len++;
+				}
+				if (t_len == tv_len) {
+					Train *v = t;
+					for (TemplateVehicle *u = tv; u != NULL; u = u->Next(), v = v->Next()) {
+						u->spritenum = v->spritenum;
+						u->cur_image = v->GetImage(DIR_W, EIT_PURCHASE);
+						u->image_width = v->GetDisplayImageWidth();
+					}
+				}
+				delete t;
 			}
 		}
 	}

@@ -2991,6 +2991,9 @@ bool AfterLoadGame()
 	ResetSignalHandlers();
 
 	AfterLoadLinkGraphs();
+
+	AfterLoadTemplateVehiclesUpdateImage();
+
 	return true;
 }
 
@@ -3028,4 +3031,5 @@ void ReloadNewGRFData()
 	/* redraw the whole screen */
 	MarkWholeScreenDirty();
 	CheckTrainsLengths();
+	AfterLoadTemplateVehiclesUpdateImage();
 }
