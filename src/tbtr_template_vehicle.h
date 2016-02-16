@@ -92,7 +92,6 @@ public:
 	byte spritenum;
 	SpriteID cur_image;
 	uint32 image_width;
-	const SpriteGroup *sgroup;
 
 	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, byte B = 0, Owner = _local_company);
 	TemplateVehicle(EngineID, RailVehicleInfo*);

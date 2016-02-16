@@ -293,12 +293,10 @@
   <ItemGroup>
     <ClCompile Include="..\src\tbtr_template_gui_main.cpp" />
     <ClCompile Include="..\src\tbtr_template_gui_create.cpp" />
-    <ClCompile Include="..\src\tbtr_template_gui_create_virtualtrain.cpp" />
     <ClCompile Include="..\src\tbtr_template_vehicle.cpp" />
     <ClCompile Include="..\src\tbtr_template_vehicle_func.cpp" />
     <ClInclude Include="..\src\tbtr_template_gui_main.h" />
     <ClInclude Include="..\src\tbtr_template_gui_create.h" />
-    <ClInclude Include="..\src\tbtr_template_gui_create_virtualtrain.h" />
     <ClInclude Include="..\src\tbtr_template_vehicle.h" />
     <ClInclude Include="..\src\tbtr_template_vehicle_func.h" />
     <ClCompile Include="..\src\airport.cpp" />

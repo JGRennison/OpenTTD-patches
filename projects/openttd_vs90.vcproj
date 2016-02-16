@@ -440,10 +440,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\..\src\tbtr_template_gui_create_virtualtrain.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\..\src\tbtr_template_vehicle.cpp"
 				>
 			</File>
@@ -457,10 +453,6 @@
 			</File>
 			<File
 				RelativePath=".\..\src\tbtr_template_gui_create.h"
-				>
-			</File>
-			<File
-				RelativePath=".\..\src\tbtr_template_gui_create_virtualtrain.h"
 				>
 			</File>
 			<File

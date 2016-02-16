@@ -17,7 +17,7 @@
 
 #include "tbtr_template_vehicle.h"
 
-Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv);
+Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err);
 
 void DrawTemplateVehicle(const TemplateVehicle*, int, int, int, VehicleID, int, VehicleID);
 

@@ -4136,19 +4136,19 @@ Train* CmdBuildVirtualRailWagon(const Engine *e)
 	return v;
 }
 
-/**
- * Build a railroad vehicle.
- * @param tile     tile of the depot where rail-vehicle is built.
- * @param flags    type of operation.
- * @param e        the engine to build.
- * @param data     bit 0 prevents any free cars from being added to the train.
- * @param ret[out] the vehicle that has been built.
- * @return the cost of this operation or an error.
- */
-Train* CmdBuildVirtualRailVehicle(EngineID eid)
+Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID &error)
 {
-	if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
-		return NULL;
+	if (lax_engine_check) {
+		const Engine *e = Engine::GetIfValid(eid);
+		if (e == NULL || e->type != VEH_TRAIN) {
+			error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN;
+			return NULL;
+		}
+	} else {
+		if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
+			error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN;
+			return NULL;
+		}
 	}
 
 	const Engine* e = Engine::Get(eid);
@@ -4156,6 +4156,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid)
 
 	int num_vehicles = (e->u.rail.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid, false);
 	if (!Train::CanAllocateItem(num_vehicles)) {
+		error = STR_ERROR_TOO_MANY_VEHICLES_IN_GAME;
 		return NULL;
 	}
 
@@ -4229,13 +4230,18 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 {
 	EngineID eid = p1;
 
+	if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
+		return_cmd_error(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
+	}
+
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
-		Train* train = CmdBuildVirtualRailVehicle(eid);
+		StringID err = INVALID_STRING_ID;
+		Train* train = CmdBuildVirtualRailVehicle(eid, false, err);
 
 		if (train == NULL) {
-			return CMD_ERROR;
+			return_cmd_error(err);
 		}
 	}
 
@@ -4309,7 +4315,12 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		CommandCost buyCost = TestBuyAllTemplateVehiclesInChain(tv, tile);
 		if (!buyCost.Succeeded() || !CheckCompanyHasMoney(buyCost)) {
 			if (!stayInDepot) incoming->vehstatus &= ~VS_STOPPED;
-			return_cmd_error(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
+
+			if (!buyCost.Succeeded() && buyCost.GetErrorMessage() != INVALID_STRING_ID) {
+				return buyCost;
+			} else {
+				return_cmd_error(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
+			}
 		}
 	}
 
