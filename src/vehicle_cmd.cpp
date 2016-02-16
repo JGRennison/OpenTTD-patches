@@ -1130,7 +1130,7 @@ CommandCost CmdTemplateVehicleFromTrain(TileIndex tile, DoCommandFlag flags, uin
 		return CMD_ERROR;
 	}
 
-	for (Train *v = clicked; v != NULL; v = v->Next()) {
+	for (Train *v = clicked; v != NULL; v = v->GetNextUnit()) {
 		if (!IsEngineBuildable(v->engine_type, VEH_TRAIN, _current_company)) {
 			return_cmd_error(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
 		}
