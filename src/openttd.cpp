@@ -63,6 +63,7 @@
 #include "subsidy_func.h"
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
+#include "thread/thread.h"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -553,6 +554,7 @@ static const OptionData _options[] = {
  */
 int openttd_main(int argc, char *argv[])
 {
+	SetSelfAsMainThread();
 	char *musicdriver = NULL;
 	char *sounddriver = NULL;
 	char *videodriver = NULL;

@@ -199,3 +199,7 @@ private:
 	if (thread != NULL) *thread = to;
 	return true;
 }
+
+void SetSelfAsMainThread() { }
+
+bool IsMainThread() { return false; }

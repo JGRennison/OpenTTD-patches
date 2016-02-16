@@ -122,4 +122,14 @@ private:
  */
 uint GetCPUCoreCount();
 
+/**
+ * Set the current thread as the "main" thread
+ */
+void SetSelfAsMainThread();
+
+/**
+ * @return true if the current thread definitely the "main" thread. If in doubt returns false.
+ */
+bool IsMainThread();
+
 #endif /* THREAD_H */

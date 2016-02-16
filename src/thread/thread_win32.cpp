@@ -158,3 +158,15 @@ public:
 {
 	return new ThreadMutex_Win32();
 }
+
+static uint main_thread_id;
+
+void SetSelfAsMainThread()
+{
+	main_thread_id = GetCurrentThreadId();
+}
+
+bool IsMainThread()
+{
+	return main_thread_id == GetCurrentThreadId();
+}
