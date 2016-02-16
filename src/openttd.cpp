@@ -123,6 +123,25 @@ void CDECL error(const char *s, ...)
 	abort();
 }
 
+void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...)
+{
+	va_list va;
+	char buf[2048];
+
+	char *b = buf;
+	b += seprintf(b, lastof(buf), "Assertion failed at line %i of %s: %s\n\t", line, file, expr);
+
+	va_start(va, str);
+	vseprintf(b, lastof(buf), str, va);
+	va_end(va);
+
+	ShowOSErrorBox(buf, true);
+
+	/* Set the error message for the crash log and then invoke it. */
+	CrashLog::SetErrorMessage(buf);
+	abort();
+}
+
 /**
  * Shows some information on the console/a popup box depending on the OS.
  * @param str the text to show.
