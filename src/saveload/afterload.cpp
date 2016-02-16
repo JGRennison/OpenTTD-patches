@@ -3216,6 +3216,7 @@ bool AfterLoadGame()
 	AfterLoadLinkGraphs();
 
 	AfterLoadTraceRestrict();
+	AfterLoadTemplateVehiclesUpdateImage();
 
 	/* Show this message last to avoid covering up an error message if we bail out part way */
 	switch (gcf_res) {
@@ -3261,4 +3262,5 @@ void ReloadNewGRFData()
 	/* redraw the whole screen */
 	MarkWholeScreenDirty();
 	CheckTrainsLengths();
+	AfterLoadTemplateVehiclesUpdateImage();
 }

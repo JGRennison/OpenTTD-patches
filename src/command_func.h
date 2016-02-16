@@ -133,7 +133,7 @@ CommandCallback CcSetVirtualTrain;
 CommandCallback CcVirtualTrainWaggonsMoved;
 CommandCallback CcDeleteVirtualTrain;
 
-/* tbtr_template_gui_create_virtualtrain.cpp */
+/* build_vehicle_gui.cpp */
 CommandCallback CcAddVirtualEngine;
 
 #endif /* COMMAND_FUNC_H */

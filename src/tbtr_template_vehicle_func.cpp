@@ -20,6 +20,7 @@
 #include "vehicle_func.h"
 #include "core/geometry_type.hpp"
 #include "debug.h"
+#include "zoom_func.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -123,7 +124,7 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 
 	while (t) {
 		PaletteID pal = GetEnginePalette(t->engine_type, _current_company);
-		DrawSprite(t->cur_image, pal, offset, y + 12);
+		DrawSprite(t->cur_image, pal, offset, y + ScaleGUITrad(11));
 
 		offset += t->image_width;
 		t = t->Next();
