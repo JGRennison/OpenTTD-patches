@@ -28,6 +28,7 @@
 #include "object_base.h"
 #include "newgrf_text.h"
 #include "string_func.h"
+#include "scope_info.h"
 
 #include "table/strings.h"
 
@@ -455,6 +456,8 @@ CommandCost DoCommand(const CommandContainer *container, DoCommandFlag flags)
  */
 CommandCost DoCommand(TileIndex tile, uint32 p1, uint32 p2, DoCommandFlag flags, uint32 cmd, const char *text)
 {
+	SCOPE_INFO_FMT([=], "DoCommand: tile: %dx%d, p1: 0x%X, p2: 0x%X, flags: 0x%X, company: %s, cmd: 0x%X (%s)", TileX(tile), TileY(tile), p1, p2, flags, DumpCompanyInfo(_current_company), cmd, GetCommandName(cmd));
+
 	CommandCost res;
 
 	/* Do not even think about executing out-of-bounds tile-commands */
@@ -548,6 +551,8 @@ bool DoCommandP(const CommandContainer *container, bool my_cmd)
  */
 bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd)
 {
+	SCOPE_INFO_FMT([=], "DoCommandP: tile: %dx%d, p1: 0x%X, p2: 0x%X, company: %s, cmd: 0x%X (%s), my_cmd: %d", TileX(tile), TileY(tile), p1, p2, DumpCompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd);
+
 	/* Cost estimation is generally only done when the
 	 * local user presses shift while doing somthing.
 	 * However, in case of incoming network commands,
