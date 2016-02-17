@@ -1194,3 +1194,6 @@ thread/thread.h
 #else
 	thread/thread_none.cpp
 #end
+
+scope_info.cpp
+scope_info.h

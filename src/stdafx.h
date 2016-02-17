@@ -520,4 +520,10 @@ static inline void free(const void *ptr)
 	#define IGNORE_UNINITIALIZED_WARNING_STOP
 #endif
 
+#if !defined(DISABLE_SCOPE_INFO) && (__cplusplus >= 201103L || defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__))
+#define USE_SCOPE_INFO
+#endif
+
+#define SINGLE_ARG(...) __VA_ARGS__
+
 #endif /* STDAFX_H */
