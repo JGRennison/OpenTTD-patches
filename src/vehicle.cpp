@@ -1121,6 +1121,8 @@ void CallVehicleTicks()
 	for (TemplateReplacementMap::iterator it = _vehicles_to_templatereplace.Begin(); it != _vehicles_to_templatereplace.End(); it++) {
 		Train *t = it->first;
 
+		SCOPE_INFO_FMT([t], "CallVehicleTicks: template replace: %s", DumpVehicleInfo(t));
+
 		/* Store the position of the effect as the vehicle pointer will become invalid later */
 		int x = t->x_pos;
 		int y = t->y_pos;
