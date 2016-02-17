@@ -145,3 +145,7 @@ public:
 {
 	return new ThreadMutex_OS2();
 }
+
+void SetSelfAsMainThread() { }
+
+bool IsMainThread() { return false; }

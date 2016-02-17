@@ -28,6 +28,8 @@
 #include "network/network.h"
 #include "language.h"
 #include "fontcache.h"
+#include "scope_info.h"
+#include "thread/thread.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -327,6 +329,13 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i)\n\n", ymd.year, ymd.month + 1, ymd.day, _date_fract, _tick_skip_counter);
 
 	buffer = this->LogError(buffer, last, CrashLog::message);
+
+#ifdef USE_SCOPE_INFO
+	if (IsMainThread()) {
+		buffer += WriteScopeLog(buffer, last);
+	}
+#endif
+
 	buffer = this->LogOpenTTDVersion(buffer, last);
 	buffer = this->LogRegisters(buffer, last);
 	buffer = this->LogStacktrace(buffer, last);

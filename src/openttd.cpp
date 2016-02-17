@@ -67,6 +67,7 @@
 #include "programmable_signals.h"
 #include "smallmap_gui.h"
 #include "viewport_func.h"
+#include "thread/thread.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -119,6 +120,25 @@ void CDECL error(const char *s, ...)
 
 	va_start(va, s);
 	vseprintf(buf, lastof(buf), s, va);
+	va_end(va);
+
+	ShowOSErrorBox(buf, true);
+
+	/* Set the error message for the crash log and then invoke it. */
+	CrashLog::SetErrorMessage(buf);
+	abort();
+}
+
+void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...)
+{
+	va_list va;
+	char buf[2048];
+
+	char *b = buf;
+	b += seprintf(b, lastof(buf), "Assertion failed at line %i of %s: %s\n\t", line, file, expr);
+
+	va_start(va, str);
+	vseprintf(b, lastof(buf), str, va);
 	va_end(va);
 
 	ShowOSErrorBox(buf, true);
@@ -545,6 +565,7 @@ static const OptionData _options[] = {
  */
 int openttd_main(int argc, char *argv[])
 {
+	SetSelfAsMainThread();
 	char *musicdriver = NULL;
 	char *sounddriver = NULL;
 	char *videodriver = NULL;

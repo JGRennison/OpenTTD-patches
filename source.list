@@ -1240,3 +1240,6 @@ tracerestrict.h
 tracerestrict.cpp
 tracerestrict_gui.cpp
 saveload/tracerestrict_sl.cpp
+
+scope_info.cpp
+scope_info.h

@@ -26,6 +26,9 @@
 #include "signal_func.h"
 #include "core/backup_type.hpp"
 #include "object_base.h"
+#include "newgrf_text.h"
+#include "string_func.h"
+#include "scope_info.h"
 
 #include "table/strings.h"
 
@@ -528,6 +531,8 @@ CommandCost DoCommand(const CommandContainer *container, DoCommandFlag flags)
  */
 CommandCost DoCommand(TileIndex tile, uint32 p1, uint32 p2, DoCommandFlag flags, uint32 cmd, const char *text)
 {
+	SCOPE_INFO_FMT([=], "DoCommand: tile: %dx%d, p1: 0x%X, p2: 0x%X, flags: 0x%X, company: %s, cmd: 0x%X (%s)", TileX(tile), TileY(tile), p1, p2, flags, DumpCompanyInfo(_current_company), cmd, GetCommandName(cmd));
+
 	CommandCost res;
 
 	/* Do not even think about executing out-of-bounds tile-commands */
@@ -622,6 +627,8 @@ bool DoCommandP(const CommandContainer *container, bool my_cmd)
  */
 bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, uint32 binary_length)
 {
+	SCOPE_INFO_FMT([=], "DoCommandP: tile: %dx%d, p1: 0x%X, p2: 0x%X, company: %s, cmd: 0x%X (%s), my_cmd: %d", TileX(tile), TileY(tile), p1, p2, DumpCompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd);
+
 	/* Cost estimation is generally only done when the
 	 * local user presses shift while doing somthing.
 	 * However, in case of incoming network commands,
@@ -811,7 +818,9 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 	 * test and execution have yielded the same result,
 	 * i.e. cost and error state are the same. */
 	if (!test_and_exec_can_differ) {
-		assert(res.GetCost() == res2.GetCost() && res.Failed() == res2.Failed()); // sanity check
+		assert_msg(res.GetCost() == res2.GetCost() && res.Failed() == res2.Failed(),
+				"Command: cmd: 0x%X (%s), Test: %s, Exec: %s", cmd, GetCommandName(cmd),
+				res.AllocSummaryMessage(GB(cmd, 16, 16)), res2.AllocSummaryMessage(GB(cmd, 16, 16))); // sanity check
 	} else if (res2.Failed()) {
 		return_dcpi(res2);
 	}
@@ -877,5 +886,36 @@ void CommandCost::UseTextRefStack(const GRFFile *grffile, uint num_registers)
 	this->textref_stack_size = num_registers;
 	for (uint i = 0; i < num_registers; i++) {
 		textref_stack[i] = _temp_store.GetValue(0x100 + i);
+	}
+}
+
+char *CommandCost::AllocSummaryMessage(StringID cmd_msg) const
+{
+	char buf[DRAW_STRING_BUFFER];
+	this->WriteSummaryMessage(buf, lastof(buf), cmd_msg);
+	return stredup(buf, lastof(buf));
+}
+
+int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) const
+{
+	if (this->Succeeded()) {
+		return seprintf(buf, last, "Success: cost: " OTTD_PRINTF64, (int64) this->GetCost());
+	} else {
+		if (this->textref_stack_size > 0) StartTextRefStackUsage(this->textref_stack_grffile, this->textref_stack_size, textref_stack);
+
+		char *b = buf;
+		b += seprintf(b, last, "Failed: cost: " OTTD_PRINTF64, (int64) this->GetCost());
+		if (cmd_msg != 0) {
+			b += seprintf(b, last, " ");
+			b = GetString(b, cmd_msg, last);
+		}
+		if (this->message != INVALID_STRING_ID) {
+			b += seprintf(b, last, " ");
+			b = GetString(b, this->message, last);
+		}
+
+		if (this->textref_stack_size > 0) StopTextRefStackUsage();
+
+		return b - buf;
 	}
 }

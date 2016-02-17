@@ -55,6 +55,8 @@
 #include "linkgraph/refresh.h"
 #include "blitter/factory.hpp"
 #include "tbtr_template_vehicle_func.h"
+#include "string_func.h"
+#include "scope_info.h"
 
 #include "table/strings.h"
 
@@ -944,8 +946,10 @@ static void RunVehicleDayProc()
 	if (_game_mode != GM_NORMAL) return;
 
 	/* Run the day_proc for every DAY_TICKS vehicle starting at _date_fract. */
+	Vehicle *v = NULL;
+	SCOPE_INFO_FMT([&v], "RunVehicleDayProc: %s", DumpVehicleInfo(v));
 	for (size_t i = _date_fract; i < Vehicle::GetPoolSize(); i += DAY_TICKS) {
-		Vehicle *v = Vehicle::Get(i);
+		v = Vehicle::Get(i);
 		if (v == NULL) continue;
 
 		/* Call the 32-day callback if needed */
@@ -998,7 +1002,8 @@ void CallVehicleTicks()
 	Station *st;
 	FOR_ALL_STATIONS(st) LoadUnloadStation(st);
 
-	Vehicle *v;
+	Vehicle *v = NULL;
+	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", DumpVehicleInfo(v));
 	FOR_ALL_VEHICLES(v) {
 		/* Vehicle could be deleted in this tick */
 		if (!v->Tick()) {
@@ -1076,6 +1081,7 @@ void CallVehicleTicks()
 			}
 		}
 	}
+	v = NULL;
 
 	/* do Auto Replacement */
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
