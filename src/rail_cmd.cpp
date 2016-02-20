@@ -1100,9 +1100,13 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					/* If signal only on one side build accoringly one-way tunnel/bridge. */
 					if ((p2 == 8 && (tbdir == DIAGDIR_NE || tbdir == DIAGDIR_SE)) ||
 						(p2 == 4 && (tbdir == DIAGDIR_SW || tbdir == DIAGDIR_NW))) {
+						ClrBitTunnelBridgeExit(tile);
+						ClrBitTunnelBridgeSignal(tile_exit);
 						SetBitTunnelBridgeSignal(tile);
 						SetBitTunnelBridgeExit(tile_exit);
 					} else {
+						ClrBitTunnelBridgeSignal(tile);
+						ClrBitTunnelBridgeExit(tile_exit);
 						SetBitTunnelBridgeSignal(tile_exit);
 						SetBitTunnelBridgeExit(tile);
 					}
