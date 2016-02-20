@@ -2260,7 +2260,13 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
 
 			bool free = TunnelBridgeIsFree(tile, end, v).Succeeded();
-			if (free) {
+			if (HasWormholeSignals(tile)) {
+				SetTunnelBridgeReservation(tile, false);
+				HandleLastTunnelBridgeSignals(tile, end, dir, free);
+				if (_settings_client.gui.show_track_reservation) {
+					MarkTileDirtyByTile(tile);
+				}
+			} else if (free) {
 				/* Free the reservation only if no other train is on the tiles. */
 				SetTunnelBridgeReservation(tile, false);
 				SetTunnelBridgeReservation(end, false);
@@ -2274,7 +2280,12 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 					}
 				}
 			}
-			if (HasWormholeSignals(tile)) HandleLastTunnelBridgeSignals(tile, end, dir, free);
+		} else if (GetTunnelBridgeDirection(tile) == dir && HasWormholeSignals(tile)) {
+			/* cancelling reservation of entry ramp, due to reverse */
+			SetTunnelBridgeReservation(tile, false);
+			if (_settings_client.gui.show_track_reservation) {
+				MarkTileDirtyByTile(tile);
+			}
 		}
 	} else if (IsRailStationTile(tile)) {
 		TileIndex new_tile = TileAddByDiagDir(tile, dir);
@@ -2955,6 +2966,12 @@ static bool TrainMovedChangeSignals(TileIndex tile, DiagDirection dir)
 			if (!IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) return true;
 		}
 	}
+	if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeExit(tile) && GetTunnelBridgeDirection(tile) == ReverseDiagDir(dir)) {
+		if (UpdateSignalsOnSegment(tile, dir, GetTileOwner(tile)) == SIGSEG_PBS) {
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -3192,6 +3209,15 @@ static bool IsToCloseBehindTrain(Vehicle *v, TileIndex tile, bool check_endtile)
 	return false;
 }
 
+static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
+{
+	TileIndex veh_orig = t->tile;
+	t->tile = tile;
+	bool ok = TryPathReserve(t);
+	t->tile = veh_orig;
+	return ok;
+}
+
 /** Simulate signals in tunnel - bridge. */
 static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 {
@@ -3204,7 +3230,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 		return true;
 	}
 	SigSegState seg_state = _settings_game.pf.reserve_paths ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
-	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !TryPathReserve(t))) {
+	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !CheckTrainStayInWormHolePathReserve(t, tile))) {
 		t->vehstatus |= VS_TRAIN_SLOWING;
 		t->cur_speed = 0;
 		return true;
@@ -3493,7 +3519,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		} else {
 			/* Handle signal simulation on tunnel/bridge. */
 			TileIndex old_tile = TileVirtXY(v->x_pos, v->y_pos);
-			if (old_tile != gp.new_tile && HasWormholeSignals(v->tile) && (v->IsFrontEngine() || v->Next() == NULL)){
+			if (old_tile != gp.new_tile && HasWormholeSignals(v->tile) && (v->IsFrontEngine() || v->Next() == NULL)) {
 				if (old_tile == v->tile) {
 					if (v->IsFrontEngine() && v->force_proceed == 0 && IsTunnelBridgeExit(v->tile)) goto invalid_rail;
 					/* Entered wormhole set counters. */
@@ -3532,6 +3558,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						v->x_pos = gp.x;
 						v->y_pos = gp.y;
 						UpdateSignalsOnSegment(old_tile, INVALID_DIAGDIR, v->owner);
+						SetTunnelBridgeReservation(old_tile, false);
 					}
 				}
 				if (distance == 0) v->load_unload_ticks++;
@@ -3553,7 +3580,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 			if (IsTileType(gp.new_tile, MP_TUNNELBRIDGE) && HasBit(VehicleEnterTile(v, gp.new_tile, gp.x, gp.y), VETS_ENTERED_WORMHOLE)) {
 				/* Perform look-ahead on tunnel exit. */
 				if (v->IsFrontEngine()) {
-					TryReserveRailTrack(gp.new_tile, DiagDirToDiagTrack(GetTunnelBridgeDirection(gp.new_tile)));
+					if (!HasWormholeSignals(gp.new_tile)) TryReserveRailTrack(gp.new_tile, DiagDirToDiagTrack(GetTunnelBridgeDirection(gp.new_tile)));
 					CheckNextTrainTile(v);
 				}
 				/* Prevent v->UpdateInclination() being called with wrong parameters.
