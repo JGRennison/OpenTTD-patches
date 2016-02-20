@@ -1166,7 +1166,7 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 
 	bool is_green;
 	bool show_exit;
-	if (IsTunnelBridgeExit(ti->tile) && IsBridge(ti->tile)) {
+	if (IsTunnelBridgeExit(ti->tile)) {
 		is_green = IsTunnelBridgeExitGreen(ti->tile);
 		show_exit = true;
 		position ^= 1;
@@ -1366,7 +1366,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti)
 		AddSortableSpriteToDraw(SPR_EMPTY_BOUNDING_BOX, PAL_NONE, ti->x + BB_data[4], ti->y + BB_data[5], BB_data[6], BB_data[7], TILE_HEIGHT, ti->z);
 
 		/* Draw signals for tunnel. */
-		if (IsTunnelBridgeEntrance(ti->tile)) DrawTunnelBridgeRampSignal(ti);
+		if (HasWormholeSignals(ti->tile)) DrawTunnelBridgeRampSignal(ti);
 
 		DrawBridgeMiddle(ti);
 	} else { // IsBridge(ti->tile)
