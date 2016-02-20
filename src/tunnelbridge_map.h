@@ -213,6 +213,16 @@ static inline bool IsTunnelBridgeExit(TileIndex t)
 	return !HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
 }
 
+static inline bool IsTunnelBridgeExitGreen(TileIndex t)
+{
+	assert(IsTunnelBridgeExit(t));
+	return HasBit(_me[t].m6, 0);
+}
 
+static inline void SetTunnelBridgeExitGreen(TileIndex t, bool green)
+{
+	assert(IsTunnelBridgeExit(t));
+	SB(_me[t].m6, 0, 1, green ? 1 : 0);
+}
 
 #endif /* TUNNELBRIDGE_MAP_H */

@@ -1164,9 +1164,23 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 		case DIAGDIR_NW: position = 3; break;
 	}
 
-	uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side][position].x;
-	uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side][position].y;
+	bool is_green;
+	bool show_exit;
+	if (IsTunnelBridgeExit(ti->tile) && IsBridge(ti->tile)) {
+		is_green = IsTunnelBridgeExitGreen(ti->tile);
+		show_exit = true;
+		position ^= 1;
+	} else {
+		is_green = IsTunnelBridgeWithSignGreen(ti->tile);
+		show_exit = false;
+	}
+
+	uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ show_exit].x;
+	uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ show_exit].y;
 	uint z = ti->z;
+
+	if (ti->tileh == SLOPE_FLAT && side == show_exit && dir == DIAGDIR_SE) z += 2;
+	if (ti->tileh == SLOPE_FLAT && side != show_exit && dir == DIAGDIR_SW) z += 2;
 
 	if (ti->tileh != SLOPE_FLAT && IsBridge(ti->tile)) z += 8; // sloped bridge head
 	SignalVariant variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
@@ -1174,10 +1188,10 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 	SpriteID sprite;
 	if (variant == SIG_ELECTRIC) {
 		/* Normal electric signals are picked from original sprites. */
-		sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + IsTunnelBridgeWithSignGreen(ti->tile));
+		sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + is_green);
 	} else {
 		/* All other signals are picked from add on sprites. */
-		sprite = SPR_SIGNALS_BASE + ((SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1) + IsTunnelBridgeWithSignGreen(ti->tile));
+		sprite = SPR_SIGNALS_BASE + ((SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1) + is_green);
 	}
 
 	AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
