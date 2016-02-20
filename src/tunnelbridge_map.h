@@ -225,4 +225,16 @@ static inline void SetTunnelBridgeExitGreen(TileIndex t, bool green)
 	SB(_me[t].m6, 0, 1, green ? 1 : 0);
 }
 
+static inline bool IsTunnelBridgeSemaphore(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	return HasBit(_me[t].m6, 1);
+}
+
+static inline void SetTunnelBridgeSemaphore(TileIndex t, bool is_semaphore)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	SB(_me[t].m6, 1, 1, is_semaphore ? 1 : 0);
+}
+
 #endif /* TUNNELBRIDGE_MAP_H */

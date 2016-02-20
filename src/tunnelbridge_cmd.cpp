@@ -1183,7 +1183,7 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 	if (ti->tileh == SLOPE_FLAT && side != show_exit && dir == DIAGDIR_SW) z += 2;
 
 	if (ti->tileh != SLOPE_FLAT && IsBridge(ti->tile)) z += 8; // sloped bridge head
-	SignalVariant variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
+	SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 
 	SpriteID sprite;
 	if (variant == SIG_ELECTRIC) {
@@ -1233,7 +1233,7 @@ static void DrawBrigeSignalOnMiddelPart(const TileInfo *ti, TileIndex bridge_sta
 			uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side][position].y;
 			z += 5;
 
-			SignalVariant variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
+			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 
 			SpriteID sprite;
 
