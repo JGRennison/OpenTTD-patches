@@ -1057,12 +1057,12 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		TileIndex tile_exit = GetOtherTunnelBridgeEnd(tile);
 		cost = CommandCost();
 		bool flip_variant = false;
+		bool is_pbs = (sigtype == SIGTYPE_PBS) || (sigtype == SIGTYPE_PBS_ONEWAY);
 		if (!HasWormholeSignals(tile)) { // toggle signal zero costs.
 			if (convert_signal) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 			if (p2 != 12) cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
 		} else {
 			if (HasBit(p1, 17)) return CommandCost();
-			if (ctrl_pressed && !convert_signal) return CommandCost();
 			if ((p2 != 0 && (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)) ||
 					(convert_signal && (ctrl_pressed || (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)))) {
 				flip_variant = true;
@@ -1075,8 +1075,15 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 				if (convert_signal) {
 					if (flip_variant) {
 						SetTunnelBridgeSemaphore(tile, !IsTunnelBridgeSemaphore(tile));
-						SetTunnelBridgeSemaphore(tile_exit, !IsTunnelBridgeSemaphore(tile_exit));
+						SetTunnelBridgeSemaphore(tile_exit, IsTunnelBridgeSemaphore(tile));
 					}
+					if (!ctrl_pressed) {
+						SetTunnelBridgePBS(tile, is_pbs);
+						SetTunnelBridgePBS(tile_exit, is_pbs);
+					}
+				} else if (ctrl_pressed) {
+					SetTunnelBridgePBS(tile, !IsTunnelBridgePBS(tile));
+					SetTunnelBridgePBS(tile_exit, IsTunnelBridgePBS(tile));
 				} else {
 					if (IsTunnelBridgeEntrance(tile)) {
 						ClrBitTunnelBridgeSignal(tile);
@@ -1113,7 +1120,11 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 				}
 				SetTunnelBridgeSemaphore(tile, sigvar == SIG_SEMAPHORE);
 				SetTunnelBridgeSemaphore(tile_exit, sigvar == SIG_SEMAPHORE);
+				SetTunnelBridgePBS(tile, is_pbs);
+				SetTunnelBridgePBS(tile_exit, is_pbs);
 			}
+			if (IsTunnelBridgeExit(tile) && IsTunnelBridgePBS(tile) && !HasTunnelBridgeReservation(tile)) SetTunnelBridgeExitGreen(tile, false);
+			if (IsTunnelBridgeExit(tile_exit) && IsTunnelBridgePBS(tile_exit) && !HasTunnelBridgeReservation(tile_exit)) SetTunnelBridgeExitGreen(tile_exit, false);
 			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));

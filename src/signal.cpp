@@ -398,8 +398,12 @@ static SigFlags ExploreSegment(Owner owner)
 						tile += TileOffsByDiagDir(exitdir); // just skip to next tile
 					} else { // NOT incoming from the wormhole!
 						if (ReverseDiagDir(enterdir) != dir) continue;
-						if (IsTunnelBridgeExit(tile) && !_tbuset.Add(tile, INVALID_TRACKDIR)) {
-							return flags | SF_FULL;
+						if (IsTunnelBridgeExit(tile)) {
+							if (IsTunnelBridgePBS(tile)) {
+								flags |= SF_PBS;
+							} else if (!_tbuset.Add(tile, INVALID_TRACKDIR)) {
+								return flags | SF_FULL;
+							}
 						}
 						if (!(flags & SF_TRAIN)) {
 							if (HasVehicleOnPos(tile, &tile, &TrainInWormholeTileEnum)) flags |= SF_TRAIN;
@@ -450,6 +454,7 @@ static void UpdateSignalsAroundSegment(SigFlags flags)
 
 	while (_tbuset.Get(&tile, &trackdir)) {
 		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeExit(tile)) {
+			if (IsTunnelBridgePBS(tile)) continue;
 			bool old_state = IsTunnelBridgeExitGreen(tile);
 			bool new_state = !(flags & SF_TRAIN);
 			if (old_state != new_state) {

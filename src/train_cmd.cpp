@@ -2244,6 +2244,12 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 	}
 }
 
+static void UnreserveBridgeTunnelTile(TileIndex tile)
+{
+	SetTunnelBridgeReservation(tile, false);
+	if (IsTunnelBridgeExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitGreen(tile, false);
+}
+
 /**
  * Clear the reservation of \a tile that was just left by a wagon on \a track_dir.
  * @param v %Train owning the reservation.
@@ -2261,15 +2267,15 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 
 			bool free = TunnelBridgeIsFree(tile, end, v).Succeeded();
 			if (HasWormholeSignals(tile)) {
-				SetTunnelBridgeReservation(tile, false);
+				UnreserveBridgeTunnelTile(tile);
 				HandleLastTunnelBridgeSignals(tile, end, dir, free);
 				if (_settings_client.gui.show_track_reservation) {
 					MarkTileDirtyByTile(tile);
 				}
 			} else if (free) {
 				/* Free the reservation only if no other train is on the tiles. */
-				SetTunnelBridgeReservation(tile, false);
-				SetTunnelBridgeReservation(end, false);
+				UnreserveBridgeTunnelTile(tile);
+				UnreserveBridgeTunnelTile(end);
 
 				if (_settings_client.gui.show_track_reservation) {
 					if (IsBridge(tile)) {
@@ -2282,7 +2288,7 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 			}
 		} else if (GetTunnelBridgeDirection(tile) == dir && HasWormholeSignals(tile)) {
 			/* cancelling reservation of entry ramp, due to reverse */
-			SetTunnelBridgeReservation(tile, false);
+			UnreserveBridgeTunnelTile(tile);
 			if (_settings_client.gui.show_track_reservation) {
 				MarkTileDirtyByTile(tile);
 			}
@@ -3012,7 +3018,7 @@ uint Train::Crash(bool flooded)
 			if (IsTileType(v->tile, MP_TUNNELBRIDGE)) {
 				/* ClearPathReservation will not free the wormhole exit
 				 * if the train has just entered the wormhole. */
-				SetTunnelBridgeReservation(GetOtherTunnelBridgeEnd(v->tile), false);
+				UnreserveBridgeTunnelTile(GetOtherTunnelBridgeEnd(v->tile));
 			}
 		}
 
@@ -3229,7 +3235,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 		ToggleBit(t->flags, VRF_REVERSING);
 		return true;
 	}
-	SigSegState seg_state = _settings_game.pf.reserve_paths ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
+	SigSegState seg_state = (_settings_game.pf.reserve_paths || IsTunnelBridgePBS(tile)) ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
 	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !CheckTrainStayInWormHolePathReserve(t, tile))) {
 		t->vehstatus |= VS_TRAIN_SLOWING;
 		t->cur_speed = 0;
@@ -3558,7 +3564,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						v->x_pos = gp.x;
 						v->y_pos = gp.y;
 						UpdateSignalsOnSegment(old_tile, INVALID_DIAGDIR, v->owner);
-						SetTunnelBridgeReservation(old_tile, false);
+						UnreserveBridgeTunnelTile(old_tile);
 					}
 				}
 				if (distance == 0) v->load_unload_ticks++;

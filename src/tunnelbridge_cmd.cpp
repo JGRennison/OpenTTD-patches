@@ -1164,12 +1164,15 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 		case DIAGDIR_NW: position = 3; break;
 	}
 
+	SignalType type = SIGTYPE_NORMAL;
+
 	bool is_green;
 	bool show_exit;
 	if (IsTunnelBridgeExit(ti->tile)) {
 		is_green = IsTunnelBridgeExitGreen(ti->tile);
 		show_exit = true;
 		position ^= 1;
+		if (IsTunnelBridgePBS(ti->tile)) type = SIGTYPE_PBS_ONEWAY;
 	} else {
 		is_green = IsTunnelBridgeWithSignGreen(ti->tile);
 		show_exit = false;
@@ -1186,19 +1189,19 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 	SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 
 	SpriteID sprite;
-	if (variant == SIG_ELECTRIC) {
+	if (variant == SIG_ELECTRIC && type == SIGTYPE_NORMAL) {
 		/* Normal electric signals are picked from original sprites. */
 		sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + is_green);
 	} else {
 		/* All other signals are picked from add on sprites. */
-		sprite = SPR_SIGNALS_BASE + ((SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1) + is_green);
+		sprite = SPR_SIGNALS_BASE + ((type - 1) * 16 + variant * 64 + (position << 1) + is_green) + (type > SIGTYPE_LAST_NOPBS ? 64 : 0);
 	}
 
 	AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
 }
 
 /* Draws a signal on tunnel / bridge entrance tile. */
-static void DrawBrigeSignalOnMiddelPart(const TileInfo *ti, TileIndex bridge_start_tile, uint z)
+static void DrawBrigeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_start_tile, uint z)
 {
 
 	uint bridge_signal_position = 0;
@@ -1628,7 +1631,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 			DrawCatenaryOnBridge(ti);
 		}
 		if (HasWormholeSignals(rampsouth)) {
-			IsTunnelBridgeExit(rampsouth) ? DrawBrigeSignalOnMiddelPart(ti, rampnorth, z): DrawBrigeSignalOnMiddelPart(ti, rampsouth, z);
+			IsTunnelBridgeExit(rampsouth) ? DrawBrigeSignalOnMiddlePart(ti, rampnorth, z): DrawBrigeSignalOnMiddlePart(ti, rampsouth, z);
 		}
 	}
 
