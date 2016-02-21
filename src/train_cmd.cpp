@@ -3219,6 +3219,14 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 {
 	TileIndex veh_orig = t->tile;
 	t->tile = tile;
+	CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->compatible_railtypes);
+	if (ft.Follow(t->tile, DiagDirToDiagTrackdir(ReverseDiagDir(GetTunnelBridgeDirection(tile))))) {
+		TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+		if (reserved == TRACKDIR_BIT_NONE) {
+			/* next tile is not reserved, so reserve the exit tile */
+			SetTunnelBridgeReservation(tile, true);
+		}
+	}
 	bool ok = TryPathReserve(t);
 	t->tile = veh_orig;
 	return ok;
