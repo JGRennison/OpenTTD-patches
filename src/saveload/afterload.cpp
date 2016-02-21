@@ -2968,6 +2968,17 @@ bool AfterLoadGame()
 #endif
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 1)) {
+		/* set the semaphore bit to match what it would have been in v1 */
+		/* clear the PBS bit, update the end signal state */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && HasWormholeSignals(t)) {
+				SetTunnelBridgeSemaphore(t, _cur_year < _settings_client.gui.semaphore_build_before);
+				SetTunnelBridgePBS(t, false);
+				UpdateSignalsOnSegment(t, INVALID_DIAGDIR, GetTileOwner(t));
+			}
+		}
+	}
 
 	/* Station acceptance is some kind of cache */
 	if (IsSavegameVersionBefore(127)) {
