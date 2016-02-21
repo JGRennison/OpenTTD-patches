@@ -125,6 +125,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 		case MP_TUNNELBRIDGE:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && !GetTunnelBridgeReservationTrackBits(tile)) {
 				SetTunnelBridgeReservation(tile, true);
+				if (IsTunnelBridgeExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitGreen(tile, true);
 				return true;
 			}
 			break;
@@ -177,7 +178,10 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 			break;
 
 		case MP_TUNNELBRIDGE:
-			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) SetTunnelBridgeReservation(tile, false);
+			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
+				SetTunnelBridgeReservation(tile, false);
+				if (IsTunnelBridgeExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitGreen(tile, false);
+			}
 			break;
 
 		default:
@@ -246,6 +250,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 		if (IsRailDepotTile(tile)) break;
 		/* Non-pbs signal? Reservation can't continue. */
 		if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) break;
+		if (IsTileType(tile, MP_TUNNELBRIDGE) && HasWormholeSignals(tile)) break;
 	}
 
 	return PBSTileInfo(tile, trackdir, false);
@@ -314,7 +319,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res)
 				if (ftoti.best != NULL) *train_on_res = ftoti.best->First();
 			}
 		}
-		if (*train_on_res == NULL && IsTileType(ftoti.res.tile, MP_TUNNELBRIDGE)) {
+		if (*train_on_res == NULL && IsTileType(ftoti.res.tile, MP_TUNNELBRIDGE) && !HasWormholeSignals(ftoti.res.tile)) {
 			/* The target tile is a bridge/tunnel, also check the other end tile. */
 			FindVehicleOnPos(GetOtherTunnelBridgeEnd(ftoti.res.tile), &ftoti, FindTrainOnTrackEnum);
 			if (ftoti.best != NULL) *train_on_res = ftoti.best->First();
@@ -389,6 +394,12 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 		if (HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) return true;
 	}
 
+	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
+		if (IsTunnelBridgeEntrance(tile)) {
+			return true;
+		}
+	}
+
 	/* Check next tile. For performance reasons, we check for 90 degree turns ourself. */
 	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);
 
@@ -437,6 +448,7 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	/* Not reserved and depot or not a pbs signal -> free. */
 	if (IsRailDepotTile(tile)) return true;
 	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) return true;
+	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeEntrance(tile)) return true;
 
 	/* Check the next tile, if it's a PBS signal, it has to be free as well. */
 	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);

@@ -213,6 +213,40 @@ static inline bool IsTunnelBridgeExit(TileIndex t)
 	return !HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
 }
 
+static inline bool IsTunnelBridgeExitGreen(TileIndex t)
+{
+	assert(IsTunnelBridgeExit(t));
+	return HasBit(_me[t].m6, 0);
+}
 
+static inline void SetTunnelBridgeExitGreen(TileIndex t, bool green)
+{
+	assert(IsTunnelBridgeExit(t));
+	SB(_me[t].m6, 0, 1, green ? 1 : 0);
+}
+
+static inline bool IsTunnelBridgeSemaphore(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	return HasBit(_me[t].m6, 1);
+}
+
+static inline void SetTunnelBridgeSemaphore(TileIndex t, bool is_semaphore)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	SB(_me[t].m6, 1, 1, is_semaphore ? 1 : 0);
+}
+
+static inline bool IsTunnelBridgePBS(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	return HasBit(_me[t].m6, 6);
+}
+
+static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
+}
 
 #endif /* TUNNELBRIDGE_MAP_H */

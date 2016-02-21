@@ -1056,21 +1056,46 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
 		TileIndex tile_exit = GetOtherTunnelBridgeEnd(tile);
 		cost = CommandCost();
+		bool flip_variant = false;
+		bool is_pbs = (sigtype == SIGTYPE_PBS) || (sigtype == SIGTYPE_PBS_ONEWAY);
 		if (!HasWormholeSignals(tile)) { // toggle signal zero costs.
+			if (convert_signal) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 			if (p2 != 12) cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
+		} else {
+			if (HasBit(p1, 17)) return CommandCost();
+			if ((p2 != 0 && (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)) ||
+					(convert_signal && (ctrl_pressed || (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)))) {
+				flip_variant = true;
+				cost = CommandCost(EXPENSES_CONSTRUCTION, (_price[PR_BUILD_SIGNALS] + _price[PR_CLEAR_SIGNALS]) *
+						((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
+			}
 		}
 		if (flags & DC_EXEC) {
 			if (p2 == 0 && HasWormholeSignals(tile)) { // Toggle signal if already signals present.
-				if (IsTunnelBridgeEntrance(tile)) {
-					ClrBitTunnelBridgeSignal(tile);
-					ClrBitTunnelBridgeExit(tile_exit);
-					SetBitTunnelBridgeExit(tile);
-					SetBitTunnelBridgeSignal(tile_exit);
+				if (convert_signal) {
+					if (flip_variant) {
+						SetTunnelBridgeSemaphore(tile, !IsTunnelBridgeSemaphore(tile));
+						SetTunnelBridgeSemaphore(tile_exit, IsTunnelBridgeSemaphore(tile));
+					}
+					if (!ctrl_pressed) {
+						SetTunnelBridgePBS(tile, is_pbs);
+						SetTunnelBridgePBS(tile_exit, is_pbs);
+					}
+				} else if (ctrl_pressed) {
+					SetTunnelBridgePBS(tile, !IsTunnelBridgePBS(tile));
+					SetTunnelBridgePBS(tile_exit, IsTunnelBridgePBS(tile));
 				} else {
-					ClrBitTunnelBridgeSignal(tile_exit);
-					ClrBitTunnelBridgeExit(tile);
-					SetBitTunnelBridgeExit(tile_exit);
-					SetBitTunnelBridgeSignal(tile);
+					if (IsTunnelBridgeEntrance(tile)) {
+						ClrBitTunnelBridgeSignal(tile);
+						ClrBitTunnelBridgeExit(tile_exit);
+						SetBitTunnelBridgeExit(tile);
+						SetBitTunnelBridgeSignal(tile_exit);
+					} else {
+						ClrBitTunnelBridgeSignal(tile_exit);
+						ClrBitTunnelBridgeExit(tile);
+						SetBitTunnelBridgeExit(tile_exit);
+						SetBitTunnelBridgeSignal(tile);
+					}
 				}
 			} else {
 				/* Create one direction tunnel/bridge if required. */
@@ -1082,14 +1107,24 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					/* If signal only on one side build accoringly one-way tunnel/bridge. */
 					if ((p2 == 8 && (tbdir == DIAGDIR_NE || tbdir == DIAGDIR_SE)) ||
 						(p2 == 4 && (tbdir == DIAGDIR_SW || tbdir == DIAGDIR_NW))) {
+						ClrBitTunnelBridgeExit(tile);
+						ClrBitTunnelBridgeSignal(tile_exit);
 						SetBitTunnelBridgeSignal(tile);
 						SetBitTunnelBridgeExit(tile_exit);
 					} else {
+						ClrBitTunnelBridgeSignal(tile);
+						ClrBitTunnelBridgeExit(tile_exit);
 						SetBitTunnelBridgeSignal(tile_exit);
 						SetBitTunnelBridgeExit(tile);
 					}
 				}
+				SetTunnelBridgeSemaphore(tile, sigvar == SIG_SEMAPHORE);
+				SetTunnelBridgeSemaphore(tile_exit, sigvar == SIG_SEMAPHORE);
+				SetTunnelBridgePBS(tile, is_pbs);
+				SetTunnelBridgePBS(tile_exit, is_pbs);
 			}
+			if (IsTunnelBridgeExit(tile) && IsTunnelBridgePBS(tile) && !HasTunnelBridgeReservation(tile)) SetTunnelBridgeExitGreen(tile, false);
+			if (IsTunnelBridgeExit(tile_exit) && IsTunnelBridgePBS(tile_exit) && !HasTunnelBridgeReservation(tile_exit)) SetTunnelBridgeExitGreen(tile_exit, false);
 			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
