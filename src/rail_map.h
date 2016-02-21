@@ -18,6 +18,7 @@
 #include "track_func.h"
 #include "tile_map.h"
 #include "signal_type.h"
+#include "tunnelbridge_map.h"
 
 
 /** Different types of Rail-related tiles */
@@ -479,8 +480,15 @@ static inline bool HasPbsSignalOnTrackdir(TileIndex tile, Trackdir td)
  */
 static inline bool HasOnewaySignalBlockingTrackdir(TileIndex tile, Trackdir td)
 {
-	return IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, ReverseTrackdir(td)) &&
-			!HasSignalOnTrackdir(tile, td) && IsOnewaySignal(tile, TrackdirToTrack(td));
+	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, ReverseTrackdir(td)) &&
+			!HasSignalOnTrackdir(tile, td) && IsOnewaySignal(tile, TrackdirToTrack(td))) {
+		return true;
+	}
+	if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeExit(tile) &&
+			DiagDirToDiagTrackdir(GetTunnelBridgeDirection(tile)) == td) {
+		return true;
+	}
+	return false;
 }
 
 /**
