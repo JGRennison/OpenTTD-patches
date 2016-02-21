@@ -2767,6 +2767,12 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 		}
 	}
 
+	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeExit(v->tile) &&
+			DiagDirToDiagTrackBits(GetTunnelBridgeDirection(v->tile)) == v->track) {
+		// prevent any attempt to reserve the wrong way onto a tunnel/bridge exit
+		return false;
+	}
+
 	Vehicle *other_train = NULL;
 	PBSTileInfo origin = FollowTrainReservation(v, &other_train);
 	/* The path we are driving on is already blocked by some other train.
@@ -3220,7 +3226,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 	TileIndex veh_orig = t->tile;
 	t->tile = tile;
 	CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->compatible_railtypes);
-	if (ft.Follow(t->tile, DiagDirToDiagTrackdir(ReverseDiagDir(GetTunnelBridgeDirection(tile))))) {
+	if (ft.Follow(tile, DiagDirToDiagTrackdir(ReverseDiagDir(GetTunnelBridgeDirection(tile))))) {
 		TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
 		if (reserved == TRACKDIR_BIT_NONE) {
 			/* next tile is not reserved, so reserve the exit tile */
@@ -3244,6 +3250,18 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 		return true;
 	}
 	SigSegState seg_state = (_settings_game.pf.reserve_paths || IsTunnelBridgePBS(tile)) ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
+	if (seg_state != SIGSEG_PBS) {
+		CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->compatible_railtypes);
+		if (ft.Follow(tile, DiagDirToDiagTrackdir(ReverseDiagDir(GetTunnelBridgeDirection(tile))))) {
+			if (ft.m_new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE) {
+				Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);
+				if (HasPbsSignalOnTrackdir(ft.m_new_tile, td)) {
+					/* immediately after the exit, there is a PBS signal, switch to PBS mode */
+					seg_state = SIGSEG_PBS;
+				}
+			}
+		}
+	}
 	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !CheckTrainStayInWormHolePathReserve(t, tile))) {
 		t->vehstatus |= VS_TRAIN_SLOWING;
 		t->cur_speed = 0;
@@ -3594,7 +3612,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 			if (IsTileType(gp.new_tile, MP_TUNNELBRIDGE) && HasBit(VehicleEnterTile(v, gp.new_tile, gp.x, gp.y), VETS_ENTERED_WORMHOLE)) {
 				/* Perform look-ahead on tunnel exit. */
 				if (v->IsFrontEngine()) {
-					if (!HasWormholeSignals(gp.new_tile)) TryReserveRailTrack(gp.new_tile, DiagDirToDiagTrack(GetTunnelBridgeDirection(gp.new_tile)));
+					TryReserveRailTrack(gp.new_tile, DiagDirToDiagTrack(GetTunnelBridgeDirection(gp.new_tile)));
 					CheckNextTrainTile(v);
 				}
 				/* Prevent v->UpdateInclination() being called with wrong parameters.
