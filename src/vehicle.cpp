@@ -852,7 +852,7 @@ static void RunVehicleDayProc()
 
 	/* Run the day_proc for every DAY_TICKS vehicle starting at _date_fract. */
 	Vehicle *v = NULL;
-	SCOPE_INFO_FMT([&v], "RunVehicleDayProc: %s", DumpVehicleInfo(v));
+	SCOPE_INFO_FMT([&v], "RunVehicleDayProc: %s", scope_dumper().VehicleInfo(v));
 	for (size_t i = _date_fract; i < Vehicle::GetPoolSize(); i += DAY_TICKS) {
 		v = Vehicle::Get(i);
 		if (v == NULL) continue;
@@ -888,7 +888,7 @@ void CallVehicleTicks()
 	FOR_ALL_STATIONS(st) LoadUnloadStation(st);
 
 	Vehicle *v = NULL;
-	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", DumpVehicleInfo(v));
+	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));
 	FOR_ALL_VEHICLES(v) {
 		/* Vehicle could be deleted in this tick */
 		if (!v->Tick()) {

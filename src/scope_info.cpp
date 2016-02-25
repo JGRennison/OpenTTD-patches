@@ -39,34 +39,35 @@ int WriteScopeLog(char *buf, const char *last)
 }
 
 // helper functions
-char *DumpCompanyInfo(int company_id)
+const char *scope_dumper::CompanyInfo(int company_id)
 {
-	char buf[256];
-	char *b = buf + seprintf(buf, lastof(buf), "%d (", company_id);
+	char *b = this->buffer;
+	const char *last = lastof(this->buffer);
+	b += seprintf(b, last, "%d (", company_id);
 	SetDParam(0, company_id);
-	b = GetString(b, STR_COMPANY_NAME, lastof(buf));
-	b += seprintf(b, lastof(buf), ")");
-	return stredup(buf, lastof(buf));
+	b = GetString(b, STR_COMPANY_NAME, last);
+	b += seprintf(b, last, ")");
+	return buffer;
 }
 
-char *DumpVehicleInfo(const Vehicle *v)
+const char *scope_dumper::VehicleInfo(const Vehicle *v)
 {
-	char buf[256];
-	char *b = buf;
+	char *b = this->buffer;
+	const char *last = lastof(this->buffer);
 	if (v) {
-		b += seprintf(b, lastof(buf), "veh: %u: (", v->index);
+		b += seprintf(b, last, "veh: %u: (", v->index);
 		SetDParam(0, v->index);
-		b = GetString(b, STR_VEHICLE_NAME, lastof(buf));
+		b = GetString(b, STR_VEHICLE_NAME, last);
 		if (v->First() && v->First() != v) {
-			b += seprintf(b, lastof(buf), "), front: %u: (", v->First()->index);
+			b += seprintf(b, last, "), front: %u: (", v->First()->index);
 			SetDParam(0, v->First()->index);
-			b = GetString(b, STR_VEHICLE_NAME, lastof(buf));
+			b = GetString(b, STR_VEHICLE_NAME, last);
 		}
-		b += seprintf(b, lastof(buf), ")");
+		b += seprintf(b, last, ")");
 	} else {
-		b += seprintf(b, lastof(buf), "veh: NULL");
+		b += seprintf(b, last, "veh: NULL");
 	}
-	return stredup(buf, lastof(buf));
+	return this->buffer;
 }
 
 #endif
