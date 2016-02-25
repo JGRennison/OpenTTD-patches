@@ -43,15 +43,32 @@ int WriteScopeLog(char *buf, const char *last);
  * This lambda is then captured by reference in a std::function which is pushed onto the scope stack
  * The scope stack is popped at the end of the scope
  */
-#define SCOPE_INFO_FMT(capture, ...) auto SCOPE_INFO_PASTE(_sc_lm_, __LINE__) = capture (char *buf, const char *last) { return seprintf(buf, last, __VA_ARGS__); }; scope_info_func_obj SCOPE_INFO_PASTE(_sc_obj_, __LINE__) ([&](char *buf, const char *last) -> int { return SCOPE_INFO_PASTE(_sc_lm_, __LINE__) (buf, last); });
+#define SCOPE_INFO_FMT(capture, ...) \
+	auto SCOPE_INFO_PASTE(_sc_lm_, __LINE__) = capture (char *buf, const char *last) { \
+		return seprintf(buf, last, __VA_ARGS__); \
+	}; \
+	scope_info_func_obj SCOPE_INFO_PASTE(_sc_obj_, __LINE__) ([&](char *buf, const char *last) -> int { \
+		return SCOPE_INFO_PASTE(_sc_lm_, __LINE__) (buf, last); \
+	});
 
-// helper functions
-char *DumpCompanyInfo(int company_id);
-char *DumpVehicleInfo(const Vehicle *v);
+/**
+ * This is a set of helper functions to print useful info from within a SCOPE_INFO_FMT statement.
+ * The use of a struct is so that when used as an argument to SCOPE_INFO_FMT/seprintf/etc, the buffer lives
+ * on the stack with a lifetime which lasts until the end of the statement.
+ * This avoids needing to call malloc(), which is technically unsafe within the crash logger signal handler,
+ * writing directly into the seprintf buffer, or the use of a separate static buffer.
+ */
+struct scope_dumper {
+	const char *CompanyInfo(int company_id);
+	const char *VehicleInfo(const Vehicle *v);
+
+private:
+	char buffer[256];
+};
 
 #else /* USE_SCOPE_INFO */
 
-#define SCOPE_INFO_FMT(...)
+#define SCOPE_INFO_FMT(...) { }
 
 #endif /* USE_SCOPE_INFO */
 
