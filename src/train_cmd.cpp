@@ -3011,6 +3011,11 @@ static Vehicle *FindTrainCollideEnum(Vehicle *v, void *data)
 	/* not a train or in depot */
 	if (v->type != VEH_TRAIN || Train::From(v)->track == TRACK_BIT_DEPOT) return NULL;
 
+	if (_settings_game.vehicle.no_train_crash_other_company) {
+		/* do not crash into trains of another company. */
+		if (v->owner != tcc->v->owner) return NULL;
+	}
+
 	/* get first vehicle now to make most usual checks faster */
 	Train *coll = Train::From(v)->First();
 
