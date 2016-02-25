@@ -81,6 +81,13 @@ char *CrashLog::LogCompiler(char *buffer, const char *last) const
 	return buffer;
 }
 
+#ifdef USE_SCOPE_INFO
+/* virtual */ char *CrashLog::LogScopeInfo(char *buffer, const char *last) const
+{
+	return buffer + WriteScopeLog(buffer, last);
+}
+#endif
+
 /**
  * Writes OpenTTD's version to the buffer.
  * @param buffer The begin where to write at.

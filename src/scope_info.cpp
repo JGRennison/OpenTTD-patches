@@ -56,10 +56,18 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 	const char *last = lastof(this->buffer);
 	if (v) {
 		b += seprintf(b, last, "veh: %u: (", v->index);
+		if (Vehicle::GetIfValid(v->index) != v) {
+			b += seprintf(b, last, "INVALID PTR: %p)", v);
+			return this->buffer;
+		}
 		SetDParam(0, v->index);
 		b = GetString(b, STR_VEHICLE_NAME, last);
 		if (v->First() && v->First() != v) {
 			b += seprintf(b, last, "), front: %u: (", v->First()->index);
+			if (Vehicle::GetIfValid(v->First()->index) != v->First()) {
+				b += seprintf(b, last, "INVALID PTR: %p)", v->First());
+				return this->buffer;
+			}
 			SetDParam(0, v->First()->index);
 			b = GetString(b, STR_VEHICLE_NAME, last);
 		}
