@@ -1724,6 +1724,7 @@ static SettingsContainer &GetSettingsTree()
 			disasters->Add(new SettingEntry("difficulty.vehicle_breakdowns"));
 			disasters->Add(new SettingEntry("vehicle.improved_breakdowns"));
 			disasters->Add(new SettingEntry("vehicle.plane_crashes"));
+			disasters->Add(new SettingEntry("vehicle.no_train_crash_other_company"));
 		}
 
 		SettingsPage *genworld = main->Add(new SettingsPage(STR_CONFIG_SETTING_GENWORLD));
