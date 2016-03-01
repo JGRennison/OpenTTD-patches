@@ -2415,7 +2415,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		tile = ft.m_new_tile;
 		cur_td = FindFirstTrackdir(ft.m_new_td_bits);
 
-		UnreserveRailTrack(tile, TrackdirToTrack(cur_td));
+		UnreserveRailTrackdir(tile, cur_td);
 	}
 
 	/* Path invalid. */

@@ -119,7 +119,7 @@ private:
 				tile = TILE_ADD(tile, diff);
 			}
 		} else if (tile != m_res_fail_tile || td != m_res_fail_td) {
-			UnreserveRailTrack(tile, TrackdirToTrack(td));
+			UnreserveRailTrackdir(tile, td);
 		}
 		return (tile != m_res_dest || td != m_res_dest_td) && (tile != m_res_fail_tile || td != m_res_fail_td);
 	}
