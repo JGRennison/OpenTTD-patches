@@ -155,6 +155,20 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 }
 
 /**
+ * Lift the reservation of a specific trackdir on a tile
+ * This also sets PBS signals to red if unreserving through the facing track direction
+ * @param tile the tile
+ * @param t the track
+ */
+void UnreserveRailTrackdir(TileIndex tile, Trackdir td)
+{
+	if (HasPbsSignalOnTrackdir(tile, td)) {
+		SetSignalStateByTrackdir(tile, td, SIGNAL_STATE_RED);
+	}
+	UnreserveRailTrack(tile, TrackdirToTrack(td));
+}
+
+/**
  * Lift the reservation of a specific track on a tile
  * @param tile the tile
  * @param t the track
