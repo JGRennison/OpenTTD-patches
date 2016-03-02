@@ -196,6 +196,50 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 }
 
 /**
+ * Change timetable data of all orders of a vehicle.
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Various bitstuffed elements
+ * - p1 = (bit  0-19) - Vehicle with the orders to change.
+ * - p1 = (bit 20-27) - unused
+ * - p1 = (bit 28-29) - Timetable data to change (@see ModifyTimetableFlags)
+ * - p1 = (bit    30) - 0 to set timetable wait/travel time, 1 to clear it
+ * @param p2 The amount of time to wait.
+ * - p2 = (bit  0-15) - The data to modify as specified by p1 bits 28-29.
+ *                      0 to clear times, UINT16_MAX to clear speed limit.
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 2>(p1);
+	if (mtf >= MTF_END) return CMD_ERROR;
+
+	if (v->GetNumOrders() == 0) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		for (VehicleOrderID order_number = 0; order_number < v->GetNumOrders(); order_number++) {
+			Order *order = v->GetOrder(order_number);
+			if (order == NULL || order->IsType(OT_IMPLICIT)) continue;
+
+			uint32 new_p1 = p1;
+			SB(new_p1, 20, 8, order_number);
+			DoCommand(tile, new_p1, p2, flags, CMD_CHANGE_TIMETABLE);
+		}
+	}
+
+	return CommandCost();
+}
+
+/**
  * Clear the lateness counter to make the vehicle on time.
  * @param tile Not used.
  * @param flags Operation to perform.
