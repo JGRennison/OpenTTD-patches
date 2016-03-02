@@ -1525,6 +1525,7 @@ void StateGameLoop()
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 		_tick_skip_counter++;
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
+			AnimateAnimatedTiles();
 			CallVehicleTicks();
 		} else {
 			_tick_skip_counter = 0;

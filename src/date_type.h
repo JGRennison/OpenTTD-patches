@@ -34,6 +34,7 @@ static const int DAYS_IN_YEAR      = 365; ///< days per year
 static const int DAYS_IN_LEAP_YEAR = 366; ///< sometimes, you need one day more...
 
 #define CURRENT_SCALED_TICKS (((((DateTicksScaled)_date * DAY_TICKS) + _date_fract) * _settings_game.economy.day_length_factor) + _tick_skip_counter)
+#define SCALED_TICK_COUNTER ((((uint32)_tick_counter) * _settings_game.economy.day_length_factor) + _tick_skip_counter)
 
 #define DATE_UNIT_SIZE (_settings_client.gui.time_in_minutes ? _settings_client.gui.ticks_per_minute : (DAY_TICKS * _settings_game.economy.day_length_factor))
 
