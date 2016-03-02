@@ -2,6 +2,31 @@
 
 * * *
 
+### v0.12.0 (2016-03-02)
+* Fix "remove all trees in scenario editor" being available in game.
+* Fix crash when a company went bankrupt whilst one of its vehicles was in the middle of loading/unloading.
+* Add template-base train replacement patch, with many fixes/changes.
+* Allow changing the timetabled waiting time for all of a vehicle's orders at once.
+* Run tile animations at the normal rate regardless of day length factor.
+* Routing restrictions:
+  * Fix unreserving through a green PBS signal not setting the state to red.  
+    This also fixes unsuccessful reservation attempts though a reserve-through signal erroneously leaving the signal set to green.
+* Infrastructure sharing:
+  * Add company settings to enable competitors to buy/renew vehicles in this company's depots.
+  * Add setting to control whether trains can crash with trains owned by other companies.
+* Signals on bridges/tunnels:
+  * Enable PBS reservations to be made up to the signalled entrance to a bridge/tunnel.
+  * Show tunnel/bridge exit signal facing correct way with correct colour.
+  * Enable setting semaphore/electric type of signals on bridges/tunnels.
+  * Also draw signals for tunnel exits.
+  * Fix drag-convert not updating bridge/tunnel direction correctly.
+  * Enable bridge/tunnel exit signals to be one-way PBS. Add signal conversion support.
+* Enhanced viewports:
+  * Fix route step lines not being updated when cloning a vehicle's orders.
+* Strip colour codes when writing debug messages to the terminal.
+* Improvements to crash logging.
+* Bump trunk base from r27505 to r27518
+
 ### v0.11.0 (2016-02-04)
 * Programmable signals: Fix crash when a programmable signal referenced a signal which was then turned to face the other way, and the programmable signal and then the other signal were then deleted.
 * Improved breakdowns:
