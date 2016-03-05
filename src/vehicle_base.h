@@ -318,10 +318,6 @@ public:
 
 	void HandleWaiting(bool stop_waiting = false);
 
-	void GetConsistFreeCapacities(SmallMap<CargoID, uint> &capacities) const;
-
-	uint GetConsistTotalCapacity() const;
-
 	/**
 	 * Marks the vehicles to be redrawn and updates cached variables
 	 *

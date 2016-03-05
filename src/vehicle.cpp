@@ -2664,34 +2664,6 @@ void Vehicle::HandleWaiting(bool stop_waiting)
 }
 
 /**
- * Get a map of cargoes and free capacities in the consist.
- * @param capacities Map to be filled with cargoes and capacities.
- */
-void Vehicle::GetConsistFreeCapacities(SmallMap<CargoID, uint> &capacities) const
-{
-	for (const Vehicle *v = this; v != NULL; v = v->Next()) {
-		if (v->cargo_cap == 0) continue;
-		SmallPair<CargoID, uint> *pair = capacities.Find(v->cargo_type);
-		if (pair == capacities.End()) {
-			pair = capacities.Append();
-			pair->first = v->cargo_type;
-			pair->second = v->cargo_cap - v->cargo.StoredCount();
-		} else {
-			pair->second += v->cargo_cap - v->cargo.StoredCount();
-		}
-	}
-}
-
-uint Vehicle::GetConsistTotalCapacity() const
-{
-	uint result = 0;
-	for (const Vehicle *v = this; v != NULL; v = v->Next()) {
-		result += v->cargo_cap;
-	}
-	return result;
-}
-
-/**
  * Send this vehicle to the depot using the given command(s).
  * @param flags   the command flags (like execute and such).
  * @param command the command to execute.
