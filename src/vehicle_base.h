@@ -150,21 +150,9 @@ extern void FixOldVehicles();
 
 struct GRFFile;
 
-/**
- * Simulated cargo type and capacity for prediction of future links.
- */
-struct RefitDesc {
-	CargoID cargo;    ///< Cargo type the vehicle will be carrying.
-	uint16 capacity;  ///< Capacity the vehicle will have.
-	uint16 remaining; ///< Capacity remaining from before the previous refit.
-	RefitDesc(CargoID cargo, uint16 capacity, uint16 remaining) :
-			cargo(cargo), capacity(capacity), remaining(remaining) {}
-};
-
 /** %Vehicle data structure. */
 struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle, BaseConsist {
 private:
-	typedef std::list<RefitDesc> RefitList;
 	typedef std::map<CargoID, uint> CapacitiesMap;
 
 	Vehicle *next;                      ///< pointer to the next vehicle in the chain
