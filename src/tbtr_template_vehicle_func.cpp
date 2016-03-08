@@ -119,16 +119,26 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 {
 	if (!tv) return;
 
+	DrawPixelInfo tmp_dpi, *old_dpi;
+	int max_width = right - left + 1;
+	int height = ScaleGUITrad(14);
+	if (!FillDrawPixelInfo(&tmp_dpi, left, y, max_width, height)) return;
+
+	old_dpi = _cur_dpi;
+	_cur_dpi = &tmp_dpi;
+
 	const TemplateVehicle *t = tv;
-	int offset = left;
+	int offset = 0;
 
 	while (t) {
 		PaletteID pal = GetEnginePalette(t->engine_type, _current_company);
-		DrawSprite(t->cur_image, pal, offset, y + ScaleGUITrad(11));
+		DrawSprite(t->cur_image, pal, offset + t->image_width / 2, ScaleGUITrad(11));
 
 		offset += t->image_width;
 		t = t->Next();
 	}
+
+	_cur_dpi = old_dpi;
 }
 
 // copy important stuff from the virtual vehicle to the template

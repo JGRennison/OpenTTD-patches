@@ -679,7 +679,7 @@ public:
 			}
 
 			/* Draw the template */
-			DrawTemplate(v, left + ScaleGUITrad(50), right, y);
+			DrawTemplate(v, left + ScaleGUITrad(36), right - ScaleGUITrad(24), y);
 
 			/* Draw a notification string for chains that are not runnable */
 			if (v->IsFreeWagonChain()) {
