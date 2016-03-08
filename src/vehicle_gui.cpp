@@ -171,6 +171,8 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
 		d = maxdim(d, GetStringBoundingBox(change_order_str));
 	}
 
+	d = maxdim(d, GetStringBoundingBox(STR_VEHICLE_LIST_CREATE_GROUP));
+
 	return d;
 }
 
@@ -198,6 +200,8 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 	if (change_order_str != 0) {
 		*list->Append() = new DropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, false);
 	}
+
+	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, false);
 
 	return list;
 }
@@ -1792,12 +1796,21 @@ public:
 						SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT, this);
 						break;
 
+					case ADI_CREATE_GROUP:
+						ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+						break;
+
 					default: NOT_REACHED();
 				}
 				break;
 			default: NOT_REACHED();
 		}
 		this->SetDirty();
+	}
+
+	virtual void OnQueryTextFinished(char *str)
+	{
+		DoCommandP(0, this->window_number, 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), NULL, str);
 	}
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)

@@ -3799,6 +3799,8 @@ STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :Move order to a
 STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :Move order to another depot
 STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Move order to another hangar
 
+STR_VEHICLE_LIST_CREATE_GROUP                                   :Create group from list
+
 # Group window
 STR_GROUP_ALL_TRAINS                                            :All trains
 STR_GROUP_ALL_ROAD_VEHICLES                                     :All road vehicles

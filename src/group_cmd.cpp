@@ -427,6 +427,52 @@ CommandCost CmdAlterGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	return CommandCost();
 }
 
+/**
+ * Create a new vehicle group.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 packed VehicleListIdentifier
+ * @param p2   unused
+ * @param text the new name or an empty string when setting to the default
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCreateGroupFromList(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleListIdentifier vli;
+	VehicleList list;
+	if (!vli.Unpack(p1)) return CMD_ERROR;
+	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
+	if (!GenerateVehicleSortList(&list, vli)) return CMD_ERROR;
+
+	CommandCost ret = DoCommand(tile, vli.vtype, 0, flags, CMD_CREATE_GROUP);
+	if (ret.Failed()) return ret;
+
+	if (!StrEmpty(text)) {
+		if (Utf8StringLength(text) >= MAX_LENGTH_GROUP_NAME_CHARS) return CMD_ERROR;
+		if (!IsUniqueGroupNameForVehicleType(text, vli.vtype)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+	}
+
+	if (flags & DC_EXEC) {
+		Group *g = Group::GetIfValid(_new_group_id);
+		if (g == NULL || g->owner != _current_company) return CMD_ERROR;
+
+		if (!StrEmpty(text)) {
+			DoCommand(tile, g->index, 0, flags, CMD_ALTER_GROUP, text);
+		}
+
+		for (uint i = 0; i < list.Length(); i++) {
+			const Vehicle *v = list[i];
+
+			/* Just try and don't care if some vehicle's can't be added. */
+			DoCommand(tile, g->index, v->index, flags, CMD_ADD_VEHICLE_GROUP);
+		}
+
+		MarkWholeScreenDirty();
+	}
+
+	return CommandCost();
+}
+
 
 /**
  * Do add a vehicle to a group.
