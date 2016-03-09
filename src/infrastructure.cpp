@@ -23,6 +23,8 @@
 #include "gui.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include "company_base.h"
+#include "string_func.h"
+#include "scope_info.h"
 
 #include "table/strings.h"
 
@@ -273,7 +275,8 @@ void HandleSharingCompanyDeletion(Owner owner)
 {
 	YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 
-	Vehicle *v;
+	Vehicle *v = NULL;
+	SCOPE_INFO_FMT([&v], "HandleSharingCompanyDeletion: veh: %s", scope_dumper().VehicleInfo(v));
 	FOR_ALL_VEHICLES(v) {
 		if (!IsCompanyBuildableVehicleType(v) || v->Previous() != NULL) continue;
 		/* vehicle position */
@@ -294,8 +297,9 @@ void HandleSharingCompanyDeletion(Owner owner)
 		/* order list */
 		if (v->FirstShared() != v) continue;
 
-		Order *o;
+		Order *o = NULL;
 		int id = -1;
+		SCOPE_INFO_FMT([&], "HandleSharingCompanyDeletion: veh: %s, order: %d, %X", scope_dumper().VehicleInfo(v), id, o ? o->Pack() : 0);
 		FOR_VEHICLE_ORDERS(v, o) {
 			id++;
 			if (OrderDestinationIsAllowed(o, v, owner)) continue;
