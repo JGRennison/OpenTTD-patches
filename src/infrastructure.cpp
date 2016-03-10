@@ -98,8 +98,10 @@ void PayDailyTrackSharingFee(Train *v)
  */
 static bool VehiclePositionIsAllowed(const Vehicle *v, Owner owner = INVALID_OWNER)
 {
+	if (!IsValidTile(v->tile)) return true;
 	switch (v->type) {
 		case VEH_TRAIN:
+			if (HasBit(Train::From(v)->subtype, GVSF_VIRTUAL)) return true;
 			for (const Vehicle *u = v; u != NULL; u = u->Next()) {
 				if (!IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, u->tile) || GetTileOwner(u->tile) == owner) return false;
 			}
