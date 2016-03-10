@@ -97,6 +97,7 @@ set_default() {
 	with_sse="1"
 	with_libbfd="1"
 	with_bfd_extra_debug="1"
+	with_dbg_gdb="1"
 
 	save_params_array="
 		build
@@ -176,6 +177,7 @@ set_default() {
 		with_sse
 		with_libbfd
 		with_bfd_extra_debug
+		with_dbg_gdb
 	CC CXX CFLAGS CXXFLAGS LDFLAGS CFLAGS_BUILD CXXFLAGS_BUILD LDFLAGS_BUILD"
 }
 
@@ -476,6 +478,10 @@ detect_params() {
 			--without-bfd-extra-debug)    with_bfd_extra_debug="0";;
 			--with-bfd-extra-debug)       with_bfd_extra_debug="1";;
 			--with-bfd-extra-debug=*)     with_bfd_extra_debug="$optarg";;
+
+			--without-self-gdb-debug)     with_dbg_gdb="0";;
+			--with-self-gdb-debug)        with_dbg_gdb="1";;
+			--with-self-gdb-debug=*)      with_dbg_gdb="$optarg";;
 
 			CC=* | --CC=*)                CC="$optarg";;
 			CXX=* | --CXX=*)              CXX="$optarg";;
@@ -1614,6 +1620,7 @@ EOL
 			CFLAGS="$CFLAGS -DWITH_DL"
 		fi
 
+		LIBBFD_LIBS=
 		if [ "$with_libbfd" = "1" ]; then
 			if test_compile_libbfd "-lbfd -lz"; then
 				LIBBFD_LIBS="-lbfd -lz"
@@ -1621,18 +1628,65 @@ EOL
 				LIBBFD_LIBS="-lbfd -liberty -lz"
 			elif test_compile_libbfd "-lbfd -liberty -lintl -lz"; then
 				LIBBFD_LIBS="-lbfd -liberty -lintl -lz"
-			else
-				LIBBFD_LIBS=
 			fi
 			if [ -n "$LIBBFD_LIBS" ]; then
 				log 1 "checking libbfd... found"
 				LIBS="$LIBS $LIBBFD_LIBS"
 				CFLAGS="$CFLAGS -DWITH_BFD"
-				if [ $enable_debug -lt 1 ] && [ "$with_bfd_extra_debug" = "1" ]; then
-					CFLAGS="$CFLAGS -g1"
-				fi
 			else
 				log 1 "checking libbfd... no"
+			fi
+		fi
+
+		HAVE_GDB_DBG=
+		if [ "$with_dbg_gdb" = "1" ]; then
+			log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdb -x c++ -"
+			"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdb -x c++ - 2> /dev/null << EOL
+				#include <unistd.h>
+				#include <sys/stat.h>
+				#include <fcntl.h>
+				#include <sys/syscall.h>
+				#include <sys/types.h>
+				#include <sys/wait.h>
+				int main() {
+					pid_t tid = syscall(SYS_gettid);
+					int status;
+					waitpid((pid_t) 0, &status, 0);
+					return WIFEXITED(status) && WEXITSTATUS(status);
+				}
+EOL
+			ret=$?
+			rm -f tmp.config.dbggdb
+			log 2 "  exit code $ret"
+			if [ $ret -ne 0 ]; then
+				log 1 "checking dbg gdb... no"
+			else
+				log 1 "checking dbg gdb... found"
+				CFLAGS="$CFLAGS -DWITH_DBG_GDB"
+				HAVE_GDB_DBG=1
+
+				log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdbprctl -x c++ -"
+				"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdbprctl -x c++ - 2> /dev/null << EOL
+					#include <sys/prctl.h>
+					int main() {
+						return prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
+					}
+EOL
+				ret=$?
+				rm -f tmp.config.dbggdbprctl
+				log 2 "  exit code $ret"
+				if [ $ret -ne 0 ]; then
+					log 1 "checking dbg gdb (prctl)... no"
+				else
+					log 1 "checking dbg gdb (prctl)... found"
+					CFLAGS="$CFLAGS -DWITH_PRCTL_PT"
+				fi
+			fi
+		fi
+
+		if [ -n "$LIBBFD_LIBS" -o -n "$HAVE_GDB_DBG" ]; then
+			if [ $enable_debug -lt 1 ] && [ "$with_bfd_extra_debug" = "1" ]; then
+				CFLAGS="$CFLAGS -g1"
 			fi
 		fi
 	fi
@@ -3694,6 +3748,7 @@ showhelp() {
 	echo "  --without-sse                  disable SSE support (x86/x86_64 only)"
 	echo "  --without-libbfd               disable libbfd support, used for improved crash logs (MinGW and Unix/glibc only)"
 	echo "  --without-bfd-extra-debug      disable extra debugging information when using libbfd (MinGW and Unix/glibc only)"
+	echo "  --without-self-gdb-debug       disable improved crash logs using gdb (Linux only)"
 	echo ""
 	echo "Some influential environment variables:"
 	echo "  CC                             C compiler command"

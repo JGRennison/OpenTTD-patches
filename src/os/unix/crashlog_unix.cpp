@@ -21,6 +21,19 @@
 #include <sys/utsname.h>
 #include <setjmp.h>
 
+#if defined(WITH_DBG_GDB)
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#endif /* WITH_DBG_GDB */
+
+#if defined(WITH_PRCTL_PT)
+#include <sys/prctl.h>
+#endif /* WITH_PRCTL_PT */
+
 #if defined(__GLIBC__)
 /* Execinfo (and thus making stacktraces) is a GNU extension */
 #	include <execinfo.h>
@@ -132,6 +145,79 @@ class CrashLogUnix : public CrashLog {
 #endif
 
 	/**
+	 * Get a stack backtrace of the current thread's stack using the gdb debugger, if available.
+	 *
+	 * Using GDB is useful as it knows about inlined functions and locals, and generally can
+	 * do a more thorough job than in LogStacktrace.
+	 * This is done in addition to LogStacktrace as gdb cannot be assumed to be present
+	 * and there is some potentially useful information in the output from LogStacktrace
+	 * which is not in gdb's output.
+	 */
+	char *LogStacktraceGdb(char *buffer, const char *last) const
+	{
+#if defined(WITH_DBG_GDB)
+
+#if defined(WITH_PRCTL_PT)
+		prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
+#endif /* WITH_PRCTL_PT */
+
+		pid_t tid = syscall(SYS_gettid);
+
+		int pipefd[2];
+		if (pipe(pipefd) == -1) return buffer;
+
+		int pid = fork();
+		if (pid < 0) return buffer;
+
+		if (pid == 0) {
+			/* child */
+
+			close(pipefd[0]); /* Close unused read end */
+			dup2(pipefd[1], STDOUT_FILENO);
+			close(pipefd[1]);
+			int null_fd = open("/dev/null", O_RDWR);
+			if (null_fd != -1) {
+				dup2(null_fd, STDERR_FILENO);
+				dup2(null_fd, STDIN_FILENO);
+			}
+			char buffer[16];
+			seprintf(buffer, lastof(buffer), "%d", tid);
+			execlp("gdb", "gdb", "-n", "-p", buffer, "-batch", "-ex", "bt full", NULL);
+			exit(42);
+		}
+
+		/* parent */
+
+		close(pipefd[1]); /* Close unused write end */
+
+		char *buffer_orig = buffer;
+
+		buffer += seprintf(buffer, last, "Stacktrace (GDB):\n");
+		while (buffer < last) {
+			ssize_t res = read(pipefd[0], buffer, last - buffer);
+			if (res < 0) {
+				if (errno == EINTR) continue;
+				break;
+			} else if (res == 0) {
+				break;
+			} else {
+				buffer += res;
+			}
+		}
+		buffer += seprintf(buffer, last, "\n");
+
+		int status;
+		int wait_ret = waitpid(pid, &status, 0);
+		if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+			/* gdb did not appear to run successfully */
+			buffer = buffer_orig;
+		}
+#endif /* WITH_DBG_GDB */
+
+		return buffer;
+	}
+
+	/**
 	 * Get a stack backtrace of the current thread's stack.
 	 *
 	 * This has several modes/options, the most full-featured/complex of which is GLIBC mode.
@@ -156,6 +242,8 @@ class CrashLogUnix : public CrashLog {
 	 */
 	/* virtual */ char *LogStacktrace(char *buffer, const char *last) const
 	{
+		buffer = LogStacktraceGdb(buffer, last);
+
 		buffer += seprintf(buffer, last, "Stacktrace:\n");
 
 #if defined(__GLIBC__)
