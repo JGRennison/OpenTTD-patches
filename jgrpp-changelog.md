@@ -2,6 +2,62 @@
 
 * * *
 
+### v0.12.0 (2016-03-02)
+* Fix "remove all trees in scenario editor" being available in game.
+* Fix crash when a company went bankrupt whilst one of its vehicles was in the middle of loading/unloading.
+* Add template-base train replacement patch, with many fixes/changes.
+* Allow changing the timetabled waiting time for all of a vehicle's orders at once.
+* Run tile animations at the normal rate regardless of day length factor.
+* Routing restrictions:
+  * Fix unreserving through a green PBS signal not setting the state to red.  
+    This also fixes unsuccessful reservation attempts though a reserve-through signal erroneously leaving the signal set to green.
+* Infrastructure sharing:
+  * Add company settings to enable competitors to buy/renew vehicles in this company's depots.
+  * Add setting to control whether trains can crash with trains owned by other companies.
+* Signals on bridges/tunnels:
+  * Enable PBS reservations to be made up to the signalled entrance to a bridge/tunnel.
+  * Show tunnel/bridge exit signal facing correct way with correct colour.
+  * Enable setting semaphore/electric type of signals on bridges/tunnels.
+  * Also draw signals for tunnel exits.
+  * Fix drag-convert not updating bridge/tunnel direction correctly.
+  * Enable bridge/tunnel exit signals to be one-way PBS. Add signal conversion support.
+* Enhanced viewports:
+  * Fix route step lines not being updated when cloning a vehicle's orders.
+* Strip colour codes when writing debug messages to the terminal.
+* Improvements to crash logging.
+* Bump trunk base from r27505 to r27518
+
+### v0.11.0 (2016-02-04)
+* Programmable signals: Fix crash when a programmable signal referenced a signal which was then turned to face the other way, and the programmable signal and then the other signal were then deleted.
+* Improved breakdowns:
+  * Change the breakdown probability calculation to more closely resemble the original behaviour.
+  * Revert airport crash probabilities back to original behaviour, with modified behaviour only during emergency landings.
+  * Low power breakdowns now only reduce the power of the engine which has broken down.
+  * Low power breakdowns no longer reduce speed directly when using realistic acceleration, trains can coast or accelerate more slowly instead of actively braking.
+  * Fix vehicle needs repair speed limits being incorrect in vehicle details.
+* Auto timetables:
+  * Fix timetable auto not being unset when sharing orders. Clear autofill when sharing/copying orders with timetable auto enabled.
+  * Copy timetable auto state when copying orders.
+  * Fix set distributed timetable start not working when using minutes.
+  * Avoid set distributed timetable start setting start dates in the past.
+* Add the hierarchical group collapse patch, with various modifications:
+  * Make group collapsing per-window.
+  * Add icon for collapsed groups.
+  * Only enable collapse & (un)collapse all buttons where useful. Disable collapse button for leaf groups. Disable (un)collapse all button when all non-leaf groups already (un)collapsed.
+* Add the ship collision avoidance patch. Add an on/off setting.
+* Add the reduced tree growth patch.
+* Add the remove all trees in scenario editor patch.
+* Add a menu item to the vehicle list to change order target, e.g. for moving depot orders to a different depot.
+* Show the average of the order occupancies in the orders window, and add a vehicle sort mode.
+* Routing restrictions: Add Long Reserve feature.
+* Infrastructure sharing:
+  * Trains can now be crashed with trains from other companies
+  * PBS reservations are now cleared when other companies' trains are removed due to the company being deleted/bankrupt.
+* Cargo dest link graph:
+  * Join more than one link graph job at once where possible. This is to prevent a backlog of jobs if the link graph settings are changed mid game.
+  * Add setting for link graph times to be in non day length scaled days.
+  * Bump trunk base from r27495 to r27505
+
 ### v0.10.2 (2016-01-19)
 * Improved breakdowns:
   * Fix incorrect train speed limits after a save/load or network join (causing desync issues) after critical/mechanical breakdowns.

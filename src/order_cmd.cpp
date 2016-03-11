@@ -752,7 +752,7 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * - p1 = (bit 24 - 31) - the selected order (if any). If the last order is given,
+ * - p1 = (bit 20 - 27) - the selected order (if any). If the last order is given,
  *                        the order will be inserted before that one
  *                        the maximum vehicle order id is 254.
  * @param p2 packed order to insert
@@ -1887,7 +1887,8 @@ void CheckOrders(const Vehicle *v)
 	if (v->FirstShared() != v) return;
 
 	/* Only check every 20 days, so that we don't flood the message log */
-	if (v->owner == _local_company && v->day_counter % 20 == 0) {
+	/* The check is skipped entirely in case the current vehicle is virtual (a.k.a a 'template train') */
+	if (v->owner == _local_company && v->day_counter % 20 == 0 && !HasBit(v->subtype, GVSF_VIRTUAL)) {
 		const Order *order;
 		StringID message = INVALID_STRING_ID;
 
@@ -2467,4 +2468,58 @@ bool Order::CanLeaveWithCargo(bool has_cargo) const
 {
 	return (this->GetLoadType() & OLFB_NO_LOAD) == 0 || (has_cargo &&
 			(this->GetUnloadType() & (OUFB_UNLOAD | OUFB_TRANSFER)) == 0);
+}
+
+/**
+ * Mass change the target of an order.
+ * This implemented by adding a new order and if that succeeds deleting the previous one.
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 various bitstuffed elements
+ * - p1 = (bit  0 - 15) - The destination ID to change from
+ * - p1 = (bit 16 - 18) - The vehicle type
+ * - p1 = (bit 20 - 23) - The order type
+ * @param p2 various bitstuffed elements
+  * - p2 = (bit  0 - 15) - The destination ID to change to
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	DestinationID from_dest = GB(p1, 0, 16);
+	VehicleType vehtype = Extract<VehicleType, 16, 3>(p1);
+	OrderType order_type = (OrderType) GB(p1, 20, 4);
+	DestinationID to_dest = GB(p2, 0, 16);
+
+	if (flags & DC_EXEC) {
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			if (v->type == vehtype && v->IsPrimaryVehicle() && CheckOwnership(v->owner).Succeeded()) {
+				Order *order;
+				int index = 0;
+
+				FOR_VEHICLE_ORDERS(v, order) {
+					if (order->GetDestination() == from_dest && order->IsType(order_type) &&
+							!(order_type == OT_GOTO_DEPOT && order->GetDepotActionType() & ODATFB_NEAREST_DEPOT)) {
+						Order new_order;
+						new_order.AssignOrder(*order);
+						new_order.SetDestination(to_dest);
+						new_order.SetWaitTimetabled(false);
+						new_order.SetTravelTimetabled(false);
+						if (DoCommand(0, v->index | ((index + 1) << 20), new_order.Pack(), flags, CMD_INSERT_ORDER).Succeeded()) {
+							DoCommand(0, v->index, index, flags, CMD_DELETE_ORDER);
+
+							order = v->orders.list->GetOrderAt(index);
+							order->SetRefit(new_order.GetRefitCargo());
+							order->SetMaxSpeed(new_order.GetMaxSpeed());
+						}
+
+						new_order.Free();
+					}
+					index++;
+				}
+			}
+		}
+	}
+	return CommandCost();
 }

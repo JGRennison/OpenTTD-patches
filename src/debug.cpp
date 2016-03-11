@@ -168,6 +168,8 @@ static void debug_print(const char *dbg, const char *buf)
 	char buffer[512];
 	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
 
+	str_strip_colours(buffer);
+
 	/* do not write desync messages to the console on Windows platforms, as they do
 	 * not seem able to handle text direction change characters in a console without
 	 * crashing, and NetworkTextMessage includes these */

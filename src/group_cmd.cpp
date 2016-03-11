@@ -21,6 +21,7 @@
 #include "company_func.h"
 #include "core/pool_func.hpp"
 #include "order_backup.h"
+#include "tbtr_template_vehicle.h"
 
 #include "table/strings.h"
 
@@ -137,6 +138,9 @@ void GroupStatistics::Clear()
  */
 /* static */ void GroupStatistics::CountVehicle(const Vehicle *v, int delta)
 {
+	/* make virtual trains group-neutral */
+	if ( HasBit(v->subtype, GVSF_VIRTUAL) ) return;
+
 	assert(delta == 1 || delta == -1);
 
 	GroupStatistics &stats_all = GroupStatistics::GetAllGroup(v);
@@ -341,6 +345,9 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		VehicleType vt = g->vehicle_type;
 
+		/* Delete all template replacements using the just deleted group */
+		deleteIllegalTemplateReplacements(g->index);
+
 		/* Delete the Replace Vehicle Windows */
 		DeleteWindowById(WC_REPLACE_VEHICLE, g->vehicle_type);
 		delete g;
@@ -415,6 +422,52 @@ CommandCost CmdAlterGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	if (flags & DC_EXEC) {
 		SetWindowDirty(WC_REPLACE_VEHICLE, g->vehicle_type);
 		InvalidateWindowData(GetWindowClassForVehicleType(g->vehicle_type), VehicleListIdentifier(VL_GROUP_LIST, g->vehicle_type, _current_company).Pack());
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Create a new vehicle group.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 packed VehicleListIdentifier
+ * @param p2   unused
+ * @param text the new name or an empty string when setting to the default
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCreateGroupFromList(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleListIdentifier vli;
+	VehicleList list;
+	if (!vli.Unpack(p1)) return CMD_ERROR;
+	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
+	if (!GenerateVehicleSortList(&list, vli)) return CMD_ERROR;
+
+	CommandCost ret = DoCommand(tile, vli.vtype, 0, flags, CMD_CREATE_GROUP);
+	if (ret.Failed()) return ret;
+
+	if (!StrEmpty(text)) {
+		if (Utf8StringLength(text) >= MAX_LENGTH_GROUP_NAME_CHARS) return CMD_ERROR;
+		if (!IsUniqueGroupNameForVehicleType(text, vli.vtype)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+	}
+
+	if (flags & DC_EXEC) {
+		Group *g = Group::GetIfValid(_new_group_id);
+		if (g == NULL || g->owner != _current_company) return CMD_ERROR;
+
+		if (!StrEmpty(text)) {
+			DoCommand(tile, g->index, 0, flags, CMD_ALTER_GROUP, text);
+		}
+
+		for (uint i = 0; i < list.Length(); i++) {
+			const Vehicle *v = list[i];
+
+			/* Just try and don't care if some vehicle's can't be added. */
+			DoCommand(tile, g->index, v->index, flags, CMD_ADD_VEHICLE_GROUP);
+		}
+
+		MarkWholeScreenDirty();
 	}
 
 	return CommandCost();

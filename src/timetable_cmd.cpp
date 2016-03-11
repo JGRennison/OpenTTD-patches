@@ -196,6 +196,50 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 }
 
 /**
+ * Change timetable data of all orders of a vehicle.
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Various bitstuffed elements
+ * - p1 = (bit  0-19) - Vehicle with the orders to change.
+ * - p1 = (bit 20-27) - unused
+ * - p1 = (bit 28-29) - Timetable data to change (@see ModifyTimetableFlags)
+ * - p1 = (bit    30) - 0 to set timetable wait/travel time, 1 to clear it
+ * @param p2 The amount of time to wait.
+ * - p2 = (bit  0-15) - The data to modify as specified by p1 bits 28-29.
+ *                      0 to clear times, UINT16_MAX to clear speed limit.
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 2>(p1);
+	if (mtf >= MTF_END) return CMD_ERROR;
+
+	if (v->GetNumOrders() == 0) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		for (VehicleOrderID order_number = 0; order_number < v->GetNumOrders(); order_number++) {
+			Order *order = v->GetOrder(order_number);
+			if (order == NULL || order->IsType(OT_IMPLICIT)) continue;
+
+			uint32 new_p1 = p1;
+			SB(new_p1, 20, 8, order_number);
+			DoCommand(tile, new_p1, p2, flags, CMD_CHANGE_TIMETABLE);
+		}
+	}
+
+	return CommandCost();
+}
+
+/**
  * Clear the lateness counter to make the vehicle on time.
  * @param tile Not used.
  * @param flags Operation to perform.
@@ -284,17 +328,9 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	DateTicks start_date = (Date)p2 / DAY_TICKS;
-
-#if WALLCLOCK_NETWORK_COMPATIBLE
-	/* Don't let a timetable start more than 15 years into the future or 1 year in the past. */
-	if (start_date < 0 || start_date > MAX_DAY) return CMD_ERROR;
-	if (start_date - _date > 15 * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
-	if (_date - start_date > DAYS_IN_LEAP_YEAR) return CMD_ERROR;
 	if (timetable_all && !v->orders.list->IsCompleteTimetable()) return CMD_ERROR;
-#else
-	start_date = ((DateTicks)_date * DAY_TICKS) + _date_fract + (DateTicks)(int32)p2;
-#endif
+
+	DateTicks start_date = ((DateTicks)_date * DAY_TICKS) + _date_fract + (DateTicks)(int32)p2;
 
 	if (flags & DC_EXEC) {
 		SmallVector<Vehicle *, 8> vehs;
@@ -323,11 +359,10 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
-#if WALLCLOCK_NETWORK_COMPATIBLE
-			w->timetable_start = start_date + idx * total_duration / num_vehs / DAY_TICKS;
-#else
-			w->timetable_start = start_date + idx * total_duration / num_vehs;
-#endif
+			w->timetable_start = start_date + idx * total_duration / (num_vehs * _settings_game.economy.day_length_factor);
+			if (w->timetable_start < (((DateTicks)_date * DAY_TICKS) + _date_fract) && idx < 0) {
+				w->timetable_start += (total_duration / _settings_game.economy.day_length_factor);
+			}
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
 		}
 
@@ -622,11 +657,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
-#if WALLCLOCK_NETWORK_COMPATIBLE
-			v->lateness_counter = ((_date - v->timetable_start) * DAY_TICKS + _date_fract) * _settings_game.economy.day_length_factor + _tick_skip_counter;
-#else
 			v->lateness_counter = ((_date * DAY_TICKS) + _date_fract - v->timetable_start) * _settings_game.economy.day_length_factor + _tick_skip_counter;
-#endif
 			v->timetable_start = 0;
 		}
 
@@ -713,14 +744,16 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		}
 
 		if (new_time < 1) new_time = 1;
-		if (new_time != (int32)timetabled)
+		if (new_time != (int32)timetabled) {
 			ChangeTimetable(v, v->cur_real_order_index, new_time, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+		}
 	} else if (timetabled == 0 && HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
 		/* Add times for orders that are not yet timetabled, even while not autofilling */
-		if (travelling)
-			ChangeTimetable(v, v->cur_real_order_index, time_taken, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
-		else
-			ChangeTimetable(v, v->cur_real_order_index, time_loading, travelling ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+		if (travelling) {
+			ChangeTimetable(v, v->cur_real_order_index, time_taken, MTF_TRAVEL_TIME, true);
+		} else {
+			ChangeTimetable(v, v->cur_real_order_index, time_loading, MTF_WAIT_TIME, true);
+		}
 	}
 
 	/* Vehicles will wait at stations if they arrive early even if they are not

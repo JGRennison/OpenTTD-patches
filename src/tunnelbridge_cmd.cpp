@@ -1167,27 +1167,44 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 		case DIAGDIR_NW: position = 3; break;
 	}
 
-	uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side][position].x;
-	uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side][position].y;
+	SignalType type = SIGTYPE_NORMAL;
+
+	bool is_green;
+	bool show_exit;
+	if (IsTunnelBridgeExit(ti->tile)) {
+		is_green = IsTunnelBridgeExitGreen(ti->tile);
+		show_exit = true;
+		position ^= 1;
+		if (IsTunnelBridgePBS(ti->tile)) type = SIGTYPE_PBS_ONEWAY;
+	} else {
+		is_green = IsTunnelBridgeWithSignGreen(ti->tile);
+		show_exit = false;
+	}
+
+	uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ show_exit].x;
+	uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ show_exit].y;
 	uint z = ti->z;
 
+	if (ti->tileh == SLOPE_FLAT && side == show_exit && dir == DIAGDIR_SE) z += 2;
+	if (ti->tileh == SLOPE_FLAT && side != show_exit && dir == DIAGDIR_SW) z += 2;
+
 	if (ti->tileh != SLOPE_FLAT && IsBridge(ti->tile)) z += 8; // sloped bridge head
-	SignalVariant variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
+	SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 
 	SpriteID sprite;
-	if (variant == SIG_ELECTRIC) {
+	if (variant == SIG_ELECTRIC && type == SIGTYPE_NORMAL) {
 		/* Normal electric signals are picked from original sprites. */
-		sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + IsTunnelBridgeWithSignGreen(ti->tile));
+		sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + is_green);
 	} else {
 		/* All other signals are picked from add on sprites. */
-		sprite = SPR_SIGNALS_BASE + ((SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1) + IsTunnelBridgeWithSignGreen(ti->tile));
+		sprite = SPR_SIGNALS_BASE + ((type - 1) * 16 + variant * 64 + (position << 1) + is_green) + (IsSignalSpritePBS(type) ? 64 : 0);
 	}
 
 	AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
 }
 
 /* Draws a signal on tunnel / bridge entrance tile. */
-static void DrawBrigeSignalOnMiddelPart(const TileInfo *ti, TileIndex bridge_start_tile, uint z)
+static void DrawBrigeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_start_tile, uint z)
 {
 
 	uint bridge_signal_position = 0;
@@ -1222,7 +1239,7 @@ static void DrawBrigeSignalOnMiddelPart(const TileInfo *ti, TileIndex bridge_sta
 			uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side][position].y;
 			z += 5;
 
-			SignalVariant variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
+			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 
 			SpriteID sprite;
 
@@ -1355,7 +1372,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti)
 		AddSortableSpriteToDraw(SPR_EMPTY_BOUNDING_BOX, PAL_NONE, ti->x + BB_data[4], ti->y + BB_data[5], BB_data[6], BB_data[7], TILE_HEIGHT, ti->z);
 
 		/* Draw signals for tunnel. */
-		if (IsTunnelBridgeEntrance(ti->tile)) DrawTunnelBridgeRampSignal(ti);
+		if (HasWormholeSignals(ti->tile)) DrawTunnelBridgeRampSignal(ti);
 
 		DrawBridgeMiddle(ti);
 	} else { // IsBridge(ti->tile)
@@ -1601,7 +1618,8 @@ void DrawBridgeMiddle(const TileInfo *ti)
 			}
 		}
 
-		if (_game_mode != GM_MENU && _settings_client.gui.show_track_reservation && !IsInvisibilitySet(TO_BRIDGES) && HasTunnelBridgeReservation(rampnorth)) {
+		if (_game_mode != GM_MENU && _settings_client.gui.show_track_reservation && !IsInvisibilitySet(TO_BRIDGES) && HasTunnelBridgeReservation(rampnorth)
+				&& !HasWormholeSignals(rampnorth)) {
 			if (rti->UsesOverlay()) {
 				SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RTSG_OVERLAY);
 				AddSortableSpriteToDraw(overlay + RTO_X + axis, PALETTE_CRASH, ti->x, ti->y, 16, 16, 0, bridge_z, IsTransparencySet(TO_BRIDGES));
@@ -1616,7 +1634,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 			DrawCatenaryOnBridge(ti);
 		}
 		if (HasWormholeSignals(rampsouth)) {
-			IsTunnelBridgeExit(rampsouth) ? DrawBrigeSignalOnMiddelPart(ti, rampnorth, z): DrawBrigeSignalOnMiddelPart(ti, rampsouth, z);
+			IsTunnelBridgeExit(rampsouth) ? DrawBrigeSignalOnMiddlePart(ti, rampnorth, z): DrawBrigeSignalOnMiddlePart(ti, rampsouth, z);
 		}
 	}
 

@@ -2687,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :社有地
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTDについて
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}オリジナル版権{COPYRIGHT} 1995 Chris Sawyer All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD バージョン {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ゲームを保存
@@ -2875,6 +2875,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}前の�
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}前のノーマルスプライトに戻ります。始端と終端は連続しているものとみなし、疑似/リカラー/フォントスプライトはスキップします
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}現在選択されているスプライトの代表絵を示します。この配列はスプライトを描画するときには無視されます
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}X・Yオフセットを変更し、スプライトを移動します
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK} 相対値リセット
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK} 現在の相対オフセットをリセットします。
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Xオフセット : {NUM},Yオフセット : {NUM} (絶対値)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  : {BLACK}X オフセット : {NUM}, Y オフセット : {NUM} (相対値)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}スプライトを選ぶ
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}画面内からスプライトを選びます
 

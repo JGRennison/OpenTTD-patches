@@ -347,7 +347,7 @@ static inline CommandCost CmdMoveVehicle(const Vehicle *v, const Vehicle *after,
  * @param new_head The new head of the completely replaced vehicle chain
  * @param flags the command flags to use
  */
-static CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoCommandFlag flags)
+CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoCommandFlag flags)
 {
 	CommandCost cost = CommandCost();
 

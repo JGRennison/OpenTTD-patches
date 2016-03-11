@@ -1026,7 +1026,7 @@ static bool RoadVehAccelerationModelChanged(int32 p1)
 		RoadVehicle *rv;
 		FOR_ALL_ROADVEHICLES(rv) {
 			if (rv->IsFrontEngine()) {
-				rv->breakdown_chance = 128;
+				rv->breakdown_chance_factor = 128;
 			}
 		}
 	}
@@ -1346,6 +1346,33 @@ static bool MaxVehiclesChanged(int32 p1)
 {
 	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);
 	MarkWholeScreenDirty();
+	return true;
+}
+
+static bool ImprovedBreakdownsSettingChanged(int32 p1)
+{
+	if (!_settings_game.vehicle.improved_breakdowns) return true;
+
+	Vehicle *v;
+	FOR_ALL_VEHICLES(v) {
+		switch(v->type) {
+			case VEH_TRAIN:
+				if (v->IsFrontEngine()) {
+					v->breakdown_chance_factor = 128;
+					Train::From(v)->UpdateAcceleration();
+				}
+				break;
+
+			case VEH_ROAD:
+				if (v->IsFrontEngine()) {
+					v->breakdown_chance_factor = 128;
+				}
+				break;
+
+			default:
+				break;
+		}
+	}
 	return true;
 }
 

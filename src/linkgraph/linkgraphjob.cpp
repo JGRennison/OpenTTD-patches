@@ -28,6 +28,15 @@ INSTANTIATE_POOL_METHODS(LinkGraphJob)
  */
 /* static */ Path *Path::invalid_path = new Path(INVALID_NODE, true);
 
+static DateTicks GetLinkGraphJobJoinDateTicks()
+{
+	DateTicks ticks = _settings_game.linkgraph.recalc_time * DAY_TICKS;
+	if (_settings_game.linkgraph.recalc_not_scaled_by_daylength) {
+		ticks /= _settings_game.economy.day_length_factor;
+	}
+	return ticks + (_date * DAY_TICKS) + _date_fract;
+}
+
 /**
  * Create a link graph job from a link graph. The link graph will be copied so
  * that the calculations don't interfer with the normal operations on the
@@ -40,7 +49,8 @@ LinkGraphJob::LinkGraphJob(const LinkGraph &orig) :
 		link_graph(orig),
 		settings(_settings_game.linkgraph),
 		thread(NULL),
-		join_date(_date + _settings_game.linkgraph.recalc_time),
+		join_date_ticks(GetLinkGraphJobJoinDateTicks()),
+		start_date_ticks((_date * DAY_TICKS) + _date_fract),
 		job_completed(false)
 {
 }

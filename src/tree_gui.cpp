@@ -28,6 +28,7 @@
 #include "safeguards.h"
 
 void PlaceTreesRandomly();
+void RemoveAllTrees();
 
 /**
  * The build trees window.
@@ -79,7 +80,7 @@ public:
 			return;
 		}
 
-		if (widget != WID_BT_MANY_RANDOM) return;
+		if (widget != WID_BT_MANY_RANDOM && widget != WID_BT_REMOVE_ALL) return;
 
 		if (_game_mode != GM_EDITOR) {
 			size->width = 0;
@@ -120,6 +121,13 @@ public:
 				PlaceTreesRandomly();
 				MarkWholeScreenDirty();
 				break;
+
+			case WID_BT_REMOVE_ALL: // remove all trees over the landscape
+				if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
+				RemoveAllTrees();
+				MarkWholeScreenDirty();
+				break;
+
 		}
 	}
 
@@ -213,6 +221,8 @@ static const NWidgetPart _nested_build_trees_widgets[] = {
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_TYPE_RANDOM), SetMinimalSize(139, 12), SetDataTip(STR_TREES_RANDOM_TYPE, STR_TREES_RANDOM_TYPE_TOOLTIP),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 1),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BT_MANY_RANDOM), SetMinimalSize(139, 12), SetDataTip(STR_TREES_RANDOM_TREES_BUTTON, STR_TREES_RANDOM_TREES_TOOLTIP),
+				NWidget(NWID_SPACER), SetMinimalSize(0, 1),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BT_REMOVE_ALL), SetMinimalSize(139, 12), SetDataTip(STR_TREES_REMOVE_TREES_BUTTON, STR_TREES_REMOVE_TREES_TOOLTIP),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 2),
 			EndContainer(),
 			NWidget(NWID_SPACER), SetMinimalSize(2, 0),

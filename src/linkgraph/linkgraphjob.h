@@ -54,13 +54,15 @@ private:
 	typedef SmallMatrix<EdgeAnnotation> EdgeAnnotationMatrix;
 
 	friend const SaveLoad *GetLinkGraphJobDesc();
+	friend void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
 	friend class LinkGraphSchedule;
 
 protected:
 	const LinkGraph link_graph;       ///< Link graph to by analyzed. Is copied when job is started and mustn't be modified later.
 	const LinkGraphSettings settings; ///< Copy of _settings_game.linkgraph at spawn time.
 	ThreadObject *thread;             ///< Thread the job is running in or NULL if it's running in the main thread.
-	Date join_date;                   ///< Date when the job is to be joined.
+	DateTicks join_date_ticks;        ///< Date when the job is to be joined.
+	DateTicks start_date_ticks;       ///< Date when the job was started.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
 	EdgeAnnotationMatrix edges;       ///< Extra edge data necessary for link graph calculation.
 	bool job_completed;               ///< Is the job still running. This is accessed by multiple threads and is permitted to be spuriously incorrect.
@@ -268,7 +270,7 @@ public:
 	 * settings have to be brutally const-casted in order to populate them.
 	 */
 	LinkGraphJob() : settings(_settings_game.linkgraph), thread(NULL),
-			join_date(INVALID_DATE), job_completed(false) {}
+			join_date_ticks(INVALID_DATE), start_date_ticks(INVALID_DATE), job_completed(false) {}
 
 	LinkGraphJob(const LinkGraph &orig);
 	~LinkGraphJob();
@@ -279,21 +281,28 @@ public:
 
 	/**
 	 * Check if job is supposed to be finished.
+	 * @param tick_offset Optional number of ticks to add to the current date
 	 * @return True if job should be finished by now, false if not.
 	 */
-	inline bool IsFinished() const { return this->join_date <= _date; }
+	inline bool IsFinished(int tick_offset = 0) const { return this->join_date_ticks <= (_date * DAY_TICKS) + _date_fract + tick_offset; }
 
 	/**
 	 * Get the date when the job should be finished.
 	 * @return Join date.
 	 */
-	inline Date JoinDate() const { return join_date; }
+	inline DateTicks JoinDateTicks() const { return join_date_ticks; }
+
+	/**
+	 * Get the date when the job was started.
+	 * @return Start date.
+	 */
+	inline DateTicks StartDateTicks() const { return start_date_ticks; }
 
 	/**
 	 * Change the join date on date cheating.
 	 * @param interval Number of days to add.
 	 */
-	inline void ShiftJoinDate(int interval) { this->join_date += interval; }
+	inline void ShiftJoinDate(int interval) { this->join_date_ticks += interval * DAY_TICKS; }
 
 	/**
 	 * Get the link graph settings for this component.

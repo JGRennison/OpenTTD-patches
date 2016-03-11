@@ -1265,6 +1265,9 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :When enabled, i
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Ships avoid collisions: {STRING2}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :When enabled, ships try to avoid passing through each other. Requires 90° turns to be forbidden.
 
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Trains from different companies may not crash into each other: {STRING2}
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :This setting is primarily to prevent untrusted players deliberately causing crashes involving other companies' trains in multi-player rail infrastructure sharing games.
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Airports never expire: {STRING2}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Enabling this setting makes each airport type stay available forever after its introduction
 
@@ -1542,6 +1545,10 @@ STR_CONFIG_SETTING_SHARING_FEE_AIR                              :Terminal fee fo
 STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Allow companies in debt to pay sharing fees: {STRING2}
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Can't change this setting, vehicles are using shared infrastructure.
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Can't change this setting, vehicles have orders to destinations of others.
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :Enable competitors to buy and renew trains in depots: {STRING2}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :Enable competitors to buy and renew road vehicles in depots: {STRING2}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Enable competitors to buy and renew ships in depots: {STRING2}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Enable competitors to buy and renew aircraft in hangars: {STRING2}
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Service intervals are in percents: {STRING2}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Choose whether servicing of vehicles is triggered by the time passed since last service or by reliability dropping by a certain percentage of the maximum reliability
@@ -1714,6 +1721,8 @@ STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Update distribu
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Time between subsequent recalculations of the link graph. Each recalculation calculates the plans for one component of the graph. That means that a value X for this setting does not mean the whole graph will be updated every X days. Only some component will. The shorter you set it the more CPU time will be necessary to calculate it. The longer you set it the longer it will take until the cargo distribution starts on new routes.
 STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Take {STRING2}{NBSP}day{P 0:2 "" s} for recalculation of distribution graph
 STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :Time taken for each recalculation of a link graph component. When a recalculation is started, a thread is spawned which is allowed to run for this number of days. The shorter you set this the more likely it is that the thread is not finished when it's supposed to. Then the game stops until it is ("lag"). The longer you set it the longer it takes for the distribution to be updated when routes change.
+STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :Do not scale the linkgraph days by the day length factor: {STRING2}
+STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :When enabled, the linkgraph recalculation interval and time are in units of unscaled, original days, instead of day-length scaled calendar days.
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetric
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetric
@@ -2819,6 +2828,8 @@ STR_TREES_RANDOM_TYPE                                           :{BLACK}Trees of
 STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}Place trees of random type. Shift toggles building/showing cost estimate
 STR_TREES_RANDOM_TREES_BUTTON                                   :{BLACK}Random Trees
 STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK}Plant trees randomly throughout the landscape
+STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Remove all Trees
+STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Remove all Trees over landscape
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Land Generation
@@ -3024,7 +3035,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Company-owned l
 STR_ABOUT_OPENTTD                                               :{WHITE}About OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Save Game
@@ -3781,6 +3792,15 @@ STR_VEHICLE_LIST_MASS_START_LIST_TOOLTIP                        :{BLACK}Click to
 
 STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION                     :{WHITE}Shared orders of {COMMA} Vehicle{P "" s}
 
+STR_VEHICLE_LIST_CHANGE_ORDER_STATION                           :Move order to another station
+STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT                          :Move order to another waypoint
+STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT                       :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :Move order to another depot
+STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Move order to another hangar
+
+STR_VEHICLE_LIST_CREATE_GROUP                                   :Create group from list
+
 # Group window
 STR_GROUP_ALL_TRAINS                                            :All trains
 STR_GROUP_ALL_ROAD_VEHICLES                                     :All road vehicles
@@ -4078,7 +4098,8 @@ STR_VEHICLE_STATUS_LEAVING                                      :{LTBLUE}Leaving
 STR_VEHICLE_STATUS_CRASHED                                      :{RED}Crashed!
 STR_VEHICLE_STATUS_BROKEN_DOWN                                  :{RED}Broken down
 STR_VEHICLE_STATUS_STOPPED                                      :{RED}Stopped
-STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}Broken down - {STRING1}, {LTBLUE} {VELOCITY}
+STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}Broken down - {STRING2}, {LTBLUE} {VELOCITY}
+STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}Broken down - {STRING2}
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL                           :{RED}Stopping, {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}No power
 STR_VEHICLE_STATUS_TRAIN_STUCK                                  :{ORANGE}Waiting for free path
@@ -4117,7 +4138,7 @@ STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Age: {LT
 
 STR_RUNNING                                                     :{LTBLUE}Running
 STR_NEED_REPAIR                                                 :{ORANGE}Train needs repair - max speed reduced to {VELOCITY}
-STR_CURRENT_STATUS                                              :{BLACK}Current status: {STRING2}
+STR_CURRENT_STATUS                                              :{BLACK}Current status: {STRING3}
 
 # The next two need to stay in this order
 STR_VEHICLE_INFO_AGE                                            :{COMMA} year{P "" s} ({COMMA})
@@ -4432,7 +4453,7 @@ STR_TIMETABLE_STARTING_DATE                                     :{BLACK}Start da
 STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}Select a date as starting point of this timetable. Ctrl+Click sets the starting point of this timetable and distributes all vehicles sharing this order evenly based on their relative order, if the order is completely timetabled
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Change Time
-STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Change the amount of time that the highlighted order should take
+STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Change the amount of time that the highlighted order should take (Ctrl+Click sets waiting time for all orders)
 
 STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}Clear Time
 STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Clear the amount of time for the highlighted order
@@ -5566,3 +5587,64 @@ STR_ZONING_STA_CATCH_OPEN                                       :Station catchme
 STR_ZONING_BUL_UNSER                                            :Unserved buildings
 STR_ZONING_IND_UNSER                                            :Unserved industries
 STR_ZONING_TRACERESTRICT                                        :Restricted signals
+
+STR_TMPL_RPL_TITLE                                              :{WHITE}Template Replacement
+STR_TMPL_TEMPLATE_REPLACEMENT                                   :Template Replacement
+STR_TMPL_TRAINS_IN_GROUP                                        :{BLACK}Trains in group
+STR_TMPL_AVAILABLE_TEMPLATES                                    :{BLACK}Available Templates
+STR_TMPL_DEFINE_TEMPLATE                                        :{BLACK}New
+STR_TMPL_EDIT_TEMPLATE                                          :{BLACK}Edit
+STR_TMPL_CREATE_CLONE_VEH                                       :{BLACK}Clone
+STR_TMPL_DELETE_TEMPLATE                                        :{BLACK}Delete
+STR_TMPL_RPL_ALL_TMPL                                           :{BLACK}Replace All Templates
+STR_TMPL_NEW_VEHICLE                                            :{BLACK}New Vehicle
+STR_TMPL_CONFIRM                                                :{BLACK}Ok
+STR_TMPL_CANCEL                                                 :{BLACK}Cancel
+STR_TMPL_NEW                                                    :{BLACK}New Template Vehicle
+STR_TMPL_REFIT                                                  :{BLACK}Refit
+STR_TMPL_GROUP_INFO                                             :{BLACK}Group Info: {ORANGE}
+STR_TMPL_TEMPLATE_INFO                                          :{BLACK}Template Info: {ORANGE}
+STR_TMPL_RPL_START                                              :{BLACK}Start replacing
+STR_TMPL_RPL_STOP                                               :{BLACK}Stop replacing
+STR_TMPL_TRAIN_OVR_VALUE                                        :{TINY_FONT}{BLACK}Train Value: {CURRENCY_SHORT}
+STR_TMPL_TEMPLATE_OVR_VALUE                                     :{TINY_FONT}{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_nogold                              :{TINY_FONT}{BLACK}Buying Cost: {CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_nogoldandcurrency                   :{TINY_FONT}{BLACK}Buying Cost:
+STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont                          :{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_notinyfontandblack                  :Buying Cost: {GOLD}{CURRENCY_LONG}
+STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Free Chain: not runnable!
+STR_TMPL_TEST                                                   :{ORANGE}Test String: {RAW_STRING} {RAW_STRING}
+STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Template in use: {NUM}
+STR_TMP_TEMPLATE_IN_USE                                         :Template is in use
+STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
+STR_TMPL_CREATEGUI_TITLE                                        :{WHITE}Create/Edit Template Vehicle
+STR_TMPL_MAINGUI_DEFINEDGROUPS                                  :{BLACK}Defined Groups for Company
+STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE                               :Uses Template of different rail type
+
+STR_TMPL_SET_USEDEPOT                                           :{BLACK}Use vehicles in depot
+STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Use vehicles inside the depot that are in a neutral and idle state to compose trains on template replacement in order to reduce buying costs
+STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Keep remainders
+STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}After finishing template replacement keep all remaining vehicles from the old train in a neutral and idle state for later use
+STR_TMPL_SET_REFIT                                              :{BLACK}Use Refit
+STR_TMPL_SET_REFIT_TIP                                          :{BLACK}If set, the train will use exactly the cargo refit specified by the template. If not every wagon that is to be newly bought or retrieved from the depot, will *attempt* to be refitted as the old one was. Standard refit if this is impossible.
+
+STR_TMPL_CONFIG_USEDEPOT                                        :use depot
+STR_TMPL_CONFIG_KEEPREMAINDERS                                  :keep rem
+STR_TMPL_CONFIG_REFIT                                           :refit
+
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# trains to replace:
+
+STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
+STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})
+
+STR_TMPL_RPLALLGUI_TITLE                                        :{WHITE}Replace all Templace Vehicles
+STR_TMPL_RPLALLGUI_INSET_TOP                                    :{BLACK}Choose Vehicle Type and Replacement
+STR_TMPL_RPLALLGUI_INSET_TOP_1                                  :{BLACK}Template Engines
+STR_TMPL_RPLALLGUI_INSET_TOP_2                                  :{BLACK}Buyable Engines
+STR_TMPL_RPLALLGUI_INSET_BOTTOM                                 :{BLACK}Current Template List (updated only after replacement)
+STR_TMPL_RPLALLGUI_BUTTON_RPLALL                                :{BLACK}Replace All
+STR_TMPL_RPLALLGUI_BUTTON_APPLY                                 :{BLACK}Apply
+STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}Cancel
+STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}Select a vehicle type from each list and press 'Replace All'. If you are happy with the result displayed in the template list, press 'Apply' to actually apply these changes.
+
+STR_TMPL_CANT_CREATE                                            :{WHITE}Can't create template or virtual vehicle...

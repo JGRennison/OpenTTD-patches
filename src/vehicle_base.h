@@ -28,6 +28,8 @@
 #include <list>
 #include <map>
 
+CommandCost CmdRefitVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
+
 /** Vehicle status bits in #Vehicle::vehstatus. */
 enum VehStatus {
 	VS_HIDDEN          = 0x01, ///< Vehicle is not visible.
@@ -122,6 +124,7 @@ enum GroundVehicleSubtypeFlags {
 	GVSF_ENGINE           = 3, ///< Engine that can be front engine, but might be placed behind another engine (not used for road vehicles).
 	GVSF_FREE_WAGON       = 4, ///< First in a wagon chain (in depot) (not used for road vehicles).
 	GVSF_MULTIHEADED      = 5, ///< Engine is multiheaded (not used for road vehicles).
+	GVSF_VIRTUAL          = 6, ///< Used for virtual trains during template design, it is needed to skip checks for tile or depot status
 };
 
 /** Cached often queried values common to all vehicles. */
@@ -196,12 +199,8 @@ public:
 
 	CargoPayment *cargo_payment;        ///< The cargo payment we're currently in
 
-
 	/* Used for timetabling. */
-	uint32 current_order_time;          ///< How many ticks have passed since this order started.
 	uint32 current_loading_time;        ///< How long loading took. Less than current_order_time if vehicle is early.
-	int32 lateness_counter;             ///< How many ticks late (or early if negative) this vehicle is.
-	Date timetable_start;               ///< When the vehicle is supposed to start the timetable.
 
 	Rect coord;                         ///< NOSAVE: Graphical bounding box of the vehicle, i.e. what to redraw on moves.
 
@@ -214,6 +213,7 @@ public:
 
 	byte breakdown_severity;            ///< severity of the breakdown. Note that lower means more severe
 	byte breakdown_type;                ///< Type of breakdown
+	byte breakdown_chance_factor;       ///< Improved breakdowns: current multiplier for breakdown_chance * 128, used for head vehicle only
 	SpriteID colourmap;                 ///< NOSAVE: cached colour mapping
 
 	/* Related to age and service time */
@@ -546,6 +546,7 @@ public:
 	Money GetDisplayProfitLifetime() const { return ((this->profit_lifetime + this->profit_this_year) >> 8); }
 
 	void SetNext(Vehicle *next);
+	inline void SetFirst(Vehicle *f) { this->first = f; }
 
 	/**
 	 * Get the next vehicle of this vehicle.
@@ -734,10 +735,7 @@ public:
 		this->profit_this_year = src->profit_this_year;
 		this->profit_last_year = src->profit_last_year;
 
-		this->current_order_time = src->current_order_time;
 		this->current_loading_time = src->current_loading_time;
-		this->lateness_counter = src->lateness_counter;
-		this->timetable_start = src->timetable_start;
 
 		if (HasBit(src->vehicle_flags, VF_TIMETABLE_STARTED)) SetBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 		if (HasBit(src->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);

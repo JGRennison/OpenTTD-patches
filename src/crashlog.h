@@ -80,6 +80,16 @@ protected:
 	 */
 	virtual char *LogModules(char *buffer, const char *last) const;
 
+#ifdef USE_SCOPE_INFO
+	/**
+	 * Writes the scope info log to the buffer.
+	 * This may only be called when IsMainThread() returns true
+	 * @param buffer The begin where to write at.
+	 * @param last   The last position in the buffer to write to.
+	 * @return the position of the \c '\0' character after the buffer.
+	 */
+	virtual char *LogScopeInfo(char *buffer, const char *last) const;
+#endif
 
 	char *LogOpenTTDVersion(char *buffer, const char *last) const;
 	char *LogConfiguration(char *buffer, const char *last) const;

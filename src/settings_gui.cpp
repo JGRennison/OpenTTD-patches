@@ -1641,6 +1641,10 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("vehicle.auto_timetable_by_default"));
 			company->Add(new SettingEntry("auto_timetable_separation_rate"));
 			company->Add(new SettingEntry("order_occupancy_smoothness"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[0]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[1]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[2]"));
+			company->Add(new SettingEntry("company.infra_others_buy_in_depot[3]"));
 		}
 
 		SettingsPage *accounting = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCOUNTING));
@@ -1720,6 +1724,7 @@ static SettingsContainer &GetSettingsTree()
 			disasters->Add(new SettingEntry("difficulty.vehicle_breakdowns"));
 			disasters->Add(new SettingEntry("vehicle.improved_breakdowns"));
 			disasters->Add(new SettingEntry("vehicle.plane_crashes"));
+			disasters->Add(new SettingEntry("vehicle.no_train_crash_other_company"));
 		}
 
 		SettingsPage *genworld = main->Add(new SettingsPage(STR_CONFIG_SETTING_GENWORLD));
@@ -1782,6 +1787,7 @@ static SettingsContainer &GetSettingsTree()
 				cdist->Add(new SettingEntry("linkgraph.demand_distance"));
 				cdist->Add(new SettingEntry("linkgraph.demand_size"));
 				cdist->Add(new SettingEntry("linkgraph.short_path_saturation"));
+				cdist->Add(new SettingEntry("linkgraph.recalc_not_scaled_by_daylength"));
 			}
 			SettingsPage *treedist = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_TREES));
 			{

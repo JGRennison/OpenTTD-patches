@@ -299,6 +299,16 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	inline void ClearFreeWagon() { ClrBit(this->subtype, GVSF_FREE_WAGON); }
 
 	/**
+	 * Set a vehicle as a virtual vehicle.
+	 */
+	inline void SetVirtual() { SetBit(this->subtype, GVSF_VIRTUAL); }
+
+	/**
+	 * Clear a vehicle from being a virtual vehicle.
+	 */
+	inline void ClearVirtual() { ClrBit(this->subtype, GVSF_VIRTUAL); }
+
+	/**
 	 * Set a vehicle as a multiheaded engine.
 	 */
 	inline void SetMultiheaded() { SetBit(this->subtype, GVSF_MULTIHEADED); }
@@ -331,6 +341,12 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	 * @return Returns true if the vehicle is a multiheaded engine.
 	 */
 	inline bool IsMultiheaded() const { return HasBit(this->subtype, GVSF_MULTIHEADED); }
+
+	/**
+	* Tell if we are dealing with a virtual vehicle (used for templates).
+	* @return True if the vehicle is a virtual vehicle.
+	*/
+	inline bool IsVirtual() const { return HasBit(this->subtype, GVSF_VIRTUAL); }
 
 	/**
 	 * Tell if we are dealing with the rear end of a multiheaded engine.
@@ -370,22 +386,24 @@ protected:
 		uint spd = this->subspeed + accel;
 		this->subspeed = (byte)spd;
 
+		int tempmax = max_speed;
+
 		/* When we are going faster than the maximum speed, reduce the speed
 		 * somewhat gradually. But never lower than the maximum speed. */
-		int tempmax = ((this->breakdown_ctr == 1) ? this->cur_speed : max_speed);
-
 		if (this->breakdown_ctr == 1) {
 			if (this->breakdown_type == BREAKDOWN_LOW_POWER) {
-				if((this->tick_counter & 0x7) == 0) {
-					if(this->cur_speed > (this->breakdown_severity * max_speed) >> 8) {
+				if ((this->tick_counter & 0x7) == 0 && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
+					if (this->cur_speed > (this->breakdown_severity * max_speed) >> 8) {
 						tempmax = this->cur_speed - (this->cur_speed / 10) - 1;
 					} else {
 						tempmax = (this->breakdown_severity * max_speed) >> 8;
 					}
 				}
-			}
-			if(this->breakdown_type == BREAKDOWN_LOW_SPEED)
+			} else if (this->breakdown_type == BREAKDOWN_LOW_SPEED) {
 				tempmax = min(max_speed, this->breakdown_severity);
+			} else {
+				tempmax = this->cur_speed;
+			}
 		}
 
 		if (this->cur_speed > max_speed) {

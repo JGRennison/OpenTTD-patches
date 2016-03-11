@@ -162,6 +162,21 @@ public:
 	{
 		return !this->success;
 	}
+
+	/**
+	 * @param cmd_msg optional failure string as passed to DoCommand
+	 * @return an allocated string summarising the command result
+	 */
+	char *AllocSummaryMessage(StringID cmd_msg = 0) const;
+
+	/**
+	 * Write a string summarising the command result
+	 * @param buf buffer to write to
+	 * @param last last byte in buffer
+	 * @param cmd_msg optional failure string as passed to DoCommand
+	 * @return the number of bytes written
+	 */
+	int WriteSummaryMessage(char *buf, char *last, StringID cmd_msg = 0) const;
 };
 
 /**
@@ -228,6 +243,7 @@ enum Commands {
 	CMD_SKIP_TO_ORDER,                ///< skip an order to the next of specific one
 	CMD_DELETE_ORDER,                 ///< delete an order
 	CMD_INSERT_ORDER,                 ///< insert a new order
+	CMD_MASS_CHANGE_ORDER,            ///< mass change the target of an order
 
 	CMD_CHANGE_SERVICE_INT,           ///< change the server interval of a vehicle
 
@@ -240,6 +256,8 @@ enum Commands {
 	CMD_DECREASE_LOAN,                ///< decrease the loan from the bank
 
 	CMD_WANT_ENGINE_PREVIEW,          ///< confirm the preview of an engine
+
+	CMD_SET_VEHICLE_UNIT_NUMBER,      ///< sets the unit number of a vehicle
 
 	CMD_RENAME_VEHICLE,               ///< rename a whole vehicle
 	CMD_RENAME_ENGINE,                ///< rename a engine (in the engine list)
@@ -307,16 +325,34 @@ enum Commands {
 
 	CMD_SET_AUTOREPLACE,              ///< set an autoreplace entry
 
+	CMD_TOGGLE_REUSE_DEPOT_VEHICLES,  ///< toggle 'reuse depot vehicles' on template
+	CMD_TOGGLE_KEEP_REMAINING_VEHICLES, ///< toggle 'keep remaining vehicles' on template
+	CMD_TOGGLE_REFIT_AS_TEMPLATE,     ///< toggle 'refit as template' on template
+
+	CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE, ///< Creates a virtual train from a template
+	CMD_VIRTUAL_TRAIN_FROM_TRAIN,     ///< Creates a virtual train from a regular train
+	CMD_DELETE_VIRTUAL_TRAIN,         ///< Delete a virtual train
+	CMD_BUILD_VIRTUAL_RAIL_VEHICLE,   ///< Build a virtual train
+	CMD_REPLACE_TEMPLATE_VEHICLE,     ///< Replace a template vehicle with another one based on a virtual train
+
+	CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN, ///< clone a train and create a new template vehicle based on it
+	CMD_DELETE_TEMPLATE_VEHICLE,      ///< delete a template vehicle
+
+	CMD_ISSUE_TEMPLATE_REPLACEMENT,   ///< issue a template replacement for a vehicle group
+	CMD_DELETE_TEMPLATE_REPLACEMENT,  ///< delete a template replacement from a vehicle group
+
 	CMD_CLONE_VEHICLE,                ///< clone a vehicle
 	CMD_START_STOP_VEHICLE,           ///< start or stop a vehicle
 	CMD_MASS_START_STOP,              ///< start/stop all vehicles (in a depot)
 	CMD_AUTOREPLACE_VEHICLE,          ///< replace/renew a vehicle while it is in a depot
+	CMD_TEMPLATE_REPLACE_VEHICLE,     ///< template replace a vehicle while it is in a depot
 	CMD_DEPOT_SELL_ALL_VEHICLES,      ///< sell all vehicles which are in a given depot
 	CMD_DEPOT_MASS_AUTOREPLACE,       ///< force the autoreplace to take action in a given depot
 
 	CMD_CREATE_GROUP,                 ///< create a new group
 	CMD_DELETE_GROUP,                 ///< delete a group
 	CMD_ALTER_GROUP,                  ///< alter a group
+	CMD_CREATE_GROUP_FROM_LIST,       ///< create and rename a new group from a vehicle list
 	CMD_ADD_VEHICLE_GROUP,            ///< add a vehicle to a group
 	CMD_ADD_SHARED_VEHICLE_GROUP,     ///< add all other shared vehicles to a group which are missing
 	CMD_REMOVE_ALL_VEHICLES_GROUP,    ///< remove all vehicles from a group
@@ -324,6 +360,7 @@ enum Commands {
 
 	CMD_MOVE_ORDER,                   ///< move an order
 	CMD_CHANGE_TIMETABLE,             ///< change the timetable for a vehicle
+	CMD_BULK_CHANGE_TIMETABLE,        ///< change the timetable for all orders of a vehicle
 	CMD_SET_VEHICLE_ON_TIME,          ///< set the vehicle on time feature (timetable)
 	CMD_AUTOFILL_TIMETABLE,           ///< autofill the timetable
 	CMD_AUTOMATE_TIMETABLE,           ///< automate the timetable
