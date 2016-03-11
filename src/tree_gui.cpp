@@ -80,7 +80,7 @@ public:
 			return;
 		}
 
-		if (widget != WID_BT_MANY_RANDOM) return;
+		if (widget != WID_BT_MANY_RANDOM && widget != WID_BT_REMOVE_ALL) return;
 
 		if (_game_mode != GM_EDITOR) {
 			size->width = 0;

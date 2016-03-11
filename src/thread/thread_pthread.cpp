@@ -182,3 +182,15 @@ public:
 {
 	return new ThreadMutex_pthread();
 }
+
+static pthread_t main_thread;
+
+void SetSelfAsMainThread()
+{
+	main_thread = pthread_self();
+}
+
+bool IsMainThread()
+{
+	return main_thread == pthread_self();
+}

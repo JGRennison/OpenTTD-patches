@@ -514,6 +514,7 @@ struct VehicleSettings {
 	bool   pay_for_repair;                   ///< pay for repairing vehicle
 	uint8  repair_cost;                      ///< cost of repairing vehicle
 	bool   ship_collision_avoidance;         ///< ships try to avoid colliding with each other
+	bool   no_train_crash_other_company;     ///< trains cannot crash with trains from other companies
 };
 
 /** Settings related to the economy. */
@@ -596,6 +597,7 @@ struct CompanySettings {
 	VehicleDefaultSettings vehicle;          ///< default settings for vehicles
 	uint8 order_occupancy_smoothness;        ///< percentage smoothness of occupancy measurement changes
 	uint8  auto_timetable_separation_rate;   ///< percentage of auto timetable separation change to apply
+	bool infra_others_buy_in_depot[4];       ///< other companies can buy/autorenew in this companies depots (where infra sharing enabled)
 };
 
 /** All settings together for the game. */

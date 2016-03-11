@@ -28,6 +28,8 @@
 #include <list>
 #include <map>
 
+CommandCost CmdRefitVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
+
 /** Vehicle status bits in #Vehicle::vehstatus. */
 enum VehStatus {
 	VS_HIDDEN          = 0x01, ///< Vehicle is not visible.
@@ -122,6 +124,7 @@ enum GroundVehicleSubtypeFlags {
 	GVSF_ENGINE           = 3, ///< Engine that can be front engine, but might be placed behind another engine (not used for road vehicles).
 	GVSF_FREE_WAGON       = 4, ///< First in a wagon chain (in depot) (not used for road vehicles).
 	GVSF_MULTIHEADED      = 5, ///< Engine is multiheaded (not used for road vehicles).
+	GVSF_VIRTUAL          = 6, ///< Used for virtual trains during template design, it is needed to skip checks for tile or depot status
 };
 
 /** Cached often queried values common to all vehicles. */
@@ -543,6 +546,7 @@ public:
 	Money GetDisplayProfitLifetime() const { return ((this->profit_lifetime + this->profit_this_year) >> 8); }
 
 	void SetNext(Vehicle *next);
+	inline void SetFirst(Vehicle *f) { this->first = f; }
 
 	/**
 	 * Get the next vehicle of this vehicle.

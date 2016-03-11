@@ -37,6 +37,9 @@
 #include "zoom_func.h"
 #include "newgrf_debug.h"
 #include "tracerestrict.h"
+#include "tbtr_template_vehicle_func.h"
+#include "autoreplace_func.h"
+#include "engine_func.h"
 
 #include "table/strings.h"
 #include "table/train_cmd.h"
@@ -308,7 +311,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	if (this->IsFrontEngine()) {
 		this->UpdateAcceleration();
-		SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
+		if (!HasBit(this->subtype, GVSF_VIRTUAL)) SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 		InvalidateWindowData(WC_VEHICLE_REFIT, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateWindowData(WC_VEHICLE_ORDERS, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateNewGRFInspectWindow(GSF_TRAINS, this->index);
@@ -719,7 +722,8 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 					w->IsFreeWagon() &&             ///< A free wagon chain
 					w->engine_type == e->index &&   ///< Same type
 					w->First() != v &&              ///< Don't connect to ourself
-					!(w->vehstatus & VS_CRASHED)) { ///< Not crashed/flooded
+					!(w->vehstatus & VS_CRASHED) && ///< Not crashed/flooded
+					w->owner == v->owner) {         ///< Same owner
 				DoCommand(0, v->index | 1 << 20, w->Last()->index, DC_EXEC, CMD_MOVE_RAIL_VEHICLE);
 				break;
 			}
@@ -735,7 +739,8 @@ static void NormalizeTrainVehInDepot(const Train *u)
 	const Train *v;
 	FOR_ALL_TRAINS(v) {
 		if (v->IsFreeWagon() && v->tile == u->tile &&
-				v->track == TRACK_BIT_DEPOT) {
+				v->track == TRACK_BIT_DEPOT &&
+				v->owner == u->owner) {
 			if (DoCommand(0, v->index | 1 << 20, u->index, DC_EXEC,
 					CMD_MOVE_RAIL_VEHICLE).Failed())
 				break;
@@ -874,7 +879,7 @@ static Train *FindGoodVehiclePos(const Train *src)
 
 	Train *dst;
 	FOR_ALL_TRAINS(dst) {
-		if (dst->IsFreeWagon() && dst->tile == tile && !(dst->vehstatus & VS_CRASHED)) {
+		if (dst->IsFreeWagon() && dst->tile == tile && !(dst->vehstatus & VS_CRASHED) && dst->owner == src->owner) {
 			/* check so all vehicles in the line have the same engine. */
 			Train *t = dst;
 			while (t->engine_type == eng) {
@@ -1223,6 +1228,7 @@ static void NormaliseTrainHead(Train *head)
  * @param p1 various bitstuffed elements
  * - p1 (bit  0 - 19) source vehicle index
  * - p1 (bit      20) move all vehicles following the source vehicle
+ * - p1 (bit      21) this is a virtual vehicle (for creating TemplateVehicles)
  * @param p2 what wagon to put the source wagon AFTER, XXX - INVALID_VEHICLE to make a new line
  * @param text unused
  * @return the cost of this operation or an error
@@ -1287,10 +1293,16 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	if (!move_chain && dst != NULL && dst->IsRearDualheaded() && src == dst->other_multiheaded_part) return CommandCost();
 
 	/* Check if all vehicles in the source train are stopped inside a depot. */
-	if (!src_head->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
+	/* Do this check only if the vehicle to be moved is non-virtual */
+	if (!HasBit(p1, 21)) {
+		if (!src_head->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
+	}
 
 	/* Check if all vehicles in the destination train are stopped inside a depot. */
-	if (dst_head != NULL && !dst_head->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
+	/* Do this check only if the destination vehicle is non-virtual */
+	if (!HasBit(p1, 21)) {
+		if (dst_head != NULL && !dst_head->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
+	}
 
 	/* First make a backup of the order of the trains. That way we can do
 	 * whatever we want with the order and later on easily revert. */
@@ -1399,8 +1411,11 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		if (dst_head != NULL) dst_head->First()->MarkDirty();
 
 		/* We are undoubtedly changing something in the depot and train list. */
-		InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile);
-		InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+		/* But only if the moved vehicle is not virtual */
+		if (!HasBit(src->subtype, GVSF_VIRTUAL)) {
+			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile);
+			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+		}
 	} else {
 		/* We don't want to execute what we're just tried. */
 		RestoreTrainBackup(original_src);
@@ -1483,8 +1498,11 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 		NormaliseTrainHead(new_head);
 
 		/* We are undoubtedly changing something in the depot and train list. */
-		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
-		InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+		/* Unless its a virtual train */
+		if (!HasBit(v->subtype, GVSF_VIRTUAL)) {
+			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+		}
 
 		/* Actually delete the sold 'goods' */
 		delete sell_head;
@@ -2358,6 +2376,12 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 	}
 }
 
+static void UnreserveBridgeTunnelTile(TileIndex tile)
+{
+	SetTunnelBridgeReservation(tile, false);
+	if (IsTunnelBridgeExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitGreen(tile, false);
+}
+
 /**
  * Clear the reservation of \a tile that was just left by a wagon on \a track_dir.
  * @param v %Train owning the reservation.
@@ -2374,10 +2398,16 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
 
 			bool free = TunnelBridgeIsFree(tile, end, v).Succeeded();
-			if (free) {
+			if (HasWormholeSignals(tile)) {
+				UnreserveBridgeTunnelTile(tile);
+				HandleLastTunnelBridgeSignals(tile, end, dir, free);
+				if (_settings_client.gui.show_track_reservation) {
+					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				}
+			} else if (free) {
 				/* Free the reservation only if no other train is on the tiles. */
-				SetTunnelBridgeReservation(tile, false);
-				SetTunnelBridgeReservation(end, false);
+				UnreserveBridgeTunnelTile(tile);
+				UnreserveBridgeTunnelTile(end);
 
 				if (_settings_client.gui.show_track_reservation) {
 					if (IsBridge(tile)) {
@@ -2388,7 +2418,12 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 					}
 				}
 			}
-			if (HasWormholeSignals(tile)) HandleLastTunnelBridgeSignals(tile, end, dir, free);
+		} else if (GetTunnelBridgeDirection(tile) == dir && HasWormholeSignals(tile)) {
+			/* cancelling reservation of entry ramp, due to reverse */
+			UnreserveBridgeTunnelTile(tile);
+			if (_settings_client.gui.show_track_reservation) {
+				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			}
 		}
 	} else if (IsRailStationTile(tile)) {
 		TileIndex new_tile = TileAddByDiagDir(tile, dir);
@@ -2578,7 +2613,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		tile = ft.m_new_tile;
 		cur_td = FindFirstTrackdir(ft.m_new_td_bits);
 
-		UnreserveRailTrack(tile, TrackdirToTrack(cur_td));
+		UnreserveRailTrackdir(tile, cur_td);
 	}
 
 	/* Path invalid. */
@@ -2917,6 +2952,12 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 		}
 	}
 
+	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeExit(v->tile) &&
+			DiagDirToDiagTrackBits(GetTunnelBridgeDirection(v->tile)) == v->track) {
+		// prevent any attempt to reserve the wrong way onto a tunnel/bridge exit
+		return false;
+	}
+
 	Vehicle *other_train = NULL;
 	PBSTileInfo origin = FollowTrainReservation(v, &other_train);
 	/* The path we are driving on is already blocked by some other train.
@@ -3149,6 +3190,11 @@ static TrainMovedChangeSignalEnum TrainMovedChangeSignal(Train* v, TileIndex til
 			if (HasLongReservePbsSignalOnTrackdir(v, tile, trackdir)) return CHANGED_LR_PBS;
 		}
 	}
+	if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeExit(tile) && GetTunnelBridgeDirection(tile) == ReverseDiagDir(dir)) {
+		if (UpdateSignalsOnSegment(tile, dir, GetTileOwner(tile)) == SIGSEG_PBS) {
+			return CHANGED_NORMAL_TO_PBS_BLOCK;
+		}
+	}
 
 	return CHANGED_NOTHING;
 }
@@ -3190,7 +3236,7 @@ uint Train::Crash(bool flooded)
 			if (IsTileType(v->tile, MP_TUNNELBRIDGE)) {
 				/* ClearPathReservation will not free the wormhole exit
 				 * if the train has just entered the wormhole. */
-				SetTunnelBridgeReservation(GetOtherTunnelBridgeEnd(v->tile), false);
+				UnreserveBridgeTunnelTile(GetOtherTunnelBridgeEnd(v->tile));
 			}
 		}
 
@@ -3251,6 +3297,11 @@ static Vehicle *FindTrainCollideEnum(Vehicle *v, void *data)
 
 	/* not a train or in depot */
 	if (v->type != VEH_TRAIN || Train::From(v)->track == TRACK_BIT_DEPOT) return NULL;
+
+	if (_settings_game.vehicle.no_train_crash_other_company) {
+		/* do not crash into trains of another company. */
+		if (v->owner != tcc->v->owner) return NULL;
+	}
 
 	/* get first vehicle now to make most usual checks faster */
 	Train *coll = Train::From(v)->First();
@@ -3384,6 +3435,23 @@ static bool IsToCloseBehindTrain(Vehicle *v, TileIndex tile, bool check_endtile)
 	return false;
 }
 
+static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
+{
+	TileIndex veh_orig = t->tile;
+	t->tile = tile;
+	CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->compatible_railtypes);
+	if (ft.Follow(tile, DiagDirToDiagTrackdir(ReverseDiagDir(GetTunnelBridgeDirection(tile))))) {
+		TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+		if (reserved == TRACKDIR_BIT_NONE) {
+			/* next tile is not reserved, so reserve the exit tile */
+			SetTunnelBridgeReservation(tile, true);
+		}
+	}
+	bool ok = TryPathReserve(t);
+	t->tile = veh_orig;
+	return ok;
+}
+
 /** Simulate signals in tunnel - bridge. */
 static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 {
@@ -3395,8 +3463,20 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 		ToggleBit(t->flags, VRF_REVERSING);
 		return true;
 	}
-	SigSegState seg_state = _settings_game.pf.reserve_paths ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
-	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !TryPathReserve(t))) {
+	SigSegState seg_state = (_settings_game.pf.reserve_paths || IsTunnelBridgePBS(tile)) ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
+	if (seg_state != SIGSEG_PBS) {
+		CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->compatible_railtypes);
+		if (ft.Follow(tile, DiagDirToDiagTrackdir(ReverseDiagDir(GetTunnelBridgeDirection(tile))))) {
+			if (ft.m_new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE) {
+				Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);
+				if (HasPbsSignalOnTrackdir(ft.m_new_tile, td)) {
+					/* immediately after the exit, there is a PBS signal, switch to PBS mode */
+					seg_state = SIGSEG_PBS;
+				}
+			}
+		}
+	}
+	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !CheckTrainStayInWormHolePathReserve(t, tile))) {
 		t->vehstatus |= VS_TRAIN_SLOWING;
 		t->cur_speed = 0;
 		return true;
@@ -3706,7 +3786,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		} else {
 			/* Handle signal simulation on tunnel/bridge. */
 			TileIndex old_tile = TileVirtXY(v->x_pos, v->y_pos);
-			if (old_tile != gp.new_tile && HasWormholeSignals(v->tile) && (v->IsFrontEngine() || v->Next() == NULL)){
+			if (old_tile != gp.new_tile && HasWormholeSignals(v->tile) && (v->IsFrontEngine() || v->Next() == NULL)) {
 				if (old_tile == v->tile) {
 					if (v->IsFrontEngine() && v->force_proceed == 0 && IsTunnelBridgeExit(v->tile)) goto invalid_rail;
 					/* Entered wormhole set counters. */
@@ -3745,6 +3825,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						v->x_pos = gp.x;
 						v->y_pos = gp.y;
 						UpdateSignalsOnSegment(old_tile, INVALID_DIAGDIR, v->owner);
+						UnreserveBridgeTunnelTile(old_tile);
 					}
 				}
 				if (distance == 0) v->load_unload_ticks++;
@@ -4197,6 +4278,16 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 	return true;
 }
 
+/* Calculate the summed up value of all parts of a train */
+Money Train::CalculateCurrentOverallValue() const
+{
+	Money ovr_value = 0;
+	const Train *v = this;
+	do {
+		ovr_value += v->value;
+	} while ((v = v->GetNextVehicle()) != NULL);
+	return ovr_value;
+}
 
 static bool TrainLocoHandler(Train *v, bool mode)
 {
@@ -4540,4 +4631,411 @@ void DeleteVisibleTrain(Train *v)
 	if (crossing != INVALID_TILE) UpdateLevelCrossing(crossing);
 
 	UpdateSignalsInBuffer();
+}
+
+/* Get the pixel-width of the image that is used for the train vehicle
+ * @return:	the image width number in pixel
+ */
+int GetDisplayImageWidth(Train *t, Point *offset)
+{
+	int reference_width = TRAININFO_DEFAULT_VEHICLE_WIDTH;
+	int vehicle_pitch = 0;
+
+	const Engine *e = Engine::Get(t->engine_type);
+	if (e->grf_prop.grffile != NULL && is_custom_sprite(e->u.rail.image_index)) {
+		reference_width = e->grf_prop.grffile->traininfo_vehicle_width;
+		vehicle_pitch = e->grf_prop.grffile->traininfo_vehicle_pitch;
+	}
+
+	if (offset != NULL) {
+		offset->x = reference_width / 2;
+		offset->y = vehicle_pitch;
+	}
+	return t->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH;
+}
+
+Train* CmdBuildVirtualRailWagon(const Engine *e)
+{
+	const RailVehicleInfo *rvi = &e->u.rail;
+
+	Train *v = new Train();
+
+	v->x_pos = 0;
+	v->y_pos = 0;
+
+	v->spritenum = rvi->image_index;
+
+	v->engine_type = e->index;
+	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
+
+	v->direction = DIR_W;
+	v->tile = 0; // INVALID_TILE;
+
+	v->owner = _current_company;
+	v->track = TRACK_BIT_DEPOT;
+	v->vehstatus = VS_HIDDEN | VS_DEFPAL;
+
+	v->SetWagon();
+	v->SetFreeWagon();
+
+	v->cargo_type = e->GetDefaultCargoType();
+	v->cargo_cap = rvi->capacity;
+
+	v->railtype = rvi->railtype;
+
+	v->build_year = _cur_year;
+	v->cur_image = SPR_IMG_QUERY;
+	v->random_bits = VehicleRandomBits();
+
+	v->group_id = DEFAULT_GROUP;
+
+	AddArticulatedParts(v);
+
+	// Make sure we set EVERYTHING to virtual, even articulated parts.
+	for (Train* train_part = v; train_part != NULL; train_part = train_part->Next()) {
+		train_part->SetVirtual();
+	}
+
+	_new_vehicle_id = v->index;
+
+	v->UpdateViewport(true, false);
+
+	v->First()->ConsistChanged(CCF_ARRANGE);
+
+	CheckConsistencyOfArticulatedVehicle(v);
+
+	return v;
+}
+
+Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID &error)
+{
+	if (lax_engine_check) {
+		const Engine *e = Engine::GetIfValid(eid);
+		if (e == NULL || e->type != VEH_TRAIN) {
+			error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN;
+			return NULL;
+		}
+	} else {
+		if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
+			error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN;
+			return NULL;
+		}
+	}
+
+	const Engine* e = Engine::Get(eid);
+	const RailVehicleInfo *rvi = &e->u.rail;
+
+	int num_vehicles = (e->u.rail.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid, false);
+	if (!Train::CanAllocateItem(num_vehicles)) {
+		error = STR_ERROR_TOO_MANY_VEHICLES_IN_GAME;
+		return NULL;
+	}
+
+	if (rvi->railveh_type == RAILVEH_WAGON) {
+		return CmdBuildVirtualRailWagon(e);
+	}
+
+	Train *v = new Train();
+
+	v->x_pos = 0;
+	v->y_pos = 0;
+
+	v->direction = DIR_W;
+	v->tile = 0; // INVALID_TILE;
+	v->owner = _current_company;
+	v->track = TRACK_BIT_DEPOT;
+	v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
+	v->spritenum = rvi->image_index;
+	v->cargo_type = e->GetDefaultCargoType();
+	v->cargo_cap = rvi->capacity;
+	v->last_station_visited = INVALID_STATION;
+
+	v->engine_type = e->index;
+	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
+
+	v->reliability = e->reliability;
+	v->reliability_spd_dec = e->reliability_spd_dec;
+	v->max_age = e->GetLifeLengthInDays();
+
+	v->railtype = rvi->railtype;
+	_new_vehicle_id = v->index;
+
+	v->cur_image = SPR_IMG_QUERY;
+	v->random_bits = VehicleRandomBits();
+
+	v->group_id = DEFAULT_GROUP;
+
+	v->SetFrontEngine();
+	v->SetEngine();
+
+	v->UpdateViewport(true, false);
+
+	if (rvi->railveh_type == RAILVEH_MULTIHEAD) {
+		AddRearEngineToMultiheadedTrain(v);
+	} else {
+		AddArticulatedParts(v);
+	}
+
+	// Make sure we set EVERYTHING to virtual, even articulated parts.
+	for (Train* train_part = v; train_part != NULL; train_part = train_part->Next()) {
+		train_part->SetVirtual();
+	}
+
+	v->ConsistChanged(CCF_ARRANGE);
+
+	CheckConsistencyOfArticulatedVehicle(v);
+
+	return v;
+}
+
+/**
+ * Build a virtual train vehicle.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 the engine ID to build
+ * @param p2 unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	EngineID eid = p1;
+
+	if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
+		return_cmd_error(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
+	}
+
+	bool should_execute = (flags & DC_EXEC) != 0;
+
+	if (should_execute) {
+		StringID err = INVALID_STRING_ID;
+		Train* train = CmdBuildVirtualRailVehicle(eid, false, err);
+
+		if (train == NULL) {
+			return_cmd_error(err);
+		}
+
+		if (text && text[0] == 'R') {
+			CargoID cargo = text[1];
+			if (cargo >= NUM_CARGO) return CMD_ERROR;
+			CargoID default_cargo = Engine::Get(eid)->GetDefaultCargoType();
+			if (default_cargo != cargo) {
+				CommandCost refit_res = CmdRefitVehicle(tile, flags, train->index, cargo, NULL);
+				if (!refit_res.Succeeded()) return refit_res;
+			}
+		}
+	}
+
+	return CommandCost();
+}
+
+/**
+* Replace a vehicle based on a template replacement order.
+* @param tile unused
+* @param flags type of operation
+* @param p1 the ID of the vehicle to replace.
+* @param p2 whether the vehicle should stay in the depot.
+* @param text unused
+* @return the cost of this operation or an error
+*/
+CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID vehicle_id = p1;
+
+	Vehicle* vehicle = Vehicle::GetIfValid(vehicle_id);
+
+	if (vehicle == NULL || vehicle->type != VEH_TRAIN) {
+		return CMD_ERROR;
+	}
+
+	bool should_execute = (flags & DC_EXEC) != 0;
+
+	if (!should_execute) {
+		return CommandCost();
+	}
+
+	Train* incoming = Train::From(vehicle);
+	bool stayInDepot = p2 != 0;
+
+	Train *new_chain = NULL;
+	Train *remainder_chain = NULL;
+	Train *tmp_chain = NULL;
+	TemplateVehicle *tv = GetTemplateVehicleByGroupID(incoming->group_id);
+	EngineID eid = tv->engine_type;
+
+	CommandCost buy(EXPENSES_NEW_VEHICLES);
+	CommandCost move_cost(EXPENSES_NEW_VEHICLES);
+	CommandCost tmp_result(EXPENSES_NEW_VEHICLES);
+
+
+	/* first some tests on necessity and sanity */
+	if (tv == NULL) return buy;
+	bool need_replacement = !TrainMatchesTemplate(incoming, tv);
+	bool need_refit = !TrainMatchesTemplateRefit(incoming, tv);
+	bool use_refit = tv->refit_as_template;
+	CargoID store_refit_ct = CT_INVALID;
+	short store_refit_csubt = 0;
+	// if a train shall keep its old refit, store the refit setting of its first vehicle
+	if (!use_refit) {
+		for (Train *getc = incoming; getc != NULL; getc = getc->GetNextUnit()) {
+			if (getc->cargo_type != CT_INVALID) {
+				store_refit_ct = getc->cargo_type;
+				break;
+			}
+		}
+	}
+
+	// TODO: set result status to success/no success before returning
+	if (!need_replacement) {
+		if (!need_refit || !use_refit) {
+			/* before returning, release incoming train first if 2nd param says so */
+			if (!stayInDepot) incoming->vehstatus &= ~VS_STOPPED;
+			return buy;
+		}
+	} else {
+		CommandCost buyCost = TestBuyAllTemplateVehiclesInChain(tv, tile);
+		if (!buyCost.Succeeded() || !CheckCompanyHasMoney(buyCost)) {
+			if (!stayInDepot) incoming->vehstatus &= ~VS_STOPPED;
+
+			if (!buyCost.Succeeded() && buyCost.GetErrorMessage() != INVALID_STRING_ID) {
+				return buyCost;
+			} else {
+				return_cmd_error(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY);
+			}
+		}
+	}
+
+	/* define replacement behavior */
+	bool reuseDepot = tv->IsSetReuseDepotVehicles();
+	bool keepRemainders = tv->IsSetKeepRemainingVehicles();
+
+	if (need_replacement) {
+		// step 1: generate primary for newchain and generate remainder_chain
+		// 1. primary of incoming might already fit the template
+		//    leave incoming's primary as is and move the rest to a free chain = remainder_chain
+		// 2. needed primary might be one of incoming's member vehicles
+		// 3. primary might be available as orphan vehicle in the depot
+		// 4. we need to buy a new engine for the primary
+		// all options other than 1. need to make sure to copy incoming's primary's status
+		if (eid == incoming->engine_type) {                                                                       // 1
+			new_chain = incoming;
+			remainder_chain = incoming->GetNextUnit();
+			if (remainder_chain) {
+				move_cost.AddCost(CmdMoveRailVehicle(tile, flags, remainder_chain->index | (1 << 20), INVALID_VEHICLE, 0));
+			}
+		} else if ((tmp_chain = ChainContainsEngine(eid, incoming)) && tmp_chain != NULL) {                       // 2
+			// new_chain is the needed engine, move it to an empty spot in the depot
+			new_chain = tmp_chain;
+			move_cost.AddCost(DoCommand(tile, new_chain->index, INVALID_VEHICLE, flags, CMD_MOVE_RAIL_VEHICLE));
+			remainder_chain = incoming;
+		} else if (reuseDepot && (tmp_chain = DepotContainsEngine(tile, eid, incoming)) && tmp_chain != NULL) {   // 3
+			new_chain = tmp_chain;
+			move_cost.AddCost(DoCommand(tile, new_chain->index, INVALID_VEHICLE, flags, CMD_MOVE_RAIL_VEHICLE));
+			remainder_chain = incoming;
+		} else {                                                                                                  // 4
+			tmp_result = DoCommand(tile, eid, 0, flags, CMD_BUILD_VEHICLE);
+			/* break up in case buying the vehicle didn't succeed */
+			if (!tmp_result.Succeeded()) {
+				return tmp_result;
+			}
+			buy.AddCost(tmp_result);
+			new_chain = Train::Get(_new_vehicle_id);
+			/* make sure the newly built engine is not attached to any free wagons inside the depot */
+			move_cost.AddCost(DoCommand(tile, new_chain->index, INVALID_VEHICLE, flags, CMD_MOVE_RAIL_VEHICLE));
+			/* prepare the remainder chain */
+			remainder_chain = incoming;
+		}
+		// If we bought a new engine or reused one from the depot, copy some parameters from the incoming primary engine
+		if (incoming != new_chain && flags == DC_EXEC) {
+			CopyHeadSpecificThings(incoming, new_chain, flags);
+			NeutralizeStatus(incoming);
+
+			// additionally, if we don't want to use the template refit, refit as incoming
+			// the template refit will be set further down, if we use it at all
+			if (!use_refit) {
+				uint32 cb = GetCmdRefitVeh(new_chain);
+				DoCommand(new_chain->tile, new_chain->index, store_refit_ct | store_refit_csubt << 8 | 1 << 16 | (1 << 5), flags, cb);
+			}
+		}
+
+		// step 2: fill up newchain according to the template
+		// foreach member of template (after primary):
+		// 1. needed engine might be within remainder_chain already
+		// 2. needed engine might be orphaned within the depot (copy status)
+		// 3. we need to buy (again)                           (copy status)
+		TemplateVehicle *cur_tmpl = tv->GetNextUnit();
+		Train *last_veh = new_chain;
+		while (cur_tmpl) {
+			// 1. engine contained in remainder chain
+			if ((tmp_chain = ChainContainsEngine(cur_tmpl->engine_type, remainder_chain)) && tmp_chain != NULL)	{
+				// advance remainder_chain (if necessary) to not lose track of it
+				if (tmp_chain == remainder_chain) {
+					remainder_chain = remainder_chain->GetNextUnit();
+				}
+				move_cost.AddCost(CmdMoveRailVehicle(tile, flags, tmp_chain->index, last_veh->index, 0));
+			}
+			// 2. engine contained somewhere else in the depot
+			else if (reuseDepot && (tmp_chain = DepotContainsEngine(tile, cur_tmpl->engine_type, new_chain)) && tmp_chain != NULL) {
+				move_cost.AddCost(CmdMoveRailVehicle(tile, flags, tmp_chain->index, last_veh->index, 0));
+			}
+			// 3. must buy new engine
+			else {
+				tmp_result = DoCommand(tile, cur_tmpl->engine_type, 0, flags, CMD_BUILD_VEHICLE);
+				if (!tmp_result.Succeeded()) {
+					return tmp_result;
+				}
+				buy.AddCost(tmp_result);
+				tmp_chain = Train::Get(_new_vehicle_id);
+				move_cost.AddCost(CmdMoveRailVehicle(tile, flags, tmp_chain->index, last_veh->index, 0));
+			}
+			// TODO: is this enough ? might it be that we bought a new wagon here and it now has std refit ?
+			if (need_refit && flags == DC_EXEC) {
+				if (use_refit) {
+					uint32 cb = GetCmdRefitVeh(tmp_chain);
+					DoCommand(tmp_chain->tile, tmp_chain->index, cur_tmpl->cargo_type | (cur_tmpl->cargo_subtype << 8) | (1 << 16) | (1 << 5), flags, cb);
+				} else {
+					uint32 cb = GetCmdRefitVeh(tmp_chain);
+					DoCommand(tmp_chain->tile, tmp_chain->index, store_refit_ct | (store_refit_csubt << 8) | (1 << 16) | (1 << 5), flags, cb);
+				}
+			}
+			cur_tmpl = cur_tmpl->GetNextUnit();
+			last_veh = tmp_chain;
+		}
+	}
+	/* no replacement done */
+	else {
+		new_chain = incoming;
+	}
+	/// step 3: reorder and neutralize the remaining vehicles from incoming
+	// wagons remaining from remainder_chain should be filled up in as few freewagonchains as possible
+	// each locos might be left as singular in the depot
+	// neutralize each remaining engine's status
+
+	// refit, only if the template option is set so
+	if (use_refit && (need_refit || need_replacement)) {
+		CmdRefitTrainFromTemplate(new_chain, tv, flags);
+	}
+
+	if (new_chain && remainder_chain) {
+		for (Train *ct = remainder_chain; ct; ct = ct->GetNextUnit()) {
+			TransferCargoForTrain(ct, new_chain);
+		}
+	}
+
+	// point incoming to the newly created train so that starting/stopping from the calling function can be done
+	incoming = new_chain;
+	if (!stayInDepot && flags == DC_EXEC) {
+		new_chain->vehstatus &= ~VS_STOPPED;
+	}
+
+	if (remainder_chain && keepRemainders && flags == DC_EXEC) {
+		BreakUpRemainders(remainder_chain);
+	} else if (remainder_chain) {
+		buy.AddCost(DoCommand(tile, remainder_chain->index | (1 << 20), 0, flags, CMD_SELL_VEHICLE));
+	}
+
+	/* Redraw main gui for changed statistics */
+	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
+
+	return buy;
 }

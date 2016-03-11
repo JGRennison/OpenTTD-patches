@@ -28,6 +28,7 @@ const SaveLoad *GetBaseStationDescription();
 
 void AfterLoadVehicles(bool part_of_load);
 void FixupTrainLengths();
+void AfterLoadTemplateVehicles();
 void AfterLoadStations();
 void AfterLoadRoadStops();
 void AfterLoadLabelMaps();
@@ -47,6 +48,8 @@ void ConnectMultiheadedTrains();
 
 Engine *GetTempDataEngine(EngineID index);
 void CopyTempEngineData();
+
+void AfterLoadTemplateVehiclesUpdateImage();
 
 extern int32 _saved_scrollpos_x;
 extern int32 _saved_scrollpos_y;

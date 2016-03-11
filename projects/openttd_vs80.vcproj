@@ -435,6 +435,38 @@
 			Name="Source Files"
 			>
 			<File
+				RelativePath=".\..\src\tbtr_template_gui_main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tbtr_template_gui_create.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tbtr_template_vehicle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tbtr_template_vehicle_func.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tbtr_template_gui_main.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tbtr_template_gui_create.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tbtr_template_vehicle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\tbtr_template_vehicle_func.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\airport.cpp"
 				>
 			</File>
@@ -2880,6 +2912,14 @@
 			</File>
 			<File
 				RelativePath=".\..\src\saveload\extended_ver_sl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\saveload\tbtr_template_replacement_sl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\saveload\tbtr_template_veh_sl.cpp"
 				>
 			</File>
 		</Filter>

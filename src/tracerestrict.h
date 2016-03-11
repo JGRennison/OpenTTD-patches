@@ -520,7 +520,7 @@ static inline Track GetTraceRestrictRefIdTrack(TraceRestrictRefId ref)
 
 void TraceRestrictSetIsSignalRestrictedBit(TileIndex t);
 void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProgram *prog);
-void TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref);
+bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref);
 
 TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool create_new);
 

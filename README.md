@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.11.0
+## JGR's Patchpack version 0.12.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -49,7 +49,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Vehicles visible in tunnels (transparency setting): [imported](http://dev.openttdcoop.org/projects/clientpatches/repository/changes/VehicelsInTunnels.diff)
 
-* Signals in tunnels and on bridges: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=41260)
+* Signals in tunnels and on bridges: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=41260)  
+  Modifications include support for PBS and setting the semaphore/electric type of signals.
 
 * Measurement tools: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49212)
 
@@ -69,13 +70,16 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Auto timetabling: Bias timetable adjustment to favour negative adjustments; this is to avoid positive feedback between congestion delays and increased timetable length. Reduce jam detection threshold.  
   * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Add a company setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
   * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
-  * Add a company setting to enable automatic timetabling for new vehicles.
+  * Add a company setting to enable automatic timetabling for new vehicles.  
+  * Allow changing the timetabled waiting time for all of a vehicle's orders at once.
 
 * Vehicle repair cost: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=45642)
 
 * Enhanced viewport: [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=53394)
 
-* Infrastructure sharing: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)
+* Infrastructure sharing: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42254)  
+  * Add company settings to enable competitors to buy/renew vehicles in this company's depots.  
+  * Add setting to control whether trains can crash with trains owned by other companies.
 
 * Rating in town label: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=42598)
 
@@ -137,6 +141,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Remove all trees in scenario editor: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49326) (added in v0.11.0)
 
 * Add a menu item to the vehicle list to change order target (added in v0.11.0)
+
+* Template-based train replacement [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=58904) (added in v0.12.0)
 
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  

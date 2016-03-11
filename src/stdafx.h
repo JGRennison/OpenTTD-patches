@@ -444,8 +444,17 @@ assert_compile(SIZE_MAX >= UINT32_MAX);
 	#define CloseConnection OTTD_CloseConnection
 #endif /* __APPLE__ */
 
+#ifdef __GNUC__
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+#else
+#define likely(x)       (x)
+#define unlikely(x)     (x)
+#endif
+
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
+void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...) WARN_FORMAT(4, 5);
 #define NOT_REACHED() error("NOT_REACHED triggered at line %i of %s", __LINE__, __FILE__)
 
 /* For non-debug builds with assertions enabled use the special assertion handler:
@@ -454,12 +463,15 @@ void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
  */
 #if (defined(_MSC_VER) && defined(NDEBUG) && defined(WITH_ASSERT)) || (!defined(_MSC_VER) && !defined(NDEBUG) && !defined(_DEBUG))
 	#undef assert
-	#define assert(expression) if (!(expression)) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
+	#define assert(expression) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
 #endif
 
 /* Asserts are enabled if NDEBUG isn't defined, or if we are using MSVC and WITH_ASSERT is defined. */
 #if !defined(NDEBUG) || (defined(_MSC_VER) && defined(WITH_ASSERT))
 	#define OTTD_ASSERT
+	#define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, __VA_ARGS__);
+#else
+	#define assert_msg(expression, ...)
 #endif
 
 #if defined(MORPHOS) || defined(__NDS__) || defined(__DJGPP__)
@@ -542,12 +554,10 @@ static inline void free(const void *ptr)
 	#define PREFETCH_NTA(address)
 #endif
 
-#ifdef __GNUC__
-#define likely(x)       __builtin_expect(!!(x), 1)
-#define unlikely(x)     __builtin_expect(!!(x), 0)
-#else
-#define likely(x)       (x)
-#define unlikely(x)     (x)
+#if !defined(DISABLE_SCOPE_INFO) && (__cplusplus >= 201103L || defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__))
+#define USE_SCOPE_INFO
 #endif
+
+#define SINGLE_ARG(...) __VA_ARGS__
 
 #endif /* STDAFX_H */

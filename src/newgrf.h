@@ -197,4 +197,6 @@ StringID MapGRFStringID(uint32 grfid, StringID str);
 void ShowNewGRFError();
 int CountSelectedGRFs(GRFConfig *grfconf);
 
+struct TemplateVehicle;
+
 #endif /* NEWGRF_H */

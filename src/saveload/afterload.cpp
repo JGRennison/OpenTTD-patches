@@ -839,6 +839,9 @@ bool AfterLoadGame()
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
 
+	/* Update template vehicles */
+	AfterLoadTemplateVehicles();
+
 	/* Make sure there is an AI attached to an AI company */
 	{
 		Company *c;
@@ -3178,6 +3181,18 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 1)) {
+		/* set the semaphore bit to match what it would have been in v1 */
+		/* clear the PBS bit, update the end signal state */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && HasWormholeSignals(t)) {
+				SetTunnelBridgeSemaphore(t, _cur_year < _settings_client.gui.semaphore_build_before);
+				SetTunnelBridgePBS(t, false);
+				UpdateSignalsOnSegment(t, INVALID_DIAGDIR, GetTileOwner(t));
+			}
+		}
+	}
+
 	/* Station acceptance is some kind of cache */
 	if (IsSavegameVersionBefore(127)) {
 		Station *st;
@@ -3213,6 +3228,7 @@ bool AfterLoadGame()
 	AfterLoadLinkGraphs();
 
 	AfterLoadTraceRestrict();
+	AfterLoadTemplateVehiclesUpdateImage();
 
 	/* Show this message last to avoid covering up an error message if we bail out part way */
 	switch (gcf_res) {
@@ -3258,4 +3274,5 @@ void ReloadNewGRFData()
 	/* redraw the whole screen */
 	MarkWholeScreenDirty();
 	CheckTrainsLengths();
+	AfterLoadTemplateVehiclesUpdateImage();
 }

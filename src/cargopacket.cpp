@@ -658,6 +658,7 @@ uint VehicleCargoList::Unload(uint max_move, StationCargoList *dest, CargoPaymen
 uint VehicleCargoList::Truncate(uint max_move)
 {
 	max_move = min(this->count, max_move);
+	if (max_move > this->ActionCount(MTA_KEEP)) this->KeepAll();
 	this->PopCargo(CargoRemoval<VehicleCargoList>(this, max_move));
 	return max_move;
 }

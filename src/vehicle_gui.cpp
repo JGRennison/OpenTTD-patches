@@ -39,6 +39,7 @@
 #include "infrastructure_func.h"
 #include "tilehighlight_func.h"
 #include "train.h"
+#include "tbtr_template_gui_main.h"
 #include "zoom_func.h"
 
 #include "safeguards.h"
@@ -150,11 +151,14 @@ void BaseVehicleListWindow::BuildVehicleList()
  * @param show_group If true include group-related stuff.
  * @return Required size.
  */
-Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bool show_group, StringID change_order_str)
+Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str)
 {
 	Dimension d = {0, 0};
 
 	if (show_autoreplace) d = maxdim(d, GetStringBoundingBox(STR_VEHICLE_LIST_REPLACE_VEHICLES));
+	if (show_autoreplace && show_template_replace) {
+		d = maxdim(d, GetStringBoundingBox(STR_TMPL_TEMPLATE_REPLACEMENT));
+	}
 	d = maxdim(d, GetStringBoundingBox(STR_VEHICLE_LIST_SEND_FOR_SERVICING));
 	d = maxdim(d, GetStringBoundingBox(this->vehicle_depot_name[this->vli.vtype]));
 
@@ -167,6 +171,8 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
 		d = maxdim(d, GetStringBoundingBox(change_order_str));
 	}
 
+	d = maxdim(d, GetStringBoundingBox(STR_VEHICLE_LIST_CREATE_GROUP));
+
 	return d;
 }
 
@@ -176,11 +182,14 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
  * @param show_group If true include group-related stuff.
  * @return Itemlist for dropdown
  */
-DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group, StringID change_order_str)
+DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str)
 {
 	DropDownList *list = new DropDownList();
 
 	if (show_autoreplace) *list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, false);
+	if (show_autoreplace && show_template_replace) {
+		*list->Append() = new DropDownListStringItem(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, false);
+	}
 	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, false);
 	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, false);
 
@@ -191,6 +200,8 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 	if (change_order_str != 0) {
 		*list->Append() = new DropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, false);
 	}
+
+	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, false);
 
 	return list;
 }
@@ -440,6 +451,7 @@ struct RefitWindow : public Window {
 	VehicleID selected_vehicle;  ///< First vehicle in the current selection.
 	uint8 num_vehicles;          ///< Number of selected vehicles.
 	bool auto_refit;             ///< Select cargo for auto-refitting.
+	bool is_virtual_train;       ///< TemplateReplacement, whether the selected vehicle is virtual
 
 	/**
 	 * Collects all (cargo, subcargo) refit options of a vehicle chain.
@@ -621,11 +633,12 @@ struct RefitWindow : public Window {
 		return &l[this->sel[1]];
 	}
 
-	RefitWindow(WindowDesc *desc, const Vehicle *v, VehicleOrderID order, bool auto_refit) : Window(desc)
+	RefitWindow(WindowDesc *desc, const Vehicle *v, VehicleOrderID order, bool auto_refit, bool is_virtual) : Window(desc)
 	{
 		this->sel[0] = -1;
 		this->sel[1] = 0;
 		this->auto_refit = auto_refit;
+		this->is_virtual_train = is_virtual;
 		this->order = order;
 		this->CreateNestedTree();
 
@@ -1015,9 +1028,12 @@ struct RefitWindow : public Window {
 
 					if (this->order == INVALID_VEH_ORDER_ID) {
 						bool delete_window = this->selected_vehicle == v->index && this->num_vehicles == UINT8_MAX;
-						if (DoCommandP(v->tile, this->selected_vehicle, this->cargo->cargo | this->cargo->subtype << 8 | this->num_vehicles << 16, GetCmdRefitVeh(v)) && delete_window) delete this;
+						if (DoCommandP(v->tile, this->selected_vehicle, this->cargo->cargo | this->cargo->subtype << 8 | this->num_vehicles << 16 | this->is_virtual_train << 5,
+								GetCmdRefitVeh(v)) && delete_window) {
+							delete this;
+						}
 					} else {
-						if (DoCommandP(v->tile, v->index, this->cargo->cargo | this->order << 16, CMD_ORDER_REFIT)) delete this;
+						if (DoCommandP(v->tile, v->index, this->cargo->cargo | this->cargo->subtype << 8 | this->order << 16 | this->is_virtual_train << 5, CMD_ORDER_REFIT)) delete this;
 					}
 				}
 				break;
@@ -1098,10 +1114,10 @@ static WindowDesc _vehicle_refit_desc(
  * @param parent the parent window of the refit window
  * @param auto_refit Choose cargo for auto-refitting
  */
-void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit)
+void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit, bool is_virtual_train)
 {
 	DeleteWindowById(WC_VEHICLE_REFIT, v->index);
-	RefitWindow *w = new RefitWindow(&_vehicle_refit_desc, v, order, auto_refit);
+	RefitWindow *w = new RefitWindow(&_vehicle_refit_desc, v, order, auto_refit, is_virtual_train);
 	w->parent = parent;
 }
 
@@ -1614,7 +1630,8 @@ public:
 			}
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
-				Dimension d = this->GetActionDropdownSize(this->vli.type == VL_STANDARD, false, this->GetChangeOrderStringID());
+				Dimension d = this->GetActionDropdownSize(this->vli.type == VL_STANDARD, false,
+						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID());
 				d.height += padding.height;
 				d.width  += padding.width;
 				*size = maxdim(*size, d);
@@ -1740,7 +1757,7 @@ public:
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
 				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier(this->window_number).type == VL_STANDARD, false,
-						this->GetChangeOrderStringID());
+						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID());
 				ShowDropDownList(this, list, 0, WID_VL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
@@ -1765,6 +1782,11 @@ public:
 					case ADI_REPLACE: // Replace window
 						ShowReplaceGroupVehicleWindow(ALL_GROUP, this->vli.vtype);
 						break;
+					case ADI_TEMPLATE_REPLACE:
+						if (vli.vtype == VEH_TRAIN) {
+							ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
+						}
+						break;
 					case ADI_SERVICE: // Send for servicing
 					case ADI_DEPOT: // Send to Depots
 						DoCommandP(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : (DepotCommand)0), this->window_number, GetCmdSendToDepot(this->vli.vtype));
@@ -1774,12 +1796,21 @@ public:
 						SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT, this);
 						break;
 
+					case ADI_CREATE_GROUP:
+						ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+						break;
+
 					default: NOT_REACHED();
 				}
 				break;
 			default: NOT_REACHED();
 		}
 		this->SetDirty();
+	}
+
+	virtual void OnQueryTextFinished(char *str)
+	{
+		DoCommandP(0, this->window_number, 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), NULL, str);
 	}
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)

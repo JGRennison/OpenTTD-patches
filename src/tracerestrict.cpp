@@ -66,11 +66,6 @@ INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
 TraceRestrictMapping _tracerestrictprogram_mapping;
 
 /**
- * Default value for pathfinder penalty instructions
- */
-static const uint16 _tracerestrict_penalty_item_default_value = 500;
-
-/**
  * List of pre-defined pathfinder penalty values
  * This is indexed by TraceRestrictPathfinderPenaltyPresetIndex
  */
@@ -663,8 +658,9 @@ void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProg
 
 /**
  * Remove a program mapping
+ * @return true if a mapping was actually removed
  */
-void TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
+bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 {
 	TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.find(ref);
 	if (iter != _tracerestrictprogram_mapping.end()) {
@@ -694,6 +690,9 @@ void TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 				}
 			}
 		}
+		return true;
+	} else {
+		return false;
 	}
 }
 
@@ -733,8 +732,9 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 {
 	TraceRestrictRefId ref = MakeTraceRestrictRefId(tile, track);
-	TraceRestrictRemoveProgramMapping(ref);
+	bool removed = TraceRestrictRemoveProgramMapping(ref);
 	DeleteWindowById(WC_TRACE_RESTRICT, ref);
+	if (removed) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
 
 /**
@@ -1017,6 +1017,10 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 		if (ret.Failed()) {
 			return ret;
 		}
+	}
+
+	if (type != TRDCT_PROG_RESET && !TraceRestrictProgram::CanAllocateItem()) {
+		return CMD_ERROR;
 	}
 
 	if (!(flags & DC_EXEC)) {

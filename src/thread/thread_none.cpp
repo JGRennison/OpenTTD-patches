@@ -33,3 +33,7 @@ public:
 {
 	return new ThreadMutex_None();
 }
+
+void SetSelfAsMainThread() { }
+
+bool IsMainThread() { return true; }
