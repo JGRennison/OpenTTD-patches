@@ -1716,6 +1716,11 @@ STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Wert der
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Schließe benachbarte Bahnübergänge: {STRING}
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Schließt alle Bahnübergänge benachbarter paralleler Gleise wenn eines oder mehrere der Gleise befahren werden
 
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Zahle für Reparaturen: {STRING}
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Zahle für die Reparatur der Fahrzeuge nach Pannen.
+STR_CONFIG_SETTING_REPAIR_COST                                  :Reparaturkosten: 1/{STRING} der Beschaffungskosten
+STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Kosten der Reparatur nach Pannen.
+
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Fehler in der Konfigurations-Datei...
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... Fehler im Array '{STRING}'
