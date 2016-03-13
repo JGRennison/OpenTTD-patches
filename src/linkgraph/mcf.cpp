@@ -301,6 +301,12 @@ struct AnnoSetAllocator {
 	}
 
 	typedef Ttype value_type;
+	typedef Ttype* pointer;
+	typedef const Ttype* const_pointer;
+	typedef Ttype& reference;
+	typedef const Ttype& const_reference;
+	typedef std::size_t size_type;
+	typedef std::ptrdiff_t difference_type;
 
 	template<typename Tother>
 	struct rebind {
