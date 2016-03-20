@@ -170,7 +170,7 @@ struct TimetableWindow : Window {
 	Scrollbar *vscroll;
 	bool query_is_speed_query; ///< The currently open query window is a speed query and not a time query.
 	bool set_start_date_all;   ///< Set start date using minutes text entry: this is a set all vehicle (ctrl-click) action
-	bool set_wait_time_all;    ///< Set wait time for all timetable entries (ctrl-click) action
+	bool change_timetable_all; ///< Set wait time or speed for all timetable entries (ctrl-click) action
 
 	TimetableWindow(WindowDesc *desc, WindowNumber window_number) :
 			Window(desc),
@@ -602,7 +602,7 @@ struct TimetableWindow : Window {
 				}
 
 				this->query_is_speed_query = false;
-				this->set_wait_time_all = (order != NULL) && (selected % 2 == 0) && _ctrl_pressed;
+				this->change_timetable_all = (order != NULL) && (selected % 2 == 0) && _ctrl_pressed;
 				ShowQueryString(current, STR_TIMETABLE_CHANGE_TIME, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				break;
 			}
@@ -623,19 +623,20 @@ struct TimetableWindow : Window {
 				}
 
 				this->query_is_speed_query = true;
+				this->change_timetable_all = (order != NULL) && _ctrl_pressed;
 				ShowQueryString(current, STR_TIMETABLE_CHANGE_SPEED, 31, this, CS_NUMERAL, QSF_NONE);
 				break;
 			}
 
 			case WID_VT_CLEAR_TIME: { // Clear waiting time.
 				uint32 p1 = PackTimetableArgs(v, this->sel_index, false, true);
-				DoCommandP(0, p1, 0, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				DoCommandP(0, p1, 0, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
 
 			case WID_VT_CLEAR_SPEED: { // Clear max speed button.
 				uint32 p1 = PackTimetableArgs(v, this->sel_index, true);
-				DoCommandP(0, p1, UINT16_MAX, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				DoCommandP(0, p1, UINT16_MAX, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
 
@@ -693,7 +694,7 @@ struct TimetableWindow : Window {
 
 				uint32 p2 = minu(val, UINT16_MAX);
 
-				DoCommandP(0, p1, p2, (this->set_wait_time_all ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				DoCommandP(0, p1, p2, (this->change_timetable_all ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
 
