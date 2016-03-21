@@ -250,6 +250,8 @@ struct SpecializedStation : public BaseStation {
 	}
 };
 
-#define FOR_ALL_BASE_STATIONS_OF_TYPE(name, var) FOR_ALL_ITEMS_FROM(name, station_index, var, 0) if (name::IsExpected(var))
+#define FOR_ALL_BASE_STATIONS_OF_TYPE(name, var) \
+	for (size_t station_index = 0; var = NULL, station_index < name::GetPoolSize(); station_index++) \
+		if ((var = name::GetIfValid(station_index)) != NULL)
 
 #endif /* BASE_STATION_BASE_H */

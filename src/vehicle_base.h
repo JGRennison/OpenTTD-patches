@@ -1170,7 +1170,9 @@ struct SpecializedVehicle : public Vehicle {
  * @param name The type of vehicle to iterate over.
  * @param var  The variable used to iterate over.
  */
-#define FOR_ALL_VEHICLES_OF_TYPE(name, var) FOR_ALL_ITEMS_FROM(name, vehicle_index, var, 0) if (var->type == name::EXPECTED_TYPE)
+#define FOR_ALL_VEHICLES_OF_TYPE(name, var) \
+	for (size_t vehicle_index = 0; var = NULL, vehicle_index < name::GetPoolSize(); vehicle_index++) \
+		if ((var = name::GetIfValid(vehicle_index)) != NULL)
 
 /** Generates sequence of free UnitID numbers */
 struct FreeUnitIDGenerator {
