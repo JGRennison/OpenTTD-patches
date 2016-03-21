@@ -4,6 +4,7 @@
 #include "../tbtr_template_vehicle_func.h"
 #include "../train.h"
 #include "../core/backup_type.hpp"
+#include "../core/random_func.hpp"
 
 #include "saveload.h"
 
@@ -101,6 +102,9 @@ void AfterLoadTemplateVehiclesUpdateImage()
 {
 	TemplateVehicle *tv;
 
+	SavedRandomSeeds saved_seeds;
+	SaveRandomSeeds(&saved_seeds);
+
 	FOR_ALL_TEMPLATES(tv) {
 		if (tv->Prev() == NULL) {
 			Backup<CompanyByte> cur_company(_current_company, tv->owner, FILE_LINE);
@@ -128,6 +132,8 @@ void AfterLoadTemplateVehiclesUpdateImage()
 			cur_company.Restore();
 		}
 	}
+
+	RestoreRandomSeeds(saved_seeds);
 }
 
 extern const ChunkHandler _template_vehicle_chunk_handlers[] = {
