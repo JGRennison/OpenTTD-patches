@@ -2333,6 +2333,8 @@ void ViewportMapDraw(const ViewPort * const vp)
 	assert(vp != NULL);
 	Blitter * const blitter = BlitterFactory::GetCurrentBlitter();
 
+	SmallMapWindow::RebuildColourIndexIfNecessary();
+
 	/* Index of colour: _green_map_heights[] contains blocks of 4 colours, say ABCD
 	 * For a XXXY colour block to render nicely, follow the model:
 	 *   line 1: ABCDABCDABCD
