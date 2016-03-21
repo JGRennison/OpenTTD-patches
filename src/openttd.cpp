@@ -1299,6 +1299,7 @@ void CheckCaches(bool force_check)
 		free(grf_cache);
 		free(veh_cache);
 		free(gro_cache);
+		free(air_cache);
 		free(tra_cache);
 		free(veh_old);
 	}
