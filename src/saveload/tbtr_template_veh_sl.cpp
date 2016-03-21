@@ -3,6 +3,7 @@
 #include "../tbtr_template_vehicle.h"
 #include "../tbtr_template_vehicle_func.h"
 #include "../train.h"
+#include "../core/backup_type.hpp"
 
 #include "saveload.h"
 
@@ -102,6 +103,7 @@ void AfterLoadTemplateVehiclesUpdateImage()
 
 	FOR_ALL_TEMPLATES(tv) {
 		if (tv->Prev() == NULL) {
+			Backup<CompanyByte> cur_company(_current_company, tv->owner, FILE_LINE);
 			StringID err;
 			Train* t = VirtualTrainFromTemplateVehicle(tv, err);
 			if (t != NULL) {
@@ -123,6 +125,7 @@ void AfterLoadTemplateVehiclesUpdateImage()
 				}
 				delete t;
 			}
+			cur_company.Restore();
 		}
 	}
 }

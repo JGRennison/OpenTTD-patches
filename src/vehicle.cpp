@@ -653,6 +653,7 @@ uint CountVehiclesInChain(const Vehicle *v)
  */
 bool Vehicle::IsEngineCountable() const
 {
+	if (HasBit(this->subtype, GVSF_VIRTUAL)) return false;
 	switch (this->type) {
 		case VEH_AIRCRAFT: return Aircraft::From(this)->IsNormalAircraft(); // don't count plane shadows and helicopter rotors
 		case VEH_TRAIN:
