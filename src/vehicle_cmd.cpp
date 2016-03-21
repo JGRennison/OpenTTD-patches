@@ -960,6 +960,10 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 		return CMD_ERROR;
 	}
 
+	if (tv->owner != _current_company) {
+		return CMD_ERROR;
+	}
+
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
@@ -980,6 +984,8 @@ Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err)
 {
 	CommandCost c;
 	Train *tmp, *head, *tail;
+
+	assert(tv->owner == _current_company);
 
 	head = CmdBuildVirtualRailVehicle(tv->engine_type, true, err);
 	if (!head) return NULL;
