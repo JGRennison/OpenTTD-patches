@@ -206,6 +206,8 @@ class CrashLogUnix : public CrashLog {
 		}
 		buffer += seprintf(buffer, last, "\n");
 
+		close(pipefd[0]); /* close read end */
+
 		int status;
 		int wait_ret = waitpid(pid, &status, 0);
 		if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {

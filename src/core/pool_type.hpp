@@ -110,7 +110,7 @@ struct Pool : PoolBase {
 	 */
 	inline Titem *Get(size_t index)
 	{
-		assert(index < this->first_unused);
+		assert_msg(index < this->first_unused, "index: %zu, first_unused: %zu, name: %s", index, this->first_unused, this->name);
 		return this->data[index];
 	}
 
@@ -166,7 +166,7 @@ struct Pool : PoolBase {
 		{
 			if (p == NULL) return;
 			Titem *pn = (Titem *)p;
-			assert(pn == Tpool->Get(pn->index));
+			assert_msg(pn == Tpool->Get(pn->index), "name: %s", Tpool->name);
 			Tpool->FreeItem(pn->index);
 		}
 
@@ -200,7 +200,7 @@ struct Pool : PoolBase {
 				 * memory are the same (because of possible inheritance).
 				 * Use { size_t index = item->index; delete item; new (index) item; }
 				 * instead to make sure destructor is called and no memory leaks. */
-				assert(ptr != Tpool->data[i]);
+				assert_msg(ptr != Tpool->data[i], "name: %s", Tpool->name);
 			}
 			return ptr;
 		}
