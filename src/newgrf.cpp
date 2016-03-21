@@ -3664,8 +3664,11 @@ static void DuplicateTileTable(AirportSpec *as)
 		MemCpyT(table_list[i], as->table[i], num_tiles);
 	}
 	as->table = table_list;
-	HangarTileTable *depot_table = MallocT<HangarTileTable>(as->nof_depots);
-	MemCpyT(depot_table, as->depot_table, as->nof_depots);
+	HangarTileTable *depot_table = NULL;
+	if (as->nof_depots > 0) {
+		depot_table = MallocT<HangarTileTable>(as->nof_depots);
+		MemCpyT(depot_table, as->depot_table, as->nof_depots);
+	}
 	as->depot_table = depot_table;
 }
 

@@ -94,7 +94,7 @@ protected:
 public:
 	inline int SlopeCost(TileIndex tile, Trackdir td)
 	{
-		CPerfStart perf_cost(Yapf().m_perf_slope_cost);
+		CPerfStart perf_cost(&Yapf().m_perf_slope_cost);
 		if (!stSlopeCost(tile, td)) return 0;
 		return Yapf().PfGetSettings().rail_slope_penalty;
 	}
@@ -280,7 +280,7 @@ public:
 	{
 		int cost = 0;
 		/* if there is one-way signal in the opposite direction, then it is not our way */
-		CPerfStart perf_cost(Yapf().m_perf_other_cost);
+		CPerfStart perf_cost(&Yapf().m_perf_other_cost);
 		if (IsTileType(tile, MP_RAILWAY)) {
 			bool has_signal_against = HasSignalOnTrackdir(tile, ReverseTrackdir(trackdir));
 			bool has_signal_along = HasSignalOnTrackdir(tile, trackdir);
@@ -402,7 +402,7 @@ public:
 		assert(tf->m_new_tile == n.m_key.m_tile);
 		assert((TrackdirToTrackdirBits(n.m_key.m_td) & tf->m_new_td_bits) != TRACKDIR_BIT_NONE);
 
-		CPerfStart perf_cost(Yapf().m_perf_cost);
+		CPerfStart perf_cost(&Yapf().m_perf_cost);
 
 		/* Does the node have some parent node? */
 		bool has_parent = (n.m_parent != NULL);
