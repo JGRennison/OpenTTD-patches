@@ -741,6 +741,8 @@ void Vehicle::PreDestructor()
 {
 	if (CleaningPool()) return;
 
+	SCOPE_INFO_FMT([this], "Vehicle::PreDestructor: %s", scope_dumper().VehicleInfo(this));
+
 	if (Station::IsValidID(this->last_station_visited)) {
 		Station *st = Station::Get(this->last_station_visited);
 		st->loading_vehicles.remove(this);
