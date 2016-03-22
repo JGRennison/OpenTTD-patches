@@ -39,6 +39,9 @@
 #include "engine_base.h"
 #include "game/game.hpp"
 #include "table/strings.h"
+#include "aircraft.h"
+#include "airport.h"
+#include "station_base.h"
 
 #include "safeguards.h"
 
@@ -1904,6 +1907,44 @@ DEF_CONSOLE_CMD(ConNewGRFReload)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConResetBlockedHeliports)
+{
+	if (argc == 0) {
+		IConsoleHelp("Resets heliports blocked by the improved breakdowns bug, for single-player use only.");
+		return true;
+	}
+
+	unsigned int count = 0;
+	Station *st;
+	FOR_ALL_STATIONS(st) {
+		if (st->airport.tile == INVALID_TILE) continue;
+		if (st->airport.HasHangar()) continue;
+		if (!st->airport.flags) continue;
+
+		bool occupied = false;
+		const Aircraft *a;
+		FOR_ALL_AIRCRAFT(a) {
+			if (a->targetairport == st->index && a->state != FLYING) {
+				occupied = true;
+				break;
+			}
+		}
+		if (!occupied) {
+			st->airport.flags = 0;
+			count++;
+			char buffer[256];
+			SetDParam(0, st->index);
+			GetString(buffer, STR_STATION_NAME, lastof(buffer));
+			IConsolePrintF(CC_DEFAULT, "Unblocked: %s", buffer);
+		}
+	}
+
+	IConsolePrintF(CC_DEFAULT, "Unblocked %u heliports", count);
+	return true;
+}
+
+
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -2051,4 +2092,7 @@ void IConsoleStdLibRegister()
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
+
+	/* Bug workarounds */
+	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork);
 }
