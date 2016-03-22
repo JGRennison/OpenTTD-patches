@@ -1124,11 +1124,23 @@ void FindBreakdownDestination(Aircraft *v)
 	if(destination != INVALID_STATION) {
 		if(destination != v->current_order.GetDestination()) {
 			v->current_order.MakeGoToDepot(destination, ODTFB_BREAKDOWN);
-			AircraftNextAirportPos_and_Order(v);
+			if (v->state == FLYING) {
+				/* Do not change airport if in the middle of another airport's state machine,
+				 * as this can result in the airport being left in a blocked state */
+				AircraftNextAirportPos_and_Order(v);
+			}
 		} else {
 			v->current_order.MakeGoToDepot(destination, ODTFB_BREAKDOWN);
 		}
 	} else {
+		if (v->state != FLYING && v->targetairport != INVALID_STATION) {
+			/* Crashing whilst in an airport state machine is inconvenient
+			 * as any blocks would need to then be marked unoccupied.
+			 * Change the breakdown type to a speed reduction. */
+			v->breakdown_type = BREAKDOWN_AIRCRAFT_SPEED;
+			v->breakdown_severity = 15; /* very slow */
+			return;
+		}
 		/* If no hangar was found, crash */
 		v->targetairport = INVALID_STATION;
 		CrashAirplane(v);
