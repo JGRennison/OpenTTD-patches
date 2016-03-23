@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.12.1 (2016-03-23)
+* Template-based train replacement:
+  * Fix crash on join or load as a spectator in multiplayer, if the game contained template trains.
+  * Fix desync on join in multiplayer, if the game contained template trains.
+  * Fix crash during a bankruptcy/company reset when another company owned a virtual train.
+  * Fix drawing of template trains not being clipped to fit within the window.
+* Improved breakdowns:
+  * Fix aircraft aborting a landing/take off at a heliport/oil rig in the event of a breakdown to head to a hangar, and leaving the heliport/oil rig marked occupied.
+  * Add a console command to fix savegames which were left with blocked heliports/oil rigs due to the above issue.
+* Enhanced viewports: Fix incorrect rendering and/or buffer over-reads when using viewport map mode without first opening the small map window at the same map height limit.
+* Fix shared restricted signal windows not being immediately updated when removing a restricted signal.
+* Add menu item to vehicle list windows to assign all vehicles to a new group.
+* Extend changing the timetable values of all of a vehicle's orders at once to also include: clear time, and set/clear speed.
+* Improvements to crash logging.
+* Add German translations by Auge, for the restricted signals, repair cost, ship collision avoidance, and lifetime profit patches.
+* Bump trunk base from r27518 to r27525
+
 ### v0.12.0 (2016-03-02)
 * Fix "remove all trees in scenario editor" being available in game.
 * Fix crash when a company went bankrupt whilst one of its vehicles was in the middle of loading/unloading.

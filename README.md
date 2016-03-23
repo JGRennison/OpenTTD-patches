@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.12.0
+## JGR's Patchpack version 0.12.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -71,7 +71,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Add a company setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
   * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
   * Add a company setting to enable automatic timetabling for new vehicles.  
-  * Allow changing the timetabled waiting time for all of a vehicle's orders at once.
+  * Allow changing/clearing the timetabled waiting time and max speed of all of a vehicle's orders at once.
 
 * Vehicle repair cost: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=45642)
 
@@ -143,6 +143,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Add a menu item to the vehicle list to change order target (added in v0.11.0)
 
 * Template-based train replacement [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=58904) (added in v0.12.0)
+
+* Add a menu item to the vehicle list to assign all listed vehicles to a new group (added in v0.12.1)
 
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
