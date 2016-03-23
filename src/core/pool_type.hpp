@@ -110,7 +110,7 @@ struct Pool : PoolBase {
 	 */
 	inline Titem *Get(size_t index)
 	{
-		assert_msg(index < this->first_unused, "index: %zu, first_unused: %zu, name: %s", index, this->first_unused, this->name);
+		assert_msg(index < this->first_unused, "index: " PRINTF_SIZE ", first_unused: " PRINTF_SIZE ", name: %s", index, this->first_unused, this->name);
 		return this->data[index];
 	}
 
