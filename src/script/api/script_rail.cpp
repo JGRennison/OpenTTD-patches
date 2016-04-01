@@ -157,7 +157,7 @@
 	EnforcePrecondition(false, station_id == ScriptStation::STATION_NEW || station_id == ScriptStation::STATION_JOIN_ADJACENT || ScriptStation::IsValidStation(station_id));
 
 	uint32 p1 = GetCurrentRailType() | (platform_length << 16) | (num_platforms << 8);
-	if (direction == RAILTRACK_NW_SE) p1 |= (1 << 4);
+	if (direction == RAILTRACK_NW_SE) p1 |= (1 << 5);
 	if (station_id != ScriptStation::STATION_JOIN_ADJACENT) p1 |= (1 << 24);
 	return ScriptObject::DoCommand(tile, p1, (ScriptStation::IsValidStation(station_id) ? station_id : INVALID_STATION) << 16, CMD_BUILD_RAIL_STATION);
 }
@@ -176,7 +176,7 @@
 	EnforcePrecondition(false, goal_industry   == ScriptIndustryType::INDUSTRYTYPE_UNKNOWN || goal_industry   == ScriptIndustryType::INDUSTRYTYPE_TOWN || ScriptIndustryType::IsValidIndustryType(goal_industry));
 
 	uint32 p1 = GetCurrentRailType() | (platform_length << 16) | (num_platforms << 8);
-	if (direction == RAILTRACK_NW_SE) p1 |= 1 << 4;
+	if (direction == RAILTRACK_NW_SE) p1 |= 1 << 5;
 	if (station_id != ScriptStation::STATION_JOIN_ADJACENT) p1 |= (1 << 24);
 
 	const GRFFile *file;
@@ -244,7 +244,7 @@
 	EnforcePrecondition(false, KillFirstBit((uint)rail_track) == 0);
 	EnforcePrecondition(false, IsRailTypeAvailable(GetCurrentRailType()));
 
-	return ScriptObject::DoCommand(tile, tile, GetCurrentRailType() | (FindFirstTrack((::TrackBits)rail_track) << 4), CMD_BUILD_RAILROAD_TRACK);
+	return ScriptObject::DoCommand(tile, tile, GetCurrentRailType() | (FindFirstTrack((::TrackBits)rail_track) << 5), CMD_BUILD_RAILROAD_TRACK);
 }
 
 /* static */ bool ScriptRail::RemoveRailTrack(TileIndex tile, RailTrack rail_track)
@@ -255,7 +255,7 @@
 	EnforcePrecondition(false, GetRailTracks(tile) & rail_track);
 	EnforcePrecondition(false, KillFirstBit((uint)rail_track) == 0);
 
-	return ScriptObject::DoCommand(tile, tile, FindFirstTrack((::TrackBits)rail_track) << 4, CMD_REMOVE_RAILROAD_TRACK);
+	return ScriptObject::DoCommand(tile, tile, FindFirstTrack((::TrackBits)rail_track) << 5, CMD_REMOVE_RAILROAD_TRACK);
 }
 
 /* static */ bool ScriptRail::AreTilesConnected(TileIndex from, TileIndex tile, TileIndex to)
@@ -288,16 +288,16 @@ static uint32 SimulateDrag(TileIndex from, TileIndex tile, TileIndex *to)
 	int diag_offset = abs(abs((int)::TileX(*to) - (int)::TileX(tile)) - abs((int)::TileY(*to) - (int)::TileY(tile)));
 	uint32 p2 = 0;
 	if (::TileY(from) == ::TileY(*to)) {
-		p2 |= (TRACK_X << 4);
+		p2 |= (TRACK_X << 5);
 		*to -= Clamp((int)::TileX(*to) - (int)::TileX(tile), -1, 1);
 	} else if (::TileX(from) == ::TileX(*to)) {
-		p2 |= (TRACK_Y << 4);
+		p2 |= (TRACK_Y << 5);
 		*to -= ::MapSizeX() * Clamp((int)::TileY(*to) - (int)::TileY(tile), -1, 1);
 	} else if (::TileY(from) < ::TileY(tile)) {
 		if (::TileX(*to) < ::TileX(tile)) {
-			p2 |= (TRACK_UPPER << 4);
+			p2 |= (TRACK_UPPER << 5);
 		} else {
-			p2 |= (TRACK_LEFT << 4);
+			p2 |= (TRACK_LEFT << 5);
 		}
 		if (diag_offset != 0) {
 			*to -= Clamp((int)::TileX(*to) - (int)::TileX(tile), -1, 1);
@@ -306,9 +306,9 @@ static uint32 SimulateDrag(TileIndex from, TileIndex tile, TileIndex *to)
 		}
 	} else if (::TileY(from) > ::TileY(tile)) {
 		if (::TileX(*to) < ::TileX(tile)) {
-			p2 |= (TRACK_RIGHT << 4);
+			p2 |= (TRACK_RIGHT << 5);
 		} else {
-			p2 |= (TRACK_LOWER << 4);
+			p2 |= (TRACK_LOWER << 5);
 		}
 		if (diag_offset != 0) {
 			*to -= Clamp((int)::TileX(*to) - (int)::TileX(tile), -1, 1);
@@ -317,9 +317,9 @@ static uint32 SimulateDrag(TileIndex from, TileIndex tile, TileIndex *to)
 		}
 	} else if (::TileX(from) < ::TileX(tile)) {
 		if (::TileY(*to) < ::TileY(tile)) {
-			p2 |= (TRACK_UPPER << 4);
+			p2 |= (TRACK_UPPER << 5);
 		} else {
-			p2 |= (TRACK_RIGHT << 4);
+			p2 |= (TRACK_RIGHT << 5);
 		}
 		if (diag_offset == 0) {
 			*to -= Clamp((int)::TileX(*to) - (int)::TileX(tile), -1, 1);
@@ -328,9 +328,9 @@ static uint32 SimulateDrag(TileIndex from, TileIndex tile, TileIndex *to)
 		}
 	} else if (::TileX(from) > ::TileX(tile)) {
 		if (::TileY(*to) < ::TileY(tile)) {
-			p2 |= (TRACK_LEFT << 4);
+			p2 |= (TRACK_LEFT << 5);
 		} else {
-			p2 |= (TRACK_LOWER << 4);
+			p2 |= (TRACK_LOWER << 5);
 		}
 		if (diag_offset == 0) {
 			*to -= Clamp((int)::TileX(*to) - (int)::TileX(tile), -1, 1);

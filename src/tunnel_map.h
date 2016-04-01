@@ -75,7 +75,9 @@ static inline void MakeRailTunnel(TileIndex t, Owner o, DiagDirection d, RailTyp
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
 	_m[t].m2 = 0;
-	_m[t].m3 = r;
+	SB(_m[t].m1, 7, 1, GB(r, 4, 1));
+	SB(_m[t].m3, 0, 4, GB(r, 0, 4));
+	SB(_m[t].m3, 4, 4, 0);
 	_m[t].m4 = 0;
 	_m[t].m5 = TRANSPORT_RAIL << 2 | d;
 	SB(_me[t].m6, 2, 4, 0);

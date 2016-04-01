@@ -1190,8 +1190,8 @@ CommandCost FindJoiningWaypoint(StationID existing_waypoint, StationID waypoint_
  * @param tile_org northern most position of station dragging/placement
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
- * - p1 = (bit  0- 3) - railtype
- * - p1 = (bit  4)    - orientation (Axis)
+ * - p1 = (bit  0- 4) - railtype
+ * - p1 = (bit  5)    - orientation (Axis)
  * - p1 = (bit  8-15) - number of tracks
  * - p1 = (bit 16-23) - platform length
  * - p1 = (bit 24)    - allow stations directly adjacent to other stations.
@@ -1205,8 +1205,8 @@ CommandCost FindJoiningWaypoint(StationID existing_waypoint, StationID waypoint_
 CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	/* Unpack parameters */
-	RailType rt    = Extract<RailType, 0, 4>(p1);
-	Axis axis      = Extract<Axis, 4, 1>(p1);
+	RailType rt    = Extract<RailType, 0, 5>(p1);
+	Axis axis      = Extract<Axis, 5, 1>(p1);
 	byte numtracks = GB(p1,  8, 8);
 	byte plat_len  = GB(p1, 16, 8);
 	bool adjacent  = HasBit(p1, 24);
