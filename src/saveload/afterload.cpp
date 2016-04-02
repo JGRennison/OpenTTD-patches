@@ -3217,11 +3217,12 @@ bool AfterLoadGame()
 	// So set it to 0 just in case there was garbage in there.
 	if (SlXvIsFeatureMissing(XSLFI_MORE_RAIL_TYPES)) {
 		for (TileIndex t = 0; t < map_size; t++) {
-			if (_m[t].type == MP_RAILWAY ||
-					_m[t].type == MP_ROAD ||
-					_m[t].type == MP_STATION ||
-					_m[t].type == MP_TUNNELBRIDGE) {
-				SB(_m[t].m1, 7, 1, 0);
+			if (GetTileType(t) == MP_RAILWAY ||
+					IsLevelCrossingTile(t) ||
+					IsRailStationTile(t) ||
+					IsRailWaypointTile(t) ||
+					IsRailTunnelBridgeTile(t)) {
+				ClrBit(_m[t].m1, 7);
 			}
 		}
 	}
@@ -3263,6 +3264,21 @@ bool AfterLoadGame()
  */
 void ReloadNewGRFData()
 {
+	TileIndex map_size = MapSize();
+
+	/* Backup railtype labels for all rail tiles. The railtype info array will be resorted. */
+	std::map<TileIndex, RailTypeLabel> rail_type_label_backups;
+
+	for (TileIndex t = 0; t < map_size; t++) {
+		if (GetTileType(t) == MP_RAILWAY ||
+			IsLevelCrossingTile(t) ||
+			IsRailStationTile(t) ||
+			IsRailWaypointTile(t) ||
+			IsRailTunnelBridgeTile(t)) {
+			rail_type_label_backups[t] = GetRailTypeInfo(GetRailType(t))->label;
+		}
+	}
+
 	/* reload grf data */
 	GfxLoadSprites();
 	LoadStringWidthTable();
@@ -3288,4 +3304,16 @@ void ReloadNewGRFData()
 	MarkWholeScreenDirty();
 	CheckTrainsLengths();
 	AfterLoadTemplateVehiclesUpdateImage();
+
+	/* Restore correct railtype for all rail tiles.*/
+	for (TileIndex t = 0; t < map_size; t++) {
+		if (GetTileType(t) == MP_RAILWAY ||
+			IsLevelCrossingTile(t) ||
+			IsRailStationTile(t) ||
+			IsRailWaypointTile(t) ||
+			IsRailTunnelBridgeTile(t)) {
+			RailType old_type = GetRailTypeByLabel(rail_type_label_backups[t]);
+			SetRailType(t, (old_type == INVALID_RAILTYPE) ? RAILTYPE_RAIL : old_type);
+		}
+	}
 }

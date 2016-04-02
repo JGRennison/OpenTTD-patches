@@ -14,6 +14,7 @@
 
 #include "bridge_map.h"
 #include "tunnel_map.h"
+#include "cmd_helper.h"
 
 
 /**
@@ -55,6 +56,19 @@ static inline bool HasTunnelBridgeSnowOrDesert(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
 	return HasBit(_me[t].m7, 5);
+}
+
+
+/**
+* Is this a rail bridge or tunnel?
+* @param t the tile that might be a rail bridge or tunnel
+* @return true if and only if this tile is a rail bridge or tunnel
+*/
+static inline bool IsRailTunnelBridgeTile(TileIndex t)
+{
+	TransportType tt = Extract<TransportType, 2, 2>(_m[t].m5);
+
+	return IsTileType(t, MP_TUNNELBRIDGE) && (tt == TRANSPORT_RAIL);
 }
 
 /**
