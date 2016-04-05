@@ -17,6 +17,7 @@
 #include "command_func.h"
 #include "rail_map.h"
 #include "tile_type.h"
+#include "group_type.h"
 #include <map>
 #include <vector>
 
@@ -111,6 +112,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_CARGO               = 15,   ///< Test if train can carry cargo type
 	TRIT_COND_ENTRY_DIRECTION     = 16,   ///< Test which side of signal/signal tile is being entered from
 	TRIT_COND_PBS_ENTRY_SIGNAL    = 17,   ///< Test tile and PBS-state of previous signal
+	TRIT_COND_TRAIN_GROUP         = 18,   ///< Test train group membership
 	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
 	/* space up to 31 */
 };
@@ -411,7 +413,8 @@ enum TraceRestrictValueType {
 	TRVT_PF_PENALTY               = 9, ///< takes a pathfinder penalty value or preset index, as per the auxiliary field as type: TraceRestrictPathfinderPenaltyAuxField
 	TRVT_RESERVE_THROUGH          = 10,///< takes a value 0 = reserve through, 1 = cancel previous reserve through
 	TRVT_LONG_RESERVE             = 11,///< takes a value 0 = long reserve, 1 = cancel previous long reserve
-	TRVT_OWNER                    = 12,///< takes a CompanyID
+	TRVT_GROUP_INDEX              = 12,///< takes a GroupID
+	TRVT_OWNER                    = 40,///< takes a CompanyID
 };
 
 /**
@@ -470,6 +473,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_PBS_ENTRY_SIGNAL:
 				out.value_type = TRVT_TILE_INDEX;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_TRAIN_GROUP:
+				out.value_type = TRVT_GROUP_INDEX;
 				out.cond_type = TRCOT_BINARY;
 				break;
 
@@ -572,6 +580,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
 
 void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16 index);
+void TraceRestrictRemoveGroupID(GroupID index);
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company);
 
 #endif /* TRACERESTRICT_H */

@@ -22,6 +22,7 @@
 #include "core/pool_func.hpp"
 #include "order_backup.h"
 #include "tbtr_template_vehicle.h"
+#include "tracerestrict.h"
 
 #include "table/strings.h"
 
@@ -350,6 +351,9 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		/* Delete all template replacements using the just deleted group */
 		deleteIllegalTemplateReplacements(g->index);
+
+		/* notify tracerestrict that group is about to be deleted */
+		TraceRestrictRemoveGroupID(g->index);
 
 		/* Delete the Replace Vehicle Windows */
 		DeleteWindowById(WC_REPLACE_VEHICLE, g->vehicle_type);

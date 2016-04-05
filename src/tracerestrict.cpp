@@ -18,6 +18,7 @@
 #include "window_func.h"
 #include "order_base.h"
 #include "cargotype.h"
+#include "group.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include <vector>
 
@@ -343,6 +344,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_TRAIN_GROUP: {
+						result = TestBinaryConditionCommon(item, GroupIsInGroup(v->group_id, GetTraceRestrictValue(item)));
+						break;
+					}
+
 					case TRIT_COND_TRAIN_OWNER: {
 						result = TestBinaryConditionCommon(item, v->owner == condvalue);
 						break;
@@ -484,6 +490,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_CARGO:
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
+				case TRIT_COND_TRAIN_GROUP:
 				case TRIT_COND_TRAIN_OWNER:
 					break;
 
@@ -581,6 +588,11 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_PF_PENALTY:
 			SetTraceRestrictValue(item, TRPPPI_SMALL);
 			SetTraceRestrictAuxField(item, TRPPAF_PRESET);
+			break;
+
+		case TRVT_GROUP_INDEX:
+			SetTraceRestrictValue(item, INVALID_GROUP);
+			SetTraceRestrictAuxField(item, 0);
 			break;
 
 		case TRVT_OWNER:
@@ -1113,6 +1125,28 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 				if (GetTraceRestrictAuxField(item) == type && GetTraceRestrictValue(item) == index) {
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
 				}
+			}
+			if (IsTraceRestrictDoubleItem(item)) i++;
+		}
+	}
+
+	// update windows
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+}
+
+/**
+ * This is called when a group is about to be deleted
+ * Scan program pool and change any references to it to the invalid group ID, to avoid dangling references
+ */
+void TraceRestrictRemoveGroupID(GroupID index)
+{
+	TraceRestrictProgram *prog;
+
+	FOR_ALL_TRACE_RESTRICT_PROGRAMS(prog) {
+		for (size_t i = 0; i < prog->items.size(); i++) {
+			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
+			if (GetTraceRestrictType(item) == TRIT_COND_TRAIN_GROUP && GetTraceRestrictValue(item) == index) {
+				SetTraceRestrictValueDefault(item, TRVT_GROUP_INDEX); // this updates the instruction in-place
 			}
 			if (IsTraceRestrictDoubleItem(item)) i++;
 		}

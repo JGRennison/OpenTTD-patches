@@ -24,6 +24,7 @@
 #include "company_func.h"
 #include "tilehighlight_func.h"
 #include "widgets/dropdown_func.h"
+#include "widgets/dropdown_type.h"
 #include "gui.h"
 #include "gfx_func.h"
 #include "rail_map.h"
@@ -34,6 +35,8 @@
 #include "depot_base.h"
 #include "error.h"
 #include "cargotype.h"
+#include "sortlist_type.h"
+#include "group.h"
 #include "table/sprites.h"
 #include "toolbar_gui.h"
 
@@ -270,6 +273,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		STR_TRACE_RESTRICT_VARIABLE_CARGO,
 		STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION,
 		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
+		STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
@@ -283,6 +287,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictI
 		TRIT_COND_CARGO,
 		TRIT_COND_ENTRY_DIRECTION,
 		TRIT_COND_PBS_ENTRY_SIGNAL,
+		TRIT_COND_TRAIN_GROUP,
 		TRIT_COND_TRAIN_OWNER,
 		TRIT_COND_UNDEFINED,
 	};
@@ -312,6 +317,43 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
 	cargo_list_str[_sorted_standard_cargo_specs_size] = INVALID_STRING_ID;
 
 	return &cargo_list;
+}
+
+/**
+ * Get a DropDownList of the group list
+ */
+static DropDownList *GetGroupDropDownList(Owner owner, GroupID group_id, int &selected)
+{
+	typedef GUIList<const Group*> GUIGroupList;
+	extern int CDECL GroupNameSorter(const Group * const *a, const Group * const *b);
+
+	GUIGroupList list;
+
+	const Group *g;
+	FOR_ALL_GROUPS(g) {
+		if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
+			*list.Append() = g;
+		}
+	}
+
+	list.ForceResort();
+	list.Sort(&GroupNameSorter);
+
+	DropDownList *dlist = new DropDownList();
+	selected = -1;
+
+	if (group_id == DEFAULT_GROUP) selected = DEFAULT_GROUP;
+	*dlist->Append() = new DropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false);
+
+	for (size_t i = 0; i < list.Length(); ++i) {
+		const Group *g = list[i];
+		if (group_id == g->index) selected = group_id;
+		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_GROUP_NAME, g->index, false);
+		item->SetParam(0, g->index);
+		*dlist->Append() = item;
+	}
+
+	return dlist;
 }
 
 static const StringID _cargo_cond_ops_str[] = {
@@ -637,6 +679,25 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					break;
 				}
 
+				case TRVT_GROUP_INDEX: {
+					assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+					if (GetTraceRestrictValue(item) == INVALID_GROUP) {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
+						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+					} else if (GetTraceRestrictValue(item) == DEFAULT_GROUP) {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
+						SetDParam(2, STR_GROUP_DEFAULT_TRAINS);
+						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+					} else {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP;
+						SetDParam(2, GetTraceRestrictValue(item));
+					}
+					break;
+				}
+
 				case TRVT_OWNER: {
 					assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
 					CompanyID cid = static_cast<CompanyID>(GetTraceRestrictValue(item));
@@ -918,6 +979,13 @@ public:
 						this->ShowDropDownListWithValue(&_long_reserve_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
+					case TRVT_GROUP_INDEX: {
+						int selected;
+						DropDownList *dlist = GetGroupDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
+						ShowDropDownList(this, dlist, selected, TR_WIDGET_VALUE_DROPDOWN);
+						break;
+					}
+
 					case TRVT_OWNER:
 						this->ShowCompanyDropDownListWithValue(static_cast<CompanyID>(GetTraceRestrictValue(item)), false, TR_WIDGET_VALUE_DROPDOWN);
 						break;
@@ -993,8 +1061,8 @@ public:
 			return;
 		}
 
-		if (widget == TR_WIDGET_VALUE_DROPDOWN && this->value_drop_down_is_company) {
-			// this is a special company drop-down
+		if (widget == TR_WIDGET_VALUE_DROPDOWN && (this->value_drop_down_is_company || GetTraceRestrictTypeProperties(item).value_type == TRVT_GROUP_INDEX)) {
+			// this is a special company drop-down or group-index drop-down
 			SetTraceRestrictValue(item, index);
 			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 			return;
@@ -1327,8 +1395,9 @@ public:
 
 			case TR_WIDGET_VALUE_DROPDOWN: {
 				TraceRestrictItem item = this->GetSelected();
-				if (GetTraceRestrictTypeProperties(item).value_type == TRVT_PF_PENALTY &&
-						GetTraceRestrictAuxField(item) == TRPPAF_VALUE) {
+				if ((GetTraceRestrictTypeProperties(item).value_type == TRVT_PF_PENALTY &&
+						GetTraceRestrictAuxField(item) == TRPPAF_VALUE)
+						|| GetTraceRestrictTypeProperties(item).value_type == TRVT_GROUP_INDEX) {
 					SetDParam(0, GetTraceRestrictValue(item));
 				}
 				break;
@@ -1681,6 +1750,24 @@ private:
 									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL : STR_TRACE_RESTRICT_LONG_RESERVE;
 							break;
 
+						case TRVT_GROUP_INDEX:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							switch (GetTraceRestrictValue(item)) {
+								case INVALID_GROUP:
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+									break;
+
+								case DEFAULT_GROUP:
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_GROUP_DEFAULT_TRAINS;
+									break;
+
+								default:
+									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_GROUP_NAME;
+									break;
+							}
+							break;
+
 						case TRVT_OWNER:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
@@ -1707,7 +1794,7 @@ private:
 	void ShowDropDownListWithValue(const TraceRestrictDropDownListSet *list_set, uint value, bool missing_ok,
 			int button, uint32 disabled_mask, uint32 hidden_mask, uint width)
 	{
-		drop_down_list_mapping[button] = list_set;
+		this->drop_down_list_mapping[button] = list_set;
 		int selected = GetDropDownListIndexByValue(list_set, value, missing_ok);
 		if (button == TR_WIDGET_VALUE_DROPDOWN) this->value_drop_down_is_company = false;
 		ShowDropDownMenu(this, list_set->string_array, selected, button, disabled_mask, hidden_mask, width);
