@@ -511,6 +511,7 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_SUBSIDIES                           :{BLACK}Prikaži
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}Prikaži spisak svih stanica preduzeća
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}Prikaži finansijsko stanje preduzeća
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}Prikaži opšte podatke preduzeća
+STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Prikaži priču
 STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Pokaži listu ciljeva
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Prikaži grafikone
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Prikaži tabele lige preduzeća
@@ -585,6 +586,7 @@ STR_FILE_MENU_EXIT                                              :Izađi
 # map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :Karta sveta
 STR_MAP_MENU_EXTRA_VIEW_PORT                                    :Dodatno gledište
+STR_MAP_MENU_LINGRAPH_LEGEND                                    :Legenda protoka tereta
 STR_MAP_MENU_SIGN_LIST                                          :Lista Znakova
 
 ############ range for town menu starts
@@ -896,6 +898,7 @@ STR_SMALLMAP_CAPTION                                            :{WHITE}Karta - 
 STR_SMALLMAP_TYPE_CONTOURS                                      :Reljef
 STR_SMALLMAP_TYPE_VEHICLES                                      :Vozila
 STR_SMALLMAP_TYPE_INDUSTRIES                                    :Fabrike
+STR_SMALLMAP_TYPE_ROUTEMAP                                      :Protok tereta
 STR_SMALLMAP_TYPE_ROUTES                                        :Rute
 STR_SMALLMAP_TYPE_VEGETATION                                    :Vegetacija
 STR_SMALLMAP_TYPE_OWNERS                                        :Vlasnici
@@ -908,6 +911,7 @@ STR_SMALLMAP_TOOLTIP_SHOW_VEGETATION_ON_MAP                     :{BLACK}Prikazuj
 STR_SMALLMAP_TOOLTIP_SHOW_LAND_OWNERS_ON_MAP                    :{BLACK}Prikazuje vlasništva na karti
 STR_SMALLMAP_TOOLTIP_INDUSTRY_SELECTION                         :{BLACK}Klikom na industriju se prikazuju/ne prikazuju njene fabrike. Ctrl+Klik prikazuje fabrike samo odabrane. Sa ponovnim Ctrl+Klik prikazuju se fabrike svih industrija
 STR_SMALLMAP_TOOLTIP_COMPANY_SELECTION                          :{BLACK}Klikom na preduzeće se prikazuje/ne prikazuje njeno vlasništvo. Ctrl+Klik prikazuje vlasništvo samo odabranog. Sa ponovnim Ctrl+Klik prikazuju se vlasništva svih preduzeća
+STR_SMALLMAP_TOOLTIP_CARGO_SELECTION                            :{BLACK}Klikom na teret se prikazuje/neprikazuje vlasnik tereta. Ctrl+Klik onemogućava sve terete osim odabranog. Sa ponovnim Ctrl+Klik omogućava sve terete.
 
 STR_SMALLMAP_LEGENDA_ROADS                                      :{TINY_FONT}{BLACK}Putevi
 STR_SMALLMAP_LEGENDA_RAILROADS                                  :{TINY_FONT}{BLACK}Pruge
@@ -1035,6 +1039,7 @@ STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} ima neodređenu naredbu
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} ima dupliciranu naredbu
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} ima neodgovarajuću stanicu u naredbi
+STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE} ima u naredbama aerodrom sa prekratkom pistom
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} zastareva
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} previše zastareva
@@ -1292,6 +1297,8 @@ STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :Podešavanja ig
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :Podešavanja preduzeća (čuvaju se prilikom snimanja; utiču samo na nove igre)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Podešavanja preduzeća (čuvaju se prilikom snimanja; utiču samo tekuće preduzeće)
 
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategorija:
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Vrsta:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Ograničava donju listu tako da prikazuje samo promenjena podešavanja
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :Osnovna podešavanja
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Napredna podešavanja
@@ -1306,6 +1313,10 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :Podešavanja ig
 STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Podešavanja igre (biće uskladištena u sačuvanoj igri; ima efekta samo na nove partije)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Kompanijska podešavanja (biće uskladištena u sačuvanoj igri; ima efekta samo na nove partije)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Podešavanja kompanije (uskladištena u sačuvanoj igri; utiču samo na trenutnu kompaniju)
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Prikaži sve rezultate pretrage po postavkama{}{SILVER}Kategorija {BLACK}do {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Pokaži sve rezultate pretrage prema postavkama{}{SILVER}Tip {BLACK}do {WHITE} Svi tipovi postavki
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Prikaži sve rezultate pretrage po postavkama{}{SILVER}Kategorija {BLACK}do {WHITE}{STRING} {BLACK}i {SILVER}Tip {BLACK}do {WHITE}Svi tipovi postavki
+STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Nema -
 
 STR_CONFIG_SETTING_OFF                                          :Ne
 STR_CONFIG_SETTING_ON                                           :Da
@@ -1464,23 +1475,40 @@ STR_CONFIG_SETTING_ERRMSG_DURATION                              :Trajanje poruke
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Trajanje prikazivanja poruka o greškama u crvenom prozoru. Neke (kritične) poruke o greškama se ne zatvaraju automatski posle ovog vremena nego moraju da se zatvore ručno
 STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} sekund{P a e i}
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Prikaži poruke u balončićima: {STRING}
+STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Odgoda pre prikaza objašnjenja alata kada se miš postavi iznad nekog elementa interfejsa. Alternativno, objašnjenja alata se mogu vezati uz desnu dugmetom na mišu kada je ova vrednost postavljena na 0.
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Lebdi na {COMMA} milisekund{P 0 u i i}
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :Desni klik
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Prikazivati br. stanovnika pored naziva naselja: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Prikazuje broj stanovnika naselja na njihovoj oznaci na karti
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Debljina linija u grafikonima: {STRING}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Širina linije na grafiku. Tanka linija je preciznija a debelu je lakše videti i lakše je razlikovati boje
 
+STR_CONFIG_SETTING_LANDSCAPE                                    :Reljef:{STRING}
+STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Tereni definišu osnovne scenarije za igru sa različitim teretima i zahtevima za rast gradova. NewGRFovi i skripte igre omogućavaju detaljnije kontrole i postavke.
 STR_CONFIG_SETTING_LAND_GENERATOR                               :Oblikovanje reljefa: {STRING}
+STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Originalni generator zavisi o baznom grafičkom setu i komponuje fiksne oblike u terenu. TerraGenesis je generator zasnovan na Perlinu sa detaljnijim podešavanjima i kontrolama
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Originalno
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Vrsta terena: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :(Samo TerraGenesis) Brdovitost terena
+STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Gustoća industrije: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Odaberite koliko industrije treba da se generiše i koji nivo treba da se održava tokom igre
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Najveće rastojanje od ivice za Rafinerije Nafte: {STRING}
+STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Rafinerije nafte se grade samo u blizini ivice karte, to jest uz obalu za otočne karte
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Nivo snežnog pokrivača: {STRING}
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Odredite na kojoj visini počinje sneg u subarktičkoj klimi. Sneg takođe utiče na stvaranje industrija i uslove rasta gradova
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Vrste terena (samo za TerraGenesis) : {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Samo TerraGenesis) Odaberite učestalost brda: Blaži tereni imaju rjeđa, ali šira brda. Teži tereni imaju mnogo brda koja bi mogla da izgledaju kao da se ponavljaju
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Ravnomerna
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Malo valovita
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Valovita
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Vrlo valovita
+STR_CONFIG_SETTING_VARIETY                                      :Raznolikost distribucije: {STRING}
+STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(Samo TerraGenesis) Odredite da li će karta sadržavati i planinska i ravna područja. Kako ovo čini kartu još ravnijom, ostale bi postavke trebale biti postavljene na planinske.
+STR_CONFIG_SETTING_RIVER_AMOUNT                                 :Količina reka: {STRING}
+STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Izaberite količinu generiranih reka
 STR_CONFIG_SETTING_TREE_PLACER                                  :Posađivanje drveća: {STRING}
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Odaberite distribuciju drveća ma karti: 'Originalno' sadi drveće ravnomerno, 'Poboljšano2 sadi drveće u grupama
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Nikakav
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Originalni
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Unapređen
@@ -1493,22 +1521,30 @@ STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :Visina ravnog t
 STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}Jedan ili više sektora na severnoj ivici nije prazan
 STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}Jedan ili više sektora na jednoj od ivica nije voda
 
+STR_CONFIG_SETTING_STATION_SPREAD                               :Maksimalna rasprostranjenost stanice: {STRING}
+STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :Maksimalna površina na kojoj mogu biti delovi jedne stanice. Imajte na umur da će visoke vrednosti  usporiti igru
 STR_CONFIG_SETTING_SERVICEATHELIPAD                             :Automatsko servisiranje helikoptera na heliodromima: {STRING}
 STR_CONFIG_SETTING_SERVICEATHELIPAD_HELPTEXT                    :Servisiraj helikoptere posle svakog sletanja, čak i kada nema depoa na aerodromu
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR                       :Poveži traku alatki za reljef sa železničkim/drumskim/brodskim/avionskim trakama: {STRING}
+STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR_HELPTEXT              :Kada se otvara alatna traka za građenje neke vrste transporta, istodobno se otvara i alatna traka za oblikovanje terena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR                         :Boja tla na karti: {STRING}
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Boja terena na karti
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Zelena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Tamno zelena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Ljubičasta
 STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Suprotan smer pomeranja prozora: {STRING}
+STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Ponašanje kod skrolovanja karte desnim dugmetom miša. Kada je isključeno, miš pomiče kameru. Kada je uključeno, miš pomiče kartu
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Ravnomeran prelaz prozora: {STRING}
+STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Odredi kako se glavni prikaz pomiče na određeno mesto kada se klikne na malu kartu ili kada se daje naredba za pomicanje na određeni objekat na karti. Ako je omogućeno, prikaz se pomiče glatko, ako je onemogućeno, prikaz izravno skače na ciljano mesto
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Prikazivati mere dok se koriste alati za gradnju: {STRING}
+STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Prikaži udaljenost u poljima i visinsku razliku kod povlačenja prilikom gradnje
 STR_CONFIG_SETTING_LIVERIES                                     :Prikazivati boje preduzeća: {STRING}
+STR_CONFIG_SETTING_LIVERIES_HELPTEXT                            :Kontroliraj korišćenje boja tipa vozila za određena vozila (u suprotnosti sa bojama tvrtke)
 STR_CONFIG_SETTING_LIVERIES_NONE                                :Ne
 STR_CONFIG_SETTING_LIVERIES_OWN                                 :Samo sopstvene
 STR_CONFIG_SETTING_LIVERIES_ALL                                 :Svih
 STR_CONFIG_SETTING_PREFER_TEAMCHAT                              :Slanje poruka svojoj ekipi sa <ENTER>: {STRING}
+STR_CONFIG_SETTING_PREFER_TEAMCHAT_HELPTEXT                     :Prebacivanje vezivanja internog i javnog razgovora preduzeća na <ENTER> to jest<Ctrl+ENTER>
 STR_CONFIG_SETTING_SCROLLWHEEL_SCROLLING                        :Uloga točkića na mišu: {STRING}
 STR_CONFIG_SETTING_SCROLLWHEEL_SCROLLING_HELPTEXT               :Omogući skrolovanje sa dvodimenzionalnim točkićima na mišu
 STR_CONFIG_SETTING_SCROLLWHEEL_ZOOM                             :Promena uvećanja terena
@@ -1517,18 +1553,23 @@ STR_CONFIG_SETTING_SCROLLWHEEL_OFF                              :Nikakva
 STR_CONFIG_SETTING_SCROLLWHEEL_MULTIPLIER                       :Osetljivost točkića: {STRING}
 STR_CONFIG_SETTING_SCROLLWHEEL_MULTIPLIER_HELPTEXT              :Kontroliše osetljivost skrolovanja preko točkića na mišu
 STR_CONFIG_SETTING_OSK_ACTIVATION                               :Tastatura na ekranu: {STRING}
+STR_CONFIG_SETTING_OSK_ACTIVATION_HELPTEXT                      :Odaberite način upotrebe tastature na ekranu za unos teksta u polja korištenjem samo pokazivača. Ovo je namenjeno malim uređajima bez fizičke tastature
 STR_CONFIG_SETTING_OSK_ACTIVATION_DISABLED                      :Onemogućeno
 STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Dupli klik
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Klik (ako je u fokusu)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Klik (odmah)
 
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Oponašanje desnog klika: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Odaberite metodu imitiranja klika na desnu dirku miša
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+Klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Nikakvo
 
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Pomeranje sa levim klikom: {STRING}
+STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Omogući skrolovanje po mapi povlačenjem mape sa levim dugmetom miša. Ovo je posebno korisno kod skrolovanja na ekranima na dodir
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autočuvanje: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Izbor vremenskog intervala između dve automatski sačuvane pozicije
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Koristiti {STRING} oblik datuma u nazivima sačuvanih partija
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Format datuma u imenima fajlova sačuvanih partija
@@ -1537,24 +1578,34 @@ STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_SHORT              :kratak (31-12-2
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-12-31)
 
 STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME                            :Pauzirati odmah po pokretanju nove partije : {STRING}
+STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME_HELPTEXT                   :Kada je omogućeno, igra će se automatski pauzirati kada počinjete novu partiju, omogućavajući bolje proučavanje karte
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL                          :Tokom pauze dozvoljene su: {STRING}
+STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_HELPTEXT                 :Odabir akcija koje mogu biti vršene za vreme pauze
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_NO_ACTIONS               :nikakve aktivnosti
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_CONSTRUCTION     :sve negrađevinske aktivnosti
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_LANDSCAPING      :sve aktivnosti sem izmene reljefa
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :sve aktivnosti
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Koristiti napredan spisak vozila: {STRING}
+STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Omogući upotrebu naprednih lista vozila za grupisanje vozila
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Koristiti pokazatelj utovarivanja: {STRING}
+STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Izbor da li će biti prikazani indikatori utovara i istovara iznad vozila
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Prikazati red vožnje u diskretnim otkucajima: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Prikaži vreme putovanja u redu vožnje u diskretnim otkucajima umesto u danima
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Prikazivanje polaska i dolaska u rasporedima: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Prikazivanje očekivanog vremena dolaska i odlaska u rasporedima
 STR_CONFIG_SETTING_QUICKGOTO                                    :Zadržati aktivno 'Idi do' dugme: {STRING}
+STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Pred-odaberi kursor naredbe "otiđi na" kod otvaranja prozora s naredbama
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Podešena vrsta pruge (posle učitavanja/nove partije): {STRING}
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Vrsta željeznice koja će biti odabrana prilikom pokretanja ili učitavanja igre. "Prva dostupna" odabire najstariju vrstu, "zadnja dostupna" odabire najnoviju vrstu, "najčešće korištena" odabire vrstu koja je trenutno najviše u upotrebi
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :Prva dostupna
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :Zadnja dostupna
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Najčešće korišćena
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Prikazivati rezervisane pruge: {STRING}
+STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Prikaži rezervisane pruge u drugoj boji kako bi se olakšalo rešavanje problema sa vozovima koji ne žele ući u određenu deonicu puta
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Zadržati aktivne alate za gradnju posle upotrebe: {STRING}
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Ostavi alate za gradnju mostova, tunela itd. otvorene nakon korišćenja
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Grupisati troškove u finansijskom prozoru preduzeća: {STRING}
+STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Odredi izgled prozora troškova tvrtke
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :Telegrafski zvuk: {STRING}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Reprodukuj zvučne efekte pri prikazu sažetih novinskih poruka
@@ -1574,6 +1625,7 @@ STR_CONFIG_SETTING_SOUND_AMBIENT                                :Okruženje: {ST
 STR_CONFIG_SETTING_SOUND_AMBIENT_HELPTEXT                       :Reprodukuj ambijentalne zvučne efekte za teren, industrije i gradove
 
 STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING                  :Onemogućena izgradnja infrastrukture kada nema odgovarajućih vozila: {STRING}
+STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING_HELPTEXT         :Ako je omogućeno, infrastruktura je dostupna samo ako su dostupna i vozila, sprečavajući troškove vremena i novca na neupotrebljivu infrastrukturu
 STR_CONFIG_SETTING_MAX_TRAINS                                   :Najviše vozova po preduzeću: {STRING}
 STR_CONFIG_SETTING_MAX_TRAINS_HELPTEXT                          :Najveći broj vozova koje preduzeće može da ima
 STR_CONFIG_SETTING_MAX_ROAD_VEHICLES                            :Najviše drumskih vozila po preduzeću: {STRING}
@@ -1606,14 +1658,21 @@ STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Najveći broj k
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Intervali servisiranja u procentima: {STRING}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Da li se intervali servisiranja vozila okidaju vremenom proteklim od prošlog servisiranja ili padom pouzdanosti za određeni procenat u odnosu na najveću pouzdanost
 STR_CONFIG_SETTING_SERVINT_TRAINS                               :Podrazumevani servisni interval za vozove: {STRING}
+STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :Podrazumevani servisni interval za nove vozove, ako nema zadanog servisnog intervala za vozilo
 STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA} dan{P 0 "" a a}/%
 STR_CONFIG_SETTING_SERVINT_DISABLED                             :Onemogućeno
 STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES                        :Podrazumevani servisni interval za drumska vozila: {STRING}
+STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES_HELPTEXT               :Postavite podrazumevani servisni interval za drumska vozila, ako nema zadanog servisnog intervala za vozilo
 STR_CONFIG_SETTING_SERVINT_AIRCRAFT                             :Podrazumevani servisni interval za letilice: {STRING}
+STR_CONFIG_SETTING_SERVINT_AIRCRAFT_HELPTEXT                    :Postavite podrazumevani servisni interval za avione, ako nema zadanog servisnog intervala za vozilo
 STR_CONFIG_SETTING_SERVINT_SHIPS                                :Podrazumevani servisni interval za brodove: {STRING}
+STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :Postavite podrazumevani servisni interval za nove brodove, ako nema zadanog servisnog intervala za vozilo
 STR_CONFIG_SETTING_NOSERVICE                                    :Isključeno servisiranje kada ne postoje kvarovi: {STRING}
+STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :Kada je uključeno, vozila se ne servisiraju ako ne mogu da se pokvare
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Uključeno ograničenje brzine kod vagona: {STRING}
+STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Kada je omogućeno, takođe upotrebi ograničenje brzine vagona za određivanje maksimalne brzine voza
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Ne postoji posebna električna pruga: {STRING}
+STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Omogućavanje ovog podešavanja onemogućava potrebu elektrifikacije pruge da bi električni vozovi mogli voziti po njoj
 
 STR_CONFIG_SETTING_NEWS_ARRIVAL_FIRST_VEHICLE_OWN               :Dolazak prvog vozila na igračevu stanicu: {STRING}
 STR_CONFIG_SETTING_NEWS_ARRIVAL_FIRST_VEHICLE_OWN_HELPTEXT      :Prikazuje novinske naslove kada prvo vozilo pristigne u novu stanicu igrača
@@ -1657,17 +1716,24 @@ STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :Uključena glat
 STR_CONFIG_SETTING_SMOOTH_ECONOMY_HELPTEXT                      :Ako je omogućeno, industrijska proizvodnja se češće menja u manjim koracima. Ako se vrste industrija učitavaju preko NewGRF dodataka ovo podešavanje uglavnom nema efekta
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Dozvoljena kupovina deonica drugih preduzeća: {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Ako je omogućeno, dozvoljava kupovinu i prodaju deonica preduzeća. Deonice su dostupne tek kad preduzeće dostigne određenu starost
+STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Procenat prihoda koji će biti predan srednjim dionicama prevoza u fider sustavima: {STRING}
+STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Procenat prihoda koji će biti predan srednjim dionicama prevoza u fider sustavima, dajući više kontrole nad prihodima
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :Prilikom prevlačenja, postavi signale na svakih: {STRING}
+STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :Postavi razmak između signala koji će se graditi do sledeće prepreke (signal, raskrsnica), ukoliko se signali povlače
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_VALUE                   :{COMMA} pločic{P 0 u e e}
 STR_CONFIG_SETTING_DRAG_SIGNALS_FIXED_DISTANCE                  :Prilikom prevlačenja, čuvaj fiksno rastojanje između signala: {STRING}
+STR_CONFIG_SETTING_DRAG_SIGNALS_FIXED_DISTANCE_HELPTEXT         :Odabir ponašanja postavljanja signala uz Ctrl+povlačenje signala. Ako je onemogućeno, signali se postavljaju ispred i iza tunela ili mostova kako bi se izbegli dugi delovi pruge bez signala. Ako je omogućeno, signali se postavljaju svakih n kvadrata, olakšavajući poravnavanje signala na paralelnim delovima pruge
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE                  :Automatsko postavljanje semafora do: {STRING}
+STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE_HELPTEXT         :Postavite godinu za početak korištenja električnih signala za pruge. Prije ove godine, koristiti će se neelektrični signali (imaju iste funkcije samo izgledaju drugačije)
 STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI                            :Omogućena traka za signalizaciju:{STRING}
+STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI_HELPTEXT                   :Prikaži prozor za izbor vrste signala za gradnju, umesto samo rotacije tipa signala bez prozora sa Ctrl+klik na sagrađenim signalima
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_TYPE                          :Uobičajena vrsta signalizacije za izgradnju: {STRING}
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_TYPE_HELPTEXT                 :Podrazumevani tip signala
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_NORMAL                        :Blok signalizacija
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_PBS                           :Putna signalizacija
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_PBSOWAY                       :Jednosmerna putna signalizacija
 STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES                           :Ciklični izbor vrste signalizacije: {STRING}
+STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES_HELPTEXT                  :Ciklični izbor vrste signalizacije, kada Ctrl+Klik na izgradnju signala sa alatom signala
 STR_CONFIG_SETTING_CYCLE_SIGNAL_NORMAL                          :Samo blok
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Samo putna
 STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :Sva
@@ -1680,6 +1746,7 @@ STR_CONFIG_SETTING_TOWN_LAYOUT_2X2_GRID                         :2x2 mreže
 STR_CONFIG_SETTING_TOWN_LAYOUT_3X3_GRID                         :3x3 mreže
 STR_CONFIG_SETTING_TOWN_LAYOUT_RANDOM                           :proizvoljan plan
 STR_CONFIG_SETTING_ALLOW_TOWN_ROADS                             :Naseljima je dozvoljeno da grade kolovoze: {STRING}
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT                    :Dozvoli naseljima da grade ulice kako bi rasli. Onemogući kako bi sprečili gradske vlasti da same grade ulice
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS                   :Naseljima je dozvoljeno da grade putne prelaze: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT          :Omogućava naseljima da grade prelaz pruge preko puta
 STR_CONFIG_SETTING_NOISE_LEVEL                                  :Naseljima je dozvoljeno da kontrolišu nivo buke aerodroma: {STRING}
@@ -1691,6 +1758,7 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :dozvoljeno
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :dozvoljeno, zaseban plan gradnje
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Rasejavanje drveća tokom partije: {STRING}
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Kontrola nasumične pojave drveća u toku igre. Ovo može uticati na industrije koje zavise o rastu drveća, na primer pilana
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :{G=srednji}nikakvo {RED}(onesposobljava rad drvnih kombinata)
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :samo u tropskim šumama
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :svuda
@@ -1700,12 +1768,17 @@ STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontalna po
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Položaj statusne linije: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS_HELPTEXT                       :Horizontalna pozicija statusne linije na dnu ekrana
 STR_CONFIG_SETTING_SNAP_RADIUS                                  :Udaljenost na kojoj će prozor da se prilepi uz susedni: {STRING}
+STR_CONFIG_SETTING_SNAP_RADIUS_HELPTEXT                         :Udaljenost između prozora prije nego se pomerani prozor automatski poravna sa drugim prozorima u blizini
 STR_CONFIG_SETTING_SNAP_RADIUS_VALUE                            :{COMMA} piksel{P 0 "" a a}
 STR_CONFIG_SETTING_SNAP_RADIUS_DISABLED                         :Isključeno
 STR_CONFIG_SETTING_SOFT_LIMIT                                   :Najviše nepridenutih prozora: {STRING}
+STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Broj nepridenutih otvorenih prozora pre nego se stariji prozori ne počnu automatski zatvarati da bi napravili mesta za nove prozore
 STR_CONFIG_SETTING_SOFT_LIMIT_VALUE                             :{COMMA}
+STR_CONFIG_SETTING_SOFT_LIMIT_DISABLED                          :Isključeno
 STR_CONFIG_SETTING_ZOOM_MIN                                     :Najbliži nivo: {STRING}
+STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Najveći nivo zumiranja prema unutra u prikazima. Uzmite u obzir da uključivanje većih nivoa zumiranja prema unutra povećava i upotrebu memorije
 STR_CONFIG_SETTING_ZOOM_MAX                                     :Najudaljeniji nivo: {STRING}
+STR_CONFIG_SETTING_ZOOM_MAX_HELPTEXT                            :Najmanji nivo zumiranja prema van u prikazima. Veći nivo zumiranja prema van može uzrokovati usporavanje igre
 STR_CONFIG_SETTING_ZOOM_LVL_MIN                                 :4x
 STR_CONFIG_SETTING_ZOOM_LVL_IN_2X                               :2x
 STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :Uobičajen
@@ -1726,11 +1799,29 @@ STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Nijedan
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Inicijalni množilac razvoja gradova: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Prosečna veličina naselja relativno u odnosu na gradove na početku partije
 
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Ažuriraj  grafikon distribucije svakih {STRING}{NBSP}dan{P 0:2 a a a}
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Vreme između slijedećih preračuna grafikona. Svaki preračun izračunava planove za jednu komponentu grafikona. To znači da vrednost X za ovu postavku ne mora da znači i ažuriranje celog grafikona unutar X dana. Samo neke komponente će da budu ažurirane. Čim kraće vreme odredite, više će biti potrebno resursa CPUa za izračun. Čim duže vrijeme odredite, trebati će više vremena za pokretanje distribucije po novim putevima.
+STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Uzmi {STRING}{NBSP}dan{P 0:2 a a a} za preračun grafikona
+STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :Vreme potrebno za preračun komponente grafikona. Kada se preračun pokrene, stvara se sled koji može raditi broj dana koliko ovdje odredite. Čim kraće vreme odredite, postoji mogućnost da sled neće biti gotov kada bi trebao. Tada se igra usporava odnosno zaustavlja dok ne bude gotovo. Čim duže vreme odredite, potrebno je duže da se distribucija ažurira kada se izmene rute.
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :ručno
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimetrično
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simetrično
+STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :Način distribucije putnika: {STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :"Simetrično" znači da će se otprilike isti broj putnika slati od stanice A prema stanici B kao i od B prema A. "Asimetrično" znači da će se proizvoljan broj putnika slati u oba smera. "Ručno" znači da se distribucija putnika neće vršiti automatski.
+STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :Režim distribucije za poštu: {STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :"Simetrično" znači da će se otprilike ista količina pošte slati od stanice A prema stanici B kao i od B prema A. "Asimetrično" znači da će se proizvoljne količine pošte slati u oba smera. "Ručno" znači da se distribucija pošte neće vršiti automatski.
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Način distribucije za OKLOPLJENU klasu tereta: {STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :OKLOPLJENA klasa tereta sadrži dragocenosti u umjerenoj klimi, dijamante u subtropskoj klimi ili zlato u subarktičkoj klimi. NewGFR-ovi bi mogli ovo izmeniti. "Simetrično" znači da će se otprilike ista količina tereta slati od stanice A prema stanici B kao i od B prema A. "Asimetrično" znači da će se proizvoljne količine tereta slati u oba smera. "Ručno" znači da se distribucija tih tereta neće vršiti automatski. Preporučljivo je namestiti ovu postavku na "asimetrično" ili "ručno" kod subarktičke klime jer banke neće slati zlato natrag prema rudnicima zlata. Za umjerenu i subtropsku klimu možete namestiti i "simetrično" jer će banke slati neke dragocenosti natrag prema banci porekla.
+STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Način distribucije za ostale klase tereta: {STRING}
+STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"asimetrično" znači da odabrana količina tereta može biti poslana u svim smerovima. "ručno" znači da neće biti automatske distribucije za odabrane terete
+STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Tačnost distribucije: {STRING}
+STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Čim višu vrednost odaberete, CPU će trebati više vremena za izračun grafikona. Ako bude trebalo predugo, mogli bi primetiti usporavanje igre. U suprotnom, ako namestite na manju vrednost, distribucija će biti netočnija i mogli biste primetiti da se teret šalje na mesta koja niste očekivali.
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Uticaj daljine na zahteve: {STRING}
 STR_CONFIG_SETTING_DEMAND_DISTANCE_HELPTEXT                     :Ako podesite ovu vrednost veće od 0, daljina između porekla stanice A nekog tereta i moguće destinacije B će imati uticaj na iznos poslatog tereta od A do B. Što daljnije B je od A, smaniće se iznos tereta što će biti poslat. Ako vrednost povećavate, manji iznos tereta će biti poslat dalekim mestima i veći iznos tereta će biti poslat bližnjim stanicama.
+STR_CONFIG_SETTING_DEMAND_SIZE                                  :Količina tereta koji se šalje natrag za simetrični mod: {STRING}
+STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :Postavljanje ovoga na manje od 100% daje da se simetrična distribucija ponaša sličnije asimetričnoj distribuciji. Manje tereta biti će prisilno vraćeno ako je određena količina poslata u stanicu. Ako postavku namestite na 0%, simetrična distribucija se ponaša tačno kao asimetrična distribucija.
+STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :Zasićenje kratkih putova pre korišćenja putova velikih kapaciteta: {STRING}
+STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :Često postoji više puteva izmeđe dve stanice. Cargodist će prvo popuniti najkraći put, nakon toga koristiti drugi najkraći put dok se ne popuni itd. Popunjenost se određuje procenom kapaciteta i planirane upotrebe. Jednom kad se popune svi putevi i ako i dalje postoji potreba, pretrpati će sve puteve preferirajući one sa visokim kapacitetom. Ipak, algoritam najčešće neće proceniti kapacitet tačno. Ova postavka vam omogućava da specificirate do kojeg postotka će kraći put biti popunjen u prvom prolazu pre nego se počne popunjavati sledeći put. Namestite ga na manje od 100% da bi izbegli pretrpane stanice u slučaju previsoko procenjenog kapaciteta.
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :Mere brzine: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Kada brzina bude pokazana u interfejsu, pokaži u željenoj meri
@@ -1739,6 +1830,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :Metričke mere 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Mere za snagu vozila: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Kada je prikazana snaga vozila u korisničkom interfejsu, prikaži je u odabranim jedinicama
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_IMPERIAL            :Imperijalne mere (hp)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_METRIC              :Metričke mere (hp)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_SI                  :SI (kW)
@@ -1750,11 +1842,13 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_METRIC             :Metričke mere 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_SI                 :SI (kg)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME                    :Mere zapremine: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_HELPTEXT           :Kada je jačina zvuka prikazana u korisničkom interfejsu, prikaži je u odabranim jedinicama
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_IMPERIAL           :Imperijalne mere (gal)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_METRIC             :Metričke mere (l)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_SI                 :SI (m³)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE                     :Mere za silu trenja: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_HELPTEXT            :Uvek kada je vučna snaga (vučna sila) prikazana u korisničkom interfejsu, prikaži je u odabranim jedinicama
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_IMPERIAL            :Imperijalne mere (lbf)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :Metričke mere (kgf)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
@@ -1766,11 +1860,23 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metričke mere 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Prevod
+STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafika
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Zvučni efekti
 STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Okruženje
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Opšte
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Prikazi
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Izgradnja
+STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Vesti / Savetnici
+STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Preduzeće
+STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Računovodstvo
 STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Vozila
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Fizika
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Rutiranje
+STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Ograničenja
+STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Katastrofe / Nezgode
+STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Stvaranje sveta
+STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Okoliš
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Vlasti
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Naselja
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industrije
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distribucija Tovara
@@ -1806,7 +1912,11 @@ STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :nekompatibilno 
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :nepoznato
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... nivo kompresije '{STRING}' nije ispravan
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... format sačuvane partije '{STRING}' nije dostupan. Vraćanje na '{STRING}'
+STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignoriram osnovni set grafike '{STRING}': nije pronađen
+STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}...ignoriram osnovni skup zvukova '{STRING}': nije pronađen
+STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoriram osnovni set muzike '{STRING}': nije pronađen
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Nema više memorije
+STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Dodela {BYTES} predmemorije sprajtova nije uspelo. Predmemorija sprajtova je smanjena na {BYTES}. Ovo će smanjiti performanse OpenTTDa. Kako bi smanjili memorijske zahteve možete pokušati da isključite 32bpp grafiku i/ili nivo zumiranja
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -1986,6 +2096,8 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Promena 
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Mrežna partija
+STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK} Sa reklamama
+STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Odaberite između igre s oglasima (internet) i bez oglasa (Local Area Network, LAN)
 STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Ne
 STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Da
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Ime igrača:
@@ -2168,6 +2280,7 @@ STR_NETWORK_CLIENT                                              :Igrač
 STR_NETWORK_SPECTATORS                                          :Posmatrači
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Unesite svotu novca koju želite dati
+STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Posmatrač
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Otkaži unetu lozinku
@@ -2287,7 +2400,9 @@ STR_CONTENT_SELECT_UPDATES_CAPTION_TOOLTIP                      :{BLACK}Obeleža
 STR_CONTENT_UNSELECT_ALL_CAPTION                                :{BLACK}Poništi izbor svega
 STR_CONTENT_UNSELECT_ALL_CAPTION_TOOLTIP                        :{BLACK}Otkazuje preuzimanje svih dodataka
 STR_CONTENT_SEARCH_EXTERNAL                                     :{BLACK}Pretraži eksterne web stranice
+STR_CONTENT_SEARCH_EXTERNAL_TOOLTIP                             :{BLACK}Traženi sadržaj nije dostupan u OpenTTD servisu za sadržaje za web stranice koje nisu pridružene u OpenTTD
 STR_CONTENT_SEARCH_EXTERNAL_DISCLAIMER_CAPTION                  :{WHITE}Vi napuštate OpenTTD!
+STR_CONTENT_SEARCH_EXTERNAL_DISCLAIMER                          :{WHITE}Odredbe i uslovi za preuzimanje sadržaja sa spoljnih sajtova varira.{}Moraćete pogledati spoljašnje sajtove za uputstva kako da instalirate sadržaj u OpenTTD.{}Želite li da nastavite?
 STR_CONTENT_FILTER_TITLE                                        :{BLACK}Filter po oznaci/nazivu:
 STR_CONTENT_OPEN_URL                                            :{BLACK}Idi na Web lokaciju
 STR_CONTENT_OPEN_URL_TOOLTIP                                    :{BLACK}Ovaj sadržaj nalazi se na Web lokaciji
@@ -2358,8 +2473,15 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Promena 
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Čini objekte nevidljivim umesto prozirnim
 
 # Linkgraph legend window
+STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}Legenda protoka tereta
+STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}Sve
+STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Nema
+STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Odaberite preduzeća koja želite da se prikažu
 
 # Linkgraph legend window and linkgraph legend in smallmap
+STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}neiskorišćen
+STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}zasićen
+STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}Preopterećen
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Označavanje zahvaćenog područja
@@ -2636,6 +2758,7 @@ STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :{BLACK}Prikazuj
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :{BLACK}Obeleži na karti
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :{BLACK}Obeležava prikazane industrije i na karti
 STR_INDUSTRY_CARGOES_SELECT_CARGO                               :{BLACK}Odaberite tovar
+STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :{BLACK} Odaberite teret koji želite da prikažete
 STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :{BLACK}Odaberite fabriku
 STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Odaberite fabriku koju želite da prikažete
 
@@ -2662,6 +2785,7 @@ STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: 
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Tovar prihvaćen: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Najveća brzina na pruzi: {LTBLUE}{VELOCITY}
+STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Ograničenje brzine: {LTBLUE}{VELOCITY}
 
 # Description of land area of different tiles
 STR_LAI_CLEAR_DESCRIPTION_ROCKS                                 :Stene
@@ -2758,7 +2882,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Zemljište u po
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD-u
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Originalni kopirajt {COPYRIGHT} 1995 Chris Sawyer, Sva prava zadržana
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verzija {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD tim
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD tim
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Sačuvaj poziciju
@@ -2777,6 +2901,7 @@ STR_SAVELOAD_SAVE_BUTTON                                        :{BLACK}Sačuvaj
 STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}Sačuvaj tekuću igru, koristeći odabrano ime
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Učitaj
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Učitava označenu partiju
+STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Učitaj odabranu elevacionu kartu
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Detalji partije
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Podaci ne postoje
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -2880,6 +3005,7 @@ STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}Pomera o
 STR_NEWGRF_SETTINGS_MOVEDOWN                                    :{BLACK}Naniže
 STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}Pomera označenu NewGRF datoteku niže na spisku
 STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}Ažuriraj
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP                             :{BLACK}Nadogradite NewGRF datoteke za koje već imate instalirane novije verzije
 STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK}Spisak instaliranih NewGRF datoteka.
 
 STR_NEWGRF_SETTINGS_SET_PARAMETERS                              :{BLACK}Postavi parametre
@@ -2905,6 +3031,14 @@ STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Isključen
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Nije kompatibilno sa ovom OpenTTD verzijom
 
 # NewGRF save preset window
+STR_SAVE_PRESET_CAPTION                                         :{WHITE} Sačuvajte postavku
+STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista dostupnih postavki, odaberite jednu za kopiranje pod imenom ispod
+STR_SAVE_PRESET_TITLE                                           :{BLACK} Unesite ime postavke
+STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Trenutno izabrani naziv za snimanje početnih postavki
+STR_SAVE_PRESET_CANCEL                                          :{BLACK}Otkaži
+STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ne manjati odabrane postavke
+STR_SAVE_PRESET_SAVE                                            :{BLACK}Sačuvaj
+STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK} Sačuvaj trenutnu postavku odabranog imena
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Promena NewGRF parametara
@@ -2935,7 +3069,11 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Ide na d
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Prethodni sprajt
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Vraća se na prethodni normalan sprajt, preskačući sve pseudo/prebojavajuće/font sprajtove i prelazi na kraj posle početnog
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Prikaz trenutno odabranog sprajta. Poravnanje se ignoriše tokom iscrtavanja ovog sprajta
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Premeštanje sprajta po kordinatama, menjanjem X i Y pomeraja
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Premeštanje sprajta po kordinatama, menjanjem X i Y pomeraja. Ctrl+Klik za pomeranje sprajta osam jedinica odjednom
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Poništi relativne
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Poništi trenutne relativne pomake
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X pomak: {NUM}, Y pomak: {NUM} (Apsolutni)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X pomak: {NUM}, Y pomak: {NUM} (Relativni)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Odabiranje sprajta
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Odabiranje sprajta bilo gde sa ekrana
 
@@ -2946,7 +3084,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Upozorenje: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Greška: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Kobno: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Došlo je do neotklonljive NewGRF greške: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Došlo je do neotklonljive NewGRF greške:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} neće raditi sa TTDPatch verzijom prema prijavi OpenTTD-a
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} je za {STRING} verziju TTD-a
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} je napravljen za korišćenje sa {STRING}
@@ -2992,6 +3130,7 @@ STR_NEWGRF_LIST_MISSING                                         :{RED}Nedostaju 
 STR_NEWGRF_BROKEN                                               :{WHITE}NewGRF '{0:STRING}' može izazvati desinhronizacije i/ili krahove
 STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Vagon '{1:ENGINE}' je promenio motorno stanje izvan depoa
 STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Promenio je dužinu vozila '{1:ENGINE}' dok je izvan depoa
+STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Promenio je kapacitet vozila '{1:ENGINE}' dok je izvan depoa ili u remontu
 STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Voz '{VEHICLE}' preduzeća '{COMPANY}' je neispravne dužine. Verovatno je izazvana nekim problemima sa NewGRF(ovima). Igra može da krahira ili da se desinhronizuje
 
 STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{0:STRING}' sadrži neispravne podatke
@@ -3095,6 +3234,7 @@ STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globalni
 STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Opšti ciljevi:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nema -
+STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Nije primenjivo -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 STR_GOALS_COMPANY_TITLE                                         :{BLACK}Ciljevi preduzeća:
@@ -3137,6 +3277,8 @@ STR_SUBSIDIES_SUBSIDISED_FROM_TO                                :{ORANGE}{STRING
 STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Klikom na uslugu prebacuje glavni pogled na lokaciju fabrike/naselja. Ctrl+Klik otvara novi pogled na to mesto
 
 # Story book window
+STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY}Priča
+STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Globalna priča
 STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 STR_STORY_BOOK_GENERIC_PAGE_ITEM                                :Stranica {NUM}
 STR_STORY_BOOK_SEL_PAGE_TOOLTIP                                 :{BLACK}Idi do željene stranice uz izbor te stranice u ovoj listi.
@@ -3144,6 +3286,7 @@ STR_STORY_BOOK_PREV_PAGE                                        :{BLACK}Prethodn
 STR_STORY_BOOK_PREV_PAGE_TOOLTIP                                :{BLACK}Idi do prethodne stranice
 STR_STORY_BOOK_NEXT_PAGE                                        :{BLACK}Sledeće
 STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}Idi do sledeće stranice
+STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Nevažeća referenca cilja
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Imena stanica - klikom na ime se centrira glavni pogled na stanicu. Ctrl+Klik otvara novi pogled na lokaciju stanice
@@ -3407,6 +3550,8 @@ STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Briše s
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Preimenovanje označene grupe
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Klikom se ova grupa štiti od globalne automatske zamene
 
+STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Izbriši grupu
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Da li ste sigurni da elite izbrisati ovu grupu i sve podgrupe?
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Dodaj deljeno vozilo
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Ukloni sva vozila
@@ -3470,7 +3615,15 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}Promenit
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}Promenite naziv vrste broda
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}Promenite naziv vrste letilice
 
+STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON                        :{BLACK}Sakriti
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_TOGGLE_BUTTON                 :{BLACK}Sakriti
+STR_BUY_VEHICLE_SHIP_HIDE_TOGGLE_BUTTON                         :Sakriti
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_TOGGLE_BUTTON                     :Sakriti
 
+STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON                        :{BLACK}Prikaz
+STR_BUY_VEHICLE_ROAD_VEHICLE_SHOW_TOGGLE_BUTTON                 :{BLACK}Prikaži
+STR_BUY_VEHICLE_SHIP_SHOW_TOGGLE_BUTTON                         :{BLACK}Prikaži
+STR_BUY_VEHICLE_AIRCRAFT_SHOW_TOGGLE_BUTTON                     :{BLACK}Prikaži
 
 STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP                  :{BLACK}Uključi skrivanje/prikazivanje tip voza
 STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_SHOW_TOGGLE_TOOLTIP           :{BLACK}Uključi skrivanje/prikazivanje tip drumskog vozila
@@ -3598,7 +3751,9 @@ STR_REPLACE_VEHICLE_AIRCRAFT                                    :letelica
 STR_REPLACE_VEHICLE_AIRCRAFT.aku                                :letelicu
 
 STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}Upotrebljena vozila
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :{BLACK}Kolona sa vozilima koja posedujete
 STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}Dostupna vozila
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK} Kolona sa vozilima dostupnima za zamenu
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Izaberite vrstu lokomotive za zamenu
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Izaberite novu vrstu lokomotive koju biste želeli da koristite umesto obeležene s leve strane
@@ -3954,6 +4109,10 @@ STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Putovanje (bez 
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Putovanje sa najviše {2:VELOCITY} (bez rasporeda)
 STR_TIMETABLE_TRAVEL_FOR                                        :Putovanje za {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Putovanje do {STRING} sa najviše {VELOCITY}
+STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Putovanje (za{STRING}, bez rasporeda)
+STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Putovanje (za {STRING}, bez rasporeda) sa najviše {VELOCITY}
+STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(stajanje za {STRING}, bez rasporeda)
+STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(putovanje za {STRING}, bez rasporeda)
 STR_TIMETABLE_STAY_FOR                                          :i ostani {STRING}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :i putuj {STRING}
 STR_TIMETABLE_DAYS                                              :{COMMA} dan{P "" a a}
@@ -4083,6 +4242,8 @@ STR_AI_SETTINGS_START_DELAY                                     :Broj dana za po
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} uputstvo za {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} izmene od {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} licenca od {STRING}
+STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Prelomiti tekst
+STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK} Prelomiti tekst prozora tako da stane bez potrebe skrolovanja
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Prikaži uputstvo
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Izmene
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licenca
@@ -4245,6 +4406,7 @@ STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... mož
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... može biti izgrađena samo ispod linije snega
 
 STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}Nije bilo odgovarajućih mesta za '{STRING}' fabrike
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Promena parametara generisanja karte za dobivanje bolje karte
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}Izgradnja železničke stanice ovde nije moguća...
@@ -4409,6 +4571,7 @@ STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... već
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Grupa se ne može napraviti...
 STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Grupa se ne može izbrisati...
 STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Grupa se ne može preimenovati...
+STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Ne može se postaviti matična grupa...
 STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}Ne mogu se sva vozila ukloniti iz grupe...
 STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}Vozilo se ne može dodati u ovu grupu...
 STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}Deljena vozila se ne mogu dodati u grupu...

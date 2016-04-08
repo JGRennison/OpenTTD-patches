@@ -14,13 +14,13 @@
 #include "../../gfx_func.h"
 #include "../../textbuf_gui.h"
 #include "../../fileio_func.h"
-#include "../../fios.h"
 #include <windows.h>
 #include <fcntl.h>
 #include <regstr.h>
 #include <shlobj.h> /* SHGetFolderPath */
 #include <shellapi.h>
 #include "win32.h"
+#include "../../fios.h"
 #include "../../core/alloc_func.hpp"
 #include "../../openttd.h"
 #include "../../core/random_func.hpp"
@@ -338,9 +338,16 @@ void CreateConsole()
 		return;
 	}
 
+#if defined(_MSC_VER) && _MSC_VER >= 1900
+	freopen("CONOUT$", "a", stdout);
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "a", stderr);
+#else
 	*stdout = *_fdopen(fd, "w");
 	*stdin = *_fdopen(_open_osfhandle((intptr_t)GetStdHandle(STD_INPUT_HANDLE), _O_TEXT), "r" );
 	*stderr = *_fdopen(_open_osfhandle((intptr_t)GetStdHandle(STD_ERROR_HANDLE), _O_TEXT), "w" );
+#endif
+
 #else
 	/* open_osfhandle is not in cygwin */
 	*stdout = *fdopen(1, "w" );

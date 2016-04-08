@@ -2751,7 +2751,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Vállalat álta
 STR_ABOUT_OPENTTD                                               :{WHITE}Az OpenTTD-ről
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Eredeti copyright {COPYRIGHT} 1995 Chris Sawyer, Minden jog fenntartva
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD {REV} verzió
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 Az OpenTTD csapat
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 Az OpenTTD csapat
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Játék mentése
@@ -2938,7 +2938,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Ugrás a
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Előző sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Továbbhaladás az előző normál spritera, kihagyva bármilyen ál/átszínező/betű spriteokat, az elején folytatva az utolsóval
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}A jelenleg kiválasztott sprite ábrázolása. Az elhelyezkedés kikapcsolt sprite-rajzolás közben
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Sprite elmozdítása, módosítva az X és Y offszeteket
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Sprite elmozdítása, módosítva az X és Y offszeteket. Ctrl+kattintással a spriteot nyolc egységgel mozgatja
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Eltolás visszaállítása
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}A jelenlegi relatív eltolás visszaállítása
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X eltolás: {NUM}, Y eltolás: {NUM} (Abszolút)
@@ -2953,7 +2953,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Figyelmeztetés: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Hiba: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Végzetes hiba: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Egy végzetes NewGRF hiba történt: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Egy végzetes NewGRF hiba történt:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} nem fog működni az OpenTTD által jelentett TTDPatch verzióval
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} a TTD {STRING} verziójához van
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} úgy lett tervezve, hogy együtt lesz használva ezzel: {STRING}

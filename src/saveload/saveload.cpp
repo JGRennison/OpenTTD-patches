@@ -261,7 +261,8 @@
  *  191   26646
  *  192   26700
  *  193   26802
- *  194   26881   1.5.x
+ *  194   26881   1.5.x, 1.6.x
+ *  TODO: insert new savegame version and add 'economy.allow_placing_houses' setting to savegames
  */
 extern const uint16 SAVEGAME_VERSION = 194; ///< Current savegame version of OpenTTD.
 

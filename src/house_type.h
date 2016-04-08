@@ -14,7 +14,15 @@
 
 typedef uint16 HouseID; ///< OpenTTD ID of house types.
 typedef uint16 HouseClassID; ///< Classes of houses.
+typedef byte HouseVariant; ///< House variant.
 
 struct HouseSpec;
+
+/** Visualization contexts of town houses. */
+enum HouseImageType {
+	HIT_HOUSE_TILE        = 0, ///< Real house that exists on the game map (certain house tile).
+	HIT_GUI_HOUSE_PREVIEW = 1, ///< GUI preview of a house.
+	HIT_GUI_HOUSE_LIST    = 2, ///< Same as #HIT_GUI_HOUSE_PREVIEW but the house is being drawn in the GUI list of houses, not in the full house preview.
+};
 
 #endif /* HOUSE_TYPE_H */
