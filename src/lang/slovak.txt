@@ -750,7 +750,7 @@ STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED                         :{BIG_FONT}{BLAC
 STR_HIGHSCORE_TOP_COMPANIES_NETWORK_GAME                        :{BIG_FONT}{BLACK}Tabuľka spoločnosti v roku {NUM}
 STR_HIGHSCORE_POSITION                                          :{BIG_FONT}{BLACK}{COMMA}.
 STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN                     :{G=z}Obchodníčka
-STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN.g                   :{G=s}Obchodníci
+STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN.g                   :Obchodníci
 STR_HIGHSCORE_PERFORMANCE_TITLE_ENTREPRENEUR                    :{G=z}Podnikateľka
 STR_HIGHSCORE_PERFORMANCE_TITLE_INDUSTRIALIST                   :{G=m}Priemyselník
 STR_HIGHSCORE_PERFORMANCE_TITLE_CAPITALIST                      :{G=m}Kapitalista
@@ -1350,7 +1350,7 @@ STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} sek{P u
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Ukáž nápovedu: {STRING}
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Oneskorenie pred tým ako bude zobrazená nápoveda po ukázaní myšou. Nápoveda môže byť eventuálne nastavené aj na PRAVÉ tlačítko myši.
 STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Zobrazenie na {COMMA} sekúnd
-STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :Klick pravým tlačítkom
+STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :Klik pravým tlačítkom
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Zobraziť počet obyvateľov mesta v jeho názve: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Zobrazí populáciu mesta v jeho názve.
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Hrúbka čiar v grafe: {STRING}
@@ -2755,7 +2755,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Spoločnosťou 
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Pôvodný copyright: {COPYRIGHT} 1995 Chris Sawyer, všetky práva vyhradené
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verzia {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 team OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 team OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Uložiť hru
@@ -2957,7 +2957,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Upozornenie: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Chyba: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Kritická chyba: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Nastala závažná chyba NewGRF: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Nastala závažná chyba NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} nebude fungovať s TTDPatch verziou nahlásenou OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} je pre verziu {STRING} TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} je navrhnutý pre použitie s {STRING}
@@ -4967,7 +4967,7 @@ STR_COMPANY_NAME_COMPANY_NUM                                    :{COMPANY} {COMP
 STR_DEPOT_NAME                                                  :{DEPOT}
 STR_ENGINE_NAME                                                 :{ENGINE}
 STR_HIDDEN_ENGINE_NAME                                          :{ENGINE} (skryté)
-STR_HIDDEN_ENGINE_NAME.g                                        :{G=m}{ENGINE} (skrytý)
+STR_HIDDEN_ENGINE_NAME.g                                        :{ENGINE} (skrytý)
 STR_GROUP_NAME                                                  :{GROUP}
 STR_INDUSTRY_NAME                                               :{INDUSTRY}
 STR_PRESIDENT_NAME                                              :{PRESIDENT_NAME}

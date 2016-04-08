@@ -1402,7 +1402,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop
 				break;
 
 			case 0x12: // SFX
-				rvi->sfx = buf->ReadByte();
+				rvi->sfx = GetNewGRFSoundID(_cur.grffile, buf->ReadByte());
 				break;
 
 			case PROP_ROADVEH_POWER: // Power in units of 10 HP.
@@ -1590,7 +1590,7 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop
 				break;
 
 			case 0x10: // SFX
-				svi->sfx = buf->ReadByte();
+				svi->sfx = GetNewGRFSoundID(_cur.grffile, buf->ReadByte());
 				break;
 
 			case 0x11: { // Cargoes available for refitting
@@ -1758,7 +1758,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 				break;
 
 			case 0x12: // SFX
-				avi->sfx = buf->ReadByte();
+				avi->sfx = GetNewGRFSoundID(_cur.grffile, buf->ReadByte());
 				break;
 
 			case 0x13: { // Cargoes available for refitting
@@ -2353,6 +2353,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, Byt
 				housespec->grf_prop.local_id = hid + i;
 				housespec->grf_prop.subst_id = subs_id;
 				housespec->grf_prop.grffile = _cur.grffile;
+				housespec->construction_cost = 0xFFFF;
 				housespec->random_colour[0] = 0x04;  // those 4 random colours are the base colour
 				housespec->random_colour[1] = 0x08;  // for all new houses
 				housespec->random_colour[2] = 0x0C;  // they stand for red, blue, orange and green
@@ -2517,6 +2518,14 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, Byt
 
 			case 0x22: // long maximum year
 				housespec->max_year = buf->ReadWord();
+				break;
+
+			case 0x23: // Build cost multiplier
+				housespec->construction_cost = buf->ReadDWord();
+				break;
+
+			case 0x24:
+				housespec->num_variants = buf->ReadByte();
 				break;
 
 			default:
@@ -6421,8 +6430,8 @@ static void SafeParamSet(ByteReader *buf)
 {
 	uint8 target = buf->ReadByte();
 
-	/* Only writing GRF parameters is considered safe */
-	if (target < 0x80) return;
+	/* Writing GRF parameters and some bits of 'misc GRF features' are safe. */
+	if (target < 0x80 || target == 0x9E) return;
 
 	/* GRM could be unsafe, but as here it can only happen after other GRFs
 	 * are loaded, it should be okay. If the GRF tried to use the slots it
@@ -6838,7 +6847,15 @@ static void ParamSet(ByteReader *buf)
 			/* Remove the local flags from the global flags */
 			ClrBit(res, GMB_TRAIN_WIDTH_32_PIXELS);
 
-			_misc_grf_features = res;
+			/* Only copy safe bits for static grfs */
+			if (HasBit(_cur.grfconfig->flags, GCF_STATIC)) {
+				uint32 safe_bits = 0;
+				SetBit(safe_bits, GMB_SECOND_ROCKY_TILE_SET);
+
+				_misc_grf_features = (_misc_grf_features & ~safe_bits) | (res & safe_bits);
+			} else {
+				_misc_grf_features = res;
+			}
 			break;
 
 		case 0x9F: // locale-dependent settings
@@ -8575,6 +8592,13 @@ static void FinaliseHouseArray()
 			 * building_flags to zero here to make sure any house following
 			 * this one in the pool is properly handled as 1x1 house. */
 			hs->building_flags = TILE_NO_FLAG;
+		} else if (hs->enabled && (hs->building_flags && BUILDING_HAS_1_TILE)) {
+			if (hs->construction_cost == 0xFFFF) {
+				hs->construction_cost = DefaultHouseCostBaseMultiplier(
+						hs->callback_mask, hs->population, hs->mail_generation,
+						hs->cargo_acceptance[0], hs->cargo_acceptance[1], hs->cargo_acceptance[2],
+						hs->accepts_cargo[0], hs->accepts_cargo[1], hs->accepts_cargo[2]);
+			}
 		}
 	}
 
