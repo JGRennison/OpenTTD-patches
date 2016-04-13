@@ -14,6 +14,7 @@
 
 #include "gfx_type.h"
 #include "tilehighlight_type.h"
+#include "track_type.h"
 
 void PlaceProc_DemolishArea(TileIndex tile);
 bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_tile, TileIndex end_tile);
@@ -29,6 +30,10 @@ void VpSetPresizeRange(TileIndex from, TileIndex to);
 void VpSetPlaceSizingLimit(int limit);
 
 void UpdateTileSelection();
+
+void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track start_track, bool bidirectional = true);
+void ResetRailPlacementSnapping();
+bool CurrentlySnappingRailPlacement();
 
 extern TileHighlightData _thd;
 
