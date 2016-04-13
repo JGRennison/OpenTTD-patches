@@ -904,6 +904,7 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RAT_BUILD_EW,                          "WID_RAT_BUILD_EW");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RAT_BUILD_Y,                           "WID_RAT_BUILD_Y");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RAT_AUTORAIL,                          "WID_RAT_AUTORAIL");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RAT_POLYRAIL,                          "WID_RAT_POLYRAIL");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RAT_DEMOLISH,                          "WID_RAT_DEMOLISH");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RAT_BUILD_DEPOT,                       "WID_RAT_BUILD_DEPOT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_RAT_BUILD_WAYPOINT,                    "WID_RAT_BUILD_WAYPOINT");
