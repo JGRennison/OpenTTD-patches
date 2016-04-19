@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.13.0 (2016-04-19)
+* Fix crash when dragging two-directional block signals onto a bridge or tunnel.
+* Add polyline rail track building tool.
+* Routing restrictions: Add a train group membership conditional.
+* Increase number of available rail track types from 16 to 32.
+* Rail signals on bridges and tunnels now use rail-type specific graphics where available.
+* Bump trunk base from r27525 to r27547
+
 ### v0.12.1 (2016-03-23)
 * Template-based train replacement:
   * Fix crash on join or load as a spectator in multiplayer, if the game contained template trains.

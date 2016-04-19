@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.12.1
+## JGR's Patchpack version 0.13.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -146,6 +146,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Add a menu item to the vehicle list to assign all listed vehicles to a new group (added in v0.12.1)
 
+* Polyline rail track building tool [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=57080) (added in v0.13.0)
+
+* Increase number of available rail track types from 16 to 32 [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.13.0)
+
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 33% faster. (added in v0.8.1)  
@@ -160,10 +164,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Savegames from other patched versions are not loadable in this patchpack except for savegames from the *tracerestrict* branch ([routing restrictions patch](http://www.tt-forums.net/viewtopic.php?f=33&t=73397)),
     savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892) v2.0, v2.1, v2.2 (subject to caveats, see below).
 
-* Changes to the crash log (added in v0.5.0)  
-  Enable stack traces on MinGW, try to demangle C++ symbol names, try to use libbfd for better symbol lookup, handle SIGSEGV while backtracing.
-
 * Miscellaneous  
+  * Various improvements to the crash logger. (added in v0.5.0, v0.12.0, v0.12.1)  
   * Label threads with a descriptive name on supported Unixy platforms. (added in v0.8.1)
 
 * Translations  
