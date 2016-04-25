@@ -182,7 +182,8 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
  * @param show_group If true include group-related stuff.
  * @return Itemlist for dropdown
  */
-DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str)
+DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
+		StringID change_order_str, bool show_create_group)
 {
 	DropDownList *list = new DropDownList();
 
@@ -200,8 +201,9 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 	if (change_order_str != 0) {
 		*list->Append() = new DropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, false);
 	}
-
-	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, false);
+	if (show_create_group) {
+		*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, false);
+	}
 
 	return list;
 }
@@ -1757,7 +1759,7 @@ public:
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
 				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier(this->window_number).type == VL_STANDARD, false,
-						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID());
+						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID(), true);
 				ShowDropDownList(this, list, 0, WID_VL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
