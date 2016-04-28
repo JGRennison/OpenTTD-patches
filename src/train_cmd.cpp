@@ -3445,6 +3445,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 		if (reserved == TRACKDIR_BIT_NONE) {
 			/* next tile is not reserved, so reserve the exit tile */
 			SetTunnelBridgeReservation(tile, true);
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 		}
 	}
 	bool ok = TryPathReserve(t);
