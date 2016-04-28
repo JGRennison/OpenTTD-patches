@@ -126,6 +126,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && !GetTunnelBridgeReservationTrackBits(tile)) {
 				SetTunnelBridgeReservation(tile, true);
 				if (IsTunnelBridgeExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitGreen(tile, true);
+				MarkTileDirtyByTile(tile);
 				return true;
 			}
 			break;
@@ -181,6 +182,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 				SetTunnelBridgeReservation(tile, false);
 				if (IsTunnelBridgeExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitGreen(tile, false);
+				MarkTileDirtyByTile(tile);
 			}
 			break;
 
@@ -275,6 +277,14 @@ static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
 	if (v->type != VEH_TRAIN || (v->vehstatus & VS_CRASHED)) return NULL;
 
 	Train *t = Train::From(v);
+	if (t->track == TRACK_BIT_WORMHOLE) {
+		/* Do not find trains inside signalled bridge/tunnels.
+		 * Trains on the ramp/entrance itself are found though.
+		 */
+		if (IsTileType(info->res.tile, MP_TUNNELBRIDGE) && HasWormholeSignals(info->res.tile) && info->res.tile != TileVirtXY(t->x_pos, t->y_pos)) {
+			return NULL;
+		}
+	}
 	if (t->track == TRACK_BIT_WORMHOLE || HasBit((TrackBits)t->track, TrackdirToTrack(info->res.trackdir))) {
 		t = t->First();
 
