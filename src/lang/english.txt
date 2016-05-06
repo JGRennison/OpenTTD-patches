@@ -1394,8 +1394,6 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Use groups in v
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Enable usage of the advanced vehicle lists for grouping vehicles
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Use loading indicators: {STRING2}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Select whether loading indicators are displayed above loading or unloading vehicles
-STR_CONFIG_SETTING_TIMETABLE_AUTOMATED                          :Automatically manage timetables: {STRING2}
-STR_CONFIG_SETTING_TIMETABLE_AUTOMATED_HELPTEXT                 :Whether to enable automatic timetables
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Show timetable in ticks rather than days: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Show travel times in time tables in game ticks instead of days
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :Use timetable to ensure vehicle separation: {STRING2}

@@ -340,7 +340,6 @@ struct TimetableWindow : Window {
 		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
 		this->SetWidgetLoweredState(WID_VT_AUTOMATE, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 		this->SetWidgetDisabledState(WID_VT_START_DATE, _settings_game.order.timetable_separation);
-		this->SetWidgetDisabledState(WID_VT_AUTOMATE, !_settings_game.order.timetable_automated);
 		this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 		this->SetWidgetDisabledState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 		this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
@@ -661,7 +660,6 @@ struct TimetableWindow : Window {
 	void UpdateSelectionStates()
 	{
 		this->GetWidget<NWidgetStacked>(WID_VT_ARRIVAL_DEPARTURE_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : SZSP_NONE);
-		// this->GetWidget<NWidgetStacked>(TTV_AUTO_SELECTION)->SetDisplayedPlane(!_settings_game.order.timetable_automated ? 0 : 1);
 		this->GetWidget<NWidgetStacked>(WID_VT_EXPECTED_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : 1);
 	}
 };

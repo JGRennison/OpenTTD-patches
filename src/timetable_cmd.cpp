@@ -395,8 +395,6 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	if (!_settings_game.order.timetable_automated) return CMD_ERROR;
-
 	VehicleID veh = GB(p1, 0, 16);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
