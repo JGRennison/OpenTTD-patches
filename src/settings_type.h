@@ -143,6 +143,7 @@ struct GUISettings {
 	bool   enable_signal_gui;                ///< show the signal GUI when the signal button is pressed
 	Year   coloured_news_year;               ///< when does newspaper become coloured?
 	bool   timetable_in_ticks;               ///< whether to show the timetable in ticks rather than days
+	bool   timetable_leftover_ticks;         ///< whether to show leftover ticks after converting to minutes/days, in the timetable
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
 	bool   timetable_start_text_entry;       ///< whether to enter timetable start times as text (hhmm format)
 	uint8  ticks_per_minute;                 ///< how many ticks per minute

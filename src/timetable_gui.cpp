@@ -41,21 +41,28 @@ struct TimetableArrivalDeparture {
 
 /**
  * Set the timetable parameters in the format as described by the setting.
- * @param param1 the first DParam to fill
- * @param param2 the second DParam to fill
+ * @param param the first DParam to fill
  * @param ticks  the number of ticks to 'draw'
  */
-void SetTimetableParams(int param1, int param2, Ticks ticks)
+void SetTimetableParams(int first_param, Ticks ticks)
 {
 	if (_settings_client.gui.timetable_in_ticks) {
-		SetDParam(param2, ticks);
-		SetDParam(param1, STR_TIMETABLE_TICKS);
-	} else if (_settings_client.gui.time_in_minutes) {
-		SetDParam(param2, ticks / DATE_UNIT_SIZE);
-		SetDParam(param1, STR_TIMETABLE_MINUTES);
+		SetDParam(first_param, STR_TIMETABLE_TICKS);
+		SetDParam(first_param + 1, ticks);
 	} else {
-		SetDParam(param2, ticks / DATE_UNIT_SIZE);
-		SetDParam(param1, STR_TIMETABLE_DAYS);
+		StringID str = _settings_client.gui.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_TIMETABLE_DAYS;
+		size_t ratio = DATE_UNIT_SIZE;
+		size_t units = ticks / ratio;
+		size_t leftover = ticks % ratio;
+		if (leftover && _settings_client.gui.timetable_leftover_ticks) {
+			SetDParam(first_param, STR_TIMETABLE_LEFTOVER_TICKS);
+			SetDParam(first_param + 1, str);
+			SetDParam(first_param + 2, units);
+			SetDParam(first_param + 3, leftover);
+		} else {
+			SetDParam(first_param, str);
+			SetDParam(first_param + 1, units);
+		}
 	}
 }
 
@@ -425,7 +432,7 @@ struct TimetableWindow : Window {
 							colour = ((i == selected) ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
 						} else if (!order->IsTravelTimetabled()) {
 							if (order->GetTravelTime() > 0) {
-								SetTimetableParams(0, 1, order->GetTravelTime());
+								SetTimetableParams(0, order->GetTravelTime());
 								string = order->GetMaxSpeed() != UINT16_MAX ?
 										STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED  :
 										STR_TIMETABLE_TRAVEL_FOR_ESTIMATED;
@@ -435,11 +442,11 @@ struct TimetableWindow : Window {
 										STR_TIMETABLE_TRAVEL_NOT_TIMETABLED;
 							}
 						} else {
-							SetTimetableParams(0, 1, order->GetTimetabledTravel());
+							SetTimetableParams(0, order->GetTimetabledTravel());
 							string = order->GetMaxSpeed() != UINT16_MAX ?
 									STR_TIMETABLE_TRAVEL_FOR_SPEED : STR_TIMETABLE_TRAVEL_FOR;
 						}
-						SetDParam(2, order->GetMaxSpeed());
+						SetDParam(string == STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED ? 2 : 4, order->GetMaxSpeed());
 
 						DrawString(rtl ? r.left + WD_FRAMERECT_LEFT : middle, rtl ? middle : r.right - WD_FRAMERECT_LEFT, y, string, colour);
 
@@ -510,7 +517,7 @@ struct TimetableWindow : Window {
 
 				Ticks total_time = v->orders.list != NULL ? v->orders.list->GetTimetableDurationIncomplete() : 0;
 				if (total_time != 0) {
-					SetTimetableParams(0, 1, total_time);
+					SetTimetableParams(0, total_time);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, v->orders.list->IsCompleteTimetable() ? STR_TIMETABLE_TOTAL_TIME : STR_TIMETABLE_TOTAL_TIME_INCOMPLETE);
 				}
 				y += FONT_HEIGHT_NORMAL;
@@ -528,7 +535,7 @@ struct TimetableWindow : Window {
 				} else if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / DATE_UNIT_SIZE == 0)) {
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_TIMETABLE_STATUS_ON_TIME);
 				} else {
-					SetTimetableParams(0, 1, abs(v->lateness_counter));
+					SetTimetableParams(0, abs(v->lateness_counter));
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE);
 				}
 				break;

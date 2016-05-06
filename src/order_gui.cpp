@@ -263,12 +263,12 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	DrawString(left, rtl ? right - 2 * sprite_size.width - 3 : middle, y, STR_ORDER_INDEX, colour, SA_RIGHT | SA_FORCE);
 
 	SetDParam(5, STR_EMPTY);
-	SetDParam(8, STR_EMPTY);
+	SetDParam(10, STR_EMPTY);
 
 	/* Check range for aircraft. */
 	if (v->type == VEH_AIRCRAFT && Aircraft::From(v)->GetRange() > 0 && order->IsGotoOrder()) {
 		const Order *next = order->next != NULL ? order->next : v->GetFirstOrder();
-		if (GetOrderDistance(order, next, v) > Aircraft::From(v)->acache.cached_max_range_sqr) SetDParam(8, STR_ORDER_OUT_OF_RANGE);
+		if (GetOrderDistance(order, next, v) > Aircraft::From(v)->acache.cached_max_range_sqr) SetDParam(10, STR_ORDER_OUT_OF_RANGE);
 	}
 
 	switch (order->GetType()) {
@@ -297,7 +297,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 				if (order->GetWaitTime() > 0) {
 					SetDParam(5, order->IsWaitTimetabled() ? STR_TIMETABLE_STAY_FOR : STR_TIMETABLE_STAY_FOR_ESTIMATED);
-					SetTimetableParams(6, 7, order->GetWaitTime());
+					SetTimetableParams(6, order->GetWaitTime());
 				}
 			} else {
 				SetDParam(3, (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) ? STR_EMPTY : _station_load_types[order->IsRefit()][unload][load]);
@@ -345,7 +345,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			if (timetable) {
 				if (order->GetWaitTime() > 0) {
 					SetDParam(5, order->IsWaitTimetabled() ? STR_TIMETABLE_STAY_FOR : STR_TIMETABLE_STAY_FOR_ESTIMATED);
-					SetTimetableParams(6, 7, order->GetWaitTime());
+					SetTimetableParams(6, order->GetWaitTime());
 				}
 			}
 			break;
@@ -402,7 +402,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 			if (timetable && order->GetWaitTime() > 0) {
 				SetDParam(5, order->IsWaitTimetabled() ? STR_TIMETABLE_AND_TRAVEL_FOR : STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED);
-				SetTimetableParams(6, 7, order->GetWaitTime());
+				SetTimetableParams(6, order->GetWaitTime());
 			} else {
 				SetDParam(5, STR_EMPTY);
 			}

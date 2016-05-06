@@ -1589,6 +1589,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
 			interface->Add(new SettingEntry("gui.advanced_vehicle_list"));
 			interface->Add(new SettingEntry("gui.timetable_in_ticks"));
+			interface->Add(new SettingEntry("gui.timetable_leftover_ticks"));
 			interface->Add(new SettingEntry("gui.timetable_arrival_departure"));
 			interface->Add(new SettingEntry("gui.expenses_layout"));
 			interface->Add(new SettingEntry("gui.show_train_length_in_details"));
