@@ -541,6 +541,7 @@ struct CompanySettings {
 	bool renew_keep_length;                  ///< sell some wagons if after autoreplace the train is longer than before
 	VehicleDefaultSettings vehicle;          ///< default settings for vehicles
 	uint8  auto_timetable_separation_rate;   ///< percentage of auto timetable separation change to apply
+	uint16 timetable_autofill_rounding;      ///< round up timetable times to be a multiple of this number of ticks
 };
 
 /** All settings together for the game. */

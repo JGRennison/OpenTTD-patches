@@ -1404,6 +1404,8 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :Auto timetable 
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :How much of the vehicle separation auto timetable change to apply at each step
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Show arrival and departure in timetables: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Display anticipated arrival and departure times in timetables
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :Round up auto-filled timetable times to multiples of this many ticks: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :Timetable times adjusted by timetable automation are not rounded. A day at a a day length of 1 is 74 ticks.
 STR_CONFIG_SETTING_QUICKGOTO                                    :Quick creation of vehicle orders: {STRING2}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Pre-select the 'goto cursor' when opening the orders window
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Default rail type (after new game/game load): {STRING2}

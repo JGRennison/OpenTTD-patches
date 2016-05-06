@@ -1588,6 +1588,7 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("vehicle.servint_aircraft"));
 			company->Add(new SettingEntry("vehicle.auto_timetable_by_default"));
 			company->Add(new SettingEntry("auto_timetable_separation_rate"));
+			company->Add(new SettingEntry("timetable_autofill_rounding"));
 		}
 
 		SettingsPage *accounting = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCOUNTING));
