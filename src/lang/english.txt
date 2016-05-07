@@ -1394,10 +1394,12 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Use groups in v
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Enable usage of the advanced vehicle lists for grouping vehicles
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Use loading indicators: {STRING2}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Select whether loading indicators are displayed above loading or unloading vehicles
+STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT                    :Use automatic timetables by default: {STRING2}
+STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :Choose whether automatic timetables should by automatically enabled for new vehicles
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Use timetable to ensure vehicle separation by default: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Choose whether to ensure separation of vehicles should by automatically enabled for new vehicles
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Show timetable in ticks rather than days: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Show travel times in time tables in game ticks instead of days
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :Use timetable to ensure vehicle separation: {STRING2}
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT                :Select whether to ensure separation of vehicles when using automatic timetables
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :Auto timetable vehicle separation factor: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :How much of the vehicle separation auto timetable change to apply at each step
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Show arrival and departure in timetables: {STRING2}
@@ -1478,8 +1480,6 @@ STR_CONFIG_SETTING_SERVINT_AIRCRAFT                             :Default service
 STR_CONFIG_SETTING_SERVINT_AIRCRAFT_HELPTEXT                    :Set the default service interval for new aircraft, if no explicit service interval is set for the vehicle
 STR_CONFIG_SETTING_SERVINT_SHIPS                                :Default service interval for ships: {STRING2}
 STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :Set the default service interval for new ships, if no explicit service interval is set for the vehicle
-STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT                    :Use automatic timetables by default
-STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :Choose whether automatic timetables should by automatically enabled for new vehicles
 STR_CONFIG_SETTING_NOSERVICE                                    :Disable servicing when breakdowns set to none: {STRING2}
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :When enabled, vehicles do not get serviced if they cannot break down
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Enable wagon speed limits: {STRING2}
@@ -3947,6 +3947,9 @@ STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}Fill the
 
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automate
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Manage the timetables automatically by updating the values for each journey (Ctrl+Click when disabling to keep the current timetable)
+
+STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}Auto Separation
+STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}Automatically adjust timetable start times to ensure vehicle separation
 
 STR_TIMETABLE_EXPECTED                                          :{BLACK}Expected
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Scheduled

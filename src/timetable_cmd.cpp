@@ -443,6 +443,41 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 	return CommandCost();
 }
 
+/**
+ * Enable or disable auto timetable separation
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index.
+ * @param p2 Various bitstuffed elements
+ * - p2 = (bit 0) - Set to 1 to enable, 0 to disable auto separatiom.
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdTimetableSeparation(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (flags & DC_EXEC) {
+		for (Vehicle *v2 = v->FirstShared(); v2 != NULL; v2 = v2->NextShared()) {
+			if (HasBit(p2, 0)) {
+				SetBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION);
+			} else {
+				ClrBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION);
+			}
+			v2->ClearSeparation();
+			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
+		}
+	}
+
+	return CommandCost();
+}
+
 static inline bool IsOrderUsableForSeparation(const Order *order)
 {
 	if (order->IsType(OT_CONDITIONAL)) {
@@ -594,7 +629,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		v->ClearSeparation();
 		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 		v->lateness_counter = 0;
-		if (_settings_game.order.timetable_separation) UpdateSeparationOrder(v);
+		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) UpdateSeparationOrder(v);
 		for (v = v->FirstShared(); v != NULL; v = v->NextShared()) {
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 		}
@@ -716,7 +751,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	 * when this happens. */
 	if (timetabled == 0 && (travelling || v->lateness_counter >= 0)) return;
 
-	if (_settings_game.order.timetable_separation && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
+	if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 		v->current_order_time = time_taken;
 		v->current_loading_time = time_loading;
 		UpdateSeparationOrder(v);

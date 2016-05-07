@@ -1587,6 +1587,7 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("vehicle.servint_ships"));
 			company->Add(new SettingEntry("vehicle.servint_aircraft"));
 			company->Add(new SettingEntry("vehicle.auto_timetable_by_default"));
+			company->Add(new SettingEntry("vehicle.auto_separation_by_default"));
 			company->Add(new SettingEntry("auto_timetable_separation_rate"));
 			company->Add(new SettingEntry("timetable_autofill_rounding"));
 		}
@@ -1629,7 +1630,6 @@ static SettingsContainer &GetSettingsTree()
 
 			vehicles->Add(new SettingEntry("order.no_servicing_if_no_breakdowns"));
 			vehicles->Add(new SettingEntry("order.serviceathelipad"));
-			vehicles->Add(new SettingEntry("order.timetable_separation"));
 		}
 
 		SettingsPage *limitations = main->Add(new SettingsPage(STR_CONFIG_SETTING_LIMITATIONS));

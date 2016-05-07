@@ -210,7 +210,7 @@ uint Vehicle::Crash(bool flooded)
 	}
 
 	this->ClearSeparation();
-	if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 
 	/* Dirty some windows */
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(this->type), 0);
@@ -2231,7 +2231,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 				this->current_order.SetDepotOrderType(ODTF_MANUAL);
 				this->current_order.SetDepotActionType(halt_in_depot ? ODATF_SERVICE_ONLY : ODATFB_HALT);
 				this->ClearSeparation();
-				if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+				if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			}
 			return CommandCost();
@@ -2249,7 +2249,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 			}
 
 			this->ClearSeparation();
-			if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+			if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 
 			this->current_order.MakeDummy();
 			SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -2702,7 +2702,7 @@ void Vehicle::RemoveFromShared()
 	this->previous_shared = NULL;
 
 	this->ClearSeparation();
-	if (_settings_game.order.timetable_separation) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 
 void VehiclesYearlyLoop()

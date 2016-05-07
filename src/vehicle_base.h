@@ -54,6 +54,7 @@ enum VehicleFlags {
 	// Additional flags not in trunk are added at the end to avoid clashing with any new
 	// flags which get added in future trunk, and to avoid re-ordering flags which are in trunk already,
 	// as this breaks savegame compatibility.
+	VF_TIMETABLE_SEPARATION = 14,///< Whether the vehicle should manage the timetable automatically.
 	VF_AUTOMATE_TIMETABLE = 15, ///< Whether the vehicle should manage the timetable automatically.
 };
 

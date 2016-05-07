@@ -438,9 +438,9 @@ struct OrderSettings {
 	bool   gradual_loading;                  ///< load vehicles gradually
 	bool   selectgoods;                      ///< only send the goods to station if a train has been there
 	bool   no_servicing_if_no_breakdowns;    ///< don't send vehicles to depot when breakdowns are disabled
-	bool   timetable_separation;             ///< whether to perform automatic separation based on timetable
 	bool   serviceathelipad;                 ///< service helicopters at helipads automatically (no need to send to depot)
 
+	bool   old_timetable_separation;         ///< moved to company settings: whether to perform automatic separation based on timetable
 	uint8  old_timetable_separation_rate;    ///< moved to company settings: percentage of timetable separation change to apply
 };
 
@@ -530,6 +530,7 @@ struct VehicleDefaultSettings {
 	uint16 servint_aircraft;                 ///< service interval for aircraft
 	uint16 servint_ships;                    ///< service interval for ships
 	bool   auto_timetable_by_default;        ///< use automatic timetables by default
+	bool   auto_separation_by_default;       ///< use automatic timetable separation by default
 };
 
 /** Settings that can be set per company. */

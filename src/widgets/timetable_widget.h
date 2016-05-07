@@ -26,6 +26,7 @@ enum VehicleTimetableWidgets {
 	WID_VT_RESET_LATENESS,              ///< Reset lateness button.
 	WID_VT_AUTOFILL,                    ///< Autofill button.
 	WID_VT_AUTOMATE,                    ///< Automate button.
+	WID_VT_AUTO_SEPARATION,             ///< Auto separation button.
 	WID_VT_EXPECTED,                    ///< Toggle between expected and scheduled arrivals.
 	WID_VT_SHARED_ORDER_LIST,           ///< Show the shared order list.
 	WID_VT_ARRIVAL_DEPARTURE_SELECTION, ///< Disable/hide the arrival departure panel.

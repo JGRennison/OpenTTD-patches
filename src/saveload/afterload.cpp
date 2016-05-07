@@ -2975,6 +2975,11 @@ bool AfterLoadGame()
 		FOR_ALL_STATIONS(st) UpdateStationAcceptance(st, false);
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 3)) {
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) SB(v->vehicle_flags, VF_TIMETABLE_SEPARATION, 1, _settings_game.order.old_timetable_separation);
+	}
+
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
 	AfterLoadLabelMaps();
