@@ -440,8 +440,6 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	if (!_settings_game.order.timetable_automated) return CMD_ERROR;
-
 	VehicleID veh = GB(p1, 0, 16);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
@@ -483,6 +481,41 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 					}
 				}
 			}
+			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
+		}
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Enable or disable auto timetable separation
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index.
+ * @param p2 Various bitstuffed elements
+ * - p2 = (bit 0) - Set to 1 to enable, 0 to disable auto separatiom.
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdTimetableSeparation(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (flags & DC_EXEC) {
+		for (Vehicle *v2 = v->FirstShared(); v2 != NULL; v2 = v2->NextShared()) {
+			if (HasBit(p2, 0)) {
+				SetBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION);
+			} else {
+				ClrBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION);
+			}
+			v2->ClearSeparation();
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 		}
 	}
@@ -641,7 +674,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		v->ClearSeparation();
 		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 		v->lateness_counter = 0;
-		if (_settings_game.order.timetable_separation) UpdateSeparationOrder(v);
+		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) UpdateSeparationOrder(v);
 		for (v = v->FirstShared(); v != NULL; v = v->NextShared()) {
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 		}
@@ -682,16 +715,18 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	/* Before modifying waiting times, check whether we want to preserve bigger ones. */
 	if (!real_current_order->IsType(OT_CONDITIONAL) &&
 			(travelling || time_taken > real_current_order->GetWaitTime() || remeasure_wait_time)) {
-		/* Round the time taken up to the nearest day, as this will avoid
-		 * confusion for people who are timetabling in days, and can be
-		 * adjusted later by people who aren't.
+		/* Round the time taken up to the nearest timetable rounding factor
+		 * (default: day), as this will avoid confusion for people who are
+		 * timetabling in days, and can be adjusted later by people who aren't.
 		 * For trains/aircraft multiple movement cycles are done in one
 		 * tick. This makes it possible to leave the station and process
 		 * e.g. a depot order in the same tick, causing it to not fill
 		 * the timetable entry like is done for road vehicles/ships.
 		 * Thus always make sure at least one tick is used between the
 		 * processing of different orders when filling the timetable. */
-		uint time_to_set = CeilDiv(max(time_taken, 1U), DAY_TICKS) * DAY_TICKS;
+		Company *owner = Company::GetIfValid(v->owner);
+		uint rounding_factor = owner ? owner->settings.timetable_autofill_rounding : DAY_TICKS;
+		uint time_to_set = CeilDiv(max(time_taken, 1U), rounding_factor) * rounding_factor;
 
 		if (travelling && (autofilling || !real_current_order->IsTravelTimetabled())) {
 			ChangeTimetable(v, v->cur_real_order_index, time_to_set, MTF_TRAVEL_TIME, autofilling);
@@ -761,7 +796,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	 * when this happens. */
 	if (timetabled == 0 && (travelling || v->lateness_counter >= 0)) return;
 
-	if (_settings_game.order.timetable_separation && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
+	if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 		v->current_order_time = time_taken;
 		v->current_loading_time = time_loading;
 		UpdateSeparationOrder(v);

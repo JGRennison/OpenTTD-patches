@@ -1221,7 +1221,7 @@ CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		InvalidateVehicleOrder(v, VIWD_MODIFY_ORDERS);
 
 		v->ClearSeparation();
-		if (_settings_game.order.timetable_separation) ClrBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
+		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 	}
 
 	/* We have an aircraft/ship, they have a mini-schedule, so update them all */
@@ -1717,11 +1717,17 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				} else {
 					ClrBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
 				}
+				/* Set auto separation bit if target has it. */
+				if (HasBit(src->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+					SetBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				} else {
+					ClrBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				}
 				ClrBit(dst->vehicle_flags, VF_AUTOFILL_TIMETABLE);
 				ClrBit(dst->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 
 				dst->ClearSeparation();
-				if (_settings_game.order.timetable_separation) ClrBit(dst->vehicle_flags, VF_TIMETABLE_STARTED);
+				if (HasBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(dst->vehicle_flags, VF_TIMETABLE_STARTED);
 
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 				InvalidateVehicleOrder(src, VIWD_MODIFY_ORDERS);
@@ -1794,6 +1800,12 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					ClrBit(dst->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 				} else {
 					ClrBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+				}
+				/* Set auto separation bit if target has it. */
+				if (HasBit(src->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+					SetBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				} else {
+					ClrBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
 				}
 
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);

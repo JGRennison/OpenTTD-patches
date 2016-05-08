@@ -358,6 +358,11 @@ struct TimetableWindow : Window {
 			this->SetWidgetDisabledState(WID_VT_RESET_LATENESS, v->orders.list == NULL);
 			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders.list == NULL);
 			this->EnableWidget(WID_VT_AUTOMATE);
+			this->EnableWidget(WID_VT_AUTO_SEPARATION);
+			this->SetWidgetDisabledState(WID_VT_START_DATE, HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
+			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+			this->SetWidgetDisabledState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 		} else {
 			this->DisableWidget(WID_VT_START_DATE);
 			this->DisableWidget(WID_VT_CHANGE_TIME);
@@ -367,16 +372,13 @@ struct TimetableWindow : Window {
 			this->DisableWidget(WID_VT_RESET_LATENESS);
 			this->DisableWidget(WID_VT_AUTOFILL);
 			this->DisableWidget(WID_VT_AUTOMATE);
+			this->DisableWidget(WID_VT_AUTO_SEPARATION);
 			this->DisableWidget(WID_VT_SHARED_ORDER_LIST);
 		}
 
 		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
 		this->SetWidgetLoweredState(WID_VT_AUTOMATE, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-		this->SetWidgetDisabledState(WID_VT_START_DATE, _settings_game.order.timetable_separation);
-		this->SetWidgetDisabledState(WID_VT_AUTOMATE, !_settings_game.order.timetable_automated);
-		this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-		this->SetWidgetDisabledState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-		this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+		this->SetWidgetLoweredState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
 
 		this->DrawWidgets();
 	}
@@ -667,6 +669,13 @@ struct TimetableWindow : Window {
 				break;
 			}
 
+			case WID_VT_AUTO_SEPARATION: {
+				uint32 p2 = 0;
+				if (!HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) SetBit(p2, 0);
+				DoCommandP(0, v->index, p2, CMD_TIMETABLE_SEPARATION | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				break;
+			}
+
 			case WID_VT_EXPECTED:
 				this->show_expected = !this->show_expected;
 				break;
@@ -735,7 +744,6 @@ struct TimetableWindow : Window {
 	void UpdateSelectionStates()
 	{
 		this->GetWidget<NWidgetStacked>(WID_VT_ARRIVAL_DEPARTURE_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : SZSP_NONE);
-		// this->GetWidget<NWidgetStacked>(TTV_AUTO_SELECTION)->SetDisplayedPlane(!_settings_game.order.timetable_automated ? 0 : 1);
 		this->GetWidget<NWidgetStacked>(WID_VT_EXPECTED_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : 1);
 	}
 
@@ -790,6 +798,7 @@ static const NWidgetPart _nested_timetable_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_START_DATE), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_STARTING_DATE, STR_TIMETABLE_STARTING_DATE_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_AUTO_SEPARATION), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_AUTO_SEPARATION, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_RESET_LATENESS), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_RESET_LATENESS, STR_TIMETABLE_RESET_LATENESS_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),

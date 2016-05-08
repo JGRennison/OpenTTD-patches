@@ -481,11 +481,10 @@ struct OrderSettings {
 	bool   gradual_loading;                  ///< load vehicles gradually
 	bool   selectgoods;                      ///< only send the goods to station if a train has been there
 	bool   no_servicing_if_no_breakdowns;    ///< don't send vehicles to depot when breakdowns are disabled
-	bool   timetable_automated;              ///< whether to automatically manage timetables
-	bool   timetable_separation;             ///< whether to perform automatic separation based on timetable
 	bool   serviceathelipad;                 ///< service helicopters at helipads automatically (no need to send to depot)
 
 	uint8  old_occupancy_smoothness;         ///< moved to company settings: percentage smoothness of occupancy measurement changes
+	bool   old_timetable_separation;         ///< moved to company settings: whether to perform automatic separation based on timetable
 	uint8  old_timetable_separation_rate;    ///< moved to company settings: percentage of timetable separation change to apply
 };
 
@@ -588,6 +587,7 @@ struct VehicleDefaultSettings {
 	uint16 servint_aircraft;                 ///< service interval for aircraft
 	uint16 servint_ships;                    ///< service interval for ships
 	bool   auto_timetable_by_default;        ///< use automatic timetables by default
+	bool   auto_separation_by_default;       ///< use automatic timetable separation by default
 };
 
 /** Settings that can be set per company. */
@@ -600,6 +600,7 @@ struct CompanySettings {
 	uint8 order_occupancy_smoothness;        ///< percentage smoothness of occupancy measurement changes
 	uint8  auto_timetable_separation_rate;   ///< percentage of auto timetable separation change to apply
 	bool infra_others_buy_in_depot[4];       ///< other companies can buy/autorenew in this companies depots (where infra sharing enabled)
+	uint16 timetable_autofill_rounding;      ///< round up timetable times to be a multiple of this number of ticks
 };
 
 /** All settings together for the game. */

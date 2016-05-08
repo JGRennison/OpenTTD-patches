@@ -1640,7 +1640,9 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("vehicle.servint_ships"));
 			company->Add(new SettingEntry("vehicle.servint_aircraft"));
 			company->Add(new SettingEntry("vehicle.auto_timetable_by_default"));
+			company->Add(new SettingEntry("vehicle.auto_separation_by_default"));
 			company->Add(new SettingEntry("auto_timetable_separation_rate"));
+			company->Add(new SettingEntry("timetable_autofill_rounding"));
 			company->Add(new SettingEntry("order_occupancy_smoothness"));
 			company->Add(new SettingEntry("company.infra_others_buy_in_depot[0]"));
 			company->Add(new SettingEntry("company.infra_others_buy_in_depot[1]"));
@@ -1688,8 +1690,6 @@ static SettingsContainer &GetSettingsTree()
 
 			vehicles->Add(new SettingEntry("order.no_servicing_if_no_breakdowns"));
 			vehicles->Add(new SettingEntry("order.serviceathelipad"));
-			vehicles->Add(new SettingEntry("order.timetable_automated"));
-			vehicles->Add(new SettingEntry("order.timetable_separation"));
 			vehicles->Add(new SettingEntry("vehicle.adjacent_crossings"));
 		}
 

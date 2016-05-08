@@ -494,9 +494,12 @@ static void Load_PLYR()
 		SaveLoad_PLYR(c);
 		_company_colours[index] = (Colours)c->colour;
 
-		// setting moved from game settings to company settings
+		// settings moved from game settings to company settings
 		if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 2)) {
 			c->settings.auto_timetable_separation_rate = _settings_game.order.old_timetable_separation_rate;
+		}
+		if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 3)) {
+			c->settings.vehicle.auto_separation_by_default = _settings_game.order.old_timetable_separation;
 		}
 	}
 }
