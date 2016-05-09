@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.13.1 (2016-05-09)
+* Fix crash when using erroneously present create group from vehicle list menu item in vehicle group GUI, remove menu item from vehicle group GUI.
+* Fix incorrect calculation of final delivery payment after a transfer.
+* Signals on bridges/tunnels:
+  * Fix trains not leaving stations by PBS into non-empty signalled bridge/tunnels.
+  * Fix signalled bridge/tunnel not always being redrawn on (un)reservation.
+* Auto timetables:
+  * Timetable auto separation is now per vehicle, with a company setting for the default. Remove global on-off settings.
+  * Fix automate, start date, change time and autofill buttons being shown enabled for other companies' vehicles.
+  * Add client setting to show the remainder ticks in timetable, after dividing to days or minutes.
+  * Add a company setting to control the number of ticks used in auto-fill timetable rounding.
+* Bump trunk base from r27547 to r27555
+
 ### v0.13.0 (2016-04-19)
 * Fix crash when dragging two-directional block signals onto a bridge or tunnel.
 * Add polyline rail track building tool.

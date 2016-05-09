@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.13.0
+## JGR's Patchpack version 0.13.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -68,10 +68,12 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Automated timetables and separation: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=46391)  
   * Auto timetabling: Bias timetable adjustment to favour negative adjustments; this is to avoid positive feedback between congestion delays and increased timetable length. Reduce jam detection threshold.  
-  * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Add a company setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
-  * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
-  * Add a company setting to enable automatic timetabling for new vehicles.  
-  * Allow changing/clearing the timetabled waiting time and max speed of all of a vehicle's orders at once.
+  * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Change to a per-vehicle setting. Add a company setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
+  * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.
+  * Add company settings to enable automatic timetabling or separation for new vehicles.  
+  * Allow changing/clearing the timetabled waiting time and max speed of all of a vehicle's orders at once.  
+  * Add client setting to show the remainder ticks in timetable, after dividing to days or minutes.  
+  * Add a company setting to control the number of ticks used in auto-fill timetable rounding.
 
 * Vehicle repair cost: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=45642)
 
