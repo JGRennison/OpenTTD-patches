@@ -348,21 +348,17 @@ struct TimetableWindow : Window {
 			}
 			bool disable_speed = disable || selected % 2 != 1 || v->type == VEH_AIRCRAFT;
 
-			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable);
-			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable);
+			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 			this->SetWidgetDisabledState(WID_VT_CHANGE_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_CLEAR_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !v->IsOrderListShared());
 
-			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders.list == NULL);
+			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders.list == NULL || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
 			this->SetWidgetDisabledState(WID_VT_RESET_LATENESS, v->orders.list == NULL);
-			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders.list == NULL);
+			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders.list == NULL || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 			this->EnableWidget(WID_VT_AUTOMATE);
 			this->EnableWidget(WID_VT_AUTO_SEPARATION);
-			this->SetWidgetDisabledState(WID_VT_START_DATE, HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
-			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-			this->SetWidgetDisabledState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 		} else {
 			this->DisableWidget(WID_VT_START_DATE);
 			this->DisableWidget(WID_VT_CHANGE_TIME);
