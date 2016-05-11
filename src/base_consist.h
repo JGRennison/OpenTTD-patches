@@ -24,6 +24,7 @@ struct BaseConsist {
 	uint32 current_order_time;          ///< How many ticks have passed since this order started.
 	int32 lateness_counter;             ///< How many ticks late (or early if negative) this vehicle is.
 	DateTicks timetable_start;          ///< When the vehicle is supposed to start the timetable.
+	uint16 timetable_start_subticks;    ///< When the vehicle is supposed to start the timetable: sub-ticks.
 
 	uint16 service_interval;            ///< The interval for (automatic) servicing; either in days or %.
 

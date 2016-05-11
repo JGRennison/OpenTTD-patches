@@ -148,7 +148,10 @@ struct SetDateWindow : Window {
 				ShowDateDropDown(widget);
 				break;
 			case WID_SD_SET_DATE:
-				if (this->callback != NULL) this->callback(this, ConvertYMDToDate(this->date.year, this->date.month, this->date.day) * DAY_TICKS);
+				if (this->callback != NULL) {
+					this->callback(this, ConvertYMDToDate(this->date.year, this->date.month, this->date.day)
+							* DAY_TICKS * _settings_game.economy.day_length_factor);
+				}
 				delete this;
 				break;
 		}
@@ -178,9 +181,9 @@ struct SetMinutesWindow : SetDateWindow
 	Minutes minutes;
 
 	/** Constructor. */
-	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, DateTicks initial_date, Year min_year, Year max_year, SetDateCallback *callback) :
+	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, DateTicksScaled initial_date, Year min_year, Year max_year, SetDateCallback *callback) :
 		SetDateWindow(desc, window_number, parent, initial_date, min_year, max_year, callback),
-		minutes(initial_date * _settings_game.economy.day_length_factor / _settings_client.gui.ticks_per_minute)
+		minutes(initial_date / _settings_client.gui.ticks_per_minute)
 	{
 	}
 
@@ -264,8 +267,7 @@ struct SetMinutesWindow : SetDateWindow
 
 			case WID_SD_SET_DATE:
 				if (this->callback != NULL) {
-					this->callback(this, (((DateTicks)minutes - _settings_client.gui.clock_offset) * _settings_client.gui.ticks_per_minute)
-							/ _settings_game.economy.day_length_factor);
+					this->callback(this, ((DateTicks)minutes - _settings_client.gui.clock_offset) * _settings_client.gui.ticks_per_minute);
 				}
 				delete this;
 				break;
@@ -358,13 +360,15 @@ static WindowDesc _set_minutes_desc(
  * @param max_year the maximum year (inclusive) to show in the year dropdown
  * @param callback the callback to call once a date has been selected
  */
-void ShowSetDateWindow(Window *parent, int window_number, DateTicks initial_date, Year min_year, Year max_year, SetDateCallback *callback)
+void ShowSetDateWindow(Window *parent, int window_number, DateTicksScaled initial_date, Year min_year, Year max_year, SetDateCallback *callback)
 {
 	DeleteWindowByClass(WC_SET_DATE);
 
 	if (!_settings_client.gui.time_in_minutes) {
-		new SetDateWindow(&_set_date_desc, window_number, parent, initial_date / DAY_TICKS, min_year, max_year, callback);
+		new SetDateWindow(&_set_date_desc, window_number, parent, initial_date / (DAY_TICKS * _settings_game.economy.day_length_factor), min_year, max_year, callback);
 	} else {
-		new SetMinutesWindow(&_set_minutes_desc, window_number, parent, initial_date + (_settings_client.gui.clock_offset * _settings_client.gui.ticks_per_minute), min_year, max_year, callback);
+		new SetMinutesWindow(&_set_minutes_desc, window_number, parent,
+				initial_date + (_settings_game.economy.day_length_factor * (_settings_client.gui.clock_offset * _settings_client.gui.ticks_per_minute)),
+				min_year, max_year, callback);
 	}
 }

@@ -673,6 +673,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Vehicle, current_order.travel_time,   SLE_UINT16,            67, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, current_order.max_speed,     SLE_UINT16,           174, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, timetable_start,       SLE_INT32,                  129, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, timetable_start_subticks,   SLE_UINT16,             0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 2)),
 
 		 SLE_CONDREF(Vehicle, orders,                REF_ORDER,                    0, 104),
 		 SLE_CONDREF(Vehicle, orders,                REF_ORDERLIST,              105, SL_MAX_VERSION),

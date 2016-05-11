@@ -3113,6 +3113,12 @@ bool AfterLoadGame()
 			}
 		}
 	}
+	if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2)) {
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			v->timetable_start_subticks = 0;
+		}
+	}
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {
 		/*

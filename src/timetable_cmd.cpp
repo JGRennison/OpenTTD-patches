@@ -315,6 +315,7 @@ static int CDECL VehicleTimetableSorter(Vehicle * const *ap, Vehicle * const *bp
  * @param p1 Various bitstuffed elements
  * - p1 = (bit 0-19) - Vehicle ID.
  * - p1 = (bit 20)   - Set to 1 to set timetable start for all vehicles sharing this order
+ * - p1 = (bit 21-31)- Timetable start date: sub-ticks
  * @param p2 The timetable start date.
  * @param text Not used.
  * @return The error or cost of the operation.
@@ -323,6 +324,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 {
 	bool timetable_all = HasBit(p1, 20);
 	Vehicle *v = Vehicle::GetIfValid(GB(p1, 0, 20));
+	uint16 sub_ticks = GB(p1, 21, 11);
 	if (v == NULL || !v->IsPrimaryVehicle() || v->orders.list == NULL) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
@@ -330,7 +332,8 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 	if (timetable_all && !v->orders.list->IsCompleteTimetable()) return CMD_ERROR;
 
-	DateTicks start_date = ((DateTicks)_date * DAY_TICKS) + _date_fract + (DateTicks)(int32)p2;
+	const DateTicksScaled now = CURRENT_SCALED_TICKS;
+	DateTicksScaled start_date_scaled = (_settings_game.economy.day_length_factor * (((DateTicks)_date * DAY_TICKS) + _date_fract + (DateTicks)(int32)p2)) + sub_ticks;
 
 	if (flags & DC_EXEC) {
 		SmallVector<Vehicle *, 8> vehs;
@@ -359,10 +362,12 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
-			w->timetable_start = start_date + idx * total_duration / (num_vehs * _settings_game.economy.day_length_factor);
-			if (w->timetable_start < (((DateTicks)_date * DAY_TICKS) + _date_fract) && idx < 0) {
-				w->timetable_start += (total_duration / _settings_game.economy.day_length_factor);
+			DateTicksScaled tt_start = start_date_scaled + ((idx * total_duration) / num_vehs);
+			if (tt_start < now && idx < 0) {
+				tt_start += total_duration;
 			}
+			w->timetable_start = tt_start / _settings_game.economy.day_length_factor;
+			w->timetable_start_subticks = tt_start % _settings_game.economy.day_length_factor;
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
 		}
 
@@ -407,6 +412,7 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			if (HasBit(p2, 1)) SetBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 
 			v->timetable_start = 0;
+			v->timetable_start_subticks = 0;
 			v->lateness_counter = 0;
 		} else {
 			ClrBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE);
@@ -457,6 +463,7 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 				ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 				v2->timetable_start = 0;
+				v->timetable_start_subticks = 0;
 				v2->lateness_counter = 0;
 				v2->current_loading_time = 0;
 				v2->ClearSeparation();
@@ -470,6 +477,7 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 					/* Ctrl wasn't pressed, so clear all timetabled times. */
 					SetBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 					v2->timetable_start = 0;
+					v->timetable_start_subticks = 0;
 					v2->lateness_counter = 0;
 					v2->current_loading_time = 0;
 					OrderList *orders = v2->orders.list;
@@ -690,8 +698,9 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
-			v->lateness_counter = ((_date * DAY_TICKS) + _date_fract - v->timetable_start) * _settings_game.economy.day_length_factor + _tick_skip_counter;
+			v->lateness_counter = CURRENT_SCALED_TICKS - ((_settings_game.economy.day_length_factor * v->timetable_start) + v->timetable_start_subticks);
 			v->timetable_start = 0;
+			v->timetable_start_subticks = 0;
 		}
 
 		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);

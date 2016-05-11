@@ -152,9 +152,11 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
  * @param p1 The p1 parameter to send to CmdSetTimetableStart
  * @param date the actually chosen date
  */
-static void ChangeTimetableStartIntl(uint32 p1, DateTicks date)
+static void ChangeTimetableStartIntl(uint32 p1, DateTicksScaled date)
 {
-	DoCommandP(0, p1, (Ticks)(date - (((DateTicks)_date * DAY_TICKS) + _date_fract)), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+	DateTicks date_part = date / _settings_game.economy.day_length_factor;
+	uint32 sub_ticks = date % _settings_game.economy.day_length_factor;
+	DoCommandP(0, p1 | (sub_ticks << 21), (Ticks)(date_part - (((DateTicks)_date * DAY_TICKS) + _date_fract)), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 }
 
 /**
@@ -162,7 +164,7 @@ static void ChangeTimetableStartIntl(uint32 p1, DateTicks date)
  * @param window the window related to the setting of the date
  * @param date the actually chosen date
  */
-static void ChangeTimetableStartCallback(const Window *w, DateTicks date)
+static void ChangeTimetableStartCallback(const Window *w, DateTicksScaled date)
 {
 	ChangeTimetableStartIntl(w->window_number, date);
 }
@@ -524,7 +526,7 @@ struct TimetableWindow : Window {
 					/* We are running towards the first station so we can start the
 					 * timetable at the given time. */
 					SetDParam(0, STR_JUST_DATE_WALLCLOCK_TINY);
-					SetDParam(1, v->timetable_start * _settings_game.economy.day_length_factor);
+					SetDParam(1, (v->timetable_start * _settings_game.economy.day_length_factor) + v->timetable_start_subticks);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_TIMETABLE_STATUS_START_AT);
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"
@@ -583,7 +585,7 @@ struct TimetableWindow : Window {
 					ShowQueryString(str, STR_TIMETABLE_STARTING_DATE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					ShowSetDateWindow(this, v->index | (v->orders.list->IsCompleteTimetable() && _ctrl_pressed ? 1U << 20 : 0),
-							((DateTicks)_date * DAY_TICKS) + _date_fract, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
+							CURRENT_SCALED_TICKS, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
 				}
 				break;
 
@@ -720,7 +722,6 @@ struct TimetableWindow : Window {
 
 					if (val < (CURRENT_MINUTE - 60)) val += 60 * 24;
 					val *= _settings_client.gui.ticks_per_minute;
-					val /= _settings_game.economy.day_length_factor;
 					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), val);
 				}
 				break;
