@@ -497,28 +497,9 @@ static CallBackFunction MenuClickMap(int index)
 
 /* --- Town button menu --- */
 
-enum TownMenuEntries {
-	TME_SHOW_TOWNDIRECTORY = 0,
-	TME_SHOW_FOUNDTOWN,
-	TME_SHOW_BUILDHOUSE,
-};
-
 static CallBackFunction ToolbarTownClick(Window *w)
 {
-	DropDownList *list = new DropDownList();
-	*list->Append() = new DropDownListStringItem(STR_TOWN_MENU_TOWN_DIRECTORY, TME_SHOW_TOWNDIRECTORY, false);
-
-	/* Hide "found town" and "fund new house" if we are a spectator */
-	if (_local_company != COMPANY_SPECTATOR) {
-		if (_game_mode == GM_EDITOR || _settings_game.economy.found_town != TF_FORBIDDEN) {
-			*list->Append() = new DropDownListStringItem(STR_TOWN_MENU_FOUND_TOWN, TME_SHOW_FOUNDTOWN, false);
-		}
-		if (_game_mode == GM_EDITOR || _settings_game.economy.allow_placing_houses) {
-			*list->Append() = new DropDownListStringItem(STR_TOWN_MENU_FUND_HOUSE, TME_SHOW_BUILDHOUSE, false);
-		}
-	}
-
-	PopupMainToolbMenu(w, WID_TN_TOWNS, list, TME_SHOW_TOWNDIRECTORY);
+	PopupMainToolbMenu(w, WID_TN_TOWNS, STR_TOWN_MENU_TOWN_DIRECTORY, (_settings_game.economy.found_town == TF_FORBIDDEN) ? 1 : 2);
 	return CBF_NONE;
 }
 
@@ -531,9 +512,10 @@ static CallBackFunction ToolbarTownClick(Window *w)
 static CallBackFunction MenuClickTown(int index)
 {
 	switch (index) {
-		case TME_SHOW_TOWNDIRECTORY: ShowTownDirectory(); break;
-		case TME_SHOW_FOUNDTOWN:     ShowFoundTownWindow(); break;
-		case TME_SHOW_BUILDHOUSE:    ShowBuildHousePicker(); break;
+		case 0: ShowTownDirectory(); break;
+		case 1: // setting could be changed when the dropdown was open
+			if (_settings_game.economy.found_town != TF_FORBIDDEN) ShowFoundTownWindow();
+			break;
 	}
 	return CBF_NONE;
 }
@@ -1237,10 +1219,9 @@ static CallBackFunction ToolbarScenGenLand(Window *w)
 
 static CallBackFunction ToolbarScenGenTown(Window *w)
 {
-	DropDownList *list = new DropDownList();
-	*list->Append() = new DropDownListStringItem(STR_TOWN_MENU_FOUND_TOWN, TME_SHOW_FOUNDTOWN, false);
-	*list->Append() = new DropDownListStringItem(STR_TOWN_MENU_FUND_HOUSE, TME_SHOW_BUILDHOUSE, false);
-	PopupMainToolbMenu(w, WID_TE_TOWN_GENERATE, list, TME_SHOW_FOUNDTOWN);
+	w->HandleButtonClick(WID_TE_TOWN_GENERATE);
+	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+	ShowFoundTownWindow();
 	return CBF_NONE;
 }
 
@@ -2067,10 +2048,9 @@ struct ScenarioEditorToolbarWindow : Window {
 
 	virtual void OnDropdownSelect(int widget, int index)
 	{
-		/* The map and the town buttons are in a different location on
-		 * the scenario editor toolbar, so we need to adjust for it. */
+		/* The map button is in a different location on the scenario
+		 * editor toolbar, so we need to adjust for it. */
 		if (widget == WID_TE_SMALL_MAP) widget = WID_TN_SMALL_MAP;
-		if (widget == WID_TE_TOWN_GENERATE) widget = WID_TN_TOWNS;
 		CallBackFunction cbf = _menu_clicked_procs[widget](index);
 		if (cbf != CBF_NONE) this->last_started_action = cbf;
 		if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
@@ -2223,7 +2203,7 @@ static const NWidgetPart _nested_toolb_scen_inner_widgets[] = {
 	NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TE_ZOOM_OUT), SetDataTip(SPR_IMG_ZOOMOUT, STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT),
 	NWidget(NWID_SPACER),
 	NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TE_LAND_GENERATE), SetDataTip(SPR_IMG_LANDSCAPING, STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION),
-	NWidget(WWT_IMGBTN, COLOUR_GREY, WID_TE_TOWN_GENERATE), SetDataTip(SPR_IMG_TOWN, STR_SCENEDIT_TOOLBAR_TOWN_GENERATION),
+	NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TE_TOWN_GENERATE), SetDataTip(SPR_IMG_TOWN, STR_SCENEDIT_TOOLBAR_TOWN_GENERATION),
 	NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TE_INDUSTRY), SetDataTip(SPR_IMG_INDUSTRY, STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION),
 	NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TE_ROADS), SetDataTip(SPR_IMG_BUILDROAD, STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION),
 	NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_TE_WATER), SetDataTip(SPR_IMG_BUILDWATER, STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS),

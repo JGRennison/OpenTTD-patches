@@ -367,6 +367,7 @@ tilematrix_type.hpp
 timetable.h
 toolbar_gui.h
 town.h
+town_gui.h
 town_type.h
 townname_func.h
 townname_type.h

@@ -2342,6 +2342,7 @@ public:
 		WID_ETT_PLACE_ROCKS                          = ::WID_ETT_PLACE_ROCKS,                          ///< Place rocks button.
 		WID_ETT_PLACE_DESERT                         = ::WID_ETT_PLACE_DESERT,                         ///< Place desert button (in tropical climate).
 		WID_ETT_PLACE_OBJECT                         = ::WID_ETT_PLACE_OBJECT,                         ///< Place transmitter button.
+		WID_ETT_PLACE_HOUSE                          = ::WID_ETT_PLACE_HOUSE,                          ///< Place house button.
 		WID_ETT_BUTTONS_END                          = ::WID_ETT_BUTTONS_END,                          ///< End of pushable buttons.
 		WID_ETT_INCREASE_SIZE                        = ::WID_ETT_INCREASE_SIZE,                        ///< Upwards arrow button to increase terraforming size.
 		WID_ETT_DECREASE_SIZE                        = ::WID_ETT_DECREASE_SIZE,                        ///< Downwards arrow button to decrease terraforming size.
@@ -2486,13 +2487,6 @@ public:
 		WID_TF_LAYOUT_RANDOM                         = ::WID_TF_LAYOUT_RANDOM,                         ///< Selection for a randomly chosen town layout.
 	};
 
-	/** Widgets of the #SelectTownWindow class. */
-	enum SelectTownWidgets {
-		WID_ST_CAPTION                               = ::WID_ST_CAPTION,                               ///< Caption of the window.
-		WID_ST_PANEL                                 = ::WID_ST_PANEL,                                 ///< Main panel.
-		WID_ST_SCROLLBAR                             = ::WID_ST_SCROLLBAR,                             ///< Scrollbar of the panel.
-	};
-
 	/** Widgets of the #HousePickerWindow class. */
 	enum HousePickerWidgets {
 		WID_HP_CAPTION                               = ::WID_HP_CAPTION,
@@ -2503,10 +2497,6 @@ public:
 		WID_HP_HOUSE_SELECT_SCROLL                   = ::WID_HP_HOUSE_SELECT_SCROLL,                   ///< Scrollbar associated with the house matrix.
 		WID_HP_HOUSE_SELECT                          = ::WID_HP_HOUSE_SELECT,                          ///< Panels with house images in the house matrix.
 		WID_HP_HOUSE_PREVIEW                         = ::WID_HP_HOUSE_PREVIEW,                         ///< House preview panel.
-		WID_HP_PREV_VARIANT_SEL                      = ::WID_HP_PREV_VARIANT_SEL,                      ///< Selection widget to show/hide the prev variant buttons.
-		WID_HP_PREV_VARIANT                          = ::WID_HP_PREV_VARIANT,                          ///< Prev variant button.
-		WID_HP_NEXT_VARIANT_SEL                      = ::WID_HP_NEXT_VARIANT_SEL,                      ///< Selection widget to show/hide the next variant buttons.
-		WID_HP_NEXT_VARIANT                          = ::WID_HP_NEXT_VARIANT,                          ///< Next variant button.
 		WID_HP_HOUSE_NAME                            = ::WID_HP_HOUSE_NAME,                            ///< House name display.
 		WID_HP_HISTORICAL_BUILDING                   = ::WID_HP_HISTORICAL_BUILDING,                   ///< "Historical building" label.
 		WID_HP_HOUSE_POPULATION                      = ::WID_HP_HOUSE_POPULATION,                      ///< House population display.
@@ -2516,6 +2506,13 @@ public:
 		WID_HP_HOUSE_YEARS                           = ::WID_HP_HOUSE_YEARS,                           ///< Years display.
 		WID_HP_HOUSE_ACCEPTANCE                      = ::WID_HP_HOUSE_ACCEPTANCE,                      ///< Cargo accepted.
 		WID_HP_HOUSE_SUPPLY                          = ::WID_HP_HOUSE_SUPPLY,                          ///< Cargo supplied.
+	};
+
+	/** Widgets of the #SelectTownWindow class. */
+	enum SelectTownWidgets {
+		WID_ST_CAPTION                               = ::WID_ST_CAPTION,                               ///< Caption of the window.
+		WID_ST_PANEL                                 = ::WID_ST_PANEL,                                 ///< Main panel.
+		WID_ST_SCROLLBAR                             = ::WID_ST_SCROLLBAR,                             ///< Scrollbar of the panel.
 	};
 
 	/* automatically generated from ../../widgets/transparency_widget.h */

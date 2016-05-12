@@ -281,9 +281,6 @@ enum CallbackID {
 
 	/** Called to spawn visual effects for vehicles. */
 	CBID_VEHICLE_SPAWN_VISUAL_EFFECT     = 0x160, // 15 bit callback
-
-	/** Called to set house variant through animation control. */
-	CBID_HOUSE_SETUP_VARIANT             = 0x161, // 15 bit callback
 };
 
 /**
@@ -329,7 +326,6 @@ enum HouseCallbackMask {
 	CBM_HOUSE_DENY_DESTRUCTION          = 10, ///< conditional protection
 	CBM_HOUSE_DRAW_FOUNDATIONS          = 11, ///< decides if default foundations need to be drawn
 	CBM_HOUSE_AUTOSLOPE                 = 12, ///< decides allowance of autosloping
-	CBM_HOUSE_SETUP_VARIANT             = 13, ///< set house variant through animation control
 };
 
 /**

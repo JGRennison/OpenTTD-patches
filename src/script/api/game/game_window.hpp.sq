@@ -1141,6 +1141,7 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ETT_PLACE_ROCKS,                       "WID_ETT_PLACE_ROCKS");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ETT_PLACE_DESERT,                      "WID_ETT_PLACE_DESERT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ETT_PLACE_OBJECT,                      "WID_ETT_PLACE_OBJECT");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ETT_PLACE_HOUSE,                       "WID_ETT_PLACE_HOUSE");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ETT_BUTTONS_END,                       "WID_ETT_BUTTONS_END");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ETT_INCREASE_SIZE,                     "WID_ETT_INCREASE_SIZE");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ETT_DECREASE_SIZE,                     "WID_ETT_DECREASE_SIZE");
@@ -1251,9 +1252,6 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_TF_LAYOUT_GRID2,                       "WID_TF_LAYOUT_GRID2");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_TF_LAYOUT_GRID3,                       "WID_TF_LAYOUT_GRID3");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_TF_LAYOUT_RANDOM,                      "WID_TF_LAYOUT_RANDOM");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ST_CAPTION,                            "WID_ST_CAPTION");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ST_PANEL,                              "WID_ST_PANEL");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ST_SCROLLBAR,                          "WID_ST_SCROLLBAR");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_CAPTION,                            "WID_HP_CAPTION");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_MAIN_PANEL_SEL,                     "WID_HP_MAIN_PANEL_SEL");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_SETS_SEL,                     "WID_HP_HOUSE_SETS_SEL");
@@ -1262,10 +1260,6 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_SELECT_SCROLL,                "WID_HP_HOUSE_SELECT_SCROLL");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_SELECT,                       "WID_HP_HOUSE_SELECT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_PREVIEW,                      "WID_HP_HOUSE_PREVIEW");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_PREV_VARIANT_SEL,                   "WID_HP_PREV_VARIANT_SEL");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_PREV_VARIANT,                       "WID_HP_PREV_VARIANT");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_NEXT_VARIANT_SEL,                   "WID_HP_NEXT_VARIANT_SEL");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_NEXT_VARIANT,                       "WID_HP_NEXT_VARIANT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_NAME,                         "WID_HP_HOUSE_NAME");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HISTORICAL_BUILDING,                "WID_HP_HISTORICAL_BUILDING");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_POPULATION,                   "WID_HP_HOUSE_POPULATION");
@@ -1275,6 +1269,9 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_YEARS,                        "WID_HP_HOUSE_YEARS");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_ACCEPTANCE,                   "WID_HP_HOUSE_ACCEPTANCE");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_HP_HOUSE_SUPPLY,                       "WID_HP_HOUSE_SUPPLY");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ST_CAPTION,                            "WID_ST_CAPTION");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ST_PANEL,                              "WID_ST_PANEL");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_ST_SCROLLBAR,                          "WID_ST_SCROLLBAR");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_TT_BEGIN,                              "WID_TT_BEGIN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_TT_SIGNS,                              "WID_TT_SIGNS");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_TT_TREES,                              "WID_TT_TREES");

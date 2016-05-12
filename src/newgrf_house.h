@@ -14,7 +14,7 @@
 
 #include "newgrf_callbacks.h"
 #include "tile_cmd.h"
-#include "house.h"
+#include "house_type.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_town.h"
 
@@ -23,12 +23,11 @@ struct HouseScopeResolver : public ScopeResolver {
 	HouseID house_id;              ///< Type of house being queried.
 	TileIndex tile;                ///< Tile of this house.
 	Town *town;                    ///< Town of this house.
-	bool placing;                  ///< True if the house is being placed currently.
 	bool not_yet_constructed;      ///< True for construction check.
 	uint16 initial_random_bits;    ///< Random bits during construction checks.
 	uint32 watched_cargo_triggers; ///< Cargo types that triggered the watched cargo callback.
 
-	HouseScopeResolver(ResolverObject &ro, HouseID house_id, TileIndex tile, Town *town, bool placing,
+	HouseScopeResolver(ResolverObject &ro, HouseID house_id, TileIndex tile, Town *town,
 			bool not_yet_constructed, uint8 initial_random_bits, uint32 watched_cargo_triggers);
 
 	/* virtual */ uint32 GetRandomBits() const;
@@ -50,17 +49,12 @@ struct HouseScopeResolver : public ScopeResolver {
  */
 struct FakeHouseScopeResolver : public ScopeResolver {
 	HouseID house_id; ///< Type of house being queried.
-	HouseImageType image_type; ///< Context.
-	byte anim_frame; ///< House animation frame.
 
-	FakeHouseScopeResolver(ResolverObject &ro, HouseID house_id, HouseImageType image_type, byte anim_frame)
-		: ScopeResolver(ro), house_id(house_id), image_type(image_type), anim_frame(anim_frame)
+	FakeHouseScopeResolver(ResolverObject &ro, HouseID house_id)
+		: ScopeResolver(ro), house_id(house_id)
 	{ }
 
 	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
-
-private:
-	HouseID GetHouseNearbyPart(byte offset) const;
 };
 
 /** Resolver object to be used for houses (feature 07 spritegroups). */
@@ -68,12 +62,9 @@ struct HouseResolverObject : public ResolverObject {
 	ScopeResolver *house_scope;
 	ScopeResolver *town_scope;
 
-	HouseResolverObject(HouseID house_id, TileIndex tile, Town *town,
+	HouseResolverObject(HouseID house_id, TileIndex tile = INVALID_TILE, Town *town = NULL,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0,
 			bool not_yet_constructed = false, uint8 initial_random_bits = 0, uint32 watched_cargo_triggers = 0);
-
-	HouseResolverObject(HouseID house_id, HouseVariant variant, HouseImageType image_type = HIT_GUI_HOUSE_PREVIEW,
-			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0);
 
 	/* virtual */ ~HouseResolverObject();
 
@@ -107,21 +98,20 @@ struct HouseClassMapping {
 
 HouseClassID AllocateHouseClassID(byte grf_class_id, uint32 grfid);
 
-void InitializeHouses();
-
 void InitializeBuildingCounts();
 void IncreaseBuildingCount(Town *t, HouseID house_id);
 void DecreaseBuildingCount(Town *t, HouseID house_id);
 
 void DrawNewHouseTile(TileInfo *ti, HouseID house_id);
-void DrawNewHouseTileInGUI(int x, int y, HouseID house_id, HouseVariant variant, HouseImageType image_type, bool ground);
+void DrawNewHouseTileInGUI(int x, int y, HouseID house_id, bool ground);
 void AnimateNewHouseTile(TileIndex tile);
 void AnimateNewHouseConstruction(TileIndex tile);
-void AnimateNewHouseSetupVariant(TileIndex tile, HouseVariant variant);
 
-uint16 GetHouseCallback(CallbackID callback, uint32 param1, uint32 param2, HouseID house_id, Town *town, TileIndex tile, HouseImageType image_type = HIT_HOUSE_TILE, HouseVariant variant = HOUSE_NO_VARIANT);
+uint16 GetHouseCallback(CallbackID callback, uint32 param1, uint32 param2, HouseID house_id, Town *town = NULL, TileIndex tile = INVALID_TILE,
+		bool not_yet_constructed = false, uint8 initial_random_bits = 0, uint32 watched_cargo_triggers = 0);
 void WatchedCargoCallback(TileIndex tile, uint32 trigger_cargoes);
-CommandCost HouseAllowsConstruction(HouseID house_id, HouseVariant variant, TileIndex tile, Town *t, byte random_bits);
+
+bool HouseAllowsConstruction(HouseID house_id, TileIndex tile, Town *t, byte random_bits);
 bool CanDeleteHouse(TileIndex tile);
 
 bool NewHouseTileLoop(TileIndex tile);

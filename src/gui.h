@@ -65,7 +65,6 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 
 void ShowBuildIndustryWindow();
 void ShowFoundTownWindow();
-void ShowBuildHousePicker();
 void ShowMusicWindow();
 
 #endif /* GUI_H */

@@ -7,14 +7,11 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file house_type.h declaration of basic house types and enums */
+/** @file town_gui.h Types and functions related to the town GUI. */
 
-#ifndef HOUSE_TYPE_H
-#define HOUSE_TYPE_H
+#ifndef TOWN_GUI_H
+#define TOWN_GUI_H
 
-typedef uint16 HouseID; ///< OpenTTD ID of house types.
-typedef uint16 HouseClassID; ///< Classes of houses.
+void ShowBuildHousePicker();
 
-struct HouseSpec;
-
-#endif /* HOUSE_TYPE_H */
+#endif /* TOWN_GUI_H */

@@ -62,13 +62,6 @@ enum TownFoundingWidgets {
 	WID_TF_LAYOUT_RANDOM,     ///< Selection for a randomly chosen town layout.
 };
 
-/** Widgets of the #SelectTownWindow class. */
-enum SelectTownWidgets {
-	WID_ST_CAPTION,   ///< Caption of the window.
-	WID_ST_PANEL,     ///< Main panel.
-	WID_ST_SCROLLBAR, ///< Scrollbar of the panel.
-};
-
 /** Widgets of the #HousePickerWindow class. */
 enum HousePickerWidgets {
 	WID_HP_CAPTION,
@@ -79,10 +72,6 @@ enum HousePickerWidgets {
 	WID_HP_HOUSE_SELECT_SCROLL, ///< Scrollbar associated with the house matrix.
 	WID_HP_HOUSE_SELECT,        ///< Panels with house images in the house matrix.
 	WID_HP_HOUSE_PREVIEW,       ///< House preview panel.
-	WID_HP_PREV_VARIANT_SEL,    ///< Selection widget to show/hide the prev variant buttons.
-	WID_HP_PREV_VARIANT,        ///< Prev variant button.
-	WID_HP_NEXT_VARIANT_SEL,    ///< Selection widget to show/hide the next variant buttons.
-	WID_HP_NEXT_VARIANT,        ///< Next variant button.
 	WID_HP_HOUSE_NAME,          ///< House name display.
 	WID_HP_HISTORICAL_BUILDING, ///< "Historical building" label.
 	WID_HP_HOUSE_POPULATION,    ///< House population display.
@@ -92,6 +81,13 @@ enum HousePickerWidgets {
 	WID_HP_HOUSE_YEARS,         ///< Years display.
 	WID_HP_HOUSE_ACCEPTANCE,    ///< Cargo accepted.
 	WID_HP_HOUSE_SUPPLY,        ///< Cargo supplied.
+};
+
+/** Widgets of the #SelectTownWindow class. */
+enum SelectTownWidgets {
+	WID_ST_CAPTION,   ///< Caption of the window.
+	WID_ST_PANEL,     ///< Main panel.
+	WID_ST_SCROLLBAR, ///< Scrollbar of the panel.
 };
 
 #endif /* WIDGETS_TOWN_WIDGET_H */
