@@ -2353,7 +2353,6 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, Byt
 				housespec->grf_prop.local_id = hid + i;
 				housespec->grf_prop.subst_id = subs_id;
 				housespec->grf_prop.grffile = _cur.grffile;
-				housespec->construction_cost = 0xFFFF;
 				housespec->random_colour[0] = 0x04;  // those 4 random colours are the base colour
 				housespec->random_colour[1] = 0x08;  // for all new houses
 				housespec->random_colour[2] = 0x0C;  // they stand for red, blue, orange and green
@@ -2518,14 +2517,6 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, Byt
 
 			case 0x22: // long maximum year
 				housespec->max_year = buf->ReadWord();
-				break;
-
-			case 0x23: // Build cost multiplier
-				housespec->construction_cost = buf->ReadDWord();
-				break;
-
-			case 0x24:
-				housespec->num_variants = buf->ReadByte();
 				break;
 
 			default:
@@ -8603,13 +8594,6 @@ static void FinaliseHouseArray()
 			 * building_flags to zero here to make sure any house following
 			 * this one in the pool is properly handled as 1x1 house. */
 			hs->building_flags = TILE_NO_FLAG;
-		} else if (hs->enabled && (hs->building_flags && BUILDING_HAS_1_TILE)) {
-			if (hs->construction_cost == 0xFFFF) {
-				hs->construction_cost = DefaultHouseCostBaseMultiplier(
-						hs->callback_mask, hs->population, hs->mail_generation,
-						hs->cargo_acceptance[0], hs->cargo_acceptance[1], hs->cargo_acceptance[2],
-						hs->accepts_cargo[0], hs->accepts_cargo[1], hs->accepts_cargo[2]);
-			}
 		}
 	}
 

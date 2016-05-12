@@ -346,33 +346,6 @@ static inline int RoundDivSU(int a, uint b)
 	}
 }
 
-/**
- * Test if <tt> sqrt(a) <= sqrt(b) + sqrt(c) </tt>
- *
- * This function can tell you what's the relation between some of your values
- * even thought you know only squares of them. Useful when comparing euclidean
- * distances, it's easier to calculate them squared (#DistanceSquare) e.g.
- * having a squared town radius R and squared distance D, to tell if the distance
- * is further then N tiles beyond the town you may check if !SqrtCmp(D, R, N * N).
- *
- * @param a first value squared
- * @param b second value squared
- * @param c third value squared
- * @return sqrt(a) <= sqrt(b) + sqrt(c)
- *
- * @pre 4 * b * c <= UINT32_MAX
- */
-inline bool SqrtCmp(uint32 a, uint32 b, uint32 c)
-{
-	assert(c == 0 || b <= UINT32_MAX / 4 / c);
-
-	/* we can square the inequality twice to get rid of square roots
-	 * but some edge case must be checked first */
-	if (a <= b + c) return true;
-	uint32 d = a - (b + c);
-	return d <= UINT16_MAX && d * d <= 4 * b * c;
-}
-
 uint32 IntSqrt(uint32 num);
 
 #endif /* MATH_FUNC_HPP */

@@ -31,9 +31,6 @@ static const HouseID NEW_HOUSE_OFFSET = 110;    ///< Offset for new houses.
 static const HouseID NUM_HOUSES       = 512;    ///< Total number of houses.
 static const HouseID INVALID_HOUSE_ID = 0xFFFF;
 
-static const HouseVariant HOUSE_NO_VARIANT    = 0; ///< No particular house variant.
-static const HouseVariant HOUSE_FIRST_VARIANT = 1; ///< First possible house variant.
-
 /**
  * There can only be as many classes as there are new houses, plus one for
  * NO_CLASS, as the original houses don't have classes.
@@ -89,13 +86,11 @@ enum HouseZones {                  ///< Bit  Value       Meaning
 DECLARE_ENUM_AS_BIT_SET(HouseZones)
 
 enum HouseExtraFlags {
-	NO_EXTRA_FLAG                  =       0,
-	BUILDING_IS_HISTORICAL         = 1U << 0, ///< this house will only appear during town generation in random games, thus the historical
-	BUILDING_IS_PROTECTED          = 1U << 1, ///< towns and AI will not remove this house, while human players will be able to
-	SYNCHRONISED_CALLBACK_1B       = 1U << 2, ///< synchronized callback 1B will be performed, on multi tile houses
-	CALLBACK_1A_RANDOM_BITS        = 1U << 3, ///< callback 1A needs random bits
-	DISALLOW_BUILDING_BY_COMPANIES = 1U << 4, ///< disallow placing manually by companies (excludes scenario editor, game scripts)
-	DISALLOW_BUILDING_MANUALLY     = 1U << 5, ///< disallow placing manually
+	NO_EXTRA_FLAG            =       0,
+	BUILDING_IS_HISTORICAL   = 1U << 0,  ///< this house will only appear during town generation in random games, thus the historical
+	BUILDING_IS_PROTECTED    = 1U << 1,  ///< towns and AI will not remove this house, while human players will be able to
+	SYNCHRONISED_CALLBACK_1B = 1U << 2,  ///< synchronized callback 1B will be performed, on multi tile houses
+	CALLBACK_1A_RANDOM_BITS  = 1U << 3,  ///< callback 1A needs random bits
 };
 
 DECLARE_ENUM_AS_BIT_SET(HouseExtraFlags)
@@ -106,7 +101,6 @@ struct HouseSpec {
 	Year max_year;                     ///< last year it can be built
 	byte population;                   ///< population (Zero on other tiles in multi tile house.)
 	byte removal_cost;                 ///< cost multiplier for removing it
-	uint16 construction_cost;          ///< cost multiplier for building it
 	StringID building_name;            ///< building name
 	uint16 remove_rating_decrease;     ///< rating decrease if removed
 	byte mail_generation;              ///< mail generation multiplier (tile based, as the acceptances below)
@@ -120,7 +114,6 @@ struct HouseSpec {
 	GRFFileProps grf_prop;             ///< Properties related the the grf file
 	uint16 callback_mask;              ///< Bitmask of house callbacks that have to be called
 	byte random_colour[4];             ///< 4 "random" colours
-	byte num_variants;                 ///< total number of house variants, 0 - variants disabled
 	byte probability;                  ///< Relative probability of appearing (16 is the standard value)
 	HouseExtraFlags extra_flags;       ///< some more flags
 	HouseClassID class_id;             ///< defines the class this house has (not grf file based)
@@ -129,7 +122,6 @@ struct HouseSpec {
 	byte minimum_life;                 ///< The minimum number of years this house will survive before the town rebuilds it
 	uint32 watched_cargoes;            ///< Cargo types watched for acceptance.
 
-	Money GetConstructionCost() const;
 	Money GetRemovalCost() const;
 
 	static inline HouseSpec *Get(size_t house_id)
@@ -151,16 +143,9 @@ static inline HouseID GetTranslatedHouseID(HouseID hid)
 	return hs->grf_prop.override == INVALID_HOUSE_ID ? hid : hs->grf_prop.override;
 }
 
-StringID GetHouseName(HouseID house_id, TileIndex tile, HouseVariant variant = HOUSE_NO_VARIANT);
-void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom, HouseImageType image_type, HouseVariant variant = HOUSE_NO_VARIANT);
-void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &produced, HouseVariant variant = HOUSE_NO_VARIANT);
-void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &acceptance, uint32 *always_accepted, HouseVariant variant = HOUSE_NO_VARIANT);
-HouseZones CurrentClimateHouseZones(int altitude = -1);
-
-CommandCost CheckHouseDistanceFromTown(const Town *t, TileIndex tile, bool allow_outside);
-CommandCost IsHouseTypeAllowed(HouseID house, HouseZones availability, bool allow_historical);
-CommandCost CheckFlatLandHouse(HouseID house, TileIndex tile);
-
-uint16 DefaultHouseCostBaseMultiplier(uint16 callback_mask, byte population, byte mail_generation, byte cargo_acceptance1, byte cargo_acceptance2, byte cargo_acceptance3, CargoID accepts_cargo1, CargoID accepts_cargo2, CargoID accepts_cargo3);
+StringID GetHouseName(HouseID house, TileIndex tile = INVALID_TILE);
+void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom);
+void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &produced);
+void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &acceptance, uint32 *always_accepted = NULL);
 
 #endif /* HOUSE_H */

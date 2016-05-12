@@ -544,7 +544,6 @@ struct EconomySettings {
 	bool   sharing_payment_in_debt;          ///< allow fee payment for companies with more loan than money (switch off to prevent MP exploits)
 	bool   allow_town_level_crossings;       ///< towns are allowed to build level crossings
 	int8   town_cargo_factor;                ///< power-of-two multiplier for town (passenger, mail) generation. May be negative.
-	bool   allow_placing_houses;             ///< whether to allow placing houses manually also during gameplay, not only in scenario editor
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure
 	uint8  day_length_factor;                ///< factor which the length of day is multiplied
 };

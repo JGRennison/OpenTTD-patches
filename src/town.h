@@ -198,19 +198,7 @@ enum TownFlags {
 CommandCost CheckforTownRating(DoCommandFlag flags, Town *t, TownRatingCheckType type);
 
 
-TileIndexDiffC GetHouseNorthPartDiffC(HouseID &house);
-
-/**
- * Determines if a given HouseID is part of a multitile house.
- * The given ID is set to the ID of the north tile and the TileDiff to the north tile is returned.
- *
- * @param house Is changed to the HouseID of the north tile of the same house
- * @return TileDiff from the tile of the given HouseID to the north tile
- */
-static inline TileIndexDiff GetHouseNorthPart(HouseID &house)
-{
-	return ToTileIndexDiff(GetHouseNorthPartDiffC(house));
-}
+TileIndexDiff GetHouseNorthPart(HouseID &house);
 
 Town *CalcClosestTownFromTile(TileIndex tile, uint threshold = UINT_MAX);
 
@@ -228,7 +216,7 @@ void UpdateTownCargoBitmap();
 CommandCost CheckIfAuthorityAllowsNewStation(TileIndex tile, DoCommandFlag flags);
 Town *ClosestTownFromTile(TileIndex tile, uint threshold);
 void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags);
-HouseZonesBits TryGetTownRadiusGroup(const Town *t, TileIndex tile, uint *distance = NULL, uint *zone_inner = NULL, uint *zone_outer = NULL);
+HouseZonesBits TryGetTownRadiusGroup(const Town *t, TileIndex tile);
 HouseZonesBits GetTownRadiusGroup(const Town *t, TileIndex tile);
 void SetTownRatingTestMode(bool mode);
 uint GetMaskOfTownActions(int *nump, CompanyID cid, const Town *t);

@@ -1071,14 +1071,6 @@ static bool TownFoundingChanged(int32 p1)
 	return true;
 }
 
-static bool AllowPlacingHousesChanged(int32 p1)
-{
-	if (_game_mode != GM_EDITOR && !_settings_game.economy.allow_placing_houses) {
-		DeleteWindowById(WC_BUILD_HOUSE, 0);
-	}
-	return true;
-}
-
 static bool InvalidateVehTimetableWindow(int32 p1)
 {
 	InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE, VIWD_MODIFY_ORDERS);
