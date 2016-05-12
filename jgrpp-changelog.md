@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.13.2 (2016-05-13)
+* Fix desync issues by reverting from v4 to v2 of house picking/placing patch, due to desync issue present in v4.
+* Fix crash when using start date, autofill or clear/change time buttons in timetable window when vehicle had no orders.
+* Timetable start times are no longer subject to rounding when the day length is greater than 1.
+* Bump trunk base from r27555 to r27564
+
 ### v0.13.1 (2016-05-09)
 * Fix crash when using erroneously present create group from vehicle list menu item in vehicle group GUI, remove menu item from vehicle group GUI.
 * Fix incorrect calculation of final delivery payment after a transfer.
@@ -21,6 +27,7 @@
 * Routing restrictions: Add a train group membership conditional.
 * Increase number of available rail track types from 16 to 32.
 * Rail signals on bridges and tunnels now use rail-type specific graphics where available.
+* Update from v2 to v4 of house picking/placing patch.
 * Bump trunk base from r27525 to r27547
 
 ### v0.12.1 (2016-03-23)
