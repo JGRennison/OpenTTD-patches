@@ -86,6 +86,7 @@
 #include "bridge_map.h"
 
 #include <map>
+#include <math.h>
 
 #include "table/strings.h"
 #include "table/string_colours.h"
