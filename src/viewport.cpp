@@ -102,6 +102,7 @@
 
 #include <map>
 #include <vector>
+#include <math.h>
 
 #include "table/strings.h"
 #include "table/string_colours.h"
