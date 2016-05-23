@@ -1155,6 +1155,7 @@ struct SpecializedVehicle : public Vehicle {
 	 */
 	inline void UpdateViewport(bool force_update, bool update_delta)
 	{
+		/* Skip updating sprites on dedicated servers without screen */
 		if (_network_dedicated) return;
 
 		/* Explicitly choose method to call to prevent vtable dereference -

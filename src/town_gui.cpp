@@ -183,7 +183,7 @@ public:
 		y = y + WD_FRAMERECT_BOTTOM - nwid->pos_y; // Compute needed size of the widget.
 		if (y > nwid->current_y) {
 			/* If the company list is too big to fit, mark ourself dirty and draw again. */
-			ResizeWindow(this, 0, y - nwid->current_y);
+			ResizeWindow(this, 0, y - nwid->current_y, false);
 		}
 	}
 
@@ -1920,7 +1920,7 @@ static void PlaceProc_House(TileIndex tile)
 		_cur_house, // p1 - house type and town index (town not yet set)
 		InteractiveRandom(), // p2 - random bits for the house
 		CMD_BUILD_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE_HERE),
-		CcPlaySound1E,
+		CcPlaySound_SPLAT_RAIL,
 		0,
 		""
 	};
