@@ -2243,6 +2243,11 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, ByteR
 				bridge->price = buf->ReadWord();
 				break;
 
+			case 0x14: // purchase sprite
+				bridge->sprite = buf->ReadWord();
+				bridge->pal    = buf->ReadWord();
+				break;
+
 			default:
 				ret = CIR_UNKNOWN;
 				break;
