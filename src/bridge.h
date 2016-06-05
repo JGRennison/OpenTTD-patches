@@ -33,7 +33,7 @@ enum BridgePieces {
 
 DECLARE_POSTFIX_INCREMENT(BridgePieces)
 
-static const uint MAX_BRIDGES = 13; ///< Maximal number of available bridge specs.
+static const uint MAX_BRIDGES = 16; ///< Number of available bridge specs.
 
 typedef uint BridgeType; ///< Bridge spec number.
 
