@@ -1205,8 +1205,8 @@ void DetermineBreakdownType(Vehicle *v, uint32 r) {
 		if (rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_SPEED]) {
 			v->breakdown_type = BREAKDOWN_AIRCRAFT_SPEED;
 			/* all speed values here are 1/8th of the real max speed in km/h */
-			byte max_speed = min(AircraftVehInfo( v->engine_type )->max_speed >> 3, 255);
-			byte min_speed = min(15 + (max_speed >> 2), AircraftVehInfo(v->engine_type)->max_speed >> 4);
+			byte max_speed = max(1, min(v->vcache.cached_max_speed >> 3, 255));
+			byte min_speed = max(1, min(15 + (max_speed >> 2), v->vcache.cached_max_speed >> 4));
 			v->breakdown_severity = min_speed + (((v->reliability + GB(r, 16, 16)) * (max_speed - min_speed)) >> 17);
 		} else if (rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_DEPOT]) {
 			v->breakdown_type = BREAKDOWN_AIRCRAFT_DEPOT;
