@@ -10,6 +10,9 @@
 /** @file town_cmd.cpp Handling of town tiles. */
 
 #include "stdafx.h"
+
+#include <bitset>
+
 #include "road_internal.h" /* Cleaning up road bits */
 #include "road_cmd.h"
 #include "landscape.h"
@@ -1263,17 +1266,33 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 	/* no water tiles in between? */
 	if (bridge_length == 1) return false;
 
-	for (uint8 times = 0; times <= 22; times++) {
-		byte bridge_type = RandomRange(MAX_BRIDGES - 1);
+	std::bitset <MAX_BRIDGES> tried;
+	uint n = MAX_BRIDGES;
+	byte bridge_type = RandomRange (n);
 
+	for (;;) {
 		/* Can we actually build the bridge? */
 		if (DoCommand(tile, bridge_tile, bridge_type | ROADTYPES_ROAD << 8 | TRANSPORT_ROAD << 15, CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)), CMD_BUILD_BRIDGE).Succeeded()) {
 			DoCommand(tile, bridge_tile, bridge_type | ROADTYPES_ROAD << 8 | TRANSPORT_ROAD << 15, DC_EXEC | CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)), CMD_BUILD_BRIDGE);
 			_grow_town_result = GROWTH_SUCCEED;
 			return true;
 		}
+
+		/* Try a different bridge. */
+		tried[bridge_type] = true;
+		n--;
+		assert (n + tried.count() == MAX_BRIDGES);
+		if (n == 0) break;
+
+		bridge_type = 0;
+		uint i = RandomRange (n);
+		while (tried[bridge_type] || (i-- > 0)) {
+			bridge_type++;
+			assert (bridge_type < MAX_BRIDGES);
+		}
 	}
-	/* Quit if it selecting an appropriate bridge type fails a large number of times. */
+
+	/* Quit if no bridge can be built. */
 	return false;
 }
 
