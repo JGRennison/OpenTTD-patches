@@ -2937,6 +2937,21 @@ bool AfterLoadGame()
 			}
 		}
 	}
+	if (!SlXvIsFeaturePresent(XSLFI_IMPROVED_BREAKDOWNS, 4)) {
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			switch(v->type) {
+				case VEH_AIRCRAFT:
+					if (v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED && v->breakdown_severity == 0) {
+						v->breakdown_severity = max(1, min(v->vcache.cached_max_speed >> 4, 255));
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+	}
 
 	/* The road owner of standard road stops was not properly accounted for. */
 	if (IsSavegameVersionBefore(172)) {
