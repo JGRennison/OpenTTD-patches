@@ -466,14 +466,15 @@ static void MakeTownHouseBigger(TileIndex tile)
  * @param ct type of cargo to generate, usually CT_PASSENGERS or CT_MAIL
  * @param amount how many units of cargo
  * @param stations available stations for this house
+ * @param economy_adjust true if amount should be reduced during recession
  */
-static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &stations)
+static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &stations, bool economy_adjust)
 {
 	// custom cargo generation factor
 	int cf = _settings_game.economy.town_cargo_factor;
 
 	// when the economy flunctuates, everyone wants to stay at home
-	if (EconomyIsInRecession()) {
+	if (economy_adjust && EconomyIsInRecession()) {
 		amount = (amount + 1) >> 1;
 	}
 
@@ -495,20 +496,20 @@ static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &
 	assert(amount > 0);
 
 	// calculate for town stats
-	const CargoSpec *cs = CargoSpec::Get(ct);
-	switch (cs->town_effect) {
-		case TE_PASSENGERS:
-			t->supplied[CT_PASSENGERS].new_max += amount;
-			t->supplied[CT_PASSENGERS].new_act += MoveGoodsToStation(CT_PASSENGERS, amount, ST_TOWN, t->index, stations.GetStations());
+
+	switch (ct) {
+		case CT_PASSENGERS:
+		case CT_MAIL:
+			t->supplied[ct].new_max += amount;
+			t->supplied[ct].new_act += MoveGoodsToStation(ct, amount, ST_TOWN, t->index, stations.GetStations());
 			break;
 
-		case TE_MAIL:
-			t->supplied[CT_MAIL].new_max += amount;
-			t->supplied[CT_MAIL].new_act += MoveGoodsToStation(CT_MAIL, amount, ST_TOWN, t->index, stations.GetStations());
+		default: {
+			const CargoSpec *cs = CargoSpec::Get(ct);
+			t->supplied[cs->Index()].new_max += amount;
+			t->supplied[cs->Index()].new_act += MoveGoodsToStation(ct, amount, ST_TOWN, t->index, stations.GetStations());
 			break;
-
-		default:
-			break;
+		}
 	}
 }
 
@@ -560,19 +561,19 @@ static void TileLoop_Town(TileIndex tile)
 			if (amt == 0) continue;
 
 			// XXX: no economy flunctuation for GRF cargos?
-			TownGenerateCargo(t, cargo, amt, stations);
+			TownGenerateCargo(t, cargo, amt, stations, false);
 		}
 	} else {
 		if (GB(r, 0, 8) < hs->population) {
 			uint amt = GB(r, 0, 8) / 8 + 1;
 
-			TownGenerateCargo(t, CT_PASSENGERS, amt, stations);
+			TownGenerateCargo(t, CT_PASSENGERS, amt, stations, true);
 		}
 
 		if (GB(r, 8, 8) < hs->mail_generation) {
 			uint amt = GB(r, 8, 8) / 8 + 1;
 
-			TownGenerateCargo(t, CT_MAIL, amt, stations);
+			TownGenerateCargo(t, CT_MAIL, amt, stations, true);
 		}
 	}
 
