@@ -4280,6 +4280,9 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	Train *remainder_chain = NULL;
 	Train *tmp_chain = NULL;
 	TemplateVehicle *tv = GetTemplateVehicleByGroupID(incoming->group_id);
+	if (tv == NULL) {
+		return CMD_ERROR;
+	}
 	EngineID eid = tv->engine_type;
 
 	CommandCost buy(EXPENSES_NEW_VEHICLES);

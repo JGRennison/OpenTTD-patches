@@ -199,7 +199,6 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 };
 
 TemplateReplacement* GetTemplateReplacementByGroupID(GroupID);
-TemplateReplacement* GetTemplateReplacementByTemplateID(TemplateID);
 bool IssueTemplateReplacement(GroupID, TemplateID);
 
 short deleteIllegalTemplateReplacements(GroupID);
