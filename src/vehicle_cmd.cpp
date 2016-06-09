@@ -1224,10 +1224,12 @@ CommandCost CmdDeleteTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint32
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
-		// Remove a corresponding template replacement if existing
-		TemplateReplacement *tr = GetTemplateReplacementByTemplateID(del->index);
-		if (tr != NULL) {
-			delete tr;
+		// Remove corresponding template replacements if existing
+		TemplateReplacement *tr;
+		FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
+			if (tr->Template() == del->index) {
+				delete tr;
+			}
 		}
 
 		delete del;
