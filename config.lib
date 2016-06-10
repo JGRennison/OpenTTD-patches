@@ -97,7 +97,7 @@ set_default() {
 	with_sse="1"
 	with_libbfd="1"
 	with_bfd_extra_debug="1"
-	with_dbg_gdb="1"
+	with_self_gdb_debug="1"
 
 	save_params_array="
 		build
@@ -177,7 +177,7 @@ set_default() {
 		with_sse
 		with_libbfd
 		with_bfd_extra_debug
-		with_dbg_gdb
+		with_self_gdb_debug
 	CC CXX CFLAGS CXXFLAGS LDFLAGS CFLAGS_BUILD CXXFLAGS_BUILD LDFLAGS_BUILD"
 }
 
@@ -479,9 +479,9 @@ detect_params() {
 			--with-bfd-extra-debug)       with_bfd_extra_debug="1";;
 			--with-bfd-extra-debug=*)     with_bfd_extra_debug="$optarg";;
 
-			--without-self-gdb-debug)     with_dbg_gdb="0";;
-			--with-self-gdb-debug)        with_dbg_gdb="1";;
-			--with-self-gdb-debug=*)      with_dbg_gdb="$optarg";;
+			--without-self-gdb-debug)     with_self_gdb_debug="0";;
+			--with-self-gdb-debug)        with_self_gdb_debug="1";;
+			--with-self-gdb-debug=*)      with_self_gdb_debug="$optarg";;
 
 			CC=* | --CC=*)                CC="$optarg";;
 			CXX=* | --CXX=*)              CXX="$optarg";;
@@ -1639,7 +1639,7 @@ EOL
 		fi
 
 		HAVE_GDB_DBG=
-		if [ "$with_dbg_gdb" = "1" ]; then
+		if [ "$with_self_gdb_debug" = "1" ]; then
 			log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdb -x c++ -"
 			"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdb -x c++ - 2> /dev/null << EOL
 				#include <unistd.h>
