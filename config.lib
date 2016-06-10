@@ -1689,6 +1689,34 @@ EOL
 				CFLAGS="$CFLAGS -g1"
 			fi
 		fi
+
+		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.sigaction -x c++ - -ldl"
+		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.sigaction -x c++ - -ldl 2> /dev/null << EOL
+			#include <signal.h>
+			void *addr;
+			int code;
+			void handler(int sig, siginfo_t *si, void *context) {
+				addr = si->si_addr;
+				code = si->si_code;
+			}
+			int main() {
+				struct sigaction sa;
+				sa.sa_flags = SA_SIGINFO;
+				sigemptyset(&sa.sa_mask);
+				sa.sa_sigaction = handler;
+				sigaction(SIGSEGV, &sa, 0);
+				return 0;
+			}
+EOL
+		ret=$?
+		rm -f tmp.config.sigaction
+		log 2 "  exit code $ret"
+		if [ $ret -ne 0 ]; then
+			log 1 "checking sigaction... no"
+		else
+			log 1 "checking sigaction... found"
+			CFLAGS="$CFLAGS -DWITH_SIGACTION"
+		fi
 	fi
 
 	if [ "$os" = "MINGW" ]; then
