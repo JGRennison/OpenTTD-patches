@@ -513,6 +513,12 @@ detect_params() {
 	# Clean the logfile
 	echo "" > $config_log
 	log 2 "Invocation: $0 $*"
+	if [ "$ignore_extra_parameters" = "0" -o ! -f config.invocation ]; then
+		echo "$0 $*" > config.invocation
+		CONFIGURE_INVOCATION="$0 $*"
+	else
+		CONFIGURE_INVOCATION="`cat config.invocation`"
+	fi
 }
 
 save_params() {
@@ -3440,6 +3446,7 @@ make_sed() {
 		s@!!CONFIG_CACHE_VERSION!!@config.cache.version@g;
 		s@!!CONFIG_CACHE_SOURCE_LIST!!@config.cache.source.list@g;
 		s@!!CONFIG_CACHE_PWD!!@config.cache.pwd@g;
+		s@!!CONFIG_CACHE_INVOCATION!!@config.cache.invocation@g;
 		s@!!LANG_SUPPRESS!!@$lang_suppress@g;
 		s@!!OBJS_C!!@$OBJS_C@g;
 		s@!!OBJS_CPP!!@$OBJS_CPP@g;
@@ -3452,6 +3459,7 @@ make_sed() {
 		s@!!DISTCC!!@$distcc@g;
 		s@!!NFORENUM!!@$nforenum@g;
 		s@!!GRFCODEC!!@$grfcodec@g;
+		s@!!CONFIGURE_INVOCATION!!@$CONFIGURE_INVOCATION@g;
 	"
 
 	if [ "$icon_theme_dir" != "" ]; then

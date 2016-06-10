@@ -103,7 +103,8 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 			" Bits:       %d\n"
 			" Endian:     %s\n"
 			" Dedicated:  %s\n"
-			" Build date: %s\n\n",
+			" Build date: %s\n"
+			" Configure:  %s\n\n",
 			_openttd_revision,
 			_openttd_revision_modified,
 			_openttd_newgrf_version,
@@ -122,7 +123,8 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 #else
 			"no",
 #endif
-			_openttd_build_date
+			_openttd_build_date,
+			_openttd_build_configure
 	);
 }
 
