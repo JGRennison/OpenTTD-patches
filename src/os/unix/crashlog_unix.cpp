@@ -20,14 +20,13 @@
 #include <signal.h>
 #include <sys/utsname.h>
 #include <setjmp.h>
-
-#if defined(WITH_DBG_GDB)
 #include <unistd.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+#if defined(WITH_DBG_GDB)
+#include <sys/syscall.h>
 #endif /* WITH_DBG_GDB */
 
 #if defined(WITH_PRCTL_PT)
@@ -74,6 +73,60 @@ static void LogStacktraceSigSegvHandler(int  sig)
 }
 #endif
 
+static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, const char *last)
+{
+	int pipefd[2];
+	if (pipe(pipefd) == -1) return false;
+
+	int pid = fork();
+	if (pid < 0) return false;
+
+	if (pid == 0) {
+		/* child */
+
+		close(pipefd[0]); /* Close unused read end */
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[1]);
+		int null_fd = open("/dev/null", O_RDWR);
+		if (null_fd != -1) {
+			dup2(null_fd, STDERR_FILENO);
+			dup2(null_fd, STDIN_FILENO);
+		}
+
+		execvp(file, args);
+		exit(42);
+	}
+
+	/* parent */
+
+	close(pipefd[1]); /* Close unused write end */
+
+	while (buffer < last) {
+		ssize_t res = read(pipefd[0], buffer, last - buffer);
+		if (res < 0) {
+			if (errno == EINTR) continue;
+			break;
+		} else if (res == 0) {
+			break;
+		} else {
+			buffer += res;
+		}
+	}
+	buffer += seprintf(buffer, last, "\n");
+
+	close(pipefd[0]); /* close read end */
+
+	int status;
+	int wait_ret = waitpid(pid, &status, 0);
+	if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+		/* command did not appear to run successfully */
+		return false;
+	} else {
+		/* command executed successfully */
+		return true;
+	}
+}
+
 /**
  * Unix implementation for the crash logger.
  */
@@ -105,6 +158,23 @@ class CrashLogUnix : public CrashLog {
 				name.version,
 				name.machine
 		);
+	}
+
+	/* virtual */ char *LogOSVersionDetail(char *buffer, const char *last) const
+	{
+		struct utsname name;
+		if (uname(&name) < 0) return buffer;
+
+		if (strcmp(name.sysname, "Linux") == 0) {
+			char *buffer_orig = buffer;
+			buffer += seprintf(buffer, last, "Distro version:\n");
+
+			const char *args[] = { "/bin/sh", "-c", "lsb_release -a || find /etc -maxdepth 1 -type f -a \\( -name '*release' -o -name '*version' \\) -exec head -v {} \\+", NULL };
+			if (!ExecReadStdout("/bin/sh", const_cast<char* const*>(args), buffer, last)) {
+				buffer = buffer_orig;
+			}
+		}
+		return buffer;
 	}
 
 	/* virtual */ char *LogError(char *buffer, const char *last, const char *message) const
@@ -253,84 +323,40 @@ class CrashLogUnix : public CrashLog {
 
 		pid_t tid = syscall(SYS_gettid);
 
-		int pipefd[2];
-		if (pipe(pipefd) == -1) return buffer;
+		char *buffer_orig = buffer;
+		buffer += seprintf(buffer, last, "GDB info:\n");
 
-		int pid = fork();
-		if (pid < 0) return buffer;
+		char tid_buffer[16];
+		char disasm_buffer[32];
 
-		if (pid == 0) {
-			/* child */
+		seprintf(tid_buffer, lastof(tid_buffer), "%d", tid);
 
-			close(pipefd[0]); /* Close unused read end */
-			dup2(pipefd[1], STDOUT_FILENO);
-			close(pipefd[1]);
-			int null_fd = open("/dev/null", O_RDWR);
-			if (null_fd != -1) {
-				dup2(null_fd, STDERR_FILENO);
-				dup2(null_fd, STDIN_FILENO);
-			}
+		std::vector<const char *> args;
+		args.push_back("gdb");
+		args.push_back("-n");
+		args.push_back("-p");
+		args.push_back(tid_buffer);
+		args.push_back("-batch");
 
-			char tid_buffer[16];
-			char disasm_buffer[32];
-
-			seprintf(tid_buffer, lastof(tid_buffer), "%d", tid);
-
-			std::vector<const char *> args;
-			args.push_back("gdb");
-			args.push_back("-n");
-			args.push_back("-p");
-			args.push_back(tid_buffer);
-			args.push_back("-batch");
-
-			args.push_back("-ex");
-			args.push_back("echo \\nBacktrace:\\n");
-			args.push_back("-ex");
-			args.push_back("bt full");
+		args.push_back("-ex");
+		args.push_back("echo \\nBacktrace:\\n");
+		args.push_back("-ex");
+		args.push_back("bt full");
 
 #ifdef WITH_SIGACTION
-			if (this->GetMessage() == NULL && this->signal_instruction_ptr_valid) {
-				seprintf(disasm_buffer, lastof(disasm_buffer), "x/1i %p", this->signal_instruction_ptr);
-				args.push_back("-ex");
-				args.push_back("set disassembly-flavor intel");
-				args.push_back("-ex");
-				args.push_back("echo \\nFault instruction:\\n");
-				args.push_back("-ex");
-				args.push_back(disasm_buffer);
-			}
+		if (this->GetMessage() == NULL && this->signal_instruction_ptr_valid) {
+			seprintf(disasm_buffer, lastof(disasm_buffer), "x/1i %p", this->signal_instruction_ptr);
+			args.push_back("-ex");
+			args.push_back("set disassembly-flavor intel");
+			args.push_back("-ex");
+			args.push_back("echo \\nFault instruction:\\n");
+			args.push_back("-ex");
+			args.push_back(disasm_buffer);
+		}
 #endif
 
-			args.push_back(NULL);
-			execvp("gdb", const_cast<char* const*>(&(args[0])));
-			exit(42);
-		}
-
-		/* parent */
-
-		close(pipefd[1]); /* Close unused write end */
-
-		char *buffer_orig = buffer;
-
-		buffer += seprintf(buffer, last, "GDB info:\n");
-		while (buffer < last) {
-			ssize_t res = read(pipefd[0], buffer, last - buffer);
-			if (res < 0) {
-				if (errno == EINTR) continue;
-				break;
-			} else if (res == 0) {
-				break;
-			} else {
-				buffer += res;
-			}
-		}
-		buffer += seprintf(buffer, last, "\n");
-
-		close(pipefd[0]); /* close read end */
-
-		int status;
-		int wait_ret = waitpid(pid, &status, 0);
-		if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-			/* gdb did not appear to run successfully */
+		args.push_back(NULL);
+		if (!ExecReadStdout("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
 			buffer = buffer_orig;
 		}
 #endif /* WITH_DBG_GDB */

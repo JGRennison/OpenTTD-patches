@@ -69,6 +69,12 @@ char *CrashLog::LogCompiler(char *buffer, const char *last) const
 #endif
 }
 
+/* virtual */ char *CrashLog::LogOSVersionDetail(char *buffer, const char *last) const
+{
+	/* Stub implementation; not all OSes support this. */
+	return buffer;
+}
+
 /* virtual */ char *CrashLog::LogRegisters(char *buffer, const char *last) const
 {
 	/* Stub implementation; not all OSes support this. */
@@ -350,6 +356,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	buffer = this->LogRegisters(buffer, last);
 	buffer = this->LogOSVersion(buffer, last);
 	buffer = this->LogCompiler(buffer, last);
+	buffer = this->LogOSVersionDetail(buffer, last);
 	buffer = this->LogConfiguration(buffer, last);
 	buffer = this->LogLibraries(buffer, last);
 	buffer = this->LogModules(buffer, last);
