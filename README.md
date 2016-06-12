@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.13.2
+## JGR's Patchpack version 0.13.3
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -167,7 +167,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
     savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892) v2.0, v2.1, v2.2 (subject to caveats, see below).
 
 * Miscellaneous  
-  * Various improvements to the crash logger. (added in v0.5.0, v0.12.0, v0.12.1)  
+  * Various improvements to the crash logger.  
   * Label threads with a descriptive name on supported Unixy platforms. (added in v0.8.1)
 
 * Translations  

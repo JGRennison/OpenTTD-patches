@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.13.3 (2016-06-12)
+* Fix improved breakdowns reducing aircraft speed to 0 in some circumstances.
+* Fix town cargo other than passengers and mail (e.g. ECS tourists) not being generated.
+* Fix crash after deleting a template replacement vehicle, when it was in use by more than one group.
+* Fix compliation on gcc 6 and some platforms.
+* Various improvements to the crash logger.
+* Bump trunk base from r27564 to r27599
+
 ### v0.13.2 (2016-05-13)
 * Fix desync issues by reverting from v4 to v2 of house picking/placing patch, due to desync issue present in v4.
 * Fix crash when using start date, autofill or clear/change time buttons in timetable window when vehicle had no orders.
