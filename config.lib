@@ -1723,6 +1723,31 @@ EOL
 			log 1 "checking sigaction... found"
 			CFLAGS="$CFLAGS -DWITH_SIGACTION"
 		fi
+
+		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.ucontext -x c++ - -ldl"
+		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.ucontext -x c++ - -ldl 2> /dev/null << EOL
+			#include <ucontext.h>
+			int main() {
+				ucontext_t context;
+#if defined(__x86_64__)
+				void *ptr = (void *) context.uc_mcontext.gregs[REG_RIP];
+#elif defined(__i386)
+				void *ptr = (void *) context.uc_mcontext.gregs[REG_EIP];
+#else
+#error Unknown arch
+#endif
+				return 0;
+			}
+EOL
+		ret=$?
+		rm -f tmp.config.ucontext
+		log 2 "  exit code $ret"
+		if [ $ret -ne 0 ]; then
+			log 1 "checking ucontext... no"
+		else
+			log 1 "checking ucontext... found"
+			CFLAGS="$CFLAGS -DWITH_UCONTEXT"
+		fi
 	fi
 
 	if [ "$os" = "MINGW" ]; then

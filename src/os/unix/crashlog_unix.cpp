@@ -55,6 +55,8 @@
 #include <unistd.h>
 #endif
 
+#include <vector>
+
 #include "../../safeguards.h"
 
 #if defined(__GLIBC__) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
@@ -80,6 +82,9 @@ class CrashLogUnix : public CrashLog {
 	int signum;
 #ifdef WITH_SIGACTION
 	siginfo_t *si;
+	void *context;
+	bool signal_instruction_ptr_valid;
+	void *signal_instruction_ptr;
 #endif
 
 	/* virtual */ char *LogOSVersion(char *buffer, const char *last) const
@@ -116,8 +121,13 @@ class CrashLogUnix : public CrashLog {
 					this->si->si_code);
 			if (this->signum != SIGABRT) {
 				buffer += seprintf(buffer, last,
-						"          fault address: %p\n",
+						"          Fault address: %p\n",
 						this->si->si_addr);
+				if (this->signal_instruction_ptr_valid) {
+					buffer += seprintf(buffer, last,
+							"          Instruction address: %p\n",
+							this->signal_instruction_ptr);
+				}
 			}
 		}
 #endif
@@ -163,7 +173,69 @@ class CrashLogUnix : public CrashLog {
 #endif
 
 	/**
-	 * Get a stack backtrace of the current thread's stack using the gdb debugger, if available.
+	 * Show registers if possible
+	 *
+	 * Also log GDB information if available
+	 */
+	/* virtual */ char *LogRegisters(char *buffer, const char *last) const
+	{
+		buffer = LogGdbInfo(buffer, last);
+
+#ifdef WITH_UCONTEXT
+		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
+#if defined(__x86_64__)
+		const gregset_t &gregs = ucontext->uc_mcontext.gregs;
+		buffer += seprintf(buffer, last,
+			"Registers:\n"
+			" rax: %#16llx rbx: %#16llx rcx: %#16llx rdx: %#16llx\n"
+			" rsi: %#16llx rdi: %#16llx rbp: %#16llx rsp: %#16llx\n"
+			" r8:  %#16llx r9:  %#16llx r10: %#16llx r11: %#16llx\n"
+			" r12: %#16llx r13: %#16llx r14: %#16llx r15: %#16llx\n"
+			" rip: %#16llx eflags: %#8llx\n\n",
+			gregs[REG_RAX],
+			gregs[REG_RBX],
+			gregs[REG_RCX],
+			gregs[REG_RDX],
+			gregs[REG_RSI],
+			gregs[REG_RDI],
+			gregs[REG_RBP],
+			gregs[REG_RSP],
+			gregs[REG_R8],
+			gregs[REG_R9],
+			gregs[REG_R10],
+			gregs[REG_R11],
+			gregs[REG_R12],
+			gregs[REG_R13],
+			gregs[REG_R14],
+			gregs[REG_R15],
+			gregs[REG_RIP],
+			gregs[REG_EFL]
+		);
+#elif defined(__i386)
+		const gregset_t &gregs = ucontext->uc_mcontext.gregs;
+		buffer += seprintf(buffer, last,
+			"Registers:\n"
+			" eax: %#8x ebx: %#8x ecx: %#8x edx: %#8x\n"
+			" esi: %#8x edi: %#8x ebp: %#8x esp: %#8x\n"
+			" eip: %#8x eflags: %#8x\n\n",
+			gregs[REG_EAX],
+			gregs[REG_EBX],
+			gregs[REG_ECX],
+			gregs[REG_EDX],
+			gregs[REG_ESI],
+			gregs[REG_EDI],
+			gregs[REG_EBP],
+			gregs[REG_ESP],
+			gregs[REG_EIP],
+			gregs[REG_EFL]
+		);
+#endif
+#endif
+		return buffer;
+	}
+
+	/**
+	 * Get a stack backtrace of the current thread's stack and other info using the gdb debugger, if available.
 	 *
 	 * Using GDB is useful as it knows about inlined functions and locals, and generally can
 	 * do a more thorough job than in LogStacktrace.
@@ -171,7 +243,7 @@ class CrashLogUnix : public CrashLog {
 	 * and there is some potentially useful information in the output from LogStacktrace
 	 * which is not in gdb's output.
 	 */
-	char *LogStacktraceGdb(char *buffer, const char *last) const
+	char *LogGdbInfo(char *buffer, const char *last) const
 	{
 #if defined(WITH_DBG_GDB)
 
@@ -198,9 +270,38 @@ class CrashLogUnix : public CrashLog {
 				dup2(null_fd, STDERR_FILENO);
 				dup2(null_fd, STDIN_FILENO);
 			}
-			char buffer[16];
-			seprintf(buffer, lastof(buffer), "%d", tid);
-			execlp("gdb", "gdb", "-n", "-p", buffer, "-batch", "-ex", "bt full", NULL);
+
+			char tid_buffer[16];
+			char disasm_buffer[32];
+
+			seprintf(tid_buffer, lastof(tid_buffer), "%d", tid);
+
+			std::vector<const char *> args;
+			args.push_back("gdb");
+			args.push_back("-n");
+			args.push_back("-p");
+			args.push_back(tid_buffer);
+			args.push_back("-batch");
+
+			args.push_back("-ex");
+			args.push_back("echo \\nBacktrace:\\n");
+			args.push_back("-ex");
+			args.push_back("bt full");
+
+#ifdef WITH_SIGACTION
+			if (this->GetMessage() == NULL && this->signal_instruction_ptr_valid) {
+				seprintf(disasm_buffer, lastof(disasm_buffer), "x/1i %p", this->signal_instruction_ptr);
+				args.push_back("-ex");
+				args.push_back("set disassembly-flavor intel");
+				args.push_back("-ex");
+				args.push_back("echo \\nFault instruction:\\n");
+				args.push_back("-ex");
+				args.push_back(disasm_buffer);
+			}
+#endif
+
+			args.push_back(NULL);
+			execvp("gdb", const_cast<char* const*>(&(args[0])));
 			exit(42);
 		}
 
@@ -210,7 +311,7 @@ class CrashLogUnix : public CrashLog {
 
 		char *buffer_orig = buffer;
 
-		buffer += seprintf(buffer, last, "Stacktrace (GDB):\n");
+		buffer += seprintf(buffer, last, "GDB info:\n");
 		while (buffer < last) {
 			ssize_t res = read(pipefd[0], buffer, last - buffer);
 			if (res < 0) {
@@ -262,8 +363,6 @@ class CrashLogUnix : public CrashLog {
 	 */
 	/* virtual */ char *LogStacktrace(char *buffer, const char *last) const
 	{
-		buffer = LogStacktraceGdb(buffer, last);
-
 		buffer += seprintf(buffer, last, "Stacktrace:\n");
 
 #if defined(__GLIBC__)
@@ -397,16 +496,28 @@ public:
 	 * @param signum the signal that was caused by the crash.
 	 */
 #ifdef WITH_SIGACTION
-	CrashLogUnix(int signum, siginfo_t *si) :
-		signum(signum), si(si)
+	CrashLogUnix(int signum, siginfo_t *si, void *context) :
+		signum(signum), si(si), context(context)
 	{
+		this->signal_instruction_ptr_valid = false;
+
+#ifdef WITH_UCONTEXT
+		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
+#if defined(__x86_64__)
+		this->signal_instruction_ptr = (void *) ucontext->uc_mcontext.gregs[REG_RIP];
+		this->signal_instruction_ptr_valid = true;
+#elif defined(__i386)
+		this->signal_instruction_ptr = (void *) ucontext->uc_mcontext.gregs[REG_EIP];
+		this->signal_instruction_ptr_valid = true;
+#endif
+#endif /* WITH_UCONTEXT */
 	}
 #else
 	CrashLogUnix(int signum) :
 		signum(signum)
 	{
 	}
-#endif
+#endif /* WITH_SIGACTION */
 };
 
 /** The signals we want our crash handler to handle. */
@@ -442,7 +553,7 @@ static void CDECL HandleCrash(int signum)
 	}
 
 #ifdef WITH_SIGACTION
-	CrashLogUnix log(signum, si);
+	CrashLogUnix log(signum, si, context);
 #else
 	CrashLogUnix log(signum);
 #endif

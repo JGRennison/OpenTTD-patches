@@ -127,6 +127,8 @@ public:
 
 	static void SetErrorMessage(const char *message);
 	static void AfterCrashLogCleanup();
+
+	inline const char *GetMessage() const { return this->message; }
 };
 
 #endif /* CRASHLOG_H */

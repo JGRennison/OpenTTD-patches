@@ -346,8 +346,8 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 #endif
 
 	buffer = this->LogOpenTTDVersion(buffer, last);
-	buffer = this->LogRegisters(buffer, last);
 	buffer = this->LogStacktrace(buffer, last);
+	buffer = this->LogRegisters(buffer, last);
 	buffer = this->LogOSVersion(buffer, last);
 	buffer = this->LogCompiler(buffer, last);
 	buffer = this->LogConfiguration(buffer, last);
