@@ -38,11 +38,13 @@ MAKEDEPEND     = !!MAKEDEPEND!!
 CFLAGS_MAKEDEP = !!CFLAGS_MAKEDEP!!
 SORT           = !!SORT!!
 AWK            = !!AWK!!
+CONFIGURE_INVOCATION  = !!CONFIGURE_INVOCATION!!
 CONFIG_CACHE_COMPILER = $(SRC_OBJS_DIR)/!!CONFIG_CACHE_COMPILER!!
 CONFIG_CACHE_LINKER   = $(SRC_OBJS_DIR)/!!CONFIG_CACHE_LINKER!!
 CONFIG_CACHE_ENDIAN   = $(SRC_OBJS_DIR)/!!CONFIG_CACHE_ENDIAN!!
 CONFIG_CACHE_SOURCE   = $(SRC_OBJS_DIR)/!!CONFIG_CACHE_SOURCE!!
 CONFIG_CACHE_VERSION  = $(SRC_OBJS_DIR)/!!CONFIG_CACHE_VERSION!!
+CONFIG_CACHE_INVOCATION  = $(SRC_OBJS_DIR)/!!CONFIG_CACHE_INVOCATION!!
 
 OBJS_C   := !!OBJS_C!!
 OBJS_CPP := !!OBJS_CPP!!
@@ -114,6 +116,8 @@ RES := $(shell if [ "`cat $(CONFIG_CACHE_ENDIAN) 2>/dev/null`" != "$(ENDIAN_FORC
 RES := $(shell if [ "`cat $(CONFIG_CACHE_SOURCE) 2>/dev/null`" != "$(SRCS)" ]; then echo "$(SRCS)" > $(CONFIG_CACHE_SOURCE); fi )
 # If there is a change in the revision, make sure we recompile rev.cpp
 RES := $(shell if [ "`cat $(CONFIG_CACHE_VERSION) 2>/dev/null`" != "$(REV) $(REV_NR) $(MODIFIED)" ]; then echo "$(REV) $(REV_NR) $(MODIFIED)" > $(CONFIG_CACHE_VERSION); fi )
+# If there is a change in the configure invocation, make sure we recompile rev.cpp
+RES := $(shell if [ "`cat $(CONFIG_CACHE_INVOCATION) 2>/dev/null`" != "$(CONFIGURE_INVOCATION)" ]; then echo "$(CONFIGURE_INVOCATION)" > $(CONFIG_CACHE_INVOCATION); fi )
 
 ifndef MAKEDEPEND
 # The slow, but always correct, dep-check
@@ -292,8 +296,8 @@ $(ENDIAN_CHECK): $(SRC_DIR)/endian_check.cpp
 
 # Revision files
 
-$(SRC_DIR)/rev.cpp: $(CONFIG_CACHE_VERSION) $(SRC_DIR)/rev.cpp.in
-	$(Q)cat $(SRC_DIR)/rev.cpp.in      | sed "s@\!\!REVISION\!\!@$(REV_NR)@g;s@!!VERSION!!@$(REV)@g;s@!!MODIFIED!!@$(MODIFIED)@g;s@!!DATE!!@`date +%d.%m.%y`@g" > $(SRC_DIR)/rev.cpp
+$(SRC_DIR)/rev.cpp: $(CONFIG_CACHE_VERSION) $(CONFIG_CACHE_INVOCATION) $(SRC_DIR)/rev.cpp.in
+	$(Q)cat $(SRC_DIR)/rev.cpp.in      | sed "s@\!\!REVISION\!\!@$(REV_NR)@g;s@!!VERSION!!@$(REV)@g;s@!!MODIFIED!!@$(MODIFIED)@g;s@!!DATE!!@`date +%d.%m.%y`@g;s@\!\!CONFIGURE_INVOCATION\!\!@$(CONFIGURE_INVOCATION)@g;" > $(SRC_DIR)/rev.cpp
 
 $(SRC_DIR)/os/windows/ottdres.rc: $(CONFIG_CACHE_VERSION) $(SRC_DIR)/os/windows/ottdres.rc.in
 	$(Q)cat $(SRC_DIR)/os/windows/ottdres.rc.in | sed "s@\!\!REVISION\!\!@$(REV_NR)@g;s@!!VERSION!!@$(REV)@g;s@!!DATE!!@`date +%d.%m.%y`@g" > $(SRC_DIR)/os/windows/ottdres.rc

@@ -304,12 +304,20 @@ static void InitializeWindowsAndCaches()
 	BuildOwnerLegend();
 }
 
+#ifdef WITH_SIGACTION
+static struct sigaction _prev_segfault;
+static struct sigaction _prev_abort;
+static struct sigaction _prev_fpe;
+
+static void CDECL HandleSavegameLoadCrash(int signum, siginfo_t *si, void *context);
+#else
 typedef void (CDECL *SignalHandlerPointer)(int);
 static SignalHandlerPointer _prev_segfault = NULL;
 static SignalHandlerPointer _prev_abort    = NULL;
 static SignalHandlerPointer _prev_fpe      = NULL;
 
 static void CDECL HandleSavegameLoadCrash(int signum);
+#endif
 
 /**
  * Replaces signal handlers of SIGSEGV and SIGABRT
@@ -317,9 +325,20 @@ static void CDECL HandleSavegameLoadCrash(int signum);
  */
 static void SetSignalHandlers()
 {
+#ifdef WITH_SIGACTION
+	struct sigaction sa;
+	memset(&sa, 0, sizeof(sa));
+	sa.sa_flags = SA_SIGINFO | SA_RESTART;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_sigaction = HandleSavegameLoadCrash;
+	sigaction(SIGSEGV, &sa, &_prev_segfault);
+	sigaction(SIGABRT, &sa, &_prev_abort);
+	sigaction(SIGFPE,  &sa, &_prev_fpe);
+#else
 	_prev_segfault = signal(SIGSEGV, HandleSavegameLoadCrash);
 	_prev_abort    = signal(SIGABRT, HandleSavegameLoadCrash);
 	_prev_fpe      = signal(SIGFPE,  HandleSavegameLoadCrash);
+#endif
 }
 
 /**
@@ -327,9 +346,15 @@ static void SetSignalHandlers()
  */
 static void ResetSignalHandlers()
 {
+#ifdef WITH_SIGACTION
+	sigaction(SIGSEGV, &_prev_segfault, NULL);
+	sigaction(SIGABRT, &_prev_abort, NULL);
+	sigaction(SIGFPE,  &_prev_fpe, NULL);
+#else
 	signal(SIGSEGV, _prev_segfault);
 	signal(SIGABRT, _prev_abort);
 	signal(SIGFPE,  _prev_fpe);
+#endif
 }
 
 /**
@@ -369,7 +394,11 @@ bool SaveloadCrashWithMissingNewGRFs()
  * NewGRFs that are required by the savegame.
  * @param signum received signal
  */
+#ifdef WITH_SIGACTION
+static void CDECL HandleSavegameLoadCrash(int signum, siginfo_t *si, void *context)
+#else
 static void CDECL HandleSavegameLoadCrash(int signum)
+#endif
 {
 	ResetSignalHandlers();
 
@@ -416,14 +445,27 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 
 	ShowInfo(buffer);
 
+#ifdef WITH_SIGACTION
+	struct sigaction call;
+#else
 	SignalHandlerPointer call = NULL;
+#endif
 	switch (signum) {
 		case SIGSEGV: call = _prev_segfault; break;
 		case SIGABRT: call = _prev_abort; break;
 		case SIGFPE:  call = _prev_fpe; break;
 		default: NOT_REACHED();
 	}
+#ifdef WITH_SIGACTION
+	if (call.sa_flags & SA_SIGINFO) {
+		if (call.sa_sigaction != NULL) call.sa_sigaction(signum, si, context);
+	} else {
+		if (call.sa_handler != NULL) call.sa_handler(signum);
+	}
+#else
 	if (call != NULL) call(signum);
+#endif
+
 }
 
 /**

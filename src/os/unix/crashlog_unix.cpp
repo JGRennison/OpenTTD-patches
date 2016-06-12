@@ -20,14 +20,13 @@
 #include <signal.h>
 #include <sys/utsname.h>
 #include <setjmp.h>
-
-#if defined(WITH_DBG_GDB)
 #include <unistd.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+#if defined(WITH_DBG_GDB)
+#include <sys/syscall.h>
 #endif /* WITH_DBG_GDB */
 
 #if defined(WITH_PRCTL_PT)
@@ -55,6 +54,8 @@
 #include <unistd.h>
 #endif
 
+#include <vector>
+
 #include "../../safeguards.h"
 
 #if defined(__GLIBC__) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
@@ -72,12 +73,72 @@ static void LogStacktraceSigSegvHandler(int  sig)
 }
 #endif
 
+static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, const char *last)
+{
+	int pipefd[2];
+	if (pipe(pipefd) == -1) return false;
+
+	int pid = fork();
+	if (pid < 0) return false;
+
+	if (pid == 0) {
+		/* child */
+
+		close(pipefd[0]); /* Close unused read end */
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[1]);
+		int null_fd = open("/dev/null", O_RDWR);
+		if (null_fd != -1) {
+			dup2(null_fd, STDERR_FILENO);
+			dup2(null_fd, STDIN_FILENO);
+		}
+
+		execvp(file, args);
+		exit(42);
+	}
+
+	/* parent */
+
+	close(pipefd[1]); /* Close unused write end */
+
+	while (buffer < last) {
+		ssize_t res = read(pipefd[0], buffer, last - buffer);
+		if (res < 0) {
+			if (errno == EINTR) continue;
+			break;
+		} else if (res == 0) {
+			break;
+		} else {
+			buffer += res;
+		}
+	}
+	buffer += seprintf(buffer, last, "\n");
+
+	close(pipefd[0]); /* close read end */
+
+	int status;
+	int wait_ret = waitpid(pid, &status, 0);
+	if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+		/* command did not appear to run successfully */
+		return false;
+	} else {
+		/* command executed successfully */
+		return true;
+	}
+}
+
 /**
  * Unix implementation for the crash logger.
  */
 class CrashLogUnix : public CrashLog {
 	/** Signal that has been thrown. */
 	int signum;
+#ifdef WITH_SIGACTION
+	siginfo_t *si;
+	void *context;
+	bool signal_instruction_ptr_valid;
+	void *signal_instruction_ptr;
+#endif
 
 	/* virtual */ char *LogOSVersion(char *buffer, const char *last) const
 	{
@@ -99,16 +160,53 @@ class CrashLogUnix : public CrashLog {
 		);
 	}
 
+	/* virtual */ char *LogOSVersionDetail(char *buffer, const char *last) const
+	{
+		struct utsname name;
+		if (uname(&name) < 0) return buffer;
+
+		if (strcmp(name.sysname, "Linux") == 0) {
+			char *buffer_orig = buffer;
+			buffer += seprintf(buffer, last, "Distro version:\n");
+
+			const char *args[] = { "/bin/sh", "-c", "lsb_release -a || find /etc -maxdepth 1 -type f -a \\( -name '*release' -o -name '*version' \\) -exec head -v {} \\+", NULL };
+			if (!ExecReadStdout("/bin/sh", const_cast<char* const*>(args), buffer, last)) {
+				buffer = buffer_orig;
+			}
+		}
+		return buffer;
+	}
+
 	/* virtual */ char *LogError(char *buffer, const char *last, const char *message) const
 	{
-		return buffer + seprintf(buffer, last,
+		buffer += seprintf(buffer, last,
 				"Crash reason:\n"
-				" Signal:  %s (%d)\n"
-				" Message: %s\n\n",
+				" Signal:  %s (%d)\n",
 				strsignal(this->signum),
-				this->signum,
+				this->signum);
+#ifdef WITH_SIGACTION
+		if (this->si) {
+			buffer += seprintf(buffer, last,
+					"          si_code: %d\n",
+					this->si->si_code);
+			if (this->signum != SIGABRT) {
+				buffer += seprintf(buffer, last,
+						"          Fault address: %p\n",
+						this->si->si_addr);
+				if (this->signal_instruction_ptr_valid) {
+					buffer += seprintf(buffer, last,
+							"          Instruction address: %p\n",
+							this->signal_instruction_ptr);
+				}
+			}
+		}
+#endif
+		buffer += seprintf(buffer, last,
+				" Message: %s\n\n",
 				message == NULL ? "<none>" : message
 		);
+
+		return buffer;
 	}
 
 #if defined(SUNOS)
@@ -145,7 +243,69 @@ class CrashLogUnix : public CrashLog {
 #endif
 
 	/**
-	 * Get a stack backtrace of the current thread's stack using the gdb debugger, if available.
+	 * Show registers if possible
+	 *
+	 * Also log GDB information if available
+	 */
+	/* virtual */ char *LogRegisters(char *buffer, const char *last) const
+	{
+		buffer = LogGdbInfo(buffer, last);
+
+#ifdef WITH_UCONTEXT
+		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
+#if defined(__x86_64__)
+		const gregset_t &gregs = ucontext->uc_mcontext.gregs;
+		buffer += seprintf(buffer, last,
+			"Registers:\n"
+			" rax: %#16llx rbx: %#16llx rcx: %#16llx rdx: %#16llx\n"
+			" rsi: %#16llx rdi: %#16llx rbp: %#16llx rsp: %#16llx\n"
+			" r8:  %#16llx r9:  %#16llx r10: %#16llx r11: %#16llx\n"
+			" r12: %#16llx r13: %#16llx r14: %#16llx r15: %#16llx\n"
+			" rip: %#16llx eflags: %#8llx\n\n",
+			gregs[REG_RAX],
+			gregs[REG_RBX],
+			gregs[REG_RCX],
+			gregs[REG_RDX],
+			gregs[REG_RSI],
+			gregs[REG_RDI],
+			gregs[REG_RBP],
+			gregs[REG_RSP],
+			gregs[REG_R8],
+			gregs[REG_R9],
+			gregs[REG_R10],
+			gregs[REG_R11],
+			gregs[REG_R12],
+			gregs[REG_R13],
+			gregs[REG_R14],
+			gregs[REG_R15],
+			gregs[REG_RIP],
+			gregs[REG_EFL]
+		);
+#elif defined(__i386)
+		const gregset_t &gregs = ucontext->uc_mcontext.gregs;
+		buffer += seprintf(buffer, last,
+			"Registers:\n"
+			" eax: %#8x ebx: %#8x ecx: %#8x edx: %#8x\n"
+			" esi: %#8x edi: %#8x ebp: %#8x esp: %#8x\n"
+			" eip: %#8x eflags: %#8x\n\n",
+			gregs[REG_EAX],
+			gregs[REG_EBX],
+			gregs[REG_ECX],
+			gregs[REG_EDX],
+			gregs[REG_ESI],
+			gregs[REG_EDI],
+			gregs[REG_EBP],
+			gregs[REG_ESP],
+			gregs[REG_EIP],
+			gregs[REG_EFL]
+		);
+#endif
+#endif
+		return buffer;
+	}
+
+	/**
+	 * Get a stack backtrace of the current thread's stack and other info using the gdb debugger, if available.
 	 *
 	 * Using GDB is useful as it knows about inlined functions and locals, and generally can
 	 * do a more thorough job than in LogStacktrace.
@@ -153,7 +313,7 @@ class CrashLogUnix : public CrashLog {
 	 * and there is some potentially useful information in the output from LogStacktrace
 	 * which is not in gdb's output.
 	 */
-	char *LogStacktraceGdb(char *buffer, const char *last) const
+	char *LogGdbInfo(char *buffer, const char *last) const
 	{
 #if defined(WITH_DBG_GDB)
 
@@ -163,55 +323,40 @@ class CrashLogUnix : public CrashLog {
 
 		pid_t tid = syscall(SYS_gettid);
 
-		int pipefd[2];
-		if (pipe(pipefd) == -1) return buffer;
-
-		int pid = fork();
-		if (pid < 0) return buffer;
-
-		if (pid == 0) {
-			/* child */
-
-			close(pipefd[0]); /* Close unused read end */
-			dup2(pipefd[1], STDOUT_FILENO);
-			close(pipefd[1]);
-			int null_fd = open("/dev/null", O_RDWR);
-			if (null_fd != -1) {
-				dup2(null_fd, STDERR_FILENO);
-				dup2(null_fd, STDIN_FILENO);
-			}
-			char buffer[16];
-			seprintf(buffer, lastof(buffer), "%d", tid);
-			execlp("gdb", "gdb", "-n", "-p", buffer, "-batch", "-ex", "bt full", NULL);
-			exit(42);
-		}
-
-		/* parent */
-
-		close(pipefd[1]); /* Close unused write end */
-
 		char *buffer_orig = buffer;
+		buffer += seprintf(buffer, last, "GDB info:\n");
 
-		buffer += seprintf(buffer, last, "Stacktrace (GDB):\n");
-		while (buffer < last) {
-			ssize_t res = read(pipefd[0], buffer, last - buffer);
-			if (res < 0) {
-				if (errno == EINTR) continue;
-				break;
-			} else if (res == 0) {
-				break;
-			} else {
-				buffer += res;
-			}
+		char tid_buffer[16];
+		char disasm_buffer[32];
+
+		seprintf(tid_buffer, lastof(tid_buffer), "%d", tid);
+
+		std::vector<const char *> args;
+		args.push_back("gdb");
+		args.push_back("-n");
+		args.push_back("-p");
+		args.push_back(tid_buffer);
+		args.push_back("-batch");
+
+		args.push_back("-ex");
+		args.push_back("echo \\nBacktrace:\\n");
+		args.push_back("-ex");
+		args.push_back("bt full");
+
+#ifdef WITH_SIGACTION
+		if (this->GetMessage() == NULL && this->signal_instruction_ptr_valid) {
+			seprintf(disasm_buffer, lastof(disasm_buffer), "x/1i %p", this->signal_instruction_ptr);
+			args.push_back("-ex");
+			args.push_back("set disassembly-flavor intel");
+			args.push_back("-ex");
+			args.push_back("echo \\nFault instruction:\\n");
+			args.push_back("-ex");
+			args.push_back(disasm_buffer);
 		}
-		buffer += seprintf(buffer, last, "\n");
+#endif
 
-		close(pipefd[0]); /* close read end */
-
-		int status;
-		int wait_ret = waitpid(pid, &status, 0);
-		if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-			/* gdb did not appear to run successfully */
+		args.push_back(NULL);
+		if (!ExecReadStdout("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
 			buffer = buffer_orig;
 		}
 #endif /* WITH_DBG_GDB */
@@ -244,8 +389,6 @@ class CrashLogUnix : public CrashLog {
 	 */
 	/* virtual */ char *LogStacktrace(char *buffer, const char *last) const
 	{
-		buffer = LogStacktraceGdb(buffer, last);
-
 		buffer += seprintf(buffer, last, "Stacktrace:\n");
 
 #if defined(__GLIBC__)
@@ -378,10 +521,29 @@ public:
 	 * A crash log is always generated by signal.
 	 * @param signum the signal that was caused by the crash.
 	 */
+#ifdef WITH_SIGACTION
+	CrashLogUnix(int signum, siginfo_t *si, void *context) :
+		signum(signum), si(si), context(context)
+	{
+		this->signal_instruction_ptr_valid = false;
+
+#ifdef WITH_UCONTEXT
+		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
+#if defined(__x86_64__)
+		this->signal_instruction_ptr = (void *) ucontext->uc_mcontext.gregs[REG_RIP];
+		this->signal_instruction_ptr_valid = true;
+#elif defined(__i386)
+		this->signal_instruction_ptr = (void *) ucontext->uc_mcontext.gregs[REG_EIP];
+		this->signal_instruction_ptr_valid = true;
+#endif
+#endif /* WITH_UCONTEXT */
+	}
+#else
 	CrashLogUnix(int signum) :
 		signum(signum)
 	{
 	}
+#endif /* WITH_SIGACTION */
 };
 
 /** The signals we want our crash handler to handle. */
@@ -392,7 +554,11 @@ static const int _signals_to_handle[] = { SIGSEGV, SIGABRT, SIGFPE, SIGBUS, SIGI
  * @note Not static so it shows up in the backtrace.
  * @param signum the signal that caused us to crash.
  */
+#ifdef WITH_SIGACTION
+static void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
+#else
 static void CDECL HandleCrash(int signum)
+#endif
 {
 	/* Disable all handling of signals by us, so we don't go into infinite loops. */
 	for (const int *i = _signals_to_handle; i != endof(_signals_to_handle); i++) {
@@ -412,7 +578,11 @@ static void CDECL HandleCrash(int signum)
 		abort();
 	}
 
+#ifdef WITH_SIGACTION
+	CrashLogUnix log(signum, si, context);
+#else
 	CrashLogUnix log(signum);
+#endif
 	log.MakeCrashLog();
 
 	CrashLog::AfterCrashLogCleanup();
@@ -422,6 +592,15 @@ static void CDECL HandleCrash(int signum)
 /* static */ void CrashLog::InitialiseCrashLog()
 {
 	for (const int *i = _signals_to_handle; i != endof(_signals_to_handle); i++) {
+#ifdef WITH_SIGACTION
+		struct sigaction sa;
+		memset(&sa, 0, sizeof(sa));
+		sa.sa_flags = SA_SIGINFO | SA_RESTART;
+		sigemptyset(&sa.sa_mask);
+		sa.sa_sigaction = HandleCrash;
+		sigaction(*i, &sa, NULL);
+#else
 		signal(*i, HandleCrash);
+#endif
 	}
 }

@@ -97,7 +97,7 @@ set_default() {
 	with_sse="1"
 	with_libbfd="1"
 	with_bfd_extra_debug="1"
-	with_dbg_gdb="1"
+	with_self_gdb_debug="1"
 
 	save_params_array="
 		build
@@ -177,7 +177,7 @@ set_default() {
 		with_sse
 		with_libbfd
 		with_bfd_extra_debug
-		with_dbg_gdb
+		with_self_gdb_debug
 	CC CXX CFLAGS CXXFLAGS LDFLAGS CFLAGS_BUILD CXXFLAGS_BUILD LDFLAGS_BUILD"
 }
 
@@ -479,9 +479,9 @@ detect_params() {
 			--with-bfd-extra-debug)       with_bfd_extra_debug="1";;
 			--with-bfd-extra-debug=*)     with_bfd_extra_debug="$optarg";;
 
-			--without-self-gdb-debug)     with_dbg_gdb="0";;
-			--with-self-gdb-debug)        with_dbg_gdb="1";;
-			--with-self-gdb-debug=*)      with_dbg_gdb="$optarg";;
+			--without-self-gdb-debug)     with_self_gdb_debug="0";;
+			--with-self-gdb-debug)        with_self_gdb_debug="1";;
+			--with-self-gdb-debug=*)      with_self_gdb_debug="$optarg";;
 
 			CC=* | --CC=*)                CC="$optarg";;
 			CXX=* | --CXX=*)              CXX="$optarg";;
@@ -513,6 +513,12 @@ detect_params() {
 	# Clean the logfile
 	echo "" > $config_log
 	log 2 "Invocation: $0 $*"
+	if [ "$ignore_extra_parameters" = "0" -o ! -f config.invocation ]; then
+		echo "$0 $*" > config.invocation
+		CONFIGURE_INVOCATION="$0 $*"
+	else
+		CONFIGURE_INVOCATION="`cat config.invocation`"
+	fi
 }
 
 save_params() {
@@ -1660,7 +1666,7 @@ EOL
 		fi
 
 		HAVE_GDB_DBG=
-		if [ "$with_dbg_gdb" = "1" ]; then
+		if [ "$with_self_gdb_debug" = "1" ]; then
 			log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdb -x c++ -"
 			"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdb -x c++ - 2> /dev/null << EOL
 				#include <unistd.h>
@@ -1709,6 +1715,59 @@ EOL
 			if [ $enable_debug -lt 1 ] && [ "$with_bfd_extra_debug" = "1" ]; then
 				CFLAGS="$CFLAGS -g1"
 			fi
+		fi
+
+		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.sigaction -x c++ - -ldl"
+		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.sigaction -x c++ - -ldl 2> /dev/null << EOL
+			#include <signal.h>
+			void *addr;
+			int code;
+			void handler(int sig, siginfo_t *si, void *context) {
+				addr = si->si_addr;
+				code = si->si_code;
+			}
+			int main() {
+				struct sigaction sa;
+				sa.sa_flags = SA_SIGINFO;
+				sigemptyset(&sa.sa_mask);
+				sa.sa_sigaction = handler;
+				sigaction(SIGSEGV, &sa, 0);
+				return 0;
+			}
+EOL
+		ret=$?
+		rm -f tmp.config.sigaction
+		log 2 "  exit code $ret"
+		if [ $ret -ne 0 ]; then
+			log 1 "checking sigaction... no"
+		else
+			log 1 "checking sigaction... found"
+			CFLAGS="$CFLAGS -DWITH_SIGACTION"
+		fi
+
+		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.ucontext -x c++ - -ldl"
+		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.ucontext -x c++ - -ldl 2> /dev/null << EOL
+			#include <ucontext.h>
+			int main() {
+				ucontext_t context;
+#if defined(__x86_64__)
+				void *ptr = (void *) context.uc_mcontext.gregs[REG_RIP];
+#elif defined(__i386)
+				void *ptr = (void *) context.uc_mcontext.gregs[REG_EIP];
+#else
+#error Unknown arch
+#endif
+				return 0;
+			}
+EOL
+		ret=$?
+		rm -f tmp.config.ucontext
+		log 2 "  exit code $ret"
+		if [ $ret -ne 0 ]; then
+			log 1 "checking ucontext... no"
+		else
+			log 1 "checking ucontext... found"
+			CFLAGS="$CFLAGS -DWITH_UCONTEXT"
 		fi
 	fi
 
@@ -3433,6 +3492,7 @@ make_sed() {
 		s@!!CONFIG_CACHE_VERSION!!@config.cache.version@g;
 		s@!!CONFIG_CACHE_SOURCE_LIST!!@config.cache.source.list@g;
 		s@!!CONFIG_CACHE_PWD!!@config.cache.pwd@g;
+		s@!!CONFIG_CACHE_INVOCATION!!@config.cache.invocation@g;
 		s@!!LANG_SUPPRESS!!@$lang_suppress@g;
 		s@!!OBJS_C!!@$OBJS_C@g;
 		s@!!OBJS_CPP!!@$OBJS_CPP@g;
@@ -3446,6 +3506,7 @@ make_sed() {
 		s@!!DISTCC!!@$distcc@g;
 		s@!!NFORENUM!!@$nforenum@g;
 		s@!!GRFCODEC!!@$grfcodec@g;
+		s@!!CONFIGURE_INVOCATION!!@$CONFIGURE_INVOCATION@g;
 	"
 
 	if [ "$icon_theme_dir" != "" ]; then

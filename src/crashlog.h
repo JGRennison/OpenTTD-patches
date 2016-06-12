@@ -45,6 +45,14 @@ protected:
 	virtual char *LogCompiler(char *buffer, const char *last) const;
 
 	/**
+	 * Writes OS' version detail to the buffer, if available.
+	 * @param buffer The begin where to write at.
+	 * @param last   The last position in the buffer to write to.
+	 * @return the position of the \c '\0' character after the buffer.
+	 */
+	virtual char *LogOSVersionDetail(char *buffer, const char *last) const;
+
+	/**
 	 * Writes actually encountered error to the buffer.
 	 * @param buffer  The begin where to write at.
 	 * @param last    The last position in the buffer to write to.
@@ -127,6 +135,8 @@ public:
 
 	static void SetErrorMessage(const char *message);
 	static void AfterCrashLogCleanup();
+
+	inline const char *GetMessage() const { return this->message; }
 };
 
 #endif /* CRASHLOG_H */

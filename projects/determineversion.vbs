@@ -27,6 +27,7 @@ Sub UpdateFile(modified, revision, version, cur_date, filename)
 	FindReplaceInFile filename, "!!REVISION!!", revision
 	FindReplaceInFile filename, "!!VERSION!!", version
 	FindReplaceInFile filename, "!!DATE!!", cur_date
+	FindReplaceInFile filename, "!!CONFIGURE_INVOCATION!!", ""
 End Sub
 
 Sub UpdateFiles(version)
