@@ -1874,9 +1874,9 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 		sprite += type * 16 + variant * 64 + image * 2 + condition + (type > SIGTYPE_LAST_NOPBS ? 64 : 0);
 	}
 
-	uint origin_slot = GetOriginFileSlot(sprite);
-	extern uint _first_user_grf_file_index;
-	extern uint _opengfx_grf_file_index;
+	int origin_slot = GetOriginFileSlot(sprite);
+	extern int _first_user_grf_file_index;
+	extern int _opengfx_grf_file_index;
 	if (!is_custom_sprite) is_custom_sprite = origin_slot != _opengfx_grf_file_index && (origin_slot >= _first_user_grf_file_index);
 
 	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default) {
