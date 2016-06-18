@@ -2061,9 +2061,9 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 		sprite = SPR_PROGSIGNAL_BASE + 16 + image * 2 + condition;
 		is_custom_sprite = false;
 	} else {
-		uint origin_slot = GetOriginFileSlot(sprite);
-		extern uint _first_user_grf_file_index;
-		extern uint _opengfx_grf_file_index;
+		int origin_slot = GetOriginFileSlot(sprite);
+		extern int _first_user_grf_file_index;
+		extern int _opengfx_grf_file_index;
 		if (!is_custom_sprite) is_custom_sprite = origin_slot != _opengfx_grf_file_index && (origin_slot >= _first_user_grf_file_index);
 	}
 
