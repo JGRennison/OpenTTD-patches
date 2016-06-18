@@ -600,7 +600,7 @@ void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engin
 		const Sprite *real_spritef = GetSprite(spritef, ST_NORMAL);
 		const Sprite *real_spriter = GetSprite(spriter, ST_NORMAL);
 
-		preferred_x = Clamp(preferred_x,
+		preferred_x = SoftClamp(preferred_x,
 				left - UnScaleGUI(real_spritef->x_offs) + ScaleGUITrad(14),
 				right - UnScaleGUI(real_spriter->width) - UnScaleGUI(real_spriter->x_offs) - ScaleGUITrad(15));
 
