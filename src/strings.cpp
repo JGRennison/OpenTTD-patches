@@ -759,6 +759,67 @@ uint ConvertDisplaySpeedToKmhishSpeed(uint speed)
 {
 	return _units_velocity[_settings_game.locale.units_velocity].c.FromDisplay(speed * 16, true, 10);
 }
+
+/**
+ * Convert the given internal weight to the display weight.
+ * @param weight the weight to convert
+ * @return the converted weight.
+ */
+uint ConvertWeightToDisplayWeight(uint weight)
+{
+	return _units_weight[_settings_game.locale.units_weight].c.ToDisplay(weight);
+}
+
+/**
+ * Convert the given display weight to the (internal) weight.
+ * @param weight the weight to convert
+ * @return the converted weight.
+ */
+uint ConvertDisplayWeightToWeight(uint weight)
+{
+	return _units_weight[_settings_game.locale.units_weight].c.FromDisplay(weight);
+}
+
+/**
+ * Convert the given internal power to the display power.
+ * @param power the power to convert
+ * @return the converted power.
+ */
+uint ConvertPowerToDisplayPower(uint power)
+{
+	return _units_power[_settings_game.locale.units_power].c.ToDisplay(power);
+}
+
+/**
+ * Convert the given display power to the (internal) power.
+ * @param power the power to convert
+ * @return the converted power.
+ */
+uint ConvertDisplayPowerToPower(uint power)
+{
+	return _units_power[_settings_game.locale.units_power].c.FromDisplay(power);
+}
+
+/**
+ * Convert the given internal force to the display force.
+ * @param force the force to convert
+ * @return the converted force.
+ */
+uint ConvertForceToDisplayForce(uint force)
+{
+	return _units_force[_settings_game.locale.units_force].c.ToDisplay(force);
+}
+
+/**
+ * Convert the given display force to the (internal) force.
+ * @param force the force to convert
+ * @return the converted force.
+ */
+uint ConvertDisplayForceToForce(uint force)
+{
+	return _units_force[_settings_game.locale.units_force].c.FromDisplay(force);
+}
+
 /**
  * Parse most format codes within a string and write the result to a buffer.
  * @param buff  The buffer to write the final string to.

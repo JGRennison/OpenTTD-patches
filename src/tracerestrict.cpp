@@ -349,6 +349,27 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_PHYS_PROP: {
+						switch (static_cast<TraceRestrictPhysPropCondAuxField>(GetTraceRestrictAuxField(item))) {
+							case TRPPCAF_WEIGHT:
+								result = TestCondition(v->gcache.cached_weight, condop, condvalue);
+								break;
+
+							case TRPPCAF_POWER:
+								result = TestCondition(v->gcache.cached_power, condop, condvalue);
+								break;
+
+							case TRPPCAF_MAX_TE:
+								result = TestCondition(v->gcache.cached_max_te / 1000, condop, condvalue);
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -486,6 +507,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
 				case TRIT_COND_TRAIN_GROUP:
+				case TRIT_COND_PHYS_PROP:
 					break;
 
 				default:
@@ -559,6 +581,9 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_TILE_INDEX:
 		case TRVT_RESERVE_THROUGH:
 		case TRVT_LONG_RESERVE:
+		case TRVT_WEIGHT:
+		case TRVT_POWER:
+		case TRVT_FORCE:
 			SetTraceRestrictValue(item, 0);
 			SetTraceRestrictAuxField(item, 0);
 			break;
@@ -598,7 +623,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 /**
  * Set the type field of a TraceRestrictItem, and resets any other fields which are no longer valid/meaningful to sensible defaults
  */
-void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type)
+void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type, uint8 aux_data)
 {
 	if (item != 0) {
 		assert(GetTraceRestrictType(item) != TRIT_NULL);
@@ -608,12 +633,26 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItem
 
 	TraceRestrictTypePropertySet old_properties = GetTraceRestrictTypeProperties(item);
 	SetTraceRestrictType(item, type);
+	bool set_aux_field = false;
+	if (type == TRIT_COND_PHYS_PROP) {
+		SetTraceRestrictAuxField(item, aux_data);
+		set_aux_field = true;
+	} else {
+		assert(aux_data == 0);
+	}
 	TraceRestrictTypePropertySet new_properties = GetTraceRestrictTypeProperties(item);
 
 	if (old_properties.cond_type != new_properties.cond_type ||
 			old_properties.value_type != new_properties.value_type) {
 		SetTraceRestrictCondOp(item, TRCO_IS);
 		SetTraceRestrictValueDefault(item, new_properties.value_type);
+		if (set_aux_field) {
+			SetTraceRestrictAuxField(item, aux_data);
+		}
+	}
+	if (GetTraceRestrictType(item) == TRIT_COND_LAST_STATION && GetTraceRestrictAuxField(item) != TROCAF_STATION) {
+		// if changing type from another order type to last visited station, reset value if not currently a station
+		SetTraceRestrictValueDefault(item, TRVT_ORDER);
 	}
 }
 
