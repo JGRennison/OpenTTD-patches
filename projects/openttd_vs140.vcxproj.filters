@@ -1263,6 +1263,9 @@
     <ClInclude Include="..\src\sound\win32_s.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\unit_conversion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\video\win32_v.h">
       <Filter>Header Files</Filter>
     </ClInclude>

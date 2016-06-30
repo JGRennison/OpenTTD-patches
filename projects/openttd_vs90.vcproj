@@ -1984,6 +1984,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\unit_conversion.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\video\win32_v.h"
 				>
 			</File>

@@ -695,6 +695,7 @@
     <ClInclude Include="..\src\os\windows\win32.h" />
     <ClInclude Include="..\src\music\win32_m.h" />
     <ClInclude Include="..\src\sound\win32_s.h" />
+    <ClInclude Include="..\src\unit_conversion.h" />
     <ClInclude Include="..\src\video\win32_v.h" />
     <ClInclude Include="..\src\window_func.h" />
     <ClInclude Include="..\src\window_gui.h" />

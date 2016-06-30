@@ -113,6 +113,8 @@ enum TraceRestrictItemType {
 	TRIT_COND_ENTRY_DIRECTION     = 16,   ///< Test which side of signal/signal tile is being entered from
 	TRIT_COND_PBS_ENTRY_SIGNAL    = 17,   ///< Test tile and PBS-state of previous signal
 	TRIT_COND_TRAIN_GROUP         = 18,   ///< Test train group membership
+	TRIT_COND_PHYS_PROP           = 19,   ///< Test train physical property
+	TRIT_COND_PHYS_RATIO          = 20,   ///< Test train physical property ratio
 	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
 	/* space up to 31 */
 };
@@ -169,6 +171,25 @@ enum TraceRestrictOrderCondAuxField {
 	TROCAF_STATION                = 0,       ///< value field is a station StationID
 	TROCAF_WAYPOINT               = 1,       ///< value field is a waypoint StationID
 	TROCAF_DEPOT                  = 2,       ///< value field is a depot DepotID
+	/* space up to 3 */
+};
+
+/**
+ * TraceRestrictItem auxiliary type field, for physical property type conditionals
+ */
+enum TraceRestrictPhysPropCondAuxField {
+	TRPPCAF_WEIGHT                = 0,       ///< value field is a weight
+	TRPPCAF_POWER                 = 1,       ///< value field is a power
+	TRPPCAF_MAX_TE                = 2,       ///< value field is a tractive effort
+	/* space up to 3 */
+};
+
+/**
+ * TraceRestrictItem auxiliary type field, for physical property ratio type conditionals
+ */
+enum TraceRestrictPhysPropRatioCondAuxField {
+	TRPPRCAF_POWER_WEIGHT         = 0,       ///< value field is a 100 * power / weight ratio
+	TRPPRCAF_MAX_TE_WEIGHT        = 1,       ///< value field is a 100 * tractive effort / weight ratio
 	/* space up to 3 */
 };
 
@@ -414,6 +435,11 @@ enum TraceRestrictValueType {
 	TRVT_RESERVE_THROUGH          = 10,///< takes a value 0 = reserve through, 1 = cancel previous reserve through
 	TRVT_LONG_RESERVE             = 11,///< takes a value 0 = long reserve, 1 = cancel previous long reserve
 	TRVT_GROUP_INDEX              = 12,///< takes a GroupID
+	TRVT_WEIGHT                   = 13,///< takes a weight
+	TRVT_POWER                    = 14,///< takes a power
+	TRVT_FORCE                    = 15,///< takes a force
+	TRVT_POWER_WEIGHT_RATIO       = 16,///< takes a power / weight ratio, * 100
+	TRVT_FORCE_WEIGHT_RATIO       = 17,///< takes a force / weight ratio, * 100
 	TRVT_OWNER                    = 40,///< takes a CompanyID
 };
 
@@ -426,7 +452,7 @@ struct TraceRestrictTypePropertySet {
 };
 
 void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueType value_type);
-void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type);
+void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type, uint8 aux_data = 0);
 
 /**
  * Get TraceRestrictTypePropertySet for a given instruction, only looks at value field
@@ -481,6 +507,42 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 				out.cond_type = TRCOT_BINARY;
 				break;
 
+			case TRIT_COND_PHYS_PROP:
+				switch (static_cast<TraceRestrictPhysPropCondAuxField>(GetTraceRestrictAuxField(item))) {
+					case TRPPCAF_WEIGHT:
+						out.value_type = TRVT_WEIGHT;
+						break;
+
+					case TRPPCAF_POWER:
+						out.value_type = TRVT_POWER;
+						break;
+
+					case TRPPCAF_MAX_TE:
+						out.value_type = TRVT_FORCE;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
+				break;
+
+			case TRIT_COND_PHYS_RATIO:
+				switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(GetTraceRestrictAuxField(item))) {
+					case TRPPRCAF_POWER_WEIGHT:
+						out.value_type = TRVT_POWER_WEIGHT_RATIO;
+						break;
+
+					case TRPPRCAF_MAX_TE_WEIGHT:
+						out.value_type = TRVT_FORCE_WEIGHT_RATIO;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
+				break;
+
 			case TRIT_COND_TRAIN_OWNER:
 				out.value_type = TRVT_OWNER;
 				out.cond_type = TRCOT_BINARY;
@@ -506,6 +568,19 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 	}
 
 	return out;
+}
+
+/** Is the aux field for this TraceRestrictItemType used as a subtype which changes the type of the value field? */
+static inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
+{
+	switch (type) {
+		case TRIT_COND_PHYS_PROP:
+		case TRIT_COND_PHYS_RATIO:
+			return true;
+
+		default:
+			return false;
+	}
 }
 
 /** Get mapping ref ID from tile and track */
