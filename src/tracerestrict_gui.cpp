@@ -242,11 +242,12 @@ typedef uint TraceRestrictGuiItemType;
 
 static TraceRestrictGuiItemType GetItemGuiType(TraceRestrictItem item)
 {
-	TraceRestrictGuiItemType type = GetTraceRestrictType(item);
-	if (type == TRIT_COND_PHYS_PROP) {
-		type |= GetTraceRestrictAuxField(item) << 16;
+	TraceRestrictItemType type = GetTraceRestrictType(item);
+	if (IsTraceRestrictTypeAuxSubtype(type)) {
+		return type | (GetTraceRestrictAuxField(item) << 16);
+	} else {
+		return type;
 	}
-	return type;
 }
 
 static TraceRestrictItemType ItemTypeFromGuiType(TraceRestrictGuiItemType type)
@@ -289,6 +290,8 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE,
+		STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER_WEIGHT_RATIO,
+		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -305,6 +308,8 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_PHYS_PROP | (TRPPCAF_WEIGHT << 16),
 		TRIT_COND_PHYS_PROP | (TRPPCAF_POWER << 16),
 		TRIT_COND_PHYS_PROP | (TRPPCAF_MAX_TE << 16),
+		TRIT_COND_PHYS_RATIO | (TRPPRCAF_POWER_WEIGHT << 16),
+		TRIT_COND_PHYS_RATIO | (TRPPRCAF_MAX_TE_WEIGHT << 16),
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -470,6 +475,8 @@ static bool IsIntegerValueType(TraceRestrictValueType type)
 		case TRVT_WEIGHT:
 		case TRVT_POWER:
 		case TRVT_FORCE:
+		case TRVT_POWER_WEIGHT_RATIO:
+		case TRVT_FORCE_WEIGHT_RATIO:
 			return true;
 
 		default:
@@ -507,6 +514,18 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 			return to_display
 					? ConvertForceToDisplayForce(in)
 					: ConvertDisplayForceToForce(in);
+			break;
+
+		case TRVT_POWER_WEIGHT_RATIO:
+			return to_display
+					? ConvertPowerToDisplayPower(in) * 10
+					: ConvertDisplayPowerToPower(in) / 10;
+			break;
+
+		case TRVT_FORCE_WEIGHT_RATIO:
+			return to_display
+					? ConvertForceToDisplayForce(in) * 10
+					: ConvertDisplayForceToForce(in) / 10;
 			break;
 
 		case TRVT_PF_PENALTY:
@@ -749,6 +768,20 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_FORCE:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE;
 					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					break;
+
+				case TRVT_POWER_WEIGHT_RATIO:
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER_WEIGHT_RATIO;
+					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					SetDParam(4, STR_UNITS_WEIGHT_LONG_METRIC);
+					SetDParam(5, 100);
+					break;
+
+				case TRVT_FORCE_WEIGHT_RATIO:
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO;
+					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					SetDParam(4, STR_UNITS_WEIGHT_LONG_METRIC);
+					SetDParam(5, 100);
 					break;
 
 				default:
