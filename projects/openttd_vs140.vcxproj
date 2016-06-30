@@ -671,6 +671,7 @@
     <ClInclude Include="..\src\os\windows\win32.h" />
     <ClInclude Include="..\src\music\win32_m.h" />
     <ClInclude Include="..\src\sound\win32_s.h" />
+    <ClInclude Include="..\src\unit_conversion.h" />
     <ClInclude Include="..\src\video\win32_v.h" />
     <ClInclude Include="..\src\window_func.h" />
     <ClInclude Include="..\src\window_gui.h" />
@@ -1290,6 +1291,10 @@
     <ClCompile Include="..\src\os\windows\win32.cpp" />
     <ClInclude Include="..\src\thread\thread.h" />
     <ClCompile Include="..\src\thread\thread_win32.cpp" />
+    <ClInclude Include="..\src\tracerestrict.h" />
+    <ClCompile Include="..\src\tracerestrict.cpp" />
+    <ClCompile Include="..\src\tracerestrict_gui.cpp" />
+    <ClCompile Include="..\src\saveload\tracerestrict_sl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />
