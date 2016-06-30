@@ -791,7 +791,7 @@ void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommand
 }
 
 /**
- * Check whether a tile/tracl pair contains a usable signal
+ * Check whether a tile/track pair contains a usable signal
  */
 static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
 {
