@@ -36,16 +36,8 @@
 #include "cargotype.h"
 #include "sortlist_type.h"
 #include "group.h"
+#include "unit_conversion.h"
 #include "table/sprites.h"
-
-extern uint ConvertSpeedToDisplaySpeed(uint speed);
-extern uint ConvertDisplaySpeedToSpeed(uint speed);
-extern uint ConvertWeightToDisplayWeight(uint weight);
-extern uint ConvertDisplayWeightToWeight(uint weight);
-extern uint ConvertPowerToDisplayPower(uint power);
-extern uint ConvertDisplayPowerToPower(uint power);
-extern uint ConvertForceToDisplayForce(uint force);
-extern uint ConvertDisplayForceToForce(uint force);
 
 /** Widget IDs */
 enum TraceRestrictWindowWidgets {

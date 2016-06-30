@@ -34,6 +34,7 @@
 #include "smallmap_gui.h"
 #include "window_func.h"
 #include "debug.h"
+#include "unit_conversion.h"
 #include "game/game_text.hpp"
 #include "network/network_content_gui.h"
 #include <stack>
