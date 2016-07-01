@@ -3972,6 +3972,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\blitter\32bpp_anim_sse2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_anim_sse2.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\blitter\32bpp_anim_sse4.cpp"
 				>
 			</File>
@@ -4653,6 +4661,14 @@
 			</File>
 			<File
 				RelativePath=".\..\src\saveload\tracerestrict_sl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\scope_info.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\scope_info.h"
 				>
 			</File>
 		</Filter>
