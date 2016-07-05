@@ -46,6 +46,7 @@ void ValidateString(const char *str);
 
 void str_fix_scc_encoded(char *str, const char *last);
 void str_strip_colours(char *str);
+char *str_replace_wchar(char *str, const char *last, WChar find, WChar replace);
 bool strtolower(char *str);
 
 bool StrValid(const char *str, const char *last);

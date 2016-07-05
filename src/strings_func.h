@@ -139,6 +139,8 @@ uint ConvertDisplaySpeedToKmhishSpeed(uint speed);
 
 void InjectDParam(uint amount);
 
+WChar GetDecimalSeparatorChar();
+
 /**
  * Set a string parameter \a v at index \a n in a given array \a s.
  * @param s Array of string parameters.
