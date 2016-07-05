@@ -1859,6 +1859,7 @@ static StringID _service_interval_dropdown[] = {
 struct VehicleDetailsWindow : Window {
 	TrainDetailsWindowTabs tab; ///< For train vehicles: which tab is displayed.
 	Scrollbar *vscroll;
+	bool vehicle_weight_ratio_line_shown;
 
 	/** Initialize a newly created vehicle details window */
 	VehicleDetailsWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
@@ -1920,12 +1921,21 @@ struct VehicleDetailsWindow : Window {
 		return desired_height;
 	}
 
+	bool ShouldShowWeightRatioLine(const Vehicle *v) const
+	{
+		return (v->type == VEH_TRAIN && _settings_client.gui.show_train_weight_ratios_in_details);
+	}
+
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		switch (widget) {
 			case WID_VD_TOP_DETAILS: {
+				const Vehicle *v = Vehicle::Get(this->window_number);
 				Dimension dim = { 0, 0 };
-				size->height = WD_FRAMERECT_TOP + 4 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				this->vehicle_weight_ratio_line_shown = ShouldShowWeightRatioLine(v);
+				int lines = 4;
+				if (this->vehicle_weight_ratio_line_shown) lines++;
+				size->height = WD_FRAMERECT_TOP + lines * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 
 				for (uint i = 0; i < 4; i++) SetDParamMaxValue(i, INT16_MAX);
 				static const StringID info_strings[] = {
@@ -1937,6 +1947,11 @@ struct VehicleDetailsWindow : Window {
 				};
 				for (uint i = 0; i < lengthof(info_strings); i++) {
 					dim = maxdim(dim, GetStringBoundingBox(info_strings[i]));
+				}
+				if (this->vehicle_weight_ratio_line_shown) {
+					SetDParamMaxValue(0, 1 << 16);
+					SetDParamMaxValue(1, 1 << 16);
+					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_WEIGHT_RATIOS));
 				}
 				SetDParam(0, STR_VEHICLE_INFO_AGE);
 				dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_AGE_RUNNING_COST_YR));
@@ -2072,6 +2087,14 @@ struct VehicleDetailsWindow : Window {
 				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, string);
 				y += FONT_HEIGHT_NORMAL;
 
+				bool should_show_weight_ratio = this->ShouldShowWeightRatioLine(v);
+				if (should_show_weight_ratio) {
+					SetDParam(0, (100 * Train::From(v)->gcache.cached_power) / max<uint>(1, Train::From(v)->gcache.cached_weight));
+					SetDParam(1, (Train::From(v)->gcache.cached_max_te / 10) / max<uint>(1, Train::From(v)->gcache.cached_weight));
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_WEIGHT_RATIOS);
+					y += FONT_HEIGHT_NORMAL;
+				}
+
 				/* Draw profit */
 				SetDParam(0, v->GetDisplayProfitThisYear());
 				SetDParam(1, v->GetDisplayProfitLastYear());
@@ -2082,6 +2105,10 @@ struct VehicleDetailsWindow : Window {
 				SetDParam(0, ToPercent16(v->reliability));
 				SetDParam(1, v->breakdowns_since_last_service);
 				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS);
+
+				if (this->vehicle_weight_ratio_line_shown != should_show_weight_ratio) {
+					const_cast<VehicleDetailsWindow *>(this)->ReInit();
+				}
 				break;
 			}
 

@@ -1287,6 +1287,10 @@ STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Show town popul
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Display the population of towns in their label on the map
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Thickness of lines in graphs: {STRING2}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Width of the line in the graphs. A thin line is more precisely readable, a thicker line is easier to see and colours are easier to distinguish
+STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :Show train length in details: {STRING2}
+STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :Show train length in the vehicle details window
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Show train weight ratios in details: {STRING2}
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Show train weight ratios in the vehicle details window
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Show restricted electric signals using default graphics: {STRING2}
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Show electric signals with routing restriction programs using the default signal graphics with a blue signal post, instead of using any NewGRF signal graphics. This is to make it easier to visually distinguish restricted signals.
 
@@ -3775,6 +3779,8 @@ STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Max. spe
 STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. speed: {LTBLUE}{VELOCITY} {BLACK}Range: {LTBLUE}{COMMA} tiles
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Weight: {LTBLUE}{WEIGHT_SHORT} {BLACK}Power: {LTBLUE}{POWER}{BLACK} Max. speed: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Weight: {LTBLUE}{WEIGHT_SHORT} {BLACK}Power: {LTBLUE}{POWER}{BLACK} Max. speed: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
+
+STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{BLACK}Power / weight: {LTBLUE}{POWER_WEIGHT_RATIO} {BLACK} Max. T.E / weight: {LTBLUE}{FORCE_WEIGHT_RATIO}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Profit this year: {LTBLUE}{CURRENCY_LONG} (last year: {CURRENCY_LONG})
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Reliability: {LTBLUE}{COMMA}%  {BLACK}Breakdowns since last service: {LTBLUE}{COMMA}
