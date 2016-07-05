@@ -58,6 +58,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_CONDFLAGS,
 	TR_WIDGET_COMPARATOR,
 	TR_WIDGET_VALUE_INT,
+	TR_WIDGET_VALUE_DECIMAL,
 	TR_WIDGET_VALUE_DROPDOWN,
 	TR_WIDGET_VALUE_DEST,
 	TR_WIDGET_VALUE_SIGNAL,
@@ -93,6 +94,7 @@ enum PanelWidgets {
 
 	// Right
 	DPR_VALUE_INT = 0,
+	DPR_VALUE_DECIMAL,
 	DPR_VALUE_DROPDOWN,
 	DPR_VALUE_DEST,
 	DPR_VALUE_SIGNAL,
@@ -479,6 +481,19 @@ static bool IsIntegerValueType(TraceRestrictValueType type)
 		case TRVT_WEIGHT:
 		case TRVT_POWER:
 		case TRVT_FORCE:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+/**
+ * Return true if item type field @p type is a decimal value type
+ */
+static bool IsDecimalValueType(TraceRestrictValueType type)
+{
+	switch (type) {
 		case TRVT_POWER_WEIGHT_RATIO:
 		case TRVT_FORCE_WEIGHT_RATIO:
 			return true;
@@ -520,20 +535,47 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 					: ConvertDisplayForceToForce(in);
 			break;
 
+		case TRVT_PF_PENALTY:
+			return in;
+
+		default:
+			NOT_REACHED();
+			return 0;
+	}
+}
+
+/**
+ * Convert integer values to decimal display units
+ */
+static void ConvertValueToDecimal(TraceRestrictValueType type, uint in, int64 &value, int64 &decimal)
+{
+	switch (type) {
 		case TRVT_POWER_WEIGHT_RATIO:
-			return to_display
-					? ConvertPowerToDisplayPower(in) * 10
-					: ConvertDisplayPowerToPower(in) / 10;
+			ConvertPowerWeightRatioToDisplay(in, value, decimal);
 			break;
 
 		case TRVT_FORCE_WEIGHT_RATIO:
-			return to_display
-					? ConvertForceToDisplayForce(in) * 10
-					: ConvertDisplayForceToForce(in) / 10;
+			ConvertForceWeightRatioToDisplay(in, value, decimal);
 			break;
 
-		case TRVT_PF_PENALTY:
-			return in;
+		default:
+			NOT_REACHED();
+	}
+}
+
+/**
+ * Convert decimal (double) display units to integer values
+ */
+static uint ConvertDecimalToValue(TraceRestrictValueType type, double in)
+{
+	switch (type) {
+		case TRVT_POWER_WEIGHT_RATIO:
+			return ConvertDisplayToPowerWeightRatio(in);
+			break;
+
+		case TRVT_FORCE_WEIGHT_RATIO:
+			return ConvertDisplayToForceWeightRatio(in);
+			break;
 
 		default:
 			NOT_REACHED();
@@ -793,15 +835,11 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_POWER_WEIGHT_RATIO:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER_WEIGHT_RATIO;
 					DrawInstructionStringConditionalIntegerCommon(item, properties);
-					SetDParam(4, STR_UNITS_WEIGHT_LONG_METRIC);
-					SetDParam(5, 100);
 					break;
 
 				case TRVT_FORCE_WEIGHT_RATIO:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO;
 					DrawInstructionStringConditionalIntegerCommon(item, properties);
-					SetDParam(4, STR_UNITS_WEIGHT_LONG_METRIC);
-					SetDParam(5, 100);
 					break;
 
 				default:
@@ -1042,6 +1080,22 @@ public:
 				break;
 			}
 
+			case TR_WIDGET_VALUE_DECIMAL: {
+				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+				if (IsDecimalValueType(type)) {
+					int64 value, decimal;
+					ConvertValueToDecimal(type, GetTraceRestrictValue(item), value, decimal);
+					SetDParam(0, value);
+					SetDParam(1, decimal);
+					char *saved = _settings_game.locale.digit_group_separator;
+					_settings_game.locale.digit_group_separator = const_cast<char*>("");
+					ShowQueryString(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_VALUE_CAPTION, 16, this, CS_NUMERAL_DECIMAL, QSF_NONE);
+					_settings_game.locale.digit_group_separator = saved;
+				}
+				break;
+			}
+
 			case TR_WIDGET_VALUE_DROPDOWN: {
 				TraceRestrictItem item = this->GetSelected();
 				switch (GetTraceRestrictTypeProperties(item).value_type) {
@@ -1125,19 +1179,35 @@ public:
 
 		TraceRestrictItem item = GetSelected();
 		TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
-		if (!IsIntegerValueType(type) && type != TRVT_PF_PENALTY) {
-			return;
-		}
+		uint value;
 
-		uint value = ConvertIntegerValue(type, atoi(str), false);
-		if (value >= (1 << TRIFA_VALUE_COUNT)) {
-			SetDParam(0, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true));
-			ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
-			return;
-		}
+		if (IsIntegerValueType(type) || type == TRVT_PF_PENALTY) {
+			value = ConvertIntegerValue(type, atoi(str), false);
+			if (value >= (1 << TRIFA_VALUE_COUNT)) {
+				SetDParam(0, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true));
+				SetDParam(1, 0);
+				ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
+				return;
+			}
 
-		if (type == TRVT_PF_PENALTY) {
-			SetTraceRestrictAuxField(item, TRPPAF_VALUE);
+			if (type == TRVT_PF_PENALTY) {
+				SetTraceRestrictAuxField(item, TRPPAF_VALUE);
+			}
+		} else if (IsDecimalValueType(type)) {
+			char tmp_buffer[32];
+			strecpy(tmp_buffer, str, lastof(tmp_buffer));
+			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
+			value = ConvertDecimalToValue(type, atof(tmp_buffer));
+			if (value >= (1 << TRIFA_VALUE_COUNT)) {
+				int64 value, decimal;
+				ConvertValueToDecimal(type, (1 << TRIFA_VALUE_COUNT) - 1, value, decimal);
+				SetDParam(0, value);
+				SetDParam(1, decimal);
+				ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
+				return;
+			}
+		} else {
+			return;
 		}
 
 		SetTraceRestrictValue(item, value);
@@ -1470,6 +1540,20 @@ public:
 				break;
 			}
 
+			case TR_WIDGET_VALUE_DECIMAL: {
+				SetDParam(0, 0);
+				SetDParam(1, 0);
+				TraceRestrictItem item = this->GetSelected();
+				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+				if (IsDecimalValueType(type)) {
+					int64 value, decimal;
+					ConvertValueToDecimal(type, GetTraceRestrictValue(item), value, decimal);
+					SetDParam(0, value);
+					SetDParam(1, decimal);
+				}
+				break;
+			}
+
 			case TR_WIDGET_CAPTION: {
 				const TraceRestrictProgram *prog = this->GetProgram();
 				if (prog) {
@@ -1629,6 +1713,7 @@ private:
 		this->RaiseWidget(TR_WIDGET_CONDFLAGS);
 		this->RaiseWidget(TR_WIDGET_COMPARATOR);
 		this->RaiseWidget(TR_WIDGET_VALUE_INT);
+		this->RaiseWidget(TR_WIDGET_VALUE_DECIMAL);
 		this->RaiseWidget(TR_WIDGET_VALUE_DROPDOWN);
 		this->RaiseWidget(TR_WIDGET_VALUE_DEST);
 		this->RaiseWidget(TR_WIDGET_VALUE_SIGNAL);
@@ -1644,6 +1729,7 @@ private:
 		this->DisableWidget(TR_WIDGET_CONDFLAGS);
 		this->DisableWidget(TR_WIDGET_COMPARATOR);
 		this->DisableWidget(TR_WIDGET_VALUE_INT);
+		this->DisableWidget(TR_WIDGET_VALUE_DECIMAL);
 		this->DisableWidget(TR_WIDGET_VALUE_DROPDOWN);
 		this->DisableWidget(TR_WIDGET_VALUE_DEST);
 		this->DisableWidget(TR_WIDGET_VALUE_SIGNAL);
@@ -1779,6 +1865,9 @@ private:
 				if (IsIntegerValueType(properties.value_type)) {
 					right_sel->SetDisplayedPlane(DPR_VALUE_INT);
 					this->EnableWidget(TR_WIDGET_VALUE_INT);
+				} else if(IsDecimalValueType(properties.value_type)) {
+					right_sel->SetDisplayedPlane(DPR_VALUE_DECIMAL);
+					this->EnableWidget(TR_WIDGET_VALUE_DECIMAL);
 				} else {
 					switch (properties.value_type) {
 						case TRVT_DENY:
@@ -2021,6 +2110,8 @@ static const NWidgetPart _nested_program_widgets[] = {
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_RIGHT),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_INT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_BLACK_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DECIMAL), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_BLACK_DECIMAL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_VALUE_DROPDOWN), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DEST), SetMinimalSize(124, 12), SetFill(1, 0),

@@ -17,3 +17,7 @@ uint ConvertPowerToDisplayPower(uint power);
 uint ConvertDisplayPowerToPower(uint power);
 uint ConvertForceToDisplayForce(uint force);
 uint ConvertDisplayForceToForce(uint force);
+void ConvertPowerWeightRatioToDisplay(uint ratio, int64 &value, int64 &decimals);
+void ConvertForceWeightRatioToDisplay(uint ratio, int64 &value, int64 &decimals);
+uint ConvertDisplayToPowerWeightRatio(double in);
+uint ConvertDisplayToForceWeightRatio(double in);
