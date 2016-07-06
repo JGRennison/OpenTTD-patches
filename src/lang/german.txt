@@ -2457,7 +2457,7 @@ STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Beende d
 STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Kann die Anweisung nicht einfügen
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Kann die Anweisung nicht ändern
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Kann die Anweisung nicht entfernen
-STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Wert zu groß, der größtmögiche Wert ist {COMMA}
+STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Wert zu groß, der größtmögiche Wert ist {DECIMAL}
 
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :Ein 'Ende Wenn' kann nicht entfernt werden
 
