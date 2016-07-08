@@ -367,6 +367,7 @@ Vehicle::Vehicle(VehicleType type)
 	this->cargo_age_counter  = 1;
 	this->last_station_visited = INVALID_STATION;
 	this->last_loading_station = INVALID_STATION;
+	this->cur_image_valid_dir  = INVALID_DIR;
 }
 
 /**

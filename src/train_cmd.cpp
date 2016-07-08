@@ -1638,6 +1638,8 @@ static void SwapTrainFlags(uint16 *swap_flag1, uint16 *swap_flag2)
  */
 static void UpdateStatusAfterSwap(Train *v)
 {
+	v->cur_image_valid_dir = INVALID_DIR;
+
 	/* Reverse the direction. */
 	if (v->track != TRACK_BIT_DEPOT) v->direction = ReverseDir(v->direction);
 
@@ -3052,6 +3054,7 @@ void Train::MarkDirty()
 	Train *v = this;
 	do {
 		v->colourmap = PAL_NONE;
+		v->cur_image_valid_dir = INVALID_DIR;
 		v->UpdateViewport(true, false);
 	} while ((v = v->Next()) != NULL);
 

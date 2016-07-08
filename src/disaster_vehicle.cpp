@@ -186,6 +186,7 @@ void DisasterVehicle::UpdatePosition(int x, int y, int z)
 	this->z_pos = z;
 	this->tile = TileVirtXY(x, y);
 
+	this->cur_image_valid_dir = INVALID_DIR;
 	this->UpdateImage();
 	this->UpdatePositionAndViewport();
 
@@ -199,6 +200,7 @@ void DisasterVehicle::UpdatePosition(int x, int y, int z)
 		safe_y = Clamp(u->y_pos, 0, MapMaxY() * TILE_SIZE);
 		u->z_pos = GetSlopePixelZ(safe_x, safe_y);
 		u->direction = this->direction;
+		u->cur_image_valid_dir = INVALID_DIR;
 
 		u->UpdateImage();
 		u->UpdatePositionAndViewport();

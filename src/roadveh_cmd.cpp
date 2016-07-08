@@ -408,6 +408,7 @@ void RoadVehicle::MarkDirty()
 {
 	for (RoadVehicle *v = this; v != NULL; v = v->Next()) {
 		v->colourmap = PAL_NONE;
+		v->cur_image_valid_dir = INVALID_DIR;
 		v->UpdateViewport(true, false);
 	}
 	this->CargoChanged();

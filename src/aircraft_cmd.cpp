@@ -1293,6 +1293,7 @@ TileIndex Aircraft::GetOrderStationLocation(StationID station)
 void Aircraft::MarkDirty()
 {
 	this->colourmap = PAL_NONE;
+	this->cur_image_valid_dir = INVALID_DIR;
 	this->UpdateViewport(true, false);
 	if (this->subtype == AIR_HELICOPTER) this->Next()->Next()->cur_image = GetRotorImage(this, EIT_ON_MAP);
 }

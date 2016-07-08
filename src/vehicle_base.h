@@ -291,6 +291,7 @@ public:
 	uint16 load_unload_ticks;           ///< Ticks to wait before starting next cycle.
 	GroupID group_id;                   ///< Index of group Pool array
 	byte subtype;                       ///< subtype (Filled with values from #EffectVehicles/#TrainSubTypes/#AircraftSubTypes)
+	DirectionByte cur_image_valid_dir;  ///< NOSAVE: direction for which cur_image does not need to be regenerated on the next tick
 
 	NewGRFCache grf_cache;              ///< Cache of often used calculated NewGRF values
 	VehicleCache vcache;                ///< Cache of often used vehicle values.
@@ -1158,11 +1159,20 @@ struct SpecializedVehicle : public Vehicle {
 		/* Skip updating sprites on dedicated servers without screen */
 		if (_network_dedicated) return;
 
+		extern bool _sprite_group_resolve_check_veh_enable;
+		extern bool _sprite_group_resolve_check_veh_result;
+
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);
 		SpriteID old_image = this->cur_image;
-		this->cur_image = ((T *)this)->T::GetImage(this->direction, EIT_ON_MAP);
+		if (this->cur_image_valid_dir != this->direction) {
+			_sprite_group_resolve_check_veh_enable = true;
+			_sprite_group_resolve_check_veh_result = true;
+			this->cur_image = ((T *)this)->T::GetImage(this->direction, EIT_ON_MAP);
+			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_result ? this->direction : INVALID_DIR;
+			_sprite_group_resolve_check_veh_enable = false;
+		}
 		if (force_update || this->cur_image != old_image) this->Vehicle::UpdateViewport(true);
 	}
 };
