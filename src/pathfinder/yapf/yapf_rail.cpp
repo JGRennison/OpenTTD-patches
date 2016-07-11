@@ -138,8 +138,8 @@ public:
 	{
 		assert(node->m_parent != NULL);
 
-		/* We will never pass more than two signals, no need to check for a safe tile. */
-		if (node->m_parent->m_num_signals_passed >= 2) return;
+		/* We will never pass more than two non-reserve-through signals, no need to check for a safe tile. */
+		if (node->m_parent->m_num_signals_passed - node->m_parent->m_num_signals_res_through_passed >= 2) return;
 
 		if (!node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::FindSafePositionProc)) {
 			m_res_node = node;
