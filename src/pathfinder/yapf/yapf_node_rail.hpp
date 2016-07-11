@@ -128,6 +128,7 @@ struct CYapfRailNodeT
 
 	CYapfRailSegment *m_segment;
 	uint16            m_num_signals_passed;
+	uint16            m_num_signals_res_through_passed;
 	union {
 		uint32          m_inherited_flags;
 		struct {
@@ -145,6 +146,7 @@ struct CYapfRailNodeT
 		m_segment = NULL;
 		if (parent == NULL) {
 			m_num_signals_passed      = 0;
+			m_num_signals_res_through_passed = 0;
 			flags_u.m_inherited_flags = 0;
 			m_last_red_signal_type    = SIGTYPE_NORMAL;
 			/* We use PBS as initial signal type because if we are in
@@ -160,6 +162,7 @@ struct CYapfRailNodeT
 			m_last_signal_type        = SIGTYPE_PBS;
 		} else {
 			m_num_signals_passed      = parent->m_num_signals_passed;
+			m_num_signals_res_through_passed = parent->m_num_signals_res_through_passed;
 			flags_u.m_inherited_flags = parent->flags_u.m_inherited_flags;
 			m_last_red_signal_type    = parent->m_last_red_signal_type;
 			m_last_signal_type        = parent->m_last_signal_type;
@@ -210,6 +213,7 @@ struct CYapfRailNodeT
 		base::Dump(dmp);
 		dmp.WriteStructT("m_segment", m_segment);
 		dmp.WriteLine("m_num_signals_passed = %d", m_num_signals_passed);
+		dmp.WriteLine("m_num_signals_res_through_passed = %d", m_num_signals_res_through_passed);
 		dmp.WriteLine("m_targed_seen = %s", flags_u.flags_s.m_targed_seen ? "Yes" : "No");
 		dmp.WriteLine("m_choice_seen = %s", flags_u.flags_s.m_choice_seen ? "Yes" : "No");
 		dmp.WriteLine("m_last_signal_was_red = %s", flags_u.flags_s.m_last_signal_was_red ? "Yes" : "No");
