@@ -212,7 +212,22 @@ public:
 		// From BaseVehicleListWindow
 		this->unitnumber_digits = dig;
 
+		/* Find the most used vehicle type, which is usually
+		 * better than 'just' the first/previous vehicle type. */
+		uint type_count[RAILTYPE_END];
+		memset(type_count, 0, sizeof(type_count));
+
+		const Engine *e;
+		FOR_ALL_ENGINES_OF_TYPE(e, VEH_TRAIN) {
+			if (e->u.rail.railveh_type == RAILVEH_WAGON) continue;
+			type_count[e->u.rail.railtype] += GetGroupNumEngines(_local_company, ALL_GROUP, e->index);
+		}
+
 		this->sel_railtype = RAILTYPE_BEGIN;
+		for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
+			if (type_count[this->sel_railtype] < type_count[rt]) this->sel_railtype = rt;
+		}
+
 		this->details_height = 10 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 
 		this->line_height = step_h;
