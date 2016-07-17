@@ -221,9 +221,13 @@ private:
 				TileIndex tile = v->tile;
 				Trackdir  trackdir = v->GetVehicleTrackdir();
 
-				CFollowTrackRail ft(v);
-
 				TileIndex candidate_tile = INVALID_TILE;
+
+				if (IsRailDepotTile(v->tile)) {
+					candidate_tile = v->tile;
+				}
+
+				CFollowTrackRail ft(v);
 
 				for (;;) {
 					if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir)) {

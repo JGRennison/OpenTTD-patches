@@ -423,6 +423,10 @@ Train *GetTrainForReservation(TileIndex tile, Track track)
  */
 TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *)
 {
+	if (IsRailDepotTile(v->tile)) {
+		return v->tile;
+	}
+
 	// scan forwards from vehicle position, for the case that train is waiting at/approaching PBS signal
 
 	TileIndex tile = v->tile;
