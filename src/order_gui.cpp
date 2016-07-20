@@ -1624,6 +1624,8 @@ public:
 						DoCommandP(this->vehicle->tile, this->vehicle->index, from_order | (to_order << 16), CMD_MOVE_ORDER | CMD_MSG(STR_ERROR_CAN_T_MOVE_THIS_ORDER))) {
 					this->selected_order = -1;
 					this->UpdateButtonState();
+					MarkAllRoutePathsDirty(this->vehicle);
+					MarkAllRouteStepsDirty(this);
 				}
 				break;
 			}
