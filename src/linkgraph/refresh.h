@@ -14,7 +14,7 @@
 
 #include "../cargo_type.h"
 #include "../vehicle_base.h"
-#include <deque>
+#include <vector>
 #include <map>
 #include <set>
 
@@ -79,7 +79,7 @@ protected:
 		bool operator<(const Hop &other) const;
 	};
 
-	typedef std::deque<RefitDesc> RefitList;
+	typedef std::vector<RefitDesc> RefitList;
 	typedef std::set<Hop> HopSet;
 
 	Vehicle *vehicle;           ///< Vehicle for which the links should be refreshed.

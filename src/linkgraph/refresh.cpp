@@ -72,9 +72,7 @@ LinkRefresher::LinkRefresher(Vehicle *vehicle, HopSet *seen_hops, bool allow_mer
 	vehicle(vehicle), seen_hops(seen_hops), cargo(CT_INVALID), allow_merge(allow_merge),
 	is_full_loading(is_full_loading)
 {
-	for (CargoID cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
-		this->capacities[cargo_type] = 0;
-	}
+	memset(this->capacities, 0, sizeof(this->capacities));
 
 	/* Assemble list of capacities and set last loading stations to 0. */
 	for (Vehicle *v = this->vehicle; v != NULL; v = v->Next()) {
@@ -211,7 +209,6 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next)
 			/* Refresh the link and give it a minimum capacity. */
 
 			uint cargo_quantity = this->capacities[c];
-
 			if (cargo_quantity == 0) continue;
 
 			/* If not allowed to merge link graphs, make sure the stations are

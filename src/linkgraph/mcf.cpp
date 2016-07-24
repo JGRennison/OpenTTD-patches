@@ -68,6 +68,7 @@ public:
  */
 class CapacityAnnotation : public Path {
 	int cached_annotation;
+
 public:
 	typedef int AnnotationValueType;
 
