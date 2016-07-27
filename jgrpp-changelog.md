@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.14.0 (2016-07-27)
+* Routing restrictions:
+  * Add conditionals: train weight, power, max T.E., power/weight and max T.E/weight.
+  * Add client setting to show train weight ratios in details header.
+  * Allow value of "PBS entry signal" conditional to be a rail depot.
+  * Fix reservation through multiple reserve-through signals after a junction.
+  * Fix compliation on MSVC.
+* Template-based train replacement:
+  * Fix crash when attempting to create a template train which used certain NewGRF features.
+  * Select most used rail type by default, instead of first rail type.
+* Fix loading of SpringPP savegames (regression in jgrpp-0.13.1).
+* Fix crash involving very long articulated vehicles in preview window.
+* Enhanced viewports: Update route markers/lines when drag/dropping vehicle orders.
+* Improve performance when not running as a dedicated server in some circumstances.
+* Bump trunk base from r27599 to r27623
+
 ### v0.13.3 (2016-06-12)
 * Fix improved breakdowns reducing aircraft speed to 0 in some circumstances.
 * Fix town cargo other than passengers and mail (e.g. ECS tourists) not being generated.
