@@ -134,6 +134,7 @@ private:
 	bool *create_window_open;         /// used to notify main window of progress (dummy way of disabling 'delete' while editing a template)
 	VehicleID sel;
 	VehicleID vehicle_over;
+	bool sell_hovered;                ///< A vehicle is being dragged/hovered over the sell button.
 	uint32 template_index;
 
 public:
@@ -154,6 +155,7 @@ public:
 
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
+		this->sell_hovered = false;
 
 		if (to_edit != NULL) {
 			DoCommandP(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
@@ -277,7 +279,10 @@ public:
 
 	virtual void OnPlaceObjectAbort()
 	{
+		this->sel = INVALID_VEHICLE;
+		this->vehicle_over = INVALID_VEHICLE;
 		this->RaiseButtons();
+		this->SetDirty();
 	}
 
 	virtual void DrawWidget(const Rect &r, int widget) const
@@ -378,6 +383,7 @@ public:
 				this->SetDirty();
 				break;
 		}
+		this->sell_hovered = false;
 		_cursor.vehchain = false;
 		this->sel = INVALID_VEHICLE;
 		this->SetDirty();
@@ -386,6 +392,14 @@ public:
 	virtual void OnMouseDrag(Point pt, int widget)
 	{
 		if (this->sel == INVALID_VEHICLE) return;
+
+		bool is_sell_widget = widget == TCW_SELL_TMPL;
+		if (is_sell_widget != this->sell_hovered) {
+			this->sell_hovered = is_sell_widget;
+			this->SetWidgetLoweredState(TCW_SELL_TMPL, is_sell_widget);
+			this->SetWidgetDirty(TCW_SELL_TMPL);
+		}
+
 		/* A rail vehicle is dragged.. */
 		if (widget != TCW_NEW_TMPL_PANEL) { // ..outside of the depot matrix.
 			if (this->vehicle_over != INVALID_VEHICLE) {
@@ -516,14 +530,12 @@ public:
 			this->sel = INVALID_VEHICLE;
 			TrainDepotMoveVehicle(v, sel, gdvp.head);
 		} else if (v != NULL) {
-			int image = v->GetImage(_current_text_dir == TD_RTL ? DIR_E : DIR_W, EIT_PURCHASE);
-			SetObjectToPlaceWnd(image, GetVehiclePalette(v), HT_DRAG, this);
+			SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
+			SetMouseCursorVehicle(v, EIT_PURCHASE);
+			_cursor.vehchain = _ctrl_pressed;
 
 			this->sel = v->index;
 			this->SetDirty();
-
-			_cursor.short_vehicle_offset = v->IsGroundVehicle() ? 16 - v->GetGroundVehicleCache()->cached_veh_length * 2 : 0;
-			_cursor.vehchain = _ctrl_pressed;
 		}
 	}
 
