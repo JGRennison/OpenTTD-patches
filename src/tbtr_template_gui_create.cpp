@@ -134,6 +134,7 @@ private:
 	bool *create_window_open;         /// used to notify main window of progress (dummy way of disabling 'delete' while editing a template)
 	VehicleID sel;
 	VehicleID vehicle_over;
+	bool sell_hovered;                ///< A vehicle is being dragged/hovered over the sell button.
 	uint32 template_index;
 
 public:
@@ -154,6 +155,7 @@ public:
 
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
+		this->sell_hovered = false;
 
 		if (to_edit != NULL) {
 			DoCommandP(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
@@ -378,6 +380,7 @@ public:
 				this->SetDirty();
 				break;
 		}
+		this->sell_hovered = false;
 		_cursor.vehchain = false;
 		this->sel = INVALID_VEHICLE;
 		this->SetDirty();
@@ -386,6 +389,14 @@ public:
 	virtual void OnMouseDrag(Point pt, int widget)
 	{
 		if (this->sel == INVALID_VEHICLE) return;
+
+		bool is_sell_widget = widget == TCW_SELL_TMPL;
+		if (is_sell_widget != this->sell_hovered) {
+			this->sell_hovered = is_sell_widget;
+			this->SetWidgetLoweredState(TCW_SELL_TMPL, is_sell_widget);
+			this->SetWidgetDirty(TCW_SELL_TMPL);
+		}
+
 		/* A rail vehicle is dragged.. */
 		if (widget != TCW_NEW_TMPL_PANEL) { // ..outside of the depot matrix.
 			if (this->vehicle_over != INVALID_VEHICLE) {
