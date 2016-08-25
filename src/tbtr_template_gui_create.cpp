@@ -516,14 +516,12 @@ public:
 			this->sel = INVALID_VEHICLE;
 			TrainDepotMoveVehicle(v, sel, gdvp.head);
 		} else if (v != NULL) {
-			int image = v->GetImage(_current_text_dir == TD_RTL ? DIR_E : DIR_W, EIT_PURCHASE);
-			SetObjectToPlaceWnd(image, GetVehiclePalette(v), HT_DRAG, this);
+			SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
+			SetMouseCursorVehicle(v, EIT_PURCHASE);
+			_cursor.vehchain = _ctrl_pressed;
 
 			this->sel = v->index;
 			this->SetDirty();
-
-			_cursor.short_vehicle_offset = v->IsGroundVehicle() ? 16 - v->GetGroundVehicleCache()->cached_veh_length * 2 : 0;
-			_cursor.vehchain = _ctrl_pressed;
 		}
 	}
 
