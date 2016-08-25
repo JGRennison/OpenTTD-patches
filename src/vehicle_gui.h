@@ -64,7 +64,8 @@ static inline uint GetVehicleHeight(VehicleType type)
 	return (type == VEH_TRAIN || type == VEH_ROAD) ? 14 : 24;
 }
 
-int GetVehicleWidth(Vehicle *v, EngineImageType image_type);
+int GetSingleVehicleWidth(const Vehicle *v, EngineImageType image_type);
+int GetVehicleWidth(const Vehicle *v, EngineImageType image_type);
 
 /** Dimensions of a cell in the purchase/depot windows. */
 struct VehicleCellSize {
@@ -100,5 +101,6 @@ void StartStopVehicle(const Vehicle *v, bool texteffect);
 Vehicle *CheckClickOnVehicle(const struct ViewPort *vp, int x, int y);
 
 void DrawVehicleImage(const Vehicle *v, int left, int right, int y, VehicleID selection, EngineImageType image_type, int skip);
+void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type);
 
 #endif /* VEHICLE_GUI_H */

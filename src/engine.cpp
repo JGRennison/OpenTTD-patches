@@ -85,6 +85,7 @@ Engine::Engine(VehicleType type, EngineID base)
 	this->type = type;
 	this->grf_prop.local_id = base;
 	this->list_position = base;
+	this->preview_company = INVALID_COMPANY;
 
 	/* Check if this base engine is within the original engine data range */
 	if (base >= _engine_counts[type]) {
@@ -879,7 +880,7 @@ CommandCost CmdSetVehicleVisibility(TileIndex tile, DoCommandFlag flags, uint32 
 {
 	Engine *e = Engine::GetIfValid(GB(p2, 0, 31));
 	if (e == NULL || _current_company >= MAX_COMPANIES) return CMD_ERROR;
-	if ((e->flags & ENGINE_AVAILABLE) == 0 || !HasBit(e->company_avail, _current_company)) return CMD_ERROR;
+	if (!IsEngineBuildable(e->index, e->type, _current_company)) return CMD_ERROR;
 
 	if ((flags & DC_EXEC) != 0) {
 		SB(e->company_hidden, _current_company, 1, GB(p2, 31, 1));
@@ -902,7 +903,7 @@ CommandCost CmdSetVehicleVisibility(TileIndex tile, DoCommandFlag flags, uint32 
 CommandCost CmdWantEnginePreview(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	Engine *e = Engine::GetIfValid(p1);
-	if (e == NULL || e->preview_company != _current_company) return CMD_ERROR;
+	if (e == NULL || !(e->flags & ENGINE_EXCLUSIVE_PREVIEW) || e->preview_company != _current_company) return CMD_ERROR;
 
 	if (flags & DC_EXEC) AcceptEnginePreview(p1, _current_company);
 
