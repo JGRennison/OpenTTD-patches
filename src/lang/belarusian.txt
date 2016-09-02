@@ -3020,7 +3020,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Зямля на
 STR_ABOUT_OPENTTD                                               :{WHITE}Аб OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Арыґінальныя аўтарскія правы {COPYRIGHT} 1995 Chris Sawyer. Усе правы абароненыя.
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD вэрсія {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002–2015 Каманда распрацоўнікаў OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002–2016 Каманда распрацоўнікаў OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Захаваць гульню
@@ -3207,7 +3207,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Пера
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Папярэдні спрайт
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Перайсьці да папярэдняга звычайнага спрайта, прапускаючы змяняючыя колер, шрыфтавыя, псэўдаспрайты. Пераход з пачатку сьпісу да апошняга спрайта.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Прадстаўленьне выбранага спрайта. Выраўноўваньне не ўлічваецца пры прарысоўцы гэтага спрайта.
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Рухайце спрайт, зьмяняючы зрушэньне па X і па Y
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Рухайце спрайт, зьмяняючы зрушэньне па X і па Y. Ctrl+пстрычка, каб зрушыць спрайт на восем адзінак за раз
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Скід зрушэння
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Скінуць значэнні адноснага зрушэння
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Зрушэнне X: {NUM}; зрушэнне Y: {NUM} (абсалютнае)

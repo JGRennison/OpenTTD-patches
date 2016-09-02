@@ -264,9 +264,10 @@
  *  191   26646
  *  192   26700
  *  193   26802
- *  194   26881   1.5.x
+ *  194   26881   1.5.x, 1.6.0
+ *  195   27572   1.6.x
  */
-extern const uint16 SAVEGAME_VERSION = 194; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 195; ///< Current savegame version of OpenTTD.
 const uint16 SAVEGAME_VERSION_EXT = 0x8000; ///< Savegame extension indicator mask
 
 SavegameType _savegame_type; ///< type of savegame we are loading
@@ -2537,7 +2538,7 @@ static void SaveFileStart()
 {
 	_sl.ff_state = _fast_forward;
 	_fast_forward = 0;
-	if (_cursor.sprite == SPR_CURSOR_MOUSE) SetMouseCursor(SPR_CURSOR_ZZZ, PAL_NONE);
+	SetMouseCursorBusy(true);
 
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SAVELOAD_START);
 	_sl.saveinprogress = true;
@@ -2547,7 +2548,7 @@ static void SaveFileStart()
 static void SaveFileDone()
 {
 	if (_game_mode != GM_MENU) _fast_forward = _sl.ff_state;
-	if (_cursor.sprite == SPR_CURSOR_ZZZ) SetMouseCursor(SPR_CURSOR_MOUSE, PAL_NONE);
+	SetMouseCursorBusy(false);
 
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SAVELOAD_FINISH);
 	_sl.saveinprogress = false;
