@@ -43,6 +43,8 @@ private:
 
 	CargoID refit_cargo;  ///< Refit CargoID
 
+	uint8 cargo_type_flags[NUM_CARGO]; ///< Load/unload types for each cargo type.
+
 	uint16 wait_time;    ///< How long in ticks to wait at the destination.
 	uint16 travel_time;  ///< How long in ticks the journey to this destination should take.
 	uint16 max_speed;    ///< How fast the vehicle may go on the way to the destination.
@@ -126,9 +128,35 @@ public:
 	void SetRefit(CargoID cargo);
 
 	/** How must the consist be loaded? */
-	inline OrderLoadFlags GetLoadType() const { return (OrderLoadFlags)GB(this->flags, 4, 3); }
+	inline OrderLoadFlags GetLoadType() const { return (OrderLoadFlags)GB(this->flags, 4, 4); }
+
+	/**
+	 * How must the consist be loaded for this type of cargo?
+	 * @pre GetLoadType() == OLFB_CARGO_TYPE_LOAD
+	 * @param cargo_id The cargo type index.
+	 * @return The load type for this cargo.
+	 */
+	inline OrderLoadFlags GetLoadType(CargoID cargo_id) const
+	{
+		assert(cargo_id < NUM_CARGO);
+		return (OrderLoadFlags) GB(this->cargo_type_flags[cargo_id], 4, 4);
+	}
+
 	/** How must the consist be unloaded? */
-	inline OrderUnloadFlags GetUnloadType() const { return (OrderUnloadFlags)GB(this->flags, 0, 3); }
+	inline OrderUnloadFlags GetUnloadType() const { return (OrderUnloadFlags)GB(this->flags, 0, 4); }
+
+	/**
+	 * How must the consist be unloaded for this type of cargo?
+	 * @pre GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD
+	 * @param cargo_id The cargo type index.
+	 * @return The unload type for this cargo.
+	 */
+	inline OrderUnloadFlags GetUnloadType(CargoID cargo_id) const
+	{
+		assert(cargo_id < NUM_CARGO);
+		return (OrderUnloadFlags) GB(this->cargo_type_flags[cargo_id], 0, 4);
+	}
+
 	/** At which stations must we stop? */
 	inline OrderNonStopFlags GetNonStopType() const { return (OrderNonStopFlags)GB(this->type, 6, 2); }
 	/** Where must we stop at the platform? */
@@ -147,9 +175,35 @@ public:
 	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
 
 	/** Set how the consist must be loaded. */
-	inline void SetLoadType(OrderLoadFlags load_type) { SB(this->flags, 4, 3, load_type); }
+	inline void SetLoadType(OrderLoadFlags load_type) { SB(this->flags, 4, 4, load_type); }
+
+	/**
+	 * Set how the consist must be loaded for this type of cargo.
+	 * @pre GetLoadType() == OLFB_CARGO_TYPE_LOAD
+	 * @param load_type The load type.
+	 * @param cargo_id The cargo type index.
+	 */
+	inline void SetLoadType(OrderLoadFlags load_type, CargoID cargo_id)
+	{
+		assert(cargo_id < NUM_CARGO);
+		SB(this->cargo_type_flags[cargo_id], 4, 4, load_type);
+	}
+
 	/** Set how the consist must be unloaded. */
-	inline void SetUnloadType(OrderUnloadFlags unload_type) { SB(this->flags, 0, 3, unload_type); }
+	inline void SetUnloadType(OrderUnloadFlags unload_type) { SB(this->flags, 0, 4, unload_type); }
+
+	/**
+	 * Set how the consist must be unloaded for this type of cargo.
+	 * @pre GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD
+	 * @param unload_type The unload type.
+	 * @param cargo_id The cargo type index.
+	 */
+	inline void SetUnloadType(OrderUnloadFlags unload_type, CargoID cargo_id)
+	{
+		assert(cargo_id < NUM_CARGO);
+		SB(this->cargo_type_flags[cargo_id], 0, 4, unload_type);
+	}
+
 	/** Set whether we must stop at stations or not. */
 	inline void SetNonStopType(OrderNonStopFlags non_stop_type) { SB(this->type, 6, 2, non_stop_type); }
 	/** Set where we must stop at the platform. */

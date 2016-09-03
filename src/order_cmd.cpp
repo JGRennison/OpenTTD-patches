@@ -282,6 +282,12 @@ void Order::AssignOrder(const Order &other)
 	this->wait_time   = other.wait_time;
 	this->travel_time = other.travel_time;
 	this->max_speed   = other.max_speed;
+
+	if (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+		for (uint i = 0; i < NUM_CARGO; i++) {
+			this->cargo_type_flags[i] = other.cargo_type_flags[i];
+		}
+	}
 }
 
 /**
@@ -1277,12 +1283,13 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * - p1 = (bit 24 - 31) - the selected order (if any). If the last order is given,
+ * - p1 = (bit 20 - 27) - the selected order (if any). If the last order is given,
  *                        the order will be inserted before that one
  *                        the maximum vehicle order id is 254.
  * @param p2 various bitstuffed elements
  *  - p2 = (bit 0 -  3) - what data to modify (@see ModifyOrderFlags)
  *  - p2 = (bit 4 - 15) - the data to modify
+ *  - p2 = (bit 16 - 23) - a CargoID for cargo type orders (MOF_CARGO_TYPE_UNLOAD or MOF_CARGO_TYPE_LOAD)
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1292,6 +1299,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	VehicleID veh          = GB(p1,  0, 20);
 	ModifyOrderFlags mof   = Extract<ModifyOrderFlags, 0, 4>(p2);
 	uint16 data            = GB(p2,  4, 11);
+	CargoID cargo_id       = (mof == MOF_CARGO_TYPE_UNLOAD || mof == MOF_CARGO_TYPE_LOAD) ? (CargoID) GB(p2, 16, 8) : (CargoID) CT_INVALID;
 
 	if (mof >= MOF_END) return CMD_ERROR;
 
@@ -1307,7 +1315,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	Order *order = v->GetOrder(sel_ord);
 	switch (order->GetType()) {
 		case OT_GOTO_STATION:
-			if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD) return CMD_ERROR;
+			if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD && mof != MOF_CARGO_TYPE_UNLOAD && mof != MOF_CARGO_TYPE_LOAD) return CMD_ERROR;
 			break;
 
 		case OT_GOTO_DEPOT:
@@ -1340,17 +1348,27 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			if (data >= OSL_END) return CMD_ERROR;
 			break;
 
+		case MOF_CARGO_TYPE_UNLOAD:
+			if (cargo_id >= NUM_CARGO) return CMD_ERROR;
+			if (data == OUFB_CARGO_TYPE_UNLOAD) return CMD_ERROR;
+			/* FALL THROUGH */
 		case MOF_UNLOAD:
 			if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return CMD_ERROR;
-			if ((data & ~(OUFB_UNLOAD | OUFB_TRANSFER | OUFB_NO_UNLOAD)) != 0) return CMD_ERROR;
+			if ((data & ~(OUFB_UNLOAD | OUFB_TRANSFER | OUFB_NO_UNLOAD | OUFB_CARGO_TYPE_UNLOAD)) != 0) return CMD_ERROR;
 			/* Unload and no-unload are mutual exclusive and so are transfer and no unload. */
-			if (data != 0 && ((data & (OUFB_UNLOAD | OUFB_TRANSFER)) != 0) == ((data & OUFB_NO_UNLOAD) != 0)) return CMD_ERROR;
+			if (data != 0 && (data & OUFB_CARGO_TYPE_UNLOAD) == 0 && ((data & (OUFB_UNLOAD | OUFB_TRANSFER)) != 0) == ((data & OUFB_NO_UNLOAD) != 0)) return CMD_ERROR;
+			/* Cargo-type-unload exclude all the other flags. */
+			if ((data & OUFB_CARGO_TYPE_UNLOAD) != 0 && data != OUFB_CARGO_TYPE_UNLOAD) return CMD_ERROR;
 			if (data == order->GetUnloadType()) return CMD_ERROR;
 			break;
 
+		case MOF_CARGO_TYPE_LOAD:
+			if (cargo_id >= NUM_CARGO) return CMD_ERROR;
+			if (data == OLFB_CARGO_TYPE_LOAD || data == OLF_FULL_LOAD_ANY) return CMD_ERROR;
+			/* FALL THROUGH */
 		case MOF_LOAD:
 			if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return CMD_ERROR;
-			if (data > OLFB_NO_LOAD || data == 1) return CMD_ERROR;
+			if ((data > OLFB_NO_LOAD && data != OLFB_CARGO_TYPE_LOAD) || data == 1) return CMD_ERROR;
 			if (data == order->GetLoadType()) return CMD_ERROR;
 			break;
 
@@ -1418,9 +1436,17 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				order->SetUnloadType((OrderUnloadFlags)data);
 				break;
 
+			case MOF_CARGO_TYPE_UNLOAD:
+				order->SetUnloadType((OrderUnloadFlags)data, cargo_id);
+				break;
+
 			case MOF_LOAD:
 				order->SetLoadType((OrderLoadFlags)data);
 				if (data & OLFB_NO_LOAD) order->SetRefit(CT_NO_REFIT);
+				break;
+
+			case MOF_CARGO_TYPE_LOAD:
+				order->SetLoadType((OrderLoadFlags)data, cargo_id);
 				break;
 
 			case MOF_DEPOT_ACTION: {

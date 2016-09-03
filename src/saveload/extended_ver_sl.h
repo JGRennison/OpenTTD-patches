@@ -21,6 +21,7 @@
  */
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
+	XSLFI_CARGO_TYPE_ORDERS,                      ///< Cargo-specific load/unload order flags
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };

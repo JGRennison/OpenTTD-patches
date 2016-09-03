@@ -207,6 +207,18 @@ enum WindowClass {
 	WC_VEHICLE_ORDERS,
 
 	/**
+	 * Vehicle cargo type load orders; %Window numbers:
+	 *   - #VehicleID = #CargoTypeOrdersWidgets
+	 */
+	WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS,
+
+	/**
+	 * Vehicle cargo type unload orders; %Window numbers:
+	 *   - #VehicleID = #CargoTypeOrdersWidgets
+	 */
+	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS,
+
+	/**
 	 * Replace vehicle window; %Window numbers:
 	 *   - #VehicleType = #ReplaceVehicleWidgets
 	 */

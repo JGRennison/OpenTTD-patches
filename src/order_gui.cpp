@@ -34,9 +34,305 @@
 
 #include "safeguards.h"
 
+enum CargoTypeOrdersWindowVariant {
+	CTOWV_LOAD   = 0,
+	CTOWV_UNLOAD = 1,
+};
+
+/** Cargo type orders strings for load dropdowns. */
+static const StringID _cargo_type_load_order_drowdown[] = {
+	STR_ORDER_DROP_LOAD_IF_POSSIBLE,      // OLF_LOAD_IF_POSSIBLE
+	STR_EMPTY,
+	STR_CARGO_TYPE_ORDERS_DROP_FULL_LOAD, // OLFB_FULL_LOAD
+	STR_EMPTY,
+	STR_ORDER_DROP_NO_LOADING,            // OLFB_NO_LOAD
+	INVALID_STRING_ID
+};
+static const uint32 _cargo_type_load_order_drowdown_hidden_mask = 0xA; // 01010
+
+/** Cargo type orders strings for unload dropdowns. */
+static const StringID _cargo_type_unload_order_drowdown[] = {
+	STR_ORDER_DROP_UNLOAD_IF_ACCEPTED, // OUF_UNLOAD_IF_POSSIBLE
+	STR_ORDER_DROP_UNLOAD,             // OUFB_UNLOAD
+	STR_ORDER_DROP_TRANSFER,           // OUFB_TRANSFER
+	STR_EMPTY,
+	STR_ORDER_DROP_NO_UNLOADING,       // OUFB_NO_UNLOAD
+	INVALID_STRING_ID
+};
+static const uint32 _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 01000
+
+struct CargoTypeOrdersWindow : public Window {
+private:
+	CargoTypeOrdersWindowVariant variant;
+
+	const Vehicle *vehicle;  ///< Vehicle owning the orders being displayed and manipulated.
+	VehicleOrderID order_id; ///< Index of the order concerned by this window.
+
+	static const uint8 CARGO_ICON_WIDTH  = 12;
+	static const uint8 CARGO_ICON_HEIGHT =  8;
+
+	const StringID *cargo_type_order_dropdown; ///< Strings used to populate order dropdowns.
+	uint32 cargo_type_order_dropdown_hmask;    ///< Hidden mask for order dropdowns.
+
+	uint max_cargo_name_width;     ///< Greatest width of cargo names.
+	uint max_cargo_dropdown_width; ///< Greatest width of order names.
+
+	uint set_to_all_dropdown_sel;     ///< Selected entry for the 'set to all' dropdown
+
+	/**
+	 * Initialize \c max_cargo_name_width and \c max_cargo_dropdown_width.
+	 * @post \c max_cargo_name_width
+	 * @post \c max_cargo_dropdown_width
+	 */
+	void InitMaxWidgetWidth()
+	{
+		this->max_cargo_name_width = 0;
+		for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+			SetDParam(0, _sorted_cargo_specs[i]->name);
+			this->max_cargo_name_width = max(this->max_cargo_name_width, GetStringBoundingBox(STR_JUST_STRING).width);
+		}
+		this->max_cargo_dropdown_width = 0;
+		for (int i = 0; this->cargo_type_order_dropdown[i] != INVALID_STRING_ID; i++) {
+			SetDParam(0, this->cargo_type_order_dropdown[i]);
+			this->max_cargo_dropdown_width = max(this->max_cargo_dropdown_width, GetStringBoundingBox(STR_JUST_STRING).width);
+		}
+	}
+
+	/** Populate the selected entry of order dropdowns. */
+	void InitDropdownSelectedTypes()
+	{
+		StringID tooltip = STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant;
+		const Order *order = this->vehicle->GetOrder(this->order_id);
+		for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+			const CargoSpec *cs = _sorted_cargo_specs[i];
+			CargoID cargo_id = GetCargoIDByBitnum(cs->bitnum);
+			uint8 order_type = (this->variant == CTOWV_LOAD) ? (uint8) order->GetLoadType(cargo_id) : (uint8) order->GetUnloadType(cargo_id);
+			this->GetWidget<NWidgetCore>(WID_CTO_CARGO_DROPDOWN_FIRST + i)->SetDataTip(this->cargo_type_order_dropdown[order_type], tooltip);
+		}
+		this->set_to_all_dropdown_sel = 0;
+		this->GetWidget<NWidgetCore>(WID_CTO_SET_TO_ALL_DROPDOWN)->widget_data = this->cargo_type_order_dropdown[this->set_to_all_dropdown_sel];
+	}
+
+	/**
+	 * Returns the load/unload type of this order for the specified cargo.
+	 * @param cargo_id The cargo index for wich we want the load/unload type.
+	 * @return an OrderLoadFlags if \c load_variant = true, an OrderUnloadFlags otherwise.
+	 */
+	uint8 GetOrderActionTypeForCargo(CargoID cargo_id)
+	{
+		const Order *order = this->vehicle->GetOrder(this->order_id);
+		return (this->variant == CTOWV_LOAD) ? (uint8) order->GetLoadType(cargo_id) : (uint8) order->GetUnloadType(cargo_id);
+	}
+
+public:
+	/**
+	 * Instantiate a new CargoTypeOrdersWindow.
+	 * @param desc The window description.
+	 * @param v The vehicle the order belongs to.
+	 * @param order_id Which order to display/edit.
+	 * @param variant Which aspect of the order to display/edit: load or unload.
+	 * @pre \c v != NULL
+	 */
+	CargoTypeOrdersWindow(WindowDesc *desc, const Vehicle *v, VehicleOrderID order_id, CargoTypeOrdersWindowVariant variant) : Window(desc)
+	{
+		this->variant = variant;
+		this->cargo_type_order_dropdown = (this->variant == CTOWV_LOAD) ? _cargo_type_load_order_drowdown : _cargo_type_unload_order_drowdown;
+		this->cargo_type_order_dropdown_hmask = (this->variant == CTOWV_LOAD) ? _cargo_type_load_order_drowdown_hidden_mask : _cargo_type_unload_order_drowdown_hidden_mask;
+		this->InitMaxWidgetWidth();
+
+		this->vehicle = v;
+		this->order_id = order_id;
+
+		this->CreateNestedTree(desc);
+		this->GetWidget<NWidgetCore>(WID_CTO_CAPTION)->SetDataTip(STR_CARGO_TYPE_ORDERS_LOAD_CAPTION + this->variant, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
+		this->GetWidget<NWidgetCore>(WID_CTO_HEADER)->SetDataTip(STR_CARGO_TYPE_ORDERS_LOAD_TITLE + this->variant, STR_NULL);
+		this->InitDropdownSelectedTypes();
+		this->FinishInitNested(v->index);
+
+		this->owner = v->owner;
+	}
+
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	{
+		if (widget == WID_CTO_HEADER) {
+			(*size).height = max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+		} else if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
+			(*size).width  = max((*size).width,  WD_FRAMERECT_LEFT + this->CARGO_ICON_WIDTH + WD_FRAMETEXT_LEFT + this->max_cargo_name_width + WD_FRAMETEXT_RIGHT + padding.width);
+			(*size).height = max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+		} else if ((WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) || widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
+			(*size).width  = max((*size).width,  WD_DROPDOWNTEXT_LEFT + this->max_cargo_dropdown_width + WD_DROPDOWNTEXT_RIGHT);
+			(*size).height = max((*size).height, (uint) WD_DROPDOWNTEXT_TOP + FONT_HEIGHT_NORMAL + WD_DROPDOWNTEXT_BOTTOM);
+		} else if (widget == WID_CTO_SET_TO_ALL_LABEL) {
+			(*size).width = max((*size).width, this->max_cargo_name_width + WD_FRAMETEXT_RIGHT + padding.width);
+			(*size).height = max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+		}
+	}
+
+	virtual void DrawWidget(const Rect &r, int widget) const
+	{
+		if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
+			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_LABEL_FIRST];
+			bool rtl = (_current_text_dir == TD_RTL);
+
+			/* Draw cargo icon. */
+			int rect_left   = rtl ? r.right - WD_FRAMETEXT_RIGHT - this->CARGO_ICON_WIDTH : r.left + WD_FRAMERECT_LEFT;
+			int rect_right  = rect_left + this->CARGO_ICON_WIDTH;
+			int rect_top    = r.top + WD_FRAMERECT_TOP + ((r.bottom - WD_FRAMERECT_BOTTOM - r.top - WD_FRAMERECT_TOP) - this->CARGO_ICON_HEIGHT) / 2;
+			int rect_bottom = rect_top + this->CARGO_ICON_HEIGHT;
+			GfxFillRect(rect_left, rect_top, rect_right, rect_bottom, PC_BLACK);
+			GfxFillRect(rect_left + 1, rect_top + 1, rect_right - 1, rect_bottom - 1, cs->legend_colour);
+
+			/* Draw cargo name */
+			int text_left  = rtl ? r.left + WD_FRAMETEXT_LEFT : rect_right + WD_FRAMETEXT_LEFT;
+			int text_right = rtl ? rect_left - WD_FRAMETEXT_LEFT : r.right - WD_FRAMETEXT_RIGHT;
+			int text_top   = r.top + WD_FRAMERECT_TOP;
+			SetDParam(0, cs->name);
+			DrawString(text_left, text_right, text_top, STR_BLACK_STRING);
+		}
+	}
+
+	virtual void OnClick(Point pt, int widget, int click_count)
+	{
+		if (widget == WID_CTO_CLOSEBTN) {
+			delete this;
+		} else if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
+			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
+			CargoID cargo_id = GetCargoIDByBitnum(cs->bitnum);
+
+			ShowDropDownMenu(this, this->cargo_type_order_dropdown, this->GetOrderActionTypeForCargo(cargo_id), widget, 0, this->cargo_type_order_dropdown_hmask);
+		} else if (widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
+			ShowDropDownMenu(this, this->cargo_type_order_dropdown, this->set_to_all_dropdown_sel, widget, 0, this->cargo_type_order_dropdown_hmask);
+		}
+	}
+
+	virtual void OnDropdownSelect(int widget, int action_type)
+	{
+		if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
+			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
+			CargoID cargo_id = GetCargoIDByBitnum(cs->bitnum);
+			uint8 order_action_type = this->GetOrderActionTypeForCargo(cargo_id);
+
+			if (action_type == order_action_type) return;
+
+			ModifyOrderFlags mof = (this->variant == CTOWV_LOAD) ? MOF_CARGO_TYPE_LOAD : MOF_CARGO_TYPE_UNLOAD;
+			DoCommandP(this->vehicle->tile, this->vehicle->index + (this->order_id << 20), mof | (action_type << 4) | (cargo_id << 16), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+
+			this->GetWidget<NWidgetCore>(widget)->SetDataTip(this->cargo_type_order_dropdown[this->GetOrderActionTypeForCargo(cargo_id)], STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant);
+			this->SetWidgetDirty(widget);
+		} else if (widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
+			for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+				this->OnDropdownSelect(i + WID_CTO_CARGO_DROPDOWN_FIRST, action_type);
+			}
+
+			if (action_type != (int) this->set_to_all_dropdown_sel) {
+				this->set_to_all_dropdown_sel = action_type;
+				this->GetWidget<NWidgetCore>(widget)->widget_data = this->cargo_type_order_dropdown[this->set_to_all_dropdown_sel];
+				this->SetWidgetDirty(widget);
+			}
+		}
+	}
+
+	virtual void SetStringParameters(int widget) const
+	{
+		if (widget == WID_CTO_CAPTION) {
+			SetDParam(0, this->vehicle->index);
+			SetDParam(1, this->order_id + 1);
+			SetDParam(2, this->vehicle->GetOrder(this->order_id)->GetDestination());
+		}
+	}
+};
+
+/**
+ * Make a list of panel for each available cargo type.
+ * Each panel contains a label to display the cargo name.
+ * @param biggest_index Storage for collecting the biggest index used in the returned tree
+ * @return A vertical container of cargo type orders rows.
+ * @post \c *biggest_index contains the largest used index in the tree.
+ */
+static NWidgetBase *MakeCargoTypeOrdersRows(int *biggest_index)
+{
+	NWidgetVertical *ver = new NWidgetVertical;
+
+	for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+		/* Cargo row */
+		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, WID_CTO_CARGO_ROW_FIRST + i);
+		ver->Add(panel);
+		NWidgetHorizontal *horiz = new NWidgetHorizontal;
+		panel->Add(horiz);
+		/* Cargo label */
+		NWidgetBackground *label = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, WID_CTO_CARGO_LABEL_FIRST + i);
+		label->SetFill(1, 0);
+		label->SetResize(1, 0);
+		horiz->Add(label);
+		/* Orders dropdown */
+		NWidgetLeaf *dropdown = new NWidgetLeaf(WWT_DROPDOWN, COLOUR_GREY, WID_CTO_CARGO_DROPDOWN_FIRST + i, STR_NULL, STR_EMPTY);
+		dropdown->SetFill(1, 0);
+		dropdown->SetResize(1, 0);
+		horiz->Add(dropdown);
+	}
+
+	*biggest_index = WID_CTO_CARGO_DROPDOWN_LAST;
+	return ver;
+}
+
+/** Widgets definition of CargoTypeOrdersWindow. */
+static const NWidgetPart _nested_cargo_type_orders_widgets[] = {
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_CTO_CAPTION), SetDataTip(STR_NULL, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+	EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_GREY),
+		NWidget(WWT_LABEL, COLOUR_GREY, WID_CTO_HEADER), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_NULL, STR_NULL),
+	EndContainer(),
+	NWidgetFunction(MakeCargoTypeOrdersRows),
+	NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(1, 4), SetFill(1, 0), SetResize(1, 0), EndContainer(), // SPACER
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PANEL, COLOUR_GREY),
+			NWidget(WWT_TEXT, COLOUR_GREY, WID_CTO_SET_TO_ALL_LABEL), SetPadding(0, 0, 0, WD_FRAMERECT_LEFT + 12 + WD_FRAMETEXT_LEFT), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL, STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP),
+		EndContainer(),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_CTO_SET_TO_ALL_DROPDOWN), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_NULL, STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_CTO_CLOSEBTN), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_CARGO_TYPE_ORDERS_CLOSE_BUTTON, STR_TOOLTIP_CLOSE_WINDOW),
+		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+	EndContainer(),
+};
+
+/** Window description for the 'load' variant of CargoTypeOrdersWindow. */
+static WindowDesc _cargo_type_load_orders_widgets (
+	WDP_AUTO, "view_cargo_type_load_order", 195, 186,
+	WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, WC_VEHICLE_ORDERS,
+	WDF_CONSTRUCTION,
+	_nested_cargo_type_orders_widgets, lengthof(_nested_cargo_type_orders_widgets)
+);
+
+/** Window description for the 'unload' variant of CargoTypeOrdersWindow. */
+static WindowDesc _cargo_type_unload_orders_widgets (
+	WDP_AUTO, "view_cargo_type_unload_order", 195, 186,
+	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, WC_VEHICLE_ORDERS,
+	WDF_CONSTRUCTION,
+	_nested_cargo_type_orders_widgets, lengthof(_nested_cargo_type_orders_widgets)
+);
+
+/**
+ * Show the CargoTypeOrdersWindow for an order.
+ * @param v The vehicle the order belongs to.
+ * @param parent The parent window.
+ * @param order_id Which order to display/edit.
+ * @param variant Which aspect of the order to display/edit: load or unload.
+ * @pre \c v != NULL
+ */
+void ShowCargoTypeOrdersWindow(const Vehicle *v, Window *parent, VehicleOrderID order_id, CargoTypeOrdersWindowVariant variant)
+{
+	WindowDesc &desc = (variant == CTOWV_LOAD) ? _cargo_type_load_orders_widgets : _cargo_type_unload_orders_widgets;
+	DeleteWindowById(desc.cls, v->index);
+	CargoTypeOrdersWindow *w = new CargoTypeOrdersWindow(&desc, v, order_id, variant);
+	w->parent = parent;
+}
+
 
 /** Order load types that could be given to station orders. */
-static const StringID _station_load_types[][5][5] = {
+static const StringID _station_load_types[][9][9] = {
 	{
 		/* No refitting. */
 		{
@@ -45,30 +341,67 @@ static const StringID _station_load_types[][5][5] = {
 			STR_ORDER_FULL_LOAD,
 			STR_ORDER_FULL_LOAD_ANY,
 			STR_ORDER_NO_LOAD,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_CARGO_TYPE_LOAD,
 		}, {
 			STR_ORDER_UNLOAD,
 			INVALID_STRING_ID,
 			STR_ORDER_UNLOAD_FULL_LOAD,
 			STR_ORDER_UNLOAD_FULL_LOAD_ANY,
 			STR_ORDER_UNLOAD_NO_LOAD,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_UNLOAD_CARGO_TYPE_LOAD,
 		}, {
 			STR_ORDER_TRANSFER,
 			INVALID_STRING_ID,
 			STR_ORDER_TRANSFER_FULL_LOAD,
 			STR_ORDER_TRANSFER_FULL_LOAD_ANY,
 			STR_ORDER_TRANSFER_NO_LOAD,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_TRANSFER_CARGO_TYPE_LOAD,
 		}, {
 			/* Unload and transfer do not work together. */
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
 			STR_ORDER_NO_UNLOAD,
 			INVALID_STRING_ID,
 			STR_ORDER_NO_UNLOAD_FULL_LOAD,
 			STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY,
 			STR_ORDER_NO_UNLOAD_NO_LOAD,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+		}, {
+			STR_ORDER_CARGO_TYPE_UNLOAD,
+			INVALID_STRING_ID,
+			STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD,
+			STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY,
+			STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD,
 		}
 	}, {
 		/* With auto-refitting. No loading and auto-refitting do not work together. */
@@ -78,30 +411,67 @@ static const StringID _station_load_types[][5][5] = {
 			STR_ORDER_FULL_LOAD_REFIT,
 			STR_ORDER_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_CARGO_TYPE_LOAD_REFIT,
 		}, {
 			STR_ORDER_UNLOAD_REFIT,
 			INVALID_STRING_ID,
 			STR_ORDER_UNLOAD_FULL_LOAD_REFIT,
 			STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT,
 		}, {
 			STR_ORDER_TRANSFER_REFIT,
 			INVALID_STRING_ID,
 			STR_ORDER_TRANSFER_FULL_LOAD_REFIT,
 			STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT,
 		}, {
 			/* Unload and transfer do not work together. */
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
 			STR_ORDER_NO_UNLOAD_REFIT,
 			INVALID_STRING_ID,
 			STR_ORDER_NO_UNLOAD_FULL_LOAD_REFIT,
 			STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+		}, {
+			STR_ORDER_CARGO_TYPE_UNLOAD_REFIT,
+			INVALID_STRING_ID,
+			STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT,
+			STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			INVALID_STRING_ID,
+			STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT,
 		}
 	}
 };
@@ -120,6 +490,10 @@ static const StringID _order_full_load_drowdown[] = {
 	STR_ORDER_DROP_FULL_LOAD_ALL,
 	STR_ORDER_DROP_FULL_LOAD_ANY,
 	STR_ORDER_DROP_NO_LOADING,
+	STR_EMPTY,
+	STR_EMPTY,
+	STR_EMPTY,
+	STR_ORDER_DROP_CARGO_TYPE_LOAD,
 	INVALID_STRING_ID
 };
 
@@ -129,6 +503,10 @@ static const StringID _order_unload_drowdown[] = {
 	STR_ORDER_DROP_TRANSFER,
 	STR_EMPTY,
 	STR_ORDER_DROP_NO_UNLOADING,
+	STR_EMPTY,
+	STR_EMPTY,
+	STR_EMPTY,
+	STR_ORDER_DROP_CARGO_TYPE_UNLOAD,
 	INVALID_STRING_ID
 };
 
@@ -573,12 +951,16 @@ private:
 		VehicleOrderID sel_ord = this->OrderGetSel();
 		const Order *order = this->vehicle->GetOrder(sel_ord);
 
-		if (order == NULL || order->GetLoadType() == load_type) return;
+		if (order == NULL || (order->GetLoadType() == load_type && load_type != OLFB_CARGO_TYPE_LOAD)) return;
 
 		if (load_type < 0) {
 			load_type = order->GetLoadType() == OLF_LOAD_IF_POSSIBLE ? OLF_FULL_LOAD_ANY : OLF_LOAD_IF_POSSIBLE;
 		}
-		DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_LOAD | (load_type << 4), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+		if (order->GetLoadType() != load_type) {
+			DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_LOAD | (load_type << 4), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+		}
+
+		if (load_type == OLFB_CARGO_TYPE_LOAD) ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_LOAD);
 	}
 
 	/**
@@ -627,18 +1009,22 @@ private:
 		VehicleOrderID sel_ord = this->OrderGetSel();
 		const Order *order = this->vehicle->GetOrder(sel_ord);
 
-		if (order == NULL || order->GetUnloadType() == unload_type) return;
+		if (order == NULL || (order->GetUnloadType() == unload_type && unload_type != OUFB_CARGO_TYPE_UNLOAD)) return;
 
 		if (unload_type < 0) {
 			unload_type = order->GetUnloadType() == OUF_UNLOAD_IF_POSSIBLE ? OUFB_UNLOAD : OUF_UNLOAD_IF_POSSIBLE;
 		}
 
-		DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_UNLOAD | (unload_type << 4), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+		if (order->GetUnloadType() != unload_type) {
+			DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_UNLOAD | (unload_type << 4), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+		}
 
-		/* Transfer orders with leave empty as default */
 		if (unload_type == OUFB_TRANSFER) {
+			/* Transfer orders with leave empty as default */
 			DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_LOAD | (OLFB_NO_LOAD << 4), CMD_MODIFY_ORDER);
 			this->SetWidgetDirty(WID_O_FULL_LOAD);
+		} else if(unload_type == OUFB_CARGO_TYPE_UNLOAD) {
+			ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_UNLOAD);
 		}
 	}
 
@@ -1255,7 +1641,7 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_FullLoad(-1);
 				} else {
-					ShowDropDownMenu(this, _order_full_load_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetLoadType(), WID_O_FULL_LOAD, 0, 2);
+					ShowDropDownMenu(this, _order_full_load_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetLoadType(), WID_O_FULL_LOAD, 0, 0xE2 /* 1110 0010 */);
 				}
 				break;
 
@@ -1263,7 +1649,7 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_Unload(-1);
 				} else {
-					ShowDropDownMenu(this, _order_unload_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetUnloadType(), WID_O_UNLOAD, 0, 8);
+					ShowDropDownMenu(this, _order_unload_drowdown, this->vehicle->GetOrder(this->OrderGetSel())->GetUnloadType(), WID_O_UNLOAD, 0, 0xE8 /* 1110 1000 */);
 				}
 				break;
 
