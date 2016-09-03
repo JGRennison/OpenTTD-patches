@@ -106,7 +106,7 @@ private:
 		for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
 			const CargoSpec *cs = _sorted_cargo_specs[i];
 			CargoID cargo_id = GetCargoIDByBitnum(cs->bitnum);
-			uint8 order_type = (this->variant == CTOWV_LOAD) ? (uint8) order->GetLoadType(cargo_id) : (uint8) order->GetUnloadType(cargo_id);
+			uint8 order_type = (this->variant == CTOWV_LOAD) ? (uint8) order->GetCargoLoadTypeRaw(cargo_id) : (uint8) order->GetCargoUnloadTypeRaw(cargo_id);
 			this->GetWidget<NWidgetCore>(WID_CTO_CARGO_DROPDOWN_FIRST + i)->SetDataTip(this->cargo_type_order_dropdown[order_type], tooltip);
 		}
 		this->set_to_all_dropdown_sel = 0;
@@ -121,7 +121,7 @@ private:
 	uint8 GetOrderActionTypeForCargo(CargoID cargo_id)
 	{
 		const Order *order = this->vehicle->GetOrder(this->order_id);
-		return (this->variant == CTOWV_LOAD) ? (uint8) order->GetLoadType(cargo_id) : (uint8) order->GetUnloadType(cargo_id);
+		return (this->variant == CTOWV_LOAD) ? (uint8) order->GetCargoLoadTypeRaw(cargo_id) : (uint8) order->GetCargoUnloadTypeRaw(cargo_id);
 	}
 
 public:

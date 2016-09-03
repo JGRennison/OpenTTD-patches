@@ -1242,31 +1242,26 @@ Money CargoPayment::PayTransfer(const CargoPacket *cp, uint count)
 
 /**
  * Returns the load type of a vehicle.
- * In case of cargo type order, the load type returned depends of the cargo carriable by the vehicle.
+ * In case of cargo type order, the load type returned depends on the cargo carriable by the vehicle.
  * @pre v != NULL
  * @param v A pointer to a vehicle.
  * @return the load type of this vehicle.
  */
 static OrderLoadFlags GetLoadType(const Vehicle *v)
 {
-	const Vehicle *front = v->First();
-	OrderLoadFlags olf = front->current_order.GetLoadType();
-	if (olf == OLFB_CARGO_TYPE_LOAD) olf = front->current_order.GetLoadType(v->cargo_type);
-	return olf;
+	return v->First()->current_order.GetCargoLoadType(v->cargo_type);
 }
 
 /**
  * Returns the unload type of a vehicle.
- * In case of cargo type order, the unload type returned depends of the cargo carriable be the vehicle.
+ * In case of cargo type order, the unload type returned depends on the cargo carriable by the vehicle.
+ * @pre v != NULL
  * @param v A pointer to a vehicle.
  * @return The unload type of this vehicle.
  */
 static OrderUnloadFlags GetUnloadType(const Vehicle *v)
 {
-	const Vehicle *front = v->First();
-	OrderUnloadFlags ouf = front->current_order.GetUnloadType();
-	if (ouf == OUFB_CARGO_TYPE_UNLOAD) ouf = front->current_order.GetUnloadType(v->cargo_type);
-	return ouf;
+	return v->First()->current_order.GetCargoUnloadType(v->cargo_type);
 }
 
 /**
@@ -1477,7 +1472,7 @@ struct FinalizeRefitAction
 	 */
 	bool operator()(Vehicle *v)
 	{
-		if (this->do_reserve || (cargo_type_loading == NULL || (cargo_type_loading->current_order.GetLoadType(v->cargo_type) & OLFB_FULL_LOAD))) {
+		if (this->do_reserve || (cargo_type_loading == NULL || (cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD))) {
 			this->st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
 					&v->cargo, st->xy, this->next_station);
 		}
@@ -1560,7 +1555,7 @@ struct ReserveCargoAction {
 
 	bool operator()(Vehicle *v)
 	{
-		if (cargo_type_loading != NULL && !(cargo_type_loading->current_order.GetLoadType(v->cargo_type) & OLFB_FULL_LOAD)) return true;
+		if (cargo_type_loading != NULL && !(cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD)) return true;
 		if (v->cargo_cap > v->cargo.RemainingCount()) {
 			st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
 					&v->cargo, st->xy, *next_station);
@@ -1599,7 +1594,7 @@ static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft,
 			IterateVehicleParts(v, ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL));
 		}
 		if (consist_capleft == NULL || v->cargo_cap == 0) continue;
-		if (cargo_type_loading && !(u->current_order.GetLoadType(v->cargo_type) & OLFB_FULL_LOAD)) continue;
+		if (cargo_type_loading && !(u->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD)) continue;
 		(*consist_capleft)[v->cargo_type] += v->cargo_cap - v->cargo.RemainingCount();
 	}
 }
@@ -1866,7 +1861,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	bool has_full_load_order = front->current_order.GetLoadType() & OLFB_FULL_LOAD;
 	if (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
 		for (Vehicle *v = front; v != NULL; v = v->Next()) {
-			if (front->current_order.GetLoadType(v->cargo_type) & OLFB_FULL_LOAD) {
+			if (front->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD) {
 				has_full_load_order = true;
 				break;
 			}

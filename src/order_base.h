@@ -136,10 +136,23 @@ public:
 	 * @param cargo_id The cargo type index.
 	 * @return The load type for this cargo.
 	 */
-	inline OrderLoadFlags GetLoadType(CargoID cargo_id) const
+	inline OrderLoadFlags GetCargoLoadTypeRaw(CargoID cargo_id) const
 	{
 		assert(cargo_id < NUM_CARGO);
 		return (OrderLoadFlags) GB(this->cargo_type_flags[cargo_id], 4, 4);
+	}
+
+	/**
+	 * How must the consist be loaded for this type of cargo?
+	 * @param cargo_id The cargo type index.
+	 * @return The load type for this cargo.
+	 */
+	inline OrderLoadFlags GetCargoLoadType(CargoID cargo_id) const
+	{
+		assert(cargo_id < NUM_CARGO);
+		OrderLoadFlags olf = this->GetLoadType();
+		if (olf == OLFB_CARGO_TYPE_LOAD) olf = this->GetCargoLoadTypeRaw(cargo_id);
+		return olf;
 	}
 
 	/** How must the consist be unloaded? */
@@ -151,10 +164,23 @@ public:
 	 * @param cargo_id The cargo type index.
 	 * @return The unload type for this cargo.
 	 */
-	inline OrderUnloadFlags GetUnloadType(CargoID cargo_id) const
+	inline OrderUnloadFlags GetCargoUnloadTypeRaw(CargoID cargo_id) const
 	{
 		assert(cargo_id < NUM_CARGO);
 		return (OrderUnloadFlags) GB(this->cargo_type_flags[cargo_id], 0, 4);
+	}
+
+	/**
+	 * How must the consist be unloaded for this type of cargo?
+	 * @param cargo_id The cargo type index.
+	 * @return The unload type for this cargo.
+	 */
+	inline OrderUnloadFlags GetCargoUnloadType(CargoID cargo_id) const
+	{
+		assert(cargo_id < NUM_CARGO);
+		OrderUnloadFlags ouf = this->GetUnloadType();
+		if (ouf == OUFB_CARGO_TYPE_UNLOAD) ouf = this->GetCargoUnloadTypeRaw(cargo_id);
+		return ouf;
 	}
 
 	/** At which stations must we stop? */
