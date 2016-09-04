@@ -439,16 +439,9 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, uint32
 			/* This is a cargo-specific load/unload order.
 			 * If the first cargo is both a no-load and no-unload order, skip it.
 			 * Drop cargoes which don't match the first one. */
-			CargoID first_cargo_id = FindFirstBit(cargo_mask);
-			can_load_or_unload = ((next->GetCargoLoadType(first_cargo_id) & OLFB_NO_LOAD) == 0 || (next->GetCargoUnloadType(first_cargo_id) & OUFB_NO_UNLOAD) == 0);
-			uint32 other_cargo_mask = cargo_mask;
-			ClrBit(other_cargo_mask, first_cargo_id);
-			CargoID cargo;
-			FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
-				if (can_load_or_unload != ((next->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0 || (next->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0)) {
-					ClrBit(cargo_mask, cargo);
-				}
-			}
+			can_load_or_unload = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoID cargo) {
+				return ((next->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0 || (next->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
+			});
 		} else if ((next->GetLoadType() & OLFB_NO_LOAD) == 0 || (next->GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
 			can_load_or_unload = true;
 		}
@@ -520,21 +513,12 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, ui
 		/* Don't return a next stop if the vehicle has to unload everything. */
 		if ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
 				next->GetDestination() == v->last_station_visited) {
-			CargoID first_cargo_id = FindFirstBit(cargo_mask);
-			bool invalid = ((next->GetCargoUnloadType(first_cargo_id) & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0);
-			if (next->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
-				/* This is a cargo-specific load/unload order.
-				 * Don't return a next stop if first cargo has transfer or unload set.
-				 * Drop cargoes which don't match the first one. */
-				uint32 other_cargo_mask = cargo_mask;
-				ClrBit(other_cargo_mask, first_cargo_id);
-				CargoID cargo;
-				FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
-					if (invalid != ((next->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0)) {
-						ClrBit(cargo_mask, cargo);
-					}
-				}
-			}
+			/* This is a cargo-specific load/unload order.
+			 * Don't return a next stop if first cargo has transfer or unload set.
+			 * Drop cargoes which don't match the first one. */
+			bool invalid = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoID cargo) {
+				return ((next->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0);
+			});
 			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		}
 	} while (next->IsType(OT_GOTO_DEPOT) || next->GetDestination() == v->last_station_visited);

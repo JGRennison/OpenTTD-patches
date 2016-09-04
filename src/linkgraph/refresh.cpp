@@ -38,22 +38,14 @@
 		for (const Order *o = v->orders.list->GetFirstOrder(); o != NULL; o = o->next) {
 			if (o->IsType(OT_GOTO_STATION) || o->IsType(OT_IMPLICIT)) {
 				if (o->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
-					OrderUnloadFlags ouf = o->GetCargoUnloadType(first_cargo_id);
-					uint32 other_cargo_mask = cargo_mask;
-					ClrBit(other_cargo_mask, first_cargo_id);
-					CargoID cargo;
-					FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
-						if (((ouf ^ o->GetCargoUnloadType(cargo)) & (OUFB_TRANSFER | OUFB_UNLOAD | OUFB_NO_UNLOAD)) != 0) ClrBit(cargo_mask, cargo);
-					}
+					CargoMaskValueFilter<uint>(cargo_mask, [&](CargoID cargo) -> uint {
+						return o->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD | OUFB_NO_UNLOAD);
+					});
 				}
 				if (o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-					OrderLoadFlags olf = o->GetCargoLoadType(first_cargo_id);
-					uint32 other_cargo_mask = cargo_mask;
-					ClrBit(other_cargo_mask, first_cargo_id);
-					CargoID cargo;
-					FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
-						if (((olf ^ o->GetCargoLoadType(cargo)) & (OLFB_NO_LOAD)) != 0) ClrBit(cargo_mask, cargo);
-					}
+					CargoMaskValueFilter<uint>(cargo_mask, [&](CargoID cargo) -> uint {
+						return o->GetCargoLoadType(cargo) & (OLFB_NO_LOAD);
+					});
 				}
 			}
 		}
