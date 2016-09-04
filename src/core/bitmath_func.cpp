@@ -14,6 +14,8 @@
 
 #include "../safeguards.h"
 
+#ifndef WITH_BITMATH_BUILTINS
+
 const uint8 _ffb_64[64] = {
 	0,  0,  1,  0,  2,  0,  1,  0,
 	3,  0,  1,  0,  2,  0,  1,  0,
@@ -52,6 +54,8 @@ uint8 FindFirstBit(uint32 x)
 
 	return pos;
 }
+
+#endif
 
 /**
  * Search the last set bit in a 64 bit variable.

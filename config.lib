@@ -1812,6 +1812,22 @@ EOL
 		fi
 	fi
 
+	log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.bitmath-builtins -x c++ -"
+	"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.bitmath-builtins -x c++ - 2> /dev/null << EOL
+		int main() {
+			return __builtin_popcountll(__builtin_popcountl(__builtin_popcount(__builtin_ctz(1))));
+		}
+EOL
+	ret=$?
+	rm -f tmp.config.bitmath-builtins
+	log 2 "  exit code $ret"
+	if [ $ret -ne 0 ]; then
+		log 1 "checking bitmath builtins... no"
+	else
+		log 1 "checking bitmath builtins... found"
+		CFLAGS="$CFLAGS -DWITH_BITMATH_BUILTINS"
+	fi
+
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
 		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.demangle -x c++ - -lstdc++"
 		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL
