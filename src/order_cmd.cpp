@@ -48,6 +48,7 @@ INSTANTIATE_POOL_METHODS(OrderList)
 /** Clean everything up. */
 Order::~Order()
 {
+	DeAllocExtraInfo();
 	if (CleaningPool()) return;
 
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
@@ -68,6 +69,7 @@ void Order::Free()
 	this->flags = 0;
 	this->dest  = 0;
 	this->next  = NULL;
+	DeAllocExtraInfo();
 }
 
 /**
@@ -238,6 +240,7 @@ Order::Order(uint32 packed)
 	this->type    = (OrderType)GB(packed,  0,  8);
 	this->flags   = GB(packed,  8,  8);
 	this->dest    = GB(packed, 16, 16);
+	this->extra   = NULL;
 	this->next    = NULL;
 	this->refit_cargo   = CT_NO_REFIT;
 	this->wait_time     = 0;
@@ -284,11 +287,32 @@ void Order::AssignOrder(const Order &other)
 	this->travel_time = other.travel_time;
 	this->max_speed   = other.max_speed;
 
-	if (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-		for (uint i = 0; i < NUM_CARGO; i++) {
-			this->cargo_type_flags[i] = other.cargo_type_flags[i];
-		}
+	if ((this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) && other.extra != NULL) {
+		this->AllocExtraInfo();
+		*(this->extra) = *(other.extra);
+	} else {
+		this->DeAllocExtraInfo();
 	}
+}
+
+void Order::AllocExtraInfo()
+{
+	if (this->extra == NULL) {
+		this->extra = new OrderExtraInfo();
+	}
+}
+
+void Order::DeAllocExtraInfo()
+{
+	if (this->extra != NULL) {
+		delete this->extra;
+		this->extra = NULL;
+	}
+}
+
+OrderExtraInfo::OrderExtraInfo()
+{
+	memset(cargo_type_flags, 0, sizeof(cargo_type_flags));
 }
 
 void CargoStationIDStackSet::FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first, uint hops)

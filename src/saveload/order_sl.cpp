@@ -113,7 +113,6 @@ const SaveLoad *GetOrderDescription()
 		 SLE_CONDVAR(Order, wait_time,      SLE_UINT16,  67, SL_MAX_VERSION),
 		 SLE_CONDVAR(Order, travel_time,    SLE_UINT16,  67, SL_MAX_VERSION),
 		 SLE_CONDVAR(Order, max_speed,      SLE_UINT16, 172, SL_MAX_VERSION),
-		SLE_CONDARR_X(Order, cargo_type_flags, SLE_UINT8, NUM_CARGO, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 1)),
 
 		/* Leftover from the minor savegame version stuff
 		 * We will never use those free bytes, but we have to keep this line to allow loading of old savegames */
@@ -192,6 +191,39 @@ static void Load_ORDR()
 				order->SetWaitTimetabled(order->GetWaitTime() > 0);
 			}
 		}
+	}
+}
+
+const SaveLoad *GetOrderExtraInfoDescription()
+{
+	static const SaveLoad _order_extra_info_desc[] = {
+		SLE_ARR(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO),
+		SLE_END()
+	};
+
+	return _order_extra_info_desc;
+}
+
+void Save_ORDX()
+{
+	Order *order;
+
+	FOR_ALL_ORDERS(order) {
+		if (order->extra != NULL) {
+			SlSetArrayIndex(order->index);
+			SlObject(order->extra, GetOrderExtraInfoDescription());
+		}
+	}
+}
+
+void Load_ORDX()
+{
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		Order *order = Order::GetIfValid(index);
+		assert(order != NULL);
+		order->AllocExtraInfo();
+		SlObject(order->extra, GetOrderExtraInfoDescription());
 	}
 }
 
@@ -309,5 +341,6 @@ static void Ptrs_BKOR()
 extern const ChunkHandler _order_chunk_handlers[] = {
 	{ 'BKOR', Save_BKOR, Load_BKOR, Ptrs_BKOR, NULL, CH_ARRAY},
 	{ 'ORDR', Save_ORDR, Load_ORDR, Ptrs_ORDR, NULL, CH_ARRAY},
-	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, NULL, CH_ARRAY | CH_LAST},
+	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, NULL, CH_ARRAY},
+	{ 'ORDX', Save_ORDX, Load_ORDX, NULL,      NULL, CH_SPARSE_ARRAY | CH_LAST},
 };

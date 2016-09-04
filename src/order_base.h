@@ -28,6 +28,12 @@ typedef Pool<OrderList, OrderListID, 128, 64000> OrderListPool;
 extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
 
+struct OrderExtraInfo {
+	uint8 cargo_type_flags[NUM_CARGO]; ///< Load/unload types for each cargo type.
+
+	OrderExtraInfo();
+};
+
 /* If you change this, keep in mind that it is saved on 3 places:
  * - Load_ORDR, all the global orders
  * - Vehicle -> current_order
@@ -38,6 +44,8 @@ private:
 	friend const struct SaveLoad *GetVehicleDescription(VehicleType vt); ///< Saving and loading the current order of vehicles.
 	friend void Load_VEHS();                                             ///< Loading of ancient vehicles.
 	friend const struct SaveLoad *GetOrderDescription();                 ///< Saving and loading of orders.
+	friend void Load_ORDX();                                             ///< Saving and loading of orders.
+	friend void Save_ORDX();                                             ///< Saving and loading of orders.
 
 	uint8 type;           ///< The type of order + non-stop flags
 	uint8 flags;          ///< Load/unload types, depot order/action types.
@@ -45,19 +53,40 @@ private:
 
 	CargoID refit_cargo;  ///< Refit CargoID
 
-	uint8 cargo_type_flags[NUM_CARGO]; ///< Load/unload types for each cargo type.
+	OrderExtraInfo *extra;///< Extra order info
 
 	uint16 wait_time;    ///< How long in ticks to wait at the destination.
 	uint16 travel_time;  ///< How long in ticks the journey to this destination should take.
 	uint16 max_speed;    ///< How fast the vehicle may go on the way to the destination.
 
+	void AllocExtraInfo();
+	void DeAllocExtraInfo();
+
+	inline void CheckExtraInfoAlloced()
+	{
+		if (!this->extra) this->AllocExtraInfo();
+	}
+
 public:
 	Order *next;          ///< Pointer to next order. If NULL, end of list
 
-	Order() : refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
+	Order() : refit_cargo(CT_NO_REFIT), extra(NULL), max_speed(UINT16_MAX) {}
 	~Order();
 
 	Order(uint32 packed);
+
+	Order(const Order& other) : extra(NULL)
+	{
+		*this = other;
+	}
+
+	inline Order& operator=(Order const& other)
+	{
+		AssignOrder(other);
+		this->next = other.next;
+		this->index = other.index;
+		return *this;
+	}
 
 	/**
 	 * Check whether this order is of the given type.
@@ -141,7 +170,8 @@ public:
 	inline OrderLoadFlags GetCargoLoadTypeRaw(CargoID cargo_id) const
 	{
 		assert(cargo_id < NUM_CARGO);
-		return (OrderLoadFlags) GB(this->cargo_type_flags[cargo_id], 4, 4);
+		if (!this->extra) return OLF_LOAD_IF_POSSIBLE;
+		return (OrderLoadFlags) GB(this->extra->cargo_type_flags[cargo_id], 4, 4);
 	}
 
 	/**
@@ -169,7 +199,8 @@ public:
 	inline OrderUnloadFlags GetCargoUnloadTypeRaw(CargoID cargo_id) const
 	{
 		assert(cargo_id < NUM_CARGO);
-		return (OrderUnloadFlags) GB(this->cargo_type_flags[cargo_id], 0, 4);
+		if (!this->extra) return OUF_UNLOAD_IF_POSSIBLE;
+		return (OrderUnloadFlags) GB(this->extra->cargo_type_flags[cargo_id], 0, 4);
 	}
 
 	/**
@@ -214,7 +245,8 @@ public:
 	inline void SetLoadType(OrderLoadFlags load_type, CargoID cargo_id)
 	{
 		assert(cargo_id < NUM_CARGO);
-		SB(this->cargo_type_flags[cargo_id], 4, 4, load_type);
+		this->CheckExtraInfoAlloced();
+		SB(this->extra->cargo_type_flags[cargo_id], 4, 4, load_type);
 	}
 
 	/** Set how the consist must be unloaded. */
@@ -229,7 +261,8 @@ public:
 	inline void SetUnloadType(OrderUnloadFlags unload_type, CargoID cargo_id)
 	{
 		assert(cargo_id < NUM_CARGO);
-		SB(this->cargo_type_flags[cargo_id], 0, 4, unload_type);
+		this->CheckExtraInfoAlloced();
+		SB(this->extra->cargo_type_flags[cargo_id], 0, 4, unload_type);
 	}
 
 	/** Set whether we must stop at stations or not. */
