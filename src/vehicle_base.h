@@ -639,9 +639,11 @@ public:
 	 * Get the next station the vehicle will stop at.
 	 * @return ID of the next station the vehicle will stop at or INVALID_STATION.
 	 */
-	inline StationIDStack GetNextStoppingStation() const
+	inline CargoStationIDStackSet GetNextStoppingStation() const
 	{
-		return (this->orders.list == NULL) ? INVALID_STATION : this->orders.list->GetNextStoppingStation(this);
+		CargoStationIDStackSet set;
+		if (this->orders.list != NULL) set.FillNextStoppingStation(this, this->orders.list);
+		return set;
 	}
 
 	void ResetRefitCaps();

@@ -21,6 +21,8 @@
 #include "vehicle_type.h"
 #include "date_type.h"
 
+#include <vector>
+
 typedef Pool<Order, OrderID, 256, 64000> OrderPool;
 typedef Pool<OrderList, OrderListID, 128, 64000> OrderListPool;
 extern OrderPool _order_pool;
@@ -325,6 +327,35 @@ public:
 void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord);
 void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord);
 
+struct CargoMaskedStationIDStack {
+	uint32 cargo_mask;
+	StationIDStack station;
+
+	CargoMaskedStationIDStack(uint32 cargo_mask, StationIDStack station)
+			: cargo_mask(cargo_mask), station(station) {}
+};
+
+struct CargoStationIDStackSet {
+private:
+	CargoMaskedStationIDStack first;
+	std::vector<CargoMaskedStationIDStack> more;
+
+public:
+	CargoStationIDStackSet()
+			: first(~0, INVALID_STATION) {}
+
+	const StationIDStack& Get(CargoID cargo) const
+	{
+		if (HasBit(first.cargo_mask, cargo)) return first.station;
+		for (size_t i = 0; i < more.size(); i++) {
+			if (HasBit(more[i].cargo_mask, cargo)) return more[i].station;
+		}
+		NOT_REACHED();
+	}
+
+	void FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first = NULL, uint hops = 0);
+};
+
 /**
  * Shared order list linking together the linked list of orders and the list
  *  of vehicles sharing this order list.
@@ -397,7 +428,7 @@ public:
 	 */
 	inline VehicleOrderID GetNumManualOrders() const { return this->num_manual_orders; }
 
-	StationIDStack GetNextStoppingStation(const Vehicle *v, const Order *first = NULL, uint hops = 0) const;
+	CargoMaskedStationIDStack GetNextStoppingStation(const Vehicle *v, uint32 cargo_mask, const Order *first = NULL, uint hops = 0) const;
 	const Order *GetNextDecisionNode(const Order *next, uint hops) const;
 
 	void InsertOrderAt(Order *new_order, int index);

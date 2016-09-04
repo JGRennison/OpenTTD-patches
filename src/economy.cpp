@@ -1287,7 +1287,7 @@ void PrepareUnload(Vehicle *front_v)
 	assert(CargoPayment::CanAllocateItem());
 	front_v->cargo_payment = new CargoPayment(front_v);
 
-	StationIDStack next_station = front_v->GetNextStoppingStation();
+	CargoStationIDStackSet next_station = front_v->GetNextStoppingStation();
 	if (front_v->orders.list == NULL || (front_v->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
 		Station *st = Station::Get(front_v->last_station_visited);
 		for (Vehicle *v = front_v; v != NULL; v = v->Next()) {
@@ -1296,7 +1296,7 @@ void PrepareUnload(Vehicle *front_v)
 			if (v->cargo_cap > 0 && v->cargo.TotalCount() > 0) {
 				v->cargo.Stage(
 						HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE),
-						front_v->last_station_visited, next_station,
+						front_v->last_station_visited, next_station.Get(v->cargo_type),
 						GetUnloadType(v), ge,
 						front_v->cargo_payment);
 				if (v->cargo.UnloadCount() > 0) SetBit(v->vehicle_flags, VF_CARGO_UNLOADING);
@@ -1450,7 +1450,7 @@ struct FinalizeRefitAction
 {
 	CargoArray &consist_capleft;  ///< Capacities left in the consist.
 	Station *st;                  ///< Station to reserve cargo from.
-	StationIDStack &next_station; ///< Next hops to reserve cargo for.
+	const CargoStationIDStackSet &next_station; ///< Next hops to reserve cargo for.
 	bool do_reserve;              ///< If the vehicle should reserve.
 	Vehicle *cargo_type_loading;  ///< Non-null if vehicle should reserve if the cargo type of the vehicle is a cargo-specific full-load order using this pointer
 
@@ -1460,8 +1460,9 @@ struct FinalizeRefitAction
 	 * @param st Station to reserve cargo from.
 	 * @param next_station Next hops to reserve cargo for.
 	 * @param do_reserve If we should reserve cargo or just add up the capacities.
+	 * @param cargo_type_loading Non-null if vehicle should reserve if the cargo type of the vehicle is a cargo-specific full-load order using this pointer
 	 */
-	FinalizeRefitAction(CargoArray &consist_capleft, Station *st, StationIDStack &next_station, bool do_reserve, Vehicle *cargo_type_loading) :
+	FinalizeRefitAction(CargoArray &consist_capleft, Station *st, const CargoStationIDStackSet &next_station, bool do_reserve, Vehicle *cargo_type_loading) :
 		consist_capleft(consist_capleft), st(st), next_station(next_station), do_reserve(do_reserve), cargo_type_loading(cargo_type_loading) {}
 
 	/**
@@ -1474,7 +1475,7 @@ struct FinalizeRefitAction
 	{
 		if (this->do_reserve || (cargo_type_loading == NULL || (cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD))) {
 			this->st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
-					&v->cargo, st->xy, this->next_station);
+					&v->cargo, st->xy, this->next_station.Get(v->cargo_type));
 		}
 		this->consist_capleft[v->cargo_type] += v->cargo_cap - v->cargo.RemainingCount();
 		return true;
@@ -1489,7 +1490,7 @@ struct FinalizeRefitAction
  * @param next_station Possible next stations the vehicle can travel to.
  * @param new_cid Target cargo for refit.
  */
-static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station *st, StationIDStack next_station, CargoID new_cid)
+static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station *st, CargoStationIDStackSet next_station, CargoID new_cid)
 {
 	Vehicle *v_start = v->GetFirstEnginePart();
 	if (!IterateVehicleParts(v_start, IsEmptyAction())) return;
@@ -1507,7 +1508,7 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 		CargoID cid;
 		new_cid = v_start->cargo_type;
 		FOR_EACH_SET_CARGO_ID(cid, refit_mask) {
-			if (st->goods[cid].cargo.HasCargoFor(next_station)) {
+			if (st->goods[cid].cargo.HasCargoFor(next_station.Get(cid))) {
 				/* Try to find out if auto-refitting would succeed. In case the refit is allowed,
 				 * the returned refit capacity will be greater than zero. */
 				DoCommand(v_start->tile, v_start->index, cid | 1U << 6 | 0xFF << 8 | 1U << 16, DC_QUERY_COST, GetCmdRefitVeh(v_start)); // Auto-refit and only this vehicle including artic parts.
@@ -1547,10 +1548,10 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 
 struct ReserveCargoAction {
 	Station *st;
-	StationIDStack *next_station;
+	const CargoStationIDStackSet &next_station;
 	Vehicle *cargo_type_loading;
 
-	ReserveCargoAction(Station *st, StationIDStack *next_station, Vehicle *cargo_type_loading) :
+	ReserveCargoAction(Station *st, const CargoStationIDStackSet &next_station, Vehicle *cargo_type_loading) :
 		st(st), next_station(next_station), cargo_type_loading(cargo_type_loading) {}
 
 	bool operator()(Vehicle *v)
@@ -1558,7 +1559,7 @@ struct ReserveCargoAction {
 		if (cargo_type_loading != NULL && !(cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD)) return true;
 		if (v->cargo_cap > v->cargo.RemainingCount()) {
 			st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
-					&v->cargo, st->xy, *next_station);
+					&v->cargo, st->xy, next_station.Get(v->cargo_type));
 		}
 
 		return true;
@@ -1575,7 +1576,7 @@ struct ReserveCargoAction {
  * @param next_station Station(s) the vehicle will stop at next.
  * @param cargo_type_loading check cargo-specific loading type
  */
-static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft, StationIDStack *next_station, bool cargo_type_loading)
+static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft, const CargoStationIDStackSet &next_station, bool cargo_type_loading)
 {
 	/* If there is a cargo payment not all vehicles of the consist have tried to do the refit.
 	 * In that case, only reserve if it's a fixed refit and the equivalent of "articulated chain"
@@ -1631,23 +1632,25 @@ static void LoadUnloadVehicle(Vehicle *front)
 	StationID last_visited = front->last_station_visited;
 	Station *st = Station::Get(last_visited);
 
-	StationIDStack next_station = front->GetNextStoppingStation();
+	CargoStationIDStackSet next_station = front->GetNextStoppingStation();
+
 	bool use_autorefit = front->current_order.IsRefit() && front->current_order.GetRefitCargo() == CT_AUTO_REFIT;
 	CargoArray consist_capleft;
+	bool should_reserve_consist = false;
+	bool reserve_consist_cargo_type_loading = false;
 	if (_settings_game.order.improved_load && use_autorefit) {
-		if (front->cargo_payment == NULL) {
-			ReserveConsist(st, front,
-					(use_autorefit && front->load_unload_ticks != 0) ? &consist_capleft : NULL,
-					&next_station,
-					false);
-		}
+		if (front->cargo_payment == NULL) should_reserve_consist = true;
 	} else {
 		if ((front->current_order.GetLoadType() & OLFB_FULL_LOAD) || (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD)) {
-			ReserveConsist(st, front,
-					(use_autorefit && front->load_unload_ticks != 0) ? &consist_capleft : NULL,
-					&next_station,
-					(front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD));
+			should_reserve_consist = true;
+			reserve_consist_cargo_type_loading = (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD);
 		}
+	}
+	if (should_reserve_consist) {
+		ReserveConsist(st, front,
+				(use_autorefit && front->load_unload_ticks != 0) ? &consist_capleft : NULL,
+				next_station,
+				reserve_consist_cargo_type_loading);
 	}
 
 	/* We have not waited enough time till the next round of loading/unloading */
@@ -1797,7 +1800,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, load_amount);
 			if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
 
-			uint loaded = ge->cargo.Load(cap_left, &v->cargo, st->xy, next_station);
+			uint loaded = ge->cargo.Load(cap_left, &v->cargo, st->xy, next_station.Get(v->cargo_type));
 			if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {
 				/* Remember if there are reservations left so that we don't stop
 				 * loading before they're loaded. */
