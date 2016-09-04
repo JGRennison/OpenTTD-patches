@@ -1460,6 +1460,7 @@ void VehicleEnterDepot(Vehicle *v)
 			 * before the stop to the station after the stop can't be predicted
 			 * we shouldn't construct it when the vehicle visits the next stop. */
 			v->last_loading_station = INVALID_STATION;
+			ClrBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 			if (v->owner == _local_company) {
 				SetDParam(0, v->index);
 				AddVehicleAdviceNewsItem(STR_NEWS_TRAIN_IS_WAITING + v->type, v->index);
@@ -1931,6 +1932,33 @@ void Vehicle::DeleteUnreachedImplicitOrders()
 }
 
 /**
+ * Increase capacity for all link stats associated with vehicles in the given consist.
+ * @param st Station to get the link stats from.
+ * @param front First vehicle in the consist.
+ * @param next_station_id Station the consist will be travelling to next.
+ */
+static void VehicleIncreaseStats(const Vehicle *front)
+{
+	for (const Vehicle *v = front; v != NULL; v = v->Next()) {
+		StationID last_loading_station = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_station : front->last_loading_station;
+		if (v->refit_cap > 0 &&
+				last_loading_station != INVALID_STATION &&
+				last_loading_station != front->last_station_visited &&
+				((front->current_order.GetCargoLoadType(v->cargo_type) & OLFB_NO_LOAD) == 0 ||
+				(front->current_order.GetCargoUnloadType(v->cargo_type) & OUFB_NO_UNLOAD) == 0)) {
+			/* The cargo count can indeed be higher than the refit_cap if
+			 * wagons have been auto-replaced and subsequently auto-
+			 * refitted to a higher capacity. The cargo gets redistributed
+			 * among the wagons in that case.
+			 * As usage is not such an important figure anyway we just
+			 * ignore the additional cargo then.*/
+			IncreaseStats(Station::Get(last_loading_station), v->cargo_type, front->last_station_visited, v->refit_cap,
+				min(v->refit_cap, v->cargo.StoredCount()), EUM_INCREASE);
+		}
+	}
+}
+
+/**
  * Prepare everything to begin the loading when arriving at a station.
  * @pre IsTileType(this->tile, MP_STATION) || this->type == VEH_SHIP.
  */
@@ -2040,12 +2068,7 @@ void Vehicle::BeginLoading()
 		this->current_order.MakeLoading(false);
 	}
 
-	if (this->last_loading_station != INVALID_STATION &&
-			this->last_loading_station != this->last_station_visited &&
-			((this->current_order.GetLoadType() & OLFB_NO_LOAD) == 0 ||
-			(this->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0)) {
-		IncreaseStats(Station::Get(this->last_loading_station), this, this->last_station_visited);
-	}
+	VehicleIncreaseStats(this);
 
 	PrepareUnload(this);
 
@@ -2093,19 +2116,44 @@ void Vehicle::LeaveStation()
 
 	if ((this->current_order.GetLoadType() & OLFB_NO_LOAD) == 0 ||
 			(this->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
-		if (this->current_order.CanLeaveWithCargo(this->last_loading_station != INVALID_STATION)) {
-			/* Refresh next hop stats to make sure we've done that at least once
-			 * during the stop and that refit_cap == cargo_cap for each vehicle in
-			 * the consist. */
+		if (HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) || (this->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) || (this->current_order.GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
+			/* Always run these, check is handled by check_cargo_can_leave param of LinkRefresher::Run */
 			this->ResetRefitCaps();
-			LinkRefresher::Run(this);
+			LinkRefresher::Run(this, true, false, true);
 
-			/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
-			this->last_loading_station = this->last_station_visited;
+			/* NB: this is saved here as we overwrite it on the first iteration of the loop below */
+			StationID head_last_loading_station = this->last_loading_station;
+			for (Vehicle *u = this; u != NULL; u = u->Next()) {
+				StationID last_loading_station = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_station : head_last_loading_station;
+				if ((this->current_order.GetCargoLoadType(u->cargo_type) & OLFB_NO_LOAD) == 0 ||
+						(this->current_order.GetCargoUnloadType(u->cargo_type) & OUFB_NO_UNLOAD) == 0) {
+					if (this->current_order.CanLeaveWithCargo(last_loading_station != INVALID_STATION, u->cargo_type)) {
+						u->last_loading_station = this->last_station_visited;
+					} else {
+						u->last_loading_station = INVALID_STATION;
+					}
+				} else {
+					u->last_loading_station = last_loading_station;
+				}
+			}
+			SetBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 		} else {
-			/* if the vehicle couldn't load and had to unload or transfer everything
-			 * set the last loading station to invalid as it will leave empty. */
-			this->last_loading_station = INVALID_STATION;
+			if (this->current_order.CanLeaveWithCargo(this->last_loading_station != INVALID_STATION, 0)) {
+				/* Refresh next hop stats to make sure we've done that at least once
+				 * during the stop and that refit_cap == cargo_cap for each vehicle in
+				 * the consist. */
+				this->ResetRefitCaps();
+				LinkRefresher::Run(this);
+
+				/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
+				this->last_loading_station = this->last_station_visited;
+				ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+			} else {
+				/* if the vehicle couldn't load and had to unload or transfer everything
+				 * set the last loading station to invalid as it will leave empty. */
+				this->last_loading_station = INVALID_STATION;
+				ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+			}
 		}
 	}
 

@@ -25,19 +25,69 @@
  * @param allow_merge If the refresher is allowed to merge or extend link graphs.
  * @param is_full_loading If the vehicle is full loading.
  */
-/* static */ void LinkRefresher::Run(Vehicle *v, bool allow_merge, bool is_full_loading)
+/* static */ void LinkRefresher::Run(Vehicle *v, bool allow_merge, bool is_full_loading, bool check_cargo_can_leave)
 {
 	/* If there are no orders we can't predict anything.*/
 	if (v->orders.list == NULL) return;
 
-	/* Make sure the first order is a useful order. */
-	const Order *first = v->orders.list->GetNextDecisionNode(v->GetOrder(v->cur_implicit_order_index), 0);
-	if (first == NULL) return;
+	/* Scan orders for cargo-specific load/unload, and run LinkRefresher separately for each set of cargoes where they differ. */
+	uint32 cargoes_to_check = ~0;
+	while (cargoes_to_check != 0) {
+		uint32 cargo_mask = cargoes_to_check;
+		const CargoID first_cargo_id = FindFirstBit(cargo_mask);
+		for (const Order *o = v->orders.list->GetFirstOrder(); o != NULL; o = o->next) {
+			if (o->IsType(OT_GOTO_STATION) || o->IsType(OT_IMPLICIT)) {
+				if (o->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
+					OrderUnloadFlags ouf = o->GetCargoUnloadType(first_cargo_id);
+					uint32 other_cargo_mask = cargo_mask;
+					ClrBit(other_cargo_mask, first_cargo_id);
+					CargoID cargo;
+					FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
+						if (((ouf ^ o->GetCargoUnloadType(cargo)) & (OUFB_TRANSFER | OUFB_UNLOAD | OUFB_NO_UNLOAD)) != 0) ClrBit(cargo_mask, cargo);
+					}
+				}
+				if (o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+					OrderLoadFlags olf = o->GetCargoLoadType(first_cargo_id);
+					uint32 other_cargo_mask = cargo_mask;
+					ClrBit(other_cargo_mask, first_cargo_id);
+					CargoID cargo;
+					FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
+						if (((olf ^ o->GetCargoLoadType(cargo)) & (OLFB_NO_LOAD)) != 0) ClrBit(cargo_mask, cargo);
+					}
+				}
+			}
+		}
 
-	HopSet seen_hops;
-	LinkRefresher refresher(v, &seen_hops, allow_merge, is_full_loading);
+		bool has_cargo;
+		if (!HasBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP)) {
+			has_cargo = v->last_loading_station != INVALID_STATION;
+		} else {
+			has_cargo = false;
+			for (const Vehicle *u = v; u != NULL; u = u->Next()) {
+				if (u->cargo_type < NUM_CARGO && HasBit(cargo_mask, u->cargo_type) && u->last_loading_station != INVALID_STATION) {
+					has_cargo = true;
+					break;
+				}
+			}
+		}
 
-	refresher.RefreshLinks(first, first, v->last_loading_station != INVALID_STATION ? 1 << HAS_CARGO : 0);
+		if (check_cargo_can_leave && (v->current_order.IsType(OT_GOTO_STATION) || v->current_order.IsType(OT_IMPLICIT)) &&
+				(!v->current_order.CanLeaveWithCargo(has_cargo, first_cargo_id))) {
+			cargoes_to_check &= ~cargo_mask;
+			continue;
+		}
+
+		/* Make sure the first order is a useful order. */
+		const Order *first = v->orders.list->GetNextDecisionNode(v->GetOrder(v->cur_implicit_order_index), 0, cargo_mask);
+		if (first != NULL) {
+			HopSet seen_hops;
+			LinkRefresher refresher(v, &seen_hops, allow_merge, is_full_loading, cargo_mask);
+
+			refresher.RefreshLinks(first, first, has_cargo ? 1 << HAS_CARGO : 0);
+		}
+
+		cargoes_to_check &= ~cargo_mask;
+	}
 }
 
 /**
@@ -68,9 +118,9 @@ bool LinkRefresher::Hop::operator<(const Hop &other) const
  * @param allow_merge If the refresher is allowed to merge or extend link graphs.
  * @param is_full_loading If the vehicle is full loading.
  */
-LinkRefresher::LinkRefresher(Vehicle *vehicle, HopSet *seen_hops, bool allow_merge, bool is_full_loading) :
+LinkRefresher::LinkRefresher(Vehicle *vehicle, HopSet *seen_hops, bool allow_merge, bool is_full_loading, uint32 cargo_mask) :
 	vehicle(vehicle), seen_hops(seen_hops), cargo(CT_INVALID), allow_merge(allow_merge),
-	is_full_loading(is_full_loading)
+	is_full_loading(is_full_loading), cargo_mask(cargo_mask)
 {
 	memset(this->capacities, 0, sizeof(this->capacities));
 
@@ -175,8 +225,10 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 		SetBit(flags, USE_NEXT);
 
 		if (next->IsType(OT_CONDITIONAL)) {
+			uint32 this_cargo_mask = this->cargo_mask;
 			const Order *skip_to = this->vehicle->orders.list->GetNextDecisionNode(
-					this->vehicle->orders.list->GetOrderAt(next->GetConditionSkipToOrder()), num_hops);
+					this->vehicle->orders.list->GetOrderAt(next->GetConditionSkipToOrder()), num_hops, this_cargo_mask);
+			assert(this_cargo_mask == this->cargo_mask);
 			if (skip_to != NULL && num_hops < this->vehicle->orders.list->GetNumOrders()) {
 				/* Make copies of capacity tracking lists. There is potential
 				 * for optimization here: If the vehicle never refits we don't
@@ -189,8 +241,10 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 
 		/* Reassign next with the following stop. This can be a station or a
 		 * depot.*/
+		uint32 this_cargo_mask = this->cargo_mask;
 		next = this->vehicle->orders.list->GetNextDecisionNode(
-				this->vehicle->orders.list->GetNext(next), num_hops++);
+				this->vehicle->orders.list->GetNext(next), num_hops++, this_cargo_mask);
+		assert(this_cargo_mask == this->cargo_mask);
 	}
 	return next;
 }
@@ -208,6 +262,8 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next)
 		for (CargoID c = 0; c < NUM_CARGO; c++) {
 			/* Refresh the link and give it a minimum capacity. */
 
+			if (!HasBit(this->cargo_mask, c)) continue;
+
 			uint cargo_quantity = this->capacities[c];
 			if (cargo_quantity == 0) continue;
 
@@ -218,7 +274,7 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next)
 			}
 
 			/* A link is at least partly restricted if a vehicle can't load at its source. */
-			EdgeUpdateMode restricted_mode = (cur->GetLoadType() & OLFB_NO_LOAD) == 0 ?
+			EdgeUpdateMode restricted_mode = (cur->GetCargoLoadType(c) & OLFB_NO_LOAD) == 0 ?
 						EUM_UNRESTRICTED : EUM_RESTRICTED;
 
 			/* If the vehicle is currently full loading, increase the capacities at the station
@@ -309,7 +365,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flag
 		}
 
 		if (cur->IsType(OT_GOTO_STATION) || cur->IsType(OT_IMPLICIT)) {
-			if (cur->CanLeaveWithCargo(HasBit(flags, HAS_CARGO))) {
+			if (cur->CanLeaveWithCargo(HasBit(flags, HAS_CARGO), FindFirstBit(this->cargo_mask))) {
 				SetBit(flags, HAS_CARGO);
 				this->RefreshStats(cur, next);
 			} else {

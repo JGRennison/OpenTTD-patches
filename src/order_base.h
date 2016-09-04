@@ -300,8 +300,7 @@ public:
 	inline void SetMaxSpeed(uint16 speed) { this->max_speed = speed; }
 
 	bool ShouldStopAtStation(const Vehicle *v, StationID station) const;
-	bool CanLoadOrUnload() const;
-	bool CanLeaveWithCargo(bool has_cargo) const;
+	bool CanLeaveWithCargo(bool has_cargo, CargoID cargo) const;
 
 	TileIndex GetLocation(const Vehicle *v, bool airport = false) const;
 
@@ -429,7 +428,7 @@ public:
 	inline VehicleOrderID GetNumManualOrders() const { return this->num_manual_orders; }
 
 	CargoMaskedStationIDStack GetNextStoppingStation(const Vehicle *v, uint32 cargo_mask, const Order *first = NULL, uint hops = 0) const;
-	const Order *GetNextDecisionNode(const Order *next, uint hops) const;
+	const Order *GetNextDecisionNode(const Order *next, uint hops, uint32 &cargo_mask) const;
 
 	void InsertOrderAt(Order *new_order, int index);
 	void DeleteOrderAt(int index);
