@@ -2305,22 +2305,22 @@ static const NWidgetPart _nested_vehicle_view_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CENTER_MAIN_VIEW), SetMinimalSize(18, 18), SetFill(1, 1), SetDataTip(SPR_CENTRE_VIEW_VEHICLE, 0x0 /* filled later */),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CENTER_MAIN_VIEW), SetMinimalSize(18, 18), SetDataTip(SPR_CENTRE_VIEW_VEHICLE, 0x0 /* filled later */),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VV_SELECT_DEPOT_CLONE),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_GOTO_DEPOT), SetMinimalSize(18, 18), SetFill(1, 1), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CLONE), SetMinimalSize(18, 18), SetFill(1, 1), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_GOTO_DEPOT), SetMinimalSize(18, 18), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CLONE), SetMinimalSize(18, 18), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
 			EndContainer(),
 			/* For trains only, 'ignore signal' button. */
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_FORCE_PROCEED), SetMinimalSize(18, 18), SetFill(1, 1),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_FORCE_PROCEED), SetMinimalSize(18, 18),
 											SetDataTip(SPR_IGNORE_SIGNALS, STR_VEHICLE_VIEW_TRAIN_IGNORE_SIGNAL_TOOLTIP),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VV_SELECT_REFIT_TURN),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_REFIT), SetMinimalSize(18, 18), SetFill(1, 1), SetDataTip(SPR_REFIT_VEHICLE, 0x0 /* filled later */),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_TURN_AROUND), SetMinimalSize(18, 18), SetFill(1, 1),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_REFIT), SetMinimalSize(18, 18), SetDataTip(SPR_REFIT_VEHICLE, 0x0 /* filled later */),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_TURN_AROUND), SetMinimalSize(18, 18),
 												SetDataTip(SPR_FORCE_VEHICLE_TURN, STR_VEHICLE_VIEW_ROAD_VEHICLE_REVERSE_TOOLTIP),
 			EndContainer(),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_SHOW_ORDERS), SetFill(1, 1), SetMinimalSize(18, 18), SetDataTip(SPR_SHOW_ORDERS, 0x0 /* filled later */),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_SHOW_DETAILS), SetFill(1, 1), SetMinimalSize(18, 18), SetDataTip(SPR_SHOW_VEHICLE_DETAILS, 0x0 /* filled later */),
-			NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), SetMinimalSize(18, 0), SetResize(0, 1), EndContainer(),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_SHOW_ORDERS), SetMinimalSize(18, 18), SetDataTip(SPR_SHOW_ORDERS, 0x0 /* filled later */),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_SHOW_DETAILS), SetMinimalSize(18, 18), SetDataTip(SPR_SHOW_VEHICLE_DETAILS, 0x0 /* filled later */),
+			NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(18, 0), SetResize(0, 1), EndContainer(),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
@@ -2856,35 +2856,74 @@ void CcBuildPrimaryVehicle(const CommandCost &result, TileIndex tile, uint32 p1,
 }
 
 /**
- * Get the width of a vehicle (including all parts of the consist) in pixels.
+ * Get the width of a vehicle (part) in pixels.
  * @param v Vehicle to get the width for.
  * @return Width of the vehicle.
  */
-int GetVehicleWidth(Vehicle *v, EngineImageType image_type)
+int GetSingleVehicleWidth(const Vehicle *v, EngineImageType image_type)
 {
-	int vehicle_width = 0;
-
 	switch (v->type) {
 		case VEH_TRAIN:
-			for (const Train *u = Train::From(v); u != NULL; u = u->Next()) {
-				vehicle_width += u->GetDisplayImageWidth();
-			}
-			break;
+			return Train::From(v)->GetDisplayImageWidth();
 
 		case VEH_ROAD:
-			for (const RoadVehicle *u = RoadVehicle::From(v); u != NULL; u = u->Next()) {
-				vehicle_width += u->GetDisplayImageWidth();
-			}
-			break;
+			return RoadVehicle::From(v)->GetDisplayImageWidth();
 
 		default:
 			bool rtl = _current_text_dir == TD_RTL;
 			SpriteID sprite = v->GetImage(rtl ? DIR_E : DIR_W, image_type);
 			const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
-			vehicle_width = UnScaleGUI(real_sprite->width);
+			return UnScaleGUI(real_sprite->width);
+	}
+}
 
-			break;
+/**
+ * Get the width of a vehicle (including all parts of the consist) in pixels.
+ * @param v Vehicle to get the width for.
+ * @return Width of the vehicle.
+ */
+int GetVehicleWidth(const Vehicle *v, EngineImageType image_type)
+{
+	if (v->type == VEH_TRAIN || v->type == VEH_ROAD) {
+		int vehicle_width = 0;
+		for (const Vehicle *u = v; u != NULL; u = u->Next()) {
+			vehicle_width += GetSingleVehicleWidth(u, image_type);
+		}
+		return vehicle_width;
+	} else {
+		return GetSingleVehicleWidth(v, image_type);
+	}
+}
+
+/**
+ * Set the mouse cursor to look like a vehicle.
+ * @param v Vehicle
+ * @param image_type Type of vehicle image to use.
+ */
+void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
+{
+	bool rtl = _current_text_dir == TD_RTL;
+
+	_cursor.sprite_count = 0;
+	int total_width = 0;
+	for (; v != NULL; v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : NULL) {
+		if (_cursor.sprite_count == lengthof(_cursor.sprite_seq)) break;
+		if (total_width >= 2 * (int)VEHICLEINFO_FULL_VEHICLE_WIDTH) break;
+
+		_cursor.sprite_seq[_cursor.sprite_count].sprite = v->GetImage(rtl ? DIR_E : DIR_W, image_type);
+		_cursor.sprite_seq[_cursor.sprite_count].pal = GetVehiclePalette(v);
+		_cursor.sprite_pos[_cursor.sprite_count].x = rtl ? -total_width : total_width;
+		_cursor.sprite_pos[_cursor.sprite_count].y = 0;
+
+		total_width += GetSingleVehicleWidth(v, image_type);
+		_cursor.sprite_count++;
 	}
 
-	return vehicle_width;
+	int offs = ((int)VEHICLEINFO_FULL_VEHICLE_WIDTH - total_width) / 2;
+	if (rtl) offs = -offs;
+	for (uint i = 0; i < _cursor.sprite_count; ++i) {
+		_cursor.sprite_pos[i].x += offs;
+	}
+
+	UpdateCursorSize();
 }

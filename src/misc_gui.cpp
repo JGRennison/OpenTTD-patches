@@ -604,7 +604,7 @@ TextEffectID ShowFillingPercent(int x, int y, int z, uint8 percent, StringID str
 /**
  * Update vehicle loading indicators.
  * @param te_id   TextEffectID to be updated.
- * @param string  String wich is printed.
+ * @param string  String which is printed.
  */
 void UpdateFillingPercent(TextEffectID te_id, uint8 percent, StringID string)
 {
@@ -673,8 +673,8 @@ struct TooltipsWindow : public Window
 		/* Correctly position the tooltip position, watch out for window and cursor size
 		 * Clamp value to below main toolbar and above statusbar. If tooltip would
 		 * go below window, flip it so it is shown above the cursor */
-		pt.y = Clamp(_cursor.pos.y + _cursor.size.y + _cursor.offs.y + 5, scr_top, scr_bot);
-		if (pt.y + sm_height > scr_bot) pt.y = min(_cursor.pos.y + _cursor.offs.y - 5, scr_bot) - sm_height;
+		pt.y = Clamp(_cursor.pos.y + _cursor.total_size.y + _cursor.total_offs.y + 5, scr_top, scr_bot);
+		if (pt.y + sm_height > scr_bot) pt.y = min(_cursor.pos.y + _cursor.total_offs.y - 5, scr_bot) - sm_height;
 		pt.x = sm_width >= _screen.width ? 0 : Clamp(_cursor.pos.x - (sm_width >> 1), 0, _screen.width - sm_width);
 
 		return pt;

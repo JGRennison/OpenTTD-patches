@@ -116,6 +116,7 @@ void SlXvSetCurrentState()
  */
 void SlXvCheckSpecialSavegameVersions()
 {
+	// Checks for special savegame versions go here
 	extern uint16 _sl_version;
 
 	if (_sl_version == 2000) {

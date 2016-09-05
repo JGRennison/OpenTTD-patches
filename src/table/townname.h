@@ -11,6 +11,10 @@
 
 #include "../core/enum_type.hpp"
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
+
 static const char * const _name_original_english_1[] = {
 	"Great ",
 	"Little ",

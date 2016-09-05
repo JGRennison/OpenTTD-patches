@@ -897,8 +897,8 @@ STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikan Dolar�
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Avro (€)
 STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japon Yeni (¥)
 STR_GAME_OPTIONS_CURRENCY_ATS                                   :Avusturya Şilini (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belcika Frangı (BEF)
-STR_GAME_OPTIONS_CURRENCY_CHF                                   :İsviçre Frangı (CHF)
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belçika Frankı (BEF)
+STR_GAME_OPTIONS_CURRENCY_CHF                                   :İsviçre Frankı (CHF)
 STR_GAME_OPTIONS_CURRENCY_CZK                                   :Çek Korunası (CZK)
 STR_GAME_OPTIONS_CURRENCY_DEM                                   :Alman markı (DEM)
 STR_GAME_OPTIONS_CURRENCY_DKK                                   :Danimarka Kronu (DKK)
@@ -2688,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Satın alınmı
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD Hakkında
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Telif hakkı {COPYRIGHT} 1995 Chris Sawyer, Her hakkı saklıdır
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD sürüm {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD ekibi
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD ekibi
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Oyunu Kaydet

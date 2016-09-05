@@ -942,6 +942,9 @@
     <ClInclude Include="..\src\safeguards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\screenshot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
