@@ -115,9 +115,7 @@ void SlXvSetCurrentState()
  */
 void SlXvCheckSpecialSavegameVersions()
 {
-	extern uint16 _sl_version;
-
-	// TODO: check for savegame versions
+	// Checks for special savegame versions go here
 }
 
 /**
