@@ -24,61 +24,43 @@
  * @param v Vehicle to refresh links for.
  * @param allow_merge If the refresher is allowed to merge or extend link graphs.
  * @param is_full_loading If the vehicle is full loading.
+ * @param cargo_mask Mask of cargoes to refresh
  */
-/* static */ void LinkRefresher::Run(Vehicle *v, bool allow_merge, bool is_full_loading, bool check_cargo_can_leave)
+/* static */ void LinkRefresher::Run(Vehicle *v, bool allow_merge, bool is_full_loading, uint32 cargo_mask)
 {
 	/* If there are no orders we can't predict anything.*/
 	if (v->orders.list == NULL) return;
 
+	uint32 have_cargo_mask = v->GetLastLoadingStationValidCargoMask();
+
 	/* Scan orders for cargo-specific load/unload, and run LinkRefresher separately for each set of cargoes where they differ. */
-	uint32 cargoes_to_check = ~0;
-	while (cargoes_to_check != 0) {
-		uint32 cargo_mask = cargoes_to_check;
-		const CargoID first_cargo_id = FindFirstBit(cargo_mask);
+	while (cargo_mask != 0) {
+		uint32 iter_cargo_mask = cargo_mask;
 		for (const Order *o = v->orders.list->GetFirstOrder(); o != NULL; o = o->next) {
 			if (o->IsType(OT_GOTO_STATION) || o->IsType(OT_IMPLICIT)) {
 				if (o->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
-					CargoMaskValueFilter<uint>(cargo_mask, [&](CargoID cargo) -> uint {
+					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoID cargo) -> uint {
 						return o->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD | OUFB_NO_UNLOAD);
 					});
 				}
 				if (o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-					CargoMaskValueFilter<uint>(cargo_mask, [&](CargoID cargo) -> uint {
+					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoID cargo) -> uint {
 						return o->GetCargoLoadType(cargo) & (OLFB_NO_LOAD);
 					});
 				}
 			}
 		}
 
-		bool has_cargo;
-		if (!HasBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP)) {
-			has_cargo = v->last_loading_station != INVALID_STATION;
-		} else {
-			has_cargo = false;
-			for (const Vehicle *u = v; u != NULL; u = u->Next()) {
-				if (u->cargo_type < NUM_CARGO && HasBit(cargo_mask, u->cargo_type) && u->last_loading_station != INVALID_STATION) {
-					has_cargo = true;
-					break;
-				}
-			}
-		}
-
-		if (check_cargo_can_leave && (v->current_order.IsType(OT_GOTO_STATION) || v->current_order.IsType(OT_IMPLICIT)) &&
-				(!v->current_order.CanLeaveWithCargo(has_cargo, first_cargo_id))) {
-			cargoes_to_check &= ~cargo_mask;
-			continue;
-		}
-
 		/* Make sure the first order is a useful order. */
-		const Order *first = v->orders.list->GetNextDecisionNode(v->GetOrder(v->cur_implicit_order_index), 0, cargo_mask);
+		const Order *first = v->orders.list->GetNextDecisionNode(v->GetOrder(v->cur_implicit_order_index), 0, iter_cargo_mask);
 		if (first != NULL) {
 			HopSet seen_hops;
-			LinkRefresher refresher(v, &seen_hops, allow_merge, is_full_loading, cargo_mask);
+			LinkRefresher refresher(v, &seen_hops, allow_merge, is_full_loading, iter_cargo_mask);
 
-			refresher.RefreshLinks(first, first, has_cargo ? 1 << HAS_CARGO : 0);
+			refresher.RefreshLinks(first, first, (iter_cargo_mask & have_cargo_mask) ? 1 << HAS_CARGO : 0);
 		}
 
-		cargoes_to_check &= ~cargo_mask;
+		cargo_mask &= ~iter_cargo_mask;
 	}
 }
 

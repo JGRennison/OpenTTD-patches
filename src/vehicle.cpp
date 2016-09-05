@@ -2100,6 +2100,21 @@ void Vehicle::CancelReservation(StationID next, Station *st)
 	}
 }
 
+uint32 Vehicle::GetLastLoadingStationValidCargoMask() const
+{
+	if (!HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP)) {
+		return (this->last_loading_station != INVALID_STATION) ? ~0 : 0;
+	} else {
+		uint32 cargo_mask = 0;
+		for (const Vehicle *u = this; u != NULL; u = u->Next()) {
+			if (u->cargo_type < NUM_CARGO && u->last_loading_station != INVALID_STATION) {
+				SetBit(cargo_mask, u->cargo_type);
+			}
+		}
+		return cargo_mask;
+	}
+}
+
 /**
  * Perform all actions when leaving a station.
  * @pre this->current_order.IsType(OT_LOADING)
@@ -2114,20 +2129,45 @@ void Vehicle::LeaveStation()
 	/* Only update the timetable if the vehicle was supposed to stop here. */
 	if (this->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) UpdateVehicleTimetable(this, false);
 
-	if ((this->current_order.GetLoadType() & OLFB_NO_LOAD) == 0 ||
-			(this->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
-		if (HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) || (this->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) || (this->current_order.GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
-			/* Always run these, check is handled by check_cargo_can_leave param of LinkRefresher::Run */
+	uint32 cargoes_can_load_unload = this->current_order.FilterLoadUnloadTypeCargoMask([&](const Order *o, CargoID cargo) {
+		return ((o->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0) || ((o->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
+	});
+	uint32 has_cargo_mask = this->GetLastLoadingStationValidCargoMask();
+	uint32 cargoes_can_leave_with_cargo = FilterCargoMask([&](CargoID cargo) {
+		return this->current_order.CanLeaveWithCargo(HasBit(has_cargo_mask, cargo), cargo);
+	}, cargoes_can_load_unload);
+
+	if (cargoes_can_load_unload != 0) {
+		if (cargoes_can_leave_with_cargo != 0) {
+			/* Refresh next hop stats to make sure we've done that at least once
+			 * during the stop and that refit_cap == cargo_cap for each vehicle in
+			 * the consist. */
 			this->ResetRefitCaps();
-			LinkRefresher::Run(this, true, false, true);
+			LinkRefresher::Run(this, true, false, cargoes_can_leave_with_cargo);
+		}
+
+		if (cargoes_can_leave_with_cargo == (uint32) ~0) {
+			/* can leave with all cargoes */
+
+			/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
+			this->last_loading_station = this->last_station_visited;
+			ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+		} else if (cargoes_can_leave_with_cargo == 0) {
+			/* can leave with no cargoes */
+
+			/* if the vehicle couldn't load and had to unload or transfer everything
+			 * set the last loading station to invalid as it will leave empty. */
+			this->last_loading_station = INVALID_STATION;
+			ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+		} else {
+			/* mix of cargoes loadable or could not leave with all cargoes */
 
 			/* NB: this is saved here as we overwrite it on the first iteration of the loop below */
 			StationID head_last_loading_station = this->last_loading_station;
 			for (Vehicle *u = this; u != NULL; u = u->Next()) {
 				StationID last_loading_station = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_station : head_last_loading_station;
-				if ((this->current_order.GetCargoLoadType(u->cargo_type) & OLFB_NO_LOAD) == 0 ||
-						(this->current_order.GetCargoUnloadType(u->cargo_type) & OUFB_NO_UNLOAD) == 0) {
-					if (this->current_order.CanLeaveWithCargo(last_loading_station != INVALID_STATION, u->cargo_type)) {
+				if (u->cargo_type < NUM_CARGO && HasBit(cargoes_can_load_unload, u->cargo_type)) {
+					if (HasBit(cargoes_can_leave_with_cargo, u->cargo_type)) {
 						u->last_loading_station = this->last_station_visited;
 					} else {
 						u->last_loading_station = INVALID_STATION;
@@ -2137,23 +2177,6 @@ void Vehicle::LeaveStation()
 				}
 			}
 			SetBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
-		} else {
-			if (this->current_order.CanLeaveWithCargo(this->last_loading_station != INVALID_STATION, 0)) {
-				/* Refresh next hop stats to make sure we've done that at least once
-				 * during the stop and that refit_cap == cargo_cap for each vehicle in
-				 * the consist. */
-				this->ResetRefitCaps();
-				LinkRefresher::Run(this);
-
-				/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
-				this->last_loading_station = this->last_station_visited;
-				ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
-			} else {
-				/* if the vehicle couldn't load and had to unload or transfer everything
-				 * set the last loading station to invalid as it will leave empty. */
-				this->last_loading_station = INVALID_STATION;
-				ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
-			}
 		}
 	}
 

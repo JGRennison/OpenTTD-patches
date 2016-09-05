@@ -23,7 +23,7 @@
  */
 class LinkRefresher {
 public:
-	static void Run(Vehicle *v, bool allow_merge = true, bool is_full_loading = false, bool check_cargo_can_leave = false);
+	static void Run(Vehicle *v, bool allow_merge = true, bool is_full_loading = false, uint32 cargo_mask = ~0);
 
 protected:
 	/**
