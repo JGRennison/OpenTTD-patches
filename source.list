@@ -310,6 +310,7 @@ road_type.h
 roadstop_base.h
 roadveh.h
 safeguards.h
+scope.h
 screenshot.h
 sdl.h
 sound/sdl_s.h
