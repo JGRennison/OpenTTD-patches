@@ -209,9 +209,9 @@ void Save_ORDX()
 	Order *order;
 
 	FOR_ALL_ORDERS(order) {
-		if (order->extra != NULL) {
+		if (order->extra) {
 			SlSetArrayIndex(order->index);
-			SlObject(order->extra, GetOrderExtraInfoDescription());
+			SlObject(order->extra.get(), GetOrderExtraInfoDescription());
 		}
 	}
 }
@@ -223,7 +223,7 @@ void Load_ORDX()
 		Order *order = Order::GetIfValid(index);
 		assert(order != NULL);
 		order->AllocExtraInfo();
-		SlObject(order->extra, GetOrderExtraInfoDescription());
+		SlObject(order->extra.get(), GetOrderExtraInfoDescription());
 	}
 }
 

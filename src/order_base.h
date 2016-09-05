@@ -21,6 +21,7 @@
 #include "vehicle_type.h"
 #include "date_type.h"
 
+#include <memory>
 #include <vector>
 
 typedef Pool<Order, OrderID, 256, 64000> OrderPool;
@@ -29,9 +30,7 @@ extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
 
 struct OrderExtraInfo {
-	uint8 cargo_type_flags[NUM_CARGO]; ///< Load/unload types for each cargo type.
-
-	OrderExtraInfo();
+	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
 };
 
 /* If you change this, keep in mind that it is saved on 3 places:
@@ -53,7 +52,7 @@ private:
 
 	CargoID refit_cargo;  ///< Refit CargoID
 
-	OrderExtraInfo *extra;///< Extra order info
+	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
 
 	uint16 wait_time;    ///< How long in ticks to wait at the destination.
 	uint16 travel_time;  ///< How long in ticks the journey to this destination should take.
@@ -70,15 +69,17 @@ private:
 public:
 	Order *next;          ///< Pointer to next order. If NULL, end of list
 
-	Order() : refit_cargo(CT_NO_REFIT), extra(NULL), max_speed(UINT16_MAX) {}
+	Order() : refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
 	~Order();
 
 	Order(uint32 packed);
 
-	Order(const Order& other) : extra(NULL)
+	Order(const Order& other)
 	{
 		*this = other;
 	}
+
+	Order(Order&& other) = default;
 
 	inline Order& operator=(Order const& other)
 	{

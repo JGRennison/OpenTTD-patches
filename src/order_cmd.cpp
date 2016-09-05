@@ -48,7 +48,6 @@ INSTANTIATE_POOL_METHODS(OrderList)
 /** Clean everything up. */
 Order::~Order()
 {
-	DeAllocExtraInfo();
 	if (CleaningPool()) return;
 
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
@@ -297,22 +296,14 @@ void Order::AssignOrder(const Order &other)
 
 void Order::AllocExtraInfo()
 {
-	if (this->extra == NULL) {
-		this->extra = new OrderExtraInfo();
+	if (!this->extra) {
+		this->extra.reset(new OrderExtraInfo());
 	}
 }
 
 void Order::DeAllocExtraInfo()
 {
-	if (this->extra != NULL) {
-		delete this->extra;
-		this->extra = NULL;
-	}
-}
-
-OrderExtraInfo::OrderExtraInfo()
-{
-	memset(cargo_type_flags, 0, sizeof(cargo_type_flags));
+	this->extra.reset();
 }
 
 void CargoStationIDStackSet::FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first, uint hops)
