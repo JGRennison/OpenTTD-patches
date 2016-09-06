@@ -1265,7 +1265,12 @@ make_compiler_cflags() {
 			# remark #2259: non-pointer conversion from ... to ... may lose significant bits
 			flags="$flags -wd2259"
 			# Use c++0x mode so static_assert() is available
-			cxxflags="$cxxflags -std=c++0x"
+			cxxflags="$cxxflags -std=c++11"
+		fi
+
+		if [ $cc_version -lt 140 ]; then
+			log 1 "configure: error: ICC version is too old: `$1 -dumpversion`, minumum: 14.0"
+			exit 1
 		fi
 
 		if [ "$enable_lto" != "0" ]; then
@@ -1285,7 +1290,7 @@ make_compiler_cflags() {
 
 		# -W alone doesn't enable all warnings enabled by -Wall; on the other hand,
 		# -Weverything enables too many useless warnings that can't be disabled (as of 3.0)
-		flags="$flags -Wall -W"
+		flags="$flags -Wall -W -Wextra"
 
 		# warning: unused parameter '...'
 		flags="$flags -Wno-unused-parameter"
@@ -1324,6 +1329,14 @@ make_compiler_cflags() {
 		if [ "$enable_assert" -eq "0" ]; then
 			# do not warn about unused variables when building without asserts
 			flags="$flags -Wno-unused-variable"
+		fi
+
+		if [ "$cc_version" -ge "33" ]; then
+			# clang completed C++11 support in version 3.3
+			flags="$flags -std=c++11"
+		else
+			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | head -n 1`, minumum: 3.3"
+			exit 1
 		fi
 
 		# rdynamic is used to get useful stack traces from crash reports.
@@ -1385,7 +1398,7 @@ make_compiler_cflags() {
 		if [ $cc_version -ge 403 ] && [ $cc_version -lt 600 ]; then
 			# Use gnu++0x mode so static_assert() is available.
 			# Don't use c++0x, it breaks mingw (with gcc 4.4.0).
-			cxxflags="$cxxflags -std=gnu++0x"
+			cxxflags="$cxxflags -std=gnu++11"
 		fi
 
 		if [ $cc_version -eq 405 ]; then
@@ -1401,6 +1414,9 @@ make_compiler_cflags() {
 			cxxflags="$cxxflags -Wno-narrowing"
 			# Disable bogus 'attempt to free a non-heap object' warning
 			flags="$flags -Wno-free-nonheap-object"
+		else
+			log 1 "configure: error: GCC version is too old: `$1 -dumpversion`, minumum: 4.7"
+			exit 1
 		fi
 
 		if [ $cc_version -ge 600 ]; then
