@@ -1643,6 +1643,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\scope.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\screenshot.h"
 				>
 			</File>

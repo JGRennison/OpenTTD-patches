@@ -2341,18 +2341,6 @@ static void SaveSettings(const SettingDesc *sd, void *object)
 static std::vector<const SettingDesc *> _sorted_patx_settings;
 
 /**
- * Internal structure used in LoadSettingsPatx()
- * placed outside for legacy compiler compatibility
- * this makes me miss lambdas :/
- */
-struct StringSorter {
-	bool operator()(const SettingDesc *a, const SettingDesc *b)
-	{
-		return strcmp(a->patx_name, b->patx_name) < 0;
-	}
-};
-
-/**
  * Prepare a sorted list of settings to be potentially be loaded out of the PATX chunk
  * This is to enable efficient lookup of settings by name
  * This is stored in _sorted_patx_settings
@@ -2370,27 +2358,10 @@ static void MakeSettingsPatxList(const SettingDesc *sd)
 		_sorted_patx_settings.push_back(desc);
 	}
 
-	std::sort(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), StringSorter());
+	std::sort(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), [](const SettingDesc *a, const SettingDesc *b) {
+		return strcmp(a->patx_name, b->patx_name) < 0;
+	});
 }
-
-/**
- * Internal structure used in LoadSettingsPatx()
- * placed outside for legacy compiler compatibility
- * this is effectively a reference capture lambda
- */
-struct StringSearcher {
-	bool &m_exact_match;
-
-	StringSearcher(bool &exact_match)
-			: m_exact_match(exact_match) { }
-
-	bool operator()(const SettingDesc *a, const char *b)
-	{
-		int result = strcmp(a->patx_name, b);
-		if (result == 0) m_exact_match = true;
-		return result < 0;
-	}
-};
 
 /**
  * Internal structure used in LoadSettingsPatx() and LoadSettingsPlyx()
@@ -2447,9 +2418,13 @@ static void LoadSettingsPatx(const SettingDesc *sd, void *object)
 		// flags are not in use yet, reserve for future expansion
 		if (current_setting.flags != 0) SlErrorCorruptFmt("PATX chunk: unknown setting header flags: 0x%X", current_setting.flags);
 
-		// now try to find corresponding setting, this would be much easier with C++11 support...
+		// now try to find corresponding setting
 		bool exact_match = false;
-		std::vector<const SettingDesc *>::iterator iter = std::lower_bound(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), current_setting.name, StringSearcher(exact_match));
+		auto iter = std::lower_bound(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), current_setting.name, [&](const SettingDesc *a, const char *b) {
+			int result = strcmp(a->patx_name, b);
+			if (result == 0) exact_match = true;
+			return result < 0;
+		});
 
 		if (exact_match) {
 			assert(iter != _sorted_patx_settings.end());
@@ -2470,15 +2445,6 @@ static void LoadSettingsPatx(const SettingDesc *sd, void *object)
 }
 
 /**
- * Internal structure used in SaveSettingsPatx()
- * placed outside for legacy compiler compatibility
- */
-struct SettingToAdd {
-	const SettingDesc *setting;
-	uint32 setting_length;
-};
-
-/**
  * Save handler for settings which go in the PATX chunk
  * @param sd SettingDesc struct containing all information
  * @param object can be either NULL in which case we load global variables or
@@ -2488,6 +2454,10 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 {
 	SettingsExtSave current_setting;
 
+	struct SettingToAdd {
+		const SettingDesc *setting;
+		uint32 setting_length;
+	};
 	std::vector<SettingToAdd> settings_to_add;
 
 	size_t length = 8;
