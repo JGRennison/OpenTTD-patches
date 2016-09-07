@@ -30,7 +30,7 @@ STR_CARGO_PLURAL_NOTHING                                        :
 STR_CARGO_PLURAL_PASSENGERS                                     :Passagiers
 STR_CARGO_PLURAL_COAL                                           :Kolen
 STR_CARGO_PLURAL_MAIL                                           :Post
-STR_CARGO_PLURAL_OIL                                            :Olie
+STR_CARGO_PLURAL_OIL                                            :Aardolie
 STR_CARGO_PLURAL_LIVESTOCK                                      :Vee
 STR_CARGO_PLURAL_GOODS                                          :Goederen
 STR_CARGO_PLURAL_GRAIN                                          :Graan
@@ -64,7 +64,7 @@ STR_CARGO_SINGULAR_NOTHING                                      :
 STR_CARGO_SINGULAR_PASSENGER                                    :Passagier
 STR_CARGO_SINGULAR_COAL                                         :Kolen
 STR_CARGO_SINGULAR_MAIL                                         :Post
-STR_CARGO_SINGULAR_OIL                                          :Olie
+STR_CARGO_SINGULAR_OIL                                          :Aardolie
 STR_CARGO_SINGULAR_LIVESTOCK                                    :Vee
 STR_CARGO_SINGULAR_GOODS                                        :Goederen
 STR_CARGO_SINGULAR_GRAIN                                        :Graan
@@ -98,7 +98,7 @@ STR_QUANTITY_NOTHING                                            :
 STR_QUANTITY_PASSENGERS                                         :{COMMA}{NBSP}passagier{P "" s}
 STR_QUANTITY_COAL                                               :{WEIGHT_LONG} kolen
 STR_QUANTITY_MAIL                                               :{COMMA}{NBSP}zak{P "" ken} post
-STR_QUANTITY_OIL                                                :{VOLUME_LONG} olie
+STR_QUANTITY_OIL                                                :{VOLUME_LONG} Vaten Olie
 STR_QUANTITY_LIVESTOCK                                          :{COMMA}{NBSP}stuk{P "" s} vee
 STR_QUANTITY_GOODS                                              :{COMMA}{NBSP}krat{P "" ten} goederen
 STR_QUANTITY_GRAIN                                              :{WEIGHT_LONG} graan
@@ -168,7 +168,7 @@ STR_ABBREV_ALL                                                  :{TINY_FONT}ALLE
 STR_PASSENGERS                                                  :{COMMA}{NBSP}passagier{P "" s}
 STR_BAGS                                                        :{COMMA}{NBSP}zak{P "" ken}
 STR_TONS                                                        :{COMMA}{NBSP}ton
-STR_LITERS                                                      :{COMMA}{NBSP}liter
+STR_LITERS                                                      :{COMMA}{NBSP}liter{P "" s}
 STR_ITEMS                                                       :{COMMA}{NBSP}stuk{P "" s}
 STR_CRATES                                                      :{COMMA}{NBSP}krat{P "" ten}
 
@@ -2687,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terrein in bedr
 STR_ABOUT_OPENTTD                                               :{WHITE}Over OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Originele copyright {COPYRIGHT} 1995 Chris Sawyer, alle rechten voorbehouden
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versie {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 Het OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 Het OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spel Opslaan
@@ -2874,7 +2874,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Ga naar 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Vorige afbeelding
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Ga naar vorige normale afbeelding, sla alle pseudo/herkleur/lettertype afbeeldingen over en ga naar het einde bij het begin
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Voorbeeld van de huidige afbeelding. De uitlijning wordt genegeerd bij het weergeven van de afbeelding
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Afbeelding verplaatsen, dit verandert X en Y offsets
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Afbeelding verplaatsen, dit verandert X en Y offsets. Ctr+klik om de afbeelding 8 eenheden per keer te verplaatsen.
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Herstel relatief
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Herstel de huidige relative offsets
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Absoluut)
@@ -2889,7 +2889,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Waarschuwing: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fout: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatale fout: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Een fatale NewGRF-fout is ontstaan: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Een fatale NewGRF-fout is ontstaan:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} werkt niet met de TTDPatch-versie die is opgegeven door OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} is voor de {STRING} versie van TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} is ontwikkeld voor {STRING}
@@ -2907,7 +2907,7 @@ STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Bevat meerdere acties 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Voorbij het einde van pseudo-sprite gelezen (sprite {3:NUM})
 STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}De huidige basis graphics-set mist een aantal sprites..{}Werk de graphics-set bij aub
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}De momenteel gebruikte basis graphics set mist een aantal sprites. {} Werk de ingestelde basis graphics bij. {} Aangezien u een {YELLOW} ontwikkeling momentopname van OpenTTD{WHITE} speelt, heeft u ook een {YELLOW} ontwikkeling snapshot van de basis graphics set{WHITE} nodig
+STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}De momenteel gebruikte basis graphics set mist een aantal sprites.{} Werk de ingestelde basis graphics bij.{} Aangezien u een {YELLOW} ontwikkeling momentopname van OpenTTD{WHITE} speelt, heeft u ook een {YELLOW} ontwikkeling snapshot van de basis graphics set{WHITE} nodig
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Gevraagde GRF middelen niet beschikbaar (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} is uitgeschakeld door {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ongeldig/onbekend sprite lay-out-formaat (sprite {3:NUM})
@@ -3185,7 +3185,7 @@ STR_FINANCES_YEAR                                               :{WHITE}{NUM}
 STR_FINANCES_SECTION_CONSTRUCTION                               :{GOLD}Bouwkosten
 STR_FINANCES_SECTION_NEW_VEHICLES                               :{GOLD}Nieuwe voertuigen
 STR_FINANCES_SECTION_TRAIN_RUNNING_COSTS                        :{GOLD}Treinonderhoudskosten
-STR_FINANCES_SECTION_ROAD_VEHICLE_RUNNING_COSTS                 :{GOLD}Wegvoertuigbrandstofkosten
+STR_FINANCES_SECTION_ROAD_VEHICLE_RUNNING_COSTS                 :{GOLD}Wegvoertuigonderhoudskosten
 STR_FINANCES_SECTION_AIRCRAFT_RUNNING_COSTS                     :{GOLD}Vliegtuigonderhoudskosten
 STR_FINANCES_SECTION_SHIP_RUNNING_COSTS                         :{GOLD}Schiponderhoudskosten
 STR_FINANCES_SECTION_PROPERTY_MAINTENANCE                       :{GOLD}Eigendomsonderhoud
@@ -3268,7 +3268,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TRAMWAY                         :{WHITE}Tramrail
 STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT                      :{GOLD}Water tegels:
 STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}Kanalen
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}Stations:
-STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}Station tegels
+STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}Stationtegels
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}Vliegvelden
 STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL                           :{WHITE}{CURRENCY_LONG}/jr
 
@@ -3350,7 +3350,7 @@ STR_GROUP_DEFAULT_SHIPS                                         :Niet gegroepeer
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Niet gegroepeerde vliegtuigen
 
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Groepen - Klik op een groep voor een lijst van alle voertuigen in deze groep. Klik en sleep om hiërarchie te beheren
-STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klik om een groep te maken
+STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klik om een groep te creëren
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Verwijder de geselecteerde groep
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Hernoem de geselecteerde groep
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Klik om deze groep te beschermen tegen globaal automatisch vervangen
@@ -3974,7 +3974,7 @@ STR_AI_DEBUG_SELECT_AI_TOOLTIP                                  :{BLACK}Toon deb
 STR_AI_GAME_SCRIPT                                              :{BLACK}Game Script
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Controleer het Game Script log
 
-STR_ERROR_AI_NO_AI_FOUND                                        :Geen geschikte AI gevonden. {} Deze AI is een 'dummy' en voert niets uit.{}Verschillende AI's kunnen worden gedownload via het 'Online Content' systeem
+STR_ERROR_AI_NO_AI_FOUND                                        :Geen geschikte AI gevonden.{} Deze AI is een 'dummy' en voert niets uit.{}Verschillende AI's kunnen worden gedownload via het 'Online Content' systeem
 STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Eén van de actieve scripts is vastgelopen. Meld dit a.u.b. bij de auteur van dit script met een schermprint van het AI/Spel script Debugscherm
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}AI/Spel script debugvenster is alleen beschikbaar voor de server
 
@@ -4357,7 +4357,7 @@ STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}Kan dit 
 STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... het is al van jou!
 
 # Group related errors
-STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Kan groep niet maken...
+STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Kan groep niet creëren...
 STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Kan deze groep niet verwijderen...
 STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Kan deze groep niet hernoemen...
 STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Kan huidige groep niet instellen...

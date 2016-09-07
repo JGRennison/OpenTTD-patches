@@ -1207,6 +1207,7 @@ void ChangeWindowOwner(Owner old_owner, Owner new_owner)
 			case WC_BUY_COMPANY:
 			case WC_COMPANY:
 			case WC_COMPANY_INFRASTRUCTURE:
+			case WC_VEHICLE_ORDERS: // Changing owner would also require changing WindowDesc, which is not possible; however keeping the old one crashes because of missing widgets etc.. See ShowOrdersWindow().
 				continue;
 
 			default:
@@ -2824,7 +2825,6 @@ static void MouseLoop(MouseClick click, int mousewheel)
 		switch (click) {
 			case MC_DOUBLE_LEFT:
 			case MC_LEFT:
-				DEBUG(misc, 2, "Cursor: 0x%X (%d)", _cursor.sprite, _cursor.sprite);
 				if (!HandleViewportClicked(vp, x, y) &&
 						!(w->flags & WF_DISABLE_VP_SCROLL) &&
 						_settings_client.gui.left_mouse_btn_scrolling) {
@@ -3029,6 +3029,10 @@ void UpdateWindows()
 		w->ProcessScheduledInvalidations();
 		w->ProcessHighlightedInvalidations();
 	}
+
+	/* Skip the actual drawing on dedicated servers without screen.
+	 * But still empty the invalidation queues above. */
+	if (_network_dedicated) return;
 
 	static int we4_timer = 0;
 	int t = we4_timer + 1;

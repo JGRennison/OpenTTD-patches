@@ -36,6 +36,38 @@
 
 #include <time.h>
 
+#ifdef WITH_ALLEGRO
+#	include <allegro.h>
+#endif /* WITH_ALLEGRO */
+#ifdef WITH_FONTCONFIG
+#	include <fontconfig/fontconfig.h>
+#endif /* WITH_FONTCONFIG */
+#ifdef WITH_PNG
+	/* pngconf.h, included by png.h doesn't like something in the
+	 * freetype headers. As such it's not alphabetically sorted. */
+#	include <png.h>
+#endif /* WITH_PNG */
+#ifdef WITH_FREETYPE
+#	include <ft2build.h>
+#	include FT_FREETYPE_H
+#endif /* WITH_FREETYPE */
+#if defined(WITH_ICU_LAYOUT) || defined(WITH_ICU_SORT)
+#	include <unicode/uversion.h>
+#endif /* WITH_ICU_SORT || WITH_ICU_LAYOUT */
+#ifdef WITH_LZMA
+#	include <lzma.h>
+#endif
+#ifdef WITH_LZO
+#include <lzo/lzo1x.h>
+#endif
+#ifdef WITH_SDL
+#	include "sdl.h"
+#	include <SDL.h>
+#endif /* WITH_SDL */
+#ifdef WITH_ZLIB
+# include <zlib.h>
+#endif
+
 #include "safeguards.h"
 
 /* static */ const char *CrashLog::message = NULL;
@@ -180,39 +212,6 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 	return buffer;
 }
 
-/* Include these here so it's close to where it's actually used. */
-#ifdef WITH_ALLEGRO
-#	include <allegro.h>
-#endif /* WITH_ALLEGRO */
-#ifdef WITH_FONTCONFIG
-#	include <fontconfig/fontconfig.h>
-#endif /* WITH_FONTCONFIG */
-#ifdef WITH_PNG
-	/* pngconf.h, included by png.h doesn't like something in the
-	 * freetype headers. As such it's not alphabetically sorted. */
-#	include <png.h>
-#endif /* WITH_PNG */
-#ifdef WITH_FREETYPE
-#	include <ft2build.h>
-#	include FT_FREETYPE_H
-#endif /* WITH_FREETYPE */
-#ifdef WITH_ICU
-#	include <unicode/uversion.h>
-#endif /* WITH_ICU */
-#ifdef WITH_LZMA
-#	include <lzma.h>
-#endif
-#ifdef WITH_LZO
-#include <lzo/lzo1x.h>
-#endif
-#ifdef WITH_SDL
-#	include "sdl.h"
-#	include <SDL.h>
-#endif /* WITH_SDL */
-#ifdef WITH_ZLIB
-# include <zlib.h>
-#endif
-
 /**
  * Writes information (versions) of the used libraries.
  * @param buffer The begin where to write at.
@@ -241,14 +240,19 @@ char *CrashLog::LogLibraries(char *buffer, const char *last) const
 	buffer += seprintf(buffer, last, " FreeType:   %d.%d.%d\n", major, minor, patch);
 #endif /* WITH_FREETYPE */
 
-#ifdef WITH_ICU
+#if defined(WITH_ICU_LAYOUT) || defined(WITH_ICU_SORT)
 	/* 4 times 0-255, separated by dots (.) and a trailing '\0' */
 	char buf[4 * 3 + 3 + 1];
 	UVersionInfo ver;
 	u_getVersion(ver);
 	u_versionToString(ver, buf);
-	buffer += seprintf(buffer, last, " ICU:        %s\n", buf);
-#endif /* WITH_ICU */
+#ifdef WITH_ICU_SORT
+	buffer += seprintf(buffer, last, " ICU i18n:   %s\n", buf);
+#endif
+#ifdef WITH_ICU_LAYOUT
+	buffer += seprintf(buffer, last, " ICU lx:     %s\n", buf);
+#endif
+#endif /* WITH_ICU_SORT || WITH_ICU_LAYOUT */
 
 #ifdef WITH_LZMA
 	buffer += seprintf(buffer, last, " LZMA:       %s\n", lzma_version_string());
@@ -384,7 +388,7 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last) const
 		seprintf(filename, filename_last, "%scrash.sav", _personal_dir);
 
 		/* Don't do a threaded saveload. */
-		return SaveOrLoad(filename, SL_SAVE, NO_DIRECTORY, false) == SL_OK;
+		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, false) == SL_OK;
 	} catch (...) {
 		return false;
 	}

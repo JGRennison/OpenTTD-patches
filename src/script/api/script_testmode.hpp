@@ -48,6 +48,11 @@ public:
 	 *   in when the instance was created.
 	 */
 	~ScriptTestMode();
+
+	/**
+	 * @api -all
+	 */
+	virtual void FinalRelease();
 };
 
 #endif /* SCRIPT_TESTMODE_HPP */

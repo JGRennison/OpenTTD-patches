@@ -413,26 +413,10 @@ static const byte _tiletype_importance[] = {
 };
 
 
-static inline TileType GetEffectiveTileType(TileIndex tile)
-{
-	TileType t = GetTileType(tile);
-
-	if (t == MP_TUNNELBRIDGE) {
-		TransportType tt = GetTunnelBridgeTransportType(tile);
-
-		switch (tt) {
-			case TRANSPORT_RAIL: t = MP_RAILWAY; break;
-			case TRANSPORT_ROAD: t = MP_ROAD;    break;
-			default:             t = MP_WATER;   break;
-		}
-	}
-	return t;
-}
-
 /**
  * Return the colour a tile would be displayed with in the small map in mode "Contour".
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetEffectiveTileType).
+ * @param t    Effective tile type of the tile (see #GetTileColours).
  * @return The colour of tile in the small map in mode "Contour"
  */
 static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
@@ -445,7 +429,7 @@ static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "Vehicles".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetEffectiveTileType).
+ * @param t    Effective tile type of the tile (see #GetTileColours).
  * @return The colour of tile in the small map in mode "Vehicles"
  */
 static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
@@ -458,23 +442,11 @@ static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "Industries".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetEffectiveTileType).
+ * @param t    Effective tile type of the tile (see #GetTileColours).
  * @return The colour of tile in the small map in mode "Industries"
  */
 static inline uint32 GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
 {
-	if (t == MP_INDUSTRY) {
-		/* If industry is allowed to be seen, use its colour on the map */
-		IndustryType type = Industry::GetByTile(tile)->type;
-		if (_legend_from_industries[_industry_to_list_pos[type]].show_on_map &&
-				(_smallmap_industry_highlight_state || type != _smallmap_industry_highlight)) {
-			return (type == _smallmap_industry_highlight ? PC_WHITE : GetIndustrySpec(Industry::GetByTile(tile)->type)->map_colour) * 0x01010101;
-		} else {
-			/* Otherwise, return the colour which will make it disappear */
-			t = (IsTileOnWater(tile) ? MP_WATER : MP_CLEAR);
-		}
-	}
-
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
 	return ApplyMask(_smallmap_show_heightmap ? cs->height_colours[TileHeight(tile)] : cs->default_colour, &_smallmap_vehicles_andor[t]);
 }
@@ -483,7 +455,7 @@ static inline uint32 GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "Routes".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetEffectiveTileType).
+ * @param t    Effective tile type of the tile (see #GetTileColours).
  * @return The colour of tile  in the small map in mode "Routes"
  */
 static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
@@ -516,7 +488,7 @@ static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "link stats".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetEffectiveTileType).
+ * @param t    Effective tile type of the tile (see #GetTileColours).
  * @return The colour of tile in the small map in mode "link stats"
  */
 static inline uint32 GetSmallMapLinkStatsPixels(TileIndex tile, TileType t)
@@ -539,7 +511,7 @@ static const uint32 _vegetation_clear_bits[] = {
  * Return the colour a tile would be displayed with in the smallmap in mode "Vegetation".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetEffectiveTileType).
+ * @param t    Effective tile type of the tile (see #GetTileColours).
  * @return The colour of tile  in the smallmap in mode "Vegetation"
  */
 static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
@@ -566,7 +538,7 @@ static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "Owner".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetEffectiveTileType).
+ * @param t    Effective tile type of the tile (see #GetTileColours).
  * @return The colour of tile in the small map in mode "Owner"
  */
 static inline uint32 GetSmallMapOwnerPixels(TileIndex tile, TileType t)
@@ -754,7 +726,42 @@ inline uint32 SmallMapWindow::GetTileColours(const TileArea &ta) const
 	TileType et = MP_VOID;         // Effective tile type at that position.
 
 	TILE_AREA_LOOP(ti, ta) {
-		TileType ttype = GetEffectiveTileType(ti);
+		TileType ttype = GetTileType(ti);
+
+		switch (ttype) {
+			case MP_TUNNELBRIDGE: {
+				TransportType tt = GetTunnelBridgeTransportType(ti);
+
+				switch (tt) {
+					case TRANSPORT_RAIL: ttype = MP_RAILWAY; break;
+					case TRANSPORT_ROAD: ttype = MP_ROAD;    break;
+					default:             ttype = MP_WATER;   break;
+				}
+				break;
+			}
+
+			case MP_INDUSTRY:
+				/* Special handling of industries while in "Industries" smallmap view. */
+				if (this->map_type == SMT_INDUSTRY) {
+					/* If industry is allowed to be seen, use its colour on the map.
+					 * This has the highest priority above any value in _tiletype_importance. */
+					IndustryType type = Industry::GetByTile(ti)->type;
+					if (_legend_from_industries[_industry_to_list_pos[type]].show_on_map) {
+						if (type == _smallmap_industry_highlight) {
+							if (_smallmap_industry_highlight_state) return MKCOLOUR_XXXX(PC_WHITE);
+						} else {
+							return GetIndustrySpec(type)->map_colour * 0x01010101;
+						}
+					}
+					/* Otherwise make it disappear */
+					ttype = IsTileOnWater(ti) ? MP_WATER : MP_CLEAR;
+				}
+				break;
+
+			default:
+				break;
+		}
+
 		if (_tiletype_importance[ttype] > importance) {
 			importance = _tiletype_importance[ttype];
 			tile = ti;
@@ -1076,7 +1083,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 		_heightmap_schemes[n].height_colours = ReallocT<uint32>(_heightmap_schemes[n].height_colours, heights);
 
 		for (int z = 0; z < heights; z++) {
-			uint access_index = (_heightmap_schemes[n].colour_count * z) / heights;
+			size_t access_index = (_heightmap_schemes[n].colour_count * z) / heights;
 
 			/* Choose colour by mapping the range (0..max heightlevel) on the complete colour table. */
 			_heightmap_schemes[n].height_colours[z] = _heightmap_schemes[n].height_colours_base[access_index];
@@ -1401,7 +1408,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 		case WID_SM_ZOOM_IN:
 		case WID_SM_ZOOM_OUT: {
 			const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
-			Point pt = {wid->current_x / 2, wid->current_y / 2};
+			Point pt = { (int)wid->current_x / 2, (int)wid->current_y / 2};
 			this->SetZoomLevel((widget == WID_SM_ZOOM_IN) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &pt);
 			if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 			break;

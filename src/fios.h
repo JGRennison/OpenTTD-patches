@@ -97,38 +97,6 @@ enum FileSlots {
 	MAX_FILE_SLOTS = 64
 };
 
-/** Mode of the file dialogue window. */
-enum SaveLoadDialogMode {
-	SLD_LOAD_GAME,      ///< Load a game.
-	SLD_LOAD_SCENARIO,  ///< Load a scenario.
-	SLD_SAVE_GAME,      ///< Save a game.
-	SLD_SAVE_SCENARIO,  ///< Save a scenario.
-	SLD_LOAD_HEIGHTMAP, ///< Load a heightmap.
-	SLD_SAVE_HEIGHTMAP, ///< Save a heightmap.
-};
-
-/** The different types of files that the system knows about. */
-enum FileType {
-	FT_NONE,      ///< nothing to do
-	FT_SAVEGAME,  ///< old or new savegame
-	FT_SCENARIO,  ///< old or new scenario
-	FT_HEIGHTMAP, ///< heightmap file
-};
-
-enum FiosType {
-	FIOS_TYPE_DRIVE,
-	FIOS_TYPE_PARENT,
-	FIOS_TYPE_DIR,
-	FIOS_TYPE_FILE,
-	FIOS_TYPE_OLDFILE,
-	FIOS_TYPE_SCENARIO,
-	FIOS_TYPE_OLD_SCENARIO,
-	FIOS_TYPE_DIRECT,
-	FIOS_TYPE_PNG,
-	FIOS_TYPE_BMP,
-	FIOS_TYPE_INVALID = 255,
-};
-
 /** Deals with finding savegames */
 struct FiosItem {
 	FiosType type;
@@ -137,12 +105,95 @@ struct FiosItem {
 	char name[MAX_PATH];
 };
 
-/** Deals with the type of the savegame, independent of extension */
-struct SmallFiosItem {
-	int mode;             ///< savegame/scenario type (old, new)
-	FileType filetype;    ///< what type of file are we dealing with
-	char name[MAX_PATH];  ///< name
-	char title[255];      ///< internal name of the game
+/** List of file information. */
+class FileList {
+public:
+	~FileList();
+
+	/**
+	 * Construct a new entry in the file list.
+	 * @return Pointer to the new items to be initialized.
+	 */
+	inline FiosItem *Append()
+	{
+		return this->files.Append();
+	}
+
+	/**
+	 * Get the number of files in the list.
+	 * @return The number of files stored in the list.
+	 */
+	inline uint Length() const
+	{
+		return this->files.Length();
+	}
+
+	/**
+	 * Get a pointer to the first file information.
+	 * @return Address of the first file information.
+	 */
+	inline const FiosItem *Begin() const
+	{
+		return this->files.Begin();
+	}
+
+	/**
+	 * Get a pointer behind the last file information.
+	 * @return Address behind the last file information.
+	 */
+	inline const FiosItem *End() const
+	{
+		return this->files.End();
+	}
+
+	/**
+	 * Get a pointer to the indicated file information. File information must exist.
+	 * @return Address of the indicated existing file information.
+	 */
+	inline const FiosItem *Get(uint index) const
+	{
+		return this->files.Get(index);
+	}
+
+	/**
+	 * Get a pointer to the indicated file information. File information must exist.
+	 * @return Address of the indicated existing file information.
+	 */
+	inline FiosItem *Get(uint index)
+	{
+		return this->files.Get(index);
+	}
+
+	inline const FiosItem &operator[](uint index) const
+	{
+		return this->files[index];
+	}
+
+	/**
+	 * Get a reference to the indicated file information. File information must exist.
+	 * @return The requested file information.
+	 */
+	inline FiosItem &operator[](uint index)
+	{
+		return this->files[index];
+	}
+
+	/** Remove all items from the list. */
+	inline void Clear()
+	{
+		this->files.Clear();
+	}
+
+	/** Compact the list down to the smallest block size boundary. */
+	inline void Compact()
+	{
+		this->files.Compact();
+	}
+
+	void BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop);
+	const FiosItem *FindItem(const char *file);
+
+	SmallVector<FiosItem, 32> files; ///< The list of files.
 };
 
 enum SortingBits {
@@ -154,18 +205,14 @@ enum SortingBits {
 DECLARE_ENUM_AS_BIT_SET(SortingBits)
 
 /* Variables to display file lists */
-extern SmallVector<FiosItem, 32> _fios_items;
-extern SmallFiosItem _file_to_saveload;
-extern SaveLoadDialogMode _saveload_mode;
 extern SortingBits _savegame_sort_order;
 
-void ShowSaveLoadDialog(SaveLoadDialogMode mode);
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop);
 
-void FiosGetSavegameList(SaveLoadDialogMode mode);
-void FiosGetScenarioList(SaveLoadDialogMode mode);
-void FiosGetHeightmapList(SaveLoadDialogMode mode);
+void FiosGetSavegameList(SaveLoadOperation fop, FileList &file_list);
+void FiosGetScenarioList(SaveLoadOperation fop, FileList &file_list);
+void FiosGetHeightmapList(SaveLoadOperation fop, FileList &file_list);
 
-void FiosFreeSavegameList();
 const char *FiosBrowseTo(const FiosItem *item);
 
 StringID FiosGetDescText(const char **path, uint64 *total_free);
@@ -173,13 +220,8 @@ bool FiosDelete(const char *name);
 void FiosMakeHeightmapName(char *buf, const char *name, const char *last);
 void FiosMakeSavegameName(char *buf, const char *name, const char *last);
 
-FiosType FiosGetSavegameListCallback(SaveLoadDialogMode mode, const char *file, const char *ext, char *title, const char *last);
+FiosType FiosGetSavegameListCallback(SaveLoadOperation fop, const char *file, const char *ext, char *title, const char *last);
 
 int CDECL CompareFiosItems(const FiosItem *a, const FiosItem *b);
-
-extern const TextColour _fios_colours[];
-
-void BuildFileList();
-void SetFiosType(const byte fiostype);
 
 #endif /* FIOS_H */

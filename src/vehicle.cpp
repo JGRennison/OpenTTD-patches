@@ -216,7 +216,7 @@ uint Vehicle::Crash(bool flooded)
 	SetWindowDirty(WC_VEHICLE_DEPOT, this->tile);
 
 	delete this->cargo_payment;
-	this->cargo_payment = NULL;
+	assert(this->cargo_payment == NULL); // cleared by ~CargoPayment
 
 	return RandomRange(pass + 1); // Randomise deceased passengers.
 }
@@ -746,6 +746,7 @@ void Vehicle::PreDestructor()
 		HideFillingPercent(&this->fill_percent_te_id);
 		this->CancelReservation(INVALID_STATION, st);
 		delete this->cargo_payment;
+		assert(this->cargo_payment == NULL); // cleared by ~CargoPayment
 	}
 
 	if (this->IsEngineCountable()) {
@@ -1290,6 +1291,9 @@ void AgeVehicle(Vehicle *v)
  * @param front The front vehicle of the consist to check.
  * @param colour The string to show depending on if we are unloading or loading
  * @return A percentage of how full the Vehicle is.
+ *         Percentages are rounded towards 50%, so that 0% and 100% are only returned
+ *         if the vehicle is completely empty or full.
+ *         This is useful for both display and conditional orders.
  */
 uint8 CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 {
@@ -1337,7 +1341,13 @@ uint8 CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 	if (max == 0) return 100;
 
 	/* Return the percentage */
-	return (count * 100) / max;
+	if (count * 2 < max) {
+		/* Less than 50%; round up, so that 0% means really empty. */
+		return CeilDiv(count * 100, max);
+	} else {
+		/* More than 50%; round down, so that 100% means really full. */
+		return (count * 100) / max;
+	}
 }
 
 /**
@@ -2076,6 +2086,7 @@ void Vehicle::LeaveStation()
 	assert(this->current_order.IsType(OT_LOADING));
 
 	delete this->cargo_payment;
+	assert(this->cargo_payment == NULL); // cleared by ~CargoPayment
 
 	/* Only update the timetable if the vehicle was supposed to stop here. */
 	if (this->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) UpdateVehicleTimetable(this, false);

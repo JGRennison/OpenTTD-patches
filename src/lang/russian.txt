@@ -2064,7 +2064,7 @@ STR_NETWORK_SERVER_LIST_GAME_NAME                               :{BLACK}Назв
 STR_NETWORK_SERVER_LIST_GAME_NAME_TOOLTIP                       :{BLACK}Название игры
 STR_NETWORK_SERVER_LIST_GENERAL_ONLINE                          :{BLACK}{COMMA}/{COMMA} - {COMMA}/{COMMA}
 STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION                         :{BLACK}Клиенты
-STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION_TOOLTIP                 :{BLACK}Клиентов сейчас/макс. {}Компаний сейчас/макс.
+STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION_TOOLTIP                 :{BLACK}Клиентов сейчас/макс.{}Компаний сейчас/макс.
 STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x{COMMA}
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION                        :{BLACK}Размер карты
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP                :{BLACK}Размер карты игры{}Нажмите для сортировки по площади
@@ -2387,29 +2387,29 @@ STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... за
 
 # Order of these is important!
 STR_CONTENT_TYPE_BASE_GRAPHICS                                  :{G=m}Базовая графика
-STR_CONTENT_TYPE_BASE_GRAPHICS.gen                              :{G=m}набора базовой графики
-STR_CONTENT_TYPE_BASE_GRAPHICS.acc                              :{G=m}набор базовой графики
+STR_CONTENT_TYPE_BASE_GRAPHICS.gen                              :набора базовой графики
+STR_CONTENT_TYPE_BASE_GRAPHICS.acc                              :набор базовой графики
 STR_CONTENT_TYPE_NEWGRF                                         :{G=m}NewGRF
-STR_CONTENT_TYPE_NEWGRF.gen                                     :{G=m}NewGRF
-STR_CONTENT_TYPE_NEWGRF.acc                                     :{G=m}NewGRF
+STR_CONTENT_TYPE_NEWGRF.gen                                     :NewGRF
+STR_CONTENT_TYPE_NEWGRF.acc                                     :NewGRF
 STR_CONTENT_TYPE_AI                                             :{G=m}ИИ
-STR_CONTENT_TYPE_AI.gen                                         :{G=m}ИИ
-STR_CONTENT_TYPE_AI.acc                                         :{G=m}ИИ
+STR_CONTENT_TYPE_AI.gen                                         :ИИ
+STR_CONTENT_TYPE_AI.acc                                         :ИИ
 STR_CONTENT_TYPE_AI_LIBRARY                                     :{G=f}Библиотека ИИ
-STR_CONTENT_TYPE_AI_LIBRARY.gen                                 :{G=f}библиотеки ИИ
-STR_CONTENT_TYPE_AI_LIBRARY.acc                                 :{G=f}библиотеку ИИ
+STR_CONTENT_TYPE_AI_LIBRARY.gen                                 :библиотеки ИИ
+STR_CONTENT_TYPE_AI_LIBRARY.acc                                 :библиотеку ИИ
 STR_CONTENT_TYPE_SCENARIO                                       :{G=m}Сценарий
-STR_CONTENT_TYPE_SCENARIO.gen                                   :{G=m}сценария
-STR_CONTENT_TYPE_SCENARIO.acc                                   :{G=m}сценарий
+STR_CONTENT_TYPE_SCENARIO.gen                                   :сценария
+STR_CONTENT_TYPE_SCENARIO.acc                                   :сценарий
 STR_CONTENT_TYPE_HEIGHTMAP                                      :{G=f}Карта высот
-STR_CONTENT_TYPE_HEIGHTMAP.gen                                  :{G=f}карты высот
-STR_CONTENT_TYPE_HEIGHTMAP.acc                                  :{G=f}карту высот
+STR_CONTENT_TYPE_HEIGHTMAP.gen                                  :карты высот
+STR_CONTENT_TYPE_HEIGHTMAP.acc                                  :карту высот
 STR_CONTENT_TYPE_BASE_SOUNDS                                    :Основные звуки
-STR_CONTENT_TYPE_BASE_SOUNDS.gen                                :{G=m}набора базовых звуков
-STR_CONTENT_TYPE_BASE_SOUNDS.acc                                :{G=m}набор базовых звуков
+STR_CONTENT_TYPE_BASE_SOUNDS.gen                                :набора базовых звуков
+STR_CONTENT_TYPE_BASE_SOUNDS.acc                                :набор базовых звуков
 STR_CONTENT_TYPE_BASE_MUSIC                                     :{G=f}Музыка
-STR_CONTENT_TYPE_BASE_MUSIC.gen                                 :{G=f}музыки
-STR_CONTENT_TYPE_BASE_MUSIC.acc                                 :{G=f}музыку
+STR_CONTENT_TYPE_BASE_MUSIC.gen                                 :музыки
+STR_CONTENT_TYPE_BASE_MUSIC.acc                                 :музыку
 STR_CONTENT_TYPE_GAME_SCRIPT                                    :Игровой скрипт
 STR_CONTENT_TYPE_GS_LIBRARY                                     :Библиотека ИС
 
@@ -2867,7 +2867,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Земля в �
 STR_ABOUT_OPENTTD                                               :{WHITE}Об OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Оригинальные авторские права {COPYRIGHT} 1995 Chris Sawyer. Все права защищены.
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD версия {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 Команда разработчиков OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 Команда разработчиков OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Сохранить игру
@@ -3054,7 +3054,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Пере
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Предыдущий спрайт
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Перейти к предыдущему нормальному спрайту, пропуская изменяющие цвет, шрифтовые, псевдоспрайты. Переход из начала списка к последнему спрайту.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Представление выбранного спрайта. Выравнивание не учитывается при прорисовке этого спрайта.
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Двигайте спрайт, изменяя смещение по X и по Y
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Двигайте спрайт, изменяя смещение по осям X и Y. С помощью Ctrl+щелчка можно сдвигать спрайты на 8 единиц.
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Сброс смещения
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Сбросить значения относительного смещения
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Смещение X: {NUM}; смещение Y: {NUM} (абсолютное)
@@ -3094,7 +3094,7 @@ STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Недопус�
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Осторожно!
-STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Вы модифицируете запущенную игру - это может закрыть OpenTTD или привести к нестабильной работе. Не присылайте отчёты с ошибками в этом случае.{}Вы действительно хотите это сделать?
+STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Вы собираетесь внести изменения в запущенную игру; это может привести к нестабильной работе или к аварийному завершению OpenTTD. В этом случае не надо присылать отчёты с ошибками.{}Вы действительно хотите это сделать?
 
 STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Невозможно добавить файл: дублируются GRF ID
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Соответствующий файл не найден (загружен совместимый GRF)

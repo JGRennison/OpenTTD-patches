@@ -1247,8 +1247,8 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 					/* FALL THROUGH */
 
 				case TL_2X2_GRID:
-					rcmd = GetTownRoadGridElement(t1, house_tile, target_dir);
-					allow_house = (rcmd == ROAD_NONE);
+					rcmd = GetTownRoadGridElement(t1, tile, target_dir);
+					allow_house = (rcmd & DiagDirToRoadBits(target_dir)) == ROAD_NONE;
 					break;
 
 				case TL_BETTER_ROADS: // Use original afterwards!
@@ -1378,13 +1378,12 @@ static bool GrowTownAtRoad(Town *t, TileIndex tile)
 
 		/* Try to grow the town from this point */
 		GrowTownInTile(&tile, cur_rb, target_dir, t);
+		if (_grow_town_result == GROWTH_SUCCEED) return true;
 
 		/* Exclude the source position from the bitmask
 		 * and return if no more road blocks available */
 		if (IsValidDiagDirection(target_dir)) cur_rb &= ~DiagDirToRoadBits(ReverseDiagDir(target_dir));
-		if (cur_rb == ROAD_NONE) {
-			return _grow_town_result == GROWTH_SUCCEED;
-		}
+		if (cur_rb == ROAD_NONE) return false;
 
 		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
 			/* Only build in the direction away from the tunnel or bridge. */
@@ -1419,7 +1418,7 @@ static bool GrowTownAtRoad(Town *t, TileIndex tile)
 		/* Max number of times is checked. */
 	} while (--_grow_town_result >= 0);
 
-	return _grow_town_result == GROWTH_SUCCEED - 1;
+	return false;
 }
 
 /**

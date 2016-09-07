@@ -36,7 +36,6 @@
 
 #include "safeguards.h"
 
-SaveLoadDialogMode _saveload_mode;
 LoadCheckData _load_check_data;    ///< Data loaded from save during SL_LOAD_CHECK.
 
 static bool _fios_path_changed;
@@ -187,33 +186,24 @@ static const NWidgetPart _nested_save_dialog_widgets[] = {
 	EndContainer(),
 };
 
-/** Colours for fios types, indexed by #FiosType. */
-const TextColour _fios_colours[] = {
-	TC_LIGHT_BLUE, TC_DARK_GREEN,  TC_DARK_GREEN, TC_ORANGE, TC_LIGHT_BROWN,
-	TC_ORANGE,     TC_LIGHT_BROWN, TC_ORANGE,     TC_ORANGE, TC_YELLOW
+/** Text colours of #DetailedFileType fios entries in the window. */
+static const TextColour _fios_colours[] = {
+	TC_LIGHT_BROWN,  // DFT_OLD_GAME_FILE
+	TC_ORANGE,       // DFT_GAME_FILE
+	TC_YELLOW,       // DFT_HEIGHTMAP_BMP
+	TC_ORANGE,       // DFT_HEIGHTMAP_PNG
+	TC_LIGHT_BLUE,   // DFT_FIOS_DRIVE
+	TC_DARK_GREEN,   // DFT_FIOS_PARENT
+	TC_DARK_GREEN,   // DFT_FIOS_DIR
+	TC_ORANGE,       // DFT_FIOS_DIRECT
 };
 
-void BuildFileList()
-{
-	_fios_path_changed = true;
-	FiosFreeSavegameList();
 
-	switch (_saveload_mode) {
-		case SLD_LOAD_SCENARIO:
-		case SLD_SAVE_SCENARIO:
-			FiosGetScenarioList(_saveload_mode); break;
-		case SLD_SAVE_HEIGHTMAP:
-		case SLD_LOAD_HEIGHTMAP:
-			FiosGetHeightmapList(_saveload_mode); break;
-
-		default: FiosGetSavegameList(_saveload_mode); break;
-	}
-
-	/* Invalidate saveload window */
-	InvalidateWindowData(WC_SAVELOAD, 0, 2, true);
-}
-
-static void MakeSortedSaveGameList()
+/**
+ * Sort the collected list save games prior to displaying it in the save/load gui.
+ * @param [inout] file_list List of save game files found in the directory.
+ */
+static void SortSaveGameList(FileList &file_list)
 {
 	uint sort_start = 0;
 	uint sort_end = 0;
@@ -222,7 +212,7 @@ static void MakeSortedSaveGameList()
 	 * Drives (A:\ (windows only) are always under the files (FIOS_TYPE_DRIVE)
 	 * Only sort savegames/scenarios, not directories
 	 */
-	for (const FiosItem *item = _fios_items.Begin(); item != _fios_items.End(); item++) {
+	for (const FiosItem *item = file_list.Begin(); item != file_list.End(); item++) {
 		switch (item->type) {
 			case FIOS_TYPE_DIR:    sort_start++; break;
 			case FIOS_TYPE_PARENT: sort_start++; break;
@@ -231,15 +221,18 @@ static void MakeSortedSaveGameList()
 		}
 	}
 
-	uint s_amount = _fios_items.Length() - sort_start - sort_end;
-	QSortT(_fios_items.Get(sort_start), s_amount, CompareFiosItems);
+	uint s_amount = file_list.Length() - sort_start - sort_end;
+	QSortT(file_list.Get(sort_start), s_amount, CompareFiosItems);
 }
 
 struct SaveLoadWindow : public Window {
 private:
 	QueryString filename_editbox; ///< Filename editbox.
+	AbstractFileType abstract_filetype; /// Type of file to select.
+	SaveLoadOperation fop;        ///< File operation to perform.
+	FileList fios_items;          ///< Save game list.
 	FiosItem o_dir;
-	const FiosItem *selected;
+	const FiosItem *selected;     ///< Selected game in #fios_items, or \c NULL.
 	Scrollbar *vscroll;
 public:
 
@@ -250,35 +243,56 @@ public:
 		this->filename_editbox.text.UpdateSize();
 	}
 
-	SaveLoadWindow(WindowDesc *desc, SaveLoadDialogMode mode) : Window(desc), filename_editbox(64)
+	SaveLoadWindow(WindowDesc *desc, AbstractFileType abstract_filetype, SaveLoadOperation fop)
+			: Window(desc), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop)
 	{
-		static const StringID saveload_captions[] = {
-			STR_SAVELOAD_LOAD_CAPTION,
-			STR_SAVELOAD_LOAD_SCENARIO,
-			STR_SAVELOAD_SAVE_CAPTION,
-			STR_SAVELOAD_SAVE_SCENARIO,
-			STR_SAVELOAD_LOAD_HEIGHTMAP,
-			STR_SAVELOAD_SAVE_HEIGHTMAP,
-		};
-		assert((uint)mode < lengthof(saveload_captions));
+		assert(this->fop == SLO_SAVE || this->fop == SLO_LOAD);
 
-		/* Use an array to define what will be the current file type being handled
-		 * by current file mode */
-		switch (mode) {
-			case SLD_SAVE_GAME:     this->GenerateFileName(); break;
-			case SLD_SAVE_HEIGHTMAP:
-			case SLD_SAVE_SCENARIO: this->filename_editbox.text.Assign("UNNAMED"); break;
-			default:                break;
+		/* For saving, construct an initial file name. */
+		if (this->fop == SLO_SAVE) {
+			switch (this->abstract_filetype) {
+				case FT_SAVEGAME:
+					this->GenerateFileName();
+					break;
+
+				case FT_SCENARIO:
+				case FT_HEIGHTMAP:
+					this->filename_editbox.text.Assign("UNNAMED");
+					break;
+
+				default:
+					NOT_REACHED();
+			}
 		}
-
 		this->querystrings[WID_SL_SAVE_OSK_TITLE] = &this->filename_editbox;
 		this->filename_editbox.ok_button = WID_SL_SAVE_GAME;
 
 		this->CreateNestedTree(true);
-		if (mode == SLD_LOAD_GAME) this->GetWidget<NWidgetStacked>(WID_SL_CONTENT_DOWNLOAD_SEL)->SetDisplayedPlane(SZSP_HORIZONTAL);
-		this->GetWidget<NWidgetCore>(WID_SL_CAPTION)->widget_data = saveload_captions[mode];
-		this->vscroll = this->GetScrollbar(WID_SL_SCROLLBAR);
+		if (this->fop == SLO_LOAD && this->abstract_filetype == FT_SAVEGAME) {
+			this->GetWidget<NWidgetStacked>(WID_SL_CONTENT_DOWNLOAD_SEL)->SetDisplayedPlane(SZSP_HORIZONTAL);
+		}
 
+		/* Select caption string of the window. */
+		StringID caption_string;
+		switch (this->abstract_filetype) {
+			case FT_SAVEGAME:
+				caption_string = (this->fop == SLO_SAVE) ? STR_SAVELOAD_SAVE_CAPTION : STR_SAVELOAD_LOAD_CAPTION;
+				break;
+
+			case FT_SCENARIO:
+				caption_string = (this->fop == SLO_SAVE) ? STR_SAVELOAD_SAVE_SCENARIO : STR_SAVELOAD_LOAD_SCENARIO;
+				break;
+
+			case FT_HEIGHTMAP:
+				caption_string = (this->fop == SLO_SAVE) ? STR_SAVELOAD_SAVE_HEIGHTMAP : STR_SAVELOAD_LOAD_HEIGHTMAP;
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+		this->GetWidget<NWidgetCore>(WID_SL_CAPTION)->widget_data = caption_string;
+
+		this->vscroll = this->GetScrollbar(WID_SL_SCROLLBAR);
 		this->FinishInitNested(0);
 
 		this->LowerWidget(WID_SL_DRIVES_DIRECTORIES_LIST);
@@ -294,20 +308,18 @@ public:
 
 		ResetObjectToPlace();
 
+		/* Select the initial directory. */
 		o_dir.type = FIOS_TYPE_DIRECT;
-		switch (_saveload_mode) {
-			case SLD_SAVE_GAME:
-			case SLD_LOAD_GAME:
+		switch (this->abstract_filetype) {
+			case FT_SAVEGAME:
 				FioGetDirectory(o_dir.name, lastof(o_dir.name), SAVE_DIR);
 				break;
 
-			case SLD_SAVE_SCENARIO:
-			case SLD_LOAD_SCENARIO:
+			case FT_SCENARIO:
 				FioGetDirectory(o_dir.name, lastof(o_dir.name), SCENARIO_DIR);
 				break;
 
-			case SLD_SAVE_HEIGHTMAP:
-			case SLD_LOAD_HEIGHTMAP:
+			case FT_HEIGHTMAP:
 				FioGetDirectory(o_dir.name, lastof(o_dir.name), HEIGHTMAP_DIR);
 				break;
 
@@ -316,9 +328,7 @@ public:
 		}
 
 		/* Focus the edit box by default in the save windows */
-		if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO || _saveload_mode == SLD_SAVE_HEIGHTMAP) {
-			this->SetFocusedWidget(WID_SL_SAVE_OSK_TITLE);
-		}
+		if (this->fop == SLO_SAVE) this->SetFocusedWidget(WID_SL_SAVE_OSK_TITLE);
 	}
 
 	virtual ~SaveLoadWindow()
@@ -327,7 +337,6 @@ public:
 		if (!_networking && _game_mode != GM_EDITOR && _game_mode != GM_MENU) {
 			DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
 		}
-		FiosFreeSavegameList();
 	}
 
 	virtual void DrawWidget(const Rect &r, int widget) const
@@ -360,13 +369,13 @@ public:
 				GfxFillRect(r.left + 1, r.top + 1, r.right, r.bottom, PC_BLACK);
 
 				uint y = r.top + WD_FRAMERECT_TOP;
-				for (uint pos = this->vscroll->GetPosition(); pos < _fios_items.Length(); pos++) {
-					const FiosItem *item = _fios_items.Get(pos);
+				for (uint pos = this->vscroll->GetPosition(); pos < this->fios_items.Length(); pos++) {
+					const FiosItem *item = this->fios_items.Get(pos);
 
 					if (item == this->selected) {
 						GfxFillRect(r.left + 1, y, r.right, y + this->resize.step_height, PC_DARK_BLUE);
 					}
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, item->title, _fios_colours[item->type]);
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, item->title, _fios_colours[GetDetailedFileType(item->type)]);
 					y += this->resize.step_height;
 					if (y >= this->vscroll->GetCapacity() * this->resize.step_height + r.top + WD_FRAMERECT_TOP) break;
 				}
@@ -421,7 +430,7 @@ public:
 					if (y > y_max) break;
 
 					/* Hide current date for scenarios */
-					if (_saveload_mode != SLD_LOAD_SCENARIO && _saveload_mode != SLD_SAVE_SCENARIO) {
+					if (this->abstract_filetype != FT_SCENARIO) {
 						/* Current date */
 						SetDParam(0, _load_check_data.current_date);
 						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_NETWORK_SERVER_LIST_CURRENT_DATE);
@@ -429,7 +438,7 @@ public:
 					}
 
 					/* Hide the NewGRF stuff when saving. We also hide the button. */
-					if (_saveload_mode == SLD_LOAD_GAME || _saveload_mode == SLD_LOAD_SCENARIO) {
+					if (this->fop == SLO_LOAD && (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO)) {
 						y += WD_PAR_VSEP_NORMAL;
 						if (y > y_max) break;
 
@@ -442,7 +451,7 @@ public:
 					if (y > y_max) break;
 
 					/* Hide the company stuff for scenarios */
-					if (_saveload_mode != SLD_LOAD_SCENARIO && _saveload_mode != SLD_SAVE_SCENARIO) {
+					if (this->abstract_filetype != FT_SCENARIO) {
 						y += FONT_HEIGHT_NORMAL;
 						if (y > y_max) break;
 
@@ -495,10 +504,10 @@ public:
 	{
 		if (_savegame_sort_dirty) {
 			_savegame_sort_dirty = false;
-			MakeSortedSaveGameList();
+			SortSaveGameList(this->fios_items);
 		}
 
-		this->vscroll->SetCount(_fios_items.Length());
+		this->vscroll->SetCount(this->fios_items.Length());
 		this->DrawWidgets();
 	}
 
@@ -527,14 +536,14 @@ public:
 			case WID_SL_LOAD_BUTTON:
 				if (this->selected != NULL && !_load_check_data.HasErrors()) {
 					const char *name = FiosBrowseTo(this->selected);
-					SetFiosType(this->selected->type);
+					_file_to_saveload.SetMode(this->selected->type);
+					_file_to_saveload.SetName(name);
+					_file_to_saveload.SetTitle(this->selected->title);
 
-					strecpy(_file_to_saveload.name, name, lastof(_file_to_saveload.name));
-					strecpy(_file_to_saveload.title, this->selected->title, lastof(_file_to_saveload.title));
-
-					if (_saveload_mode == SLD_LOAD_HEIGHTMAP) {
+					if (this->abstract_filetype == FT_HEIGHTMAP) {
 						delete this;
 						ShowHeightmapLoad();
+
 					} else if (!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
 						_switch_mode = (_game_mode == GM_EDITOR) ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 						ClearErrorMessages();
@@ -563,7 +572,7 @@ public:
 				int y = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SL_DRIVES_DIRECTORIES_LIST, WD_FRAMERECT_TOP);
 				if (y == INT_MAX) return;
 
-				const FiosItem *file = _fios_items.Get(y);
+				const FiosItem *file = this->fios_items.Get(y);
 
 				const char *name = FiosBrowseTo(file);
 				if (name != NULL) {
@@ -572,28 +581,32 @@ public:
 							this->selected = file;
 							_load_check_data.Clear();
 
-							if (file->type == FIOS_TYPE_FILE || file->type == FIOS_TYPE_SCENARIO) {
-								SaveOrLoad(name, SL_LOAD_CHECK, NO_DIRECTORY, false);
+							if (GetDetailedFileType(file->type) == DFT_GAME_FILE) {
+								/* Other detailed file types cannot be checked before. */
+								SaveOrLoad(name, SLO_CHECK, DFT_GAME_FILE, NO_DIRECTORY, false);
 							}
 
 							this->InvalidateData(1);
 						}
-						if (_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO || _saveload_mode == SLD_SAVE_HEIGHTMAP) {
+						if (this->fop == SLO_SAVE) {
 							/* Copy clicked name to editbox */
 							this->filename_editbox.text.Assign(file->title);
 							this->SetWidgetDirty(WID_SL_SAVE_OSK_TITLE);
 						}
 					} else if (!_load_check_data.HasErrors()) {
 						this->selected = file;
-						if (_saveload_mode == SLD_LOAD_GAME || _saveload_mode == SLD_LOAD_SCENARIO) {
-							this->OnClick(pt, WID_SL_LOAD_BUTTON, 1);
-						} else if (_saveload_mode == SLD_LOAD_HEIGHTMAP) {
-							SetFiosType(file->type);
-							strecpy(_file_to_saveload.name, name, lastof(_file_to_saveload.name));
-							strecpy(_file_to_saveload.title, file->title, lastof(_file_to_saveload.title));
+						if (this->fop == SLO_LOAD) {
+							if (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO) {
+								this->OnClick(pt, WID_SL_LOAD_BUTTON, 1);
+							} else {
+								assert(this->abstract_filetype == FT_HEIGHTMAP);
+								_file_to_saveload.SetMode(file->type);
+								_file_to_saveload.SetName(name);
+								_file_to_saveload.SetTitle(file->title);
 
-							delete this;
-							ShowHeightmapLoad();
+								delete this;
+								ShowHeightmapLoad();
+							}
 						}
 					}
 				} else {
@@ -608,10 +621,11 @@ public:
 					ShowErrorMessage(STR_NETWORK_ERROR_NOTAVAILABLE, INVALID_STRING_ID, WL_ERROR);
 				} else {
 #if defined(ENABLE_NETWORK)
-					switch (_saveload_mode) {
+					assert(this->fop == SLO_LOAD);
+					switch (this->abstract_filetype) {
 						default: NOT_REACHED();
-						case SLD_LOAD_SCENARIO:  ShowNetworkContentListWindow(NULL, CONTENT_TYPE_SCENARIO);  break;
-						case SLD_LOAD_HEIGHTMAP: ShowNetworkContentListWindow(NULL, CONTENT_TYPE_HEIGHTMAP); break;
+						case FT_SCENARIO:  ShowNetworkContentListWindow(NULL, CONTENT_TYPE_SCENARIO);  break;
+						case FT_HEIGHTMAP: ShowNetworkContentListWindow(NULL, CONTENT_TYPE_HEIGHTMAP); break;
 					}
 #endif
 				}
@@ -639,9 +653,8 @@ public:
 
 	virtual void OnTimeout()
 	{
-		/* This test protects against using widgets 11 and 12 which are only available
-		 * in those saveload modes. */
-		if (!(_saveload_mode == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO || _saveload_mode == SLD_SAVE_HEIGHTMAP)) return;
+		/* Widgets WID_SL_DELETE_SELECTION and WID_SL_SAVE_GAME only exist when saving to a file. */
+		if (this->fop != SLO_SAVE) return;
 
 		if (this->IsWidgetLowered(WID_SL_DELETE_SELECTION)) { // Delete button clicked
 			if (!FiosDelete(this->filename_editbox.text.buf)) {
@@ -649,10 +662,10 @@ public:
 			} else {
 				this->InvalidateData();
 				/* Reset file name to current date on successful delete */
-				if (_saveload_mode == SLD_SAVE_GAME) GenerateFileName();
+				if (this->abstract_filetype == FT_SAVEGAME) GenerateFileName();
 			}
 		} else if (this->IsWidgetLowered(WID_SL_SAVE_GAME)) { // Save button clicked
-			if (_saveload_mode  == SLD_SAVE_GAME || _saveload_mode == SLD_SAVE_SCENARIO) {
+			if (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO) {
 				_switch_mode = SM_SAVE_GAME;
 				FiosMakeSavegameName(_file_to_saveload.name, this->filename_editbox.text.buf, lastof(_file_to_saveload.name));
 			} else {
@@ -683,28 +696,40 @@ public:
 				this->selected = NULL;
 				_load_check_data.Clear();
 				if (!gui_scope) break;
-				BuildFileList();
+
+				_fios_path_changed = true;
+				this->fios_items.BuildFileList(this->abstract_filetype, this->fop);
+				this->vscroll->SetCount(this->fios_items.Length());
+				this->selected = NULL;
+				_load_check_data.Clear();
 				/* FALL THROUGH */
 			case 1:
 				/* Selection changes */
 				if (!gui_scope) break;
-				if (_saveload_mode == SLD_LOAD_HEIGHTMAP) {
-					this->SetWidgetDisabledState(WID_SL_LOAD_BUTTON, this->selected == NULL || _load_check_data.HasErrors());
+
+				if (this->fop != SLO_LOAD) break;
+
+				switch (this->abstract_filetype) {
+					case FT_HEIGHTMAP:
+						this->SetWidgetDisabledState(WID_SL_LOAD_BUTTON, this->selected == NULL || _load_check_data.HasErrors());
+						break;
+
+					case FT_SAVEGAME:
+					case FT_SCENARIO: {
+						bool disabled = this->selected == NULL || _load_check_data.HasErrors();
+						if (!_settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
+							disabled |= _load_check_data.HasNewGrfs() && _load_check_data.grf_compatibility == GLC_NOT_FOUND;
+						}
+						this->SetWidgetDisabledState(WID_SL_LOAD_BUTTON, disabled);
+						this->SetWidgetDisabledState(WID_SL_NEWGRF_INFO, !_load_check_data.HasNewGrfs());
+						this->SetWidgetDisabledState(WID_SL_MISSING_NEWGRFS,
+								!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility == GLC_ALL_GOOD);
+						break;
+					}
+
+					default:
+						NOT_REACHED();
 				}
-				if (_saveload_mode == SLD_LOAD_GAME || _saveload_mode == SLD_LOAD_SCENARIO) {
-					this->SetWidgetDisabledState(WID_SL_LOAD_BUTTON,
-							this->selected == NULL || _load_check_data.HasErrors() || !(!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()));
-					this->SetWidgetDisabledState(WID_SL_NEWGRF_INFO,
-							!_load_check_data.HasNewGrfs());
-					this->SetWidgetDisabledState(WID_SL_MISSING_NEWGRFS,
-							!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility == GLC_ALL_GOOD);
-				}
-				break;
-			case 2:
-				/* _fios_items changed */
-				this->vscroll->SetCount(_fios_items.Length());
-				this->selected = NULL;
-				_load_check_data.Clear();
 				break;
 		}
 	}
@@ -735,69 +760,23 @@ static WindowDesc _save_dialog_desc(
 );
 
 /**
- * These values are used to convert the file/operations mode into a corresponding file type.
- * So each entry, as expressed by the related comment, is based on the enum
- */
-static const FileType _file_modetotype[] = {
-	FT_SAVEGAME,  // used for SLD_LOAD_GAME
-	FT_SCENARIO,  // used for SLD_LOAD_SCENARIO
-	FT_SAVEGAME,  // used for SLD_SAVE_GAME
-	FT_SCENARIO,  // used for SLD_SAVE_SCENARIO
-	FT_HEIGHTMAP, // used for SLD_LOAD_HEIGHTMAP
-	FT_HEIGHTMAP, // used for SLD_SAVE_HEIGHTMAP
-};
-
-/**
  * Launch save/load dialog in the given mode.
- * @param mode Save/load mode.
+ * @param abstract_filetype Kind of file to handle.
+ * @param fop File operation to perform (load or save).
  */
-void ShowSaveLoadDialog(SaveLoadDialogMode mode)
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop)
 {
 	DeleteWindowById(WC_SAVELOAD, 0);
 
 	WindowDesc *sld;
-	switch (mode) {
-		case SLD_SAVE_GAME:
-		case SLD_SAVE_SCENARIO:
-		case SLD_SAVE_HEIGHTMAP:
-			sld = &_save_dialog_desc; break;
-		case SLD_LOAD_HEIGHTMAP:
-			sld = &_load_heightmap_dialog_desc; break;
-		default:
-			sld = &_load_dialog_desc; break;
+	if (fop == SLO_SAVE) {
+		sld = &_save_dialog_desc;
+	} else {
+		/* Dialogue for loading a file. */
+		sld = (abstract_filetype == FT_HEIGHTMAP) ? &_load_heightmap_dialog_desc : &_load_dialog_desc;
 	}
 
-	_saveload_mode = mode;
-	_file_to_saveload.filetype = _file_modetotype[mode];
+	_file_to_saveload.abstract_ftype = abstract_filetype;
 
-	new SaveLoadWindow(sld, mode);
-}
-
-void SetFiosType(const byte fiostype)
-{
-	switch (fiostype) {
-		case FIOS_TYPE_FILE:
-		case FIOS_TYPE_SCENARIO:
-			_file_to_saveload.mode = SL_LOAD;
-			break;
-
-		case FIOS_TYPE_OLDFILE:
-		case FIOS_TYPE_OLD_SCENARIO:
-			_file_to_saveload.mode = SL_OLD_LOAD;
-			break;
-
-#ifdef WITH_PNG
-		case FIOS_TYPE_PNG:
-			_file_to_saveload.mode = SL_PNG;
-			break;
-#endif /* WITH_PNG */
-
-		case FIOS_TYPE_BMP:
-			_file_to_saveload.mode = SL_BMP;
-			break;
-
-		default:
-			_file_to_saveload.mode = SL_INVALID;
-			break;
-	}
+	new SaveLoadWindow(sld, abstract_filetype, fop);
 }

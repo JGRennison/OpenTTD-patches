@@ -25,12 +25,12 @@
 #include <errno.h> // required by vsnprintf implementation for MSVC
 #endif
 
-#ifdef WITH_ICU
+#ifdef WITH_ICU_SORT
 /* Required by strnatcmp. */
 #include <unicode/ustring.h>
 #include "language.h"
 #include "gfx_func.h"
-#endif /* WITH_ICU */
+#endif /* WITH_ICU_SORT */
 
 /* The function vsnprintf is used internally to perform the required formatting
  * tasks. As such this one must be allowed, and makes sure it's terminated. */
@@ -355,7 +355,7 @@ bool IsValidChar(WChar key, CharSetFilter afilter)
 }
 
 #ifdef WIN32
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && _MSC_VER < 1900
 /**
  * Almost POSIX compliant implementation of \c vsnprintf for VC compiler.
  * The difference is in the value returned on output truncation. This
@@ -578,33 +578,20 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 		s1 = SkipGarbage(s1);
 		s2 = SkipGarbage(s2);
 	}
-#ifdef WITH_ICU
+#ifdef WITH_ICU_SORT
 	if (_current_collator != NULL) {
 		UErrorCode status = U_ZERO_ERROR;
-		int result;
-
-		/* We want to use the new faster method for ICU 4.2 and higher. */
-#if U_ICU_VERSION_MAJOR_NUM > 4 || (U_ICU_VERSION_MAJOR_NUM == 4 && U_ICU_VERSION_MINOR_NUM >= 2)
-		/* The StringPiece parameter gets implicitly constructed from the char *. */
-		result = _current_collator->compareUTF8(s1, s2, status);
-#else /* The following for 4.0 and lower. */
-		UChar buffer1[DRAW_STRING_BUFFER];
-		u_strFromUTF8Lenient(buffer1, lengthof(buffer1), NULL, s1, -1, &status);
-		UChar buffer2[DRAW_STRING_BUFFER];
-		u_strFromUTF8Lenient(buffer2, lengthof(buffer2), NULL, s2, -1, &status);
-
-		result = _current_collator->compare(buffer1, buffer2, status);
-#endif /* ICU version check. */
+		int result = _current_collator->compareUTF8(s1, s2, status);
 		if (U_SUCCESS(status)) return result;
 	}
 
-#endif /* WITH_ICU */
+#endif /* WITH_ICU_SORT */
 
 	/* Do a normal comparison if ICU is missing or if we cannot create a collator. */
 	return strcasecmp(s1, s2);
 }
 
-#ifdef WITH_ICU
+#ifdef WITH_ICU_SORT
 
 #include <unicode/utext.h>
 #include <unicode/brkiter.h>

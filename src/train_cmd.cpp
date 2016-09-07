@@ -636,6 +636,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 
 		v->railtype = rvi->railtype;
 
+		v->date_of_last_service = _date;
 		v->build_year = _cur_year;
 		v->cur_image = SPR_IMG_QUERY;
 		v->random_bits = VehicleRandomBits();
@@ -703,6 +704,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->refit_cap = v->refit_cap;
 	u->railtype = v->railtype;
 	u->engine_type = v->engine_type;
+	u->date_of_last_service = v->date_of_last_service;
 	u->build_year = v->build_year;
 	u->cur_image = SPR_IMG_QUERY;
 	u->random_bits = VehicleRandomBits();
@@ -1386,12 +1388,14 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 		return ret;
 	}
 
-	CommandCost cost(EXPENSES_NEW_VEHICLES);
-	for (Train *t = sell_head; t != NULL; t = t->Next()) cost.AddCost(-t->value);
-
 	if (first->orders.list == NULL && !OrderList::CanAllocateItem()) {
+		/* Restore the train we had. */
+		RestoreTrainBackup(original);
 		return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 	}
+
+	CommandCost cost(EXPENSES_NEW_VEHICLES);
+	for (Train *t = sell_head; t != NULL; t = t->Next()) cost.AddCost(-t->value);
 
 	/* do it? */
 	if (flags & DC_EXEC) {
