@@ -4276,6 +4276,7 @@ STR_ORDER_DROP_LOAD_IF_POSSIBLE                                 :Load if availab
 STR_ORDER_DROP_FULL_LOAD_ALL                                    :Full load all cargo
 STR_ORDER_DROP_FULL_LOAD_ANY                                    :Full load any cargo
 STR_ORDER_DROP_NO_LOADING                                       :No loading
+STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :Load by cargo type
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Change the loading behaviour of the highlighted order
 
 STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Unload all
@@ -4283,6 +4284,7 @@ STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Unload if accep
 STR_ORDER_DROP_UNLOAD                                           :Unload all
 STR_ORDER_DROP_TRANSFER                                         :Transfer
 STR_ORDER_DROP_NO_UNLOADING                                     :No unloading
+STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :Unload by cargo type
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Change the unloading behaviour of the highlighted order
 
 STR_ORDER_REFIT                                                 :{BLACK}Refit
@@ -4398,31 +4400,48 @@ STR_ORDER_IMPLICIT                                              :(Implicit)
 STR_ORDER_FULL_LOAD                                             :(Full load)
 STR_ORDER_FULL_LOAD_ANY                                         :(Full load any cargo)
 STR_ORDER_NO_LOAD                                               :(No loading)
+STR_ORDER_CARGO_TYPE_LOAD                                       :(Load by cargo type)
 STR_ORDER_UNLOAD                                                :(Unload and take cargo)
 STR_ORDER_UNLOAD_FULL_LOAD                                      :(Unload and wait for full load)
 STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :(Unload and wait for any full load)
 STR_ORDER_UNLOAD_NO_LOAD                                        :(Unload and leave empty)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :(Unload and load by cargo type)
 STR_ORDER_TRANSFER                                              :(Transfer and take cargo)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :(Transfer and wait for full load)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :(Transfer and wait for any full load)
 STR_ORDER_TRANSFER_NO_LOAD                                      :(Transfer and leave empty)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :(Transfer and load by cargo type)
 STR_ORDER_NO_UNLOAD                                             :(No unloading and take cargo)
 STR_ORDER_NO_UNLOAD_FULL_LOAD                                   :(No unloading and wait for full load)
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY                               :(No unloading and wait for any full load)
 STR_ORDER_NO_UNLOAD_NO_LOAD                                     :(No unloading and no loading)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :(No unloading and load by cargo type)
+STR_ORDER_CARGO_TYPE_UNLOAD                                     :(Unload by cargo type)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :(Unload by cargo type and wait for full load)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :(Unload by cargo type and wait for any full load)
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(Unload by cargo type and leave empty)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :(Unload by cargo type and load by cargo type)
 
 STR_ORDER_AUTO_REFIT                                            :(Refit to {STRING})
 STR_ORDER_FULL_LOAD_REFIT                                       :(Full load with refit to {STRING})
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :(Full load any cargo with refit to {STRING})
+STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :(Load by cargo type with refit to {STRING})
 STR_ORDER_UNLOAD_REFIT                                          :(Unload and take cargo with refit to {STRING})
 STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :(Unload and wait for full load with refit to {STRING})
 STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :(Unload and wait for any full load with refit to {STRING})
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :(Unload and load by cargo type with refit to {STRING})
 STR_ORDER_TRANSFER_REFIT                                        :(Transfer and take cargo with refit to {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :(Transfer and wait for full load with refit to {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :(Transfer and wait for any full load with refit to {STRING})
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :(Transfer and load by cargo type with refit to {STRING})
 STR_ORDER_NO_UNLOAD_REFIT                                       :(No unloading and take cargo with refit to {STRING})
 STR_ORDER_NO_UNLOAD_FULL_LOAD_REFIT                             :(No unloading and wait for full load with refit to {STRING})
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT                         :(No unloading and wait for any full load with refit to {STRING})
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :(No unloading and load by cargo type with refit to {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :(Unload by cargo type and take cargo with refit to {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :(Unload by cargo type and wait for full load with refit to {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :(Unload by cargo type and wait for any full load with refit to {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :(Unload by cargo type and load by cargo type with refit to {STRING})
 
 STR_ORDER_AUTO_REFIT_ANY                                        :available cargo
 
@@ -4518,6 +4537,19 @@ STR_DATE_YEAR_TOOLTIP                                           :{BLACK}Select y
 STR_DATE_MINUTES_DAY_TOOLTIP                                    :{BLACK}Select minute
 STR_DATE_MINUTES_MONTH_TOOLTIP                                  :{BLACK}Select hour
 
+# Cargo type orders Window
+STR_CARGO_TYPE_ORDERS_LOAD_CAPTION                              :{WHITE}{VEHICLE} ({NUM}: Load at {STATION})
+STR_CARGO_TYPE_ORDERS_UNLOAD_CAPTION                            :{WHITE}{VEHICLE} ({NUM}: Unload at {STATION})
+STR_CARGO_TYPE_ORDERS_LOAD_TITLE                                :{GOLD}Select load order per cargo type:
+STR_CARGO_TYPE_ORDERS_UNLOAD_TITLE                              :{GOLD}Select unload order per cargo type:
+STR_CARGO_TYPE_ORDERS_CLOSE_BUTTON                              :{BLACK}Close
+
+STR_CARGO_TYPE_ORDERS_DROP_FULL_LOAD                            :Full load
+STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP                         :{BLACK}Change the loading behaviour for this cargo type
+STR_CARGO_TYPE_UNLOAD_ORDERS_DROP_TOOLTIP                       :{BLACK}Change the unloading behaviour for this cargo type
+
+STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}Set all to:
+STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}Set all cargo type orders to the one selected by the dropdown
 
 # AI debug window
 STR_AI_DEBUG                                                    :{WHITE}AI/Game Script Debug

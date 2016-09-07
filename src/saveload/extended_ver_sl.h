@@ -44,6 +44,7 @@ enum SlXvFeatureIndex {
 	XSLFI_LINKGRAPH_DAY_SCALE,                    ///< Linkgraph job duration & interval may be in non-scaled days
 	XSLFI_TEMPLATE_REPLACEMENT,                   ///< Template-based train replacement
 	XSLFI_MORE_RAIL_TYPES,                        ///< Increased number of rail types
+	XSLFI_CARGO_TYPE_ORDERS,                      ///< Cargo-specific load/unload order flags
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

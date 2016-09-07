@@ -24,6 +24,7 @@
 #include "cargotype.h"
 #include "vehicle_func.h"
 #include "depot_base.h"
+#include "core/bitmath_func.hpp"
 #include "core/pool_func.hpp"
 #include "core/random_func.hpp"
 #include "aircraft.h"
@@ -73,6 +74,7 @@ void Order::Free()
 	this->flags = 0;
 	this->dest  = 0;
 	this->next  = NULL;
+	DeAllocExtraInfo();
 }
 
 /**
@@ -267,6 +269,7 @@ Order::Order(uint32 packed)
 	this->type    = (OrderType)GB(packed,  0,  8);
 	this->flags   = GB(packed,  8,  8);
 	this->dest    = GB(packed, 16, 16);
+	this->extra   = NULL;
 	this->next    = NULL;
 	this->refit_cargo   = CT_NO_REFIT;
 	this->occupancy     = 0;
@@ -316,6 +319,38 @@ void Order::AssignOrder(const Order &other)
 	this->jump_counter = other.jump_counter;
 	this->travel_time = other.travel_time;
 	this->max_speed   = other.max_speed;
+
+	if ((this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) && other.extra != NULL) {
+		this->AllocExtraInfo();
+		*(this->extra) = *(other.extra);
+	} else {
+		this->DeAllocExtraInfo();
+	}
+}
+
+void Order::AllocExtraInfo()
+{
+	if (!this->extra) {
+		this->extra.reset(new OrderExtraInfo());
+	}
+}
+
+void Order::DeAllocExtraInfo()
+{
+	this->extra.reset();
+}
+
+void CargoStationIDStackSet::FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first, uint hops)
+{
+	this->more.clear();
+	this->first = o->GetNextStoppingStation(v, ~0, first, hops);
+	if (this->first.cargo_mask != (uint32) ~0) {
+		uint32 have_cargoes = this->first.cargo_mask;
+		do {
+			this->more.push_back(o->GetNextStoppingStation(v, ~have_cargoes, first, hops));
+			have_cargoes |= this->more.back().cargo_mask;
+		} while (have_cargoes != (uint32) ~0);
+	}
 }
 
 /**
@@ -394,14 +429,17 @@ Order *OrderList::GetOrderAt(int index) const
  * or refit at a depot or evaluate a non-trivial condition.
  * @param next The order to start looking at.
  * @param hops The number of orders we have already looked at.
+ * @param cargo_mask The bit set of cargoes that the we are looking at, this may be reduced to indicate the set of cargoes that the result is valid for.
  * @return Either of
  *         \li a station order
  *         \li a refitting depot order
  *         \li a non-trivial conditional order
  *         \li NULL  if the vehicle won't stop anymore.
  */
-const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops) const
+const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, uint32 &cargo_mask) const
 {
+	assert(cargo_mask != 0);
+
 	if (hops > this->GetNumOrders() || next == NULL) return NULL;
 
 	if (next->IsType(OT_CONDITIONAL)) {
@@ -411,7 +449,7 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops) const
 		 * the same as regular order progression. */
 		return this->GetNextDecisionNode(
 				this->GetOrderAt(next->GetConditionSkipToOrder()),
-				hops + 1);
+				hops + 1, cargo_mask);
 	}
 
 	if (next->IsType(OT_GOTO_DEPOT)) {
@@ -419,8 +457,23 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops) const
 		if (next->IsRefit()) return next;
 	}
 
-	if (!next->CanLoadOrUnload()) {
-		return this->GetNextDecisionNode(this->GetNext(next), hops + 1);
+	bool can_load_or_unload = false;
+	if ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
+			(next->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
+		if (next->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || next->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+			/* This is a cargo-specific load/unload order.
+			 * If the first cargo is both a no-load and no-unload order, skip it.
+			 * Drop cargoes which don't match the first one. */
+			can_load_or_unload = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoID cargo) {
+				return ((next->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0 || (next->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
+			});
+		} else if ((next->GetLoadType() & OLFB_NO_LOAD) == 0 || (next->GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
+			can_load_or_unload = true;
+		}
+	}
+
+	if (!can_load_or_unload) {
+		return this->GetNextDecisionNode(this->GetNext(next), hops + 1, cargo_mask);
 	}
 
 	return next;
@@ -429,21 +482,23 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops) const
 /**
  * Recursively determine the next deterministic station to stop at.
  * @param v The vehicle we're looking at.
+ * @param uint32 cargo_mask Bit-set of the cargo IDs of interest.
  * @param first Order to start searching at or NULL to start at cur_implicit_order_index + 1.
  * @param hops Number of orders we have already looked at.
- * @return Next stoppping station or INVALID_STATION.
+ * @return A CargoMaskedStationIDStack of the cargo mask the result is valid for, and the next stoppping station or INVALID_STATION.
  * @pre The vehicle is currently loading and v->last_station_visited is meaningful.
  * @note This function may draw a random number. Don't use it from the GUI.
  */
-StationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, const Order *first, uint hops) const
+CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, uint32 cargo_mask, const Order *first, uint hops) const
 {
+	assert(cargo_mask != 0);
 
 	const Order *next = first;
 	if (first == NULL) {
 		next = this->GetOrderAt(v->cur_implicit_order_index);
 		if (next == NULL) {
 			next = this->GetFirstOrder();
-			if (next == NULL) return INVALID_STATION;
+			if (next == NULL) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		} else {
 			/* GetNext never returns NULL if there is a valid station in the list.
 			 * As the given "next" is already valid and a station in the list, we
@@ -454,37 +509,46 @@ StationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, const Order *
 	}
 
 	do {
-		next = this->GetNextDecisionNode(next, ++hops);
+		next = this->GetNextDecisionNode(next, ++hops, cargo_mask);
 
 		/* Resolve possibly nested conditionals by estimation. */
 		while (next != NULL && next->IsType(OT_CONDITIONAL)) {
 			/* We return both options of conditional orders. */
 			const Order *skip_to = this->GetNextDecisionNode(
-					this->GetOrderAt(next->GetConditionSkipToOrder()), hops);
+					this->GetOrderAt(next->GetConditionSkipToOrder()), hops, cargo_mask);
 			const Order *advance = this->GetNextDecisionNode(
-					this->GetNext(next), hops);
+					this->GetNext(next), hops, cargo_mask);
 			if (advance == NULL || advance == first || skip_to == advance) {
 				next = (skip_to == first) ? NULL : skip_to;
 			} else if (skip_to == NULL || skip_to == first) {
 				next = (advance == first) ? NULL : advance;
 			} else {
-				StationIDStack st1 = this->GetNextStoppingStation(v, skip_to, hops);
-				StationIDStack st2 = this->GetNextStoppingStation(v, advance, hops);
-				while (!st2.IsEmpty()) st1.Push(st2.Pop());
+				CargoMaskedStationIDStack st1 = this->GetNextStoppingStation(v, cargo_mask, skip_to, hops);
+				cargo_mask &= st1.cargo_mask;
+				CargoMaskedStationIDStack st2 = this->GetNextStoppingStation(v, cargo_mask, advance, hops);
+				st1.cargo_mask &= st2.cargo_mask;
+				while (!st2.station.IsEmpty()) st1.station.Push(st2.station.Pop());
 				return st1;
 			}
 			++hops;
 		}
 
+		if (next == NULL) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
+
 		/* Don't return a next stop if the vehicle has to unload everything. */
-		if (next == NULL || ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
-				next->GetDestination() == v->last_station_visited &&
-				(next->GetUnloadType() & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0)) {
-			return INVALID_STATION;
+		if ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
+				next->GetDestination() == v->last_station_visited) {
+			/* This is a cargo-specific load/unload order.
+			 * Don't return a next stop if first cargo has transfer or unload set.
+			 * Drop cargoes which don't match the first one. */
+			bool invalid = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoID cargo) {
+				return ((next->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0);
+			});
+			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		}
 	} while (next->IsType(OT_GOTO_DEPOT) || next->GetDestination() == v->last_station_visited);
 
-	return next->GetDestination();
+	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination());
 }
 
 /**
@@ -1345,6 +1409,7 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
  * @param p2 various bitstuffed elements
  *  - p2 = (bit 0 -  3) - what data to modify (@see ModifyOrderFlags)
  *  - p2 = (bit 4 - 15) - the data to modify
+ *  - p2 = (bit 16 - 23) - a CargoID for cargo type orders (MOF_CARGO_TYPE_UNLOAD or MOF_CARGO_TYPE_LOAD)
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1354,6 +1419,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	VehicleID veh          = GB(p1,  0, 20);
 	ModifyOrderFlags mof   = Extract<ModifyOrderFlags, 0, 4>(p2);
 	uint16 data            = GB(p2,  4, 11);
+	CargoID cargo_id       = (mof == MOF_CARGO_TYPE_UNLOAD || mof == MOF_CARGO_TYPE_LOAD) ? (CargoID) GB(p2, 16, 8) : (CargoID) CT_INVALID;
 
 	if (mof >= MOF_END) return CMD_ERROR;
 
@@ -1369,7 +1435,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	Order *order = v->GetOrder(sel_ord);
 	switch (order->GetType()) {
 		case OT_GOTO_STATION:
-			if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD) return CMD_ERROR;
+			if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD && mof != MOF_CARGO_TYPE_UNLOAD && mof != MOF_CARGO_TYPE_LOAD) return CMD_ERROR;
 			break;
 
 		case OT_GOTO_DEPOT:
@@ -1402,17 +1468,27 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			if (data >= OSL_END) return CMD_ERROR;
 			break;
 
+		case MOF_CARGO_TYPE_UNLOAD:
+			if (cargo_id >= NUM_CARGO) return CMD_ERROR;
+			if (data == OUFB_CARGO_TYPE_UNLOAD) return CMD_ERROR;
+			/* FALL THROUGH */
 		case MOF_UNLOAD:
 			if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return CMD_ERROR;
-			if ((data & ~(OUFB_UNLOAD | OUFB_TRANSFER | OUFB_NO_UNLOAD)) != 0) return CMD_ERROR;
+			if ((data & ~(OUFB_UNLOAD | OUFB_TRANSFER | OUFB_NO_UNLOAD | OUFB_CARGO_TYPE_UNLOAD)) != 0) return CMD_ERROR;
 			/* Unload and no-unload are mutual exclusive and so are transfer and no unload. */
-			if (data != 0 && ((data & (OUFB_UNLOAD | OUFB_TRANSFER)) != 0) == ((data & OUFB_NO_UNLOAD) != 0)) return CMD_ERROR;
+			if (data != 0 && (data & OUFB_CARGO_TYPE_UNLOAD) == 0 && ((data & (OUFB_UNLOAD | OUFB_TRANSFER)) != 0) == ((data & OUFB_NO_UNLOAD) != 0)) return CMD_ERROR;
+			/* Cargo-type-unload exclude all the other flags. */
+			if ((data & OUFB_CARGO_TYPE_UNLOAD) != 0 && data != OUFB_CARGO_TYPE_UNLOAD) return CMD_ERROR;
 			if (data == order->GetUnloadType()) return CMD_ERROR;
 			break;
 
+		case MOF_CARGO_TYPE_LOAD:
+			if (cargo_id >= NUM_CARGO) return CMD_ERROR;
+			if (data == OLFB_CARGO_TYPE_LOAD || data == OLF_FULL_LOAD_ANY) return CMD_ERROR;
+			/* FALL THROUGH */
 		case MOF_LOAD:
 			if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return CMD_ERROR;
-			if (data > OLFB_NO_LOAD || data == 1) return CMD_ERROR;
+			if ((data > OLFB_NO_LOAD && data != OLFB_CARGO_TYPE_LOAD) || data == 1) return CMD_ERROR;
 			if (data == order->GetLoadType()) return CMD_ERROR;
 			break;
 
@@ -1495,9 +1571,17 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				order->SetUnloadType((OrderUnloadFlags)data);
 				break;
 
+			case MOF_CARGO_TYPE_UNLOAD:
+				order->SetUnloadType((OrderUnloadFlags)data, cargo_id);
+				break;
+
 			case MOF_LOAD:
 				order->SetLoadType((OrderLoadFlags)data);
 				if (data & OLFB_NO_LOAD) order->SetRefit(CT_NO_REFIT);
+				break;
+
+			case MOF_CARGO_TYPE_LOAD:
+				order->SetLoadType((OrderLoadFlags)data, cargo_id);
 				break;
 
 			case MOF_DEPOT_ACTION: {
@@ -2462,24 +2546,16 @@ bool Order::ShouldStopAtStation(const Vehicle *v, StationID station) const
 			!(this->GetNonStopType() & (is_dest_station ? ONSF_NO_STOP_AT_DESTINATION_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS));
 }
 
-bool Order::CanLoadOrUnload() const
-{
-	return (this->IsType(OT_GOTO_STATION) || this->IsType(OT_IMPLICIT)) &&
-			(this->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0 &&
-			((this->GetLoadType() & OLFB_NO_LOAD) == 0 ||
-			(this->GetUnloadType() & OUFB_NO_UNLOAD) == 0);
-}
-
 /**
  * A vehicle can leave the current station with cargo if:
  * 1. it can load cargo here OR
  * 2a. it could leave the last station with cargo AND
  * 2b. it doesn't have to unload all cargo here.
  */
-bool Order::CanLeaveWithCargo(bool has_cargo) const
+bool Order::CanLeaveWithCargo(bool has_cargo, CargoID cargo) const
 {
-	return (this->GetLoadType() & OLFB_NO_LOAD) == 0 || (has_cargo &&
-			(this->GetUnloadType() & (OUFB_UNLOAD | OUFB_TRANSFER)) == 0);
+	return (this->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0 || (has_cargo &&
+			(this->GetCargoUnloadType(cargo) & (OUFB_UNLOAD | OUFB_TRANSFER)) == 0);
 }
 
 /**

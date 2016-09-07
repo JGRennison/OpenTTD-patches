@@ -21,10 +21,17 @@
 #include "vehicle_type.h"
 #include "date_type.h"
 
+#include <memory>
+#include <vector>
+
 typedef Pool<Order, OrderID, 256, 64000> OrderPool;
 typedef Pool<OrderList, OrderListID, 128, 64000> OrderListPool;
 extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
+
+struct OrderExtraInfo {
+	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
+};
 
 /* If you change this, keep in mind that it is saved on 3 places:
  * - Load_ORDR, all the global orders
@@ -36,6 +43,8 @@ private:
 	friend const struct SaveLoad *GetVehicleDescription(VehicleType vt); ///< Saving and loading the current order of vehicles.
 	friend void Load_VEHS();                                             ///< Loading of ancient vehicles.
 	friend const struct SaveLoad *GetOrderDescription();                 ///< Saving and loading of orders.
+	friend void Load_ORDX();                                             ///< Saving and loading of orders.
+	friend void Save_ORDX();                                             ///< Saving and loading of orders.
 
 	uint8 type;           ///< The type of order + non-stop flags
 	uint8 flags;          ///< Load/unload types, depot order/action types.
@@ -46,9 +55,19 @@ private:
 	uint8 occupancy;     ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
 	int8 jump_counter;   ///< Counter for the 'jump xx% of times' option
 
+	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
+
 	uint16 wait_time;    ///< How long in ticks to wait at the destination.
 	uint16 travel_time;  ///< How long in ticks the journey to this destination should take.
 	uint16 max_speed;    ///< How fast the vehicle may go on the way to the destination.
+
+	void AllocExtraInfo();
+	void DeAllocExtraInfo();
+
+	inline void CheckExtraInfoAlloced()
+	{
+		if (!this->extra) this->AllocExtraInfo();
+	}
 
 public:
 	Order *next;          ///< Pointer to next order. If NULL, end of list
@@ -57,6 +76,21 @@ public:
 	~Order();
 
 	Order(uint32 packed);
+
+	Order(const Order& other)
+	{
+		*this = other;
+	}
+
+	Order(Order&& other) = default;
+
+	inline Order& operator=(Order const& other)
+	{
+		AssignOrder(other);
+		this->next = other.next;
+		this->index = other.index;
+		return *this;
+	}
 
 	/**
 	 * Check whether this order is of the given type.
@@ -138,9 +172,87 @@ public:
 	bool UpdateJumpCounter(uint8 percent);
 
 	/** How must the consist be loaded? */
-	inline OrderLoadFlags GetLoadType() const { return (OrderLoadFlags)GB(this->flags, 4, 3); }
+	inline OrderLoadFlags GetLoadType() const
+	{
+		OrderLoadFlags type = (OrderLoadFlags)GB(this->flags, 4, 3);
+		if (type == OLFB_CARGO_TYPE_LOAD_ENCODING) type = OLFB_CARGO_TYPE_LOAD;
+		return type;
+	}
+
+	/**
+	 * How must the consist be loaded for this type of cargo?
+	 * @pre GetLoadType() == OLFB_CARGO_TYPE_LOAD
+	 * @param cargo_id The cargo type index.
+	 * @return The load type for this cargo.
+	 */
+	inline OrderLoadFlags GetCargoLoadTypeRaw(CargoID cargo_id) const
+	{
+		assert(cargo_id < NUM_CARGO);
+		if (!this->extra) return OLF_LOAD_IF_POSSIBLE;
+		return (OrderLoadFlags) GB(this->extra->cargo_type_flags[cargo_id], 4, 4);
+	}
+
+	/**
+	 * How must the consist be loaded for this type of cargo?
+	 * @param cargo_id The cargo type index.
+	 * @return The load type for this cargo.
+	 */
+	inline OrderLoadFlags GetCargoLoadType(CargoID cargo_id) const
+	{
+		assert(cargo_id < NUM_CARGO);
+		OrderLoadFlags olf = this->GetLoadType();
+		if (olf == OLFB_CARGO_TYPE_LOAD) olf = this->GetCargoLoadTypeRaw(cargo_id);
+		return olf;
+	}
+
 	/** How must the consist be unloaded? */
-	inline OrderUnloadFlags GetUnloadType() const { return (OrderUnloadFlags)GB(this->flags, 0, 3); }
+	inline OrderUnloadFlags GetUnloadType() const
+	{
+		OrderUnloadFlags type = (OrderUnloadFlags)GB(this->flags, 0, 3);
+		if (type == OUFB_CARGO_TYPE_UNLOAD_ENCODING) type = OUFB_CARGO_TYPE_UNLOAD;
+		return type;
+	}
+
+	/**
+	 * How must the consist be unloaded for this type of cargo?
+	 * @pre GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD
+	 * @param cargo_id The cargo type index.
+	 * @return The unload type for this cargo.
+	 */
+	inline OrderUnloadFlags GetCargoUnloadTypeRaw(CargoID cargo_id) const
+	{
+		assert(cargo_id < NUM_CARGO);
+		if (!this->extra) return OUF_UNLOAD_IF_POSSIBLE;
+		return (OrderUnloadFlags) GB(this->extra->cargo_type_flags[cargo_id], 0, 4);
+	}
+
+	/**
+	 * How must the consist be unloaded for this type of cargo?
+	 * @param cargo_id The cargo type index.
+	 * @return The unload type for this cargo.
+	 */
+	inline OrderUnloadFlags GetCargoUnloadType(CargoID cargo_id) const
+	{
+		assert(cargo_id < NUM_CARGO);
+		OrderUnloadFlags ouf = this->GetUnloadType();
+		if (ouf == OUFB_CARGO_TYPE_UNLOAD) ouf = this->GetCargoUnloadTypeRaw(cargo_id);
+		return ouf;
+	}
+
+	template <typename F> uint32 FilterLoadUnloadTypeCargoMask(F filter_func, uint32 cargo_mask = ~0)
+	{
+		if ((this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) || (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
+			CargoID cargo;
+			uint32 output_mask = cargo_mask;
+			FOR_EACH_SET_BIT(cargo, cargo_mask) {
+				if (!filter_func(this, cargo)) ClrBit(output_mask, cargo);
+			}
+			return output_mask;
+		} else {
+			return filter_func(this, FindFirstBit(cargo_mask)) ? cargo_mask : 0;
+		}
+	}
+
 	/** At which stations must we stop? */
 	inline OrderNonStopFlags GetNonStopType() const { return (OrderNonStopFlags)GB(this->type, 6, 2); }
 	/** Where must we stop at the platform? */
@@ -161,9 +273,45 @@ public:
 	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
 
 	/** Set how the consist must be loaded. */
-	inline void SetLoadType(OrderLoadFlags load_type) { SB(this->flags, 4, 3, load_type); }
+	inline void SetLoadType(OrderLoadFlags load_type)
+	{
+		if (load_type == OLFB_CARGO_TYPE_LOAD) load_type = OLFB_CARGO_TYPE_LOAD_ENCODING;
+		SB(this->flags, 4, 3, load_type);
+	}
+
+	/**
+	 * Set how the consist must be loaded for this type of cargo.
+	 * @pre GetLoadType() == OLFB_CARGO_TYPE_LOAD
+	 * @param load_type The load type.
+	 * @param cargo_id The cargo type index.
+	 */
+	inline void SetLoadType(OrderLoadFlags load_type, CargoID cargo_id)
+	{
+		assert(cargo_id < NUM_CARGO);
+		this->CheckExtraInfoAlloced();
+		SB(this->extra->cargo_type_flags[cargo_id], 4, 4, load_type);
+	}
+
 	/** Set how the consist must be unloaded. */
-	inline void SetUnloadType(OrderUnloadFlags unload_type) { SB(this->flags, 0, 3, unload_type); }
+	inline void SetUnloadType(OrderUnloadFlags unload_type)
+	{
+		if (unload_type == OUFB_CARGO_TYPE_UNLOAD) unload_type = OUFB_CARGO_TYPE_UNLOAD_ENCODING;
+		SB(this->flags, 0, 3, unload_type);
+	}
+
+	/**
+	 * Set how the consist must be unloaded for this type of cargo.
+	 * @pre GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD
+	 * @param unload_type The unload type.
+	 * @param cargo_id The cargo type index.
+	 */
+	inline void SetUnloadType(OrderUnloadFlags unload_type, CargoID cargo_id)
+	{
+		assert(cargo_id < NUM_CARGO);
+		this->CheckExtraInfoAlloced();
+		SB(this->extra->cargo_type_flags[cargo_id], 0, 4, unload_type);
+	}
+
 	/** Set whether we must stop at stations or not. */
 	inline void SetNonStopType(OrderNonStopFlags non_stop_type) { SB(this->type, 6, 2, non_stop_type); }
 	/** Set where we must stop at the platform. */
@@ -246,8 +394,7 @@ public:
 	inline void SetOccupancy(uint8 occupancy) { this->occupancy = occupancy; }
 
 	bool ShouldStopAtStation(const Vehicle *v, StationID station) const;
-	bool CanLoadOrUnload() const;
-	bool CanLeaveWithCargo(bool has_cargo) const;
+	bool CanLeaveWithCargo(bool has_cargo, CargoID cargo) const;
 
 	TileIndex GetLocation(const Vehicle *v, bool airport = false) const;
 
@@ -272,6 +419,58 @@ public:
 
 void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord);
 void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord);
+
+struct CargoMaskedStationIDStack {
+	uint32 cargo_mask;
+	StationIDStack station;
+
+	CargoMaskedStationIDStack(uint32 cargo_mask, StationIDStack station)
+			: cargo_mask(cargo_mask), station(station) {}
+};
+
+struct CargoStationIDStackSet {
+private:
+	CargoMaskedStationIDStack first;
+	std::vector<CargoMaskedStationIDStack> more;
+
+public:
+	CargoStationIDStackSet()
+			: first(~0, INVALID_STATION) {}
+
+	const StationIDStack& Get(CargoID cargo) const
+	{
+		if (HasBit(first.cargo_mask, cargo)) return first.station;
+		for (size_t i = 0; i < more.size(); i++) {
+			if (HasBit(more[i].cargo_mask, cargo)) return more[i].station;
+		}
+		NOT_REACHED();
+	}
+
+	void FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first = NULL, uint hops = 0);
+};
+
+template <typename F> uint32 FilterCargoMask(F filter_func, uint32 cargo_mask = ~0)
+{
+	CargoID cargo;
+	uint32 output_mask = cargo_mask;
+	FOR_EACH_SET_BIT(cargo, cargo_mask) {
+		if (!filter_func(cargo)) ClrBit(output_mask, cargo);
+	}
+	return output_mask;
+}
+
+template <typename T, typename F> T CargoMaskValueFilter(uint32 &cargo_mask, F filter_func)
+{
+	CargoID first_cargo_id = FindFirstBit(cargo_mask);
+	T value = filter_func(first_cargo_id);
+	uint32 other_cargo_mask = cargo_mask;
+	ClrBit(other_cargo_mask, first_cargo_id);
+	CargoID cargo;
+	FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
+		if (value != filter_func(cargo)) ClrBit(cargo_mask, cargo);
+	}
+	return value;
+}
 
 /**
  * Shared order list linking together the linked list of orders and the list
@@ -345,8 +544,8 @@ public:
 	 */
 	inline VehicleOrderID GetNumManualOrders() const { return this->num_manual_orders; }
 
-	StationIDStack GetNextStoppingStation(const Vehicle *v, const Order *first = NULL, uint hops = 0) const;
-	const Order *GetNextDecisionNode(const Order *next, uint hops) const;
+	CargoMaskedStationIDStack GetNextStoppingStation(const Vehicle *v, uint32 cargo_mask, const Order *first = NULL, uint hops = 0) const;
+	const Order *GetNextDecisionNode(const Order *next, uint hops, uint32 &cargo_mask) const;
 
 	void InsertOrderAt(Order *new_order, int index);
 	void DeleteOrderAt(int index);

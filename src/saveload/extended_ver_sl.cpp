@@ -70,6 +70,8 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_LINKGRAPH_DAY_SCALE,    XSCF_NULL,                1,   1, "linkgraph_day_scale",       NULL, NULL, NULL        },
 	{ XSLFI_TEMPLATE_REPLACEMENT,   XSCF_NULL,                1,   1, "template_replacement",      NULL, NULL, "TRPL,TMPL" },
 	{ XSLFI_MORE_RAIL_TYPES,        XSCF_NULL,                1,   1, "more_rail_types",           NULL, NULL, NULL        },
+	{ XSLFI_CARGO_TYPE_ORDERS,      XSCF_NULL,                1,   1, "cargo_type_orders",         NULL, NULL, "ORDX"      },
+
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 

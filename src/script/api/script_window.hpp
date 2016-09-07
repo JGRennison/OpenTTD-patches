@@ -290,6 +290,18 @@ public:
 		WC_VEHICLE_ORDERS                            = ::WC_VEHICLE_ORDERS,
 
 		/**
+		 * Vehicle cargo type load orders; %Window numbers:
+		 *   - #VehicleID = #CargoTypeOrdersWidgets
+		 */
+		WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS = ::WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS,
+
+		/**
+		 * Vehicle cargo type unload orders; %Window numbers:
+		 *   - #VehicleID = #CargoTypeOrdersWidgets
+		 */
+		WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS = ::WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS,
+
+		/**
 		 * Replace vehicle window; %Window numbers:
 		 *   - #VehicleType = #ReplaceVehicleWidgets
 		 */
@@ -1955,6 +1967,21 @@ public:
 		WID_O_SEL_TOP_ROW                            = ::WID_O_SEL_TOP_ROW,                            ///< #NWID_SELECTION widget for the top row of the 'your non-trains' order window.
 		WID_O_SEL_BOTTOM_MIDDLE                      = ::WID_O_SEL_BOTTOM_MIDDLE,                      ///< #NWID_SELECTION widget for the middle part of the bottom row of the 'your train' order window.
 		WID_O_SHARED_ORDER_LIST                      = ::WID_O_SHARED_ORDER_LIST,                      ///< Open list of shared vehicles.
+	};
+
+	/** Widgets of the #CargoTypeOrdersWindow class. */
+	enum CargoTypeOrdersWidgets {
+		WID_CTO_CAPTION                      = ::WID_CTO_CAPTION,                      ///< Caption of the window.
+		WID_CTO_HEADER                       = ::WID_CTO_HEADER,                       ///< Window header.
+		WID_CTO_CLOSEBTN                     = ::WID_CTO_CLOSEBTN,                     ///< Close button.
+		WID_CTO_SET_TO_ALL_LABEL             = ::WID_CTO_SET_TO_ALL_LABEL,             ///< 'Set to all' dropdown label
+		WID_CTO_SET_TO_ALL_DROPDOWN          = ::WID_CTO_SET_TO_ALL_DROPDOWN,          ///< 'Set to all' dropdown
+		WID_CTO_CARGO_ROW_FIRST              = ::WID_CTO_CARGO_ROW_FIRST,              ///< First cargo type order row.
+		WID_CTO_CARGO_ROW_LAST               = ::WID_CTO_CARGO_ROW_LAST,               ///< Last cargo type order row.
+		WID_CTO_CARGO_LABEL_FIRST            = ::WID_CTO_CARGO_LABEL_FIRST,            ///< First cargo label.
+		WID_CTO_CARGO_LABEL_LAST             = ::WID_CTO_CARGO_LABEL_LAST,             ///< Last cargo label.
+		WID_CTO_CARGO_DROPDOWN_FIRST         = ::WID_CTO_CARGO_DROPDOWN_FIRST,         ///< First order dropdown.
+		WID_CTO_CARGO_DROPDOWN_LAST          = ::WID_CTO_CARGO_DROPDOWN_LAST,          ///< Last order dropdown.
 	};
 
 	/* automatically generated from ../../widgets/osk_widget.h */

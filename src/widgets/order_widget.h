@@ -12,6 +12,8 @@
 #ifndef WIDGETS_ORDER_WIDGET_H
 #define WIDGETS_ORDER_WIDGET_H
 
+#include "../cargo_type.h"
+
 /** Widgets of the #OrdersWindow class. */
 enum OrderWidgets {
 	WID_O_CAPTION,                   ///< Caption of the window.
@@ -45,6 +47,21 @@ enum OrderWidgets {
 	WID_O_SEL_OCCUPANCY,             ///< #NWID_SELECTION widget for the occupancy list panel.
 	WID_O_OCCUPANCY_LIST,            ///< Occupancy list panel.
 	WID_O_OCCUPANCY_TOGGLE,          ///< Toggle display of occupancy measures.
+};
+
+/** Widgets of the #CargoTypeOrdersWindow class. */
+enum CargoTypeOrdersWidgets {
+	WID_CTO_CAPTION,                                                            ///< Caption of the window.
+	WID_CTO_HEADER,                                                             ///< Window header.
+	WID_CTO_CLOSEBTN,                                                           ///< Close button.
+	WID_CTO_SET_TO_ALL_LABEL,                                                   ///< 'Set to all' dropdown label
+	WID_CTO_SET_TO_ALL_DROPDOWN,                                                ///< 'Set to all' dropdown
+	WID_CTO_CARGO_ROW_FIRST,                                                    ///< First cargo type order row.
+	WID_CTO_CARGO_ROW_LAST = WID_CTO_CARGO_ROW_FIRST + NUM_CARGO - 1,           ///< Last cargo type order row.
+	WID_CTO_CARGO_LABEL_FIRST,                                                  ///< First cargo label.
+	WID_CTO_CARGO_LABEL_LAST = WID_CTO_CARGO_LABEL_FIRST + NUM_CARGO - 1,       ///< Last cargo label.
+	WID_CTO_CARGO_DROPDOWN_FIRST,                                               ///< First order dropdown.
+	WID_CTO_CARGO_DROPDOWN_LAST = WID_CTO_CARGO_DROPDOWN_FIRST + NUM_CARGO - 1, ///< Last order dropdown.
 };
 
 #endif /* WIDGETS_ORDER_WIDGET_H */

@@ -197,6 +197,39 @@ static void Load_ORDR()
 	}
 }
 
+const SaveLoad *GetOrderExtraInfoDescription()
+{
+	static const SaveLoad _order_extra_info_desc[] = {
+		SLE_ARR(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO),
+		SLE_END()
+	};
+
+	return _order_extra_info_desc;
+}
+
+void Save_ORDX()
+{
+	Order *order;
+
+	FOR_ALL_ORDERS(order) {
+		if (order->extra) {
+			SlSetArrayIndex(order->index);
+			SlObject(order->extra.get(), GetOrderExtraInfoDescription());
+		}
+	}
+}
+
+void Load_ORDX()
+{
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		Order *order = Order::GetIfValid(index);
+		assert(order != NULL);
+		order->AllocExtraInfo();
+		SlObject(order->extra.get(), GetOrderExtraInfoDescription());
+	}
+}
+
 static void Ptrs_ORDR()
 {
 	/* Orders from old savegames have pointers corrected in Load_ORDR */
@@ -312,5 +345,6 @@ static void Ptrs_BKOR()
 extern const ChunkHandler _order_chunk_handlers[] = {
 	{ 'BKOR', Save_BKOR, Load_BKOR, Ptrs_BKOR, NULL, CH_ARRAY},
 	{ 'ORDR', Save_ORDR, Load_ORDR, Ptrs_ORDR, NULL, CH_ARRAY},
-	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, NULL, CH_ARRAY | CH_LAST},
+	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, NULL, CH_ARRAY},
+	{ 'ORDX', Save_ORDX, Load_ORDX, NULL,      NULL, CH_SPARSE_ARRAY | CH_LAST},
 };
