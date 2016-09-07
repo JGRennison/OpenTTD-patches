@@ -160,7 +160,12 @@ public:
 	void SetRefit(CargoID cargo);
 
 	/** How must the consist be loaded? */
-	inline OrderLoadFlags GetLoadType() const { return (OrderLoadFlags)GB(this->flags, 4, 4); }
+	inline OrderLoadFlags GetLoadType() const
+	{
+		OrderLoadFlags type = (OrderLoadFlags)GB(this->flags, 4, 3);
+		if (type == OLFB_CARGO_TYPE_LOAD_ENCODING) type = OLFB_CARGO_TYPE_LOAD;
+		return type;
+	}
 
 	/**
 	 * How must the consist be loaded for this type of cargo?
@@ -189,7 +194,12 @@ public:
 	}
 
 	/** How must the consist be unloaded? */
-	inline OrderUnloadFlags GetUnloadType() const { return (OrderUnloadFlags)GB(this->flags, 0, 4); }
+	inline OrderUnloadFlags GetUnloadType() const
+	{
+		OrderUnloadFlags type = (OrderUnloadFlags)GB(this->flags, 0, 3);
+		if (type == OUFB_CARGO_TYPE_UNLOAD_ENCODING) type = OUFB_CARGO_TYPE_UNLOAD;
+		return type;
+	}
 
 	/**
 	 * How must the consist be unloaded for this type of cargo?
@@ -249,7 +259,11 @@ public:
 	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
 
 	/** Set how the consist must be loaded. */
-	inline void SetLoadType(OrderLoadFlags load_type) { SB(this->flags, 4, 4, load_type); }
+	inline void SetLoadType(OrderLoadFlags load_type)
+	{
+		if (load_type == OLFB_CARGO_TYPE_LOAD) load_type = OLFB_CARGO_TYPE_LOAD_ENCODING;
+		SB(this->flags, 4, 3, load_type);
+	}
 
 	/**
 	 * Set how the consist must be loaded for this type of cargo.
@@ -265,7 +279,11 @@ public:
 	}
 
 	/** Set how the consist must be unloaded. */
-	inline void SetUnloadType(OrderUnloadFlags unload_type) { SB(this->flags, 0, 4, unload_type); }
+	inline void SetUnloadType(OrderUnloadFlags unload_type)
+	{
+		if (unload_type == OUFB_CARGO_TYPE_UNLOAD) unload_type = OUFB_CARGO_TYPE_UNLOAD_ENCODING;
+		SB(this->flags, 0, 3, unload_type);
+	}
 
 	/**
 	 * Set how the consist must be unloaded for this type of cargo.

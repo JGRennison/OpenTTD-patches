@@ -61,6 +61,7 @@ enum OrderUnloadFlags {
 	OUFB_TRANSFER          = 1 << 1, ///< Transfer all cargo onto the platform.
 	OUFB_NO_UNLOAD         = 1 << 2, ///< Totally no unloading will be done.
 	OUFB_CARGO_TYPE_UNLOAD = 1 << 3, ///< Unload actions are defined per cargo type.
+	OUFB_CARGO_TYPE_UNLOAD_ENCODING = (1 << 0) | (1 << 2), ///< Raw encoding of OUFB_CARGO_TYPE_UNLOAD
 };
 
 /**
@@ -71,7 +72,8 @@ enum OrderLoadFlags {
 	OLFB_FULL_LOAD       = 1 << 1, ///< Full load all cargoes of the consist.
 	OLF_FULL_LOAD_ANY    = 3,      ///< Full load a single cargo of the consist.
 	OLFB_NO_LOAD         = 4,      ///< Do not load anything.
-	OLFB_CARGO_TYPE_LOAD = 1 << 3  ///< Load actions are defined per cargo type.
+	OLFB_CARGO_TYPE_LOAD = 1 << 3, ///< Load actions are defined per cargo type.
+	OLFB_CARGO_TYPE_LOAD_ENCODING = (1 << 1) | 4, ///< Raw encoding of OLFB_CARGO_TYPE_LOAD
 };
 
 /**
