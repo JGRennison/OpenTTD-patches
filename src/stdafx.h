@@ -512,15 +512,9 @@ static inline void free(const void *ptr)
 #endif
 
 /*
- * Conditional define for the override keyword.
- * Use of the override keyword can prevent various types of problems when the base method signature is changed, but derived overriding methods are not
- * This is conditional to maintain compatibility with legacy compilers
+ * Define for the override keyword.
  */
-#if !defined(DISABLE_OVERRIDE) && (__cplusplus >= 201103L || defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__))
-	#define OVERRIDE override
-#else
-	#define OVERRIDE
-#endif
+#define OVERRIDE override
 
 /**
  * Using _mm_prefetch() with gcc implies the compile flag -msse.
