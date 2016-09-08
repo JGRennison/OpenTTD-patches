@@ -1359,7 +1359,7 @@ make_compiler_cflags() {
 
 		if [ "$cc_version" -ge "33" ]; then
 			# clang completed C++11 support in version 3.3
-			flags="$flags -std=c++11"
+			flags="$flags -std=c++11 -DCUSTOM_ALLOCATOR"
 		else
 			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | head -n 1`, minumum: 3.3"
 			exit 1
