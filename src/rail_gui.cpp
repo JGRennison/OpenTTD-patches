@@ -107,9 +107,9 @@ static CommandContainer GenericPlaceRailCmd(TileIndex tile, Track track)
 		tile,          // tile
 		_cur_railtype, // p1
 		track,         // p2
-		_remove_button_clicked ?
+		(uint32) (_remove_button_clicked ?
 				CMD_REMOVE_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
-				CMD_BUILD_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK), // cmd
+				CMD_BUILD_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK)), // cmd
 		CcPlaySound_SPLAT_RAIL, // callback
 		0,
 		""             // text
@@ -390,10 +390,10 @@ static CommandContainer DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_t
 	CommandContainer ret = {
 		start_tile,                   // tile
 		end_tile,                     // p1
-		_cur_railtype | (track << 5), // p2
-		_remove_button_clicked ?
+		(uint32) (_cur_railtype | (track << 5)), // p2
+		(uint32) (_remove_button_clicked ?
 				CMD_REMOVE_RAILROAD_TRACK | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
-				CMD_BUILD_RAILROAD_TRACK  | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK), // cmd
+				CMD_BUILD_RAILROAD_TRACK  | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK)), // cmd
 		CcPlaySound_SPLAT_RAIL,       // callback
 		0,
 		""                            // text
