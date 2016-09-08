@@ -42,7 +42,7 @@ struct LoggedChange {
 			byte landscape;  ///< landscape (temperate, arctic, ...)
 		} mode;
 		struct {
-			char text[NETWORK_REVISION_LENGTH]; ///< revision string, _openttd_revision
+			char *text;      ///< revision string, _openttd_revision
 			uint32 newgrf;   ///< _openttd_newgrf_version
 			uint16 slver;    ///< _sl_version
 			byte modified;   ///< _openttd_revision_modified

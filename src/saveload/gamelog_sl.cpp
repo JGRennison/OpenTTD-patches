@@ -28,8 +28,11 @@ static const SaveLoad _glog_mode_desc[] = {
 	SLE_END()
 };
 
+static char old_revision_text[NETWORK_REVISION_LENGTH];
+
 static const SaveLoad _glog_revision_desc[] = {
-	SLE_ARR(LoggedChange, revision.text,     SLE_UINT8,  NETWORK_REVISION_LENGTH),
+	SLEG_CONDARR_X(old_revision_text,        SLE_UINT8, NETWORK_REVISION_LENGTH, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_EXTENDED_GAMELOG, 0, 0)),
+	SLE_CONDSTR_X(LoggedChange, revision.text, SLE_STR,                       0, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_EXTENDED_GAMELOG)),
 	SLE_VAR(LoggedChange, revision.newgrf,   SLE_UINT32),
 	SLE_VAR(LoggedChange, revision.slver,    SLE_UINT16),
 	SLE_VAR(LoggedChange, revision.modified, SLE_UINT8),
@@ -132,6 +135,9 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 			assert((uint)ct < GLCT_END);
 
 			SlObject(lc, _glog_desc[ct]);
+			if (ct == GLCT_REVISION && SlXvIsFeatureMissing(XSLFI_EXTENDED_GAMELOG)) {
+				lc->revision.text = stredup(old_revision_text);
+			}
 		}
 	}
 }

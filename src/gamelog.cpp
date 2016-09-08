@@ -75,6 +75,7 @@ void GamelogFree(LoggedAction *gamelog_action, uint gamelog_actions)
 		for (uint j = 0; j < la->changes; j++) {
 			const LoggedChange *lc = &la->change[j];
 			if (lc->ct == GLCT_SETTING) free(lc->setting.name);
+			if (lc->ct == GLCT_REVISION) free(lc->revision.text);
 		}
 		free(la->change);
 	}
@@ -414,8 +415,7 @@ void GamelogRevision()
 	LoggedChange *lc = GamelogChange(GLCT_REVISION);
 	if (lc == NULL) return;
 
-	memset(lc->revision.text, 0, sizeof(lc->revision.text));
-	strecpy(lc->revision.text, _openttd_revision, lastof(lc->revision.text), true);
+	lc->revision.text = stredup(_openttd_revision);
 	lc->revision.slver = SAVEGAME_VERSION;
 	lc->revision.modified = _openttd_revision_modified;
 	lc->revision.newgrf = _openttd_newgrf_version;
