@@ -79,6 +79,9 @@ enum CallBackFunction {
 	CBF_PLACE_LANDINFO,
 };
 
+static CallBackFunction _last_started_action = CBF_NONE; ///< Last started user action.
+
+
 /**
  * Drop down list entry for showing a checked/unchecked toggle item.
  */
@@ -247,7 +250,7 @@ static ToolbarMode _toolbar_mode;
 
 static CallBackFunction SelectSignTool()
 {
-	if (_cursor.sprite == SPR_CURSOR_SIGN) {
+	if (_last_started_action == CBF_PLACE_SIGN) {
 		ResetObjectToPlace();
 		return CBF_NONE;
 	} else {
@@ -424,17 +427,17 @@ static CallBackFunction MenuClickSaveLoad(int index = 0)
 {
 	if (_game_mode == GM_EDITOR) {
 		switch (index) {
-			case SLEME_SAVE_SCENARIO:  ShowSaveLoadDialog(SLD_SAVE_SCENARIO);  break;
-			case SLEME_LOAD_SCENARIO:  ShowSaveLoadDialog(SLD_LOAD_SCENARIO);  break;
-			case SLEME_SAVE_HEIGHTMAP: ShowSaveLoadDialog(SLD_SAVE_HEIGHTMAP); break;
-			case SLEME_LOAD_HEIGHTMAP: ShowSaveLoadDialog(SLD_LOAD_HEIGHTMAP); break;
+			case SLEME_SAVE_SCENARIO:  ShowSaveLoadDialog(FT_SCENARIO, SLO_SAVE);  break;
+			case SLEME_LOAD_SCENARIO:  ShowSaveLoadDialog(FT_SCENARIO, SLO_LOAD);  break;
+			case SLEME_SAVE_HEIGHTMAP: ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_SAVE); break;
+			case SLEME_LOAD_HEIGHTMAP: ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_LOAD); break;
 			case SLEME_EXIT_TOINTRO:   AskExitToGameMenu();                    break;
 			case SLEME_EXIT_GAME:      HandleExitGameRequest();                break;
 		}
 	} else {
 		switch (index) {
-			case SLNME_SAVE_GAME:      ShowSaveLoadDialog(SLD_SAVE_GAME); break;
-			case SLNME_LOAD_GAME:      ShowSaveLoadDialog(SLD_LOAD_GAME); break;
+			case SLNME_SAVE_GAME:      ShowSaveLoadDialog(FT_SAVEGAME, SLO_SAVE); break;
+			case SLNME_LOAD_GAME:      ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD); break;
 			case SLNME_EXIT_TOINTRO:   AskExitToGameMenu();               break;
 			case SLNME_EXIT_GAME:      HandleExitGameRequest();           break;
 		}
@@ -1031,7 +1034,7 @@ static CallBackFunction MenuClickNewspaper(int index)
 
 static CallBackFunction PlaceLandBlockInfo()
 {
-	if (_cursor.sprite == SPR_CURSOR_QUERY) {
+	if (_last_started_action == CBF_PLACE_LANDINFO) {
 		ResetObjectToPlace();
 		return CBF_NONE;
 	} else {
@@ -1656,13 +1659,11 @@ enum MainToolbarHotkeys {
 
 /** Main toolbar. */
 struct MainToolbarWindow : Window {
-	CallBackFunction last_started_action; ///< Last started user action.
-
 	MainToolbarWindow(WindowDesc *desc) : Window(desc)
 	{
 		this->InitNested(0);
 
-		this->last_started_action = CBF_NONE;
+		_last_started_action = CBF_NONE;
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		this->SetWidgetDisabledState(WID_TN_PAUSE, _networking && !_network_server); // if not server, disable pause button
 		this->SetWidgetDisabledState(WID_TN_FAST_FORWARD, _networking); // if networking, disable fast-forward button
@@ -1701,7 +1702,7 @@ struct MainToolbarWindow : Window {
 	virtual void OnDropdownSelect(int widget, int index)
 	{
 		CallBackFunction cbf = _menu_clicked_procs[widget](index);
-		if (cbf != CBF_NONE) this->last_started_action = cbf;
+		if (cbf != CBF_NONE) _last_started_action = cbf;
 	}
 
 	virtual EventState OnHotkey(int hotkey)
@@ -1711,7 +1712,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_FASTFORWARD: ToolbarFastForwardClick(this); break;
 			case MTHK_SETTINGS: ShowGameOptions(); break;
 			case MTHK_SAVEGAME: MenuClickSaveLoad(); break;
-			case MTHK_LOADGAME: ShowSaveLoadDialog(SLD_LOAD_GAME); break;
+			case MTHK_LOADGAME: ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD); break;
 			case MTHK_SMALLMAP: ShowSmallMap(); break;
 			case MTHK_TOWNDIRECTORY: ShowTownDirectory(); break;
 			case MTHK_SUBSIDIES: ShowSubsidiesList(); break;
@@ -1754,7 +1755,7 @@ struct MainToolbarWindow : Window {
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)
 	{
-		switch (this->last_started_action) {
+		switch (_last_started_action) {
 			case CBF_PLACE_SIGN:
 				PlaceProc_Sign(tile);
 				break;
@@ -1765,6 +1766,11 @@ struct MainToolbarWindow : Window {
 
 			default: NOT_REACHED();
 		}
+	}
+
+	virtual void OnPlaceObjectAbort()
+	{
+		_last_started_action = CBF_NONE;
 	}
 
 	virtual void OnTick()
@@ -1978,13 +1984,11 @@ enum MainToolbarEditorHotkeys {
 };
 
 struct ScenarioEditorToolbarWindow : Window {
-	CallBackFunction last_started_action; ///< Last started user action.
-
 	ScenarioEditorToolbarWindow(WindowDesc *desc) : Window(desc)
 	{
 		this->InitNested(0);
 
-		this->last_started_action = CBF_NONE;
+		_last_started_action = CBF_NONE;
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
@@ -2043,7 +2047,7 @@ struct ScenarioEditorToolbarWindow : Window {
 	{
 		if (_game_mode == GM_MENU) return;
 		CallBackFunction cbf = _scen_toolbar_button_procs[widget](this);
-		if (cbf != CBF_NONE) this->last_started_action = cbf;
+		if (cbf != CBF_NONE) _last_started_action = cbf;
 	}
 
 	virtual void OnDropdownSelect(int widget, int index)
@@ -2052,7 +2056,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		 * editor toolbar, so we need to adjust for it. */
 		if (widget == WID_TE_SMALL_MAP) widget = WID_TN_SMALL_MAP;
 		CallBackFunction cbf = _menu_clicked_procs[widget](index);
-		if (cbf != CBF_NONE) this->last_started_action = cbf;
+		if (cbf != CBF_NONE) _last_started_action = cbf;
 		if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 	}
 
@@ -2084,13 +2088,13 @@ struct ScenarioEditorToolbarWindow : Window {
 			case MTEHK_EXTRA_VIEWPORT:         ShowExtraViewPortWindowForTileUnderCursor(); break;
 			default: return ES_NOT_HANDLED;
 		}
-		if (cbf != CBF_NONE) this->last_started_action = cbf;
+		if (cbf != CBF_NONE) _last_started_action = cbf;
 		return ES_HANDLED;
 	}
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)
 	{
-		switch (this->last_started_action) {
+		switch (_last_started_action) {
 			case CBF_PLACE_SIGN:
 				PlaceProc_Sign(tile);
 				break;
@@ -2101,6 +2105,11 @@ struct ScenarioEditorToolbarWindow : Window {
 
 			default: NOT_REACHED();
 		}
+	}
+
+	virtual void OnPlaceObjectAbort()
+	{
+		_last_started_action = CBF_NONE;
 	}
 
 	virtual void OnTimeout()

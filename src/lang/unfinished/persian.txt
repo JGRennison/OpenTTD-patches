@@ -970,6 +970,7 @@ STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}وضوح
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :دو برابر
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}بسته گرافیک پایه
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}بسته گرافیک پایه را انتخاب کنید
@@ -2388,7 +2389,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :زمین خری
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD در باره ی
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD ویرایش {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ذخیره ی بازی
@@ -3071,6 +3072,7 @@ STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK} ستو�
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}برای توقف جایگزین کردن برای نوع انتخاب شده در سمت چپ کلیک کنید
 
 
+STR_REPLACE_ELRAIL_VEHICLES                                     :وسایل نقلیه ریلی برقی
 
 
 # Vehicle view

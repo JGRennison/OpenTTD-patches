@@ -505,15 +505,12 @@ struct DepotWindow : Window {
 					this->sel = INVALID_VEHICLE;
 					TrainDepotMoveVehicle(v, sel, gdvp.head);
 				} else if (v != NULL) {
-					bool rtl = _current_text_dir == TD_RTL;
-					int image = v->GetImage(rtl ? DIR_E : DIR_W, EIT_IN_DEPOT);
-					SetObjectToPlaceWnd(image, GetVehiclePalette(v), HT_DRAG, this);
+					SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
+					SetMouseCursorVehicle(v, EIT_IN_DEPOT);
+					_cursor.vehchain = _ctrl_pressed;
 
 					this->sel = v->index;
 					this->SetDirty();
-
-					_cursor.short_vehicle_offset = v->IsGroundVehicle() ? (16 - v->GetGroundVehicleCache()->cached_veh_length * 2) * (rtl ? -1 : 1) : 0;
-					_cursor.vehchain = _ctrl_pressed;
 				}
 				break;
 			}
@@ -663,7 +660,8 @@ struct DepotWindow : Window {
 			DepotSortList(&this->vehicle_list);
 
 			uint new_unitnumber_digits = GetUnitNumberDigits(this->vehicle_list);
-			if (this->unitnumber_digits != new_unitnumber_digits) {
+			/* Only increase the size; do not decrease to prevent constant changes */
+			if (this->unitnumber_digits < new_unitnumber_digits) {
 				this->unitnumber_digits = new_unitnumber_digits;
 				this->ReInit();
 			}

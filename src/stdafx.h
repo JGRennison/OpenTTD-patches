@@ -143,7 +143,7 @@
 #endif /* PSP */
 
 /* Stuff for GCC */
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__clang__)
 	#define NORETURN __attribute__ ((noreturn))
 	#define CDECL
 	#define __int64 long long
@@ -151,12 +151,8 @@
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
 	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
-	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)
-		#define FINAL final
-	#else
-		#define FINAL
-	#endif
-#endif /* __GNUC__ */
+	#define FINAL final
+#endif /* __GNUC__ || __clang__ */
 
 #if defined(__WATCOMC__)
 	#define NORETURN
@@ -361,21 +357,8 @@ typedef unsigned char byte;
 	#define PERSONAL_DIR ""
 #endif
 
-/* Compile time assertions. Prefer c++0x static_assert().
- * Older compilers cannot evaluate some expressions at compile time,
- * typically when templates are involved, try assert_tcompile() in those cases. */
-#if defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__) || defined(static_assert)
-	/* __STDCXX_VERSION__ is c++0x feature macro, __GXX_EXPERIMENTAL_CXX0X__ is used by gcc, __GXX_EXPERIMENTAL_CPP0X__ by icc */
-	#define assert_compile(expr) static_assert(expr, #expr )
-	#define assert_tcompile(expr) assert_compile(expr)
-#elif defined(__OS2__)
-	/* Disabled for OS/2 */
-	#define assert_compile(expr)
-	#define assert_tcompile(expr) assert_compile(expr)
-#else
-	#define assert_compile(expr) typedef int __ct_assert__[1 - 2 * !(expr)]
-	#define assert_tcompile(expr) assert(expr)
-#endif
+#define assert_compile(expr) static_assert(expr, #expr )
+#define assert_tcompile(expr) assert_compile(expr)
 
 /* Check if the types have the bitsizes like we are using them */
 assert_compile(sizeof(uint64) == 8);
@@ -444,13 +427,13 @@ assert_compile(SIZE_MAX >= UINT32_MAX);
 	#define CloseConnection OTTD_CloseConnection
 #endif /* __APPLE__ */
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 #else
 #define likely(x)       (x)
 #define unlikely(x)     (x)
-#endif
+#endif /* __GNUC__ || __clang__ */
 
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
