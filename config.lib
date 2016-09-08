@@ -1719,7 +1719,11 @@ EOL
 
 		if [ -n "$LIBBFD_LIBS" -o -n "$HAVE_GDB_DBG" ]; then
 			if [ $enable_debug -lt 1 ] && [ "$with_bfd_extra_debug" = "1" ]; then
-				CFLAGS="$CFLAGS -g1"
+				if [ -n "`basename "$cc_host" | grep "clang" 2>/dev/null`" ]; then
+					CFLAGS="$CFLAGS -gline-tables-only"
+				else
+					CFLAGS="$CFLAGS -g1"
+				fi
 			fi
 		fi
 
