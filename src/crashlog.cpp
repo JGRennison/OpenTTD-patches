@@ -82,6 +82,8 @@ char *CrashLog::LogCompiler(char *buffer, const char *last) const
 			buffer += seprintf(buffer, last, " Compiler: "
 #if defined(_MSC_VER)
 			"MSVC %d", _MSC_VER
+#elif defined(__clang__)
+			"clang %s", __clang_version__
 #elif defined(__ICC) && defined(__GNUC__)
 			"ICC %d (GCC %d.%d.%d mode)", __ICC,  __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__
 #elif defined(__ICC)
