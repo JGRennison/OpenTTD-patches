@@ -2241,30 +2241,35 @@ check_compiler() {
 	# $3 - System to try
 	# $4 - Compiler to try
 	# $5 - Env-setting to try
-	# $6 - GCC alike to try
+	# $6 - GCC alike to try (array)
 	# $7 - CC alike to try
 	# $8 - "0" gcc, "1" g++, "2" windres, "3" strip, "4" lipo
 	# $9 - What the command is to check for
 
 	if [ -n "$3" ]; then
 		# Check for system
-		if [ -z "$6" ]; then
-			compiler="$3"
-		else
-			compiler="$3-$6"
-		fi
-		machine=`eval $compiler $9 2>/dev/null`
-		ret=$?
-		eval "$2=\"$compiler\""
+		for val in $6; do
+			if [ -z "$6" ]; then
+				compiler="$3"
+			else
+				compiler="$3-$val"
+			fi
+			machine=`eval $compiler $9 2>/dev/null`
+			ret=$?
+			eval "$2=\"$compiler\""
 
-		log 2 "executing $compiler $9"
-		log 2 "  returned $machine"
-		log 2 "  exit code $ret"
+			log 2 "executing $compiler $9"
+			log 2 "  returned $machine"
+			log 2 "  exit code $ret"
+			if [ -n "$machine" ] && [ "$ret" = "0" ]; then
+				break
+			fi
+		done
 
 		if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
 			if [ -z "$5" ]; then
 				log 1 "checking $1... $compiler not found"
-				log 1 "I couldn't detect any $6 binary for $3"
+				log 1 "I couldn't detect any '$6' binary for $3"
 				exit 1
 			else
 				compiler="$3-$5"
@@ -2319,21 +2324,26 @@ check_compiler() {
 			# The user defined a GCC that doesn't reply to $9.. abort
 			if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
 				log 1 "checking $1... $5 unusable"
-				log 1 "the CC environment variable is set, but it doesn't seem to be a $6 binary"
+				log 1 "the CC environment variable is set, but it doesn't seem to be a '$6' binary"
 				log 1 "please redefine the CC/CXX environment to a $6 binary"
 				exit 1
 			fi
 		else
 			log 2 "checking $1... CC/CXX not set (skipping)"
 
-			# No $5, so try '$6'
-			machine=`$6 $9 2>/dev/null`
-			ret=$?
-			eval "$2=\"$6\""
+			for val in $6; do
+				# No $5, so try next item in '$6'
+				machine=`$val $9 2>/dev/null`
+				ret=$?
+				eval "$2=\"$val\""
 
-			log 2 "executing $6 $9"
-			log 2 "  returned $machine"
-			log 2 "  exit code $ret"
+				log 2 "executing $val $9"
+				log 2 "  returned $machine"
+				log 2 "  exit code $ret"
+				if [ -n "$machine" ] && [ "$ret" = "0" ]; then
+					break
+				fi
+			done
 
 			if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
 				# Maybe '$7'?
@@ -2348,7 +2358,7 @@ check_compiler() {
 				# All failed, abort
 				if [ -z "$machine" ]; then
 					log 1 "checking $1... $6 not found"
-					log 1 "I couldn't detect any $6 binary on your system"
+					log 1 "I couldn't detect any '$6' binary on your system"
 					log 1 "please define the CC/CXX environment to where it is located"
 
 					exit 1
@@ -2369,9 +2379,9 @@ check_build() {
 	if [ "$os" = "FREEBSD" ]; then
 		# FreeBSD's C compiler does not support dump machine.
 		# However, removing C support is not possible because PSP must be linked with the C compiler.
-		check_compiler "build system type" "cc_build" "$build" "$cc_build" "$CXX" "g++" "c++" "0" "-dumpmachine"
+		check_compiler "build system type" "cc_build" "$build" "$cc_build" "$CXX" "$default_cxx" "c++" "0" "-dumpmachine"
 	else
-		check_compiler "build system type" "cc_build" "$build" "$cc_build" "$CC" "gcc" "cc" "0" "-dumpmachine"
+		check_compiler "build system type" "cc_build" "$build" "$cc_build" "$CC" "$default_cc" "cc" "0" "-dumpmachine"
 	fi
 }
 
@@ -2382,20 +2392,20 @@ check_host() {
 	if [ "$os" = "FREEBSD" ]; then
 		# FreeBSD's C compiler does not support dump machine.
 		# However, removing C support is not possible because PSP must be linked with the C compiler.
-		check_compiler "host system type" "cc_host" "$host" "$cc_host" "$CXX" "g++" "c++" "0" "-dumpmachine"
+		check_compiler "host system type" "cc_host" "$host" "$cc_host" "$CXX" "$default_cxx" "c++" "0" "-dumpmachine"
 	else
-		check_compiler "host system type" "cc_host" "$host" "$cc_host" "$CC" "gcc" "cc" "0" "-dumpmachine"
+		check_compiler "host system type" "cc_host" "$host" "$cc_host" "$CC" "$default_cc" "cc" "0" "-dumpmachine"
 	fi
 }
 
 check_cxx_build() {
-	check_compiler "build c++" "cxx_build" "$build" "$cxx_build" "$CXX" "g++" "c++" 1 "-dumpmachine"
+	check_compiler "build c++" "cxx_build" "$build" "$cxx_build" "$CXX" "$default_cxx" "c++" 1 "-dumpmachine"
 }
 
 check_cxx_host() {
 	# By default the host is the build
 	if [ -z "$host" ]; then host="$build"; fi
-	check_compiler "host c++" "cxx_host" "$host" "$cxx_host" "$CXX" "g++" "c++" 1 "-dumpmachine"
+	check_compiler "host c++" "cxx_host" "$host" "$cxx_host" "$CXX" "$default_cxx" "c++" 1 "-dumpmachine"
 }
 
 check_windres() {
@@ -2659,6 +2669,13 @@ detect_os() {
 		log 1 "detecting OS... $os"
 	else
 		log 1 "forcing OS... $os"
+	fi
+	if [ "$os" = "OSX" ]; then
+		default_cc="clang gcc"
+		default_cxx="clang++ g++"
+	else
+		default_cc="gcc clang"
+		default_cxx="g++ clang++"
 	fi
 }
 
