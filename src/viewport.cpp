@@ -96,6 +96,7 @@
 #include "depot_base.h"
 #include "tunnelbridge_map.h"
 #include "gui.h"
+#include "core/container_func.hpp"
 
 #include <map>
 #include <vector>
@@ -193,6 +194,8 @@ static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 static DrawPixelInfo _dpi_for_text;
 static ViewportDrawer _vd;
 
+static std::vector<ViewPort *> _viewport_window_cache;
+
 RouteStepsMap _vp_route_steps;
 RouteStepsMap _vp_route_steps_last_mark_dirty;
 uint _vp_route_step_width = 0;
@@ -242,6 +245,7 @@ void DeleteWindowViewport(Window *w)
 {
 	if (w->viewport == NULL) return;
 
+	container_unordered_remove(_viewport_window_cache, w->viewport);
 	delete w->viewport->overlay;
 	free(w->viewport);
 	w->viewport = NULL;
@@ -304,6 +308,7 @@ void InitializeWindowViewport(Window *w, int x, int y,
 	w->viewport = vp;
 	vp->virtual_left = 0; // pt.x;
 	vp->virtual_top = 0;  // pt.y;
+	_viewport_window_cache.push_back(vp);
 }
 
 static Point _vp_move_offs;
@@ -1402,11 +1407,8 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 		zoomlevels[zoom].bottom = this->top    + ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM + 1, zoom);
 	}
 
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
-		ViewPort *vp = w->viewport;
-		if (vp != NULL && vp->zoom <= maxzoom) {
-			assert(vp->width != 0);
+	for (ViewPort *vp : _viewport_window_cache) {
+		if (vp->zoom <= maxzoom) {
 			Rect &zl = zoomlevels[vp->zoom];
 			MarkViewportDirty(vp, zl.left, zl.top, zl.right, zl.bottom);
 		}
@@ -2799,31 +2801,21 @@ static void MarkViewportDirty(const ViewPort * const vp, int left, int top, int 
  */
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
-		const ViewPort * const vp = w->viewport;
-		if (vp != NULL) {
-			assert(vp->width != 0);
-			if (vp->zoom >= mark_dirty_if_zoomlevel_is_below) continue;
-			MarkViewportDirty(vp, left, top, right, bottom);
-		}
+	for (const ViewPort * const vp : _viewport_window_cache) {
+		if (vp->zoom >= mark_dirty_if_zoomlevel_is_below) continue;
+		MarkViewportDirty(vp, left, top, right, bottom);
 	}
 }
 
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 {
 	assert(tile != INVALID_TILE);
-	Window *w;
 	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
-		const ViewPort * const vp = w->viewport;
-		if (vp != NULL) {
-			assert(vp->width != 0);
-			const int half_width = ScaleByZoom((_vp_route_step_width / 2) + 1, vp->zoom);
-			const int height = ScaleByZoom(_vp_route_step_height_top + char_height * order_nr + _vp_route_step_height_bottom, vp->zoom);
-			MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y);
-		}
+	for (const ViewPort * const vp : _viewport_window_cache) {
+		const int half_width = ScaleByZoom((_vp_route_step_width / 2) + 1, vp->zoom);
+		const int height = ScaleByZoom(_vp_route_step_height_top + char_height * order_nr + _vp_route_step_height_bottom, vp->zoom);
+		MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y);
 	}
 }
 
