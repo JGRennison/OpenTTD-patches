@@ -127,6 +127,7 @@ static const SaveLoadGlobVarList _date_check_desc[] = {
 static void SaveLoad_DATE()
 {
 	SlGlobList(_date_desc);
+	SetScaledTickVariables();
 }
 
 static void Check_DATE()

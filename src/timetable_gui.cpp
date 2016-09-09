@@ -491,10 +491,10 @@ struct TimetableWindow : Window {
 						if (arr_dep[i / 2].arrival != INVALID_TICKS) {
 							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_ARRIVAL_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
 							if (this->show_expected && i / 2 == earlyID) {
-								SetDParam(0, CURRENT_SCALED_TICKS + arr_dep[i / 2].arrival);
+								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival);
 								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY, TC_GREEN);
 							} else {
-								SetDParam(0, CURRENT_SCALED_TICKS + arr_dep[i / 2].arrival + offset);
+								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival + offset);
 								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
 										show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
 							}
@@ -502,7 +502,7 @@ struct TimetableWindow : Window {
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
 							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
-							SetDParam(0, CURRENT_SCALED_TICKS + arr_dep[i/2].departure + offset);
+							SetDParam(0, _scaled_date_ticks + arr_dep[i/2].departure + offset);
 							DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
 									show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
 						}
@@ -576,7 +576,7 @@ struct TimetableWindow : Window {
 				if (_settings_client.gui.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					this->set_start_date_all = v->orders.list->IsCompleteTimetable() && _ctrl_pressed;
 					StringID str = STR_JUST_INT;
-					uint64 time = CURRENT_SCALED_TICKS;
+					uint64 time = _scaled_date_ticks;
 					time /= _settings_client.gui.ticks_per_minute;
 					time += _settings_client.gui.clock_offset;
 					time %= (24 * 60);
@@ -585,7 +585,7 @@ struct TimetableWindow : Window {
 					ShowQueryString(str, STR_TIMETABLE_STARTING_DATE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					ShowSetDateWindow(this, v->index | (v->orders.list->IsCompleteTimetable() && _ctrl_pressed ? 1U << 20 : 0),
-							CURRENT_SCALED_TICKS, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
+							_scaled_date_ticks, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
 				}
 				break;
 

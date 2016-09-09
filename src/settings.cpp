@@ -1376,6 +1376,12 @@ static bool ImprovedBreakdownsSettingChanged(int32 p1)
 	return true;
 }
 
+static bool DayLengthChanged(int32 p1)
+{
+	SetScaledTickVariables();
+	return true;
+}
+
 #ifdef ENABLE_NETWORK
 
 static bool UpdateClientName(int32 p1)

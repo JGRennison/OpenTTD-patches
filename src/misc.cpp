@@ -75,6 +75,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	if (reset_date) {
 		SetDate(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
 		InitializeOldNames();
+	} else {
+		SetScaledTickVariables();
 	}
 
 	LinkGraphSchedule::Clear();

@@ -30,6 +30,8 @@ Date      _date;       ///< Current date in days (day counter)
 DateFract _date_fract; ///< Fractional part of the day.
 uint16 _tick_counter;  ///< Ever incrementing (and sometimes wrapping) tick counter for setting off various events
 uint8 _tick_skip_counter; ///< Counter for ticks, when only vehicles are moving and nothing else happens
+uint32 _scaled_tick_counter; ///< Tick counter in daylength-scaled ticks
+DateTicksScaled _scaled_date_ticks; ///< Date as ticks in daylength-scaled ticks
 
 /**
  * Set the date.
@@ -47,6 +49,13 @@ void SetDate(Date date, DateFract fract)
 	ConvertDateToYMD(date, &ymd);
 	_cur_year = ymd.year;
 	_cur_month = ymd.month;
+	SetScaledTickVariables();
+}
+
+void SetScaledTickVariables()
+{
+	_scaled_date_ticks = ((((DateTicksScaled)_date * DAY_TICKS) + _date_fract) * _settings_game.economy.day_length_factor) + _tick_skip_counter;
+	_scaled_tick_counter = (((uint32)_tick_counter) * _settings_game.economy.day_length_factor) + _tick_skip_counter;
 }
 
 #define M(a, b) ((a << 5) | b)

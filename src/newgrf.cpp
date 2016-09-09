@@ -9226,6 +9226,7 @@ void LoadNewGRF(uint load_index, uint file_index)
 	Year year            = _cur_year;
 	DateFract date_fract = _date_fract;
 	uint16 tick_counter  = _tick_counter;
+	uint8 tick_skip_counter = _tick_skip_counter;
 	byte display_opt     = _display_opt;
 
 	if (_networking) {
@@ -9233,7 +9234,9 @@ void LoadNewGRF(uint load_index, uint file_index)
 		_date         = ConvertYMDToDate(_cur_year, 0, 1);
 		_date_fract   = 0;
 		_tick_counter = 0;
+		_tick_skip_counter = 0;
 		_display_opt  = 0;
+		SetScaledTickVariables();
 	}
 
 	InitializeGRFSpecial();
@@ -9316,7 +9319,9 @@ void LoadNewGRF(uint load_index, uint file_index)
 	_date         = date;
 	_date_fract   = date_fract;
 	_tick_counter = tick_counter;
+	_tick_skip_counter = tick_skip_counter;
 	_display_opt  = display_opt;
+	SetScaledTickVariables();
 }
 
 /**

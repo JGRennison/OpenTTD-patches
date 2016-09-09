@@ -540,7 +540,7 @@ static void AnimateTile_Industry(TileIndex tile)
 
 	switch (gfx) {
 	case GFX_SUGAR_MINE_SIEVE:
-		if ((SCALED_TICK_COUNTER & 1) == 0) {
+		if ((_scaled_tick_counter & 1) == 0) {
 			byte m = GetAnimationFrame(tile) + 1;
 
 			if (_settings_client.sound.ambient) {
@@ -561,7 +561,7 @@ static void AnimateTile_Industry(TileIndex tile)
 		break;
 
 	case GFX_TOFFEE_QUARY:
-		if ((SCALED_TICK_COUNTER & 3) == 0) {
+		if ((_scaled_tick_counter & 3) == 0) {
 			byte m = GetAnimationFrame(tile);
 
 			if (_industry_anim_offs_toffee[m] == 0xFF && _settings_client.sound.ambient) {
@@ -579,7 +579,7 @@ static void AnimateTile_Industry(TileIndex tile)
 		break;
 
 	case GFX_BUBBLE_CATCHER:
-		if ((SCALED_TICK_COUNTER & 1) == 0) {
+		if ((_scaled_tick_counter & 1) == 0) {
 			byte m = GetAnimationFrame(tile);
 
 			if (++m >= 40) {
@@ -594,7 +594,7 @@ static void AnimateTile_Industry(TileIndex tile)
 
 	/* Sparks on a coal plant */
 	case GFX_POWERPLANT_SPARKS:
-		if ((SCALED_TICK_COUNTER & 3) == 0) {
+		if ((_scaled_tick_counter & 3) == 0) {
 			byte m = GetAnimationFrame(tile);
 			if (m == 6) {
 				SetAnimationFrame(tile, 0);
@@ -607,7 +607,7 @@ static void AnimateTile_Industry(TileIndex tile)
 		break;
 
 	case GFX_TOY_FACTORY:
-		if ((SCALED_TICK_COUNTER & 1) == 0) {
+		if ((_scaled_tick_counter & 1) == 0) {
 			byte m = GetAnimationFrame(tile) + 1;
 
 			switch (m) {
@@ -635,7 +635,7 @@ static void AnimateTile_Industry(TileIndex tile)
 	case GFX_PLASTIC_FOUNTAIN_ANIMATED_3: case GFX_PLASTIC_FOUNTAIN_ANIMATED_4:
 	case GFX_PLASTIC_FOUNTAIN_ANIMATED_5: case GFX_PLASTIC_FOUNTAIN_ANIMATED_6:
 	case GFX_PLASTIC_FOUNTAIN_ANIMATED_7: case GFX_PLASTIC_FOUNTAIN_ANIMATED_8:
-		if ((SCALED_TICK_COUNTER & 3) == 0) {
+		if ((_scaled_tick_counter & 3) == 0) {
 			IndustryGfx gfx = GetIndustryGfx(tile);
 
 			gfx = (gfx < 155) ? gfx + 1 : 148;
@@ -647,7 +647,7 @@ static void AnimateTile_Industry(TileIndex tile)
 	case GFX_OILWELL_ANIMATED_1:
 	case GFX_OILWELL_ANIMATED_2:
 	case GFX_OILWELL_ANIMATED_3:
-		if ((SCALED_TICK_COUNTER & 7) == 0) {
+		if ((_scaled_tick_counter & 7) == 0) {
 			bool b = Chance16(1, 7);
 			IndustryGfx gfx = GetIndustryGfx(tile);
 
@@ -667,7 +667,7 @@ static void AnimateTile_Industry(TileIndex tile)
 	case GFX_COAL_MINE_TOWER_ANIMATED:
 	case GFX_COPPER_MINE_TOWER_ANIMATED:
 	case GFX_GOLD_MINE_TOWER_ANIMATED: {
-			int state = SCALED_TICK_COUNTER & 0x7FF;
+			int state = _scaled_tick_counter & 0x7FF;
 
 			if ((state -= 0x400) < 0) return;
 
@@ -827,7 +827,7 @@ static void TileLoop_Industry(TileIndex tile)
 	case GFX_COAL_MINE_TOWER_NOT_ANIMATED:
 	case GFX_COPPER_MINE_TOWER_NOT_ANIMATED:
 	case GFX_GOLD_MINE_TOWER_NOT_ANIMATED:
-		if (!(SCALED_TICK_COUNTER & 0x400) && Chance16(1, 2)) {
+		if (!(_scaled_tick_counter & 0x400) && Chance16(1, 2)) {
 			switch (gfx) {
 				case GFX_COAL_MINE_TOWER_NOT_ANIMATED:   gfx = GFX_COAL_MINE_TOWER_ANIMATED;   break;
 				case GFX_COPPER_MINE_TOWER_NOT_ANIMATED: gfx = GFX_COPPER_MINE_TOWER_ANIMATED; break;
@@ -850,7 +850,7 @@ static void TileLoop_Industry(TileIndex tile)
 	case GFX_COAL_MINE_TOWER_ANIMATED:
 	case GFX_COPPER_MINE_TOWER_ANIMATED:
 	case GFX_GOLD_MINE_TOWER_ANIMATED:
-		if (!(SCALED_TICK_COUNTER & 0x400)) {
+		if (!(_scaled_tick_counter & 0x400)) {
 			switch (gfx) {
 				case GFX_COAL_MINE_TOWER_ANIMATED:   gfx = GFX_COAL_MINE_TOWER_NOT_ANIMATED;   break;
 				case GFX_COPPER_MINE_TOWER_ANIMATED: gfx = GFX_COPPER_MINE_TOWER_NOT_ANIMATED; break;

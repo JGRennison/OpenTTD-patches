@@ -1262,7 +1262,7 @@ void CheckCaches(bool force_check)
 		 * always to aid testing of caches. */
 		if (_debug_desync_level < 1) return;
 
-		if (_debug_desync_level == 1 && CURRENT_SCALED_TICKS % 500 != 0) return;
+		if (_debug_desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
 	}
 
 	/* Check the town caches. */
@@ -1527,13 +1527,15 @@ void StateGameLoop()
 
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 		_tick_skip_counter++;
+		_scaled_tick_counter++; // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
+		_scaled_date_ticks++;   // "
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
 			AnimateAnimatedTiles();
 			CallVehicleTicks();
 		} else {
 			_tick_skip_counter = 0;
-			AnimateAnimatedTiles();
 			IncreaseDate();
+			AnimateAnimatedTiles();
 			RunTileLoop();
 			CallVehicleTicks();
 			CallLandscapeTick();

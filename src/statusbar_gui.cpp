@@ -139,7 +139,7 @@ struct StatusBarWindow : Window {
 		switch (widget) {
 			case WID_S_LEFT:
 				/* Draw the date */
-				SetDParam(0, CURRENT_SCALED_TICKS);
+				SetDParam(0, _scaled_date_ticks);
 				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, STR_WHITE_DATE_WALLCLOCK_LONG, TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 

@@ -332,7 +332,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 	if (timetable_all && !v->orders.list->IsCompleteTimetable()) return CMD_ERROR;
 
-	const DateTicksScaled now = CURRENT_SCALED_TICKS;
+	const DateTicksScaled now = _scaled_date_ticks;
 	DateTicksScaled start_date_scaled = (_settings_game.economy.day_length_factor * (((DateTicks)_date * DAY_TICKS) + _date_fract + (DateTicks)(int32)p2)) + sub_ticks;
 
 	if (flags & DC_EXEC) {
@@ -698,7 +698,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
-			v->lateness_counter = CURRENT_SCALED_TICKS - ((_settings_game.economy.day_length_factor * v->timetable_start) + v->timetable_start_subticks);
+			v->lateness_counter = _scaled_date_ticks - ((_settings_game.economy.day_length_factor * v->timetable_start) + v->timetable_start_subticks);
 			v->timetable_start = 0;
 			v->timetable_start_subticks = 0;
 		}

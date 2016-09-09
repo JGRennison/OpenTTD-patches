@@ -399,7 +399,7 @@ static void AnimateTile_Town(TileIndex tile)
 		return;
 	}
 
-	if (SCALED_TICK_COUNTER & 3) return;
+	if (_scaled_tick_counter & 3) return;
 
 	/* If the house is not one with a lift anymore, then stop this animating.
 	 * Not exactly sure when this happens, but probably when a house changes.
