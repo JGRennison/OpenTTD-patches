@@ -1025,6 +1025,7 @@ static bool RoadVehLeaveDepot(RoadVehicle *v, bool first)
 	}
 
 	v->vehstatus &= ~VS_HIDDEN;
+	v->cur_image_valid_dir = INVALID_DIR;
 	v->state = tdir;
 	v->frame = RVC_DEPOT_START_FRAME;
 
@@ -1306,6 +1307,7 @@ again:
 		}
 
 		if (!HasBit(r, VETS_ENTERED_WORMHOLE)) {
+			v->cur_image_valid_dir = INVALID_DIR;
 			v->tile = tile;
 			v->state = (byte)dir;
 			v->frame = start_frame;
@@ -1372,6 +1374,7 @@ again:
 			return false;
 		}
 
+		v->cur_image_valid_dir = INVALID_DIR;
 		v->state = dir;
 		v->frame = turn_around_start_frame;
 

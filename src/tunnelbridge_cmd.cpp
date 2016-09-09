@@ -1949,6 +1949,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					/* Frame should be equal to the next frame number in the RV's movement */
 					assert(frame == rv->frame + 1);
 					rv->tile = tile;
+					rv->cur_image_valid_dir = INVALID_DIR;
 					rv->state = RVSB_WORMHOLE;
 					rv->vehstatus |= VS_HIDDEN;
 					return VETSB_ENTERED_WORMHOLE;
@@ -1960,6 +1961,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 			/* We're at the tunnel exit ?? */
 			if (dir == ReverseDiagDir(vdir) && frame == TILE_SIZE - _tunnel_visibility_frame[dir] && z == 0) {
 				rv->tile = tile;
+				rv->cur_image_valid_dir = INVALID_DIR;
 				rv->state = DiagDirToDiagTrackdir(vdir);
 				rv->frame = frame;
 				rv->vehstatus &= ~VS_HIDDEN;
@@ -1990,6 +1992,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 
 				case VEH_ROAD: {
 					RoadVehicle *rv = RoadVehicle::From(v);
+					rv->cur_image_valid_dir = INVALID_DIR;
 					rv->state = RVSB_WORMHOLE;
 					/* There are no slopes inside bridges / tunnels. */
 					ClrBit(rv->gv_flags, GVF_GOINGUP_BIT);
@@ -2019,6 +2022,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 				case VEH_ROAD: {
 					RoadVehicle *rv = RoadVehicle::From(v);
 					if (rv->state == RVSB_WORMHOLE) {
+						rv->cur_image_valid_dir = INVALID_DIR;
 						rv->state = DiagDirToDiagTrackdir(vdir);
 						rv->frame = 0;
 						return VETSB_ENTERED_WORMHOLE;

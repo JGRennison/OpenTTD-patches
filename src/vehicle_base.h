@@ -1148,19 +1148,19 @@ struct SpecializedVehicle : public Vehicle {
 		/* Skip updating sprites on dedicated servers without screen */
 		if (_network_dedicated) return;
 
-		extern bool _sprite_group_resolve_check_veh_enable;
-		extern bool _sprite_group_resolve_check_veh_result;
+		extern bool _sprite_group_resolve_check_veh_check;
+		extern VehicleType _sprite_group_resolve_check_veh_type;
 
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);
 		SpriteID old_image = this->cur_image;
 		if (this->cur_image_valid_dir != this->direction) {
-			_sprite_group_resolve_check_veh_enable = true;
-			_sprite_group_resolve_check_veh_result = true;
+			_sprite_group_resolve_check_veh_check = true;
+			_sprite_group_resolve_check_veh_type = EXPECTED_TYPE;
 			this->cur_image = ((T *)this)->T::GetImage(this->direction, EIT_ON_MAP);
-			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_result ? this->direction : INVALID_DIR;
-			_sprite_group_resolve_check_veh_enable = false;
+			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? this->direction : INVALID_DIR;
+			_sprite_group_resolve_check_veh_check = false;
 		}
 		if (force_update || this->cur_image != old_image) this->Vehicle::UpdateViewport(true);
 	}

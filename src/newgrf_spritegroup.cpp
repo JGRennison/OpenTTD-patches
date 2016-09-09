@@ -13,6 +13,7 @@
 #include "debug.h"
 #include "newgrf_spritegroup.h"
 #include "core/pool_func.hpp"
+#include "vehicle_type.h"
 
 #include "safeguards.h"
 
@@ -237,8 +238,8 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust *adjust, ScopeResolver
 	}
 }
 
-bool _sprite_group_resolve_check_veh_enable = false;
-bool _sprite_group_resolve_check_veh_result = false;
+bool _sprite_group_resolve_check_veh_check = false;
+VehicleType _sprite_group_resolve_check_veh_type;
 
 const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) const
 {
@@ -254,7 +255,7 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		/* Try to get the variable. We shall assume it is available, unless told otherwise. */
 		bool available = true;
 		if (adjust->variable == 0x7E) {
-			_sprite_group_resolve_check_veh_result = false;
+			_sprite_group_resolve_check_veh_check = false;
 			const SpriteGroup *subgroup = SpriteGroup::Resolve(adjust->subroutine, object, false);
 			if (subgroup == NULL) {
 				value = CALLBACK_FAILED;
@@ -264,10 +265,10 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 
 			/* Note: 'last_value' and 'reseed' are shared between the main chain and the procedure */
 		} else if (adjust->variable == 0x7B) {
-			_sprite_group_resolve_check_veh_result = false;
+			_sprite_group_resolve_check_veh_check = false;
 			value = GetVariable(object, scope, adjust->parameter, last_value, &available);
 		} else {
-			if (_sprite_group_resolve_check_veh_enable) {
+			if (_sprite_group_resolve_check_veh_check) {
 				switch (adjust->variable) {
 					// whitelist of variables which can be checked without requiring an immediate re-check on the next tick
 					case 0xC:
@@ -302,8 +303,15 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 					case 0x80 + 0x7A:
 						break;
 
+					case 0x80 + 0x62:
+						// RoadVehicle::state
+						if (_sprite_group_resolve_check_veh_type != VEH_ROAD) {
+							_sprite_group_resolve_check_veh_check = false;
+						}
+						break;
+
 					default:
-						_sprite_group_resolve_check_veh_result = false;
+						_sprite_group_resolve_check_veh_check = false;
 						break;
 				}
 			}
