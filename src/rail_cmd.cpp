@@ -36,6 +36,7 @@
 #include "tracerestrict.h"
 #include "programmable_signals.h"
 #include "spritecache.h"
+#include "core/container_func.hpp"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -1438,10 +1439,22 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 	Trackdir last_suitable_trackdir = INVALID_TRACKDIR;
 	CommandCost last_error = CMD_ERROR;
 	bool had_success = false;
+	std::vector<TileIndex> tunnel_bridge_blacklist;
 	for (;;) {
-		/* only build/remove signals with the specified density */
+		bool tile_ok = true;
+		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+			if (container_unordered_remove(tunnel_bridge_blacklist, tile) > 0) {
+				/* This tile is blacklisted, skip tile and remove from blacklist.
+				 * Mark last used counter as current tile.
+				 */
+				tile_ok = false;
+				last_used_ctr = signal_ctr;
+				last_suitable_tile = INVALID_TILE;
+			}
+		}
 
-		if (remove || minimise_gaps || signal_ctr % signal_density == 0 || IsTileType(tile, MP_TUNNELBRIDGE)) {
+		/* only build/remove signals with the specified density */
+		if (tile_ok && (remove || minimise_gaps || signal_ctr % signal_density == 0 || IsTileType(tile, MP_TUNNELBRIDGE))) {
 			uint32 p1 = GB(TrackdirToTrack(trackdir), 0, 3);
 			SB(p1, 3, 1, mode);
 			SB(p1, 4, 1, semaphores);
@@ -1456,6 +1469,10 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 			/* Test tiles in between for suitability as well if minimising gaps. */
 			bool test_only = !remove && minimise_gaps && signal_ctr < (last_used_ctr + signal_density);
 			CommandCost ret = DoCommand(tile, p1, signals, test_only ? flags & ~DC_EXEC : flags, remove ? CMD_REMOVE_SIGNALS : CMD_BUILD_SIGNALS);
+			if (!test_only && ret.Succeeded() && IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeDirection(tile) == TrackdirToExitdir(trackdir)) {
+				/* Blacklist far end of tunnel if we just actioned the near end */
+				tunnel_bridge_blacklist.push_back(GetOtherTunnelBridgeEnd(tile));
+			}
 
 			if (ret.Succeeded()) {
 				/* Remember last track piece where we can place a signal. */
@@ -1473,6 +1490,10 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 				if (HasBit(signal_dir, 1)) signals |= SignalAgainstTrackdir(last_suitable_trackdir);
 
 				ret = DoCommand(last_suitable_tile, p1, signals, flags, remove ? CMD_REMOVE_SIGNALS : CMD_BUILD_SIGNALS);
+				if (ret.Succeeded() && IsTileType(last_suitable_tile, MP_TUNNELBRIDGE) && GetTunnelBridgeDirection(last_suitable_tile) == TrackdirToExitdir(last_suitable_trackdir)) {
+					/* Blacklist far end of tunnel if we just actioned the near end */
+					tunnel_bridge_blacklist.push_back(GetOtherTunnelBridgeEnd(last_suitable_tile));
+				}
 			}
 
 			/* Collect cost. */
@@ -1480,14 +1501,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 				/* Be user-friendly and try placing signals as much as possible */
 				if (ret.Succeeded()) {
 					had_success = true;
-					if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-						if ((!autofill && GetTunnelBridgeDirection(tile) == TrackdirToExitdir(trackdir)) ||
-								(autofill && GetTunnelBridgeDirection(tile) != TrackdirToExitdir(trackdir))) {
-							total_cost.AddCost(ret);
-						}
-					} else {
-						total_cost.AddCost(ret);
-					}
+					total_cost.AddCost(ret);
 					last_used_ctr = last_suitable_ctr;
 					last_suitable_tile = INVALID_TILE;
 				} else {
