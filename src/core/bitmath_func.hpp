@@ -12,6 +12,8 @@
 #ifndef BITMATH_FUNC_HPP
 #define BITMATH_FUNC_HPP
 
+#include <type_traits>
+
 /**
  * Fetch \a n bits from \a x, started at bit \a s.
  *
@@ -268,12 +270,13 @@ template <typename T>
 static inline uint CountBits(T value)
 {
 #ifdef WITH_BITMATH_BUILTINS
-	if (sizeof(T) == sizeof(unsigned int)) {
-		return __builtin_popcount(value);
+	typename std::make_unsigned<T>::type unsigned_value = value;
+	if (sizeof(T) <= sizeof(unsigned int)) {
+		return __builtin_popcount(unsigned_value);
 	} else if (sizeof(T) == sizeof(unsigned long)) {
-		return __builtin_popcountl(value);
+		return __builtin_popcountl(unsigned_value);
 	} else {
-		return __builtin_popcountll(value);
+		return __builtin_popcountll(unsigned_value);
 	}
 #else
 	uint num;
