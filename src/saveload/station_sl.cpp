@@ -240,7 +240,7 @@ static const SaveLoad _station_speclist_desc[] = {
 	SLE_END()
 };
 
-std::list<CargoPacket *> _packets;
+CargoPacketList _packets;
 uint32 _num_dests;
 
 struct FlowSaveLoad {
@@ -282,7 +282,7 @@ const SaveLoad *GetGoodsDesc()
 		SLEG_CONDVAR(            _cargo_feeder_share,  SLE_FILE_U32 | SLE_VAR_I64, 14, 64),
 		SLEG_CONDVAR(            _cargo_feeder_share,  SLE_INT64,                  65, 67),
 		 SLE_CONDVAR(GoodsEntry, amount_fract,         SLE_UINT8,                 150, SL_MAX_VERSION),
-		SLEG_CONDLST(            _packets,             REF_CARGO_PACKET,           68, 182),
+		SLEG_CONDDEQ(            _packets,             REF_CARGO_PACKET,           68, 182),
 		SLEG_CONDVAR(            _num_dests,           SLE_UINT32,                183, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, cargo.reserved_count, SLE_UINT,                  181, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, link_graph,           SLE_UINT16,                183, SL_MAX_VERSION),
@@ -295,11 +295,11 @@ const SaveLoad *GetGoodsDesc()
 	return goods_desc;
 }
 
-typedef std::pair<const StationID, std::list<CargoPacket *> > StationCargoPair;
+typedef std::pair<const StationID, CargoPacketList> StationCargoPair;
 
 static const SaveLoad _cargo_list_desc[] = {
 	SLE_VAR(StationCargoPair, first,  SLE_UINT16),
-	SLE_LST(StationCargoPair, second, REF_CARGO_PACKET),
+	SLE_DEQ(StationCargoPair, second, REF_CARGO_PACKET),
 	SLE_END()
 };
 
@@ -313,7 +313,7 @@ static void SwapPackets(GoodsEntry *ge)
 	StationCargoPacketMap &ge_packets = const_cast<StationCargoPacketMap &>(*ge->cargo.Packets());
 
 	if (_packets.empty()) {
-		std::map<StationID, std::list<CargoPacket *> >::iterator it(ge_packets.find(INVALID_STATION));
+		std::map<StationID, CargoPacketList>::iterator it(ge_packets.find(INVALID_STATION));
 		if (it == ge_packets.end()) {
 			return;
 		} else {

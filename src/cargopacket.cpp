@@ -17,6 +17,8 @@
 #include "cargoaction.h"
 #include "order_type.h"
 
+#include <vector>
+
 #include "safeguards.h"
 
 /* Initialize the cargopacket-pool */
@@ -311,17 +313,12 @@ template<class Taction>
 void VehicleCargoList::PopCargo(Taction action)
 {
 	if (this->packets.empty()) return;
-	Iterator it(--(this->packets.end()));
-	Iterator begin(this->packets.begin());
-	while (action.MaxMove() > 0) {
+	for (auto it = this->packets.end(); it != this->packets.begin();) {
+		if (action.MaxMove() <= 0) break;
+		--it;
 		CargoPacket *cp = *it;
 		if (action(cp)) {
-			if (it != begin) {
-				this->packets.erase(it--);
-			} else {
-				this->packets.erase(it);
-				break;
-			}
+			it = this->packets.erase(it);
 		} else {
 			break;
 		}
@@ -452,9 +449,10 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 	this->AssertCountConsistency();
 	assert(this->action_counts[MTA_LOAD] == 0);
 	this->action_counts[MTA_TRANSFER] = this->action_counts[MTA_DELIVER] = this->action_counts[MTA_KEEP] = 0;
-	Iterator deliver = this->packets.end();
 	Iterator it = this->packets.begin();
 	uint sum = 0;
+	CargoPacketList transfer_deliver;
+	std::vector<CargoPacket *> keep;
 
 	bool force_keep = (order_flags & OUFB_NO_UNLOAD) != 0;
 	bool force_unload = (order_flags & OUFB_UNLOAD) != 0;
@@ -463,7 +461,7 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 	while (sum < this->count) {
 		CargoPacket *cp = *it;
 
-		this->packets.erase(it++);
+		it = this->packets.erase(it);
 		StationID cargo_next = INVALID_STATION;
 		MoveToAction action = MTA_LOAD;
 		if (force_keep) {
@@ -514,14 +512,13 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 		Money share;
 		switch (action) {
 			case MTA_KEEP:
-				this->packets.push_back(cp);
-				if (deliver == this->packets.end()) --deliver;
+				keep.push_back(cp);
 				break;
 			case MTA_DELIVER:
-				this->packets.insert(deliver, cp);
+				transfer_deliver.push_back(cp);
 				break;
 			case MTA_TRANSFER:
-				this->packets.push_front(cp);
+				transfer_deliver.push_front(cp);
 				/* Add feeder share here to allow reusing field for next station. */
 				share = payment->PayTransfer(cp, cp->count);
 				cp->AddFeederShare(share);
@@ -534,6 +531,9 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 		this->action_counts[action] += cp->count;
 		sum += cp->count;
 	}
+	assert(this->packets.empty());
+	this->packets = std::move(transfer_deliver);
+	this->packets.insert(this->packets.end(), keep.begin(), keep.end());
 	this->AssertCountConsistency();
 	return this->action_counts[MTA_DELIVER] > 0 || this->action_counts[MTA_TRANSFER] > 0;
 }
