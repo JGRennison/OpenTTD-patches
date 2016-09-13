@@ -1626,7 +1626,7 @@ struct StationViewWindow : public Window {
 	 */
 	void SetDisplayedRow(const CargoDataEntry *data)
 	{
-		std::list<StationID> stations;
+		std::vector<StationID> stations;
 		const CargoDataEntry *parent = data->GetParent();
 		if (parent->GetParent() == NULL) {
 			this->displayed_rows.push_back(RowDisplay(&this->expanded_rows, data->GetCargo()));
