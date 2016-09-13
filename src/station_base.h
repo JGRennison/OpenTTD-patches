@@ -20,6 +20,7 @@
 #include "linkgraph/linkgraph_type.h"
 #include "newgrf_storage.h"
 #include <map>
+#include <vector>
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
@@ -468,7 +469,7 @@ public:
 	byte time_since_unload;
 
 	byte last_vehicle_type;
-	std::list<Vehicle *> loading_vehicles;
+	std::vector<Vehicle *> loading_vehicles;
 	GoodsEntry goods[NUM_CARGO];  ///< Goods at this station
 	uint32 always_accepted;       ///< Bitmask of always accepted cargo types (by houses, HQs, industry tiles when industry doesn't accept cargo)
 

@@ -3558,8 +3558,8 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
 	ge.cargo.Reroute(UINT_MAX, &ge.cargo, avoid, avoid2, &ge);
 
 	/* Reroute cargo staged to be transfered. */
-	for (std::list<Vehicle *>::iterator it(st->loading_vehicles.begin()); it != st->loading_vehicles.end(); ++it) {
-		for (Vehicle *v = *it; v != NULL; v = v->Next()) {
+	for (Vehicle *v : st->loading_vehicles) {
+		for (; v != NULL; v = v->Next()) {
 			if (v->cargo_type != c) continue;
 			v->cargo.Reroute(UINT_MAX, &v->cargo, avoid, avoid2, &ge);
 		}

@@ -218,7 +218,7 @@ static const SaveLoad _old_station_desc[] = {
 	SLE_CONDVAR(Station, waiting_triggers,           SLE_UINT8,                  27, SL_MAX_VERSION),
 	SLE_CONDVAR(Station, num_specs,                  SLE_UINT8,                  27, SL_MAX_VERSION),
 
-	SLE_CONDLST(Station, loading_vehicles,           REF_VEHICLE,                57, SL_MAX_VERSION),
+	SLE_CONDVEC(Station, loading_vehicles,           REF_VEHICLE,                57, SL_MAX_VERSION),
 
 	/* reserve extra space in savegame here. (currently 32 bytes) */
 	SLE_CONDNULL(32, 2, SL_MAX_VERSION),
@@ -440,7 +440,7 @@ static const SaveLoad _station_desc[] = {
 	      SLE_VAR(Station, time_since_unload,          SLE_UINT8),
 	      SLE_VAR(Station, last_vehicle_type,          SLE_UINT8),
 	      SLE_VAR(Station, had_vehicle_of_type,        SLE_UINT8),
-	      SLE_LST(Station, loading_vehicles,           REF_VEHICLE),
+	      SLE_VEC(Station, loading_vehicles,           REF_VEHICLE),
 	  SLE_CONDVAR(Station, always_accepted,            SLE_UINT32, 127, SL_MAX_VERSION),
 
 	      SLE_END()

@@ -1969,12 +1969,9 @@ void LoadUnloadStation(Station *st)
 	if (st->loading_vehicles.empty()) return;
 
 	Vehicle *last_loading = NULL;
-	std::list<Vehicle *>::iterator iter;
 
 	/* Check if anything will be loaded at all. Otherwise we don't need to reserve either. */
-	for (iter = st->loading_vehicles.begin(); iter != st->loading_vehicles.end(); ++iter) {
-		Vehicle *v = *iter;
-
+	for (Vehicle *v : st->loading_vehicles) {
 		if ((v->vehstatus & (VS_STOPPED | VS_CRASHED))) continue;
 
 		assert(v->load_unload_ticks != 0);
@@ -1990,8 +1987,7 @@ void LoadUnloadStation(Station *st)
 	 */
 	if (last_loading == NULL) return;
 
-	for (iter = st->loading_vehicles.begin(); iter != st->loading_vehicles.end(); ++iter) {
-		Vehicle *v = *iter;
+	for (Vehicle *v : st->loading_vehicles) {
 		if (!(v->vehstatus & (VS_STOPPED | VS_CRASHED))) LoadUnloadVehicle(v);
 		if (v == last_loading) break;
 	}

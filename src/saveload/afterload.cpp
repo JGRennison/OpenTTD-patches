@@ -62,6 +62,7 @@
 #include "saveload_internal.h"
 
 #include <signal.h>
+#include <algorithm>
 
 #include "../safeguards.h"
 
@@ -1658,12 +1659,10 @@ bool AfterLoadGame()
 
 		Station *st;
 		FOR_ALL_STATIONS(st) {
-			std::list<Vehicle *>::iterator iter;
-			for (iter = st->loading_vehicles.begin(); iter != st->loading_vehicles.end();) {
-				Vehicle *v = *iter;
-				iter++;
-				if (!v->current_order.IsType(OT_LOADING)) st->loading_vehicles.remove(v);
-			}
+			st->loading_vehicles.erase(std::remove_if(st->loading_vehicles.begin(), st->loading_vehicles.end(),
+				[](Vehicle *v) {
+					return !v->current_order.IsType(OT_LOADING);
+				}), st->loading_vehicles.end());
 		}
 	}
 
@@ -2248,13 +2247,11 @@ bool AfterLoadGame()
 		 */
 		Station *st;
 		FOR_ALL_STATIONS(st) {
-			std::list<Vehicle *>::iterator iter;
-			for (iter = st->loading_vehicles.begin(); iter != st->loading_vehicles.end(); ++iter) {
+			for (Vehicle *v : st->loading_vehicles) {
 				/* There are always as many CargoPayments as Vehicles. We need to make the
 				 * assert() in Pool::GetNew() happy by calling CanAllocateItem(). */
 				assert_compile(CargoPaymentPool::MAX_SIZE == VehiclePool::MAX_SIZE);
 				assert(CargoPayment::CanAllocateItem());
-				Vehicle *v = *iter;
 				if (v->cargo_payment == NULL) v->cargo_payment = new CargoPayment(v);
 			}
 		}

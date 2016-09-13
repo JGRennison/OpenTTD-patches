@@ -60,6 +60,8 @@
 
 #include "table/strings.h"
 
+#include <algorithm>
+
 #include "safeguards.h"
 
 #define GEN_HASH(x, y) ((GB((y), 6 + ZOOM_LVL_SHIFT, 6) << 6) + GB((x), 7 + ZOOM_LVL_SHIFT, 6))
@@ -830,7 +832,7 @@ void Vehicle::PreDestructor()
 
 	if (Station::IsValidID(this->last_station_visited)) {
 		Station *st = Station::Get(this->last_station_visited);
-		st->loading_vehicles.remove(this);
+		st->loading_vehicles.erase(std::remove(st->loading_vehicles.begin(), st->loading_vehicles.end(), this), st->loading_vehicles.end());
 
 		HideFillingPercent(&this->fill_percent_te_id);
 		this->CancelReservation(INVALID_STATION, st);
@@ -2592,7 +2594,7 @@ void Vehicle::LeaveStation()
 	this->current_order.MakeLeaveStation();
 	Station *st = Station::Get(this->last_station_visited);
 	this->CancelReservation(INVALID_STATION, st);
-	st->loading_vehicles.remove(this);
+	st->loading_vehicles.erase(std::remove(st->loading_vehicles.begin(), st->loading_vehicles.end(), this), st->loading_vehicles.end());
 
 	HideFillingPercent(&this->fill_percent_te_id);
 	trip_occupancy = CalcPercentVehicleFilled(this, NULL);
