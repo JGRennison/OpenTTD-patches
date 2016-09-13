@@ -174,16 +174,19 @@ void SlXvCheckSpecialSavegameVersions()
 		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.0.102 savegame version %d as version 187", _sl_version);
 
 		_sl_version = 187;
+		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 1;
 	} else if (_sl_version == 221) { /* SL_SPRING_2013_v2_1_108 */
 		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.1.108 savegame version %d as version 188", _sl_version);
 
 		_sl_version = 188;
+		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 2;
 	} else if (_sl_version == 222) { /* SL_SPRING_2013_v2_1_147 */
 		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.1.147 savegame version %d as version 194", _sl_version);
 
 		_sl_version = 194;
+		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 3;
 	}
 
