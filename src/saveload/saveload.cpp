@@ -1489,6 +1489,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 		case SL_STR:
 		case SL_LST:
 		case SL_DEQ:
+		case SL_VEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) break;
 
@@ -1499,6 +1500,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 				case SL_STR: return SlCalcStringLen(GetVariableAddress(object, sld), sld->length, sld->conv);
 				case SL_LST: return SlCalcListLen<std::list<void *>>(GetVariableAddress(object, sld));
 				case SL_DEQ: return SlCalcListLen<std::deque<void *>>(GetVariableAddress(object, sld));
+				case SL_VEC: return SlCalcListLen<std::vector<void *>>(GetVariableAddress(object, sld));
 				default: NOT_REACHED();
 			}
 			break;
@@ -1562,6 +1564,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 		case SL_STR:
 		case SL_LST:
 		case SL_DEQ:
+		case SL_VEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) return false;
 			if (SlSkipVariableOnLoad(sld)) return false;
@@ -1590,6 +1593,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 				case SL_STR: SlString(ptr, sld->length, sld->conv); break;
 				case SL_LST: SlList<std::list<void *>>(ptr, (SLRefType)conv); break;
 				case SL_DEQ: SlList<std::deque<void *>>(ptr, (SLRefType)conv); break;
+				case SL_VEC: SlList<std::vector<void *>>(ptr, (SLRefType)conv); break;
 				default: NOT_REACHED();
 			}
 			break;
