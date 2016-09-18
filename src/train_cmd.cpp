@@ -2240,10 +2240,10 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 
 		if (IsTunnelBridgeSignalSimulationEntrance(end) && GetTunnelBridgeSignalState(end) == SIGNAL_STATE_RED) {
 			SetTunnelBridgeSignalState(end, SIGNAL_STATE_GREEN);
-			if (!_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(end);
+			MarkTileDirtyByTile(end);
 		} else if (IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeSignalState(tile) == SIGNAL_STATE_RED) {
 			SetTunnelBridgeSignalState(tile, SIGNAL_STATE_GREEN);
-			if (!_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile);
 		}
 	}
 }
