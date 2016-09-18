@@ -14,6 +14,7 @@
 
 #include "bridge_map.h"
 #include "tunnel_map.h"
+#include "signal_type.h"
 
 
 /**
@@ -122,40 +123,40 @@ static inline TrackBits GetTunnelBridgeReservationTrackBits(TileIndex t)
 }
 
 /**
- * Declare tunnel/bridge with signal simulation.
+ * Declare tunnel/bridge entrance with signal simulation.
  * @param t the tunnel/bridge tile.
  */
-static inline void SetBitTunnelBridgeSignal(TileIndex t)
+static inline void SetTunnelBridgeSignalSimulationEntrance(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
 	SetBit(_m[t].m5, 5);
 }
 
 /**
- * Remove tunnel/bridge with signal simulation.
+ * Remove tunnel/bridge entrance with signal simulation.
  * @param t the tunnel/bridge tile.
  */
-static inline void ClrBitTunnelBridgeSignal(TileIndex t)
+static inline void ClrTunnelBridgeSignalSimulationEntrance(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
 	ClrBit(_m[t].m5, 5);
 }
 
 /**
- * Declare tunnel/bridge exit.
+ * Declare tunnel/bridge exit with signal simulation.
  * @param t the tunnel/bridge tile.
  */
-static inline void SetBitTunnelBridgeExit(TileIndex t)
+static inline void SetTunnelBridgeSignalSimulationExit(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
 	SetBit(_m[t].m5, 6);
 }
 
 /**
- * Remove tunnel/bridge exit declaration.
+ * Remove tunnel/bridge exit with signal simulation.
  * @param t the tunnel/bridge tile.
  */
-static inline void ClrBitTunnelBridgeExit(TileIndex t)
+static inline void ClrTunnelBridgeSignalSimulationExit(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
 	ClrBit(_m[t].m5, 6);
@@ -167,85 +168,81 @@ static inline void ClrBitTunnelBridgeExit(TileIndex t)
  * @param t the tile that might be a tunnel/bridge.
  * @return true if and only if this tile is a tunnel/bridge with signal simulation.
  */
-static inline bool HasWormholeSignals(TileIndex t)
+static inline bool IsTunnelBridgeWithSignalSimulation(TileIndex t)
 {
-	return IsTileType(t, MP_TUNNELBRIDGE) && (HasBit(_m[t].m5, 5) || HasBit(_m[t].m5, 6)) ;
-}
-
-/**
- * Is this a tunnel/bridge with sign on green?
- * @param t the tile that might be a tunnel/bridge with sign set green.
- * @pre IsTileType(t, MP_TUNNELBRIDGE)
- * @return true if and only if this tile is a tunnel/bridge entrance.
- */
-static inline bool IsTunnelBridgeWithSignGreen(TileIndex t)
-{
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
-	return HasBit(_m[t].m5, 5) && !HasBit(_m[t].m5, 6);
-}
-
-static inline bool IsTunnelBridgeWithSignRed(TileIndex t)
-{
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
-	return HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
+	return IsTileType(t, MP_TUNNELBRIDGE) && (HasBit(_m[t].m5, 5) || HasBit(_m[t].m5, 6));
 }
 
 /**
  * Is this a tunnel/bridge entrance tile with signal?
  * Tunnel bridge signal simulation has allways bit 5 on at entrance.
  * @param t the tile that might be a tunnel/bridge.
+ * @pre IsTileType(t, MP_TUNNELBRIDGE)
  * @return true if and only if this tile is a tunnel/bridge entrance.
  */
-static inline bool IsTunnelBridgeEntrance(TileIndex t)
+static inline bool IsTunnelBridgeSignalSimulationEntrance(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
-	return HasBit(_m[t].m5, 5) ;
+	return HasBit(_m[t].m5, 5) && !HasBit(_m[t].m5, 6);
 }
 
 /**
  * Is this a tunnel/bridge exit?
  * @param t the tile that might be a tunnel/bridge.
+ * @pre IsTileType(t, MP_TUNNELBRIDGE)
  * @return true if and only if this tile is a tunnel/bridge exit.
  */
-static inline bool IsTunnelBridgeExit(TileIndex t)
+static inline bool IsTunnelBridgeSignalSimulationExit(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
 	return !HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
 }
 
-static inline bool IsTunnelBridgeExitGreen(TileIndex t)
+/**
+ * Get the signal state for a tunnel/bridge entrance or exit with signal simulation
+ * @param t the tunnel/bridge entrance or exit tile with signal simulation
+ * @pre IsTunnelBridgeWithSignalSimulation(t)
+ * @return signal state
+ */
+static inline SignalState GetTunnelBridgeSignalState(TileIndex t)
 {
-	assert(IsTunnelBridgeExit(t));
-	return HasBit(_me[t].m6, 0);
+	assert(IsTunnelBridgeWithSignalSimulation(t));
+	return HasBit(_me[t].m6, 0) ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED;
 }
 
-static inline void SetTunnelBridgeExitGreen(TileIndex t, bool green)
+/**
+ * Set the signal state for a tunnel/bridge entrance or exit with signal simulation
+ * @param t the tunnel/bridge entrance or exit tile with signal simulation
+ * @pre IsTunnelBridgeWithSignalSimulation(t)
+ * @param state signal state
+ */
+static inline void SetTunnelBridgeSignalState(TileIndex t, SignalState state)
 {
-	assert(IsTunnelBridgeExit(t));
-	SB(_me[t].m6, 0, 1, green ? 1 : 0);
+	assert(IsTunnelBridgeWithSignalSimulation(t));
+	SB(_me[t].m6, 0, 1, (state == SIGNAL_STATE_GREEN) ? 1 : 0);
 }
 
 static inline bool IsTunnelBridgeSemaphore(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	assert(IsTunnelBridgeWithSignalSimulation(t));
 	return HasBit(_me[t].m6, 1);
 }
 
 static inline void SetTunnelBridgeSemaphore(TileIndex t, bool is_semaphore)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	assert(IsTunnelBridgeWithSignalSimulation(t));
 	SB(_me[t].m6, 1, 1, is_semaphore ? 1 : 0);
 }
 
 static inline bool IsTunnelBridgePBS(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	assert(IsTunnelBridgeWithSignalSimulation(t));
 	return HasBit(_me[t].m6, 6);
 }
 
 static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE) && HasWormholeSignals(t));
+	assert(IsTunnelBridgeWithSignalSimulation(t));
 	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
 }
 

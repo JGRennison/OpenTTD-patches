@@ -936,7 +936,7 @@ static void NPFFollowTrack(AyStar *aystar, OpenListNode *current)
 				break;
 			}
 		}
-		if (IsTileType(dst_tile, MP_TUNNELBRIDGE) && IsTunnelBridgeExit(dst_tile) && DiagDirToDiagTrackdir(GetTunnelBridgeDirection(dst_tile)) == dst_trackdir) {
+		if (IsTileType(dst_tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(dst_tile) && DiagDirToDiagTrackdir(GetTunnelBridgeDirection(dst_tile)) == dst_trackdir) {
 			/* Entering a signalled bridge/tunnel from the wrong side, equivalent to encountering a one-way signal from the wrong side */
 			break;
 		}
