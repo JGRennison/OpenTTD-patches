@@ -52,6 +52,7 @@
 
 #include "../safeguards.h"
 
+#include <deque>
 #include <vector>
 
 /*
@@ -566,7 +567,7 @@ void NORETURN SlError(StringID string, const char *extra_msg, bool already_mallo
 /**
  * As SlError, except that it takes a format string and additional parameters
  */
-void CDECL NORETURN SlErrorFmt(StringID string, const char *msg, ...)
+void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...)
 {
 	va_list va;
 	va_start(va, msg);
@@ -590,7 +591,7 @@ void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced)
 /**
  * As SlErrorCorruptFmt, except that it takes a format string and additional parameters
  */
-void CDECL NORETURN SlErrorCorruptFmt(const char *msg, ...)
+void NORETURN CDECL SlErrorCorruptFmt(const char *msg, ...)
 {
 	va_list va;
 	va_start(va, msg);
@@ -890,9 +891,20 @@ void SlSetLength(size_t length)
 				case CH_RIFF:
 					/* Ugly encoding of >16M RIFF chunks
 					 * The lower 24 bits are normal
-					 * The uppermost 4 bits are bits 24:27 */
-					assert(length < (1 << 28));
+					 * The uppermost 4 bits are bits 24:27
+					 *
+					 * If we have more than 28 bits, use an extra uint32 and
+					 * signal this using the extended chunk header */
+					assert(length < (1LL << 32));
+					if (length >= (1 << 28)) {
+						/* write out extended chunk header */
+						SlWriteByte(CH_EXT_HDR);
+						SlWriteUint32(static_cast<uint32>(SLCEHF_BIG_RIFF));
+					}
 					SlWriteUint32((uint32)((length & 0xFFFFFF) | ((length >> 24) << 28)));
+					if (length >= (1 << 28)) {
+						SlWriteUint32(length >> 28);
+					}
 					break;
 				case CH_ARRAY:
 					assert(_sl.last_array_index <= _sl.array_index);
@@ -1355,9 +1367,10 @@ static void *IntToReference(size_t index, SLRefType rt)
  * Return the size in bytes of a list
  * @param list The std::list to find the size of
  */
+ template<typename PtrList>
 static inline size_t SlCalcListLen(const void *list)
 {
-	const std::list<void *> *l = (const std::list<void *> *) list;
+	const PtrList *l = (const PtrList *) list;
 
 	int type_size = IsSavegameVersionBefore(69) ? 2 : 4;
 	/* Each entry is saved as type_size bytes, plus type_size bytes are used for the length
@@ -1371,23 +1384,23 @@ static inline size_t SlCalcListLen(const void *list)
  * @param list The list being manipulated
  * @param conv SLRefType type of the list (Vehicle *, Station *, etc)
  */
+template<typename PtrList>
 static void SlList(void *list, SLRefType conv)
 {
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
-		SlSetLength(SlCalcListLen(list));
+		SlSetLength(SlCalcListLen<PtrList>(list));
 		/* Determine length only? */
 		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
-	typedef std::list<void *> PtrList;
 	PtrList *l = (PtrList *)list;
 
 	switch (_sl.action) {
 		case SLA_SAVE: {
 			SlWriteUint32((uint32)l->size());
 
-			PtrList::iterator iter;
+			typename PtrList::iterator iter;
 			for (iter = l->begin(); iter != l->end(); ++iter) {
 				void *ptr = *iter;
 				SlWriteUint32((uint32)ReferenceToInt(ptr, conv));
@@ -1409,7 +1422,7 @@ static void SlList(void *list, SLRefType conv)
 			PtrList temp = *l;
 
 			l->clear();
-			PtrList::iterator iter;
+			typename PtrList::iterator iter;
 			for (iter = temp.begin(); iter != temp.end(); ++iter) {
 				void *ptr = IntToReference((size_t)*iter, conv);
 				l->push_back(ptr);
@@ -1475,6 +1488,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_LST:
+		case SL_DEQ:
+		case SL_VEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) break;
 
@@ -1483,7 +1498,9 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 				case SL_REF: return SlCalcRefLen();
 				case SL_ARR: return SlCalcArrayLen(sld->length, sld->conv);
 				case SL_STR: return SlCalcStringLen(GetVariableAddress(object, sld), sld->length, sld->conv);
-				case SL_LST: return SlCalcListLen(GetVariableAddress(object, sld));
+				case SL_LST: return SlCalcListLen<std::list<void *>>(GetVariableAddress(object, sld));
+				case SL_DEQ: return SlCalcListLen<std::deque<void *>>(GetVariableAddress(object, sld));
+				case SL_VEC: return SlCalcListLen<std::vector<void *>>(GetVariableAddress(object, sld));
 				default: NOT_REACHED();
 			}
 			break;
@@ -1546,6 +1563,8 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_LST:
+		case SL_DEQ:
+		case SL_VEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) return false;
 			if (SlSkipVariableOnLoad(sld)) return false;
@@ -1572,7 +1591,9 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 					break;
 				case SL_ARR: SlArray(ptr, sld->length, conv); break;
 				case SL_STR: SlString(ptr, sld->length, sld->conv); break;
-				case SL_LST: SlList(ptr, (SLRefType)conv); break;
+				case SL_LST: SlList<std::list<void *>>(ptr, (SLRefType)conv); break;
+				case SL_DEQ: SlList<std::deque<void *>>(ptr, (SLRefType)conv); break;
+				case SL_VEC: SlList<std::vector<void *>>(ptr, (SLRefType)conv); break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -1663,6 +1684,16 @@ void SlAutolength(AutolengthProc *proc, void *arg)
 	if (offs != _sl.dumper->GetSize()) SlErrorCorrupt("Invalid chunk size");
 }
 
+/*
+ * Notes on extended chunk header:
+ *
+ * If the chunk type is CH_EXT_HDR (15), then a u32 flags field follows.
+ * This flag field may define additional fields which follow the flags field in future.
+ * The standard chunk header follows, though it my be modified by the flags field.
+ * At present SLCEHF_BIG_RIFF increases the RIFF size limit to a theoretical 60 bits,
+ * by adding a further u32 field for the high bits after the existing RIFF size field.
+ */
+
 /**
  * Load a chunk of data (eg vehicles, stations, etc.)
  * @param ch The chunkhandler that will be used for the operation
@@ -1675,6 +1706,15 @@ static void SlLoadChunk(const ChunkHandler *ch)
 
 	_sl.block_mode = m;
 	_sl.obj_len = 0;
+
+	SaveLoadChunkExtHeaderFlags ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(0);
+	if ((m & 0xF) == CH_EXT_HDR) {
+		ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(SlReadUint32());
+
+		/* read in real header */
+		m = SlReadByte();
+		_sl.block_mode = m;
+	}
 
 	switch (m) {
 		case CH_ARRAY:
@@ -1691,6 +1731,10 @@ static void SlLoadChunk(const ChunkHandler *ch)
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
 				len += SlReadUint16();
+				if (ext_flags & SLCEHF_BIG_RIFF) {
+					len |= SlReadUint32() << 28;
+				}
+
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;
 				ch->load_proc();
@@ -1716,9 +1760,21 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 	_sl.block_mode = m;
 	_sl.obj_len = 0;
 
+	SaveLoadChunkExtHeaderFlags ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(0);
+	if ((m & 0xF) == CH_EXT_HDR) {
+		ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(SlReadUint32());
+
+		/* read in real header */
+		m = SlReadByte();
+		_sl.block_mode = m;
+	}
+
 	switch (m) {
 		case CH_ARRAY:
 			_sl.array_index = 0;
+			if (ext_flags) {
+				SlErrorCorruptFmt("CH_ARRAY does not take chunk header extension flags: 0x%X", ext_flags);
+			}
 			if (ch && ch->load_check_proc) {
 				ch->load_check_proc();
 			} else {
@@ -1726,6 +1782,9 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 			}
 			break;
 		case CH_SPARSE_ARRAY:
+			if (ext_flags) {
+				SlErrorCorruptFmt("CH_SPARSE_ARRAY does not take chunk header extension flags: 0x%X", ext_flags);
+			}
 			if (ch && ch->load_check_proc) {
 				ch->load_check_proc();
 			} else {
@@ -1734,9 +1793,19 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 			break;
 		default:
 			if ((m & 0xF) == CH_RIFF) {
+				if (ext_flags != (ext_flags & SLCEHF_BIG_RIFF)) {
+					SlErrorCorruptFmt("Unknown chunk header extension flags for CH_RIFF: 0x%X", ext_flags);
+				}
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
 				len += SlReadUint16();
+				if (ext_flags & SLCEHF_BIG_RIFF) {
+					uint64 full_len = len | (static_cast<uint64>(SlReadUint32()) << 28);
+					if (full_len >= (1LL << 32)) {
+						SlErrorCorrupt("Chunk size too large: " OTTD_PRINTFHEX64, full_len);
+					}
+					len = static_cast<size_t>(full_len);
+				}
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;
 				if (ch && ch->load_check_proc) {

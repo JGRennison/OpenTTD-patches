@@ -249,7 +249,20 @@ static void WriteSavegameInfo(const char *name)
 	char buf[8192];
 	char *p = buf;
 	p += seprintf(p, lastof(buf), "Name:         %s\n", name);
-	p += seprintf(p, lastof(buf), "Savegame ver: %d\n", _sl_version);
+	const char *type = "";
+	extern bool _sl_is_faked_ext;
+	extern bool _sl_is_ext_version;
+	if (_sl_is_faked_ext) {
+		type = " (fake extended)";
+	} else if (_sl_is_ext_version) {
+		type = " (extended)";
+	}
+	p += seprintf(p, lastof(buf), "Savegame ver: %d%s\n", _sl_version, type);
+	for (size_t i = 0; i < XSLFI_SIZE; i++) {
+		if (_sl_xv_feature_versions[i] > 0) {
+			p += seprintf(p, lastof(buf), "    Feature: %s = %d\n", SlXvGetFeatureName((SlXvFeatureIndex) i), _sl_xv_feature_versions[i]);
+		}
+	}
 	p += seprintf(p, lastof(buf), "NewGRF ver:   0x%08X\n", last_ottd_rev);
 	p += seprintf(p, lastof(buf), "Modified:     %d\n", ever_modified);
 

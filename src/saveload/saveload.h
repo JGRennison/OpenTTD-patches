@@ -104,9 +104,16 @@ enum ChunkType {
 	CH_ARRAY        =  1,
 	CH_SPARSE_ARRAY =  2,
 	CH_TYPE_MASK    =  3,
+	CH_EXT_HDR      = 15, ///< Extended chunk header
 	CH_LAST         =  8, ///< Last chunk in this array.
 	CH_AUTO_LENGTH  = 16,
 };
+
+/** Flags for chunk extended headers */
+enum SaveLoadChunkExtHeaderFlags {
+	SLCEHF_BIG_RIFF           = 1 << 0,  ///< This block uses a 60-bit RIFF chunk size
+};
+DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
 
 /**
  * VarTypes is the general bitmasked magic type that tells us
@@ -198,6 +205,8 @@ enum SaveLoadTypes {
 	SL_ARR         =  2, ///< Save/load an array.
 	SL_STR         =  3, ///< Save/load a string.
 	SL_LST         =  4, ///< Save/load a list.
+	SL_DEQ         =  5, ///< Save/load a deque.
+	SL_VEC         =  6, ///< Save/load a vector.
 	/* non-normal save-load types */
 	SL_WRITEBYTE   =  8,
 	SL_VEH_INCLUDE =  9,
@@ -304,6 +313,30 @@ typedef SaveLoad SaveLoadGlobVarList;
 #define SLE_CONDLST(base, variable, type, from, to) SLE_CONDLST_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
+ * Storage of a deque in some savegame versions.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLE_CONDDEQ_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_DEQ, base, variable, type, 0, from, to, extver)
+#define SLE_CONDDEQ(base, variable, type, from, to) SLE_CONDDEQ_X(base, variable, type, from, to, SlXvFeatureTest())
+
+/**
+ * Storage of a vector in some savegame versions.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLE_CONDVEC_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_VEC, base, variable, type, 0, from, to, extver)
+#define SLE_CONDVEC(base, variable, type, from, to) SLE_CONDVEC_X(base, variable, type, from, to, SlXvFeatureTest())
+
+/**
  * Storage of a variable in every version of a savegame.
  * @param base     Name of the class or struct containing the variable.
  * @param variable Name of the variable in the class or struct referenced by \a base.
@@ -344,6 +377,22 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  */
 #define SLE_LST(base, variable, type) SLE_CONDLST(base, variable, type, 0, SL_MAX_VERSION)
+
+/**
+ * Storage of a deque in every savegame version.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLE_DEQ(base, variable, type) SLE_CONDDEQ(base, variable, type, 0, SL_MAX_VERSION)
+
+/**
+ * Storage of a vector in every savegame version.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLE_VEC(base, variable, type) SLE_CONDVEC(base, variable, type, 0, SL_MAX_VERSION)
 
 /**
  * Empty space in every savegame version.
@@ -441,6 +490,28 @@ typedef SaveLoad SaveLoadGlobVarList;
 #define SLEG_CONDLST(variable, type, from, to) SLEG_CONDLST_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
+ * Storage of a global deque in some savegame versions.
+ * @param variable Name of the global variable.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLEG_CONDDEQ_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_DEQ, variable, type, 0, from, to, extver)
+#define SLEG_CONDDEQ(variable, type, from, to) SLEG_CONDDEQ_X(variable, type, from, to, SlXvFeatureTest())
+
+/**
+ * Storage of a global vector in some savegame versions.
+ * @param variable Name of the global variable.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLEG_CONDVEC_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_VEC, variable, type, 0, from, to, extver)
+#define SLEG_CONDVEC(variable, type, from, to) SLEG_CONDVEC_X(variable, type, from, to, SlXvFeatureTest())
+
+/**
  * Storage of a global variable in every savegame version.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
@@ -474,6 +545,20 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param type     Storage of the data in memory and in the savegame.
  */
 #define SLEG_LST(variable, type) SLEG_CONDLST(variable, type, 0, SL_MAX_VERSION)
+
+/**
+ * Storage of a global deque in every savegame version.
+ * @param variable Name of the global variable.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLEG_DEQ(variable, type) SLEG_CONDDEQ(variable, type, 0, SL_MAX_VERSION)
+
+/**
+ * Storage of a global vector in every savegame version.
+ * @param variable Name of the global variable.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLEG_VEC(variable, type) SLEG_CONDVEC(variable, type, 0, SL_MAX_VERSION)
 
 /**
  * Empty global space in some savegame versions.
@@ -629,8 +714,8 @@ void SlObject(void *object, const SaveLoad *sld);
 bool SlObjectMember(void *object, const SaveLoad *sld);
 void NORETURN SlError(StringID string, const char *extra_msg = NULL, bool already_malloced = false);
 void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced = false);
-void CDECL NORETURN SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);
-void CDECL NORETURN SlErrorCorruptFmt(const char *msg, ...) WARN_FORMAT(1, 2);
+void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);
+void NORETURN CDECL SlErrorCorruptFmt(const char *msg, ...) WARN_FORMAT(1, 2);
 
 bool SaveloadCrashWithMissingNewGRFs();
 
