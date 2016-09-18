@@ -68,6 +68,7 @@
 #include "smallmap_gui.h"
 #include "viewport_func.h"
 #include "thread/thread.h"
+#include "bridge_signal_map.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -341,6 +342,7 @@ static void ShutdownGame()
 
 	LinkGraphSchedule::Clear();
 	ClearTraceRestrictMapping();
+	ClearBridgeSimulatedSignalMapping();
 	PoolBase::Clean(PT_ALL);
 
 	FreeSignalPrograms();

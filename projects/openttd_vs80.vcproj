@@ -2051,6 +2051,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\core\container_func.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\core\endian_func.hpp"
 				>
 			</File>
@@ -2928,6 +2932,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\saveload\tbtr_template_veh_sl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\saveload\bridge_signal_sl.cpp"
 				>
 			</File>
 		</Filter>
@@ -4224,6 +4232,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\bridge_map.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\bridge_signal_map.h"
 				>
 			</File>
 			<File

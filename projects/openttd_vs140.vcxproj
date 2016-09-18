@@ -710,6 +710,7 @@
     <ClInclude Include="..\src\core\backup_type.hpp" />
     <ClCompile Include="..\src\core\bitmath_func.cpp" />
     <ClInclude Include="..\src\core\bitmath_func.hpp" />
+    <ClInclude Include="..\src\core\container_func.hpp" />
     <ClInclude Include="..\src\core\endian_func.hpp" />
     <ClInclude Include="..\src\core\endian_type.hpp" />
     <ClInclude Include="..\src\core\enum_type.hpp" />
@@ -926,6 +927,7 @@
     <ClCompile Include="..\src\saveload\extended_ver_sl.cpp" />
     <ClCompile Include="..\src\saveload\tbtr_template_replacement_sl.cpp" />
     <ClCompile Include="..\src\saveload\tbtr_template_veh_sl.cpp" />
+    <ClCompile Include="..\src\saveload\bridge_signal_sl.cpp" />
     <ClInclude Include="..\src\table\airport_defaults.h" />
     <ClInclude Include="..\src\table\airport_movement.h" />
     <ClInclude Include="..\src\table\airporttile_ids.h" />
@@ -1234,6 +1236,7 @@
     <ClCompile Include="..\src\newgrf_townname.cpp" />
     <ClCompile Include="..\src\bridge_map.cpp" />
     <ClInclude Include="..\src\bridge_map.h" />
+    <ClInclude Include="..\src\bridge_signal_map.h" />
     <ClInclude Include="..\src\clear_map.h" />
     <ClInclude Include="..\src\industry_map.h" />
     <ClInclude Include="..\src\object_map.h" />

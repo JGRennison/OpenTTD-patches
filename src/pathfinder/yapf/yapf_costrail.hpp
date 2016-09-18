@@ -374,7 +374,7 @@ public:
 				}
 			}
 		}
-		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeExit(tile) && DiagDirToDiagTrackdir(GetTunnelBridgeDirection(tile)) == trackdir) {
+		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile) && DiagDirToDiagTrackdir(GetTunnelBridgeDirection(tile)) == trackdir) {
 			/* Entering a signalled bridge/tunnel from the wrong side, equivalent to encountering a one-way signal from the wrong side */
 			n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
 		}

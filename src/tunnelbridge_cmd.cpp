@@ -26,6 +26,7 @@
 #include "newgrf_sound.h"
 #include "autoslope.h"
 #include "tunnelbridge_map.h"
+#include "bridge_signal_map.h"
 #include "strings_func.h"
 #include "date_func.h"
 #include "clear_func.h"
@@ -957,6 +958,9 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		}
 		DirtyCompanyInfrastructureWindows(owner);
 
+		if (IsTunnelBridgeSignalSimulationEntrance(tile)) ClearBridgeEntranceSimulatedSignals(tile);
+		if (IsTunnelBridgeSignalSimulationEntrance(endtile)) ClearBridgeEntranceSimulatedSignals(endtile);
+
 		DoClearSquare(tile);
 		DoClearSquare(endtile);
 		for (TileIndex c = tile + delta; c != endtile; c += delta) {
@@ -1169,15 +1173,13 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 
 	SignalType type = SIGTYPE_NORMAL;
 
-	bool is_green;
+	bool is_green = (GetTunnelBridgeSignalState(ti->tile) == SIGNAL_STATE_GREEN);
 	bool show_exit;
-	if (IsTunnelBridgeExit(ti->tile)) {
-		is_green = IsTunnelBridgeExitGreen(ti->tile);
+	if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
 		show_exit = true;
 		position ^= 1;
 		if (IsTunnelBridgePBS(ti->tile)) type = SIGTYPE_PBS_ONEWAY;
 	} else {
-		is_green = IsTunnelBridgeWithSignGreen(ti->tile);
 		show_exit = false;
 	}
 
@@ -1248,14 +1250,14 @@ static void DrawBrigeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_sta
 
 			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 
-			SpriteID sprite;
+			SpriteID sprite = (GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position) == SIGNAL_STATE_GREEN);
 
 			if (variant == SIG_ELECTRIC) {
 				/* Normal electric signals are picked from original sprites. */
-				sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + !HasBit(_m[bridge_start_tile].m2, m2_position));
+				sprite += SPR_ORIGINAL_SIGNALS_BASE + (position << 1);
 			} else {
 				/* All other signals are picked from add on sprites. */
-				sprite = SPR_SIGNALS_BASE + ((SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1) + !HasBit(_m[bridge_start_tile].m2, m2_position));
+				sprite += SPR_SIGNALS_BASE + (SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1);
 			}
 
 			AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
@@ -1379,7 +1381,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti)
 		AddSortableSpriteToDraw(SPR_EMPTY_BOUNDING_BOX, PAL_NONE, ti->x + BB_data[4], ti->y + BB_data[5], BB_data[6], BB_data[7], TILE_HEIGHT, ti->z);
 
 		/* Draw signals for tunnel. */
-		if (HasWormholeSignals(ti->tile)) DrawTunnelBridgeRampSignal(ti);
+		if (IsTunnelBridgeWithSignalSimulation(ti->tile)) DrawTunnelBridgeRampSignal(ti);
 
 		DrawBridgeMiddle(ti);
 	} else { // IsBridge(ti->tile)
@@ -1489,7 +1491,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti)
 		}
 
 		/* Draw signals for bridge. */
-		if (HasWormholeSignals(ti->tile)) DrawTunnelBridgeRampSignal(ti);
+		if (IsTunnelBridgeWithSignalSimulation(ti->tile)) DrawTunnelBridgeRampSignal(ti);
 
 		DrawBridgeMiddle(ti);
 	}
@@ -1626,7 +1628,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 		}
 
 		if (_game_mode != GM_MENU && _settings_client.gui.show_track_reservation && !IsInvisibilitySet(TO_BRIDGES) && HasTunnelBridgeReservation(rampnorth)
-				&& !HasWormholeSignals(rampnorth)) {
+				&& !IsTunnelBridgeWithSignalSimulation(rampnorth)) {
 			if (rti->UsesOverlay()) {
 				SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RTSG_OVERLAY);
 				AddSortableSpriteToDraw(overlay + RTO_X + axis, PALETTE_CRASH, ti->x, ti->y, 16, 16, 0, bridge_z, IsTransparencySet(TO_BRIDGES));
@@ -1640,8 +1642,8 @@ void DrawBridgeMiddle(const TileInfo *ti)
 		if (HasCatenaryDrawn(GetRailType(rampsouth))) {
 			DrawCatenaryOnBridge(ti);
 		}
-		if (HasWormholeSignals(rampsouth)) {
-			IsTunnelBridgeExit(rampsouth) ? DrawBrigeSignalOnMiddlePart(ti, rampnorth, z): DrawBrigeSignalOnMiddlePart(ti, rampsouth, z);
+		if (IsTunnelBridgeWithSignalSimulation(rampsouth)) {
+			IsTunnelBridgeSignalSimulationExit(rampsouth) ? DrawBrigeSignalOnMiddlePart(ti, rampnorth, z): DrawBrigeSignalOnMiddlePart(ti, rampsouth, z);
 		}
 	}
 
@@ -1731,9 +1733,9 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	TransportType tt = GetTunnelBridgeTransportType(tile);
 
 	if (IsTunnel(tile)) {
-		td->str = (tt == TRANSPORT_RAIL) ? HasWormholeSignals(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD : STR_LAI_TUNNEL_DESCRIPTION_ROAD;
+		td->str = (tt == TRANSPORT_RAIL) ? IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD : STR_LAI_TUNNEL_DESCRIPTION_ROAD;
 	} else { // IsBridge(tile)
-		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : HasWormholeSignals(tile) ? STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
+		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
 	}
 	td->owner[0] = GetTileOwner(tile);
 
