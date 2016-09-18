@@ -9,6 +9,7 @@
     span.option{ font-family: "Courier New", Courier, mono; background-color: rgb(255,255, 30); }
     span.free  { font-family: "Courier New", Courier, mono; background-color: rgb(30, 178, 54); }
     span.used  { font-family: "Courier New", Courier, mono; }
+    span.used_p{ font-family: "Courier New", Courier, mono; background-color: cyan; }
     td.bits    { white-space: nowrap; text-align: center; font-family: "Courier New", Courier, mono; }
     td.caption { white-space: nowrap; text-align: left; }
     td li      { white-space: nowrap; text-align: left; }
@@ -23,6 +24,7 @@ the array so you can quickly see what is used and what is not.
 <ul>
   <li><span style="font-weight: bold;"><span class="free">O</span></span> - bit is free</li>
   <li><span style="font-weight: bold;"><span class="used">X</span></span> - bit is used</li>
+  <li><span style="font-weight: bold;"><span class="used_p">P</span></span> - bit is used by patch feature</li>
   <li><span style="font-weight: bold;"><span class="abuse">&nbsp;</span></span> - bit of attribute is abused for different purposes, i.e. other bits define the actual meaning.</li>
   <li><span style="font-weight: bold;"><span class="option">~</span></span> - bit is accessed, but does not really have a meaning (e.g. owner of clear land is always OWNER_NONE)</li>
 </ul>
@@ -108,7 +110,7 @@ the array so you can quickly see what is used and what is not.
       <td class="bits">-inherit-</td>
       <td class="bits">-inherit-</td>
       <td class="bits">-inherit-</td>
-      <td class="bits"><span class="free">OOOO</span> XXXX XXXX XXXX</td>
+      <td class="bits"><span class="free">OOO</span><span class="used_p">P</span> XXXX XXXX XXXX</td>
       <td class="bits">XXXX XXXX</td>
       <td class="bits">XXXX XXXX</td>
       <td class="bits">-inherit-</td>
