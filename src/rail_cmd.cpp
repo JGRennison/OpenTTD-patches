@@ -21,6 +21,7 @@
 #include "autoslope.h"
 #include "water.h"
 #include "tunnelbridge_map.h"
+#include "bridge_signal_map.h"
 #include "vehicle_func.h"
 #include "sound_func.h"
 #include "tunnelbridge.h"
@@ -1003,6 +1004,20 @@ CommandCost CmdBuildTrainDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	return cost;
 }
 
+static void ClearBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit)
+{
+	if (IsBridge(entrance)) ClearBridgeEntranceSimulatedSignals(entrance);
+	ClrTunnelBridgeSignalSimulationEntrance(entrance);
+	ClrTunnelBridgeSignalSimulationExit(exit);
+}
+
+static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit)
+{
+	SetTunnelBridgeSignalSimulationEntrance(entrance);
+	SetTunnelBridgeSignalState(entrance, SIGNAL_STATE_GREEN);
+	SetTunnelBridgeSignalSimulationExit(exit);
+}
+
 /**
  * Build signals, alternate between double/single, signal/semaphore,
  * pre/exit/combo-signals, and what-else not. If the rail piece does not
@@ -1089,41 +1104,27 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					SetTunnelBridgePBS(tile_exit, IsTunnelBridgePBS(tile));
 				} else {
 					if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
-						ClrTunnelBridgeSignalSimulationEntrance(tile);
-						ClrTunnelBridgeSignalSimulationExit(tile_exit);
-						SetTunnelBridgeSignalSimulationExit(tile);
-						SetTunnelBridgeSignalSimulationEntrance(tile_exit);
-						SetTunnelBridgeSignalState(tile_exit, SIGNAL_STATE_GREEN);
+						ClearBridgeTunnelSignalSimulation(tile, tile_exit);
+						SetupBridgeTunnelSignalSimulation(tile_exit, tile);
 					} else {
-						ClrTunnelBridgeSignalSimulationEntrance(tile_exit);
-						ClrTunnelBridgeSignalSimulationExit(tile);
-						SetTunnelBridgeSignalSimulationExit(tile_exit);
-						SetTunnelBridgeSignalSimulationEntrance(tile);
-						SetTunnelBridgeSignalState(tile, SIGNAL_STATE_GREEN);
+						ClearBridgeTunnelSignalSimulation(tile_exit, tile);
+						SetupBridgeTunnelSignalSimulation(tile, tile_exit);
 					}
 				}
 			} else {
 				/* Create one direction tunnel/bridge if required. */
 				if (p2 == 0) {
-					SetTunnelBridgeSignalSimulationEntrance(tile);
-					SetTunnelBridgeSignalSimulationExit(tile_exit);
-					SetTunnelBridgeSignalState(tile, SIGNAL_STATE_GREEN);
+					SetupBridgeTunnelSignalSimulation(tile, tile_exit);
 				} else if (p2 == 4 || p2 == 8) {
 					DiagDirection tbdir = GetTunnelBridgeDirection(tile);
 					/* If signal only on one side build accoringly one-way tunnel/bridge. */
 					if ((p2 == 8 && (tbdir == DIAGDIR_NE || tbdir == DIAGDIR_SE)) ||
 						(p2 == 4 && (tbdir == DIAGDIR_SW || tbdir == DIAGDIR_NW))) {
-						ClrTunnelBridgeSignalSimulationExit(tile);
-						ClrTunnelBridgeSignalSimulationEntrance(tile_exit);
-						SetTunnelBridgeSignalSimulationEntrance(tile);
-						SetTunnelBridgeSignalSimulationExit(tile_exit);
-						SetTunnelBridgeSignalState(tile, SIGNAL_STATE_GREEN);
+						ClearBridgeTunnelSignalSimulation(tile_exit, tile);
+						SetupBridgeTunnelSignalSimulation(tile, tile_exit);
 					} else {
-						ClrTunnelBridgeSignalSimulationEntrance(tile);
-						ClrTunnelBridgeSignalSimulationExit(tile_exit);
-						SetTunnelBridgeSignalSimulationEntrance(tile_exit);
-						SetTunnelBridgeSignalSimulationExit(tile);
-						SetTunnelBridgeSignalState(tile_exit, SIGNAL_STATE_GREEN);
+						ClearBridgeTunnelSignalSimulation(tile, tile_exit);
+						SetupBridgeTunnelSignalSimulation(tile_exit, tile);
 					}
 				}
 				if (p2 == 0 || p2 == 4 || p2 == 8) {
@@ -1591,12 +1592,8 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 
 		if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
-			ClrTunnelBridgeSignalSimulationExit(tile);
-			ClrTunnelBridgeSignalSimulationExit(end);
-			ClrTunnelBridgeSignalSimulationEntrance(tile);
-			ClrTunnelBridgeSignalSimulationEntrance(end);
-			_m[tile].m2 = 0;
-			_m[end].m2 = 0;
+			ClearBridgeTunnelSignalSimulation(end, tile);
+			ClearBridgeTunnelSignalSimulation(tile, end);
 			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));

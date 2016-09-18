@@ -1560,7 +1560,8 @@
        <li>m6 bit 6: set = PBS signals, clear = block signals</li>
        <li>m6 bit 1: set = semaphore signals, clear = light signals</li>
        <li>m6 bit 0: set = signal shows green, clear = signal shows red</li>
-       <li>m2 bits 15..0: for bridges only: for signals 0..15 on bridge, signal is visually red if corresponding bit in 0..15 is set</li>
+       <li>m2 bit 15: for bridge entrances only: storage for visual red/green state of signals starting from 15 is allocated outside the map array</li>
+       <li>m2 bits 14..0: for bridge entrances only: for signals 0..14 on bridge, signal is visually red if corresponding bit in 0..14 is set</li>
       </ul>
      </li>
      <li>m5 bits 3..2: transport type

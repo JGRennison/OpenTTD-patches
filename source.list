@@ -637,6 +637,7 @@ saveload/vehicle_sl.cpp
 saveload/waypoint_sl.cpp
 saveload/extended_ver_sl.h
 saveload/extended_ver_sl.cpp
+saveload/bridge_signal_sl.cpp
 
 # Tables
 table/airport_defaults.h
@@ -981,6 +982,7 @@ newgrf_townname.cpp
 # Map Accessors
 bridge_map.cpp
 bridge_map.h
+bridge_signal_map.h
 clear_map.h
 industry_map.h
 object_map.h

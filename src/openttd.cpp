@@ -63,6 +63,7 @@
 #include "subsidy_func.h"
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
+#include "bridge_signal_map.h"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -334,6 +335,7 @@ static void ShutdownGame()
 #endif
 
 	LinkGraphSchedule::Clear();
+	ClearBridgeSimulatedSignalMapping();
 	PoolBase::Clean(PT_ALL);
 
 	/* No NewGRFs were loaded when it was still bootstrapping. */

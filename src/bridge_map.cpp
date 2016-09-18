@@ -12,6 +12,8 @@
 #include "stdafx.h"
 #include "landscape.h"
 #include "tunnelbridge_map.h"
+#include "bridge_signal_map.h"
+#include "debug.h"
 
 #include "safeguards.h"
 
@@ -77,4 +79,57 @@ int GetBridgeHeight(TileIndex t)
 
 	/* one height level extra for the ramp */
 	return h + 1 + ApplyFoundationToSlope(f, &tileh);
+}
+
+std::unordered_map<TileIndex, LongBridgeSignalStorage> _long_bridge_signal_sim_map;
+
+SignalState GetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal)
+{
+	const auto it = _long_bridge_signal_sim_map.find(t);
+	if (it != _long_bridge_signal_sim_map.end()) {
+		const LongBridgeSignalStorage &lbss = it->second;
+		uint16 offset = signal - 15;
+		uint16 slot = offset >> 6;
+		uint16 bit = offset & 0x3F;
+		if (slot >= lbss.signal_red_bits.size()) return SIGNAL_STATE_GREEN;
+		return GB(lbss.signal_red_bits[slot], bit, 1) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
+	} else {
+		return SIGNAL_STATE_GREEN;
+	}
+}
+
+void SetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal, SignalState state)
+{
+	LongBridgeSignalStorage &lbss = _long_bridge_signal_sim_map[t];
+	uint16 offset = signal - 15;
+	uint16 slot = offset >> 6;
+	uint16 bit = offset & 0x3F;
+	if (slot >= lbss.signal_red_bits.size()) lbss.signal_red_bits.resize(slot + 1);
+	SB(lbss.signal_red_bits[slot], bit, 1, (uint64) ((state == SIGNAL_STATE_RED) ? 1 : 0));
+	_m[t].m2 |= 0x8000;
+}
+
+void SetAllBridgeEntranceSimulatedSignalsGreenExtended(TileIndex t)
+{
+	auto it = _long_bridge_signal_sim_map.find(t);
+	if (it != _long_bridge_signal_sim_map.end()) {
+		LongBridgeSignalStorage &lbss = it->second;
+		for (auto &it : lbss.signal_red_bits) {
+			it = 0;
+		}
+		_m[t].m2 = 0x8000;
+	} else {
+		_m[t].m2 = 0;
+	}
+}
+
+void ClearBridgeEntranceSimulatedSignalsExtended(TileIndex t)
+{
+	_long_bridge_signal_sim_map.erase(t);
+	_m[t].m2 = 0;
+}
+
+void ClearBridgeSimulatedSignalMapping()
+{
+	_long_bridge_signal_sim_map.clear();
 }

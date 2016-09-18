@@ -26,6 +26,7 @@
 #include "newgrf_sound.h"
 #include "autoslope.h"
 #include "tunnelbridge_map.h"
+#include "bridge_signal_map.h"
 #include "strings_func.h"
 #include "date_func.h"
 #include "clear_func.h"
@@ -954,6 +955,9 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		}
 		DirtyCompanyInfrastructureWindows(owner);
 
+		if (IsTunnelBridgeSignalSimulationEntrance(tile)) ClearBridgeEntranceSimulatedSignals(tile);
+		if (IsTunnelBridgeSignalSimulationEntrance(endtile)) ClearBridgeEntranceSimulatedSignals(endtile);
+
 		DoClearSquare(tile);
 		DoClearSquare(endtile);
 		for (TileIndex c = tile + delta; c != endtile; c += delta) {
@@ -1236,14 +1240,14 @@ static void DrawBrigeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_sta
 
 			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 
-			SpriteID sprite;
+			SpriteID sprite = (GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position) == SIGNAL_STATE_GREEN);
 
 			if (variant == SIG_ELECTRIC) {
 				/* Normal electric signals are picked from original sprites. */
-				sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + !HasBit(_m[bridge_start_tile].m2, m2_position));
+				sprite += SPR_ORIGINAL_SIGNALS_BASE + (position << 1);
 			} else {
 				/* All other signals are picked from add on sprites. */
-				sprite = SPR_SIGNALS_BASE + ((SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1) + !HasBit(_m[bridge_start_tile].m2, m2_position));
+				sprite += SPR_SIGNALS_BASE + (SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1);
 			}
 
 			AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
