@@ -547,6 +547,7 @@ struct EconomySettings {
 	int8   town_cargo_factor;                ///< power-of-two multiplier for town (passenger, mail) generation. May be negative.
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure
 	uint8  day_length_factor;                ///< factor which the length of day is multiplied
+	uint16 random_road_reconstruction;       ///< chance out of 1000 per tile loop for towns to start random road re-construction
 };
 
 struct LinkGraphSettings {

@@ -1522,7 +1522,7 @@ static void TileLoop_Road(TileIndex tile)
 			grp = GetTownRadiusGroup(t, tile);
 
 			/* Show an animation to indicate road work */
-			if (t->road_build_months != 0 &&
+			if ((t->road_build_months != 0 || Chance16(_settings_game.economy.random_road_reconstruction, 1000)) &&
 					(DistanceManhattan(t->xy, tile) < 8 || grp != HZB_TOWN_EDGE) &&
 					IsNormalRoad(tile) && !HasAtMostOneBit(GetAllRoadBits(tile))) {
 				if (GetFoundationSlope(tile) == SLOPE_FLAT && EnsureNoVehicleOnGround(tile).Succeeded() && Chance16(1, 40)) {
