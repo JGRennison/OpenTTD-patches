@@ -1714,6 +1714,8 @@ static inline Vehicle *GetVehicleFromWindow(Window *w)
 			case WC_VEHICLE_TIMETABLE:
 			case WC_VEHICLE_DETAILS:
 			case WC_VEHICLE_REFIT:
+			case WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS:
+			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
 				if (wn != INVALID_VEHICLE) return Vehicle::Get(wn);
 				break;
 			default:

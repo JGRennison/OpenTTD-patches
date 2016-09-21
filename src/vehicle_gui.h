@@ -126,6 +126,8 @@ static inline bool HasFocusedVehicleChanged(const VehicleID vid, Window *ref_win
 			case WC_VEHICLE_ORDERS:
 			case WC_VEHICLE_TIMETABLE:
 			case WC_VEHICLE_VIEW:
+			case WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS:
+			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
 				return ((uint32) wn != vid);
 		}
 	}
