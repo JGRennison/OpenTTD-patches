@@ -173,6 +173,9 @@ struct DropdownWindow : Window {
 			pt.x -= w2->left;
 			pt.y -= w2->top;
 			w2->OnDropdownClose(pt, this->parent_button, this->selected_index, this->instant_close);
+			if (_focused_window == this) {
+				SetFocusedWindow(w2);
+			}
 		}
 		delete this->list;
 	}
