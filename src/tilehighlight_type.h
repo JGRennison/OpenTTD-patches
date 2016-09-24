@@ -31,6 +31,7 @@ enum HighLightStyle {
 	HT_POLY      = 0x400, ///< polyline mode; connect highlighted track with previous one
 	HT_NEW_POLY  = 0xC00, ///< start completly new polyline; implies #HT_POLY
 	HT_DRAG_MASK = 0x0F8, ///< Mask for the tile drag-type modes.
+	HT_TUNNEL    = 0x1000,///< tunnel highlight hint
 
 	/* lower bits (used with HT_LINE and HT_RAIL):
 	 * (see ASCII art in table/autorail.h for a visual interpretation) */

@@ -14,6 +14,8 @@
 #include "window_gui.h"
 #include "viewport_func.h"
 #include "strings_func.h"
+#include "tunnelbridge.h"
+#include "tilehighlight_func.h"
 #include "zoom_func.h"
 #include "window_func.h"
 #include "gfx_func.h"
@@ -150,7 +152,7 @@ public:
 			ZoomInOrOutToCursorWindow(wheel < 0, this);
 		}
 	}
-	
+
 	virtual void OnMouseOver(Point pt, int widget)
 	{
 		if (pt.x != -1) {
@@ -197,11 +199,17 @@ void ShowExtraViewPortWindow(TileIndex tile)
 
 /**
  * Show a new Extra Viewport window.
- * Center it on the tile under the cursor, if the cursor is inside a viewport.
+ * When building a tunnel, the tunnel end-tile is used as center for new viewport.
+ * Otherwise center it on the tile under the cursor, if the cursor is inside a viewport.
  * If that fails, center it on main viewport center.
  */
 void ShowExtraViewPortWindowForTileUnderCursor()
 {
+	if (_build_tunnel_endtile != 0 && _thd.place_mode & HT_TUNNEL) {
+		ShowExtraViewPortWindow(_build_tunnel_endtile);
+		return;
+	}
+
 	/* Use tile under mouse as center for new viewport.
 	 * Do this before creating the window, it might appear just below the mouse. */
 	Point pt = GetTileBelowCursor();
