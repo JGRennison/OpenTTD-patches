@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.14.0
+## JGR's Patchpack version 0.15.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -106,7 +106,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * More conditional orders: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=38317) (added in v0.3.0)
 
 * Include the train length and group name in the vehicle details window (added in v0.3.0)  
-  This are each controlled by a setting (on by default).
+  These are each controlled by a setting (on by default).
 
 * Pause the game when cargo dest link graph jobs lag (added in v0.4.0)  
   Previously if a cargo dest link graph update job took longer than permitted, the game would block until it completed, preventing all user interaction.  
@@ -152,6 +152,14 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Increase number of available rail track types from 16 to 32 [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.13.0)
 
+* Cargo type orders, this allows order load/unload types to be set per cargo type [imported](https://www.tt-forums.net/viewtopic.php?p=1047749) (added in v0.15.0)  
+  This has been modified so that cargo dest can follow orders with different load/unload types.
+
+* Random town road reconstruction [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=36438) (added in v0.15.0)  
+  This has been modified to change the setting scale. This defaults to off.
+
+* When building tunnels, open new viewports at the far end of the tunnel [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=72639) (added in v0.15.0)
+
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 33% faster. (added in v0.8.1)  
@@ -191,3 +199,12 @@ Many features have two branches, the *feature* branches are just the raw feature
 There are not generally savegame compatible with anything else, except for loading of trunk savegame versions at or before the point where the branch diverged from trunk.  
 All other load attempts may result in undefined behaviour.  
 The *feature-sx* branches use the savegame framework in the *save_ext* branch.
+
+
+#### Compiler requirements
+
+As of v0.15.0, C++11 support is required.
+The minimum supported compiler versions are:
+* GCC: 4.7
+* clang: 3.3
+Sufficienty up-to-date versions of other compiler toolchains including MSVC and ICC should also work.

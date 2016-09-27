@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.15.0 (2016-09-27)
+* Signals on bridges/tunnels:
+  * Fix crash when dragging signals over bridges/tunnels.
+  * Fix bridge/tunnel entrance signal not always being redrawn when state changes.
+  * Display correct signal state for all signals on bridge middle part, not just first 16.
+* Add cargo type orders patch, this allows order load/unload types to be set per cargo type.
+* Add random town road reconstruction patch (default off).
+* Add patch: when building tunnels, open new viewports at the far end of the tunnel.
+* Template-based train replacement:
+  * Fix vehicle not being unselected when aborting drag.
+  * Sell button now lowers on hover.
+* Enhanced viewports: Fix route markers/lines being hidden when using drop-down menus in the order window.
+* Compiler requirements change: C++11 support is now required.
+* Improve clang compiler support.
+* Various minor performance improvements.
+* Bump trunk base from r27623 to r27656
+
 ### v0.14.0 (2016-07-27)
 * Routing restrictions:
   * Add conditionals: train weight, power, max T.E., power/weight and max T.E/weight.
