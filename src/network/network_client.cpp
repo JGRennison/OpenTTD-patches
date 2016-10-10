@@ -255,7 +255,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 			if (_sync_seed_1 != _random.state[0]) {
 #endif
 				NetworkError(STR_NETWORK_ERROR_DESYNC);
-				DEBUG(desync, 1, "sync_err: %08x; %02x; %02X", _date, _date_fract, _tick_skip_counter);
+				DEBUG(desync, 1, "sync_err: date{%08x; %02x; %02x}", _date, _date_fract, _tick_skip_counter);
 				DEBUG(net, 0, "Sync error detected!");
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
 

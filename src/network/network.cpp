@@ -275,7 +275,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	char *msg_ptr = message + Utf8Encode(message, _current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
 	GetString(msg_ptr, strid, lastof(message));
 
-	DEBUG(desync, 1, "msg: %08x; %02x; %s", _date, _date_fract, message);
+	DEBUG(desync, 1, "msg: date{%08x; %02x; %02x}; %s", _date, _date_fract, _tick_skip_counter, message);
 	IConsolePrintF(colour, "%s", message);
 	NetworkAddChatMessage((TextColour)colour, _settings_client.gui.network_chat_timeout, "%s", message);
 }
@@ -879,7 +879,7 @@ void NetworkGameLoop()
 			/* We don't want to log multiple times if paused. */
 			static Date last_log;
 			if (last_log != _date) {
-				DEBUG(desync, 1, "sync: %08x; %02x; %08x; %08x", _date, _date_fract, _random.state[0], _random.state[1]);
+				DEBUG(desync, 1, "sync: date{%08x; %02x; %02x}; %08x; %08x", _date, _date_fract, _tick_skip_counter, _random.state[0], _random.state[1]);
 				last_log = _date;
 			}
 		}
@@ -889,6 +889,7 @@ void NetworkGameLoop()
 		static FILE *f = FioFOpenFile("commands.log", "rb", SAVE_DIR);
 		static Date next_date = 0;
 		static uint32 next_date_fract;
+		static uint8 next_tick_skip_counter;
 		static CommandPacket *cp = NULL;
 		static bool check_sync_state = false;
 		static uint32 sync_state[2];
@@ -901,16 +902,16 @@ void NetworkGameLoop()
 			if (_date == next_date && _date_fract == next_date_fract) {
 				if (cp != NULL) {
 					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->cmd & ~CMD_FLAGS_MASK, NULL, cp->text, cp->company);
-					DEBUG(net, 0, "injecting: %08x; %02x; %02x; %06x; %08x; %08x; %08x; \"%s\" (%s)", _date, _date_fract, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->cmd, cp->text, GetCommandName(cp->cmd));
+					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; %08x; \"%s\" (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->cmd, cp->text, GetCommandName(cp->cmd));
 					free(cp);
 					cp = NULL;
 				}
 				if (check_sync_state) {
 					if (sync_state[0] == _random.state[0] && sync_state[1] == _random.state[1]) {
-						DEBUG(net, 0, "sync check: %08x; %02x; match", _date, _date_fract);
+						DEBUG(net, 0, "sync check: date{%08x; %02x; %02x}; match", _date, _date_fract, _tick_skip_counter);
 					} else {
-						DEBUG(net, 0, "sync check: %08x; %02x; mismatch expected {%08x, %08x}, got {%08x, %08x}",
-									_date, _date_fract, sync_state[0], sync_state[1], _random.state[0], _random.state[1]);
+						DEBUG(net, 0, "sync check: date{%08x; %02x; %02x}; mismatch expected {%08x, %08x}, got {%08x, %08x}",
+									_date, _date_fract, _tick_skip_counter, sync_state[0], sync_state[1], _random.state[0], _random.state[1]);
 						NOT_REACHED();
 					}
 					check_sync_state = false;
@@ -939,17 +940,17 @@ void NetworkGameLoop()
 				if (*p == ' ') p++;
 				cp = CallocT<CommandPacket>(1);
 				int company;
-				int ret = sscanf(p, "%x; %x; %x; %x; %x; %x; %x; \"%[^\"]\"", &next_date, &next_date_fract, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, cp->text);
-				/* There are 8 pieces of data to read, however the last is a
+				int ret = sscanf(p, "date{%x; %x; %x}; %x; %x; %x; %x; %x; \"%[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, cp->text);
+				/* There are 9 pieces of data to read, however the last is a
 				 * string that might or might not exist. Ignore it if that
 				 * string misses because in 99% of the time it's not used. */
-				assert(ret == 8 || ret == 7);
+				assert(ret == 9 || ret == 8);
 				cp->company = (CompanyID)company;
 			} else if (strncmp(p, "join: ", 6) == 0) {
 				/* Manually insert a pause when joining; this way the client can join at the exact right time. */
-				int ret = sscanf(p + 6, "%x; %x", &next_date, &next_date_fract);
-				assert(ret == 2);
-				DEBUG(net, 0, "injecting pause for join at %08x:%02x; please join when paused", next_date, next_date_fract);
+				int ret = sscanf(p + 6, "date{%x; %x; %x}", &next_date, &next_date_fract, &next_tick_skip_counter);
+				assert(ret == 3);
+				DEBUG(net, 0, "injecting pause for join at date{%08x; %02x; %02x}; please join when paused", next_date, next_date_fract, next_tick_skip_counter);
 				cp = CallocT<CommandPacket>(1);
 				cp->company = COMPANY_SPECTATOR;
 				cp->cmd = CMD_PAUSE;
@@ -957,8 +958,8 @@ void NetworkGameLoop()
 				cp->p2 = 1;
 				_ddc_fastforward = false;
 			} else if (strncmp(p, "sync: ", 6) == 0) {
-				int ret = sscanf(p + 6, "%x; %x; %x; %x", &next_date, &next_date_fract, &sync_state[0], &sync_state[1]);
-				assert(ret == 4);
+				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date, &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);
+				assert(ret == 5);
 				check_sync_state = true;
 			} else if (strncmp(p, "msg: ", 5) == 0 || strncmp(p, "client: ", 8) == 0 ||
 						strncmp(p, "load: ", 6) == 0 || strncmp(p, "save: ", 6) == 0) {
