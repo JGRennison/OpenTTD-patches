@@ -101,7 +101,7 @@ static const SaveLoadGlobVarList _date_check_desc[] = {
 	SLEG_CONDVAR(_load_check_data.current_date,  SLE_INT32,                  31, SL_MAX_VERSION),
 	    SLE_NULL(2),                       // _date_fract
 	    SLE_NULL(2),                       // _tick_counter
-	SLEG_CONDVAR_X(_tick_skip_counter,           SLE_UINT8,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH)),
+	SLE_CONDNULL_X(1, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH)), // _tick_skip_counter
 	SLE_CONDNULL(2, 0, 156),               // _vehicle_id_ctr_day
 	SLE_CONDNULL(1, 0, 161),               // _age_cargo_skip_counter
 	SLE_CONDNULL(1, 0, 45),
