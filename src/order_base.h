@@ -45,6 +45,8 @@ private:
 	friend const struct SaveLoad *GetOrderDescription();                 ///< Saving and loading of orders.
 	friend void Load_ORDX();                                             ///< Saving and loading of orders.
 	friend void Save_ORDX();                                             ///< Saving and loading of orders.
+	friend void Load_VEOX();                                             ///< Saving and loading of orders.
+	friend void Save_VEOX();                                             ///< Saving and loading of orders.
 
 	uint8 type;           ///< The type of order + non-stop flags
 	uint8 flags;          ///< Load/unload types, depot order/action types.
