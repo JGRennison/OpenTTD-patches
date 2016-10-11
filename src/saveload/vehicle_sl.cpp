@@ -934,6 +934,33 @@ static void Ptrs_VEHS()
 	}
 }
 
+const SaveLoad *GetOrderExtraInfoDescription();
+
+void Save_VEOX()
+{
+	/* save extended order info for vehicle current order */
+	Vehicle *v;
+	FOR_ALL_VEHICLES(v) {
+		if (v->current_order.extra) {
+			SlSetArrayIndex(v->index);
+			SlObject(v->current_order.extra.get(), GetOrderExtraInfoDescription());
+		}
+	}
+}
+
+void Load_VEOX()
+{
+	/* load extended order info for vehicle current order */
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		Vehicle *v = Vehicle::GetIfValid(index);
+		assert(v != NULL);
+		v->current_order.AllocExtraInfo();
+		SlObject(v->current_order.extra.get(), GetOrderExtraInfoDescription());
+	}
+}
+
 extern const ChunkHandler _veh_chunk_handlers[] = {
-	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, NULL, CH_SPARSE_ARRAY | CH_LAST},
+	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, NULL, CH_SPARSE_ARRAY},
+	{ 'VEOX', Save_VEOX, Load_VEOX, NULL,      NULL, CH_SPARSE_ARRAY | CH_LAST},
 };
