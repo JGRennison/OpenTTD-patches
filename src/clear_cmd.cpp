@@ -67,7 +67,7 @@ SpriteID GetSpriteIDForHillyLand(const Slope slope, const uint rough_index)
 
 void DrawHillyLandTile(const TileInfo *ti)
 {
-	DrawGroundSprite(GetSpriteIDForHillyLand(ti->tileh, GB(ti->x ^ ti->y, 4, 3)), PAL_NONE);
+	DrawGroundSprite(GetSpriteIDForHillyLand(ti->tileh, GB(TileHash(ti->x, ti->y), 4, 3)), PAL_NONE);
 }
 
 SpriteID GetSpriteIDForRocks(const Slope slope, const uint tile_hash)
