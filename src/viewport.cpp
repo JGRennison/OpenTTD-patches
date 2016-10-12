@@ -163,8 +163,10 @@ typedef SmallVector<StringSpriteToDraw, 4> StringSpriteToDrawVector;
 typedef SmallVector<ParentSpriteToDraw, 64> ParentSpriteToDrawVector;
 typedef SmallVector<ChildScreenSpriteToDraw, 16> ChildScreenSpriteToDrawVector;
 
-typedef std::list<std::pair<int, OrderType> > RankOrderTypeList;
+typedef std::vector<std::pair<int, OrderType> > RankOrderTypeList;
 typedef std::map<TileIndex, RankOrderTypeList> RouteStepsMap;
+
+const uint max_rank_order_type_count = 10;
 
 /** Data structure storing rendering information */
 struct ViewportDrawer {
@@ -189,6 +191,7 @@ struct ViewportDrawer {
 };
 
 static void MarkViewportDirty(const ViewPort * const vp, int left, int top, int right, int bottom);
+static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 
 static DrawPixelInfo _dpi_for_text;
@@ -1770,17 +1773,18 @@ static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 static inline void DrawRouteStep(const ViewPort * const vp, const TileIndex tile, const RankOrderTypeList list)
 {
 	if (tile == INVALID_TILE) return;
+	const uint step_count = list.size() > max_rank_order_type_count ? 1 : list.size();
 	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
 	const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom) - (_vp_route_step_width / 2);
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
-	const int rsth = _vp_route_step_height_top + (int) list.size() * char_height + _vp_route_step_height_bottom;
+	const int rsth = _vp_route_step_height_top + (int) step_count * char_height + _vp_route_step_height_bottom;
 	const int y = UnScaleByZoomLower(pt.y - _vd.dpi.top,  _vd.dpi.zoom) - rsth;
 
 	/* Draw the background. */
 	DrawSprite(SPR_ROUTE_STEP_TOP, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y);
 	uint y2 = y + _vp_route_step_height_top;
 
-	for (size_t r = list.size(); r != 0; r--, y2 += char_height) {
+	for (uint r = step_count; r != 0; r--, y2 += char_height) {
 		DrawSprite(SPR_ROUTE_STEP_MIDDLE, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y2, &_vp_route_step_subsprite);
 	}
 
@@ -1791,27 +1795,39 @@ static inline void DrawRouteStep(const ViewPort * const vp, const TileIndex tile
 	/* Fill with the data. */
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	y2 = y + _vp_route_step_height_top;
-	for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
-		SetDParam(0, cit->first);
-		switch (cit->second) {
-			case OT_GOTO_STATION:
-				SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION);
-				goto draw;
-			case OT_GOTO_DEPOT:
-				SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT);
-				goto draw;
-			case OT_GOTO_WAYPOINT:
-				SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT);
-				goto draw;
-			case OT_IMPLICIT: {
-				SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT);
-draw:
-				/* Write order's info */
-				_cur_dpi = &_dpi_for_text;
-				DrawString(_dpi_for_text.left + x, _dpi_for_text.left + x + _vp_route_step_width - 1, _dpi_for_text.top + y2, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
-				break;
+	_cur_dpi = &_dpi_for_text;
+
+	if (list.size() > max_rank_order_type_count) {
+		/* Write order overflow item */
+		SetDParam(0, list.size());
+		DrawString(_dpi_for_text.left + x, _dpi_for_text.left + x + _vp_route_step_width - 1, _dpi_for_text.top + y2,
+				STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
+	} else {
+		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
+			bool ok = true;
+			switch (cit->second) {
+				case OT_GOTO_STATION:
+					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION);
+					break;
+				case OT_GOTO_DEPOT:
+					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT);
+					break;
+				case OT_GOTO_WAYPOINT:
+					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT);
+					break;
+				case OT_IMPLICIT:
+					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT);
+					break;
+				default: // OT_NOTHING OT_LOADING OT_LEAVESTATION OT_DUMMY OT_CONDITIONAL
+					ok = false;
+					break;
 			}
-			default: break; // OT_NOTHING OT_LOADING OT_LEAVESTATION OT_DUMMY OT_CONDITIONAL
+			if (ok) {
+				/* Write order's info */
+				SetDParam(0, cit->first);
+				DrawString(_dpi_for_text.left + x, _dpi_for_text.left + x + _vp_route_step_width - 1, _dpi_for_text.top + y2,
+						STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
+			}
 		}
 	}
 	_cur_dpi = old_dpi;
@@ -1843,7 +1859,7 @@ static void ViewportDrawVehicleRouteSteps(const ViewPort * const vp)
 	if (veh && ViewportPrepareVehicleRouteSteps(veh)) {
 		if (_vp_route_steps != _vp_route_steps_last_mark_dirty) {
 			for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
-				MarkRouteStepDirty(cit->first, (uint) cit->second.size());
+				MarkRouteStepDirty(cit);
 			}
 			_vp_route_steps_last_mark_dirty = _vp_route_steps;
 		}
@@ -2807,6 +2823,12 @@ void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomL
 	}
 }
 
+static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit)
+{
+	const uint size = cit->second.size() > max_rank_order_type_count ? 1 : cit->second.size();
+	MarkRouteStepDirty(cit->first, size);
+}
+
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 {
 	assert(tile != INVALID_TILE);
@@ -2824,7 +2846,7 @@ void MarkAllRouteStepsDirty(Window *vehicle_window)
 	const Vehicle * const veh = GetVehicleFromWindow(vehicle_window);
 	ViewportPrepareVehicleRouteSteps(veh);
 	for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
-		MarkRouteStepDirty(cit->first, (uint) cit->second.size());
+		MarkRouteStepDirty(cit);
 	}
 	_vp_route_steps_last_mark_dirty.swap(_vp_route_steps);
 	_vp_route_steps.clear();
