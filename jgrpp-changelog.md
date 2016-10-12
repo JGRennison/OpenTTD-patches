@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.15.1 (2016-10-12)
+* Fix incorrect behaviour or multiplayer desync when saving/loading or joining a game with a per cargo type order as a vehicle's current order.
+* Enhanced viewports:
+  * If an order list includes the same destination a large number of times, show a single marker instead of a large stack.
+  * Improve performance of route markers/lines.
+* Departure board windows can now be scrolled using the mouse wheel.
+* Bump trunk base from r27656 to r27661
+
 ### v0.15.0 (2016-09-27)
 * Signals on bridges/tunnels:
   * Fix crash when dragging signals over bridges/tunnels.
