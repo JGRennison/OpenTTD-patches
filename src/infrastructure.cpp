@@ -160,7 +160,7 @@ static void RemoveAndSellVehicle(Vehicle *v, bool give_money)
 		/* compute total value and give that to the owner */
 		Money value = 0;
 		for (Vehicle *u = v->First(); u != NULL; u = u->Next()) {
-			value += v->value;
+			value += u->value;
 		}
 		CompanyID old = _current_company;
 		_current_company = v->owner;
