@@ -28,9 +28,9 @@ INSTANTIATE_POOL_METHODS(LinkGraphJob)
  */
 /* static */ Path *Path::invalid_path = new Path(INVALID_NODE, true);
 
-static DateTicks GetLinkGraphJobJoinDateTicks()
+static DateTicks GetLinkGraphJobJoinDateTicks(uint duration_multiplier)
 {
-	DateTicks ticks = _settings_game.linkgraph.recalc_time * DAY_TICKS;
+	DateTicks ticks = _settings_game.linkgraph.recalc_time * DAY_TICKS * duration_multiplier;
 	if (_settings_game.linkgraph.recalc_not_scaled_by_daylength) {
 		ticks /= _settings_game.economy.day_length_factor;
 	}
@@ -43,13 +43,13 @@ static DateTicks GetLinkGraphJobJoinDateTicks()
  * original. The job is immediately started.
  * @param orig Original LinkGraph to be copied.
  */
-LinkGraphJob::LinkGraphJob(const LinkGraph &orig) :
+LinkGraphJob::LinkGraphJob(const LinkGraph &orig, uint duration_multiplier) :
 		/* Copying the link graph here also copies its index member.
 		 * This is on purpose. */
 		link_graph(orig),
 		settings(_settings_game.linkgraph),
 		thread(NULL),
-		join_date_ticks(GetLinkGraphJobJoinDateTicks()),
+		join_date_ticks(GetLinkGraphJobJoinDateTicks(duration_multiplier)),
 		start_date_ticks((_date * DAY_TICKS) + _date_fract),
 		job_completed(false)
 {

@@ -16,6 +16,7 @@
 #include "mcf.h"
 #include "flowmapper.h"
 #include "../command_func.h"
+#include <algorithm>
 
 #include "../safeguards.h"
 
@@ -27,27 +28,74 @@
 /* static */ LinkGraphSchedule LinkGraphSchedule::instance;
 
 /**
- * Start the next job in the schedule.
+ * Start the next job(s) in the schedule.
+ *
+ * The cost estimate of a link graph job is C ~ N^2 log N, where
+ * N is the number of nodes in the job link graph.
+ * The cost estimate is summed for all running and scheduled jobs to form the total cost estimate T = sum C.
+ * The nominal cycle time (in recalc intervals) required to schedule all jobs is calculated as S = log_2 T.
+ * Hence the nominal duration of an individual job (in recalc intervals) is D = ceil(S * C / T)
+ * The cost budget for an individual call to this method is given by T / S.
+ *
+ * The purpose of this algorithm is so that overall responsiveness is not hindered by large numbers of small/cheap
+ * jobs which would previously need to be cycled through individually, but equally large/slow jobs have an extended
+ * duration in which to execute, to avoid unnecessary pauses.
  */
 void LinkGraphSchedule::SpawnNext()
 {
 	if (this->schedule.empty()) return;
-	LinkGraph *next = this->schedule.front();
-	LinkGraph *first = next;
-	while (next->Size() < 2) {
-		this->schedule.splice(this->schedule.end(), this->schedule, this->schedule.begin());
-		next = this->schedule.front();
-		if (next == first) return;
+
+	GraphList schedule_to_back;
+	uint total_cost = 0;
+	for (auto iter = this->schedule.begin(); iter != this->schedule.end();) {
+		auto current = iter;
+		++iter;
+		const LinkGraph *lg = *current;
+
+		if (lg->Size() < 2) {
+			schedule_to_back.splice(schedule_to_back.end(), this->schedule, current);
+		} else {
+			total_cost += lg->CalculateCostEstimate();
+		}
 	}
-	assert(next == LinkGraph::Get(next->index));
-	this->schedule.pop_front();
-	if (LinkGraphJob::CanAllocateItem()) {
-		LinkGraphJob *job = new LinkGraphJob(*next);
-		job->SpawnThread();
-		this->running.push_back(job);
-	} else {
-		NOT_REACHED();
+	for (auto &it : this->running) {
+		total_cost += it->Graph().CalculateCostEstimate();
 	}
+	uint scaling = FindLastBit(total_cost);
+	uint cost_budget = total_cost / scaling;
+	uint used_budget = 0;
+	while (used_budget < cost_budget && !this->schedule.empty()) {
+		LinkGraph *lg = this->schedule.front();
+		assert(lg == LinkGraph::Get(lg->index));
+		this->schedule.pop_front();
+		uint cost = lg->CalculateCostEstimate();
+		used_budget += cost;
+		if (LinkGraphJob::CanAllocateItem()) {
+			uint duration_multiplier = CeilDiv(scaling * cost, total_cost);
+			std::unique_ptr<LinkGraphJob> job(new LinkGraphJob(*lg, duration_multiplier));
+			job->SpawnThread(); // todo
+			if (this->running.empty() || job->JoinDateTicks() >= this->running.back()->JoinDateTicks()) {
+				this->running.push_back(std::move(job));
+				DEBUG(linkgraph, 3, "LinkGraphSchedule::SpawnNext(): Running job: id: %u, nodes: %u, cost: %u, duration_multiplier: %u",
+						lg->index, lg->Size(), cost, duration_multiplier);
+			} else {
+				// find right place to insert
+				auto iter = std::upper_bound(this->running.begin(), this->running.end(), job->JoinDateTicks(), [](DateTicks a, const std::unique_ptr<LinkGraphJob> &b) {
+					return a < b->JoinDateTicks();
+				});
+				this->running.insert(iter, std::move(job));
+				DEBUG(linkgraph, 3, "LinkGraphSchedule::SpawnNext(): Running job (re-ordering): id: %u, nodes: %u, cost: %u, duration_multiplier: %u",
+						lg->index, lg->Size(), cost, duration_multiplier);
+			}
+		} else {
+			NOT_REACHED();
+		}
+	}
+
+	this->schedule.splice(this->schedule.end(), schedule_to_back);
+
+	DEBUG(linkgraph, 2, "LinkGraphSchedule::SpawnNext(): Linkgraph job totals: cost: %u, budget: %u, scaling: %u, scheduled: %zu, running: %zu",
+			total_cost, cost_budget, scaling, this->schedule.size(), this->running.size());
 }
 
 /**
@@ -74,11 +122,11 @@ bool LinkGraphSchedule::IsJoinWithUnfinishedJobDue() const
 void LinkGraphSchedule::JoinNext()
 {
 	while (!(this->running.empty())) {
-		LinkGraphJob *next = this->running.front();
-		if (!next->IsFinished()) return;
+		if (!this->running.front()->IsFinished()) return;
+		std::unique_ptr<LinkGraphJob> next = std::move(this->running.front());
 		this->running.pop_front();
 		LinkGraphID id = next->LinkGraphIndex();
-		delete next; // implicitly joins the thread
+		next.reset(); // implicitly joins the thread
 		if (LinkGraph::IsValidID(id)) {
 			LinkGraph *lg = LinkGraph::Get(id);
 			this->Unqueue(lg); // Unqueue to avoid double-queueing recycled IDs.

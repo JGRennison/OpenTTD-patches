@@ -13,6 +13,7 @@
 #define LINKGRAPHSCHEDULE_H
 
 #include "linkgraph.h"
+#include <memory>
 
 class LinkGraphJob;
 
@@ -40,7 +41,7 @@ private:
 	LinkGraphSchedule();
 	~LinkGraphSchedule();
 	typedef std::list<LinkGraph *> GraphList;
-	typedef std::list<LinkGraphJob *> JobList;
+	typedef std::list<std::unique_ptr<LinkGraphJob>> JobList;
 	friend const SaveLoad *GetLinkGraphScheduleDesc();
 
 protected:
