@@ -15,9 +15,11 @@
 #include "../thread/thread.h"
 #include "linkgraph.h"
 #include <list>
+#include <memory>
 
 class LinkGraphJob;
 class Path;
+class LinkGraphJobGroup;
 typedef std::list<Path *> PathList;
 
 /** Type of the pool for link graph jobs. */
@@ -56,11 +58,12 @@ private:
 	friend const SaveLoad *GetLinkGraphJobDesc();
 	friend void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
 	friend class LinkGraphSchedule;
+	friend class LinkGraphJobGroup;
 
 protected:
 	const LinkGraph link_graph;       ///< Link graph to by analyzed. Is copied when job is started and mustn't be modified later.
+	std::shared_ptr<LinkGraphJobGroup> group; ///< JOb group thread the job is running in or NULL if it's running in the main thread.
 	const LinkGraphSettings settings; ///< Copy of _settings_game.linkgraph at spawn time.
-	ThreadObject *thread;             ///< Thread the job is running in or NULL if it's running in the main thread.
 	DateTicks join_date_ticks;        ///< Date when the job is to be joined.
 	DateTicks start_date_ticks;       ///< Date when the job was started.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
@@ -69,7 +72,7 @@ protected:
 
 	void EraseFlows(NodeID from);
 	void JoinThread();
-	void SpawnThread();
+	void SetJobGroup(std::shared_ptr<LinkGraphJobGroup> group);
 
 public:
 
@@ -269,7 +272,7 @@ public:
 	 * Bare constructor, only for save/load. link_graph, join_date and actually
 	 * settings have to be brutally const-casted in order to populate them.
 	 */
-	LinkGraphJob() : settings(_settings_game.linkgraph), thread(NULL),
+	LinkGraphJob() : settings(_settings_game.linkgraph),
 			join_date_ticks(INVALID_DATE), start_date_ticks(INVALID_DATE), job_completed(false) {}
 
 	LinkGraphJob(const LinkGraph &orig, uint duration_multiplier);

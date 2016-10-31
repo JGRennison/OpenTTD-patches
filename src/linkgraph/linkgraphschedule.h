@@ -12,6 +12,7 @@
 #ifndef LINKGRAPHSCHEDULE_H
 #define LINKGRAPHSCHEDULE_H
 
+#include "../thread/thread.h"
 #include "linkgraph.h"
 #include <memory>
 
@@ -78,6 +79,35 @@ public:
 	 * @param lg Link graph to be removed.
 	 */
 	void Unqueue(LinkGraph *lg) { this->schedule.remove(lg); }
+};
+
+class LinkGraphJobGroup : public std::enable_shared_from_this<LinkGraphJobGroup> {
+	friend LinkGraphJob;
+
+private:
+	bool joined_thread = false;              ///< True if thread has already been joined
+	std::unique_ptr<ThreadObject> thread;    ///< Thread the job group is running in or NULL if it's running in the main thread.
+	const std::vector<LinkGraphJob *> jobs;  ///< The set of jobs in this job set
+
+private:
+	struct constructor_token { };
+	static void Run(void *group);
+	void SpawnThread();
+	void JoinThread();
+
+public:
+	LinkGraphJobGroup(constructor_token token, std::vector<LinkGraphJob *> jobs);
+
+	struct JobInfo {
+		LinkGraphJob * job;
+		uint cost_estimate;
+
+		JobInfo(LinkGraphJob *job);
+		JobInfo(LinkGraphJob *job, uint cost_estimate) :
+				job(job), cost_estimate(cost_estimate) { }
+	};
+
+	static void ExecuteJobSet(std::vector<JobInfo> jobs);
 };
 
 #endif /* LINKGRAPHSCHEDULE_H */

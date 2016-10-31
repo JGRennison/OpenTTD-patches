@@ -64,6 +64,7 @@ void LinkGraphSchedule::SpawnNext()
 	uint scaling = FindLastBit(total_cost);
 	uint cost_budget = total_cost / scaling;
 	uint used_budget = 0;
+	std::vector<LinkGraphJobGroup::JobInfo> jobs_to_execute;
 	while (used_budget < cost_budget && !this->schedule.empty()) {
 		LinkGraph *lg = this->schedule.front();
 		assert(lg == LinkGraph::Get(lg->index));
@@ -73,7 +74,7 @@ void LinkGraphSchedule::SpawnNext()
 		if (LinkGraphJob::CanAllocateItem()) {
 			uint duration_multiplier = CeilDiv(scaling * cost, total_cost);
 			std::unique_ptr<LinkGraphJob> job(new LinkGraphJob(*lg, duration_multiplier));
-			job->SpawnThread(); // todo
+			jobs_to_execute.emplace_back(job.get(), cost);
 			if (this->running.empty() || job->JoinDateTicks() >= this->running.back()->JoinDateTicks()) {
 				this->running.push_back(std::move(job));
 				DEBUG(linkgraph, 3, "LinkGraphSchedule::SpawnNext(): Running job: id: %u, nodes: %u, cost: %u, duration_multiplier: %u",
@@ -93,6 +94,8 @@ void LinkGraphSchedule::SpawnNext()
 	}
 
 	this->schedule.splice(this->schedule.end(), schedule_to_back);
+
+	LinkGraphJobGroup::ExecuteJobSet(std::move(jobs_to_execute));
 
 	DEBUG(linkgraph, 2, "LinkGraphSchedule::SpawnNext(): Linkgraph job totals: cost: %u, budget: %u, scaling: %u, scheduled: %zu, running: %zu",
 			total_cost, cost_budget, scaling, this->schedule.size(), this->running.size());
@@ -169,9 +172,11 @@ void LinkGraphSchedule::JoinNext()
  */
 void LinkGraphSchedule::SpawnAll()
 {
+	std::vector<LinkGraphJobGroup::JobInfo> jobs_to_execute;
 	for (JobList::iterator i = this->running.begin(); i != this->running.end(); ++i) {
-		(*i)->SpawnThread();
+		jobs_to_execute.emplace_back(i->get());
 	}
+	LinkGraphJobGroup::ExecuteJobSet(std::move(jobs_to_execute));
 }
 
 /**
@@ -222,6 +227,82 @@ LinkGraphSchedule::~LinkGraphSchedule()
 		delete this->handlers[i];
 	}
 }
+
+LinkGraphJobGroup::LinkGraphJobGroup(constructor_token token, std::vector<LinkGraphJob *> jobs) :
+	jobs(std::move(jobs)) { }
+
+void LinkGraphJobGroup::SpawnThread() {
+	ThreadObject *t = nullptr;
+
+	/**
+	 * Spawn a thread if possible and run the link graph job in the thread. If
+	 * that's not possible run the job right now in the current thread.
+	 */
+	if (ThreadObject::New(&(LinkGraphJobGroup::Run), this, &t, "ottd:linkgraph")) {
+		this->thread.reset(t);
+		for (auto &it : this->jobs) {
+			it->SetJobGroup(this->shared_from_this());
+		}
+	} else {
+		this->thread.reset();
+		/* Of course this will hang a bit.
+		 * On the other hand, if you want to play games which make this hang noticably
+		 * on a platform without threads then you'll probably get other problems first.
+		 * OK:
+		 * If someone comes and tells me that this hangs for him/her, I'll implement a
+		 * smaller grained "Step" method for all handlers and add some more ticks where
+		 * "Step" is called. No problem in principle. */
+		LinkGraphJobGroup::Run(this);
+	}
+}
+
+void LinkGraphJobGroup::JoinThread() {
+	if (!this->thread || this->joined_thread) return;
+	this->thread->Join();
+	this->joined_thread = true;
+}
+
+/**
+ * Run all jobs for the given LinkGraphJobGroup. This method is tailored to
+ * ThreadObject::New.
+ * @param j Pointer to a LinkGraphJobGroup.
+ */
+/* static */ void LinkGraphJobGroup::Run(void *group)
+{
+	LinkGraphJobGroup *job_group = (LinkGraphJobGroup *)group;
+	for (LinkGraphJob *job : job_group->jobs) {
+		LinkGraphSchedule::Run(job);
+	}
+}
+
+/* static */ void LinkGraphJobGroup::ExecuteJobSet(std::vector<JobInfo> jobs) {
+	const uint thread_budget = 200000;
+
+	std::sort(jobs.begin(), jobs.end(), [](const JobInfo &a, const JobInfo &b) {
+		return a.cost_estimate < b.cost_estimate;
+	});
+
+	std::vector<LinkGraphJob *> bucket;
+	uint bucket_cost = 0;
+	auto flush_bucket = [&]() {
+		if (!bucket_cost) return;
+		DEBUG(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: %zu, cost: %u", bucket.size(), bucket_cost);
+		auto group = std::make_shared<LinkGraphJobGroup>(constructor_token(), std::move(bucket));
+		group->SpawnThread();
+		bucket_cost = 0;
+		bucket.clear();
+	};
+
+	for (JobInfo &it : jobs) {
+		if (bucket_cost && (bucket_cost + it.cost_estimate > thread_budget)) flush_bucket();
+		bucket.push_back(it.job);
+		bucket_cost += it.cost_estimate;
+	}
+	flush_bucket();
+}
+
+LinkGraphJobGroup::JobInfo::JobInfo(LinkGraphJob *job) :
+		job(job), cost_estimate(job->Graph().CalculateCostEstimate()) { }
 
 /**
  * Pause the game if on the next _date_fract tick, we would do a join with the next

@@ -48,7 +48,6 @@ LinkGraphJob::LinkGraphJob(const LinkGraph &orig, uint duration_multiplier) :
 		 * This is on purpose. */
 		link_graph(orig),
 		settings(_settings_game.linkgraph),
-		thread(NULL),
 		join_date_ticks(GetLinkGraphJobJoinDateTicks(duration_multiplier)),
 		start_date_ticks((_date * DAY_TICKS) + _date_fract),
 		job_completed(false)
@@ -66,23 +65,9 @@ void LinkGraphJob::EraseFlows(NodeID from)
 	}
 }
 
-/**
- * Spawn a thread if possible and run the link graph job in the thread. If
- * that's not possible run the job right now in the current thread.
- */
-void LinkGraphJob::SpawnThread()
+void LinkGraphJob::SetJobGroup(std::shared_ptr<LinkGraphJobGroup> group)
 {
-	if (!ThreadObject::New(&(LinkGraphSchedule::Run), this, &this->thread, "ottd:linkgraph")) {
-		this->thread = NULL;
-		/* Of course this will hang a bit.
-		 * On the other hand, if you want to play games which make this hang noticably
-		 * on a platform without threads then you'll probably get other problems first.
-		 * OK:
-		 * If someone comes and tells me that this hangs for him/her, I'll implement a
-		 * smaller grained "Step" method for all handlers and add some more ticks where
-		 * "Step" is called. No problem in principle. */
-		LinkGraphSchedule::Run(this);
-	}
+	this->group = std::move(group);
 }
 
 /**
@@ -90,10 +75,9 @@ void LinkGraphJob::SpawnThread()
  */
 void LinkGraphJob::JoinThread()
 {
-	if (this->thread != NULL) {
-		this->thread->Join();
-		delete this->thread;
-		this->thread = NULL;
+	if (this->group != nullptr) {
+		this->group->JoinThread();
+		this->group.reset();
 	}
 }
 
