@@ -4124,7 +4124,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e)
 	v->railtype = rvi->railtype;
 
 	v->build_year = _cur_year;
-	v->cur_image = SPR_IMG_QUERY;
+	v->sprite_seq.Set(SPR_IMG_QUERY);
 	v->random_bits = VehicleRandomBits();
 
 	v->group_id = DEFAULT_GROUP;
@@ -4200,7 +4200,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID 
 	v->railtype = rvi->railtype;
 	_new_vehicle_id = v->index;
 
-	v->cur_image = SPR_IMG_QUERY;
+	v->sprite_seq.Set(SPR_IMG_QUERY);
 	v->random_bits = VehicleRandomBits();
 
 	v->group_id = DEFAULT_GROUP;

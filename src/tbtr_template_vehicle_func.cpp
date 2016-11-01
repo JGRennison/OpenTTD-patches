@@ -132,7 +132,7 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 
 	while (t) {
 		PaletteID pal = GetEnginePalette(t->engine_type, _current_company);
-		DrawSprite(t->cur_image, pal, offset + t->image_width / 2, ScaleGUITrad(11));
+		t->sprite_seq.Draw(offset + t->image_width / 2, ScaleGUITrad(11), pal, false);
 
 		offset += t->image_width;
 		t = t->Next();
@@ -167,7 +167,7 @@ inline void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicl
 	tmp->max_te = gcache->cached_max_te / 1000;
 
 	tmp->spritenum = virt->spritenum;
-	tmp->cur_image = virt->GetImage(DIR_W, EIT_PURCHASE);
+	virt->GetImage(DIR_W, EIT_PURCHASE, &tmp->sprite_seq);
 	Point *p = new Point();
 	tmp->image_width = virt->GetDisplayImageWidth(p);
 }
