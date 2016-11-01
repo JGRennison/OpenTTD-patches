@@ -64,7 +64,7 @@ TemplateVehicle::TemplateVehicle(VehicleType ty, EngineID eid, byte subtypeflag,
 	this->previous = 0x0;
 	this->owner_b = _current_company;
 
-	this->cur_image = SPR_IMG_QUERY;
+	this->sprite_seq.Set(SPR_IMG_QUERY);
 
 	this->owner = current_owner;
 

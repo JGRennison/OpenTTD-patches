@@ -2384,9 +2384,7 @@ struct VehicleDetailsWindow : Window {
 			case WID_VD_MIDDLE_DETAILS: {
 				/* For other vehicles, at the place of the matrix. */
 				bool rtl = _current_text_dir == TD_RTL;
-				uint sprite_width = UnScaleGUI(
-						max<uint>(GetSprite(v->GetImage(rtl ? DIR_E : DIR_W, EIT_IN_DETAILS), ST_NORMAL)->width, 70U)) +
-						WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+				uint sprite_width = GetSingleVehicleWidth(v, EIT_IN_DETAILS) + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 
 				uint text_left  = r.left  + (rtl ? 0 : sprite_width);
 				uint text_right = r.right - (rtl ? sprite_width : 0);
@@ -2672,8 +2670,8 @@ static const uint32 _vehicle_command_translation_table[][4] = {
 };
 
 /**
- * This is the Callback method after the cloning attempt of a vehicle
- * @param result the result of the cloning command
+ * This is the Callback method after attempting to start/stop a vehicle
+ * @param result the result of the start/stop command
  * @param tile unused
  * @param p1 vehicle ID
  * @param p2 unused
@@ -3201,9 +3199,11 @@ int GetSingleVehicleWidth(const Vehicle *v, EngineImageType image_type)
 
 		default:
 			bool rtl = _current_text_dir == TD_RTL;
-			SpriteID sprite = v->GetImage(rtl ? DIR_E : DIR_W, image_type);
-			const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
-			return UnScaleGUI(real_sprite->width);
+			VehicleSpriteSeq seq;
+			v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
+			Rect rec;
+			seq.GetBounds(&rec);
+			return UnScaleGUI(rec.right - rec.left + 1);
 	}
 }
 
@@ -3237,16 +3237,24 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 	_cursor.sprite_count = 0;
 	int total_width = 0;
 	for (; v != NULL; v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : NULL) {
-		if (_cursor.sprite_count == lengthof(_cursor.sprite_seq)) break;
 		if (total_width >= 2 * (int)VEHICLEINFO_FULL_VEHICLE_WIDTH) break;
 
-		_cursor.sprite_seq[_cursor.sprite_count].sprite = v->GetImage(rtl ? DIR_E : DIR_W, image_type);
-		_cursor.sprite_seq[_cursor.sprite_count].pal = GetVehiclePalette(v);
-		_cursor.sprite_pos[_cursor.sprite_count].x = rtl ? -total_width : total_width;
-		_cursor.sprite_pos[_cursor.sprite_count].y = 0;
+		PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
+		VehicleSpriteSeq seq;
+		v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
+
+		if (_cursor.sprite_count + seq.count > lengthof(_cursor.sprite_seq)) break;
+
+		for (uint i = 0; i < seq.count; ++i) {
+			PaletteID pal2 = (v->vehstatus & VS_CRASHED) || !seq.seq[i].pal ? pal : seq.seq[i].pal;
+			_cursor.sprite_seq[_cursor.sprite_count].sprite = seq.seq[i].sprite;
+			_cursor.sprite_seq[_cursor.sprite_count].pal = pal2;
+			_cursor.sprite_pos[_cursor.sprite_count].x = rtl ? -total_width : total_width;
+			_cursor.sprite_pos[_cursor.sprite_count].y = 0;
+			_cursor.sprite_count++;
+		}
 
 		total_width += GetSingleVehicleWidth(v, image_type);
-		_cursor.sprite_count++;
 	}
 
 	int offs = ((int)VEHICLEINFO_FULL_VEHICLE_WIDTH - total_width) / 2;
