@@ -1120,7 +1120,7 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Firma indstilli
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Firma indstilling (lagret i gemt spil; påvirker kun aktuelt selskab)
 STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Vis alle søgeresultater ved at sætte{}{SILVER}Kategori {BLACK}to {WHITE}{STRING}
 STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Vis alle søgeresultater ved at sætte{}{SILVER}Indtast {BLACK}til {WHITE}Alle Indstillingstyper
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Vis alle søgeresultater ved at sætte {} {SILVER}Kategori {BLACK}til {WHITE} {STRING} {BLACK}og {SILVER} Indtast {BLACK}til {WHITE}Alle Indstillingstyper
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Vis alle søgeresultater ved at sætte{} {SILVER}Kategori {BLACK}til {WHITE} {STRING} {BLACK}og {SILVER} Indtast {BLACK}til {WHITE}Alle Indstillingstyper
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Ingen -
 
 STR_CONFIG_SETTING_OFF                                          :Fra
@@ -2687,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Land ejet af se
 STR_ABOUT_OPENTTD                                               :{WHITE}Om OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, Alle rettigheder reserveret
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD teamet
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD teamet
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Gem spil
@@ -2874,7 +2874,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Gå til 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Tidligere grafikelement
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fortsæt til den forrige normal sprite, springe over nogen pseudo / recolour / FONT sprites og indpakning rundt fra den første sprite til det sidste
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Repræsentation af den markerede sprite. Justeringen ignoreres når denne sprite tegnes.
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flyt spriten rundt for at ændre X- og Y-forskydningen
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flyt spriten rundt for at ændre X- og Y-forskydningen. Ctrl+Klik for at flytte spriten otte enheder af gangen
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Nulstil relativ
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Nulstil den nuværende relative forskydning
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X-forskydning: {NUM}, Y-forskydning: {NUM} (Absolut)
@@ -2889,7 +2889,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Advarsel: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fejl: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatalt: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}En fatal NewGRF-fejl er opstået: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}En fatal NewGRF-fejl er opstået:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} virker ikke med TTDPatch-versionen rapporteret af OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} er beregnet til {STRING}-versionen af TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} er designet til brug sammen med {STRING}

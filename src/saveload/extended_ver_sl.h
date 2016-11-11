@@ -67,6 +67,8 @@ inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature)
 	return !SlXvIsFeaturePresent(feature);
 }
 
+const char *SlXvGetFeatureName(SlXvFeatureIndex feature);
+
 /**
  * sub chunk flags, this is saved as-is
  * (XSCF_EXTRA_DATA_PRESENT and XSCF_CHUNK_ID_LIST_PRESENT must only be set by the save code, and read by the load code)

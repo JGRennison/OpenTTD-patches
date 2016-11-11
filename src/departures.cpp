@@ -111,8 +111,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			continue;
 		}
 
-        /* MAX_COMPANIES is probably the wrong thing to put here, but it works. GenerateVehicleSortList doesn't check the company when the type of list is VL_STATION_LIST (r20801). */
-		if (!GenerateVehicleSortList(&vehicles, VehicleListIdentifier(VL_STATION_LIST, (VehicleType)(VEH_TRAIN + i), MAX_COMPANIES, station).Pack())) {
+		/* MAX_COMPANIES is probably the wrong thing to put here, but it works. GenerateVehicleSortList doesn't check the company when the type of list is VL_STATION_LIST (r20801). */
+		if (!GenerateVehicleSortList(&vehicles, VehicleListIdentifier(VL_STATION_LIST, (VehicleType)(VEH_TRAIN + i), MAX_COMPANIES, station))) {
 			/* Something went wrong: panic! */
 			return result;
 		}

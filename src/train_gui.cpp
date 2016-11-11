@@ -56,15 +56,16 @@ void CcBuildWagon(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p
  * @param px        The current x position to draw from.
  * @param max_width The maximum space available to draw.
  * @param selection Selected vehicle that is dragged.
+ * @param chain     Whether a whole chain is dragged.
  * @return The width of the highlight mark.
  */
-static int HighlightDragPosition(int px, int max_width, VehicleID selection)
+static int HighlightDragPosition(int px, int max_width, VehicleID selection, bool chain)
 {
 	bool rtl = _current_text_dir == TD_RTL;
 
 	assert(selection != INVALID_VEHICLE);
 	int dragged_width = WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
-	for (Train *t = Train::Get(selection); t != NULL; t = t->HasArticulatedPart() ? t->GetNextArticulatedPart() : NULL) {
+	for (Train *t = Train::Get(selection); t != NULL; t = chain ? t->Next() : (t->HasArticulatedPart() ? t->GetNextArticulatedPart() : NULL)) {
 		dragged_width += t->GetDisplayImageWidth(NULL);
 	}
 
@@ -114,7 +115,7 @@ void DrawTrainImage(const Train *v, int left, int right, int y, VehicleID select
 	for (; v != NULL && (rtl ? px > 0 : px < max_width); v = v->Next()) {
 		if (dragging && !drag_at_end_of_train && drag_dest == v->index) {
 			/* Highlight the drag-and-drop destination inside the train. */
-			int drag_hlight_width = HighlightDragPosition(px, max_width, selection);
+			int drag_hlight_width = HighlightDragPosition(px, max_width, selection, _cursor.vehchain);
 			px += rtl ? -drag_hlight_width : drag_hlight_width;
 		}
 
@@ -123,7 +124,9 @@ void DrawTrainImage(const Train *v, int left, int right, int y, VehicleID select
 
 		if (rtl ? px + width > 0 : px - width < max_width) {
 			PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
-			DrawSprite(v->GetImage(dir, image_type), pal, px + (rtl ? -offset.x : offset.x), height / 2 + offset.y);
+			VehicleSpriteSeq seq;
+			v->GetImage(dir, image_type, &seq);
+			seq.Draw(px + (rtl ? -offset.x : offset.x), height / 2 + offset.y, pal, v->vehstatus & VS_CRASHED);
 		}
 
 		if (!v->IsArticulatedPart()) sel_articulated = false;
@@ -146,7 +149,7 @@ void DrawTrainImage(const Train *v, int left, int right, int y, VehicleID select
 
 	if (dragging && drag_at_end_of_train) {
 		/* Highlight the drag-and-drop destination at the end of the train. */
-		HighlightDragPosition(px, max_width, selection);
+		HighlightDragPosition(px, max_width, selection, _cursor.vehchain);
 	}
 
 	if (highlight_l != highlight_r) {
@@ -382,7 +385,9 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 						pitch = ScaleGUITrad(e->GetGRF()->traininfo_vehicle_pitch);
 					}
 					PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
-					DrawSprite(u->GetImage(dir, EIT_IN_DETAILS), pal, px + (rtl ? -offset.x : offset.x), y - line_height * vscroll_pos + sprite_y_offset + pitch);
+					VehicleSpriteSeq seq;
+					u->GetImage(dir, EIT_IN_DETAILS, &seq);
+					seq.Draw(px + (rtl ? -offset.x : offset.x), y - line_height * vscroll_pos + sprite_y_offset + pitch, pal, v->vehstatus & VS_CRASHED);
 				}
 				px += rtl ? -width : width;
 				dx += width;

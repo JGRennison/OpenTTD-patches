@@ -1402,7 +1402,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop
 				break;
 
 			case 0x12: // SFX
-				rvi->sfx = buf->ReadByte();
+				rvi->sfx = GetNewGRFSoundID(_cur.grffile, buf->ReadByte());
 				break;
 
 			case PROP_ROADVEH_POWER: // Power in units of 10 HP.
@@ -1590,7 +1590,7 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop
 				break;
 
 			case 0x10: // SFX
-				svi->sfx = buf->ReadByte();
+				svi->sfx = GetNewGRFSoundID(_cur.grffile, buf->ReadByte());
 				break;
 
 			case 0x11: { // Cargoes available for refitting
@@ -1758,7 +1758,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 				break;
 
 			case 0x12: // SFX
-				avi->sfx = buf->ReadByte();
+				avi->sfx = GetNewGRFSoundID(_cur.grffile, buf->ReadByte());
 				break;
 
 			case 0x13: { // Cargoes available for refitting
@@ -3010,7 +3010,7 @@ static ChangeInfoResult SoundEffectChangeInfo(uint sid, int numinfo, int prop, B
 	}
 
 	if (sid + numinfo - ORIGINAL_SAMPLE_COUNT > _cur.grffile->num_sounds) {
-		grfmsg(1, "SoundEffectChangeInfo: Attemting to change undefined sound effect (%u), max (%u). Ignoring.", sid + numinfo, ORIGINAL_SAMPLE_COUNT + _cur.grffile->num_sounds);
+		grfmsg(1, "SoundEffectChangeInfo: Attempting to change undefined sound effect (%u), max (%u). Ignoring.", sid + numinfo, ORIGINAL_SAMPLE_COUNT + _cur.grffile->num_sounds);
 		return CIR_INVALID_ID;
 	}
 
@@ -5584,7 +5584,7 @@ static const Action5Type _action5_types[] = {
 	/* 0x02 */ { A5BLOCK_INVALID,      0,                            0, 0,                                           "Type 0x02"                },
 	/* 0x03 */ { A5BLOCK_INVALID,      0,                            0, 0,                                           "Type 0x03"                },
 	/* 0x04 */ { A5BLOCK_ALLOW_OFFSET, SPR_SIGNALS_BASE,             1, PRESIGNAL_SEMAPHORE_AND_PBS_SPRITE_COUNT,    "Signal graphics"          },
-	/* 0x05 */ { A5BLOCK_ALLOW_OFFSET, SPR_ELRAIL_BASE,              1, ELRAIL_SPRITE_COUNT,                         "Catenary graphics"        },
+	/* 0x05 */ { A5BLOCK_ALLOW_OFFSET, SPR_ELRAIL_BASE,              1, ELRAIL_SPRITE_COUNT,                         "Rail catenary graphics"   },
 	/* 0x06 */ { A5BLOCK_ALLOW_OFFSET, SPR_SLOPES_BASE,              1, NORMAL_AND_HALFTILE_FOUNDATION_SPRITE_COUNT, "Foundation graphics"      },
 	/* 0x07 */ { A5BLOCK_INVALID,      0,                           75, 0,                                           "TTDP GUI graphics"        }, // Not used by OTTD.
 	/* 0x08 */ { A5BLOCK_ALLOW_OFFSET, SPR_CANALS_BASE,              1, CANALS_SPRITE_COUNT,                         "Canal graphics"           },
@@ -6421,8 +6421,8 @@ static void SafeParamSet(ByteReader *buf)
 {
 	uint8 target = buf->ReadByte();
 
-	/* Only writing GRF parameters is considered safe */
-	if (target < 0x80) return;
+	/* Writing GRF parameters and some bits of 'misc GRF features' are safe. */
+	if (target < 0x80 || target == 0x9E) return;
 
 	/* GRM could be unsafe, but as here it can only happen after other GRFs
 	 * are loaded, it should be okay. If the GRF tried to use the slots it
@@ -6838,7 +6838,15 @@ static void ParamSet(ByteReader *buf)
 			/* Remove the local flags from the global flags */
 			ClrBit(res, GMB_TRAIN_WIDTH_32_PIXELS);
 
-			_misc_grf_features = res;
+			/* Only copy safe bits for static grfs */
+			if (HasBit(_cur.grfconfig->flags, GCF_STATIC)) {
+				uint32 safe_bits = 0;
+				SetBit(safe_bits, GMB_SECOND_ROCKY_TILE_SET);
+
+				_misc_grf_features = (_misc_grf_features & ~safe_bits) | (res & safe_bits);
+			} else {
+				_misc_grf_features = res;
+			}
 			break;
 
 		case 0x9F: // locale-dependent settings

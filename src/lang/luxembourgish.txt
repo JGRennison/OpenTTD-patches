@@ -2687,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Land am Firmenb
 STR_ABOUT_OPENTTD                                               :{WHITE}Iwwert OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original Copyright {COPYRIGHT} 1995 Chris Sawyer, All Rechter virbehalen
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD Versioun {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 D'OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 D'OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spill späicheren
@@ -2874,7 +2874,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Géi op 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Viregt Sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Géi weider op déi nächst normal Sprite, iwwersprang all pseudo/recolour/font Sprite an sprang zréck op den Ufank no der leschter.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representatioun vun der grad gewielter Sprite. Den Alignement gëtt ignoréiert wann d'Sprite gezun gëtt
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Beweg Sprite, X an Y offsets enneren sech
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Beweg Sprite, X an Y offsets enneren sech. Ctrl+Klick fir de Sprite8 Eenheete matenen ze bewegen.
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Relativ zerécksetzen
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Momentan relativ Offsets zerécksetzen
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X-Offset: {NUM}, Y-Offset: {NUM} (Absolut)
@@ -2889,7 +2889,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Warnung: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fehler: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}E fatalen NewGRF Fehler ass geschitt: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}E fatalen NewGRF Fehler ass geschitt:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} wärt net mat der TTDPatch Versioun déi vun OpenTTD erkannt gouf funktionéiren
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} ass fir {STRING} Versioun vun TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} ass designed fir mat {STRING} benotzt ze ginn
@@ -2906,7 +2906,7 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Versicht invali
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} huet eng korrupt Sprite. All korrupt Sprites ginn als Fragezeichen (?) duergestallt
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Huet eng Rei Action 8 Einträg (Sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lanscht d'Enn vum Pseudo-Sprite gelies (Sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}D'momentan benotzten Grafikset huet e puer Sprites ze mann. {}W.e.g d'Basisgrafikset updaten
+STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}D'momentan benotzten Grafikset huet e puer Sprites ze mann.{}W.e.g d'Basisgrafikset updaten
 STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Am grad benotzten Basis-Grafikset fehlen e puer Sprites.{}W.e.g Basis-Grafikset updaten.{}Wellsde en {YELLOW}Development Snapshot vun OpenTTD spills{WHITE}, brauchsde och en {YELLOW}Development Snapshot vum Basis-Grafikset{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Ugefroten GRF Ressource net verfügbar (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} gouf ausgeschalt vun {STRING}
@@ -4063,7 +4063,7 @@ STR_MESSAGE_ESTIMATED_COST                                      :{WHITE}Geschät
 STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Geschätzten Akommes: {CURRENCY_LONG}
 
 # Saveload messages
-STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Nach amgaangen ze späicheren. {} W.e.g. waarde bis daat fäerdeg ass!
+STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Nach amgaangen ze späicheren.{} W.e.g. waarde bis daat fäerdeg ass!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Fehler beim Autospäicheren
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Kann net um Laafwierk liesen
 STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Fehler beim Späicheren{}{STRING}
