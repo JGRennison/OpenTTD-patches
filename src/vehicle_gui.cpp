@@ -1553,9 +1553,9 @@ private:
 
 	StringID GetChangeOrderStringID() const
 	{
-		if (VehicleListIdentifier(this->window_number).type == VL_STATION_LIST) {
+		if (VehicleListIdentifier::UnPack(this->window_number).type == VL_STATION_LIST) {
 			return (Station::Get(this->vli.index)->facilities & FACIL_WAYPOINT) ? STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT : STR_VEHICLE_LIST_CHANGE_ORDER_STATION;
-		} else if (VehicleListIdentifier(this->window_number).type == VL_DEPOT_LIST) {
+		} else if (VehicleListIdentifier::UnPack(this->window_number).type == VL_DEPOT_LIST) {
 			return STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT + this->vli.vtype;
 		} else {
 			return 0;
@@ -1758,7 +1758,7 @@ public:
 				break;
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
-				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier(this->window_number).type == VL_STANDARD, false,
+				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier::UnPack(this->window_number).type == VL_STANDARD, false,
 						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID(), true);
 				ShowDropDownList(this, list, 0, WID_VL_MANAGE_VEHICLES_DROPDOWN);
 				break;

@@ -447,7 +447,7 @@ CommandCost CmdCreateGroupFromList(TileIndex tile, DoCommandFlag flags, uint32 p
 {
 	VehicleListIdentifier vli;
 	VehicleList list;
-	if (!vli.Unpack(p1)) return CMD_ERROR;
+	if (!vli.UnpackIfValid(p1)) return CMD_ERROR;
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
 	if (!GenerateVehicleSortList(&list, vli)) return CMD_ERROR;
 
