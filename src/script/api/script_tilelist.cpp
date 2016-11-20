@@ -64,7 +64,7 @@ ScriptTileList_IndustryAccepting::ScriptTileList_IndustryAccepting(IndustryID in
 		if (!cargo_accepts) return;
 	}
 
-	if (!_settings_game.station.modified_catchment) radius = CA_UNMODIFIED;
+	if (!_settings_game.station.modified_catchment) radius = CA_UNMODIFIED + _settings_game.station.catchment_increase;
 
 	TileArea ta(i->location.tile - ::TileDiffXY(radius, radius), i->location.w + radius * 2, i->location.h + radius * 2);
 	TILE_AREA_LOOP(cur_tile, ta) {
@@ -100,7 +100,7 @@ ScriptTileList_IndustryProducing::ScriptTileList_IndustryProducing(IndustryID in
 	}
 	if (!cargo_produces) return;
 
-	if (!_settings_game.station.modified_catchment) radius = CA_UNMODIFIED;
+	if (!_settings_game.station.modified_catchment) radius = CA_UNMODIFIED + _settings_game.station.catchment_increase;
 
 	TileArea ta(i->location.tile - ::TileDiffXY(radius, radius), i->location.w + radius * 2, i->location.h + radius * 2);
 	TILE_AREA_LOOP(cur_tile, ta) {

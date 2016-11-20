@@ -60,7 +60,7 @@ void DrawZoningSprites(SpriteID image, SpriteID colour, const TileInfo *ti)
  */
 bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner, StationFacility facility_mask)
 {
-	int catchment = _settings_game.station.station_spread + (_settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED);
+	int catchment = _settings_game.station.station_spread + (_settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED) + _settings_game.station.catchment_increase;
 
 	StationFinder morestations(TileArea(TileXY(TileX(area.tile) - (catchment / 2), TileY(area.tile) - (catchment / 2)),
 			TileX(area.tile) + area.w + catchment, TileY(area.tile) + area.h + catchment));
@@ -90,7 +90,7 @@ bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner, StationFaci
  */
 bool IsTileWithinAcceptanceZoneOfStation(TileIndex tile, Owner owner, StationFacility facility_mask, bool open_window_only)
 {
-	int catchment = _settings_game.station.station_spread + (_settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED);
+	int catchment = _settings_game.station.station_spread + (_settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED) + _settings_game.station.catchment_increase;
 
 	StationFinder morestations(TileArea(TileXY(TileX(tile) - (catchment / 2), TileY(tile) - (catchment / 2)),
 			catchment, catchment));

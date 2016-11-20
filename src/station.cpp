@@ -288,6 +288,8 @@ uint Station::GetCatchmentRadius() const
 		}
 	}
 
+	if (ret != CA_NONE) ret += _settings_game.station.catchment_increase;
+
 	return ret;
 }
 

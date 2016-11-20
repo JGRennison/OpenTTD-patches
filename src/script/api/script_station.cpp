@@ -159,14 +159,16 @@ template<bool Tfrom, bool Tvia>
 	if (station_type == STATION_AIRPORT) return -1;
 	if (!HasExactlyOneBit(station_type)) return -1;
 
-	if (!_settings_game.station.modified_catchment) return CA_UNMODIFIED;
+	const int32 inc = _settings_game.station.catchment_increase;
+
+	if (!_settings_game.station.modified_catchment) return CA_UNMODIFIED + inc;
 
 	switch (station_type) {
-		case STATION_TRAIN:      return CA_TRAIN;
-		case STATION_TRUCK_STOP: return CA_TRUCK;
-		case STATION_BUS_STOP:   return CA_BUS;
-		case STATION_DOCK:       return CA_DOCK;
-		default:                 return CA_NONE;
+		case STATION_TRAIN:      return CA_TRAIN + inc;
+		case STATION_TRUCK_STOP: return CA_TRUCK + inc;
+		case STATION_BUS_STOP:   return CA_BUS + inc;
+		case STATION_DOCK:       return CA_DOCK + inc;
+		default:                 return CA_NONE + inc;
 	}
 }
 

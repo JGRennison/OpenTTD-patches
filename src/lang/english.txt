@@ -1177,6 +1177,8 @@ STR_CONFIG_SETTING_AUTOSLOPE                                    :Allow landscapi
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Allow landscaping under buildings and tracks without removing them
 STR_CONFIG_SETTING_CATCHMENT                                    :Allow more realistically sized catchment areas: {STRING2}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Have differently sized catchment areas for different types of stations and airports
+STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :Increase station catchment radius: {STRING2}
+STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :Increase radius of station catchment areas by this many tiles
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Allow removal of more town-owned roads, bridges and tunnels: {STRING2}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Make it easier to remove town-owned infrastructure and buildings
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maximum length of trains: {STRING2}

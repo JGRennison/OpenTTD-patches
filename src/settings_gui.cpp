@@ -1801,6 +1801,7 @@ static SettingsContainer &GetSettingsTree()
 			}
 
 			environment->Add(new SettingEntry("station.modified_catchment"));
+			environment->Add(new SettingEntry("station.catchment_increase"));
 		}
 
 		SettingsPage *ai = main->Add(new SettingsPage(STR_CONFIG_SETTING_AI));

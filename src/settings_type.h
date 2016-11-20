@@ -578,6 +578,7 @@ struct StationSettings {
 	bool   distant_join_stations;            ///< allow to join non-adjacent stations
 	bool   never_expire_airports;            ///< never expire airports
 	byte   station_spread;                   ///< amount a station may spread
+	byte   catchment_increase;               ///< amount by which station catchment is increased
 };
 
 /** Default settings for vehicles. */

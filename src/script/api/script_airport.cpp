@@ -67,7 +67,7 @@
 {
 	if (!IsAirportInformationAvailable(type)) return -1;
 
-	return _settings_game.station.modified_catchment ? ::AirportSpec::Get(type)->catchment : (uint)CA_UNMODIFIED;
+	return (_settings_game.station.modified_catchment ? ::AirportSpec::Get(type)->catchment : (uint)CA_UNMODIFIED) + _settings_game.station.catchment_increase;
 }
 
 /* static */ bool ScriptAirport::BuildAirport(TileIndex tile, AirportType type, StationID station_id)

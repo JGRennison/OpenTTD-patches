@@ -415,6 +415,7 @@ public:
 	virtual void OnPaint()
 	{
 		int rad = (_settings_game.station.modified_catchment) ? CA_DOCK : CA_UNMODIFIED;
+		rad += _settings_game.station.catchment_increase;
 
 		this->DrawWidgets();
 

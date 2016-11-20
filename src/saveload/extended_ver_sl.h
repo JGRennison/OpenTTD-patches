@@ -46,6 +46,7 @@ enum SlXvFeatureIndex {
 	XSLFI_MORE_RAIL_TYPES,                        ///< Increased number of rail types
 	XSLFI_CARGO_TYPE_ORDERS,                      ///< Cargo-specific load/unload order flags
 	XSLFI_EXTENDED_GAMELOG,                       ///< Extended gamelog
+	XSLFI_STATION_CATCHMENT_INC,                  ///< Station catchment radius increase
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

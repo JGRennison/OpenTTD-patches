@@ -3866,6 +3866,7 @@ void FindStationsAroundTiles(const TileArea &location, StationList *stations)
 {
 	/* area to search = producer plus station catchment radius */
 	uint max_rad = (_settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED);
+	max_rad += _settings_game.station.catchment_increase;
 
 	uint x = TileX(location.tile);
 	uint y = TileY(location.tile);

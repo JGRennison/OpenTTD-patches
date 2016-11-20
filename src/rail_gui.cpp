@@ -1129,6 +1129,7 @@ public:
 		}
 
 		int rad = (_settings_game.station.modified_catchment) ? CA_TRAIN : CA_UNMODIFIED;
+		rad += _settings_game.station.catchment_increase;
 
 		if (_settings_client.gui.station_show_coverage) SetTileSelectBigSize(-rad, -rad, 2 * rad, 2 * rad);
 
