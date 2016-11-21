@@ -319,7 +319,7 @@ void LinkGraphOverlay::SetCompanyMask(uint32 company_mask)
 /** Make a number of rows with buttons for each company for the linkgraph legend window. */
 NWidgetBase *MakeCompanyButtonRowsLinkGraphGUI(int *biggest_index)
 {
-	return MakeCompanyButtonRows(biggest_index, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST, 3, STR_LINKGRAPH_LEGEND_SELECT_COMPANIES);
+	return MakeCompanyButtonRows(biggest_index, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST, 3, 0);
 }
 
 NWidgetBase *MakeSaturationLegendLinkGraphGUI(int *biggest_index)
@@ -497,6 +497,28 @@ void LinkGraphLegendWindow::DrawWidget(const Rect &r, int widget) const
 		CargoSpec *cargo = CargoSpec::Get(widget - WID_LGL_CARGO_FIRST);
 		GfxFillRect(r.left + 2, r.top + 2, r.right - 2, r.bottom - 2, cargo->legend_colour);
 		DrawString(r.left, r.right, (r.top + r.bottom + 1 - FONT_HEIGHT_SMALL) / 2, cargo->abbrev, TC_BLACK, SA_HOR_CENTER);
+	}
+}
+
+void LinkGraphLegendWindow::OnHover(Point pt, int widget)
+{
+	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {
+		uint64 params[5];
+		if (this->IsWidgetDisabled(widget)) {
+			GuiShowTooltips(this, STR_LINKGRAPH_LEGEND_SELECT_COMPANIES, 0, params, TCC_HOVER);
+		} else {
+			CompanyID cid = (CompanyID)(widget - WID_LGL_COMPANY_FIRST);
+			params[0] = STR_LINKGRAPH_LEGEND_SELECT_COMPANIES;
+			params[1] = cid;
+			GuiShowTooltips(this, STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP, 2, params, TCC_HOVER);
+		}
+	}
+	if (IsInsideMM(widget, WID_LGL_CARGO_FIRST, WID_LGL_CARGO_LAST + 1)) {
+		if (this->IsWidgetDisabled(widget)) return;
+		CargoSpec *cargo = CargoSpec::Get(widget - WID_LGL_CARGO_FIRST);
+		uint64 params[5];
+		params[0] = cargo->name;
+		GuiShowTooltips(this, STR_BLACK_STRING, 1, params, TCC_HOVER);
 	}
 }
 
