@@ -2258,8 +2258,13 @@ struct GameSettingsWindow : Window {
 				if (sd->desc.flags & SGF_CURRENCY) value *= _currency->rate;
 
 				this->valuewindow_entry = pe;
-				SetDParam(0, value);
-				ShowQueryString(STR_JUST_INT, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
+				if (sd->desc.flags & SGF_DECIMAL1) {
+					SetDParam(0, value);
+					ShowQueryString(STR_JUST_DECIMAL1, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, CS_NUMERAL_DECIMAL, QSF_ENABLE_DEFAULT);
+				} else {
+					SetDParam(0, value);
+					ShowQueryString(STR_JUST_INT, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
+				}
 			}
 			this->SetDisplayedHelpText(pe);
 		}
@@ -2284,7 +2289,11 @@ struct GameSettingsWindow : Window {
 
 		int32 value;
 		if (!StrEmpty(str)) {
-			value = atoi(str);
+			if (sd->desc.flags & SGF_DECIMAL1) {
+				value = atof(str) * 10;
+			} else {
+				value = atoi(str);
+			}
 
 			/* Save the correct currency-translated value */
 			if (sd->desc.flags & SGF_CURRENCY) value /= _currency->rate;
