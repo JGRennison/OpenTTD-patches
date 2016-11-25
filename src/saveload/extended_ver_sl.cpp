@@ -203,6 +203,7 @@ void SlXvCheckSpecialSavegameVersions()
 		_sl_xv_feature_versions[XSLFI_INFRA_SHARING] = 1;
 		_sl_xv_feature_versions[XSLFI_AUTO_TIMETABLE] = 1;
 		_sl_xv_feature_versions[XSLFI_MORE_COND_ORDERS] = 1;
+		_sl_xv_feature_versions[XSLFI_SIG_TUNNEL_BRIDGE] = 1;
 
 		_sl_xv_discardable_chunk_ids.push_back('SNOW');
 	}
