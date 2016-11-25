@@ -1247,6 +1247,12 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 			}
 
+			case SCC_DECIMAL1: {// {DECIMAL1}
+				int64 number = args->GetInt64(SCC_DECIMAL1);
+				buff = FormatCommaNumber(buff, number, last, 1);
+				break;
+			}
+
 			case SCC_NUM: // {NUM}
 				buff = FormatNoCommaNumber(buff, args->GetInt64(SCC_NUM), last);
 				break;
