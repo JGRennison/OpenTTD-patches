@@ -3307,6 +3307,11 @@ bool AfterLoadGame()
 		FOR_ALL_VEHICLES(v) SB(v->vehicle_flags, VF_TIMETABLE_SEPARATION, 1, _settings_game.order.old_timetable_separation);
 	}
 
+	/* Set lifetime vehicle profit to 0 if lifetime profit feature is missing */
+	if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2)) {
+		_settings_game.economy.town_cargo_scale_factor = _settings_game.economy.old_town_cargo_factor * 10;
+	}
+
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
 	AfterLoadLabelMaps();
