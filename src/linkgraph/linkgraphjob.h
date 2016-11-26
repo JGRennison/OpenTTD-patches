@@ -69,10 +69,12 @@ protected:
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
 	EdgeAnnotationMatrix edges;       ///< Extra edge data necessary for link graph calculation.
 	bool job_completed;               ///< Is the job still running. This is accessed by multiple threads and is permitted to be spuriously incorrect.
+	bool abort_job;                   ///< Abort the job at the next available opportunity. This is accessed by multiple threads.
 
 	void EraseFlows(NodeID from);
 	void JoinThread();
 	void SetJobGroup(std::shared_ptr<LinkGraphJobGroup> group);
+	bool IsJobAborted() const;
 
 public:
 
@@ -282,6 +284,7 @@ public:
 	void FinaliseJob();
 
 	bool IsJobCompleted() const;
+	void AbortJob();
 
 	/**
 	 * Check if job is supposed to be finished.

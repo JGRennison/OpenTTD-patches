@@ -130,6 +130,7 @@ void LinkGraphSchedule::JoinNext()
 		this->running.pop_front();
 		LinkGraphID id = next->LinkGraphIndex();
 		next->FinaliseJob(); // joins the thread and finalises the job
+		assert(!next->IsJobAborted());
 		next.reset();
 		if (LinkGraph::IsValidID(id)) {
 			LinkGraph *lg = LinkGraph::Get(id);
@@ -148,6 +149,7 @@ void LinkGraphSchedule::JoinNext()
 {
 	LinkGraphJob *job = (LinkGraphJob *)j;
 	for (uint i = 0; i < lengthof(instance.handlers); ++i) {
+		if (job->IsJobAborted()) return;
 		instance.handlers[i]->Run(*job);
 	}
 
@@ -186,7 +188,7 @@ void LinkGraphSchedule::SpawnAll()
 /* static */ void LinkGraphSchedule::Clear()
 {
 	for (JobList::iterator i(instance.running.begin()); i != instance.running.end(); ++i) {
-		(*i)->JoinThread();
+		(*i)->AbortJob();
 	}
 	instance.running.clear();
 	instance.schedule.clear();
