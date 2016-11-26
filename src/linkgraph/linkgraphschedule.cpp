@@ -129,7 +129,8 @@ void LinkGraphSchedule::JoinNext()
 		std::unique_ptr<LinkGraphJob> next = std::move(this->running.front());
 		this->running.pop_front();
 		LinkGraphID id = next->LinkGraphIndex();
-		next.reset(); // implicitly joins the thread
+		next->FinaliseJob(); // joins the thread and finalises the job
+		next.reset();
 		if (LinkGraph::IsValidID(id)) {
 			LinkGraph *lg = LinkGraph::Get(id);
 			this->Unqueue(lg); // Unqueue to avoid double-queueing recycled IDs.

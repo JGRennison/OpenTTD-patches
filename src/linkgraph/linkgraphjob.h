@@ -279,6 +279,7 @@ public:
 	~LinkGraphJob();
 
 	void Init();
+	void FinaliseJob();
 
 	bool IsJobCompleted() const;
 

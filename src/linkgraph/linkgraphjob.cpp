@@ -82,15 +82,19 @@ void LinkGraphJob::JoinThread()
 }
 
 /**
- * Join the link graph job and destroy it.
+ * Join the link graph job thread, if not already joined.
  */
 LinkGraphJob::~LinkGraphJob()
 {
 	this->JoinThread();
+}
 
-	/* Don't update stuff from other pools, when everything is being removed.
-	 * Accessing other pools may be invalid. */
-	if (CleaningPool()) return;
+/**
+ * Join the link graph job thread, then merge/apply it.
+ */
+void LinkGraphJob::FinaliseJob()
+{
+	this->JoinThread();
 
 	/* Link graph has been merged into another one. */
 	if (!LinkGraph::IsValidID(this->link_graph.index)) return;
