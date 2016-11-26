@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.15.1
+## JGR's Patchpack version 0.16.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -45,7 +45,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Fixed departure boards with orders with timetabled 0 travel times, e.g. those with depot service orders.  
   * Made modifications to work with day length greater than 1.
 
-* Town cargo generation factor: [imported](http://www.tt-forums.net/viewtopic.php?t=46399)
+* Town cargo generation factor: [imported](http://www.tt-forums.net/viewtopic.php?t=46399)  
+  * Allow factor to be more finely adjusted in 0.1 increments. (added in v0.16.0)
 
 * Vehicles visible in tunnels (transparency setting): [imported](http://dev.openttdcoop.org/projects/clientpatches/repository/changes/VehicelsInTunnels.diff)
 
@@ -160,6 +161,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * When building tunnels, open new viewports at the far end of the tunnel [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=72639) (added in v0.15.0)
 
+* Add a setting to increase the station catchment radius (added in v0.16.0)
+
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 33% faster. (added in v0.8.1)  
@@ -176,7 +179,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Miscellaneous  
   * Various improvements to the crash logger.  
-  * Label threads with a descriptive name on supported Unixy platforms. (added in v0.8.1)
+  * Label threads with a descriptive name on supported Unixy platforms. (added in v0.8.1)  
+  * Adjust cargo dest link graph job scheduling algorithm to improve responsiveness. (added in v0.16.0)  
+  * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)
 
 * Translations  
   * German (by Auge): including vehicle group info, vehicle details window, the zoning toolbar, and settings for improved breakdowns and adjacent level crossings.

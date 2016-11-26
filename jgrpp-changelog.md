@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.16.0 (2016-11-26)
+* Fix wrong calculation of infrastructure sharing train repayment on track deletion due to track owner bankruptcy.
+* Fix loaded SpringPP savegames having wrong red/green state of signals on bridges/tunnels.
+* Add setting to increase station catchment radius.
+* Allow town cargo generation factor setting to be more finely adjusted (0.1 increments).
+* Cargo dest:
+  * Changes to link graph job scheduling algorithm, to improve responsiveness of updates.
+  * Add hover tool-tips to graph legend window.
+  * Improve visual contrast of graph legend window cargo labels.
+* Bump trunk base from r27661 to r27680
+
 ### v0.15.1 (2016-10-12)
 * Fix incorrect behaviour or multiplayer desync when saving/loading or joining a game with a per cargo type order as a vehicle's current order.
 * Enhanced viewports:
