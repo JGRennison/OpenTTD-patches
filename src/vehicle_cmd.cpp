@@ -1521,8 +1521,8 @@ static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, bool service, con
  * @param flags for command type
  * @param p1 bitmask
  * - p1 0-20: bitvehicle ID to send to the depot
- * - p1 bits 25-8  - DEPOT_ flags (see vehicle_type.h)
- * @param p2 packed VehicleListIdentifier.
+ * - p1 bits 27-31  - DEPOT_ flags (see vehicle_type.h)
+ * @param p2 packed VehicleListIdentifier, or specific depot tile
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1539,7 +1539,7 @@ CommandCost CmdSendVehicleToDepot(TileIndex tile, DoCommandFlag flags, uint32 p1
 	if (v == NULL) return CMD_ERROR;
 	if (!v->IsPrimaryVehicle()) return CMD_ERROR;
 
-	return v->SendToDepot(flags, (DepotCommand)(p1 & DEPOT_COMMAND_MASK));
+	return v->SendToDepot(flags, (DepotCommand)(p1 & DEPOT_COMMAND_MASK), p2);
 }
 
 /**

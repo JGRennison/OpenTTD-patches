@@ -2578,7 +2578,7 @@ static const NWidgetPart _nested_vehicle_view_widgets[] = {
 		NWidget(NWID_VERTICAL),
 			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CENTER_MAIN_VIEW), SetMinimalSize(18, 18), SetDataTip(SPR_CENTRE_VIEW_VEHICLE, 0x0 /* filled later */),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VV_SELECT_DEPOT_CLONE),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_GOTO_DEPOT), SetMinimalSize(18, 18), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
+				NWidget(WWT_IMGBTN, COLOUR_GREY, WID_VV_GOTO_DEPOT), SetMinimalSize(18, 18), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CLONE), SetMinimalSize(18, 18), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
 			EndContainer(),
 			/* For trains only, 'ignore signal' button. */
@@ -2721,6 +2721,9 @@ static bool IsVehicleRefitable(const Vehicle *v)
 /** Window manager class for viewing a vehicle. */
 struct VehicleViewWindow : Window {
 private:
+	bool depot_select_active = false;
+	bool depot_select_ctrl_pressed = false;
+
 	/** Display planes available in the vehicle view window. */
 	enum PlaneSelections {
 		SEL_DC_GOTO_DEPOT,  ///< Display 'goto depot' button in #WID_VV_SELECT_DEPOT_CLONE stacked widget.
@@ -2801,7 +2804,6 @@ public:
 		this->GetWidget<NWidgetCore>(WID_VV_START_STOP)->tool_tip       = STR_VEHICLE_VIEW_TRAIN_STATE_START_STOP_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_CENTER_MAIN_VIEW)->tool_tip = STR_VEHICLE_VIEW_TRAIN_LOCATION_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_REFIT)->tool_tip            = STR_VEHICLE_VIEW_TRAIN_REFIT_TOOLTIP + v->type;
-		this->GetWidget<NWidgetCore>(WID_VV_GOTO_DEPOT)->tool_tip       = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_SHOW_ORDERS)->tool_tip      = STR_VEHICLE_VIEW_TRAIN_ORDERS_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_SHOW_DETAILS)->tool_tip     = STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_CLONE)->tool_tip            = STR_VEHICLE_VIEW_CLONE_TRAIN_INFO + v->type;
@@ -3041,7 +3043,15 @@ public:
 			}
 
 			case WID_VV_GOTO_DEPOT: // goto hangar
-				DoCommandP(v->tile, v->index | (_ctrl_pressed ? DEPOT_SERVICE : 0U), 0, GetCmdSendToDepot(v));
+				if (_shift_pressed) {
+					if (HandlePlacePushButton(this, WID_VV_GOTO_DEPOT, ANIMCURSOR_PICKSTATION, HT_RECT)) {
+						this->depot_select_ctrl_pressed = _ctrl_pressed;
+						this->depot_select_active = true;
+					}
+				} else {
+					this->HandleButtonClick(WID_VV_GOTO_DEPOT);
+					DoCommandP(v->tile, v->index | (_ctrl_pressed ? DEPOT_SERVICE : 0U), 0, GetCmdSendToDepot(v));
+				}
 				break;
 			case WID_VV_REFIT: // refit
 				ShowVehicleRefitWindow(v, INVALID_VEH_ORDER_ID, this);
@@ -3074,6 +3084,48 @@ public:
 				assert(v->type == VEH_TRAIN);
 				DoCommandP(v->tile, v->index, 0, CMD_FORCE_TRAIN_PROCEED | CMD_MSG(STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL));
 				break;
+		}
+	}
+
+	virtual void OnTimeout()
+	{
+		if (!this->depot_select_active) {
+			this->RaiseWidget(WID_VV_GOTO_DEPOT);
+			this->SetWidgetDirty(WID_VV_GOTO_DEPOT);
+		}
+	}
+
+	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	{
+		const Vehicle *v = Vehicle::Get(this->window_number);
+		if (IsDepotTile(tile) && GetDepotVehicleType(tile) == v->type && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
+			DoCommandP(v->tile, v->index | (this->depot_select_ctrl_pressed ? DEPOT_SERVICE : 0U) | DEPOT_SPECIFIC, tile, GetCmdSendToDepot(v));
+			ResetObjectToPlace();
+			this->RaiseButtons();
+		}
+	}
+
+	virtual void OnPlaceObjectAbort()
+	{
+		this->depot_select_active = false;
+		this->RaiseWidget(WID_VV_GOTO_DEPOT);
+		this->SetWidgetDirty(WID_VV_GOTO_DEPOT);
+	}
+
+	virtual bool OnRightClick(Point pt, int widget)
+	{
+		if (widget == WID_VV_GOTO_DEPOT && _settings_client.gui.hover_delay_ms == 0) {
+			uint64 arg = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + Vehicle::Get(this->window_number)->type;
+			GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, TCC_RIGHT_CLICK);
+		}
+		return false;
+	}
+
+	virtual void OnHover(Point pt, int widget)
+	{
+		if (widget == WID_VV_GOTO_DEPOT) {
+			uint64 arg = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + Vehicle::Get(this->window_number)->type;
+			GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, TCC_HOVER);
 		}
 	}
 

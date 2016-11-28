@@ -2789,7 +2789,7 @@ void Vehicle::HandleWaiting(bool stop_waiting)
  * @param command the command to execute.
  * @return the cost of the depot action.
  */
-CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
+CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, TileIndex specific_depot)
 {
 	CommandCost ret = CheckOwnership(this->owner);
 	if (ret.Failed()) return ret;
@@ -2797,7 +2797,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 	if (this->vehstatus & VS_CRASHED) return CMD_ERROR;
 	if (this->IsStoppedInDepot()) return CMD_ERROR;
 
-	if (this->current_order.IsType(OT_GOTO_DEPOT)) {
+	if (this->current_order.IsType(OT_GOTO_DEPOT) && !(command & DEPOT_SPECIFIC)) {
 		bool halt_in_depot = (this->current_order.GetDepotActionType() & ODATFB_HALT) != 0;
 		if (!!(command & DEPOT_SERVICE) == halt_in_depot) {
 			/* We called with a different DEPOT_SERVICE setting.
@@ -2842,7 +2842,17 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 	DestinationID destination;
 	bool reverse;
 	static const StringID no_depot[] = {STR_ERROR_UNABLE_TO_FIND_ROUTE_TO, STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT, STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT, STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR};
-	if (!this->FindClosestDepot(&location, &destination, &reverse)) return_cmd_error(no_depot[this->type]);
+	if (command & DEPOT_SPECIFIC) {
+		if (!(IsDepotTile(specific_depot) && GetDepotVehicleType(specific_depot) == this->type &&
+				IsInfraTileUsageAllowed(this->type, this->owner, specific_depot))) {
+			return_cmd_error(no_depot[this->type]);
+		}
+		location = specific_depot;
+		destination = (this->type == VEH_AIRCRAFT) ? GetStationIndex(specific_depot) : GetDepotIndex(specific_depot);
+		reverse = false;
+	} else {
+		if (!this->FindClosestDepot(&location, &destination, &reverse)) return_cmd_error(no_depot[this->type]);
+	}
 
 	if (flags & DC_EXEC) {
 		if (this->current_order.IsType(OT_LOADING)) this->LeaveStation();

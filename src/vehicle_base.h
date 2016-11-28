@@ -819,7 +819,7 @@ public:
 	 */
 	virtual bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse) { return false; }
 
-	CommandCost SendToDepot(DoCommandFlag flags, DepotCommand command);
+	CommandCost SendToDepot(DoCommandFlag flags, DepotCommand command, TileIndex specific_depot = 0);
 
 	void UpdateVisualEffect(bool allow_power_change = true);
 	void ShowVisualEffect() const;
