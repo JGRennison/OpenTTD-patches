@@ -1176,9 +1176,9 @@ STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :지도에 생�
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}이 값을 최대 지형 높이로 설정할 수 없습니다. 이 값보다 고도가 높은 산이 최소 한 개 이상 존재합니다.
 STR_CONFIG_SETTING_AUTOSLOPE                                    :건물, 트랙 등의 하부 지형 편집 허용: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :건물이나 도로/선로 등을 제거하지 않고도 하부의 지형을 편집할 수 있게 허용합니다.
-STR_CONFIG_SETTING_CATCHMENT                                    :더 현실적인 역세권 지정: {STRING2}
+STR_CONFIG_SETTING_CATCHMENT                                    :더 현실적인 역세권 지정: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :역과 공항의 종류에 따라 다른 크기의 역세권을 가지도록 만듭니다.
-STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :역세권 크기 늘리기: {STRING2}
+STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :역세권 크기 늘리기: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :정한 칸 만큼 역세권을 증가시킵니다.
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :도시 소유의 도로, 다리 등의 제거 허용: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :도시 소유의 기반시설이나 건물을 제거할 수 있게 합니다.
@@ -1311,7 +1311,7 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :열차의 그�
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :상세정보 화면에서 열차 무게 비 보이기: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :열차의 무게 비를 상세정보 화면에 표시할지 설정합니다.
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :경로 제한 신호기를 기본 그래픽으로 보이기: {STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :경로 제한이 설정된 전자 신호기를 NewGRF의 신호기 그래픽 대신 기본 신호기 그래픽에 파란 표시를 한 그래픽으로 표시합니다. 이 옵션은 경로 제한 신호기의 구별을 쉽게 하기 위해 사용합니다. 
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :경로 제한이 설정된 전자 신호기를 NewGRF의 신호기 그래픽 대신 기본 신호기 그래픽에 파란 표시를 한 그래픽으로 표시합니다. 이 옵션은 경로 제한 신호기의 구별을 쉽게 하기 위해 사용합니다.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :지형: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :지형에 따라 화물과 도시 성장 요구 조건이 다른 게임 플레이 시나리오가 만들어집니다. NewGRF과 게임 스크립트를 통해 세밀한 조절이 가능합니다.
