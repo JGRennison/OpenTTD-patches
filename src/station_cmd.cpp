@@ -3577,6 +3577,7 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
 void DeleteStaleLinks(Station *from)
 {
 	for (CargoID c = 0; c < NUM_CARGO; ++c) {
+		const bool auto_distributed = (_settings_game.linkgraph.GetDistributionType(c) != DT_MANUAL);
 		GoodsEntry &ge = from->goods[c];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);
 		if (lg == NULL) continue;
@@ -3589,36 +3590,52 @@ void DeleteStaleLinks(Station *from)
 			assert(_date >= edge.LastUpdate());
 			uint timeout = max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
 			if ((uint)(_date - edge.LastUpdate()) > timeout) {
-				/* Have all vehicles refresh their next hops before deciding to
-				 * remove the node. */
 				bool updated = false;
-				OrderList *l;
-				FOR_ALL_ORDER_LISTS(l) {
-					bool found_from = false;
-					bool found_to = false;
-					for (Order *order = l->GetFirstOrder(); order != NULL; order = order->next) {
-						if (!order->IsType(OT_GOTO_STATION) && !order->IsType(OT_IMPLICIT)) continue;
-						if (order->GetDestination() == from->index) {
-							found_from = true;
-							if (found_to) break;
-						} else if (order->GetDestination() == to->index) {
-							found_to = true;
-							if (found_from) break;
+
+				if (auto_distributed) {
+					/* Have all vehicles refresh their next hops before deciding to
+					 * remove the node. */
+					OrderList *l;
+					SmallVector<Vehicle *, 32> vehicles;
+					FOR_ALL_ORDER_LISTS(l) {
+						bool found_from = false;
+						bool found_to = false;
+						for (Order *order = l->GetFirstOrder(); order != NULL; order = order->next) {
+							if (!order->IsType(OT_GOTO_STATION) && !order->IsType(OT_IMPLICIT)) continue;
+							if (order->GetDestination() == from->index) {
+								found_from = true;
+								if (found_to) break;
+							} else if (order->GetDestination() == to->index) {
+								found_to = true;
+								if (found_from) break;
+							}
 						}
+						if (!found_to || !found_from) continue;
+						*(vehicles.Append()) = l->GetFirstSharedVehicle();
 					}
-					if (!found_to || !found_from) continue;
-					for (Vehicle *v = l->GetFirstSharedVehicle(); !updated && v != NULL; v = v->NextShared()) {
-						/* There is potential for optimization here:
-						 * - Usually consists of the same order list are the same. It's probably better to
-						 *   first check the first of each list, then the second of each list and so on.
-						 * - We could try to figure out if we've seen a consist with the same cargo on the
-						 *   same list already and if the consist can actually carry the cargo we're looking
-						 *   for. With conditional and refit orders this is not quite trivial, though. */
+
+					Vehicle **iter = vehicles.Begin();
+					while (iter != vehicles.End()) {
+						Vehicle *v = *iter;
+
 						LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
-						if (edge.LastUpdate() == _date) updated = true;
+						if (edge.LastUpdate() == _date) {
+							updated = true;
+							break;
+						}
+
+						Vehicle *next_shared = v->NextShared();
+						if (next_shared) {
+							*iter = next_shared;
+							++iter;
+						} else {
+							vehicles.Erase(iter);
+						}
+
+						if (iter == vehicles.End()) iter = vehicles.Begin();
 					}
-					if (updated) break;
 				}
+
 				if (!updated) {
 					/* If it's still considered dead remove it. */
 					node.RemoveEdge(to->goods[c].node);
