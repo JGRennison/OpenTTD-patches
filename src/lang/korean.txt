@@ -1904,7 +1904,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}새로 �
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}인공지능/게임 스크립트 설정창을 엽니다.
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}'OpenTTD'를 종료합니다.
 
-STR_INTRO_TRANSLATION                                           :{BLACK}이 버전의 OpenTTD는 {NUM}개의 문장이 한국어로 번역되지 않았습니다. 자세한 내용은 readme.txt를 참조하십시오.
+STR_INTRO_TRANSLATION                                           :{BLACK}이 버전의 OpenTTD는 {NUM}개의 문장이 한국어로 번역되지 않았습니다. 자세한 내용은 readme.txt를 참조하십시오..
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}종료
@@ -2624,11 +2624,11 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}구문�
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}구문을 수정할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}구문을 제거할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}값이 너무 큽니다. {DECIMAL} 이하로 설정하십시오.
-STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No trace restrict program exists
-STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset too large
-STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :Can't change conditionality
+STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :프로그램이 존재하지 않습니다.
+STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :오프셋이 너무 큽니다.
+STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :조건을 수정할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :'조건문 종료'만 제거할 수 없습니다.
-STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :인증 실패: condstack non-empty at exit
+STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :인증 실패: 출구의 condstack이 비어있지 않습니다.
 STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :인증 실패: 시작 '조건문' 없이 존재하는 '아니라면', '조건문 종료'
 STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :인증 실패: 중복된 '아니라면'
 STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :인증 실패: 시작 '조건문' 없이 존재하는 '아니라면, 조건문'
@@ -4089,6 +4089,8 @@ STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}열차�
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}차량을 차고지로 보냅니다. CTRL+클릭하면 점검만 합니다.
 STR_VEHICLE_VIEW_SHIP_SEND_TO_DEPOT_TOOLTIP                     :{BLACK}선박을 정박소로 보냅니다. CTRL+클릭하면 정비만 합니다.
 STR_VEHICLE_VIEW_AIRCRAFT_SEND_TO_DEPOT_TOOLTIP                 :{BLACK}항공기를 격납고로 보냅니다. CTRL+클릭하면 점검만 합니다
+
+STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT					:{STRING} SHIFT+클릭해서 선택합니다.
 
 STR_VEHICLE_VIEW_CLONE_TRAIN_INFO                               :{BLACK}객차/화차를 포함한 열차 전체를 복제합니다. CTRL+클릭하면 경로도 함께 공유됩니다.
 STR_VEHICLE_VIEW_CLONE_ROAD_VEHICLE_INFO                        :{BLACK}차량을 복제합니다. CTRL+클릭하면 경로도 함께 공유됩니다.
