@@ -23,6 +23,7 @@
 #include "newgrf_storage.h"
 #include "newgrf_text.h"
 #include "newgrf_cargo.h"
+#include "newgrf_config.h"
 #include "string_func.h"
 #include "date_type.h"
 #include "debug.h"
@@ -674,7 +675,10 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
 	}
 
 	/* Too many strings allocated, return empty */
-	if (id == lengthof(_grf_text)) return STR_EMPTY;
+	if (id == lengthof(_grf_text)) {
+		_grf_bug_too_many_strings = true;
+		return STR_EMPTY;
+	}
 
 	int len;
 	translatedtext = TranslateTTDPatchCodes(grfid, langid_to_add, allow_newlines, text_to_add, &len);

@@ -205,6 +205,8 @@ extern GRFConfig *_grfconfig;         ///< First item in list of current GRF set
 extern GRFConfig *_grfconfig_newgame; ///< First item in list of default GRF set up
 extern GRFConfig *_grfconfig_static;  ///< First item in list of static GRF set up
 
+extern bool _grf_bug_too_many_strings;///< NewGRF bug: Insufficient available string IDs for GRFs
+
 /** Callback for NewGRF scanning. */
 struct NewGRFScanCallback {
 	/** Make sure the right destructor gets called. */

@@ -1897,6 +1897,9 @@ DEF_CONSOLE_CMD(ConNewGRFReload)
 	}
 
 	ReloadNewGRFData();
+
+	extern void PostCheckNewGRFLoadWarnings();
+	PostCheckNewGRFLoadWarnings();
 	return true;
 }
 
