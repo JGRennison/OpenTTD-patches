@@ -14,7 +14,7 @@ section "Licensing" in readme.txt for details.
 
 * * *
 
-See readme.txt for the original OpenTTD readme.
+See [readme.txt](readme.txt) for the original OpenTTD readme.
 
 The thread for this patchpack can be found [here](http://www.tt-forums.net/viewtopic.php?f=33&t=73469).
 
@@ -209,7 +209,9 @@ The *feature-sx* branches use the savegame framework in the *save_ext* branch.
 #### Compiler requirements
 
 As of v0.15.0, C++11 support is required.
+
 The minimum supported compiler versions are:
 * GCC: 4.7
 * clang: 3.3
+
 Sufficienty up-to-date versions of other compiler toolchains including MSVC and ICC should also work.
