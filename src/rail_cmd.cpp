@@ -2935,8 +2935,8 @@ static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
 {
 	const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(tile));
 	td->rail_speed = rti->max_speed;
+	td->railtype = rti->strings.name;
 	td->owner[0] = GetTileOwner(tile);
-	SetDParamX(td->dparam, 0, rti->strings.name);
 	switch (GetRailTileType(tile)) {
 		case RAIL_TILE_NORMAL:
 			td->str = STR_LAI_RAIL_DESCRIPTION_TRACK;
@@ -3022,7 +3022,6 @@ static void GetTileDesc_Track(TileIndex tile, TileDesc *td)
 
 			if (IsRestrictedSignal(tile)) {
 				SetDParamX(td->dparam, 0, td->str);
-				SetDParamX(td->dparam, 1, rti->strings.name);
 				td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
 			}
 			break;
