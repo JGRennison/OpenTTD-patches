@@ -62,6 +62,9 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 		}
 		SetDParam(0, v->index);
 		b = GetString(b, STR_VEHICLE_NAME, last);
+		if (HasBit(v->subtype, GVSF_VIRTUAL)) {
+			b += seprintf(b, last, ", VIRT");
+		}
 		if (v->First() && v->First() != v) {
 			b += seprintf(b, last, "), front: %u: (", v->First()->index);
 			if (Vehicle::GetIfValid(v->First()->index) != v->First()) {
