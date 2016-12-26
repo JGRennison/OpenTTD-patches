@@ -88,6 +88,20 @@ bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version, uint16 m
 }
 
 /**
+ * Returns true if @p feature is present and has a version inclusively bounded by @p min_version and @p max_version
+ */
+const char *SlXvGetFeatureName(SlXvFeatureIndex feature)
+{
+	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
+	for (; info->index != XSLFI_NULL; ++info) {
+		if (info->index == feature) {
+			return info->name;
+		}
+	}
+	return "(unknown feature)";
+}
+
+/**
  * Resets all extended feature versions to 0
  */
 void SlXvResetState()
@@ -116,9 +130,7 @@ void SlXvSetCurrentState()
  */
 void SlXvCheckSpecialSavegameVersions()
 {
-	extern uint16 _sl_version;
-
-	// TODO: check for savegame versions
+	// Checks for special savegame versions go here
 }
 
 /**

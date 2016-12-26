@@ -52,6 +52,7 @@
 
 #include "../safeguards.h"
 
+#include <deque>
 #include <vector>
 
 /*
@@ -1368,9 +1369,10 @@ static void *IntToReference(size_t index, SLRefType rt)
  * Return the size in bytes of a list
  * @param list The std::list to find the size of
  */
+ template<typename PtrList>
 static inline size_t SlCalcListLen(const void *list)
 {
-	const std::list<void *> *l = (const std::list<void *> *) list;
+	const PtrList *l = (const PtrList *) list;
 
 	int type_size = IsSavegameVersionBefore(69) ? 2 : 4;
 	/* Each entry is saved as type_size bytes, plus type_size bytes are used for the length
@@ -1384,23 +1386,23 @@ static inline size_t SlCalcListLen(const void *list)
  * @param list The list being manipulated
  * @param conv SLRefType type of the list (Vehicle *, Station *, etc)
  */
+template<typename PtrList>
 static void SlList(void *list, SLRefType conv)
 {
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
-		SlSetLength(SlCalcListLen(list));
+		SlSetLength(SlCalcListLen<PtrList>(list));
 		/* Determine length only? */
 		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
-	typedef std::list<void *> PtrList;
 	PtrList *l = (PtrList *)list;
 
 	switch (_sl.action) {
 		case SLA_SAVE: {
 			SlWriteUint32((uint32)l->size());
 
-			PtrList::iterator iter;
+			typename PtrList::iterator iter;
 			for (iter = l->begin(); iter != l->end(); ++iter) {
 				void *ptr = *iter;
 				SlWriteUint32((uint32)ReferenceToInt(ptr, conv));
@@ -1422,7 +1424,7 @@ static void SlList(void *list, SLRefType conv)
 			PtrList temp = *l;
 
 			l->clear();
-			PtrList::iterator iter;
+			typename PtrList::iterator iter;
 			for (iter = temp.begin(); iter != temp.end(); ++iter) {
 				void *ptr = IntToReference((size_t)*iter, conv);
 				l->push_back(ptr);
@@ -1488,6 +1490,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_LST:
+		case SL_DEQ:
+		case SL_VEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) break;
 
@@ -1496,7 +1500,9 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 				case SL_REF: return SlCalcRefLen();
 				case SL_ARR: return SlCalcArrayLen(sld->length, sld->conv);
 				case SL_STR: return SlCalcStringLen(GetVariableAddress(object, sld), sld->length, sld->conv);
-				case SL_LST: return SlCalcListLen(GetVariableAddress(object, sld));
+				case SL_LST: return SlCalcListLen<std::list<void *>>(GetVariableAddress(object, sld));
+				case SL_DEQ: return SlCalcListLen<std::deque<void *>>(GetVariableAddress(object, sld));
+				case SL_VEC: return SlCalcListLen<std::vector<void *>>(GetVariableAddress(object, sld));
 				default: NOT_REACHED();
 			}
 			break;
@@ -1507,6 +1513,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 	}
 	return 0;
 }
+
+#ifdef OTTD_ASSERT
 
 /**
  * Check whether the variable size of the variable in the saveload configuration
@@ -1548,9 +1556,13 @@ static bool IsVariableSizeRight(const SaveLoad *sld)
 	}
 }
 
+#endif /* OTTD_ASSERT */
+
 bool SlObjectMember(void *ptr, const SaveLoad *sld)
 {
+#ifdef OTTD_ASSERT
 	assert(IsVariableSizeRight(sld));
+#endif
 
 	VarType conv = GB(sld->conv, 0, 8);
 	switch (sld->cmd) {
@@ -1559,6 +1571,8 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_LST:
+		case SL_DEQ:
+		case SL_VEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) return false;
 			if (SlSkipVariableOnLoad(sld)) return false;
@@ -1585,7 +1599,9 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 					break;
 				case SL_ARR: SlArray(ptr, sld->length, conv); break;
 				case SL_STR: SlString(ptr, sld->length, sld->conv); break;
-				case SL_LST: SlList(ptr, (SLRefType)conv); break;
+				case SL_LST: SlList<std::list<void *>>(ptr, (SLRefType)conv); break;
+				case SL_DEQ: SlList<std::deque<void *>>(ptr, (SLRefType)conv); break;
+				case SL_VEC: SlList<std::vector<void *>>(ptr, (SLRefType)conv); break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -2666,7 +2682,7 @@ static SaveOrLoadResult DoSave(SaveFilter *writer, bool threaded)
 	SlSaveChunks();
 
 	SaveFileStart();
-	if (!threaded || !ThreadObject::New(&SaveFileToDiskThread, NULL, &_save_thread)) {
+	if (!threaded || !ThreadObject::New(&SaveFileToDiskThread, NULL, &_save_thread, "ottd:savegame")) {
 		if (threaded) DEBUG(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
 
 		SaveOrLoadResult result = SaveFileToDisk(false);
