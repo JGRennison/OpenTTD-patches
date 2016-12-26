@@ -664,8 +664,11 @@ struct RefitWindow : public Window {
 	{
 		if (this->window_number != INVALID_VEHICLE) {
 			if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-				if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-				MarkAllRouteStepsDirty(this);
+				if (this->window_number != INVALID_VEHICLE) {
+					const Vehicle *v = Vehicle::Get(this->window_number);
+					MarkAllRoutePathsDirty(v);
+					MarkAllRouteStepsDirty(v);
+				}
 			}
 		}
 	}
@@ -673,16 +676,22 @@ struct RefitWindow : public Window {
 	virtual void OnFocus(Window *previously_focused_window)
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-			MarkAllRouteStepsDirty(this);
+			if (this->window_number != INVALID_VEHICLE) {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				MarkAllRoutePathsDirty(v);
+				MarkAllRouteStepsDirty(v);
+			}
 		}
 	}
 
 	virtual void OnFocusLost(Window *newly_focused_window)
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-			MarkAllRouteStepsDirty(this);
+			if (this->window_number != INVALID_VEHICLE) {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				MarkAllRoutePathsDirty(v);
+				MarkAllRouteStepsDirty(v);
+			}
 		}
 	}
 
@@ -2070,8 +2079,11 @@ struct VehicleDetailsWindow : Window {
 	{
 		if (this->window_number != INVALID_VEHICLE) {
 			if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-				if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-				MarkAllRouteStepsDirty(this);
+				if (this->window_number != INVALID_VEHICLE) {
+					const Vehicle *v = Vehicle::Get(this->window_number);
+					MarkAllRoutePathsDirty(v);
+					MarkAllRouteStepsDirty(v);
+				}
 			}
 		}
 	}
@@ -2518,16 +2530,22 @@ struct VehicleDetailsWindow : Window {
 	virtual void OnFocus(Window *previously_focused_window)
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-			MarkAllRouteStepsDirty(this);
+			if (this->window_number != INVALID_VEHICLE) {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				MarkAllRoutePathsDirty(v);
+				MarkAllRouteStepsDirty(v);
+			}
 		}
 	}
 
 	virtual void OnFocusLost(Window *newly_focused_window)
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-			MarkAllRouteStepsDirty(this);
+			if (this->window_number != INVALID_VEHICLE) {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				MarkAllRoutePathsDirty(v);
+				MarkAllRouteStepsDirty(v);
+			}
 		}
 	}
 };
@@ -2811,8 +2829,11 @@ public:
 
 	~VehicleViewWindow()
 	{
-		if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-		MarkAllRouteStepsDirty(this);
+		if (this->window_number != INVALID_VEHICLE) {
+			const Vehicle *v = Vehicle::Get(this->window_number);
+			MarkAllRoutePathsDirty(v);
+			MarkAllRouteStepsDirty(v);
+		}
 		DeleteWindowById(WC_VEHICLE_ORDERS, this->window_number, false);
 		DeleteWindowById(WC_VEHICLE_REFIT, this->window_number, false);
 		DeleteWindowById(WC_VEHICLE_DETAILS, this->window_number, false);
@@ -2822,16 +2843,22 @@ public:
 	virtual void OnFocus(Window *previously_focused_window)
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-			MarkAllRouteStepsDirty(this);
+			if (this->window_number != INVALID_VEHICLE) {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				MarkAllRoutePathsDirty(v);
+				MarkAllRouteStepsDirty(v);
+			}
 		}
 	}
 
 	virtual void OnFocusLost(Window *newly_focused_window)
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) MarkAllRoutePathsDirty(Vehicle::Get(this->window_number));
-			MarkAllRouteStepsDirty(this);
+			if (this->window_number != INVALID_VEHICLE) {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				MarkAllRoutePathsDirty(v);
+				MarkAllRouteStepsDirty(v);
+			}
 		}
 	}
 

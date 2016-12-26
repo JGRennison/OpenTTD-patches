@@ -171,16 +171,16 @@ inline int GetCharacterHeight(FontSize size)
 	return font_height_cache[size];
 }
 
-/** Height of characters in the small (#FS_SMALL) font. */
+/** Height of characters in the small (#FS_SMALL) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_SMALL  (GetCharacterHeight(FS_SMALL))
 
-/** Height of characters in the normal (#FS_NORMAL) font. */
+/** Height of characters in the normal (#FS_NORMAL) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_NORMAL (GetCharacterHeight(FS_NORMAL))
 
-/** Height of characters in the large (#FS_LARGE) font. */
+/** Height of characters in the large (#FS_LARGE) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_LARGE  (GetCharacterHeight(FS_LARGE))
 
-/** Height of characters in the large (#FS_MONO) font. */
+/** Height of characters in the large (#FS_MONO) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_MONO  (GetCharacterHeight(FS_MONO))
 
 extern DrawPixelInfo *_cur_dpi;
