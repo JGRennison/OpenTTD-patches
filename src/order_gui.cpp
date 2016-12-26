@@ -617,8 +617,6 @@ private:
 		order.SetDepotActionType(ODATFB_NEAREST_DEPOT);
 
 		DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
-		MarkAllRoutePathsDirty(this->vehicle);
-		MarkAllRouteStepsDirty(this);
 	}
 
 	/**
@@ -704,12 +702,9 @@ private:
 		/* When networking, move one order lower */
 		int selected = this->selected_order + (int)_networking;
 
-		MarkAllRouteStepsDirty(this);
 		if (DoCommandP(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), CMD_DELETE_ORDER | CMD_MSG(STR_ERROR_CAN_T_DELETE_THIS_ORDER))) {
 			this->selected_order = selected >= this->vehicle->GetNumOrders() ? -1 : selected;
 			this->UpdateButtonState();
-			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this);
 		}
 	}
 
@@ -803,7 +798,7 @@ public:
 	~OrdersWindow()
 	{
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-			MarkAllRouteStepsDirty(this);
+			MarkAllRouteStepsDirty(this->vehicle);
 		}
 	}
 
@@ -1181,8 +1176,6 @@ public:
 						order.MakeConditional(order_id);
 
 						DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
-						MarkAllRoutePathsDirty(this->vehicle);
-						MarkAllRouteStepsDirty(this);
 					}
 					ResetObjectToPlace();
 					break;
@@ -1412,8 +1405,6 @@ public:
 						DoCommandP(this->vehicle->tile, this->vehicle->index, from_order | (to_order << 16), CMD_MOVE_ORDER | CMD_MSG(STR_ERROR_CAN_T_MOVE_THIS_ORDER))) {
 					this->selected_order = -1;
 					this->UpdateButtonState();
-					MarkAllRoutePathsDirty(this->vehicle);
-					MarkAllRouteStepsDirty(this);
 				}
 				break;
 			}
@@ -1464,8 +1455,6 @@ public:
 			if (cmd.IsType(OT_NOTHING)) return;
 
 			if (DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), cmd.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER))) {
-				MarkAllRoutePathsDirty(this->vehicle);
-				MarkAllRouteStepsDirty(this);
 				/* With quick goto the Go To button stays active */
 				if (!_settings_client.gui.quick_goto) ResetObjectToPlace();
 			}
@@ -1486,8 +1475,6 @@ public:
 				share_order ? CMD_CLONE_ORDER | CMD_MSG(STR_ERROR_CAN_T_SHARE_ORDER_LIST) : CMD_CLONE_ORDER | CMD_MSG(STR_ERROR_CAN_T_COPY_ORDER_LIST))) {
 			this->selected_order = -1;
 			ResetObjectToPlace();
-			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this);
 		}
 		return true;
 	}
@@ -1534,7 +1521,7 @@ public:
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this);
+			MarkAllRouteStepsDirty(this->vehicle);
 		}
 	}
 
@@ -1542,7 +1529,7 @@ public:
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this);
+			MarkAllRouteStepsDirty(this->vehicle);
 		}
 	}
 

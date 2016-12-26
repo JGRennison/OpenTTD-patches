@@ -32,9 +32,10 @@ void UpdateViewportPosition(Window *w);
 
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom);
-void MarkAllRouteStepsDirty(Window *vehicle_window);
+void MarkAllRouteStepsDirty(const Vehicle *veh);
 void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile);
 void MarkAllRoutePathsDirty(const Vehicle *veh);
+void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh);
 
 bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);

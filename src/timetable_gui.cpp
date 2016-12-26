@@ -175,7 +175,7 @@ struct TimetableWindow : Window {
 	~TimetableWindow()
 	{
 		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-			MarkAllRouteStepsDirty(this);
+			MarkAllRouteStepsDirty(this->vehicle);
 		}
 	}
 
@@ -660,7 +660,7 @@ struct TimetableWindow : Window {
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this);
+			MarkAllRouteStepsDirty(this->vehicle);
 		}
 	}
 
@@ -668,7 +668,7 @@ struct TimetableWindow : Window {
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);
-			MarkAllRouteStepsDirty(this);
+			MarkAllRouteStepsDirty(this->vehicle);
 		}
 	}
 
