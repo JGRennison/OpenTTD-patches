@@ -2234,29 +2234,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :حقول
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :ارض ثلجية
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :صحراء
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} مسار
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} مسار مع اشارة اغلاق
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} مسار مع اشارة مبتدئة
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} سكة حديد مع اشارة خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} سكة حديد مع اشارة مزدوجة
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} سكة حديد مع اشارة طريق
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} سكة حديد مع اشارة اتجاة واحد
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} سكة حديد مع اشارة توقف و اشارة مبتدئة
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} سكة حديد مع اشارة توقف و خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} سكة حديد مع اشارة توقف و مزدوجة
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} سكة حديد مع اشارة اغلاق و طريق
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} سكة حديد مع اشارة اغلاق و طريق باتجاة واحد
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} سكة حديد مع اشارة مبدئية و اشارة خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} سكة حديد مع اشارة مبدئية و اشارة مزدوجة
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} سكة حديد مع اشارة مبدئية و طريق
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} سكة حديد مع اشارة مبدئية و اتجاة و احد
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} سكة حديد مع اشارة خروج و مزدوجة
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} سكة حديد مع اشارة خروج و طريق
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} سكة حديد مع اشارة خروج و اتجاة واحد
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} سكة حديد مع اشارة مزدوجة و طريق
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} سكة حديد مع اشارة مزدوجة و طريق باتجاه واحد
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} سكة حديد مع اشارة طريق و اتجاة و احد
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} مستودع صيانة قطارات
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :سكة حديد مسار
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :سكة حديد مسار مع اشارة اغلاق
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :سكة حديد مسار مع اشارة مبتدئة
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :سكة حديد سكة حديد مع اشارة خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :سكة حديد سكة حديد مع اشارة مزدوجة
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :سكة حديد سكة حديد مع اشارة طريق
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :سكة حديد سكة حديد مع اشارة اتجاة واحد
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :سكة حديد سكة حديد مع اشارة توقف و اشارة مبتدئة
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :سكة حديد سكة حديد مع اشارة توقف و خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :سكة حديد سكة حديد مع اشارة توقف و مزدوجة
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :سكة حديد سكة حديد مع اشارة اغلاق و طريق
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :سكة حديد سكة حديد مع اشارة اغلاق و طريق باتجاة واحد
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :سكة حديد سكة حديد مع اشارة مبدئية و اشارة خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :سكة حديد سكة حديد مع اشارة مبدئية و اشارة مزدوجة
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :سكة حديد سكة حديد مع اشارة مبدئية و طريق
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :سكة حديد سكة حديد مع اشارة مبدئية و اتجاة و احد
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :سكة حديد سكة حديد مع اشارة خروج و مزدوجة
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :سكة حديد سكة حديد مع اشارة خروج و طريق
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :سكة حديد سكة حديد مع اشارة خروج و اتجاة واحد
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :سكة حديد سكة حديد مع اشارة مزدوجة و طريق
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :سكة حديد سكة حديد مع اشارة مزدوجة و طريق باتجاه واحد
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :سكة حديد سكة حديد مع اشارة طريق و اتجاة و احد
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :سكة حديد مستودع صيانة قطارات
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :طريق
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :طريق مضاء
@@ -3060,7 +3060,6 @@ STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}لم ي�
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK} اوقف تبديل العربات
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK} اضغط لايقاف تبديل المحركات المختارة في اليسار
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK} تبديل: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK} بدل بين نافذة استبدال المحركات و العربات
 STR_REPLACE_ENGINES                                             :محركات
 STR_REPLACE_WAGONS                                              :عربات
