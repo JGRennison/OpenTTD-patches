@@ -433,6 +433,10 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 				GetSignalType(ft.m_new_tile, TrackdirToTrack(td)) == SIGTYPE_PBS_ONEWAY) {
 			return include_line_end;
 		}
+		if (IsTileType(ft.m_new_tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(ft.m_new_tile) == TRANSPORT_RAIL &&
+				IsTunnelBridgeSignalSimulationExit(ft.m_new_tile) && IsTunnelBridgePBS(ft.m_new_tile)) {
+			return include_line_end;
+		}
 	}
 
 	return false;
