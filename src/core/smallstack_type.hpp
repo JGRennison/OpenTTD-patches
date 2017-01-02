@@ -211,7 +211,9 @@ public:
 				_pool.Destroy(this->next);
 			} else {
 				--popped.branch_count;
-				this->Branch();
+				if (popped.next != Tmax_size) {
+					++(_pool.Get(popped.next).branch_count);
+				}
 			}
 			/* Accessing popped here is no problem as the pool will only set
 			 * the validity flag, not actually delete the item, on Destroy().
