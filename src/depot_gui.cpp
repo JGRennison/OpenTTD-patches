@@ -229,6 +229,7 @@ struct DepotWindow : Window {
 	VehicleID vehicle_over; ///< Rail vehicle over which another one is dragged, \c INVALID_VEHICLE if none.
 	VehicleType type;
 	bool generate_list;
+	int hovered_widget; ///< Index of the widget being hovered during drag/drop. -1 if no drag is in progress.
 	VehicleList vehicle_list;
 	VehicleList wagon_list;
 	uint unitnumber_digits;
@@ -243,6 +244,7 @@ struct DepotWindow : Window {
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
 		this->generate_list = true;
+		this->hovered_widget = -1;
 		this->type = type;
 		this->num_columns = 1; // for non-trains this gets set in FinishInitNested()
 		this->unitnumber_digits = 2;
@@ -503,15 +505,12 @@ struct DepotWindow : Window {
 					this->sel = INVALID_VEHICLE;
 					TrainDepotMoveVehicle(v, sel, gdvp.head);
 				} else if (v != NULL) {
-					bool rtl = _current_text_dir == TD_RTL;
-					int image = v->GetImage(rtl ? DIR_E : DIR_W, EIT_IN_DEPOT);
-					SetObjectToPlaceWnd(image, GetVehiclePalette(v), HT_DRAG, this);
+					SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
+					SetMouseCursorVehicle(v, EIT_IN_DEPOT);
+					_cursor.vehchain = _ctrl_pressed;
 
 					this->sel = v->index;
 					this->SetDirty();
-
-					_cursor.short_vehicle_offset = v->IsGroundVehicle() ? (16 - v->GetGroundVehicleCache()->cached_veh_length * 2) * (rtl ? -1 : 1) : 0;
-					_cursor.vehchain = _ctrl_pressed;
 				}
 				break;
 			}
@@ -661,7 +660,8 @@ struct DepotWindow : Window {
 			DepotSortList(&this->vehicle_list);
 
 			uint new_unitnumber_digits = GetUnitNumberDigits(this->vehicle_list);
-			if (this->unitnumber_digits != new_unitnumber_digits) {
+			/* Only increase the size; do not decrease to prevent constant changes */
+			if (this->unitnumber_digits < new_unitnumber_digits) {
 				this->unitnumber_digits = new_unitnumber_digits;
 				this->ReInit();
 			}
@@ -867,11 +867,29 @@ struct DepotWindow : Window {
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
 		this->SetWidgetDirty(WID_D_MATRIX);
+
+		if (this->hovered_widget != -1) {
+			this->SetWidgetLoweredState(this->hovered_widget, false);
+			this->SetWidgetDirty(this->hovered_widget);
+			this->hovered_widget = -1;
+		}
 	}
 
 	virtual void OnMouseDrag(Point pt, int widget)
 	{
-		if (this->type != VEH_TRAIN || this->sel == INVALID_VEHICLE) return;
+		if (this->sel == INVALID_VEHICLE) return;
+		if (widget != this->hovered_widget) {
+			if (this->hovered_widget == WID_D_SELL || this->hovered_widget == WID_D_SELL_CHAIN) {
+				this->SetWidgetLoweredState(this->hovered_widget, false);
+				this->SetWidgetDirty(this->hovered_widget);
+			}
+			this->hovered_widget = widget;
+			if (this->hovered_widget == WID_D_SELL || this->hovered_widget == WID_D_SELL_CHAIN) {
+				this->SetWidgetLoweredState(this->hovered_widget, true);
+				this->SetWidgetDirty(this->hovered_widget);
+			}
+		}
+		if (this->type != VEH_TRAIN) return;
 
 		/* A rail vehicle is dragged.. */
 		if (widget != WID_D_MATRIX) { // ..outside of the depot matrix.
@@ -958,7 +976,9 @@ struct DepotWindow : Window {
 			default:
 				this->sel = INVALID_VEHICLE;
 				this->SetDirty();
+				break;
 		}
+		this->hovered_widget = -1;
 		_cursor.vehchain = false;
 	}
 

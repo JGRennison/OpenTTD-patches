@@ -433,6 +433,7 @@ void AddArticulatedParts(Vehicle *first)
 		v->x_pos = first->x_pos;
 		v->y_pos = first->y_pos;
 		v->z_pos = first->z_pos;
+		v->date_of_last_service = first->date_of_last_service;
 		v->build_year = first->build_year;
 		v->vehstatus = first->vehstatus & ~VS_STOPPED;
 
@@ -440,7 +441,7 @@ void AddArticulatedParts(Vehicle *first)
 		v->max_age = 0;
 		v->engine_type = engine_type;
 		v->value = 0;
-		v->cur_image = SPR_IMG_QUERY;
+		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = VehicleRandomBits();
 
 		if (flip_image) v->spritenum++;

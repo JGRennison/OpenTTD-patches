@@ -102,25 +102,25 @@ STR_QUANTITY_COAL                                               :{WEIGHT_LONG} k
 STR_QUANTITY_MAIL                                               :{COMMA}{NBSP}postsekk{P "" er}
 STR_QUANTITY_OIL                                                :{VOLUME_LONG} olje
 STR_QUANTITY_LIVESTOCK                                          :{COMMA}{NBSP}enhet{P "" er} buskap
-STR_QUANTITY_GOODS                                              :{COMMA}{NBSP}kasse{P "" r} med gods
+STR_QUANTITY_GOODS                                              :{COMMA}{NBSP}kasse{P "" r} gods
 STR_QUANTITY_GRAIN                                              :{WEIGHT_LONG} korn
 STR_QUANTITY_WOOD                                               :{WEIGHT_LONG} tømmer
 STR_QUANTITY_IRON_ORE                                           :{WEIGHT_LONG} jernmalm
 STR_QUANTITY_STEEL                                              :{WEIGHT_LONG} stål
-STR_QUANTITY_VALUABLES                                          :{COMMA}{NBSP}sekk{P "" er} med verdisaker
+STR_QUANTITY_VALUABLES                                          :{COMMA}{NBSP}sekk{P "" er} verdisaker
 STR_QUANTITY_COPPER_ORE                                         :{WEIGHT_LONG} kobbermalm
 STR_QUANTITY_MAIZE                                              :{WEIGHT_LONG} mais
 STR_QUANTITY_FRUIT                                              :{WEIGHT_LONG} frukt
-STR_QUANTITY_DIAMONDS                                           :{COMMA}{NBSP}sekk{P "" er} med diamanter
+STR_QUANTITY_DIAMONDS                                           :{COMMA}{NBSP}sekk{P "" er} diamanter
 STR_QUANTITY_FOOD                                               :{WEIGHT_LONG} mat
 STR_QUANTITY_PAPER                                              :{WEIGHT_LONG} papir
-STR_QUANTITY_GOLD                                               :{COMMA}{NBSP}sekk{P "" er} med gull
+STR_QUANTITY_GOLD                                               :{COMMA}{NBSP}sekk{P "" er} gull
 STR_QUANTITY_WATER                                              :{VOLUME_LONG} vann
 STR_QUANTITY_WHEAT                                              :{WEIGHT_LONG} hvete
 STR_QUANTITY_RUBBER                                             :{VOLUME_LONG} gummi
 STR_QUANTITY_SUGAR                                              :{WEIGHT_LONG} sukker
 STR_QUANTITY_TOYS                                               :{COMMA}{NBSP}leke{P "" r}
-STR_QUANTITY_SWEETS                                             :{COMMA}{NBSP}sekk{P "" er} med godteri
+STR_QUANTITY_SWEETS                                             :{COMMA}{NBSP}sekk{P "" er} godteri
 STR_QUANTITY_COLA                                               :{VOLUME_LONG} cola
 STR_QUANTITY_CANDYFLOSS                                         :{WEIGHT_LONG} sukkerspinn
 STR_QUANTITY_BUBBLES                                            :{COMMA} boble{P "" r}
@@ -205,16 +205,16 @@ STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
 
-STR_UNITS_WEIGHT_LONG_IMPERIAL                                  :{COMMA}{NBSP}tonn{P "" er}
-STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA}{NBSP}tonn{P "" er}
+STR_UNITS_WEIGHT_LONG_IMPERIAL                                  :{COMMA}{NBSP}tonn
+STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA}{NBSP}tonn{P "" ""}
 STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA}{NBSP}kg
 
 STR_UNITS_VOLUME_SHORT_IMPERIAL                                 :{COMMA}{NBSP}gal
 STR_UNITS_VOLUME_SHORT_METRIC                                   :{COMMA}{NBSP}l
 STR_UNITS_VOLUME_SHORT_SI                                       :{COMMA} m³
 
-STR_UNITS_VOLUME_LONG_IMPERIAL                                  :{COMMA}{NBSP}gallon{P "" er}
-STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA}{NBSP}liter{P "" er}
+STR_UNITS_VOLUME_LONG_IMPERIAL                                  :{COMMA}{NBSP}gallon
+STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA}{NBSP}liter
 STR_UNITS_VOLUME_LONG_SI                                        :{COMMA}{NBSP}m³
 
 STR_UNITS_FORCE_IMPERIAL                                        :{COMMA}{NBSP}lbf
@@ -816,7 +816,7 @@ STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDE
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING} sponset grunnleggelsen av den nye byen {TOWN}!
 
-STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}Ny{G "" "" tt} {STRING} bygges i nærheten av {TOWN}!
+STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}Ny{G "" "" tt} {STRING} blir anlagt i nærheten av {TOWN}!
 STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}Ny{G "" "" tt} {STRING} plantes i nærheten av {TOWN}!
 
 STR_NEWS_INDUSTRY_CLOSURE_GENERAL                               :{BIG_FONT}{BLACK}{STRING} legges ned!
@@ -825,7 +825,7 @@ STR_NEWS_INDUSTRY_CLOSURE_LACK_OF_TREES                         :{BIG_FONT}{BLAC
 
 STR_NEWS_EURO_INTRODUCTION                                      :{BIG_FONT}{BLACK}Europeisk valutaunion!{}{}Euro introdusert som enerådende valutaenhet for transaksjoner i landet ditt!
 STR_NEWS_BEGIN_OF_RECESSION                                     :{BIG_FONT}{BLACK}Global finanskrise!{}{}Økonomer frykter det verste i det økonomien raser!
-STR_NEWS_END_OF_RECESSION                                       :{BIG_FONT}{BLACK}Finanskrisen over!{}{}Opptur i markedet gir industrien selvsikkerheten tilbake!
+STR_NEWS_END_OF_RECESSION                                       :{BIG_FONT}{BLACK}Finanskrisen over!{}{}Opptur i markedet gir industrien selvtilliten tilbake!
 
 STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_GENERAL                   :{BIG_FONT}{BLACK}{INDUSTRY} øker produksjonen!
 STR_NEWS_INDUSTRY_PRODUCTION_INCREASE_COAL                      :{BIG_FONT}{BLACK}Ny kullåre funnet i {INDUSTRY}!{}En dobling i produksjonen ventes!
@@ -1082,11 +1082,11 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :Veldig flatt
 STR_TERRAIN_TYPE_FLAT                                           :Flatt
 STR_TERRAIN_TYPE_HILLY                                          :Åslendt
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Berglendt
-STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
+STR_TERRAIN_TYPE_ALPINIST                                       :Alpint
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Ettergivende
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerant
-STR_CITY_APPROVAL_HOSTILE                                       :Fientlig
+STR_CITY_APPROVAL_HOSTILE                                       :Fiendtlig
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Ingen egnet AI tilgjengelig...{}Du kan laste ned flere AIer fra nettet med spillets nedlastingssystem.
 
@@ -1120,9 +1120,9 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :Spillinnstillin
 STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Spillinnstillinger (lagres i lagringsfilen; påvirker bare gjeldende spill)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Firmainnstillinger (lagres i lagringsfilen; påvirker bare nye spill)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Firmainnstillinger (lagret i lagringsfilen; påvirker bare gjeldende selskap)
-STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK} Vis alle søkeresultater ved å sette {} {SILVER} kategori {BLACK} til {WHITE} {STRING}
-STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK} Vis alle søkeresultater ved å sette {} {SILVER} type {BLACK} til {WHITE} alle innstillingstyper
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK} Vis alle søkeresultater ved å sette {} {SILVER} kategori {BLACK} til {WHITE} {STRING} {BLACK} og {SILVER} type {BLACK} til {WHITE} alle innstillingstyper
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK} Vis alle søkeresultater ved å sette{} {SILVER} kategori {BLACK} til {WHITE} {STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK} Vis alle søkeresultater ved å sette{} {SILVER} type {BLACK} til {WHITE} alle innstillingstyper
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK} Vis alle søkeresultater ved å sette{} {SILVER} kategori {BLACK} til {WHITE} {STRING} {BLACK} og {SILVER} type {BLACK} til {WHITE} alle innstillingstyper
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Ingen -
 
 STR_CONFIG_SETTING_OFF                                          :Av
@@ -1528,7 +1528,7 @@ STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Prosentandel av
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Andel av inntekten gitt til de mellomliggende etapper i et overføringssystem, noe som gir mer kontroll over inntektene
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :Når du drar en linje, plasser signaler hver: {STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :Angi distansen for når signaler vil bli bygget på et spor frem til neste hinder (signal, kryss), hvis signaler blir dratt
-STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_VALUE                   :{COMMA} kartelement{P 0 "" s}
+STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_VALUE                   :{COMMA} kartelement{P 0 "" er}
 STR_CONFIG_SETTING_DRAG_SIGNALS_FIXED_DISTANCE                  :Når du drar en linje, oppretthold fast avstand mellom signaler: {STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_FIXED_DISTANCE_HELPTEXT         :Velg oppførselen til signalplassering ved Ctrl + dragning av signaler. Hvis deaktivert, blir signaler plassert ved tunneler eller broer for å unngå lange strekninger uten signaler. Hvis aktivert, blir signalene plassert for hver N ruter, noe som gjør justering av signaler på parallelle spor enklere
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE                  :Bygg vingesignal automatisk før: {STRING}
@@ -1577,7 +1577,7 @@ STR_CONFIG_SETTING_STATUSBAR_POS                                :Statusbarens po
 STR_CONFIG_SETTING_STATUSBAR_POS_HELPTEXT                       :Horisontal posisjon av status verktøylinjen på bunnen av skjermen
 STR_CONFIG_SETTING_SNAP_RADIUS                                  :Vinduers smekkeradius: {STRING}
 STR_CONFIG_SETTING_SNAP_RADIUS_HELPTEXT                         :Avstanden mellom vinduer før vinduet som blir flyttet automatisk tilpasset nærliggende vinduer
-STR_CONFIG_SETTING_SNAP_RADIUS_VALUE                            :{COMMA} piksel{P 0 "" s}
+STR_CONFIG_SETTING_SNAP_RADIUS_VALUE                            :{COMMA} piks{P 0 el ler}
 STR_CONFIG_SETTING_SNAP_RADIUS_DISABLED                         :Deaktivert
 STR_CONFIG_SETTING_SOFT_LIMIT                                   :Maksimalt antall flytende vinduer: {STRING}
 STR_CONFIG_SETTING_SOFT_LIMIT_HELPTEXT                          :Antall ikke-klebrige åpne vinduer før gamle vinduer automatisk blir lukket for å gi plass til nye vinduer
@@ -1922,7 +1922,7 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP                :{BLACK}Kartstø
 STR_NETWORK_SERVER_LIST_DATE_CAPTION                            :{BLACK}Dato
 STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}Gjeldende dato
 STR_NETWORK_SERVER_LIST_YEARS_CAPTION                           :{BLACK}År
-STR_NETWORK_SERVER_LIST_YEARS_CAPTION_TOOLTIP                   :{BLACK}Antall år {}spillet pågår
+STR_NETWORK_SERVER_LIST_YEARS_CAPTION_TOOLTIP                   :{BLACK}Antall år{}spillet pågår
 STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Språk, tjenerversjon, osv.
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klikk på et spill i listen for å velge det
@@ -2605,29 +2605,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Jorder
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Snødekket land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Ørken
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING}spor
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING}spor med blokksignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING}spor med forsignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING}spor med utgangssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING}spor med kombinasjonssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING}spor med avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} spor med enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} spor med blokk- og forsignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} spor med blokk- og utgangssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} spor med blokk- og kombinasjonssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} spor med blokk- og avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} spor med blokk- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} spor med for- og utgangssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} spor med for- og kombinasjonssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} spor med for- og avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} spor med for- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} spor med utgangs- og kombinasjonssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} spor med utgangs- og avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} spor med utgangs- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} spor med kombinasjon- og avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} spor med kombinasjon- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} spor med avanserte- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} togstall
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Jernbanespor
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Jernbanespor med blokksignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Jernbanespor med forsignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Jernbanespor med utgangssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Jernbanespor med kombinasjonssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Jernbanespor med avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Jernbane spor med enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Jernbane spor med blokk- og forsignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Jernbane spor med blokk- og utgangssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Jernbane spor med blokk- og kombinasjonssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Jernbane spor med blokk- og avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Jernbane spor med blokk- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Jernbane spor med for- og utgangssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Jernbane spor med for- og kombinasjonssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Jernbane spor med for- og avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Jernbane spor med for- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Jernbane spor med utgangs- og kombinasjonssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Jernbane spor med utgangs- og avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Jernbane spor med utgangs- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Jernbane spor med kombinasjon- og avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Jernbane spor med kombinasjon- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Jernbane spor med avanserte- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Jernbane togstall
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Vei
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Vei med gatelykter
@@ -2691,7 +2691,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Firma-eid lando
 STR_ABOUT_OPENTTD                                               :{WHITE}Om OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Opprinnelig opphavsbeskyttet {COPYRIGHT} 1995 Chris Sawyer, Alle rettigheter reservert
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versjon {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD-teamet
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD-teamet
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Lagre spill
@@ -2878,7 +2878,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Gå til 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Forrige sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fortsett til forrige normale sprite og hopp over enhver pseudo-/omfargings-/skrifttype- sprite, samt start om ved begynnelsen
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Forhåndsvisning av valgt sprite. Innrettingen ignoreres når spriten tegnes
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flytt på spriten for å endre X- og Y-forskyvningene
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flytt på ikonet for å endre X- og Y-forskyvningene. Ctrl+klikk for å flytte ikonet åtte enheter om gangen
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Tilbakestill relativt
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Nullstill de nåværende relative forskyvningene
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X forskyvning: {NUM}, Y forskyvning: {NUM} (Absolutt)
@@ -2893,7 +2893,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Advarsel: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Feil: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}En fatal NewGRF-feil har oppstått: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}En fatal NewGRF-feil har oppstått:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} virker ikke med TTDPatch-versjonen som er rapportert av OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} er for versjon {STRING} av TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} er laget for bruk med {STRING}
@@ -3522,12 +3522,12 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Du er n
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Melding fra kjøretøysprodusent
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Vi har nettopp designet e{G n i t} ny{G "" "" tt} {STRING} - er du interessert i et års ekslusivt bruk av dette, slik at vi kan se hvordan det virker før det blir allment tilgjengelig?
-STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :lokomotiv
-STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :kjøretøy
+STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=neuter}lokomotiv
+STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :{G=neuter}kjøretøy
 STR_ENGINE_PREVIEW_AIRCRAFT                                     :{G=neuter}luftfartøy
-STR_ENGINE_PREVIEW_SHIP                                         :skip
-STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :monorail-lokomotiv
-STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :maglev-lokomotiv
+STR_ENGINE_PREVIEW_SHIP                                         :{G=neuter}skip
+STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :{G=neuter}monorail-lokomotiv
+STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :{G=neuter}maglev-lokomotiv
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kostnad: {CURRENCY_LONG} Vekt: {WEIGHT_SHORT}{}Hastighet: {VELOCITY}  Kraft: {POWER}{}Driftskostnader: {CURRENCY_LONG}/år{}Kapasitet: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Kostnad: {CURRENCY_LONG} Vekt: {WEIGHT_SHORT}{}Hastighet: {VELOCITY}  Kraft: {POWER}  Maks trekkraft: {6:FORCE}{}Vedlikehold: {4:CURRENCY_LONG}/år{}Kapasitet: {5:CARGO_LONG}
@@ -3561,7 +3561,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} når g
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stopp erstatning av kjøretøy
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Klikk denne knappen for å stoppe erstatning av lokomotivet som er valgt på venstresiden
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Erstatter: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Veksle mellom tog- og vognerstatningsvinduet
 STR_REPLACE_ENGINES                                             :Lokomotiv
 STR_REPLACE_WAGONS                                              :Vogner
@@ -3908,8 +3907,8 @@ STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(opphold i {STR
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(reise for {STRING}, ikke oppsatt med rutetabell)
 STR_TIMETABLE_STAY_FOR                                          :og bli værende i {STRING}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :og reis i {STRING}
-STR_TIMETABLE_DAYS                                              :{COMMA}{NBSP}dag{P "" s}
-STR_TIMETABLE_TICKS                                             :{COMMA}{NBSP}tikk{P "" s}
+STR_TIMETABLE_DAYS                                              :{COMMA}{NBSP}dag{P "" er}
+STR_TIMETABLE_TICKS                                             :{COMMA}{NBSP}tikk
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Det vil ta {STRING} å fullføre rutetabellen
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Det vil ta minst {STRING} å fullføre denne rutetabellen (rutetabell ikke fullstendig)
@@ -4423,7 +4422,7 @@ STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}...{NBSP
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Ingen kjøretøyer vil være tilgjengelig i det hele tatt
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Endre din NewGRF konfigurasjon
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}Ingen kjøretøyer er tilgjengelig enda
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}Ingen kjøretøyer er tilgjengelig ennå
 STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Starte et nytt spill etter {DATE_SHORT}, eller bruke en NewGRF som inneholder tidlige kjøretøy
 
 # Specific vehicle errors
@@ -4547,7 +4546,7 @@ STR_INDUSTRY_NAME_CANDY_FACTORY                                 :{G=masculine}Go
 STR_INDUSTRY_NAME_BATTERY_FARM                                  :{G=masculine}Batterigård
 STR_INDUSTRY_NAME_COLA_WELLS                                    :{G=masculine}Colabrønn
 STR_INDUSTRY_NAME_TOY_SHOP                                      :{G=masculine}Leketøysbutikk
-STR_INDUSTRY_NAME_TOY_FACTORY                                   :Leketøysfabrikk
+STR_INDUSTRY_NAME_TOY_FACTORY                                   :{G=masculine}Leketøysfabrikk
 STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS                             :{G=feminine}Plastfontene
 STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY                           :{G=masculine}Mineralvannfabrikk
 STR_INDUSTRY_NAME_BUBBLE_GENERATOR                              :{G=masculine}Boblegenerator

@@ -30,256 +30,256 @@ STR_JUST_NOTHING                                                :Nihil
 # Plural cargo name
 STR_CARGO_PLURAL_NOTHING                                        :
 STR_CARGO_PLURAL_PASSENGERS                                     :{G=mp}Vectores
-STR_CARGO_PLURAL_PASSENGERS.gen                                 :{G=mp}vectorum
-STR_CARGO_PLURAL_PASSENGERS.acc                                 :{G=mp}Vectores
-STR_CARGO_PLURAL_PASSENGERS.dat                                 :{G=mp}Vectoribus
+STR_CARGO_PLURAL_PASSENGERS.gen                                 :vectorum
+STR_CARGO_PLURAL_PASSENGERS.acc                                 :Vectores
+STR_CARGO_PLURAL_PASSENGERS.dat                                 :Vectoribus
 STR_CARGO_PLURAL_COAL                                           :{G=m}Carbo
-STR_CARGO_PLURAL_COAL.gen                                       :{G=m}carbonis
-STR_CARGO_PLURAL_COAL.acc                                       :{G=m}Carbonem
-STR_CARGO_PLURAL_COAL.dat                                       :{G=m}Carboni
+STR_CARGO_PLURAL_COAL.gen                                       :carbonis
+STR_CARGO_PLURAL_COAL.acc                                       :Carbonem
+STR_CARGO_PLURAL_COAL.dat                                       :Carboni
 STR_CARGO_PLURAL_MAIL                                           :{G=fp}Epistulae
-STR_CARGO_PLURAL_MAIL.gen                                       :{G=fp}epistularum
-STR_CARGO_PLURAL_MAIL.acc                                       :{G=fp}Epistulas
-STR_CARGO_PLURAL_MAIL.dat                                       :{G=fp}Epistulis
+STR_CARGO_PLURAL_MAIL.gen                                       :epistularum
+STR_CARGO_PLURAL_MAIL.acc                                       :Epistulas
+STR_CARGO_PLURAL_MAIL.dat                                       :Epistulis
 STR_CARGO_PLURAL_OIL                                            :{G=n}Petroleum
-STR_CARGO_PLURAL_OIL.gen                                        :{G=n}petrolei
-STR_CARGO_PLURAL_OIL.acc                                        :{G=n}Petroleum
-STR_CARGO_PLURAL_OIL.dat                                        :{G=n}Petroleo
+STR_CARGO_PLURAL_OIL.gen                                        :petrolei
+STR_CARGO_PLURAL_OIL.acc                                        :Petroleum
+STR_CARGO_PLURAL_OIL.dat                                        :Petroleo
 STR_CARGO_PLURAL_LIVESTOCK                                      :{G=np}Pecora
-STR_CARGO_PLURAL_LIVESTOCK.gen                                  :{G=np}pecorum
-STR_CARGO_PLURAL_LIVESTOCK.acc                                  :{G=np}Pecora
-STR_CARGO_PLURAL_LIVESTOCK.dat                                  :{G=np}Pecoribus
+STR_CARGO_PLURAL_LIVESTOCK.gen                                  :pecorum
+STR_CARGO_PLURAL_LIVESTOCK.acc                                  :Pecora
+STR_CARGO_PLURAL_LIVESTOCK.dat                                  :Pecoribus
 STR_CARGO_PLURAL_GOODS                                          :{G=fp}Merces
-STR_CARGO_PLURAL_GOODS.gen                                      :{G=fp}mercium
-STR_CARGO_PLURAL_GOODS.acc                                      :{G=fp}Merces
-STR_CARGO_PLURAL_GOODS.dat                                      :{G=fp}Mercibus
+STR_CARGO_PLURAL_GOODS.gen                                      :mercium
+STR_CARGO_PLURAL_GOODS.acc                                      :Merces
+STR_CARGO_PLURAL_GOODS.dat                                      :Mercibus
 STR_CARGO_PLURAL_GRAIN                                          :{G=n}Frumentum
-STR_CARGO_PLURAL_GRAIN.gen                                      :{G=n}frumenti
-STR_CARGO_PLURAL_GRAIN.acc                                      :{G=n}Frumentum
-STR_CARGO_PLURAL_GRAIN.dat                                      :{G=n}Frumento
+STR_CARGO_PLURAL_GRAIN.gen                                      :frumenti
+STR_CARGO_PLURAL_GRAIN.acc                                      :Frumentum
+STR_CARGO_PLURAL_GRAIN.dat                                      :Frumento
 STR_CARGO_PLURAL_WOOD                                           :{G=n}Lignum
-STR_CARGO_PLURAL_WOOD.gen                                       :{G=n}ligni
-STR_CARGO_PLURAL_WOOD.acc                                       :{G=n}Lignum
-STR_CARGO_PLURAL_WOOD.dat                                       :{G=n}Ligno
-STR_CARGO_PLURAL_IRON_ORE                                       :{G=n}Ferrum
-STR_CARGO_PLURAL_IRON_ORE.gen                                   :{G=n}ferri
-STR_CARGO_PLURAL_IRON_ORE.acc                                   :{G=n}Ferrum
-STR_CARGO_PLURAL_IRON_ORE.dat                                   :{G=n}Ferro
+STR_CARGO_PLURAL_WOOD.gen                                       :ligni
+STR_CARGO_PLURAL_WOOD.acc                                       :Lignum
+STR_CARGO_PLURAL_WOOD.dat                                       :Ligno
+STR_CARGO_PLURAL_IRON_ORE                                       :{G=n}Ferrum Rude
+STR_CARGO_PLURAL_IRON_ORE.gen                                   :ferri rudis
+STR_CARGO_PLURAL_IRON_ORE.acc                                   :Ferrum Rude
+STR_CARGO_PLURAL_IRON_ORE.dat                                   :Ferro Rudi
 STR_CARGO_PLURAL_STEEL                                          :{G=m}Chalybs
-STR_CARGO_PLURAL_STEEL.gen                                      :{G=m}chalybis
-STR_CARGO_PLURAL_STEEL.acc                                      :{G=m}Chalybem
-STR_CARGO_PLURAL_STEEL.dat                                      :{G=m}Chalybi
+STR_CARGO_PLURAL_STEEL.gen                                      :chalybis
+STR_CARGO_PLURAL_STEEL.acc                                      :Chalybem
+STR_CARGO_PLURAL_STEEL.dat                                      :Chalybi
 STR_CARGO_PLURAL_VALUABLES                                      :{G=fp}Res Pretiosa
-STR_CARGO_PLURAL_VALUABLES.gen                                  :{G=fp}rerum pretiosarum
-STR_CARGO_PLURAL_VALUABLES.acc                                  :{G=fp}Res Pretiosas
-STR_CARGO_PLURAL_VALUABLES.dat                                  :{G=fp}Rebus Pretiosis
-STR_CARGO_PLURAL_COPPER_ORE                                     :{G=n}Aes
-STR_CARGO_PLURAL_COPPER_ORE.gen                                 :{G=n}aeris
-STR_CARGO_PLURAL_COPPER_ORE.acc                                 :{G=n}Aes
-STR_CARGO_PLURAL_COPPER_ORE.dat                                 :{G=n}Aeri
+STR_CARGO_PLURAL_VALUABLES.gen                                  :rerum pretiosarum
+STR_CARGO_PLURAL_VALUABLES.acc                                  :Res Pretiosas
+STR_CARGO_PLURAL_VALUABLES.dat                                  :Rebus Pretiosis
+STR_CARGO_PLURAL_COPPER_ORE                                     :{G=n}Aes Rude
+STR_CARGO_PLURAL_COPPER_ORE.gen                                 :aeris rudis
+STR_CARGO_PLURAL_COPPER_ORE.acc                                 :Aes Rude
+STR_CARGO_PLURAL_COPPER_ORE.dat                                 :Aeri Rudi
 STR_CARGO_PLURAL_MAIZE                                          :{G=n}Maizium
-STR_CARGO_PLURAL_MAIZE.gen                                      :{G=n}maizii
-STR_CARGO_PLURAL_MAIZE.acc                                      :{G=n}Maizium
-STR_CARGO_PLURAL_MAIZE.dat                                      :{G=n}Maizio
+STR_CARGO_PLURAL_MAIZE.gen                                      :maizii
+STR_CARGO_PLURAL_MAIZE.acc                                      :Maizium
+STR_CARGO_PLURAL_MAIZE.dat                                      :Maizio
 STR_CARGO_PLURAL_FRUIT                                          :{G=mp}Fructus
-STR_CARGO_PLURAL_FRUIT.gen                                      :{G=mp}fructuum
-STR_CARGO_PLURAL_FRUIT.acc                                      :{G=mp}Fructus
-STR_CARGO_PLURAL_FRUIT.dat                                      :{G=mp}Fructibus
+STR_CARGO_PLURAL_FRUIT.gen                                      :fructuum
+STR_CARGO_PLURAL_FRUIT.acc                                      :Fructus
+STR_CARGO_PLURAL_FRUIT.dat                                      :Fructibus
 STR_CARGO_PLURAL_DIAMONDS                                       :{G=mp}Adamantes
-STR_CARGO_PLURAL_DIAMONDS.gen                                   :{G=mp}adamantum
-STR_CARGO_PLURAL_DIAMONDS.acc                                   :{G=mp}Adamantes
-STR_CARGO_PLURAL_DIAMONDS.dat                                   :{G=mp}Adamantibus
+STR_CARGO_PLURAL_DIAMONDS.gen                                   :adamantum
+STR_CARGO_PLURAL_DIAMONDS.acc                                   :Adamantes
+STR_CARGO_PLURAL_DIAMONDS.dat                                   :Adamantibus
 STR_CARGO_PLURAL_FOOD                                           :{G=m}Cibus
-STR_CARGO_PLURAL_FOOD.gen                                       :{G=m}cibi
-STR_CARGO_PLURAL_FOOD.acc                                       :{G=m}Cibum
-STR_CARGO_PLURAL_FOOD.dat                                       :{G=m}Cibo
+STR_CARGO_PLURAL_FOOD.gen                                       :cibi
+STR_CARGO_PLURAL_FOOD.acc                                       :Cibum
+STR_CARGO_PLURAL_FOOD.dat                                       :Cibo
 STR_CARGO_PLURAL_PAPER                                          :{G=f}Charta
-STR_CARGO_PLURAL_PAPER.gen                                      :{G=f}chartae
-STR_CARGO_PLURAL_PAPER.acc                                      :{G=f}Chartam
-STR_CARGO_PLURAL_PAPER.dat                                      :{G=f}Chartae
+STR_CARGO_PLURAL_PAPER.gen                                      :chartae
+STR_CARGO_PLURAL_PAPER.acc                                      :Chartam
+STR_CARGO_PLURAL_PAPER.dat                                      :Chartae
 STR_CARGO_PLURAL_GOLD                                           :{G=n}Aurum
-STR_CARGO_PLURAL_GOLD.gen                                       :{G=n}auri
-STR_CARGO_PLURAL_GOLD.acc                                       :{G=n}Aurum
-STR_CARGO_PLURAL_GOLD.dat                                       :{G=n}Auro
+STR_CARGO_PLURAL_GOLD.gen                                       :auri
+STR_CARGO_PLURAL_GOLD.acc                                       :Aurum
+STR_CARGO_PLURAL_GOLD.dat                                       :Auro
 STR_CARGO_PLURAL_WATER                                          :{G=f}Aqua
-STR_CARGO_PLURAL_WATER.gen                                      :{G=f}aquae
-STR_CARGO_PLURAL_WATER.acc                                      :{G=f}Aquam
-STR_CARGO_PLURAL_WATER.dat                                      :{G=f}Aquae
+STR_CARGO_PLURAL_WATER.gen                                      :aquae
+STR_CARGO_PLURAL_WATER.acc                                      :Aquam
+STR_CARGO_PLURAL_WATER.dat                                      :Aquae
 STR_CARGO_PLURAL_WHEAT                                          :{G=n}Triticum
-STR_CARGO_PLURAL_WHEAT.gen                                      :{G=n}tritici
-STR_CARGO_PLURAL_WHEAT.acc                                      :{G=n}Triticum
-STR_CARGO_PLURAL_WHEAT.dat                                      :{G=n}Tritico
+STR_CARGO_PLURAL_WHEAT.gen                                      :tritici
+STR_CARGO_PLURAL_WHEAT.acc                                      :Triticum
+STR_CARGO_PLURAL_WHEAT.dat                                      :Tritico
 STR_CARGO_PLURAL_RUBBER                                         :{G=f}Gummis
-STR_CARGO_PLURAL_RUBBER.gen                                     :{G=f}gummis
-STR_CARGO_PLURAL_RUBBER.acc                                     :{G=f}Gummem
-STR_CARGO_PLURAL_RUBBER.dat                                     :{G=f}Gummi
+STR_CARGO_PLURAL_RUBBER.gen                                     :gummis
+STR_CARGO_PLURAL_RUBBER.acc                                     :Gummem
+STR_CARGO_PLURAL_RUBBER.dat                                     :Gummi
 STR_CARGO_PLURAL_SUGAR                                          :{G=n}Saccharum
-STR_CARGO_PLURAL_SUGAR.gen                                      :{G=n}sacchari
-STR_CARGO_PLURAL_SUGAR.acc                                      :{G=n}Saccharum
-STR_CARGO_PLURAL_SUGAR.dat                                      :{G=n}Saccharo
+STR_CARGO_PLURAL_SUGAR.gen                                      :sacchari
+STR_CARGO_PLURAL_SUGAR.acc                                      :Saccharum
+STR_CARGO_PLURAL_SUGAR.dat                                      :Saccharo
 STR_CARGO_PLURAL_TOYS                                           :{G=np}Ludicra
-STR_CARGO_PLURAL_TOYS.gen                                       :{G=np}ludicrorum
-STR_CARGO_PLURAL_TOYS.acc                                       :{G=np}Ludicra
-STR_CARGO_PLURAL_TOYS.dat                                       :{G=np}Ludicris
+STR_CARGO_PLURAL_TOYS.gen                                       :ludicrorum
+STR_CARGO_PLURAL_TOYS.acc                                       :Ludicra
+STR_CARGO_PLURAL_TOYS.dat                                       :Ludicris
 STR_CARGO_PLURAL_CANDY                                          :{G=np}Bellaria
-STR_CARGO_PLURAL_CANDY.gen                                      :{G=np}bellariorum
-STR_CARGO_PLURAL_CANDY.acc                                      :{G=np}Bellaria
-STR_CARGO_PLURAL_CANDY.dat                                      :{G=np}Bellariis
+STR_CARGO_PLURAL_CANDY.gen                                      :bellariorum
+STR_CARGO_PLURAL_CANDY.acc                                      :Bellaria
+STR_CARGO_PLURAL_CANDY.dat                                      :Bellariis
 STR_CARGO_PLURAL_COLA                                           :{G=f}Cola
-STR_CARGO_PLURAL_COLA.gen                                       :{G=f}colae
-STR_CARGO_PLURAL_COLA.acc                                       :{G=f}Colam
-STR_CARGO_PLURAL_COLA.dat                                       :{G=f}Colae
+STR_CARGO_PLURAL_COLA.gen                                       :colae
+STR_CARGO_PLURAL_COLA.acc                                       :Colam
+STR_CARGO_PLURAL_COLA.dat                                       :Colae
 STR_CARGO_PLURAL_COTTON_CANDY                                   :{G=n}Sacchari Xylinum
-STR_CARGO_PLURAL_COTTON_CANDY.gen                               :{G=n}sacchari xylini
-STR_CARGO_PLURAL_COTTON_CANDY.acc                               :{G=n}Sacchari Xylinum
-STR_CARGO_PLURAL_COTTON_CANDY.dat                               :{G=n}Sacchari Xylino
+STR_CARGO_PLURAL_COTTON_CANDY.gen                               :sacchari xylini
+STR_CARGO_PLURAL_COTTON_CANDY.acc                               :Sacchari Xylinum
+STR_CARGO_PLURAL_COTTON_CANDY.dat                               :Sacchari Xylino
 STR_CARGO_PLURAL_BUBBLES                                        :{G=fp}Bullae
-STR_CARGO_PLURAL_BUBBLES.gen                                    :{G=fp}bullarum
-STR_CARGO_PLURAL_BUBBLES.acc                                    :{G=fp}Bullas
-STR_CARGO_PLURAL_BUBBLES.dat                                    :{G=fp}Bullis
+STR_CARGO_PLURAL_BUBBLES.gen                                    :bullarum
+STR_CARGO_PLURAL_BUBBLES.acc                                    :Bullas
+STR_CARGO_PLURAL_BUBBLES.dat                                    :Bullis
 STR_CARGO_PLURAL_TOFFEE                                         :{G=n}Saccharum Tostum
-STR_CARGO_PLURAL_TOFFEE.gen                                     :{G=n}sacchari tosti
-STR_CARGO_PLURAL_TOFFEE.acc                                     :{G=n}Saccharum Tostum
-STR_CARGO_PLURAL_TOFFEE.dat                                     :{G=n}Saccharo Tosto
+STR_CARGO_PLURAL_TOFFEE.gen                                     :sacchari tosti
+STR_CARGO_PLURAL_TOFFEE.acc                                     :Saccharum Tostum
+STR_CARGO_PLURAL_TOFFEE.dat                                     :Saccharo Tosto
 STR_CARGO_PLURAL_BATTERIES                                      :{G=fp}Pilae Electricae
-STR_CARGO_PLURAL_BATTERIES.gen                                  :{G=fp}pilarum electricarum
-STR_CARGO_PLURAL_BATTERIES.acc                                  :{G=fp}Pilas Electricas
-STR_CARGO_PLURAL_BATTERIES.dat                                  :{G=fp}Pilis Electricis
+STR_CARGO_PLURAL_BATTERIES.gen                                  :pilarum electricarum
+STR_CARGO_PLURAL_BATTERIES.acc                                  :Pilas Electricas
+STR_CARGO_PLURAL_BATTERIES.dat                                  :Pilis Electricis
 STR_CARGO_PLURAL_PLASTIC                                        :{G=f}Plastica
-STR_CARGO_PLURAL_PLASTIC.gen                                    :{G=f}plasticae
-STR_CARGO_PLURAL_PLASTIC.acc                                    :{G=f}Plasticam
-STR_CARGO_PLURAL_PLASTIC.dat                                    :{G=f}Plasticae
+STR_CARGO_PLURAL_PLASTIC.gen                                    :plasticae
+STR_CARGO_PLURAL_PLASTIC.acc                                    :Plasticam
+STR_CARGO_PLURAL_PLASTIC.dat                                    :Plasticae
 STR_CARGO_PLURAL_FIZZY_DRINKS                                   :{G=fp}Potiones Carbonatae
-STR_CARGO_PLURAL_FIZZY_DRINKS.gen                               :{G=fp}potionum carbonatarum
-STR_CARGO_PLURAL_FIZZY_DRINKS.acc                               :{G=fp}Potiones Carbonatas
-STR_CARGO_PLURAL_FIZZY_DRINKS.dat                               :{G=fp}Potionibus Carbonatis
+STR_CARGO_PLURAL_FIZZY_DRINKS.gen                               :potionum carbonatarum
+STR_CARGO_PLURAL_FIZZY_DRINKS.acc                               :Potiones Carbonatas
+STR_CARGO_PLURAL_FIZZY_DRINKS.dat                               :Potionibus Carbonatis
 
 # Singular cargo name
 STR_CARGO_SINGULAR_NOTHING                                      :
 STR_CARGO_SINGULAR_PASSENGER                                    :{G=mp}Vectores
-STR_CARGO_SINGULAR_PASSENGER.gen                                :{G=mp}vectorum
-STR_CARGO_SINGULAR_PASSENGER.acc                                :{G=mp}Vectores
-STR_CARGO_SINGULAR_PASSENGER.dat                                :{G=mp}Vectoribus
+STR_CARGO_SINGULAR_PASSENGER.gen                                :vectorum
+STR_CARGO_SINGULAR_PASSENGER.acc                                :Vectores
+STR_CARGO_SINGULAR_PASSENGER.dat                                :Vectoribus
 STR_CARGO_SINGULAR_COAL                                         :{G=m}Carbo
-STR_CARGO_SINGULAR_COAL.gen                                     :{G=m}carbonis
-STR_CARGO_SINGULAR_COAL.acc                                     :{G=m}Carbonem
-STR_CARGO_SINGULAR_COAL.dat                                     :{G=m}Carboni
+STR_CARGO_SINGULAR_COAL.gen                                     :carbonis
+STR_CARGO_SINGULAR_COAL.acc                                     :Carbonem
+STR_CARGO_SINGULAR_COAL.dat                                     :Carboni
 STR_CARGO_SINGULAR_MAIL                                         :{G=fp}Epistulae
-STR_CARGO_SINGULAR_MAIL.gen                                     :{G=fp}epistularum
-STR_CARGO_SINGULAR_MAIL.acc                                     :{G=fp}Epistulas
-STR_CARGO_SINGULAR_MAIL.dat                                     :{G=fp}Epistulis
+STR_CARGO_SINGULAR_MAIL.gen                                     :epistularum
+STR_CARGO_SINGULAR_MAIL.acc                                     :Epistulas
+STR_CARGO_SINGULAR_MAIL.dat                                     :Epistulis
 STR_CARGO_SINGULAR_OIL                                          :{G=n}Petroleum
-STR_CARGO_SINGULAR_OIL.gen                                      :{G=n}petrolei
-STR_CARGO_SINGULAR_OIL.acc                                      :{G=n}Petroleum
-STR_CARGO_SINGULAR_OIL.dat                                      :{G=n}Petroleo
+STR_CARGO_SINGULAR_OIL.gen                                      :petrolei
+STR_CARGO_SINGULAR_OIL.acc                                      :Petroleum
+STR_CARGO_SINGULAR_OIL.dat                                      :Petroleo
 STR_CARGO_SINGULAR_LIVESTOCK                                    :{G=np}Pecora
-STR_CARGO_SINGULAR_LIVESTOCK.gen                                :{G=np}pecorum
-STR_CARGO_SINGULAR_LIVESTOCK.acc                                :{G=np}Pecora
-STR_CARGO_SINGULAR_LIVESTOCK.dat                                :{G=np}Pecoribus
+STR_CARGO_SINGULAR_LIVESTOCK.gen                                :pecorum
+STR_CARGO_SINGULAR_LIVESTOCK.acc                                :Pecora
+STR_CARGO_SINGULAR_LIVESTOCK.dat                                :Pecoribus
 STR_CARGO_SINGULAR_GOODS                                        :{G=fp}Merces
-STR_CARGO_SINGULAR_GOODS.gen                                    :{G=fp}mercium
-STR_CARGO_SINGULAR_GOODS.acc                                    :{G=fp}Merces
-STR_CARGO_SINGULAR_GOODS.dat                                    :{G=fp}Mercibus
+STR_CARGO_SINGULAR_GOODS.gen                                    :mercium
+STR_CARGO_SINGULAR_GOODS.acc                                    :Merces
+STR_CARGO_SINGULAR_GOODS.dat                                    :Mercibus
 STR_CARGO_SINGULAR_GRAIN                                        :{G=n}Frumentum
-STR_CARGO_SINGULAR_GRAIN.gen                                    :{G=n}frumenti
-STR_CARGO_SINGULAR_GRAIN.acc                                    :{G=n}Frumentum
-STR_CARGO_SINGULAR_GRAIN.dat                                    :{G=n}Frumento
+STR_CARGO_SINGULAR_GRAIN.gen                                    :frumenti
+STR_CARGO_SINGULAR_GRAIN.acc                                    :Frumentum
+STR_CARGO_SINGULAR_GRAIN.dat                                    :Frumento
 STR_CARGO_SINGULAR_WOOD                                         :{G=n}Lignum
-STR_CARGO_SINGULAR_WOOD.gen                                     :{G=n}ligni
-STR_CARGO_SINGULAR_WOOD.acc                                     :{G=n}Lignum
-STR_CARGO_SINGULAR_WOOD.dat                                     :{G=n}Ligno
-STR_CARGO_SINGULAR_IRON_ORE                                     :{G=n}Ferrum
-STR_CARGO_SINGULAR_IRON_ORE.gen                                 :{G=n}ferri
-STR_CARGO_SINGULAR_IRON_ORE.acc                                 :{G=n}Ferrum
-STR_CARGO_SINGULAR_IRON_ORE.dat                                 :{G=n}Ferro
+STR_CARGO_SINGULAR_WOOD.gen                                     :ligni
+STR_CARGO_SINGULAR_WOOD.acc                                     :Lignum
+STR_CARGO_SINGULAR_WOOD.dat                                     :Ligno
+STR_CARGO_SINGULAR_IRON_ORE                                     :{G=n}Ferrum Rudum
+STR_CARGO_SINGULAR_IRON_ORE.gen                                 :ferri rudis
+STR_CARGO_SINGULAR_IRON_ORE.acc                                 :Ferrum Rude
+STR_CARGO_SINGULAR_IRON_ORE.dat                                 :Ferro Rudi
 STR_CARGO_SINGULAR_STEEL                                        :{G=m}Chalybs
-STR_CARGO_SINGULAR_STEEL.gen                                    :{G=m}chalybis
-STR_CARGO_SINGULAR_STEEL.acc                                    :{G=m}Chalybem
-STR_CARGO_SINGULAR_STEEL.dat                                    :{G=m}Chalybi
+STR_CARGO_SINGULAR_STEEL.gen                                    :chalybis
+STR_CARGO_SINGULAR_STEEL.acc                                    :Chalybem
+STR_CARGO_SINGULAR_STEEL.dat                                    :Chalybi
 STR_CARGO_SINGULAR_VALUABLES                                    :{G=fp}Res Pretiosa
-STR_CARGO_SINGULAR_VALUABLES.gen                                :{G=fp}rerum pretiosarum
-STR_CARGO_SINGULAR_VALUABLES.acc                                :{G=fp}Res Pretiosas
-STR_CARGO_SINGULAR_VALUABLES.dat                                :{G=fp}Rebus Pretiosis
-STR_CARGO_SINGULAR_COPPER_ORE                                   :{G=n}Aes
-STR_CARGO_SINGULAR_COPPER_ORE.gen                               :{G=n}aeris
-STR_CARGO_SINGULAR_COPPER_ORE.acc                               :{G=n}Aes
-STR_CARGO_SINGULAR_COPPER_ORE.dat                               :{G=n}Aeri
+STR_CARGO_SINGULAR_VALUABLES.gen                                :rerum pretiosarum
+STR_CARGO_SINGULAR_VALUABLES.acc                                :Res Pretiosas
+STR_CARGO_SINGULAR_VALUABLES.dat                                :Rebus Pretiosis
+STR_CARGO_SINGULAR_COPPER_ORE                                   :{G=n}Aes Rude
+STR_CARGO_SINGULAR_COPPER_ORE.gen                               :aeris rudis
+STR_CARGO_SINGULAR_COPPER_ORE.acc                               :Aes Rude
+STR_CARGO_SINGULAR_COPPER_ORE.dat                               :Aeri Rudi
 STR_CARGO_SINGULAR_MAIZE                                        :{G=n}Maizium
-STR_CARGO_SINGULAR_MAIZE.gen                                    :{G=n}maizii
-STR_CARGO_SINGULAR_MAIZE.acc                                    :{G=n}Maizium
-STR_CARGO_SINGULAR_MAIZE.dat                                    :{G=n}Maizio
+STR_CARGO_SINGULAR_MAIZE.gen                                    :maizii
+STR_CARGO_SINGULAR_MAIZE.acc                                    :Maizium
+STR_CARGO_SINGULAR_MAIZE.dat                                    :Maizio
 STR_CARGO_SINGULAR_FRUIT                                        :{G=mp}Fructus
-STR_CARGO_SINGULAR_FRUIT.gen                                    :{G=mp}fructuum
-STR_CARGO_SINGULAR_FRUIT.acc                                    :{G=mp}Fructus
-STR_CARGO_SINGULAR_FRUIT.dat                                    :{G=mp}Fructibus
+STR_CARGO_SINGULAR_FRUIT.gen                                    :fructuum
+STR_CARGO_SINGULAR_FRUIT.acc                                    :Fructus
+STR_CARGO_SINGULAR_FRUIT.dat                                    :Fructibus
 STR_CARGO_SINGULAR_DIAMOND                                      :{G=mp}Adamantes
-STR_CARGO_SINGULAR_DIAMOND.gen                                  :{G=mp}adamantum
-STR_CARGO_SINGULAR_DIAMOND.acc                                  :{G=mp}Adamantes
-STR_CARGO_SINGULAR_DIAMOND.dat                                  :{G=mp}Adamantibus
+STR_CARGO_SINGULAR_DIAMOND.gen                                  :adamantum
+STR_CARGO_SINGULAR_DIAMOND.acc                                  :Adamantes
+STR_CARGO_SINGULAR_DIAMOND.dat                                  :Adamantibus
 STR_CARGO_SINGULAR_FOOD                                         :{G=m}Cibus
-STR_CARGO_SINGULAR_FOOD.gen                                     :{G=m}cibi
-STR_CARGO_SINGULAR_FOOD.acc                                     :{G=m}Cibum
-STR_CARGO_SINGULAR_FOOD.dat                                     :{G=m}Cibo
+STR_CARGO_SINGULAR_FOOD.gen                                     :cibi
+STR_CARGO_SINGULAR_FOOD.acc                                     :Cibum
+STR_CARGO_SINGULAR_FOOD.dat                                     :Cibo
 STR_CARGO_SINGULAR_PAPER                                        :{G=f}Charta
-STR_CARGO_SINGULAR_PAPER.gen                                    :{G=f}chartae
-STR_CARGO_SINGULAR_PAPER.acc                                    :{G=f}Chartam
-STR_CARGO_SINGULAR_PAPER.dat                                    :{G=f}Chartae
+STR_CARGO_SINGULAR_PAPER.gen                                    :chartae
+STR_CARGO_SINGULAR_PAPER.acc                                    :Chartam
+STR_CARGO_SINGULAR_PAPER.dat                                    :Chartae
 STR_CARGO_SINGULAR_GOLD                                         :{G=n}Aurum
-STR_CARGO_SINGULAR_GOLD.gen                                     :{G=n}auri
-STR_CARGO_SINGULAR_GOLD.acc                                     :{G=n}Aurum
-STR_CARGO_SINGULAR_GOLD.dat                                     :{G=n}Auro
+STR_CARGO_SINGULAR_GOLD.gen                                     :auri
+STR_CARGO_SINGULAR_GOLD.acc                                     :Aurum
+STR_CARGO_SINGULAR_GOLD.dat                                     :Auro
 STR_CARGO_SINGULAR_WATER                                        :{G=f}Aqua
-STR_CARGO_SINGULAR_WATER.gen                                    :{G=f}aquae
-STR_CARGO_SINGULAR_WATER.acc                                    :{G=f}Aquam
-STR_CARGO_SINGULAR_WATER.dat                                    :{G=f}Aquae
+STR_CARGO_SINGULAR_WATER.gen                                    :aquae
+STR_CARGO_SINGULAR_WATER.acc                                    :Aquam
+STR_CARGO_SINGULAR_WATER.dat                                    :Aquae
 STR_CARGO_SINGULAR_WHEAT                                        :{G=n}Triticum
-STR_CARGO_SINGULAR_WHEAT.gen                                    :{G=n}tritici
-STR_CARGO_SINGULAR_WHEAT.acc                                    :{G=n}Triticum
-STR_CARGO_SINGULAR_WHEAT.dat                                    :{G=n}Tritico
+STR_CARGO_SINGULAR_WHEAT.gen                                    :tritici
+STR_CARGO_SINGULAR_WHEAT.acc                                    :Triticum
+STR_CARGO_SINGULAR_WHEAT.dat                                    :Tritico
 STR_CARGO_SINGULAR_RUBBER                                       :{G=f}Gummis
-STR_CARGO_SINGULAR_RUBBER.gen                                   :{G=f}gummis
-STR_CARGO_SINGULAR_RUBBER.acc                                   :{G=f}Gummem
-STR_CARGO_SINGULAR_RUBBER.dat                                   :{G=f}Gummi
+STR_CARGO_SINGULAR_RUBBER.gen                                   :gummis
+STR_CARGO_SINGULAR_RUBBER.acc                                   :Gummem
+STR_CARGO_SINGULAR_RUBBER.dat                                   :Gummi
 STR_CARGO_SINGULAR_SUGAR                                        :{G=n}Saccharum
-STR_CARGO_SINGULAR_SUGAR.gen                                    :{G=n}sacchari
-STR_CARGO_SINGULAR_SUGAR.acc                                    :{G=n}Saccharum
-STR_CARGO_SINGULAR_SUGAR.dat                                    :{G=n}Saccharo
+STR_CARGO_SINGULAR_SUGAR.gen                                    :sacchari
+STR_CARGO_SINGULAR_SUGAR.acc                                    :Saccharum
+STR_CARGO_SINGULAR_SUGAR.dat                                    :Saccharo
 STR_CARGO_SINGULAR_TOY                                          :{G=np}Ludicra
-STR_CARGO_SINGULAR_TOY.gen                                      :{G=np}ludicrorum
-STR_CARGO_SINGULAR_TOY.acc                                      :{G=np}Ludicra
-STR_CARGO_SINGULAR_TOY.dat                                      :{G=np}Ludicris
+STR_CARGO_SINGULAR_TOY.gen                                      :ludicrorum
+STR_CARGO_SINGULAR_TOY.acc                                      :Ludicra
+STR_CARGO_SINGULAR_TOY.dat                                      :Ludicris
 STR_CARGO_SINGULAR_CANDY                                        :{G=np}Bellaria
-STR_CARGO_SINGULAR_CANDY.gen                                    :{G=np}bellariorum
-STR_CARGO_SINGULAR_CANDY.acc                                    :{G=np}Bellaria
-STR_CARGO_SINGULAR_CANDY.dat                                    :{G=np}Bellariis
+STR_CARGO_SINGULAR_CANDY.gen                                    :bellariorum
+STR_CARGO_SINGULAR_CANDY.acc                                    :Bellaria
+STR_CARGO_SINGULAR_CANDY.dat                                    :Bellariis
 STR_CARGO_SINGULAR_COLA                                         :{G=f}Cola
-STR_CARGO_SINGULAR_COLA.gen                                     :{G=f}colae
-STR_CARGO_SINGULAR_COLA.acc                                     :{G=f}Colam
-STR_CARGO_SINGULAR_COLA.dat                                     :{G=f}Colae
+STR_CARGO_SINGULAR_COLA.gen                                     :colae
+STR_CARGO_SINGULAR_COLA.acc                                     :Colam
+STR_CARGO_SINGULAR_COLA.dat                                     :Colae
 STR_CARGO_SINGULAR_COTTON_CANDY                                 :{G=n}Sacchari Xylinum
-STR_CARGO_SINGULAR_COTTON_CANDY.gen                             :{G=n}sacchari xylini
-STR_CARGO_SINGULAR_COTTON_CANDY.acc                             :{G=n}Sacchari Xylinum
-STR_CARGO_SINGULAR_COTTON_CANDY.dat                             :{G=n}Sacchari Xylino
+STR_CARGO_SINGULAR_COTTON_CANDY.gen                             :sacchari xylini
+STR_CARGO_SINGULAR_COTTON_CANDY.acc                             :Sacchari Xylinum
+STR_CARGO_SINGULAR_COTTON_CANDY.dat                             :Sacchari Xylino
 STR_CARGO_SINGULAR_BUBBLE                                       :{G=fp}Bullae
-STR_CARGO_SINGULAR_BUBBLE.gen                                   :{G=fp}bullarum
-STR_CARGO_SINGULAR_BUBBLE.acc                                   :{G=fp}Bullas
-STR_CARGO_SINGULAR_BUBBLE.dat                                   :{G=fp}Bullis
+STR_CARGO_SINGULAR_BUBBLE.gen                                   :bullarum
+STR_CARGO_SINGULAR_BUBBLE.acc                                   :Bullas
+STR_CARGO_SINGULAR_BUBBLE.dat                                   :Bullis
 STR_CARGO_SINGULAR_TOFFEE                                       :{G=n}Saccharum Tostum
-STR_CARGO_SINGULAR_TOFFEE.gen                                   :{G=n}sacchari tosti
-STR_CARGO_SINGULAR_TOFFEE.acc                                   :{G=n}Saccharum Tostum
-STR_CARGO_SINGULAR_TOFFEE.dat                                   :{G=n}Saccharo Tosto
+STR_CARGO_SINGULAR_TOFFEE.gen                                   :sacchari tosti
+STR_CARGO_SINGULAR_TOFFEE.acc                                   :Saccharum Tostum
+STR_CARGO_SINGULAR_TOFFEE.dat                                   :Saccharo Tosto
 STR_CARGO_SINGULAR_BATTERY                                      :{G=fp}Pilae Electricae
-STR_CARGO_SINGULAR_BATTERY.gen                                  :{G=fp}pilarum electricarum
-STR_CARGO_SINGULAR_BATTERY.acc                                  :{G=fp}Pilas Electricas
-STR_CARGO_SINGULAR_BATTERY.dat                                  :{G=fp}Pilis Electricis
+STR_CARGO_SINGULAR_BATTERY.gen                                  :pilarum electricarum
+STR_CARGO_SINGULAR_BATTERY.acc                                  :Pilas Electricas
+STR_CARGO_SINGULAR_BATTERY.dat                                  :Pilis Electricis
 STR_CARGO_SINGULAR_PLASTIC                                      :{G=f}Plastica
-STR_CARGO_SINGULAR_PLASTIC.gen                                  :{G=f}plasticae
-STR_CARGO_SINGULAR_PLASTIC.acc                                  :{G=f}Plasticam
-STR_CARGO_SINGULAR_PLASTIC.dat                                  :{G=f}Plasticae
+STR_CARGO_SINGULAR_PLASTIC.gen                                  :plasticae
+STR_CARGO_SINGULAR_PLASTIC.acc                                  :Plasticam
+STR_CARGO_SINGULAR_PLASTIC.dat                                  :Plasticae
 STR_CARGO_SINGULAR_FIZZY_DRINK                                  :{G=fp}Potiones Carbonatae
-STR_CARGO_SINGULAR_FIZZY_DRINK.gen                              :{G=fp}potionum carbonatarum
-STR_CARGO_SINGULAR_FIZZY_DRINK.acc                              :{G=fp}Potiones Carbonatas
-STR_CARGO_SINGULAR_FIZZY_DRINK.dat                              :{G=fp}Potionibus Carbonatis
+STR_CARGO_SINGULAR_FIZZY_DRINK.gen                              :potionum carbonatarum
+STR_CARGO_SINGULAR_FIZZY_DRINK.acc                              :Potiones Carbonatas
+STR_CARGO_SINGULAR_FIZZY_DRINK.dat                              :Potionibus Carbonatis
 
 # Quantity of cargo
 STR_QUANTITY_NOTHING                                            :
@@ -291,10 +291,10 @@ STR_QUANTITY_LIVESTOCK                                          :{G=np}{COMMA}{N
 STR_QUANTITY_GOODS                                              :{G=fp}{COMMA}{NBSP}capsa{P "" e} mercium
 STR_QUANTITY_GRAIN                                              :{WEIGHT_LONG} frumenti
 STR_QUANTITY_WOOD                                               :{WEIGHT_LONG} ligni
-STR_QUANTITY_IRON_ORE                                           :{WEIGHT_LONG} ferri
+STR_QUANTITY_IRON_ORE                                           :{WEIGHT_LONG} ferri rudis
 STR_QUANTITY_STEEL                                              :{WEIGHT_LONG} chalybis
 STR_QUANTITY_VALUABLES                                          :{G=mp}{COMMA}{NBSP}sacc{P us i} rerum pretiosarum
-STR_QUANTITY_COPPER_ORE                                         :{WEIGHT_LONG} aeris
+STR_QUANTITY_COPPER_ORE                                         :{WEIGHT_LONG} aeris rudis
 STR_QUANTITY_MAIZE                                              :{WEIGHT_LONG} maizii
 STR_QUANTITY_FRUIT                                              :{WEIGHT_LONG} fructuum
 STR_QUANTITY_DIAMONDS                                           :{G=mp}{COMMA}{NBSP}sacc{P us i} adamantum
@@ -512,7 +512,7 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}Monstrar
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}Monstrare res fiscales societatis
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}Monstrare facta generalia societatis
 STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Monstrare librum fabularum
-STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Monstrare indicem metarum
+STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Monstrare indicem propositorum
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Monstrare formulas graphicas
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Monstrare album foederis societatum
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Industriam novam condere vel monstrare indicem industriarum
@@ -526,11 +526,11 @@ STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK}Struere 
 STR_TOOLBAR_TOOLTIP_BUILD_ROADS                                 :{BLACK}Struere vias
 STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}Struere navalia
 STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}Struere aeroportus
-STR_TOOLBAR_TOOLTIP_LANDSCAPING                                 :{BLACK}Monstrare terrae arcam ferramentorum qua potes terram augere/minuere, arbores serere, etc.
+STR_TOOLBAR_TOOLTIP_LANDSCAPING                                 :{BLACK}Monstrare terrae arcam instrumentorum qua potes terram augere/minuere, arbores serere, etc.
 STR_TOOLBAR_TOOLTIP_SHOW_SOUND_MUSIC_WINDOW                     :{BLACK}Monstrare fenestram soni musicaeque
 STR_TOOLBAR_TOOLTIP_SHOW_LAST_MESSAGE_NEWS                      :{BLACK}Monstrare nuntium novissimum sive optiones nuntii
 STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Indicia terrae regionis, consola, emendatio scripti, imagines conspectus, de OpenTTD
-STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Mutare inter arcas ferramentorum
+STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Mutare inter arcas instrumentorum
 
 # Extra tooltips for the scenario editor toolbar
 STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Servare scaenarium, legere scaenarium, relinquere scriptorium scaenarii, exire
@@ -1507,7 +1507,7 @@ STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Originalis
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Melior
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Vehicula viaria: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Eligere latus viae gubernandi
-STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Circuitus tabulae altitudinum: {STRING}
+STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Rotatio tabulae altitudinum: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Sinistrorsus
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Dextrorsus
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :Altitudo scaenario plano data: {STRING}
@@ -1518,8 +1518,8 @@ STR_CONFIG_SETTING_STATION_SPREAD                               :Spatium station
 STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :Area maxima in qua partes stationum possunt esse sita. Cave, numeris spatii magnis, ludus lentus sit
 STR_CONFIG_SETTING_SERVICEATHELIPAD                             :Ministrare helicoptera automatice in helicopterariis: {STRING}
 STR_CONFIG_SETTING_SERVICEATHELIPAD_HELPTEXT                    :Ministrare helicoptera post quemque appulsum, etsi non est tugurium portui
-STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR                       :Connectere terrae arcam ferramentorum arcis ferriviariae/viariae/aquariae/aeriae ferramentorum: {STRING}
-STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR_HELPTEXT              :Cum arca ferramentorum constructionis aperitur, etiam plasmationis terrae arca ferramentorum aperitur
+STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR                       :Connectere terrae arcam instrumentorum arcis ferriviariae/viariae/aquariae/aeriae instrumentorum: {STRING}
+STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR_HELPTEXT              :Cum arca instrumentorum constructionis aperitur, etiam plasmationis terrae arca instrumentorum aperitur
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR                         :Color terrae in tabula adhibitus: {STRING}
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Color terrae in tabula geographica parva
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Viridis
@@ -1756,8 +1756,8 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Nulla {RED}(rum
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Modo in silvis plivualibus
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Ubique
 
-STR_CONFIG_SETTING_TOOLBAR_POS                                  :Locus primariae arcae ferramentorum: {STRING}
-STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Locus horizontalis arcae ferramentorum primariae apud apicem fenestrae
+STR_CONFIG_SETTING_TOOLBAR_POS                                  :Locus primariae arcae instrumentorum: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Locus horizontalis arcae instrumentorum primariae apud apicem fenestrae
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Locus serae status: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS_HELPTEXT                       :Locus horizontalis serae status apud infimam partem fenestrae
 STR_CONFIG_SETTING_SNAP_RADIUS                                  :Radius fenestrae adhaerendae: {STRING}
@@ -2423,25 +2423,25 @@ STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... itaq
 
 # Order of these is important!
 STR_CONTENT_TYPE_BASE_GRAPHICS                                  :{G=n}Fundamentum Graphicum
-STR_CONTENT_TYPE_BASE_GRAPHICS.gen                              :{G=n}Fundamenti Graphici
+STR_CONTENT_TYPE_BASE_GRAPHICS.gen                              :Fundamenti Graphici
 STR_CONTENT_TYPE_NEWGRF                                         :{G=n}NewGRF
-STR_CONTENT_TYPE_NEWGRF.gen                                     :{G=n}NewGRF
+STR_CONTENT_TYPE_NEWGRF.gen                                     :NewGRF
 STR_CONTENT_TYPE_AI                                             :{G=f}IA
-STR_CONTENT_TYPE_AI.gen                                         :{G=f}IA
+STR_CONTENT_TYPE_AI.gen                                         :IA
 STR_CONTENT_TYPE_AI_LIBRARY                                     :{G=f}Bibliotheca IA
-STR_CONTENT_TYPE_AI_LIBRARY.gen                                 :{G=f}Bibliothecae IA
+STR_CONTENT_TYPE_AI_LIBRARY.gen                                 :Bibliothecae IA
 STR_CONTENT_TYPE_SCENARIO                                       :{G=n}Scaenarium
-STR_CONTENT_TYPE_SCENARIO.gen                                   :{G=n}Scaenarii
+STR_CONTENT_TYPE_SCENARIO.gen                                   :Scaenarii
 STR_CONTENT_TYPE_HEIGHTMAP                                      :{G=f}Tabula Altitudinum
-STR_CONTENT_TYPE_HEIGHTMAP.gen                                  :{G=f}Tabulae Altitudinum
+STR_CONTENT_TYPE_HEIGHTMAP.gen                                  :Tabulae Altitudinum
 STR_CONTENT_TYPE_BASE_SOUNDS                                    :{G=n}Fundamentum Sonicum
-STR_CONTENT_TYPE_BASE_SOUNDS.gen                                :{G=n}Fundamenti Sonici
+STR_CONTENT_TYPE_BASE_SOUNDS.gen                                :Fundamenti Sonici
 STR_CONTENT_TYPE_BASE_MUSIC                                     :{G=n}Fundamentum Musicum
-STR_CONTENT_TYPE_BASE_MUSIC.gen                                 :{G=n}Fundamenti Musici
+STR_CONTENT_TYPE_BASE_MUSIC.gen                                 :Fundamenti Musici
 STR_CONTENT_TYPE_GAME_SCRIPT                                    :{G=n}Ludi Scriptum
-STR_CONTENT_TYPE_GAME_SCRIPT.gen                                :{G=n}Ludi Scripti
+STR_CONTENT_TYPE_GAME_SCRIPT.gen                                :Ludi Scripti
 STR_CONTENT_TYPE_GS_LIBRARY                                     :{G=f}Bibliotheca Ludi Scriptorum
-STR_CONTENT_TYPE_GS_LIBRARY.gen                                 :{G=f}Bibliothecae Ludi Scriptorum
+STR_CONTENT_TYPE_GS_LIBRARY.gen                                 :Bibliothecae Ludi Scriptorum
 
 # Content downloading progress window
 STR_CONTENT_DOWNLOAD_TITLE                                      :{WHITE}Res arcessens...
@@ -2791,6 +2791,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nomen te
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Onera accepta: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Typus ferriviae: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Velocitas maxima ferriviae: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Velocitas maxima viae: {LTBLUE}{VELOCITY}
 
@@ -2803,29 +2804,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Agri
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terra Nivea
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Deserta
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Astarium {STRING.gen}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Astarium {STRING.gen} cum signalibus zonalibus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Astarium {STRING.gen} cum signalibus aditus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Astarium {STRING.gen} cum signalibus exitus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Astarium {STRING.gen} cum signalibus compositis
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Astarium {STRING.gen} cum signalibus itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Astarium {STRING.gen} cum signalibus itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Astarium {STRING.gen} cum signalibus zonalibus et aditus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Astarium {STRING.gen} cum signalibus zonalibus et exitus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Astarium {STRING.gen} cum signalibus zonalibus et compositis
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Astarium {STRING.gen} cum signalibus zonalibus et itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Astarium {STRING.gen} cum signalibus zonalibus et itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Astarium {STRING.gen} cum signalibus aditus et exitus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Astarium {STRING.gen} cum signalibus aditus et compositis
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Astarium {STRING.gen} cum signalibus aditus et itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Astarium {STRING.gen} cum signalibus aditus et itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Astarium {STRING.gen} cum signalibus exitus et compositis
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Astarium {STRING.gen} cum signalibus exitus et itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Astarium {STRING.gen} cum signalibus exitus et itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Astarium {STRING.gen} cum signalibus compositis et itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Astarium {STRING.gen} cum signalibus compositis et itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Astarium {STRING.gen} cum signalibus itineris et unius cursus itineris
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Receptaculum {STRING.gen}
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Astarium Ferriviae
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Ferrivia cum signalibus zonalibus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Ferrivia cum signalibus aditus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Ferrivia cum signalibus exitus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Ferrivia cum signalibus compositis
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Ferrivia cum signalibus itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Ferrivia cum signalibus itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Ferrivia cum signalibus zonalibus et aditus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Ferrivia cum signalibus zonalibus et exitus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Ferrivia cum signalibus zonalibus et compositis
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Ferrivia cum signalibus zonalibus et itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Ferrivia cum signalibus zonalibus et itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Ferrivia cum signalibus aditus et exitus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Ferrivia cum signalibus aditus et compositis
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Ferrivia cum signalibus aditus et itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Ferrivia cum signalibus aditus et itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Ferrivia cum signalibus exitus et compositis
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Ferrivia cum signalibus exitus et itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Ferrivia cum signalibus exitus et itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Ferrivia cum signalibus compositis et itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Ferrivia cum signalibus compositis et itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Ferrivia cum signalibus itineris et unius cursus itineris
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Receptaculum ferriviarium
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Via
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Via cum lampadibus
@@ -2889,7 +2890,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terra societati
 STR_ABOUT_OPENTTD                                               :{WHITE}De OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Privilegium impressorium originale {COPYRIGHT} MCMXCV Chris Sawyer, Omnia proprietatis iura reservantur
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD editio {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} MMII-MMXV Manus OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} MMII-MMXVI Manus OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Servare Ludum
@@ -2951,7 +2952,7 @@ STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Fortuiti
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Fortuiti
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manu
 
-STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Circuitus tabulae altitudinum:
+STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Rotatio tabulae altitudinum:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nomen tabulae altitudinum:
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Magnitudo:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
@@ -3021,7 +3022,7 @@ STR_NEWGRF_SETTINGS_TOGGLE_PALETTE                              :{BLACK}Mutare c
 STR_NEWGRF_SETTINGS_TOGGLE_PALETTE_TOOLTIP                      :{BLACK}Mutare coloris tabulam huius NewGRF.{}Utere cum colores huius NewGRF videntur esse rosei
 STR_NEWGRF_SETTINGS_APPLY_CHANGES                               :{BLACK}Confirmare mutationes
 
-STR_NEWGRF_SETTINGS_FIND_MISSING_CONTENT_BUTTON                 :{BLACK}Quaere res absentes in interrete
+STR_NEWGRF_SETTINGS_FIND_MISSING_CONTENT_BUTTON                 :{BLACK}Quaere res absentes in interreti
 STR_NEWGRF_SETTINGS_FIND_MISSING_CONTENT_TOOLTIP                :{BLACK}Inspicere si res absentes in inventario Interretiale sunt
 
 STR_NEWGRF_SETTINGS_FILENAME                                    :{BLACK}Nomen fasciculi: {SILVER}{STRING}
@@ -3076,7 +3077,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Ire ad s
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Spiritum priorem
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Ire ad spiritum naturalem priorem et, termino contacto, ad ultimum revertere
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Imago spiritus electi. Directio neglegitur cum hic spiritus pingitur
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Movere spiritum mutatione X et Y incrementa
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Movere spiritum mutatione X et Y incrementa. Ctrl+Preme ut spiritus octoni incrementa moveatur
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Reponere relativas
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Reponere positiones relativas
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Positio X: {NUM}, Positio Y: {NUM} (Absolutae)
@@ -3091,7 +3092,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Cautio: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Error: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Error Fatalis: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Error NewGRF fatalis: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Error NewGRF fatalis:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} non operat apud editionem TTDPatch ab OpenTTD dicta
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} spectat ad editionem {STRING} TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} spectat ad {STRING}
@@ -3236,16 +3237,16 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Emere m
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Largiri auctoritatem vicinalem ut tua censio augeatur, at difficultas adest: forsitan animadvertaris et graviter puniaris.{}Pretium: {CURRENCY_LONG}
 
 # Goal window
-STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Metae
-STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Metae Globales
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Metae globales:
+STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Proposita
+STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Proposita Universalia
+STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Proposita universalia:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nullae -
 STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Non applicabiles -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Metae Societatis:
-STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Preme in metam ut conspectus moveatur supra industriam/oppidum/tegulam. Ctrl+Preme ut nova fenestra conspectus aperiatur supra industriam/oppidum/tegulam
+STR_GOALS_COMPANY_TITLE                                         :{BLACK}Proposita Societatis:
+STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Preme in propositum ut conspectus moveatur supra industriam/oppidum/tegulam. Ctrl+Preme ut nova fenestra conspectus aperiatur supra industriam/oppidum/tegulam
 
 # Goal question window
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :Quaestio
@@ -3285,7 +3286,7 @@ STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Preme in
 
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY} Librum Fabularum
-STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Librum Fabularum Globalis
+STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Librum Fabularum Universale
 STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 STR_STORY_BOOK_GENERIC_PAGE_ITEM                                :Pagina {NUM}
 STR_STORY_BOOK_SEL_PAGE_TOOLTIP                                 :{BLACK}Salire ad quamdam paginam eligendo eam in hac indice
@@ -3293,7 +3294,7 @@ STR_STORY_BOOK_PREV_PAGE                                        :{BLACK}Priorem
 STR_STORY_BOOK_PREV_PAGE_TOOLTIP                                :{BLACK}Ire ad paginam priorem
 STR_STORY_BOOK_NEXT_PAGE                                        :{BLACK}Secundam
 STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}Ire ad paginam secundam
-STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Meta irrita
+STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Propositum irritum
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Nomina stationum - preme in nomen ut conspectus moveatur supra stationem. Ctrl+Preme ut nova fenestra conspectus aperiatur supra stationem
@@ -3555,7 +3556,7 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Greges -
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Preme ut grex creatur
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Delere gregem electam
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Renominare gregem electam
-STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Preme ut vehicula huius gregis custodiantur contra autocommutationem globalem
+STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Preme ut vehicula huius gregis custodiantur contra autocommutationem universalem
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Gregem Delere
 STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Esne certus te velle delere hanc gregem eiusque descendentes?
@@ -3759,10 +3760,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} cum ve
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Consistere mutationem vehiculorum
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Preme ut mutatio vehiculi sinistri consistatur
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Mutatio: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Mutare inter mutationem hamaxarum curruumque
 STR_REPLACE_ENGINES                                             :Hamaxarum
 STR_REPLACE_WAGONS                                              :Curruum
+STR_REPLACE_ALL_RAILTYPE                                        :Omnia vehicula ferriviaria
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Eligere typum astarii cui est hamaxas commutandas
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Haec monstrat novum vehiculum desideratum, si adest
@@ -4374,7 +4375,7 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... nimi
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... nimis prope aliud oppidum
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... nimis oppida adsunt
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... plus spatium tabulae deest
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Oppidum non vias faciet. Potest sinere vias facere in Electionibus->Circumiecta->Oppida
+STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Oppidum non vias struet. Potes hanc optionem mutare in Electionibus->Circumiecta->Oppida
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Constructio viaria agitur
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Non licet oppidum delere...{}Statio receptaculumve est oppido sive non licet tegulam oppidi removere
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... non est locus effigiei idoneus in medio oppidi
@@ -4716,153 +4717,153 @@ STR_TOWN_BUILDING_NAME_PIGGY_BANK_1                             :Argentaria Porc
 ##id 0x4800
 # industry names
 STR_INDUSTRY_NAME_COAL_MINE                                     :{G=f}Carbonifodina
-STR_INDUSTRY_NAME_COAL_MINE.gen                                 :{G=f}carbonifodinae
-STR_INDUSTRY_NAME_COAL_MINE.acc                                 :{G=f}Carbonifodinam
-STR_INDUSTRY_NAME_COAL_MINE.abl                                 :{G=f}Carbonifodina
+STR_INDUSTRY_NAME_COAL_MINE.gen                                 :carbonifodinae
+STR_INDUSTRY_NAME_COAL_MINE.acc                                 :Carbonifodinam
+STR_INDUSTRY_NAME_COAL_MINE.abl                                 :Carbonifodina
 STR_INDUSTRY_NAME_POWER_STATION                                 :{G=f}Electrificina
-STR_INDUSTRY_NAME_POWER_STATION.gen                             :{G=f}electrificinae
-STR_INDUSTRY_NAME_POWER_STATION.acc                             :{G=f}Electrificinam
-STR_INDUSTRY_NAME_POWER_STATION.abl                             :{G=f}Electrificina
+STR_INDUSTRY_NAME_POWER_STATION.gen                             :electrificinae
+STR_INDUSTRY_NAME_POWER_STATION.acc                             :Electrificinam
+STR_INDUSTRY_NAME_POWER_STATION.abl                             :Electrificina
 STR_INDUSTRY_NAME_SAWMILL                                       :{G=f}Serraria
-STR_INDUSTRY_NAME_SAWMILL.gen                                   :{G=f}serrariae
-STR_INDUSTRY_NAME_SAWMILL.acc                                   :{G=f}Serrariam
-STR_INDUSTRY_NAME_SAWMILL.abl                                   :{G=f}Serraria
+STR_INDUSTRY_NAME_SAWMILL.gen                                   :serrariae
+STR_INDUSTRY_NAME_SAWMILL.acc                                   :Serrariam
+STR_INDUSTRY_NAME_SAWMILL.abl                                   :Serraria
 STR_INDUSTRY_NAME_FOREST                                        :{G=f}Silva
-STR_INDUSTRY_NAME_FOREST.gen                                    :{G=f}silvae
-STR_INDUSTRY_NAME_FOREST.acc                                    :{G=f}Silvam
-STR_INDUSTRY_NAME_FOREST.abl                                    :{G=f}Silva
+STR_INDUSTRY_NAME_FOREST.gen                                    :silvae
+STR_INDUSTRY_NAME_FOREST.acc                                    :Silvam
+STR_INDUSTRY_NAME_FOREST.abl                                    :Silva
 STR_INDUSTRY_NAME_OIL_REFINERY                                  :{G=n}Ergasterium Petrolearium
-STR_INDUSTRY_NAME_OIL_REFINERY.gen                              :{G=n}ergasterii petrolearii
-STR_INDUSTRY_NAME_OIL_REFINERY.acc                              :{G=n}Ergasterium Petrolearium
-STR_INDUSTRY_NAME_OIL_REFINERY.abl                              :{G=n}Ergasterio Petroleario
+STR_INDUSTRY_NAME_OIL_REFINERY.gen                              :ergasterii petrolearii
+STR_INDUSTRY_NAME_OIL_REFINERY.acc                              :Ergasterium Petrolearium
+STR_INDUSTRY_NAME_OIL_REFINERY.abl                              :Ergasterio Petroleario
 STR_INDUSTRY_NAME_OIL_RIG                                       :{G=m}Suggestus Petrolearius
-STR_INDUSTRY_NAME_OIL_RIG.gen                                   :{G=m}suggestus petrolearii
-STR_INDUSTRY_NAME_OIL_RIG.acc                                   :{G=m}Suggestum Petrolearium
-STR_INDUSTRY_NAME_OIL_RIG.abl                                   :{G=m}Suggestu Petroleario
+STR_INDUSTRY_NAME_OIL_RIG.gen                                   :suggestus petrolearii
+STR_INDUSTRY_NAME_OIL_RIG.acc                                   :Suggestum Petrolearium
+STR_INDUSTRY_NAME_OIL_RIG.abl                                   :Suggestu Petroleario
 STR_INDUSTRY_NAME_FACTORY                                       :{G=f}Fabrica
-STR_INDUSTRY_NAME_FACTORY.gen                                   :{G=f}fabricae
-STR_INDUSTRY_NAME_FACTORY.acc                                   :{G=f}Fabricam
-STR_INDUSTRY_NAME_FACTORY.abl                                   :{G=f}Fabrica
+STR_INDUSTRY_NAME_FACTORY.gen                                   :fabricae
+STR_INDUSTRY_NAME_FACTORY.acc                                   :Fabricam
+STR_INDUSTRY_NAME_FACTORY.abl                                   :Fabrica
 STR_INDUSTRY_NAME_PRINTING_WORKS                                :{G=n}Impressorium
-STR_INDUSTRY_NAME_PRINTING_WORKS.gen                            :{G=n}impressorii
-STR_INDUSTRY_NAME_PRINTING_WORKS.acc                            :{G=n}Impressorium
-STR_INDUSTRY_NAME_PRINTING_WORKS.abl                            :{G=n}Impressorio
+STR_INDUSTRY_NAME_PRINTING_WORKS.gen                            :impressorii
+STR_INDUSTRY_NAME_PRINTING_WORKS.acc                            :Impressorium
+STR_INDUSTRY_NAME_PRINTING_WORKS.abl                            :Impressorio
 STR_INDUSTRY_NAME_STEEL_MILL                                    :{G=f}Fabrica Chalybeia
-STR_INDUSTRY_NAME_STEEL_MILL.gen                                :{G=f}fabricae chalybeiae
-STR_INDUSTRY_NAME_STEEL_MILL.acc                                :{G=f}Fabricam Chalybeiam
-STR_INDUSTRY_NAME_STEEL_MILL.abl                                :{G=f}Fabrica Chalybeia
+STR_INDUSTRY_NAME_STEEL_MILL.gen                                :fabricae chalybeiae
+STR_INDUSTRY_NAME_STEEL_MILL.acc                                :Fabricam Chalybeiam
+STR_INDUSTRY_NAME_STEEL_MILL.abl                                :Fabrica Chalybeia
 STR_INDUSTRY_NAME_FARM                                          :{G=m}Fundus
-STR_INDUSTRY_NAME_FARM.gen                                      :{G=m}fundi
-STR_INDUSTRY_NAME_FARM.acc                                      :{G=m}Fundum
-STR_INDUSTRY_NAME_FARM.abl                                      :{G=m}Fundo
+STR_INDUSTRY_NAME_FARM.gen                                      :fundi
+STR_INDUSTRY_NAME_FARM.acc                                      :Fundum
+STR_INDUSTRY_NAME_FARM.abl                                      :Fundo
 STR_INDUSTRY_NAME_COPPER_ORE_MINE                               :{G=f}Aerifodina
-STR_INDUSTRY_NAME_COPPER_ORE_MINE.gen                           :{G=f}aerifodinae
-STR_INDUSTRY_NAME_COPPER_ORE_MINE.acc                           :{G=f}Aerifodinam
-STR_INDUSTRY_NAME_COPPER_ORE_MINE.abl                           :{G=f}Aerifodina
+STR_INDUSTRY_NAME_COPPER_ORE_MINE.gen                           :aerifodinae
+STR_INDUSTRY_NAME_COPPER_ORE_MINE.acc                           :Aerifodinam
+STR_INDUSTRY_NAME_COPPER_ORE_MINE.abl                           :Aerifodina
 STR_INDUSTRY_NAME_OIL_WELLS                                     :{G=mp}Putei Petrolearii
-STR_INDUSTRY_NAME_OIL_WELLS.gen                                 :{G=mp}puteorum petroleariorum
-STR_INDUSTRY_NAME_OIL_WELLS.acc                                 :{G=mp}Puteos Petrolearios
-STR_INDUSTRY_NAME_OIL_WELLS.abl                                 :{G=mp}Puteis Petroleariis
+STR_INDUSTRY_NAME_OIL_WELLS.gen                                 :puteorum petroleariorum
+STR_INDUSTRY_NAME_OIL_WELLS.acc                                 :Puteos Petrolearios
+STR_INDUSTRY_NAME_OIL_WELLS.abl                                 :Puteis Petroleariis
 STR_INDUSTRY_NAME_BANK                                          :{G=f}Argentaria
-STR_INDUSTRY_NAME_BANK.gen                                      :{G=f}argentariae
-STR_INDUSTRY_NAME_BANK.acc                                      :{G=f}Argentariam
-STR_INDUSTRY_NAME_BANK.abl                                      :{G=f}Argentaria
+STR_INDUSTRY_NAME_BANK.gen                                      :argentariae
+STR_INDUSTRY_NAME_BANK.acc                                      :Argentariam
+STR_INDUSTRY_NAME_BANK.abl                                      :Argentaria
 STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT                         :{G=f}Fabrica Cibaria
-STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.gen                     :{G=f}fabricae cibariae
-STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.acc                     :{G=f}Fabricam Cibariam
-STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.abl                     :{G=f}Fabrica Cibaria
+STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.gen                     :fabricae cibariae
+STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.acc                     :Fabricam Cibariam
+STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.abl                     :Fabrica Cibaria
 STR_INDUSTRY_NAME_PAPER_MILL                                    :{G=f}Fabrica Chartaria
-STR_INDUSTRY_NAME_PAPER_MILL.gen                                :{G=f}fabricae chartariae
-STR_INDUSTRY_NAME_PAPER_MILL.acc                                :{G=f}Fabricam Chartariam
-STR_INDUSTRY_NAME_PAPER_MILL.abl                                :{G=f}Fabrica Chartaria
+STR_INDUSTRY_NAME_PAPER_MILL.gen                                :fabricae chartariae
+STR_INDUSTRY_NAME_PAPER_MILL.acc                                :Fabricam Chartariam
+STR_INDUSTRY_NAME_PAPER_MILL.abl                                :Fabrica Chartaria
 STR_INDUSTRY_NAME_GOLD_MINE                                     :{G=f}Aurifodina
-STR_INDUSTRY_NAME_GOLD_MINE.gen                                 :{G=f}aurifodinae
-STR_INDUSTRY_NAME_GOLD_MINE.acc                                 :{G=f}Aurifodinam
-STR_INDUSTRY_NAME_GOLD_MINE.abl                                 :{G=f}Aurifodina
+STR_INDUSTRY_NAME_GOLD_MINE.gen                                 :aurifodinae
+STR_INDUSTRY_NAME_GOLD_MINE.acc                                 :Aurifodinam
+STR_INDUSTRY_NAME_GOLD_MINE.abl                                 :Aurifodina
 STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC                            :{G=f}Argentaria
-STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.gen                        :{G=f}argentariae
-STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.acc                        :{G=f}Argentariam
-STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.abl                        :{G=f}Argentaria
+STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.gen                        :argentariae
+STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.acc                        :Argentariam
+STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.abl                        :Argentaria
 STR_INDUSTRY_NAME_DIAMOND_MINE                                  :{G=f}Adamantifodina
-STR_INDUSTRY_NAME_DIAMOND_MINE.gen                              :{G=f}adamantifodinae
-STR_INDUSTRY_NAME_DIAMOND_MINE.acc                              :{G=f}Adamantifodinam
-STR_INDUSTRY_NAME_DIAMOND_MINE.abl                              :{G=f}Adamantifodina
+STR_INDUSTRY_NAME_DIAMOND_MINE.gen                              :adamantifodinae
+STR_INDUSTRY_NAME_DIAMOND_MINE.acc                              :Adamantifodinam
+STR_INDUSTRY_NAME_DIAMOND_MINE.abl                              :Adamantifodina
 STR_INDUSTRY_NAME_IRON_ORE_MINE                                 :{G=f}Ferrifodina
-STR_INDUSTRY_NAME_IRON_ORE_MINE.gen                             :{G=f}ferrifodinae
-STR_INDUSTRY_NAME_IRON_ORE_MINE.acc                             :{G=f}Ferrifodinam
-STR_INDUSTRY_NAME_IRON_ORE_MINE.abl                             :{G=f}Ferrifodina
+STR_INDUSTRY_NAME_IRON_ORE_MINE.gen                             :ferrifodinae
+STR_INDUSTRY_NAME_IRON_ORE_MINE.acc                             :Ferrifodinam
+STR_INDUSTRY_NAME_IRON_ORE_MINE.abl                             :Ferrifodina
 STR_INDUSTRY_NAME_FRUIT_PLANTATION                              :{G=n}Arbustum Fructuarium
-STR_INDUSTRY_NAME_FRUIT_PLANTATION.gen                          :{G=n}arbusti fructuarii
-STR_INDUSTRY_NAME_FRUIT_PLANTATION.acc                          :{G=n}Arbustum Fructuarium
-STR_INDUSTRY_NAME_FRUIT_PLANTATION.abl                          :{G=n}Arbusto Fructuario
+STR_INDUSTRY_NAME_FRUIT_PLANTATION.gen                          :arbusti fructuarii
+STR_INDUSTRY_NAME_FRUIT_PLANTATION.acc                          :Arbustum Fructuarium
+STR_INDUSTRY_NAME_FRUIT_PLANTATION.abl                          :Arbusto Fructuario
 STR_INDUSTRY_NAME_RUBBER_PLANTATION                             :{G=n}Arbustum Gummosum
-STR_INDUSTRY_NAME_RUBBER_PLANTATION.gen                         :{G=n}arbusti gummosi
-STR_INDUSTRY_NAME_RUBBER_PLANTATION.acc                         :{G=n}Arbustum Gummosum
-STR_INDUSTRY_NAME_RUBBER_PLANTATION.abl                         :{G=n}Arbusto Gummoso
+STR_INDUSTRY_NAME_RUBBER_PLANTATION.gen                         :arbusti gummosi
+STR_INDUSTRY_NAME_RUBBER_PLANTATION.acc                         :Arbustum Gummosum
+STR_INDUSTRY_NAME_RUBBER_PLANTATION.abl                         :Arbusto Gummoso
 STR_INDUSTRY_NAME_WATER_SUPPLY                                  :{G=m}Fons Aquae
-STR_INDUSTRY_NAME_WATER_SUPPLY.gen                              :{G=m}fontis aquae
-STR_INDUSTRY_NAME_WATER_SUPPLY.acc                              :{G=m}Fontem Aquae
-STR_INDUSTRY_NAME_WATER_SUPPLY.abl                              :{G=m}Fonte Aquae
+STR_INDUSTRY_NAME_WATER_SUPPLY.gen                              :fontis aquae
+STR_INDUSTRY_NAME_WATER_SUPPLY.acc                              :Fontem Aquae
+STR_INDUSTRY_NAME_WATER_SUPPLY.abl                              :Fonte Aquae
 STR_INDUSTRY_NAME_WATER_TOWER                                   :{G=f}Turris Aquaria
-STR_INDUSTRY_NAME_WATER_TOWER.gen                               :{G=f}turris aquariae
-STR_INDUSTRY_NAME_WATER_TOWER.acc                               :{G=f}Turrim Aquariam
-STR_INDUSTRY_NAME_WATER_TOWER.abl                               :{G=f}Turri Aquaria
+STR_INDUSTRY_NAME_WATER_TOWER.gen                               :turris aquariae
+STR_INDUSTRY_NAME_WATER_TOWER.acc                               :Turrim Aquariam
+STR_INDUSTRY_NAME_WATER_TOWER.abl                               :Turri Aquaria
 STR_INDUSTRY_NAME_FACTORY_2                                     :{G=f}Fabrica
-STR_INDUSTRY_NAME_FACTORY_2.gen                                 :{G=f}fabricae
-STR_INDUSTRY_NAME_FACTORY_2.acc                                 :{G=f}Fabricam
-STR_INDUSTRY_NAME_FACTORY_2.abl                                 :{G=f}Fabrica
+STR_INDUSTRY_NAME_FACTORY_2.gen                                 :fabricae
+STR_INDUSTRY_NAME_FACTORY_2.acc                                 :Fabricam
+STR_INDUSTRY_NAME_FACTORY_2.abl                                 :Fabrica
 STR_INDUSTRY_NAME_FARM_2                                        :{G=m}Fundus
-STR_INDUSTRY_NAME_FARM_2.gen                                    :{G=m}fundi
-STR_INDUSTRY_NAME_FARM_2.acc                                    :{G=m}Fundum
-STR_INDUSTRY_NAME_FARM_2.abl                                    :{G=m}Fundo
+STR_INDUSTRY_NAME_FARM_2.gen                                    :fundi
+STR_INDUSTRY_NAME_FARM_2.acc                                    :Fundum
+STR_INDUSTRY_NAME_FARM_2.abl                                    :Fundo
 STR_INDUSTRY_NAME_LUMBER_MILL                                   :{G=np}Castra Lignatorum
-STR_INDUSTRY_NAME_LUMBER_MILL.gen                               :{G=np}castrorum lignatorum
-STR_INDUSTRY_NAME_LUMBER_MILL.acc                               :{G=np}Castra Lignatorum
-STR_INDUSTRY_NAME_LUMBER_MILL.abl                               :{G=np}Castris Lignatorum
+STR_INDUSTRY_NAME_LUMBER_MILL.gen                               :castrorum lignatorum
+STR_INDUSTRY_NAME_LUMBER_MILL.acc                               :Castra Lignatorum
+STR_INDUSTRY_NAME_LUMBER_MILL.abl                               :Castris Lignatorum
 STR_INDUSTRY_NAME_COTTON_CANDY_FOREST                           :{G=f}Silva Saccari Xylini
-STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.gen                       :{G=f}silvae saccari xylini
-STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.acc                       :{G=f}Silvam Saccari Xylini
-STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.abl                       :{G=f}Silva Saccari Xylini
+STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.gen                       :silvae saccari xylini
+STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.acc                       :Silvam Saccari Xylini
+STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.abl                       :Silva Saccari Xylini
 STR_INDUSTRY_NAME_CANDY_FACTORY                                 :{G=f}Fabrica Bellarica
-STR_INDUSTRY_NAME_CANDY_FACTORY.gen                             :{G=f}fabricae bellaricae
-STR_INDUSTRY_NAME_CANDY_FACTORY.acc                             :{G=f}Fabricam Bellaricam
-STR_INDUSTRY_NAME_CANDY_FACTORY.abl                             :{G=f}Fabrica Bellarica
+STR_INDUSTRY_NAME_CANDY_FACTORY.gen                             :fabricae bellaricae
+STR_INDUSTRY_NAME_CANDY_FACTORY.acc                             :Fabricam Bellaricam
+STR_INDUSTRY_NAME_CANDY_FACTORY.abl                             :Fabrica Bellarica
 STR_INDUSTRY_NAME_BATTERY_FARM                                  :{G=m}Fundus Pilarum Electricarum
-STR_INDUSTRY_NAME_BATTERY_FARM.gen                              :{G=m}fundi pilarum electricarum
-STR_INDUSTRY_NAME_BATTERY_FARM.acc                              :{G=m}Fundum Pilarum Electricarum
-STR_INDUSTRY_NAME_BATTERY_FARM.abl                              :{G=m}Fundo Pilarum Electricarum
+STR_INDUSTRY_NAME_BATTERY_FARM.gen                              :fundi pilarum electricarum
+STR_INDUSTRY_NAME_BATTERY_FARM.acc                              :Fundum Pilarum Electricarum
+STR_INDUSTRY_NAME_BATTERY_FARM.abl                              :Fundo Pilarum Electricarum
 STR_INDUSTRY_NAME_COLA_WELLS                                    :{G=mp}Putei Colae
-STR_INDUSTRY_NAME_COLA_WELLS.gen                                :{G=mp}puteorum colae
-STR_INDUSTRY_NAME_COLA_WELLS.acc                                :{G=mp}Puteos Colae
-STR_INDUSTRY_NAME_COLA_WELLS.abl                                :{G=mp}Puteis Colae
+STR_INDUSTRY_NAME_COLA_WELLS.gen                                :puteorum colae
+STR_INDUSTRY_NAME_COLA_WELLS.acc                                :Puteos Colae
+STR_INDUSTRY_NAME_COLA_WELLS.abl                                :Puteis Colae
 STR_INDUSTRY_NAME_TOY_SHOP                                      :{G=f}Taberna Ludicrorum
-STR_INDUSTRY_NAME_TOY_SHOP.gen                                  :{G=f}tabernae ludicrorum
-STR_INDUSTRY_NAME_TOY_SHOP.acc                                  :{G=f}Tabernam Ludicrorum
-STR_INDUSTRY_NAME_TOY_SHOP.abl                                  :{G=f}Taberna Ludicrorum
+STR_INDUSTRY_NAME_TOY_SHOP.gen                                  :tabernae ludicrorum
+STR_INDUSTRY_NAME_TOY_SHOP.acc                                  :Tabernam Ludicrorum
+STR_INDUSTRY_NAME_TOY_SHOP.abl                                  :Taberna Ludicrorum
 STR_INDUSTRY_NAME_TOY_FACTORY                                   :{G=f}Fabrica Ludicrorum
-STR_INDUSTRY_NAME_TOY_FACTORY.gen                               :{G=f}fabricae ludicrorum
-STR_INDUSTRY_NAME_TOY_FACTORY.acc                               :{G=f}Fabricam Ludicrorum
-STR_INDUSTRY_NAME_TOY_FACTORY.abl                               :{G=f}Fabrica Ludicrorum
+STR_INDUSTRY_NAME_TOY_FACTORY.gen                               :fabricae ludicrorum
+STR_INDUSTRY_NAME_TOY_FACTORY.acc                               :Fabricam Ludicrorum
+STR_INDUSTRY_NAME_TOY_FACTORY.abl                               :Fabrica Ludicrorum
 STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS                             :{G=mp}Fontes Plasticae
-STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.gen                         :{G=mp}fontium plasticae
-STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.acc                         :{G=mp}Fontes Plasticae
-STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.abl                         :{G=mp}Fontibus Plasticae
+STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.gen                         :fontium plasticae
+STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.acc                         :Fontes Plasticae
+STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.abl                         :Fontibus Plasticae
 STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY                           :{G=f}Fabrica Potionum Carbonatarum
-STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.gen                       :{G=f}fabricae potionum carbonatarum
-STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.acc                       :{G=f}Fabricam Potionum Carbonatarum
-STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.abl                       :{G=f}Fabrica Potionum Carbonatarum
+STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.gen                       :fabricae potionum carbonatarum
+STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.acc                       :Fabricam Potionum Carbonatarum
+STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.abl                       :Fabrica Potionum Carbonatarum
 STR_INDUSTRY_NAME_BUBBLE_GENERATOR                              :{G=n}Generatrum Bullarum
-STR_INDUSTRY_NAME_BUBBLE_GENERATOR.gen                          :{G=n}generatri bullarum
-STR_INDUSTRY_NAME_BUBBLE_GENERATOR.acc                          :{G=n}Generatrum Bullarum
-STR_INDUSTRY_NAME_BUBBLE_GENERATOR.abl                          :{G=n}Generatro Bullarum
+STR_INDUSTRY_NAME_BUBBLE_GENERATOR.gen                          :generatri bullarum
+STR_INDUSTRY_NAME_BUBBLE_GENERATOR.acc                          :Generatrum Bullarum
+STR_INDUSTRY_NAME_BUBBLE_GENERATOR.abl                          :Generatro Bullarum
 STR_INDUSTRY_NAME_TOFFEE_QUARRY                                 :{G=fp}Lapicidinae Sacchari Tosti
-STR_INDUSTRY_NAME_TOFFEE_QUARRY.gen                             :{G=fp}lapicidinarum sacchari tosti
-STR_INDUSTRY_NAME_TOFFEE_QUARRY.acc                             :{G=fp}Lapicidinas Sacchari Tosti
-STR_INDUSTRY_NAME_TOFFEE_QUARRY.abl                             :{G=fp}Lapicidinis Sacchari Tosti
+STR_INDUSTRY_NAME_TOFFEE_QUARRY.gen                             :lapicidinarum sacchari tosti
+STR_INDUSTRY_NAME_TOFFEE_QUARRY.acc                             :Lapicidinas Sacchari Tosti
+STR_INDUSTRY_NAME_TOFFEE_QUARRY.abl                             :Lapicidinis Sacchari Tosti
 STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=f}Saccharifodina
-STR_INDUSTRY_NAME_SUGAR_MINE.gen                                :{G=f}saccharifodinae
-STR_INDUSTRY_NAME_SUGAR_MINE.acc                                :{G=f}Saccharifodinam
-STR_INDUSTRY_NAME_SUGAR_MINE.abl                                :{G=f}Saccharifodina
+STR_INDUSTRY_NAME_SUGAR_MINE.gen                                :saccharifodinae
+STR_INDUSTRY_NAME_SUGAR_MINE.acc                                :Saccharifodinam
+STR_INDUSTRY_NAME_SUGAR_MINE.abl                                :Saccharifodina
 
 ############ WARNING, using range 0x6000 for strings that are stored in the savegame
 ############ These strings may never get a new id, or savegames will break!

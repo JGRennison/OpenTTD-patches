@@ -2225,7 +2225,7 @@ STR_NETWORK_SERVER_LIST_GAME_NAME                               :{BLACK}Назв
 STR_NETWORK_SERVER_LIST_GAME_NAME_TOOLTIP                       :{BLACK}Назва гэтай гульні
 STR_NETWORK_SERVER_LIST_GENERAL_ONLINE                          :{BLACK}{COMMA}/{COMMA} — {COMMA}/{COMMA}
 STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION                         :{BLACK}Кліенты
-STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION_TOOLTIP                 :{BLACK}Клиентаў анлайн/макс. {}Кампаніяў анлайн/макс.
+STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION_TOOLTIP                 :{BLACK}Клиентаў анлайн/макс.{}Кампаніяў анлайн/макс.
 STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x{COMMA}
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION                        :{BLACK}Памер мапы
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP                :{BLACK}Памер мапы гульні{}Клікніце для сартаваньня па плошчы
@@ -2934,29 +2934,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Палi
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Засьнежаная зямля
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Пустэльня
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} рэйкi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} рэйкi са звычайнымі сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} рэйкi з уваходнымі прэсыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} рэйкi з выхаднымi сыґналамi (прэсыґналамі)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} рэйкi з камбiнаванымi сыґналамi (прэсыґналамі)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} рэйкi з маршрутнымi (PMS) сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} рэйкi з аднабаковымi маршрутнымi (PMS) сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} рэйкi са звычайнымi й уваходнымі прэсыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} рэйкi са звычайнымi й выхаднымi сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} рэйкi са звычайнымi й камбiнаванымi сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} рэйкi са звычайнымi й маршрутнымi (PMS) сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} рэйкi са звычайнымi й аднабаковымi маршрутнымi (PMS) сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} рэйкi з уваходнымi (прэcыгналамi) ды выхаднымi сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} рэйкi з уваходнымi (прэсыґналамi) ды камбiнаванымi сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} рэйкi з уваходнымi (прэсыґналамi) ды маршрутнымi (PMS) сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} рэйкi з уваходнымi (прэсыґналамi) ды аднабаковымi маршрутнымi (PMS) сыґналамi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} рэйкi з выхаднымi й камбінаванымі прэсыґналамі
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} рэйкі з выхаднымі (прэсыґналамі) ды маршрутнымі (PMS) сыґналамі
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} рэйкі з выхаднымі (прэсыґналамі) ды аднабаковымі маршрутнымі (PMS) сыґналамі
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} рэйкі з камбінаванымі (прэсыґналамі) ды маршрутнымі (PMS) сыґналамі
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} рэйкі з камбінаванымі (прэсыґналамі) ды аднабаковымі маршрутнымі (PMS) сыґналамі
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} рэйкі з маршрутнымі (PMS) ды аднабаковымі маршрутнымі сыґналамі
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} чыгуначнае дэпо
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Чыгунка рэйкi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Чыгунка рэйкi са звычайнымі сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Чыгунка рэйкi з уваходнымі прэсыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Чыгунка рэйкi з выхаднымi сыґналамi (прэсыґналамі)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Чыгунка рэйкi з камбiнаванымi сыґналамi (прэсыґналамі)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Чыгунка рэйкi з маршрутнымi (PMS) сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Чыгунка рэйкi з аднабаковымi маршрутнымi (PMS) сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Чыгунка рэйкi са звычайнымi й уваходнымі прэсыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Чыгунка рэйкi са звычайнымi й выхаднымi сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Чыгунка рэйкi са звычайнымi й камбiнаванымi сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Чыгунка рэйкi са звычайнымi й маршрутнымi (PMS) сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Чыгунка рэйкi са звычайнымi й аднабаковымi маршрутнымi (PMS) сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Чыгунка рэйкi з уваходнымi (прэcыгналамi) ды выхаднымi сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Чыгунка рэйкi з уваходнымi (прэсыґналамi) ды камбiнаванымi сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Чыгунка рэйкi з уваходнымi (прэсыґналамi) ды маршрутнымi (PMS) сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Чыгунка рэйкi з уваходнымi (прэсыґналамi) ды аднабаковымi маршрутнымi (PMS) сыґналамi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Чыгунка рэйкi з выхаднымi й камбінаванымі прэсыґналамі
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Чыгунка рэйкі з выхаднымі (прэсыґналамі) ды маршрутнымі (PMS) сыґналамі
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Чыгунка рэйкі з выхаднымі (прэсыґналамі) ды аднабаковымі маршрутнымі (PMS) сыґналамі
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Чыгунка рэйкі з камбінаванымі (прэсыґналамі) ды маршрутнымі (PMS) сыґналамі
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Чыгунка рэйкі з камбінаванымі (прэсыґналамі) ды аднабаковымі маршрутнымі (PMS) сыґналамі
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Чыгунка рэйкі з маршрутнымі (PMS) ды аднабаковымі маршрутнымі сыґналамі
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Чыгунка чыгуначнае дэпо
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Дарога
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Дарога з вулічным асьвятленьнем
@@ -3020,7 +3020,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Зямля на
 STR_ABOUT_OPENTTD                                               :{WHITE}Аб OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Арыґінальныя аўтарскія правы {COPYRIGHT} 1995 Chris Sawyer. Усе правы абароненыя.
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD вэрсія {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002–2015 Каманда распрацоўнікаў OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002–2016 Каманда распрацоўнікаў OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Захаваць гульню
@@ -3207,7 +3207,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Пера
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Папярэдні спрайт
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Перайсьці да папярэдняга звычайнага спрайта, прапускаючы змяняючыя колер, шрыфтавыя, псэўдаспрайты. Пераход з пачатку сьпісу да апошняга спрайта.
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Прадстаўленьне выбранага спрайта. Выраўноўваньне не ўлічваецца пры прарысоўцы гэтага спрайта.
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Рухайце спрайт, зьмяняючы зрушэньне па X і па Y
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Рухайце спрайт, зьмяняючы зрушэньне па X і па Y. Ctrl+пстрычка, каб зрушыць спрайт на восем адзінак за раз
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Скід зрушэння
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Скінуць значэнні адноснага зрушэння
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Зрушэнне X: {NUM}; зрушэнне Y: {NUM} (абсалютнае)
@@ -3222,7 +3222,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Увага: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Памылка: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Крытычная памылка: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Памылка пры рабоце з NewGRF: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Памылка пры рабоце з NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} ня будзе працаваць з вэрсіяй TTDPatch, паведламленай OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :Файл {1:STRING} патрабуе {STRING}-вэрсію TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} зроблены для выкарыстаньня сумесна з {STRING}
@@ -3910,7 +3910,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} кал
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Спыніць замену
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Спыніць замену транспарту
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Замяняем: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Пераключэньне паміж вокнамі замены лякаматываў і ваґонаў
 STR_REPLACE_ENGINES                                             :Лякаматывы
 STR_REPLACE_WAGONS                                              :Ваґоны

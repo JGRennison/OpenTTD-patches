@@ -2269,10 +2269,10 @@ static void SaveSettings(const SettingDesc *sd, void *object)
  *
  * The PATX chunk contents has the following format:
  *
- * uint32                               chunk flags
+ * uint32                               chunk flags (unused)
  * uint32                               number of settings
  *     For each of N settings:
- *     uint32                           setting flags
+ *     uint32                           setting flags (unused)
  *     SLE_STR                          setting name
  *     uint32                           length of setting field
  *         N bytes                      setting field
@@ -2291,6 +2291,7 @@ static void MakeSettingsPatxList(const SettingDesc *sd)
 	static const SettingDesc *previous = NULL;
 
 	if (sd == previous) return;
+	previous = sd;
 
 	_sorted_patx_settings.clear();
 	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
@@ -2298,15 +2299,42 @@ static void MakeSettingsPatxList(const SettingDesc *sd)
 		_sorted_patx_settings.push_back(desc);
 	}
 
-	// this makes me miss lambdas :/
-	struct StringSorter {
-		bool operator()(const SettingDesc *a, const SettingDesc *b)
-		{
-			return strcmp(a->patx_name, b->patx_name) < 0;
-		}
-	};
-	std::sort(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), StringSorter());
+	std::sort(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), [](const SettingDesc *a, const SettingDesc *b) {
+		return strcmp(a->patx_name, b->patx_name) < 0;
+	});
 }
+
+/**
+ * Internal structure used in LoadSettingsPatx() and LoadSettingsPlyx()
+ */
+struct SettingsExtLoad {
+	uint32 flags;
+	char name[256];
+	uint32 setting_length;
+};
+
+static const SaveLoad _settings_ext_load_desc[] = {
+	SLE_VAR(SettingsExtLoad, flags,          SLE_UINT32),
+	SLE_STR(SettingsExtLoad, name,           SLE_STRB, 256),
+	SLE_VAR(SettingsExtLoad, setting_length, SLE_UINT32),
+	SLE_END()
+};
+
+/**
+ * Internal structure used in SaveSettingsPatx() and SaveSettingsPlyx()
+ */
+struct SettingsExtSave {
+	uint32 flags;
+	const char *name;
+	uint32 setting_length;
+};
+
+static const SaveLoad _settings_ext_save_desc[] = {
+	SLE_VAR(SettingsExtSave, flags,          SLE_UINT32),
+	SLE_STR(SettingsExtSave, name,           SLE_STR, 0),
+	SLE_VAR(SettingsExtSave, setting_length, SLE_UINT32),
+	SLE_END()
+};
 
 /**
  * Load handler for settings which go in the PATX chunk
@@ -2318,19 +2346,7 @@ static void LoadSettingsPatx(const SettingDesc *sd, void *object)
 {
 	MakeSettingsPatxList(sd);
 
-	struct SettingsPatxLoad {
-		uint32 flags;
-		char name[256];
-		uint32 setting_length;
-	};
-	SettingsPatxLoad current_setting;
-
-	static const SaveLoad _settings_patx_desc[] = {
-		SLE_VAR(SettingsPatxLoad, flags,          SLE_UINT32),
-		SLE_STR(SettingsPatxLoad, name,           SLE_STRB, 256),
-		SLE_VAR(SettingsPatxLoad, setting_length, SLE_UINT32),
-		SLE_END()
-	};
+	SettingsExtLoad current_setting;
 
 	uint32 flags = SlReadUint32();
 	// flags are not in use yet, reserve for future expansion
@@ -2338,27 +2354,18 @@ static void LoadSettingsPatx(const SettingDesc *sd, void *object)
 
 	uint32 settings_count = SlReadUint32();
 	for (uint32 i = 0; i < settings_count; i++) {
-		SlObject(&current_setting, _settings_patx_desc);
+		SlObject(&current_setting, _settings_ext_load_desc);
 
 		// flags are not in use yet, reserve for future expansion
 		if (current_setting.flags != 0) SlErrorCorruptFmt("PATX chunk: unknown setting header flags: 0x%X", current_setting.flags);
 
-		// now try to find corresponding setting, this would be much easier with C++11 support...
+		// now try to find corresponding setting
 		bool exact_match = false;
-		struct StringSearcher {
-			bool &m_exact_match;
-
-			StringSearcher(bool &exact_match)
-					: m_exact_match(exact_match) { }
-
-			bool operator()(const SettingDesc *a, const char *b)
-			{
-				int result = strcmp(a->patx_name, b);
-				if (result == 0) m_exact_match = true;
-				return result < 0;
-			}
-		};
-		std::vector<const SettingDesc *>::iterator iter = std::lower_bound(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), current_setting.name, StringSearcher(exact_match));
+		auto iter = std::lower_bound(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), current_setting.name, [&](const SettingDesc *a, const char *b) {
+			int result = strcmp(a->patx_name, b);
+			if (result == 0) exact_match = true;
+			return result < 0;
+		});
 
 		if (exact_match) {
 			assert(iter != _sorted_patx_settings.end());
@@ -2386,19 +2393,7 @@ static void LoadSettingsPatx(const SettingDesc *sd, void *object)
  */
 static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 {
-	struct SettingsPatxSave {
-		uint32 flags;
-		const char *name;
-		uint32 setting_length;
-	};
-	SettingsPatxSave current_setting;
-
-	static const SaveLoad _settings_patx_desc[] = {
-		SLE_VAR(SettingsPatxSave, flags,          SLE_UINT32),
-		SLE_STR(SettingsPatxSave, name,           SLE_STR, 0),
-		SLE_VAR(SettingsPatxSave, setting_length, SLE_UINT32),
-		SLE_END()
-	};
+	SettingsExtSave current_setting;
 
 	struct SettingToAdd {
 		const SettingDesc *setting;
@@ -2415,12 +2410,14 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 		current_setting.name = desc->patx_name;
 
 		// add length of setting header
-		length += SlCalcObjLength(&current_setting, _settings_patx_desc);
+		length += SlCalcObjLength(&current_setting, _settings_ext_save_desc);
 
 		// add length of actual setting
 		length += setting_length;
 
-		settings_to_add.push_back({ desc, setting_length });
+		// duplicate copy made for compiler backwards compatibility
+		SettingToAdd new_setting = { desc, setting_length };
+		settings_to_add.push_back(new_setting);
 	}
 	SlSetLength(length);
 
@@ -2432,9 +2429,168 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 		current_setting.flags = 0;
 		current_setting.name = desc->patx_name;
 		current_setting.setting_length = settings_to_add[i].setting_length;
-		SlObject(&current_setting, _settings_patx_desc);
+		SlObject(&current_setting, _settings_ext_save_desc);
 		void *ptr = GetVariableAddress(object, &desc->save);
 		SlObjectMember(ptr, &desc->save);
+	}
+}
+
+/** @file
+ *
+ * The PLYX chunk stores additional company settings in an unordered
+ * format which is tolerant of extra, missing or reordered settings.
+ * The format is similar to the PATX chunk.
+ * Additional settings generally means those that aren't in trunk.
+ *
+ * The PLYX chunk contents has the following format:
+ *
+ * uint32                               chunk flags (unused)
+ * uint32                               number of companies
+ *     For each of N companies:
+ *     uint32                           company ID
+ *     uint32                           company flags (unused)
+ *     uint32                           number of settings
+ *         For each of N settings:
+ *         uint32                       setting flags (unused)
+ *         SLE_STR                      setting name
+ *         uint32                       length of setting field
+ *             N bytes                  setting field
+ */
+
+/**
+ * Load handler for company settings which go in the PLYX chunk
+ * @param check_mode Whether to skip over settings without reading
+ */
+void LoadSettingsPlyx(bool skip)
+{
+	SettingsExtLoad current_setting;
+
+	uint32 chunk_flags = SlReadUint32();
+	// flags are not in use yet, reserve for future expansion
+	if (chunk_flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown chunk header flags: 0x%X", chunk_flags);
+
+	uint32 company_count = SlReadUint32();
+	for (uint32 i = 0; i < company_count; i++) {
+		uint32 company_id = SlReadUint32();
+		if (company_id >= MAX_COMPANIES) SlErrorCorruptFmt("PLYX chunk: invalid company ID: %u", company_id);
+
+		const Company *c = NULL;
+		if (!skip) {
+			c = Company::GetIfValid(company_id);
+			if (c == NULL) SlErrorCorruptFmt("PLYX chunk: non-existant company ID: %u", company_id);
+		}
+
+		uint32 company_flags = SlReadUint32();
+		// flags are not in use yet, reserve for future expansion
+		if (company_flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown company flags: 0x%X", company_flags);
+
+		uint32 settings_count = SlReadUint32();
+		for (uint32 j = 0; j < settings_count; j++) {
+			SlObject(&current_setting, _settings_ext_load_desc);
+
+			// flags are not in use yet, reserve for future expansion
+			if (current_setting.flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown setting header flags: 0x%X", current_setting.flags);
+
+			if (skip) {
+				SlSkipBytes(current_setting.setting_length);
+				continue;
+			}
+
+			const SettingDesc *setting = NULL;
+
+			// not many company settings, so perform a linear scan
+			for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
+				if (desc->patx_name != NULL && strcmp(desc->patx_name, current_setting.name) == 0) {
+					setting = desc;
+					break;
+				}
+			}
+
+			if (setting != NULL) {
+				// found setting
+				const SaveLoad *sld = &(setting->save);
+				size_t read = SlGetBytesRead();
+				void *ptr = GetVariableAddress(&(c->settings), sld);
+				SlObjectMember(ptr, sld);
+				if (SlGetBytesRead() != read + current_setting.setting_length) {
+					SlErrorCorruptFmt("PLYX chunk: setting read length mismatch for setting: '%s'", current_setting.name);
+				}
+				if (IsNumericType(sld->conv)) Write_ValidateSetting(ptr, setting, ReadValue(ptr, sld->conv));
+			} else {
+				DEBUG(sl, 1, "PLYX chunk: Could not find company setting: '%s', ignoring", current_setting.name);
+				SlSkipBytes(current_setting.setting_length);
+			}
+		}
+	}
+}
+
+/**
+ * Save handler for settings which go in the PLYX chunk
+ */
+void SaveSettingsPlyx()
+{
+	SettingsExtSave current_setting;
+
+	static const SaveLoad _settings_plyx_desc[] = {
+		SLE_VAR(SettingsExtSave, flags,          SLE_UINT32),
+		SLE_STR(SettingsExtSave, name,           SLE_STR, 0),
+		SLE_VAR(SettingsExtSave, setting_length, SLE_UINT32),
+		SLE_END()
+	};
+
+	std::vector<uint32> company_setting_counts;
+
+	size_t length = 8;
+	uint32 companies_count = 0;
+
+	Company *c;
+	FOR_ALL_COMPANIES(c) {
+		length += 12;
+		companies_count++;
+		uint32 setting_count = 0;
+		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
+			if (desc->patx_name == NULL) continue;
+			uint32 setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
+			if (!setting_length) continue;
+
+			current_setting.name = desc->patx_name;
+
+			// add length of setting header
+			length += SlCalcObjLength(&current_setting, _settings_ext_save_desc);
+
+			// add length of actual setting
+			length += setting_length;
+
+			setting_count++;
+		}
+		company_setting_counts.push_back(setting_count);
+	}
+	SlSetLength(length);
+
+	SlWriteUint32(0);                          // flags
+	SlWriteUint32(companies_count);            // companies count
+
+	size_t index = 0;
+	FOR_ALL_COMPANIES(c) {
+		length += 12;
+		companies_count++;
+		SlWriteUint32(c->index);               // company ID
+		SlWriteUint32(0);                      // flags
+		SlWriteUint32(company_setting_counts[index]); // setting count
+		index++;
+
+		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
+			if (desc->patx_name == NULL) continue;
+			uint32 setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
+			if (!setting_length) continue;
+
+			current_setting.flags = 0;
+			current_setting.name = desc->patx_name;
+			current_setting.setting_length = setting_length;
+			SlObject(&current_setting, _settings_plyx_desc);
+			void *ptr = GetVariableAddress(&(c->settings), &desc->save);
+			SlObjectMember(ptr, &desc->save);
+		}
 	}
 }
 

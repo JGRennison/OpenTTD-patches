@@ -773,7 +773,7 @@ STR_NEWS_FIRST_BUS_ARRIVAL                                      :{BIG_FONT}{BLAC
 STR_NEWS_FIRST_TRUCK_ARRIVAL                                    :{BIG_FONT}{BLACK}شهروندان ورود اولین کامیون را به . . .{}{STATION} تبریک گفتند!
 STR_NEWS_FIRST_PASSENGER_TRAM_ARRIVAL                           :{BIG_FONT}{BLACK}شهروندان شهر . . .{}ورود اولين مسافر به {STATION}را جشن مي گيرند!
 STR_NEWS_FIRST_CARGO_TRAM_ARRIVAL                               :{BIG_FONT}{BLACK}شهروندان شهر . . .{}ورود اولين بارکش به {STATION}را جشن مي گيرند!
-STR_NEWS_FIRST_SHIP_ARRIVAL                                     :{BIG_FONT}{BLACK}جشن گرفتن شهروندان. . . {} اولین کشتی به {STATION} رسید!
+STR_NEWS_FIRST_SHIP_ARRIVAL                                     :{BIG_FONT}{BLACK}جشن گرفتن شهروندان. . .{} اولین کشتی به {STATION} رسید!
 STR_NEWS_FIRST_AIRCRAFT_ARRIVAL                                 :{BIG_FONT}{BLACK}جشن شهروندان . . .{}اولین هواپیما به {STATION} می رسد!
 
 STR_NEWS_TRAIN_CRASH                                            :{BIG_FONT}{BLACK}تصادف قطار!{}{COMMA} مرگ در انفجار حاصل از برخورد
@@ -970,6 +970,7 @@ STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}وضوح
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :دو برابر
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}بسته گرافیک پایه
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}بسته گرافیک پایه را انتخاب کنید
@@ -1907,7 +1908,7 @@ STR_CONTENT_TYPE_CAPTION                                        :{BLACK}نوع
 STR_CONTENT_TYPE_CAPTION_TOOLTIP                                :{BLACK}نوع محتوی
 STR_CONTENT_NAME_CAPTION                                        :{BLACK}نام
 STR_CONTENT_NAME_CAPTION_TOOLTIP                                :{BLACK}نام محتوی
-STR_CONTENT_MATRIX_TOOLTIP                                      :{BLACK}برای مشاهده ی جزئیات روی خط کلیک کنید {}برای اتنخاب برای دانلود روی چک باکس کلیک کنید
+STR_CONTENT_MATRIX_TOOLTIP                                      :{BLACK}برای مشاهده ی جزئیات روی خط کلیک کنید{}برای اتنخاب برای دانلود روی چک باکس کلیک کنید
 STR_CONTENT_SELECT_ALL_CAPTION                                  :{BLACK}انتخاب تمامی موارد
 STR_CONTENT_SELECT_ALL_CAPTION_TOOLTIP                          :{BLACK}علامت گذاری تمامی موارد را برای بارگیری
 STR_CONTENT_SELECT_UPDATES_CAPTION                              :{BLACK}انتخاب موارد ارتقاع
@@ -2202,7 +2203,7 @@ STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK} به ش
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}طراحی اتوماتیک سرزمین
 STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}مکان های سنگی در نقشه ایجاد کن
-STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK} ناحیه ی بیابانی را مشخص کن {} دکمه ی "کنترل" را فشار بده تا حذف کند
+STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK} ناحیه ی بیابانی را مشخص کن{} دکمه ی "کنترل" را فشار بده تا حذف کند
 STR_TERRAFORM_TOOLTIP_INCREASE_SIZE_OF_LAND_AREA                :{BLACK}افزایش مساحت زمین به بالا/پایین
 STR_TERRAFORM_TOOLTIP_DECREASE_SIZE_OF_LAND_AREA                :{BLACK}کاهش مساحت زمین به بالا/پایین
 STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND                      :{BLACK}نقشه ی تصادفی بساز
@@ -2302,29 +2303,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :زمین ها
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :زمین پوشیده از برف
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :صحرا
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} ریل
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} ریل با نشانگر توقف
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} ریل با پیش نشانگر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} ریل با نشانگر خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} ریل با نشانگر چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} ریل با نشانگر مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} ریل با نشانگر مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} ریل با نشانگرهای توقف و پیش نشانگر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} ریل با نشانگرهای توقف و خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} ریل با نشانگرهای توقف و چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} ریل با نشانگرهای توقف و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} ریل با نشانگرهای توقف و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} ریل با پیش نشانگر و نشانگرخروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} ریل با پیش نشانگر و نشانگرچندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} ریل با پیش نشانگر و نشانگز مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} ریل با پیش نشانگر و نشانگر مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} ریل با نشانگرهای خروج و چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} ریل با نشانگرهای خروج و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} ریل با نشانگرهای خروج و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} ریل با نشانگرهای چندگانه و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} ریل با نشانگرهای چندگانه و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} ریل با نشانگرهای مسیر و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} گاراژ قطار
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :راه‌آهن ریل
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :راه‌آهن ریل با نشانگر توقف
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :راه‌آهن ریل با پیش نشانگر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :راه‌آهن ریل با نشانگر خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :راه‌آهن ریل با نشانگر چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :راه‌آهن ریل با نشانگر مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :راه‌آهن ریل با نشانگر مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :راه‌آهن ریل با نشانگرهای توقف و پیش نشانگر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :راه‌آهن ریل با نشانگرهای توقف و خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :راه‌آهن ریل با نشانگرهای توقف و چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :راه‌آهن ریل با نشانگرهای توقف و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :راه‌آهن ریل با نشانگرهای توقف و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :راه‌آهن ریل با پیش نشانگر و نشانگرخروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :راه‌آهن ریل با پیش نشانگر و نشانگرچندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :راه‌آهن ریل با پیش نشانگر و نشانگز مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :راه‌آهن ریل با پیش نشانگر و نشانگر مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :راه‌آهن ریل با نشانگرهای خروج و چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :راه‌آهن ریل با نشانگرهای خروج و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :راه‌آهن ریل با نشانگرهای خروج و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :راه‌آهن ریل با نشانگرهای چندگانه و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :راه‌آهن ریل با نشانگرهای چندگانه و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :راه‌آهن ریل با نشانگرهای مسیر و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :راه‌آهن گاراژ قطار
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :جاده
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :جاده با چراغ راهنمایی رانندگی
@@ -2388,7 +2389,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :زمین خری
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD در باره ی
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD ویرایش {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ذخیره ی بازی
@@ -2580,7 +2581,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}هشدار: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}خطا: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}خطای وخیم: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}یک خطای وخیم در NewGRF اتفاق افتاده: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}یک خطای وخیم در NewGRF اتفاق افتاده:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} با TTDPatch که ویرایش آن توسط OpenTTD گزارش شده کار نمی کند
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} برای ویرایش {STRING}TTD می باشد
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} طراحی شده برای استفاده با {STRING}
@@ -2801,6 +2802,7 @@ STR_STATION_VIEW_VIA_HERE                                       :{GREEN}{CARGO_S
 STR_STATION_VIEW_TO_HERE                                        :{GREEN}{CARGO_SHORT} به این ایستگاه
 STR_STATION_VIEW_NONSTOP                                        :{YELLOW}{CARGO_SHORT} بدون توقف
 
+STR_STATION_VIEW_GROUP_D_V_S                                    :مقصد با منبع
 
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :ترسناک
@@ -2870,6 +2872,7 @@ STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}25% سه
 STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}25% سهام این شرکت را بخر.Shift+Click برآورد قیمت سهام را بدون فروش سهام نشان می دهد.
 STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% سهام این شرکت را بفروش.دکمه Shift+Clickبرآورد قیمت را بدون فروش سهام نمایش می دهد
 
+STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :مدیر عامل
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}ما به دنبال یک شرکت حمل و نقل هستیم که مایل باشد مالکیت شرکت ما را بصورت یکجا در اختیار بگیرد.{}{}آیا شما مایل به خرید شرکت {COMPANY} به مبلغ {CURRENCY_LONG} هستید؟
 
@@ -3066,8 +3069,10 @@ STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}وسی�
 STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK} ستون با وسیله نقلیه آماده جایگزینی می باشد
 
 
+STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}برای توقف جایگزین کردن برای نوع انتخاب شده در سمت چپ کلیک کنید
 
 
+STR_REPLACE_ELRAIL_VEHICLES                                     :وسایل نقلیه ریلی برقی
 
 
 # Vehicle view
@@ -3191,6 +3196,7 @@ STR_ORDERS_END_OF_ORDERS                                        :- - پایان 
 # Conditional order variables, must follow order of OrderConditionVariable enum
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :عمر مفید باقی مانده (سال)
 
+STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :صحیح است
 
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}رها کردن
@@ -3253,6 +3259,7 @@ STR_AI_DEBUG                                                    :{WHITE}رفع �
 STR_AI_DEBUG_NAME_TOOLTIP                                       :{BLACK}نام کد
 STR_AI_DEBUG_RELOAD                                             :{BLACK}بازگشایی مجدد هوش مصنوعی
 STR_AI_DEBUG_RELOAD_TOOLTIP                                     :{BLACK}از بین بردن هوش مصنوعی. بازگشایی اسکریپت. و شروع مجدد هوش مصنوعی
+STR_AI_DEBUG_BREAK_STR_ON_OFF_TOOLTIP                           :{BLACK}فعالسازی/غیر فعال سازی توقف هنگامی که هوش مصنوعی گزارشی با متن توقف تولید می کند
 STR_AI_GAME_SCRIPT                                              :{BLACK}کدبازی
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}دیدن گزارش های کد بازی
 
@@ -3358,6 +3365,7 @@ STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}مکان
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}قبلا در اینجا ساخته شده
 STR_ERROR_OWNED_BY                                              :{WHITE}صاحب {STRING} است.
 STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :{WHITE}این ناحیه توسط شرکت دیگری تصاحب شده
+STR_ERROR_TERRAFORM_LIMIT_REACHED                               :{WHITE}... به بیش از حد تولید پستی و بلندی ها رسیده
 
 # Local authority errors
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}انجمن شهر {TOWN} اجازه این کار را نمیدهد
