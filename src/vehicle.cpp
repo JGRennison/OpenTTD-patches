@@ -191,8 +191,11 @@ void VehicleServiceInDepot(Vehicle *v)
 			}
 			assert(type != INVALID_EXPENSES);
 
+			Money vehicle_new_value = v->GetEngine()->GetCost();
+
 			// The static cast is to fix compilation on (old) MSVC as the overload for OverflowSafeInt operator / is ambiguous.
-			Money repair_cost = (v->breakdowns_since_last_service * v->repair_cost / static_cast<uint>(_settings_game.vehicle.repair_cost)) + 1;
+			Money repair_cost = (v->breakdowns_since_last_service * vehicle_new_value / static_cast<uint>(_settings_game.vehicle.repair_cost)) + 1;
+			if (v->age > v->max_age) repair_cost <<= 1;
 			CommandCost cost(type, repair_cost);
 			v->First()->profit_this_year -= cost.GetCost() << 8;
 			SubtractMoneyFromCompany(cost);
@@ -1379,9 +1382,6 @@ Vehicle *CheckClickOnVehicle(const ViewPort *vp, int x, int y)
 void DecreaseVehicleValue(Vehicle *v)
 {
 	v->value -= v->value >> 8;
-	if ( v->age > v->max_age ) { // double cost for each max_age days after max_age
-		v->repair_cost += v->repair_cost >> 8;
-	}
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 }
 

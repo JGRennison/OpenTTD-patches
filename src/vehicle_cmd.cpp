@@ -138,7 +138,6 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	if (value.Succeeded() && flags & DC_EXEC) {
 		v->unitnumber = unit_num;
 		v->value      = value.GetCost();
-		v->repair_cost = value.GetCost();
 
 		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(type), 0);

@@ -58,7 +58,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_IMPROVED_BREAKDOWNS,    XSCF_NULL,                4,   4, "improved_breakdowns",       NULL, NULL, NULL        },
 	{ XSLFI_TT_WAIT_IN_DEPOT,       XSCF_NULL,                1,   1, "tt_wait_in_depot",          NULL, NULL, NULL        },
 	{ XSLFI_AUTO_TIMETABLE,         XSCF_NULL,                4,   4, "auto_timetables",           NULL, NULL, NULL        },
-	{ XSLFI_VEHICLE_REPAIR_COST,    XSCF_NULL,                1,   1, "vehicle_repair_cost",       NULL, NULL, NULL        },
+	{ XSLFI_VEHICLE_REPAIR_COST,    XSCF_NULL,                2,   2, "vehicle_repair_cost",       NULL, NULL, NULL        },
 	{ XSLFI_ENH_VIEWPORT_PLANS,     XSCF_IGNORABLE_ALL,       1,   1, "enh_viewport_plans",        NULL, NULL, "PLAN,PLLN" },
 	{ XSLFI_INFRA_SHARING,          XSCF_NULL,                1,   1, "infra_sharing",             NULL, NULL, NULL        },
 	{ XSLFI_VARIABLE_DAY_LENGTH,    XSCF_NULL,                1,   1, "variable_day_length",       NULL, NULL, NULL        },

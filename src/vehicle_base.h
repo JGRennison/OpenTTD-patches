@@ -242,7 +242,6 @@ public:
 	Money profit_last_year;             ///< Profit last year << 8, low 8 bits are fract
 	Money profit_lifetime;              ///< Profit lifetime << 8, low 8 bits are fract
 	Money value;                        ///< Value of the vehicle
-	Money repair_cost;                  ///< Cost to repair one breakdown
 
 	CargoPayment *cargo_payment;        ///< The cargo payment we're currently in
 

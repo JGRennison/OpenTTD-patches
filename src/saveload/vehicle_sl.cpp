@@ -368,24 +368,6 @@ void AfterLoadVehicles(bool part_of_load)
 				v->SetServiceIntervalIsPercent(c->settings.vehicle.servint_ispercent);
 			}
 		}
-
-		if (SlXvIsFeatureMissing(XSLFI_VEHICLE_REPAIR_COST)) {
-			/* repair cost is value for new vehicles and each week +/256 part for old */
-			FOR_ALL_VEHICLES(v) {
-				if (!v->IsPrimaryVehicle()) continue;
-
-				v->repair_cost = v->value;
-				for (int w = 0; w < v->age / 7; w++, v->repair_cost += v->repair_cost >> 8);
-				//DEBUG(misc,0, "eid#%d, value=%lld, weeks=%d/%d, repair cost=%lld",
-				//	v->engine_type, (int64)v->value, v->age, v->max_age, (int64)v->repair_cost );
-
-				if (v->age > v->max_age) {
-					Date weeks = (v->age - v->max_age) / 7;
-					for (int w = 0; w < weeks; w++, v->repair_cost += v->repair_cost >> 8);
-					//DEBUG(misc,0, "OLD: value=%lld, weeks=%d, repair cost=%lld", (int64)v->value, weeks, (int64)v->repair_cost );
-				}
-			}
-		}
 	}
 
 	CheckValidVehicles();
@@ -714,7 +696,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLEG_CONDVAR(         _cargo_loaded_at_xy,   SLE_UINT32,                  51,  67),
 		 SLE_CONDVAR(Vehicle, value,                 SLE_FILE_I32 | SLE_VAR_I64,   0,  64),
 		 SLE_CONDVAR(Vehicle, value,                 SLE_INT64,                   65, SL_MAX_VERSION),
-		SLE_CONDVAR_X(Vehicle, repair_cost,          SLE_INT64,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEHICLE_REPAIR_COST)),
+		SLE_CONDNULL_X(8,                                                          0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEHICLE_REPAIR_COST, 1, 1)),
 
 		 SLE_CONDVAR(Vehicle, random_bits,           SLE_UINT8,                    2, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, waiting_triggers,      SLE_UINT8,                    2, SL_MAX_VERSION),
