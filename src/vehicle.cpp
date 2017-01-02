@@ -153,10 +153,6 @@ void VehicleServiceInDepot(Vehicle *v)
 			CLRBITS(Train::From(v)->flags, (1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN );
 		}
 	}
-	v->date_of_last_service = _date;
-	v->breakdowns_since_last_service = 0;
-	v->reliability = e->reliability;
-	v->breakdown_ctr = 0;
 	v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
 
@@ -166,6 +162,7 @@ void VehicleServiceInDepot(Vehicle *v)
 		v->reliability = v->GetEngine()->reliability;
 		/* Prevent vehicles from breaking down directly after exiting the depot. */
 		v->breakdown_chance = 0;
+		v->breakdown_ctr = 0;
 		v = v->Next();
 	} while (v != NULL && v->HasEngineType());
 }
