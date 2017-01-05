@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.16.1 (2017-01-05)
+* Fix hang which could occur when using conditional orders and cargodest.
+* Fix vehicle repair costs patch, and change cost algorithm to avoid excessive costs.
+* Fix redrawing of viewport order lines/markers for multiplayer clients.
+* Fix template replacement virtual vehicles from appearing in advice news messages.
+* Signals on bridges/tunnels:
+  * Fix train crash on bridge/tunnel with signals leaving red signals behind when crash cleared.
+  * Change back of bridge/tunnel PBS exit to be a line-end safe waiting point.
+* Add shift-clicking on vehicle depot button to select specific depot.
+* Show warning dialog if NewGRFs use too many string IDs.
+* Add Korean translations by kiwitreekor.
+* Bump trunk base from r27680 to r27719
+
 ### v0.16.0 (2016-11-26)
 * Fix wrong calculation of infrastructure sharing train repayment on track deletion due to track owner bankruptcy.
 * Fix loaded SpringPP savegames having wrong red/green state of signals on bridges/tunnels.

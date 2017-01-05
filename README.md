@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.16.0
+## JGR's Patchpack version 0.16.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -181,7 +181,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Various improvements to the crash logger.  
   * Label threads with a descriptive name on supported Unixy platforms. (added in v0.8.1)  
   * Adjust cargo dest link graph job scheduling algorithm to improve responsiveness. (added in v0.16.0)  
-  * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)
+  * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)  
+  * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)
 
 * Translations  
   * German (by Auge): including vehicle group info, vehicle details window, the zoning toolbar, and settings for improved breakdowns and adjacent level crossings.
