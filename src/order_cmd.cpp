@@ -454,7 +454,7 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, uint32
 	}
 
 	if (next->IsType(OT_GOTO_DEPOT)) {
-		if (next->GetDepotActionType() == ODATFB_HALT) return NULL;
+		if (next->GetDepotActionType() & ODATFB_HALT) return NULL;
 		if (next->IsRefit()) return next;
 	}
 

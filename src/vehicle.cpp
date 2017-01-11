@@ -1901,7 +1901,7 @@ void VehicleEnterDepot(Vehicle *v)
 		if (v->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) {
 			v->DeleteUnreachedImplicitOrders();
 			UpdateVehicleTimetable(v, true);
-			if (v->current_order.IsWaitTimetabled()) {
+			if (v->current_order.IsWaitTimetabled() && !(v->current_order.GetDepotActionType() & ODATFB_HALT)) {
 				v->current_order.MakeWaiting();
 				v->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 				return;
