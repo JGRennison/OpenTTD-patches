@@ -75,6 +75,7 @@ uint16 _returned_mail_refit_capacity; ///< Stores the mail capacity after a refi
 VehiclePool _vehicle_pool("Vehicle");
 INSTANTIATE_POOL_METHODS(Vehicle)
 
+static std::set<Vehicle *> _vehicles_to_pay_repair;
 
 /**
  * Determine shared bounds of all sprites.
@@ -166,44 +167,10 @@ void VehicleServiceInDepot(Vehicle *v)
 	do {
 		v->date_of_last_service = _date;
 		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
-			CompanyID old = _current_company;
-			ExpensesType type = INVALID_EXPENSES;
-			_current_company = v->owner;
-			switch (v->type) {
-				case VEH_AIRCRAFT:
-					type = EXPENSES_AIRCRAFT_RUN;
-					break;
-
-				case VEH_TRAIN:
-					type = EXPENSES_TRAIN_RUN;
-					break;
-
-				case VEH_SHIP:
-					type = EXPENSES_SHIP_RUN;
-					break;
-
-				case VEH_ROAD:
-					type = EXPENSES_ROADVEH_RUN;
-					break;
-
-				default:
-					NOT_REACHED();
-			}
-			assert(type != INVALID_EXPENSES);
-
-			Money vehicle_new_value = v->GetEngine()->GetCost();
-
-			// The static cast is to fix compilation on (old) MSVC as the overload for OverflowSafeInt operator / is ambiguous.
-			Money repair_cost = (v->breakdowns_since_last_service * vehicle_new_value / static_cast<uint>(_settings_game.vehicle.repair_cost)) + 1;
-			if (v->age > v->max_age) repair_cost <<= 1;
-			CommandCost cost(type, repair_cost);
-			v->First()->profit_this_year -= cost.GetCost() << 8;
-			SubtractMoneyFromCompany(cost);
-			ShowCostOrIncomeAnimation(v->x_pos, v->y_pos, v->z_pos, cost.GetCost());
-			_current_company = old;
+			_vehicles_to_pay_repair.insert(v);
+		} else {
+			v->breakdowns_since_last_service = 0;
 		}
-
-		v->breakdowns_since_last_service = 0;
 		v->reliability = v->GetEngine()->reliability;
 		/* Prevent vehicles from breaking down directly after exiting the depot. */
 		v->breakdown_chance = 0;
@@ -942,6 +909,8 @@ Vehicle::~Vehicle()
 		return;
 	}
 
+	if (this->breakdowns_since_last_service) _vehicles_to_pay_repair.erase(this);
+
 	/* sometimes, eg. for disaster vehicles, when company bankrupts, when removing crashed/flooded vehicles,
 	 * it may happen that vehicle chain is deleted when visible */
 	if (this->IsDrawn()) this->MarkAllViewportsDirty();
@@ -1044,6 +1013,7 @@ void CallVehicleTicks()
 {
 	_vehicles_to_autoreplace.Clear();
 	_vehicles_to_templatereplace.Clear();
+	_vehicles_to_pay_repair.clear();
 
 	if (_tick_skip_counter == 0) RunVehicleDayProc();
 
@@ -1195,6 +1165,48 @@ void CallVehicleTicks()
 		ShowAutoReplaceAdviceMessage(res, t);
 	}
 	tmpl_cur_company.Restore();
+
+	Backup<CompanyByte> repair_cur_company(_current_company, FILE_LINE);
+	for (Vehicle *v : _vehicles_to_pay_repair) {
+		DEBUG(misc, 0, "CallVehicleTicks: repair: %s", scope_dumper().VehicleInfo(v));
+
+		ExpensesType type = INVALID_EXPENSES;
+		_current_company = v->owner;
+		switch (v->type) {
+			case VEH_AIRCRAFT:
+				type = EXPENSES_AIRCRAFT_RUN;
+				break;
+
+			case VEH_TRAIN:
+				type = EXPENSES_TRAIN_RUN;
+				break;
+
+			case VEH_SHIP:
+				type = EXPENSES_SHIP_RUN;
+				break;
+
+			case VEH_ROAD:
+				type = EXPENSES_ROADVEH_RUN;
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+		assert(type != INVALID_EXPENSES);
+
+		Money vehicle_new_value = v->GetEngine()->GetCost();
+
+		// The static cast is to fix compilation on (old) MSVC as the overload for OverflowSafeInt operator / is ambiguous.
+		Money repair_cost = (v->breakdowns_since_last_service * vehicle_new_value / static_cast<uint>(_settings_game.vehicle.repair_cost)) + 1;
+		if (v->age > v->max_age) repair_cost <<= 1;
+		CommandCost cost(type, repair_cost);
+		v->First()->profit_this_year -= cost.GetCost() << 8;
+		SubtractMoneyFromCompany(cost);
+		ShowCostOrIncomeAnimation(v->x_pos, v->y_pos, v->z_pos, cost.GetCost());
+		v->breakdowns_since_last_service = 0;
+	}
+	repair_cur_company.Restore();
+	_vehicles_to_pay_repair.clear();
 }
 
 /**
