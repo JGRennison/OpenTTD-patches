@@ -1837,10 +1837,10 @@ STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Change s
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Close adjacent level crossings: {STRING2}
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Closes all adjacent level crossings on parallel tracks whenever one or more is occupied
 
-STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Pay for repairing vehicle: {STRING2}
-STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Pay for repairing vehicle
-STR_CONFIG_SETTING_REPAIR_COST                                  :Cost of repairing vehicle: 1/{STRING2} of total cost
-STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Cost of repairing vehicle
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Pay for repairing vehicles: {STRING2}
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Pay for repairing vehicles which have broken down
+STR_CONFIG_SETTING_REPAIR_COST                                  :Cost of repairing vehicles: 1/{STRING2} of vehicle cost
+STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Cost of repairing vehicles which have broken down, as a fraction of the current purchase cost of the vehicle. The cost is doubled if the vehicle is older than its maximum age.
 
 STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :Smoothness of order occupancy measurement: {STRING2}
 STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0% sets the measurement to the most recent value, 100% leaves it unchanged
