@@ -1508,6 +1508,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 	return 0;
 }
 
+#ifdef OTTD_ASSERT
+
 /**
  * Check whether the variable size of the variable in the saveload configuration
  * matches with the actual variable size.
@@ -1548,9 +1550,13 @@ static bool IsVariableSizeRight(const SaveLoad *sld)
 	}
 }
 
+#endif /* OTTD_ASSERT */
+
 bool SlObjectMember(void *ptr, const SaveLoad *sld)
 {
+#ifdef OTTD_ASSERT
 	assert(IsVariableSizeRight(sld));
+#endif
 
 	VarType conv = GB(sld->conv, 0, 8);
 	switch (sld->cmd) {
@@ -2666,7 +2672,7 @@ static SaveOrLoadResult DoSave(SaveFilter *writer, bool threaded)
 	SlSaveChunks();
 
 	SaveFileStart();
-	if (!threaded || !ThreadObject::New(&SaveFileToDiskThread, NULL, &_save_thread)) {
+	if (!threaded || !ThreadObject::New(&SaveFileToDiskThread, NULL, &_save_thread, "ottd:savegame")) {
 		if (threaded) DEBUG(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
 
 		SaveOrLoadResult result = SaveFileToDisk(false);

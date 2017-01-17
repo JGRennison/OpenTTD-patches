@@ -2615,29 +2615,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :שדות
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :אדמה מכוסה בשלג
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :מדבר
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} מסילה
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} מסילה עם רמזורים חוסמים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} מסילה עם רמזורים מקדימים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} מסילה עם רמזורי יציאה
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} מסילה עם רמזורים משולבים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} מסילה עם רמזורי נתיב
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} מסילה עם רמזורי נתיב חד-סטריים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} מסילה עם רמזורים חוסמים ומקדימים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} מסילה עם רמזורים חוסמים ורמזורי יציאה
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} מסילה עם רמזורים חוסמים ורמזורים משולבים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} מסילה עם רמזורים חוסמים ורמזורי נתיב
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} מסילה עם רמזורים חוסמים ורמזורי נתיב חד-סטריים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} מסילה עם רמזורים מקדימים ורמזורי יציאה
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} מסילה עם רמזורים מקדימים ורמזורים משולבים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} מסילה עם רמזורים מקדימים ורמזורי נתיב
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} מסילה עם רמזורים מקדימים ורמזורי נתיב חד-סטריים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} מסילה עם רמזורי יציאה ורמזורים משולבים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} מסילה עם רמזורי יציאה ורמזורי נתיב
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} מסילה עם רמזורי יציאה ורמזורי נתיב חד-סטריים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} מסילה עם רמזורים משולבים ורמזורי נתיב
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} מסילה עם רמזורים משולבים ורמזורי נתיב חד-סטריים
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} מסילה עם רמזורי נתיב ורמזורי נתיב חד-סטריים
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} מוסך רכבות
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :מסילת ברזל מסילה
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :מסילת ברזל מסילה עם רמזורים חוסמים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :מסילת ברזל מסילה עם רמזורים מקדימים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :מסילת ברזל מסילה עם רמזורי יציאה
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :מסילת ברזל מסילה עם רמזורים משולבים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :מסילת ברזל מסילה עם רמזורי נתיב
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :מסילת ברזל מסילה עם רמזורי נתיב חד-סטריים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :מסילת ברזל מסילה עם רמזורים חוסמים ומקדימים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :מסילת ברזל מסילה עם רמזורים חוסמים ורמזורי יציאה
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :מסילת ברזל מסילה עם רמזורים חוסמים ורמזורים משולבים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :מסילת ברזל מסילה עם רמזורים חוסמים ורמזורי נתיב
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :מסילת ברזל מסילה עם רמזורים חוסמים ורמזורי נתיב חד-סטריים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :מסילת ברזל מסילה עם רמזורים מקדימים ורמזורי יציאה
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :מסילת ברזל מסילה עם רמזורים מקדימים ורמזורים משולבים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :מסילת ברזל מסילה עם רמזורים מקדימים ורמזורי נתיב
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :מסילת ברזל מסילה עם רמזורים מקדימים ורמזורי נתיב חד-סטריים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :מסילת ברזל מסילה עם רמזורי יציאה ורמזורים משולבים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :מסילת ברזל מסילה עם רמזורי יציאה ורמזורי נתיב
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :מסילת ברזל מסילה עם רמזורי יציאה ורמזורי נתיב חד-סטריים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :מסילת ברזל מסילה עם רמזורים משולבים ורמזורי נתיב
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :מסילת ברזל מסילה עם רמזורים משולבים ורמזורי נתיב חד-סטריים
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :מסילת ברזל מסילה עם רמזורי נתיב ורמזורי נתיב חד-סטריים
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :מסילת ברזל מוסך רכבות
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :כביש
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :כביש עם תאורת רחוב
@@ -2920,8 +2920,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :ניסיון ש
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} מכיל אלמנט גרפי שגוי. כל האלמנטים הגרפיים השגויים יוצגו כסימן שאלה אדום (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :מכיל מספר רשומות Action 8 (ספרייט {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :קראת אחר סוף הפסאודו-ספרייט (ספרייט {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}בערכת גרפיקה הבסיסית חסרים מספר ספרייטים.{}אנא עדכן את הערכה הגרפית הבסיסית
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}בערכת גרפיקה הבסיסית חסרים מספר ספרייטים.{}אנא עדכן את הערכה הגרפית הבסיסית.{}מכיוון שהינך משחק {YELLOW}גרסת פיתוח של OpenTTD{WHITE}, אולי תצטרך {YELLOW}גרסת פיתוח של ערכת הגרפיקה הבסיסית{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :משאב GRF המבוקש אינו זמין (ספרייט {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} נהפך ללא זמין ע"י {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :מבנה פורמט ספרייט לא תקין/לא ידוע (ספרייט {3:NUM})
@@ -3571,7 +3569,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} כאש
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}הפסק את החלפת הכלים
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}לחץ כאן להפסיק את ההחלפה
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{ORANGE}{STRING}{BLACK} : מחליף
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}החלף בין חלונות החלפת קרון וקטר
 STR_REPLACE_ENGINES                                             :מנועים/קטרים
 STR_REPLACE_WAGONS                                              :קרונות

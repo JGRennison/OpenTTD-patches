@@ -2601,29 +2601,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Garrantaí
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Talamh faoi shneachta
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Fásach
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} ráille
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} ráille ar a bhfuil comharthaí bloc
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} ráille ar a bhfuil réamhchomharthaí
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} ráille ar a bhfuil comharthaí amach
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} ráille ar a bhfuil comharthaí teaglama
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} ráille ar a bhfuil comharthaí cosáin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} ráille ar a bhfuil comharthaí cosáin aonbhealaigh
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} ráille ar a bhfuil comharthaí bloic agus réamhchomharthaí
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} ráille ar a bhfuil comharthaí bloic agus amach
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} ráille ar a bhfuil comharthaí bloic agus teaglama
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} ráille ar a bhfuil comharthaí bloic agus cosáin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} ráille ar a bhfuil comharthaí bloic agus cosáin aonbhealaigh
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} ráille ar a bhfuil réamhchomharthaí agus comharthaí amach
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} ráille ar a bhfuil réamhchomharthaí agus comharthaí teaglama
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} ráille ar a bhfuil réamhchomharthaí agus comharthaí cosáin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} ráille ar a bhfuil réamhchomharthaí agus comharthaí cosáin aonbhealaigh
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} ráille ar a bhfuil comharthaí amach agus teaglama
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} ráille ar a bhfuil comharthaí amach agus cosáin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} ráille ar a bhfuil comharthaí amach agus cosáin aonbhealaigh
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} ráille ar a bhfuil comharthaí teaglama agus cosáin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} ráille ar a bhfuil comharthaí teaglama agus cosáin aonbhealaigh
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} ráille ar a bhfuil comharthaí cosáin agus cosáin aonbhealaigh
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} iosta traenach
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Iarnród ráille
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Iarnród ráille ar a bhfuil comharthaí bloc
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Iarnród ráille ar a bhfuil réamhchomharthaí
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Iarnród ráille ar a bhfuil comharthaí amach
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Iarnród ráille ar a bhfuil comharthaí teaglama
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Iarnród ráille ar a bhfuil comharthaí cosáin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Iarnród ráille ar a bhfuil comharthaí cosáin aonbhealaigh
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Iarnród ráille ar a bhfuil comharthaí bloic agus réamhchomharthaí
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Iarnród ráille ar a bhfuil comharthaí bloic agus amach
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Iarnród ráille ar a bhfuil comharthaí bloic agus teaglama
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Iarnród ráille ar a bhfuil comharthaí bloic agus cosáin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Iarnród ráille ar a bhfuil comharthaí bloic agus cosáin aonbhealaigh
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Iarnród ráille ar a bhfuil réamhchomharthaí agus comharthaí amach
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Iarnród ráille ar a bhfuil réamhchomharthaí agus comharthaí teaglama
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Iarnród ráille ar a bhfuil réamhchomharthaí agus comharthaí cosáin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Iarnród ráille ar a bhfuil réamhchomharthaí agus comharthaí cosáin aonbhealaigh
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Iarnród ráille ar a bhfuil comharthaí amach agus teaglama
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Iarnród ráille ar a bhfuil comharthaí amach agus cosáin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Iarnród ráille ar a bhfuil comharthaí amach agus cosáin aonbhealaigh
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Iarnród ráille ar a bhfuil comharthaí teaglama agus cosáin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Iarnród ráille ar a bhfuil comharthaí teaglama agus cosáin aonbhealaigh
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Iarnród ráille ar a bhfuil comharthaí cosáin agus cosáin aonbhealaigh
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Iarnród iosta traenach
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Bóthair
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Bóthair le soilse sráide
@@ -2906,8 +2906,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Iarracht ID nea
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}Tá sprite truaillithe in {STRING}. Taispeánfar gach sprite truaillithe mar chomhartha ceiste (?) dearg.
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Tá iontrálacha iolraccha Ghníomhaíocht 8 ann (sprid {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Léadh tar éis deireadh an pseudo-sprid (sprid {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Tá roinnt sprite in easnamh sa tsraith bhunúsach grafaicí atá in úsáid faoi láthair.{}Déan úasghrádú ar an tsraith bhunúsach grafaicí le do thoil
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Tá roinnt sprideanna in easnamh sa tacar bunghraificí atá in úsáid faoi láthair.{}Nuashonraigh an tacar bunghraificí.{}Toisc go bhfuil tú ag imirt ar {YELLOW}roghbhlúire forbróirí (development snapshot) OpenTTD{WHITE}, seans go mbeidh {YELLOW}roghbhlúire forbróirí de na bunghraificí{WHITE} ag teastáil uait
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Níl na hacmhainní GRF a iarradh ar fáil (sprid {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :Bhí {1:STRING} díchumasaithe ag {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Formáid neamhbhailí/anaithnid do leagan amach na spride (sprid {3:NUM})
@@ -3557,7 +3555,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} má t�
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stad ag athsholáthar Feithiclí
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Brúigh chun deireadh a chur le hathsholáthar den chineál innill atá roghnaithe ar chlé
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Ag athsholáthar: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Athraigh idir na fuinneoga athsholáthair innill agus vaigíní
 STR_REPLACE_ENGINES                                             :Innill
 STR_REPLACE_WAGONS                                              :Vaigíní
