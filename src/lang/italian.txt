@@ -1424,11 +1424,11 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Mostra gli arri
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Mostra gli orari di arrivo e partenza previsti nelle tabelle orarie
 STR_CONFIG_SETTING_QUICKGOTO                                    :Creazione rapida degli ordini dei veicoli: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Pre-seleziona il comando 'Vai a' quando si apre la finestra degli ordini
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Ferrovia predefinita (a inizio/ripresa partita): {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Tipo di ferrovia da selezionare dopo l'inizio o il caricamento di una partita. 'La prima disponibile' seleziona il tipo più vecchio di binari, 'L'ultima disponibile' seleziona il tipo più vecchio di binari, e 'La più usata' seleziona il tipo più utilizzato al momento
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :La prima disponibile
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :L'ultima disponibile
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :La più usata
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Tipo di rotaie predefinito (a inizio/ripresa partita): {STRING}
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Tipo di rotaie da selezionare dopo l'inizio o il caricamento di una partita. 'Il primo disponibile' seleziona il tipo più vecchio di binari, 'L'ultimo disponibile' seleziona il tipo più nuovo di binari, e 'Il più usato' seleziona il tipo più utilizzato al momento
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :Il primo disponibile
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :L'ultimo disponibile
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Il più usato
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Mostra i percorsi riservati sui binari: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Dà ai binari riservati un colore differente, aiutando a correggere problemi di treni che si rifiutano di entrare in blocchi protetti con segnali a percorso
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Mantieni aperte le finestre di costruzione dopo l'uso: {STRING}
@@ -1785,6 +1785,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Controll
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Mostra le impostazioni delle IA e degli Script
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Esci da 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}Nel pacchetto grafico di base attualmente selezionato mancano {NUM} sprite. È consigliabile controllare gli aggiornamenti del pacchetto.
 STR_INTRO_TRANSLATION                                           :{BLACK}A questa traduzione mancano {NUM} string{P a he}. Aiutaci a migliorare OpenTTD iscrivendoti come traduttore. Vedi readme.txt per dettagli.
 
 # Quit window
@@ -2619,6 +2620,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nome blo
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Carichi accettati: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Tipo di rotaie: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Limite di velocità rotaie: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Limite di velocità strada: {LTBLUE}{VELOCITY}
 
@@ -2631,29 +2633,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Campi
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terreno innevato
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Deserto
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} con segnali di blocco
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} con pre-segnali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} con segnali di uscita
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} con segnali combinati
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} con segnali a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} con segnali a percorso s.u.
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} con segnali di blocco e pre-segnali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} con segnali di blocco e di uscita
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} con segnali di blocco e combinati
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} con segnali di blocco e a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} con segnali di blocco e a percorso s.u.
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} con pre-segnali e segnali di uscita
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} con pre-segnali e segnali combinati
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} con pre-segnali e segnali a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} con pre-segnali e segnali a percorso s.u.
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} con segnali di uscita e combinati
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} con segnali di uscita e a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} con segnali di uscita e a percorso s.u.
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} con segnali combinati e a percorso
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} con segnali combinati e a percorso s.u.
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} con segnali a percorso e a percorso s.u.
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Deposito {STRING.ms}
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Ferrovia
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Ferrovia con segnali di blocco
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Ferrovia con pre-segnali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Ferrovia con segnali di uscita
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Ferrovia con segnali combinati
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Ferrovia con segnali a percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Ferrovia con segnali a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Ferrovia con segnali di blocco e pre-segnali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Ferrovia con segnali di blocco e di uscita
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Ferrovia con segnali di blocco e combinati
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Ferrovia con segnali di blocco e a percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Ferrovia con segnali di blocco e a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Ferrovia con pre-segnali e segnali di uscita
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Ferrovia con pre-segnali e segnali combinati
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Ferrovia con pre-segnali e segnali a percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Ferrovia con pre-segnali e segnali a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Ferrovia con segnali di uscita e combinati
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Ferrovia con segnali di uscita e a percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Ferrovia con segnali di uscita e a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Ferrovia con segnali combinati e a percorso
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Ferrovia con segnali combinati e a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Ferrovia con segnali a percorso e a percorso s.u.
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Deposito ferroviario
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Strada
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Strada con lampioni
@@ -2717,7 +2719,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terreno possedu
 STR_ABOUT_OPENTTD                                               :{WHITE}Informazioni su OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyright originale {COPYRIGHT} 1995 Chris Sawyer, Tutti i diritti riservati
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versione {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 Il team OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 Il team OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Salva partita
@@ -2891,7 +2893,7 @@ STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}Ispezion
 
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING} a {HEX}
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :Oggetto
-STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Tipo rotaia
+STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Tipo di rotaie
 
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parametro variabile NewGRF 60+x (esadecimale)
 
@@ -2904,7 +2906,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Va allo 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Precedente
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Procede al precedente sprite normale, saltanto qualsiasi sprite speciale, di ricoloramento o carattere e tornando all'ultimo se viene raggiunto il primo della lista
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Rappresentazione dello sprite corrente. L'allineamento viene ignorato in questa casella.
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Sposta lo sprite, cambiando gli spiazzamenti X e Y
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Sposta lo sprite, cambiando gli spiazzamenti X e Y. CTRL+clic sposta lo sprite di otto unità alla volta
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Reimposta posizione relativa
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Reimposta gli spiazzamenti relativi attuali
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Posizione X: {NUM}, Y: {NUM} (assoluto)
@@ -2919,7 +2921,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Attenzione: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Errore: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Errore irreversibile: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Si è verificato un errore irreversibile nel NewGRF: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Si è verificato un errore irreversibile nel NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} non funziona con la versione di TTDPatch riferita da OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} è per la versione {STRING} di TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} è progettato per essere usato con {STRING}
@@ -2936,8 +2938,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Tentativo di ut
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} contiene degli sprite corrotti. Tutti gli sprite corrotti saranno mostrati come punti interrogativi (?) rossi
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contiene occorrenze multiple dell'azione 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lettura oltre la fine dello pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Nel pacchetto grafico di base attualmente in uso mancano alcuni sprite.{}È consigliabile aggiornare il pacchetto grafico di base
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Nel pacchetto grafico di base attualmente in uso mancano alcuni sprite.{}È consigliabile aggiornare il pacchetto grafico di base.{}Poiché si sta giocando con uno {YELLOW}snapshot di sviluppo di OpenTTD{WHITE}, potrebbe essere necessario uno {YELLOW}snapshot di sviluppo del pacchetto grafico di base{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Risorsa GRF richiesta non disponibile (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} è stato disabilitato da {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Formato di layout dello sprite sconosciuto o non valido (sprite {3:NUM})
@@ -3587,12 +3587,12 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} una vo
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Interrompi rimpiazzamento
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Premere per interrompere il rimpiazzamento del modello di locomotiva selezionato a sinistra
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Rimpiazza: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Scambia tra loro le finestre di rimpiazzamento delle locomotive e dei vagoni
 STR_REPLACE_ENGINES                                             :Locomotive
 STR_REPLACE_WAGONS                                              :Vagoni
+STR_REPLACE_ALL_RAILTYPE                                        :Tutti i veicoli ferroviari
 
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Selezionare il tipo di rotaia per la quale si desidera rimpiazzare le locomotive
+STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Selezionare il tipo di rotaie per il quale si desidera rimpiazzare le locomotive
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Mostra con quale locomotiva sarà rimpiazzato il modello eventualmente selezionato a sinistra
 STR_REPLACE_RAIL_VEHICLES                                       :Veicoli ferroviari
 STR_REPLACE_ELRAIL_VEHICLES                                     :Veicoli ferroviari elettrici

@@ -2601,29 +2601,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Peltoja
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Lumen peittämää maata
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Aavikkoa
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} suojastusopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} tulo-opastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} poistumisopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} yhdistelmäopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} reittiopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} yksisuuntaisilla reittiopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} suojastus- ja tulo-opastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} suojastus- ja poistumisopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} suojastus- ja yhdistelmäopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} suojastus- ja reittiopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} suojastus- ja yksisuuntaisilla reittiopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} tulo- ja poistumisopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} tulo- ja yhdistelmäopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} tulo- ja reittiopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} tulo- ja yksisuuntaisilla reittiopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} poistumis- ja yhdistelmäopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} poistumis- ja reittiopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} poistumis- ja yksisuuntaisilla opastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} yhdistelmä- ja reittiopastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} yhdistelmä- ja yksisuuntaisilla opastimilla
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} reitti- ja yksisuuntaisilla opastimilla
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} veturitalli
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Rautatie
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Rautatie suojastusopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Rautatie tulo-opastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Rautatie poistumisopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Rautatie yhdistelmäopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Rautatie reittiopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Rautatie yksisuuntaisilla reittiopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Rautatie suojastus- ja tulo-opastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Rautatie suojastus- ja poistumisopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Rautatie suojastus- ja yhdistelmäopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Rautatie suojastus- ja reittiopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Rautatie suojastus- ja yksisuuntaisilla reittiopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Rautatie tulo- ja poistumisopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Rautatie tulo- ja yhdistelmäopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Rautatie tulo- ja reittiopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Rautatie tulo- ja yksisuuntaisilla reittiopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Rautatie poistumis- ja yhdistelmäopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Rautatie poistumis- ja reittiopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Rautatie poistumis- ja yksisuuntaisilla opastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Rautatie yhdistelmä- ja reittiopastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Rautatie yhdistelmä- ja yksisuuntaisilla opastimilla
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Rautatie reitti- ja yksisuuntaisilla opastimilla
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Rautatie veturitalli
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Tie
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Tie katuvaloilla
@@ -2687,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Yhtiön omistam
 STR_ABOUT_OPENTTD                                               :{WHITE}Tietoja OpenTTD:stä
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Alkuperäiset oikeudet {COPYRIGHT} 1995 Chris Sawyer, kaikki oikeudet pidätetään
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD-versio {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Tallenna peli
@@ -2874,7 +2874,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Mene val
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Edelinen sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Jatka edelliseen tavalliseen spriteen ja hyppää yli kaikki pseudo-/uudelleenväritetyt/fontti- spritet ja mene loppuun kun päästään ensimmäiseen
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Valitun spriten näyttö. Sijaintia ei huomioida spriteä piirrettäessä
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Liikuta spriteä ympäriinsä, muuttaen X- ja Y-sijainteja
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Liikuta spriteä ympäriinsä, muuttaen X- ja Y-sijainteja. Ctrl+Klik siirtää spriteä kahdeksan yksikköä kerralla
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Nollaa suhteelliset
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Nollaa suhteelliset erotukset
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X-erotus: {NUM}, Y-erotus: {NUM} (Absoluuttinen)
@@ -2889,7 +2889,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Varoitus: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Virhe: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Virhe: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Vakava NewGRF-virhe on tapahtunut: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Vakava NewGRF-virhe on tapahtunut:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} ei toimi OpenTTD:n ilmoittaman TTDPatch-version kanssa
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} on TTD:n {STRING}-versiota varten
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} ja {STRING} on suunniteltu toimimaan yhdessä
@@ -2906,8 +2906,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Yritys käyttä
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} sisältää korruptoituneen spriten. Kaikki korruptoituneet spritet näkyvät punaisina kysymysmerkkeinä (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Sisältää useita Action 8-merkintöjä (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Luku pseudo-spriten ohi (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Käytössä olevasta perusgrafiikkapaketista puuttuu spritejä.{}Ole hyvä ja päivitä perusgrafiikkapaketti
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Käytössä olevasta perusgrafiikkapaketista puuttuu spritejä.{}Päivitä perusgrafiikkapaketti.{}Koska pelaat {YELLOW}OpenTTD:n kehitysversiota{WHITE}, saatat myös tarvita {YELLOW}kehitysversion perusgrafiikkapaketista{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Pyydetyt GRF-resurssit eivät ole saatavilla (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{2:STRING} poisti käytöstä NewGRF:n {1:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Virheellinen/tuntematon spriten asettelumuoto (sprite {3:NUM})
@@ -3557,7 +3555,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} kun va
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Lopeta ajoneuvojen korv.
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Napsauta pysäyttääksesi vasemmalta valitun veturityypin korvauksen.
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Korvataan: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Vaihda toiseen korvausikkunaan
 STR_REPLACE_ENGINES                                             :Veturit
 STR_REPLACE_WAGONS                                              :Vaunut

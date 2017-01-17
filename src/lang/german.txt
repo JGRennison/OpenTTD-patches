@@ -1617,7 +1617,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :"Symmetrisch" h
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :Verteilungsschema für Post: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :"Symmetrisch" heißt, dass etwa die selbe Menge Post von einer Station A zu einer anderen Station B geschickt wird, wie von B nach A. "Asymmetrisch" heißt, dass Post in beliebigen Mengen hin- und her geschickt werden kann. "Manuell" heißt, dass keine automatische Verteilung der Post stattfindet.
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Verteilungsschema für Wertsachen: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Neben den Wertsachen im gemäßigten Klima fallen hierunter auch Diamanten im subtropischen und Gold im subarktischen Klima. Bei Verwendung von NewGRFs evtl. auch weitere ähnliche Güter. "Symmetrisch" heißt, dass etwa dieselbe Menge an Waren von Station A zur Station B gelangen möchte, wie umgekehrt von B nach A. "Asymmetrisch" heißt, dass Waren in unterschiedlichen Mengen hin- und hergelangen möchten. "Manuell" heißt, dass keine automatische Verteilung dieser Waren stattfindet. Im gemäßigten Klima kann "symmetrisch" gewählt werden, da Banken sich gegenseitig Wertsachen zusenden. Ansonsten ist "asymmetrisch" oder "manuell" zu empfehlen, da Banken dann nur Gold bzw. Diamanten annehmen und nichts produzieren.
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Werttransporte umfassen Wertsachen im gemäßigten, Diamanten im subtropischen und Gold im subarktischen Klima. NewGRFs könnte dies ändern. „Symmetrisch“ bedeutet, dass etwa dieselbe Anzahl von Station A nach Station B transportiert wird wie umgekehrt von B nach A. „Asymmetrisch“ bedeutet, dass eine unteschiedliche Menge in die jeweiligen Richtungen gesendet wird. „Manuell“ bedeudeutet, dass keine automatische Verteilung stattfindet. Es wird die Einstellung „asymmetrisch“ oder „manuell“ im subarktischen Gebiet empfohlen, da Banken kein Gold bzw. Diamanten zu den Minen senden. Für das gemäßigte und subtropische Klima kann die Einstellung „symmetrisch“ genommen werden, da Banken Wertsachen untereinander versenden.
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Verteilungsschema für sonstige Frachtarten: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Symmetrisch" heißt, dass etwa die selbe Menge Waren von einer Station A zu einer anderen Station B geschickt wird, wie von B nach A. "Asymmetrisch" heißt, dass Waren in beliebigen Mengen hin- und her geschickt werden können. "Manuell" heißt, dass keine automatische Verteilung der Waren stattfindet. Hier sollte fast immer "asymmetrisch" oder "manuell" gewählt werden.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Genauigkeit für die Berechnung der Warenverteilung: {STRING}
@@ -1766,7 +1766,7 @@ STR_INTRO_TRANSLATION                                           :{BLACK}Dieser �
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}Verlassen
-STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}OpenTTD wirklich beenden und zu {}{STRING} zurückkehren?
+STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}OpenTTD wirklich beenden und zu{}{STRING} zurückkehren?
 STR_QUIT_YES                                                    :{BLACK}Ja
 STR_QUIT_NO                                                     :{BLACK}Nein
 
@@ -2602,29 +2602,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Ackerland
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Schneebedecktes Land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Wüste
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING}: Gleise
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING}: Gleise mit Blocksignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING}: Gleise mit Vorsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING}: Gleise mit Ausfahrtsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING}: Gleise mit Kombinationssignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING}: Gleise mit Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING}: Gleise mit einseitigem Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING}: Gleise mit Block- und Vorsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING}: Gleise mit Block- und Ausfahrtsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING}: Gleise mit Block- und Kombinationssignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING}: Gleise mit Block- und Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING}: Gleise mit Blocksignal und einseitigem Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING}: Gleise mit Vor- und Ausfahrtsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING}: Gleise mit Vor- und Kombinationssignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING}: Gleise mit Vor- und Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING}: Gleise mit Vorsignal und einseitigem Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING}: Gleise mit Ausfahrts- und Kombinationssignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING}: Gleise mit Ausfahrts- und Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING}: Gleise mit Ausfahrtssignal und einseitigem Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING}: Gleise mit Kombinations- und Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING}: Gleise mit Kombinationssignal und einseitigem Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING}: Gleise mit Pfadsignal und einseitigem Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING}: Zugdepot
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Schienen: Gleise
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Schienen: Gleise mit Blocksignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Schienen: Gleise mit Vorsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Schienen: Gleise mit Ausfahrtsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Schienen: Gleise mit Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Schienen: Gleise mit Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Schienen: Gleise mit einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Schienen: Gleise mit Block- und Vorsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Schienen: Gleise mit Block- und Ausfahrtsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Schienen: Gleise mit Block- und Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Schienen: Gleise mit Block- und Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Schienen: Gleise mit Blocksignal und einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Schienen: Gleise mit Vor- und Ausfahrtsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Schienen: Gleise mit Vor- und Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Schienen: Gleise mit Vor- und Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Schienen: Gleise mit Vorsignal und einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Schienen: Gleise mit Ausfahrts- und Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Schienen: Gleise mit Ausfahrts- und Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Schienen: Gleise mit Ausfahrtssignal und einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Schienen: Gleise mit Kombinations- und Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Schienen: Gleise mit Kombinationssignal und einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Schienen: Gleise mit Pfadsignal und einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Schienen: Zugdepot
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Straße
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Straße mit Laternen
@@ -2688,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Firmeneigenes G
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Transport Tycoon-Urheberrecht {COPYRIGHT} 1995 Chris Sawyer, alle Rechte vorbehalten
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD-Version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD-Team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD-Team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spiel speichern
@@ -2875,7 +2875,11 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Gehe zum
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Vorheriges Sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Gehe zum vorherigen normalen Sprite und überspringe alle Pseudo-, Recolour- und Schriftsprites (springt ggf. vom letzten bis zum ersten Sprite)
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Darstellung des aktuellen Sprites. Die Ausrichtung wird beim Zeichnen des Sprites ignoriert
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Bewege die Sprites und ändere dadurch die X- und Y-Offsets
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Bewege die Sprites und ändere dadurch die X- und Y-Offsets. Drücke Strg+Click um die Sprites 8 Blöcke weit zu bewegen.
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Setze zurück
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Setze die aktuelle Verschiebung zurück.
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Absolut)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Relativ)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Sprite auswählen
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Wähle ein Sprite vom Bildschirm aus
 
@@ -2886,7 +2890,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Warnung: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fehler: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Schwerer Fehler: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Ein schwerer NewGRF-Fehler ist aufgetreten: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Ein schwerer NewGRF-Fehler ist aufgetreten:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} funktioniert nicht im Zusammenhang mit der von OpenTTD ermittelten TTDPatch-Version
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} ist für die {STRING}-Version von TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} ist für die Nutzung mit {STRING} vorgesehen
@@ -2903,8 +2907,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Zugriff auf ein
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} enthält fehlerhafte Grafiken. Diese werden als Fragezeichen (?) dargestellt
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Enthält mehrere Action 8 - Einträge (Sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lesezugriff über das Ende des Pseudosprites hinaus (Sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Den momentan verwendeten Basisgrafiken fehlen Sprites.{}Durch ein Update der Basisgrafiken kann dieser Fehler behoben werden
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Den momentan verwendeten Basisgrafiken fehlen einige Sprites.{}Bitte update die Basisgrafiken.{}Weil dieses eine {YELLOW}Entwickler-Version von OpenTTD{WHITE} ist, ist es möglich, dass auch eine {YELLOW}Entwickler-Version der Basisgrafiken{WHITE} benötigt wird.
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Die angeforderte GRF-Ressource ist nicht verfügbar (Sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} wurde von {STRING} deaktiviert
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ungültiges oder unbekanntes Format für Spritelayout (Sprite {3:NUM})
@@ -2920,7 +2922,7 @@ STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Datei ka
 STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Kompatible NewGRF(s) für fehlende Dateien geladen
 STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Fehlende NewGRF-Dateien wurden deaktiviert
 STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}NewGRF-Datei(en) fehlen
-STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Das Beenden der Pause kann OpenTTD zum Absturz bringen. Bitte keine Fehlerberichte bei auftretenden Fehlern senden. {}Pause wirklich beenden?
+STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Das Beenden der Pause kann OpenTTD zum Absturz bringen. Bitte keine Fehlerberichte bei auftretenden Fehlern senden.{}Pause wirklich beenden?
 
 # NewGRF status
 STR_NEWGRF_LIST_NONE                                            :Keine
@@ -3514,7 +3516,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Sollen 
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Nachricht vom Fahrzeughersteller
-STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Wir haben {G "einen" "eine" "ein" ""} neue{G n "" s ""} {0:STRING} entwickelt. {}Besteht Interesse, {G 0 den die das die} {0:STRING} ein Jahr lang exklusiv zu nutzen, so dass wir die Funktionen testen können, bevor {G 0 er sie es sie} allgemein zur Verfügung gestellt {G 0 wird wird wird werden}?
+STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Wir haben {G "einen" "eine" "ein" ""} neue{G n "" s ""} {0:STRING} entwickelt.{}Besteht Interesse, {G 0 den die das die} {0:STRING} ein Jahr lang exklusiv zu nutzen, so dass wir die Funktionen testen können, bevor {G 0 er sie es sie} allgemein zur Verfügung gestellt {G 0 wird wird wird werden}?
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=w}Lokomotive
 STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :{G=n}Straßenfahrzeug
 STR_ENGINE_PREVIEW_AIRCRAFT                                     :{G=n}Flugzeug
@@ -3554,7 +3556,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} wenn a
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Fahrzeugersetzung aus
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Klick zum Abbrechen der Ersetzung des Fahrzeugtyps auf der linken Seite
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Ersetzen: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Umschalter für Lok- oder Waggonersetzung
 STR_REPLACE_ENGINES                                             :Schienenfahrzeuge
 STR_REPLACE_WAGONS                                              :Waggons
@@ -4378,10 +4379,10 @@ STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :{WHITE}Fahrzeug
 STR_ERROR_CAN_T_RENAME_SHIP                                     :{WHITE}Schiff kann nicht benannt werden...
 STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :{WHITE}Flugzeug kann nicht benannt werden...
 
-STR_ERROR_CAN_T_STOP_START_TRAIN                                :{WHITE}Zug kann nicht angehalten {} oder losgeschickt werden ...
-STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE                         :{WHITE}Fahrzeug kann nicht angehalten {} oder losgeschickt werden...
-STR_ERROR_CAN_T_STOP_START_SHIP                                 :{WHITE}Schiff kann nicht angehalten {} oder losgeschickt werden...
-STR_ERROR_CAN_T_STOP_START_AIRCRAFT                             :{WHITE}Flugzeug kann nicht angehalten {} oder losgeschickt werden...
+STR_ERROR_CAN_T_STOP_START_TRAIN                                :{WHITE}Zug kann nicht angehalten{} oder losgeschickt werden ...
+STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE                         :{WHITE}Fahrzeug kann nicht angehalten{} oder losgeschickt werden...
+STR_ERROR_CAN_T_STOP_START_SHIP                                 :{WHITE}Schiff kann nicht angehalten{} oder losgeschickt werden...
+STR_ERROR_CAN_T_STOP_START_AIRCRAFT                             :{WHITE}Flugzeug kann nicht angehalten{} oder losgeschickt werden...
 
 STR_ERROR_CAN_T_SEND_TRAIN_TO_DEPOT                             :{WHITE}Zug kann nicht ins Depot geschickt werden...
 STR_ERROR_CAN_T_SEND_ROAD_VEHICLE_TO_DEPOT                      :{WHITE}Fahrzeug kann nicht ins Depot geschickt werden...

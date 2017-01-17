@@ -84,6 +84,7 @@ static void DedicatedSignalHandler(int sig)
 # endif
 # include <time.h>
 # include <tchar.h>
+# include "../os/windows/win32.h"
 static HANDLE _hInputReady, _hWaitForInputHandling;
 static HANDLE _hThread; // Thread to close
 static char _win_console_thread_buffer[200];
@@ -95,6 +96,8 @@ static void WINAPI CheckForConsoleInput()
 	/* WinCE doesn't support console stuff */
 	return;
 #else
+	SetWin32ThreadName(-1, "ottd:win-console");
+
 	DWORD nb;
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
 	for (;;) {
@@ -142,7 +145,7 @@ static void *_dedicated_video_mem;
 /* Whether a fork has been done. */
 bool _dedicated_forks;
 
-extern bool SafeLoad(const char *filename, int mode, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL);
+extern bool SafeLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL);
 
 static FVideoDriver_Dedicated iFVideoDriver_Dedicated;
 
@@ -286,7 +289,7 @@ void VideoDriver_Dedicated::MainLoop()
 		_switch_mode = SM_NONE;
 		/* First we need to test if the savegame can be loaded, else we will end up playing the
 		 *  intro game... */
-		if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.mode, GM_NORMAL, BASE_DIR)) {
+		if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, GM_NORMAL, BASE_DIR)) {
 			/* Loading failed, pop out.. */
 			DEBUG(net, 0, "Loading requested map failed, aborting");
 			_networking = false;
