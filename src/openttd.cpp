@@ -385,7 +385,6 @@ static void LoadIntroGame(bool load_newgrfs = true)
 	_pause_mode = PM_UNPAUSED;
 	_cursor.fix_at = false;
 
-	if (load_newgrfs) CheckForMissingSprites();
 	CheckForMissingGlyphs();
 
 	/* Play main theme */
@@ -894,8 +893,8 @@ int openttd_main(int argc, char *argv[])
 	free(musicdriver);
 
 	// Check if not too much GRFs are loaded for network game
-	if (dedicated && CountSelectedGRFs( _grfconfig ) >= MAX_FILE_SLOTS_IN_NETWORK) {
-		DEBUG(net, 0, "Too many GRF loaded. Max %d are allowed.\nExiting ...", MAX_FILE_SLOTS_IN_NETWORK);
+	if (dedicated && CountSelectedGRFs(_grfconfig) > NETWORK_MAX_GRF_COUNT) {
+		DEBUG(net, 0, "Too many GRF loaded. Max %d are allowed.\nExiting ...", NETWORK_MAX_GRF_COUNT);
 		ShutdownGame();
 		goto exit_normal;
 	}
