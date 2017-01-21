@@ -349,7 +349,7 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		VehicleType vt = g->vehicle_type;
 
 		/* Delete all template replacements using the just deleted group */
-		deleteIllegalTemplateReplacements(g->index);
+		DeleteTemplateReplacementsByGroupID(g->index);
 
 		/* Delete the Replace Vehicle Windows */
 		DeleteWindowById(WC_REPLACE_VEHICLE, g->vehicle_type);
@@ -716,7 +716,10 @@ void RemoveAllGroupsForCompany(const CompanyID company)
 	Group *g;
 
 	FOR_ALL_GROUPS(g) {
-		if (company == g->owner) delete g;
+		if (company == g->owner) {
+			DeleteTemplateReplacementsByGroupID(g->index);
+			delete g;
+		}
 	}
 }
 

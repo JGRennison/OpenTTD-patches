@@ -189,7 +189,7 @@ short TemplateVehicle::CountEnginesInChain()
 	return count;
 }
 
-short deleteIllegalTemplateReplacements(GroupID g_id)
+short DeleteTemplateReplacementsByGroupID(GroupID g_id)
 {
 	short del_amount = 0;
 	const TemplateReplacement *tr;
