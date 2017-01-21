@@ -127,7 +127,7 @@ CommandCallback CcStartStopVehicle;
 
 /* tbtr_template_gui_create.cpp */
 CommandCallback CcSetVirtualTrain;
-CommandCallback CcVirtualTrainWaggonsMoved;
+CommandCallback CcVirtualTrainWagonsMoved;
 CommandCallback CcDeleteVirtualTrain;
 
 /* build_vehicle_gui.cpp */

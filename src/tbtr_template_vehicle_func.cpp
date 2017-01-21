@@ -211,7 +211,7 @@ Train* DeleteVirtualTrain(Train *chain, Train *to_del) {
 	}
 }
 
-// retrieve template vehicle from templatereplacement that belongs to the given group
+// retrieve template vehicle from template replacement that belongs to the given group
 TemplateVehicle* GetTemplateVehicleByGroupID(GroupID gid) {
 	if (gid >= NEW_GROUP) return NULL;
 	TemplateReplacement *tr;

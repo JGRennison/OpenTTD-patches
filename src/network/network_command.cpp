@@ -52,7 +52,7 @@ static CommandCallback * const _callback_table[] = {
 	/* 0x1A */ CcGame,
 	/* 0x1B */ CcAddVehicleNewGroup,
 	/* 0x1C */ CcSetVirtualTrain,
-	/* 0x1D */ CcVirtualTrainWaggonsMoved,
+	/* 0x1D */ CcVirtualTrainWagonsMoved,
 	/* 0x1E */ CcDeleteVirtualTrain,
 	/* 0x1F */ CcAddVirtualEngine,
 };

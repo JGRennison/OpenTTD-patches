@@ -122,7 +122,7 @@ static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Veh
 	if (wagon == v) return;
 
 	DoCommandP(v->tile, v->index | ((_ctrl_pressed ? 1 : 0) << 20) | (1 << 21) , wagon == NULL ? INVALID_VEHICLE : wagon->index,
-			CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcVirtualTrainWaggonsMoved);
+			CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcVirtualTrainWagonsMoved);
 }
 
 class TemplateCreateWindow : public Window {
@@ -569,7 +569,7 @@ void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uin
 	}
 }
 
-void CcVirtualTrainWaggonsMoved(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
+void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
 {
 	if (result.Failed()) return;
 
