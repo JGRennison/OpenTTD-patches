@@ -156,15 +156,7 @@ public:
 
 	short NumGroupsUsingTemplate() const;
 
-	short CountEnginesInChain();
-
 };
-
-void appendTemplateVehicle(TemplateVehicle*, TemplateVehicle*);
-void insertTemplateVehicle(TemplateVehicle*, TemplateVehicle*, TemplateVehicle*);
-
-void NeutralizeVehicleStatus(Train*);
-void SplitVehicleRemainders(Train*);
 
 // TemplateReplacement stuff
 
@@ -202,6 +194,6 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 TemplateReplacement* GetTemplateReplacementByGroupID(GroupID);
 bool IssueTemplateReplacement(GroupID, TemplateID);
 
-short deleteIllegalTemplateReplacements(GroupID);
+short DeleteTemplateReplacementsByGroupID(GroupID);
 
 #endif /* TEMPLATE_VEH_H */

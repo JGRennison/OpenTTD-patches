@@ -3,6 +3,7 @@
 #include "../tbtr_template_vehicle.h"
 #include "../tbtr_template_vehicle_func.h"
 #include "../train.h"
+#include "../company_base.h"
 #include "../core/backup_type.hpp"
 #include "../core/random_func.hpp"
 
@@ -106,6 +107,15 @@ void AfterLoadTemplateVehiclesUpdateImage()
 
 	SavedRandomSeeds saved_seeds;
 	SaveRandomSeeds(&saved_seeds);
+
+	if (!SlXvIsFeaturePresent(XSLFI_TEMPLATE_REPLACEMENT, 3)) {
+		FOR_ALL_TEMPLATES(tv) {
+			if (tv->Prev() == NULL && !Company::IsValidID(tv->owner)) {
+				// clean up leftover template vehicles which no longer have a valid owner
+				delete tv;
+			}
+		}
+	}
 
 	FOR_ALL_TEMPLATES(tv) {
 		if (tv->Prev() == NULL) {

@@ -52,6 +52,7 @@
 #include "story_base.h"
 #include "linkgraph/refresh.h"
 #include "tracerestrict.h"
+#include "tbtr_template_vehicle.h"
 
 #include "table/strings.h"
 #include "table/pricebase.h"
@@ -498,6 +499,27 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		HandleSharingCompanyDeletion(old_owner);
 	}
 	TraceRestrictUpdateCompanyID(old_owner, new_owner);
+
+	/* Change ownership of template vehicles */
+	if (new_owner == INVALID_OWNER) {
+		TemplateVehicle *tv;
+		FOR_ALL_TEMPLATES(tv) {
+			if (tv->owner == old_owner) {
+				TemplateReplacement *tr;
+				FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
+					if (tr->Template() == tv->index) {
+						delete tr;
+					}
+				}
+				delete tv;
+			}
+		}
+	} else {
+		TemplateVehicle *tv;
+		FOR_ALL_TEMPLATES(tv) {
+			if (tv->owner == old_owner) tv->owner = new_owner;
+		}
+	}
 
 	/*  Change ownership of tiles */
 	{
