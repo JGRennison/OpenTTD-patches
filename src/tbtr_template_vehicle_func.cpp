@@ -213,22 +213,13 @@ Train* DeleteVirtualTrain(Train *chain, Train *to_del) {
 
 // retrieve template vehicle from templatereplacement that belongs to the given group
 TemplateVehicle* GetTemplateVehicleByGroupID(GroupID gid) {
+	if (gid >= NEW_GROUP) return NULL;
 	TemplateReplacement *tr;
-	// first try to find a templatereplacement issued for the given groupid
 	FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
 		if (tr->Group() == gid) {
 			return TemplateVehicle::GetIfValid(tr->Template()); // there can be only one
 		}
 	}
-	// if that didn't work, try to find a templatereplacement for ALL_GROUP
-	if (gid != ALL_GROUP) {
-		FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
-			if (tr->Group() == ALL_GROUP) {
-				return TemplateVehicle::GetIfValid(tr->Template());
-			}
-		}
-	}
-	// if all failed, just return null
 	return NULL;
 }
 
