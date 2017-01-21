@@ -103,27 +103,6 @@ TemplateVehicle* TemplateVehicle::GetPrevUnit()
 	return tv;
 }
 
-/** setting */
-void appendTemplateVehicle(TemplateVehicle *orig, TemplateVehicle *newv)
-{
-	if (!orig) return;
-	while (orig->Next()) orig = orig->Next();
-	orig->SetNext(newv);
-	newv->SetPrev(orig);
-	newv->SetFirst(orig->First());
-}
-
-void insertTemplateVehicle(TemplateVehicle *orig, TemplateVehicle *newv, TemplateVehicle *insert_after)
-{
-	if (!orig || !insert_after) return;
-	TemplateVehicle *insert_before = insert_after->Next();
-	insert_after->SetNext(newv);
-	insert_before->SetPrev(newv);
-	newv->SetPrev(insert_after);
-	newv->SetNext(insert_before);
-	newv->SetFirst(insert_after);
-}
-
 /** Length()
  * @return: length of vehicle, including current part
  */
@@ -175,18 +154,6 @@ short TemplateVehicle::NumGroupsUsingTemplate() const
 		}
 	}
 	return amount;
-}
-
-short TemplateVehicle::CountEnginesInChain()
-{
-	TemplateVehicle *tv = this->first;
-	short count = 0;
-	for (; tv != NULL; tv = tv->GetNextUnit()) {
-		if (HasBit(tv->subtype, GVSF_ENGINE)) {
-			count++;
-		}
-	}
-	return count;
 }
 
 short DeleteTemplateReplacementsByGroupID(GroupID g_id)

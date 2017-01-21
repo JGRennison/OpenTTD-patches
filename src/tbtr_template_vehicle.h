@@ -156,15 +156,7 @@ public:
 
 	short NumGroupsUsingTemplate() const;
 
-	short CountEnginesInChain();
-
 };
-
-void appendTemplateVehicle(TemplateVehicle*, TemplateVehicle*);
-void insertTemplateVehicle(TemplateVehicle*, TemplateVehicle*, TemplateVehicle*);
-
-void NeutralizeVehicleStatus(Train*);
-void SplitVehicleRemainders(Train*);
 
 // TemplateReplacement stuff
 
