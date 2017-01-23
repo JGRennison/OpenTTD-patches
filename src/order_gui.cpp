@@ -68,6 +68,9 @@ private:
 	const Vehicle *vehicle;  ///< Vehicle owning the orders being displayed and manipulated.
 	VehicleOrderID order_id; ///< Index of the order concerned by this window.
 
+	VehicleOrderID order_count; ///< Count of the orders of the vehicle owning this window
+	const Order *order;         ///< Order pointer at construction time;
+
 	static const uint8 CARGO_ICON_WIDTH  = 12;
 	static const uint8 CARGO_ICON_HEIGHT =  8;
 
@@ -124,6 +127,13 @@ private:
 		return (this->variant == CTOWV_LOAD) ? (uint8) order->GetCargoLoadTypeRaw(cargo_id) : (uint8) order->GetCargoUnloadTypeRaw(cargo_id);
 	}
 
+	bool CheckOrderStillValid() const
+	{
+		if (this->vehicle->GetNumOrders() != this->order_count) return false;
+		if (this->vehicle->GetOrder(this->order_id) != this->order) return false;
+		return true;
+	}
+
 public:
 	/**
 	 * Instantiate a new CargoTypeOrdersWindow.
@@ -142,6 +152,8 @@ public:
 
 		this->vehicle = v;
 		this->order_id = order_id;
+		this->order_count = v->GetNumOrders();
+		this->order = v->GetOrder(order_id);
 
 		this->CreateNestedTree(desc);
 		this->GetWidget<NWidgetCore>(WID_CTO_CAPTION)->SetDataTip(STR_CARGO_TYPE_ORDERS_LOAD_CAPTION + this->variant, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
@@ -193,6 +205,10 @@ public:
 
 	virtual void OnClick(Point pt, int widget, int click_count)
 	{
+		if (!this->CheckOrderStillValid()) {
+			delete this;
+			return;
+		}
 		if (widget == WID_CTO_CLOSEBTN) {
 			delete this;
 		} else if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
@@ -207,6 +223,10 @@ public:
 
 	virtual void OnDropdownSelect(int widget, int action_type)
 	{
+		if (!this->CheckOrderStillValid()) {
+			delete this;
+			return;
+		}
 		if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
 			CargoID cargo_id = GetCargoIDByBitnum(cs->bitnum);
@@ -234,10 +254,30 @@ public:
 
 	virtual void SetStringParameters(int widget) const
 	{
+		if (!this->CheckOrderStillValid()) {
+			return;
+		}
 		if (widget == WID_CTO_CAPTION) {
 			SetDParam(0, this->vehicle->index);
 			SetDParam(1, this->order_id + 1);
 			SetDParam(2, this->vehicle->GetOrder(this->order_id)->GetDestination());
+		}
+	}
+
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	{
+		if (!this->CheckOrderStillValid()) {
+			delete this;
+			return;
+		}
+		if (gui_scope) {
+			this->InitDropdownSelectedTypes();
+			this->SetDirty();
 		}
 	}
 };
@@ -1282,7 +1322,11 @@ public:
 		}
 
 		this->vscroll->SetCount(this->vehicle->GetNumOrders() + 1);
-		if (gui_scope) this->UpdateButtonState();
+		if (gui_scope) {
+			this->UpdateButtonState();
+			InvalidateWindowClassesData(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, 0);
+			InvalidateWindowClassesData(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, 0);
+		}
 
 		/* Scroll to the new order. */
 		if (from == INVALID_VEH_ORDER_ID && to != INVALID_VEH_ORDER_ID && !this->vscroll->IsVisible(to)) {
