@@ -463,7 +463,7 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 				ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 				v2->timetable_start = 0;
-				v->timetable_start_subticks = 0;
+				v2->timetable_start_subticks = 0;
 				v2->lateness_counter = 0;
 				v2->current_loading_time = 0;
 				v2->ClearSeparation();
@@ -475,21 +475,23 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 				v2->ClearSeparation();
 				if (!HasBit(p2, 1)) {
 					/* Ctrl wasn't pressed, so clear all timetabled times. */
-					SetBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
+					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 					v2->timetable_start = 0;
-					v->timetable_start_subticks = 0;
+					v2->timetable_start_subticks = 0;
 					v2->lateness_counter = 0;
 					v2->current_loading_time = 0;
-					OrderList *orders = v2->orders.list;
-					if (orders != NULL) {
-						for (int i = 0; i < orders->GetNumOrders(); i++) {
-							ChangeTimetable(v2, i, 0, MTF_WAIT_TIME, false);
-							ChangeTimetable(v2, i, 0, MTF_TRAVEL_TIME, false);
-						}
-					}
 				}
 			}
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
+		}
+		if (!HasBit(p2, 0) && !HasBit(p2, 1)) {
+			OrderList *orders = v->orders.list;
+			if (orders != NULL) {
+				for (int i = 0; i < orders->GetNumOrders(); i++) {
+					ChangeTimetable(v, i, 0, MTF_WAIT_TIME, false);
+					ChangeTimetable(v, i, 0, MTF_TRAVEL_TIME, false);
+				}
+			}
 		}
 	}
 
