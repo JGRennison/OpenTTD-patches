@@ -3034,7 +3034,7 @@ static Vehicle *FindTrainCollideEnum(Vehicle *v, void *data)
 
 	/* Slower check using multiplication */
 	int min_diff = (Train::From(v)->gcache.cached_veh_length + 1) / 2 + (tcc->v->gcache.cached_veh_length + 1) / 2 - 1;
-	if (x_diff * x_diff + y_diff * y_diff > min_diff * min_diff) return NULL;
+	if (x_diff * x_diff + y_diff * y_diff >= min_diff * min_diff) return NULL;
 
 	/* Happens when there is a train under bridge next to bridge head */
 	if (abs(v->z_pos - tcc->v->z_pos) > 5) return NULL;
