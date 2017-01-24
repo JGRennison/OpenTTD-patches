@@ -620,6 +620,37 @@ static const char *SkipGarbage(const char *str)
 	return str;
 }
 
+static int _strnatcmpIntl(const char *s1, const char *s2) {
+	while (*s1 && *s2) {
+		if (IsInsideBS(*s1, '0', 10) && IsInsideBS(*s2, '0', 10)) {
+			uint n1 = 0;
+			uint n2 = 0;
+			for (; IsInsideBS(*s1, '0', 10); s1++) {
+				n1 = (n1 * 10) + (*s1 - '0');
+			}
+			for (; IsInsideBS(*s2, '0', 10); s2++) {
+				n2 = (n2 * 10) + (*s2 - '0');
+			}
+			if (n1 != n2) return n1 > n2 ? 1 : -1;
+		} else {
+			char c1 = tolower(*s1);
+			char c2 = tolower(*s2);
+			if (c1 != c2) {
+				return c1 > c2 ? 1 : -1;
+			}
+			s1++;
+			s2++;
+		}
+	}
+	if (*s1 && !*s2) {
+		return 1;
+	} else if (*s2 && !*s1) {
+		return -1;
+	} else {
+		return 0;
+	}
+}
+
 /**
  * Compares two strings using case insensitive natural sort.
  *
@@ -643,8 +674,8 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 
 #endif /* WITH_ICU_SORT */
 
-	/* Do a normal comparison if ICU is missing or if we cannot create a collator. */
-	return strcasecmp(s1, s2);
+	/* Do a manual natural sort comparison if ICU is missing or if we cannot create a collator. */
+	return _strnatcmpIntl(s1, s2);
 }
 
 #ifdef WITH_ICU_SORT
