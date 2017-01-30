@@ -205,7 +205,12 @@ void AfterLoadCompanyStats()
 					switch (GetTunnelBridgeTransportType(tile)) {
 						case TRANSPORT_RAIL:
 							c = Company::GetIfValid(GetTileOwner(tile));
-							if (c != NULL) c->infrastructure.rail[GetRailType(tile)] += len;
+							if (c != NULL) {
+								c->infrastructure.rail[GetRailType(tile)] += len;
+								if (IsTunnelBridgeWithSignalSimulation(tile)) {
+									c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, other_end);
+								}
+							}
 							break;
 
 						case TRANSPORT_ROAD: {

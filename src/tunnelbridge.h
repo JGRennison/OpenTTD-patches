@@ -17,6 +17,7 @@
 void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height);
 void MarkBridgeDirty(TileIndex tile);
 void MarkBridgeOrTunnelDirty(TileIndex tile);
+uint GetTunnelBridgeSignalSimulationSignalCount(uint length);
 
 /**
  * Calculates the length of a tunnel or a bridge (without end tiles)
@@ -32,6 +33,17 @@ static inline uint GetTunnelBridgeLength(TileIndex begin, TileIndex end)
 	int y2 = TileY(end);
 
 	return abs(x2 + y2 - x1 - y1) - 1;
+}
+
+/**
+ * Get number of signals on bridge or tunnel with signal simulation.
+ * @param begin The begin of the tunnel or bridge.
+ * @param end   The end of the tunnel or bridge.
+ * @pre IsTunnelBridgeWithSignalSimulation(begin)
+ */
+static inline uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end)
+{
+	return GetTunnelBridgeSignalSimulationSignalCount(GetTunnelBridgeLength(begin, end));
 }
 
 extern TileIndex _build_tunnel_endtile;
