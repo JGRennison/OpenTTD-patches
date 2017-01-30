@@ -96,6 +96,16 @@ void MarkBridgeOrTunnelDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zooml
 	}
 }
 
+/**
+ * Get number of signals on bridge or tunnel with signal simulation.
+ * @param length Length of bridge/tunnel middle
+ * @return Number of signals on signalled bridge/tunnel of this length
+ */
+uint GetTunnelBridgeSignalSimulationSignalCount(uint length)
+{
+	return 2 + (length / _settings_game.construction.simulated_wormhole_signals);
+}
+
 /** Reset the data been eventually changed by the grf loaded. */
 void ResetBridges()
 {
@@ -855,6 +865,9 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 
 			if (Company::IsValidID(owner)) {
 				Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
+				if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
+					Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, endtile);
+				}
 				DirtyCompanyInfrastructureWindows(owner);
 			}
 
@@ -942,7 +955,12 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 
 		/* Update company infrastructure counts. */
 		if (rail) {
-			if (Company::IsValidID(owner)) Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
+			if (Company::IsValidID(owner)) {
+				Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
+				if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
+					Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, endtile);
+				}
+			}
 		} else if (GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD) {
 			RoadType rt;
 			FOR_EACH_SET_ROADTYPE(rt, GetRoadTypes(tile)) {
@@ -1868,6 +1886,12 @@ static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner 
 	} else if (tt == TRANSPORT_WATER) {
 		old->infrastructure.water -= num_pieces;
 		if (new_owner != INVALID_OWNER) Company::Get(new_owner)->infrastructure.water += num_pieces;
+	}
+
+	if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+		uint num_sigs = GetTunnelBridgeSignalSimulationSignalCount(tile, other_end);
+		Company::Get(old_owner)->infrastructure.signal -= num_sigs;
+		Company::Get(new_owner)->infrastructure.signal += num_sigs;
 	}
 
 	if (new_owner != INVALID_OWNER) {

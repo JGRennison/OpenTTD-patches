@@ -1159,6 +1159,14 @@ static bool InvalidateCompanyWindow(int32 p1)
 	return true;
 }
 
+static bool SimulatedWormholeSignalsChanged(int32 p1)
+{
+	extern void AfterLoadCompanyStats();
+	AfterLoadCompanyStats();
+	MarkWholeScreenDirty();
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {
