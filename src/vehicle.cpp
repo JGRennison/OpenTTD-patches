@@ -1168,7 +1168,7 @@ void CallVehicleTicks()
 
 	Backup<CompanyByte> repair_cur_company(_current_company, FILE_LINE);
 	for (Vehicle *v : _vehicles_to_pay_repair) {
-		DEBUG(misc, 0, "CallVehicleTicks: repair: %s", scope_dumper().VehicleInfo(v));
+		SCOPE_INFO_FMT([v], "CallVehicleTicks: repair: %s", scope_dumper().VehicleInfo(v));
 
 		ExpensesType type = INVALID_EXPENSES;
 		_current_company = v->owner;
