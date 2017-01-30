@@ -781,6 +781,7 @@ public:
 
 		this->profit_this_year = src->profit_this_year;
 		this->profit_last_year = src->profit_last_year;
+		this->profit_lifetime = -this->profit_this_year;
 
 		this->current_loading_time = src->current_loading_time;
 
