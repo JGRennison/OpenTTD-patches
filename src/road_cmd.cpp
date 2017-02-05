@@ -739,12 +739,6 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				CommandCost ret = TunnelBridgeIsFree(tile, other_end);
 				if (ret.Failed()) return ret;
 
-				/* check if this end is already owned by someone else */
-				const Owner owner = GetRoadOwner(tile, rt);
-				if (owner != OWNER_NONE) {
-					CommandCost ret = CheckOwnership(owner, tile);
-					if (ret.Failed()) return ret;
-				}
 
 				if ((existing | pieces) == entrance_piece) {
 					/*
@@ -761,13 +755,6 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 				if (added_pieces & entrance_piece) {
 					/* adding road to whole bridge */
-
-					/* check if other end is already owned by someone else */
-					const Owner other_end_owner = GetRoadOwner(other_end, rt);
-					if (other_end_owner != OWNER_NONE) {
-						CommandCost ret = CheckOwnership(other_end_owner, other_end);
-						if (ret.Failed()) return ret;
-					}
 
 					other_end_added_pieces = MirrorRoadBits(entrance_piece);
 					added_pieces_count += 1 + (GetTunnelBridgeLength(tile, other_end) * 2);
@@ -791,11 +778,11 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 					SubtractRoadTunnelBridgeInfrastructure(tile, other_end);
 
 					SetRoadTypes(tile, GetRoadTypes(tile) | RoadTypeToRoadTypes(rt));
-					SetRoadOwner(tile, rt, company);
+					if (!existing) SetRoadOwner(tile, rt, company);
 					SetCustomBridgeHeadRoadBits(tile, rt, existing | pieces);
 					if (other_end_added_pieces) {
 						SetRoadTypes(other_end, GetRoadTypes(other_end) | RoadTypeToRoadTypes(rt));
-						SetRoadOwner(other_end, rt, company);
+						if (!other_end_existing) SetRoadOwner(other_end, rt, company);
 						SetCustomBridgeHeadRoadBits(other_end, rt, other_end_existing | other_end_added_pieces);
 					}
 
