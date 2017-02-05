@@ -260,4 +260,7 @@ static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
 }
 
+void AddRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);
+void SubtractRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);
+
 #endif /* TUNNELBRIDGE_MAP_H */

@@ -1832,6 +1832,9 @@ STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS_HELPTEXT                :Path finder to 
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automatic reversing at signals: {STRING2}
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Allow trains to reverse on a signal, if they waited there a long time
 
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :Enable road custom bridge heads: {STRING2}
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Allow road bridges to have custom, non-straight flat entry/exit tiles
+
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Change setting value
 
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Close adjacent level crossings: {STRING2}

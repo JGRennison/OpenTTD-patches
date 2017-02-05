@@ -30,6 +30,7 @@
 #include "core/random_func.hpp"
 #include "object_base.h"
 #include "company_func.h"
+#include "tunnelbridge_map.h"
 #include "pathfinder/npf/aystar.h"
 #include "saveload/saveload.h"
 #include <deque>
@@ -351,6 +352,8 @@ Slope GetFoundationSlope(TileIndex tile, int *z)
 
 bool HasFoundationNW(TileIndex tile, Slope slope_here, uint z_here)
 {
+	if (IsRoadCustomBridgeHeadTile(tile) && GetTunnelBridgeDirection(tile) == DIAGDIR_NW) return false;
+
 	int z;
 
 	int z_W_here = z_here;
@@ -368,6 +371,8 @@ bool HasFoundationNW(TileIndex tile, Slope slope_here, uint z_here)
 
 bool HasFoundationNE(TileIndex tile, Slope slope_here, uint z_here)
 {
+	if (IsRoadCustomBridgeHeadTile(tile) && GetTunnelBridgeDirection(tile) == DIAGDIR_NE) return false;
+
 	int z;
 
 	int z_E_here = z_here;

@@ -200,7 +200,8 @@ void AfterLoadCompanyStats()
 				if (tile < other_end) {
 					/* Count each tunnel/bridge TUNNELBRIDGE_TRACKBIT_FACTOR times to simulate
 					 * the higher structural maintenance needs, and don't forget the end tiles. */
-					uint len = (GetTunnelBridgeLength(tile, other_end) + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+					const uint middle_len = GetTunnelBridgeLength(tile, other_end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+					const uint len = middle_len + (2 * TUNNELBRIDGE_TRACKBIT_FACTOR);
 
 					switch (GetTunnelBridgeTransportType(tile)) {
 						case TRANSPORT_RAIL:
@@ -214,12 +215,7 @@ void AfterLoadCompanyStats()
 							break;
 
 						case TRANSPORT_ROAD: {
-							/* Iterate all present road types as each can have a different owner. */
-							RoadType rt;
-							FOR_EACH_SET_ROADTYPE(rt, GetRoadTypes(tile)) {
-								c = Company::GetIfValid(GetRoadOwner(tile, rt));
-								if (c != NULL) c->infrastructure.road[rt] += len * 2; // A full diagonal road has two road bits.
-							}
+							AddRoadTunnelBridgeInfrastructure(tile, other_end);
 							break;
 						}
 

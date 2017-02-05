@@ -112,7 +112,10 @@ public:
 	 */
 	inline bool PfCalcCost(Node &n, const TrackFollower *tf)
 	{
-		int segment_cost = 0;
+		/* this is to handle the case where the starting tile is a junction custom bridge head,
+		 * and we have advanced across the bridge in the initial step */
+		int segment_cost = tf->m_tiles_skipped * YAPF_TILE_LENGTH;
+
 		uint tiles = 0;
 		/* start at n.m_key.m_tile / n.m_key.m_td and walk to the end of segment */
 		TileIndex tile = n.m_key.m_tile;
@@ -135,6 +138,11 @@ public:
 			TrackFollower F(Yapf().GetVehicle());
 			if (!F.Follow(tile, trackdir)) break;
 
+			/* if we skipped some tunnel tiles, add their cost */
+			/* with custom bridge heads, this cost must be added before checking if the segment has ended */
+			segment_cost += F.m_tiles_skipped * YAPF_TILE_LENGTH;
+			tiles += F.m_tiles_skipped + 1;
+
 			/* if there are more trackdirs available & reachable, we are at the end of segment */
 			if (KillFirstBit(F.m_new_td_bits) != TRACKDIR_BIT_NONE) break;
 
@@ -142,10 +150,6 @@ public:
 
 			/* stop if RV is on simple loop with no junctions */
 			if (F.m_new_tile == n.m_key.m_tile && new_td == n.m_key.m_td) return false;
-
-			/* if we skipped some tunnel tiles, add their cost */
-			segment_cost += F.m_tiles_skipped * YAPF_TILE_LENGTH;
-			tiles += F.m_tiles_skipped + 1;
 
 			/* add hilly terrain penalty */
 			segment_cost += Yapf().SlopeCost(tile, F.m_new_tile, trackdir);
