@@ -121,4 +121,7 @@ static inline TrackBits GetTunnelBridgeReservationTrackBits(TileIndex t)
 	return HasTunnelBridgeReservation(t) ? DiagDirToDiagTrackBits(GetTunnelBridgeDirection(t)) : TRACK_BIT_NONE;
 }
 
+void AddRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);
+void SubtractRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);
+
 #endif /* TUNNELBRIDGE_MAP_H */

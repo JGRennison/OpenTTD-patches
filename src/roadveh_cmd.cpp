@@ -1143,6 +1143,8 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 	 * by the previous vehicle in the chain when it gets to the right place. */
 	if (v->IsInDepot()) return true;
 
+	bool no_advance_tile = false;
+
 	if (v->state == RVSB_WORMHOLE) {
 		/* Vehicle is entering a depot or is on a bridge or in a tunnel */
 		GetNewVehiclePosResult gp = GetNewVehiclePos(v);
@@ -1156,19 +1158,24 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 		}
 
 		if (IsTileType(gp.new_tile, MP_TUNNELBRIDGE) && HasBit(VehicleEnterTile(v, gp.new_tile, gp.x, gp.y), VETS_ENTERED_WORMHOLE)) {
-			/* Vehicle has just entered a bridge or tunnel */
+			if (IsRoadCustomBridgeHeadTile(gp.new_tile)) {
+				v->frame = 15;
+				no_advance_tile = true;
+			} else {
+				/* Vehicle has just entered a bridge or tunnel */
+				v->x_pos = gp.x;
+				v->y_pos = gp.y;
+				v->UpdatePosition();
+				v->UpdateInclination(true, true);
+				return true;
+			}
+		} else {
 			v->x_pos = gp.x;
 			v->y_pos = gp.y;
 			v->UpdatePosition();
-			v->UpdateInclination(true, true);
+			if ((v->vehstatus & VS_HIDDEN) == 0) v->Vehicle::UpdateViewport(true);
 			return true;
 		}
-
-		v->x_pos = gp.x;
-		v->y_pos = gp.y;
-		v->UpdatePosition();
-		if ((v->vehstatus & VS_HIDDEN) == 0) v->Vehicle::UpdateViewport(true);
-		return true;
 	}
 
 	/* Get move position data for next frame.
@@ -1179,12 +1186,16 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 		(_settings_game.vehicle.road_side << RVS_DRIVE_SIDE)) ^ v->overtaking][v->frame + 1];
 
 	if (rd.x & RDE_NEXT_TILE) {
-		TileIndex tile = v->tile + TileOffsByDiagDir((DiagDirection)(rd.x & 3));
+		TileIndex tile = v->tile;
+		if (!no_advance_tile) tile += TileOffsByDiagDir((DiagDirection)(rd.x & 3));
 		Trackdir dir;
 
 		if (v->IsFrontEngine()) {
 			/* If this is the front engine, look for the right path. */
 			dir = RoadFindPathToDest(v, tile, (DiagDirection)(rd.x & 3));
+		} else if (no_advance_tile) {
+			/* Follow previous vehicle out of custom bridge wormhole */
+			dir = (Trackdir) prev->state;
 		} else {
 			dir = FollowPreviousRoadVehicle(v, prev, tile, (DiagDirection)(rd.x & 3), false);
 		}
@@ -1201,6 +1212,10 @@ again:
 			/* When turning around we can't be overtaking. */
 			v->overtaking = 0;
 
+			if (no_advance_tile) {
+				DEBUG(misc, 0, "Road vehicle attempted to turn around on a single road piece bridge head");
+			}
+
 			/* Turning around */
 			if (v->roadtype == ROADTYPE_TRAM) {
 				/* Determine the road bits the tram needs to be able to turn around
@@ -1213,9 +1228,16 @@ again:
 					case TRACKDIR_RVREV_SW: needed = ROAD_NE; break;
 					case TRACKDIR_RVREV_NW: needed = ROAD_SE; break;
 				}
-				if ((v->Previous() != NULL && v->Previous()->tile == tile) ||
-						(v->IsFrontEngine() && IsNormalRoadTile(tile) && !HasRoadWorks(tile) &&
-							(needed & GetRoadBits(tile, ROADTYPE_TRAM)) != ROAD_NONE)) {
+				auto tile_turn_ok = [&]() -> bool {
+					if (IsNormalRoadTile(tile)) {
+						return !HasRoadWorks(tile) && (needed & GetRoadBits(tile, ROADTYPE_TRAM)) != ROAD_NONE;
+					} else if (IsRoadCustomBridgeHeadTile(tile)) {
+						return (needed & GetCustomBridgeHeadRoadBits(tile, ROADTYPE_TRAM)) != ROAD_NONE;
+					} else {
+						return false;
+					}
+				};
+				if ((v->Previous() != NULL && v->Previous()->tile == tile) || tile_turn_ok()) {
 					/*
 					 * Taking the 'big' corner for trams only happens when:
 					 * - The previous vehicle in this (articulated) tram chain is

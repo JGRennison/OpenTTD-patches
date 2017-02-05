@@ -2474,6 +2474,15 @@ void DirtyCompanyInfrastructureWindows(CompanyID company)
 	SetWindowDirty(WC_COMPANY_INFRASTRUCTURE, company);
 }
 
+/**
+ * Redraw all windows with all company infrastructure counts.
+ */
+void DirtyAllCompanyInfrastructureWindows()
+{
+	SetWindowClassesDirty(WC_COMPANY);
+	SetWindowClassesDirty(WC_COMPANY_INFRASTRUCTURE);
+}
+
 struct BuyCompanyWindow : Window {
 	BuyCompanyWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{

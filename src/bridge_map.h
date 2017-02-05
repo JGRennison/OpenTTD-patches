@@ -180,4 +180,72 @@ static inline void MakeAqueductBridgeRamp(TileIndex t, Owner o, DiagDirection d)
 	MakeBridgeRamp(t, o, 0, d, TRANSPORT_WATER, 0);
 }
 
+/**
+ * Checks if this road bridge head is a custom bridge head
+ * @param t The tile to analyze
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
+ * @return true if it is a custom bridge head
+ */
+static inline bool IsRoadCustomBridgeHead(TileIndex t)
+{
+	assert(IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD);
+	return GB(_m[t].m2, 0, 8) != 0;
+}
+
+/**
+ * Checks if this tile is a road bridge head with a custom bridge head
+ * @param t The tile to analyze
+ * @return true if it is a road bridge head with a custom bridge head
+ */
+static inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
+{
+	return IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD && IsRoadCustomBridgeHead(t);
+}
+
+/**
+ * Returns the road bits for a (possibly custom) road bridge head
+ * @param t The tile to analyze
+ * @param rt Road type.
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
+ * @return road bits for the bridge head
+ */
+static inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadType rt)
+{
+	assert(IsBridgeTile(t));
+	if (!HasTileRoadType(t, rt)) return (RoadBits) 0;
+	RoadBits bits = (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X) ^ (RoadBits) GB(_m[t].m2, rt == ROADTYPE_TRAM ? 4 : 0, 4);
+	return bits;
+}
+
+/**
+ * Returns the road bits for a (possibly custom) road bridge head, for all road types
+ * @param t The tile to analyze
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
+ * @return road bits for the bridge head
+ */
+static inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
+{
+	return GetCustomBridgeHeadRoadBits(t, ROADTYPE_ROAD) | GetCustomBridgeHeadRoadBits(t, ROADTYPE_TRAM);
+}
+
+/**
+ * Sets the road bits for a (possibly custom) road bridge head
+ * @param t The tile to modify
+ * @param rt Road type.
+ * @param bits The road bits.
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
+ * @pre HasTileRoadType() must be set correctly before calling this
+ */
+static inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadType rt, RoadBits bits)
+{
+	assert(IsBridgeTile(t));
+	if (HasTileRoadType(t, rt)) {
+		assert(bits != ROAD_NONE);
+		SB(_m[t].m2, rt == ROADTYPE_TRAM ? 4 : 0, 4, bits ^ (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X));
+	} else {
+		assert(bits == ROAD_NONE);
+		SB(_m[t].m2, rt == ROADTYPE_TRAM ? 4 : 0, 4, 0);
+	}
+}
+
 #endif /* BRIDGE_MAP_H */

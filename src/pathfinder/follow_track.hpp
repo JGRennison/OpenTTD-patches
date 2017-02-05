@@ -101,8 +101,9 @@ struct CFollowTrackT
 	{
 		assert(IsTram()); // this function shouldn't be called in other cases
 
-		if (IsNormalRoadTile(tile)) {
-			RoadBits rb = GetRoadBits(tile, ROADTYPE_TRAM);
+		const bool is_bridge = IsRoadCustomBridgeHeadTile(tile);
+		if (is_bridge || IsNormalRoadTile(tile)) {
+			RoadBits rb = is_bridge ? GetCustomBridgeHeadRoadBits(tile, ROADTYPE_TRAM) : GetRoadBits(tile, ROADTYPE_TRAM);
 			switch (rb) {
 				case ROAD_NW: return DIAGDIR_NW;
 				case ROAD_SW: return DIAGDIR_SW;
@@ -215,7 +216,7 @@ protected:
 				m_tiles_skipped = GetTunnelBridgeLength(m_new_tile, m_old_tile);
 				return;
 			}
-			assert(ReverseDiagDir(enterdir) == m_exitdir);
+			if (!IsRoadCustomBridgeHeadTile(m_old_tile)) assert(ReverseDiagDir(enterdir) == m_exitdir);
 		}
 
 		/* normal or station tile, do one step */
@@ -364,7 +365,12 @@ protected:
 					}
 				}
 			} else { // IsBridge(m_new_tile)
-				if (!m_is_bridge) {
+				if (!m_is_bridge && IsRoadTT() && IsRoadCustomBridgeHeadTile(m_new_tile)) {
+					if (!(DiagDirToRoadBits(ReverseDiagDir(m_exitdir)) & GetCustomBridgeHeadRoadBits(m_new_tile, IsTram() ? ROADTYPE_TRAM : ROADTYPE_ROAD))) {
+						m_err = EC_NO_WAY;
+						return false;
+					}
+				} else if (!m_is_bridge) {
 					DiagDirection ramp_enderdir = GetTunnelBridgeDirection(m_new_tile);
 					if (ramp_enderdir != m_exitdir) {
 						m_err = EC_NO_WAY;
