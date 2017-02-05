@@ -21,6 +21,7 @@
  */
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
+	XSLFI_CUSTOM_BRIDGE_HEADS,                    ///< Custom bridge heads
 
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
