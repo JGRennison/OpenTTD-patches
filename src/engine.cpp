@@ -48,11 +48,6 @@ EngineOverrideManager _engine_mngr;
  */
 static Year _year_engine_aging_stops;
 
-/**
- * The railtypes that have been or never will be introduced, or
- * an inverse bitmap of rail types that have to be introduced. */
-static uint16 _introduced_railtypes;
-
 /** Number of engines of each vehicle type in original engine data */
 const uint8 _engine_counts[4] = {
 	lengthof(_orig_rail_vehicle_info),
@@ -85,6 +80,7 @@ Engine::Engine(VehicleType type, EngineID base)
 	this->type = type;
 	this->grf_prop.local_id = base;
 	this->list_position = base;
+	this->preview_company = INVALID_COMPANY;
 
 	/* Check if this base engine is within the original engine data range */
 	if (base >= _engine_counts[type]) {
@@ -542,29 +538,6 @@ void SetupEngines()
 		const Engine *e = new Engine(eid->type, eid->internal_id);
 		assert(e->index == index);
 	}
-
-	_introduced_railtypes = 0;
-}
-
-/**
- * Check whether the railtypes should be introduced.
- */
-static void CheckRailIntroduction()
-{
-	/* All railtypes have been introduced. */
-	if (_introduced_railtypes == UINT16_MAX || Company::GetPoolSize() == 0) return;
-
-	/* We need to find the railtypes that are known to all companies. */
-	RailTypes rts = (RailTypes)UINT16_MAX;
-
-	/* We are at, or past the introduction date of the rail. */
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
-		c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes, _date);
-		rts &= c->avail_railtypes;
-	}
-
-	_introduced_railtypes |= rts;
 }
 
 void ShowEnginePreviewWindow(EngineID engine);
@@ -710,19 +683,6 @@ void StartupEngines()
 		c->avail_roadtypes = GetCompanyRoadtypes(c->index);
 	}
 
-	/* Rail types that are invalid or never introduced are marked as
-	 * being introduced upon start. That way we can easily check whether
-	 * there is any date related introduction that is still going to
-	 * happen somewhere in the future. */
-	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		const RailtypeInfo *rti = GetRailTypeInfo(rt);
-		if (rti->label != 0 && IsInsideMM(rti->introduction_date, 0, MAX_DAY)) continue;
-
-		SetBit(_introduced_railtypes, rt);
-	}
-
-	CheckRailIntroduction();
-
 	/* Invalidate any open purchase lists */
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);
 }
@@ -819,7 +779,10 @@ static bool IsVehicleTypeDisabled(VehicleType type, bool ai)
 /** Daily check to offer an exclusive engine preview to the companies. */
 void EnginesDailyLoop()
 {
-	CheckRailIntroduction();
+	Company *c;
+	FOR_ALL_COMPANIES(c) {
+		c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes, _date);
+	}
 
 	if (_cur_year >= _year_engine_aging_stops) return;
 
@@ -879,7 +842,7 @@ CommandCost CmdSetVehicleVisibility(TileIndex tile, DoCommandFlag flags, uint32 
 {
 	Engine *e = Engine::GetIfValid(GB(p2, 0, 31));
 	if (e == NULL || _current_company >= MAX_COMPANIES) return CMD_ERROR;
-	if ((e->flags & ENGINE_AVAILABLE) == 0 || !HasBit(e->company_avail, _current_company)) return CMD_ERROR;
+	if (!IsEngineBuildable(e->index, e->type, _current_company)) return CMD_ERROR;
 
 	if ((flags & DC_EXEC) != 0) {
 		SB(e->company_hidden, _current_company, 1, GB(p2, 31, 1));
@@ -902,7 +865,7 @@ CommandCost CmdSetVehicleVisibility(TileIndex tile, DoCommandFlag flags, uint32 
 CommandCost CmdWantEnginePreview(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	Engine *e = Engine::GetIfValid(p1);
-	if (e == NULL || e->preview_company != _current_company) return CMD_ERROR;
+	if (e == NULL || !(e->flags & ENGINE_EXCLUSIVE_PREVIEW) || e->preview_company != _current_company) return CMD_ERROR;
 
 	if (flags & DC_EXEC) AcceptEnginePreview(p1, _current_company);
 

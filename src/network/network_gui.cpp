@@ -1187,17 +1187,17 @@ struct NetworkStartServerWindow : public Window {
 
 			case WID_NSS_LOAD_GAME:
 				_is_network_server = true;
-				ShowSaveLoadDialog(SLD_LOAD_GAME);
+				ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD);
 				break;
 
 			case WID_NSS_PLAY_SCENARIO:
 				_is_network_server = true;
-				ShowSaveLoadDialog(SLD_LOAD_SCENARIO);
+				ShowSaveLoadDialog(FT_SCENARIO, SLO_LOAD);
 				break;
 
 			case WID_NSS_PLAY_HEIGHTMAP:
 				_is_network_server = true;
-				ShowSaveLoadDialog(SLD_LOAD_HEIGHTMAP);
+				ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_LOAD);
 				break;
 		}
 	}
@@ -1892,7 +1892,7 @@ struct NetworkClientListWindow : Window {
 		int diff = (num + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM) - (this->GetWidget<NWidgetBase>(WID_CL_PANEL)->current_y);
 		/* If height is changed */
 		if (diff != 0) {
-			ResizeWindow(this, 0, diff);
+			ResizeWindow(this, 0, diff, false);
 			return false;
 		}
 		return true;

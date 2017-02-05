@@ -14,7 +14,7 @@
 
 #include "../cargo_type.h"
 #include "../vehicle_base.h"
-#include <list>
+#include <vector>
 #include <map>
 #include <set>
 
@@ -79,12 +79,11 @@ protected:
 		bool operator<(const Hop &other) const;
 	};
 
-	typedef std::list<RefitDesc> RefitList;
-	typedef std::map<CargoID, uint> CapacitiesMap;
+	typedef std::vector<RefitDesc> RefitList;
 	typedef std::set<Hop> HopSet;
 
 	Vehicle *vehicle;           ///< Vehicle for which the links should be refreshed.
-	CapacitiesMap capacities;   ///< Current added capacities per cargo ID in the consist.
+	uint capacities[NUM_CARGO]; ///< Current added capacities per cargo ID in the consist.
 	RefitList refit_capacities; ///< Current state of capacity remaining from previous refits versus overall capacity per vehicle in the consist.
 	HopSet *seen_hops;          ///< Hops already seen. If the same hop is seen twice we stop the algorithm. This is shared between all Refreshers of the same run.
 	CargoID cargo;              ///< Cargo given in last refit order.

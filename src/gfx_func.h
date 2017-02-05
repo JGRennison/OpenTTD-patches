@@ -145,6 +145,7 @@ bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int heigh
 /* window.cpp */
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom);
 
+void SetMouseCursorBusy(bool busy);
 void SetMouseCursor(CursorID cursor, PaletteID pal);
 void SetAnimatedMouseCursor(const AnimCursor *table);
 void CursorTick();
@@ -160,16 +161,16 @@ void GetBroadestDigit(uint *front, uint *next, FontSize size = FS_NORMAL);
 
 int GetCharacterHeight(FontSize size);
 
-/** Height of characters in the small (#FS_SMALL) font. */
+/** Height of characters in the small (#FS_SMALL) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_SMALL  (GetCharacterHeight(FS_SMALL))
 
-/** Height of characters in the normal (#FS_NORMAL) font. */
+/** Height of characters in the normal (#FS_NORMAL) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_NORMAL (GetCharacterHeight(FS_NORMAL))
 
-/** Height of characters in the large (#FS_LARGE) font. */
+/** Height of characters in the large (#FS_LARGE) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_LARGE  (GetCharacterHeight(FS_LARGE))
 
-/** Height of characters in the large (#FS_MONO) font. */
+/** Height of characters in the large (#FS_MONO) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_MONO  (GetCharacterHeight(FS_MONO))
 
 extern DrawPixelInfo *_cur_dpi;

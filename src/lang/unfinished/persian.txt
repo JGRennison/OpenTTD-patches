@@ -970,6 +970,7 @@ STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}وضوح
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :دو برابر
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}بسته گرافیک پایه
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}بسته گرافیک پایه را انتخاب کنید
@@ -2302,29 +2303,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :زمین ها
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :زمین پوشیده از برف
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :صحرا
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} ریل
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} ریل با نشانگر توقف
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} ریل با پیش نشانگر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} ریل با نشانگر خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} ریل با نشانگر چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} ریل با نشانگر مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} ریل با نشانگر مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} ریل با نشانگرهای توقف و پیش نشانگر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} ریل با نشانگرهای توقف و خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} ریل با نشانگرهای توقف و چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} ریل با نشانگرهای توقف و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} ریل با نشانگرهای توقف و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} ریل با پیش نشانگر و نشانگرخروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} ریل با پیش نشانگر و نشانگرچندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} ریل با پیش نشانگر و نشانگز مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} ریل با پیش نشانگر و نشانگر مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} ریل با نشانگرهای خروج و چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} ریل با نشانگرهای خروج و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} ریل با نشانگرهای خروج و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} ریل با نشانگرهای چندگانه و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} ریل با نشانگرهای چندگانه و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} ریل با نشانگرهای مسیر و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} گاراژ قطار
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :راه‌آهن ریل
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :راه‌آهن ریل با نشانگر توقف
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :راه‌آهن ریل با پیش نشانگر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :راه‌آهن ریل با نشانگر خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :راه‌آهن ریل با نشانگر چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :راه‌آهن ریل با نشانگر مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :راه‌آهن ریل با نشانگر مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :راه‌آهن ریل با نشانگرهای توقف و پیش نشانگر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :راه‌آهن ریل با نشانگرهای توقف و خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :راه‌آهن ریل با نشانگرهای توقف و چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :راه‌آهن ریل با نشانگرهای توقف و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :راه‌آهن ریل با نشانگرهای توقف و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :راه‌آهن ریل با پیش نشانگر و نشانگرخروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :راه‌آهن ریل با پیش نشانگر و نشانگرچندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :راه‌آهن ریل با پیش نشانگر و نشانگز مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :راه‌آهن ریل با پیش نشانگر و نشانگر مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :راه‌آهن ریل با نشانگرهای خروج و چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :راه‌آهن ریل با نشانگرهای خروج و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :راه‌آهن ریل با نشانگرهای خروج و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :راه‌آهن ریل با نشانگرهای چندگانه و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :راه‌آهن ریل با نشانگرهای چندگانه و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :راه‌آهن ریل با نشانگرهای مسیر و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :راه‌آهن گاراژ قطار
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :جاده
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :جاده با چراغ راهنمایی رانندگی
@@ -2592,7 +2593,6 @@ STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE                          :فایل GRF ب
 STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :تعداد NewGRF بیشتر از حد می باشد
 STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :در حال بارگزاری {1:STRING} به عنوان NewGRF ایستا با {STRING} مشکل همخوانی دارد
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} دارای یک تصویر خراب می باشد. تصویرهای خراب با علامت سوال قرمز (؟) نشان داده شدند.
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}بسته گرافیک استفاده شده تعدادی از تصاوبر را ندارد.{}لطفا بسته گرافیکی را به روز کنید
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} غیر فعال گردیده توسط {STRING}
 
 # NewGRF related 'general' warnings
@@ -3071,6 +3071,7 @@ STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK} ستو�
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}برای توقف جایگزین کردن برای نوع انتخاب شده در سمت چپ کلیک کنید
 
 
+STR_REPLACE_ELRAIL_VEHICLES                                     :وسایل نقلیه ریلی برقی
 
 
 # Vehicle view
