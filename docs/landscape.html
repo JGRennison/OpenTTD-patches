@@ -1443,6 +1443,36 @@
    <td>
     <ul>
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a></li>
+     <li style="color: blue">m2 bits 7..0: custom road bridge heads (flat bridge heads only)<br>
+      Road/tram bits below are XORed with the axial bridge direction road bits.<br>
+      A non-custom bridge head configuration will have a value of 0.
+      <ul>
+       <li>m2 bits 7..4: Road bits<br>
+           Valid only if m7 bit 6 is set
+       </li>
+       <li>m2 bits 3..0: Tram bits<br>
+           Valid only if m7 bit 7 is set
+       </li>
+      </ul>
+      <table style="color: blue">
+       <tr>
+        <td align=left>bit 0: </td>
+        <td>NW piece</td>
+       </tr>
+       <tr>
+        <td align=left>bit 1: </td>
+        <td>SW piece</td>
+       </tr>
+       <tr>
+        <td align=left>bit 2: </td>
+        <td>SE piece</td>
+       </tr>
+       <tr>
+        <td align=left>bit 3: </td>
+        <td>NE piece</td>
+       </tr>
+      </table>
+     </li>
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of tram</li>
      <li>m3 bits 3..0: <a href="#TrackType">track type</a> for railway</li>
      <li>m5 bit 4: pbs reservation state for railway</li>
