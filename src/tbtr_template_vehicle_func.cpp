@@ -44,7 +44,6 @@
 #include "safeguards.h"
 
 Vehicle *vhead, *vtmp;
-static const uint MAX_ARTICULATED_PARTS = 100;
 
 #ifdef _DEBUG
 // debugging printing functions for convenience, usually called from gdb
