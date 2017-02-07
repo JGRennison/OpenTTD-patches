@@ -4691,6 +4691,38 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Btree containers"
+			>
+			<File
+				RelativePath=".\..\src\3rdparty\cpp-btree\btree.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\3rdparty\cpp-btree\btree_container.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\3rdparty\cpp-btree\btree_map.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\3rdparty\cpp-btree\btree_set.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\3rdparty\cpp-btree\safe_btree.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\3rdparty\cpp-btree\safe_btree_map.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\3rdparty\cpp-btree\safe_btree_set.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\..\media\openttd.ico"
 			>

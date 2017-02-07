@@ -1323,6 +1323,13 @@
     <ClCompile Include="..\src\saveload\tracerestrict_sl.cpp" />
     <ClCompile Include="..\src\scope_info.cpp" />
     <ClInclude Include="..\src\scope_info.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_container.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_map.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_set.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree_map.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree_set.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />

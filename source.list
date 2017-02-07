@@ -1248,3 +1248,12 @@ saveload/tracerestrict_sl.cpp
 
 scope_info.cpp
 scope_info.h
+
+# Btree containers
+3rdparty/cpp-btree/btree.h
+3rdparty/cpp-btree/btree_container.h
+3rdparty/cpp-btree/btree_map.h
+3rdparty/cpp-btree/btree_set.h
+3rdparty/cpp-btree/safe_btree.h
+3rdparty/cpp-btree/safe_btree_map.h
+3rdparty/cpp-btree/safe_btree_set.h
