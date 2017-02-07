@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.16.1
+## JGR's Patchpack version 0.17.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -163,6 +163,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Add a setting to increase the station catchment radius (added in v0.16.0)
 
+* Custom bridge heads for road bridges (added in v0.17.0)
+
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 33% faster. (added in v0.8.1)  
@@ -182,7 +184,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Label threads with a descriptive name on supported Unixy platforms. (added in v0.8.1)  
   * Adjust cargo dest link graph job scheduling algorithm to improve responsiveness. (added in v0.16.0)  
   * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)  
-  * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)
+  * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)  
+  * Increase maximum setting limits for per-company vehicle-type limits. (added in v0.17.0)  
+  * Increase maximum permitted vehicle name length. added in v0.17.0)
 
 * Translations  
   * German (by Auge): including vehicle group info, vehicle details window, the zoning toolbar, and settings for improved breakdowns and adjacent level crossings.

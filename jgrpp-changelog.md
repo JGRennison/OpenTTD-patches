@@ -2,6 +2,27 @@
 
 * * *
 
+### v0.17.0 (2017-02-07)
+* Template-based train replacement:
+  * Fix crash on load/join after a company which owns templates goes bankrupt or is bought out.
+  * Fix incorrect cost estimates in GUI for templates.
+* Fix go to nearest depot and halt orders, not halting.
+* Fix vehicle breakdown repair cost being paid when vehicle is being auto-replaced.
+* Fix inverted condition for cargo waiting conditional order.
+* Fix trains on adjacent non-connected tiles being able to crash into each other.
+* Fix various UI/display issues with group collapsing.
+* Fix various issues for cargo type orders in multiplayer.
+* Fix lifetime profit not being fully reset when renewing vehicle.
+* Fix vehicle list windows erroneously including sort by length for ships and aircraft, which caused a crash when used.
+* Minor fix: more fully clear timetable state when clearing timetable automation.
+* Minor fix: increase cost of removing secondary road-type from bridges/tunnels to correct amount.
+* Add custom bridge heads for road bridges.
+* Increase maximum setting limits for per-company vehicle-type limits.
+* Increase maximum permitted vehicle name length.
+* Signals on tunnel/bridges are now included in company infrastructure stats.
+* Add a natural sort function to use if not compiling with ICU.
+* Bump trunk base from r27719 to r27743
+
 ### v0.16.1 (2017-01-05)
 * Fix hang which could occur when using conditional orders and cargodest.
 * Fix vehicle repair costs patch, and change cost algorithm to avoid excessive costs.
