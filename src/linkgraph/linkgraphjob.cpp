@@ -228,7 +228,7 @@ void LinkGraphJob::AbortJob()
 void LinkGraphJob::Init()
 {
 	uint size = this->Size();
-	this->nodes.Resize(size);
+	this->nodes.resize(size);
 	this->edges.Resize(size, size);
 	for (uint i = 0; i < size; ++i) {
 		this->nodes[i].Init(this->link_graph[i].Supply());
@@ -257,8 +257,6 @@ void LinkGraphJob::EdgeAnnotation::Init()
 void LinkGraphJob::NodeAnnotation::Init(uint supply)
 {
 	this->undelivered_supply = supply;
-	new (&this->flows) FlowStatMap;
-	new (&this->paths) PathList;
 }
 
 /**
