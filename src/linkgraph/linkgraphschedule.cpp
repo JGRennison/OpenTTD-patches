@@ -212,12 +212,12 @@ void LinkGraphSchedule::ShiftDates(int interval)
  */
 LinkGraphSchedule::LinkGraphSchedule()
 {
-	this->handlers[0] = new InitHandler;
-	this->handlers[1] = new DemandHandler;
-	this->handlers[2] = new MCFHandler<MCF1stPass>;
-	this->handlers[3] = new FlowMapper(false);
-	this->handlers[4] = new MCFHandler<MCF2ndPass>;
-	this->handlers[5] = new FlowMapper(true);
+	this->handlers[0].reset(new InitHandler);
+	this->handlers[1].reset(new DemandHandler);
+	this->handlers[2].reset(new MCFHandler<MCF1stPass>);
+	this->handlers[3].reset(new FlowMapper(false));
+	this->handlers[4].reset(new MCFHandler<MCF2ndPass>);
+	this->handlers[5].reset(new FlowMapper(true));
 }
 
 /**
@@ -226,9 +226,6 @@ LinkGraphSchedule::LinkGraphSchedule()
 LinkGraphSchedule::~LinkGraphSchedule()
 {
 	this->Clear();
-	for (uint i = 0; i < lengthof(this->handlers); ++i) {
-		delete this->handlers[i];
-	}
 }
 
 LinkGraphJobGroup::LinkGraphJobGroup(constructor_token token, std::vector<LinkGraphJob *> jobs) :

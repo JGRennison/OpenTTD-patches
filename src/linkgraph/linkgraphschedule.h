@@ -46,7 +46,7 @@ private:
 	friend const SaveLoad *GetLinkGraphScheduleDesc();
 
 protected:
-	ComponentHandler *handlers[6]; ///< Handlers to be run for each job.
+	std::unique_ptr<ComponentHandler> handlers[6]; ///< Handlers to be run for each job.
 	GraphList schedule;            ///< Queue for new jobs.
 	JobList running;               ///< Currently running jobs.
 
