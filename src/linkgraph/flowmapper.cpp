@@ -60,10 +60,7 @@ void FlowMapper::Run(LinkGraphJob &job) const
 			}
 		}
 		/* Clear paths. */
-		PathList &paths = node.Paths();
-		for (PathList::iterator i = paths.begin(); i != paths.end(); ++i) {
-			delete *i;
-		}
-		paths.clear();
+		node.Paths().clear();
 	}
+	job.path_allocator.ResetArena();
 }

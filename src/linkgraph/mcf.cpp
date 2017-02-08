@@ -378,8 +378,11 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 	Tedge_iterator iter(this->job);
 	uint size = this->job.Size();
 	paths.resize(size, NULL);
+
+	this->job.path_allocator.SetParameters(sizeof(AnnosWrapper<Tannotation>), (8192 - 32) / sizeof(AnnosWrapper<Tannotation>));
+
 	for (NodeID node = 0; node < size; ++node) {
-		AnnosWrapper<Tannotation> *anno = new AnnosWrapper<Tannotation>(node, node == source_node);
+		AnnosWrapper<Tannotation> *anno = new (this->job.path_allocator.Allocate()) AnnosWrapper<Tannotation>(node, node == source_node);
 		anno->UpdateAnnotation();
 		anno->self_iter = annos.insert(AnnoSetItem<Tannotation>(anno)).first;
 		paths[node] = anno;
@@ -431,12 +434,12 @@ void MultiCommodityFlow::CleanupPaths(NodeID source_id, PathVector &paths)
 			path->Detach();
 			if (path->GetNumChildren() == 0) {
 				paths[path->GetNode()] = NULL;
-				delete path;
+				this->job.path_allocator.Free(path);
 			}
 			path = parent;
 		}
 	}
-	delete source;
+	this->job.path_allocator.Free(source);
 	paths.clear();
 }
 
