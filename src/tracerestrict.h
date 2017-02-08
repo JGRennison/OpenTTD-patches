@@ -18,7 +18,7 @@
 #include "rail_map.h"
 #include "tile_type.h"
 #include "group_type.h"
-#include <map>
+#include "3rdparty/cpp-btree/btree_map.h"
 #include <vector>
 
 struct Train;
@@ -50,7 +50,7 @@ struct TraceRestrictMappingItem {
 			: program_id(program_id_) { }
 };
 
-typedef std::map<TraceRestrictRefId, TraceRestrictMappingItem> TraceRestrictMapping;
+typedef btree::btree_map<TraceRestrictRefId, TraceRestrictMappingItem> TraceRestrictMapping;
 
 /** The actual mapping from TraceRestrictRefId to TraceRestrictProgramID. */
 extern TraceRestrictMapping _tracerestrictprogram_mapping;

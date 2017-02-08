@@ -57,6 +57,7 @@
 #include "tbtr_template_vehicle_func.h"
 #include "string_func.h"
 #include "scope_info.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include "table/strings.h"
 
@@ -75,7 +76,7 @@ uint16 _returned_mail_refit_capacity; ///< Stores the mail capacity after a refi
 VehiclePool _vehicle_pool("Vehicle");
 INSTANTIATE_POOL_METHODS(Vehicle)
 
-static std::set<Vehicle *> _vehicles_to_pay_repair;
+static btree::btree_set<Vehicle *> _vehicles_to_pay_repair;
 
 /**
  * Determine shared bounds of all sprites.

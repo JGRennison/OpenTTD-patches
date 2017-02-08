@@ -33,8 +33,8 @@
 #include "tunnelbridge_map.h"
 #include "pathfinder/npf/aystar.h"
 #include "saveload/saveload.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 #include <deque>
-#include <set>
 
 #include "table/strings.h"
 #include "table/sprites.h"
@@ -1119,7 +1119,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 	uint height = TileHeight(begin);
 	if (IsWaterTile(begin)) return DistanceManhattan(spring, begin) > _settings_game.game_creation.min_river_length;
 
-	std::set<TileIndex> marks;
+	btree::btree_set<TileIndex> marks;
 	SET_MARK(begin);
 
 	/* Breadth first search for the closest tile we can flow down to. */
@@ -1156,7 +1156,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 		/* Maybe we can make a lake. Find the Nth of the considered tiles. */
 		TileIndex lakeCenter = 0;
 		int i = RandomRange(count - 1) + 1;
-		std::set<TileIndex>::const_iterator cit = marks.begin();
+		btree::btree_set<TileIndex>::const_iterator cit = marks.begin();
 		while (--i) cit++;
 		lakeCenter = *cit;
 

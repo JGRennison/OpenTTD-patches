@@ -17,8 +17,7 @@
 #include "industry.h"
 #include "town.h"
 #include "core/overflowsafe_type.hpp"
-#include <map>
-
+#include "3rdparty/cpp-btree/btree_map.h"
 struct Station;
 
 /**
@@ -32,7 +31,7 @@ struct Station;
 typedef uint32 CargoMonitorID; ///< Type of the cargo monitor number.
 
 /** Map type for storing and updating active cargo monitor numbers and their amounts. */
-typedef std::map<CargoMonitorID, OverflowSafeInt32> CargoMonitorMap;
+typedef btree::btree_map<CargoMonitorID, OverflowSafeInt32> CargoMonitorMap;
 
 extern CargoMonitorMap _cargo_pickups;
 extern CargoMonitorMap _cargo_deliveries;

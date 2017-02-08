@@ -21,15 +21,15 @@
 
 #include "table/strings.h"
 
-#include <map>
-#include <set>
+#include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "safeguards.h"
 
 /** Set of tiles. */
-typedef std::set<TileIndex> TileIndexSet;
+typedef btree::btree_set<TileIndex> TileIndexSet;
 /** Mapping of tiles to their height. */
-typedef std::map<TileIndex, int> TileIndexToHeightMap;
+typedef btree::btree_map<TileIndex, int> TileIndexToHeightMap;
 
 /** State of the terraforming. */
 struct TerraformerState {

@@ -3,11 +3,12 @@
 #include "../stdafx.h"
 #include "../core/math_func.hpp"
 #include "mcf.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
 #include <set>
 
 #include "../safeguards.h"
 
-typedef std::map<NodeID, Path *> PathViaMap;
+typedef btree::btree_map<NodeID, Path *> PathViaMap;
 
 /**
  * This is a wrapper around Tannotation* which also stores a cache of GetAnnotation() and GetNode()

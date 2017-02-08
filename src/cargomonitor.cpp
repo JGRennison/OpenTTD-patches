@@ -32,12 +32,11 @@ static void ClearCargoMonitoring(CargoMonitorMap &cargo_monitor_map, CompanyID c
 		return;
 	}
 
-	CargoMonitorMap::iterator next;
-	for (CargoMonitorMap::iterator it = cargo_monitor_map.begin(); it != cargo_monitor_map.end(); it = next) {
-		next = it;
-		next++;
+	for (CargoMonitorMap::iterator it = cargo_monitor_map.begin(); it != cargo_monitor_map.end();) {
 		if (DecodeMonitorCompany(it->first) == company) {
-			cargo_monitor_map.erase(it);
+			it = cargo_monitor_map.erase(it);
+		} else {
+			++it;
 		}
 	}
 }

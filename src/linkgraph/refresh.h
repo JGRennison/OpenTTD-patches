@@ -14,9 +14,9 @@
 
 #include "../cargo_type.h"
 #include "../vehicle_base.h"
+#include "../3rdparty/cpp-btree/btree_set.h"
 #include <vector>
 #include <map>
-#include <set>
 
 /**
  * Utility to refresh links a consist will visit.
@@ -67,7 +67,7 @@ protected:
 		 * Default constructor should not be called but has to be visible for
 		 * usage in std::set.
 		 */
-		Hop() {NOT_REACHED();}
+		Hop() {}
 
 		/**
 		 * Real constructor, only use this one.
@@ -80,7 +80,7 @@ protected:
 	};
 
 	typedef std::vector<RefitDesc> RefitList;
-	typedef std::set<Hop> HopSet;
+	typedef btree::btree_set<Hop> HopSet;
 
 	Vehicle *vehicle;           ///< Vehicle for which the links should be refreshed.
 	uint capacities[NUM_CARGO]; ///< Current added capacities per cargo ID in the consist.

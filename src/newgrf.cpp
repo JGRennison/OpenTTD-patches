@@ -41,7 +41,6 @@
 #include "date_func.h"
 #include "string_func.h"
 #include "network/network.h"
-#include <map>
 #include "smallmap_gui.h"
 #include "genworld.h"
 #include "error.h"
@@ -51,6 +50,8 @@
 
 #include "table/strings.h"
 #include "table/build_industry.h"
+
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "safeguards.h"
 
@@ -90,7 +91,7 @@ private:
 	};
 
 	/** Currently referenceable spritesets */
-	std::map<uint, SpriteSet> spritesets[GSF_END];
+	btree::btree_map<uint, SpriteSet> spritesets[GSF_END];
 
 public:
 	/* Global state */
@@ -347,6 +348,7 @@ struct GRFLocation {
 	uint32 grfid;
 	uint32 nfoline;
 
+	GRFLocation() { }
 	GRFLocation(uint32 grfid, uint32 nfoline) : grfid(grfid), nfoline(nfoline) { }
 
 	bool operator<(const GRFLocation &other) const
@@ -360,8 +362,8 @@ struct GRFLocation {
 	}
 };
 
-static std::map<GRFLocation, SpriteID> _grm_sprites;
-typedef std::map<GRFLocation, byte*> GRFLineToSpriteOverride;
+static btree::btree_map<GRFLocation, SpriteID> _grm_sprites;
+typedef btree::btree_map<GRFLocation, byte*> GRFLineToSpriteOverride;
 static GRFLineToSpriteOverride _grf_line_to_action6_sprite_override;
 
 /**
@@ -5931,7 +5933,7 @@ static void CfgApply(ByteReader *buf)
 	GRFLineToSpriteOverride::iterator it = _grf_line_to_action6_sprite_override.find(location);
 	if (it != _grf_line_to_action6_sprite_override.end()) {
 		free(preload_sprite);
-		preload_sprite = _grf_line_to_action6_sprite_override[location];
+		preload_sprite = it->second;
 	} else {
 		_grf_line_to_action6_sprite_override[location] = preload_sprite;
 	}
@@ -8760,7 +8762,7 @@ static void DecodeSpecialSprite(byte *buf, uint num, GrfLoadingStage stage)
 		FioReadBlock(buf, num);
 	} else {
 		/* Use the preloaded sprite data. */
-		buf = _grf_line_to_action6_sprite_override[location];
+		buf = it->second;
 		grfmsg(7, "DecodeSpecialSprite: Using preloaded pseudo sprite data");
 
 		/* Skip the real (original) content of this action. */

@@ -24,6 +24,8 @@
 #include "table/strings.h"
 #include "table/palette_convert.h"
 
+#include "3rdparty/cpp-btree/btree_map.h"
+
 #include "safeguards.h"
 
 /* Default of 4MB spritecache */
@@ -476,7 +478,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 
 
 /** Map from sprite numbers to position in the GRF file. */
-static std::map<uint32, size_t> _grf_sprite_offsets;
+static btree::btree_map<uint32, size_t> _grf_sprite_offsets;
 
 /**
  * Get the file offset for a specific sprite in the sprite section of a GRF.
@@ -485,7 +487,8 @@ static std::map<uint32, size_t> _grf_sprite_offsets;
  */
 size_t GetGRFSpriteOffset(uint32 id)
 {
-	return _grf_sprite_offsets.find(id) != _grf_sprite_offsets.end() ? _grf_sprite_offsets[id] : SIZE_MAX;
+	auto iter = _grf_sprite_offsets.find(id);
+	return iter != _grf_sprite_offsets.end() ? iter->second : SIZE_MAX;
 }
 
 /**
