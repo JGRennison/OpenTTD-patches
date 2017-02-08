@@ -74,9 +74,10 @@ protected:
 	void EraseFlows(NodeID from);
 	void JoinThread();
 	void SetJobGroup(std::shared_ptr<LinkGraphJobGroup> group);
-	bool IsJobAborted() const;
 
 public:
+
+	bool IsJobAborted() const;
 
 	/**
 	 * A job edge. Wraps a link graph edge and an edge annotation. The

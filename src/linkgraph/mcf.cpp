@@ -638,7 +638,7 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 			}
 			this->CleanupPaths(source, paths);
 		}
-	} while (more_loops || this->EliminateCycles());
+	} while ((more_loops || this->EliminateCycles()) && !job.IsJobAborted());
 }
 
 /**
@@ -653,7 +653,7 @@ MCF2ndPass::MCF2ndPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 	uint size = job.Size();
 	uint accuracy = job.Settings().accuracy;
 	bool demand_left = true;
-	while (demand_left) {
+	while (demand_left && !job.IsJobAborted()) {
 		demand_left = false;
 		for (NodeID source = 0; source < size; ++source) {
 			this->Dijkstra<CapacityAnnotation, FlowEdgeIterator>(source, paths);
