@@ -24,8 +24,9 @@ void FlowMapper::Run(LinkGraphJob &job) const
 		Node prev_node = job[node_id];
 		StationID prev = prev_node.Station();
 		PathList &paths = prev_node.Paths();
-		for (PathList::iterator i = paths.begin(); i != paths.end(); ++i) {
+		for (PathList::reverse_iterator i = paths.rbegin(); i != paths.rend(); ++i) {
 			Path *path = *i;
+			if (!path) continue;
 			uint flow = path->GetFlow();
 			if (flow == 0) break;
 			Node node = job[path->GetNode()];

@@ -493,10 +493,9 @@ void MCF1stPass::EliminateCycle(PathVector &path, Path *cycle_begin, uint flow)
 		cycle_begin->ReduceFlow(flow);
 		if (cycle_begin->GetFlow() == 0) {
 			PathList &node_paths = this->job[cycle_begin->GetParent()->GetNode()].Paths();
-			for (PathList::iterator i = node_paths.begin(); i != node_paths.end(); ++i) {
+			for (PathList::reverse_iterator i = node_paths.rbegin(); i != node_paths.rend(); ++i) {
 				if (*i == cycle_begin) {
-					node_paths.erase(i);
-					node_paths.push_back(cycle_begin);
+					*i = nullptr;
 					break;
 				}
 			}
@@ -528,30 +527,35 @@ bool MCF1stPass::EliminateCycles(PathVector &path, NodeID origin_id, NodeID next
 		 * in one path each. */
 		PathList &paths = this->job[next_id].Paths();
 		PathViaMap next_hops;
-		for (PathList::iterator i = paths.begin(); i != paths.end();) {
+		uint holes = 0;
+		for (PathList::reverse_iterator i = paths.rbegin(); i != paths.rend();) {
 			Path *new_child = *i;
-			uint new_flow = new_child->GetFlow();
-			if (new_flow == 0) break;
-			if (new_child->GetOrigin() == origin_id) {
-				PathViaMap::iterator via_it = next_hops.find(new_child->GetNode());
-				if (via_it == next_hops.end()) {
-					next_hops[new_child->GetNode()] = new_child;
-					++i;
-				} else {
-					Path *child = via_it->second;
-					child->AddFlow(new_flow);
-					new_child->ReduceFlow(new_flow);
+			if (new_child) {
+				uint new_flow = new_child->GetFlow();
+				if (new_flow == 0) break;
+				if (new_child->GetOrigin() == origin_id) {
+					PathViaMap::iterator via_it = next_hops.find(new_child->GetNode());
+					if (via_it == next_hops.end()) {
+						next_hops[new_child->GetNode()] = new_child;
+					} else {
+						Path *child = via_it->second;
+						child->AddFlow(new_flow);
+						new_child->ReduceFlow(new_flow);
 
-					/* We might hit end() with with the ++ here and skip the
-					 * newly push_back'ed path. That's good as the flow of that
-					 * path is 0 anyway. */
-					paths.erase(i++);
-					paths.push_back(new_child);
+						*i = nullptr;
+						holes++;
+					}
 				}
 			} else {
-				++i;
+				holes++;
 			}
+			++i;
 		}
+		if (holes >= paths.size() / 8) {
+			/* remove any holes */
+			paths.erase(std::remove(paths.begin(), paths.end(), nullptr), paths.end());
+		}
+
 		bool found = false;
 		/* Search the next hops for nodes we have already visited */
 		for (PathViaMap::iterator via_it = next_hops.begin();

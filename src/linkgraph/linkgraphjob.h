@@ -15,13 +15,13 @@
 #include "../thread/thread.h"
 #include "../core/dyn_arena_alloc.hpp"
 #include "linkgraph.h"
-#include <list>
+#include <vector>
 #include <memory>
 
 class LinkGraphJob;
 class Path;
 class LinkGraphJobGroup;
-typedef std::list<Path *> PathList;
+typedef std::vector<Path *> PathList;
 
 /** Type of the pool for link graph jobs. */
 typedef Pool<LinkGraphJob, LinkGraphJobID, 32, 0xFFFF> LinkGraphJobPool;
