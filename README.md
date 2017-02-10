@@ -186,7 +186,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)  
   * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)  
   * Increase maximum setting limits for per-company vehicle-type limits. (added in v0.17.0)  
-  * Increase maximum permitted vehicle name length. added in v0.17.0)
+  * Increase maximum permitted vehicle name length. (added in v0.17.0)
 
 * Translations  
   * German (by Auge): including vehicle group info, vehicle details window, the zoning toolbar, and settings for improved breakdowns and adjacent level crossings.
