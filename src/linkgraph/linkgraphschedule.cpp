@@ -33,7 +33,7 @@
  * The cost estimate of a link graph job is C ~ N^2 log N, where
  * N is the number of nodes in the job link graph.
  * The cost estimate is summed for all running and scheduled jobs to form the total cost estimate T = sum C.
- * The nominal cycle time (in recalc intervals) required to schedule all jobs is calculated as S = log_2 T.
+ * The nominal cycle time (in recalc intervals) required to schedule all jobs is calculated as S = 1 + log_2 T.
  * Hence the nominal duration of an individual job (in recalc intervals) is D = ceil(S * C / T)
  * The cost budget for an individual call to this method is given by T / S.
  *
@@ -61,7 +61,7 @@ void LinkGraphSchedule::SpawnNext()
 	for (auto &it : this->running) {
 		total_cost += it->Graph().CalculateCostEstimate();
 	}
-	uint scaling = FindLastBit(total_cost);
+	uint scaling = 1 + FindLastBit(total_cost);
 	uint cost_budget = total_cost / scaling;
 	uint used_budget = 0;
 	std::vector<LinkGraphJobGroup::JobInfo> jobs_to_execute;
