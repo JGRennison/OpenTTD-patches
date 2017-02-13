@@ -177,6 +177,14 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 				}
 			}
 		}
+		/* Since we can't estimate the cost of build and refitting a vehicle accurately we must
+		 * check whether the company has enough money manually. */
+		if (!CheckCompanyHasMoney(value)) {
+			if (flags & DC_EXEC) {
+				/* The vehicle has already been bought, so now it must be sold again. */
+				DoCommand(tile, v->index, 0, flags, GetCmdSellVeh(type));
+			}
+		}
 	}
 
 	return value;

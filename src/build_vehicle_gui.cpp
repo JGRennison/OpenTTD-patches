@@ -1352,6 +1352,9 @@ struct BuildVehicleWindow : Window {
 						char text_buffer[2];
 						text_buffer[0] = 'R';
 						text_buffer[1] = this->cargo_filter[this->cargo_filter_criteria];
+						if ((cmd & 0xFFFF) == CMD_BUILD_VEHICLE) {
+							cmd = (cmd & ~0xFFFF) | CMD_BUILD_VEHICLE_NT;
+						}
 						DoCommandP(this->window_number, sel_eng, 0, cmd, callback, text_buffer, true, 2);
 					} else {
 						/* build only */
