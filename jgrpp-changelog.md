@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.17.1 (2017-02-14)
+* Fix crash when deleting bridge/tunnel with signals due to company reset/bankruptcy.
+* Fix crash in linkgraph job scheduler when the total estimated cost of all jobs is 0.
+* Fix crash when using build and refit with NewGRF sets with unpredicatable/dynamic refit costs.
+* Fix support for increased number of NewGRFs in single player.
+
 ### v0.17.0 (2017-02-07)
 * Template-based train replacement:
   * Fix crash on load/join after a company which owns templates goes bankrupt or is bought out.
