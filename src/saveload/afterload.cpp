@@ -741,6 +741,13 @@ bool AfterLoadGame()
 		return false;
 	}
 
+	if (_networking && CountSelectedGRFs(_grfconfig) > NETWORK_MAX_GRF_COUNT) {
+		SetSaveLoadError(STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
+		/* Restore the signals */
+		ResetSignalHandlers();
+		return false;
+	}
+
 	/* The value of _date_fract got divided, so make sure that old games are converted correctly. */
 	if (IsSavegameVersionBefore(11, 1) || (IsSavegameVersionBefore(147) && _date_fract > DAY_TICKS)) _date_fract /= 885;
 

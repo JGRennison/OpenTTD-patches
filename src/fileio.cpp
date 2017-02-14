@@ -75,7 +75,7 @@ size_t FioGetPos()
  * @param slot Index of queried file.
  * @return Name of the file.
  */
-const char *FioGetFilename(uint8 slot)
+const char *FioGetFilename(uint slot)
 {
 	return _fio.shortnames[slot];
 }
@@ -112,7 +112,7 @@ static void FioRestoreFile(int slot)
  * @param slot Slot number of the new file.
  * @param pos New absolute position in the new file.
  */
-void FioSeekToFile(uint8 slot, size_t pos)
+void FioSeekToFile(uint slot, size_t pos)
 {
 	FILE *f;
 #if defined(LIMITED_FDS)
@@ -247,7 +247,7 @@ static void FioFreeHandle()
  * @param filename Name of the file at the disk.
  * @param subdir The sub directory to search this file in.
  */
-void FioOpenFile(int slot, const char *filename, Subdirectory subdir)
+void FioOpenFile(uint slot, const char *filename, Subdirectory subdir)
 {
 	FILE *f;
 
