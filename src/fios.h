@@ -90,8 +90,10 @@ enum FileSlots {
 	SOUND_SLOT     =  1,
 	/** First slot usable for (New)GRFs used during the game. */
 	FIRST_GRF_SLOT =  2,
+	/** Maximum number of GRFs in single-player */
+	MAX_NEWGRFS = 256,
 	/** Maximum number of slots. */
-	MAX_FILE_SLOTS = 256,
+	MAX_FILE_SLOTS = 300,
 };
 
 /** Deals with finding savegames */

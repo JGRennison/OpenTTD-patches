@@ -1521,7 +1521,7 @@ private:
 			if (!HasBit((*list)->flags, GCF_STATIC)) count++;
 		}
 		if (entry == NULL) entry = list;
-		if (count >= NETWORK_MAX_GRF_COUNT) {
+		if (count >= MAX_NEWGRFS) {
 			ShowErrorMessage(STR_NEWGRF_TOO_MANY_NEWGRFS, INVALID_STRING_ID, WL_INFO);
 			return false;
 		}

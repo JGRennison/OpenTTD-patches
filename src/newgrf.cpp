@@ -9269,7 +9269,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 			if (stage == GLS_LABELSCAN) InitNewGRFFile(c);
 
 			if (!HasBit(c->flags, GCF_STATIC) && !HasBit(c->flags, GCF_SYSTEM)) {
-				if (num_non_static == NETWORK_MAX_GRF_COUNT) {
+				if ((_networking && num_non_static == NETWORK_MAX_GRF_COUNT) || slot == MAX_FILE_SLOTS) {
 					DEBUG(grf, 0, "'%s' is not loaded as the maximum number of non-static GRFs has been reached", c->filename);
 					c->status = GCS_DISABLED;
 					c->error  = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
@@ -9312,12 +9312,13 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 /**
  * Returns amount of user selected NewGRFs files.
  */
-int CountSelectedGRFs(GRFConfig *grfconf)
+uint CountSelectedGRFs(GRFConfig *grfconf)
 {
-	int i = 0;
+	uint i = 0;
 
 	/* Find last entry in the list */
-	for (const GRFConfig *list = grfconf; list != NULL; list = list->next, i++) {
+	for (const GRFConfig *list = grfconf; list != NULL; list = list->next) {
+		if (!HasBit(list->flags, GCF_STATIC) && !HasBit(list->flags, GCF_SYSTEM)) i++;
 	}
 	return i;
 }

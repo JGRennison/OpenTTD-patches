@@ -16,14 +16,14 @@
 #include "fileio_type.h"
 
 void FioSeekTo(size_t pos, int mode);
-void FioSeekToFile(uint8 slot, size_t pos);
+void FioSeekToFile(uint slot, size_t pos);
 size_t FioGetPos();
-const char *FioGetFilename(uint8 slot);
+const char *FioGetFilename(uint slot);
 byte FioReadByte();
 uint16 FioReadWord();
 uint32 FioReadDword();
 void FioCloseAll();
-void FioOpenFile(int slot, const char *filename, Subdirectory subdir);
+void FioOpenFile(uint slot, const char *filename, Subdirectory subdir);
 void FioReadBlock(void *ptr, size_t size);
 void FioSkipBytes(int n);
 
