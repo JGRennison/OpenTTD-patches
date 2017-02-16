@@ -1245,7 +1245,7 @@ again:
 						return false;
 					}
 				};
-				if ((v->Previous() != NULL && v->Previous()->tile == tile) || tile_turn_ok()) {
+				if ((v->Previous() != NULL && v->Previous()->tile == tile) || (v->IsFrontEngine() && tile_turn_ok())) {
 					/*
 					 * Taking the 'big' corner for trams only happens when:
 					 * - The previous vehicle in this (articulated) tram chain is
