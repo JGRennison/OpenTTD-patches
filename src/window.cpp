@@ -2579,6 +2579,8 @@ EventState Window::HandleEditBoxKey(int wid, WChar key, uint16 keycode)
  */
 void HandleKeypress(uint keycode, WChar key)
 {
+	if (InEventLoopPostCrash()) return;
+
 	/* World generation is multithreaded and messes with companies.
 	 * But there is no company related window open anyway, so _current_company is not used. */
 	assert(HasModalProgress() || IsLocalCompany());
@@ -2783,6 +2785,8 @@ static void HandleKeyScrolling()
 
 static void MouseLoop(MouseClick click, int mousewheel)
 {
+	if (InEventLoopPostCrash()) return;
+
 	/* World generation is multithreaded and messes with companies.
 	 * But there is no company related window open anyway, so _current_company is not used. */
 	assert(HasModalProgress() || IsLocalCompany());
@@ -2872,6 +2876,8 @@ static void MouseLoop(MouseClick click, int mousewheel)
  */
 void HandleMouseEvents()
 {
+	if (InEventLoopPostCrash()) return;
+
 	/* World generation is multithreaded and messes with companies.
 	 * But there is no company related window open anyway, so _current_company is not used. */
 	assert(HasModalProgress() || IsLocalCompany());
@@ -2979,6 +2985,8 @@ static void CheckSoftLimit()
  */
 void InputLoop()
 {
+	if (InEventLoopPostCrash()) return;
+
 	/* World generation is multithreaded and messes with companies.
 	 * But there is no company related window open anyway, so _current_company is not used. */
 	assert(HasModalProgress() || IsLocalCompany());

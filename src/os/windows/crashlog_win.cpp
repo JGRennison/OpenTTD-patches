@@ -21,6 +21,7 @@
 #include "../../gamelog.h"
 #include "../../saveload/saveload.h"
 #include "../../video/video_driver.hpp"
+#include "../../openttd.h"
 #if defined(WITH_DEMANGLE)
 #include <cxxabi.h>
 #endif
@@ -532,6 +533,8 @@ void *_safe_esp = NULL;
 
 static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 {
+	_in_event_loop_post_crash = true;
+
 	if (CrashLogWindows::current != NULL) {
 		CrashLog::AfterCrashLogCleanup();
 		ExitProcess(2);
