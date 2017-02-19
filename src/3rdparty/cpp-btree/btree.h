@@ -100,7 +100,6 @@
 #ifndef UTIL_BTREE_BTREE_H__
 #define UTIL_BTREE_BTREE_H__
 
-#include <assert.h>
 #include <stddef.h>
 #include <string.h>
 #include <sys/types.h>

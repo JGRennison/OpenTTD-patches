@@ -17,7 +17,6 @@
 #include "window_func.h"
 #include "company_func.h"
 #include "cmd_helper.h"
-#include <assert.h>
 
 ProgramList _signal_programs;
 
