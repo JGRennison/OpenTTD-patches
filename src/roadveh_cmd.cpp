@@ -36,6 +36,8 @@
 #include "infrastructure_func.h"
 #include "newgrf.h"
 #include "zoom_func.h"
+#include "scope_info.h"
+#include "string_func.h"
 
 #include "table/strings.h"
 
@@ -1132,6 +1134,7 @@ static bool CanBuildTramTrackOnTile(CompanyID c, TileIndex t, RoadBits r)
 
 bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 {
+	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: %s, %s", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
 	if (v->overtaking != 0)  {
 		if (IsTileType(v->tile, MP_STATION)) {
 			/* Force us to be not overtaking! */
