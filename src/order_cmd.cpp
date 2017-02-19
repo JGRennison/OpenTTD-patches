@@ -717,16 +717,16 @@ void OrderList::DebugCheckSanity() const
 		check_timetable_duration += o->GetTimetabledWait() + o->GetTimetabledTravel();
 		check_total_duration += o->GetWaitTime() + o->GetTravelTime();
 	}
-	assert(this->num_orders == check_num_orders);
-	assert(this->num_manual_orders == check_num_manual_orders);
-	assert(this->timetable_duration == check_timetable_duration);
-	assert(this->total_duration == check_total_duration);
+	assert_msg(this->num_orders == check_num_orders, "%u, %u", this->num_orders, check_num_orders);
+	assert_msg(this->num_manual_orders == check_num_manual_orders, "%u, %u", this->num_manual_orders, check_num_manual_orders);
+	assert_msg(this->timetable_duration == check_timetable_duration, "%u, %u", this->timetable_duration, check_timetable_duration);
+	assert_msg(this->total_duration == check_total_duration, "%u, %u", this->total_duration, check_total_duration);
 
 	for (const Vehicle *v = this->first_shared; v != NULL; v = v->NextShared()) {
 		++check_num_vehicles;
-		assert(v->orders.list == this);
+		assert_msg(v->orders.list == this, "%p, %p", v->orders.list, this);
 	}
-	assert(this->num_vehicles == check_num_vehicles);
+	assert_msg(this->num_vehicles == check_num_vehicles, "%u, %u", this->num_vehicles, check_num_vehicles);
 	DEBUG(misc, 6, "... detected %u orders (%u manual), %u vehicles, %i timetabled, %i total",
 			(uint)this->num_orders, (uint)this->num_manual_orders,
 			this->num_vehicles, this->timetable_duration, this->total_duration);
