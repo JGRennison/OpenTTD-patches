@@ -331,6 +331,8 @@ static void ShutdownGame()
 	FioCloseAll();
 
 	UninitFreeType();
+
+	ClearCommandLog();
 }
 
 /**

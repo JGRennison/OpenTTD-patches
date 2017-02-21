@@ -68,6 +68,9 @@ static inline DoCommandFlag CommandFlagsToDCFlags(CommandFlags cmd_flags)
 	return flags;
 }
 
+void ClearCommandLog();
+char *DumpCommandLog(char *buffer, const char *last);
+
 /*** All command callbacks that exist ***/
 
 /* ai/ai_instance.cpp */

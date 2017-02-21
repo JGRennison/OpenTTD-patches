@@ -28,6 +28,7 @@
 #include "core/pool_type.hpp"
 #include "game/game.hpp"
 #include "linkgraph/linkgraphschedule.h"
+#include "command_func.h"
 
 #include "safeguards.h"
 
@@ -58,6 +59,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	UnInitWindowSystem();
 
 	AllocateMap(size_x, size_y);
+
+	ClearCommandLog();
 
 	_pause_mode = PM_UNPAUSED;
 	_fast_forward = 0;
