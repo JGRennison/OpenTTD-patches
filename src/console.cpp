@@ -253,13 +253,14 @@ char *RemoveUnderscores(char *name)
  * @param name name of the command that will be used
  * @param proc function that will be called upon execution of command
  */
-void IConsoleCmdRegister(const char *name, IConsoleCmdProc *proc, IConsoleHook *hook)
+void IConsoleCmdRegister(const char *name, IConsoleCmdProc *proc, IConsoleHook *hook, bool unlisted)
 {
 	IConsoleCmd *item_new = MallocT<IConsoleCmd>(1);
 	item_new->name = RemoveUnderscores(stredup(name));
 	item_new->next = NULL;
 	item_new->proc = proc;
 	item_new->hook = hook;
+	item_new->unlisted = unlisted;
 
 	IConsoleAddSorted(&_iconsole_cmds, item_new);
 }
