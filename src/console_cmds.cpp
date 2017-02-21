@@ -1525,7 +1525,7 @@ DEF_CONSOLE_CMD(ConListCommands)
 
 	for (const IConsoleCmd *cmd = _iconsole_cmds; cmd != NULL; cmd = cmd->next) {
 		if (argv[1] == NULL || strstr(cmd->name, argv[1]) != NULL) {
-			if (cmd->hook == NULL || cmd->hook(false) != CHR_HIDE) IConsolePrintF(CC_DEFAULT, "%s", cmd->name);
+			if (cmd->unlisted == false && (cmd->hook == NULL || cmd->hook(false) != CHR_HIDE)) IConsolePrintF(CC_DEFAULT, "%s", cmd->name);
 		}
 	}
 
@@ -1939,7 +1939,18 @@ DEF_CONSOLE_CMD(ConResetBlockedHeliports)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpCommandLog)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump log of recently executed commands.");
+		return true;
+	}
 
+	char buffer[32768];
+	DumpCommandLog(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
 
 #ifdef _DEBUG
 /******************
@@ -2085,6 +2096,7 @@ void IConsoleStdLibRegister()
 #ifdef _DEBUG
 	IConsoleDebugLibRegister();
 #endif
+	IConsoleCmdRegister("dump_command_log", ConDumpCommandLog, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
