@@ -1690,7 +1690,7 @@ static TrackStatus GetTileTrackStatus_TunnelBridge(TileIndex tile, TransportType
 static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end, bool add) {
 	/* A full diagonal road has two road bits. */
 	const uint middle_len = 2 * GetTunnelBridgeLength(begin, end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
-	const uint len = middle_len + (2 * TUNNELBRIDGE_TRACKBIT_FACTOR);
+	const uint len = middle_len + (4 * TUNNELBRIDGE_TRACKBIT_FACTOR);
 
 	/* Iterate all present road types as each can have a different owner. */
 	RoadType rt;
