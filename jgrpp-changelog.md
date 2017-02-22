@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.17.2 (2017-02-22)
+* Fix crash due to articulated trams decoupling when doing a U-turn, when the end-of-line was removed mid-way through the turn.
+* Fix wrong calculation of company infrastructure totals for road tunnels, which could cause multiplayer desyncs.
+* Fix crash when removing secondary road type from tunnel.
+* Fix crash and/or multiplayer desync after updating orders of vehicles which refer to stations/depots owned by a company which is being deleted.
+* Increase maximum permitted group name length.
+* Improvements to crash logging.
+* Improve performance of linkgraph, and minor other areas.
+* Fix memory leak when aborting linkgraph jobs due to abandoning game.
+* Add Korean translations by kiwitreekor.
+* Bump trunk base from r27743 to r27747
+
 ### v0.17.1 (2017-02-14)
 * Fix crash when deleting bridge/tunnel with signals due to company reset/bankruptcy.
 * Fix crash in linkgraph job scheduler when the total estimated cost of all jobs is 0.
