@@ -1175,6 +1175,11 @@ void CheckCaches(bool force_check)
 	for (const Company *c : Company::Iterate()) {
 		if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
 			DEBUG(desync, 0, "infrastructure cache mismatch: company %i", (int)c->index);
+			char buffer[4096];
+			old_infrastructure.Get(i)->Dump(buffer, lastof(buffer));
+			DEBUG(desync, 0, "Previous:\n%s", buffer);
+			c->infrastructure.Dump(buffer, lastof(buffer));
+			DEBUG(desync, 0, "Recalculated:\n%s", buffer);
 		}
 		i++;
 	}

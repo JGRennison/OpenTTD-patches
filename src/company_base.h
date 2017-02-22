@@ -45,6 +45,7 @@ struct CompanyInfrastructure {
 
 	uint32 GetRoadTotal() const;
 	uint32 GetTramTotal() const;
+	char *Dump(char *buffer, const char *last) const;
 };
 
 typedef Pool<Company, CompanyID, 1, MAX_COMPANIES> CompanyPool;

@@ -1182,3 +1182,18 @@ uint32 CompanyInfrastructure::GetTramTotal() const
 	}
 	return total;
 }
+
+char *CompanyInfrastructure::Dump(char *buffer, const char *last) const
+{
+	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+		if (rail[rt]) buffer += seprintf(buffer, last, "Rail: %s: %u\n", GetStringPtr(GetRailTypeInfo(rt)->strings.name), rail[rt]);
+	}
+	buffer += seprintf(buffer, last, "Signal: %u\n", signal);
+	buffer += seprintf(buffer, last, "Road: %u\n", road[ROADTYPE_ROAD]);
+	buffer += seprintf(buffer, last, "Tram: %u\n", road[ROADTYPE_TRAM]);
+	buffer += seprintf(buffer, last, "Water: %u\n", water);
+	buffer += seprintf(buffer, last, "Station: %u\n", station);
+	buffer += seprintf(buffer, last, "Airport: %u\n", airport);
+
+	return buffer;
+}
