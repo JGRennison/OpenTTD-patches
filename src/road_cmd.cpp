@@ -250,7 +250,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 					other_end_pieces |= other_end_existing;
 				}
 				pieces_count += middle_len * 2;
-				if ((GetCustomBridgeHeadRoadBits(tile, other_rt) & entrance_piece) == ROAD_NONE) {
+				if (custom_bridge_head && ((GetCustomBridgeHeadRoadBits(tile, other_rt) & entrance_piece) == ROAD_NONE)) {
 					/* can't leave no entrance pieces for any road type */
 					return DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 				}
