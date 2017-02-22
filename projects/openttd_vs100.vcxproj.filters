@@ -897,6 +897,9 @@
     <ClInclude Include="..\src\order_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\order_cmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\order_func.h">
       <Filter>Header Files</Filter>
     </ClInclude>

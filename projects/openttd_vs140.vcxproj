@@ -348,6 +348,7 @@
     <ClCompile Include="..\src\ground_vehicle.cpp" />
     <ClCompile Include="..\src\heightmap.cpp" />
     <ClCompile Include="..\src\highscore.cpp" />
+    <ClCompile Include="..\src\infrastructure.cpp" />
     <ClCompile Include="..\src\hotkeys.cpp" />
     <ClCompile Include="..\src\ini.cpp" />
     <ClCompile Include="..\src\ini_load.cpp" />
@@ -498,6 +499,7 @@
     <ClInclude Include="..\src\industry.h" />
     <ClInclude Include="..\src\industry_type.h" />
     <ClInclude Include="..\src\industrytype.h" />
+    <ClInclude Include="..\src\infrastructure_func.h" />
     <ClInclude Include="..\src\ini_type.h" />
     <ClInclude Include="..\src\landscape.h" />
     <ClInclude Include="..\src\landscape_type.h" />
@@ -571,6 +573,7 @@
     <ClInclude Include="..\src\openttd.h" />
     <ClInclude Include="..\src\order_backup.h" />
     <ClInclude Include="..\src\order_base.h" />
+    <ClInclude Include="..\src\order_cmd.h" />
     <ClInclude Include="..\src\order_func.h" />
     <ClInclude Include="..\src\order_type.h" />
     <ClInclude Include="..\src\pbs.h" />

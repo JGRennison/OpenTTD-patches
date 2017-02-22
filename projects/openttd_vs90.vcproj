@@ -1496,6 +1496,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\order_cmd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\order_func.h"
 				>
 			</File>
