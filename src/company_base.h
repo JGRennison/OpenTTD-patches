@@ -43,6 +43,8 @@ struct CompanyInfrastructure {
 		for (RailType rt =  RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) total += this->rail[rt];
 		return total;
 	}
+
+	char *Dump(char *buffer, const char *last) const;
 };
 
 typedef Pool<Company, CompanyID, 1, MAX_COMPANIES> CompanyPool;
