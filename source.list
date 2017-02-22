@@ -312,6 +312,7 @@ object_type.h
 openttd.h
 order_backup.h
 order_base.h
+order_cmd.h
 order_func.h
 order_type.h
 pbs.h

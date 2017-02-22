@@ -36,6 +36,7 @@
 #include "order_backup.h"
 #include "cheat_type.h"
 #include "viewport_func.h"
+#include "order_cmd.h"
 
 #include "table/strings.h"
 
@@ -2065,55 +2066,22 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination)
 
 	/* Go through all vehicles */
 	FOR_ALL_VEHICLES(v) {
-		Order *order;
-
-		order = &v->current_order;
+		Order *order = &v->current_order;
 		if ((v->type == VEH_AIRCRAFT && order->IsType(OT_GOTO_DEPOT) ? OT_GOTO_STATION : order->GetType()) == type &&
 				v->current_order.GetDestination() == destination) {
 			order->MakeDummy();
 			SetWindowDirty(WC_VEHICLE_VIEW, v->index);
 		}
 
-		/* Clear the order from the order-list */
-		int id = -1;
-		FOR_VEHICLE_ORDERS(v, order) {
-			id++;
-restart:
+		/* order list */
+		if (v->FirstShared() != v) continue;
 
-			OrderType ot = order->GetType();
-			if (ot == OT_GOTO_DEPOT && (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) continue;
+		RemoveVehicleOrdersIf(v, [&](const Order *o) {
+			OrderType ot = o->GetType();
+			if (ot == OT_GOTO_DEPOT && (o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
 			if (ot == OT_IMPLICIT || (v->type == VEH_AIRCRAFT && ot == OT_GOTO_DEPOT)) ot = OT_GOTO_STATION;
-			if (ot == type && order->GetDestination() == destination) {
-				/* We want to clear implicit orders, but we don't want to make them
-				 * dummy orders. They should just vanish. Also check the actual order
-				 * type as ot is currently OT_GOTO_STATION. */
-				if (order->IsType(OT_IMPLICIT)) {
-					order = order->next; // DeleteOrder() invalidates current order
-					DeleteOrder(v, id);
-					if (order != NULL) goto restart;
-					break;
-				}
-
-				/* Clear wait time */
-				v->orders.list->UpdateTotalDuration(-order->GetWaitTime());
-				if (order->IsWaitTimetabled()) {
-					v->orders.list->UpdateTimetableDuration(-order->GetTimetabledWait());
-					order->SetWaitTimetabled(false);
-				}
-				order->SetWaitTime(0);
-
-				/* Clear order, preserving travel time */
-				bool travel_timetabled = order->IsTravelTimetabled();
-				order->MakeDummy();
-				order->SetTravelTimetabled(travel_timetabled);
-
-				for (const Vehicle *w = v->FirstShared(); w != NULL; w = w->NextShared()) {
-					/* In GUI, simulate by removing the order and adding it back */
-					InvalidateVehicleOrder(w, id | (INVALID_VEH_ORDER_ID << 8));
-					InvalidateVehicleOrder(w, (INVALID_VEH_ORDER_ID << 8) | id);
-				}
-			}
-		}
+			return (ot == type && o->GetDestination() == destination);
+		});
 	}
 
 	OrderBackup::RemoveOrder(type, destination);

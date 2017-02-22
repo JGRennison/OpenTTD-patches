@@ -25,6 +25,7 @@
 #include "company_base.h"
 #include "string_func.h"
 #include "scope_info.h"
+#include "order_cmd.h"
 
 #include "table/strings.h"
 
@@ -142,6 +143,7 @@ static bool OrderDestinationIsAllowed(const Order *order, const Vehicle *v, Owne
 {
 	Owner dest_owner;
 	switch (order->GetType()) {
+		case OT_IMPLICIT:
 		case OT_GOTO_STATION:
 		case OT_GOTO_WAYPOINT: dest_owner = BaseStation::Get(order->GetDestination())->owner; break;
 		case OT_GOTO_DEPOT:    dest_owner = (v->type == VEH_AIRCRAFT) ? Station::Get(order->GetDestination())->owner : GetTileOwner(Depot::Get(order->GetDestination())->xy); break;
@@ -299,20 +301,10 @@ void HandleSharingCompanyDeletion(Owner owner)
 		/* order list */
 		if (v->FirstShared() != v) continue;
 
-		Order *o = NULL;
-		int id = -1;
-		SCOPE_INFO_FMT([&], "HandleSharingCompanyDeletion: veh: %s, order: %d, %X", scope_dumper().VehicleInfo(v), id, o ? o->Pack() : 0);
-		FOR_VEHICLE_ORDERS(v, o) {
-			id++;
-			if (OrderDestinationIsAllowed(o, v, owner)) continue;
-
-			o->MakeDummy();
-			for (const Vehicle *w = v; w != NULL; w = w->NextShared()) {
-				/* In GUI, simulate by removing the order and adding it back */
-				InvalidateVehicleOrder(w, id | (INVALID_VEH_ORDER_ID << 8));
-				InvalidateVehicleOrder(w, (id << 8) | INVALID_VEH_ORDER_ID);
-			}
-		}
+		RemoveVehicleOrdersIf(v, [&](const Order *o) {
+			if (o->GetType() == OT_GOTO_DEPOT && (o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
+			return !OrderDestinationIsAllowed(o, v, owner);
+		});
 	}
 }
 

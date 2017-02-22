@@ -589,6 +589,7 @@
     <ClInclude Include="..\src\openttd.h" />
     <ClInclude Include="..\src\order_backup.h" />
     <ClInclude Include="..\src\order_base.h" />
+    <ClInclude Include="..\src\order_cmd.h" />
     <ClInclude Include="..\src\order_func.h" />
     <ClInclude Include="..\src\order_type.h" />
     <ClInclude Include="..\src\pbs.h" />
