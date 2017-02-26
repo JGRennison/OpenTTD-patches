@@ -944,6 +944,11 @@ public:
 								break;
 							}
 						}
+					} else if (GetTraceRestrictTypeProperties(item).value_type == TRVT_TILE_INDEX) {
+						TileIndex tile = *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, sel - 1) + 1);
+						if (tile != INVALID_TILE) {
+							ScrollMainWindowToTile(tile);
+						}
 					}
 					return;
 				}
