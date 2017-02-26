@@ -844,6 +844,16 @@ static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
 	}
 }
 
+template <typename T> T InstructionIteratorNext(T iter)
+{
+	return IsTraceRestrictDoubleItem(*iter) ? iter + 2 : iter + 1;
+}
+
+template <typename T> void InstructionIteratorAdvance(T &iter)
+{
+	iter = InstructionIteratorNext(iter);
+}
+
 CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &items, uint32 offset, bool shallow_mode)
 {
 	TraceRestrictItem old_item = *TraceRestrictProgram::InstructionAt(items, offset);
@@ -861,10 +871,10 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 
 		uint32 recursion_depth = 1;
 		std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
-		std::vector<TraceRestrictItem>::iterator remove_end = remove_start + 1;
+		std::vector<TraceRestrictItem>::iterator remove_end = InstructionIteratorNext(remove_start);
 
 		// iterate until matching end block found
-		for (; remove_end != items.end(); ++remove_end) {
+		for (; remove_end != items.end(); InstructionIteratorAdvance(remove_end)) {
 			TraceRestrictItem current_item = *remove_end;
 			if (IsTraceRestrictConditional(current_item)) {
 				if (GetTraceRestrictCondFlags(current_item) == 0) {
@@ -873,8 +883,13 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 						recursion_depth--;
 						if (recursion_depth == 0) {
 							if (remove_whole_block) {
-								// inclusively remove up to here
-								++remove_end;
+								if (shallow_mode) {
+									// must erase endif first, as it is later in the vector
+									items.erase(remove_end, InstructionIteratorNext(remove_end));
+								} else {
+									// inclusively remove up to here
+									InstructionIteratorAdvance(remove_end);
+								}
 								break;
 							} else {
 								// exclusively remove up to here
@@ -897,27 +912,18 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 						return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF);
 					}
 				}
-			} else if (IsTraceRestrictDoubleItem(current_item)) {
-				// this is a double-item, jump over the next item as well
-				++remove_end;
 			}
 		}
 		if (recursion_depth != 0) return CMD_ERROR; // ran off the end
 		if (shallow_mode) {
-			// must erase endif first, as it is later in the vector
-			if (remove_whole_block) items.erase(remove_end - 1);
-			items.erase(remove_start);
+			items.erase(remove_start, InstructionIteratorNext(remove_start));
 		} else {
 			items.erase(remove_start, remove_end);
 		}
 	} else {
 		std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
-		std::vector<TraceRestrictItem>::iterator remove_end = remove_start + 1;
+		std::vector<TraceRestrictItem>::iterator remove_end = InstructionIteratorNext(remove_start);
 
-		if (IsTraceRestrictDoubleItem(old_item)) {
-			// this is a double-item, remove the next item as well
-			++remove_end;
-		}
 		items.erase(remove_start, remove_end);
 	}
 	return CommandCost();
