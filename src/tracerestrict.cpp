@@ -844,6 +844,85 @@ static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
 	}
 }
 
+CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &items, uint32 offset, bool shallow_mode)
+{
+	TraceRestrictItem old_item = *TraceRestrictProgram::InstructionAt(items, offset);
+	if (IsTraceRestrictConditional(old_item) && GetTraceRestrictCondFlags(old_item) != TRCF_OR) {
+		bool remove_whole_block = false;
+		if (GetTraceRestrictCondFlags(old_item) == 0) {
+			if (GetTraceRestrictType(old_item) == TRIT_COND_ENDIF) {
+				// this is an end if, can't remove these
+				return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF);
+			} else {
+				// this is an opening if
+				remove_whole_block = true;
+			}
+		}
+
+		uint32 recursion_depth = 1;
+		std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
+		std::vector<TraceRestrictItem>::iterator remove_end = remove_start + 1;
+
+		// iterate until matching end block found
+		for (; remove_end != items.end(); ++remove_end) {
+			TraceRestrictItem current_item = *remove_end;
+			if (IsTraceRestrictConditional(current_item)) {
+				if (GetTraceRestrictCondFlags(current_item) == 0) {
+					if (GetTraceRestrictType(current_item) == TRIT_COND_ENDIF) {
+						// this is an end if
+						recursion_depth--;
+						if (recursion_depth == 0) {
+							if (remove_whole_block) {
+								// inclusively remove up to here
+								++remove_end;
+								break;
+							} else {
+								// exclusively remove up to here
+								break;
+							}
+						}
+					} else {
+						// this is an opening if
+						recursion_depth++;
+					}
+				} else {
+					// this is an else/or type block
+					if (recursion_depth == 1 && !remove_whole_block) {
+						// exclusively remove up to here
+						recursion_depth = 0;
+						break;
+					}
+					if (recursion_depth == 1 && remove_whole_block && shallow_mode) {
+						// shallow-removing whole if block, and it contains an else/or if, bail out
+						return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF);
+					}
+				}
+			} else if (IsTraceRestrictDoubleItem(current_item)) {
+				// this is a double-item, jump over the next item as well
+				++remove_end;
+			}
+		}
+		if (recursion_depth != 0) return CMD_ERROR; // ran off the end
+		if (shallow_mode) {
+			// must erase endif first, as it is later in the vector
+			if (remove_whole_block) items.erase(remove_end - 1);
+			items.erase(remove_start);
+		} else {
+			items.erase(remove_start, remove_end);
+		}
+	} else {
+		std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
+		std::vector<TraceRestrictItem>::iterator remove_end = remove_start + 1;
+
+		if (IsTraceRestrictDoubleItem(old_item)) {
+			// this is a double-item, remove the next item as well
+			++remove_end;
+		}
+		items.erase(remove_start, remove_end);
+	}
+	return CommandCost();
+}
+
 /**
  * The main command for editing a signal tracerestrict program.
  * @param tile The tile which contains the signal.
@@ -928,71 +1007,10 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			break;
 		}
 
-		case TRDCT_REMOVE_ITEM: {
-			TraceRestrictItem old_item = *TraceRestrictProgram::InstructionAt(items, offset);
-			if (IsTraceRestrictConditional(old_item) && GetTraceRestrictCondFlags(old_item) != TRCF_OR) {
-				bool remove_whole_block = false;
-				if (GetTraceRestrictCondFlags(old_item) == 0) {
-					if (GetTraceRestrictType(old_item) == TRIT_COND_ENDIF) {
-						// this is an end if, can't remove these
-						return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF);
-					} else {
-						// this is an opening if
-						remove_whole_block = true;
-					}
-				}
-
-				uint32 recursion_depth = 1;
-				std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
-				std::vector<TraceRestrictItem>::iterator remove_end = remove_start + 1;
-
-				// iterate until matching end block found
-				for (; remove_end != items.end(); ++remove_end) {
-					TraceRestrictItem current_item = *remove_end;
-					if (IsTraceRestrictConditional(current_item)) {
-						if (GetTraceRestrictCondFlags(current_item) == 0) {
-							if (GetTraceRestrictType(current_item) == TRIT_COND_ENDIF) {
-								// this is an end if
-								recursion_depth--;
-								if (recursion_depth == 0) {
-									if (remove_whole_block) {
-										// inclusively remove up to here
-										++remove_end;
-										break;
-									} else {
-										// exclusively remove up to here
-										break;
-									}
-								}
-							} else {
-								// this is an opening if
-								recursion_depth++;
-							}
-						} else {
-							// this is an else/or type block
-							if (recursion_depth == 1 && !remove_whole_block) {
-								// exclusively remove up to here
-								recursion_depth = 0;
-								break;
-							}
-						}
-					} else if (IsTraceRestrictDoubleItem(current_item)) {
-						// this is a double-item, jump over the next item as well
-						++remove_end;
-					}
-				}
-				if (recursion_depth != 0) return CMD_ERROR; // ran off the end
-				items.erase(remove_start, remove_end);
-			} else {
-				std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
-				std::vector<TraceRestrictItem>::iterator remove_end = remove_start + 1;
-
-				if (IsTraceRestrictDoubleItem(old_item)) {
-					// this is a double-item, remove the next item as well
-					++remove_end;
-				}
-				items.erase(remove_start, remove_end);
-			}
+		case TRDCT_REMOVE_ITEM:
+		case TRDCT_SHALLOW_REMOVE_ITEM: {
+			CommandCost res = TraceRestrictProgramRemoveItemAt(items, offset, type == TRDCT_SHALLOW_REMOVE_ITEM);
+			if (res.Failed()) return res;
 			break;
 		}
 

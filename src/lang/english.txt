@@ -2466,7 +2466,7 @@ STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Unshare
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Select Target
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}Select Signal
 STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Insert an instruction
-STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Remove the selected instruction
+STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Remove the selected instruction{}Ctrl+Click to remove the selected conditional instruction but retain its contents
 STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}Reset the current signal (without affecting shared programs)
 STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Copy program from another signal
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Share program with another signal
@@ -2481,6 +2481,7 @@ STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No trace restri
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset too large
 STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :Can't change conditionality
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :Can't remove an 'end if'
+STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF           :Can't shallow remove an 'if' block with one or more 'else if', 'or if' or 'else' blocks
 STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :Validation failed: condstack non-empty at exit
 STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :Validation failed: else/endif without opening if
 STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :Validation failed: duplicate else

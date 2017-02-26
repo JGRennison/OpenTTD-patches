@@ -1006,7 +1006,8 @@ public:
 					return;
 				}
 
-				TraceRestrictDoCommandP(tile, track, TRDCT_REMOVE_ITEM, this->selected_instruction - 1, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM);
+				TraceRestrictDoCommandP(tile, track, _ctrl_pressed ? TRDCT_SHALLOW_REMOVE_ITEM : TRDCT_REMOVE_ITEM,
+						this->selected_instruction - 1, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM);
 				break;
 			}
 
