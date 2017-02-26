@@ -51,6 +51,9 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_SEL_TOP_RIGHT,
 	TR_WIDGET_SEL_SHARE,
 
+	TR_WIDGET_UP_BTN,
+	TR_WIDGET_DOWN_BTN,
+
 	TR_WIDGET_TYPE_COND,
 	TR_WIDGET_TYPE_NONCOND,
 	TR_WIDGET_CONDFLAGS,
@@ -1011,6 +1014,26 @@ public:
 				break;
 			}
 
+			case TR_WIDGET_UP_BTN:
+			case TR_WIDGET_DOWN_BTN: {
+				TraceRestrictItem item = this->GetSelected();
+				if (this->GetOwner() != _local_company || item == 0) {
+					return;
+				}
+
+				uint32 p2 = 0;
+				if (widget == TR_WIDGET_UP_BTN) p2 |= 1;
+				if (_ctrl_pressed) p2 |= 2;
+
+				uint32 offset = this->selected_instruction - 1;
+
+				this->IsUpDownBtnUsable(widget == TR_WIDGET_UP_BTN, true);
+
+				TraceRestrictDoCommandP(tile, track, TRDCT_MOVE_ITEM,
+						offset, p2, STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+				break;
+			}
+
 			case TR_WIDGET_CONDFLAGS: {
 				TraceRestrictItem item = this->GetSelected();
 				if (this->GetOwner() != _local_company || item == 0) {
@@ -1560,6 +1583,11 @@ public:
 		}
 	}
 
+	virtual EventState OnCTRLStateChange() {
+		this->UpdateButtonState();
+		return ES_NOT_HANDLED;
+	}
+
 private:
 	/**
 	 * Helper function to make start and end instructions (these are not stored in the actual program)
@@ -1685,6 +1713,26 @@ private:
 		this->UpdateButtonState();
 	}
 
+	bool IsUpDownBtnUsable(bool up, bool update_selection = false) {
+		const TraceRestrictProgram *prog = this->GetProgram();
+		if (!prog) return false;
+
+		TraceRestrictItem item = this->GetSelected();
+		if (GetTraceRestrictType(item) == TRIT_NULL) return false;
+
+		std::vector<TraceRestrictItem> items = prog->items; // copy
+		uint32 offset = this->selected_instruction - 1;
+		if (TraceRestrictProgramMoveItemAt(items, offset, up, _ctrl_pressed).Succeeded()) {
+			TraceRestrictProgramActionsUsedFlags actions_used_flags;
+			if (TraceRestrictProgram::Validate(items, actions_used_flags).Succeeded()) {
+				if (update_selection) this->selected_instruction = offset + 1;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/**
 	 * Update button states, text values, etc.
 	 */
@@ -1729,6 +1777,9 @@ private:
 		this->DisableWidget(TR_WIDGET_BLANK_L);
 		this->DisableWidget(TR_WIDGET_BLANK_M);
 		this->DisableWidget(TR_WIDGET_BLANK_R);
+
+		this->DisableWidget(TR_WIDGET_UP_BTN);
+		this->DisableWidget(TR_WIDGET_DOWN_BTN);
 
 		left_2_sel->SetDisplayedPlane(DPL2_BLANK);
 		left_sel->SetDisplayedPlane(DPL_BLANK);
@@ -1936,6 +1987,8 @@ private:
 				this->EnableWidget(TR_WIDGET_INSERT);
 				this->EnableWidget(TR_WIDGET_REMOVE);
 			}
+			if (this->IsUpDownBtnUsable(true)) this->EnableWidget(TR_WIDGET_UP_BTN);
+			if (this->IsUpDownBtnUsable(false)) this->EnableWidget(TR_WIDGET_DOWN_BTN);
 		}
 
 		this->SetDirty();
@@ -2041,6 +2094,8 @@ static const NWidgetPart _nested_program_widgets[] = {
 
 	// Button Bar
 	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_UP_BTN), SetMinimalSize(12, 12), SetDataTip(SPR_ARROW_UP, STR_TRACE_RESTRICT_UP_BTN_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_DOWN_BTN), SetMinimalSize(12, 12), SetDataTip(SPR_ARROW_DOWN, STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_LEFT_2),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_TYPE_NONCOND), SetMinimalSize(124, 12), SetFill(1, 0),

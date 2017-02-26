@@ -2452,6 +2452,8 @@ STR_TRACE_RESTRICT_DIRECTION_NW                                 :north-west
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
+STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}Move the selected instruction up{}Ctrl+Click to move conditional instruction instead of whole block
+STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP                             :{BLACK}Move the selected instruction down{}Ctrl+Click to move conditional instruction instead of whole block
 STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}Type
 STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}Comparison operator
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}Value
@@ -2476,6 +2478,7 @@ STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Click an
 STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Can't insert instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Can't modify instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Can't remove instruction
+STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}Can't move instruction
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Value too large, maximum is {DECIMAL}
 STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :No trace restrict program exists
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset too large

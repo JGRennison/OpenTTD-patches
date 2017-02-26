@@ -21,6 +21,7 @@
 #include "group.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include <vector>
+#include <algorithm>
 
 /** @file
  *
@@ -929,13 +930,67 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 	return CommandCost();
 }
 
+CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items, uint32 &offset, bool up, bool shallow_mode)
+{
+	std::vector<TraceRestrictItem>::iterator move_start = TraceRestrictProgram::InstructionAt(items, offset);
+	std::vector<TraceRestrictItem>::iterator move_end = InstructionIteratorNext(move_start);
+
+	TraceRestrictItem old_item = *move_start;
+	if (!shallow_mode) {
+		if (IsTraceRestrictConditional(old_item)) {
+			if (GetTraceRestrictCondFlags(old_item) != 0) {
+				// can't move or/else blocks
+				return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+			}
+			if (GetTraceRestrictType(old_item) == TRIT_COND_ENDIF) {
+				// this is an end if, can't move these
+				return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+			}
+
+			uint32 recursion_depth = 1;
+			// iterate until matching end block found
+			for (; move_end != items.end(); InstructionIteratorAdvance(move_end)) {
+				TraceRestrictItem current_item = *move_end;
+				if (IsTraceRestrictConditional(current_item)) {
+					if (GetTraceRestrictCondFlags(current_item) == 0) {
+						if (GetTraceRestrictType(current_item) == TRIT_COND_ENDIF) {
+							// this is an end if
+							recursion_depth--;
+							if (recursion_depth == 0) {
+								// inclusively remove up to here
+								InstructionIteratorAdvance(move_end);
+								break;
+							}
+						} else {
+							// this is an opening if
+							recursion_depth++;
+						}
+					}
+				}
+			}
+			if (recursion_depth != 0) return CMD_ERROR; // ran off the end
+		}
+	}
+
+	if (up) {
+		if (move_start == items.begin()) return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+		std::rotate(TraceRestrictProgram::InstructionAt(items, offset - 1), move_start, move_end);
+		offset--;
+	} else {
+		if (move_end == items.end()) return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+		std::rotate(move_start, move_end, InstructionIteratorNext(move_end));
+		offset++;
+	}
+	return CommandCost();
+}
+
 /**
  * The main command for editing a signal tracerestrict program.
  * @param tile The tile which contains the signal.
  * @param flags Internal command handler stuff.
  * Below apply for instruction modification actions only
  * @param p1 Bitstuffed items
- * @param p2 Item, for insert and modify operations
+ * @param p2 Item, for insert and modify operations. Flags for instruction move operations
  * @return the cost of this operation (which is free), or an error
  */
 CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
@@ -1016,6 +1071,12 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		case TRDCT_REMOVE_ITEM:
 		case TRDCT_SHALLOW_REMOVE_ITEM: {
 			CommandCost res = TraceRestrictProgramRemoveItemAt(items, offset, type == TRDCT_SHALLOW_REMOVE_ITEM);
+			if (res.Failed()) return res;
+			break;
+		}
+
+		case TRDCT_MOVE_ITEM: {
+			CommandCost res = TraceRestrictProgramMoveItemAt(items, offset, p2 & 1, p2 & 2);
 			if (res.Failed()) return res;
 			break;
 		}
