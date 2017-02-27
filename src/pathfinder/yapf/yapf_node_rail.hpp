@@ -129,6 +129,8 @@ struct CYapfRailNodeT
 	CYapfRailSegment *m_segment;
 	uint16            m_num_signals_passed;
 	uint16            m_num_signals_res_through_passed;
+	TileIndex         m_last_non_reserve_through_signal_tile;
+	Trackdir          m_last_non_reserve_through_signal_td;
 	union {
 		uint32          m_inherited_flags;
 		struct {
@@ -147,6 +149,8 @@ struct CYapfRailNodeT
 		if (parent == NULL) {
 			m_num_signals_passed      = 0;
 			m_num_signals_res_through_passed = 0;
+			m_last_non_reserve_through_signal_tile = INVALID_TILE;
+			m_last_non_reserve_through_signal_td = INVALID_TRACKDIR;
 			flags_u.m_inherited_flags = 0;
 			m_last_red_signal_type    = SIGTYPE_NORMAL;
 			/* We use PBS as initial signal type because if we are in
@@ -163,6 +167,8 @@ struct CYapfRailNodeT
 		} else {
 			m_num_signals_passed      = parent->m_num_signals_passed;
 			m_num_signals_res_through_passed = parent->m_num_signals_res_through_passed;
+			m_last_non_reserve_through_signal_tile = parent->m_last_non_reserve_through_signal_tile;
+			m_last_non_reserve_through_signal_td = parent->m_last_non_reserve_through_signal_td;
 			flags_u.m_inherited_flags = parent->flags_u.m_inherited_flags;
 			m_last_red_signal_type    = parent->m_last_red_signal_type;
 			m_last_signal_type        = parent->m_last_signal_type;
