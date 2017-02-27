@@ -622,6 +622,8 @@ enum TraceRestrictDoCommandType {
 	TRDCT_MODIFY_ITEM,                       ///< modify instruction at offset field to given value
 	TRDCT_MODIFY_DUAL_ITEM,                  ///< modify second item of dual-part instruction at offset field to given value
 	TRDCT_REMOVE_ITEM,                       ///< remove instruction at offset field
+	TRDCT_SHALLOW_REMOVE_ITEM,               ///< shallow remove instruction at offset field, does not delete contents of block
+	TRDCT_MOVE_ITEM,                         ///< move instruction or block at offset field
 
 	TRDCT_PROG_COPY,                         ///< copy program operation. Do not re-order this with respect to other values
 	TRDCT_PROG_SHARE,                        ///< share program operation
@@ -644,6 +646,9 @@ inline void TraceRestrictProgMgmtDoCommandP(TileIndex tile, Track track, TraceRe
 
 CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
 CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
+
+CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &items, uint32 offset, bool shallow_mode);
+CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items, uint32 &offset, bool up, bool shallow_mode);
 
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
 
