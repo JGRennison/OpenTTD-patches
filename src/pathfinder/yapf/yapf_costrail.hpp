@@ -192,9 +192,9 @@ private:
 	{
 		const Node *node = static_cast<const Node *>(node_ptr);
 		for (;;) {
-			TileIndex last_signal_tile = node->m_segment->m_last_signal_tile;
+			TileIndex last_signal_tile = node->m_last_non_reserve_through_signal_tile;
 			if (last_signal_tile != INVALID_TILE) {
-				Trackdir last_signal_trackdir = node->m_segment->m_last_signal_td;
+				Trackdir last_signal_trackdir = node->m_last_non_reserve_through_signal_td;
 				if (HasPbsSignalOnTrackdir(last_signal_tile, last_signal_trackdir)) {
 					return last_signal_tile;
 				} else {
@@ -348,13 +348,17 @@ public:
 						}
 					}
 
+					bool is_reserve_through = false;
 					if (ShouldCheckTraceRestrict(n, tile)) {
 						TraceRestrictProgramResult out;
-						bool is_reserve_through = false;
 						if (ExecuteTraceRestrict(n, tile, trackdir, cost, out, &is_reserve_through)) {
 							return -1;
 						}
 						if (is_reserve_through) n.m_num_signals_res_through_passed++;
+					}
+					if (!is_reserve_through) {
+						n.m_last_non_reserve_through_signal_tile = tile;
+						n.m_last_non_reserve_through_signal_td = trackdir;
 					}
 
 					n.m_num_signals_passed++;
