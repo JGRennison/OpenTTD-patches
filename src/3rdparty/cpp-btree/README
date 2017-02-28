@@ -35,7 +35,7 @@ cmake . -G "Unix Makefiles" -Dbuild_tests=ON -DCMAKE_CXX_COMPILER=clang++
 Note that this is a modified version of the original at http://code.google.com/p/cpp-btree
 
 Changes include:
-- Changing size_type from ssize_t to size_t
+- Changing size_type from ssize_t to size_t, remove remaining uses of ssize_t
 - Adding cbegin, cend, crbegin, crend.
 - Adding key_comp
 - Adding move constructors/assignment.
