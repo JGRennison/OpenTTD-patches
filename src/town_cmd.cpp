@@ -1800,7 +1800,7 @@ static CommandCost TownCanBePlacedHere(TileIndex tile)
 	}
 
 	/* Check distance to all other towns. */
-	if (IsCloseToTown(tile, 20)) {
+	if (IsCloseToTown(tile, _settings_game.economy.town_min_distance)) {
 		return_cmd_error(STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN);
 	}
 
