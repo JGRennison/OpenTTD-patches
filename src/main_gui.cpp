@@ -47,9 +47,6 @@
 
 #include "safeguards.h"
 
-static int _rename_id = 1;
-static int _rename_what = -1;
-
 void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
 {
 #ifdef ENABLE_NETWORK
@@ -66,11 +63,6 @@ void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_TEAM, p2, msg, CLIENT_ID_SERVER, p1);
 	}
 #endif /* ENABLE_NETWORK */
-}
-
-void HandleOnEditText(const char *str)
-{
-	NOT_REACHED();
 }
 
 /**
