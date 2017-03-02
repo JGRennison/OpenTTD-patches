@@ -2075,7 +2075,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}新会�
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :追放
 STR_NETWORK_CLIENTLIST_BAN                                      :参入禁止
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :送金
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :全員へ発言
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :チームへ発言
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :個人的なメッセージ
@@ -2084,7 +2083,6 @@ STR_NETWORK_SERVER                                              :サーバー
 STR_NETWORK_CLIENT                                              :クライアント
 STR_NETWORK_SPECTATORS                                          :観覧者
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}送りたい金額を入力
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}観覧者
 
 # Network set password
@@ -3236,6 +3234,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}本社�
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}本社ビルを移転します(費用は社の総資産の1%になります)。Shift+クリックで費用を見積もります
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}詳細
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}インフラ設備の詳細な個数・タイル数を表示します
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}送金
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}顔の変更
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}社長の顔を変更します
@@ -3253,6 +3252,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}この�
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :会社名
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :社長名
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :送りたい金額を入力
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}現在、当{COMPANY}は業績悪化に伴い、債務の肩代わりを条件に社の全資産をお譲り致そうと考えております。{}{}債務{CURRENCY_LONG}を一括代済し、この会社を吸収合併しますか?
 

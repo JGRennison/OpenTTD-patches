@@ -2075,7 +2075,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Công ty
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Đá
 STR_NETWORK_CLIENTLIST_BAN                                      :Cấm
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Cho tiền
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Nói với tất cả
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Nói cho công ty
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Thông điệp riêng
@@ -2084,7 +2083,6 @@ STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Máy trạm
 STR_NETWORK_SPECTATORS                                          :Người xem
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Nhập số tiền muốn cho đi
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Người xem
 
 # Network set password
@@ -3236,6 +3234,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Chuyển
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Chuyển trụ sở công ty đi nơi khác sẽ cần chi phí là 1% giá trị công ty. . Shift+Click để xem chi phí dự tính
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Chi tiết
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Xem chi tiết thống kê hạ tầng
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Cho tiền
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Chọn khuôn mặt khác
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Chọn khuôn mặt của người điều hành
@@ -3253,6 +3252,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Bán 25%
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Tên Công Ty
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Tên Giám Đốc
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Nhập số tiền muốn cho đi
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Chúng tôi tìm một công ty để chuyển nhượng công việc kinh doanh và tài sản công ty chúng tôi.{}{}Bạn có muốn mua công ty {COMPANY} của chúng tôi với giá {CURRENCY_LONG}?
 

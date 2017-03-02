@@ -1822,7 +1822,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}பு�
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :உதை
 STR_NETWORK_CLIENTLIST_BAN                                      :அனுமதிக்காதே
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :பணம் தா
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :அனைவருடனும் பேசு
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :நிறுவனத்திடம் பேசு
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :இரகசிய தகவல்
@@ -1831,7 +1830,6 @@ STR_NETWORK_SERVER                                              :சர்வர
 STR_NETWORK_CLIENT                                              :Client
 STR_NETWORK_SPECTATORS                                          :கவனிப்பவர்கள்
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}கொடுக்கப்படும் பணத்தின் அளவினை இடவும்
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}பார்வையாளர்
 
 # Network set password
@@ -2862,6 +2860,7 @@ STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}தல�
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}HQ வினை நகர்த்தவும்
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}விவரங்கள்
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}விவரமான கட்டட எண்ணிக்கைகளை காட்டு
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}பணம் தா
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}புதிய முகம்
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}மேலாளருக்கு புதிய முகத்தினைத் தேர்ந்தெடு
@@ -2876,6 +2875,7 @@ STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}நி�
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :நிறுவனத்தின் பெயர்
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :மேலாளரின் பெயர்
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :கொடுக்கப்படும் பணத்தின் அளவினை இடவும்
 
 
 # Company infrastructure window

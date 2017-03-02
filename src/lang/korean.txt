@@ -2077,7 +2077,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}새 회�
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :추방
 STR_NETWORK_CLIENTLIST_BAN                                      :차단
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :돈 보내기
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :모두에게 말하기
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :이 회사에게 말하기
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :귓속말하기
@@ -2086,7 +2085,6 @@ STR_NETWORK_SERVER                                              :서버
 STR_NETWORK_CLIENT                                              :접속자
 STR_NETWORK_SPECTATORS                                          :관전자
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}송금하고 싶은 양을 입력하세요.
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}관전자
 
 # Network set password
@@ -3239,6 +3237,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}본사 �
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}회사가치의 1% 가격을 들여 본사를 다른 위치로 옮깁니다. SHIFT+클릭하면 예상 가격을 볼 수 있습니다.
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}상세정보
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}기반시설 상세정보 창을 엽니다.
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}돈 보내기
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}새 얼굴
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}사장의 얼굴을 선택합니다.
@@ -3256,6 +3255,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}이 회�
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :회사 이름
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :사장 이름
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :송금하고 싶은 양을 입력하세요.
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}저희 회사를 거두어주실 운송 회사를 찾고있습니다.{}{}저희 {COMPANY} 회사를 {CURRENCY_LONG}의 가격으로 인수합병하시겠습니까?
 

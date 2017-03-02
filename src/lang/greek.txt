@@ -2184,7 +2184,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Νέα �
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Εκδίωξη
 STR_NETWORK_CLIENTLIST_BAN                                      :Απαγόρευση
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Δώστε χρήματα
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Μιλήστε σε όλους
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Μιλήστε στην εταιρεία
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Προσωπικό μήνυμα
@@ -2193,7 +2192,6 @@ STR_NETWORK_SERVER                                              :Διακομι�
 STR_NETWORK_CLIENT                                              :Πελάτης
 STR_NETWORK_SPECTATORS                                          :Θεατές
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Εισάγετε το πόσο των χρημάτων που θέλετε να δώσετε
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Θεατής
 
 # Network set password
@@ -3345,6 +3343,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Ανοι
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Εποικοδόμηση της έδρας της εταιρίας σε άλλο μέρος, με κόστος το 1% της αξίας της εταιρίας. Με Shift+Κλικ εμφανίζεται το εκτιμώμενο κόστος χωρίς επανατοποθέτηση της έδρας
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Λεπτομέρειες
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Προβολή λεπτομερούς μέτρησης υποδομών
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Δώστε χρήματα
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Νέο Πρόσωπο
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Επιλογή νέου προσώπου διευθυντή
@@ -3362,6 +3361,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Πώλη
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Όνομα Εταιρίας
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Όνομα Διευθυντή
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Εισάγετε το πόσο των χρημάτων που θέλετε να δώσετε
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Ψάχνουμε μία εταιρία μεταφορών για να εξαγοράσει την εταιρία μας.{}{}Θέλετε να εξαγοράσετε την {COMPANY} για {CURRENCY_LONG};
 

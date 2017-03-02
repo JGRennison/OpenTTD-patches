@@ -2036,7 +2036,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nova com
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Chimpar
 STR_NETWORK_CLIENTLIST_BAN                                      :Bloquear
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Dar cartos
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Falar a todos
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Falar con compañía
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Mensaxe privada
@@ -2045,7 +2044,6 @@ STR_NETWORK_SERVER                                              :Servidor
 STR_NETWORK_CLIENT                                              :Cliente
 STR_NETWORK_SPECTATORS                                          :Espectadores
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Introduce a cantidade de cartos que queres dar
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Non grava-lo contrasinal introducido
@@ -3185,6 +3183,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Reposici
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Recontruí-la sede da compañía en calquera outro lugar cun custo do 1% do valor da compañía. Shift+click mostra o custo estimado sen reubica-la sede
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detalles
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Ver contas detalladas de infraestrutura
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Dar cartos
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nova cara
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Selecciona-la nova cara do presidente
@@ -3202,6 +3201,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vender u
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nome da compañía
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nome do presidente
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Introduce a cantidade de cartos que queres dar
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Buscamos unha compañía de transportes para adquiri-la nosa compañía{}{}Queres mercar{COMPANY} por {CURRENCY_LONG}?
 

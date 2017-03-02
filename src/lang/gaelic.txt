@@ -2277,7 +2277,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Companai
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Thoir a bhròg dha
 STR_NETWORK_CLIENTLIST_BAN                                      :Toirmisg
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Thoir airgead dha
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Bruidhinn ris a h-uile duine
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Bruidhinn ris a' chompanaidh
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Teachdaireachd phrìobhaideach
@@ -2286,7 +2285,6 @@ STR_NETWORK_SERVER                                              :Frithealaiche
 STR_NETWORK_CLIENT                                              :Cliant
 STR_NETWORK_SPECTATORS                                          :Amharcaichean
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Cuir a-steach na tha thu airson toirt seachad
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Amharc
 
 # Network set password
@@ -3465,6 +3463,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Imrich i
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Ath-thog ionad na companaidh àiteigin eile airson cosgais dhe 1% dhe luach a' chompanaidh. Seallaidh Shift+briogadh tuairmse nan cosgaisean gun a bhith ag imrich ionad na companaidh
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Mion-fhiosrachadh
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Seall cunntadh mionaideach a' bhun-structair
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Thoir airgead dha
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Aghaidh ùr
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Tagh aghaidh ùr airson an stiùiriche
@@ -3482,6 +3481,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Reic ear
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Ainm na companaidh
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Ainm an stiùiriche
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Cuir a-steach na tha thu airson toirt seachad
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Tha sinn a' sireadh companaidh giùlain a ghabhas stiùir air a' chompanaidh againn.{}{}A bheil thu airson {COMPANY} a cheannach airson {CURRENCY_LONG}?
 

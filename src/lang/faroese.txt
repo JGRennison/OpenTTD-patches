@@ -1894,7 +1894,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nýggja 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Sparka
 STR_NETWORK_CLIENTLIST_BAN                                      :Bannað
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Gev pening
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Tosa við øll
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Tosa við fyritøku
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Persónligt boð
@@ -1903,7 +1902,6 @@ STR_NETWORK_SERVER                                              :Servari
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Eygleiðarar
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Skriva nøgdina av peningi tú vil geva
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Goym ikki skrivaða loyniorðið
@@ -2868,6 +2866,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Flyt HB
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Endurbygg fyritøku høvuðsborg aðrastaðni fyri 1% av virðinum á fyritøkuni. Shift+trýst vísur kostnaðar meting uttan at flyta høvuðsborgina
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Smálutir
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Sjá innankervi í smálutum
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Gev pening
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nýtt andlit
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Vel eitt nýtt andlit til leiðaran
@@ -2885,6 +2884,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sel 25% 
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Navn á Fyritøku
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Navn á leiðara
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Skriva nøgdina av peningi tú vil geva
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Vit leita eftir einari flutnings fyritøku at taka yvir okkara fyritøku.{}{}Vil tú keypa {COMPANY} fyri {CURRENCY_LONG}?
 

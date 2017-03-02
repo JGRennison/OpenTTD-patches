@@ -2024,7 +2024,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}บร�
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :เตะ
 STR_NETWORK_CLIENTLIST_BAN                                      :แบน
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :ให้เงิน
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :พูดกับผู้เล่นทั้งหมด
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :พูดกับผู้เล่นในบริษัทเดียวกัน
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :ข้อความส่วนตัว
@@ -2033,7 +2032,6 @@ STR_NETWORK_SERVER                                              :เซิฟเ
 STR_NETWORK_CLIENT                                              :ลูกข่าย
 STR_NETWORK_SPECTATORS                                          :ผู้ชม
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}กรอกจำนวนเงินที่ต้องการจะให้
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}ผู้สังเกตุการณ์
 
 # Network set password
@@ -3168,6 +3166,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}ย้�
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}ย้ายที่ตั้งที่ทำการบริษัท
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}รายละเอียด
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}ดูรายละเอียดเกี่ยวกับโครงสร้างพื้นฐาน
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}ให้เงิน
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}เลือกใบหน้าใหม่
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}เลือกใบหน้าใหม่ของผู้ประธานบริษัท
@@ -3185,6 +3184,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}ขา�
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :ชื่อบริษัท
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :ชื่อประธานบริษัท
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :กรอกจำนวนเงินที่ต้องการจะให้
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}เรากำลังมองหาบริษัทขนส่งอื่นๆที่จะเข้ามากู้วิกฤตบริษัทเรา และซื้อกิจการเราไป.{}{}คุณต้องการจะซื้อกิจการของเราหรือไม่ ? {COMPANY} for {CURRENCY_LONG}?
 

@@ -2076,7 +2076,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nuwe maa
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Skop
 STR_NETWORK_CLIENTLIST_BAN                                      :Verbod
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Gee geld
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Praat met almal
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Praat met maatskappy
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privaate boodskap
@@ -2085,7 +2084,6 @@ STR_NETWORK_SERVER                                              :Verskaffer
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Aanskouers
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Sleutel die bedrag geld in wat u wil gee
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Toeskouer
 
 # Network set password
@@ -3237,6 +3235,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Beweeg H
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Bou hoofkwartier elders teen 'n koste gelykstaande aan 1% van maatskappy se waarde. Shift+klik vir kwotasie
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Besonderhede
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Sien gedetaileerde infrastruktuur telling
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Gee geld
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nuwe Gesig
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Kies nuwe gesig vir bestuurder
@@ -3254,6 +3253,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Verkoop 
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Maatskappy Naam
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Bestuurder se Naam
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Sleutel die bedrag geld in wat u wil gee
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Ons is opsoek na 'n vervoer maatskappy wat ons se maatskappy sal oorvat.{}{}Wil jy {COMPANY} koop vir {CURRENCY_LONG}?
 

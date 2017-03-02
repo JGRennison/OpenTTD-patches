@@ -2133,7 +2133,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Uus ette
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Viska välja
 STR_NETWORK_CLIENTLIST_BAN                                      :Bänn
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Anna raha
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Räägi kõigiga
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Räägi ettevõttega
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privaatne sõnum
@@ -2142,7 +2141,6 @@ STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Vaatlejad
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Sisesta summa mida anda
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Vaatleja
 
 # Network set password
@@ -3294,6 +3292,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Liiguta 
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Ehita ettevõtte peakorter mujale 1% firmaväärtuse tasu eest. Shift+klõps näitab toimingu eeldatavat maksumust
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Täpsustused
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Vaata täpset taristu hulka
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Anna raha
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Uus nägu
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Vali presidendile uus nägu
@@ -3311,6 +3310,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Müü 25
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Ettevõtte nimi
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Presidendi nimi
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Sisesta summa mida anda
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Otsime ettevõtet, kes võtaks meie firma üle.{}{}Kas soovite osta ettevõtte {COMPANY} {CURRENCY_LONG} eest?
 

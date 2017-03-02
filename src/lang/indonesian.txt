@@ -2075,7 +2075,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Buat Per
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Usir
 STR_NETWORK_CLIENTLIST_BAN                                      :Larangan
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Kirim uang
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Bicara ke semua
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Bicara ke perusahaan
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Pesan pribadi
@@ -2084,7 +2083,6 @@ STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Klien
 STR_NETWORK_SPECTATORS                                          :Penonton
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Masukkan jumlah uang yang akan diberikan
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Pengamat
 
 # Network set password
@@ -3232,6 +3230,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Pindah K
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Membangun kembali kantor pusat perusahaan di tempat lain dengan 1% ongkos dari nilai perusahaan. Shift untuk menampilkan perkiraan biaya
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detail
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Lihat jumlah infrastruktur lebih detail
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Kirim uang
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Ganti Wajah
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Pilih wajah baru pimpinan
@@ -3249,6 +3248,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Jual 25%
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nama Perusahaan
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nama Pimpinan
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Masukkan jumlah uang yang akan diberikan
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Kami mencari perusahaan transporasi untuk mengambil alih perusahaan kami.{}{}Anda ingin membeli {COMPANY} senilai {CURRENCY_LONG}?
 

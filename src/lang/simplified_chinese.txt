@@ -2075,7 +2075,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}新公�
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :踢出
 STR_NETWORK_CLIENTLIST_BAN                                      :禁止
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :送钱
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :向全体人广播
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :向本公司广播
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :私聊
@@ -2084,7 +2083,6 @@ STR_NETWORK_SERVER                                              :服务器
 STR_NETWORK_CLIENT                                              :客户端
 STR_NETWORK_SPECTATORS                                          :旁观者
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}请输入您想赠与的资金数
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}旁观者
 
 # Network set password
@@ -3236,6 +3234,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}重置�
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}以公司市值 1% 的代价重建总部，按住 Shift 键单击可以显示所需资金
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}固定资产维护费明细
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}显示详细的设施情况
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}送钱
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}新的头像
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}为总裁选择新头像
@@ -3253,6 +3252,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}出售�
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :公司名称
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :总裁姓名
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :请输入您想赠与的资金数
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}我们正在寻找一家愿意收购我们的公司。{}{}您愿意收购 {COMPANY} ({CURRENCY_LONG}) 吗？
 
