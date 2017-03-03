@@ -57,10 +57,16 @@ void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	SetDParam(0, p2);
 	GetString(msg, STR_COMPANY_NAME, lastof(msg));
 
+	/*
+	 * bits 31-16: source company
+	 * bits 15-0: target company
+	 */
+	uint64 auxdata = (p2 & 0xFFFF) | (((uint64) _local_company) << 16);
+
 	if (!_network_server) {
-		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_TEAM, p2, msg, p1);
+		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, NetworkTextMessageData(p1, auxdata));
 	} else {
-		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_TEAM, p2, msg, CLIENT_ID_SERVER, p1);
+		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, CLIENT_ID_SERVER, NetworkTextMessageData(p1, auxdata));
 	}
 #endif /* ENABLE_NETWORK */
 }

@@ -2187,6 +2187,8 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {RAW_STRING
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {RAW_STRING} has changed his/her name to {RAW_STRING}
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {RAW_STRING} gave your company {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** You gave {1:RAW_STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_MONEY_GIVEN                                 :*** {RAW_STRING} gave {1:RAW_STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{RAW_STRING} ({COMPANY})
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}The server closed the session
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}The server is restarting...{}Please wait...
 
