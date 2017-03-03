@@ -94,7 +94,7 @@ public:
 	static NetworkRecvStatus SendGamePassword(const char *password);
 	static NetworkRecvStatus SendCompanyPassword(const char *password);
 
-	static NetworkRecvStatus SendChat(NetworkAction action, DestType type, int dest, const char *msg, int64 data);
+	static NetworkRecvStatus SendChat(NetworkAction action, DestType type, int dest, const char *msg, NetworkTextMessageData data);
 	static NetworkRecvStatus SendSetPassword(const char *password);
 	static NetworkRecvStatus SendSetName(const char *name);
 	static NetworkRecvStatus SendRCon(const char *password, const char *command);

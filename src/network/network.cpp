@@ -230,7 +230,7 @@ bool NetworkCompanyIsPassworded(CompanyID company_id)
 /* This puts a text-message to the console, or in the future, the chat-box,
  *  (to keep it all a bit more general)
  * If 'self_send' is true, this is the client who is sending the message */
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const char *name, const char *str, int64 data)
+void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const char *name, const char *str, NetworkTextMessageData data)
 {
 	StringID strid;
 	switch (action) {
@@ -266,7 +266,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	char message[1024];
 	SetDParamStr(0, name);
 	SetDParamStr(1, str);
-	SetDParam(2, data);
+	SetDParam(2, data.data);
 
 	/* All of these strings start with "***". These characters are interpreted as both left-to-right and
 	 * right-to-left characters depending on the context. As the next text might be an user's name, the

@@ -131,5 +131,20 @@ enum NetworkErrorCode {
 	NETWORK_ERROR_END,
 };
 
+struct NetworkTextMessageData {
+	int64 data;
+
+	NetworkTextMessageData(int64 data = 0)
+			: data(data) { }
+
+	template <typename T> void recv(T *p) {
+		this->data = p->Recv_uint64();
+	}
+
+	template <typename T> void send(T *p) const {
+		p->Send_uint64(this->data);
+	}
+};
+
 #endif /* ENABLE_NETWORK */
 #endif /* NETWORK_TYPE_H */
