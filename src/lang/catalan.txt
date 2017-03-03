@@ -2077,7 +2077,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nova com
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Breu
 STR_NETWORK_CLIENTLIST_BAN                                      :Prohibit
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Entrega diners
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Parla a tothom
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Parla amb la companyia
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Missatge Privat
@@ -2086,7 +2085,6 @@ STR_NETWORK_SERVER                                              :Servidor
 STR_NETWORK_CLIENT                                              :Client
 STR_NETWORK_SPECTATORS                                          :Espectadors
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Introdueix la quantitat de diners que vols donar
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Espectador
 
 # Network set password
@@ -3239,6 +3237,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Trasllad
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Trasllada la seu a un altre lloc amb el cost d'un 1% del valor de la companyia. Amb Maj+Clic, mostra el cost estimat sense traslladar la seu.
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detalls
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Veure els detalls de la infraestructura de la companyia.
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Entrega diners
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Modifica la cara
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Modifica la cara del president de la companyia.
@@ -3256,6 +3255,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Ven un 2
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nom de la companyia
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nom del president
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Introdueix la quantitat de diners que vols donar
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Estem venent la nostra companyia de transports.{}{}Vols comprar {COMPANY} per {CURRENCY_LONG}?
 

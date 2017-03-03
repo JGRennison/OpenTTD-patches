@@ -2089,7 +2089,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}חברה
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :בעט
 STR_NETWORK_CLIENTLIST_BAN                                      :חסימה
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :נתן כסף
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :דבר לכולם
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :דבר לחברה
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :הודעה פרטית
@@ -2098,7 +2097,6 @@ STR_NETWORK_SERVER                                              :שרת
 STR_NETWORK_CLIENT                                              :לקוח
 STR_NETWORK_SPECTATORS                                          :צופים
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}הכנס סכום כסף שברצונך לתת
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}צופה
 
 # Network set password
@@ -3250,6 +3248,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}שנה �
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}מקם מחדש את מטה החברה עבור 1% משווי החברה. Shift+לחיצה מציג הערכת עלות ללא מיקום מחדש של המטה
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}פרטים
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}צפה בספירות מפורטות של תשתיות
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}נתן כסף
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}פנים חדשות
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}בחר פנים חדשות למנהל
@@ -3267,6 +3266,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}מכור
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :שם החברה
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :שם המנהל
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :הכנס סכום כסף שברצונך לתת
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}.אנו מחפשים אחר קונה לחברה{} ? {NBSP}{1:CURRENCY_LONG} תמורת {NBSP}{0:COMPANY} האם אתה מעוניין לקנות את
 

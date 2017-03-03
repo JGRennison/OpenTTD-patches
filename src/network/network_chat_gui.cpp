@@ -273,7 +273,7 @@ static void SendChat(const char *buf, DestType type, int dest)
 {
 	if (StrEmpty(buf)) return;
 	if (!_network_server) {
-		MyClient::SendChat((NetworkAction)(NETWORK_ACTION_CHAT + type), type, dest, buf, 0);
+		MyClient::SendChat((NetworkAction)(NETWORK_ACTION_CHAT + type), type, dest, buf, NetworkTextMessageData());
 	} else {
 		NetworkServerSendChat((NetworkAction)(NETWORK_ACTION_CHAT + type), type, dest, buf, CLIENT_ID_SERVER);
 	}

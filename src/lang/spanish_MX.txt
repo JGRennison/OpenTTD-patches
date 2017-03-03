@@ -2077,7 +2077,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nueva em
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Expulsar
 STR_NETWORK_CLIENTLIST_BAN                                      :Prohibir acceso
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Dar dinero
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Hablar a todos
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Hablar a una empresa
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Mensaje privado
@@ -2086,7 +2085,6 @@ STR_NETWORK_SERVER                                              :Servidor
 STR_NETWORK_CLIENT                                              :Cliente
 STR_NETWORK_SPECTATORS                                          :Espectadores
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Introducir la cantidad de dinero a dar
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Espectador
 
 # Network set password
@@ -3239,6 +3237,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Reubicar
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Reubicar la sede de la empresa a cualquier otro lugar con el costo del 1% del valor total de la empresa. Mayús+Clic muestra una estimación del precio sin mover la sede
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detalles
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Ver informe detallado de infraestructura
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Dar dinero
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nueva cara
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Elegir nueva cara para el presidente
@@ -3256,6 +3255,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vender 2
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nombre de la empresa
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nombre del presidente
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Introducir la cantidad de dinero a dar
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Buscamos una empresa de transportes que quiera adquirir la nuestra.{}{}¿Comprar {COMPANY} por {CURRENCY_LONG}?
 

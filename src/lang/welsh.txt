@@ -2075,7 +2075,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Cwmni ne
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Cicio
 STR_NETWORK_CLIENTLIST_BAN                                      :Gwahardd
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Rhoi arian
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Siarad â phawb
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Siarad a'r cwmni
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Neges breifat
@@ -2084,7 +2083,6 @@ STR_NETWORK_SERVER                                              :Gweinydd
 STR_NETWORK_CLIENT                                              :Gwestai
 STR_NETWORK_SPECTATORS                                          :Gwylwyr
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Nodwch faint o arian yr hoffech chi ei roi
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Gwyliwr
 
 # Network set password
@@ -3237,6 +3235,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Ail-leol
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Ailadeiladu pencadlys cwmni mewn man arall am 1% o werth y cwmni. Mae Shift+Clic yn dangos amcangyfrif o'r gost heb adleoli
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Manylion
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Gweld cyfansymau tanadeiledd manwl
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Rhoi arian
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Gwyneb Newydd
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Dewiswch wyneb newydd ar gyfer y rheolwr
@@ -3254,6 +3253,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Gwerthu 
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Enw Cwmni
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Enw Rheolwr
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Nodwch faint o arian yr hoffech chi ei roi
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Rydyn ni'n chwilio am rywun i gymryd ein cwmni ni drosodd.{}{}Hoffech chi brynu {COMPANY} am {CURRENCY_LONG}?
 

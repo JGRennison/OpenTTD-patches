@@ -2040,7 +2040,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Companie
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Dă afară
 STR_NETWORK_CLIENTLIST_BAN                                      :Interzice acces
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Donează bani
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Vorbeşte către toţi
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Vorbeşte către companie
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Mesaj privat
@@ -2049,7 +2048,6 @@ STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Client
 STR_NETWORK_SPECTATORS                                          :Spectatori
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Introduceţi suma pe care o oferiţi
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Spectator
 
 # Network set password
@@ -3194,6 +3192,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Mută se
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Mută sediul companiei (costă 1% din valoarea companiei). Shift+Click arată estimarea de cost fără a muta sediul companiei
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detalii
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Vezi contabilizarea infrastructurii
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Donează bani
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Schimbă poza
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Alege o nouă poză a preşedintelui
@@ -3211,6 +3210,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vinde 25
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Noul nume al companiei
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Noul nume al preşedintelui
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Introduceţi suma pe care o oferiţi
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Căutăm o companie de transport care să preia societatea noastră{}{}Doriţi să cumpăraţi {COMPANY} la preţul de {CURRENCY_LONG}?
 

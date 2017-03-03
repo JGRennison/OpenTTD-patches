@@ -473,7 +473,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyStats()
  * @param msg The actual message.
  * @param data Arbitrary extra data.
  */
-NetworkRecvStatus ServerNetworkAdminSocketHandler::SendChat(NetworkAction action, DestType desttype, ClientID client_id, const char *msg, int64 data)
+NetworkRecvStatus ServerNetworkAdminSocketHandler::SendChat(NetworkAction action, DestType desttype, ClientID client_id, const char *msg, NetworkTextMessageData data)
 {
 	Packet *p = new Packet(ADMIN_PACKET_SERVER_CHAT);
 
@@ -481,7 +481,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendChat(NetworkAction action
 	p->Send_uint8 (desttype);
 	p->Send_uint32(client_id);
 	p->Send_string(msg);
-	p->Send_uint64(data);
+	data.send(p);
 
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
@@ -935,7 +935,7 @@ void NetworkAdminCompanyRemove(CompanyID company_id, AdminCompanyRemoveReason bc
 /**
  * Send chat to the admin network (if they did opt in for the respective update).
  */
-void NetworkAdminChat(NetworkAction action, DestType desttype, ClientID client_id, const char *msg, int64 data, bool from_admin)
+void NetworkAdminChat(NetworkAction action, DestType desttype, ClientID client_id, const char *msg, NetworkTextMessageData data, bool from_admin)
 {
 	if (from_admin) return;
 

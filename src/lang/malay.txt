@@ -1795,7 +1795,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Syarikat
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Tendang
 STR_NETWORK_CLIENTLIST_BAN                                      :Larang
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Beri wang
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Cakap kepada semua
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Cakap kepada syarikat
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Pesanan peribadi
@@ -1804,7 +1803,6 @@ STR_NETWORK_SERVER                                              :Pelayan
 STR_NETWORK_CLIENT                                              :Klien
 STR_NETWORK_SPECTATORS                                          :Penyaksi
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Masukkan jumlah wang anda hendak memberikan
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Jangan simpan kata laluan ini
@@ -2887,6 +2885,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Tempatka
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Bina semula ibu pejabat syarikat di tempat lain dengan kos 1% nilai syarikat. Shift+Klik untuk menunjukkan anggaran kos tanpa pemindahan HQ
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Butiran
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Lihat kiraan infrastruktur secara terperinci
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Beri wang
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Wajah Baru
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Pilih wajah baru untuk pengurus
@@ -2904,6 +2903,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Jual 25%
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nama Syarikat
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nama Pengurus
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Masukkan jumlah wang anda hendak memberikan
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Kami sedang mencari syarikat pengangkutan yang boleh mengambil alih syarikat kami.{}{}Adakah anda ingin membeli {COMPANY} untuk {CURRENCY_LONG}?
 

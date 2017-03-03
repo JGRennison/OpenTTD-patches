@@ -2143,7 +2143,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nová sp
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Vyhodit
 STR_NETWORK_CLIENTLIST_BAN                                      :Ban
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Previesť peniaze
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Napísať správu všetkým
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Napísať spoločnosti správu
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Súkromná správa
@@ -2152,7 +2151,6 @@ STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Pozorovatelia
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Vložte čiastku ktorú chcete dať
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Pozorovateľ
 
 # Network set password
@@ -3304,6 +3302,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Premiest
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Sídlo spoločnosti je možné premiestniť za 1% hodnoty spoločnosti. Shift+klik zobrazí predpokladanú cenu
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detaily
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Ukázať detailné počty infraštruktúry
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Previesť peniaze
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nová tvár
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Vybrať novú tvár prezidenta
@@ -3321,6 +3320,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Predať 
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Názov spoločnosti
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Meno prezidenta
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Vložte čiastku ktorú chcete dať
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Hľadáme záujemcu o kúpu našej spoločnosti{}{}Chcete kúpiť našu spoločnosť {COMPANY} za {CURRENCY_LONG}?
 

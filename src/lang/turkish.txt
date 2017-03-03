@@ -2076,7 +2076,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Yeni şi
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :At
 STR_NETWORK_CLIENTLIST_BAN                                      :Yasakla
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Para ver
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Herkesle konuş
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Şirketle konuş
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Özel mesaj
@@ -2085,7 +2084,6 @@ STR_NETWORK_SERVER                                              :Sunucu
 STR_NETWORK_CLIENT                                              :İstemci
 STR_NETWORK_SPECTATORS                                          :İzleyiciler
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Vermek istediğiniz para miktarını girin
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}İzleyici
 
 # Network set password
@@ -3238,6 +3236,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Binayı 
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Şirket değerinin %1'i karşılığında binanın yerini değiştir. Shift+tıklama şirket binasının yerini değiştirmeden tahmini maliyeti gösterir
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Ayrıntılar
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Ayrıntılı altyapı sayılarını göster
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Para ver
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Yeni Surat
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Müdür için yeni surat seç
@@ -3255,6 +3254,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Şirketi
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Şirketin ismi
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Yöneticinin ismi
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Vermek istediğiniz para miktarını girin
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Şirketimizi satın alacak birilerini arıyoruz.{}{} {COMPANY} şirketini şu fiyata almak ister misiniz: {CURRENCY_LONG}?
 

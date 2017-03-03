@@ -2294,7 +2294,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nauja į
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Išmesti (Kick)
 STR_NETWORK_CLIENTLIST_BAN                                      :Užblokuoti
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Duoti pinigų
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Sakyti visiems
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Sakyti kompanijai
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privati žinutė
@@ -2303,7 +2302,6 @@ STR_NETWORK_SERVER                                              :Serveris
 STR_NETWORK_CLIENT                                              :Žaidėjas
 STR_NETWORK_SPECTATORS                                          :Stebėtojai
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Įveskite kiekį pinigų, kurį norite gauti
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Stebėtojas
 
 # Network set password
@@ -3455,6 +3453,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Perkelti
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Perstatyti įmonės būstinę kitur už 1% įmonė vertės. Shift+Click parodys kainą neperstatant būstinės
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Išsamiau
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Peržiūrėti detalesnę infrastruktūros informaciją
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Duoti pinigų
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Naujas veidas
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Pasirink naują veidą
@@ -3472,6 +3471,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Parduoti
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Kompanijos pavadinimas
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Direktoriaus vardas
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Įveskite kiekį pinigų, kurį norite gauti
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Mes ieškome, kas galėtų perimti mūsų kompaniją.{}{}Ar jūs norėtumėte pirkti {COMPANY} už {CURRENCY_LONG}?
 

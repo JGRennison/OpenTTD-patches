@@ -1725,7 +1725,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nova kom
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Forbatu
 STR_NETWORK_CLIENTLIST_BAN                                      :Bari
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Donu monon
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Parolu al ĉiuj
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Parolu al kompanio
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privata mesaĝo
@@ -1734,7 +1733,6 @@ STR_NETWORK_SERVER                                              :Servilo
 STR_NETWORK_CLIENT                                              :Kliento
 STR_NETWORK_SPECTATORS                                          :Spektantoj
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Tajpu kiom da mono vi volas doni
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ne konservu la pasvorton.
@@ -2688,6 +2686,7 @@ STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Vidu HQ
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Rigardi kompanian administraciejon
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Relokigu HQ
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Rekonstruu kompanian ĉefkonstruaĵon aliloke por 1% de kompanivaloro. Tenu maljuskliga klavo + Klak por (kost)taksi sen rekonstrui ĉefkonstruaĵon
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Donu monon
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nova Vizaĝo
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Elektu novan vizaĝon por la manaĝanto
@@ -2705,6 +2704,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vendu 25
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Kompania Nomo
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nomo de la Manaĝanto
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Tajpu kiom da mono vi volas doni
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Ni serĉas transportkompanion por transpreni nian kompanion.{}{}Ĉu vi volas aĉeti {COMPANY} por {CURRENCY_LONG}?
 

@@ -1984,7 +1984,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Konpaini
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Kanporatu
 STR_NETWORK_CLIENTLIST_BAN                                      :Debekatu
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Dirua eman
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Guztiei hitz egin
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Konpainiari hitz egin
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Mezu pribatua
@@ -1993,7 +1992,6 @@ STR_NETWORK_SERVER                                              :Zerbitzaria
 STR_NETWORK_CLIENT                                              :Bezeroa
 STR_NETWORK_SPECTATORS                                          :Ikusleak
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Eman nahi duzun diru kantitatea ezarri
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Ikusle
 
 # Network set password
@@ -3122,6 +3120,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Konpaini
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Konpainiaren egoitza birkokatu, konpainiaren balioaren %1 gatik. Shift+klik gutxi gora beherako kostea erakutsi
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Xehetasunak
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Azpiegitura kantitateak xehetasunez ikusi
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Dirua eman
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Aurpegi berria
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Lehendakariaren aurpegi berria aukeratu
@@ -3139,6 +3138,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Konpaini
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Konpainiaren izena
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Lehendakariaren izena
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Eman nahi duzun diru kantitatea ezarri
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Gure konpainia erostea nahiko genuke{}{}{COMPANY} {CURRENCY_LONG}rengatik erosi nahi duzu?
 

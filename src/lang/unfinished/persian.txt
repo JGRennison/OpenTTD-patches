@@ -1786,7 +1786,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}شرکت
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :اخراج
 STR_NETWORK_CLIENTLIST_BAN                                      :قدغن کردن
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :پول دادن
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :گفتگو با همه
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :گفتگو با شرکت
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :پیام خصوصی
@@ -1795,7 +1794,6 @@ STR_NETWORK_SERVER                                              :سرویس ده
 STR_NETWORK_CLIENT                                              :سرویس گیرنده
 STR_NETWORK_SPECTATORS                                          :تماشاگران
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}مقدار پولی که می خواهید دریافت نمایید را وارد کنید
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}تماشگر
 
 # Network set password
@@ -2864,12 +2862,14 @@ STR_COMPANY_VIEW_BUILD_HQ_BUTTON                                :{BLACK}ساخت
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}دیدن ساختمان مرکزی
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}جزییات
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}مشاهده جزییات تعداد زیرساخت ها
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}پول دادن
 
 
 STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}25% سهام شرکت را بخر
 STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}25% سهام شرکت را بفروش
 STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}25% سهام این شرکت را بخر.Shift+Click برآورد قیمت سهام را بدون فروش سهام نشان می دهد.
 STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% سهام این شرکت را بفروش.دکمه Shift+Clickبرآورد قیمت را بدون فروش سهام نمایش می دهد
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :مقدار پولی که می خواهید دریافت نمایید را وارد کنید
 
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :مدیر عامل
 

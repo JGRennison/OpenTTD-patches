@@ -2163,7 +2163,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nová sp
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Vyhodit
 STR_NETWORK_CLIENTLIST_BAN                                      :Ban
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Darovat peníze
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Napsat všem
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Napsat společnosti
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Soukromá zpráva
@@ -2172,7 +2171,6 @@ STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Pozorovatelé
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Napiš částku, kterou chceš poskytnout
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Pozorovatel
 
 # Network set password
@@ -3331,6 +3329,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Přesíd
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Sídlo společnosti můžeš vystavit jinde za 1{NBSP}% její hodnoty. Stisknutý Shift pro zobrazení odhadu ceny
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detaily
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Zobrazit detaily a souhrny o infrastruktuře
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Darovat peníze
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nový obličej
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Zvol nový obličej prezidenta
@@ -3348,6 +3347,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodat 2
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Jméno společnosti
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Jméno prezidenta
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Napiš částku, kterou chceš poskytnout
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Hledáme společnost, která převezme naši společnost.{}{}Chcete zakoupit {COMPANY} za {CURRENCY_LONG}?
 

@@ -230,8 +230,9 @@ bool NetworkCompanyIsPassworded(CompanyID company_id)
 /* This puts a text-message to the console, or in the future, the chat-box,
  *  (to keep it all a bit more general)
  * If 'self_send' is true, this is the client who is sending the message */
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const char *name, const char *str, int64 data)
+void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const char *name, const char *str, NetworkTextMessageData data)
 {
+	char message_src[256];
 	StringID strid;
 	switch (action) {
 		case NETWORK_ACTION_SERVER_MESSAGE:
@@ -257,7 +258,22 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 			break;
 		case NETWORK_ACTION_LEAVE:          strid = STR_NETWORK_MESSAGE_CLIENT_LEFT; break;
 		case NETWORK_ACTION_NAME_CHANGE:    strid = STR_NETWORK_MESSAGE_NAME_CHANGE; break;
-		case NETWORK_ACTION_GIVE_MONEY:     strid = self_send ? STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY : STR_NETWORK_MESSAGE_GIVE_MONEY;   break;
+
+		case NETWORK_ACTION_GIVE_MONEY:
+			SetDParamStr(0, name);
+			SetDParam(1, data.auxdata >> 16);
+			GetString(message_src, STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, lastof(message_src));
+			name = message_src;
+			if (self_send) {
+				strid = STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY;
+			} else if ((CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
+				strid = STR_NETWORK_MESSAGE_GIVE_MONEY;
+			} else {
+				strid = STR_NETWORK_MESSAGE_MONEY_GIVEN;
+				SetDParam(3, data.auxdata & 0xFFFF);
+			}
+			break;
+
 		case NETWORK_ACTION_CHAT_COMPANY:   strid = self_send ? STR_NETWORK_CHAT_TO_COMPANY : STR_NETWORK_CHAT_COMPANY; break;
 		case NETWORK_ACTION_CHAT_CLIENT:    strid = self_send ? STR_NETWORK_CHAT_TO_CLIENT  : STR_NETWORK_CHAT_CLIENT;  break;
 		default:                            strid = STR_NETWORK_CHAT_ALL; break;
@@ -266,7 +282,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	char message[1024];
 	SetDParamStr(0, name);
 	SetDParamStr(1, str);
-	SetDParam(2, data);
+	SetDParam(2, data.data);
 
 	/* All of these strings start with "***". These characters are interpreted as both left-to-right and
 	 * right-to-left characters depending on the context. As the next text might be an user's name, the

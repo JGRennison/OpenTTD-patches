@@ -2096,7 +2096,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Neue Fir
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Hinauswerfen
 STR_NETWORK_CLIENTLIST_BAN                                      :Sperren
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Geld schenken
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Mit allen sprechen
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Mit Firma sprechen
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Private Nachricht
@@ -2105,7 +2104,6 @@ STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Teilnehmer
 STR_NETWORK_SPECTATORS                                          :Zuschauer
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Wieviel Geld soll übergeben werden?
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Zuschauer
 
 # Network set password
@@ -3332,6 +3330,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Verlegen
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Errichte Firmensitz für 1% des Firmenwertes an anderer Stelle neu. Shift+Klick zeigt einen Kostenvoranschlag
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Details
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Detaillierte Informationen zur Infrastruktur dieser Firma anzeigen
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Geld schenken
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Neues Gesicht
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Neues Gesicht für Manager aussuchen
@@ -3349,6 +3348,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}25% der 
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Firmenname
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Name des Managers
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Wieviel Geld soll übergeben werden?
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Wir suchen eine Transportfirma, die unsere Firma übernimmt.{}{}Besteht Interesse daran, {COMPANY} für {CURRENCY_LONG} zu übernehmen?
 

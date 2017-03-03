@@ -2228,7 +2228,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Novo pod
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Brcni
 STR_NETWORK_CLIENTLIST_BAN                                      :Blokiraj
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Daj denar
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Pogovor vsem
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Pogovor podjetju
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Zasebno sporočilo
@@ -2237,7 +2236,6 @@ STR_NETWORK_SERVER                                              :Strežnik
 STR_NETWORK_CLIENT                                              :Gost
 STR_NETWORK_SPECTATORS                                          :Gledalci
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Vpiši znesek denarja za darovanje
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Gledalec
 
 # Network set password
@@ -3389,6 +3387,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Preseli 
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Preseli sedež podjetja drugam za ceno 1% vrednosti podjetja. Shift+Klik prikaže predviden strošek brez selitve
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Podrobnosti
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Podrobni prikaz količine infrastrukture
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Daj denar
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nov obraz
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Izberi nov obraz za direktorja
@@ -3406,6 +3405,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodaj 2
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Ime podjetja
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Direktorjevo ime
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Vpiši znesek denarja za darovanje
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Iščemo novega lastnika, ki bi prevzel naše podjetje.{}{}Ali želiš odkupiti podjetje {COMPANY} za ceno {CURRENCY_LONG}?
 

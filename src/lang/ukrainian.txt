@@ -2203,7 +2203,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Нова
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Відключити гравця
 STR_NETWORK_CLIENTLIST_BAN                                      :Бан
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Дати грошей
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Повідомлення всім
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Повідомлення компанії
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Приватне повідомлення
@@ -2212,7 +2211,6 @@ STR_NETWORK_SERVER                                              :Сервер
 STR_NETWORK_CLIENT                                              :Клієнт
 STR_NETWORK_SPECTATORS                                          :Спостерігачі
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Введіть суму грошей, яку Ви хочете віддати
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Глядач
 
 # Network set password
@@ -3367,6 +3365,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Пере
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Перенесення Офісу в інше місце. Коштує 1% від вартості компанії. Утримуйте Shift для показу очікуваних витрат на перенесення
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Деталі
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Переглянути детальну інформацію про інфраструктуру
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Дати грошей
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Нове обличчя
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Вибрати нове обличчя керівника
@@ -3384,6 +3383,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Прод
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Назва компанії
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Ім'я керівника
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Введіть суму грошей, яку Ви хочете віддати
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Ми шукаємо нового власника нашої компанії.{}{}Чи бажаєте Ви купити {COMPANY} за {CURRENCY_LONG}?
 

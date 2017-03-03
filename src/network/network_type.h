@@ -81,6 +81,7 @@ enum NetworkPasswordType {
 /** Destination of our chat messages. */
 enum DestType {
 	DESTTYPE_BROADCAST, ///< Send message/notice to all clients (All)
+	DESTTYPE_BROADCAST_SS, ///< Send message/notice to all clients (All), but tag the broadcast to self as a self-send
 	DESTTYPE_TEAM,      ///< Send message/notice to everyone playing the same company (Team)
 	DESTTYPE_CLIENT,    ///< Send message/notice to only a certain client (Private)
 };
@@ -128,6 +129,24 @@ enum NetworkErrorCode {
 	NETWORK_ERROR_TIMEOUT_JOIN,
 
 	NETWORK_ERROR_END,
+};
+
+struct NetworkTextMessageData {
+	int64 data;
+	int64 auxdata;
+
+	NetworkTextMessageData(int64 data = 0, int64 auxdata = 0)
+			: data(data), auxdata(auxdata) { }
+
+	template <typename T> void recv(T *p) {
+		this->data = p->Recv_uint64();
+		this->auxdata = p->Recv_uint64();
+	}
+
+	template <typename T> void send(T *p) const {
+		p->Send_uint64(this->data);
+		p->Send_uint64(this->auxdata);
+	}
 };
 
 #endif /* ENABLE_NETWORK */

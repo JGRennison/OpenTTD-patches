@@ -952,6 +952,8 @@ struct QueryStringWindow : public Window
 	QueryStringWindow(StringID str, StringID caption, uint max_bytes, uint max_chars, WindowDesc *desc, Window *parent, CharSetFilter afilter, QueryStringFlags flags) :
 			Window(desc), editbox(max_bytes, max_chars)
 	{
+		assert(parent != NULL);
+
 		char *last_of = &this->editbox.text.buf[this->editbox.text.max_bytes - 1];
 		GetString(this->editbox.text.buf, str, last_of);
 		str_validate(this->editbox.text.buf, last_of, SVS_NONE);
@@ -1003,7 +1005,7 @@ struct QueryStringWindow : public Window
 			if (this->parent != NULL) {
 				this->parent->OnQueryTextFinished(this->editbox.text.buf);
 			} else {
-				HandleOnEditText(this->editbox.text.buf);
+				NOT_REACHED();
 			}
 			this->editbox.handled = true;
 		}

@@ -2075,7 +2075,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}新公�
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :踢除
 STR_NETWORK_CLIENTLIST_BAN                                      :封鎖
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :給錢
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :對全員說話
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :對公司說話
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :私人訊息
@@ -2084,7 +2083,6 @@ STR_NETWORK_SERVER                                              :伺服器
 STR_NETWORK_CLIENT                                              :用戶端
 STR_NETWORK_SPECTATORS                                          :旁觀者
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}請輸入你要付出多少資金
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :(BLACK)旁觀者
 
 # Network set password
@@ -3236,6 +3234,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}搬移�
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}以公司總值的 1% 在其它地方建造新公司總部。按住 Shift 點選則只會顯示預估的建造費用
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}詳情
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}顯示基礎建設數目的詳細資料
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}給錢
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}新臉孔
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}選擇總經理的新臉孔
@@ -3253,6 +3252,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}出售�
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :公司名稱
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :總經理姓名
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :請輸入你要付出多少資金
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}我們正在找一間運輸公司收購我們的公司。{}{}您想購買 {COMPANY} 付出 {CURRENCY_LONG} 嗎？
 

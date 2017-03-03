@@ -2075,7 +2075,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Uusi yht
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Potkaise
 STR_NETWORK_CLIENTLIST_BAN                                      :Kiellä
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Anna rahaa
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Puhu kaikille
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Puhu yhtiölle
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Yksityinen viesti
@@ -2084,7 +2083,6 @@ STR_NETWORK_SERVER                                              :Palvelin
 STR_NETWORK_CLIENT                                              :Pelaaja
 STR_NETWORK_SPECTATORS                                          :Katsojat
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Syötä rahamäärä, jonka haluat antaa
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Katsoja
 
 # Network set password
@@ -3236,6 +3234,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Sijoita 
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Rakenna yhtiön päärakennus muualle, kustannus 1{NBSP}% yhtiön arvosta. Shift+Klik näyttää kustannearvion sijoittamatta päärakennusta uudelleen
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Yksityiskohdat
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Näytä tarkka infrastruktuurin määrä
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Anna rahaa
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Uudet kasvot
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Valitse uudet kasvot pääjohtajalle.
@@ -3253,6 +3252,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Myy 25{N
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Yhtiön nimi
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Pääjohtajan nimi
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Syötä rahamäärä, jonka haluat antaa
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Etsimme kuljetusyhtiötä, joka ottaisi haltuunsa yhtiömme{}{}Haluatko ostaa yhtiön {COMPANY} hintaan {CURRENCY_LONG}?
 

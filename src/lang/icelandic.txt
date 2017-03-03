@@ -1932,7 +1932,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nýtt fy
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Sparka
 STR_NETWORK_CLIENTLIST_BAN                                      :Banna
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Gefa pening
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Tala við alla
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Tala við fyrirtæki
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Einkaskilaboð
@@ -1941,7 +1940,6 @@ STR_NETWORK_SERVER                                              :Þjónn
 STR_NETWORK_CLIENT                                              :Notandi
 STR_NETWORK_SPECTATORS                                          :Áhorfendur
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Sláðu inn peningaupphæð sem þú vilt láta af hendi rakna
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Áhorfandi
 
 # Network set password
@@ -3027,6 +3025,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Flytja H
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Endurreisa höfuðstöðvarnar annarsstaðar fyrir 1% af verðmæti fyrirtækis. Shift sýnir áætlaðan kostnað við flutning á höfuðstöðvum
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Nánar
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Skoða nánar fjölda innviða
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Gefa pening
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nýtt Andlit
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Velja nýtt andlit á forstöðumanninn
@@ -3044,6 +3043,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Selja 25
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nafn Fyrirtækis
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nafn forstjóra
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Sláðu inn peningaupphæð sem þú vilt láta af hendi rakna
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Við erum að leita að flutningsfyrirtæki til að taka yfir okkar rekstri.{}{}Viltu kaupa {COMPANY} fyrir {CURRENCY_LONG}?
 

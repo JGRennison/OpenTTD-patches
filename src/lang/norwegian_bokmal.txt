@@ -2079,7 +2079,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nytt fir
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Kast ut
 STR_NETWORK_CLIENTLIST_BAN                                      :Bannlys
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Gi penger
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Snakk til alle
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Snakk til firma
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privat melding
@@ -2088,7 +2087,6 @@ STR_NETWORK_SERVER                                              :Tjener
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Tilskuere
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Skriv inn hvor mye penger du ønsker å gi
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Tilskuer
 
 # Network set password
@@ -3240,6 +3238,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Flytt fi
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Gjenoppbygg (flytt) firmaets hovedkontor et annet sted til en kostnad av 1{NBSP}% av firmaverdien. Shift+klikk viser beregnet kostnad uten å flytte kontoret
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detaljer
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Vis detaljert infrastrukturtelling
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Gi penger
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nytt ansikt
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Velg nytt ansikt på sjefen
@@ -3257,6 +3256,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Selg 25{
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Firmanavn
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Sjefens navn
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Skriv inn hvor mye penger du ønsker å gi
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Vi ser etter et transportfirma som er villig til å overta oss.{}{}Vil du kjøpe {COMPANY} for {CURRENCY_LONG}?
 

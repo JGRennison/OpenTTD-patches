@@ -2264,7 +2264,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Societas
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Dimittere
 STR_NETWORK_CLIENTLIST_BAN                                      :Expellere
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Dare pecuniam
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Ad omnes loqui
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Ad societatem loqui
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Ad clientem loqui
@@ -2273,7 +2272,6 @@ STR_NETWORK_SERVER                                              :Servatrum
 STR_NETWORK_CLIENT                                              :Cliens
 STR_NETWORK_SPECTATORS                                          :Spectatores
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Inscribe quantitatem pecuniae dandam
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Spectator
 
 # Network set password
@@ -3440,6 +3438,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Movere s
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Movere primariam sedem societatis aliquo pretio 1% aestimationis valoris societatis. Shift+Preme ut pretium monstretur sine sedem movendo
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Indicia
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Videre indicia descripta infrastructurae
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Dare pecuniam
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Facies Nova
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Eligere novam faciem praesidis
@@ -3457,6 +3456,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Quadrant
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nomen Societatis
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nomen Praesidis
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Inscribe quantitatem pecuniae dandam
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Quaerimus aliam societatem emere nostram societatem.{}{}Visne emere {COMPANY} pretio {CURRENCY_LONG}?
 

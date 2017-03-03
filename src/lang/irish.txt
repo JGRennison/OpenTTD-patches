@@ -2075,7 +2075,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Cuideach
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Ciceáil
 STR_NETWORK_CLIENTLIST_BAN                                      :Toirmisc
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Tabhair airgead
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Labhair le cách
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Labhair le cuideachta
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Teacht. phríobháideach
@@ -2084,7 +2083,6 @@ STR_NETWORK_SERVER                                              :Freastalaí
 STR_NETWORK_CLIENT                                              :Cliant
 STR_NETWORK_SPECTATORS                                          :Féachadóirí
 
-STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Iontráil an méid airgid is mian leat a thabhairt
 STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Féachadóir
 
 # Network set password
@@ -3236,6 +3234,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Athlonna
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Tóg ceanncheathrú na cuideachta in áit eile ar chostas 1% de luach na cuideachta
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Sonraí
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Taispeáin líon mionsonraithe na bpíosaí bonneagair
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Tabhair airgead
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Aghaigh Nua
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Roghnaigh aghaidh nua don bhainisteoir
@@ -3253,6 +3252,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Díol sc
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Ainm na Cuideachta
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Ainm an Bhainisteora
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Iontráil an méid airgid is mian leat a thabhairt
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Tá cuideachta iompair á lorg againn chun seilbh a ghlacadh ar ár gcuideachta.{}{}An bhfuil fonn ort seilbh a ghlacadh ar {COMPANY} ar chostas {CURRENCY_LONG}?
 
