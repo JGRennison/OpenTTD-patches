@@ -133,16 +133,19 @@ enum NetworkErrorCode {
 
 struct NetworkTextMessageData {
 	int64 data;
+	int64 auxdata;
 
-	NetworkTextMessageData(int64 data = 0)
-			: data(data) { }
+	NetworkTextMessageData(int64 data = 0, int64 auxdata = 0)
+			: data(data), auxdata(auxdata) { }
 
 	template <typename T> void recv(T *p) {
 		this->data = p->Recv_uint64();
+		this->auxdata = p->Recv_uint64();
 	}
 
 	template <typename T> void send(T *p) const {
 		p->Send_uint64(this->data);
+		p->Send_uint64(this->auxdata);
 	}
 };
 
