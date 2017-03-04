@@ -36,20 +36,8 @@ Tunnel::~Tunnel()
  */
 TileIndex GetOtherTunnelEnd(TileIndex tile)
 {
-	DiagDirection dir = GetTunnelBridgeDirection(tile);
-	TileIndexDiff delta = TileOffsByDiagDir(dir);
-	int z = GetTileZ(tile);
-
-	dir = ReverseDiagDir(dir);
-	do {
-		tile += delta;
-	} while (
-		!IsTunnelTile(tile) ||
-		GetTunnelBridgeDirection(tile) != dir ||
-		GetTileZ(tile) != z
-	);
-
-	return tile;
+	Tunnel *t = Tunnel::GetByTile(tile);
+	return t->tile_n == tile ? t->tile_s : t->tile_n;
 }
 
 

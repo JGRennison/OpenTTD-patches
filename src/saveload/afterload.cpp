@@ -13,6 +13,7 @@
 #include "../void_map.h"
 #include "../signs_base.h"
 #include "../depot_base.h"
+#include "../tunnel_base.h"
 #include "../fios.h"
 #include "../gamelog_internal.h"
 #include "../network/network.h"
@@ -562,6 +563,25 @@ static inline bool MayHaveBridgeAbove(TileIndex t)
 	return IsTileType(t, MP_CLEAR) || IsTileType(t, MP_RAILWAY) || IsTileType(t, MP_ROAD) ||
 			IsTileType(t, MP_WATER) || IsTileType(t, MP_TUNNELBRIDGE) || IsTileType(t, MP_OBJECT);
 }
+
+TileIndex GetOtherTunnelBridgeEndOLd(TileIndex tile)
+{
+	DiagDirection dir = GetTunnelBridgeDirection(tile);
+	TileIndexDiff delta = TileOffsByDiagDir(dir);
+	int z = GetTileZ(tile);
+
+	dir = ReverseDiagDir(dir);
+	do {
+		tile += delta;
+	} while (
+		!IsTunnelTile(tile) ||
+		GetTunnelBridgeDirection(tile) != dir ||
+		GetTileZ(tile) != z
+	);
+
+	return tile;
+}
+
 
 /**
  * Perform a (large) amount of savegame conversion *magic* in order to
@@ -2009,6 +2029,29 @@ bool AfterLoadGame()
 		}
 	}
 
+	/* Tunnel pool has to be initiated before reservations. */
+	for (TileIndex t = 0; t < map_size; t++) {
+		if (IsTunnelTile(t)) {
+			DiagDirection dir = GetTunnelBridgeDirection(t);
+			if (dir == DIAGDIR_SE || dir == DIAGDIR_SW) {
+				TileIndex start_tile = t;
+				TileIndex end_tile = GetOtherTunnelBridgeEndOLd(start_tile);
+
+				if (!Tunnel::CanAllocateItem()) return false;
+
+				Tunnel *t = new Tunnel(start_tile);
+				t->tile_s = end_tile;
+
+				DEBUG(misc, 0, "Tun start %#x, index=%#x", t->tile_n, t->index);
+				DEBUG(misc, 0, "Tun  end  %#x, index=%#x", t->tile_s, t->index);
+
+				_m[start_tile].m2 = t->index;
+				_m[end_tile].m2 = t->index;
+			}
+		}
+	}
+
+
 	/* Move the signal variant back up one bit for PBS. We don't convert the old PBS
 	 * format here, as an old layout wouldn't work properly anyway. To be safe, we
 	 * clear any possible PBS reservations as well. */
@@ -2643,7 +2686,7 @@ bool AfterLoadGame()
 			} else if (dir == ReverseDiagDir(vdir)) { // Leaving tunnel
 				hidden = frame < TILE_SIZE - _tunnel_visibility_frame[dir];
 				/* v->tile changes at the moment when the vehicle leaves the tunnel. */
-				v->tile = hidden ? GetOtherTunnelBridgeEnd(vtile) : vtile;
+				v->tile = hidden ? GetOtherTunnelBridgeEndOLd(vtile) : vtile;
 			} else {
 				/* We could get here in two cases:
 				 * - for road vehicles, it is reversing at the end of the tunnel
