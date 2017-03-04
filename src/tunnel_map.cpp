@@ -44,10 +44,10 @@ TileIndex GetOtherTunnelEnd(TileIndex tile)
  * Is there a tunnel in the way in any direction?
  * @param tile the tile to search from.
  * @param z the 'z' to search on.
- * @param not_allowed Only terra forming does not search between tunnel portals.
+ * @param chunnel_allowed True if chunnel mid-parts are allowed, used when terraforming.
  * @return true if and only if there is a tunnel.
  */
-bool IsTunnelInWay(TileIndex tile, int z, bool not_allowed)
+bool IsTunnelInWay(TileIndex tile, int z, bool chunnel_allowed)
 {
 	uint x = TileX(tile);
 	uint y = TileY(tile);
@@ -62,7 +62,7 @@ bool IsTunnelInWay(TileIndex tile, int z, bool not_allowed)
 			if (TileY(t->tile_n) != y || (int)TileHeight(t->tile_n) != z) continue; // dir DIAGDIR_SW
 		}
 
-		if (t->is_chunnel > not_allowed) {
+		if (t->is_chunnel && chunnel_allowed) {
 			/* Only if tunnel was build over water terraforming is allowed between portals. */
 			TileIndexDiff delta = GetTunnelBridgeDirection(t->tile_n) == DIAGDIR_SE ? TileOffsByDiagDir(DIAGDIR_SE) * 4 : 4;  // 4 tiles ramp.
 			if (tile < t->tile_n + delta || t->tile_s - delta < tile) return true;

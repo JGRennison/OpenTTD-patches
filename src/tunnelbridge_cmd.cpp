@@ -740,7 +740,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 			head_tiles = 0;
 			found_tunnel_tile = INVALID_TILE;
 		}
-		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z, false)) {
+		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z, true)) {
 			if (found_tunnel_tile == INVALID_TILE || is_chunnel) { // Remember the first or the last when we pass a tunnel.
 				found_tunnel_tile = end_tile;
 				head_tiles = 0;

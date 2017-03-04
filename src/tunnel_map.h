@@ -51,7 +51,7 @@ static inline TunnelID GetTunnelIndex(TileIndex t)
 }
 
 TileIndex GetOtherTunnelEnd(TileIndex);
-bool IsTunnelInWay(TileIndex, int z, bool not_allowed = true);
+bool IsTunnelInWay(TileIndex, int z, bool chunnel_allowed = false);
 
 /**
  * Makes a road tunnel entrance
