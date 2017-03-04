@@ -692,7 +692,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 			_build_tunnel_endtile = found_tunnel_tile != INVALID_TILE ? found_tunnel_tile : end_tile;
 
 			/* Test if we are on a shore. */
-			if (end_z == 0 &&
+			if (end_z == 0 && _settings_game.construction.chunnel &&
 					(IsCoastTile(end_tile) ||
 					(IsValidTile(end_tile + delta) && HasTileWaterGround(end_tile + delta)) ||
 					(IsValidTile(end_tile + delta * 2) && HasTileWaterGround(end_tile + delta * 2)))) {
