@@ -40,28 +40,6 @@ TileIndex GetOtherTunnelEnd(TileIndex tile)
 	return t->tile_n == tile ? t->tile_s : t->tile_n;
 }
 
-
-/**
- * Is there a tunnel in the way in the given direction?
- * @param tile the tile to search from.
- * @param z    the 'z' to search on.
- * @param dir  the direction to start searching to.
- * @return true if and only if there is a tunnel.
- */
-bool IsTunnelInWayDir(TileIndex tile, int z, DiagDirection dir)
-{
-	TileIndexDiff delta = TileOffsByDiagDir(dir);
-	int height;
-
-	do {
-		tile -= delta;
-		if (!IsValidTile(tile)) return false;
-		height = GetTileZ(tile);
-	} while (z < height);
-
-	return z == height && IsTunnelTile(tile) && GetTunnelBridgeDirection(tile) == dir;
-}
-
 /**
  * Is there a tunnel in the way in any direction?
  * @param tile the tile to search from.
@@ -70,6 +48,20 @@ bool IsTunnelInWayDir(TileIndex tile, int z, DiagDirection dir)
  */
 bool IsTunnelInWay(TileIndex tile, int z)
 {
-	return IsTunnelInWayDir(tile, z, (TileX(tile) > (MapMaxX() / 2)) ? DIAGDIR_NE : DIAGDIR_SW) ||
-			IsTunnelInWayDir(tile, z, (TileY(tile) > (MapMaxY() / 2)) ? DIAGDIR_NW : DIAGDIR_SE);
+	uint x = TileX(tile);
+	uint y = TileY(tile);
+
+	Tunnel *t;
+	FOR_ALL_TUNNELS(t)  {
+		if (t->tile_n > tile || tile > t->tile_s) continue;
+
+		if (t->tile_s - t->tile_n > MapMaxX()){
+			if (TileX(t->tile_n) != x || (int)TileHeight(t->tile_n) != z) continue; // dir DIAGDIR_SE
+		} else {
+			if (TileY(t->tile_n) != y || (int)TileHeight(t->tile_n) != z) continue; // dir DIAGDIR_SW
+		}
+
+		return true;
+	}
+	return false;
 }
