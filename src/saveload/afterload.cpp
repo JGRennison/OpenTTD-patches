@@ -2030,7 +2030,7 @@ bool AfterLoadGame()
 	}
 
 	/* Tunnel pool has to be initiated before reservations. */
-	if (IsSavegameVersionBefore(196)) {
+	if (SlXvIsFeatureMissing(XSLFI_CHUNNEL)) {
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTunnelTile(t)) {
 				DiagDirection dir = GetTunnelBridgeDirection(t);
