@@ -2044,9 +2044,6 @@ bool AfterLoadGame()
 					t->tile_s = end_tile;
 					t->is_chunnel = 0;
 
-					DEBUG(misc, 0, "Tun start %#x, index=%#x", t->tile_n, t->index);
-					DEBUG(misc, 0, "Tun  end  %#x, index=%#x", t->tile_s, t->index);
-
 					_m[start_tile].m2 = t->index;
 					_m[end_tile].m2 = t->index;
 				}
