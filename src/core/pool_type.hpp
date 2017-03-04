@@ -286,6 +286,13 @@ struct Pool : PoolBase {
 		 * @note it's called only when !CleaningPool()
 		 */
 		static inline void PostDestructor(size_t index) { }
+
+		/**
+		 * Dummy function called before a pool is about to be cleaned.
+		 * If you want to use it, override it in PoolItem's subclass.
+		 * @note it's called only when CleaningPool()
+		 */
+		static inline void PreCleanPool() { }
 	};
 
 private:
