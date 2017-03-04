@@ -14,6 +14,7 @@
 
 #include "depot_type.h"
 #include "tile_map.h"
+#include "tree_map.h"
 
 /**
  * Bit field layout of m5 for water tiles.
@@ -204,7 +205,7 @@ static inline bool IsCoast(TileIndex t)
  */
 static inline bool IsCoastTile(TileIndex t)
 {
-	return IsTileType(t, MP_WATER) && IsCoast(t);
+	return (IsTileType(t, MP_WATER) && IsCoast(t)) || (IsTileType(t, MP_TREES) && GetTreeGround(t) == TREE_GROUND_SHORE);
 }
 
 /**

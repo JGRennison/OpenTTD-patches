@@ -680,13 +680,38 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		if (!IsValidTile(end_tile)) return_cmd_error(STR_ERROR_TUNNEL_THROUGH_MAP_BORDER);
 		end_tileh = GetTileSlope(end_tile, &end_z);
 
-		if (start_z == end_z) break;
+		if (start_z == end_z) {
+			/* Handle chunnels only on sea level. */
+			if (end_z > 0) break;
 
+			if (!IsValidTile(end_tile + delta) || !IsValidTile(end_tile + delta * 2)) break;
+
+			/* Test if we are on a shore. */
+			if (!IsCoastTile(end_tile) && !HasTileWaterGround(end_tile + delta) && !HasTileWaterGround(end_tile + delta * 2)) break;
+
+			/* A shore was found so pass the water and find a proper shore tile that potentially
+			 * could have a tunnel portal behind. */
+			for (;;) {
+				if (!IsValidTile(end_tile)) return_cmd_error(STR_ERROR_TUNNEL_THROUGH_MAP_BORDER);
+
+				end_tileh = GetTileSlope(end_tile);
+				if(direction == DIAGDIR_NE && (end_tileh & SLOPE_NE) == SLOPE_NE) break;
+				if(direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
+				if(direction == DIAGDIR_SW && (end_tileh & SLOPE_SW) == SLOPE_SW) break;
+				if(direction == DIAGDIR_NW && (end_tileh & SLOPE_NW) == SLOPE_NW) break;
+
+				end_tile += delta;
+				tiles++;
+			}
+		}
 		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z)) {
 			return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
 		}
 
 		tiles++;
+	}
+	/* The cost of the digging. */
+	for (int i = tiles; i > 0; i--) {
 		if (tiles == tiles_bump) {
 			tiles_coef++;
 			tiles_bump *= 2;
@@ -2044,6 +2069,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 
 			if (dir == ReverseDiagDir(vdir) && frame == TILE_SIZE - _tunnel_visibility_frame[dir] && z == 0) {
 				/* We're at the tunnel exit ?? */
+				if (t->tile != tile && GetOtherTunnelEnd(t->tile) != tile) return VETSB_CONTINUE; // In chunnel
 				t->tile = tile;
 				t->track = DiagDirToDiagTrackBits(vdir);
 				assert(t->track);
@@ -2070,6 +2096,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 
 			/* We're at the tunnel exit ?? */
 			if (dir == ReverseDiagDir(vdir) && frame == TILE_SIZE - _tunnel_visibility_frame[dir] && z == 0) {
+				if (rv->tile != tile && GetOtherTunnelEnd(rv->tile) != tile) return VETSB_CONTINUE; // In chunnel
 				rv->tile = tile;
 				rv->cur_image_valid_dir = INVALID_DIR;
 				rv->state = DiagDirToDiagTrackdir(vdir);
@@ -2079,6 +2106,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 			}
 		}
 	} else { // IsBridge(tile)
+		if (v->vehstatus & VS_HIDDEN) return VETSB_CONTINUE; // Building bridges between chunnel portals allowed.
 		if (v->type != VEH_SHIP) {
 			/* modify speed of vehicle */
 			uint16 spd = GetBridgeSpec(GetBridgeType(tile))->speed;
