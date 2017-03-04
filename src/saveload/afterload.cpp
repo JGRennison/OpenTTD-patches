@@ -2030,23 +2030,26 @@ bool AfterLoadGame()
 	}
 
 	/* Tunnel pool has to be initiated before reservations. */
-	for (TileIndex t = 0; t < map_size; t++) {
-		if (IsTunnelTile(t)) {
-			DiagDirection dir = GetTunnelBridgeDirection(t);
-			if (dir == DIAGDIR_SE || dir == DIAGDIR_SW) {
-				TileIndex start_tile = t;
-				TileIndex end_tile = GetOtherTunnelBridgeEndOLd(start_tile);
+	if (IsSavegameVersionBefore(196)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTunnelTile(t)) {
+				DiagDirection dir = GetTunnelBridgeDirection(t);
+				if (dir == DIAGDIR_SE || dir == DIAGDIR_SW) {
+					TileIndex start_tile = t;
+					TileIndex end_tile = GetOtherTunnelBridgeEndOLd(start_tile);
 
-				if (!Tunnel::CanAllocateItem()) return false;
+					if (!Tunnel::CanAllocateItem()) return false;
 
-				Tunnel *t = new Tunnel(start_tile);
-				t->tile_s = end_tile;
+					Tunnel *t = new Tunnel(start_tile);
+					t->tile_s = end_tile;
+					t->is_chunnel = 0;
 
-				DEBUG(misc, 0, "Tun start %#x, index=%#x", t->tile_n, t->index);
-				DEBUG(misc, 0, "Tun  end  %#x, index=%#x", t->tile_s, t->index);
+					DEBUG(misc, 0, "Tun start %#x, index=%#x", t->tile_n, t->index);
+					DEBUG(misc, 0, "Tun  end  %#x, index=%#x", t->tile_s, t->index);
 
-				_m[start_tile].m2 = t->index;
-				_m[end_tile].m2 = t->index;
+					_m[start_tile].m2 = t->index;
+					_m[end_tile].m2 = t->index;
+				}
 			}
 		}
 	}

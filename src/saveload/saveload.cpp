@@ -270,7 +270,7 @@
  *  194   26881   1.5.x, 1.6.0
  *  195   27572   1.6.x
  */
-extern const uint16 SAVEGAME_VERSION = 195; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 196; ///< Current savegame version of OpenTTD.
 const uint16 SAVEGAME_VERSION_EXT = 0x8000; ///< Savegame extension indicator mask
 
 SavegameType _savegame_type; ///< type of savegame we are loading
@@ -465,6 +465,7 @@ extern const ChunkHandler _plan_chunk_handlers[];
 extern const ChunkHandler _template_replacement_chunk_handlers[];
 extern const ChunkHandler _template_vehicle_chunk_handlers[];
 extern const ChunkHandler _bridge_signal_chunk_handlers[];
+extern const ChunkHandler _tunnel_chunk_handlers[];
 
 /** Array of all chunks in a savegame, \c NULL terminated. */
 static const ChunkHandler * const _chunk_handlers[] = {
@@ -508,6 +509,7 @@ static const ChunkHandler * const _chunk_handlers[] = {
 	_template_replacement_chunk_handlers,
 	_template_vehicle_chunk_handlers,
 	_bridge_signal_chunk_handlers,
+	_tunnel_chunk_handlers,
 	NULL,
 };
 

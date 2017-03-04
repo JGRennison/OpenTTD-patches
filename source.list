@@ -671,6 +671,7 @@ saveload/strings_sl.cpp
 saveload/story_sl.cpp
 saveload/subsidy_sl.cpp
 saveload/town_sl.cpp
+saveload/tunnel_sl.cpp
 saveload/vehicle_sl.cpp
 saveload/waypoint_sl.cpp
 saveload/signal_sl.cpp
