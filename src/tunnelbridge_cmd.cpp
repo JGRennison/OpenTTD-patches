@@ -44,6 +44,8 @@
 #include "water.h"
 #include "company_gui.h"
 #include "viewport_func.h"
+#include "station_map.h"
+#include "industry_map.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -706,6 +708,12 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 				if(direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
 				if(direction == DIAGDIR_SW && (end_tileh & SLOPE_SW) == SLOPE_SW) break;
 				if(direction == DIAGDIR_NW && (end_tileh & SLOPE_NW) == SLOPE_NW) break;
+
+				/* No drilling under oil rigs.*/
+				if ((IsTileType(end_tile, MP_STATION) && IsOilRig(end_tile)) ||
+						(IsTileType(end_tile, MP_INDUSTRY)                   &&
+						GetIndustryGfx(end_tile) >= GFX_OILRIG_1             &&
+						GetIndustryGfx(end_tile) <= GFX_OILRIG_5)) return_cmd_error(STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL);
 
 				end_tile += delta;
 				tiles++;
