@@ -1839,7 +1839,11 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	TransportType tt = GetTunnelBridgeTransportType(tile);
 
 	if (IsTunnel(tile)) {
-		td->str = (tt == TRANSPORT_RAIL) ? IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD : STR_LAI_TUNNEL_DESCRIPTION_ROAD;
+		if (Tunnel::GetByTile(tile)->is_chunnel) {
+			td->str = (tt == TRANSPORT_RAIL) ? IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL_CHUNNEL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_CHUNNEL : STR_LAI_TUNNEL_DESCRIPTION_ROAD_CHUNNEL;
+		} else {
+			td->str = (tt == TRANSPORT_RAIL) ? IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD : STR_LAI_TUNNEL_DESCRIPTION_ROAD;
+		}
 	} else { // IsBridge(tile)
 		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
 	}

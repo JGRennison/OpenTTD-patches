@@ -3042,8 +3042,11 @@ STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :Ship depot
 # Industries come directly from their industry names
 
 STR_LAI_TUNNEL_DESCRIPTION_RAILROAD                             :Railway tunnel
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_CHUNNEL                     :Railway tunnel passing water
 STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL                      :Railway tunnel with signal simulation
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL_CHUNNEL              :Railway tunnel with signal simulation passing water
 STR_LAI_TUNNEL_DESCRIPTION_ROAD                                 :Road tunnel
+STR_LAI_TUNNEL_DESCRIPTION_ROAD_CHUNNEL                         :Road tunnel passing water
 
 STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :Railway bridge with signal simulation
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_SUSPENSION_STEEL                :Steel suspension rail bridge
