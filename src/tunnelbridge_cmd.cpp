@@ -670,6 +670,10 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	int tiles_coef = 3;
 	/* Number of tiles from start of tunnel */
 	int tiles = 0;
+	/* flag for chunnels. */
+	bool is_chunnel = false;
+	/* Number of chunnel head tiles. */
+	int head_tiles = 1;
 	/* Number of tiles at which the cost increase coefficient per tile is halved */
 	int tiles_bump = 25;
 
@@ -691,6 +695,9 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 
 			/* A shore was found so pass the water and find a proper shore tile that potentially
 			 * could have a tunnel portal behind. */
+			is_chunnel = true;
+			if (head_tiles < 4 && is_chunnel) break; // Not enough lead way to go under water.
+			head_tiles = 0;
 			for (;;) {
 				if (!IsValidTile(end_tile)) return_cmd_error(STR_ERROR_TUNNEL_THROUGH_MAP_BORDER);
 
@@ -704,10 +711,10 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 				tiles++;
 			}
 		}
-		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z)) {
+		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z, false)) {
 			return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
 		}
-
+		head_tiles++;
 		tiles++;
 	}
 	/* The cost of the digging. */
@@ -729,6 +736,8 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	_build_tunnel_endtile = end_tile;
 
 	if (tiles > _settings_game.construction.max_tunnel_length) return_cmd_error(STR_ERROR_TUNNEL_TOO_LONG);
+
+	if (head_tiles < 4 && is_chunnel) return_cmd_error(STR_ERROR_TUNNEL_RAMP_TOO_SHORT);
 
 	if (HasTileWaterGround(end_tile)) return_cmd_error(STR_ERROR_CAN_T_BUILD_ON_WATER);
 
@@ -777,6 +786,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		if (!Tunnel::CanAllocateItem()) return CMD_ERROR;
 		Tunnel *t = new Tunnel(tn);
 		t->tile_s = ts;
+		t->is_chunnel = is_chunnel;
 
 		if (transport_type == TRANSPORT_RAIL) {
 			if (!IsTunnelTile(start_tile) && c != NULL) c->infrastructure.rail[railtype] += num_pieces;

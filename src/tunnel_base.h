@@ -24,6 +24,7 @@ struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 
 	TileIndex tile_n; // North tile of tunnel.
 	TileIndex tile_s; // South tile of tunnel.
+	bool is_chunnel;
 
 	Tunnel(TileIndex tile_n = INVALID_TILE) : tile_n(tile_n) {}
 	~Tunnel();
