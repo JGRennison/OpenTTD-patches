@@ -13,7 +13,7 @@
 #define TUNNELBRIDGE_MAP_H
 
 #include "bridge_map.h"
-#include "tunnel_map.h"
+#include "tunnel_base.h"
 #include "cmd_helper.h"
 #include "signal_type.h"
 

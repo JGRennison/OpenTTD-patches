@@ -27,6 +27,7 @@
 #include "autoslope.h"
 #include "tunnelbridge_map.h"
 #include "bridge_signal_map.h"
+#include "tunnel_base.h"
 #include "strings_func.h"
 #include "date_func.h"
 #include "clear_func.h"
@@ -48,6 +49,7 @@
 #include "table/bridge_land.h"
 
 #include "safeguards.h"
+
 
 BridgeSpec _bridge[MAX_BRIDGES]; ///< The specification of all bridges.
 TileIndex _build_tunnel_endtile; ///< The end of a tunnel; as hidden return from the tunnel build command for GUI purposes.
@@ -747,10 +749,20 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	if (flags & DC_EXEC) {
 		Company *c = Company::GetIfValid(company);
 		uint num_pieces = (tiles + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+
+		/* The most northern tile first. */
+		TileIndex tn = start_tile;
+		TileIndex ts = end_tile;
+		if(start_tile > end_tile) Swap(tn, ts);
+
+		if (!Tunnel::CanAllocateItem()) return CMD_ERROR;
+		Tunnel *t = new Tunnel(tn);
+		t->tile_s = ts;
+
 		if (transport_type == TRANSPORT_RAIL) {
 			if (!IsTunnelTile(start_tile) && c != NULL) c->infrastructure.rail[railtype] += num_pieces;
-			MakeRailTunnel(start_tile, company, direction,                 railtype);
-			MakeRailTunnel(end_tile,   company, ReverseDiagDir(direction), railtype);
+			MakeRailTunnel(start_tile, company, t->index, direction,                 railtype);
+			MakeRailTunnel(end_tile,   company, t->index, ReverseDiagDir(direction), railtype);
 			AddSideToSignalBuffer(start_tile, INVALID_DIAGDIR, company);
 			YapfNotifyTrackLayoutChange(start_tile, DiagDirToDiagTrack(direction));
 		} else {
@@ -760,8 +772,8 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 					c->infrastructure.road[rt] += num_pieces * 2; // A full diagonal road has two road bits.
 				}
 			}
-			MakeRoadTunnel(start_tile, company, direction,                 rts);
-			MakeRoadTunnel(end_tile,   company, ReverseDiagDir(direction), rts);
+			MakeRoadTunnel(start_tile, company, t->index, direction,                 rts);
+			MakeRoadTunnel(end_tile,   company, t->index, ReverseDiagDir(direction), rts);
 		}
 		DirtyCompanyInfrastructureWindows(company);
 	}
@@ -873,6 +885,8 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 				DirtyCompanyInfrastructureWindows(owner);
 			}
 
+			delete Tunnel::GetByTile(tile);
+
 			DoClearSquare(tile);
 			DoClearSquare(endtile);
 
@@ -894,6 +908,8 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 					DirtyCompanyInfrastructureWindows(c->index);
 				}
 			}
+
+			delete Tunnel::GetByTile(tile);
 
 			DoClearSquare(tile);
 			DoClearSquare(endtile);

@@ -12,8 +12,21 @@
 #include "stdafx.h"
 #include "tunnelbridge_map.h"
 
+#include "core/pool_func.hpp"
+
 #include "safeguards.h"
 
+/** All tunnel portals tucked away in a pool. */
+TunnelPool _tunnel_pool("Tunnel");
+INSTANTIATE_POOL_METHODS(Tunnel)
+
+/**
+ * Clean up a tunnel tile
+ */
+Tunnel::~Tunnel()
+{
+	if (CleaningPool()) return;
+}
 
 /**
  * Gets the other end of the tunnel. Where a vehicle would reappear when it

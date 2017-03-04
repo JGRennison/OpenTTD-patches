@@ -14,6 +14,7 @@
 
 #include "road_map.h"
 
+typedef uint16 TunnelID; ///< Type for the unique identifier of tunnels.
 
 /**
  * Is this a tunnel (entrance)?
@@ -37,6 +38,18 @@ static inline bool IsTunnelTile(TileIndex t)
 	return IsTileType(t, MP_TUNNELBRIDGE) && IsTunnel(t);
 }
 
+/**
+ * Get the index of tunnel tile.
+ * @param t the tile
+ * @pre IsTunnelTile(t)
+ * @return TunnelID
+ */
+static inline TunnelID GetTunnelIndex(TileIndex t)
+{
+	assert(IsTunnelTile(t));
+	return _m[t].m2;
+}
+
 TileIndex GetOtherTunnelEnd(TileIndex);
 bool IsTunnelInWay(TileIndex, int z);
 bool IsTunnelInWayDir(TileIndex tile, int z, DiagDirection dir);
@@ -48,11 +61,11 @@ bool IsTunnelInWayDir(TileIndex tile, int z, DiagDirection dir);
  * @param d the direction facing out of the tunnel
  * @param r the road type used in the tunnel
  */
-static inline void MakeRoadTunnel(TileIndex t, Owner o, DiagDirection d, RoadTypes r)
+static inline void MakeRoadTunnel(TileIndex t, Owner o, TunnelID id, DiagDirection d, RoadTypes r)
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
-	_m[t].m2 = 0;
+	_m[t].m2 = id;
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
 	_m[t].m5 = TRANSPORT_ROAD << 2 | d;
@@ -70,11 +83,11 @@ static inline void MakeRoadTunnel(TileIndex t, Owner o, DiagDirection d, RoadTyp
  * @param d the direction facing out of the tunnel
  * @param r the rail type used in the tunnel
  */
-static inline void MakeRailTunnel(TileIndex t, Owner o, DiagDirection d, RailType r)
+static inline void MakeRailTunnel(TileIndex t, Owner o,TunnelID id, DiagDirection d, RailType r)
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
-	_m[t].m2 = 0;
+	_m[t].m2 = id;
 	SB(_m[t].m1, 7, 1, GB(r, 4, 1));
 	SB(_m[t].m3, 0, 4, GB(r, 0, 4));
 	SB(_m[t].m3, 4, 4, 0);
@@ -83,5 +96,7 @@ static inline void MakeRailTunnel(TileIndex t, Owner o, DiagDirection d, RailTyp
 	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }
+
+
 
 #endif /* TUNNEL_MAP_H */

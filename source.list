@@ -404,6 +404,7 @@ transparency.h
 transparency_gui.h
 transport_type.h
 tunnelbridge.h
+tunnel_base.h
 vehicle_base.h
 vehicle_func.h
 vehicle_gui.h
