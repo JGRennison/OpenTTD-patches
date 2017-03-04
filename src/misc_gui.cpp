@@ -129,7 +129,7 @@ public:
 			DEBUG(misc, LANDINFOD_LEVEL, "index: %#x"          , Tunnel::GetByTile(tile)->index);
 			DEBUG(misc, LANDINFOD_LEVEL, "north tile: %#x"     , Tunnel::GetByTile(tile)->tile_n);
 			DEBUG(misc, LANDINFOD_LEVEL, "south tile: %#x"     , Tunnel::GetByTile(tile)->tile_s);
-			DEBUG(misc, LANDINFOD_LEVEL, "is chunel: %u"       , Tunnel::GetByTile(tile)->is_chunnel);
+			DEBUG(misc, LANDINFOD_LEVEL, "is chunnel: %u"      , Tunnel::GetByTile(tile)->is_chunnel);
 		}
 		DEBUG(misc, LANDINFOD_LEVEL, "type   = %#x", _m[tile].type);
 		DEBUG(misc, LANDINFOD_LEVEL, "height = %#x", _m[tile].height);
