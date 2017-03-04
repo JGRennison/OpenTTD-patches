@@ -26,6 +26,7 @@
 #include "core/geometry_func.hpp"
 #include "newgrf_debug.h"
 #include "zoom_func.h"
+#include "tunnelbridge_map.h"
 
 #include "widgets/misc_widget.h"
 
@@ -123,6 +124,13 @@ public:
 #	define LANDINFOD_LEVEL 1
 #endif
 		DEBUG(misc, LANDINFOD_LEVEL, "TILE: %#x (%i,%i)", tile, TileX(tile), TileY(tile));
+		if(IsTunnelTile(tile)) {
+			DEBUG(misc, LANDINFOD_LEVEL, "tunnel pool size: %u", (uint)Tunnel::GetPoolSize());
+			DEBUG(misc, LANDINFOD_LEVEL, "index: %#x"          , Tunnel::GetByTile(tile)->index);
+			DEBUG(misc, LANDINFOD_LEVEL, "north tile: %#x"     , Tunnel::GetByTile(tile)->tile_n);
+			DEBUG(misc, LANDINFOD_LEVEL, "south tile: %#x"     , Tunnel::GetByTile(tile)->tile_s);
+			DEBUG(misc, LANDINFOD_LEVEL, "is chunel: %u"       , Tunnel::GetByTile(tile)->is_chunnel);
+		}
 		DEBUG(misc, LANDINFOD_LEVEL, "type   = %#x", _m[tile].type);
 		DEBUG(misc, LANDINFOD_LEVEL, "height = %#x", _m[tile].height);
 		DEBUG(misc, LANDINFOD_LEVEL, "m1     = %#x", _m[tile].m1);
