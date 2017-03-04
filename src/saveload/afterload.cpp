@@ -2040,9 +2040,7 @@ bool AfterLoadGame()
 
 					if (!Tunnel::CanAllocateItem()) return false;
 
-					Tunnel *t = new Tunnel(start_tile);
-					t->tile_s = end_tile;
-					t->is_chunnel = 0;
+					const Tunnel *t = new Tunnel(start_tile, end_tile, false);
 
 					_m[start_tile].m2 = t->index;
 					_m[end_tile].m2 = t->index;

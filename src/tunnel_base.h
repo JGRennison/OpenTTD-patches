@@ -26,7 +26,8 @@ struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 	TileIndex tile_s; // South tile of tunnel.
 	bool is_chunnel;
 
-	Tunnel(TileIndex tile_n = INVALID_TILE) : tile_n(tile_n) {}
+	Tunnel() {}
+	Tunnel(TileIndex tile_n, TileIndex tile_s, bool is_chunnel) : tile_n(tile_n), tile_s(tile_s), is_chunnel(is_chunnel) {}
 	~Tunnel();
 
 	static inline Tunnel *GetByTile(TileIndex tile)

@@ -814,9 +814,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		if(start_tile > end_tile) Swap(tn, ts);
 
 		if (!Tunnel::CanAllocateItem()) return CMD_ERROR;
-		Tunnel *t = new Tunnel(tn);
-		t->tile_s = ts;
-		t->is_chunnel = is_chunnel;
+		const Tunnel *t = new Tunnel(tn, ts, is_chunnel);
 
 		if (transport_type == TRANSPORT_RAIL) {
 			if (!IsTunnelTile(start_tile) && c != NULL) c->infrastructure.rail[railtype] += num_pieces;
