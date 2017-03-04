@@ -17,7 +17,7 @@
 
 struct Tunnel;
 
-typedef Pool<Tunnel, TunnelID, 64, 64000> TunnelPool;
+typedef Pool<Tunnel, TunnelID, 64, 1048576> TunnelPool;
 extern TunnelPool _tunnel_pool;
 
 struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
@@ -27,13 +27,21 @@ struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 	bool is_chunnel;
 
 	Tunnel() {}
-	Tunnel(TileIndex tile_n, TileIndex tile_s, bool is_chunnel) : tile_n(tile_n), tile_s(tile_s), is_chunnel(is_chunnel) {}
 	~Tunnel();
+
+	Tunnel(TileIndex tile_n, TileIndex tile_s, bool is_chunnel) : tile_n(tile_n), tile_s(tile_s), is_chunnel(is_chunnel)
+	{
+		this->UpdateIndexes();
+	}
+
+	void UpdateIndexes();
 
 	static inline Tunnel *GetByTile(TileIndex tile)
 	{
 		return Tunnel::Get(GetTunnelIndex(tile));
 	}
+
+	static void PreCleanPool();
 };
 
 #define FOR_ALL_TUNNELS_FROM(var, start) FOR_ALL_ITEMS_FROM(Tunnel, tunnel_index, var, start)

@@ -14,7 +14,9 @@
 
 #include "road_map.h"
 
-typedef uint16 TunnelID; ///< Type for the unique identifier of tunnels.
+typedef uint32 TunnelID; ///< Type for the unique identifier of tunnels.
+
+static const TunnelID TUNNEL_ID_MAP_LOOKUP = 0xFFFF; ///< Sentinel ID value to store in m2 to indiciate that the ID should be looked up instead
 
 /**
  * Is this a tunnel (entrance)?
@@ -46,8 +48,11 @@ static inline bool IsTunnelTile(TileIndex t)
  */
 static inline TunnelID GetTunnelIndex(TileIndex t)
 {
+	extern TunnelID GetTunnelIndexByLookup(TileIndex t);
+
 	assert(IsTunnelTile(t));
-	return _m[t].m2;
+	TunnelID map_id = _m[t].m2;
+	return map_id == TUNNEL_ID_MAP_LOOKUP ? GetTunnelIndexByLookup(t) : map_id;
 }
 
 TileIndex GetOtherTunnelEnd(TileIndex);
@@ -65,7 +70,7 @@ static inline void MakeRoadTunnel(TileIndex t, Owner o, TunnelID id, DiagDirecti
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
-	_m[t].m2 = id;
+	_m[t].m2 = (id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id;
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
 	_m[t].m5 = TRANSPORT_ROAD << 2 | d;
@@ -88,7 +93,7 @@ static inline void MakeRailTunnel(TileIndex t, Owner o, TunnelID id, DiagDirecti
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
-	_m[t].m2 = id;
+	_m[t].m2 = (id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id;
 	SB(_m[t].m1, 7, 1, GB(r, 4, 1));
 	SB(_m[t].m3, 0, 4, GB(r, 0, 4));
 	SB(_m[t].m3, 4, 4, 0);
