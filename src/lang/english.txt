@@ -5006,6 +5006,7 @@ STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}Tunnel w
 STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}Unable to excavate land for other end of tunnel
 STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... tunnel too long
 STR_ERROR_TUNNEL_RAMP_TOO_SHORT                                 :{WHITE}... ramp too short, tunnels under water must have a ramp at least three tiles long at both ends.
+STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... too many tunnels
 STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL                             :{WHITE}No oil rigs allowed above underwater tunnels.
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}Three tiles are needed to pass under the other tunnel.
 

@@ -2038,7 +2038,12 @@ bool AfterLoadGame()
 					TileIndex start_tile = t;
 					TileIndex end_tile = GetOtherTunnelBridgeEndOld(start_tile);
 
-					if (!Tunnel::CanAllocateItem()) return false;
+					if (!Tunnel::CanAllocateItem()) {
+						SetSaveLoadError(STR_ERROR_TUNNEL_TOO_MANY);
+						/* Restore the signals */
+						ResetSignalHandlers();
+						return false;
+					}
 
 					const Tunnel *t = new Tunnel(start_tile, end_tile, false);
 

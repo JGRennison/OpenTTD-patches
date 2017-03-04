@@ -813,7 +813,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		TileIndex ts = end_tile;
 		if(start_tile > end_tile) Swap(tn, ts);
 
-		if (!Tunnel::CanAllocateItem()) return CMD_ERROR;
+		if (!Tunnel::CanAllocateItem()) return_cmd_error(STR_ERROR_TUNNEL_TOO_MANY);
 		const Tunnel *t = new Tunnel(tn, ts, is_chunnel);
 
 		if (transport_type == TRANSPORT_RAIL) {
