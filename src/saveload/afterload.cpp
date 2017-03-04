@@ -564,7 +564,7 @@ static inline bool MayHaveBridgeAbove(TileIndex t)
 			IsTileType(t, MP_WATER) || IsTileType(t, MP_TUNNELBRIDGE) || IsTileType(t, MP_OBJECT);
 }
 
-TileIndex GetOtherTunnelBridgeEndOLd(TileIndex tile)
+TileIndex GetOtherTunnelBridgeEndOld(TileIndex tile)
 {
 	DiagDirection dir = GetTunnelBridgeDirection(tile);
 	TileIndexDiff delta = TileOffsByDiagDir(dir);
@@ -2036,7 +2036,7 @@ bool AfterLoadGame()
 				DiagDirection dir = GetTunnelBridgeDirection(t);
 				if (dir == DIAGDIR_SE || dir == DIAGDIR_SW) {
 					TileIndex start_tile = t;
-					TileIndex end_tile = GetOtherTunnelBridgeEndOLd(start_tile);
+					TileIndex end_tile = GetOtherTunnelBridgeEndOld(start_tile);
 
 					if (!Tunnel::CanAllocateItem()) return false;
 
@@ -2689,7 +2689,7 @@ bool AfterLoadGame()
 			} else if (dir == ReverseDiagDir(vdir)) { // Leaving tunnel
 				hidden = frame < TILE_SIZE - _tunnel_visibility_frame[dir];
 				/* v->tile changes at the moment when the vehicle leaves the tunnel. */
-				v->tile = hidden ? GetOtherTunnelBridgeEndOLd(vtile) : vtile;
+				v->tile = hidden ? GetOtherTunnelBridgeEndOld(vtile) : vtile;
 			} else {
 				/* We could get here in two cases:
 				 * - for road vehicles, it is reversing at the end of the tunnel
