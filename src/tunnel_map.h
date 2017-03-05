@@ -56,7 +56,16 @@ static inline TunnelID GetTunnelIndex(TileIndex t)
 }
 
 TileIndex GetOtherTunnelEnd(TileIndex);
-bool IsTunnelInWay(TileIndex, int z, bool chunnel_allowed = false);
+
+/** Flags for miscellaneous industry tile specialities */
+enum IsTunnelInWayFlags {
+	ITIWF_NONE                  = 0,
+	ITIWF_IGNORE_CHUNNEL        = 1 << 0, ///< Chunnel mid-parts are ignored, used when terraforming.
+	ITIWF_CHUNNEL_ONLY          = 1 << 1, ///< Only check for chunnels
+};
+DECLARE_ENUM_AS_BIT_SET(IsTunnelInWayFlags)
+
+bool IsTunnelInWay(TileIndex, int z, IsTunnelInWayFlags flags = ITIWF_NONE);
 
 /**
  * Set the index of tunnel tile.

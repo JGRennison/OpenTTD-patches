@@ -740,7 +740,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 			head_tiles = 0;
 			found_tunnel_tile = INVALID_TILE;
 		}
-		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z, true)) {
+		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z, ITIWF_IGNORE_CHUNNEL)) {
 			if (found_tunnel_tile == INVALID_TILE || is_chunnel) { // Remember the first or the last when we pass a tunnel.
 				found_tunnel_tile = end_tile;
 				head_tiles = 0;
@@ -749,6 +749,26 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		head_tiles++;
 		tiles++;
 	}
+
+	if (is_chunnel && !_cheats.crossing_tunnels.value) {
+		/*
+		 * Chunnel check: second pass
+		 *
+		 * Make sure that we don't intersect with any other chunnels
+		 */
+
+		TileIndex check_tile = start_tile;
+		for (;;) {
+			check_tile += delta;
+			if (check_tile == end_tile) break;
+
+			if (IsTunnelInWay(check_tile, start_z, ITIWF_CHUNNEL_ONLY)) {
+				_build_tunnel_endtile = check_tile;
+				return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
+			}
+		}
+	}
+
 	/* The cost of the digging. */
 	for (int i = tiles; i > 0; i--) {
 		if (tiles == tiles_bump) {

@@ -103,14 +103,17 @@ TileIndex GetOtherTunnelEnd(TileIndex tile)
 	return t->tile_n == tile ? t->tile_s : t->tile_n;
 }
 
-static inline bool IsTunnelInWaySingleAxis(TileIndex tile, int z, bool chunnel_allowed, bool y_axis, TileIndexDiff tile_diff)
+static inline bool IsTunnelInWaySingleAxis(TileIndex tile, int z, IsTunnelInWayFlags flags, bool y_axis, TileIndexDiff tile_diff)
 {
 	const auto tunnels = tunnel_axis_height_index.equal_range(GetTunnelAxisHeightCacheKey(tile, z, y_axis));
 	for (auto it = tunnels.first; it != tunnels.second; ++it) {
 		const Tunnel *t = it->second;
 		if (t->tile_n > tile || tile > t->tile_s) continue;
 
-		if (t->is_chunnel && chunnel_allowed) {
+		if (!t->is_chunnel && (flags & ITIWF_CHUNNEL_ONLY)) {
+			continue;
+		}
+		if (t->is_chunnel && (flags & ITIWF_IGNORE_CHUNNEL)) {
 			/* Only if tunnel was built over water is terraforming is allowed between portals. */
 			const TileIndexDiff delta = tile_diff * 4;  // 4 tiles ramp.
 			if (tile < t->tile_n + delta || t->tile_s - delta < tile) return true;
@@ -128,7 +131,7 @@ static inline bool IsTunnelInWaySingleAxis(TileIndex tile, int z, bool chunnel_a
  * @param chunnel_allowed True if chunnel mid-parts are allowed, used when terraforming.
  * @return true if and only if there is a tunnel.
  */
-bool IsTunnelInWay(TileIndex tile, int z, bool chunnel_allowed)
+bool IsTunnelInWay(TileIndex tile, int z, IsTunnelInWayFlags flags)
 {
-	return IsTunnelInWaySingleAxis(tile, z, chunnel_allowed, false, 1) || IsTunnelInWaySingleAxis(tile, z, chunnel_allowed, true, TileOffsByDiagDir(DIAGDIR_SE));
+	return IsTunnelInWaySingleAxis(tile, z, flags, false, 1) || IsTunnelInWaySingleAxis(tile, z, flags, true, TileOffsByDiagDir(DIAGDIR_SE));
 }
