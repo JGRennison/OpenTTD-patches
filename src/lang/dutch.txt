@@ -2601,29 +2601,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Akkers
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Sneeuw
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Woestijn
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} spoor
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} spoor met blokseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} spoor met voorseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} spoor met exitseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} spoor met combo-seinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} spoor met routeseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} spoor met eenrichtingsseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} spoor met blok en voorseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} spoor met blok en exitseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} spoor met blok en combo-seinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} spoor met blok en routeseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} spoor met blok en eenrichtingsseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} spoor met voor- en exitseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} spoor met voor- en combo-seinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} spoor met voor- en routeseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} spoor met voor- en eenrichtingsseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} spoor met exit- en combo-seinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} spoor em exit- en routeseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} spoor met exit- en eenrichtingsseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} spoor met combo- en routeseinen
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} Spoor met combo- en eenrichtingssein
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} spoor met route en eenrichtingssein
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} trein depot
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Spoorweg spoor
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Spoorweg spoor met blokseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Spoorweg spoor met voorseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Spoorweg spoor met exitseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Spoorweg spoor met combo-seinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Spoorweg spoor met routeseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Spoorweg spoor met eenrichtingsseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Spoorweg spoor met blok en voorseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Spoorweg spoor met blok en exitseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Spoorweg spoor met blok en combo-seinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Spoorweg spoor met blok en routeseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Spoorweg spoor met blok en eenrichtingsseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Spoorweg spoor met voor- en exitseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Spoorweg spoor met voor- en combo-seinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Spoorweg spoor met voor- en routeseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Spoorweg spoor met voor- en eenrichtingsseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Spoorweg spoor met exit- en combo-seinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Spoorweg spoor em exit- en routeseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Spoorweg spoor met exit- en eenrichtingsseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Spoorweg spoor met combo- en routeseinen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Spoorweg Spoor met combo- en eenrichtingssein
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Spoorweg spoor met route en eenrichtingssein
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Spoorweg trein depot
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Weg
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Weg met straatlantaarns
@@ -2906,8 +2906,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Poging om ongel
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} bevat een ongeldige afbeelding. Alle ongeldige afbeeldingen worden getoond als een rood vraagteken (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Bevat meerdere acties 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Voorbij het einde van pseudo-sprite gelezen (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}De huidige basis graphics-set mist een aantal sprites..{}Werk de graphics-set bij aub
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}De momenteel gebruikte basis graphics set mist een aantal sprites.{} Werk de ingestelde basis graphics bij.{} Aangezien u een {YELLOW} ontwikkeling momentopname van OpenTTD{WHITE} speelt, heeft u ook een {YELLOW} ontwikkeling snapshot van de basis graphics set{WHITE} nodig
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Gevraagde GRF middelen niet beschikbaar (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} is uitgeschakeld door {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ongeldig/onbekend sprite lay-out-formaat (sprite {3:NUM})
@@ -3557,7 +3555,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} als ou
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stop het vervangen
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Klik op deze knop als je de aan de linkerkant geselecteerde locomotief niet wilt vervangen
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Aan het vervangen: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Wissel tussen locomotief- en wagonvervangvensters
 STR_REPLACE_ENGINES                                             :Motoren
 STR_REPLACE_WAGONS                                              :Wagons

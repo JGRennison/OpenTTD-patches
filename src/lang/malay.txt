@@ -2308,29 +2308,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Ladang
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Tanah diliputi salji
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Padang pasir
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} landasan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} landasan dengan isyarat sekatan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} landasan dengan pra-isyarat
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} landasan dengan isyarat keluar
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} landasan dengan isyarat kombo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} landasan dengan isyarat laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} landasan dengan isyarat satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} landasan dengan isyarat sekatan dan pra-isyarat
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} landasan dengan isyarat sekatan dan keluar
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} landasan dengan isyarat sekatan dan kombo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} landasan dengan isyarat sekatan dan laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} landasan dengan isyarat sekatan dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} landasan dengan isyarat pra- dan keluar
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} landasan dengan isyarat pra- dan kombo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} landasan dengan isyarat pra- dan laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} landasan dengan isyarat pra- dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} landasan dengan isyarat keluar dan kombo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} landasan dengan isyarat keluar dan laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} landasan dengan isyarat keluar dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} landasan dengan isyarat kombo dan laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} landasan dengan isyarat kombo dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} landasan dengan isyarat laluan dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} depoh keretapi
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Keretapi landasan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Keretapi landasan dengan isyarat sekatan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Keretapi landasan dengan pra-isyarat
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Keretapi landasan dengan isyarat keluar
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Keretapi landasan dengan isyarat kombo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Keretapi landasan dengan isyarat laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Keretapi landasan dengan isyarat satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Keretapi landasan dengan isyarat sekatan dan pra-isyarat
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Keretapi landasan dengan isyarat sekatan dan keluar
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Keretapi landasan dengan isyarat sekatan dan kombo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Keretapi landasan dengan isyarat sekatan dan laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Keretapi landasan dengan isyarat sekatan dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Keretapi landasan dengan isyarat pra- dan keluar
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Keretapi landasan dengan isyarat pra- dan kombo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Keretapi landasan dengan isyarat pra- dan laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Keretapi landasan dengan isyarat pra- dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Keretapi landasan dengan isyarat keluar dan kombo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Keretapi landasan dengan isyarat keluar dan laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Keretapi landasan dengan isyarat keluar dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Keretapi landasan dengan isyarat kombo dan laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Keretapi landasan dengan isyarat kombo dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Keretapi landasan dengan isyarat laluan dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Keretapi depoh keretapi
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Jalanraya
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Jalan raya berlampu
@@ -2602,7 +2602,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Cubaan untuk me
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} mengandungi peperi yang rosak. Semua peperi yang rosak akan ditunjukkan menggunakan tanda soal (?) merah.
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Mengandungi pelbagai Tindakan 8 kemasukan (peperi {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Bacaan melepasi penghujung peperi-pseudo (peperi {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Set asas grafik yang sedang digunakan, hilang sebilangan sprites.{}Sila mengemaskini set asas grafik
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Sumber GRF yang diminta tidak diperolehi (peperi {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} telah dinyahaktifkan oleh {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Tidak sah/diketahui format susun atur (peperi {3:NUM})
@@ -3197,7 +3196,6 @@ STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Tiada ke
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Hentikan Penggantian Kenderaan
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Menekan untuk menghentikan ketukaran jenis engin yang telah dipilih di sebelah kiri
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Menggantikan: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Beralih antara tetingkap enjin dan penggantian wagon
 STR_REPLACE_ENGINES                                             :Enjin
 STR_REPLACE_WAGONS                                              :Gerabak

@@ -1762,6 +1762,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}새로 �
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}인공지능/게임 스크립트 설정창을 엽니다.
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}'OpenTTD'를 종료합니다.
 
+STR_INTRO_BASESET                                               :{BLACK}현재 선택된 기본 그래픽 세트에는 {NUM}개의 스프라이트가 빠져있습니다. 기본 세트를 업데이트하세요.
 STR_INTRO_TRANSLATION                                           :{BLACK}이 버전의 OpenTTD는 {NUM}개의 문장이 한국어로 번역되지 않았습니다. OpenTTD가 더욱 발전할 수 있도록 번역에 참여하세요. 자세한 사항은 readme.txt를 참고하세요.
 
 # Quit window
@@ -2590,6 +2591,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}공항 �
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}받을 수 있는 화물: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}철도 종류: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}선로의 제한 속력: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}도로 속도 제한: {LTBLUE}{VELOCITY}
 
@@ -2602,29 +2604,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :들판
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :눈덮인 땅
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :사막
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :일반 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :입구 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :출구 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :복합 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :단방향 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :일반 신호기와 입구 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :일반 신호기와 출구 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :일반 신호기와 복합 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :일반 신호기와 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :일반 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :입구 신호기와 출구 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :입구 신호기와 복합 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :입구 신호기와 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :입구 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :출구 신호기와 복합 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :출구 신호기와 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :출구 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :복합 신호기와 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :복합 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :경로 신호기와 단방향 경로 신호기가 설치된 {STRING} 선로
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} 차량기지
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :일반 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :입구 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :출구 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :복합 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :단방향 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :일반 신호기와 입구 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :일반 신호기와 출구 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :일반 신호기와 복합 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :일반 신호기와 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :일반 신호기와 단방향 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :입구 신호기와 출구 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :입구 신호기와 복합 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :입구 신호기와 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :입구 신호기와 단방향 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :출구 신호기와 복합 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :출구 신호기와 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :출구 신호기와 단방향 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :복합 신호기와 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :복합 신호기와 단방향 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :경로 신호기와 단방향 경로 신호기가 설치된 철도 선로
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :철도 차량기지
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :도로
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :가로등이 있는 도로
@@ -2907,8 +2909,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :유효하지 �
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} 에 손상된 객체가 있습니다. 모든 손상된 객체는 붉은 물음표로 보일 것입니다.
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :여러 개의 액션 8 엔트리 포함 (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :모조-스프라이트의 지나간 끝을 읽음 (스프라이트 {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}최근에 이용한 기본 그래픽 세트에 객체가 많이 손실되었습니다.{}기본 그래픽 세트를 업데이트 하십시오.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}현재 사용중인 기본 그래픽에 그래픽이 다수 존재하지 않습니다.{}기본 그래픽 세트를 업데이트해 주십시오.{}현재 당신이 {YELLOW}OpenTTD의 개발 버전{WHITE}을 사용하고 있기 때문에, {YELLOW}기본 그래픽의 개발 버전{WHITE}이 필요할 수 있습니다.
 STR_NEWGRF_ERROR_GRM_FAILED                                     :요청한 GRF 자원을 사용할 수 없음 (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING}(은)는 {STRING} 때문에 사용할 수 없습니다
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :유효하지 않은/알 수 없는 스프라이트 구조 유형 (스프라이트 {3:NUM})
@@ -3558,10 +3558,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :낡으면 {ENGI
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}차량 교체 중지
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}왼쪽에서 선택한 기관차 종류의 차량교체를 중지하려면 이 버튼을 누르세요.
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}교체중: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}기관차/화물차 교체 창으로 전환합니다.
 STR_REPLACE_ENGINES                                             :기관차
 STR_REPLACE_WAGONS                                              :화물차
+STR_REPLACE_ALL_RAILTYPE                                        :모든 철도 차량
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}교체할 기관차의 철도 종류를 고르세요
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}왼쪽의 선택한 기관차가 어떤 기관차로 교체되고 있는지 표시합니다.

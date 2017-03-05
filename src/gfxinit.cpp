@@ -197,31 +197,49 @@ static void LoadSpriteTables()
 	InitializeUnicodeGlyphMap();
 
 	/*
-	 * Load the base NewGRF with OTTD required graphics as first NewGRF.
+	 * Load the base and extra NewGRF with OTTD required graphics as first NewGRF.
 	 * However, we do not want it to show up in the list of used NewGRFs,
 	 * so we have to manually add it, and then remove it later.
 	 */
 	GRFConfig *top = _grfconfig;
-	GRFConfig *master = new GRFConfig(used_set->files[GFT_EXTRA].filename);
+
+	/* Default extra graphics */
+	GRFConfig *master = new GRFConfig("OPENTTD.GRF");
+	master->palette |= GRFP_GRF_DOS;
+	FillGRFDetails(master, false, BASESET_DIR);
+	ClrBit(master->flags, GCF_INIT_ONLY);
+
+	/* Baseset extra graphics */
+	GRFConfig *extra = new GRFConfig(used_set->files[GFT_EXTRA].filename);
 
 	/* We know the palette of the base set, so if the base NewGRF is not
 	 * setting one, use the palette of the base set and not the global
 	 * one which might be the wrong palette for this base NewGRF.
 	 * The value set here might be overridden via action14 later. */
 	switch (used_set->palette) {
-		case PAL_DOS:     master->palette |= GRFP_GRF_DOS;     break;
-		case PAL_WINDOWS: master->palette |= GRFP_GRF_WINDOWS; break;
+		case PAL_DOS:     extra->palette |= GRFP_GRF_DOS;     break;
+		case PAL_WINDOWS: extra->palette |= GRFP_GRF_WINDOWS; break;
 		default: break;
 	}
-	FillGRFDetails(master, false, BASESET_DIR);
+	FillGRFDetails(extra, false, BASESET_DIR);
+	ClrBit(extra->flags, GCF_INIT_ONLY);
 
-	ClrBit(master->flags, GCF_INIT_ONLY);
-	master->next = top;
+	extra->next = top;
+	master->next = extra;
 	_grfconfig = master;
 
-	LoadNewGRF(SPR_NEWGRFS_BASE, i);
+	LoadNewGRF(SPR_NEWGRFS_BASE, i, 2);
+
+	uint total_extra_graphics = SPR_NEWGRFS_BASE - SPR_OPENTTD_BASE;
+	_missing_extra_graphics = GetSpriteCountForSlot(i, SPR_OPENTTD_BASE, SPR_NEWGRFS_BASE);
+	DEBUG(sprite, 1, "%u extra sprites, %u from baseset, %u from fallback", total_extra_graphics, total_extra_graphics - _missing_extra_graphics, _missing_extra_graphics);
+
+	/* The original baseset extra graphics intentionally make use of the fallback graphics.
+	 * Let's say everything which provides less than 500 sprites misses the rest intentionally. */
+	if (500 + _missing_extra_graphics > total_extra_graphics) _missing_extra_graphics = 0;
 
 	/* Free and remove the top element. */
+	delete extra;
 	delete master;
 	_grfconfig = top;
 }

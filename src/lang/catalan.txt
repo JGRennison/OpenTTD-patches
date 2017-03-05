@@ -1407,7 +1407,7 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :El més antic d
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :El més modern disponible
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :El més utilitzat disponible
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Mostra els camins reservats: {STRING}
-STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Dóna a les vies reservades un color diferent per ajudar en problemes de trens que refusen entrar en blocs basats en camí
+STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Dóna a les vies reservades un color diferent per visualitzar problemes d'encaminament de trens
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Mantingues les eines de construcció actives després del seu ús: {STRING}
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Mantingues les eines de construcció pels ponts, túnels, etc. obertes després d'utilitzar-les
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Agrupa les despeses a la finestra de finances de la companyia: {STRING}
@@ -1762,6 +1762,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Comprova
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Mostra els paràmetres de les IA/Script de la partida
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Surt d'OpenTTD
 
+STR_INTRO_BASESET                                               :{WHITE}Al joc de gràfics base seleccionat li falten {NUM} sprite{P "" s}.{}Si us plau, comproveu-ne si hi ha actualitzacions disponibles.
 STR_INTRO_TRANSLATION                                           :{BLACK}A aquesta traducció li falten {NUM} caden{P a es}. Si us plau ajuda a fer millor OpenTTD unint-te com a traductor. Veure readme.txt per més detalls.
 
 # Quit window
@@ -2590,6 +2591,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nom de l
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Càrrega acceptada: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Tipus de via: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Límit de velocitat de la via: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Límit de velocitat de la carretera: {LTBLUE}{VELOCITY}
 
@@ -2602,29 +2604,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Camps de conreu
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terreny nevat
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Desert
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Via de {STRING}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} via amb senyals de bloc
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} via amb pre-senyals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} via amb senyals de sortida
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} via amb senyals combinats
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} via amb senyals de camí
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} via amb senyals de camí d'un sentit
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING}via amb senyals de bloc i pre-senyals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} via amb senyals de bloc i de sortida
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} via amb senyals de bloc i combinats
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} via amb senyals de bloc i de camí
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} via amb senyals de bloc i de camí d'un sentit
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} via amb pre-senyals i senyals de sortida
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} via amb pre-senyals i senyals combinats
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} via amb pre-senyals i senyals de camí
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} via amb pre-senyals i senyals de camí d'un sentit
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} via amb senyals de sortida i combinats
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} via amb senyals de sortida i de camí
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} via amb senyals de sortida i de camí d'un sentit
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} via amb senyals combinats i de camí
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} via amb senyals combinats i de camí d'un sentit
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} via amb senyals de camí i de camí d'un sentit
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} cotxeres de tren
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Via ferroviària
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Via ferroviària amb senyals de secció
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Via ferroviària amb senyals d'entrada
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Via ferroviària amb senyals de sortida
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Via ferroviària amb senyals combinats
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Ferrocarril via amb senyals de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Via ferroviària amb senyals de ruta d'un sentit
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Via ferroviària amb senyals de secció i d'entrada
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Via ferroviària amb senyals de secció i de sortida
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Via ferroviària amb senyals de secció i combinats
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Via ferroviària amb senyals de secció i de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Via ferroviària amb senyals de secció i de ruta d'un sentit
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Via ferroviària amb senyals d'entrada i de sortida
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Via ferroviària amb senyals d'entrada i combinats
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Via ferroviària amb senyals d'entrada i senyals de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Via ferroviària amb senyals d'entrada i de ruta d'un sentit
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Via ferroviària amb senyals combinats i de sortida
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Via ferroviària amb senyals de sortida i de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Via ferroviària amb senyals de sortida i de ruta d'un sentit
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Via ferroviària amb senyals combinats i de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Via ferroviària amb senyals combinats i de ruta d'un sentit
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Via ferroviària amb senyals de ruta i de ruta d'un sentit
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Cotxeres de vehicles ferroviaris
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Carretera
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Carretera amb fanals
@@ -2907,8 +2909,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Intent d'utilit
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} conté un sprite corrupte. Tots els sprites corruptes seran mostrats amb un interrogant vermell (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Conté múltiples entrades d'acció 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :S'ha llegit després del final d'un pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Al joc de gràfics base establert actualment li falten un nombre de sprites.{}Si us plau, actualitzeu el joc de gràfics base.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Als gràfics base actualment utilitzats els hi falta un nombre de sprites.{}Si us plau, actualitzeu el conjunt de gràfics base.{}Com que esteu jugant amb una {YELLOW}versió de desenvolupament de l'OpenTTD{WHITE}, pot ser que necessiteu una {YELLOW}versió de desenvolupament dels gràfics base{WHITE}.
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Els recursos GRF demanats no estan disponibles (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} ha estat desactivat per {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Format de disposició de sprite no vàlid o desconegut (sprite {3:NUM}).
@@ -3392,7 +3392,7 @@ STR_PURCHASE_INFO_AIRCRAFT_CAPACITY                             :{BLACK}Capacita
 STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Vagons Automotrius: {GOLD}+{POWER}{BLACK} Pes: {GOLD}+{WEIGHT_SHORT}
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Remodelable a: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Totes les càrregues
-STR_PURCHASE_INFO_ALL_BUT                                       :Tots menys {CARGO_LIST}
+STR_PURCHASE_INFO_ALL_BUT                                       :Qualsevol excepte {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Esforç de tracció màxim: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Abast: {GOLD}{COMMA} cel·les
 
@@ -3558,10 +3558,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} quan s
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Para de substituir
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Prem per aturar el reemplaçament del model seleccionat a l'esquerra
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Substituint: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Canvia entre finestres de substitució de vagons i de motors
 STR_REPLACE_ENGINES                                             :Motors
 STR_REPLACE_WAGONS                                              :Vagons
+STR_REPLACE_ALL_RAILTYPE                                        :Tots els vehicles ferroviaris
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Tria el tipus de via dels models de vehicle que vols substituir
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Mostra quin model dels seleccionats a l'esquerra es substitueix, si n'hi ha
@@ -3884,7 +3884,7 @@ STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :salta a l'ordre
 STR_ORDER_CONDITIONAL_NUM                                       :Salta a l'ordre {COMMA} quan {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Salta a l'ordre {COMMA} quan {STRING} {STRING}
 
-STR_INVALID_ORDER                                               :{RED} (Ordre incorrecte)
+STR_INVALID_ORDER                                               :{RED} (Ordre incorrecta)
 
 # Time table window
 STR_TIMETABLE_TITLE                                             :{WHITE}{VEHICLE} (Horari)
