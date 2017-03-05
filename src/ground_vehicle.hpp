@@ -225,7 +225,9 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 			this->z_pos += HasBit(this->gv_flags, GVF_GOINGUP_BIT) ? d : -d;
 		}
 
+#ifdef _DEBUG
 		assert(this->z_pos == GetSlopePixelZ(this->x_pos, this->y_pos));
+#endif
 	}
 
 	/**
