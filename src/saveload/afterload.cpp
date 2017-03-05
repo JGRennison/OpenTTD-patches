@@ -759,6 +759,11 @@ bool AfterLoadGame()
 		assert(_tick_skip_counter < _settings_game.economy.day_length_factor);
 	}
 
+	/* Set day length factor to 1 if loading a pre day length savegame */
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP)) {
+		_settings_game.economy.day_length_factor = 1;
+	}
+
 	/* Update current year
 	 * must be done before loading sprites as some newgrfs check it */
 	SetDate(_date, _date_fract);
