@@ -20,6 +20,7 @@
 static const SaveLoad _tunnel_desc[] = {
 	 SLE_CONDVAR(Tunnel, tile_n,           SLE_UINT32,             0, SL_MAX_VERSION),
 	 SLE_CONDVAR(Tunnel, tile_s,           SLE_UINT32,             0, SL_MAX_VERSION),
+	 SLE_CONDVAR(Tunnel, height,            SLE_UINT8,             0, SL_MAX_VERSION),
 	 SLE_CONDVAR(Tunnel, is_chunnel,         SLE_BOOL,             0, SL_MAX_VERSION),
 	 SLE_END()
 };
