@@ -804,6 +804,8 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		default: NOT_REACHED();
 	}
 
+	if (is_chunnel) cost.MultiplyCost(2);
+
 	if (flags & DC_EXEC) {
 		Company *c = Company::GetIfValid(company);
 		uint num_pieces = (tiles + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
@@ -919,6 +921,8 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 		ChangeTownRating(t, RATING_TUNNEL_BRIDGE_DOWN_STEP, RATING_TUNNEL_BRIDGE_MINIMUM, flags);
 	}
 
+	const bool is_chunnel = Tunnel::GetByTile(tile)->is_chunnel;
+
 	uint len = GetTunnelBridgeLength(tile, endtile) + 2; // Don't forget the end tiles.
 
 	if (flags & DC_EXEC) {
@@ -974,7 +978,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 		ViewportMapInvalidateTunnelCacheByTile(tile);
 		ViewportMapInvalidateTunnelCacheByTile(endtile);
 	}
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_TUNNEL] * len);
+	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_TUNNEL] * len * (is_chunnel ? 2 : 1));
 }
 
 
