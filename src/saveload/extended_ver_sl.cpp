@@ -137,6 +137,7 @@ void SlXvResetState()
 {
 	_sl_is_ext_version = false;
 	_sl_is_faked_ext = false;
+	_sl_xv_discardable_chunk_ids.clear();
 	memset(_sl_xv_feature_versions, 0, sizeof(_sl_xv_feature_versions));
 }
 

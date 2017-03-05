@@ -780,6 +780,11 @@ bool AfterLoadGame()
 		assert(_tick_skip_counter < _settings_game.economy.day_length_factor);
 	}
 
+	/* Set day length factor to 1 if loading a pre day length savegame */
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP)) {
+		_settings_game.economy.day_length_factor = 1;
+	}
+
 	/* Update current year
 	 * must be done before loading sprites as some newgrfs check it */
 	SetDate(_date, _date_fract);
@@ -3374,6 +3379,11 @@ bool AfterLoadGame()
 	/* Set lifetime vehicle profit to 0 if lifetime profit feature is missing */
 	if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2)) {
 		_settings_game.economy.town_cargo_scale_factor = _settings_game.economy.old_town_cargo_factor * 10;
+	}
+
+	/* Set day length factor to 1 if loading a pre day length savegame */
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP)) {
+		_settings_game.economy.day_length_factor = 1;
 	}
 
 	/* Road stops is 'only' updating some caches */
