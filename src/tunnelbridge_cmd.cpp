@@ -734,9 +734,10 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 
 				end_tile += delta;
 				tiles++;
+				if (IsTileType(end_tile, MP_WATER) && IsSea(end_tile)) is_chunnel = true;
 			}
 			/* The water was passed */
-			is_chunnel = true;
+			if (!is_chunnel) return_cmd_error(STR_ERROR_CHUNNEL_ONLY_OVER_SEA);
 			head_tiles = 0;
 			found_tunnel_tile = INVALID_TILE;
 		}
