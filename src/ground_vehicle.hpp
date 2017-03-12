@@ -16,6 +16,7 @@
 #include "vehicle_gui.h"
 #include "landscape.h"
 #include "window_func.h"
+#include "tunnel_map.h"
 #include "widgets/vehicle_widget.h"
 
 /** What is the status of our acceleration? */
@@ -54,6 +55,7 @@ enum GroundVehicleFlags {
 	GVF_GOINGUP_BIT              = 0,  ///< Vehicle is currently going uphill. (Cached track information for acceleration)
 	GVF_GOINGDOWN_BIT            = 1,  ///< Vehicle is currently going downhill. (Cached track information for acceleration)
 	GVF_SUPPRESS_IMPLICIT_ORDERS = 2,  ///< Disable insertion and removal of automatic orders until the vehicle completes the real order.
+	GVF_CHUNNEL_BIT              = 3,  ///< Vehicle may currently be in a chunnel. (Cached track information for inclination changes)
 };
 
 /**
@@ -228,7 +230,13 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 #ifdef _DEBUG
 		assert(this->z_pos == GetSlopePixelZ(this->x_pos, this->y_pos));
 #endif
+
+		if (HasBit(this->gv_flags, GVF_CHUNNEL_BIT) && !IsTunnelTile(this->tile)) {
+			ClrBit(this->gv_flags, GVF_CHUNNEL_BIT);
+		}
 	}
+
+	void UpdateZPositionInWormhole();
 
 	/**
 	 * Checks if the vehicle is in a slope and sets the required flags in that case.
@@ -236,11 +244,13 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	 * @param update_delta Indicates to also update the delta.
 	 * @return Old height of the vehicle.
 	 */
-	inline int UpdateInclination(bool new_tile, bool update_delta)
+	inline int UpdateInclination(bool new_tile, bool update_delta, bool in_wormhole = false)
 	{
 		int old_z = this->z_pos;
 
-		if (new_tile) {
+		if (in_wormhole) {
+			if (HasBit(this->gv_flags, GVF_CHUNNEL_BIT)) this->UpdateZPositionInWormhole();
+		} else if (new_tile) {
 			this->UpdateZPositionAndInclination();
 		} else {
 			this->UpdateZPosition();

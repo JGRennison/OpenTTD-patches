@@ -13,6 +13,8 @@
 #include "train.h"
 #include "roadveh.h"
 #include "depot_map.h"
+#include "tunnel_base.h"
+#include "slope_type.h"
 
 #include "safeguards.h"
 
@@ -278,6 +280,66 @@ bool GroundVehicle<T, Type>::IsChainInDepot() const
 	}
 
 	return true;
+}
+
+/**
+ * Updates vehicle's Z inclination inside a wormhole, where applicable.
+ */
+template <class T, VehicleType Type>
+void GroundVehicle<T, Type>::UpdateZPositionInWormhole()
+{
+	if (!IsTunnel(this->tile)) return;
+
+	const Tunnel *t = Tunnel::GetByTile(this->tile);
+	if (!t->is_chunnel) return;
+
+	TileIndex pos_tile = TileVirtXY(this->x_pos, this->y_pos);
+
+	ClrBit(this->gv_flags, GVF_GOINGUP_BIT);
+	ClrBit(this->gv_flags, GVF_GOINGDOWN_BIT);
+
+	if (pos_tile == t->tile_n || pos_tile == t->tile_s) {
+		this->z_pos = 0;
+		return;
+	}
+
+	int north_coord, south_coord, pos_coord;
+	bool going_north;
+	Slope slope_north;
+	if (t->tile_s - t->tile_n > MapMaxX()) {
+		// tunnel extends along Y axis (DIAGDIR_SE from north end), has same X values
+		north_coord = TileY(t->tile_n);
+		south_coord = TileY(t->tile_s);
+		pos_coord = TileY(pos_tile);
+		going_north = (this->direction == DIR_NW);
+		slope_north = SLOPE_NW;
+	} else {
+		// tunnel extends along X axis (DIAGDIR_SW from north end), has same Y values
+		north_coord = TileX(t->tile_n);
+		south_coord = TileX(t->tile_s);
+		pos_coord = TileX(pos_tile);
+		going_north = (this->direction == DIR_NE);
+		slope_north = SLOPE_NE;
+	}
+
+	Slope slope = SLOPE_FLAT;
+
+	int delta;
+	if ((delta = pos_coord - north_coord) <= 3) {
+		this->z_pos = TILE_HEIGHT * (delta == 3 ? -2 : -1);
+		if (delta != 2) {
+			slope = slope_north;
+			SetBit(this->gv_flags, going_north ? GVF_GOINGUP_BIT : GVF_GOINGDOWN_BIT);
+		}
+	} else if ((delta = south_coord - pos_coord) <= 3) {
+		this->z_pos = TILE_HEIGHT * (delta == 3 ? -2 : -1);
+		if (delta != 2) {
+			slope = SLOPE_ELEVATED ^ slope_north;
+			SetBit(this->gv_flags, going_north ? GVF_GOINGDOWN_BIT : GVF_GOINGUP_BIT);
+		}
+	}
+
+	if (slope != SLOPE_FLAT) this->z_pos += GetPartialPixelZ(this->x_pos & 0xF, this->y_pos & 0xF, slope);
 }
 
 /* Instantiation for Train */

@@ -12,8 +12,84 @@
 #include "stdafx.h"
 #include "tunnelbridge_map.h"
 
+#include "core/pool_func.hpp"
+#include <unordered_map>
+
 #include "safeguards.h"
 
+/** All tunnel portals tucked away in a pool. */
+TunnelPool _tunnel_pool("Tunnel");
+INSTANTIATE_POOL_METHODS(Tunnel)
+
+static std::unordered_map<TileIndex, TunnelID> tunnel_tile_index_map;
+static std::unordered_multimap<uint64, Tunnel*> tunnel_axis_height_index;
+
+static uint64 GetTunnelAxisHeightCacheKey(TileIndex tile, uint8 height, bool y_axis) {
+	if (y_axis) {
+		// tunnel extends along Y axis (DIAGDIR_SE from north end), has same X values
+		return TileX(tile) | (((uint64) height) << 24) | (((uint64) 1) << 32);
+	} else {
+		// tunnel extends along X axis (DIAGDIR_SW from north end), has same Y values
+		return TileY(tile) | (((uint64) height) << 24);
+	}
+}
+
+static inline uint64 GetTunnelAxisHeightCacheKey(const Tunnel* t) {
+	return GetTunnelAxisHeightCacheKey(t->tile_n, t->height, t->tile_s - t->tile_n > MapMaxX());
+}
+
+/**
+ * Clean up a tunnel tile
+ */
+Tunnel::~Tunnel()
+{
+	if (CleaningPool()) return;
+
+	if (this->index >= TUNNEL_ID_MAP_LOOKUP) {
+		tunnel_tile_index_map.erase(this->tile_n);
+		tunnel_tile_index_map.erase(this->tile_s);
+	}
+
+	auto range = tunnel_axis_height_index.equal_range(GetTunnelAxisHeightCacheKey(this));
+	bool have_erased = false;
+	for (auto it = range.first; it != range.second; ++it) {
+		if (it->second == this) {
+			tunnel_axis_height_index.erase(it);
+			have_erased = true;
+			break;
+		}
+	}
+	assert(have_erased);
+}
+
+/**
+ * Update tunnel indexes
+ */
+void Tunnel::UpdateIndexes()
+{
+	if (this->index >= TUNNEL_ID_MAP_LOOKUP) {
+		tunnel_tile_index_map[this->tile_n] = this->index;
+		tunnel_tile_index_map[this->tile_s] = this->index;
+	}
+
+	tunnel_axis_height_index.emplace(GetTunnelAxisHeightCacheKey(this), this);
+}
+
+/**
+ * Tunnel pool is about to be cleaned
+ */
+void Tunnel::PreCleanPool()
+{
+	tunnel_tile_index_map.clear();
+	tunnel_axis_height_index.clear();
+}
+
+TunnelID GetTunnelIndexByLookup(TileIndex t)
+{
+	auto iter = tunnel_tile_index_map.find(t);
+	assert_msg(iter != tunnel_tile_index_map.end(), "tile: 0x%X", t);
+	return iter->second;
+}
 
 /**
  * Gets the other end of the tunnel. Where a vehicle would reappear when it
@@ -23,52 +99,39 @@
  */
 TileIndex GetOtherTunnelEnd(TileIndex tile)
 {
-	DiagDirection dir = GetTunnelBridgeDirection(tile);
-	TileIndexDiff delta = TileOffsByDiagDir(dir);
-	int z = GetTileZ(tile);
-
-	dir = ReverseDiagDir(dir);
-	do {
-		tile += delta;
-	} while (
-		!IsTunnelTile(tile) ||
-		GetTunnelBridgeDirection(tile) != dir ||
-		GetTileZ(tile) != z
-	);
-
-	return tile;
+	Tunnel *t = Tunnel::GetByTile(tile);
+	return t->tile_n == tile ? t->tile_s : t->tile_n;
 }
 
-
-/**
- * Is there a tunnel in the way in the given direction?
- * @param tile the tile to search from.
- * @param z    the 'z' to search on.
- * @param dir  the direction to start searching to.
- * @return true if and only if there is a tunnel.
- */
-bool IsTunnelInWayDir(TileIndex tile, int z, DiagDirection dir)
+static inline bool IsTunnelInWaySingleAxis(TileIndex tile, int z, IsTunnelInWayFlags flags, bool y_axis, TileIndexDiff tile_diff)
 {
-	TileIndexDiff delta = TileOffsByDiagDir(dir);
-	int height;
+	const auto tunnels = tunnel_axis_height_index.equal_range(GetTunnelAxisHeightCacheKey(tile, z, y_axis));
+	for (auto it = tunnels.first; it != tunnels.second; ++it) {
+		const Tunnel *t = it->second;
+		if (t->tile_n > tile || tile > t->tile_s) continue;
 
-	do {
-		tile -= delta;
-		if (!IsValidTile(tile)) return false;
-		height = GetTileZ(tile);
-	} while (z < height);
-
-	return z == height && IsTunnelTile(tile) && GetTunnelBridgeDirection(tile) == dir;
+		if (!t->is_chunnel && (flags & ITIWF_CHUNNEL_ONLY)) {
+			continue;
+		}
+		if (t->is_chunnel && (flags & ITIWF_IGNORE_CHUNNEL)) {
+			/* Only if tunnel was built over water is terraforming is allowed between portals. */
+			const TileIndexDiff delta = tile_diff * 4;  // 4 tiles ramp.
+			if (tile < t->tile_n + delta || t->tile_s - delta < tile) return true;
+			continue;
+		}
+		return true;
+	}
+	return false;
 }
 
 /**
  * Is there a tunnel in the way in any direction?
  * @param tile the tile to search from.
  * @param z the 'z' to search on.
+ * @param chunnel_allowed True if chunnel mid-parts are allowed, used when terraforming.
  * @return true if and only if there is a tunnel.
  */
-bool IsTunnelInWay(TileIndex tile, int z)
+bool IsTunnelInWay(TileIndex tile, int z, IsTunnelInWayFlags flags)
 {
-	return IsTunnelInWayDir(tile, z, (TileX(tile) > (MapMaxX() / 2)) ? DIAGDIR_NE : DIAGDIR_SW) ||
-			IsTunnelInWayDir(tile, z, (TileY(tile) > (MapMaxY() / 2)) ? DIAGDIR_NW : DIAGDIR_SE);
+	return IsTunnelInWaySingleAxis(tile, z, flags, false, 1) || IsTunnelInWaySingleAxis(tile, z, flags, true, TileOffsByDiagDir(DIAGDIR_SE));
 }

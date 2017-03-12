@@ -1267,6 +1267,9 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :When enabled, i
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Ships avoid collisions: {STRING2}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :When enabled, ships try to avoid passing through each other. Requires 90° turns to be forbidden.
 
+STR_CONFIG_SETTING_CHUNNEL                                      :Allow construction of tunnels under water: {STRING2}
+STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :When enabled, tunnels can be constructed under bodies of water at sea level. This requires the tunnel ends to be least 3 tiles away from the shore.
+
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Trains from different companies may not crash into each other: {STRING2}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :This setting is primarily to prevent untrusted players deliberately causing crashes involving other companies' trains in multi-player rail infrastructure sharing games.
 
@@ -3042,8 +3045,11 @@ STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :Ship depot
 # Industries come directly from their industry names
 
 STR_LAI_TUNNEL_DESCRIPTION_RAILROAD                             :Railway tunnel
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_CHUNNEL                     :Railway tunnel (underwater)
 STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL                      :Railway tunnel with signal simulation
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL_CHUNNEL              :Railway tunnel with signal simulation (underwater)
 STR_LAI_TUNNEL_DESCRIPTION_ROAD                                 :Road tunnel
+STR_LAI_TUNNEL_DESCRIPTION_ROAD_CHUNNEL                         :Road tunnel (underwater)
 
 STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :Railway bridge with signal simulation
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_SUSPENSION_STEEL                :Steel suspension rail bridge
@@ -5002,6 +5008,11 @@ STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}Another 
 STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}Tunnel would end out of the map
 STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}Unable to excavate land for other end of tunnel
 STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... tunnel too long
+STR_ERROR_TUNNEL_RAMP_TOO_SHORT                                 :{WHITE}... ramp too short, tunnels under water must have a ramp at least three tiles long at both ends.
+STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... too many tunnels
+STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL                             :{WHITE}No oil rigs allowed above underwater tunnels.
+STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}Three tiles are needed to pass under the other tunnel.
+STR_ERROR_CHUNNEL_ONLY_OVER_SEA                                 :{WHITE}Underwater tunnels are only allowed to cross sea...
 
 # Object related errors
 STR_ERROR_TOO_MANY_OBJECTS                                      :{WHITE}... too many objects

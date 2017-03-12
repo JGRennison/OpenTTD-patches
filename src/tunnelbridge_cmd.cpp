@@ -27,6 +27,7 @@
 #include "autoslope.h"
 #include "tunnelbridge_map.h"
 #include "bridge_signal_map.h"
+#include "tunnel_base.h"
 #include "strings_func.h"
 #include "date_func.h"
 #include "clear_func.h"
@@ -43,11 +44,14 @@
 #include "water.h"
 #include "company_gui.h"
 #include "viewport_func.h"
+#include "station_map.h"
+#include "industry_map.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
 
 #include "safeguards.h"
+
 
 BridgeSpec _bridge[MAX_BRIDGES]; ///< The specification of all bridges.
 TileIndex _build_tunnel_endtile; ///< The end of a tunnel; as hidden return from the tunnel build command for GUI purposes.
@@ -661,12 +665,6 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	 * position, because of increased-cost-by-length: 'cost += cost >> 3' */
 
 	TileIndexDiff delta = TileOffsByDiagDir(direction);
-	DiagDirection tunnel_in_way_dir;
-	if (DiagDirToAxis(direction) == AXIS_Y) {
-		tunnel_in_way_dir = (TileX(start_tile) < (MapMaxX() / 2)) ? DIAGDIR_SW : DIAGDIR_NE;
-	} else {
-		tunnel_in_way_dir = (TileY(start_tile) < (MapMaxX() / 2)) ? DIAGDIR_SE : DIAGDIR_NW;
-	}
 
 	TileIndex end_tile = start_tile;
 
@@ -674,8 +672,14 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	int tiles_coef = 3;
 	/* Number of tiles from start of tunnel */
 	int tiles = 0;
+	/* flag for chunnels. */
+	bool is_chunnel = false;
+	/* Number of chunnel head tiles. */
+	int head_tiles = 0;
 	/* Number of tiles at which the cost increase coefficient per tile is halved */
 	int tiles_bump = 25;
+
+	TileIndex found_tunnel_tile = INVALID_TILE;
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	Slope end_tileh;
@@ -684,13 +688,90 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		if (!IsValidTile(end_tile)) return_cmd_error(STR_ERROR_TUNNEL_THROUGH_MAP_BORDER);
 		end_tileh = GetTileSlope(end_tile, &end_z);
 
-		if (start_z == end_z) break;
+		if (start_z == end_z) {
+			_build_tunnel_endtile = found_tunnel_tile != INVALID_TILE ? found_tunnel_tile : end_tile;
 
-		if (!_cheats.crossing_tunnels.value && IsTunnelInWayDir(end_tile, start_z, tunnel_in_way_dir)) {
-			return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
+			/* Test if we are on a shore. */
+			if (end_z == 0 && _settings_game.construction.chunnel &&
+					(IsCoastTile(end_tile) ||
+					(IsValidTile(end_tile + delta) && HasTileWaterGround(end_tile + delta)) ||
+					(IsValidTile(end_tile + delta * 2) && HasTileWaterGround(end_tile + delta * 2)))) {
+				if (!is_chunnel) {
+					/*We are about to pass water for the first time so check if not to close to other tunnel */
+					if (tiles + 1 < head_tiles + 4 && found_tunnel_tile != INVALID_TILE) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL);
+					if (tiles + 1 < 4) return_cmd_error(STR_ERROR_TUNNEL_RAMP_TOO_SHORT);
+				}
+			} else {/* We are leaving.*/
+				if (is_chunnel) {
+					/* Check if there is enough ramp space to come up. */
+					if (head_tiles < 4 && found_tunnel_tile != INVALID_TILE) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL);
+					if (head_tiles < 4) return_cmd_error(STR_ERROR_TUNNEL_RAMP_TOO_SHORT);
+				} else {
+					if (found_tunnel_tile != INVALID_TILE) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
+				}
+				break;
+			}
+
+			/* A shore was found so pass the water and find a proper shore tile that potentially
+			 * could have a tunnel portal behind. */
+			for (;;) {
+				if (!IsValidTile(end_tile)) return_cmd_error(STR_ERROR_TUNNEL_THROUGH_MAP_BORDER);
+
+				end_tileh = GetTileSlope(end_tile);
+				if(direction == DIAGDIR_NE && (end_tileh & SLOPE_NE) == SLOPE_NE) break;
+				if(direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
+				if(direction == DIAGDIR_SW && (end_tileh & SLOPE_SW) == SLOPE_SW) break;
+				if(direction == DIAGDIR_NW && (end_tileh & SLOPE_NW) == SLOPE_NW) break;
+
+				/* No drilling under oil rigs.*/
+				if ((IsTileType(end_tile, MP_STATION) && IsOilRig(end_tile)) ||
+						(IsTileType(end_tile, MP_INDUSTRY)                   &&
+						GetIndustryGfx(end_tile) >= GFX_OILRIG_1             &&
+						GetIndustryGfx(end_tile) <= GFX_OILRIG_5)) {
+					_build_tunnel_endtile = end_tile;
+					return_cmd_error(STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL);
+				}
+
+				end_tile += delta;
+				tiles++;
+				if (IsTileType(end_tile, MP_WATER) && IsSea(end_tile)) is_chunnel = true;
+			}
+			/* The water was passed */
+			if (!is_chunnel) return_cmd_error(STR_ERROR_CHUNNEL_ONLY_OVER_SEA);
+			head_tiles = 0;
+			found_tunnel_tile = INVALID_TILE;
 		}
-
+		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z, ITIWF_IGNORE_CHUNNEL)) {
+			if (found_tunnel_tile == INVALID_TILE || is_chunnel) { // Remember the first or the last when we pass a tunnel.
+				found_tunnel_tile = end_tile;
+				head_tiles = 0;
+			}
+		}
+		head_tiles++;
 		tiles++;
+	}
+
+	if (is_chunnel && !_cheats.crossing_tunnels.value) {
+		/*
+		 * Chunnel check: second pass
+		 *
+		 * Make sure that we don't intersect with any other chunnels
+		 */
+
+		TileIndex check_tile = start_tile;
+		for (;;) {
+			check_tile += delta;
+			if (check_tile == end_tile) break;
+
+			if (IsTunnelInWay(check_tile, start_z, ITIWF_CHUNNEL_ONLY)) {
+				_build_tunnel_endtile = check_tile;
+				return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
+			}
+		}
+	}
+
+	/* The cost of the digging. */
+	for (int i = tiles; i > 0; i--) {
 		if (tiles == tiles_bump) {
 			tiles_coef++;
 			tiles_bump *= 2;
@@ -744,13 +825,24 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		default: NOT_REACHED();
 	}
 
+	if (is_chunnel) cost.MultiplyCost(2);
+
 	if (flags & DC_EXEC) {
 		Company *c = Company::GetIfValid(company);
 		uint num_pieces = (tiles + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+
+		/* The most northern tile first. */
+		TileIndex tn = start_tile;
+		TileIndex ts = end_tile;
+		if(start_tile > end_tile) Swap(tn, ts);
+
+		if (!Tunnel::CanAllocateItem()) return_cmd_error(STR_ERROR_TUNNEL_TOO_MANY);
+		const Tunnel *t = new Tunnel(tn, ts, TileHeight(tn), is_chunnel);
+
 		if (transport_type == TRANSPORT_RAIL) {
 			if (!IsTunnelTile(start_tile) && c != NULL) c->infrastructure.rail[railtype] += num_pieces;
-			MakeRailTunnel(start_tile, company, direction,                 railtype);
-			MakeRailTunnel(end_tile,   company, ReverseDiagDir(direction), railtype);
+			MakeRailTunnel(start_tile, company, t->index, direction,                 railtype);
+			MakeRailTunnel(end_tile,   company, t->index, ReverseDiagDir(direction), railtype);
 			AddSideToSignalBuffer(start_tile, INVALID_DIAGDIR, company);
 			YapfNotifyTrackLayoutChange(start_tile, DiagDirToDiagTrack(direction));
 		} else {
@@ -760,8 +852,8 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 					c->infrastructure.road[rt] += num_pieces * 2; // A full diagonal road has two road bits.
 				}
 			}
-			MakeRoadTunnel(start_tile, company, direction,                 rts);
-			MakeRoadTunnel(end_tile,   company, ReverseDiagDir(direction), rts);
+			MakeRoadTunnel(start_tile, company, t->index, direction,                 rts);
+			MakeRoadTunnel(end_tile,   company, t->index, ReverseDiagDir(direction), rts);
 		}
 		DirtyCompanyInfrastructureWindows(company);
 	}
@@ -850,6 +942,8 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 		ChangeTownRating(t, RATING_TUNNEL_BRIDGE_DOWN_STEP, RATING_TUNNEL_BRIDGE_MINIMUM, flags);
 	}
 
+	const bool is_chunnel = Tunnel::GetByTile(tile)->is_chunnel;
+
 	uint len = GetTunnelBridgeLength(tile, endtile) + 2; // Don't forget the end tiles.
 
 	if (flags & DC_EXEC) {
@@ -873,6 +967,8 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 				DirtyCompanyInfrastructureWindows(owner);
 			}
 
+			delete Tunnel::GetByTile(tile);
+
 			DoClearSquare(tile);
 			DoClearSquare(endtile);
 
@@ -895,13 +991,15 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 				}
 			}
 
+			delete Tunnel::GetByTile(tile);
+
 			DoClearSquare(tile);
 			DoClearSquare(endtile);
 		}
 		ViewportMapInvalidateTunnelCacheByTile(tile);
 		ViewportMapInvalidateTunnelCacheByTile(endtile);
 	}
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_TUNNEL] * len);
+	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_TUNNEL] * len * (is_chunnel ? 2 : 1));
 }
 
 
@@ -1764,7 +1862,11 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	TransportType tt = GetTunnelBridgeTransportType(tile);
 
 	if (IsTunnel(tile)) {
-		td->str = (tt == TRANSPORT_RAIL) ? IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD : STR_LAI_TUNNEL_DESCRIPTION_ROAD;
+		if (Tunnel::GetByTile(tile)->is_chunnel) {
+			td->str = (tt == TRANSPORT_RAIL) ? IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL_CHUNNEL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_CHUNNEL : STR_LAI_TUNNEL_DESCRIPTION_ROAD_CHUNNEL;
+		} else {
+			td->str = (tt == TRANSPORT_RAIL) ? IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL : STR_LAI_TUNNEL_DESCRIPTION_RAILROAD : STR_LAI_TUNNEL_DESCRIPTION_ROAD;
+		}
 	} else { // IsBridge(tile)
 		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
 	}
@@ -2027,6 +2129,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 				if (frame == _tunnel_visibility_frame[dir]) {
 					t->tile = tile;
 					t->track = TRACK_BIT_WORMHOLE;
+					if (Tunnel::GetByTile(tile)->is_chunnel) SetBit(t->gv_flags, GVF_CHUNNEL_BIT);
 					t->vehstatus |= VS_HIDDEN;
 					return VETSB_ENTERED_WORMHOLE;
 				}
@@ -2034,6 +2137,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 
 			if (dir == ReverseDiagDir(vdir) && frame == TILE_SIZE - _tunnel_visibility_frame[dir] && z == 0) {
 				/* We're at the tunnel exit ?? */
+				if (t->tile != tile && GetOtherTunnelEnd(t->tile) != tile) return VETSB_CONTINUE; // In chunnel
 				t->tile = tile;
 				t->track = DiagDirToDiagTrackBits(vdir);
 				assert(t->track);
@@ -2051,6 +2155,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					rv->tile = tile;
 					rv->cur_image_valid_dir = INVALID_DIR;
 					rv->state = RVSB_WORMHOLE;
+					if (Tunnel::GetByTile(tile)->is_chunnel) SetBit(rv->gv_flags, GVF_CHUNNEL_BIT);
 					rv->vehstatus |= VS_HIDDEN;
 					return VETSB_ENTERED_WORMHOLE;
 				} else {
@@ -2060,6 +2165,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 
 			/* We're at the tunnel exit ?? */
 			if (dir == ReverseDiagDir(vdir) && frame == TILE_SIZE - _tunnel_visibility_frame[dir] && z == 0) {
+				if (rv->tile != tile && GetOtherTunnelEnd(rv->tile) != tile) return VETSB_CONTINUE; // In chunnel
 				rv->tile = tile;
 				rv->cur_image_valid_dir = INVALID_DIR;
 				rv->state = DiagDirToDiagTrackdir(vdir);
@@ -2069,6 +2175,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 			}
 		}
 	} else { // IsBridge(tile)
+		if (v->vehstatus & VS_HIDDEN) return VETSB_CONTINUE; // Building bridges between chunnel portals allowed.
 		if (v->type != VEH_SHIP) {
 			/* modify speed of vehicle */
 			uint16 spd = GetBridgeSpec(GetBridgeType(tile))->speed;

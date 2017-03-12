@@ -21,6 +21,7 @@
 #include "cheat_type.h"
 #include "genworld.h"
 #include "tree_map.h"
+#include "tunnel_map.h"
 #include "newgrf_cargo.h"
 #include "newgrf_debug.h"
 #include "newgrf_industrytiles.h"
@@ -1456,6 +1457,11 @@ static CommandCost CheckIfIndustryIsAllowed(TileIndex tile, int type, const Town
 	if ((GetIndustrySpec(type)->behaviour & INDUSTRYBEH_ONLY_NEARTOWN) && DistanceMax(t->xy, tile) > 9) {
 		return_cmd_error(STR_ERROR_CAN_ONLY_BE_BUILT_NEAR_TOWN_CENTER);
 	}
+
+	if (type == IT_OIL_RIG &&
+			(IsTunnelInWay(tile, 0) ||
+			IsTunnelInWay(tile + TileDiffXY(0, 1), 0) ||
+			IsTunnelInWay(tile + TileDiffXY(1, 2), 0))) return_cmd_error(STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL);
 
 	return CommandCost();
 }

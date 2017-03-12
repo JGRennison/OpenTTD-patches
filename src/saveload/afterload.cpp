@@ -13,6 +13,7 @@
 #include "../void_map.h"
 #include "../signs_base.h"
 #include "../depot_base.h"
+#include "../tunnel_base.h"
 #include "../fios.h"
 #include "../gamelog_internal.h"
 #include "../network/network.h"
@@ -57,6 +58,7 @@
 #include "../error.h"
 #include "../disaster_vehicle.h"
 #include "../tracerestrict.h"
+#include "../tunnel_map.h"
 
 
 #include "saveload_internal.h"
@@ -562,6 +564,25 @@ static inline bool MayHaveBridgeAbove(TileIndex t)
 	return IsTileType(t, MP_CLEAR) || IsTileType(t, MP_RAILWAY) || IsTileType(t, MP_ROAD) ||
 			IsTileType(t, MP_WATER) || IsTileType(t, MP_TUNNELBRIDGE) || IsTileType(t, MP_OBJECT);
 }
+
+TileIndex GetOtherTunnelBridgeEndOld(TileIndex tile)
+{
+	DiagDirection dir = GetTunnelBridgeDirection(tile);
+	TileIndexDiff delta = TileOffsByDiagDir(dir);
+	int z = GetTileZ(tile);
+
+	dir = ReverseDiagDir(dir);
+	do {
+		tile += delta;
+	} while (
+		!IsTunnelTile(tile) ||
+		GetTunnelBridgeDirection(tile) != dir ||
+		GetTileZ(tile) != z
+	);
+
+	return tile;
+}
+
 
 /**
  * Perform a (large) amount of savegame conversion *magic* in order to
@@ -2014,6 +2035,31 @@ bool AfterLoadGame()
 		}
 	}
 
+	/* Tunnel pool has to be initiated before reservations. */
+	if (SlXvIsFeatureMissing(XSLFI_CHUNNEL)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTunnelTile(t)) {
+				DiagDirection dir = GetTunnelBridgeDirection(t);
+				if (dir == DIAGDIR_SE || dir == DIAGDIR_SW) {
+					TileIndex start_tile = t;
+					TileIndex end_tile = GetOtherTunnelBridgeEndOld(start_tile);
+
+					if (!Tunnel::CanAllocateItem()) {
+						SetSaveLoadError(STR_ERROR_TUNNEL_TOO_MANY);
+						/* Restore the signals */
+						ResetSignalHandlers();
+						return false;
+					}
+
+					const Tunnel *t = new Tunnel(start_tile, end_tile, TileHeight(start_tile), false);
+
+					SetTunnelIndex(start_tile, t->index);
+					SetTunnelIndex(end_tile, t->index);
+				}
+			}
+		}
+	}
+
 	/* Move the signal variant back up one bit for PBS. We don't convert the old PBS
 	 * format here, as an old layout wouldn't work properly anyway. To be safe, we
 	 * clear any possible PBS reservations as well. */
@@ -2648,7 +2694,7 @@ bool AfterLoadGame()
 			} else if (dir == ReverseDiagDir(vdir)) { // Leaving tunnel
 				hidden = frame < TILE_SIZE - _tunnel_visibility_frame[dir];
 				/* v->tile changes at the moment when the vehicle leaves the tunnel. */
-				v->tile = hidden ? GetOtherTunnelBridgeEnd(vtile) : vtile;
+				v->tile = hidden ? GetOtherTunnelBridgeEndOld(vtile) : vtile;
 			} else {
 				/* We could get here in two cases:
 				 * - for road vehicles, it is reversing at the end of the tunnel
@@ -3333,6 +3379,11 @@ bool AfterLoadGame()
 	/* Set lifetime vehicle profit to 0 if lifetime profit feature is missing */
 	if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2)) {
 		_settings_game.economy.town_cargo_scale_factor = _settings_game.economy.old_town_cargo_factor * 10;
+	}
+
+	/* Set day length factor to 1 if loading a pre day length savegame */
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP)) {
+		_settings_game.economy.day_length_factor = 1;
 	}
 
 	/* Road stops is 'only' updating some caches */
