@@ -1224,6 +1224,9 @@
     <ClInclude Include="..\src\tunnelbridge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tunnel_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\vehicle_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1945,6 +1948,9 @@
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\saveload\town_sl.cpp">
+      <Filter>Save/Load handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\saveload\tunnel_sl.cpp">
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\saveload\vehicle_sl.cpp">

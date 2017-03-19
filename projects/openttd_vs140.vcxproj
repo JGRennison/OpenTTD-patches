@@ -681,6 +681,7 @@
     <ClInclude Include="..\src\transparency_gui.h" />
     <ClInclude Include="..\src\transport_type.h" />
     <ClInclude Include="..\src\tunnelbridge.h" />
+    <ClInclude Include="..\src\tunnel_base.h" />
     <ClInclude Include="..\src\vehicle_base.h" />
     <ClInclude Include="..\src\vehicle_func.h" />
     <ClInclude Include="..\src\vehicle_gui.h" />
@@ -922,6 +923,7 @@
     <ClCompile Include="..\src\saveload\story_sl.cpp" />
     <ClCompile Include="..\src\saveload\subsidy_sl.cpp" />
     <ClCompile Include="..\src\saveload\town_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tunnel_sl.cpp" />
     <ClCompile Include="..\src\saveload\vehicle_sl.cpp" />
     <ClCompile Include="..\src\saveload\waypoint_sl.cpp" />
     <ClCompile Include="..\src\saveload\signal_sl.cpp" />
