@@ -441,11 +441,10 @@ void Blitter_32bppAnim::CopyToBuffer(const void *video, void *dst, int width, in
 	assert(video >= _screen.dst_ptr && video <= (uint32 *)_screen.dst_ptr + _screen.width + _screen.height * _screen.pitch);
 	uint32 *udst = (uint32 *)dst;
 	const uint32 *src = (const uint32 *)video;
-	const uint16 *anim_line;
 
 	if (this->anim_buf == NULL) return;
 
-	anim_line = this->ScreenToAnimOffset((const uint32 *)video) + this->anim_buf;
+	const uint16 *anim_line = this->ScreenToAnimOffset((const uint32 *)video) + this->anim_buf;
 
 	for (; height > 0; height--) {
 		memcpy(udst, src, width * sizeof(uint32));
