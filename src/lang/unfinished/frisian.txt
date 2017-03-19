@@ -2475,7 +2475,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Lân fan bedriu
 STR_ABOUT_OPENTTD                                               :{WHITE}Oer OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Orizjineel copyright {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD-ferzje {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 It OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 It OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spul Opslaan
@@ -3043,8 +3043,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Nedich: 
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Nedich: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produseart: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produseart: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3220,8 +3220,7 @@ STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :monorail lokomo
 STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :maglevlokomotyf
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kosten: {CURRENCY_LONG} Gewicht: {WEIGHT_SHORT}{}Snelheid: {VELOCITY}  Kracht: {POWER}{}Underhâldskosten: {CURRENCY_LONG}/jr{}Kapasiteit: {CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Kosten: {CURRENCY_LONG} Maks. Faasje: {VELOCITY}{}Kapasiteit: {CARGO_LONG}{}Underhâldskosten: {CURRENCY_LONG}/jr
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Kosten: {CURRENCY_LONG} Maks. Faasje: {VELOCITY} Bereik: {COMMA} tegels{}Kapasiteit: {CARGO_LONG}{}Underhâldskosten: {CURRENCY_LONG}/jr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Kosten: {CURRENCY_LONG} Maks. Faasje: {VELOCITY}{}Kapasiteit: {CARGO_LONG}{}Underhâldskosten: {CURRENCY_LONG}/jr
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Ferfang {STRING} - {STRING}
@@ -3388,6 +3387,7 @@ STR_ORDER_GO_NON_STOP_VIA                                       :Gean non-stop f
 STR_ORDER_TOOLTIP_NON_STOP                                      :{BLACK}Feroarje it stop gedrach fan selektearre opdracht
 
 STR_ORDER_TOGGLE_FULL_LOAD                                      :{BLACK}Alle fracht folslein lade
+STR_ORDER_DROP_LOAD_IF_POSSIBLE                                 :Lade as beskikber
 STR_ORDER_DROP_FULL_LOAD_ANY                                    :Samar in fracht folslein lade
 STR_ORDER_DROP_NO_LOADING                                       :Net laden
 
@@ -3597,6 +3597,7 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 
 
 # Textfile window
+STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} feroarings fan {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} lisinsje fan {STRING}
 STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Omwikkelje tekst
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Feroarings

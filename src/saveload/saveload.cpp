@@ -267,8 +267,9 @@
  *  193   26802
  *  194   26881   1.5.x, 1.6.0
  *  195   27572   1.6.x
+ *  196   27778   1.7.x
  */
-extern const uint16 SAVEGAME_VERSION = 195; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 196; ///< Current savegame version of OpenTTD.
 const uint16 SAVEGAME_VERSION_EXT = 0x8000; ///< Savegame extension indicator mask
 
 SavegameType _savegame_type; ///< type of savegame we are loading
@@ -2081,7 +2082,7 @@ struct LZOLoadFilter : LoadFilter {
 		byte out[LZO_BUFFER_SIZE + LZO_BUFFER_SIZE / 16 + 64 + 3 + sizeof(uint32) * 2];
 		uint32 tmp[2];
 		uint32 size;
-		lzo_uint len;
+		lzo_uint len = ssize;
 
 		/* Read header*/
 		if (this->chain->Read((byte*)tmp, sizeof(tmp)) != sizeof(tmp)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE, "File read failed");
@@ -2103,7 +2104,8 @@ struct LZOLoadFilter : LoadFilter {
 		if (tmp[0] != lzo_adler32(0, out, size + sizeof(uint32))) SlErrorCorrupt("Bad checksum");
 
 		/* Decompress */
-		lzo1x_decompress_safe(out + sizeof(uint32) * 1, size, buf, &len, NULL);
+		int ret = lzo1x_decompress_safe(out + sizeof(uint32) * 1, size, buf, &len, NULL);
+		if (ret != LZO_E_OK) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 		return len;
 	}
 };
