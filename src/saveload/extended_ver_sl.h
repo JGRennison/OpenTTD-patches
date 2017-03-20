@@ -66,6 +66,8 @@ inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature)
 	return !SlXvIsFeaturePresent(feature);
 }
 
+const char *SlXvGetFeatureName(SlXvFeatureIndex feature);
+
 /**
  * sub chunk flags, this is saved as-is
  * (XSCF_EXTRA_DATA_PRESENT and XSCF_CHUNK_ID_LIST_PRESENT must only be set by the save code, and read by the load code)
@@ -76,6 +78,8 @@ enum SlxiSubChunkFlags {
 	XSCF_IGNORABLE_VERSION        = 1 << 1,  ///< the loader is free to ignore this without aborting the load if the version is greater than the maximum that can be loaded
 	XSCF_EXTRA_DATA_PRESENT       = 1 << 2,  ///< extra data field is present, extra data in some sub-chunk/feature specific format, not used for anything yet
 	XSCF_CHUNK_ID_LIST_PRESENT    = 1 << 3,  ///< chunk ID list field is present, list of chunks which this sub-chunk/feature adds to the save game, this can be used to discard the chunks if the feature is unknown
+
+	XSCF_IGNORABLE_ALL            = XSCF_IGNORABLE_UNKNOWN | XSCF_IGNORABLE_VERSION, ///< all "ignorable" flags
 };
 DECLARE_ENUM_AS_BIT_SET(SlxiSubChunkFlags)
 

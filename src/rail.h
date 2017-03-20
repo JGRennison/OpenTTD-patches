@@ -113,7 +113,8 @@ typedef SmallVector<RailTypeLabel, 4> RailTypeLabelList;
 /**
  * This struct contains all the info that is needed to draw and construct tracks.
  */
-struct RailtypeInfo {
+class RailtypeInfo {
+public:
 	/**
 	 * Struct containing the main sprites. @note not all sprites are listed, but only
 	 *  the ones used directly in the code
@@ -430,5 +431,14 @@ RailType GetRailTypeByLabel(RailTypeLabel label, bool allow_alternate_labels = t
 void ResetRailTypes();
 void InitRailTypes();
 RailType AllocateRailType(RailTypeLabel label);
+
+extern RailType _sorted_railtypes[RAILTYPE_END];
+extern uint8 _sorted_railtypes_size;
+
+/**
+ * Loop header for iterating over railtypes, sorted by sortorder.
+ * @param var Railtype.
+ */
+#define FOR_ALL_SORTED_RAILTYPES(var) for (uint8 index = 0; index < _sorted_railtypes_size && (var = _sorted_railtypes[index], true) ; index++)
 
 #endif /* RAIL_H */

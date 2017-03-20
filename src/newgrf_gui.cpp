@@ -39,10 +39,6 @@
 #include <map>
 #include "safeguards.h"
 
-/* Maximum number of NewGRFs that may be loaded. Six reserved slots are:
- * 0 - config, 1 - sound, 2 - base, 3 - logos, 4 - climate, 5 - extra */
-static const int MAX_NEWGRFS = MAX_FILE_SLOTS - 6;
-
 /**
  * Show the first NewGRF error we can find.
  */
@@ -223,7 +219,7 @@ struct NewGRFParametersWindow : public Window {
 
 			case WID_NP_DESCRIPTION:
 				/* Minimum size of 4 lines. The 500 is the default size of the window. */
-				Dimension suggestion = {500 - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT, FONT_HEIGHT_NORMAL * 4 + WD_TEXTPANEL_TOP + WD_TEXTPANEL_BOTTOM};
+				Dimension suggestion = {500 - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT, (uint)FONT_HEIGHT_NORMAL * 4 + WD_TEXTPANEL_TOP + WD_TEXTPANEL_BOTTOM};
 				for (uint i = 0; i < this->grf_config->param_info.Length(); i++) {
 					const GRFParameterInfo *par_info = this->grf_config->param_info[i];
 					if (par_info == NULL) continue;
@@ -1279,7 +1275,6 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			/* All widgets are now enabled, so disable widgets we can't use */
 			if (this->active_sel == this->actives)    this->DisableWidget(WID_NS_MOVE_UP);
 			if (this->active_sel->next == NULL)       this->DisableWidget(WID_NS_MOVE_DOWN);
-			if (this->active_sel->IsOpenTTDBaseGRF()) this->DisableWidget(WID_NS_REMOVE);
 		}
 
 		this->SetWidgetDisabledState(WID_NS_PRESET_DELETE, this->preset == -1);
@@ -1510,7 +1505,7 @@ private:
 	{
 		if (this->avail_sel == NULL || !this->editable || HasBit(this->avail_sel->flags, GCF_INVALID)) return false;
 
-		int count = 0;
+		uint count = 0;
 		GRFConfig **entry = NULL;
 		GRFConfig **list;
 		/* Find last entry in the list, checking for duplicate grfid on the way */
@@ -1520,10 +1515,10 @@ private:
 				ShowErrorMessage(STR_NEWGRF_DUPLICATE_GRFID, INVALID_STRING_ID, WL_INFO);
 				return false;
 			}
-			count++;
+			if (!HasBit((*list)->flags, GCF_STATIC)) count++;
 		}
 		if (entry == NULL) entry = list;
-		if (count >= MAX_NEWGRFS) {
+		if (count >= NETWORK_MAX_GRF_COUNT) {
 			ShowErrorMessage(STR_NEWGRF_TOO_MANY_NEWGRFS, INVALID_STRING_ID, WL_INFO);
 			return false;
 		}

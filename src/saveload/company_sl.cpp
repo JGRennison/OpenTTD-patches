@@ -16,6 +16,8 @@
 #include "../tunnelbridge_map.h"
 #include "../tunnelbridge.h"
 #include "../station_base.h"
+#include "../strings_func.h"
+#include "../settings_func.h"
 
 #include "saveload.h"
 
@@ -243,7 +245,7 @@ static const SaveLoad _company_desc[] = {
 	    SLE_VAR(CompanyProperties, name_1,          SLE_STRINGID),
 	SLE_CONDSTR(CompanyProperties, name,            SLE_STR | SLF_ALLOW_CONTROL, 0, 84, SL_MAX_VERSION),
 
-	    SLE_VAR(CompanyProperties, president_name_1, SLE_UINT16),
+	    SLE_VAR(CompanyProperties, president_name_1, SLE_STRINGID),
 	    SLE_VAR(CompanyProperties, president_name_2, SLE_UINT32),
 	SLE_CONDSTR(CompanyProperties, president_name,  SLE_STR | SLF_ALLOW_CONTROL, 0, 84, SL_MAX_VERSION),
 
@@ -486,6 +488,7 @@ static void Load_PLYR()
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Company *c = new (index) Company();
+		SetDefaultCompanySettings(c->index);
 		SaveLoad_PLYR(c);
 		_company_colours[index] = (Colours)c->colour;
 	}
@@ -501,11 +504,11 @@ static void Check_PLYR()
 
 		/* We do not load old custom names */
 		if (IsSavegameVersionBefore(84)) {
-			if (GB(cprops->name_1, 11, 5) == 15) {
+			if (GetStringTab(cprops->name_1) == TEXT_TAB_OLD_CUSTOM) {
 				cprops->name_1 = STR_GAME_SAVELOAD_NOT_AVAILABLE;
 			}
 
-			if (GB(cprops->president_name_1, 11, 5) == 15) {
+			if (GetStringTab(cprops->president_name_1) == TEXT_TAB_OLD_CUSTOM) {
 				cprops->president_name_1 = STR_GAME_SAVELOAD_NOT_AVAILABLE;
 			}
 		}
@@ -529,7 +532,25 @@ static void Ptrs_PLYR()
 	}
 }
 
+extern void LoadSettingsPlyx(bool skip);
+extern void SaveSettingsPlyx();
+
+static void Load_PLYX()
+{
+	LoadSettingsPlyx(false);
+}
+
+static void Check_PLYX()
+{
+	LoadSettingsPlyx(true);
+}
+
+static void Save_PLYX()
+{
+	SaveSettingsPlyx();
+}
 
 extern const ChunkHandler _company_chunk_handlers[] = {
-	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, CH_ARRAY | CH_LAST},
+	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, CH_ARRAY },
+	{ 'PLYX', Save_PLYX, Load_PLYX, NULL,      Check_PLYX, CH_RIFF | CH_LAST},
 };

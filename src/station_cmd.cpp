@@ -1143,6 +1143,30 @@ CommandCost FindJoiningWaypoint(StationID existing_waypoint, StationID waypoint_
 }
 
 /**
+ * Clear platform reservation during station building/removing.
+ * @param v vehicle which holds reservation
+ */
+static void FreeTrainReservation(Train *v)
+{
+	FreeTrainTrackReservation(v);
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
+	v = v->Last();
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), false);
+}
+
+/**
+ * Restore platform reservation during station building/removing.
+ * @param v vehicle which held reservation
+ */
+static void RestoreTrainReservation(Train *v)
+{
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
+	TryPathReserve(v, true, true);
+	v = v->Last();
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), true);
+}
+
+/**
  * Build rail station
  * @param tile_org northern most position of station dragging/placement
  * @param flags operation to perform
@@ -1281,11 +1305,8 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 					/* Check for trains having a reservation for this tile. */
 					Train *v = GetTrainForReservation(tile, AxisToTrack(GetRailStationAxis(tile)));
 					if (v != NULL) {
-						FreeTrainTrackReservation(v);
 						*affected_vehicles.Append() = v;
-						if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
-						for (; v->Next() != NULL; v = v->Next()) { }
-						if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), false);
+						FreeTrainReservation(v);
 					}
 				}
 
@@ -1336,11 +1357,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 
 		for (uint i = 0; i < affected_vehicles.Length(); ++i) {
 			/* Restore reservations of trains. */
-			Train *v = affected_vehicles[i];
-			if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
-			TryPathReserve(v, true, true);
-			for (; v->Next() != NULL; v = v->Next()) { }
-			if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), true);
+			RestoreTrainReservation(affected_vehicles[i]);
 		}
 
 		/* Check whether we need to expand the reservation of trains already on the station. */
@@ -1504,14 +1521,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected
 
 			if (HasStationReservation(tile)) {
 				v = GetTrainForReservation(tile, track);
-				if (v != NULL) {
-					/* Free train reservation. */
-					FreeTrainTrackReservation(v);
-					if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
-					Vehicle *temp = v;
-					for (; temp->Next() != NULL; temp = temp->Next()) { }
-					if (IsRailStationTile(temp->tile)) SetRailStationPlatformReservation(temp->tile, TrackdirToExitdir(ReverseTrackdir(temp->GetVehicleTrackdir())), false);
-				}
+				if (v != NULL) FreeTrainReservation(v);
 			}
 
 			bool build_rail = keep_rail && !IsStationTileBlocked(tile);
@@ -1531,13 +1541,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected
 
 			affected_stations.Include(st);
 
-			if (v != NULL) {
-				/* Restore station reservation. */
-				if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
-				TryPathReserve(v, true, true);
-				for (; v->Next() != NULL; v = v->Next()) { }
-				if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), true);
-			}
+			if (v != NULL) RestoreTrainReservation(v);
 		}
 	}
 
@@ -2897,12 +2901,12 @@ draw_default_foundation:
 		}
 	}
 
-	if (HasStationRail(ti->tile) && HasCatenaryDrawn(GetRailType(ti->tile))) DrawCatenary(ti);
+	if (HasStationRail(ti->tile) && HasRailCatenaryDrawn(GetRailType(ti->tile))) DrawRailCatenary(ti);
 
 	if (HasBit(roadtypes, ROADTYPE_TRAM)) {
 		Axis axis = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? AXIS_X : AXIS_Y;
 		DrawGroundSprite((HasBit(roadtypes, ROADTYPE_ROAD) ? SPR_TRAMWAY_OVERLAY : SPR_TRAMWAY_TRAM) + (axis ^ 1), PAL_NONE);
-		DrawTramCatenary(ti, axis == AXIS_X ? ROAD_X : ROAD_Y);
+		DrawRoadCatenary(ti, axis == AXIS_X ? ROAD_X : ROAD_Y);
 	}
 
 	if (IsRailWaypoint(ti->tile)) {
@@ -2995,6 +2999,7 @@ static void GetTileDesc_Station(TileIndex tile, TileDesc *td)
 
 		const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(tile));
 		td->rail_speed = rti->max_speed;
+		td->railtype = rti->strings.name;
 	}
 
 	if (IsAirport(tile)) {
@@ -3445,6 +3450,7 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
 void DeleteStaleLinks(Station *from)
 {
 	for (CargoID c = 0; c < NUM_CARGO; ++c) {
+		const bool auto_distributed = (_settings_game.linkgraph.GetDistributionType(c) != DT_MANUAL);
 		GoodsEntry &ge = from->goods[c];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);
 		if (lg == NULL) continue;
@@ -3457,36 +3463,52 @@ void DeleteStaleLinks(Station *from)
 			assert(_date >= edge.LastUpdate());
 			uint timeout = LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3);
 			if ((uint)(_date - edge.LastUpdate()) > timeout) {
-				/* Have all vehicles refresh their next hops before deciding to
-				 * remove the node. */
 				bool updated = false;
-				OrderList *l;
-				FOR_ALL_ORDER_LISTS(l) {
-					bool found_from = false;
-					bool found_to = false;
-					for (Order *order = l->GetFirstOrder(); order != NULL; order = order->next) {
-						if (!order->IsType(OT_GOTO_STATION) && !order->IsType(OT_IMPLICIT)) continue;
-						if (order->GetDestination() == from->index) {
-							found_from = true;
-							if (found_to) break;
-						} else if (order->GetDestination() == to->index) {
-							found_to = true;
-							if (found_from) break;
+
+				if (auto_distributed) {
+					/* Have all vehicles refresh their next hops before deciding to
+					 * remove the node. */
+					OrderList *l;
+					SmallVector<Vehicle *, 32> vehicles;
+					FOR_ALL_ORDER_LISTS(l) {
+						bool found_from = false;
+						bool found_to = false;
+						for (Order *order = l->GetFirstOrder(); order != NULL; order = order->next) {
+							if (!order->IsType(OT_GOTO_STATION) && !order->IsType(OT_IMPLICIT)) continue;
+							if (order->GetDestination() == from->index) {
+								found_from = true;
+								if (found_to) break;
+							} else if (order->GetDestination() == to->index) {
+								found_to = true;
+								if (found_from) break;
+							}
 						}
+						if (!found_to || !found_from) continue;
+						*(vehicles.Append()) = l->GetFirstSharedVehicle();
 					}
-					if (!found_to || !found_from) continue;
-					for (Vehicle *v = l->GetFirstSharedVehicle(); !updated && v != NULL; v = v->NextShared()) {
-						/* There is potential for optimization here:
-						 * - Usually consists of the same order list are the same. It's probably better to
-						 *   first check the first of each list, then the second of each list and so on.
-						 * - We could try to figure out if we've seen a consist with the same cargo on the
-						 *   same list already and if the consist can actually carry the cargo we're looking
-						 *   for. With conditional and refit orders this is not quite trivial, though. */
+
+					Vehicle **iter = vehicles.Begin();
+					while (iter != vehicles.End()) {
+						Vehicle *v = *iter;
+
 						LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
-						if (edge.LastUpdate() == _date) updated = true;
+						if (edge.LastUpdate() == _date) {
+							updated = true;
+							break;
+						}
+
+						Vehicle *next_shared = v->NextShared();
+						if (next_shared) {
+							*iter = next_shared;
+							++iter;
+						} else {
+							vehicles.Erase(iter);
+						}
+
+						if (iter == vehicles.End()) iter = vehicles.Begin();
 					}
-					if (updated) break;
 				}
+
 				if (!updated) {
 					/* If it's still considered dead remove it. */
 					node.RemoveEdge(to->goods[c].node);
