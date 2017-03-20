@@ -35,9 +35,6 @@
 
 #include "safeguards.h"
 
-#define GRFTAB  28
-#define TABSIZE 11
-
 /**
  * Explains the newgrf shift bit positioning.
  * the grf base will not be used in order to find the string, but rather for
@@ -159,7 +156,7 @@ struct GRFTextEntry {
 
 
 static uint _num_grf_texts = 0;
-static GRFTextEntry _grf_text[(1 << TABSIZE) * 3];
+static GRFTextEntry _grf_text[TAB_SIZE_NEWGRF];
 static byte _currentLangID = GRFLX_ENGLISH;  ///< by default, english is used.
 
 /**
@@ -696,7 +693,7 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
 
 	grfmsg(3, "Added 0x%X: grfid %08X string 0x%X lang 0x%X string '%s'", id, grfid, stringid, newtext->langid, newtext->text);
 
-	return (GRFTAB << TABSIZE) + id;
+	return MakeStringID(TEXT_TAB_NEWGRF_START, id);
 }
 
 /**
@@ -706,7 +703,7 @@ StringID GetGRFStringID(uint32 grfid, uint16 stringid)
 {
 	for (uint id = 0; id < _num_grf_texts; id++) {
 		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-			return (GRFTAB << TABSIZE) + id;
+			return MakeStringID(TEXT_TAB_NEWGRF_START, id);
 		}
 	}
 

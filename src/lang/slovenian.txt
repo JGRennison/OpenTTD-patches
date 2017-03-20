@@ -2840,7 +2840,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ozemlje v lasti
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Prvotne avtorske pravice {COPYRIGHT} 1995 Chris Sawyer, vse pravice pridržane
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD različica {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 ekipa OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 ekipa OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Shrani igro
@@ -3445,9 +3445,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Potrebuj
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Potrebuje: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Tovor na čakanju obdelave:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Proizvaja: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Proizvaja: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3678,10 +3677,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :magnetna lokomo
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Cena: {CURRENCY_LONG} Teža: {WEIGHT_SHORT}{}Hitrost: {VELOCITY}  Moč: {POWER}{}Cena delovanja: {CURRENCY_LONG}/leto{}Zmogljivost: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Cena: {CURRENCY_LONG} Teža: {WEIGHT_SHORT}{}Hitrost: {VELOCITY}  Moč: {POWER}  Max. T.E.: {6:FORCE}{}Stroški: {4:CURRENCY_LONG}/yr{}Zmogljivost: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Cena: {CURRENCY_LONG} Max. hitrost: {VELOCITY}{}Zmogljivost: {CARGO_LONG}, {CARGO_LONG}{}Cena delovanja: {CURRENCY_LONG}/leto
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Cena: {CURRENCY_LONG} Max. hitrost: {VELOCITY}{}Zmogljivost: {CARGO_LONG}{}Cena delovanja: {CURRENCY_LONG}/leto
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Cena: {CURRENCY_LONG} Max. Hitrost: {VELOCITY} Domet: {COMMA} polj{}Zmogljivost: {CARGO_LONG}, {CARGO_LONG}{}Stroški delovanja: {CURRENCY_LONG}/leto
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Cena: {CURRENCY_LONG} Max. Hitrost: {VELOCITY} Domet: {COMMA} polj{}Zmogljivost: {CARGO_LONG}{}Stroški delovanja: {CURRENCY_LONG}/leto
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Cena: {CURRENCY_LONG} Max. hitrost: {VELOCITY}{}Zmogljivost: {CARGO_LONG}{}Cena delovanja: {CURRENCY_LONG}/leto
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Zamenjaj {STRING} - {STRING}
@@ -3803,7 +3799,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} let{P o
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} let{P o i a ""} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Max. hitrost: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. hitrost: {LTBLUE}{VELOCITY} {BLACK}Domet: {LTBLUE}{COMMA} polj
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Teža: {LTBLUE}{WEIGHT_SHORT} {BLACK}Moč: {LTBLUE}{POWER}{BLACK} Max. hitrost: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Teža: {LTBLUE}{WEIGHT_SHORT} {BLACK}Moč: {LTBLUE}{POWER}{BLACK} Max. hitrost: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 

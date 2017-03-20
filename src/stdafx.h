@@ -143,7 +143,7 @@
 #endif /* PSP */
 
 /* Stuff for GCC */
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__clang__)
 	#define NORETURN __attribute__ ((noreturn))
 	#define CDECL
 	#define __int64 long long
@@ -151,12 +151,8 @@
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
 	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
-	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)
-		#define FINAL final
-	#else
-		#define FINAL
-	#endif
-#endif /* __GNUC__ */
+	#define FINAL final
+#endif /* __GNUC__ || __clang__ */
 
 #if defined(__WATCOMC__)
 	#define NORETURN
@@ -431,13 +427,13 @@ assert_compile(SIZE_MAX >= UINT32_MAX);
 	#define CloseConnection OTTD_CloseConnection
 #endif /* __APPLE__ */
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 #else
 #define likely(x)       (x)
 #define unlikely(x)     (x)
-#endif
+#endif /* __GNUC__ || __clang__ */
 
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);

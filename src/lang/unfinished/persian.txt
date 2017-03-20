@@ -2389,7 +2389,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :زمین خری
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD در باره ی
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD ویرایش {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ذخیره ی بازی
@@ -2908,6 +2908,7 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}مواد
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}مواد اولیه: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}محصولات: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}محصولات: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
@@ -3053,8 +3054,6 @@ STR_ENGINE_PREVIEW_SHIP                                         :کشتی
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :لوکوموتیو مونوریل
 STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :لوکوموتیو ریل مغناطیسی
 
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}قیمت: {CURRENCY_LONG} بیشینه سرعت: {VELOCITY} برد: {COMMA} قطعه{}ظرفیت: {CARGO_LONG}, {CARGO_LONG}{}هزینه نگهداری: {CURRENCY_LONG}/درسال
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}قیمت: {CURRENCY_LONG} بیشینه سرعت: {VELOCITY} برد: {COMMA} قطعه{}ظرفیت: {CARGO_LONG}{}هزینه نگهداری: {CURRENCY_LONG}/درسال
 
 # Autoreplace window
 STR_REPLACE_VEHICLE_TRAIN                                       :قطار
@@ -3127,7 +3126,6 @@ STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}نامگ
 STR_VEHICLE_INFO_AGE                                            :{COMMA}سال ({COMMA})
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} سال ({COMMA})
 
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}بیشینه سرعت: {LTBLUE}{VELOCITY} {BLACK}برد: {LTBLUE}{COMMA} قطعه
 
 
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}ظرفیت: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}

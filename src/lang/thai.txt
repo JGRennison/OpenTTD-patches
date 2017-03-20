@@ -2635,7 +2635,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :บริษั
 STR_ABOUT_OPENTTD                                               :{WHITE}เกี่ยวกับ OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}ลิขสิทธิ์เดิม {COPYRIGHT} ค.ศ.1995 ของ Chris Sawyer, สงวนลิขสิทธิ์
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD รุ่นที่ {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}ลิขสิทธิ์ OpenTTD {COPYRIGHT}2002-2016 ของ The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}ลิขสิทธิ์ OpenTTD {COPYRIGHT}2002-2017 ของ The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}บันทึกเกม
@@ -3224,9 +3224,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}มี�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}มีความต้องการ: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}พัสดุและสิ่งของที่รอการผลิต:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}ผลผลิต: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}ผลผลิต: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3447,10 +3446,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :รถไฟร
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}มูลค่า: {CURRENCY_LONG} น้ำหนัก: {WEIGHT_SHORT}{}ความเร็ว: {VELOCITY}พลังขับเคลื่อน: {POWER}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี{}ความจุ: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}มูลค่า: {CURRENCY_LONG} น้ำหนัก: {WEIGHT_SHORT}{}ความเร็ว: {VELOCITY}พลังขับเคลื่อน: {POWER}  กำัลังลากจูงสูงสุด: {6:FORCE}{}ค่าปฎิบัติการ: {4:CURRENCY_LONG}/ปี{}ความจุ: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY}{}ความจุ: {CARGO_LONG}, {CARGO_LONG}{}ค่าปฎิบัติการ: {CURRENCY_LONG}/ปี
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY}{}ความจุ: {CARGO_LONG}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY} พิสัย: {COMMA} ช่อง{}ความจุ: {CARGO_LONG}, {CARGO_LONG}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY} พิสัย: {COMMA} tiles{}ความจุ: {CARGO_LONG}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY}{}ความจุ: {CARGO_LONG}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}เปลี่ยน {STRING} - {STRING}
@@ -3569,7 +3565,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ปี 
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ปี ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}ความเร็วสูงสุด: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}ความเร็วสูงสุด: {LTBLUE}{VELOCITY} {BLACK}พิสัย: {LTBLUE}{COMMA} ช่อง
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}น้ำหนัก: {LTBLUE}{WEIGHT_SHORT} {BLACK}พลังขับเคลื่อน: {LTBLUE}{POWER}{BLACK} ความเร็วสูงสุด: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}น้ำหนัก: {LTBLUE}{WEIGHT_SHORT} {BLACK}พลังขับเคลื่อน: {LTBLUE}{POWER}{BLACK} ความเร็วสูงสุด: {LTBLUE}{VELOCITY} {BLACK}กำลังลากจูงสูงสุด: {LTBLUE}{FORCE}
 

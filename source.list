@@ -424,6 +424,7 @@ core/alloc_type.hpp
 core/backup_type.hpp
 core/bitmath_func.cpp
 core/bitmath_func.hpp
+core/container_func.hpp
 core/endian_func.hpp
 core/endian_type.hpp
 core/enum_type.hpp
