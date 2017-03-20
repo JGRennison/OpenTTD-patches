@@ -317,11 +317,6 @@ void Ship::UpdateDeltaXY(Direction direction)
 	this->z_extent      = 6;
 }
 
-static const TileIndexDiffC _ship_leave_depot_offs[] = {
-	{-1,  0},
-	{ 0, -1}
-};
-
 static bool CheckShipLeaveDepot(Ship *v)
 {
 	if (!v->IsChainInDepot()) return false;
@@ -337,9 +332,9 @@ static bool CheckShipLeaveDepot(Ship *v)
 	Axis axis = GetShipDepotAxis(tile);
 
 	DiagDirection north_dir = ReverseDiagDir(AxisToDiagDir(axis));
-	TileIndex north_neighbour = TILE_ADD(tile, ToTileIndexDiff(_ship_leave_depot_offs[axis]));
+	TileIndex north_neighbour = TILE_ADD(tile, TileOffsByDiagDir(north_dir));
 	DiagDirection south_dir = AxisToDiagDir(axis);
-	TileIndex south_neighbour = TILE_ADD(tile, -2 * ToTileIndexDiff(_ship_leave_depot_offs[axis]));
+	TileIndex south_neighbour = TILE_ADD(tile, 2 * TileOffsByDiagDir(south_dir));
 
 	TrackBits north_tracks = DiagdirReachesTracks(north_dir) & GetTileShipTrackStatus(north_neighbour);
 	TrackBits south_tracks = DiagdirReachesTracks(south_dir) & GetTileShipTrackStatus(south_neighbour);
@@ -454,27 +449,6 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 
 	v->HandlePathfindingResult(path_found);
 	return track;
-}
-
-static const Direction _new_vehicle_direction_table[] = {
-	DIR_N , DIR_NW, DIR_W , INVALID_DIR,
-	DIR_NE, DIR_N , DIR_SW, INVALID_DIR,
-	DIR_E , DIR_SE, DIR_S
-};
-
-static Direction ShipGetNewDirectionFromTiles(TileIndex new_tile, TileIndex old_tile)
-{
-	uint offs = (TileY(new_tile) - TileY(old_tile) + 1) * 4 +
-							TileX(new_tile) - TileX(old_tile) + 1;
-	assert(offs < 11 && offs != 3 && offs != 7);
-	return _new_vehicle_direction_table[offs];
-}
-
-static Direction ShipGetNewDirection(Vehicle *v, int x, int y)
-{
-	uint offs = (y - v->y_pos + 1) * 4 + (x - v->x_pos + 1);
-	assert(offs < 11 && offs != 3 && offs != 7);
-	return _new_vehicle_direction_table[offs];
 }
 
 static inline TrackBits GetAvailShipTracks(TileIndex tile, DiagDirection dir)
@@ -599,9 +573,8 @@ static void ShipController(Ship *v)
 			/* New tile */
 			if (!IsValidTile(gp.new_tile)) goto reverse_direction;
 
-			dir = ShipGetNewDirectionFromTiles(gp.new_tile, gp.old_tile);
-			assert(dir == DIR_NE || dir == DIR_SE || dir == DIR_SW || dir == DIR_NW);
-			DiagDirection diagdir = DirToDiagDir(dir);
+			DiagDirection diagdir = DiagdirBetweenTiles(gp.old_tile, gp.new_tile);
+			assert(diagdir != INVALID_DIAGDIR);
 			tracks = GetAvailShipTracks(gp.new_tile, diagdir);
 			if (tracks == TRACK_BIT_NONE) goto reverse_direction;
 
@@ -642,7 +615,6 @@ static void ShipController(Ship *v)
 	}
 
 	/* update image of ship, as well as delta XY */
-	dir = ShipGetNewDirection(v, gp.x, gp.y);
 	v->x_pos = gp.x;
 	v->y_pos = gp.y;
 	v->z_pos = GetSlopePixelZ(gp.x, gp.y);

@@ -69,23 +69,9 @@ bool IsValidImageIndex<VEH_ROAD>(uint8 image_index)
 	return image_index < lengthof(_roadveh_images);
 }
 
-/** 'Convert' the DiagDirection where a road vehicle enters to the trackdirs it can drive onto */
-static const TrackdirBits _road_enter_dir_to_reachable_trackdirs[DIAGDIR_END] = {
-	TRACKDIR_BIT_LEFT_N  | TRACKDIR_BIT_LOWER_E | TRACKDIR_BIT_X_NE,    // Enter from north east
-	TRACKDIR_BIT_LEFT_S  | TRACKDIR_BIT_UPPER_E | TRACKDIR_BIT_Y_SE,    // Enter from south east
-	TRACKDIR_BIT_UPPER_W | TRACKDIR_BIT_X_SW    | TRACKDIR_BIT_RIGHT_S, // Enter from south west
-	TRACKDIR_BIT_RIGHT_N | TRACKDIR_BIT_LOWER_W | TRACKDIR_BIT_Y_NW     // Enter from north west
-};
-
 static const Trackdir _road_reverse_table[DIAGDIR_END] = {
 	TRACKDIR_RVREV_NE, TRACKDIR_RVREV_SE, TRACKDIR_RVREV_SW, TRACKDIR_RVREV_NW
 };
-
-/** Converts the exit direction of a depot to trackdir the vehicle is going to drive to */
-static const Trackdir _roadveh_depot_exit_trackdir[DIAGDIR_END] = {
-	TRACKDIR_X_NE, TRACKDIR_Y_SE, TRACKDIR_X_SW, TRACKDIR_Y_NW
-};
-
 
 /**
  * Check whether a roadvehicle is a bus
@@ -935,7 +921,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 	 */
 
 	/* Remove tracks unreachable from the enter dir */
-	trackdirs &= _road_enter_dir_to_reachable_trackdirs[enterdir];
+	trackdirs &= DiagdirReachesTrackdirs(enterdir);
 	if (trackdirs == TRACKDIR_BIT_NONE) {
 		/* No reachable tracks, so we'll reverse */
 		return_track(_road_reverse_table[enterdir]);
@@ -1001,7 +987,7 @@ static bool RoadVehLeaveDepot(RoadVehicle *v, bool first)
 	DiagDirection dir = GetRoadDepotDirection(v->tile);
 	v->direction = DiagDirToDir(dir);
 
-	Trackdir tdir = _roadveh_depot_exit_trackdir[dir];
+	Trackdir tdir = DiagDirToDiagTrackdir(dir);
 	const RoadDriveEntry *rdp = _road_drive_data[v->roadtype][(_settings_game.vehicle.road_side << RVS_DRIVE_SIDE) + tdir];
 
 	int x = TileX(v->tile) * TILE_SIZE + (rdp[RVC_DEPOT_START_FRAME].x & 0xF);
