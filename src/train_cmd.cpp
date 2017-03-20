@@ -2485,14 +2485,16 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 /**
  * Free the reserved path in front of a vehicle.
  * @param v %Train owning the reserved path.
+ * @param origin %Tile to start clearing (if #INVALID_TILE, use the current tile of \a v).
+ * @param orig_td Track direction (if #INVALID_TRACKDIR, use the track direction of \a v).
  */
-void FreeTrainTrackReservation(const Train *v)
+void FreeTrainTrackReservation(const Train *v, TileIndex origin, Trackdir orig_td)
 {
 	assert(v->IsFrontEngine());
 
-	TileIndex tile = v->tile;
-	Trackdir  td = v->GetVehicleTrackdir();
-	bool      free_tile = !(IsRailStationTile(v->tile) || IsTileType(v->tile, MP_TUNNELBRIDGE));
+	TileIndex tile = origin != INVALID_TILE ? origin : v->tile;
+	Trackdir  td = orig_td != INVALID_TRACKDIR ? orig_td : v->GetVehicleTrackdir();
+	bool      free_tile = tile != v->tile || !(IsRailStationTile(v->tile) || IsTileType(v->tile, MP_TUNNELBRIDGE));
 	StationID station_id = IsRailStationTile(v->tile) ? GetStationIndex(v->tile) : INVALID_STATION;
 
 	/* Can't be holding a reservation if we enter a depot. */
