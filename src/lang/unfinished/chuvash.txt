@@ -7,7 +7,7 @@
 ##digitsepcur {NBSP}
 ##decimalsep ,
 ##winlangid 0x0419
-##grflangid 0x0B
+##grflangid 0x0b
 
 
 # $Id$
@@ -1111,6 +1111,7 @@ STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ҫу�
 
 ############ range for requires starts
 ############ range for requires ends
+
 
 ############ range for produces starts
 ############ range for produces ends

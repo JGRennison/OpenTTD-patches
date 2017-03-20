@@ -248,7 +248,7 @@ static void InitializeWindowsAndCaches()
 		/* For each company, verify (while loading a scenario) that the inauguration date is the current year and set it
 		 * accordingly if it is not the case.  No need to set it on companies that are not been used already,
 		 * thus the MIN_YEAR (which is really nothing more than Zero, initialized value) test */
-		if (_file_to_saveload.filetype == FT_SCENARIO && c->inaugurated_year != MIN_YEAR) {
+		if (_file_to_saveload.abstract_ftype == FT_SCENARIO && c->inaugurated_year != MIN_YEAR) {
 			c->inaugurated_year = _cur_year;
 		}
 	}
@@ -718,12 +718,14 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(95))   _settings_game.vehicle.dynamic_engines = 0;
 	if (IsSavegameVersionBefore(96))   _settings_game.economy.station_noise_level = false;
 	if (IsSavegameVersionBefore(133)) {
-		_settings_game.vehicle.roadveh_acceleration_model = 0;
 		_settings_game.vehicle.train_slope_steepness = 3;
 	}
 	if (IsSavegameVersionBefore(134))  _settings_game.economy.feeder_payment_share = 75;
 	if (IsSavegameVersionBefore(138))  _settings_game.vehicle.plane_crashes = 2;
-	if (IsSavegameVersionBefore(139))  _settings_game.vehicle.roadveh_slope_steepness = 7;
+	if (IsSavegameVersionBefore(139)) {
+		_settings_game.vehicle.roadveh_acceleration_model = 0;
+		_settings_game.vehicle.roadveh_slope_steepness = 7;
+	}
 	if (IsSavegameVersionBefore(143))  _settings_game.economy.allow_town_level_crossings = true;
 	if (IsSavegameVersionBefore(159)) {
 		_settings_game.vehicle.max_train_length = 50;

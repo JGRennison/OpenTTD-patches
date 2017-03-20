@@ -1762,6 +1762,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Check fo
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Display AI/Game script settings
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Exit 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}The currently selected base graphics set is missing {NUM} sprite{P "" s}. Please check for updates for the baseset.
 STR_INTRO_TRANSLATION                                           :{BLACK}This translation misses {NUM} string{P "" s}. Please help make OpenTTD better by signing up as translator. See readme.txt for details.
 
 # Quit window
@@ -2590,6 +2591,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Airport 
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{RAW_STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Cargo accepted: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Rail type: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Rail speed limit: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Road speed limit: {LTBLUE}{VELOCITY}
 
@@ -2602,29 +2604,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Fields
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Snow-covered land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Desert
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} track
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} track with block signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} track with pre-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} track with exit-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} track with combo-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} track with path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} track with one-way path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} track with block and pre-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} track with block and exit-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} track with block and combo-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} track with block and path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} track with block and one-way path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} track with pre- and exit-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} track with pre- and combo-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} track with pre- and path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} track with pre- and one-way path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} track with exit- and combo-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} track with exit- and path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} track with exit- and one-way path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} track with combo- and path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} track with combo- and one-way path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} track with path and one-way path signals
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} train depot
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Railway track
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Railway track with block signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Railway track with pre-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Railway track with exit-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Railway track with combo-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Railway track with path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Railway track with one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Railway track with block and pre-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Railway track with block and exit-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Railway track with block and combo-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Railway track with block and path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Railway track with block and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Railway track with pre- and exit-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Railway track with pre- and combo-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Railway track with pre- and path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Railway track with pre- and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Railway track with exit- and combo-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Railway track with exit- and path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Railway track with exit- and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Railway track with combo- and path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Railway track with combo- and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Railway track with path and one-way path signals
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Railway train depot
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Road
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Road with street lights
@@ -2688,7 +2690,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Company-owned l
 STR_ABOUT_OPENTTD                                               :{WHITE}About OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Save Game
@@ -2875,7 +2877,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Go to th
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Previous sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Proceed to the previous normal sprite, skipping any pseudo/recolour/font sprites and wrapping around from the first sprite to the last
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representation of the currently selected sprite. The alignment is ignored when drawing this sprite
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Move the sprite around, changing the X and Y offsets
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Move the sprite around, changing the X and Y offsets. Ctrl+Click to move the sprite eight units at a time
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Reset relative
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Reset the current relative offsets
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Absolute)
@@ -2907,8 +2909,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Attempt to use 
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{RAW_STRING} contains a corrupt sprite. All corrupt sprites will be shown as a red question mark (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contains multiple Action 8 entries (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Read past end of pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}The currently used base graphics set is missing a number of sprites.{}Please update the base graphics set
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}The currently used base graphics set is missing a number of sprites.{}Please update the base graphics set.{}Since you are playing a {YELLOW}development snapshot of OpenTTD{WHITE}, you might also need a {YELLOW}development snapshot of the base graphics{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Requested GRF resources not available (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:RAW_STRING} was disabled by {2:RAW_STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Invalid/unknown sprite layout format (sprite {3:NUM})
@@ -3295,9 +3295,13 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Requires
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Requires: {YELLOW}{STRING}{RAW_STRING}, {STRING}{RAW_STRING}, {STRING}{RAW_STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Requires
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}waiting
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{RAW_STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{RAW_STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Cargo waiting to be processed:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{RAW_STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produces: {YELLOW}{STRING}{RAW_STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produces: {YELLOW}{STRING}{RAW_STRING}, {STRING}{RAW_STRING}
 ############ range for produces ends
@@ -3395,6 +3399,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :All cargo types
 STR_PURCHASE_INFO_ALL_BUT                                       :All but {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Max. Tractive Effort: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Range: {GOLD}{COMMA} tiles
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Aircraft type: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Train vehicle selection list. Click on vehicle for information. Ctrl+Click for toggling hiding of the vehicle type
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Road vehicle selection list. Click on vehicle for information. Ctrl+Click for toggling hiding of the vehicle type
@@ -3528,10 +3533,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :maglev locomoti
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Cost: {CURRENCY_LONG} Weight: {WEIGHT_SHORT}{}Speed: {VELOCITY}  Power: {POWER}{}Running Cost: {CURRENCY_LONG}/yr{}Capacity: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Cost: {CURRENCY_LONG} Weight: {WEIGHT_SHORT}{}Speed: {VELOCITY}  Power: {POWER}  Max. T.E.: {6:FORCE}{}Running Cost: {4:CURRENCY_LONG}/yr{}Capacity: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY}{}Capacity: {CARGO_LONG}, {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY}{}Capacity: {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY} Range: {COMMA} tiles{}Capacity: {CARGO_LONG}, {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY} Range: {COMMA} tiles{}Capacity: {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY}{}Capacity: {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY}{}Aircraft type: {STRING}{}Capacity: {CARGO_LONG}, {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY}{}Aircraft type: {STRING}{}Capacity: {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY}{}Aircraft type: {STRING} Range: {COMMA} tiles{}Capacity: {CARGO_LONG}, {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Cost: {CURRENCY_LONG} Max. Speed: {VELOCITY}{}Aircraft type: {STRING} Range: {COMMA} tiles{}Capacity: {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Replace {STRING} - {STRING1}
@@ -3558,10 +3564,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} when o
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stop Replacing Vehicles
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Press to stop the replacement of the engine type selected on the left
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Replacing: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Switch between engine and wagon replacement windows
 STR_REPLACE_ENGINES                                             :Engines
 STR_REPLACE_WAGONS                                              :Wagons
+STR_REPLACE_ALL_RAILTYPE                                        :All rail vehicles
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Choose the rail type you want to replace engines for
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Displays which engine the left selected engine is being replaced with, if any
@@ -3654,7 +3660,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} year{P 
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} year{P "" s} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Max. speed: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. speed: {LTBLUE}{VELOCITY} {BLACK}Range: {LTBLUE}{COMMA} tiles
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Max. speed: {LTBLUE}{VELOCITY} {BLACK}Aircraft type: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Max. speed: {LTBLUE}{VELOCITY} {BLACK}Aircraft type: {LTBLUE}{STRING} {BLACK}Range: {LTBLUE}{COMMA} tiles
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Weight: {LTBLUE}{WEIGHT_SHORT} {BLACK}Power: {LTBLUE}{POWER}{BLACK} Max. speed: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Weight: {LTBLUE}{WEIGHT_SHORT} {BLACK}Power: {LTBLUE}{POWER}{BLACK} Max. speed: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 

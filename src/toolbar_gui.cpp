@@ -80,6 +80,9 @@ enum CallBackFunction {
 	CBF_PLACE_LANDINFO,
 };
 
+static CallBackFunction _last_started_action = CBF_NONE; ///< Last started user action.
+
+
 /**
  * Drop down list entry for showing a checked/unchecked toggle item.
  */
@@ -248,7 +251,7 @@ static ToolbarMode _toolbar_mode;
 
 static CallBackFunction SelectSignTool()
 {
-	if (_cursor.sprite == SPR_CURSOR_SIGN) {
+	if (_last_started_action == CBF_PLACE_SIGN) {
 		ResetObjectToPlace();
 		return CBF_NONE;
 	} else {
@@ -428,17 +431,17 @@ static CallBackFunction MenuClickSaveLoad(int index = 0)
 {
 	if (_game_mode == GM_EDITOR) {
 		switch (index) {
-			case SLEME_SAVE_SCENARIO:  ShowSaveLoadDialog(SLD_SAVE_SCENARIO);  break;
-			case SLEME_LOAD_SCENARIO:  ShowSaveLoadDialog(SLD_LOAD_SCENARIO);  break;
-			case SLEME_SAVE_HEIGHTMAP: ShowSaveLoadDialog(SLD_SAVE_HEIGHTMAP); break;
-			case SLEME_LOAD_HEIGHTMAP: ShowSaveLoadDialog(SLD_LOAD_HEIGHTMAP); break;
+			case SLEME_SAVE_SCENARIO:  ShowSaveLoadDialog(FT_SCENARIO, SLO_SAVE);  break;
+			case SLEME_LOAD_SCENARIO:  ShowSaveLoadDialog(FT_SCENARIO, SLO_LOAD);  break;
+			case SLEME_SAVE_HEIGHTMAP: ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_SAVE); break;
+			case SLEME_LOAD_HEIGHTMAP: ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_LOAD); break;
 			case SLEME_EXIT_TOINTRO:   AskExitToGameMenu();                    break;
 			case SLEME_EXIT_GAME:      HandleExitGameRequest();                break;
 		}
 	} else {
 		switch (index) {
-			case SLNME_SAVE_GAME:      ShowSaveLoadDialog(SLD_SAVE_GAME); break;
-			case SLNME_LOAD_GAME:      ShowSaveLoadDialog(SLD_LOAD_GAME); break;
+			case SLNME_SAVE_GAME:      ShowSaveLoadDialog(FT_SAVEGAME, SLO_SAVE); break;
+			case SLNME_LOAD_GAME:      ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD); break;
 			case SLNME_EXIT_TOINTRO:   AskExitToGameMenu();               break;
 			case SLNME_EXIT_GAME:      HandleExitGameRequest();           break;
 		}
@@ -1035,7 +1038,7 @@ static CallBackFunction MenuClickNewspaper(int index)
 
 static CallBackFunction PlaceLandBlockInfo()
 {
-	if (_cursor.sprite == SPR_CURSOR_QUERY) {
+	if (_last_started_action == CBF_PLACE_LANDINFO) {
 		ResetObjectToPlace();
 		return CBF_NONE;
 	} else {
@@ -1470,36 +1473,302 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 	{
 		static const uint SMALLEST_ARRANGEMENT = 14;
 		static const uint BIGGEST_ARRANGEMENT  = 20;
+
+		/* The number of buttons of each row of the toolbar should match the number of items which we want to be visible.
+		 * The total number of buttons should be equal to arrangable_count * 2.
+		 * No bad things happen, but we could see strange behaviours if we have buttons < (arrangable_count * 2) like a
+		 * pause button appearing on the right of the lower toolbar and weird resizing of the widgets even if there is
+		 * enough space.
+		 */
 		static const byte arrange14[] = {
-			0,  1, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29,
-			2,  3,  4,  5,  6,  7,  8,  9, 12, 14, 26, 27, 28, 29,
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_TRAINS,
+			WID_TN_ROADVEHS,
+			WID_TN_SHIPS,
+			WID_TN_AIRCRAFTS,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_SWITCH_BAR,
+			// lower toolbar
+			WID_TN_SETTINGS,
+			WID_TN_SAVE,
+			WID_TN_SMALL_MAP,
+			WID_TN_TOWNS,
+			WID_TN_SUBSIDIES,
+			WID_TN_STATIONS,
+			WID_TN_FINANCES,
+			WID_TN_COMPANIES,
+			WID_TN_GRAPHS,
+			WID_TN_INDUSTRIES,
+			WID_TN_MUSIC_SOUND,
+			WID_TN_MESSAGES,
+			WID_TN_HELP,
+			WID_TN_SWITCH_BAR,
 		};
 		static const byte arrange15[] = {
-			0,  1,  4, 15, 16, 17, 18, 21, 22, 23, 24, 25, 19, 20, 29,
-			0,  2,  4,  3,  5,  6,  7,  8,  9, 12, 14, 26, 27, 28, 29,
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SMALL_MAP,
+			WID_TN_TRAINS,
+			WID_TN_ROADVEHS,
+			WID_TN_SHIPS,
+			WID_TN_AIRCRAFTS,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
+			// lower toolbar
+			WID_TN_PAUSE,
+			WID_TN_SETTINGS,
+			WID_TN_SMALL_MAP,
+			WID_TN_SAVE,
+			WID_TN_TOWNS,
+			WID_TN_SUBSIDIES,
+			WID_TN_STATIONS,
+			WID_TN_FINANCES,
+			WID_TN_COMPANIES,
+			WID_TN_GRAPHS,
+			WID_TN_INDUSTRIES,
+			WID_TN_MUSIC_SOUND,
+			WID_TN_MESSAGES,
+			WID_TN_HELP,
+			WID_TN_SWITCH_BAR,
 		};
 		static const byte arrange16[] = {
-			0,  1,  2,  4, 15, 16, 17, 18, 21, 22, 23, 24, 25, 19, 20, 29,
-			0,  1,  3,  5,  6,  7,  8,  9, 12, 14, 26, 27, 28, 19, 20, 29,
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SETTINGS,
+			WID_TN_SMALL_MAP,
+			WID_TN_TRAINS,
+			WID_TN_ROADVEHS,
+			WID_TN_SHIPS,
+			WID_TN_AIRCRAFTS,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
+			// lower toolbar
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SAVE,
+			WID_TN_TOWNS,
+			WID_TN_SUBSIDIES,
+			WID_TN_STATIONS,
+			WID_TN_FINANCES,
+			WID_TN_COMPANIES,
+			WID_TN_GRAPHS,
+			WID_TN_INDUSTRIES,
+			WID_TN_MUSIC_SOUND,
+			WID_TN_MESSAGES,
+			WID_TN_HELP,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
 		};
 		static const byte arrange17[] = {
-			0,  1,  2,  4,  6, 15, 16, 17, 18, 21, 22, 23, 24, 25, 19, 20, 29,
-			0,  1,  3,  4,  6,  5,  7,  8,  9, 12, 14, 26, 27, 28, 19, 20, 29,
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SETTINGS,
+			WID_TN_SMALL_MAP,
+			WID_TN_SUBSIDIES,
+			WID_TN_TRAINS,
+			WID_TN_ROADVEHS,
+			WID_TN_SHIPS,
+			WID_TN_AIRCRAFTS,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
+			// lower toolbar
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SAVE,
+			WID_TN_SMALL_MAP,
+			WID_TN_SUBSIDIES,
+			WID_TN_TOWNS,
+			WID_TN_STATIONS,
+			WID_TN_FINANCES,
+			WID_TN_COMPANIES,
+			WID_TN_GRAPHS,
+			WID_TN_INDUSTRIES,
+			WID_TN_MUSIC_SOUND,
+			WID_TN_MESSAGES,
+			WID_TN_HELP,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
 		};
 		static const byte arrange18[] = {
-			0,  1,  2,  4,  5,  6,  7,  8,  9, 14, 21, 22, 23, 24, 25, 19, 20, 29,
-			0,  1,  3,  4,  5,  6,  7, 12, 15, 16, 17, 18, 26, 27, 28, 19, 20, 29,
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SETTINGS,
+			WID_TN_SMALL_MAP,
+			WID_TN_TOWNS,
+			WID_TN_SUBSIDIES,
+			WID_TN_STATIONS,
+			WID_TN_FINANCES,
+			WID_TN_COMPANIES,
+			WID_TN_INDUSTRIES,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
+			// lower toolbar
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SAVE,
+			WID_TN_SMALL_MAP,
+			WID_TN_TOWNS,
+			WID_TN_SUBSIDIES,
+			WID_TN_STATIONS,
+			WID_TN_GRAPHS,
+			WID_TN_TRAINS,
+			WID_TN_ROADVEHS,
+			WID_TN_SHIPS,
+			WID_TN_AIRCRAFTS,
+			WID_TN_MUSIC_SOUND,
+			WID_TN_MESSAGES,
+			WID_TN_HELP,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
 		};
 		static const byte arrange19[] = {
-			0,  1,  2,  4,  5,  6, 15, 16, 17, 18, 21, 22, 23, 24, 25, 26, 19, 20, 29,
-			0,  1,  3,  4,  7,  8,  9, 12, 14, 27, 21, 22, 23, 24, 25, 28, 19, 20, 29,
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SETTINGS,
+			WID_TN_SMALL_MAP,
+			WID_TN_TOWNS,
+			WID_TN_SUBSIDIES,
+			WID_TN_TRAINS,
+			WID_TN_ROADVEHS,
+			WID_TN_SHIPS,
+			WID_TN_AIRCRAFTS,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_MUSIC_SOUND,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
+			// lower toolbar
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SAVE,
+			WID_TN_SMALL_MAP,
+			WID_TN_STATIONS,
+			WID_TN_FINANCES,
+			WID_TN_COMPANIES,
+			WID_TN_GRAPHS,
+			WID_TN_INDUSTRIES,
+			WID_TN_MESSAGES,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_HELP,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
 		};
 		static const byte arrange20[] = {
-			0,  1,  2,  4,  5,  6, 15, 16, 17, 18, 21, 22, 23, 24, 25, 26, 11, 19, 20, 29,
-			0,  1,  3,  4,  7,  8,  9, 12, 14, 27, 21, 22, 23, 24, 25, 10, 28, 19, 20, 29,
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SETTINGS,
+			WID_TN_SMALL_MAP,
+			WID_TN_TOWNS,
+			WID_TN_SUBSIDIES,
+			WID_TN_TRAINS,
+			WID_TN_ROADVEHS,
+			WID_TN_SHIPS,
+			WID_TN_AIRCRAFTS,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_MUSIC_SOUND,
+			WID_TN_GOAL,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
+			// lower toolbar
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SAVE,
+			WID_TN_SMALL_MAP,
+			WID_TN_STATIONS,
+			WID_TN_FINANCES,
+			WID_TN_COMPANIES,
+			WID_TN_GRAPHS,
+			WID_TN_INDUSTRIES,
+			WID_TN_MESSAGES,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_STORY,
+			WID_TN_HELP,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_SWITCH_BAR,
 		};
 		static const byte arrange_all[] = {
-			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
+			WID_TN_PAUSE,
+			WID_TN_FAST_FORWARD,
+			WID_TN_SETTINGS,
+			WID_TN_SAVE,
+			WID_TN_SMALL_MAP,
+			WID_TN_TOWNS,
+			WID_TN_SUBSIDIES,
+			WID_TN_STATIONS,
+			WID_TN_FINANCES,
+			WID_TN_COMPANIES,
+			WID_TN_STORY,
+			WID_TN_GOAL,
+			WID_TN_GRAPHS,
+			WID_TN_LEAGUE,
+			WID_TN_INDUSTRIES,
+			WID_TN_TRAINS,
+			WID_TN_ROADVEHS,
+			WID_TN_SHIPS,
+			WID_TN_AIRCRAFTS,
+			WID_TN_ZOOM_IN,
+			WID_TN_ZOOM_OUT,
+			WID_TN_RAILS,
+			WID_TN_ROADS,
+			WID_TN_WATER,
+			WID_TN_AIR,
+			WID_TN_LANDSCAPE,
+			WID_TN_MUSIC_SOUND,
+			WID_TN_MESSAGES,
+			WID_TN_HELP
 		};
 
 		/* If at least BIGGEST_ARRANGEMENT fit, just spread all the buttons nicely */
@@ -1541,14 +1810,65 @@ class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 	/* virtual */ const byte *GetButtonArrangement(uint &width, uint &arrangable_count, uint &button_count, uint &spacer_count) const
 	{
 		static const byte arrange_all[] = {
-			0, 1, 2, 3, 4, 18, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 26, 28,
+			WID_TE_PAUSE,
+			WID_TE_FAST_FORWARD,
+			WID_TE_SETTINGS,
+			WID_TE_SAVE,
+			WID_TE_SPACER,
+			WID_TE_DATE_PANEL,
+			WID_TE_SMALL_MAP,
+			WID_TE_ZOOM_IN,
+			WID_TE_ZOOM_OUT,
+			WID_TE_LAND_GENERATE,
+			WID_TE_TOWN_GENERATE,
+			WID_TE_INDUSTRY,
+			WID_TE_ROADS,
+			WID_TE_WATER,
+			WID_TE_TREES,
+			WID_TE_SIGNS,
+			WID_TE_MUSIC_SOUND,
+			WID_TE_HELP,
 		};
 		static const byte arrange_nopanel[] = {
-			0, 1, 2, 3, 18, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 26, 28,
+			WID_TE_PAUSE,
+			WID_TE_FAST_FORWARD,
+			WID_TE_SETTINGS,
+			WID_TE_SAVE,
+			WID_TE_DATE_PANEL,
+			WID_TE_SMALL_MAP,
+			WID_TE_ZOOM_IN,
+			WID_TE_ZOOM_OUT,
+			WID_TE_LAND_GENERATE,
+			WID_TE_TOWN_GENERATE,
+			WID_TE_INDUSTRY,
+			WID_TE_ROADS,
+			WID_TE_WATER,
+			WID_TE_TREES,
+			WID_TE_SIGNS,
+			WID_TE_MUSIC_SOUND,
+			WID_TE_HELP,
 		};
 		static const byte arrange_switch[] = {
-			18,  8, 11, 12, 13, 14, 15, 16, 17, 29,
-			 0,  1,  2,  3, 18,  9, 10, 26, 28, 29,
+			WID_TE_DATE_PANEL,
+			WID_TE_SMALL_MAP,
+			WID_TE_LAND_GENERATE,
+			WID_TE_TOWN_GENERATE,
+			WID_TE_INDUSTRY,
+			WID_TE_ROADS,
+			WID_TE_WATER,
+			WID_TE_TREES,
+			WID_TE_SIGNS,
+			WID_TE_SWITCH_BAR,
+			// lower toolbar
+			WID_TE_PAUSE,
+			WID_TE_FAST_FORWARD,
+			WID_TE_SETTINGS,
+			WID_TE_SAVE,
+			WID_TE_DATE_PANEL,
+			WID_TE_ZOOM_IN,
+			WID_TE_ZOOM_OUT,
+			WID_TE_MUSIC_SOUND,
+			WID_TE_HELP, WID_TE_SWITCH_BAR,
 		};
 
 		/* If we can place all buttons *and* the panels, show them. */
@@ -1660,13 +1980,11 @@ enum MainToolbarHotkeys {
 
 /** Main toolbar. */
 struct MainToolbarWindow : Window {
-	CallBackFunction last_started_action; ///< Last started user action.
-
 	MainToolbarWindow(WindowDesc *desc) : Window(desc)
 	{
 		this->InitNested(0);
 
-		this->last_started_action = CBF_NONE;
+		_last_started_action = CBF_NONE;
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		this->SetWidgetDisabledState(WID_TN_PAUSE, _networking && !_network_server); // if not server, disable pause button
 		this->SetWidgetDisabledState(WID_TN_FAST_FORWARD, _networking); // if networking, disable fast-forward button
@@ -1705,7 +2023,7 @@ struct MainToolbarWindow : Window {
 	virtual void OnDropdownSelect(int widget, int index)
 	{
 		CallBackFunction cbf = _menu_clicked_procs[widget](index);
-		if (cbf != CBF_NONE) this->last_started_action = cbf;
+		if (cbf != CBF_NONE) _last_started_action = cbf;
 	}
 
 	virtual EventState OnHotkey(int hotkey)
@@ -1715,7 +2033,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_FASTFORWARD: ToolbarFastForwardClick(this); break;
 			case MTHK_SETTINGS: ShowGameOptions(); break;
 			case MTHK_SAVEGAME: MenuClickSaveLoad(); break;
-			case MTHK_LOADGAME: ShowSaveLoadDialog(SLD_LOAD_GAME); break;
+			case MTHK_LOADGAME: ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD); break;
 			case MTHK_SMALLMAP: ShowSmallMap(); break;
 			case MTHK_TOWNDIRECTORY: ShowTownDirectory(); break;
 			case MTHK_SUBSIDIES: ShowSubsidiesList(); break;
@@ -1758,7 +2076,7 @@ struct MainToolbarWindow : Window {
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)
 	{
-		switch (this->last_started_action) {
+		switch (_last_started_action) {
 			case CBF_PLACE_SIGN:
 				PlaceProc_Sign(tile);
 				break;
@@ -1769,6 +2087,11 @@ struct MainToolbarWindow : Window {
 
 			default: NOT_REACHED();
 		}
+	}
+
+	virtual void OnPlaceObjectAbort()
+	{
+		_last_started_action = CBF_NONE;
 	}
 
 	virtual void OnTick()
@@ -1899,7 +2222,14 @@ static NWidgetBase *MakeMainToolbar(int *biggest_index)
 	NWidgetMainToolbarContainer *hor = new NWidgetMainToolbarContainer();
 	for (uint i = 0; i < WID_TN_END; i++) {
 		switch (i) {
-			case 4: case 8: case 15: case 19: case 21: case 26: hor->Add(new NWidgetSpacer(0, 0)); break;
+			case WID_TN_SMALL_MAP:
+			case WID_TN_FINANCES:
+			case WID_TN_VEHICLE_START:
+			case WID_TN_ZOOM_IN:
+			case WID_TN_BUILDING_TOOLS_START:
+			case WID_TN_MUSIC_SOUND:
+				hor->Add(new NWidgetSpacer(0, 0));
+				break;
 		}
 		hor->Add(new NWidgetLeaf(i == WID_TN_SAVE ? WWT_IMGBTN_2 : WWT_IMGBTN, COLOUR_GREY, i, toolbar_button_sprites[i], STR_TOOLBAR_TOOLTIP_PAUSE_GAME + i));
 	}
@@ -1982,13 +2312,11 @@ enum MainToolbarEditorHotkeys {
 };
 
 struct ScenarioEditorToolbarWindow : Window {
-	CallBackFunction last_started_action; ///< Last started user action.
-
 	ScenarioEditorToolbarWindow(WindowDesc *desc) : Window(desc)
 	{
 		this->InitNested(0);
 
-		this->last_started_action = CBF_NONE;
+		_last_started_action = CBF_NONE;
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
@@ -2047,7 +2375,7 @@ struct ScenarioEditorToolbarWindow : Window {
 	{
 		if (_game_mode == GM_MENU) return;
 		CallBackFunction cbf = _scen_toolbar_button_procs[widget](this);
-		if (cbf != CBF_NONE) this->last_started_action = cbf;
+		if (cbf != CBF_NONE) _last_started_action = cbf;
 	}
 
 	virtual void OnDropdownSelect(int widget, int index)
@@ -2056,7 +2384,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		 * editor toolbar, so we need to adjust for it. */
 		if (widget == WID_TE_SMALL_MAP) widget = WID_TN_SMALL_MAP;
 		CallBackFunction cbf = _menu_clicked_procs[widget](index);
-		if (cbf != CBF_NONE) this->last_started_action = cbf;
+		if (cbf != CBF_NONE) _last_started_action = cbf;
 		if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 	}
 
@@ -2088,13 +2416,13 @@ struct ScenarioEditorToolbarWindow : Window {
 			case MTEHK_EXTRA_VIEWPORT:         ShowExtraViewPortWindowForTileUnderCursor(); break;
 			default: return ES_NOT_HANDLED;
 		}
-		if (cbf != CBF_NONE) this->last_started_action = cbf;
+		if (cbf != CBF_NONE) _last_started_action = cbf;
 		return ES_HANDLED;
 	}
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)
 	{
-		switch (this->last_started_action) {
+		switch (_last_started_action) {
 			case CBF_PLACE_SIGN:
 				PlaceProc_Sign(tile);
 				break;
@@ -2105,6 +2433,11 @@ struct ScenarioEditorToolbarWindow : Window {
 
 			default: NOT_REACHED();
 		}
+	}
+
+	virtual void OnPlaceObjectAbort()
+	{
+		_last_started_action = CBF_NONE;
 	}
 
 	virtual void OnTimeout()
