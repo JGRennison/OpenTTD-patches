@@ -1823,7 +1823,7 @@ static int GetSlopePixelZ_TunnelBridge(TileIndex tile, uint x, uint y)
 		if (5 <= pos && pos <= 10) return z;
 	} else { // IsBridge(tile)
 		if (IsRoadCustomBridgeHeadTile(tile)) {
-			return z + TILE_HEIGHT;
+			return z + TILE_HEIGHT + (IsSteepSlope(tileh) ? TILE_HEIGHT : 0);
 		}
 
 		DiagDirection dir = GetTunnelBridgeDirection(tile);
@@ -2265,7 +2265,11 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlag flag
 		if (IsRoadCustomBridgeHeadTile(tile)) {
 			const RoadBits pieces = GetCustomBridgeHeadAllRoadBits(tile);
 			const RoadBits entrance_piece = DiagDirToRoadBits(direction);
-			if ((_invalid_tileh_slopes_road[0][tileh_new] & (pieces & ~entrance_piece)) != ROAD_NONE) {
+
+			/* Steep slopes behave the same as slopes with one corner raised. */
+			const Slope normalised_tileh_new = IsSteepSlope(tileh_new) ? SlopeWithOneCornerRaised(GetHighestSlopeCorner(tileh_new)) : tileh_new;
+
+			if ((_invalid_tileh_slopes_road[0][normalised_tileh_new & SLOPE_ELEVATED] & (pieces & ~entrance_piece)) != ROAD_NONE) {
 				return DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 			}
 		}
