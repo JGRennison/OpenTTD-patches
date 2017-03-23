@@ -731,7 +731,11 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				if ((pieces & ~axial_pieces) && !_settings_game.construction.build_on_slopes) {
 					return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 				}
-				if ((_invalid_tileh_slopes_road[0][tileh] & (pieces & ~entrance_piece)) != ROAD_NONE) {
+
+				/* Steep slopes behave the same as slopes with one corner raised. */
+				const Slope normalised_tileh = IsSteepSlope(tileh) ? SlopeWithOneCornerRaised(GetHighestSlopeCorner(tileh)) : tileh;
+
+				if ((_invalid_tileh_slopes_road[0][normalised_tileh & SLOPE_ELEVATED] & (pieces & ~entrance_piece)) != ROAD_NONE) {
 					return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 				}
 
