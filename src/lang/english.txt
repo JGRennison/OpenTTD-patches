@@ -5006,9 +5006,10 @@ STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :{WHITE}Site uns
 STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :{WHITE}Must demolish tunnel first
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}Another tunnel in the way
 STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}Tunnel would end out of the map
+STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}Tunnel under water would end out of the map
 STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}Unable to excavate land for other end of tunnel
 STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... tunnel too long
-STR_ERROR_TUNNEL_RAMP_TOO_SHORT                                 :{WHITE}... ramp too short, tunnels under water must have a ramp at least three tiles long at both ends.
+STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... only ramp length between 4 and {NUM} tiles is allowed for tunnels under water.
 STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... too many tunnels
 STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL                             :{WHITE}No oil rigs allowed above underwater tunnels.
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}Three tiles are needed to pass under the other tunnel.

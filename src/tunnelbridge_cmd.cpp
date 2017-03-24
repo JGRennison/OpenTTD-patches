@@ -602,6 +602,103 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 	return cost;
 }
 
+/**
+ * Check if the amount of tiles of the chunnel ramp is between allowed limits.
+ * @param tile the actual tile.
+ * @param ramp ramp_start tile.
+ * @param delta the tile offset.
+ * @return an empty string if between limits or a formatted string for the error message.
+ */
+static inline StringID IsRampBetweenLimits(TileIndex ramp_start, TileIndex tile, TileIndexDiff delta)
+{
+	uint min_length = 4;
+	uint max_length = 7;
+	if (Delta(ramp_start, tile) < (uint)abs(delta) * min_length || Delta(ramp_start, tile - delta) > (uint)abs(delta) * max_length) {
+		SetDParam(0, max_length);
+		return (STR_ERROR_CHUNNEL_RAMP);
+	}
+
+	return STR_NULL;
+}
+
+/**
+ * See if chunnel building is possible.
+ * All chunnel related issues are tucked away in one procedure
+ * @pre   only on z level 0.
+ * @param tile start tile of tunnel.
+ * @param direction the direction we want to build.
+ * @param is_chunnel pointer to set if chunnel is allowed or not.
+ * @param sea_tiles pointer for the amount of tiles used to cross a sea.
+ * @return an error message or if success the is_chunnel flag is set to true and the amount of tiles needed to cross the water is returned.
+ */
+static inline CommandCost IsChunnel(TileIndex tile, DiagDirection direction , bool &is_chunnel, int &sea_tiles)
+{
+	int start_z = 0;
+	int end_z;
+	bool crossed_sea = false;
+	TileIndex ramp_start = tile;
+	StringID err_msg;
+
+	if(GetTileZ(tile) > 0) return_cmd_error(STR_ERROR_CHUNNEL_ONLY_OVER_SEA);
+
+	TileIndexDiff delta = TileOffsByDiagDir(direction);
+	Slope end_tileh;
+	for (;;) {
+		tile += delta;
+		if (!IsValidTile(tile)) return_cmd_error(STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER);
+		end_tileh = GetTileSlope(tile, &end_z);
+
+		if (start_z == end_z) {
+			_build_tunnel_endtile = tile;
+
+			/* Check if end ramp was too short or too long after crossing the sea. */
+			err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
+			if(crossed_sea && err_msg > STR_NULL) return_cmd_error(err_msg);
+
+			/* Handle chunnels only on sea level and only one time crossing. */
+			if (!crossed_sea &&
+					(IsCoastTile(tile) ||
+					(IsValidTile(tile + delta) && HasTileWaterGround(tile + delta)) ||
+					(IsValidTile(tile + delta * 2) && HasTileWaterGround(tile + delta * 2)))) {
+
+				/* A shore was found, check if start ramp was too short or too long. */
+				err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
+				if(err_msg > STR_NULL) return_cmd_error(err_msg);
+
+				/* Pass the water and find a proper shore tile that potentially
+				 * could have a tunnel portal behind. */
+				for (;;) {
+					if (!IsValidTile(tile)) return_cmd_error(STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER);
+					_build_tunnel_endtile = tile;
+
+					end_tileh = GetTileSlope(tile);
+					if(direction == DIAGDIR_NE && (end_tileh & SLOPE_NE) == SLOPE_NE) break;
+					if(direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
+					if(direction == DIAGDIR_SW && (end_tileh & SLOPE_SW) == SLOPE_SW) break;
+					if(direction == DIAGDIR_NW && (end_tileh & SLOPE_NW) == SLOPE_NW) break;
+
+					/* No drilling under oil rigs.*/
+					if ((IsTileType(tile, MP_STATION) && IsOilRig(tile)) ||
+							(IsTileType(tile, MP_INDUSTRY)               &&
+							GetIndustryGfx(tile) >= GFX_OILRIG_1         &&
+							GetIndustryGfx(tile) <= GFX_OILRIG_5)) return_cmd_error(STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL);
+
+					if (IsTileType(tile, MP_WATER) && IsSea(tile)) crossed_sea = true;
+					if (!_cheats.crossing_tunnels.value && IsTunnelInWay(tile, start_z)) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
+					tile += delta;
+					sea_tiles++;
+				}
+				if (!crossed_sea) return_cmd_error(STR_ERROR_CHUNNEL_ONLY_OVER_SEA);
+				ramp_start = tile;
+			} else {
+				break;
+			}
+		}
+	}
+	is_chunnel = crossed_sea;
+
+	return CommandCost();
+}
 
 /**
  * Build Tunnel.
@@ -672,16 +769,19 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	int tiles_coef = 3;
 	/* Number of tiles from start of tunnel */
 	int tiles = 0;
-	/* flag for chunnels. */
-	bool is_chunnel = false;
-	/* Number of chunnel head tiles. */
-	int head_tiles = 0;
 	/* Number of tiles at which the cost increase coefficient per tile is halved */
 	int tiles_bump = 25;
+	/* flags for chunnels. */
+	bool is_chunnel = false;
+	bool crossed_sea = false;
+	/* Number of tiles counted for crossing sea */
+	int sea_tiles = 0;
 
-	TileIndex found_tunnel_tile = INVALID_TILE;
+	if(start_z == 0 && _settings_game.construction.chunnel) {
+		CommandCost chunnel_test = IsChunnel(start_tile, direction, is_chunnel, sea_tiles);
+		if (chunnel_test.Failed()) return chunnel_test;
+	}
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
 	Slope end_tileh;
 	for (;;) {
 		end_tile += delta;
@@ -689,88 +789,22 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		end_tileh = GetTileSlope(end_tile, &end_z);
 
 		if (start_z == end_z) {
-			_build_tunnel_endtile = found_tunnel_tile != INVALID_TILE ? found_tunnel_tile : end_tile;
-
-			/* Test if we are on a shore. */
-			if (end_z == 0 && _settings_game.construction.chunnel &&
-					(IsCoastTile(end_tile) ||
-					(IsValidTile(end_tile + delta) && HasTileWaterGround(end_tile + delta)) ||
-					(IsValidTile(end_tile + delta * 2) && HasTileWaterGround(end_tile + delta * 2)))) {
-				if (!is_chunnel) {
-					/*We are about to pass water for the first time so check if not to close to other tunnel */
-					if (tiles + 1 < head_tiles + 4 && found_tunnel_tile != INVALID_TILE) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL);
-					if (tiles + 1 < 4) return_cmd_error(STR_ERROR_TUNNEL_RAMP_TOO_SHORT);
-				}
-			} else {/* We are leaving.*/
-				if (is_chunnel) {
-					/* Check if there is enough ramp space to come up. */
-					if (head_tiles < 4 && found_tunnel_tile != INVALID_TILE) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL);
-					if (head_tiles < 4) return_cmd_error(STR_ERROR_TUNNEL_RAMP_TOO_SHORT);
-				} else {
-					if (found_tunnel_tile != INVALID_TILE) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
-				}
+			if (is_chunnel && !crossed_sea){
+				end_tile += sea_tiles * delta;
+				tiles += sea_tiles;
+				crossed_sea = true;
+			} else {
 				break;
 			}
-
-			/* A shore was found so pass the water and find a proper shore tile that potentially
-			 * could have a tunnel portal behind. */
-			for (;;) {
-				if (!IsValidTile(end_tile)) return_cmd_error(STR_ERROR_TUNNEL_THROUGH_MAP_BORDER);
-
-				end_tileh = GetTileSlope(end_tile);
-				if(direction == DIAGDIR_NE && (end_tileh & SLOPE_NE) == SLOPE_NE) break;
-				if(direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
-				if(direction == DIAGDIR_SW && (end_tileh & SLOPE_SW) == SLOPE_SW) break;
-				if(direction == DIAGDIR_NW && (end_tileh & SLOPE_NW) == SLOPE_NW) break;
-
-				/* No drilling under oil rigs.*/
-				if ((IsTileType(end_tile, MP_STATION) && IsOilRig(end_tile)) ||
-						(IsTileType(end_tile, MP_INDUSTRY)                   &&
-						GetIndustryGfx(end_tile) >= GFX_OILRIG_1             &&
-						GetIndustryGfx(end_tile) <= GFX_OILRIG_5)) {
-					_build_tunnel_endtile = end_tile;
-					return_cmd_error(STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL);
-				}
-
-				end_tile += delta;
-				tiles++;
-				if (IsTileType(end_tile, MP_WATER) && IsSea(end_tile)) is_chunnel = true;
-			}
-			/* The water was passed */
-			if (!is_chunnel) return_cmd_error(STR_ERROR_CHUNNEL_ONLY_OVER_SEA);
-			head_tiles = 0;
-			found_tunnel_tile = INVALID_TILE;
 		}
-		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z, ITIWF_IGNORE_CHUNNEL)) {
-			if (found_tunnel_tile == INVALID_TILE || is_chunnel) { // Remember the first or the last when we pass a tunnel.
-				found_tunnel_tile = end_tile;
-				head_tiles = 0;
-			}
+		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z)) {
+			_build_tunnel_endtile = end_tile;
+			return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
 		}
-		head_tiles++;
 		tiles++;
 	}
-
-	if (is_chunnel && !_cheats.crossing_tunnels.value) {
-		/*
-		 * Chunnel check: second pass
-		 *
-		 * Make sure that we don't intersect with any other chunnels
-		 */
-
-		TileIndex check_tile = start_tile;
-		for (;;) {
-			check_tile += delta;
-			if (check_tile == end_tile) break;
-
-			if (IsTunnelInWay(check_tile, start_z, ITIWF_CHUNNEL_ONLY)) {
-				_build_tunnel_endtile = check_tile;
-				return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
-			}
-		}
-	}
-
 	/* The cost of the digging. */
+	CommandCost cost(EXPENSES_CONSTRUCTION);
 	for (int i = tiles; i > 0; i--) {
 		if (tiles == tiles_bump) {
 			tiles_coef++;
