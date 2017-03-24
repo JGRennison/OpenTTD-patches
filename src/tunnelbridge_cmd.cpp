@@ -615,7 +615,7 @@ static inline StringID IsRampBetweenLimits(TileIndex ramp_start, TileIndex tile,
 	uint max_length = 7;
 	if (Delta(ramp_start, tile) < (uint)abs(delta) * min_length || Delta(ramp_start, tile - delta) > (uint)abs(delta) * max_length) {
 		SetDParam(0, max_length);
-		return (STR_ERROR_CHUNNEL_RAMP);
+		return STR_ERROR_CHUNNEL_RAMP;
 	}
 
 	return STR_NULL;
@@ -631,29 +631,29 @@ static inline StringID IsRampBetweenLimits(TileIndex ramp_start, TileIndex tile,
  * @param sea_tiles pointer for the amount of tiles used to cross a sea.
  * @return an error message or if success the is_chunnel flag is set to true and the amount of tiles needed to cross the water is returned.
  */
-static inline CommandCost IsChunnel(TileIndex tile, DiagDirection direction , bool &is_chunnel, int &sea_tiles)
+static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection direction, bool &is_chunnel, int &sea_tiles)
 {
-	int start_z = 0;
-	int end_z;
+	const int start_z = 0;
 	bool crossed_sea = false;
 	TileIndex ramp_start = tile;
-	StringID err_msg;
 
-	if(GetTileZ(tile) > 0) return_cmd_error(STR_ERROR_CHUNNEL_ONLY_OVER_SEA);
+	if (GetTileZ(tile) > 0) return_cmd_error(STR_ERROR_CHUNNEL_ONLY_OVER_SEA);
 
-	TileIndexDiff delta = TileOffsByDiagDir(direction);
-	Slope end_tileh;
+	const TileIndexDiff delta = TileOffsByDiagDir(direction);
 	for (;;) {
 		tile += delta;
 		if (!IsValidTile(tile)) return_cmd_error(STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER);
-		end_tileh = GetTileSlope(tile, &end_z);
+		int end_z;
+		Slope end_tileh = GetTileSlope(tile, &end_z);
 
 		if (start_z == end_z) {
 			_build_tunnel_endtile = tile;
 
 			/* Check if end ramp was too short or too long after crossing the sea. */
-			err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
-			if(crossed_sea && err_msg > STR_NULL) return_cmd_error(err_msg);
+			if (crossed_sea) {
+				StringID err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
+				if (err_msg > STR_NULL) return_cmd_error(err_msg);
+			}
 
 			/* Handle chunnels only on sea level and only one time crossing. */
 			if (!crossed_sea &&
@@ -662,8 +662,8 @@ static inline CommandCost IsChunnel(TileIndex tile, DiagDirection direction , bo
 					(IsValidTile(tile + delta * 2) && HasTileWaterGround(tile + delta * 2)))) {
 
 				/* A shore was found, check if start ramp was too short or too long. */
-				err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
-				if(err_msg > STR_NULL) return_cmd_error(err_msg);
+				StringID err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
+				if (err_msg > STR_NULL) return_cmd_error(err_msg);
 
 				/* Pass the water and find a proper shore tile that potentially
 				 * could have a tunnel portal behind. */
@@ -672,10 +672,10 @@ static inline CommandCost IsChunnel(TileIndex tile, DiagDirection direction , bo
 					_build_tunnel_endtile = tile;
 
 					end_tileh = GetTileSlope(tile);
-					if(direction == DIAGDIR_NE && (end_tileh & SLOPE_NE) == SLOPE_NE) break;
-					if(direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
-					if(direction == DIAGDIR_SW && (end_tileh & SLOPE_SW) == SLOPE_SW) break;
-					if(direction == DIAGDIR_NW && (end_tileh & SLOPE_NW) == SLOPE_NW) break;
+					if (direction == DIAGDIR_NE && (end_tileh & SLOPE_NE) == SLOPE_NE) break;
+					if (direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
+					if (direction == DIAGDIR_SW && (end_tileh & SLOPE_SW) == SLOPE_SW) break;
+					if (direction == DIAGDIR_NW && (end_tileh & SLOPE_NW) == SLOPE_NW) break;
 
 					/* No drilling under oil rigs.*/
 					if ((IsTileType(tile, MP_STATION) && IsOilRig(tile)) ||
@@ -777,8 +777,8 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	/* Number of tiles counted for crossing sea */
 	int sea_tiles = 0;
 
-	if(start_z == 0 && _settings_game.construction.chunnel) {
-		CommandCost chunnel_test = IsChunnel(start_tile, direction, is_chunnel, sea_tiles);
+	if (start_z == 0 && _settings_game.construction.chunnel) {
+		CommandCost chunnel_test = CanBuildChunnel(start_tile, direction, is_chunnel, sea_tiles);
 		if (chunnel_test.Failed()) return chunnel_test;
 	}
 
