@@ -2438,6 +2438,8 @@ STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserve through
 STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancel reserve through
 STR_TRACE_RESTRICT_LONG_RESERVE                                 :Long reserve
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Cancel long reserve
+STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :Wait at PBS signal
+STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :Cancel wait at PBS signal
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
@@ -3757,6 +3759,7 @@ STR_VEHICLE_STATUS_STOPPED                                      :{RED}Stopped
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL                           :{RED}Stopping, {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}No power
 STR_VEHICLE_STATUS_TRAIN_STUCK                                  :{ORANGE}Waiting for free path
+STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}Waiting due to routing restriction
 STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR                             :{ORANGE}Too far to next destination
 
 STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL                      :{LTBLUE}Heading for {STATION}, {VELOCITY}

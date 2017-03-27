@@ -438,6 +438,14 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_WAIT_AT_PBS:
+						if (GetTraceRestrictValue(item)) {
+							out.flags &= ~TRPRF_WAIT_AT_PBS;
+						} else {
+							out.flags |= TRPRF_WAIT_AT_PBS;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -547,6 +555,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					actions_used_flags |= TRPAUF_LONG_RESERVE;
 					break;
 
+				case TRIT_WAIT_AT_PBS:
+					actions_used_flags |= TRPAUF_WAIT_AT_PBS;
+					break;
+
 				default:
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
@@ -605,6 +617,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_FORCE:
 		case TRVT_POWER_WEIGHT_RATIO:
 		case TRVT_FORCE_WEIGHT_RATIO:
+		case TRVT_WAIT_AT_PBS:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);
