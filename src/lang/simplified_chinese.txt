@@ -3120,7 +3120,7 @@ STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}显示�
 STR_STATION_VIEW_SUPPLY_RATINGS_TITLE                           :{BLACK}按月供应量与本地评比：
 STR_STATION_VIEW_CARGO_SUPPLY_RATING                            :{WHITE}{STRING}: {YELLOW}{COMMA} / {STRING} ({COMMA}%)
 
-STR_STATION_VIEW_GROUP                                          :群组方式
+STR_STATION_VIEW_GROUP                                          :{BLACK}群组方式
 STR_STATION_VIEW_WAITING_STATION                                :车站名：等候中
 STR_STATION_VIEW_WAITING_AMOUNT                                 :货物总量：等候中
 STR_STATION_VIEW_PLANNED_STATION                                :车站名：计划中
@@ -3359,6 +3359,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :添加共享车
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :移除所有车辆
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}重命名分组
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :购买普通列车
