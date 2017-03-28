@@ -1512,11 +1512,12 @@ void Train::UpdateDeltaXY(Direction direction)
  * Mark a train as stuck and stop it if it isn't stopped right now.
  * @param v %Train to mark as being stuck.
  */
-static void MarkTrainAsStuck(Train *v)
+static void MarkTrainAsStuck(Train *v, bool waiting_restriction = false)
 {
 	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) {
 		/* It is the first time the problem occurred, set the "train stuck" flag. */
 		SetBit(v->flags, VRF_TRAIN_STUCK);
+		SB(v->flags, VRF_WAITING_RESTRICTION, 1, waiting_restriction ? 1 : 0);
 
 		v->wait_counter = 0;
 
@@ -1525,6 +1526,9 @@ static void MarkTrainAsStuck(Train *v)
 		v->subspeed = 0;
 		v->SetLastSpeed();
 
+		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+	} else if (waiting_restriction != HasBit(v->flags, VRF_WAITING_RESTRICTION)) {
+		ToggleBit(v->flags, VRF_WAITING_RESTRICTION);
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 	}
 }
@@ -2586,6 +2590,18 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		Track track = FindFirstTrack(tracks);
 		/* We need to check for signals only here, as a junction tile can't have signals. */
 		if (track != INVALID_TRACK && HasPbsSignalOnTrackdir(tile, TrackEnterdirToTrackdir(track, enterdir))) {
+			if (IsRestrictedSignal(tile) && v->force_proceed != TFP_SIGNAL) {
+				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
+				if (prog && prog->actions_used_flags & TRPAUF_WAIT_AT_PBS) {
+					TraceRestrictProgramResult out;
+					prog->Execute(v, TraceRestrictProgramInput(tile, TrackEnterdirToTrackdir(track, enterdir), NULL, NULL), out);
+					if (out.flags & TRPRF_WAIT_AT_PBS) {
+						if (mark_stuck) MarkTrainAsStuck(v, true);
+						return track;
+					}
+				}
+			}
+
 			do_track_reservation = true;
 			changed_signal = true;
 			SetSignalStateByTrackdir(tile, TrackEnterdirToTrackdir(track, enterdir), SIGNAL_STATE_GREEN);

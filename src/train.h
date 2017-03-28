@@ -26,6 +26,7 @@ struct Train;
 /** Rail vehicle flags. */
 enum VehicleRailFlags {
 	VRF_REVERSING                     = 0,
+	VRF_WAITING_RESTRICTION           = 1, ///< Train is waiting due to a routing restriction, only valid when VRF_TRAIN_STUCK is also set.
 	VRF_POWEREDWAGON                  = 3, ///< Wagon is powered.
 	VRF_REVERSE_DIRECTION             = 4, ///< Reverse the visible direction of the vehicle.
 

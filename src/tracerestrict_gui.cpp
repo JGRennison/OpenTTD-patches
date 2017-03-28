@@ -127,6 +127,7 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_PF_PENALTY,
 	STR_TRACE_RESTRICT_RESERVE_THROUGH,
 	STR_TRACE_RESTRICT_LONG_RESERVE,
+	STR_TRACE_RESTRICT_WAIT_AT_PBS,
 	INVALID_STRING_ID
 };
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
@@ -141,6 +142,7 @@ static const uint _program_insert_val[] = {
 	TRIT_PF_PENALTY,                                   // penalty
 	TRIT_RESERVE_THROUGH,                              // reserve through
 	TRIT_LONG_RESERVE,                                 // long reserve
+	TRIT_WAIT_AT_PBS,                                  // wait at PBS signal
 };
 
 /** insert drop down list strings and values */
@@ -191,6 +193,21 @@ static const uint _long_reserve_value_val[] = {
 /** value drop down list for long reserve types strings and values */
 static const TraceRestrictDropDownListSet _long_reserve_value = {
 	_long_reserve_value_str, _long_reserve_value_val,
+};
+
+static const StringID _wait_at_pbs_value_str[] = {
+	STR_TRACE_RESTRICT_WAIT_AT_PBS,
+	STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL,
+	INVALID_STRING_ID
+};
+static const uint _wait_at_pbs_value_val[] = {
+	0,
+	1,
+};
+
+/** value drop down list for wait at PBS types strings and values */
+static const TraceRestrictDropDownListSet _wait_at_pbs_value = {
+	_wait_at_pbs_value_str, _wait_at_pbs_value_val,
 };
 
 static const StringID _direction_value_str[] = {
@@ -270,6 +287,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_PF_PENALTY,
 		STR_TRACE_RESTRICT_RESERVE_THROUGH,
 		STR_TRACE_RESTRICT_LONG_RESERVE,
+		STR_TRACE_RESTRICT_WAIT_AT_PBS,
 		INVALID_STRING_ID,
 	};
 	static const uint val_action[] = {
@@ -277,6 +295,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_PF_PENALTY,
 		TRIT_RESERVE_THROUGH,
 		TRIT_LONG_RESERVE,
+		TRIT_WAIT_AT_PBS,
 	};
 	static const TraceRestrictDropDownListSet set_action = {
 		str_action, val_action,
@@ -880,6 +899,10 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL : STR_TRACE_RESTRICT_LONG_RESERVE;
 				break;
 
+			case TRIT_WAIT_AT_PBS:
+				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL : STR_TRACE_RESTRICT_WAIT_AT_PBS;
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -1129,6 +1152,10 @@ public:
 
 					case TRVT_LONG_RESERVE:
 						this->ShowDropDownListWithValue(&_long_reserve_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
+					case TRVT_WAIT_AT_PBS:
+						this->ShowDropDownListWithValue(&_wait_at_pbs_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
 					case TRVT_GROUP_INDEX: {
@@ -1959,6 +1986,13 @@ private:
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
 									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL : STR_TRACE_RESTRICT_LONG_RESERVE;
+							break;
+
+						case TRVT_WAIT_AT_PBS:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL : STR_TRACE_RESTRICT_WAIT_AT_PBS;
 							break;
 
 						case TRVT_GROUP_INDEX:
