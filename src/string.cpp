@@ -180,14 +180,7 @@ void str_fix_scc_encoded(char *str, const char *last)
 }
 
 
-/**
- * Scans the string for valid characters and if it finds invalid ones,
- * replaces them with a question mark '?' (if not ignored)
- * @param str the string to validate
- * @param last the last valid character of str
- * @param settings the settings for the string validation.
- */
-void str_validate(char *str, const char *last, StringValidationSettings settings)
+char *str_validate_intl(char *str, const char *last, StringValidationSettings settings)
 {
 	/* Assume the ABSOLUTE WORST to be in str as it comes from the outside. */
 
@@ -228,7 +221,7 @@ void str_validate(char *str, const char *last, StringValidationSettings settings
 		}
 	}
 
-	*dst = '\0';
+	return dst;
 }
 
 /**

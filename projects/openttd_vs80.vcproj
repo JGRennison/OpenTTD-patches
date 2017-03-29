@@ -1951,6 +1951,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\core\container_func.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\core\dyn_arena_alloc.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\core\endian_func.hpp"
 				>
 			</File>

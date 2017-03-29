@@ -207,6 +207,7 @@ enum SaveLoadTypes {
 	SL_LST         =  4, ///< Save/load a list.
 	SL_DEQ         =  5, ///< Save/load a deque.
 	SL_VEC         =  6, ///< Save/load a vector.
+	SL_STDSTR      =  7, ///< Save/load a std::string.
 	/* non-normal save-load types */
 	SL_WRITEBYTE   =  8,
 	SL_VEH_INCLUDE =  9,
@@ -301,6 +302,18 @@ typedef SaveLoad SaveLoadGlobVarList;
 #define SLE_CONDSTR(base, variable, type, length, from, to) SLE_CONDSTR_X(base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
+ * Storage of a std::string in some savegame versions.
+ * @param base     Name of the class or struct containing the string.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the string.
+ * @param to       Last savegame version that has the string.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLE_CONDSTDSTR_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_STDSTR, base, variable, type, 0, from, to, extver)
+#define SLE_CONDSTDSTR(base, variable, type, from, to) SLE_CONDSTDSTR_X(base, variable, type, from, to, SlXvFeatureTest())
+
+/**
  * Storage of a list in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
@@ -369,6 +382,14 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param length   Number of elements in the string (only used for fixed size buffers).
  */
 #define SLE_STR(base, variable, type, length) SLE_CONDSTR(base, variable, type, length, 0, SL_MAX_VERSION)
+
+/**
+ * Storage of a std::string in every savegame version.
+ * @param base     Name of the class or struct containing the string.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLE_STDSTR(base, variable, type) SLE_CONDSTDSTR(base, variable, type, 0, SL_MAX_VERSION)
 
 /**
  * Storage of a list in every savegame version.

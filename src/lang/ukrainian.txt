@@ -3491,6 +3491,7 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Позбути�
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Перейменувати групу
 
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Новий неелектрифікований поїзд
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Новий електрифікований поїзд
@@ -3796,7 +3797,7 @@ STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Інте
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Збільшити інтервал техогляду на 10. Ctrl+клац мишою збільшує інтервал техогляду на 5
 STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Зменшити період техогляду на 10. Ctrl+клац мишою зменшує інтервал техогляду на 5
 
-STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :Відлік інтервалу між техоглядами
+STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}Відлік інтервалу між техоглядами
 STR_VEHICLE_DETAILS_DEFAULT                                     :Стандартно
 STR_VEHICLE_DETAILS_DAYS                                        :Дні
 STR_VEHICLE_DETAILS_PERCENT                                     :Проценти

@@ -1081,6 +1081,18 @@ static inline size_t SlCalcNetStringLen(const char *ptr, size_t length)
 }
 
 /**
+ * Calculate the gross length of the std::string that it
+ * will occupy in the savegame. This includes the real length,
+ * and the length that the index will occupy.
+ * @param str reference to the std::string
+ * @return return the gross length of the string
+ */
+static inline size_t SlCalcStdStrLen(const std::string &str)
+{
+	return str.size() + SlGetArrayLength(str.size()); // also include the length of the index
+}
+
+/**
  * Calculate the gross length of the string that it
  * will occupy in the savegame. This includes the real length, returned
  * by SlCalcNetStringLen and the length that the index will occupy.
@@ -1183,6 +1195,41 @@ static void SlString(void *ptr, size_t length, VarType conv)
 				settings = settings | SVS_ALLOW_NEWLINE;
 			}
 			str_validate((char *)ptr, (char *)ptr + len, settings);
+			break;
+		}
+		case SLA_PTRS: break;
+		case SLA_NULL: break;
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Save/Load a std::string.
+ * @param ptr the std::string being manipulated
+ * @param conv must be SLE_FILE_STRING
+ */
+static void SlStdString(std::string &str, VarType conv)
+{
+	switch (_sl.action) {
+		case SLA_SAVE: {
+			SlWriteArrayLength(str.size());
+			SlCopyBytes(const_cast<char *>(str.data()), str.size());
+			break;
+		}
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD: {
+			size_t len = SlReadArrayLength();
+			str.resize(len);
+			SlCopyBytes(const_cast<char *>(str.c_str()), len);
+
+			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
+			if ((conv & SLF_ALLOW_CONTROL) != 0) {
+				settings = settings | SVS_ALLOW_CONTROL_CODE;
+			}
+			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
+				settings = settings | SVS_ALLOW_NEWLINE;
+			}
+			str_validate(str, settings);
 			break;
 		}
 		case SLA_PTRS: break;
@@ -1493,6 +1540,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 		case SL_LST:
 		case SL_DEQ:
 		case SL_VEC:
+		case SL_STDSTR:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) break;
 
@@ -1504,6 +1552,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 				case SL_LST: return SlCalcListLen<std::list<void *>>(GetVariableAddress(object, sld));
 				case SL_DEQ: return SlCalcListLen<std::deque<void *>>(GetVariableAddress(object, sld));
 				case SL_VEC: return SlCalcListLen<std::vector<void *>>(GetVariableAddress(object, sld));
+				case SL_STDSTR: return SlCalcStdStrLen(*static_cast<std::string *>(GetVariableAddress(object, sld)));
 				default: NOT_REACHED();
 			}
 			break;
@@ -1552,6 +1601,9 @@ static bool IsVariableSizeRight(const SaveLoad *sld)
 			/* These should be pointer sized, or fixed array. */
 			return sld->size == sizeof(void *) || sld->size == sld->length;
 
+		case SL_STDSTR:
+			return sld->size == sizeof(std::string);
+
 		default:
 			return true;
 	}
@@ -1574,6 +1626,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 		case SL_LST:
 		case SL_DEQ:
 		case SL_VEC:
+		case SL_STDSTR:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) return false;
 			if (SlSkipVariableOnLoad(sld)) return false;
@@ -1603,6 +1656,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 				case SL_LST: SlList<std::list<void *>>(ptr, (SLRefType)conv); break;
 				case SL_DEQ: SlList<std::deque<void *>>(ptr, (SLRefType)conv); break;
 				case SL_VEC: SlList<std::vector<void *>>(ptr, (SLRefType)conv); break;
+				case SL_STDSTR: SlStdString(*static_cast<std::string *>(ptr), sld->conv); break;
 				default: NOT_REACHED();
 			}
 			break;
