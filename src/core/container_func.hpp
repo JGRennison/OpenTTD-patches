@@ -9,6 +9,11 @@
 
 /** @file container_func.hpp Functions related to use of containers. */
 
+#ifndef CONTAINER_FUNC_HPP
+#define CONTAINER_FUNC_HPP
+
+#include <iterator>
+
 template <typename C, typename UP> unsigned int container_unordered_remove_if (C &container, UP predicate) {
 	unsigned int removecount = 0;
 	for (auto it = container.begin(); it != container.end();) {
@@ -33,3 +38,5 @@ template <typename C, typename V> unsigned int container_unordered_remove(C &con
 		return v == value;
 	});
 }
+
+#endif /* CONTAINER_FUNC_HPP */
