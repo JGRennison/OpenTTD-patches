@@ -9,6 +9,9 @@
 
 /** @file dyn_arena_alloc.hpp Dynamic chunk-size arena allocator. */
 
+#ifndef DYN_ARENA_ALLOC_HPP
+#define DYN_ARENA_ALLOC_HPP
+
 #include <vector>
 
 /**
@@ -95,3 +98,5 @@ class DynUniformArenaAllocator {
 		this->items_per_chunk = items_per_chunk;
 	}
 };
+
+#endif /* DYN_ARENA_ALLOC_HPP */
