@@ -1682,6 +1682,10 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 			}
 
+			case SCC_CONSUME_ARG:
+				// do nothing
+				break;
+
 			default:
 				if (buff + Utf8CharLen(b) < last) buff += Utf8Encode(buff, b);
 				break;

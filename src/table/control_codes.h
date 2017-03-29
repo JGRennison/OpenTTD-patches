@@ -116,6 +116,8 @@ enum StringControlCode {
 	SCC_BLACK,
 	SCC_PREVIOUS_COLOUR,
 
+	SCC_CONSUME_ARG,
+
 	/**
 	 * The next variables are part of a NewGRF subsystem for creating text strings.
 	 * It uses a "stack" of bytes and reads from there.

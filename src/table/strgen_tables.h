@@ -139,6 +139,8 @@ static const CmdStruct _cmd_structs[] = {
 	{"SMALL_LEFT_ARROW",  EmitSingleChar, SCC_LESS_THAN,          0, -1, C_DONTCOUNT},
 	{"SMALL_RIGHT_ARROW", EmitSingleChar, SCC_GREATER_THAN,       0, -1, C_DONTCOUNT},
 
+	{"CONSUME_ARG",       EmitSingleChar, SCC_CONSUME_ARG,        1,  0, C_NONE},
+
 	/* The following are directional formatting codes used to get the RTL strings right:
 	 * http://www.unicode.org/unicode/reports/tr9/#Directional_Formatting_Codes */
 	{"LRM",               EmitSingleChar, CHAR_TD_LRM,            0, -1, C_DONTCOUNT},
