@@ -138,6 +138,7 @@ struct GUISettings {
 	uint8  graph_line_thickness;             ///< the thickness of the lines in the various graph guis
 	bool   show_train_weight_ratios_in_details;   ///< show train weight ratios in vehicle details window top widget
 	bool   show_restricted_signal_default;   ///< Show restricted electric signals using the default sprite
+	bool   show_adv_tracerestrict_features;  ///< Show advanced trace restrict features in UI
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.

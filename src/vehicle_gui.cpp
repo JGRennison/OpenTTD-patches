@@ -179,7 +179,7 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 		*list->Append() = new DropDownListStringItem(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, false);
 		*list->Append() = new DropDownListStringItem(STR_GROUP_REMOVE_ALL_VEHICLES, ADI_REMOVE_ALL, false);
 	}
-	if (this->vli.vtype == VEH_TRAIN) {
+	if (this->vli.vtype == VEH_TRAIN && _settings_client.gui.show_adv_tracerestrict_features) {
 		*list->Append() = new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false);
 	}
 

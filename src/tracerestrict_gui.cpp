@@ -141,6 +141,8 @@ static const StringID _program_insert_str[] = {
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
 static const uint32 _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for orif
 static const uint32 _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
+static const uint32 _program_wait_pbs_hide_mask = 0x100;       ///< disable bitmask for wait at PBS
+static const uint32 _program_slot_hide_mask = 0x200;           ///< disable bitmask for slot
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
 	TRIT_COND_UNDEFINED | (TRCF_ELSE << 16),           // elif block
@@ -289,7 +291,7 @@ static TraceRestrictItemType ItemTypeFromGuiType(TraceRestrictGuiItemType type)
 /**
  * Return the appropriate type dropdown TraceRestrictDropDownListSet for the given item type @p type
  */
-static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictGuiItemType type)
+static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictGuiItemType type, uint32 *hide_mask = nullptr)
 {
 	static const StringID str_action[] = {
 		STR_TRACE_RESTRICT_PF_DENY,
@@ -353,7 +355,15 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		str_cond, val_cond,
 	};
 
-	return IsTraceRestrictTypeConditional(ItemTypeFromGuiType(type)) ? &set_cond : &set_action;
+	bool is_conditional = IsTraceRestrictTypeConditional(ItemTypeFromGuiType(type));
+	if (hide_mask) {
+		if (_settings_client.gui.show_adv_tracerestrict_features) {
+			*hide_mask = 0;
+		} else {
+			*hide_mask = is_conditional ? 0x4000 : 0x30;
+		}
+	}
+	return is_conditional ? &set_cond : &set_action;
 }
 
 /**
@@ -1111,6 +1121,7 @@ public:
 				}
 
 				uint32 disabled = _program_insert_or_if_hide_mask;
+				uint32 hidden = 0;
 				TraceRestrictItem item = this->GetSelected();
 				if (GetTraceRestrictType(item) == TRIT_COND_ENDIF ||
 						(IsTraceRestrictConditional(item) && GetTraceRestrictCondFlags(item) != 0)) {
@@ -1131,8 +1142,9 @@ public:
 						if (ElseIfInsertionDryRun(false)) disabled &= ~_program_insert_or_if_hide_mask;
 					}
 				}
+				if (!_settings_client.gui.show_adv_tracerestrict_features) hidden |= _program_slot_hide_mask | _program_wait_pbs_hide_mask;
 
-				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, 0, 0);
+				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, hidden, 0);
 				break;
 			}
 
@@ -1197,7 +1209,9 @@ public:
 				TraceRestrictGuiItemType type = GetItemGuiType(item);
 
 				if (type != TRIT_NULL) {
-					this->ShowDropDownListWithValue(GetTypeDropDownListSet(type), type, false, widget, 0, 0, 0);
+					uint32 hide_mask = 0;
+					const TraceRestrictDropDownListSet *set = GetTypeDropDownListSet(type, &hide_mask);
+					this->ShowDropDownListWithValue(set, type, false, widget, 0, hide_mask, 0);
 				}
 				break;
 			}

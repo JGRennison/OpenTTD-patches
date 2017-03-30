@@ -1293,6 +1293,8 @@ STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Show train weig
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Show train weight ratios in the vehicle details window
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Show restricted electric signals using default graphics: {STRING2}
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Show electric signals with routing restriction programs using the default signal graphics with a blue signal post, instead of using any NewGRF signal graphics. This is to make it easier to visually distinguish restricted signals.
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :Show advanced routing restriction features: {STRING2}
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Show advanced routing restriction features. When disabled, some advanced features are not shown in the UI, but are still available to all players.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :Landscape: {STRING2}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Landscapes define basic gameplay scenarios with different cargos and town growth requirements. NewGRF and Game Scripts allow finer control though

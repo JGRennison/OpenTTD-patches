@@ -1548,6 +1548,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.timetable_arrival_departure"));
 			interface->Add(new SettingEntry("gui.expenses_layout"));
 			interface->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
+			interface->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
