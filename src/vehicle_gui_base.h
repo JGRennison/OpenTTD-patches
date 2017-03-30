@@ -48,6 +48,7 @@ struct BaseVehicleListWindow : public Window {
 	void SortVehicleList();
 	void BuildVehicleList();
 	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group);
+	bool ShouldShowActionDropdownList() const;
 	DropDownList *BuildActionDropdownList(bool show_autoreplace, bool show_group);
 };
 
