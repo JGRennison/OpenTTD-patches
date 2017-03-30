@@ -146,6 +146,12 @@ void SlXvCheckSpecialSavegameVersions()
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 6;
 	}
+	if (_sl_version == 2002) {
+		DEBUG(sl, 1, "Loading a trace restrict patch savegame version %d as version 196", _sl_version);
+		_sl_version = 196;
+		_sl_is_faked_ext = true;
+		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 6;
+	}
 }
 
 /**
