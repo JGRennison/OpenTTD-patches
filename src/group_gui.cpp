@@ -848,6 +848,13 @@ public:
 
 						DoCommandP(0, this->vli.index, 0, CMD_REMOVE_ALL_VEHICLES_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES));
 						break;
+
+					case ADI_TRACERESTRICT_SLOT_MGMT: {
+						extern void ShowTraceRestrictSlotWindow(CompanyID company);
+						ShowTraceRestrictSlotWindow(this->owner);
+						break;
+					}
+
 					default: NOT_REACHED();
 				}
 				break;

@@ -199,6 +199,11 @@ CommandProc CmdSetTimetableStart;
 CommandProc CmdOpenCloseAirport;
 
 CommandProc CmdProgramSignalTraceRestrict;
+CommandProc CmdCreateTraceRestrictSlot;
+CommandProc CmdAlterTraceRestrictSlot;
+CommandProc CmdDeleteTraceRestrictSlot;
+CommandProc CmdAddVehicleTraceRestrictSlot;
+CommandProc CmdRemoveVehicleTraceRestrictSlot;
 
 #define DEF_CMD(proc, flags, type) {proc, #proc, (CommandFlags)flags, type}
 
@@ -358,6 +363,11 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdOpenCloseAirport,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_OPEN_CLOSE_AIRPORT
 
 	DEF_CMD(CmdProgramSignalTraceRestrict,                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_PROGRAM_TRACERESTRICT_SIGNAL
+	DEF_CMD(CmdCreateTraceRestrictSlot,                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_TRACERESTRICT_SLOT
+	DEF_CMD(CmdAlterTraceRestrictSlot,                         0, CMDT_OTHER_MANAGEMENT      ), // CMD_ALTER_TRACERESTRICT_SLOT
+	DEF_CMD(CmdDeleteTraceRestrictSlot,                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_DELETE_TRACERESTRICT_SLOT
+	DEF_CMD(CmdAddVehicleTraceRestrictSlot,                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_VEHICLE_TRACERESTRICT_SLOT
+	DEF_CMD(CmdRemoveVehicleTraceRestrictSlot,                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT
 };
 
 /*!

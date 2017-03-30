@@ -2453,6 +2453,16 @@ STR_TRACE_RESTRICT_DIRECTION_NE                                 :north-east
 STR_TRACE_RESTRICT_DIRECTION_SE                                 :south-east
 STR_TRACE_RESTRICT_DIRECTION_SW                                 :south-west
 STR_TRACE_RESTRICT_DIRECTION_NW                                 :north-west
+STR_TRACE_RESTRICT_SLOT_OP                                      :Slot operation
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Acquire or wait
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
+STR_TRACE_RESTRICT_SLOT_RELEASE                                 :Release
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Acquire slot: {STRING1}{BLACK}{STRING}, or wait at PBS signal
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Try to acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
+STR_TRACE_RESTRICT_SLOT_RELEASE_ITEM                            :Release slot: {STRING1}
+STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
+STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
+STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
@@ -2463,6 +2473,20 @@ STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}Comparis
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}Value
 STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}Condition type
 STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}Go to signal
+STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}Slot operation type
+STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}Slots - click on a slot to list all vehicles of this slot.
+STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Click to create a slot
+STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Delete the selected slot
+STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Rename the selected slot
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Set the maximum occupancy of the selected slot
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Routing Restrictions - Slot Management
+STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Manage slots
+STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
+STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Rename a slot
+STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}Create a slot
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}Set maximum occupancy of a slot
+STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}Delete Slot
+STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}Are you sure you want to delete this slot?
 STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Insert
 STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}Reset
@@ -2499,6 +2523,12 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Can't re
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Can't copy program
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}Can't share program
 STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}Can't unshare program
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}Can't create slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}Can't delete this slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}Can't rename slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}Can't add the vehicle to this slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}Can't remove the vehicle from this slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}Can't set maximum occupancy of this slot...
 
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Select Rail Bridge

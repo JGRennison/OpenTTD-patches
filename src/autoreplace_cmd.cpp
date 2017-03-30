@@ -18,6 +18,7 @@
 #include "autoreplace_func.h"
 #include "autoreplace_gui.h"
 #include "articulated_vehicles.h"
+#include "tracerestrict.h"
 #include "core/random_func.hpp"
 
 #include "table/strings.h"
@@ -567,6 +568,11 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 				/* Success ! */
 				if ((flags & DC_EXEC) != 0 && new_head != old_head) {
 					*chain = new_head;
+					if (HasBit(Train::From(old_head)->flags, VRF_HAVE_SLOT)) {
+						TraceRestrictTransferVehicleOccupantInAllSlots(old_head->index, new_head->index);
+						ClrBit(Train::From(old_head)->flags, VRF_HAVE_SLOT);
+						SetBit(Train::From(new_head)->flags, VRF_HAVE_SLOT);
+					}
 				}
 
 				/* Transfer cargo of old vehicles and sell them */

@@ -50,6 +50,7 @@
 #include "tunnel_map.h"
 #include "depot_map.h"
 #include "gamelog.h"
+#include "tracerestrict.h"
 #include "linkgraph/linkgraph.h"
 #include "linkgraph/refresh.h"
 
@@ -797,6 +798,11 @@ void Vehicle::PreDestructor()
 
 		if (this->owner == _local_company) InvalidateAutoreplaceWindow(this->engine_type, this->group_id);
 		DeleteGroupHighlightOfVehicle(this);
+		if (this->type == VEH_TRAIN) {
+			extern void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v);
+
+			DeleteTraceRestrictSlotHighlightOfVehicle(this);
+		}
 	}
 
 	if (this->type == VEH_AIRCRAFT && this->IsPrimaryVehicle()) {
@@ -815,6 +821,11 @@ void Vehicle::PreDestructor()
 			/* Leave the drive through roadstop, when you have not already left it. */
 			RoadStop::GetByTile(v->tile, GetRoadStopType(v->tile))->Leave(v);
 		}
+	}
+
+	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_HAVE_SLOT)) {
+		TraceRestrictRemoveVehicleFromAllSlots(this->index);
+		ClrBit(Train::From(this)->flags, VRF_HAVE_SLOT);
 	}
 
 	if (this->Previous() == NULL) {
