@@ -2403,6 +2403,7 @@ STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :PBS entry signal
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :entered signal of PBS block
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :train group
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :slot
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :weight
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :power
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :max T.E.
@@ -2426,6 +2427,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} train 
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} at {NUM} x {NUM} then
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} train {STRING} in group: {GROUP} then
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} train {STRING} in group: {STRING} {BLACK}{STRING}then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} train {STRING} in slot: {TRSLOT} then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} train {STRING} in slot: {STRING} {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}

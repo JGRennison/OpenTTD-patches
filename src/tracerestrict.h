@@ -133,6 +133,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_TRAIN_GROUP         = 18,   ///< Test train group membership
 	TRIT_COND_PHYS_PROP           = 19,   ///< Test train physical property
 	TRIT_COND_PHYS_RATIO          = 20,   ///< Test train physical property ratio
+	TRIT_COND_SLOT                = 21,   ///< Test train slot membership
 	//TRIT_COND_TRAIN_OWNER       = 24,   ///< Test train owner: reserved for future use
 	/* space up to 31 */
 };
@@ -548,6 +549,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_TRAIN_GROUP:
 				out.value_type = TRVT_GROUP_INDEX;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_SLOT:
+				out.value_type = TRVT_SLOT_INDEX;
 				out.cond_type = TRCOT_BINARY;
 				break;
 

@@ -327,6 +327,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER_WEIGHT_RATIO,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO,
+		STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -345,6 +346,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_PHYS_PROP | (TRPPCAF_MAX_TE << 16),
 		TRIT_COND_PHYS_RATIO | (TRPPRCAF_POWER_WEIGHT << 16),
 		TRIT_COND_PHYS_RATIO | (TRPPRCAF_MAX_TE_WEIGHT << 16),
+		TRIT_COND_SLOT,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -910,6 +912,19 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_FORCE_WEIGHT_RATIO:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO;
 					DrawInstructionStringConditionalIntegerCommon(item, properties);
+					break;
+
+				case TRVT_SLOT_INDEX:
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					SetDParam(1, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_SLOT_ID) {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR;
+						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+					} else {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT;
+						SetDParam(2, GetTraceRestrictValue(item));
+					}
 					break;
 
 				default:
@@ -2132,9 +2147,11 @@ private:
 							break;
 
 						case TRVT_SLOT_INDEX:
-							middle_sel->SetDisplayedPlane(DPM_SLOT_OP);
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
-							this->EnableWidget(TR_WIDGET_SLOT_OP);
+							if (!IsTraceRestrictConditional(item)) {
+								middle_sel->SetDisplayedPlane(DPM_SLOT_OP);
+								this->EnableWidget(TR_WIDGET_SLOT_OP);
+							}
 
 							const TraceRestrictSlot *slot;
 							FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
