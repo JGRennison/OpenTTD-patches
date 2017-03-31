@@ -227,7 +227,8 @@ enum TraceRestrictPathfinderPenaltyAuxField {
 enum TraceRestrictSlotCondOpField {
 	TRSCOF_ACQUIRE_WAIT           = 0,       ///< acquire a slot, or wait at the current signal
 	TRSCOF_ACQUIRE_TRY            = 1,       ///< try to acquire a slot, or carry on otherwise
-	TRSCOF_RELEASE                = 2,       ///< release a slot
+	TRSCOF_RELEASE_BACK           = 2,       ///< release a slot (back of train)
+	TRSCOF_RELEASE_FRONT          = 3,       ///< release a slot (front of train)
 	/* space up to 8 */
 };
 
@@ -262,7 +263,8 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_LONG_RESERVE           = 1 << 2,  ///< Long reserve action is present
 	TRPAUF_WAIT_AT_PBS            = 1 << 3,  ///< Wait at PBS signal action is present
 	TRPAUF_SLOT_ACQUIRE           = 1 << 4,  ///< Slot acquire action is present
-	TRPAUF_SLOT_RELEASE           = 1 << 5,  ///< Slot release action is present
+	TRPAUF_SLOT_RELEASE_BACK      = 1 << 5,  ///< Slot release (back) action is present
+	TRPAUF_SLOT_RELEASE_FRONT     = 1 << 6,  ///< Slot release (front) action is present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -271,7 +273,8 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
  */
 enum TraceRestrictProgramInputSlotPermissions {
 	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire is permitted
-	TRPISP_RELEASE                = 1 << 1,  ///< Slot release is permitted
+	TRPISP_RELEASE_BACK           = 1 << 1,  ///< Slot release (back) is permitted
+	TRPISP_RELEASE_FRONT          = 1 << 2,  ///< Slot release (front) is permitted
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 

@@ -482,13 +482,15 @@ static const TraceRestrictDropDownListSet _cargo_cond_ops = {
 static const StringID _slot_op_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT,
 	STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE,
-	STR_TRACE_RESTRICT_SLOT_RELEASE,
+	STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT,
+	STR_TRACE_RESTRICT_SLOT_RELEASE_BACK,
 	INVALID_STRING_ID,
 };
 static const uint _slot_op_cond_ops_val[] = {
 	TRSCOF_ACQUIRE_WAIT,
 	TRSCOF_ACQUIRE_TRY,
-	TRSCOF_RELEASE,
+	TRSCOF_RELEASE_FRONT,
+	TRSCOF_RELEASE_BACK,
 };
 /** cargo conditional operators dropdown list set */
 static const TraceRestrictDropDownListSet _slot_op_cond_ops = {
@@ -1006,8 +1008,12 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						instruction_string = STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM;
 						break;
 
-					case TRSCOF_RELEASE:
-						instruction_string = STR_TRACE_RESTRICT_SLOT_RELEASE_ITEM;
+					case TRSCOF_RELEASE_BACK:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM;
+						break;
+
+					case TRSCOF_RELEASE_FRONT:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM;
 						break;
 
 					default:

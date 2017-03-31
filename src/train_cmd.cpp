@@ -3326,12 +3326,12 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 						if (IsPlainRailTile(gp.new_tile) && HasSignals(gp.new_tile) && IsRestrictedSignal(gp.new_tile)) {
 							const Trackdir dir = FindFirstTrackdir(trackdirbits);
-							if (HasSignalOnTrackdir(gp.new_tile, dir)) {
+							if (HasSignalOnTrack(gp.new_tile, TrackdirToTrack(dir))) {
 								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.new_tile, TrackdirToTrack(dir));
-								if (prog && prog->actions_used_flags & TRPAUF_SLOT_ACQUIRE) {
+								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT)) {
 									TraceRestrictProgramResult out;
 									TraceRestrictProgramInput input(gp.new_tile, dir, NULL, NULL);
-									input.permitted_slot_operations = TRPISP_ACQUIRE;
+									input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT;
 									prog->Execute(v, input, out);
 								}
 							}
@@ -3530,10 +3530,10 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					const Track track = TrackdirToTrack(rev_trackdir);
 					if (HasSignalOnTrack(gp.old_tile, track)) {
 						const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.old_tile, track);
-						if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE) {
+						if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
 							TraceRestrictProgramResult out;
 							TraceRestrictProgramInput input(gp.old_tile, ReverseTrackdir(rev_trackdir), NULL, NULL);
-							input.permitted_slot_operations = TRPISP_RELEASE;
+							input.permitted_slot_operations = TRPISP_RELEASE_BACK;
 							prog->Execute(first, input, out);
 						}
 					}
