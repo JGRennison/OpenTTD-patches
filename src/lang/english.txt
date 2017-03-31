@@ -4086,6 +4086,8 @@ STR_PLANS_ADD_LINES                                             :{BLACK}Add line
 STR_PLANS_ADDING_LINES                                          :{BLACK}Adding...
 STR_PLANS_HIDE_ALL                                              :{BLACK}Hide all
 STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}Set the visibility of all the plans and all their lines to false
+STR_PLANS_SHOW_ALL                                              :{BLACK}Show all
+STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}Set the visibility of all the plans and all their lines to true
 STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}Make private
 STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}Make public
 STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}Toggle the visibility of a plan (private is yellow, public is blue). A public plan will be displayed in the plan window of the other companies but only its owner can add lines to it.

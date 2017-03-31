@@ -51,7 +51,10 @@ static const NWidgetPart _nested_plans_widgets[] = {
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_NEW), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_NEW_PLAN, STR_NULL),
 			NWidget(WWT_TEXTBTN_2, COLOUR_GREY, WID_PLN_ADD_LINES), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_ADD_LINES, STR_PLANS_ADDING_LINES),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_VISIBILITY), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_VISIBILITY_PUBLIC, STR_PLANS_VISIBILITY_TOOLTIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_HIDE_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_HIDE_ALL, STR_NULL),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_PLN_HIDE_ALL_SEL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_HIDE_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_HIDE_ALL, STR_PLANS_HIDE_ALL_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_SHOW_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_SHOW_ALL, STR_PLANS_SHOW_ALL_TOOLTIP),
+			EndContainer(),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_DELETE), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_DELETE, STR_PLANS_DELETE_TOOLTIP),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),
@@ -73,6 +76,7 @@ struct PlansWindow : Window {
 	} ListItem;
 
 	Scrollbar *vscroll;
+	NWidgetStacked *hide_all_sel;
 	std::vector<ListItem> list; ///< The translation table linking panel indices to their related PlanID.
 	int selected; ///< What item is currently selected in the panel.
 	uint vis_btn_left; ///< left offset of visibility button
@@ -82,6 +86,8 @@ struct PlansWindow : Window {
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_PLN_SCROLLBAR);
+		this->hide_all_sel = this->GetWidget<NWidgetStacked>(WID_PLN_HIDE_ALL_SEL);
+		this->hide_all_sel->SetDisplayedPlane(0);
 		this->FinishInitNested();
 
 		this->selected = INT_MAX;
@@ -116,6 +122,14 @@ struct PlansWindow : Window {
 				Plan *p;
 				FOR_ALL_PLANS(p) {
 					if (p->IsListable()) p->SetVisibility(false);
+				}
+				this->SetWidgetDirty(WID_PLN_LIST);
+				break;
+			}
+			case WID_PLN_SHOW_ALL: {
+				Plan *p;
+				FOR_ALL_PLANS(p) {
+					if (p->IsListable()) p->SetVisibility(true);
 				}
 				this->SetWidgetDirty(WID_PLN_LIST);
 				break;
@@ -161,9 +175,20 @@ struct PlansWindow : Window {
 		}
 	}
 
+	bool AllPlansHidden() const
+	{
+		Plan *p;
+		FOR_ALL_PLANS(p) {
+			if (p->IsVisible()) return false;
+		}
+		return true;
+	}
+
 	virtual void OnPaint()
 	{
 		this->SetWidgetDisabledState(WID_PLN_HIDE_ALL, this->vscroll->GetCount() == 0);
+		this->SetWidgetDisabledState(WID_PLN_SHOW_ALL, this->vscroll->GetCount() == 0);
+		this->hide_all_sel->SetDisplayedPlane(this->vscroll->GetCount() != 0 && this->AllPlansHidden() ? 1 : 0);
 		if (_current_plan) {
 			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WIDGET_LIST_END);
 			this->GetWidget<NWidgetCore>(WID_PLN_VISIBILITY)->widget_data = _current_plan->visible_by_all ? STR_PLANS_VISIBILITY_PRIVATE : STR_PLANS_VISIBILITY_PUBLIC;
