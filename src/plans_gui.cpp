@@ -73,18 +73,16 @@ struct PlansWindow : Window {
 	} ListItem;
 
 	Scrollbar *vscroll;
-	int text_offset;
 	std::vector<ListItem> list; ///< The translation table linking panel indices to their related PlanID.
 	int selected; ///< What item is currently selected in the panel.
+	uint vis_btn_left; ///< left offset of visibility button
+	Dimension company_icon_spr_dim; ///< dimensions of company icon
 
 	PlansWindow(WindowDesc *desc) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_PLN_SCROLLBAR);
 		this->FinishInitNested();
-
-		Dimension spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
-		this->text_offset = WD_FRAMETEXT_LEFT + spr_dim.width + 2 + SETTING_BUTTON_WIDTH;
 
 		this->selected = INT_MAX;
 		RebuildList();
@@ -131,19 +129,21 @@ struct PlansWindow : Window {
 					_current_plan->SetFocus(false);
 				}
 				if (new_selected != INT_MAX) {
+					const int btn_left = this->vis_btn_left;
+					const int btn_right = btn_left + SETTING_BUTTON_WIDTH;
 					if (this->list[new_selected].is_plan) {
 						_current_plan = Plan::Get(this->list[new_selected].plan_id);
 						_current_plan->SetFocus(true);
-						if (pt.x >= 22 && pt.x < 41) _current_plan->ToggleVisibility();
+						if (pt.x >= btn_left && pt.x < btn_right) _current_plan->ToggleVisibility();
 					} else {
 						_current_plan = Plan::Get(this->list[new_selected].plan_id);
 						PlanLine *pl = _current_plan->lines[this->list[new_selected].line_id];
 						pl->SetFocus(true);
-						if (pt.x >= 22 && pt.x < 41) {
+						if (pt.x >= btn_left && pt.x < btn_right) {
 							if (pl->ToggleVisibility()) _current_plan->SetVisibility(true, false);
 						}
 					}
-					if (click_count > 1 && (pt.x < 22 || pt.x >= 41)) {
+					if (click_count > 1 && (pt.x < btn_left || pt.x >= btn_right)) {
 						_current_plan->show_lines = !_current_plan->show_lines;
 						this->InvalidateData(INVALID_PLAN);
 					}
@@ -184,10 +184,11 @@ struct PlansWindow : Window {
 				}
 
 				bool rtl = _current_text_dir == TD_RTL;
-				uint icon_left  = 4 + (rtl ? r.right - this->text_offset : r.left);
-				uint btn_left   = (rtl ? icon_left - SETTING_BUTTON_WIDTH + 4 : icon_left + SETTING_BUTTON_WIDTH - 4);
-				uint text_left  = r.left + (rtl ? WD_FRAMERECT_LEFT : this->text_offset);
-				uint text_right = r.right - (rtl ? this->text_offset : WD_FRAMERECT_RIGHT);
+				uint icon_left  = (rtl ? r.right - WD_FRAMERECT_RIGHT - this->company_icon_spr_dim.width : WD_FRAMETEXT_LEFT + r.left);
+				uint btn_left   = (rtl ? icon_left - SETTING_BUTTON_WIDTH - 4 : icon_left + this->company_icon_spr_dim.width + 4);
+				uint text_left  = (rtl ? r.left + WD_FRAMERECT_LEFT : btn_left + SETTING_BUTTON_WIDTH + 4);
+				uint text_right = (rtl ? btn_left - 4 : r.right - WD_FRAMERECT_RIGHT);
+				const_cast<PlansWindow*>(this)->vis_btn_left = btn_left;
 
 				for (uint16 i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
 					Plan *p = Plan::Get(list[i].plan_id);
@@ -195,18 +196,18 @@ struct PlansWindow : Window {
 					if (i == this->selected) GfxFillRect(r.left + 1, y, r.right, y + this->resize.step_height, PC_DARK_GREY);
 
 					if (list[i].is_plan) {
-						DrawCompanyIcon(p->owner, icon_left, y + (FONT_HEIGHT_NORMAL - 10) / 2 + 1);
-						DrawBoolButton(btn_left, y + (FONT_HEIGHT_NORMAL - 10) / 2, p->visible, true);
+						DrawCompanyIcon(p->owner, icon_left, y + (this->resize.step_height - this->company_icon_spr_dim.height) / 2);
+						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, p->visible, true);
 						SetDParam(0, list[i].plan_id + 1);
 						SetDParam(1, p->lines.size());
 						SetDParam(2, p->creation_date);
-						DrawString(text_left, text_right, y, STR_PLANS_LIST_ITEM_PLAN, p->visible_by_all ? TC_LIGHT_BLUE : TC_YELLOW);
+						DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, STR_PLANS_LIST_ITEM_PLAN, p->visible_by_all ? TC_LIGHT_BLUE : TC_YELLOW);
 					} else {
 						PlanLine *pl = p->lines[list[i].line_id];
-						DrawBoolButton(btn_left, y + (FONT_HEIGHT_NORMAL - 10) / 2, pl->visible, true);
+						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, pl->visible, true);
 						SetDParam(0, list[i].line_id + 1);
 						SetDParam(1, pl->tiles.size() - 1);
-						DrawString(text_left, text_right, y, STR_PLANS_LIST_ITEM_LINE, TC_WHITE);
+						DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, STR_PLANS_LIST_ITEM_LINE, TC_WHITE);
 					}
 					y += this->resize.step_height;
 				}
@@ -224,7 +225,8 @@ struct PlansWindow : Window {
 	{
 		switch (widget) {
 			case WID_PLN_LIST:
-				resize->height = FONT_HEIGHT_NORMAL;
+				this->company_icon_spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
+				resize->height = max<int>(FONT_HEIGHT_NORMAL, SETTING_BUTTON_HEIGHT);
 				size->height = resize->height * 5 + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 				break;
 		}
