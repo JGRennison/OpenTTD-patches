@@ -613,8 +613,9 @@ static inline StringID IsRampBetweenLimits(TileIndex ramp_start, TileIndex tile,
 {
 	uint min_length = 4;
 	uint max_length = 7;
-	if (Delta(ramp_start, tile) < (uint)abs(delta) * min_length || Delta(ramp_start, tile - delta) > (uint)abs(delta) * max_length) {
-		SetDParam(0, max_length);
+	if (Delta(ramp_start, tile) < (uint)abs(delta) * min_length || (uint)abs(delta) * max_length < Delta(ramp_start, tile)) {
+		/* Add 1 in message to have consistency with cursor count in game. */
+		SetDParam(0, max_length + 1);
 		return STR_ERROR_CHUNNEL_RAMP;
 	}
 
@@ -643,17 +644,11 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 	for (;;) {
 		tile += delta;
 		if (!IsValidTile(tile)) return_cmd_error(STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER);
+		_build_tunnel_endtile = tile;
 		int end_z;
 		Slope end_tileh = GetTileSlope(tile, &end_z);
 
 		if (start_z == end_z) {
-			_build_tunnel_endtile = tile;
-
-			/* Check if end ramp was too short or too long after crossing the sea. */
-			if (crossed_sea) {
-				StringID err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
-				if (err_msg > STR_NULL) return_cmd_error(err_msg);
-			}
 
 			/* Handle chunnels only on sea level and only one time crossing. */
 			if (!crossed_sea &&
@@ -668,9 +663,6 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 				/* Pass the water and find a proper shore tile that potentially
 				 * could have a tunnel portal behind. */
 				for (;;) {
-					if (!IsValidTile(tile)) return_cmd_error(STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER);
-					_build_tunnel_endtile = tile;
-
 					end_tileh = GetTileSlope(tile);
 					if (direction == DIAGDIR_NE && (end_tileh & SLOPE_NE) == SLOPE_NE) break;
 					if (direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
@@ -685,15 +677,25 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 
 					if (IsTileType(tile, MP_WATER) && IsSea(tile)) crossed_sea = true;
 					if (!_cheats.crossing_tunnels.value && IsTunnelInWay(tile, start_z)) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
+
 					tile += delta;
+					if (!IsValidTile(tile)) return_cmd_error(STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER);
+					_build_tunnel_endtile = tile;
 					sea_tiles++;
 				}
 				if (!crossed_sea) return_cmd_error(STR_ERROR_CHUNNEL_ONLY_OVER_SEA);
 				ramp_start = tile;
 			} else {
+				/* Check if end ramp was too short or too long after crossing the sea. */
+				if (crossed_sea) {
+					StringID err_msg = IsRampBetweenLimits(ramp_start, tile, delta);
+					if (err_msg > STR_NULL) return_cmd_error(err_msg);
+				}
+
 				break;
 			}
 		}
+		if (!_cheats.crossing_tunnels.value && IsTunnelInWay(tile, start_z)) return_cmd_error(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
 	}
 	is_chunnel = crossed_sea;
 
