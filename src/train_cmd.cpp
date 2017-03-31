@@ -4833,6 +4833,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID 
 	v->railtype = rvi->railtype;
 	_new_vehicle_id = v->index;
 
+	v->build_year = _cur_year;
 	v->sprite_seq.Set(SPR_IMG_QUERY);
 	v->random_bits = VehicleRandomBits();
 
