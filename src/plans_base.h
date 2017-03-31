@@ -131,6 +131,26 @@ struct PlanLine {
 			this->tiles.push_back(FROM_LE32(*data));
 		}
 	}
+
+	void AddLineToCalculateCentreTile(uint64 &x, uint64 &y, uint32 &count) const
+	{
+		for (size_t i = 0; i < this->tiles.size(); i++) {
+			TileIndex t = this->tiles[i];
+			x += TileX(t);
+			y += TileY(t);
+			count++;
+		}
+	}
+
+	TileIndex CalculateCentreTile() const
+	{
+		uint64 x = 0;
+		uint64 y = 0;
+		uint32 count = 0;
+		this->AddLineToCalculateCentreTile(x, y, count);
+		if (count == 0) return INVALID_TILE;
+		return TileXY(x / count, y / count);
+	}
 };
 
 struct Plan : PlanPool::PoolItem<&_plan_pool> {
@@ -228,6 +248,18 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	{
 		if (_current_plan->owner == _local_company) DoCommandP(0, _current_plan->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
 		return this->visible_by_all;
+	}
+
+	TileIndex CalculateCentreTile() const
+	{
+		uint64 x = 0;
+		uint64 y = 0;
+		uint32 count = 0;
+		for (PlanLineVector::const_iterator it = lines.begin(); it != lines.end(); it++) {
+			(*it)->AddLineToCalculateCentreTile(x, y, count);
+		}
+		if (count == 0) return INVALID_TILE;
+		return TileXY(x / count, y / count);
 	}
 };
 

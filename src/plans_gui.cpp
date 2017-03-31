@@ -139,6 +139,18 @@ struct PlansWindow : Window {
 				break;
 			case WID_PLN_LIST: {
 				int new_selected = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_PLN_LIST, WD_FRAMERECT_TOP);
+				if (_ctrl_pressed) {
+					if (new_selected != INT_MAX) {
+						TileIndex t;
+						if (this->list[new_selected].is_plan) {
+							t = Plan::Get(this->list[new_selected].plan_id)->CalculateCentreTile();
+						} else {
+							t = Plan::Get(this->list[new_selected].plan_id)->lines[this->list[new_selected].line_id]->CalculateCentreTile();
+						}
+						if (t != INVALID_TILE) ScrollMainWindowToTile(t);
+					}
+					return;
+				}
 				if (this->selected != INT_MAX) {
 					_current_plan->SetFocus(false);
 				}
