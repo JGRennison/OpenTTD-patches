@@ -3267,6 +3267,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 	}
 	bool ok = TryPathReserve(t);
 	t->tile = veh_orig;
+	if (ok && IsTunnelBridgePBS(tile)) SetTunnelBridgeSignalState(tile, SIGNAL_STATE_GREEN);
 	return ok;
 }
 
