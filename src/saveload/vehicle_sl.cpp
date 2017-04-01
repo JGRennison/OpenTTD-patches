@@ -375,7 +375,7 @@ void AfterLoadVehicles(bool part_of_load)
 	FOR_ALL_VEHICLES(v) {
 		assert(v->first != NULL);
 
-	  v->trip_occupancy = CalcPercentVehicleFilled(v, NULL);
+		v->trip_occupancy = CalcPercentVehicleFilled(v, NULL);
 
 		switch (v->type) {
 			case VEH_TRAIN: {

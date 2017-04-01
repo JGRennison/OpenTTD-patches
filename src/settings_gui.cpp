@@ -36,6 +36,8 @@
 #include "textfile_gui.h"
 #include "stringfilter_type.h"
 #include "querystring_gui.h"
+#include "signs_func.h"
+#include "station_func.h"
 
 #include <vector>
 
@@ -534,6 +536,9 @@ struct GameOptionsWindow : Window {
 				UpdateCursorSize();
 				UpdateFontHeightCache();
 				LoadStringWidthTable();
+				UpdateAllSignVirtCoords();
+				UpdateAllTownVirtCoords();
+				UpdateAllStationVirtCoords();
 				break;
 
 			case WID_GO_BASE_GRF_DROPDOWN:
