@@ -7,7 +7,7 @@
 ##digitsepcur ,
 ##decimalsep .
 ##winlangid 0x0449
-##grflangid 0x0A
+##grflangid 0x0a
 
 
 # $Id$
@@ -893,10 +893,6 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :தென் �
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :புதிதாக...
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}சாலை வாகனங்கள்
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}வாகனங்கள் சாலையின் எந்தப்பக்கத்தில் செல்ல வேண்டும்
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :இடப்பக்கம் ஒட்டு
@@ -1204,9 +1200,11 @@ STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :நகரத்
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :நகரத்தின் மக்கள்தொகையினை வரைபடத்தில் காட்டவும்
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :வரைபடத்தில் கோடுகளின் எண்ணிக்கை: {STRING}
 
+STR_CONFIG_SETTING_LANDSCAPE                                    : நிலவெளி: {STRING}
 STR_CONFIG_SETTING_LAND_GENERATOR                               :நில உருவாக்கி: {STRING}
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :உண்மையான
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
+STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :தொழிற்சாலை அடர்த்தி: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :வரைபட எல்லையிலிருந்து எண்ணெய் சுத்திகரிப்பு நிலையங்கள் இருக்கக்கூடிய தூரம்: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :எண்ணெய் சுத்திகரிப்பு நிலையங்கள் வரைபடத்தின் எல்லைகளில் மட்டுமே கட்ட இயலும், அதாவது தீவு வரைபடங்களில் கடற்கரைகளில் கட்ட இயலும்
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :பனி-கோடின் உயரம்: {STRING}
@@ -1219,6 +1217,7 @@ STR_CONFIG_SETTING_TREE_PLACER                                  :மரங்க
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :ஒன்றுமில்லை
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :உண்மையான
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :சீரமைக்கப்பட்ட
+STR_CONFIG_SETTING_ROAD_SIDE                                    :சாலை வாகனங்கள்: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :உயர்பட சுழற்ச்சி: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :வலமிருந்து இடமாக செல்
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :இடமிலிருந்து வலஞ்செல்
@@ -1254,6 +1253,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Click
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :அணை
 
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :தானியங்கிபதிவு: {STRING}
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :{STRING} தேதி வகையினை பதிவுஆட்டங்கள் பெயர்களுக்கு பயன்படுத்தவும்
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :பதிவு ஆட்டங்கள் கோப்புப் பெயர்களில் உள்ள தேதி வகையினை அமை
@@ -1310,6 +1310,7 @@ STR_CONFIG_SETTING_AI_BUILDS_AIRCRAFT_HELPTEXT                  :கணினி
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS                              :கணினியிற்கு கப்பல்களை அனுமதிக்காதே: {STRING}
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS_HELPTEXT                     :கணினியால் கப்பல்களை பயன்படுத்த இயலாது
 
+STR_CONFIG_SETTING_AI_PROFILE                                   :முதன்மை அமைப்புகள் profile: {STRING}
 STR_CONFIG_SETTING_AI_PROFILE_EASY                              :எளிதான
 STR_CONFIG_SETTING_AI_PROFILE_MEDIUM                            :நடுத்தரமான
 STR_CONFIG_SETTING_AI_PROFILE_HARD                              :கடுமையான
@@ -1418,6 +1419,7 @@ STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :ஒன்று
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :தொடக்க நகர அளவு பெருக்கம்: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :ஆட்டத்தின் தொடக்கத்தில் மாநகரங்களின் அளவு நகரங்களை ஒப்பிடுகையில்
 
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :கைமுறை
 STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :பயணிகள் பரிமாற்றம் வகை: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :அஞ்சல் பரிமாற்றம் வகை: {STRING}
 
@@ -1450,11 +1452,17 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :இம்பீ
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :மெட்ரிக் (மீ)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (மீ)
 
+STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}அசைவூட்டம்
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}ஒலிகள்
 STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Interface
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}கட்டுமானம்
+STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}நிறுவனம்
+STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}கணக்கியல்
 STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}வாகனங்கள்
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}வழி மாற்றல்
+STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}எல்லைகள்
+STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}பேரழிவுகள் / விபத்துகள்
+STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}சுற்றுச்சூழல்
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}நகரங்கள்
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}தொழிற்சாலைகள்
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}சரக்கு பரிமாற்றம்
@@ -2150,6 +2158,7 @@ STR_AIRPORT_CITY                                                :மாநகர
 STR_AIRPORT_METRO                                               :மாநகர
 STR_AIRPORT_INTERNATIONAL                                       :சர்வதேச
 STR_AIRPORT_COMMUTER                                            :பயணிகள்
+STR_AIRPORT_INTERCONTINENTAL                                    :கண்டமிடை
 STR_AIRPORT_HELIPORT                                            :ஹெலிபோர்ட்
 STR_AIRPORT_HELIDEPOT                                           :வானூர்தி பணிமனை
 STR_AIRPORT_HELISTATION                                         :வானூர்தி நிலையம்
@@ -2283,29 +2292,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :வயல்வ
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :பனி-படர்ந்த நிலம்
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :பாலைவனம்
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} தடம்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} தடம் கட்ட சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} தடம் முன் சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} தடம் வெளியேறு சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} தடம் இணைந்த சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} தடம் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} தடம் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} தடம் கட்டம் மற்றும் முன் சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} தடம் கட்டம் மற்றும் வெளியேறு சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} தடம் கட்டம் மற்றும் இணைந்த சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} தடம் கட்டம் மற்றும் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} தடம் கட்டம் மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} தடம் முன் மற்றும் வெளியேறு சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} தடம் முன் மற்றும் இணைந்த சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} தடம் முன் மற்றும் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} தடம் முன் மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} தடம் வெளியேறு மற்றும் இணைந்த சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} தடம் வெளியேறு மற்றும் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} தடம் வெளியேறு மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} தடம் இணைந்த மற்றும் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} தடம் இணைந்த மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} தடம் பாதை மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} இரயில் பணிமனை
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :இரயில்வே தடம்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :இரயில்வே தடம் கட்ட சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :இரயில்வே தடம் முன் சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :இரயில்வே தடம் வெளியேறு சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :இரயில்வே தடம் இணைந்த சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :இரயில்வே தடம் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :இரயில்வே தடம் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :இரயில்வே தடம் கட்டம் மற்றும் முன் சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :இரயில்வே தடம் கட்டம் மற்றும் வெளியேறு சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :இரயில்வே தடம் கட்டம் மற்றும் இணைந்த சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :இரயில்வே தடம் கட்டம் மற்றும் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :இரயில்வே தடம் கட்டம் மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :இரயில்வே தடம் முன் மற்றும் வெளியேறு சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :இரயில்வே தடம் முன் மற்றும் இணைந்த சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :இரயில்வே தடம் முன் மற்றும் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :இரயில்வே தடம் முன் மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :இரயில்வே தடம் வெளியேறு மற்றும் இணைந்த சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :இரயில்வே தடம் வெளியேறு மற்றும் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :இரயில்வே தடம் வெளியேறு மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :இரயில்வே தடம் இணைந்த மற்றும் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :இரயில்வே தடம் இணைந்த மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :இரயில்வே தடம் பாதை மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :இரயில்வே இரயில் பணிமனை
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :சாலை
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :தெரு விளக்குகளுடன் சாலை
@@ -2369,7 +2378,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :நிறுவ
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD-ஐ பற்றி
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}அசல் உரிமைகள் {COPYRIGHT} 1995 கிறிஸ் சாயர், எல்லா உரிமைகளும் பதிவுசெய்யப்பட்டது
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD பதிப்பு {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD குழுமம்
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 OpenTTD குழுமம்
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ஆட்டத்தை பதிவு செய்
@@ -2542,7 +2551,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}எச்சரிக்கை: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}பிழை: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}மரணம்: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}மரணமான NewGRF பிழை ஏற்பட்டுள்ளது: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}மரணமான NewGRF பிழை ஏற்பட்டுள்ளது:{}{STRING}
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} ஆனது {STRING} TTD பதிப்பிற்காகவே
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} ஆனது {STRING} உடன் இணைந்து பயன்படுத்த வடிவமைக்கப்பட்டுள்ளது
 STR_NEWGRF_ERROR_INVALID_PARAMETER                              :செல்லாத குணாதிசயம் {1:STRING} இன்: குணாதிசயம் {STRING} ({NUM})
@@ -2678,7 +2687,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :தகவல்
 STR_GOAL_QUESTION_CAPTION_WARNING                               :எச்சரிக்கை
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :பிழை
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :இரத்து செய்
 STR_GOAL_QUESTION_BUTTON_OK                                     :சரி
 STR_GOAL_QUESTION_BUTTON_NO                                     :இல்லை
@@ -2697,6 +2706,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :மீண்ட
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :தள்ளிவை
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :சரணடை
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :மூடு
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}மானியங்கள்
@@ -2902,9 +2912,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}தே�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}தேவைப்படுகிறது: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}பதனிப்பட காத்திருக்கும் சரக்கு:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}தயாரிப்பு: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}தயாரிக்கிறது: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3109,10 +3118,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :மேக்ல
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}செலவு: {CURRENCY_LONG} எடை: {WEIGHT_SHORT}{}வேகம்: {VELOCITY}  திறன்: {POWER}{}ஓட்டுவதற்கான செலவு: {CURRENCY_LONG}/வரு{}கொள்ளளவு: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}செலவு: {CURRENCY_LONG} எடை: {WEIGHT_SHORT}{}வேகம்: {VELOCITY} திறன்: {POWER}  அதி. T.E.: {6:FORCE}{}ஓட்டுவதற்கான செலவு: {4:CURRENCY_LONG}/வரு{}கொள்ளளவு: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY}{}கொள்ளளவு: {CARGO_LONG}, {CARGO_LONG}{}ஓட்டும் செலவு: {CURRENCY_LONG}/ஆண்டிற்கு
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY}{}கொள்ளளவு: {CARGO_LONG}{}ஓட்டும் செலவு: {CURRENCY_LONG}/ஆண்டிற்கு
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY} எல்லை: {COMMA} கட்டங்கள்{}கொள்ளளவு: {CARGO_LONG}, {CARGO_LONG}{}ஓட்டும் செலவு: {CURRENCY_LONG}/ஆண்டிற்கு
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY} வரையறை: {COMMA} கட்டங்கள்{}கொள்ளளவு: {CARGO_LONG}{}இயக்குவதற்கான செலவு: {CURRENCY_LONG}/வரு
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY}{}கொள்ளளவு: {CARGO_LONG}{}ஓட்டும் செலவு: {CURRENCY_LONG}/ஆண்டிற்கு
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}மாற்று {STRING} - {STRING}
@@ -3132,7 +3138,6 @@ STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}எந�
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} காலாவதியான பிறகு
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}வாகனங்களை மாற்றுவதை நிறுத்தவும்
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}மாற்றல்: {ORANGE}{STRING}
 STR_REPLACE_ENGINES                                             :பொறிகள்
 STR_REPLACE_WAGONS                                              :வாகனங்கள்
 
@@ -3220,7 +3225,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} வர�
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} வருடம்{P "" கள்} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}அதி. வேகம்: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}அதி. வேகம்: {LTBLUE}{VELOCITY} {BLACK}வரையறை: {LTBLUE}{COMMA} கட்டங்கள்
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}எடை: {LTBLUE}{WEIGHT_SHORT} {BLACK}திறன்: {LTBLUE}{POWER}{BLACK} அதி. வேகம்: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}எடை: {LTBLUE}{WEIGHT_SHORT} {BLACK}திறன்: {LTBLUE}{POWER}{BLACK} அதி. வேகம்: {LTBLUE}{VELOCITY} {BLACK}அதி. T.E.: {LTBLUE}{FORCE}
 

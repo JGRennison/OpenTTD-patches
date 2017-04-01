@@ -23,6 +23,7 @@
 #include "newgrf_debug.h"
 
 #include "table/palettes.h"
+#include "table/string_colours.h"
 #include "table/sprites.h"
 #include "table/control_codes.h"
 
@@ -175,40 +176,35 @@ static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int 
 
 	assert(width > 0);
 
-	if (y2 == y) {
-		/* Special case: horizontal line. */
-		blitter->DrawLine(video,
-				Clamp(x, 0, screen_width), y,
-				Clamp(x2, 0, screen_width), y2,
-				screen_width, screen_height, colour, width, dash);
-		return;
-	}
-	if (x2 == x) {
-		/* Special case: vertical line. */
-		blitter->DrawLine(video,
-				x, Clamp(y, 0, screen_height),
-				x2, Clamp(y2, 0, screen_height),
-				screen_width, screen_height, colour, width, dash);
+	if (y2 == y || x2 == x) {
+		/* Special case: horizontal/vertical line. All checks already done in GfxPreprocessLine. */
+		blitter->DrawLine(video, x, y, x2, y2, screen_width, screen_height, colour, width, dash);
 		return;
 	}
 
 	int grade_y = y2 - y;
 	int grade_x = x2 - x;
 
+	/* Clipping rectangle. Slightly extended so we can ignore the width of the line. */
+	int extra = (int)CeilDiv(3 * width, 4); // not less then "width * sqrt(2) / 2"
+	Rect clip = { -extra, -extra, screen_width - 1 + extra, screen_height - 1 + extra };
+
 	/* prevent integer overflows. */
 	int margin = 1;
-	while (INT_MAX / abs(grade_y) < max(abs(x), abs(screen_width - x))) {
+	while (INT_MAX / abs(grade_y) < max(abs(clip.left - x), abs(clip.right - x))) {
 		grade_y /= 2;
 		grade_x /= 2;
 		margin  *= 2; // account for rounding errors
 	}
 
-	/* If the line is outside the screen on the same side at X positions 0
-	 * and screen_width, we don't need to draw anything. */
-	int offset_0 = y - x * grade_y / grade_x;
-	int offset_width = y + (screen_width - x) * grade_y / grade_x;
-	if ((offset_0 > screen_height + width / 2 + margin && offset_width > screen_height + width / 2 + margin) ||
-			(offset_0 < -width / 2 - margin && offset_width < -width / 2 - margin)) {
+	/* Imagine that the line is infinitely long and it intersects with
+	 * infinitely long left and right edges of the clipping rectangle.
+	 * If both intersection points are outside the clipping rectangle
+	 * and both on the same side of it, we don't need to draw anything. */
+	int left_isec_y = y + (clip.left - x) * grade_y / grade_x;
+	int right_isec_y = y + (clip.right - x) * grade_y / grade_x;
+	if ((left_isec_y > clip.bottom + margin && right_isec_y > clip.bottom + margin) ||
+			(left_isec_y < clip.top - margin && right_isec_y < clip.top - margin)) {
 		return;
 	}
 
@@ -590,7 +586,7 @@ int GetStringLineCount(StringID str, int maxw)
  */
 Dimension GetStringMultiLineBoundingBox(StringID str, const Dimension &suggestion)
 {
-	Dimension box = {suggestion.width, GetStringHeight(str, suggestion.width)};
+	Dimension box = {suggestion.width, (uint)GetStringHeight(str, suggestion.width)};
 	return box;
 }
 
@@ -602,7 +598,7 @@ Dimension GetStringMultiLineBoundingBox(StringID str, const Dimension &suggestio
  */
 Dimension GetStringMultiLineBoundingBox(const char *str, const Dimension &suggestion)
 {
-	Dimension box = {suggestion.width, GetStringHeight(str, suggestion.width)};
+	Dimension box = {suggestion.width, (uint)GetStringHeight(str, suggestion.width)};
 	return box;
 }
 
@@ -1227,10 +1223,6 @@ void DrawMouseCursor()
 	if (_screen.dst_ptr == NULL) return;
 
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-	int x;
-	int y;
-	int w;
-	int h;
 
 	/* Redraw mouse cursor but only when it's inside the window */
 	if (!_cursor.in_window) return;
@@ -1241,36 +1233,44 @@ void DrawMouseCursor()
 		UndrawMouseCursor();
 	}
 
-	w = _cursor.size.x;
-	x = _cursor.pos.x + _cursor.offs.x + _cursor.short_vehicle_offset;
-	if (x < 0) {
-		w += x;
-		x = 0;
+	/* Determine visible area */
+	int left = _cursor.pos.x + _cursor.total_offs.x;
+	int width = _cursor.total_size.x;
+	if (left < 0) {
+		width += left;
+		left = 0;
 	}
-	if (w > _screen.width - x) w = _screen.width - x;
-	if (w <= 0) return;
-	_cursor.draw_pos.x = x;
-	_cursor.draw_size.x = w;
-
-	h = _cursor.size.y;
-	y = _cursor.pos.y + _cursor.offs.y;
-	if (y < 0) {
-		h += y;
-		y = 0;
+	if (left + width > _screen.width) {
+		width = _screen.width - left;
 	}
-	if (h > _screen.height - y) h = _screen.height - y;
-	if (h <= 0) return;
-	_cursor.draw_pos.y = y;
-	_cursor.draw_size.y = h;
+	if (width <= 0) return;
 
-	uint8 *buffer = _cursor_backup.Allocate(blitter->BufferSize(w, h));
+	int top = _cursor.pos.y + _cursor.total_offs.y;
+	int height = _cursor.total_size.y;
+	if (top < 0) {
+		height += top;
+		top = 0;
+	}
+	if (top + height > _screen.height) {
+		height = _screen.height - top;
+	}
+	if (height <= 0) return;
+
+	_cursor.draw_pos.x = left;
+	_cursor.draw_pos.y = top;
+	_cursor.draw_size.x = width;
+	_cursor.draw_size.y = height;
+
+	uint8 *buffer = _cursor_backup.Allocate(blitter->BufferSize(_cursor.draw_size.x, _cursor.draw_size.y));
 
 	/* Make backup of stuff below cursor */
 	blitter->CopyToBuffer(blitter->MoveTo(_screen.dst_ptr, _cursor.draw_pos.x, _cursor.draw_pos.y), buffer, _cursor.draw_size.x, _cursor.draw_size.y);
 
 	/* Draw cursor on screen */
 	_cur_dpi = &_screen;
-	DrawSprite(_cursor.sprite, _cursor.pal, _cursor.pos.x + _cursor.short_vehicle_offset, _cursor.pos.y);
+	for (uint i = 0; i < _cursor.sprite_count; ++i) {
+		DrawSprite(_cursor.sprite_seq[i].sprite, _cursor.sprite_seq[i].pal, _cursor.pos.x + _cursor.sprite_pos[i].x, _cursor.pos.y + _cursor.sprite_pos[i].y);
+	}
 
 	VideoDriver::GetInstance()->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
 
@@ -1529,15 +1529,33 @@ bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int heigh
  */
 void UpdateCursorSize()
 {
-	CursorVars *cv = &_cursor;
-	const Sprite *p = GetSprite(GB(cv->sprite, 0, SPRITE_WIDTH), ST_NORMAL);
+	/* Ignore setting any cursor before the sprites are loaded. */
+	if (GetMaxSpriteID() == 0) return;
 
-	cv->size.y = UnScaleGUI(p->height);
-	cv->size.x = UnScaleGUI(p->width);
-	cv->offs.x = UnScaleGUI(p->x_offs);
-	cv->offs.y = UnScaleGUI(p->y_offs);
+	assert_compile(lengthof(_cursor.sprite_seq) == lengthof(_cursor.sprite_pos));
+	assert(_cursor.sprite_count <= lengthof(_cursor.sprite_seq));
+	for (uint i = 0; i < _cursor.sprite_count; ++i) {
+		const Sprite *p = GetSprite(GB(_cursor.sprite_seq[i].sprite, 0, SPRITE_WIDTH), ST_NORMAL);
+		Point offs, size;
+		offs.x = UnScaleGUI(p->x_offs) + _cursor.sprite_pos[i].x;
+		offs.y = UnScaleGUI(p->y_offs) + _cursor.sprite_pos[i].y;
+		size.x = UnScaleGUI(p->width);
+		size.y = UnScaleGUI(p->height);
 
-	cv->dirty = true;
+		if (i == 0) {
+			_cursor.total_offs = offs;
+			_cursor.total_size = size;
+		} else {
+			int right  = max(_cursor.total_offs.x + _cursor.total_size.x, offs.x + size.x);
+			int bottom = max(_cursor.total_offs.y + _cursor.total_size.y, offs.y + size.y);
+			if (offs.x < _cursor.total_offs.x) _cursor.total_offs.x = offs.x;
+			if (offs.y < _cursor.total_offs.y) _cursor.total_offs.y = offs.y;
+			_cursor.total_size.x = right  - _cursor.total_offs.x;
+			_cursor.total_size.y = bottom - _cursor.total_offs.y;
+		}
+	}
+
+	_cursor.dirty = true;
 }
 
 /**
@@ -1547,14 +1565,15 @@ void UpdateCursorSize()
  */
 static void SetCursorSprite(CursorID cursor, PaletteID pal)
 {
-	CursorVars *cv = &_cursor;
-	if (cv->sprite == cursor) return;
+	if (_cursor.sprite_count == 1 && _cursor.sprite_seq[0].sprite == cursor && _cursor.sprite_seq[0].pal == pal) return;
 
-	cv->sprite = cursor;
-	cv->pal    = pal;
+	_cursor.sprite_count = 1;
+	_cursor.sprite_seq[0].sprite = cursor;
+	_cursor.sprite_seq[0].pal = pal;
+	_cursor.sprite_pos[0].x = 0;
+	_cursor.sprite_pos[0].y = 0;
+
 	UpdateCursorSize();
-
-	cv->short_vehicle_offset = 0;
 }
 
 static void SwitchAnimatedCursor()
@@ -1563,7 +1582,7 @@ static void SwitchAnimatedCursor()
 
 	if (cur == NULL || cur->sprite == AnimCursor::LAST) cur = _cursor.animate_list;
 
-	SetCursorSprite(cur->sprite, _cursor.pal);
+	SetCursorSprite(cur->sprite, _cursor.sprite_seq[0].pal);
 
 	_cursor.animate_timeout = cur->display_time;
 	_cursor.animate_cur     = cur + 1;
@@ -1573,6 +1592,19 @@ void CursorTick()
 {
 	if (_cursor.animate_timeout != 0 && --_cursor.animate_timeout == 0) {
 		SwitchAnimatedCursor();
+	}
+}
+
+/**
+ * Set or unset the ZZZ cursor.
+ * @param busy Whether to show the ZZZ cursor.
+ */
+void SetMouseCursorBusy(bool busy)
+{
+	if (busy) {
+		if (_cursor.sprite_seq[0].sprite == SPR_CURSOR_MOUSE) SetMouseCursor(SPR_CURSOR_ZZZ, PAL_NONE);
+	} else {
+		if (_cursor.sprite_seq[0].sprite == SPR_CURSOR_ZZZ) SetMouseCursor(SPR_CURSOR_MOUSE, PAL_NONE);
 	}
 }
 
@@ -1599,7 +1631,7 @@ void SetAnimatedMouseCursor(const AnimCursor *table)
 {
 	_cursor.animate_list = table;
 	_cursor.animate_cur = NULL;
-	_cursor.pal = PAL_NONE;
+	_cursor.sprite_seq[0].pal = PAL_NONE;
 	SwitchAnimatedCursor();
 }
 

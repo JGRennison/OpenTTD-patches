@@ -29,6 +29,7 @@ set_default() {
 	strip=""
 	lipo=""
 	awk="awk"
+	pkg_config="pkg-config"
 	os="DETECT"
 	endian="AUTO"
 	cpu_type="DETECT"
@@ -84,7 +85,8 @@ set_default() {
 	with_libtimidity="1"
 	with_freetype="1"
 	with_fontconfig="1"
-	with_icu="1"
+	with_icu_layout="1"
+	with_icu_sort="1"
 	static_icu="0"
 	with_psp_config="1"
 	with_threads="1"
@@ -105,6 +107,7 @@ set_default() {
 		strip
 		lipo
 		awk
+		pkg_config
 		os
 		endian
 		cpu_type
@@ -159,7 +162,8 @@ set_default() {
 		with_libtimidity
 		with_freetype
 		with_fontconfig
-		with_icu
+		with_icu_layout
+		with_icu_sort
 		static_icu
 		with_psp_config
 		with_threads
@@ -213,6 +217,8 @@ detect_params() {
 			--windres=*)                  windres="$optarg";;
 			--awk)                        prev_p="awk";;
 			--awk=*)                      awk="$optarg";;
+			--pkg-config)                 prev_p="pkg_config";;
+			--pkg-config=*)               pkg_config="$optarg";;
 			--strip)                      prev_p="strip";;
 			--strip=*)                    strip="$optarg";;
 			--lipo)                       prev_p="lipo";;
@@ -383,12 +389,18 @@ detect_params() {
 			--without-libfontconfig)      with_fontconfig="0";;
 			--with-libfontconfig=*)       with_fontconfig="$optarg";;
 
-			--with-icu)                   with_icu="2";;
-			--without-icu)                with_icu="0";;
-			--with-icu=*)                 with_icu="$optarg";;
-			--with-libicu)                with_icu="2";;
-			--without-libicu)             with_icu="0";;
-			--with-libicu=*)              with_icu="$optarg";;
+			--with-icu)                   with_icu_layout="2";with_icu_sort="2";;
+			--without-icu)                with_icu_layout="0";with_icu_sort="0";;
+			--with-icu=*)                 with_icu_layout="$optarg";with_icu_sort="$optarg";;
+			--with-libicu)                with_icu_layout="2";with_icu_sort="2";;
+			--without-libicu)             with_icu_layout="0";with_icu_sort="0";;
+			--with-libicu=*)              with_icu_layout="$optarg";with_icu_sort="$optarg";;
+			--with-icu-layout)            with_icu_layout="2";;
+			--without-icu-layout)         with_icu_layout="0";;
+			--with-icu-layout=*)          with_icu_layout="$optarg";;
+			--with-icu-sort)              with_icu_sort="2";;
+			--without-icu-sort)           with_icu_sort="0";;
+			--with-icu-sort=*)            with_icu_sort="$optarg";;
 			--static-icu)                 static_icu="1";;
 			--static-icu=*)               static_icu="$optarg";;
 			--static-libicu)              static_icu="1";;
@@ -526,10 +538,10 @@ check_params() {
 		log 1 " PREPROCESSOR is only available for OSX"
 		exit 1
 	fi
-	# OS only allows DETECT, UNIX, OSX, FREEBSD, OPENBSD, MORPHOS, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
-	if [ -z "`echo $os | egrep '^(DETECT|UNIX|OSX|FREEBSD|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP)$'`" ]; then
+	# OS only allows DETECT, UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, MORPHOS, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
+	if [ -z "`echo $os | egrep '^(DETECT|UNIX|OSX|FREEBSD|DRAGONFLY|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP)$'`" ]; then
 		log 1 "configure: error: invalid option --os=$os"
-		log 1 " Available options are: --os=[DETECT|UNIX|OSX|FREEBSD|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP]"
+		log 1 " Available options are: --os=[DETECT|UNIX|OSX|FREEBSD|DRAGONFLY|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS|WINCE|PSP]"
 		exit 1
 	fi
 	# cpu_type can be either 32 or 64
@@ -787,7 +799,7 @@ check_params() {
 	pre_detect_with_zlib=$with_zlib
 	detect_zlib
 
-	if [ "$with_zlib" = "0" ] || [ -z "$zlib" ]; then
+	if [ "$with_zlib" = "0" ] || [ -z "$zlib-config" ]; then
 		log 1 "WARNING: zlib was not detected or disabled"
 		log 1 "WARNING: OpenTTD doesn't require zlib, but it does mean that many features"
 		log 1 "WARNING: (like loading most old savegames/scenarios, loading heightmaps,"
@@ -838,7 +850,8 @@ check_params() {
 	detect_png
 	detect_freetype
 	detect_fontconfig
-	detect_icu
+	detect_icu_layout
+	detect_icu_sort
 	detect_pspconfig
 	detect_libtimidity
 
@@ -1054,7 +1067,7 @@ check_params() {
 	fi
 
 	if [ "$doc_dir" = "1" ]; then
-		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
 			doc_dir="share/doc/openttd"
 		else
 			doc_dir="$data_dir/docs"
@@ -1064,7 +1077,7 @@ check_params() {
 	fi
 
 	if [ "$icon_theme_dir" = "1" ]; then
-		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
 			icon_theme_dir="share/icons/hicolor"
 		else
 			icon_theme_dir=""
@@ -1098,7 +1111,7 @@ check_params() {
 
 	if [ "$man_dir" = "1" ]; then
 		# add manpage on UNIX systems
-		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OSX" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OSX" ]; then
 			man_dir="share/man/man6"
 		else
 			man_dir=""
@@ -1109,7 +1122,7 @@ check_params() {
 
 	if [ "$menu_dir" = "1" ]; then
 		# add a freedesktop menu item only for some UNIX systems
-		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
+		if [ "$os" = "UNIX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ]; then
 			menu_dir="share/applications"
 		else
 			menu_dir=""
@@ -1272,7 +1285,7 @@ make_compiler_cflags() {
 
 		# -W alone doesn't enable all warnings enabled by -Wall; on the other hand,
 		# -Weverything enables too many useless warnings that can't be disabled (as of 3.0)
-		flags="$flags -Wall -W"
+		flags="$flags -Wall -W -Wextra"
 
 		# warning: unused parameter '...'
 		flags="$flags -Wno-unused-parameter"
@@ -1313,13 +1326,20 @@ make_compiler_cflags() {
 			flags="$flags -Wno-unused-variable"
 		fi
 
+		if [ "$cc_version" -ge "33" ]; then
+			# clang completed C++11 support in version 3.3
+			flags="$flags -std=c++11"
+		fi
+
 		# rdynamic is used to get useful stack traces from crash reports.
 		ldflags="$ldflags -rdynamic"
 	else
 		# Enable some things only for certain GCC versions
-		cc_version=`$1 -dumpversion | cut -c 1,3`
+		# cc_version = major_version * 100 + minor_version
+		# For example: "3.3" -> 303, "4.9.2" -> 409, "6" -> 600, "23.5" -> 2305
+		cc_version=`$1 -dumpversion | $awk -F . '{printf "%d%02d", $1, $2}'`
 
-		if [ $cc_version -lt 33 ]; then
+		if [ $cc_version -lt 303 ]; then
 			log 1 "configure: error: gcc older than 3.3 can't compile OpenTTD because of its poor template support"
 			exit 1
 		fi
@@ -1332,20 +1352,20 @@ make_compiler_cflags() {
 		if [ $enable_assert -eq 0 ]; then
 			# Do not warn about unused variables when building without asserts
 			flags="$flags -Wno-unused-variable"
-			if [ $cc_version -ge 46 ]; then
+			if [ $cc_version -ge 406 ]; then
 				# GCC 4.6 gives more warnings, disable them too
 				flags="$flags -Wno-unused-but-set-variable"
 				flags="$flags -Wno-unused-but-set-parameter"
 			fi
 		fi
 
-		if [ $cc_version -ge 34 ]; then
+		if [ $cc_version -ge 304 ]; then
 			# Warn when a variable is used to initialise itself:
 			# int a = a;
 			flags="$flags -Winit-self"
 		fi
 
-		if [ $cc_version -ge 40 ]; then
+		if [ $cc_version -ge 400 ]; then
 			# GCC 4.0+ complains about that we break strict-aliasing.
 			#  On most places we don't see how to fix it, and it doesn't
 			#  break anything. So disable strict-aliasing to make the
@@ -1356,7 +1376,7 @@ make_compiler_cflags() {
 			flags="$flags -Wcast-qual"
 		fi
 
-		if [ $cc_version -ge 42 ]; then
+		if [ $cc_version -ge 402 ]; then
 			# GCC 4.2+ automatically assumes that signed overflows do
 			# not occur in signed arithmetics, whereas we are not
 			# sure that they will not happen. It furthermore complains
@@ -1367,25 +1387,34 @@ make_compiler_cflags() {
 			flags="$flags -Wnon-virtual-dtor"
 		fi
 
-		if [ $cc_version -ge 43 ]; then
+		if [ $cc_version -ge 403 ] && [ $cc_version -lt 600 ]; then
 			# Use gnu++0x mode so static_assert() is available.
 			# Don't use c++0x, it breaks mingw (with gcc 4.4.0).
 			cxxflags="$cxxflags -std=gnu++0x"
 		fi
 
-		if [ $cc_version -eq 45 ]; then
+		if [ $cc_version -eq 405 ]; then
 			# Prevent optimisation supposing enums are in a range specified by the standard
 			# For details, see http://gcc.gnu.org/PR43680
 			flags="$flags -fno-tree-vrp"
 		fi
 
-		if [ $cc_version -ge 47 ]; then
+		if [ $cc_version -eq 407 ]; then
 			# Disable -Wnarrowing which gives many warnings, such as:
 			# warning: narrowing conversion of '...' from 'unsigned int' to 'int' inside { } [-Wnarrowing]
 			# They are valid according to the C++ standard, but useless.
 			cxxflags="$cxxflags -Wno-narrowing"
+		fi
+
+		if [ $cc_version -ge 407 ]; then
 			# Disable bogus 'attempt to free a non-heap object' warning
 			flags="$flags -Wno-free-nonheap-object"
+		fi
+
+		if [ $cc_version -ge 600 ]; then
+			# -flifetime-dse=2 (default since GCC 6) doesn't play
+			# well with our custom pool item allocator
+			cxxflags="$cxxflags -flifetime-dse=1 -std=gnu++14"
 		fi
 
 		if [ "$enable_lto" != "0" ]; then
@@ -1393,7 +1422,7 @@ make_compiler_cflags() {
 			has_lto=`$1 -dumpspecs | grep '\%{flto'`
 			if [ -n "$has_lto" ]; then
 				# Use LTO only if we see LTO exists and is requested
-				if [ $cc_version -lt 46 ]; then
+				if [ $cc_version -lt 406 ]; then
 					flags="$flags -flto"
 				else
 					flags="$flags -flto=jobserver"
@@ -1477,7 +1506,7 @@ make_cflags_and_ldflags() {
 	fi
 
 	if [ $enable_debug -le 2 ]; then
-		cc_host_is_gcc=`basename "$cc_host" | grep "gcc" &>/dev/null`
+		cc_host_is_gcc=`basename "$cc_host" | grep "gcc" 2>/dev/null`
 		if [ -n "$cc_host_is_gcc" ]; then
 			# Define only when compiling with GCC. Some GLIBC versions use GNU
 			# extensions in a way that breaks build with at least ICC.
@@ -1485,14 +1514,14 @@ make_cflags_and_ldflags() {
 			CFLAGS="$CFLAGS -D_FORTIFY_SOURCE=2"
 		fi
 
-		cc_build_is_gcc=`basename "$cc_build" | grep "gcc" &>/dev/null`
+		cc_build_is_gcc=`basename "$cc_build" | grep "gcc" 2>/dev/null`
 		if [ -n "$cc_build_is_gcc" ]; then
 			# Just add -O1 to the tools needed for building.
 			CFLAGS_BUILD="$CFLAGS_BUILD -D_FORTIFY_SOURCE=2 -O1"
 		fi
 	fi
 
-	if [ "$os" = "OSX" ] && [ $cc_version -eq 40 ]; then
+	if [ "$os" = "OSX" ] && [ $cc_version -eq 400 ]; then
 		# Apple's GCC 4.0 has a compiler bug for x86_64 with (higher) optimization,
 		# wrongly optimizing ^= in loops. This disables the failing optimisation.
 		CFLAGS="$CFLAGS -fno-expensive-optimizations"
@@ -1516,7 +1545,7 @@ make_cflags_and_ldflags() {
 			LDFLAGS="$LDFLAGS -mwin32"
 		fi
 		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ]; then
-			if [ $cc_version -lt 46 ]; then
+			if [ $cc_version -lt 406 ]; then
 				flags="$flags -mno-cygwin"
 				LDFLAGS="$LDFLAGS -mno-cygwin"
 			fi
@@ -1529,16 +1558,16 @@ make_cflags_and_ldflags() {
 
 			LIBS="$LIBS -lws2_32 -lwinmm -lgdi32 -ldxguid -lole32 -limm32"
 
-			if [ $cc_version -ge 44 ]; then
+			if [ $cc_version -ge 404 ]; then
 				LDFLAGS_BUILD="$LDFLAGS_BUILD -static-libgcc -static-libstdc++"
 			fi
-			if [ $cc_version -ge 47 ]; then
+			if [ $cc_version -ge 407 ]; then
 				CFLAGS="$CFLAGS -mno-ms-bitfields"
 			fi
 		fi
 	fi
 
-	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "FREEBSD" ] && [ "$os" != "OPENBSD" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
+	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "OPENBSD" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
 		LIBS="$LIBS -lpthread"
 	fi
 
@@ -1565,10 +1594,6 @@ make_cflags_and_ldflags() {
 		LIBS="$LIBS -pthread"
 	fi
 
-	if [ "$os" = "FREEBSD" ]; then
-		LIBS="$LIBS -lpthread"
-	fi
-
 	if [ "$os" = "OSX" ]; then
 		LDFLAGS="$LDFLAGS -framework Cocoa"
 
@@ -1586,23 +1611,6 @@ make_cflags_and_ldflags() {
 			CFLAGS="$OSX_SYSROOT $CFLAGS"
 			LDFLAGS="$OSX_LD_SYSROOT $LDFLAGS"
 		fi
-
-		if [ "$enable_universal" = "0" ] && [ $cc_version -gt 40 ]; then
-			# Only set the min version when not doing an universal build.
-			# Universal builds set the version elsewhere.
-			if [ "$cpu_type" = "64" ]; then
-				CFLAGS="$CFLAGS -mmacosx-version-min=10.5"
-			else
-				gcc_cpu=`$cc_host -dumpmachine`
-				if [ "`echo $gcc_cpu | cut -c 1-3`" = "ppc" -o "`echo $gcc_cpu | cut -c 1-7`" = "powerpc" ]; then
-					# PowerPC build can run on 10.3
-					CFLAGS="$CFLAGS -mmacosx-version-min=10.3"
-				else
-					# Intel is only available starting from 10.4
-					CFLAGS="$CFLAGS -mmacosx-version-min=10.4"
-				fi
-			fi
-		fi
 	fi
 
 	if [ "$os" = "BEOS" ] || [ "$os" = "HAIKU" ]; then
@@ -1610,7 +1618,7 @@ make_cflags_and_ldflags() {
 	fi
 
 	# Most targets act like UNIX, just with some additions
-	if [ "$os" = "BEOS" ] || [ "$os" = "HAIKU" ] || [ "$os" = "OSX" ] || [ "$os" = "MORPHOS" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OS2" ]; then
+	if [ "$os" = "BEOS" ] || [ "$os" = "HAIKU" ] || [ "$os" = "OSX" ] || [ "$os" = "MORPHOS" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OS2" ]; then
 		CFLAGS="$CFLAGS -DUNIX"
 	fi
 	# And others like Windows
@@ -1657,12 +1665,13 @@ make_cflags_and_ldflags() {
 	fi
 
 	if [ "$with_zlib" != "0" ]; then
-		if [ "$enable_static" != "0" ] && [ "$os" != "OSX" ]; then
-			LIBS="$LIBS $zlib"
-		else
-			LIBS="$LIBS -lz"
-		fi
 		CFLAGS="$CFLAGS -DWITH_ZLIB"
+		CFLAGS="$CFLAGS `$zlib_config --cflags | tr '\n\r' '  '`"
+		if [ "$enable_static" != "0" ]; then
+			LIBS="$LIBS `$zlib_config --libs --static | tr '\n\r' '  '`"
+		else
+			LIBS="$LIBS `$zlib_config --libs | tr '\n\r' '  '`"
+		fi
 	fi
 
 	if [ -n "$lzma_config" ]; then
@@ -1708,13 +1717,7 @@ make_cflags_and_ldflags() {
 		CFLAGS="$CFLAGS `$png_config --cflags | tr '\n\r' '  '`"
 
 		if [ "$enable_static" != "0" ]; then
-			if [ "$os" = "OSX" ]; then
-				# fontconfig_config goes via pkg-config on all systems, which doesn't know --prefix
-				# Also, despite the reason we link to the .a file ourself (because we can't use -static), we do need to ask pkg-config about possible other deps
-				LIBS="$LIBS `$png_config --variable=prefix`/lib/libpng.a `$png_config --libs --static | sed s@-lpng[0-9]*@@`"
-			else
-				LIBS="$LIBS `$png_config --libs --static | tr '\n\r' '  '`"
-			fi
+			LIBS="$LIBS `$png_config --libs --static | tr '\n\r' '  '`"
 		else
 			LIBS="$LIBS `$png_config --libs | tr '\n\r' '  '`"
 		fi
@@ -1725,13 +1728,7 @@ make_cflags_and_ldflags() {
 		CFLAGS="$CFLAGS `$fontconfig_config --cflags | tr '\n\r' '  '`"
 
 		if [ "$enable_static" != "0" ]; then
-			if [ "$os" = "OSX" ]; then
-				# fontconfig_config goes via pkg-config on all systems, which doesn't know --prefix
-				# Also, despite the reason we link to the .a file ourself (because we can't use -static), we do need to ask pkg-config about possible other deps
-				LIBS="$LIBS `$fontconfig_config --variable=prefix`/lib/libfontconfig.a `$fontconfig_config --libs --static | sed s@-lfontconfig@@`"
-			else
-				LIBS="$LIBS `$fontconfig_config --libs --static | tr '\n\r' '  '`"
-			fi
+			LIBS="$LIBS `$fontconfig_config --libs --static | tr '\n\r' '  '`"
 		else
 			LIBS="$LIBS `$fontconfig_config --libs | tr '\n\r' '  '`"
 		fi
@@ -1742,26 +1739,31 @@ make_cflags_and_ldflags() {
 		CFLAGS="$CFLAGS `$freetype_config --cflags | tr '\n\r' '  '`"
 
 		if [ "$enable_static" != "0" ]; then
-			if [ "$os" = "OSX" ]; then
-				LIBS="$LIBS `$freetype_config --prefix`/lib/libfreetype.a"
-			else
-				# Is it possible to do static with freetype, if so: how?
-				LIBS="$LIBS `$freetype_config --libs | tr '\n\r' '  '`"
-			fi
+			LIBS="$LIBS `$freetype_config --libs --static | tr '\n\r' '  '`"
 		else
 			LIBS="$LIBS `$freetype_config --libs | tr '\n\r' '  '`"
 		fi
 	fi
 
-	if [ -n "$icu_config" ]; then
-		CFLAGS="$CFLAGS -DWITH_ICU"
-		CFLAGS="$CFLAGS `$icu_config --cppflags | tr '\n\r' '  '`"
+	if [ -n "$icu_layout_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_ICU_LAYOUT"
+		CFLAGS="$CFLAGS `$icu_layout_config --cflags | tr '\n\r' '  '`"
 
-		# Some icu-configs have the 'feature' of not adding a space where others do add the space
 		if [ "$static_icu" != "0" ]; then
-			LIBS="$LIBS `$icu_config --ldflags-searchpath` `($icu_config --ldflags-libsonly; $icu_config --ldflags-layout) | tr '\n\r' '  ' | sed s/licu/lsicu/g`"
+			LIBS="$LIBS `$icu_layout_config --libs --static | tr '\n\r' '  ' | sed s/-licu/-lsicu/g`"
 		else
-			LIBS="$LIBS `$icu_config --ldflags-searchpath` `($icu_config --ldflags-libsonly; $icu_config --ldflags-layout) | tr '\n\r' '  '`"
+			LIBS="$LIBS `$icu_layout_config --libs | tr '\n\r' '  '`"
+		fi
+	fi
+
+	if [ -n "$icu_sort_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_ICU_SORT"
+		CFLAGS="$CFLAGS `$icu_sort_config --cflags | tr '\n\r' '  '`"
+
+		if [ "$static_icu" != "0" ]; then
+			LIBS="$LIBS `$icu_sort_config --libs --static | tr '\n\r' '  ' | sed s/-licu/-lsicu/g`"
+		else
+			LIBS="$LIBS `$icu_sort_config --libs | tr '\n\r' '  '`"
 		fi
 	fi
 
@@ -1771,18 +1773,20 @@ make_cflags_and_ldflags() {
 		# GCC 4.0+ doesn't like the DirectX includes (gives tons of
 		#  warnings on it we won't be able to fix). For now just
 		#  suppress those warnings.
-		if [ $cc_version -ge 40 ]; then
+		if [ $cc_version -ge 400 ]; then
 			CFLAGS="$CFLAGS -Wno-non-virtual-dtor"
 		fi
 	fi
 
-	if [ -n "$libtimidity" ]; then
-		if [ "$enable_static" != "0" ]; then
-			LIBS="$LIBS $libtimidity"
-		else
-			LIBS="$LIBS -ltimidity"
-		fi
+	if [ -n "$libtimidity_config" ]; then
 		CFLAGS="$CFLAGS -DLIBTIMIDITY"
+		CFLAGS="$CFLAGS `$libtimidity_config --cflags | tr '\n\r' '  '`"
+
+		if [ "$enable_static" != "0" ]; then
+			LIBS="$LIBS `$libtimidity_config --libs --static | tr '\n\r' '  '`"
+		else
+			LIBS="$LIBS `$libtimidity_config --libs | tr '\n\r' '  '`"
+		fi
 	fi
 
 	if [ "$with_iconv" != "0" ]; then
@@ -1942,9 +1946,26 @@ check_compiler() {
 		log 2 "  exit code $ret"
 
 		if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
-			log 1 "checking $1... $compiler not found"
-			log 1 "I couldn't detect any $6 binary for $3"
-			exit 1
+			if [ -z "$5" ]; then
+				log 1 "checking $1... $compiler not found"
+				log 1 "I couldn't detect any $6 binary for $3"
+				exit 1
+			else
+				compiler="$3-$5"
+			fi
+			machine=`eval $compiler $9 2>/dev/null`
+			ret=$?
+			eval "$2=\"$compiler\""
+
+			log 2 "executing $compiler $9"
+			log 2 "  returned $machine"
+			log 2 "  exit code $ret"
+
+			if ( [ -z "$machine" ] && [ "$8" != "3" ] ) || [ "$ret" != "0" ]; then
+				log 1 "checking $1... $compiler not found"
+				log 1 "I couldn't detect any $5 binary for $3"
+				exit 1
+			fi
 		fi
 
 		if [ "$machine" != "$3" ] && ( [ "$8" = "0" ] || [ "$8" = "1" ] ); then
@@ -2268,52 +2289,54 @@ detect_awk() {
 
 detect_os() {
 	if [ "$os" = "DETECT" ]; then
-		# Detect UNIX, OSX, FREEBSD, OPENBSD, NETBSD, HPUX, MORPHOS, BEOS, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
+		# Detect UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, HPUX, MORPHOS, BEOS, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP
 
 		# Try first via dumpmachine, then via uname
 		os=`echo "$host" | tr '[A-Z]' '[a-z]' | $awk '
-					/linux/        { print "UNIX";    exit}
-					/darwin/       { print "OSX";     exit}
-					/freebsd/      { print "FREEBSD"; exit}
-					/openbsd/      { print "OPENBSD"; exit}
-					/netbsd/       { print "NETBSD";  exit}
-					/hp-ux/        { print "HPUX";    exit}
-					/morphos/      { print "MORPHOS"; exit}
-					/beos/         { print "BEOS";    exit}
-					/haiku/        { print "HAIKU";   exit}
-					/sunos/        { print "SUNOS";   exit}
-					/solaris/      { print "SUNOS";   exit}
-					/cygwin/       { print "CYGWIN";  exit}
-					/mingw/        { print "MINGW";   exit}
-					/os2/          { print "OS2";     exit}
-					/dos/          { print "DOS";     exit}
-					/wince/        { print "WINCE";   exit}
-					/psp/          { print "PSP";     exit}
+					/linux/        { print "UNIX";      exit}
+					/darwin/       { print "OSX";       exit}
+					/freebsd/      { print "FREEBSD";   exit}
+					/dragonfly/    { print "DRAGONFLY"; exit}
+					/openbsd/      { print "OPENBSD";   exit}
+					/netbsd/       { print "NETBSD";    exit}
+					/hp-ux/        { print "HPUX";      exit}
+					/morphos/      { print "MORPHOS";   exit}
+					/beos/         { print "BEOS";      exit}
+					/haiku/        { print "HAIKU";     exit}
+					/sunos/        { print "SUNOS";     exit}
+					/solaris/      { print "SUNOS";     exit}
+					/cygwin/       { print "CYGWIN";    exit}
+					/mingw/        { print "MINGW";     exit}
+					/os2/          { print "OS2";       exit}
+					/dos/          { print "DOS";       exit}
+					/wince/        { print "WINCE";     exit}
+					/psp/          { print "PSP";       exit}
 		'`
 
 		if [ -z "$os" ]; then
 			os=`LC_ALL=C uname | tr '[A-Z]' '[a-z]' | $awk '
-					/linux/        { print "UNIX";    exit}
-					/darwin/       { print "OSX";     exit}
-					/freebsd/      { print "FREEBSD"; exit}
-					/openbsd/      { print "OPENBSD"; exit}
-					/netbsd/       { print "NETBSD";  exit}
-					/hp-ux/        { print "HPUX";    exit}
-					/morphos/      { print "MORPHOS"; exit}
-					/beos/         { print "BEOS";    exit}
-					/haiku/        { print "HAIKU";   exit}
-					/sunos/        { print "SUNOS";   exit}
-					/cygwin/       { print "CYGWIN";  exit}
-					/mingw/        { print "MINGW";   exit}
-					/os\/2/        { print "OS2";     exit}
-					/gnu/          { print "UNIX";    exit}
+					/linux/        { print "UNIX";      exit}
+					/darwin/       { print "OSX";       exit}
+					/freebsd/      { print "FREEBSD";   exit}
+					/dragonfly/    { print "DRAGONFLY"; exit}
+					/openbsd/      { print "OPENBSD";   exit}
+					/netbsd/       { print "NETBSD";    exit}
+					/hp-ux/        { print "HPUX";      exit}
+					/morphos/      { print "MORPHOS";   exit}
+					/beos/         { print "BEOS";      exit}
+					/haiku/        { print "HAIKU";     exit}
+					/sunos/        { print "SUNOS";     exit}
+					/cygwin/       { print "CYGWIN";    exit}
+					/mingw/        { print "MINGW";     exit}
+					/os\/2/        { print "OS2";       exit}
+					/gnu/          { print "UNIX";      exit}
 			'`
 		fi
 
 		if [ -z "$os" ]; then
 			log 1 "detecting OS... none detected"
 			log 1 "I couldn't detect your OS. Please use --os=OS to force one"
-			log 1 "Allowed values are: UNIX, OSX, FREEBSD, OPENBSD, NETBSD, MORPHOS, HPUX, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP"
+			log 1 "Allowed values are: UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, MORPHOS, HPUX, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, DOS, WINCE, and PSP"
 			exit 1
 		fi
 
@@ -2351,7 +2374,7 @@ detect_allegro() {
 		return 0
 	fi
 
-	# By default on OSX we don't use SDL. The rest is auto-detect
+	# By default on OSX we don't use Allegro. The rest is auto-detect
 	if [ "$with_allegro" = "1" ] && [ "$os" = "OSX" ] && [ "$with_cocoa" != "0" ]; then
 		log 1 "checking Allegro... OSX, skipping"
 
@@ -2359,33 +2382,7 @@ detect_allegro() {
 		return 0
 	fi
 
-	if [ "$with_allegro" = "1" ] || [ "$with_allegro" = "" ] || [ "$with_allegro" = "2" ]; then
-		allegro_config="allegro-config"
-	else
-		allegro_config="$with_allegro"
-	fi
-
-	version=`$allegro_config --version 2>/dev/null`
-	ret=$?
-	log 2 "executing $allegro_config --version"
-	log 2 "  returned $version"
-	log 2 "  exit code $ret"
-
-	if [ -z "$version" ] || [ "$ret" != "0" ]; then
-		log 1 "checking Allegro... not found"
-
-		# It was forced, so it should be found.
-		if [ "$with_allegro" != "1" ]; then
-			log 1 "configure: error: allegro-config couldn't be found"
-			log 1 "configure: error: you supplied '$with_allegro', but it seems invalid"
-			exit 1
-		fi
-
-		allegro_config=""
-		return 0
-	fi
-
-	log 1 "checking Allegro... found"
+	detect_pkg_config "$with_allegro" "allegro" "allegro_config" "4.4"
 }
 
 
@@ -2431,33 +2428,7 @@ detect_sdl() {
 		sleep 5
 	fi
 
-	if [ "$with_sdl" = "1" ] || [ "$with_sdl" = "" ] || [ "$with_sdl" = "2" ]; then
-		sdl_config="sdl-config"
-	else
-		sdl_config="$with_sdl"
-	fi
-
-	version=`$sdl_config --version 2>/dev/null`
-	ret=$?
-	log 2 "executing $sdl_config --version"
-	log 2 "  returned $version"
-	log 2 "  exit code $ret"
-
-	if [ -z "$version" ] || [ "$ret" != "0" ]; then
-		log 1 "checking SDL... not found"
-
-		# It was forced, so it should be found.
-		if [ "$with_sdl" != "1" ]; then
-			log 1 "configure: error: sdl-config couldn't be found"
-			log 1 "configure: error: you supplied '$with_sdl', but it seems invalid"
-			exit 1
-		fi
-
-		sdl_config=""
-		return 0
-	fi
-
-	log 1 "checking SDL... found"
+	detect_pkg_config "$with_sdl" "sdl" "sdl_config" "1.2"
 }
 
 detect_osx_sdk() {
@@ -2638,10 +2609,13 @@ detect_library() {
 			fi
 		fi
 		if [ -z "$res" ] && [ "$os" = "HAIKU" ]; then
-			eval "$2=`ls -1 /boot/common/include/$4*.h 2>/dev/null | egrep \"\/$5\$\"`"
+			if [ -z "$includeDir" ]; then
+				includeDir=`finddir B_SYSTEM_HEADERS_DIRECTORY`
+			fi
+			eval "$2=`ls -1 $includeDir/$4*.h 2>/dev/null | egrep \"\/$5\$\"`"
 			eval "res=\$$2"
 			if [ -z "$res" ]; then
-				log 2 "  trying /boot/common/include/$4$5... no"
+				log 2 "  trying $includeDir/$4$5... no"
 			fi
 		fi
 
@@ -2710,7 +2684,7 @@ detect_library() {
 }
 
 detect_zlib() {
-	detect_library "$with_zlib" "zlib" "libz.a" "" "zlib.h"
+	detect_pkg_config "$with_zlib" "zlib" "zlib_config" "1.2"
 }
 
 detect_lzo2() {
@@ -2718,7 +2692,7 @@ detect_lzo2() {
 }
 
 detect_libtimidity() {
-	detect_library "$with_libtimidity" "libtimidity" "libtimidity.a" "" "timidity.h"
+	detect_pkg_config "$with_libtimidity" "libtimidity" "libtimidity_config" "0.1" "1"
 }
 
 detect_pkg_config() {
@@ -2726,6 +2700,7 @@ detect_pkg_config() {
 	# $2 - package name ('liblzma')
 	# $3 - config name ('lzma_config', sets $lzma_config)
 	# $4 - minimum module version ('2.3')
+	# $5 - check for dedicated, 1 is "skif if dedicated"
 
 	# 0 means no, 1 is auto-detect, 2 is force
 	if [ "$1" = "0" ]; then
@@ -2735,10 +2710,17 @@ detect_pkg_config() {
 		return 0
 	fi
 
+	if [ "$5" = "1" ] && [ "$1" = "1" ] && [ "$enable_dedicated" != "0" ]; then
+		log 1 "checking $2... dedicated server, skipping"
+
+		eval "$3=\"\""
+		return 0
+	fi
+
 	log 2 "detecting $2"
 
 	if [ "$1" = "1" ] || [ "$1" = "" ] || [ "$1" = "2" ]; then
-		pkg_config_call="pkg-config $2"
+		pkg_config_call="$pkg_config $2"
 	else
 		pkg_config_call="$1"
 	fi
@@ -2760,7 +2742,7 @@ detect_pkg_config() {
 
 		# It was forced, so it should be found.
 		if [ "$1" != "1" ]; then
-			log 1 "configure: error: pkg-config $2 couldn't be found"
+			log 1 "configure: error: $pkg_config $2 couldn't be found"
 			log 1 "configure: error: you supplied '$1', but it seems invalid"
 			exit 1
 		fi
@@ -2782,89 +2764,11 @@ detect_xdg_basedir() {
 }
 
 detect_png() {
-	# 0 means no, 1 is auto-detect, 2 is force
-	if [ "$with_png" = "0" ]; then
-		log 1 "checking libpng... disabled"
-
-		png_config=""
-		return 0
-	fi
-
-	if [ "$with_zlib" = "0" ] || [ -z "$zlib" ]; then
-		if [ "$with_png" != "1" ]; then
-			log 1 "checking libpng... no zlib"
-			log 1 "ERROR: libpng was forced, but zlib was not detected / disabled."
-			log 1 "ERROR: libpng depends on zlib."
-
-			exit 1
-		fi
-
-		log 1 "checking libpng... no zlib, skipping"
-
-		png_config=""
-		return 0
-	fi
-
 	detect_pkg_config "$with_png" "libpng" "png_config" "1.2"
 }
 
 detect_freetype() {
-	# 0 means no, 1 is auto-detect, 2 is force
-	if [ "$with_freetype" = "0" ]; then
-		log 1 "checking libfreetype... disabled"
-
-		freetype_config=""
-		return 0
-	fi
-	if [ "$with_freetype" = "1" ] && [ "$enable_dedicated" != "0" ]; then
-		log 1 "checking libfreetype... dedicated server, skipping"
-
-		freetype_config=""
-		return 0
-	fi
-
-	if [ "$with_zlib" = "0" ] || [ -z "$zlib" ]; then
-		if [ "$with_freetype" != "1" ]; then
-			log 1 "checking libfreetype... no zlib"
-			log 1 "ERROR: libfreetype was forced, but zlib was not detected / disabled."
-			log 1 "ERROR: libfreetype depends on zlib."
-
-			exit 1
-		fi
-
-		log 1 "checking libfreetype... no zlib, skipping"
-
-		freetype_config=""
-		return 0
-	fi
-
-	if [ "$with_freetype" = "1" ] || [ "$with_freetype" = "" ] || [ "$with_freetype" = "2" ]; then
-		freetype_config="freetype-config"
-	else
-		freetype_config="$with_freetype"
-	fi
-
-	version=`$freetype_config --version 2>/dev/null`
-	ret=$?
-	log 2 "executing freetype_config --version"
-	log 2 "  returned $version"
-	log 2 "  exit code $ret"
-
-	if [ -z "$version" ] || [ "$ret" != "0" ]; then
-		log 1 "checking libfreetype... not found"
-
-		# It was forced, so it should be found.
-		if [ "$with_freetype" != "1" ]; then
-			log 1 "configure: error: freetype-config couldn't be found"
-			log 1 "configure: error: you supplied '$with_freetype', but it seems invalid"
-			exit 1
-		fi
-
-		freetype_config=""
-		return 0
-	fi
-
-	log 1 "checking libfreetype... found"
+	detect_pkg_config "$with_freetype" "freetype2" "freetype_config" "2.2" "1"
 }
 
 detect_fontconfig() {
@@ -2875,19 +2779,6 @@ detect_fontconfig() {
 		fontconfig_config=""
 		return 0
 	fi
-	if [ "$with_fontconfig" = "1" ] && [ "$enable_dedicated" != "0" ]; then
-		log 1 "checking libfontconfig... dedicated server, skipping"
-
-		fontconfig_config=""
-		return 0
-	fi
-	if [ "$with_fontconfig" != "2" ] && [ -z "$freetype_config" ]; then
-		log 1 "checking libfontconfig... no freetype, skipping"
-
-		fontconfig_config=""
-		return 0
-	fi
-
 	if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "WINCE" ]; then
 		log 1 "checking libfontconfig... WIN32, skipping"
 		fontconfig_config=""
@@ -2900,57 +2791,15 @@ detect_fontconfig() {
 		return 0
 	fi
 
-	detect_pkg_config "$with_fontconfig" "fontconfig" "fontconfig_config" "2.3"
+	detect_pkg_config "$with_fontconfig" "fontconfig" "fontconfig_config" "2.3" "1"
 }
 
-detect_icu() {
-	# 0 means no, 1 is auto-detect, 2 is force
-	if [ "$with_icu" = "0" ]; then
-		log 1 "checking libicu... disabled"
+detect_icu_layout() {
+	detect_pkg_config "$with_icu_layout" "icu-lx" "icu_layout_config" "4.8" "1"
+}
 
-		icu_config=""
-		return 0
-	fi
-	if [ "$with_icu" = "1" ] && [ "$enable_dedicated" != "0" ]; then
-		log 1 "checking libicu... dedicated server, skipping"
-
-		icu_config=""
-		return 0
-	fi
-
-	if [ "$with_icu" = "1" ] || [ "$with_icu" = "" ] || [ "$with_icu" = "2" ]; then
-		icu_config="icu-config"
-	else
-		icu_config="$with_icu"
-	fi
-
-	version=`$icu_config --version 2>/dev/null`
-	ret=$?
-	check_version '3.6' "$version"
-	version_ok=$?
-	log 2 "executing $icu_config --version"
-	log 2 "  returned $version"
-	log 2 "  exit code $ret"
-
-	if [ -z "$version" ] || [ "$ret" != "0" ] || [ "$version_ok" != "1" ]; then
-		if [ -n "$version" ] && [ "$version_ok" != "1" ]; then
-			log 1 "checking libicu... needs at least version 3.6.0, icu NOT enabled"
-		else
-			log 1 "checking libicu... not found"
-		fi
-
-		# It was forced, so it should be found.
-		if [ "$with_icu" != "1" ]; then
-			log 1 "configure: error: icu-config couldn't be found"
-			log 1 "configure: error: you supplied '$with_icuconfig', but it seems invalid"
-			exit 1
-		fi
-
-		icu_config=""
-		return 0
-	fi
-
-	log 1 "checking libicu... found"
+detect_icu_sort() {
+	detect_pkg_config "$with_icu_sort" "icu-i18n" "icu_sort_config" "4.8" "1"
 }
 
 detect_pspconfig() {
@@ -3590,11 +3439,12 @@ showhelp() {
 	echo "  --windres=WINDRES              the windres to use [HOST-windres]"
 	echo "  --strip=STRIP                  the strip to use [HOST-strip]"
 	echo "  --awk=AWK                      the awk to use in configure [awk]"
+	echo "  --pkg-config=PKG-CONFIG        the pkg-config to use in configure [pkg-config]"
 	echo "  --lipo=LIPO                    the lipo to use (OSX ONLY) [HOST-lipo]"
 	echo "  --os=OS                        the OS we are compiling for [DETECT]"
-	echo "                                 DETECT/UNIX/OSX/FREEBSD/OPENBSD/NETBSD/"
-	echo "                                 MORPHOS/HPUX/BEOS/SUNOS/CYGWIN/MINGW/OS2/"
-	echo "                                 DOS/WINCE/PSP/HAIKU"
+	echo "                                 DETECT/UNIX/OSX/FREEBSD/DRAGONFLY/OPENBSD/"
+	echo "                                 NETBSD/MORPHOS/HPUX/BEOS/SUNOS/CYGWIN/"
+	echo "                                 MINGW/OS2/DOS/WINCE/PSP/HAIKU"
 	echo "  --endian=ENDIAN                set the endian of the HOST (AUTO/LE/BE)"
 	echo ""
 	echo "Paths:"
@@ -3664,23 +3514,30 @@ showhelp() {
 	echo "  --with-midi=midi               define which midi-player to use"
 	echo "  --with-midi-arg=arg            define which args to use for the"
 	echo "                                 midi-player"
-	echo "  --with-libtimidity             enables libtimidity support"
-	echo "  --with-allegro[=allegro-config]"
+	echo "  --with-libtimidity[=\"pkg-config libtimidity\"]"
+	echo "                                 enables libtimidity support"
+	echo "  --with-allegro[=\"pkg-config allegro\"]"
 	echo "                                 enables Allegro video driver support"
 	echo "  --with-cocoa                   enables COCOA video driver (OSX ONLY)"
-	echo "  --with-sdl[=sdl-config]        enables SDL video driver support"
-	echo "  --with-zlib[=zlib.a]           enables zlib support"
+	echo "  --with-sdl[=\"pkg-config sdl\"]  enables SDL video driver support"
+	echo "  --with-zlib[=\"pkg-config zlib\"]"
+	echo "                                 enables zlib support"
 	echo "  --with-liblzma[=\"pkg-config liblzma\"]"
 	echo "                                 enables liblzma support"
 	echo "  --with-liblzo2[=liblzo2.a]     enables liblzo2 support"
-	echo "  --with-png[=libpng-config]     enables libpng support"
-	echo "  --with-freetype[=freetype-config]"
+	echo "  --with-png[=\"pkg-config libpng\"]"
+	echo "                                 enables libpng support"
+	echo "  --with-freetype[=\"pkg-config freetype2\"]"
 	echo "                                 enables libfreetype support"
 	echo "  --with-fontconfig[=\"pkg-config fontconfig\"]"
 	echo "                                 enables fontconfig support"
 	echo "  --with-xdg-basedir[=\"pkg-config libxdg-basedir\"]"
 	echo "                                 enables XDG base directory support"
-	echo "  --with-icu[=icu-config]        enables icu (used for right-to-left support)"
+	echo "  --with-icu                     enables icu components for layout and sorting"
+	echo "  --with-icu-layout[=\"pkg-config icu-lx\"]"
+	echo "                                 enables icu components for layouting (right-to-left support)"
+	echo "  --with-icu-sort[=\"pkg-config icu-i18n\"]"
+	echo "                                 enables icu components for locale specific string sorting"
 	echo "  --static-icu                   try to link statically (libsicu instead of"
 	echo "                                 libicu; can fail as the new name is guessed)"
 	echo "  --with-iconv[=iconv-path]      enables iconv support"

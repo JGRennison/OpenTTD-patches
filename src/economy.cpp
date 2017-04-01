@@ -300,7 +300,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		/* Single player cheated to AI company.
 		 * There are no spectators in single player, so we must pick some other company. */
 		assert(!_networking);
-		Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
+		Backup<CompanyByte> cur_company2(_current_company, FILE_LINE);
 		Company *c;
 		FOR_ALL_COMPANIES(c) {
 			if (c->index != old_owner) {
@@ -308,7 +308,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 				break;
 			}
 		}
-		cur_company.Restore();
+		cur_company2.Restore();
 		assert(old_owner != _local_company);
 	}
 
@@ -431,10 +431,37 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			FreeUnitIDGenerator(VEH_SHIP,  new_owner), FreeUnitIDGenerator(VEH_AIRCRAFT, new_owner)
 		};
 
+		/* Override company settings to new company defaults in case we need to convert them.
+		 * This is required as the CmdChangeServiceInt doesn't copy the supplied value when it is non-custom
+		 */
+		if (new_owner != INVALID_OWNER) {
+			Company *old_company = Company::Get(old_owner);
+			Company *new_company = Company::Get(new_owner);
+
+			old_company->settings.vehicle.servint_aircraft = new_company->settings.vehicle.servint_aircraft;
+			old_company->settings.vehicle.servint_trains = new_company->settings.vehicle.servint_trains;
+			old_company->settings.vehicle.servint_roadveh = new_company->settings.vehicle.servint_roadveh;
+			old_company->settings.vehicle.servint_ships = new_company->settings.vehicle.servint_ships;
+			old_company->settings.vehicle.servint_ispercent = new_company->settings.vehicle.servint_ispercent;
+		}
+
 		Vehicle *v;
 		FOR_ALL_VEHICLES(v) {
 			if (v->owner == old_owner && IsCompanyBuildableVehicleType(v->type)) {
 				assert(new_owner != INVALID_OWNER);
+
+				/* Correct default values of interval settings while maintaining custom set ones.
+				 * This prevents invalid values on mismatching company defaults being accepted.
+				 */
+				if (!v->ServiceIntervalIsCustom()) {
+					Company *new_company = Company::Get(new_owner);
+
+					/* Technically, passing the interval is not needed as the command will query the default value itself.
+					 * However, do not rely on that behaviour.
+					 */
+					int interval = CompanyServiceInterval(new_company, v->type);
+					DoCommand(v->tile, v->index, interval | (new_company->settings.vehicle.servint_ispercent << 17), DC_EXEC | DC_BANKRUPT, CMD_CHANGE_SERVICE_INT);
+				}
 
 				v->owner = new_owner;
 
@@ -1290,7 +1317,8 @@ static uint GetLoadAmount(Vehicle *v)
 	/* Scale load amount the same as capacity */
 	if (HasBit(e->info.misc_flags, EF_NO_DEFAULT_CARGO_MULTIPLIER) && !air_mail) load_amount = CeilDiv(load_amount * CargoSpec::Get(v->cargo_type)->multiplier, 0x100);
 
-	return load_amount;
+	/* Zero load amount breaks a lot of things. */
+	return max(1u, load_amount);
 }
 
 /**
@@ -1615,15 +1643,14 @@ static void LoadUnloadVehicle(Vehicle *front)
 		if (v->cargo_cap == 0) continue;
 		artic_part++;
 
-		uint load_amount = GetLoadAmount(v);
-
 		GoodsEntry *ge = &st->goods[v->cargo_type];
 
 		if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && (front->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
 			uint cargo_count = v->cargo.UnloadCount();
-			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, load_amount) : cargo_count;
+			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, GetLoadAmount(v)) : cargo_count;
 			bool remaining = false; // Are there cargo entities in this vehicle that can still be unloaded here?
 
+			assert(payment != NULL);
 			payment->SetCargo(v->cargo_type);
 
 			if (!HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE) && v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER) > 0) {
@@ -1725,8 +1752,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 		 * has capacity for it, load it on the vehicle. */
 		uint cap_left = v->cargo_cap - v->cargo.StoredCount();
 		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0)) {
-			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, load_amount);
 			if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
+			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, GetLoadAmount(v));
 
 			uint loaded = ge->cargo.Load(cap_left, &v->cargo, st->xy, next_station);
 			if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {

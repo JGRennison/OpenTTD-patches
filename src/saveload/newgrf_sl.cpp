@@ -51,7 +51,7 @@ void Load_NewGRFMapping(OverrideManagerBase &mapping)
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		if ((uint)index >= max_id) break;
+		if ((uint)index >= max_id) SlErrorCorrupt("Too many NewGRF entity mappings");
 		SlObject(&mapping.mapping_ID[index], _newgrf_mapping_desc);
 	}
 }
@@ -96,8 +96,16 @@ static void Load_NGRF()
 {
 	Load_NGRF_common(_grfconfig);
 
-	/* Append static NewGRF configuration, but only if there are some NewGRFs. */
-	if (_game_mode != GM_MENU || _all_grfs != NULL) AppendStaticGRFConfigs(&_grfconfig);
+	if (_game_mode == GM_MENU) {
+		/* Intro game must not have NewGRF. */
+		if (_grfconfig != NULL) SlErrorCorrupt("The intro game must not use NewGRF");
+
+		/* Activate intro NewGRFs (townnames) */
+		ResetGRFConfig(false);
+	} else {
+		/* Append static NewGRF configuration */
+		AppendStaticGRFConfigs(&_grfconfig);
+	}
 }
 
 static void Check_NGRF()

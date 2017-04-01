@@ -529,7 +529,7 @@ public:
 		/**
 		 * Generate landscape (newgame); %Window numbers:
 		 *   - GLWM_SCENARIO = #CreateScenarioWidgets
-		 *   - #GenenerateLandscapeWindowMode = #GenerateLandscapeWidgets
+		 *   - #GenerateLandscapeWindowMode = #GenerateLandscapeWidgets
 		 */
 		WC_GENERATE_LANDSCAPE                        = ::WC_GENERATE_LANDSCAPE,
 
@@ -942,10 +942,8 @@ public:
 		WID_RV_STOP_REPLACE                          = ::WID_RV_STOP_REPLACE,                          ///< Stop Replacing button.
 
 		/* Train only widgets. */
-		WID_RV_TRAIN_ENGINEWAGON_TOGGLE              = ::WID_RV_TRAIN_ENGINEWAGON_TOGGLE,              ///< Button to toggle engines and/or wagons.
-		WID_RV_TRAIN_FLUFF_LEFT                      = ::WID_RV_TRAIN_FLUFF_LEFT,                      ///< The fluff on the left.
+		WID_RV_TRAIN_ENGINEWAGON_DROPDOWN            = ::WID_RV_TRAIN_ENGINEWAGON_DROPDOWN,            ///< Dropdown to select engines and/or wagons.
 		WID_RV_TRAIN_RAILTYPE_DROPDOWN               = ::WID_RV_TRAIN_RAILTYPE_DROPDOWN,               ///< Dropdown menu about the railtype.
-		WID_RV_TRAIN_FLUFF_RIGHT                     = ::WID_RV_TRAIN_FLUFF_RIGHT,                     ///< The fluff on the right.
 		WID_RV_TRAIN_WAGONREMOVE_TOGGLE              = ::WID_RV_TRAIN_WAGONREMOVE_TOGGLE,              ///< Button to toggle removing wagons.
 	};
 
@@ -1499,8 +1497,10 @@ public:
 		WID_SGI_ARCTIC_LANDSCAPE                     = ::WID_SGI_ARCTIC_LANDSCAPE,                     ///< Select arctic landscape button.
 		WID_SGI_TROPIC_LANDSCAPE                     = ::WID_SGI_TROPIC_LANDSCAPE,                     ///< Select tropic landscape button.
 		WID_SGI_TOYLAND_LANDSCAPE                    = ::WID_SGI_TOYLAND_LANDSCAPE,                    ///< Select toyland landscape button.
+		WID_SGI_BASESET_SELECTION                    = ::WID_SGI_BASESET_SELECTION,                    ///< Baseset selection.
+		WID_SGI_BASESET                              = ::WID_SGI_BASESET,                              ///< Baseset errors.
 		WID_SGI_TRANSLATION_SELECTION                = ::WID_SGI_TRANSLATION_SELECTION,                ///< Translation selection.
-		WID_SGI_TRANSLATION                          = ::WID_SGI_TRANSLATION,                          ///< Translation.
+		WID_SGI_TRANSLATION                          = ::WID_SGI_TRANSLATION,                          ///< Translation errors.
 		WID_SGI_OPTIONS                              = ::WID_SGI_OPTIONS,                              ///< Options button.
 		WID_SGI_HIGHSCORE                            = ::WID_SGI_HIGHSCORE,                            ///< Highscore button.
 		WID_SGI_SETTINGS_OPTIONS                     = ::WID_SGI_SETTINGS_OPTIONS,                     ///< Settings button.
@@ -2384,6 +2384,7 @@ public:
 		WID_TN_AIRCRAFTS                             = ::WID_TN_AIRCRAFTS,                             ///< Aircraft menu.
 		WID_TN_ZOOM_IN                               = ::WID_TN_ZOOM_IN,                               ///< Zoom in the main viewport.
 		WID_TN_ZOOM_OUT                              = ::WID_TN_ZOOM_OUT,                              ///< Zoom out the main viewport.
+		WID_TN_BUILDING_TOOLS_START                  = ::WID_TN_BUILDING_TOOLS_START,                  ///< Helper for the offset of the building tools
 		WID_TN_RAILS                                 = ::WID_TN_RAILS,                                 ///< Rail building menu.
 		WID_TN_ROADS                                 = ::WID_TN_ROADS,                                 ///< Road building menu.
 		WID_TN_WATER                                 = ::WID_TN_WATER,                                 ///< Water building toolbar.

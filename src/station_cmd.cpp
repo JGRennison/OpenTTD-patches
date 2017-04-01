@@ -963,7 +963,11 @@ static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags
 				/* There is a tram, check if we can build road+tram stop over it. */
 				if (HasBit(cur_rts, ROADTYPE_TRAM)) {
 					Owner tram_owner = GetRoadOwner(cur_tile, ROADTYPE_TRAM);
-					if (!_settings_game.construction.road_stop_on_competitor_road && tram_owner != OWNER_NONE) {
+					if (Company::IsValidID(tram_owner) &&
+							(!_settings_game.construction.road_stop_on_competitor_road ||
+							/* Disallow breaking end-of-line of someone else
+							 * so trams can still reverse on this tile. */
+							HasExactlyOneBit(GetRoadBits(cur_tile, ROADTYPE_TRAM)))) {
 						CommandCost ret = CheckOwnership(tram_owner);
 						if (ret.Failed()) return ret;
 					}
@@ -1139,6 +1143,30 @@ CommandCost FindJoiningWaypoint(StationID existing_waypoint, StationID waypoint_
 }
 
 /**
+ * Clear platform reservation during station building/removing.
+ * @param v vehicle which holds reservation
+ */
+static void FreeTrainReservation(Train *v)
+{
+	FreeTrainTrackReservation(v);
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
+	v = v->Last();
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), false);
+}
+
+/**
+ * Restore platform reservation during station building/removing.
+ * @param v vehicle which held reservation
+ */
+static void RestoreTrainReservation(Train *v)
+{
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
+	TryPathReserve(v, true, true);
+	v = v->Last();
+	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), true);
+}
+
+/**
  * Build rail station
  * @param tile_org northern most position of station dragging/placement
  * @param flags operation to perform
@@ -1277,11 +1305,8 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 					/* Check for trains having a reservation for this tile. */
 					Train *v = GetTrainForReservation(tile, AxisToTrack(GetRailStationAxis(tile)));
 					if (v != NULL) {
-						FreeTrainTrackReservation(v);
 						*affected_vehicles.Append() = v;
-						if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
-						for (; v->Next() != NULL; v = v->Next()) { }
-						if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), false);
+						FreeTrainReservation(v);
 					}
 				}
 
@@ -1332,11 +1357,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 
 		for (uint i = 0; i < affected_vehicles.Length(); ++i) {
 			/* Restore reservations of trains. */
-			Train *v = affected_vehicles[i];
-			if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
-			TryPathReserve(v, true, true);
-			for (; v->Next() != NULL; v = v->Next()) { }
-			if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), true);
+			RestoreTrainReservation(affected_vehicles[i]);
 		}
 
 		/* Check whether we need to expand the reservation of trains already on the station. */
@@ -1500,14 +1521,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected
 
 			if (HasStationReservation(tile)) {
 				v = GetTrainForReservation(tile, track);
-				if (v != NULL) {
-					/* Free train reservation. */
-					FreeTrainTrackReservation(v);
-					if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
-					Vehicle *temp = v;
-					for (; temp->Next() != NULL; temp = temp->Next()) { }
-					if (IsRailStationTile(temp->tile)) SetRailStationPlatformReservation(temp->tile, TrackdirToExitdir(ReverseTrackdir(temp->GetVehicleTrackdir())), false);
-				}
+				if (v != NULL) FreeTrainReservation(v);
 			}
 
 			bool build_rail = keep_rail && !IsStationTileBlocked(tile);
@@ -1527,13 +1541,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected
 
 			affected_stations.Include(st);
 
-			if (v != NULL) {
-				/* Restore station reservation. */
-				if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
-				TryPathReserve(v, true, true);
-				for (; v->Next() != NULL; v = v->Next()) { }
-				if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), true);
-			}
+			if (v != NULL) RestoreTrainReservation(v);
 		}
 	}
 
@@ -1623,11 +1631,12 @@ CommandCost CmdRemoveFromRailWaypoint(TileIndex start, DoCommandFlag flags, uint
  * Remove a rail station/waypoint
  * @param st The station/waypoint to remove the rail part from
  * @param flags operation to perform
+ * @param removal_cost the cost for removing a tile
  * @tparam T the type of station to remove
  * @return cost or failure of operation
  */
 template <class T>
-CommandCost RemoveRailStation(T *st, DoCommandFlag flags)
+CommandCost RemoveRailStation(T *st, DoCommandFlag flags, Money removal_cost)
 {
 	/* Current company owns the station? */
 	if (_current_company != OWNER_WATER) {
@@ -1644,47 +1653,12 @@ CommandCost RemoveRailStation(T *st, DoCommandFlag flags)
 	/* clear all areas of the station */
 	TILE_AREA_LOOP(tile, ta) {
 		/* only remove tiles that are actually train station tiles */
-		if (!st->TileBelongsToRailStation(tile)) continue;
-
-		CommandCost ret = EnsureNoVehicleOnGround(tile);
-		if (ret.Failed()) return ret;
-
-		cost.AddCost(_price[PR_CLEAR_STATION_RAIL]);
-		if (flags & DC_EXEC) {
-			/* read variables before the station tile is removed */
-			Track track = GetRailStationTrack(tile);
-			Owner owner = GetTileOwner(tile); // _current_company can be OWNER_WATER
-			Train *v = NULL;
-			if (HasStationReservation(tile)) {
-				v = GetTrainForReservation(tile, track);
-				if (v != NULL) FreeTrainTrackReservation(v);
-			}
-			if (!IsStationTileBlocked(tile)) Company::Get(owner)->infrastructure.rail[GetRailType(tile)]--;
-			Company::Get(owner)->infrastructure.station--;
-			DoClearSquare(tile);
-			DeleteNewGRFInspectWindow(GSF_STATIONS, tile);
-			AddTrackToSignalBuffer(tile, track, owner);
-			YapfNotifyTrackLayoutChange(tile, track);
-			if (v != NULL) TryPathReserve(v, true);
+		if (st->TileBelongsToRailStation(tile)) {
+			SmallVector<T*, 4> affected_stations; // dummy
+			CommandCost ret = RemoveFromRailBaseStation(TileArea(tile, 1, 1), affected_stations, flags, removal_cost, false);
+			if (ret.Failed()) return ret;
+			cost.AddCost(ret);
 		}
-	}
-
-	if (flags & DC_EXEC) {
-		st->rect.AfterRemoveRect(st, st->train_station);
-
-		st->train_station.Clear();
-
-		st->facilities &= ~FACIL_TRAIN;
-
-		free(st->speclist);
-		st->num_specs = 0;
-		st->speclist  = NULL;
-		st->cached_anim_triggers = 0;
-
-		DirtyCompanyInfrastructureWindows(st->owner);
-		SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_TRAINS);
-		st->UpdateVirtCoord();
-		DeleteStationIfEmpty(st);
 	}
 
 	return cost;
@@ -1704,7 +1678,7 @@ static CommandCost RemoveRailStation(TileIndex tile, DoCommandFlag flags)
 	}
 
 	Station *st = Station::GetByTile(tile);
-	CommandCost cost = RemoveRailStation(st, flags);
+	CommandCost cost = RemoveRailStation(st, flags, _price[PR_CLEAR_STATION_RAIL]);
 
 	if (flags & DC_EXEC) st->RecomputeIndustriesNear();
 
@@ -1724,7 +1698,7 @@ static CommandCost RemoveRailWaypoint(TileIndex tile, DoCommandFlag flags)
 		return DoCommand(tile, 0, 0, DC_EXEC, CMD_REMOVE_FROM_RAIL_WAYPOINT);
 	}
 
-	return RemoveRailStation(Waypoint::GetByTile(tile), flags);
+	return RemoveRailStation(Waypoint::GetByTile(tile), flags, _price[PR_CLEAR_WAYPOINT_RAIL]);
 }
 
 
@@ -1987,6 +1961,7 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 			}
 		}
 		Company::Get(st->owner)->infrastructure.station--;
+		DirtyCompanyInfrastructureWindows(st->owner);
 
 		if (IsDriveThroughStopTile(tile)) {
 			/* Clears the tile for us */
@@ -2033,6 +2008,7 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
  * @param p1 bit 0..7: Width of the removal area.
  *           bit 8..15: Height of the removal area.
  * @param p2 bit 0: 0 For bus stops, 1 for truck stops.
+ * @param p2 bit 1: 0 to keep roads of all drive-through stops, 1 to remove them.
  * @param text Unused.
  * @return The cost of this operation or an error.
  */
@@ -2040,38 +2016,52 @@ CommandCost CmdRemoveRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 {
 	uint8 width = (uint8)GB(p1, 0, 8);
 	uint8 height = (uint8)GB(p1, 8, 8);
+	bool keep_drive_through_roads = !HasBit(p2, 1);
 
 	/* Check for incorrect width / height. */
 	if (width == 0 || height == 0) return CMD_ERROR;
 	/* Check if the first tile and the last tile are valid */
 	if (!IsValidTile(tile) || TileAddWrap(tile, width - 1, height - 1) == INVALID_TILE) return CMD_ERROR;
+	/* Bankrupting company is not supposed to remove roads, there may be road vehicles. */
+	if (!keep_drive_through_roads && (flags & DC_BANKRUPT)) return CMD_ERROR;
 
 	TileArea roadstop_area(tile, width, height);
 
-	int quantity = 0;
 	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost last_error(STR_ERROR_THERE_IS_NO_STATION);
+	bool had_success = false;
+
 	TILE_AREA_LOOP(cur_tile, roadstop_area) {
 		/* Make sure the specified tile is a road stop of the correct type */
 		if (!IsTileType(cur_tile, MP_STATION) || !IsRoadStop(cur_tile) || (uint32)GetRoadStopType(cur_tile) != GB(p2, 0, 1)) continue;
 
-		/* Save the stop info before it is removed */
-		bool is_drive_through = IsDriveThroughStopTile(cur_tile);
-		RoadTypes rts = GetRoadTypes(cur_tile);
-		RoadBits road_bits = IsDriveThroughStopTile(cur_tile) ?
-				((GetRoadStopDir(cur_tile) == DIAGDIR_NE) ? ROAD_X : ROAD_Y) :
-				DiagDirToRoadBits(GetRoadStopDir(cur_tile));
+		/* Save information on to-be-restored roads before the stop is removed. */
+		RoadTypes rts = ROADTYPES_NONE;
+		RoadBits road_bits = ROAD_NONE;
+		Owner road_owner[] = { OWNER_NONE, OWNER_NONE };
+		assert_compile(lengthof(road_owner) == ROADTYPE_END);
+		if (IsDriveThroughStopTile(cur_tile)) {
+			RoadType rt;
+			FOR_EACH_SET_ROADTYPE(rt, GetRoadTypes(cur_tile)) {
+				road_owner[rt] = GetRoadOwner(cur_tile, rt);
+				/* If we don't want to preserve our roads then restore only roads of others. */
+				if (keep_drive_through_roads || road_owner[rt] != _current_company) SetBit(rts, rt);
+			}
+			road_bits = AxisToRoadBits(DiagDirToAxis(GetRoadStopDir(cur_tile)));
+		}
 
-		Owner road_owner = GetRoadOwner(cur_tile, ROADTYPE_ROAD);
-		Owner tram_owner = GetRoadOwner(cur_tile, ROADTYPE_TRAM);
 		CommandCost ret = RemoveRoadStop(cur_tile, flags);
-		if (ret.Failed()) return ret;
+		if (ret.Failed()) {
+			last_error = ret;
+			continue;
+		}
 		cost.AddCost(ret);
+		had_success = true;
 
-		quantity++;
-		/* If the stop was a drive-through stop replace the road */
-		if ((flags & DC_EXEC) && is_drive_through) {
+		/* Restore roads. */
+		if ((flags & DC_EXEC) && rts != ROADTYPES_NONE) {
 			MakeRoadNormal(cur_tile, road_bits, rts, ClosestTownFromTile(cur_tile, UINT_MAX)->index,
-					road_owner, tram_owner);
+					road_owner[ROADTYPE_ROAD], road_owner[ROADTYPE_TRAM]);
 
 			/* Update company infrastructure counts. */
 			RoadType rt;
@@ -2085,9 +2075,7 @@ CommandCost CmdRemoveRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 		}
 	}
 
-	if (quantity == 0) return_cmd_error(STR_ERROR_THERE_IS_NO_STATION);
-
-	return cost;
+	return had_success ? cost : last_error;
 }
 
 /**
@@ -2913,12 +2901,12 @@ draw_default_foundation:
 		}
 	}
 
-	if (HasStationRail(ti->tile) && HasCatenaryDrawn(GetRailType(ti->tile))) DrawCatenary(ti);
+	if (HasStationRail(ti->tile) && HasRailCatenaryDrawn(GetRailType(ti->tile))) DrawRailCatenary(ti);
 
 	if (HasBit(roadtypes, ROADTYPE_TRAM)) {
 		Axis axis = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? AXIS_X : AXIS_Y;
 		DrawGroundSprite((HasBit(roadtypes, ROADTYPE_ROAD) ? SPR_TRAMWAY_OVERLAY : SPR_TRAMWAY_TRAM) + (axis ^ 1), PAL_NONE);
-		DrawTramCatenary(ti, axis == AXIS_X ? ROAD_X : ROAD_Y);
+		DrawRoadCatenary(ti, axis == AXIS_X ? ROAD_X : ROAD_Y);
 	}
 
 	if (IsRailWaypoint(ti->tile)) {
@@ -3011,6 +2999,7 @@ static void GetTileDesc_Station(TileIndex tile, TileDesc *td)
 
 		const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(tile));
 		td->rail_speed = rti->max_speed;
+		td->railtype = rti->strings.name;
 	}
 
 	if (IsAirport(tile)) {
@@ -3299,7 +3288,7 @@ static void UpdateStationRating(Station *st)
 
 			bool skip = false;
 			int rating = 0;
-			uint waiting = ge->cargo.TotalCount();
+			uint waiting = ge->cargo.AvailableCount();
 
 			/* num_dests is at least 1 if there is any cargo as
 			 * INVALID_STATION is also a destination.
@@ -3461,6 +3450,7 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
 void DeleteStaleLinks(Station *from)
 {
 	for (CargoID c = 0; c < NUM_CARGO; ++c) {
+		const bool auto_distributed = (_settings_game.linkgraph.GetDistributionType(c) != DT_MANUAL);
 		GoodsEntry &ge = from->goods[c];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);
 		if (lg == NULL) continue;
@@ -3473,36 +3463,52 @@ void DeleteStaleLinks(Station *from)
 			assert(_date >= edge.LastUpdate());
 			uint timeout = LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3);
 			if ((uint)(_date - edge.LastUpdate()) > timeout) {
-				/* Have all vehicles refresh their next hops before deciding to
-				 * remove the node. */
 				bool updated = false;
-				OrderList *l;
-				FOR_ALL_ORDER_LISTS(l) {
-					bool found_from = false;
-					bool found_to = false;
-					for (Order *order = l->GetFirstOrder(); order != NULL; order = order->next) {
-						if (!order->IsType(OT_GOTO_STATION) && !order->IsType(OT_IMPLICIT)) continue;
-						if (order->GetDestination() == from->index) {
-							found_from = true;
-							if (found_to) break;
-						} else if (order->GetDestination() == to->index) {
-							found_to = true;
-							if (found_from) break;
+
+				if (auto_distributed) {
+					/* Have all vehicles refresh their next hops before deciding to
+					 * remove the node. */
+					OrderList *l;
+					SmallVector<Vehicle *, 32> vehicles;
+					FOR_ALL_ORDER_LISTS(l) {
+						bool found_from = false;
+						bool found_to = false;
+						for (Order *order = l->GetFirstOrder(); order != NULL; order = order->next) {
+							if (!order->IsType(OT_GOTO_STATION) && !order->IsType(OT_IMPLICIT)) continue;
+							if (order->GetDestination() == from->index) {
+								found_from = true;
+								if (found_to) break;
+							} else if (order->GetDestination() == to->index) {
+								found_to = true;
+								if (found_from) break;
+							}
 						}
+						if (!found_to || !found_from) continue;
+						*(vehicles.Append()) = l->GetFirstSharedVehicle();
 					}
-					if (!found_to || !found_from) continue;
-					for (Vehicle *v = l->GetFirstSharedVehicle(); !updated && v != NULL; v = v->NextShared()) {
-						/* There is potential for optimization here:
-						 * - Usually consists of the same order list are the same. It's probably better to
-						 *   first check the first of each list, then the second of each list and so on.
-						 * - We could try to figure out if we've seen a consist with the same cargo on the
-						 *   same list already and if the consist can actually carry the cargo we're looking
-						 *   for. With conditional and refit orders this is not quite trivial, though. */
+
+					Vehicle **iter = vehicles.Begin();
+					while (iter != vehicles.End()) {
+						Vehicle *v = *iter;
+
 						LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
-						if (edge.LastUpdate() == _date) updated = true;
+						if (edge.LastUpdate() == _date) {
+							updated = true;
+							break;
+						}
+
+						Vehicle *next_shared = v->NextShared();
+						if (next_shared) {
+							*iter = next_shared;
+							++iter;
+						} else {
+							vehicles.Erase(iter);
+						}
+
+						if (iter == vehicles.End()) iter = vehicles.Begin();
 					}
-					if (updated) break;
 				}
+
 				if (!updated) {
 					/* If it's still considered dead remove it. */
 					node.RemoveEdge(to->goods[c].node);

@@ -11,6 +11,7 @@
 
 #include "../../stdafx.h"
 #include "script_list.hpp"
+#include "script_controller.hpp"
 #include "../../debug.h"
 #include "../../script/squirrel.hpp"
 
@@ -556,6 +557,8 @@ void ScriptList::Sort(SorterType sorter, bool ascending)
 
 void ScriptList::AddList(ScriptList *list)
 {
+	if (list == this) return;
+
 	ScriptListMap *list_items = &list->items;
 	for (ScriptListMap::iterator iter = list_items->begin(); iter != list_items->end(); iter++) {
 		this->AddItem((*iter).first);
@@ -565,6 +568,8 @@ void ScriptList::AddList(ScriptList *list)
 
 void ScriptList::SwapList(ScriptList *list)
 {
+	if (list == this) return;
+
 	this->items.swap(list->items);
 	this->buckets.swap(list->buckets);
 	Swap(this->sorter, list->sorter);
@@ -694,9 +699,13 @@ void ScriptList::RemoveList(ScriptList *list)
 {
 	this->modifications++;
 
-	ScriptListMap *list_items = &list->items;
-	for (ScriptListMap::iterator iter = list_items->begin(); iter != list_items->end(); iter++) {
-		this->RemoveItem((*iter).first);
+	if (list == this) {
+		Clear();
+	} else {
+		ScriptListMap *list_items = &list->items;
+		for (ScriptListMap::iterator iter = list_items->begin(); iter != list_items->end(); iter++) {
+			this->RemoveItem((*iter).first);
+		}
 	}
 }
 
@@ -756,14 +765,12 @@ void ScriptList::KeepBottom(int32 count)
 
 void ScriptList::KeepList(ScriptList *list)
 {
+	if (list == this) return;
+
 	this->modifications++;
 
 	ScriptList tmp;
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end(); iter++) {
-		tmp.AddItem((*iter).first);
-		tmp.SetValue((*iter).first, (*iter).second);
-	}
-
+	tmp.AddList(this);
 	tmp.RemoveList(list);
 	this->RemoveList(&tmp);
 }
@@ -897,6 +904,16 @@ SQInteger ScriptList::Valuate(HSQUIRRELVM vm)
 				ScriptObject::SetAllowDoCommand(backup_allow);
 				return sq_throwerror(vm, "return value of valuator is not valid (not integer/bool)");
 			}
+		}
+
+		/* Kill the script when the valuator call takes way too long.
+		 * Triggered by nesting valuators, which then take billions of iterations. */
+		if (ScriptController::GetOpsTillSuspend() < -1000000) {
+			/* See below for explanation. The extra pop is the return value. */
+			sq_pop(vm, nparam + 4);
+
+			ScriptObject::SetAllowDoCommand(backup_allow);
+			return sq_throwerror(vm, "excessive CPU usage in valuator function");
 		}
 
 		/* Was something changed? */

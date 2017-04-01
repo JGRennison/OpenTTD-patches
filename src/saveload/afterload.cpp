@@ -16,6 +16,7 @@
 #include "../fios.h"
 #include "../gamelog_internal.h"
 #include "../network/network.h"
+#include "../network/network_func.h"
 #include "../gfxinit.h"
 #include "../viewport_func.h"
 #include "../industry.h"
@@ -247,7 +248,7 @@ static void InitializeWindowsAndCaches()
 		/* For each company, verify (while loading a scenario) that the inauguration date is the current year and set it
 		 * accordingly if it is not the case.  No need to set it on companies that are not been used already,
 		 * thus the MIN_YEAR (which is really nothing more than Zero, initialized value) test */
-		if (_file_to_saveload.filetype == FT_SCENARIO && c->inaugurated_year != MIN_YEAR) {
+		if (_file_to_saveload.abstract_ftype == FT_SCENARIO && c->inaugurated_year != MIN_YEAR) {
 			c->inaugurated_year = _cur_year;
 		}
 	}
@@ -717,12 +718,14 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(95))   _settings_game.vehicle.dynamic_engines = 0;
 	if (IsSavegameVersionBefore(96))   _settings_game.economy.station_noise_level = false;
 	if (IsSavegameVersionBefore(133)) {
-		_settings_game.vehicle.roadveh_acceleration_model = 0;
 		_settings_game.vehicle.train_slope_steepness = 3;
 	}
 	if (IsSavegameVersionBefore(134))  _settings_game.economy.feeder_payment_share = 75;
 	if (IsSavegameVersionBefore(138))  _settings_game.vehicle.plane_crashes = 2;
-	if (IsSavegameVersionBefore(139))  _settings_game.vehicle.roadveh_slope_steepness = 7;
+	if (IsSavegameVersionBefore(139)) {
+		_settings_game.vehicle.roadveh_acceleration_model = 0;
+		_settings_game.vehicle.roadveh_slope_steepness = 7;
+	}
 	if (IsSavegameVersionBefore(143))  _settings_game.economy.allow_town_level_crossings = true;
 	if (IsSavegameVersionBefore(159)) {
 		_settings_game.vehicle.max_train_length = 50;
@@ -2951,18 +2954,20 @@ bool AfterLoadGame()
 	}
 
 	/*
-	 * Only keep order-backups for network clients.
+	 * Only keep order-backups for network clients (and when replaying).
 	 * If we are a network server or not networking, then we just loaded a previously
 	 * saved-by-server savegame. There are no clients with a backup, so clear it.
 	 * Furthermore before savegame version 192 the actual content was always corrupt.
 	 */
 	if (!_networking || _network_server || IsSavegameVersionBefore(192)) {
+#ifndef DEBUG_DUMP_COMMANDS
 		/* Note: We cannot use CleanPool since that skips part of the destructor
 		 * and then leaks un-reachable Orders in the order pool. */
 		OrderBackup *ob;
 		FOR_ALL_ORDER_BACKUPS(ob) {
 			delete ob;
 		}
+#endif
 	}
 
 

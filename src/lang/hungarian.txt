@@ -991,10 +991,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Grúz Lari (GEL
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iráni Riál (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Közúti járművek
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}A közúti közlekedés oldalának kiválasztása
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Balra hajtás
@@ -2669,29 +2665,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Szántóföld
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Havas föld
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Sivatag
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} vasúti pálya
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} vasúti pálya normál jelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} vasúti pálya előjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} vasúti pálya kijárati jelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} vasúti pálya kombinált jelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} vasúti pálya irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} vasúti pálya egyirányú irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} vasúti pálya normál- és előjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} vasúti pálya normál- és kijárati jelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} vasúti pálya normál- és kombinált jelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} vasúti pálya normál- és irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} vasúti pálya normál- és egyirányú irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} vasúti pálya elő- és kijárati jelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} vasúti pálya elő- és kombinált jelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} vasúti pálya elő- és irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} vasúti pálya elő- és egyirányú irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} vasúti pálya kijárati- és kombinált jelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} vasúti pálya kijárati- és irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} vasúti pálya kijárati- és egyirányú irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} vasúti pálya kombinált- és irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} vasúti pálya kombinált- és egyirányú irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} vasúti pálya irány- és egyirányú irányjelzőkkel
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} járműtelep
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Vasút vasúti pálya
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Vasút vasúti pálya normál jelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Vasút vasúti pálya előjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Vasút vasúti pálya kijárati jelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Vasút vasúti pálya kombinált jelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Vasút vasúti pálya irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Vasút vasúti pálya egyirányú irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Vasút vasúti pálya normál- és előjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Vasút vasúti pálya normál- és kijárati jelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Vasút vasúti pálya normál- és kombinált jelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Vasút vasúti pálya normál- és irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Vasút vasúti pálya normál- és egyirányú irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Vasút vasúti pálya elő- és kijárati jelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Vasút vasúti pálya elő- és kombinált jelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Vasút vasúti pálya elő- és irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Vasút vasúti pálya elő- és egyirányú irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Vasút vasúti pálya kijárati- és kombinált jelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Vasút vasúti pálya kijárati- és irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Vasút vasúti pálya kijárati- és egyirányú irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Vasút vasúti pálya kombinált- és irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Vasút vasúti pálya kombinált- és egyirányú irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Vasút vasúti pálya irány- és egyirányú irányjelzőkkel
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Vasút járműtelep
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Út
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Út közvilágítással
@@ -2755,7 +2751,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Vállalat álta
 STR_ABOUT_OPENTTD                                               :{WHITE}Az OpenTTD-ről
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Eredeti copyright {COPYRIGHT} 1995 Chris Sawyer, Minden jog fenntartva
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD {REV} verzió
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 Az OpenTTD csapat
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 Az OpenTTD csapat
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Játék mentése
@@ -2942,7 +2938,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Ugrás a
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Előző sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Továbbhaladás az előző normál spritera, kihagyva bármilyen ál/átszínező/betű spriteokat, az elején folytatva az utolsóval
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}A jelenleg kiválasztott sprite ábrázolása. Az elhelyezkedés kikapcsolt sprite-rajzolás közben
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Sprite elmozdítása, módosítva az X és Y offszeteket
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Sprite elmozdítása, módosítva az X és Y offszeteket. Ctrl+kattintással a spriteot nyolc egységgel mozgatja
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Eltolás visszaállítása
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}A jelenlegi relatív eltolás visszaállítása
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X eltolás: {NUM}, Y eltolás: {NUM} (Abszolút)
@@ -2957,7 +2953,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Figyelmeztetés: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Hiba: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Végzetes hiba: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Egy végzetes NewGRF hiba történt: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Egy végzetes NewGRF hiba történt:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} nem fog működni az OpenTTD által jelentett TTDPatch verzióval
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} a TTD {STRING} verziójához van
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} úgy lett tervezve, hogy együtt lesz használva ezzel: {STRING}
@@ -2974,8 +2970,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Érvénytelen I
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} hibás sprite-ot tartalmaz. Minden hibás sprite piros kérdőjellel (?) kerül jelölésre
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Több Action 8 bejegyzést tartalmaz (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Ál-sprite távoli végének olvasása (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}A jelenleg használt grafikus alapcsomagból hiányzik számos sprite.{}Kérlek frissítsd a grafikus alapcsomagot
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}A használt alap grafikus csomagból néhány egység hiányzik.{}Kérjük frissítsd az alap grafikus csomagot.{}Mivel az {YELLOW}OpenTTD fejlesztői változatát{WHITE} használod, lehet, hogy a {YELLOW}fejlesztői alap grafikus csomagot{WHITE} kellene használnod
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Kért GRF források nem elérhetőek (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} kikapcsolva {STRING} által
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Érvénytelen/ismeretlen sprite szerkezet formátum (sprite {3:NUM})
@@ -3119,7 +3113,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Információ
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Figyelmeztetés
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Hiba
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Mégse
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Nem
@@ -3138,6 +3132,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Újrakezd
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Elhalaszt
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Felad
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Bezár
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Támogatások
@@ -3361,9 +3356,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Felhaszn
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Felhasznál: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Feldolgozásra váró rakomány:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Gyárt: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Gyárt: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3594,10 +3588,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :Maglev mozdony
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Ár: {CURRENCY_LONG} Súly: {WEIGHT_SHORT}{}Sebesség: {VELOCITY} Teljesítmény: {POWER}{}Üzemeltetés: {CURRENCY_LONG}/év{}Kapacitás: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Ár: {CURRENCY_LONG} Súly: {WEIGHT_SHORT}{}Sebesség: {VELOCITY} Teljesítmény: {POWER} Maximális vonóerő: {6:FORCE}{}Üzemeltetés: {4:CURRENCY_LONG}/év{}Kapacitás: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Ár: {CURRENCY_LONG} Végsebesség: {VELOCITY}{}Kapacitás: {CARGO_LONG}, {CARGO_LONG}{}Üzemeltetés: {CURRENCY_LONG}/év
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Ár: {CURRENCY_LONG} Végsebesség: {VELOCITY}{}Kapacitás: {CARGO_LONG}{}Üzemeltetés: {CURRENCY_LONG}/év
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Ár: {CURRENCY_LONG} Végsebesség: {VELOCITY} Hatótávolság: {COMMA} mező{}Kapacitás: {CARGO_LONG}, {CARGO_LONG}{}Üzemeltetés: {CURRENCY_LONG}/év
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Ár: {CURRENCY_LONG} Végsebesség: {VELOCITY} Hatótávolság: {COMMA} mező{}Kapacitás: {CARGO_LONG}{}Üzemeltetés: {CURRENCY_LONG}/év
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Ár: {CURRENCY_LONG} Végsebesség: {VELOCITY}{}Kapacitás: {CARGO_LONG}{}Üzemeltetés: {CURRENCY_LONG}/év
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}{STRING} lecserélése - {STRING}
@@ -3624,7 +3615,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} - csak
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Járműcsere befejezése
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Nyomd meg ezt a gombot, ha be akarod fejezni a bal oldalon kiválasztott járművek cseréjét
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Lecserél: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Váltás a mozdony és a vagoncserélő ablak között
 STR_REPLACE_ENGINES                                             :Mozdonyok
 STR_REPLACE_WAGONS                                              :Vagonok
@@ -3720,7 +3710,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} év ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} év ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Végsebesség: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Végsebesség: {LTBLUE}{VELOCITY} {BLACK}Hatótávolság: {LTBLUE}{COMMA} mező
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Súly: {LTBLUE}{WEIGHT_SHORT} {BLACK}Teljesítmény: {LTBLUE}{POWER}{BLACK} Végsebesség: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Súly: {LTBLUE}{WEIGHT_SHORT} {BLACK}Teljesítmény: {LTBLUE}{POWER}{BLACK} Végsebesség: {LTBLUE}{VELOCITY} {BLACK}Vonóerő: {LTBLUE}{FORCE}
 

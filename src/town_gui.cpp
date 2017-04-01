@@ -177,7 +177,7 @@ public:
 		y = y + WD_FRAMERECT_BOTTOM - nwid->pos_y; // Compute needed size of the widget.
 		if (y > nwid->current_y) {
 			/* If the company list is too big to fit, mark ourself dirty and draw again. */
-			ResizeWindow(this, 0, y - nwid->current_y);
+			ResizeWindow(this, 0, y - nwid->current_y, false);
 		}
 	}
 
@@ -1113,7 +1113,8 @@ public:
 		bool success = DoCommandP(tile, this->town_size | this->city << 2 | this->town_layout << 3 | random << 6,
 				townnameparts, CMD_FOUND_TOWN | CMD_MSG(errstr), cc, name);
 
-		if (success) this->RandomTownName();
+		/* Rerandomise name, if success and no cost-estimation. */
+		if (success && !_shift_pressed) this->RandomTownName();
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)

@@ -1147,7 +1147,7 @@ static bool InvalidateCompanyWindow(int32 p1)
 static void ValidateSettings()
 {
 	/* Do not allow a custom sea level with the original land generator. */
-	if (_settings_newgame.game_creation.land_generator == 0 &&
+	if (_settings_newgame.game_creation.land_generator == LG_ORIGINAL &&
 			_settings_newgame.difficulty.quantity_sea_lakes == CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY) {
 		_settings_newgame.difficulty.quantity_sea_lakes = CUSTOM_SEA_LEVEL_MIN_PERCENTAGE;
 	}
@@ -1688,7 +1688,7 @@ static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescP
 static IniFile *IniLoadConfig()
 {
 	IniFile *ini = new IniFile(_list_group_names);
-	ini->LoadFromDisk(_config_file, BASE_DIR);
+	ini->LoadFromDisk(_config_file, NO_DIRECTORY);
 	return ini;
 }
 

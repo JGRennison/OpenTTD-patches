@@ -792,7 +792,7 @@ STR_NEWS_TRAIN_CRASH                                            :{BIG_FONT}{BLAC
 STR_NEWS_ROAD_VEHICLE_CRASH_DRIVER                              :{BIG_FONT}{BLACK}Accidente de tráfico!{}O condutor morre na deflagración producida trala colisión cun tren
 STR_NEWS_ROAD_VEHICLE_CRASH                                     :{BIG_FONT}{BLACK}Accidente de tráfico!{}{COMMA} mortos na deflagración producida trala colisión cun tren
 STR_NEWS_AIRCRAFT_CRASH                                         :{BIG_FONT}{BLACK}Accidente aéreo!{}{COMMA} mortos na deflagración en {STATION}
-STR_NEWS_PLANE_CRASH_OUT_OF_FUEL                                :{BIG_FONT}{BLACK}Accidente de aéreo!O avión {} quedou sen combustible, {COMMA} mortos na deflagración!
+STR_NEWS_PLANE_CRASH_OUT_OF_FUEL                                :{BIG_FONT}{BLACK}Accidente de aéreo!O avión{} quedou sen combustible, {COMMA} mortos na deflagración!
 
 STR_NEWS_DISASTER_ZEPPELIN                                      :{BIG_FONT}{BLACK}Desastre dun zeppelin en {STATION}!
 STR_NEWS_DISASTER_SMALL_UFO                                     :{BIG_FONT}{BLACK}Vehículo de estrada destruído tras colisionar cun 'OVNI'!
@@ -926,10 +926,6 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Persoal...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari xeorxiano (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Real iraniano (IRR)
 ############ end of currency region
-
-
-############ start of measuring units region
-############ end of measuring units region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Vehículos de estrada
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Selecciona o lado da estrada polo que circularán os vehículos
@@ -2564,29 +2560,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Leiras
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terra cuberta de neve
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Deserto
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Vía de {STRING}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Vía de {STRING} con sinais de bloqueo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Vía de {STRING} con sinais avanzados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Vía de {STRING} con sinais de saída
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Vía de {STRING} con sinais combo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Vía de {STRING} con sinais de ruta
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Vía de {STRING} con sinais de ruta monosentido
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Vía de {STRING} con sinais de bloqueo e avanzados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Vía de {STRING} con sinais de bloqueo e saída
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Vía de {STRING} con sinais de bloqueo e combo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Vía de {STRING} con sinais de bloqueo e de ruta
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Vía de {STRING} con sinais de bloqueo e de ruta monosentido
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Vía de {STRING} con sinais avanzados e de saída
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Vía de {STRING} con sinais avanzados e combo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Vía de {STRING} con sinais avanzados e de ruta
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Vía de {STRING} con sinais avanzados e de ruta monosentido
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Vía de {STRING} con sinais de saída e combo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Vía de {STRING} con sinais de saída e de ruta
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Vía de {STRING} con sinais de saída e de ruta monosentido
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Vía de {STRING} con sinais combo e de ruta
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Vía de {STRING} con sinais combo e de ruta monosentido
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Vía de {STRING} con sinais de ruta e de ruta monosentido
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Depósito ferroviario {STRING}
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Vía de Ferrocarril
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Vía de Ferrocarril con sinais de bloqueo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Vía de Ferrocarril con sinais avanzados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Vía de Ferrocarril con sinais de saída
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Vía de Ferrocarril con sinais combo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Vía de Ferrocarril con sinais de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Vía de Ferrocarril con sinais de ruta monosentido
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Vía de Ferrocarril con sinais de bloqueo e avanzados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Vía de Ferrocarril con sinais de bloqueo e saída
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Vía de Ferrocarril con sinais de bloqueo e combo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Vía de Ferrocarril con sinais de bloqueo e de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Vía de Ferrocarril con sinais de bloqueo e de ruta monosentido
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Vía de Ferrocarril con sinais avanzados e de saída
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Vía de Ferrocarril con sinais avanzados e combo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Vía de Ferrocarril con sinais avanzados e de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Vía de Ferrocarril con sinais avanzados e de ruta monosentido
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Vía de Ferrocarril con sinais de saída e combo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Vía de Ferrocarril con sinais de saída e de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Vía de Ferrocarril con sinais de saída e de ruta monosentido
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Vía de Ferrocarril con sinais combo e de ruta
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Vía de Ferrocarril con sinais combo e de ruta monosentido
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Vía de Ferrocarril con sinais de ruta e de ruta monosentido
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Depósito ferroviario Ferrocarril
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Estrada
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Estrada con iluminación
@@ -2650,7 +2646,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terreo propieda
 STR_ABOUT_OPENTTD                                               :{WHITE}Acerca de OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyright orixinal {COPYRIGHT} 1995 Chris Sawyer, Tódolos dereitos reservados
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versión {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 O equipo de OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 O equipo de OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Gravar partida
@@ -2847,7 +2843,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Coidado: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Erro: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Erro fatal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Ocorreu un erro fatal de NewGRF: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Ocorreu un erro fatal de NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} non funcionará coa versión de TTDPatch reportada por OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} é para a versión {STRING} de TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} está deseñado para ser usado con {STRING}
@@ -2864,8 +2860,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Intento de usar
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} contén un sprite corrupto. Tódolos sprites corruptos mostraranse coma unha interrogación vermella (?).
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contén múltiples entradas de acción 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lectura máis aló da fin dun pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE} Ao conxunto de gráficos básicos empregado actualmente fáltalle un número de sprites. {}Por favor, actualiza o conxunto de gráficos básico
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE} Ao conxunto de gráficos básicos empregado actualmente fáltalle un número de sprites. {}Por favor, actualiza o conxunto de gráficos básico.{}Dado que estás a xogar unha {YELLOW}versión de desenrolo de OpenTTD{WHITE}, é posíbel que tamén necesites unha {YELLOW}versión de desenrolo do conjunto de gráficos base{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Os recursos GRF solicitados non están disponíbeis (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} foi desactivado por {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Formato de colocación de sprites inválido ou descoñecido (sprite {3:NUM})
@@ -2941,7 +2935,7 @@ STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Poboaci�
 STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Pasaxeiros último mes: {ORANGE}{COMMA}{BLACK}  máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Correo último mes: {ORANGE}{COMMA}{BLACK}  máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Carga necesaria para o crecemento da cidade:
-STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} necesario{P "" s}
+STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} necesario
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} necesarios en inverno
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} entregados
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (todavía requeridos)
@@ -3007,7 +3001,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Información
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Aviso
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Erro
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Cancelar
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Non
@@ -3026,6 +3020,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Reiniciar
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Pospoñer
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Renderse
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Pechar
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subvencións
@@ -3246,9 +3241,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Require:
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Require: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Carga esperando ser procesada:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produce: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produce: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3477,10 +3471,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :locomotora de m
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Custo: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade: {VELOCITY}  Potencia: {POWER}{}Custo operativo: {CURRENCY_LONG}/ano{}Capacidade: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Custo: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade: {VELOCITY}  Potencia: {POWER}  Esforzo tractor máximo: {6:FORCE}{}Custo operativo: {4:CURRENCY_LONG}/ano{}Capacidade: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Custo: {CURRENCY_LONG} Velocidade máxima: {VELOCITY}{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo operativo: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Custo: {CURRENCY_LONG} Velocidade máxima: {VELOCITY}{}Capacidade: {CARGO_LONG}{}Custo operativo: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Custo: {CURRENCY_LONG} Velocidade máxima: {VELOCITY} Autonomía: {COMMA} cadros{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo operativo: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Custo: {CURRENCY_LONG} Velocidade máxima: {VELOCITY} Autonomía: {COMMA} cadros{}Capacidade: {CARGO_LONG}{}Custo operativo: {CURRENCY_LONG}/ano
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Custo: {CURRENCY_LONG} Velocidade máxima: {VELOCITY}{}Capacidade: {CARGO_LONG}{}Custo operativo: {CURRENCY_LONG}/ano
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Substituír {STRING} - {STRING}
@@ -3507,7 +3498,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} cando 
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Parar de substituír vehículos
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Presiona para parar a substitución do tipo de máquina seleccionada na esquerda
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Substituíndo: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Cambia entre as fiestras de substitución de locomotoras e vagóns
 STR_REPLACE_ENGINES                                             :Locomotoras
 STR_REPLACE_WAGONS                                              :Vagóns
@@ -3603,7 +3593,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ano{P "
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ano{P "" s} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Velocidade máxima: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Velocidade máxima: {LTBLUE}{VELOCITY} {BLACK}Autonomía: {LTBLUE}{COMMA} cadros
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potencia: {LTBLUE}{POWER}{BLACK} Velocidade máxima: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potencia: {LTBLUE}{POWER}{BLACK} Velocidade máxima: {LTBLUE}{VELOCITY} {BLACK}T.E. máx.: {LTBLUE}{FORCE}
 

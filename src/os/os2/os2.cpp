@@ -45,7 +45,7 @@ bool FiosIsRoot(const char *file)
 	return file[3] == '\0';
 }
 
-void FiosGetDrives()
+void FiosGetDrives(FileList &file_list)
 {
 	uint disk, disk2, save, total;
 
@@ -75,7 +75,7 @@ void FiosGetDrives()
 #endif
 
 		if (disk == disk2) {
-			FiosItem *fios = _fios_items.Append();
+			FiosItem *fios = file_list.Append();
 			fios->type = FIOS_TYPE_DRIVE;
 			fios->mtime = 0;
 #ifndef __INNOTEK_LIBC__
@@ -173,6 +173,9 @@ void ShowOSErrorBox(const char *buf, bool system)
 int CDECL main(int argc, char *argv[])
 {
 	SetRandomSeed(time(NULL));
+
+	/* Make sure our arguments contain only valid UTF-8 characters. */
+	for (int i = 0; i < argc; i++) ValidateString(argv[i]);
 
 	return openttd_main(argc, argv);
 }

@@ -88,7 +88,7 @@
 #include <map>
 
 #include "table/strings.h"
-#include "table/palettes.h"
+#include "table/string_colours.h"
 
 #include "safeguards.h"
 
@@ -1309,8 +1309,9 @@ static void ViewportAddSigns(DrawPixelInfo *dpi)
  * @param center the (preferred) center of the viewport sign
  * @param top    the new top of the sign
  * @param str    the string to show in the sign
+ * @param str_small the string to show when zoomed out. STR_NULL means same as \a str
  */
-void ViewportSign::UpdatePosition(int center, int top, StringID str)
+void ViewportSign::UpdatePosition(int center, int top, StringID str, StringID str_small)
 {
 	if (this->width_normal != 0) this->MarkDirty();
 
@@ -1323,6 +1324,9 @@ void ViewportSign::UpdatePosition(int center, int top, StringID str)
 	this->center = center;
 
 	/* zoomed out version */
+	if (str_small != STR_NULL) {
+		GetString(buffer, str_small, lastof(buffer));
+	}
 	this->width_small = VPSM_LEFT + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + VPSM_RIGHT;
 
 	this->MarkDirty();
@@ -3137,6 +3141,13 @@ EventState VpHandlePlaceSizingDrag()
 	return ES_HANDLED;
 }
 
+/**
+ * Change the cursor and mouse click/drag handling to a mode for performing special operations like tile area selection, object placement, etc.
+ * @param icon New shape of the mouse cursor.
+ * @param pal Palette to use.
+ * @param mode Mode to perform.
+ * @param w %Window requesting the mode change.
+ */
 void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, HighLightStyle mode, Window *w)
 {
 	SetObjectToPlace(icon, pal, mode, w->window_class, w->window_number);
@@ -3144,6 +3155,14 @@ void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, HighLightStyle mode, Wind
 
 #include "table/animcursors.h"
 
+/**
+ * Change the cursor and mouse click/drag handling to a mode for performing special operations like tile area selection, object placement, etc.
+ * @param icon New shape of the mouse cursor.
+ * @param pal Palette to use.
+ * @param mode Mode to perform.
+ * @param window_class %Window class of the window requesting the mode change.
+ * @param window_num Number of the window in its class requesting the mode change.
+ */
 void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowClass window_class, WindowNumber window_num)
 {
 	if (_thd.window_class != WC_INVALID) {
@@ -3188,6 +3207,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 
 }
 
+/** Reset the cursor and mouse mode handling back to default (normal cursor, only clicking in windows). */
 void ResetObjectToPlace()
 {
 	SetObjectToPlace(SPR_CURSOR_MOUSE, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);

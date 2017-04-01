@@ -898,10 +898,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgiskur Lari
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranskur Rial
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Akfør
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Áset hvørja síðu á vegnum akfør skulu koyra á
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vinstrakoyring
@@ -954,6 +950,8 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Marka he
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skerm upploysn
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Vel hvørja skermupploysn tú vil brúka
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Base grafikk sett
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Vel ta base grafikk setti tú vil brúka
@@ -1054,7 +1052,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :Fíggjindaligir
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Einki hóskandi AI til taks...{}Tú kann heinta niður fleiri ymisk AI gjøgnum 'Online tilfar' kervi
 
-# Advanced settings window
+# Settings tree window
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtur strongur:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Víðka alt
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Toga alt saman
@@ -2343,29 +2341,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Markir
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Kava-klætt lendi
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Oyðimørk
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} breyt
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} breyt við blokk teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} breyt við for teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} breyt við útvegs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} breyt við blandings teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} breyt við leið teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} breyt við einvegis leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} breyt við blokk og for teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} breyt við blokk og útvegs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} breyt við block og blandings teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} breyt við blokk og leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} breyt við blokk og einvegis leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} breyt við for og útvegis teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} breyt við for og blandings teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} breyt við for og leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} breyt við for og einvegis leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} breyt við útvegs og blandings teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} breyt við útvegs og leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} breyt við útvegs og einvegis leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} breyt við blandings og leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} breyt við blandings og einvegis leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} breyt við leiðs og einvegis leiðs teknum
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} Tok goymsla
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{G=m}Jarnbreyt breyt
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{G=m}Jarnbreyt breyt við blokk teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{G=m}Jarnbreyt breyt við for teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{G=m}Jarnbreyt breyt við útvegs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{G=m}Jarnbreyt breyt við blandings teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{G=m}Jarnbreyt breyt við leið teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{G=m}Jarnbreyt breyt við einvegis leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{G=m}Jarnbreyt breyt við blokk og for teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{G=m}Jarnbreyt breyt við blokk og útvegs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{G=m}Jarnbreyt breyt við block og blandings teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{G=m}Jarnbreyt breyt við blokk og leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{G=m}Jarnbreyt breyt við blokk og einvegis leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{G=m}Jarnbreyt breyt við for og útvegis teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{G=m}Jarnbreyt breyt við for og blandings teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{G=m}Jarnbreyt breyt við for og leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{G=m}Jarnbreyt breyt við for og einvegis leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{G=m}Jarnbreyt breyt við útvegs og blandings teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{G=m}Jarnbreyt breyt við útvegs og leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{G=m}Jarnbreyt breyt við útvegs og einvegis leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{G=m}Jarnbreyt breyt við blandings og leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{G=m}Jarnbreyt breyt við blandings og einvegis leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{G=m}Jarnbreyt breyt við leiðs og einvegis leiðs teknum
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{G=m}Jarnbreyt Tok goymsla
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Vegur
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Vegur við lyktapelum
@@ -2429,7 +2427,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ogn hjá fyrit�
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upprunalig upphavsrættindi {COPYRIGHT} 1995 Chris Sawyer, Øll rættindi umbiðin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáva {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD toymi
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 OpenTTD toymi
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Goym spæl
@@ -2716,7 +2714,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Kunning
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Ávaring
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Villa
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Angra
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Nei
@@ -2735,6 +2733,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Endurbyrja
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Útset
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Gev teg upp
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Lat aftur
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Stuðulsflutningur
@@ -2924,9 +2923,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Tørvar:
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Tørvar: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Farmur ið bíðar eftir at verða viðgjørdur:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Framleiður: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Framleiður: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3143,10 +3141,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :maglev lokomoti
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kostnaður: {CURRENCY_LONG} Vekt: {WEIGHT_SHORT}{}Ferð: {VELOCITY}  Megi: {POWER}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár{}Pláss: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Kostnaður: {CURRENCY_LONG} Vekt: {WEIGHT_SHORT}{}Ferð: {VELOCITY}  Megi: {POWER}  Maks. D.Ó.: {6:FORCE}{}Rakstrar kostnaður: {4:CURRENCY_LONG}/ár{}Pláss: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY}{}Pláss: {CARGO_LONG}, {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY}{}Pláss: {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY} Vídd: {COMMA} puntar{}Pláss: {CARGO_LONG}, {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY} Vídd: {COMMA} puntar{}Pláss: {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY}{}Pláss: {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Být um {STRING} - {STRING}
@@ -3169,7 +3164,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} tá ga
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Steðga umbýting av flutningstólum
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Trýst fyri at steðga umbýtanini av motor slagnum tú valdi á vinstru síðu
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Býtur um: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Skift ímillum motor og vogna umbýtingar vindeyga
 STR_REPLACE_ENGINES                                             :Motorar
 STR_REPLACE_WAGONS                                              :Vognar
@@ -3233,7 +3227,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ár ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ár ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Maks. ferð: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Maks. ferð: {LTBLUE}{VELOCITY} {BLACK}Vídd: {LTBLUE}{COMMA} puntar
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Vekt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Megi: {LTBLUE}{POWER}{BLACK} Maks. ferð: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Vekt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Megi: {LTBLUE}{POWER}{BLACK} Maks. ferð: {LTBLUE}{VELOCITY} {BLACK}Maks. D.Ó.: {LTBLUE}{FORCE}
 

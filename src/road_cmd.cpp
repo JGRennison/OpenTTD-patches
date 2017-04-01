@@ -224,7 +224,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 			/* Pay for *every* tile of the bridge or tunnel */
 			uint len = GetTunnelBridgeLength(other_end, tile) + 2;
-			cost.AddCost(len * _price[PR_CLEAR_ROAD]);
+			cost.AddCost(len * 2 * _price[PR_CLEAR_ROAD]);
 			if (flags & DC_EXEC) {
 				Company *c = Company::GetIfValid(GetRoadOwner(tile, rt));
 				if (c != NULL) {
@@ -237,10 +237,10 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				SetRoadTypes(tile, GetRoadTypes(tile) & ~RoadTypeToRoadTypes(rt));
 
 				/* If the owner of the bridge sells all its road, also move the ownership
-				 * to the owner of the other roadtype. */
+				 * to the owner of the other roadtype, unless the bridge owner is a town. */
 				RoadType other_rt = (rt == ROADTYPE_ROAD) ? ROADTYPE_TRAM : ROADTYPE_ROAD;
 				Owner other_owner = GetRoadOwner(tile, other_rt);
-				if (other_owner != GetTileOwner(tile)) {
+				if (!IsTileOwner(tile, other_owner) && !IsTileOwner(tile, OWNER_TOWN)) {
 					SetTileOwner(tile, other_owner);
 					SetTileOwner(other_end, other_owner);
 				}
@@ -384,7 +384,10 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 					/* Update rail count for level crossings. The plain track should still be accounted
 					 * for, so only subtract the difference to the level crossing cost. */
 					c = Company::GetIfValid(GetTileOwner(tile));
-					if (c != NULL) c->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR - 1;
+					if (c != NULL) {
+						c->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR - 1;
+						DirtyCompanyInfrastructureWindows(c->index);
+					}
 				} else {
 					SetRoadTypes(tile, rts);
 				}
@@ -563,6 +566,15 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 						}
 						return_cmd_error(STR_ERROR_ALREADY_BUILT);
 					}
+					/* Disallow breaking end-of-line of someone else
+					 * so trams can still reverse on this tile. */
+					if (rt == ROADTYPE_TRAM && HasExactlyOneBit(existing)) {
+						Owner owner = GetRoadOwner(tile, rt);
+						if (Company::IsValidID(owner)) {
+							CommandCost ret = CheckOwnership(owner);
+							if (ret.Failed()) return ret;
+						}
+					}
 					break;
 				}
 
@@ -629,7 +641,10 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				/* Update rail count for level crossings. The plain track is already
 				 * counted, so only add the difference to the level crossing cost. */
 				c = Company::GetIfValid(GetTileOwner(tile));
-				if (c != NULL) c->infrastructure.rail[GetRailType(tile)] += LEVELCROSSING_TRACKBIT_FACTOR - 1;
+				if (c != NULL) {
+					c->infrastructure.rail[GetRailType(tile)] += LEVELCROSSING_TRACKBIT_FACTOR - 1;
+					DirtyCompanyInfrastructureWindows(c->index);
+				}
 
 				/* Always add road to the roadtypes (can't draw without it) */
 				bool reserved = HasBit(GetRailReservationTrackBits(tile), railtrack);
@@ -1176,7 +1191,7 @@ static bool DrawRoadAsSnowDesert(TileIndex tile, Roadside roadside)
  * @param ti   information about the tile (slopes, height etc)
  * @param tram the roadbits for the tram
  */
-void DrawTramCatenary(const TileInfo *ti, RoadBits tram)
+void DrawRoadCatenary(const TileInfo *ti, RoadBits tram)
 {
 	/* Do not draw catenary if it is invisible */
 	if (IsInvisibilitySet(TO_CATENARY)) return;
@@ -1283,7 +1298,7 @@ static void DrawRoadBits(TileInfo *ti)
 		return;
 	}
 
-	if (tram != ROAD_NONE) DrawTramCatenary(ti, tram);
+	if (tram != ROAD_NONE) DrawRoadCatenary(ti, tram);
 
 	/* Return if full detail is disabled, or we are zoomed fully out. */
 	if (!HasBit(_display_opt, DO_FULL_DETAIL) || _cur_dpi->zoom > ZOOM_LVL_DETAIL) return;
@@ -1373,9 +1388,9 @@ static void DrawTile_Road(TileInfo *ti)
 
 			if (HasTileRoadType(ti->tile, ROADTYPE_TRAM)) {
 				DrawGroundSprite(SPR_TRAMWAY_OVERLAY + (GetCrossingRoadAxis(ti->tile) ^ 1), pal);
-				DrawTramCatenary(ti, GetCrossingRoadBits(ti->tile));
+				DrawRoadCatenary(ti, GetCrossingRoadBits(ti->tile));
 			}
-			if (HasCatenaryDrawn(GetRailType(ti->tile))) DrawCatenary(ti);
+			if (HasRailCatenaryDrawn(GetRailType(ti->tile))) DrawRailCatenary(ti);
 			break;
 		}
 
@@ -1669,6 +1684,7 @@ static void GetTileDesc_Road(TileIndex tile, TileDesc *td)
 			if (HasBit(rts, ROADTYPE_TRAM)) tram_owner = GetRoadOwner(tile, ROADTYPE_TRAM);
 
 			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(tile));
+			td->railtype = rti->strings.name;
 			td->rail_speed = rti->max_speed;
 
 			break;

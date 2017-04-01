@@ -373,6 +373,7 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Sair
 
 ############ range for settings menu starts
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opções do jogo
+STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Configurações
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Configurações de IA /Script do jogo
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Definições do NewGRF
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Opções de Transparência
@@ -927,10 +928,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari da Georgia
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iraniano
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Automóveis
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Selecionar lado da rodovia para automóveis dirigirem
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Dirigem na esquerda
@@ -983,6 +980,13 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Marcar e
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Resolução da tela
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Selecionar a resolução da tela para usar
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :outra
+
+STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Tamanho da interface
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Selecione o tamanho de elemento de interface a ser usado
+
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dobro
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Quádruplo
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Conjunto de gráficos base
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selecionar o conjunto de gráficos base para usar
@@ -1077,6 +1081,7 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :Muito Plano
 STR_TERRAIN_TYPE_FLAT                                           :Plano
 STR_TERRAIN_TYPE_HILLY                                          :Acidentado
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Montanhoso
+STR_TERRAIN_TYPE_ALPINIST                                       :Alpinista
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Permissivo
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerante
@@ -1084,7 +1089,8 @@ STR_CITY_APPROVAL_HOSTILE                                       :Hostil
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Não há IA compatíveis disponíveis...{}Você pode baixar várias IA's pelo sistema de 'Conteúdo Online'
 
-# Advanced settings window
+# Settings tree window
+STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Configurações
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Filtro:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Maximizar tudo
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Minimizar tudo
@@ -1100,9 +1106,9 @@ STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Config. da comp
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Categoria:
 STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Tipo:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Restringe a lista abaixo a mostrar apenas filtros pré-definidos
-STR_CONFIG_SETTING_RESTRICT_BASIC                               :Configs. básicas
-STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Configs. avançadas
-STR_CONFIG_SETTING_RESTRICT_ALL                                 :Configs. expert / todas as configs.
+STR_CONFIG_SETTING_RESTRICT_BASIC                               :Básico (apenas configs. importantes)
+STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Avançado (maior parte das configs.)
+STR_CONFIG_SETTING_RESTRICT_ALL                                 :Expert (mostra todas as configs. inclusive as estranhas)
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT             :Configs. com valor diferente do padrão
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW                 :Configs. com um valor diferente das configs. para novos jogos
 
@@ -1730,6 +1736,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Multi-jo
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Opções do Jogo
 STR_INTRO_HIGHSCORE                                             :{BLACK}Pontuações
+STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Configurações
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Configurar NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Checar conteúdo on-line
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}Configurações de IA / Script do jogo
@@ -1749,6 +1756,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Selecion
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Exibir opções de jogo
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Exibe as pontuações
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Config. de exibição
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Exibir configs. dos NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Checar por conteúdo novo e atualizado para baixar
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Exibe configurações de IA e script do jogo
@@ -2594,29 +2602,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Campos
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Neve
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Deserto
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Trilho de {STRING}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Trilho de {STRING} com sinais normais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Trilho de {STRING} com pré-sinais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Trilho de {STRING} com sinais de saída
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Trilho de {STRING} com sinais-combo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Trilho de {STRING} com sinais avançados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Trilhos de {STRING} com sinais avançados de mão única
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Trilho de {STRING} com sinais normais e pré-sinais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Trilho de {STRING} com sinais normais e pré-sinais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Trilho de {STRING} com sinais normais e sinais-combo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Trilho de {STRING} com sinais normais e avançados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Trilho de {STRING} com sinais normais e avançados de mão única
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Trilho de {STRING} com pré-sinais e de saída
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Trilho de {STRING} com pré-sinais e sinais-combo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Trilho de {STRING} com pré-sinais e sinais avançados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Trilho de {STRING} com pré-sinais e avançados de mão única
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Trilho de {STRING} com sinais de saída e sinais-combo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Trilho de {STRING} com sinais de saída e avançados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Trilho de {STRING} com sinais de saída e avançados de mão única
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Trilho de {STRING} com sinais-combo e avançados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Trilho de {STRING} com sinais-combo e avançados de mão única
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Trilho de {STRING} com sinais avançados e avançados de mão única
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Depósito de {STRING}
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Trilho de Ferrovia
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Trilho de Ferrovia com sinais normais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Trilho de Ferrovia com pré-sinais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Trilho de Ferrovia com sinais de saída
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Trilho de Ferrovia com sinais-combo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Trilho de Ferrovia com sinais avançados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Trilhos de Ferrovia com sinais avançados de mão única
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Trilho de Ferrovia com sinais normais e pré-sinais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Trilho de Ferrovia com sinais normais e pré-sinais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Trilho de Ferrovia com sinais normais e sinais-combo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Trilho de Ferrovia com sinais normais e avançados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Trilho de Ferrovia com sinais normais e avançados de mão única
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Trilho de Ferrovia com pré-sinais e de saída
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Trilho de Ferrovia com pré-sinais e sinais-combo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Trilho de Ferrovia com pré-sinais e sinais avançados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Trilho de Ferrovia com pré-sinais e avançados de mão única
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Trilho de Ferrovia com sinais de saída e sinais-combo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Trilho de Ferrovia com sinais de saída e avançados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Trilho de Ferrovia com sinais de saída e avançados de mão única
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Trilho de Ferrovia com sinais-combo e avançados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Trilho de Ferrovia com sinais-combo e avançados de mão única
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Trilho de Ferrovia com sinais avançados e avançados de mão única
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Depósito de Ferrovia
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Rodovia
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Rodovia iluminada
@@ -2680,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :O terreno é pr
 STR_ABOUT_OPENTTD                                               :{WHITE}Sobre o OpenTTD...
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyright original {COPYRIGHT} 1995 Chris Sawyer, Todos os direitos reservados
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versão {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 A equipe do OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 A equipe do OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Salvar Jogo
@@ -2867,7 +2875,11 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Vai para
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}"Sprite" anterior
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Retorna ao "sprite" normal anterior, pulando quaisquer "sprites" falsos, recoloridos ou de fontes, e junta tudo do primeiro ao último
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representação do "sprite" atualmente selecionado. O alinhamento é ignorado ao desenhar esse "sprite"
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Move o "sprite", alterando os offsets X e Y
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Move o "sprite", alterando os offsets X e Y. Ctrl+Clique para mover o sprite 8 unidades por vez
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Resetar relativo
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Reseta os offsets relativos atuais
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Absoluto)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X offset: {NUM}, Y offset: {NUM} (Relativo)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Escolher "sprite"
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Escolhe um "sprite" de qualquer lugar na tela
 
@@ -2878,7 +2890,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Atenção: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Erro: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Erro Fatal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Um erro de NewGRF fatal ocorreu: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Um erro de NewGRF fatal ocorreu:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} não irá funcionar com a versão do TTDPatch encontrada pelo OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} funciona na versão {STRING} de TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} é projetado para ser usado com {STRING}
@@ -2895,8 +2907,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Tentativa de us
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} contém um sprite corrupto. Todos os sprites corruptos serão exibidos como um "?" vermelho
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contém multiplas entradas de Ação 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Leitura após o final do pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Estão faltando alguns sprites na base de gráficos em uso.{}Por favor atualize a base de gráficos
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}O pacote de gráficos base atuais está faltando alguns sprites.{}Favor atualizar o pacote de gráficos base.{}Já que você está usando um {YELLOW}snapshot em desenvolvimento do OpenTTD{WHITE}, você também precisa do {YELLOW}Snapshot do pacote de gráficos base em desenvolvimento{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Recursos GRF requeridos indisponíveis (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} foi desativado por {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Formato de layout de sprite inválido/desconhecido (sprite {3:NUM})
@@ -3040,7 +3050,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Informação
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Alerta
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Erro
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Cancelar
 STR_GOAL_QUESTION_BUTTON_OK                                     :OK
 STR_GOAL_QUESTION_BUTTON_NO                                     :Não
@@ -3059,6 +3069,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Reiniciar
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Postergar
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Desistir
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Fechar
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subsídios
@@ -3282,9 +3293,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Requer: 
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Requer: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Carga aguardando processamento
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produz: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produz: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3476,7 +3486,7 @@ STR_DEPOT_CLONE_ROAD_VEHICLE                                    :{BLACK}Clonar A
 STR_DEPOT_CLONE_SHIP                                            :{BLACK}Clonar Embarcação
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Clonar Aeronave
 
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Isso irá comprar uma cópia do trem, incluindo todos os vagões. Clique neste botão e depois em um trem dentro ou fora do depósito. Ctrl+Clique compartilhará as ordens. Shift+Clique mostra o preço estimado sem a compra
+STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Isso irá comprar uma cópia do trem incluindo todos os vagões. Clique neste botão e depois em um trem dentro ou fora do depósito. Ctrl+Clique compartilhará as ordens. Shift+Clique mostra o preço estimado sem a compra
 STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Isso irá comprar uma cópia do automóvel. Clique neste botão e depois em um automóvel dentro ou fora da garagem. Ctrl+Clique compartilhará as ordens. Shift+Clique mostra o preço estimado sem a compra
 STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Isso irá comprar uma cópia da embarcação. Clique neste botão e depois em uma embarcação dentro ou fora do depósito naval. Ctrl+Clique irá compartilhar as ordens. Shift+Clique mostra preço estimado sem a compra
 STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Isso irá comprar uma cópia de uma aeronave. Clique nesse botão e depois em uma aeronave dentro ou fora do hangar. Ctrl+Clique compartilhará as ordens. Shift+Clique mostra o preço estimado sem a compra
@@ -3515,10 +3525,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :locomotiva magl
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Preço: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade: {VELOCITY}  Potência: {POWER}{}Custo de manutenção: {CURRENCY_LONG}/ano{}Capacidade: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Preço: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Vel.: {VELOCITY}  Potência: {POWER}  Tração Máx: {6:FORCE}{}Custo de manutenção: {4:CURRENCY_LONG}/yr{}Capacidade: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Preço: {CURRENCY_LONG} Vel. Max.: {VELOCITY}{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo de manutenção: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Preço: {CURRENCY_LONG} Vel. Max.: {VELOCITY}{}Capacidade: {CARGO_LONG}{}Custo de manuteção: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Preço: {CURRENCY_LONG} Vel. Máx.: {VELOCITY} Alcance: {COMMA} quadrados{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Cust de manut.: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Custo: {CURRENCY_LONG} Vel. Máx.: {VELOCITY} Alcance: {COMMA} quadrados{}Capacidade: {CARGO_LONG}{}Custo de manut.: {CURRENCY_LONG}/ano
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Preço: {CURRENCY_LONG} Vel. Max.: {VELOCITY}{}Capacidade: {CARGO_LONG}{}Custo de manuteção: {CURRENCY_LONG}/ano
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Substituir {STRING} - {STRING}
@@ -3545,7 +3552,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} quando
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Parar Substituição
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Pressione para parar a subsituição do tipo de motor que selecionou à esquerda
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Substituindo: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Troca entre substituir máquinas e substituir vagões
 STR_REPLACE_ENGINES                                             :Motores
 STR_REPLACE_WAGONS                                              :Vagões
@@ -3641,7 +3647,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ano{P "
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ano{P "" s} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Velocidade Max: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{G=f}{BLACK}Vel. máx.: {LTBLUE}{VELOCITY} {BLACK}Alcance: {LTBLUE}{COMMA} quadrados
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Força: {LTBLUE}{POWER}{BLACK} Velocidade Max: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Força: {LTBLUE}{POWER}{BLACK} Velocidade Max: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 
@@ -3962,7 +3967,7 @@ STR_AI_DEBUG_SELECT_AI_TOOLTIP                                  :{BLACK}Ver a de
 STR_AI_GAME_SCRIPT                                              :{BLACK}Game Script
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Checando o log do Game Script
 
-STR_ERROR_AI_NO_AI_FOUND                                        :Nenhuma IA adequada encontrada para carregar. {} Esta IA é falsa e não irá fazer nada. {} Você pode pode baixar várias IA através do sistema de 'Conteúdo Online'
+STR_ERROR_AI_NO_AI_FOUND                                        :Nenhuma IA adequada encontrada para carregar.{} Esta IA é falsa e não irá fazer nada.{} Você pode pode baixar várias IA através do sistema de 'Conteúdo Online'
 STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Um dos scripts em execução travou. Favor relatar isto ao autor do script com uma captura de tela da Janela de Depuração da I.A./Script do jogo
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Depuração de I.A./Script do jogo só é acessível pelo servidor
 
@@ -4067,7 +4072,7 @@ STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<não disponív
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}Jogo foi salvo numa versão sem suporte a bondes. Todos os bondes foram removidos
 
 # Map generation messages
-STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}Geração do mapa abortada... {}... não há locais para criação de cidades
+STR_ERROR_COULD_NOT_CREATE_TOWN                                 :{WHITE}Geração do mapa abortada...{}... não há locais para criação de cidades
 STR_ERROR_NO_TOWN_IN_SCENARIO                                   :{WHITE}... não existe cidade neste cenário
 
 STR_ERROR_PNGMAP                                                :{WHITE}Impossível carregar terreno a partir de PNG...
@@ -4158,9 +4163,9 @@ STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... muit
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... muito perto de outra cidade
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... cidades demais
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... não há mais espaço no mapa
-STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}A cidade não irá construir estradas. Você pode ativar a construção através de Config. Avançadas>Ambiente>Cidades
+STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}A cidade não irá construir estradas. Você pode ativar a construção através de Configurações->Ambiente->Cidades
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Recapeamento rodoviário em progresso
-STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Impossível remover cidade... {}Uma estação ou depósito referente à essa cidade não pode ser removido
+STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Impossível remover cidade...{}Uma estação ou depósito referente à essa cidade não pode ser removido
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... não há local para uma estátua no centro dessa cidade
 
 # Industry related errors

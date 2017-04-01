@@ -22,7 +22,7 @@
 
 #include "table/sprites.h"
 #include "table/strings.h"
-#include "table/palettes.h"
+#include "table/string_colours.h"
 
 #include "safeguards.h"
 
@@ -221,7 +221,8 @@ static inline void DrawImageButtons(const Rect &r, WidgetType type, Colours colo
 	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, (clicked) ? FR_LOWERED : FR_NONE);
 
 	if ((type & WWT_MASK) == WWT_IMGBTN_2 && clicked) img++; // Show different image when clicked for #WWT_IMGBTN_2.
-	DrawSprite(img, PAL_NONE, r.left + WD_IMGBTN_LEFT + clicked, r.top + WD_IMGBTN_TOP + clicked);
+	Dimension d = GetSpriteSize(img);
+	DrawSprite(img, PAL_NONE, CenterBounds(r.left, r.right, d.width) + clicked, CenterBounds(r.top, r.bottom, d.height) + clicked);
 }
 
 /**
@@ -459,8 +460,7 @@ static inline void DrawFrame(const Rect &r, Colours colour, StringID str)
  */
 static inline void DrawShadeBox(const Rect &r, Colours colour, bool clicked)
 {
-	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, (clicked) ? FR_LOWERED : FR_NONE);
-	DrawSprite((clicked) ? SPR_WINDOW_SHADE : SPR_WINDOW_UNSHADE, PAL_NONE, r.left + WD_SHADEBOX_LEFT + clicked, r.top + WD_SHADEBOX_TOP + clicked);
+	DrawImageButtons(r, WWT_SHADEBOX, colour, clicked, clicked ? SPR_WINDOW_SHADE: SPR_WINDOW_UNSHADE);
 }
 
 /**
@@ -471,8 +471,7 @@ static inline void DrawShadeBox(const Rect &r, Colours colour, bool clicked)
  */
 static inline void DrawStickyBox(const Rect &r, Colours colour, bool clicked)
 {
-	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, (clicked) ? FR_LOWERED : FR_NONE);
-	DrawSprite((clicked) ? SPR_PIN_UP : SPR_PIN_DOWN, PAL_NONE, r.left + WD_STICKYBOX_LEFT + clicked, r.top + WD_STICKYBOX_TOP + clicked);
+	DrawImageButtons(r, WWT_STICKYBOX, colour, clicked, clicked ? SPR_PIN_UP : SPR_PIN_DOWN);
 }
 
 /**
@@ -483,8 +482,7 @@ static inline void DrawStickyBox(const Rect &r, Colours colour, bool clicked)
  */
 static inline void DrawDefSizeBox(const Rect &r, Colours colour, bool clicked)
 {
-	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, (clicked) ? FR_LOWERED : FR_NONE);
-	DrawSprite(SPR_WINDOW_DEFSIZE, PAL_NONE, r.left + WD_DEFSIZEBOX_LEFT + clicked, r.top + WD_DEFSIZEBOX_TOP + clicked);
+	DrawImageButtons(r, WWT_DEFSIZEBOX, colour, clicked, SPR_WINDOW_DEFSIZE);
 }
 
 /**
@@ -495,8 +493,7 @@ static inline void DrawDefSizeBox(const Rect &r, Colours colour, bool clicked)
  */
 static inline void DrawDebugBox(const Rect &r, Colours colour, bool clicked)
 {
-	DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, (clicked) ? FR_LOWERED : FR_NONE);
-	DrawSprite(SPR_WINDOW_DEBUG, PAL_NONE, r.left + WD_DEBUGBOX_LEFT + clicked, r.top + WD_DEBUGBOX_TOP + clicked);
+	DrawImageButtons(r, WWT_DEBUGBOX, colour, clicked, SPR_WINDOW_DEBUG);
 }
 
 /**
@@ -526,7 +523,9 @@ static inline void DrawResizeBox(const Rect &r, Colours colour, bool at_left, bo
 static inline void DrawCloseBox(const Rect &r, Colours colour)
 {
 	if (colour != COLOUR_WHITE) DrawFrameRect(r.left, r.top, r.right, r.bottom, colour, FR_NONE);
-	DrawSprite(SPR_CLOSEBOX, (colour != COLOUR_WHITE ? TC_BLACK : TC_SILVER) | (1 << PALETTE_TEXT_RECOLOUR), r.left + WD_CLOSEBOX_LEFT, r.top + WD_CLOSEBOX_TOP);
+	Dimension d = GetSpriteSize(SPR_CLOSEBOX);
+	int s = UnScaleGUI(1); /* Offset to account for shadow of SPR_CLOSEBOX */
+	DrawSprite(SPR_CLOSEBOX, (colour != COLOUR_WHITE ? TC_BLACK : TC_SILVER) | (1 << PALETTE_TEXT_RECOLOUR), CenterBounds(r.left, r.right, d.width - s), CenterBounds(r.top, r.bottom, d.height - s));
 }
 
 /**
@@ -1545,7 +1544,7 @@ void NWidgetMatrix::SetupSmallestSize(Window *w, bool init_array)
 	SB(nw->index, 16, 16, 0);
 	this->head->SetupSmallestSize(w, init_array);
 
-	Dimension padding = {this->pip_pre + this->pip_post, this->pip_pre + this->pip_post};
+	Dimension padding = { (uint)this->pip_pre + this->pip_post, (uint)this->pip_pre + this->pip_post};
 	Dimension size    = {this->head->smallest_x + padding.width, this->head->smallest_y + padding.height};
 	Dimension fill    = {0, 0};
 	Dimension resize  = {this->pip_inter + this->head->smallest_x, this->pip_inter + this->head->smallest_y};
@@ -2284,7 +2283,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w, bool init_array)
 		}
 		case WWT_EDITBOX: {
 			Dimension sprite_size = GetSpriteSize(_current_text_dir == TD_RTL ? SPR_IMG_DELETE_RIGHT : SPR_IMG_DELETE_LEFT);
-			size.width = 30 + sprite_size.width;
+			size.width = max(size.width, 30 + sprite_size.width);
 			size.height = max(sprite_size.height, GetStringBoundingBox("_").height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
 			/* FALL THROUGH */
 		}
@@ -2393,14 +2392,21 @@ void NWidgetLeaf::Draw(const Window *w)
 {
 	if (this->current_x == 0 || this->current_y == 0) return;
 
+	/* Setup a clipping rectangle... */
+	DrawPixelInfo new_dpi;
+	if (!FillDrawPixelInfo(&new_dpi, this->pos_x, this->pos_y, this->current_x, this->current_y)) return;
+	/* ...but keep coordinates relative to the window. */
+	new_dpi.left += this->pos_x;
+	new_dpi.top += this->pos_y;
+
+	DrawPixelInfo *old_dpi = _cur_dpi;
+	_cur_dpi = &new_dpi;
+
 	Rect r;
 	r.left = this->pos_x;
 	r.right = this->pos_x + this->current_x - 1;
 	r.top = this->pos_y;
 	r.bottom = this->pos_y + this->current_y - 1;
-
-	const DrawPixelInfo *dpi = _cur_dpi;
-	if (dpi->left > r.right || dpi->left + dpi->width <= r.left || dpi->top > r.bottom || dpi->top + dpi->height <= r.top) return;
 
 	bool clicked = this->IsLowered();
 	switch (this->type) {
@@ -2512,6 +2518,8 @@ void NWidgetLeaf::Draw(const Window *w)
 	if (this->IsDisabled()) {
 		GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, _colour_gradient[this->colour & 0xF][2], FILLRECT_CHECKER);
 	}
+
+	_cur_dpi = old_dpi;
 }
 
 /**
@@ -2524,10 +2532,10 @@ void NWidgetLeaf::Draw(const Window *w)
 bool NWidgetLeaf::ButtonHit(const Point &pt)
 {
 	if (_current_text_dir == TD_LTR) {
-		int button_width = this->pos_x + this->current_x - 12;
+		int button_width = this->pos_x + this->current_x - NWidgetLeaf::dropdown_dimension.width;
 		return pt.x < button_width;
 	} else {
-		int button_left = this->pos_x + 12;
+		int button_left = this->pos_x + NWidgetLeaf::dropdown_dimension.width;
 		return pt.x >= button_left;
 	}
 }

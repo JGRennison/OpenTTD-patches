@@ -839,7 +839,7 @@ STR_NEWS_STATION_NOW_ACCEPTS_CARGO_AND_CARGO                    :{WHITE}{STATION
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Tilboð til samstarfssamnings runnið út:{}{}{STRING} frá {STRING} til {STRING} mun ekki vera samningsbundið.
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Samsarfssamningur gerður ógildur:{}{} {STRING}flutningur frá {STRING} til {STRING} er ekki lengur samningsbundinn.
-STR_NEWS_SERVICE_SUBSIDY_OFFERED                                :{BIG_FONT}{BLACK}Nýtt tilboð til samstarfssamnings: {}{}Fyrsti {STRING}flutningur frá {STRING} til {STRING} mun stofna til eins árs samstarfssamnings við bæjaryfirvöld!
+STR_NEWS_SERVICE_SUBSIDY_OFFERED                                :{BIG_FONT}{BLACK}Nýtt tilboð til samstarfssamnings:{}{}Fyrsti {STRING}flutningur frá {STRING} til {STRING} mun stofna til eins árs samstarfssamnings við bæjaryfirvöld!
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_HALF                           :{BIG_FONT}{BLACK}Samstarfssamningur gerður við {STRING}!{}{}{STRING}flutningur frá {STRING} til {STRING} mun borga 50% aukalega í heilt ár!
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_DOUBLE                         :{BIG_FONT}{BLACK}Samstarfssamningur gerður við {STRING}!{}{}{STRING}flutningur frá {STRING} til {STRING} mun borga tvöfalt í heilt ár!
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_TRIPLE                         :{BIG_FONT}{BLACK}Samstarfssamningur gerður við {STRING}!{}{}{STRING}flutningur frá {STRING} til {STRING} mun borga þrefalt í heilt ár!
@@ -898,10 +898,6 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari (Gel)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Íranskt ríal (IRR)
 ############ end of currency region
 
-
-############ start of measuring units region
-############ end of measuring units region
-
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Aksturstefna
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Aksturstefna bifreiða
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vinstristefna
@@ -954,6 +950,8 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Smelltu 
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skjáupplausn
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Stilla skjáupplausn
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grunngrafík
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Nota grunngrafíkina
@@ -1054,7 +1052,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :Fjandsamleg
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Engin nothæf gervigreind í boði...{}Þú getur hlaðið niður mörgum gervigreindum í gegnum 'Ná í viðbætur af netinu' viðmótið
 
-# Advanced settings window
+# Settings tree window
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Sía:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Þenja út
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Draga saman
@@ -2452,29 +2450,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Akur
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Snjóþekið land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Eyðimörk
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} spor
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} spor með hefðbundnum umferðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} spor með for-merkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} spor með frámerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} spor með tvívirkum merkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} spor með leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} spor með einstefnu leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} spor með hefðbundnum- og formerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} spor með hefðbundnum- og frámerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} spor með hefðbundnum- tvívirkum merkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} spor með hefðbundnum- og leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} spor með hefðbundnum- og einstefnu leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} spor með for- og frámerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} spor með for- og tvívirkum merkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} spor með for- og leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} spor með for- og einstefnu leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} spor með frá- og tvívirkum merkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} spor með frá- og leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} spor með frá- og einstefnu leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} spor með tvívirkum- og leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} spor með tvívirkum- og einstefnu leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} spor með leiðarmerkjum og einstefnu leiðarmerkjum
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} lestarskýli
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Járnbrautarspor spor
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Járnbrautarspor spor með hefðbundnum umferðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Járnbrautarspor spor með for-merkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Járnbrautarspor spor með frámerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Járnbrautarspor spor með tvívirkum merkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Járnbrautarspor spor með leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Járnbrautarspor spor með einstefnu leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Járnbrautarspor spor með hefðbundnum- og formerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Járnbrautarspor spor með hefðbundnum- og frámerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Járnbrautarspor spor með hefðbundnum- tvívirkum merkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Járnbrautarspor spor með hefðbundnum- og leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Járnbrautarspor spor með hefðbundnum- og einstefnu leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Járnbrautarspor spor með for- og frámerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Járnbrautarspor spor með for- og tvívirkum merkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Járnbrautarspor spor með for- og leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Járnbrautarspor spor með for- og einstefnu leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Járnbrautarspor spor með frá- og tvívirkum merkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Járnbrautarspor spor með frá- og leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Járnbrautarspor spor með frá- og einstefnu leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Járnbrautarspor spor með tvívirkum- og leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Járnbrautarspor spor með tvívirkum- og einstefnu leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Járnbrautarspor spor með leiðarmerkjum og einstefnu leiðarmerkjum
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Járnbrautarspor lestarskýli
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Vegur
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Vegur með götuljósum
@@ -2538,7 +2536,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Land í eigu fy
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upphaflegur höfundarréttur {COPYRIGHT} 1995 Chris Sawyer, Öll réttindi áskilin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáfa {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 OpenTTD hópurinn
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 OpenTTD hópurinn
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Vista leik
@@ -2721,7 +2719,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Aðvörun: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Villa: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Banvænt: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Alvarleg NewGRF villa átti sér stað: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Alvarleg NewGRF villa átti sér stað:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} Mun ekki virka með útgáfu TTDPatch sem OpenTTD gefur til kynna.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} er fyrir {STRING} útgáfu af TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} er hannað til að notast með {STRING}
@@ -2738,8 +2736,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Verið að reyn
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} inniheldur gallaða mynd. Allar gallaðar myndir munu birtast sem rauð spurningamerki (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Inniheldur margþættar aðgerðir, 8 innkomur (hreyfimynd {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Les fyrir endan af gervi-hreyfimynd (hreyfimynd {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Grunnteiknisafnið sem er í notkun vantar hluta af hreyfimyndunum.{}Vinsamlegast uppfærðu grunnteiknisafnið
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Í Grafíska safnið sem nú er í notkun vantar nokkrar myndir.{}Vinsamlegast uppfærið grafíska safnið.{}Þar sem þú ert að spila {YELLOW}þróunar útgáfu af OpenTTD{WHITE}, gæti verið að þú þyrftir líka {YELLOW} þróunar útgáfu af grafíska safninu{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Umbeðin GRF gögn ekki tiltæk (hreyfimynd {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} var óvirkjað af {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Rangt/óþekkt hreyfimyndar snið (hreyfimynd {3:NUM})
@@ -2876,7 +2872,7 @@ STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Upplýsingar
 STR_GOAL_QUESTION_CAPTION_WARNING                               :Varúð
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :Villa
 
-### Start of Goal Question button list
+############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Hætta við
 STR_GOAL_QUESTION_BUTTON_OK                                     :Í lagi
 STR_GOAL_QUESTION_BUTTON_NO                                     :Nei
@@ -2895,6 +2891,7 @@ STR_GOAL_QUESTION_BUTTON_RESTART                                :Byrja aftur
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Fresta
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Gefast upp
 STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Loka
+############ End of Goal Question button list
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Samstarfssamningar
@@ -3086,9 +3083,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Þarf: {
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Þarf: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Farmur sem bíður verkunar:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Framleiðir: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Framleiðir: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3305,10 +3301,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :Segulsvifvagn
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Verð: {CURRENCY_LONG} Þyngd: {WEIGHT_SHORT}{}Hraði: {VELOCITY}  Afl: {POWER}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári{}Burðargeta: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Verð: {CURRENCY_LONG} Þyngd: {WEIGHT_SHORT}{}Hámarskhraði: {VELOCITY}  Afl: {POWER}  Hámarks kraftur: {6:FORCE}{}Running Cost: {4:CURRENCY_LONG}/ári{}Burðargeta: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY}{}Burðargeta: {CARGO_LONG}, {CARGO_LONG}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY}{}Burðargeta: {CARGO_LONG}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY} Drægni: {COMMA} reitir{}Capacity: {CARGO_LONG}, {CARGO_LONG}{}Rekstrarkosnaður: {CURRENCY_LONG} á ári
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY} Drægni: {COMMA} reitir{}Burðargeta: {CARGO_LONG}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY}{}Burðargeta: {CARGO_LONG}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Endurnýja {STRING} - {STRING}
@@ -3331,7 +3324,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} ef gö
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stöðva skipti
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Smelltu til að stöðva skipti á vagntegundinni sem valin er vinstra megin
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Skipti út: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Skipta á milli útskiptiglugga dráttar- og flutningavagna
 STR_REPLACE_ENGINES                                             :Dráttarvagnar
 STR_REPLACE_WAGONS                                              :Vagnar
@@ -3427,7 +3419,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ár ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ár ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Hámarkshraði: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Hámarkshraði: {LTBLUE}{VELOCITY} {BLACK}Drægni: {LTBLUE}{COMMA} reitir
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Þyngd: {LTBLUE}{WEIGHT_SHORT} {BLACK}Afl: {LTBLUE}{POWER}{BLACK} Hámarkshraði: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Þyngd: {LTBLUE}{WEIGHT_SHORT} {BLACK}Afl: {LTBLUE}{POWER}{BLACK} Hámarkshraði: {LTBLUE}{VELOCITY} {BLACK}Hámarks dráttarafl.: {LTBLUE}{FORCE}
 
