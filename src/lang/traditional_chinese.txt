@@ -2083,7 +2083,7 @@ STR_NETWORK_SERVER                                              :伺服器
 STR_NETWORK_CLIENT                                              :用戶端
 STR_NETWORK_SPECTATORS                                          :旁觀者
 
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :(BLACK)旁觀者
+STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}旁觀者
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}不要儲存所輸入的密碼
@@ -3087,7 +3087,7 @@ STR_STORY_BOOK_PREV_PAGE                                        :{BLACK}上一�
 STR_STORY_BOOK_PREV_PAGE_TOOLTIP                                :{BLACK}前往上一頁繼續觀看
 STR_STORY_BOOK_NEXT_PAGE                                        :{BLACK}下一頁
 STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}前往下一頁繼續觀看
-STR_STORY_BOOK_INVALID_GOAL_REF                                 :(RED)無效的目標參照
+STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}無效的目標參照
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}車站名稱 - 點選名稱可將車站置於畫面中央。按住 Ctrl 點選可於車站位置開啟新視窗視野
@@ -3359,6 +3359,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :加入共享指
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :移去所有運具
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}重新命名群組
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :新購鐵路列車

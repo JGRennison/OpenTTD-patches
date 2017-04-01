@@ -36,8 +36,6 @@
 #include "textfile_gui.h"
 #include "stringfilter_type.h"
 #include "querystring_gui.h"
-#include "signs_func.h"
-#include "station_func.h"
 
 #include <vector>
 
@@ -536,9 +534,7 @@ struct GameOptionsWindow : Window {
 				UpdateCursorSize();
 				UpdateFontHeightCache();
 				LoadStringWidthTable();
-				UpdateAllSignVirtCoords();
-				UpdateAllTownVirtCoords();
-				UpdateAllStationVirtCoords();
+				UpdateAllVirtCoords();
 				break;
 
 			case WID_GO_BASE_GRF_DROPDOWN:
@@ -1511,6 +1507,7 @@ static SettingsContainer &GetSettingsTree()
 				general->Add(new SettingEntry("gui.errmsg_duration"));
 				general->Add(new SettingEntry("gui.window_snap_radius"));
 				general->Add(new SettingEntry("gui.window_soft_limit"));
+				general->Add(new SettingEntry("gui.right_mouse_wnd_close"));
 			}
 
 			SettingsPage *viewports = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_VIEWPORTS));
