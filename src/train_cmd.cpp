@@ -2607,6 +2607,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 					}
 				}
 			}
+			ClrBit(v->flags, VRF_WAITING_RESTRICTION);
 
 			do_track_reservation = true;
 			changed_signal = true;
