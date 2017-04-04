@@ -2,6 +2,30 @@
 
 * * *
 
+### v0.18.0 (2017-04-04)
+* Fix incorrect behaviour and crashes with custom bridge heads on steep slopes.
+* Fix day length not being reset to 1 when loading pre day-length savegames.
+* Signals on bridges/tunnels:
+  * Fix bridge/tunnel exit PBS signals never being set to green.
+* Routing restrictions:
+  * Fix evaluation of PBS entry signal conditional after reserve through.
+  * Fix removal of PBS entry signal conditional instruction.
+  * Add buttons to GUI to move instructions up/down.
+  * Allow shallow-removing conditional blocks by use of ctrl+click.
+  * Implement instruction scroll-to for PBS entry signal conditional.
+* Template-based train replacement:
+  * Assume that virtual vehicles are on a suitably powered railtype.
+  * Fix virtual vehicles not having their build year set, which caused incorrect properties with some NewGRF sets.
+* Enhanced viewport plans:
+  * Fix various alignment issues in plans window.
+  * Add a show all button.
+  * Add ctrl+click to scroll to plan.
+* Fix height above sea-level in measurement tool.
+* Add chunnel patch (tunnels under bodies of water).
+* Add minimum town distance patch.
+* Add give money to company patch.
+* Bump trunk base from r27747 to r27846
+
 ### v0.17.2 (2017-02-22)
 * Fix crash due to articulated trams decoupling when doing a U-turn, when the end-of-line was removed mid-way through the turn.
 * Fix wrong calculation of company infrastructure totals for road tunnels, which could cause multiplayer desyncs.

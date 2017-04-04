@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.17.2
+## JGR's Patchpack version 0.18.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -165,6 +165,14 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Custom bridge heads for road bridges (added in v0.17.0)
 
+* Chunnels (tunnels under bodies of water) [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=41775) (added in v0.18.0)  
+  This is enabled by a setting (off by default).
+
+* Give money to company, instead of player [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=63899) (added in v0.18.0)  
+  This has been modified to broadcast money transfer notifications to all players.
+
+* Minimum town distance [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=33625) (added in v0.18.0)
+
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 2x faster. (~1.3x faster in v0.8.1, further improvements in v0.17.2)  
@@ -189,7 +197,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Increase maximum permitted vehicle name length (added in v0.17.0), and vehicle group name length (added in v0.17.2)
 
 * Translations  
-  * German (by Auge): including vehicle group info, vehicle details window, the zoning toolbar, and settings for improved breakdowns and adjacent level crossings.
+  * German (by Auge)  
+  * Korean (by kiwitreekor)
 
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  
