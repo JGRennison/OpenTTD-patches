@@ -713,6 +713,12 @@ enum WindowClass {
 	WC_TRACE_RESTRICT,
 
 	/**
+	 * Trace restrict slot window; %Window numbers:
+	 *   - Packed value = #SlotListWidgets / #VehicleListWidgets
+	 */
+	WC_TRACE_RESTRICT_SLOTS,
+
+	/**
 	 * Programmable signals window
 	 */
 	WC_SIGNAL_PROGRAM,

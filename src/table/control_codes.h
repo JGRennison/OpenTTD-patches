@@ -45,6 +45,7 @@ enum StringControlCode {
 	SCC_COMPANY_NAME,
 	SCC_PRESIDENT_NAME,
 	SCC_ENGINE_NAME,
+	SCC_TR_SLOT_NAME,
 
 	SCC_CURRENCY_SHORT,
 	SCC_CURRENCY_LONG,
@@ -120,6 +121,8 @@ enum StringControlCode {
 	SCC_DKBLUE,
 	SCC_BLACK,
 	SCC_PREVIOUS_COLOUR,
+
+	SCC_CONSUME_ARG,
 
 	/**
 	 * The next variables are part of a NewGRF subsystem for creating text strings.

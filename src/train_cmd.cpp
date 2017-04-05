@@ -1397,6 +1397,10 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			DeleteVehicleOrders(src);
 			RemoveVehicleFromGroup(src);
 			src->unitnumber = 0;
+			if (HasBit(src->flags, VRF_HAVE_SLOT)) {
+				TraceRestrictRemoveVehicleFromAllSlots(src->index);
+				ClrBit(src->flags, VRF_HAVE_SLOT);
+			}
 		}
 
 		/* We weren't a front engine but are becoming one. So
@@ -1603,11 +1607,12 @@ void Train::UpdateDeltaXY(Direction direction)
  * Mark a train as stuck and stop it if it isn't stopped right now.
  * @param v %Train to mark as being stuck.
  */
-static void MarkTrainAsStuck(Train *v)
+static void MarkTrainAsStuck(Train *v, bool waiting_restriction = false)
 {
 	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) {
 		/* It is the first time the problem occurred, set the "train stuck" flag. */
 		SetBit(v->flags, VRF_TRAIN_STUCK);
+		SB(v->flags, VRF_WAITING_RESTRICTION, 1, waiting_restriction ? 1 : 0);
 
 		v->wait_counter = 0;
 
@@ -1616,6 +1621,9 @@ static void MarkTrainAsStuck(Train *v)
 		v->subspeed = 0;
 		v->SetLastSpeed();
 
+		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+	} else if (waiting_restriction != HasBit(v->flags, VRF_WAITING_RESTRICTION)) {
+		ToggleBit(v->flags, VRF_WAITING_RESTRICTION);
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 	}
 }
@@ -2823,6 +2831,21 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		Track track = FindFirstTrack(tracks);
 		/* We need to check for signals only here, as a junction tile can't have signals. */
 		if (track != INVALID_TRACK && HasPbsSignalOnTrackdir(tile, TrackEnterdirToTrackdir(track, enterdir))) {
+			if (IsRestrictedSignal(tile) && v->force_proceed != TFP_SIGNAL) {
+				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
+				if (prog && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
+					TraceRestrictProgramResult out;
+					TraceRestrictProgramInput input(tile, TrackEnterdirToTrackdir(track, enterdir), NULL, NULL);
+					input.permitted_slot_operations = TRPISP_ACQUIRE;
+					prog->Execute(v, input, out);
+					if (out.flags & TRPRF_WAIT_AT_PBS) {
+						if (mark_stuck) MarkTrainAsStuck(v, true);
+						return track;
+					}
+				}
+			}
+			ClrBit(v->flags, VRF_WAITING_RESTRICTION);
+
 			do_track_reservation = true;
 			changed_signal = true;
 			SetSignalStateByTrackdir(tile, TrackEnterdirToTrackdir(track, enterdir), SIGNAL_STATE_GREEN);
@@ -3717,6 +3740,19 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						goto reverse_train_direction;
 					} else {
 						TryReserveRailTrack(gp.new_tile, TrackBitsToTrack(chosen_track), false);
+
+						if (IsPlainRailTile(gp.new_tile) && HasSignals(gp.new_tile) && IsRestrictedSignal(gp.new_tile)) {
+							const Trackdir dir = FindFirstTrackdir(trackdirbits);
+							if (HasSignalOnTrack(gp.new_tile, TrackdirToTrack(dir))) {
+								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.new_tile, TrackdirToTrack(dir));
+								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT)) {
+									TraceRestrictProgramResult out;
+									TraceRestrictProgramInput input(gp.new_tile, dir, NULL, NULL);
+									input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT;
+									prog->Execute(v, input, out);
+								}
+							}
+						}
 					}
 				} else {
 					/* The wagon is active, simply follow the prev vehicle. */
@@ -3994,6 +4030,21 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 			if (v->Next() == NULL) {
 				TrainMovedChangeSignal(v, gp.old_tile, ReverseDiagDir(enterdir));
 				if (IsLevelCrossingTile(gp.old_tile)) UpdateLevelCrossing(gp.old_tile);
+
+				if (IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile) && IsRestrictedSignal(gp.old_tile)) {
+					const TrackdirBits rev_tracks = TrackBitsToTrackdirBits(GetTrackBits(gp.old_tile)) & DiagdirReachesTrackdirs(ReverseDiagDir(enterdir));
+					const Trackdir rev_trackdir = FindFirstTrackdir(rev_tracks);
+					const Track track = TrackdirToTrack(rev_trackdir);
+					if (HasSignalOnTrack(gp.old_tile, track)) {
+						const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.old_tile, track);
+						if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
+							TraceRestrictProgramResult out;
+							TraceRestrictProgramInput input(gp.old_tile, ReverseTrackdir(rev_trackdir), NULL, NULL);
+							input.permitted_slot_operations = TRPISP_RELEASE_BACK;
+							prog->Execute(first, input, out);
+						}
+					}
+				}
 			}
 		}
 

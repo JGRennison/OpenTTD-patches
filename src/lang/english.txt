@@ -1314,6 +1314,8 @@ STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Show train weig
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Show train weight ratios in the vehicle details window
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Show restricted electric signals using default graphics: {STRING2}
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Show electric signals with routing restriction programs using the default signal graphics with a blue signal post, instead of using any NewGRF signal graphics. This is to make it easier to visually distinguish restricted signals.
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :Show advanced routing restriction features: {STRING2}
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Show advanced routing restriction features. When disabled, some advanced features are not shown in the UI, but are still available to all players.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :Landscape: {STRING2}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Landscapes define basic gameplay scenarios with different cargos and town growth requirements. NewGRF and Game Scripts allow finer control though
@@ -2554,6 +2556,7 @@ STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :PBS entry signal
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :entered signal of PBS block
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :train group
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :slot
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :weight
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :power
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :max T.E.
@@ -2579,6 +2582,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} train {STRING} in group: {GROUP} then
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} train {STRING} in group: {STRING} {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} train {STRING} in slot: {TRSLOT} then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} train {STRING} in slot: {STRING} {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
@@ -2593,6 +2598,8 @@ STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserve through
 STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancel reserve through
 STR_TRACE_RESTRICT_LONG_RESERVE                                 :Long reserve
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Cancel long reserve
+STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :Wait at PBS signal
+STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :Cancel wait at PBS signal
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
@@ -2606,6 +2613,18 @@ STR_TRACE_RESTRICT_DIRECTION_SW                                 :south-west
 STR_TRACE_RESTRICT_DIRECTION_NW                                 :north-west
 STR_TRACE_RESTRICT_COMPANY                                      :Company
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :Undefined company
+STR_TRACE_RESTRICT_SLOT_OP                                      :Slot operation
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Acquire or wait
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Release (front)
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :Release (back)
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Acquire slot: {STRING1}{BLACK}{STRING}, or wait at PBS signal
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Try to acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Release slot: {STRING1}{BLACK}{STRING} (front of train)
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Release slot: {STRING1}{BLACK}{STRING} (back of train)
+STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
+STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
+STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
@@ -2616,6 +2635,20 @@ STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}Comparis
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}Value
 STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}Condition type
 STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}Go to signal
+STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}Slot operation type
+STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}Slots - click on a slot to list all vehicles of this slot.
+STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Click to create a slot
+STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Delete the selected slot
+STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Rename the selected slot
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Set the maximum occupancy of the selected slot
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Routing Restrictions - Slot Management
+STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Manage slots
+STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
+STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Rename a slot
+STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}Create a slot
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}Set maximum occupancy of a slot
+STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}Delete Slot
+STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}Are you sure you want to delete this slot?
 STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Insert
 STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}Reset
@@ -2652,6 +2685,12 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Can't re
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Can't copy program
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}Can't share program
 STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}Can't unshare program
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}Can't create slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}Can't delete this slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}Can't rename slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}Can't add the vehicle to this slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}Can't remove the vehicle from this slot...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}Can't set maximum occupancy of this slot...
 
 # Programmable Signals
 STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Program signal
@@ -4161,6 +4200,7 @@ STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}Broken dow
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL                           :{RED}Stopping, {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}No power
 STR_VEHICLE_STATUS_TRAIN_STUCK                                  :{ORANGE}Waiting for free path
+STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}Waiting due to routing restriction
 STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR                             :{ORANGE}Too far to next destination
 
 STR_BREAKDOWN_TYPE_CRITICAL                                     :Mechanical failure

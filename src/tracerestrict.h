@@ -14,12 +14,16 @@
 #include "core/bitmath_func.hpp"
 #include "core/enum_type.hpp"
 #include "core/pool_type.hpp"
+#include "core/container_func.hpp"
 #include "command_func.h"
 #include "rail_map.h"
 #include "tile_type.h"
 #include "group_type.h"
+#include "vehicle_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include <map>
 #include <vector>
+#include <unordered_map>
 
 struct Train;
 
@@ -34,6 +38,19 @@ typedef uint32 TraceRestrictRefId;
 typedef Pool<TraceRestrictProgram, TraceRestrictProgramID, 16, 256000> TraceRestrictProgramPool;
 /** The actual pool for trace restrict nodes. */
 extern TraceRestrictProgramPool _tracerestrictprogram_pool;
+
+/** Slot pool ID type. */
+typedef uint16 TraceRestrictSlotID;
+struct TraceRestrictSlot;
+
+/** Type of the pool for trace restrict slots. */
+typedef Pool<TraceRestrictSlot, TraceRestrictSlotID, 16, 0xFFF0> TraceRestrictSlotPool;
+/** The actual pool for trace restrict nodes. */
+extern TraceRestrictSlotPool _tracerestrictslot_pool;
+
+static const TraceRestrictSlotID NEW_TRACE_RESTRICT_SLOT_ID = 0xFFFD;        // for GUI use only
+static const TraceRestrictSlotID ALL_TRAINS_TRACE_RESTRICT_SLOT_ID = 0xFFFE; // for GUI use only
+static const TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID = 0xFFFF;
 
 extern const uint16 _tracerestrict_pathfinder_penalty_preset_values[];
 
@@ -100,6 +117,8 @@ enum TraceRestrictItemType {
 	TRIT_PF_PENALTY               = 2,    ///< Add to pathfinder penalty
 	TRIT_RESERVE_THROUGH          = 3,    ///< Reserve through PBS signal
 	TRIT_LONG_RESERVE             = 4,    ///< Long reserve PBS signal
+	TRIT_WAIT_AT_PBS              = 5,    ///< Wait at PBS signal
+	TRIT_SLOT                     = 6,    ///< Slot operation
 
 	TRIT_COND_BEGIN               = 8,    ///< Start of conditional item types, note that this has the same value as TRIT_COND_ENDIF
 	TRIT_COND_ENDIF               = 8,    ///< This is an endif block or an else block
@@ -115,6 +134,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_TRAIN_GROUP         = 18,   ///< Test train group membership
 	TRIT_COND_PHYS_PROP           = 19,   ///< Test train physical property
 	TRIT_COND_PHYS_RATIO          = 20,   ///< Test train physical property ratio
+	TRIT_COND_SLOT                = 21,   ///< Test train slot membership
 	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
 	/* space up to 31 */
 };
@@ -203,6 +223,17 @@ enum TraceRestrictPathfinderPenaltyAuxField {
 };
 
 /**
+ * TraceRestrictItem repurposed condition operator field, for slot operation type actions
+ */
+enum TraceRestrictSlotCondOpField {
+	TRSCOF_ACQUIRE_WAIT           = 0,       ///< acquire a slot, or wait at the current signal
+	TRSCOF_ACQUIRE_TRY            = 1,       ///< try to acquire a slot, or carry on otherwise
+	TRSCOF_RELEASE_BACK           = 2,       ///< release a slot (back of train)
+	TRSCOF_RELEASE_FRONT          = 3,       ///< release a slot (front of train)
+	/* space up to 8 */
+};
+
+/**
  * TraceRestrictItem pathfinder penalty preset index
  * This may not be shortened, only lengthened, as preset indexes are stored in save games
  */
@@ -220,6 +251,7 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_DENY                    = 1 << 0,  ///< Pathfinder deny is set
 	TRPRF_RESERVE_THROUGH         = 1 << 1,  ///< Reserve through is set
 	TRPRF_LONG_RESERVE            = 1 << 2,  ///< Long reserve is set
+	TRPRF_WAIT_AT_PBS             = 1 << 3,  ///< Wait at PBS signal is set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -230,8 +262,22 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_PF                     = 1 << 0,  ///< Pathfinder deny or penalty are present
 	TRPAUF_RESERVE_THROUGH        = 1 << 1,  ///< Reserve through action is present
 	TRPAUF_LONG_RESERVE           = 1 << 2,  ///< Long reserve action is present
+	TRPAUF_WAIT_AT_PBS            = 1 << 3,  ///< Wait at PBS signal action is present
+	TRPAUF_SLOT_ACQUIRE           = 1 << 4,  ///< Slot acquire action is present
+	TRPAUF_SLOT_RELEASE_BACK      = 1 << 5,  ///< Slot release (back) action is present
+	TRPAUF_SLOT_RELEASE_FRONT     = 1 << 6,  ///< Slot release (front) action is present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
+
+/**
+ * Enumeration for TraceRestrictProgram::actions_used_flags
+ */
+enum TraceRestrictProgramInputSlotPermissions {
+	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire is permitted
+	TRPISP_RELEASE_BACK           = 1 << 1,  ///< Slot release (back) is permitted
+	TRPISP_RELEASE_FRONT          = 1 << 2,  ///< Slot release (front) is permitted
+};
+DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 
 /**
  * Execution input of a TraceRestrictProgram
@@ -243,9 +289,11 @@ struct TraceRestrictProgramInput {
 	Trackdir trackdir;                            ///< Track direction on tile of restrict signal, for direction testing
 	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be NULL
 	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
+	TraceRestrictProgramInputSlotPermissions permitted_slot_operations; ///< Permitted slot operations
 
 	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
-			: tile(tile_), trackdir(trackdir_), previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_) { }
+			: tile(tile_), trackdir(trackdir_), previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_),
+			permitted_slot_operations(static_cast<TraceRestrictProgramInputSlotPermissions>(0)) { }
 };
 
 /**
@@ -440,6 +488,8 @@ enum TraceRestrictValueType {
 	TRVT_FORCE                    = 15,///< takes a force
 	TRVT_POWER_WEIGHT_RATIO       = 16,///< takes a power / weight ratio, * 100
 	TRVT_FORCE_WEIGHT_RATIO       = 17,///< takes a force / weight ratio, * 100
+	TRVT_WAIT_AT_PBS              = 18,///< takes a value 0 = wait at PBS signal, 1 = cancel wait at PBS signal
+	TRVT_SLOT_INDEX               = 19,///< takes a TraceRestrictSlotID
 	TRVT_OWNER                    = 40,///< takes a CompanyID
 };
 
@@ -507,6 +557,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 				out.cond_type = TRCOT_BINARY;
 				break;
 
+			case TRIT_COND_SLOT:
+				out.value_type = TRVT_SLOT_INDEX;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
 			case TRIT_COND_PHYS_PROP:
 				switch (static_cast<TraceRestrictPhysPropCondAuxField>(GetTraceRestrictAuxField(item))) {
 					case TRPPCAF_WEIGHT:
@@ -562,6 +617,10 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_RESERVE_THROUGH;
 		} else if (GetTraceRestrictType(item) == TRIT_LONG_RESERVE) {
 			out.value_type = TRVT_LONG_RESERVE;
+		} else if (GetTraceRestrictType(item) == TRIT_WAIT_AT_PBS) {
+			out.value_type = TRVT_WAIT_AT_PBS;
+		} else if (GetTraceRestrictType(item) == TRIT_SLOT) {
+			out.value_type = TRVT_SLOT_INDEX;
 		} else {
 			out.value_type = TRVT_NONE;
 		}
@@ -662,5 +721,54 @@ void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
 void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16 index);
 void TraceRestrictRemoveGroupID(GroupID index);
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company);
+void TraceRestrictRemoveSlotID(TraceRestrictSlotID index);
+
+void TraceRestrictRemoveVehicleFromAllSlots(VehicleID id);
+void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to);
+void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID> &out);
+
+static const uint MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS = 128; ///< The maximum length of a slot name in characters including '\0'
+
+/**
+ * Slot type, used for slot operations
+ */
+struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_pool> {
+	std::vector<VehicleID> occupants;
+	uint32 max_occupancy = 1;
+	std::string name;
+	OwnerByte owner;
+
+	static void RebuildVehicleIndex();
+	static void PreCleanPool();
+
+	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY)
+	{
+		this->owner = owner;
+	}
+
+	~TraceRestrictSlot()
+	{
+		if (!CleaningPool()) this->Clear();
+	}
+
+	/** Test whether vehicle ID is already an occupant */
+	bool IsOccupant(VehicleID id) const {
+		for (size_t i = 0; i < occupants.size(); i++) {
+			if (occupants[i] == id) return true;
+		}
+		return false;
+	}
+
+	bool Occupy(VehicleID id, bool force = false);
+	void Vacate(VehicleID id);
+	void Clear();
+
+	private:
+	void DeIndex(VehicleID id);
+};
+
+
+#define FOR_ALL_TRACE_RESTRICT_SLOTS_FROM(var, start) FOR_ALL_ITEMS_FROM(TraceRestrictSlot, slot_index, var, start)
+#define FOR_ALL_TRACE_RESTRICT_SLOTS(var) FOR_ALL_TRACE_RESTRICT_SLOTS_FROM(var, 0)
 
 #endif /* TRACERESTRICT_H */

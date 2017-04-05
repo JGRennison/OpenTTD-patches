@@ -13,6 +13,7 @@
 #include "train.h"
 #include "vehiclelist.h"
 #include "group.h"
+#include "tracerestrict.h"
 
 #include "safeguards.h"
 
@@ -119,6 +120,14 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 
 	const Vehicle *v;
 
+	auto fill_all_vehicles = [&]() {
+		FOR_ALL_VEHICLES(v) {
+			if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->type == vli.vtype && v->owner == vli.company && v->IsPrimaryVehicle()) {
+				*list->Append() = v;
+			}
+		}
+	};
+
 	switch (vli.type) {
 		case VL_STATION_LIST:
 			FOR_ALL_VEHICLES(v) {
@@ -156,14 +165,11 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 				}
 				break;
 			}
-			/* FALL THROUGH */
+			fill_all_vehicles();
+			break;
 
 		case VL_STANDARD:
-			FOR_ALL_VEHICLES(v) {
-				if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->type == vli.vtype && v->owner == vli.company && v->IsPrimaryVehicle()) {
-					*list->Append() = v;
-				}
-			}
+			fill_all_vehicles();
 			break;
 
 		case VL_DEPOT_LIST:
@@ -180,6 +186,19 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 				}
 			}
 			break;
+
+		case VL_SLOT_LIST: {
+			if (vli.index == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID) {
+				fill_all_vehicles();
+			} else {
+				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(vli.index);
+				if (slot == NULL) return false;
+				for (VehicleID id : slot->occupants) {
+					*list->Append() = Vehicle::Get(id);
+				}
+			}
+			break;
+		}
 
 		default: return false;
 	}

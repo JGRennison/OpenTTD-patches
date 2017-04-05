@@ -124,6 +124,7 @@ static const CmdStruct _cmd_structs[] = {
 	{"COMPANY",           EmitSingleChar, SCC_COMPANY_NAME,       1, -1, C_NONE | C_GENDER},
 	{"COMPANY_NUM",       EmitSingleChar, SCC_COMPANY_NUM,        1, -1, C_NONE},
 	{"PRESIDENT_NAME",    EmitSingleChar, SCC_PRESIDENT_NAME,     1, -1, C_NONE | C_GENDER},
+	{"TRSLOT",            EmitSingleChar, SCC_TR_SLOT_NAME,       1, -1, C_NONE | C_GENDER},
 
 	{"",                  EmitSingleChar, '\n',                   0, -1, C_DONTCOUNT},
 	{"{",                 EmitSingleChar, '{',                    0, -1, C_DONTCOUNT},
@@ -143,6 +144,8 @@ static const CmdStruct _cmd_structs[] = {
 	{"RIGHT_ARROW",       EmitSingleChar, SCC_RIGHT_ARROW,        0, -1, C_DONTCOUNT},
 	{"SMALL_LEFT_ARROW",  EmitSingleChar, SCC_LESS_THAN,          0, -1, C_DONTCOUNT},
 	{"SMALL_RIGHT_ARROW", EmitSingleChar, SCC_GREATER_THAN,       0, -1, C_DONTCOUNT},
+
+	{"CONSUME_ARG",       EmitSingleChar, SCC_CONSUME_ARG,        1,  0, C_NONE},
 
 	/* The following are directional formatting codes used to get the RTL strings right:
 	 * http://www.unicode.org/unicode/reports/tr9/#Directional_Formatting_Codes */
