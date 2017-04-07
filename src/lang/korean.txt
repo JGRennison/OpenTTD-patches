@@ -1225,9 +1225,9 @@ STR_CONFIG_SETTING_SIGNALSIDE_RIGHT                             :오른쪽에
 STR_CONFIG_SETTING_SHOWFINANCES                                 :연말에 자동으로 재정 창을 띄움: {STRING}
 STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :이 설정을 켜면. 회사의 재정 상태를 확인하기 쉽도록 매년 말에 재정 창이 자동으로 뜹니다.
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :새로 지정하는 경로는 기본적으로 '직행'으로 처리: {STRING}
-STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :일반적으로 차량은 경로 상에 있는 모든 역에 정차하게 되어있습니다. 이 옵션을 켜면 차량이 마지막 목적지까지 정차없이 모든 역을 통과할 것입니다. 이 옵션은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
+STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :일반적으로 차량은 경로 상에 있는 모든 역에 정차하게 되어있습니다. 이 설정을 켜면 차량이 마지막 목적지까지 정차없이 모든 역을 통과할 것입니다. 이 설정은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
 STR_CONFIG_SETTING_STOP_LOCATION                                :새로 지정하는 역 정차 경로는 기본적으로 역의 {STRING}에 정지하도록 설정
-STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :열차가 기본적으로 정거장의 어느 위치에 정차할 것인지를 설정합니다. '가까운 쪽'은 역에 진입하는 곳과 가까운 곳에, '중간'은 역 중앙에, '먼쪽'은 진입하는 곳과 먼 곳에 정차합니다. 이 옵션은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
+STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :열차가 기본적으로 정거장의 어느 위치에 정차할 것인지를 설정합니다. '가까운 쪽'은 역에 진입하는 곳과 가까운 곳에, '중간'은 역 중앙에, '먼쪽'은 진입하는 곳과 먼 곳에 정차합니다. 이 설정은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :가까운쪽
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :중간
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :먼쪽
@@ -1266,10 +1266,13 @@ STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}이미 �
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :기반시설 유지비: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :이 설정을 켜면, 기반시설 유지비가 발생합니다. 유지비는 교통망의 규모에 비례하며 대형 회사는 소형 회사보다 많은 유지비가 들어갑니다.
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :선박 충돌 방지: {STRING}
-STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화 되어야 합니다.
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :이 설정을 켜면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화 되어야 합니다.
+
+STR_CONFIG_SETTING_CHUNNEL                                      :해저 터널 건설 허용: {STRING2}
+STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :이 설정을 켜면 해수면 아래를 통과하는 해저 터널을 건설할 수 있게 됩니다. 해저 터널을 건설하기 위해서는 터널 출입구가 해안에서 최소 3칸 이상 떨어져 있어야 합니다.
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :다른 회사의 열차가 서로 충돌할 수 없게 함: {STRING}
-STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :이 옵션은 주로 시설 공유가 활성화된 멀티 플레이 게임에서 신뢰할 수 없는 플레이어에 의해 의도적으로 충돌이 생기는 것을 막기 위해 사용합니다.
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :이 설정은 주로 시설 공유가 활성화된 멀티 플레이 게임에서 신뢰할 수 없는 플레이어에 의해 의도적으로 충돌이 생기는 것을 막기 위해 사용합니다.
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :옛날 공항을 사라지지 않고 계속 만들 수 있게 함: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :이 설정을 켜면, 소형 공항을 포함한 모든 공항 종류를 도입 이후에 계속 사용할 수 있게 됩니다.
@@ -1311,7 +1314,7 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :열차의 그�
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :상세정보 화면에서 열차 무게 비 보이기: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :열차의 무게 비를 상세정보 화면에 표시할지 설정합니다.
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :경로 제한 신호기를 기본 그래픽으로 보이기: {STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :경로 제한이 설정된 전자 신호기를 NewGRF의 신호기 그래픽 대신 기본 신호기 그래픽에 파란 표시를 한 그래픽으로 표시합니다. 이 옵션은 경로 제한 신호기의 구별을 쉽게 하기 위해 사용합니다.
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :경로 제한이 설정된 전자 신호기를 NewGRF의 신호기 그래픽 대신 기본 신호기 그래픽에 파란 표시를 한 그래픽으로 표시합니다. 이 설정은 경로 제한 신호기의 구별을 쉽게 하기 위해 사용합니다.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :지형: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :지형에 따라 화물과 도시 성장 요구 조건이 다른 게임 플레이 시나리오가 만들어집니다. NewGRF과 게임 스크립트를 통해 세밀한 조절이 가능합니다.
@@ -1365,9 +1368,9 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :녹색
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :어두운 녹색
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :보라색
 STR_CONFIG_SETTING_REVERSE_SCROLLING                            :스크롤 방향 뒤집기: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :마우스 오른쪽 클릭으로 지도를 스크롤하는 방법을 선택합니다. 옵션을 끄면 마우스 방향과 화면의 스크롤 방향이 같아집니다. 옵션을 켜면 마우스 방향과 화면의 스크롤 방향이 반대가 됩니다.
+STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :마우스 오른쪽 클릭으로 지도를 스크롤하는 방법을 선택합니다. 설정을 끄면 마우스 방향과 화면의 스크롤 방향이 같아집니다. 설정을 켜면 마우스 방향과 화면의 스크롤 방향이 반대가 됩니다.
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :게임 화면을 이동시킬 때 부드럽게 이동: {STRING}
-STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :소형 지도를 클릭하여 특정 지역으로 스크롤되거나 지도 상의 특정 장소로 이동하는 경우에 주 화면이 어떻게 스크롤 되는지를 설정합니다. 이 옵션을 켜면 화면이 목표지점까지 부드럽게 이동하며, 옵션을 끄면 목표 화면으로 곧바로 넘어가게 됩니다.
+STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :소형 지도를 클릭하여 특정 지역으로 스크롤되거나 지도 상의 특정 장소로 이동하는 경우에 주 화면이 어떻게 스크롤 되는지를 설정합니다. 이 설정을 켜면 화면이 목표지점까지 부드럽게 이동하며, 설정을 끄면 목표 화면으로 곧바로 넘어가게 됩니다.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :건설도구 사용시 거리 도움말 표시: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :철도/도로 등의 기반시설을 건설할 때 거리와 높이 차이 등을 표시합니다.
 STR_CONFIG_SETTING_LIVERIES                                     :차량 종류에 따라 회사의 색상을 구분하여 표시: {STRING}
@@ -1472,7 +1475,7 @@ STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :연도만
 STR_CONFIG_SETTING_DATE_WITH_TIME_YM                            :연도와 달
 STR_CONFIG_SETTING_DATE_WITH_TIME_YMD                           :전체 날짜
 STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :시간표 시작 시간을 텍스트로 입력 (시간/분 모드에서만): {STRING}
-STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :시간표 시작 시간을 텍스트로 입력할지 설정합니다. 이 옵션은 분 단위로 게임 시간을 보기로 설정했을 때 사용 가능합니다.
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :시간표 시작 시간을 텍스트로 입력할지 설정합니다. 이 설정은 분 단위로 게임 시간을 보기로 설정했을 때 사용 가능합니다.
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :배차 간격 유지를 위해 시간표 사용하기: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT                :자동 시간표를 사용할 때 배차 간격 유지를 위해 시간표를 쓸 지 설정합니다.
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :자동 배차 간격 유지 배수: {STRING}
