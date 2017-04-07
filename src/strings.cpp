@@ -35,6 +35,7 @@
 #include "window_func.h"
 #include "debug.h"
 #include "unit_conversion.h"
+#include "tracerestrict.h"
 #include "game/game_text.hpp"
 #ifdef ENABLE_NETWORK
 #	include "network/network_content_gui.h"
@@ -1742,10 +1743,23 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 			}
 
+			case SCC_TR_SLOT_NAME: { // {TRSLOT}
+				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(args->GetInt32(SCC_TR_SLOT_NAME));
+				if (slot == NULL) break;
+				int64 args_array[] = {(int64)(size_t)slot->name.c_str()};
+				StringParameters tmp_params(args_array);
+				buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
+				break;
+			}
+
 			case SCC_STATION_FEATURES: { // {STATIONFEATURES}
 				buff = StationGetSpecialString(buff, args->GetInt32(SCC_STATION_FEATURES), last);
 				break;
 			}
+
+			case SCC_CONSUME_ARG:
+				// do nothing
+				break;
 
 			default:
 				if (buff + Utf8CharLen(b) < last) buff += Utf8Encode(buff, b);

@@ -41,6 +41,9 @@
 #include "train.h"
 #include "tbtr_template_gui_main.h"
 #include "zoom_func.h"
+#include "tracerestrict.h"
+
+#include <vector>
 
 #include "safeguards.h"
 
@@ -177,6 +180,15 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
 }
 
 /**
+ * Whether the Action dropdown window should be shown/available.
+ * @return Whether available
+ */
+bool BaseVehicleListWindow::ShouldShowActionDropdownList() const
+{
+	return this->vehicles.Length() != 0 || (this->vli.vtype == VEH_TRAIN && _settings_client.gui.show_adv_tracerestrict_features);
+}
+
+/**
  * Display the Action dropdown window.
  * @param show_autoreplace If true include the autoreplace item.
  * @param show_group If true include group-related stuff.
@@ -186,17 +198,21 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 		StringID change_order_str, bool show_create_group)
 {
 	DropDownList *list = new DropDownList();
+	bool disable = this->vehicles.Length() == 0;
 
-	if (show_autoreplace) *list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, false);
+	if (show_autoreplace) *list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, disable);
 	if (show_autoreplace && show_template_replace) {
-		*list->Append() = new DropDownListStringItem(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, false);
+		*list->Append() = new DropDownListStringItem(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, disable);
 	}
-	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, false);
-	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, false);
+	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, disable);
+	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, disable);
 
 	if (show_group) {
-		*list->Append() = new DropDownListStringItem(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, false);
-		*list->Append() = new DropDownListStringItem(STR_GROUP_REMOVE_ALL_VEHICLES, ADI_REMOVE_ALL, false);
+		*list->Append() = new DropDownListStringItem(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, disable);
+		*list->Append() = new DropDownListStringItem(STR_GROUP_REMOVE_ALL_VEHICLES, ADI_REMOVE_ALL, disable);
+	}
+	if (this->vli.vtype == VEH_TRAIN && _settings_client.gui.show_adv_tracerestrict_features) {
+		*list->Append() = new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false);
 	}
 	if (change_order_str != 0) {
 		*list->Append() = new DropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, false);
@@ -1713,7 +1729,7 @@ public:
 		this->BuildVehicleList();
 		this->SortVehicleList();
 
-		if (this->vehicles.Length() == 0 && this->IsWidgetLowered(WID_VL_MANAGE_VEHICLES_DROPDOWN)) {
+		if (!this->ShouldShowActionDropdownList() && this->IsWidgetLowered(WID_VL_MANAGE_VEHICLES_DROPDOWN)) {
 			HideDropDownMenu(this);
 		}
 
@@ -1727,8 +1743,8 @@ public:
 		}
 		if (this->owner == _local_company) {
 			this->SetWidgetDisabledState(WID_VL_AVAILABLE_VEHICLES, this->vli.type != VL_STANDARD);
+			this->SetWidgetDisabledState(WID_VL_MANAGE_VEHICLES_DROPDOWN, !this->ShouldShowActionDropdownList());
 			this->SetWidgetsDisabledState(this->vehicles.Length() == 0,
-				WID_VL_MANAGE_VEHICLES_DROPDOWN,
 				WID_VL_STOP_ALL,
 				WID_VL_START_ALL,
 				WIDGET_LIST_END);
@@ -1769,7 +1785,7 @@ public:
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
 				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier::UnPack(this->window_number).type == VL_STANDARD, false,
 						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID(), true);
-				ShowDropDownList(this, list, 0, WID_VL_MANAGE_VEHICLES_DROPDOWN);
+				ShowDropDownList(this, list, -1, WID_VL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
 
@@ -1787,7 +1803,7 @@ public:
 				this->vehicles.SetSortType(index);
 				break;
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN:
-				assert(this->vehicles.Length() != 0);
+				assert(this->ShouldShowActionDropdownList());
 
 				switch (index) {
 					case ADI_REPLACE: // Replace window
@@ -1810,6 +1826,12 @@ public:
 					case ADI_CREATE_GROUP:
 						ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 						break;
+
+					case ADI_TRACERESTRICT_SLOT_MGMT: {
+						extern void ShowTraceRestrictSlotWindow(CompanyID company);
+						ShowTraceRestrictSlotWindow(this->owner);
+						break;
+					}
 
 					default: NOT_REACHED();
 				}
@@ -2059,6 +2081,7 @@ struct VehicleDetailsWindow : Window {
 	Scrollbar *vscroll;
 	bool vehicle_group_line_shown;
 	bool vehicle_weight_ratio_line_shown;
+	bool vehicle_slots_line_shown;
 
 	/** Initialize a newly created vehicle details window */
 	VehicleDetailsWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
@@ -2148,6 +2171,12 @@ struct VehicleDetailsWindow : Window {
 		return (v->type == VEH_TRAIN && _settings_client.gui.show_train_weight_ratios_in_details);
 	}
 
+	bool ShouldShowSlotsLine(const Vehicle *v) const
+	{
+		if (v->type != VEH_TRAIN) return false;
+		return HasBit(Train::From(v)->flags, VRF_HAVE_SLOT);
+	}
+
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		switch (widget) {
@@ -2156,9 +2185,11 @@ struct VehicleDetailsWindow : Window {
 				Dimension dim = { 0, 0 };
 				this->vehicle_group_line_shown = ShouldShowGroupLine(v);
 				this->vehicle_weight_ratio_line_shown = ShouldShowWeightRatioLine(v);
+				this->vehicle_slots_line_shown = ShouldShowSlotsLine(v);
 				int lines = 4;
 				if (this->vehicle_group_line_shown) lines++;
 				if (this->vehicle_weight_ratio_line_shown) lines++;
+				if (this->vehicle_slots_line_shown) lines++;
 				size->height = WD_FRAMERECT_TOP + lines * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 
 				for (uint i = 0; i < 5; i++) SetDParamMaxValue(i, INT16_MAX);
@@ -2386,8 +2417,32 @@ struct VehicleDetailsWindow : Window {
 				if (should_show_group) {
 					SetDParam(0, v->group_id);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_GROUP);
+					y += FONT_HEIGHT_NORMAL;
 				}
-				if (this->vehicle_group_line_shown != should_show_group || this->vehicle_weight_ratio_line_shown != should_show_weight_ratio) {
+
+				bool should_show_slots = this->ShouldShowSlotsLine(v);
+				if (should_show_slots) {
+					std::vector<TraceRestrictSlotID> slots;
+					TraceRestrictGetVehicleSlots(v->index, slots);
+
+					char text_buffer[512];
+					char *buffer = text_buffer;
+					const char * const last = lastof(text_buffer);
+					SetDParam(0, slots.size());
+					buffer = GetString(buffer, STR_TRACE_RESTRICT_SLOT_LIST_HEADER, last);
+
+					for (size_t i = 0; i < slots.size(); i++) {
+						if (i != 0) buffer = GetString(buffer, STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR, last);
+						buffer = strecpy(buffer, TraceRestrictSlot::Get(slots[i])->name.c_str(), last);
+					}
+					SetDParamStr(0, text_buffer);
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_JUST_RAW_STRING);
+					y += FONT_HEIGHT_NORMAL;
+				}
+
+				if (this->vehicle_weight_ratio_line_shown != should_show_weight_ratio ||
+						this->vehicle_weight_ratio_line_shown != should_show_weight_ratio ||
+						this->vehicle_slots_line_shown != should_show_slots) {
 					const_cast<VehicleDetailsWindow *>(this)->ReInit();
 				}
 				break;
@@ -2975,7 +3030,7 @@ public:
 				str = STR_VEHICLE_STATUS_STOPPED;
 			}
 		} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {
-			str = STR_VEHICLE_STATUS_TRAIN_STUCK;
+			str = HasBit(Train::From(v)->flags, VRF_WAITING_RESTRICTION) ? STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION : STR_VEHICLE_STATUS_TRAIN_STUCK;
 		} else if (v->type == VEH_AIRCRAFT && HasBit(Aircraft::From(v)->flags, VAF_DEST_TOO_FAR) && !v->current_order.IsType(OT_LOADING)) {
 			str = STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR;
 		} else { // vehicle is in a "normal" state, show current order

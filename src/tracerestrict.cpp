@@ -19,6 +19,7 @@
 #include "order_base.h"
 #include "cargotype.h"
 #include "group.h"
+#include "string_func.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include <vector>
 #include <algorithm>
@@ -59,6 +60,9 @@
 
 TraceRestrictProgramPool _tracerestrictprogram_pool("TraceRestrictProgram");
 INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
+
+TraceRestrictSlotPool _tracerestrictslot_pool("TraceRestrictSlot");
+INSTANTIATE_POOL_METHODS(TraceRestrictSlot)
 
 /**
  * TraceRestrictRefId --> TraceRestrictProgramID (Pool ID) mapping
@@ -350,6 +354,12 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_SLOT: {
+						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
+						result = TestBinaryConditionCommon(item, slot != NULL && slot->IsOccupant(v->index));
+						break;
+					}
+
 					case TRIT_COND_PHYS_PROP: {
 						switch (static_cast<TraceRestrictPhysPropCondAuxField>(GetTraceRestrictAuxField(item))) {
 							case TRPPCAF_WEIGHT:
@@ -443,6 +453,44 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_WAIT_AT_PBS:
+						if (GetTraceRestrictValue(item)) {
+							out.flags &= ~TRPRF_WAIT_AT_PBS;
+						} else {
+							out.flags |= TRPRF_WAIT_AT_PBS;
+						}
+						break;
+
+					case TRIT_SLOT: {
+						if (!input.permitted_slot_operations) break;
+						TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
+						if (slot == NULL) break;
+						switch (static_cast<TraceRestrictSlotCondOpField>(GetTraceRestrictCondOp(item))) {
+							case TRSCOF_ACQUIRE_WAIT:
+								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
+									if (!slot->Occupy(v->index)) out.flags |= TRPRF_WAIT_AT_PBS;
+								}
+								break;
+
+							case TRSCOF_ACQUIRE_TRY:
+								if (input.permitted_slot_operations & TRPISP_ACQUIRE) slot->Occupy(v->index);
+								break;
+
+							case TRSCOF_RELEASE_BACK:
+								if (input.permitted_slot_operations & TRPISP_RELEASE_BACK) slot->Vacate(v->index);
+								break;
+
+							case TRSCOF_RELEASE_FRONT:
+								if (input.permitted_slot_operations & TRPISP_RELEASE_FRONT) slot->Vacate(v->index);
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -530,6 +578,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
 				case TRIT_COND_TRAIN_GROUP:
+				case TRIT_COND_SLOT:
 				case TRIT_COND_PHYS_PROP:
 				case TRIT_COND_PHYS_RATIO:
 				case TRIT_COND_TRAIN_OWNER:
@@ -553,12 +602,40 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					actions_used_flags |= TRPAUF_LONG_RESERVE;
 					break;
 
+				case TRIT_WAIT_AT_PBS:
+					actions_used_flags |= TRPAUF_WAIT_AT_PBS;
+					break;
+
+				case TRIT_SLOT:
+					switch (static_cast<TraceRestrictSlotCondOpField>(GetTraceRestrictCondOp(item))) {
+						case TRSCOF_ACQUIRE_WAIT:
+							actions_used_flags |= TRPAUF_SLOT_ACQUIRE | TRPAUF_WAIT_AT_PBS;
+							break;
+
+						case TRSCOF_ACQUIRE_TRY:
+							actions_used_flags |= TRPAUF_SLOT_ACQUIRE;
+							break;
+
+						case TRSCOF_RELEASE_BACK:
+							actions_used_flags |= TRPAUF_SLOT_RELEASE_BACK;
+							break;
+
+						case TRSCOF_RELEASE_FRONT:
+							actions_used_flags |= TRPAUF_SLOT_RELEASE_FRONT;
+							break;
+
+						default:
+							NOT_REACHED();
+							break;
+					}
+					break;
+
 				default:
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
 		}
 	}
-	if(!condstack.empty()) {
+	if (!condstack.empty()) {
 		return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK);
 	}
 	return CommandCost();
@@ -611,6 +688,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_FORCE:
 		case TRVT_POWER_WEIGHT_RATIO:
 		case TRVT_FORCE_WEIGHT_RATIO:
+		case TRVT_WAIT_AT_PBS:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);
@@ -645,6 +723,11 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 
 		case TRVT_OWNER:
 			SetTraceRestrictValue(item, INVALID_OWNER);
+			SetTraceRestrictAuxField(item, 0);
+			break;
+
+		case TRVT_SLOT_INDEX:
+			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID);
 			SetTraceRestrictAuxField(item, 0);
 			break;
 
@@ -1319,4 +1402,308 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 
 	// update windows
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+}
+
+static std::unordered_multimap<VehicleID, TraceRestrictSlotID> slot_vehicle_index;
+
+/**
+ * Add vehicle ID to occupants if possible and not already an occupant
+ * @param id Vehicle ID
+ * @param force Add the vehicle even if the slot is at/over capacity
+ * @return whether vehicle ID is now an occupant
+ */
+bool TraceRestrictSlot::Occupy(VehicleID id, bool force)
+{
+	if (this->IsOccupant(id)) return true;
+	if (this->occupants.size() >= this->max_occupancy && !force) return false;
+	this->occupants.push_back(id);
+	slot_vehicle_index.emplace(id, this->index);
+	SetBit(Train::Get(id)->flags, VRF_HAVE_SLOT);
+	SetWindowDirty(WC_VEHICLE_DETAILS, id);
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	return true;
+}
+
+/**
+ * Remove vehicle ID from occupants
+ * @param id Vehicle ID
+ */
+void TraceRestrictSlot::Vacate(VehicleID id)
+{
+	if (container_unordered_remove(this->occupants, id)) {
+		this->DeIndex(id);
+	}
+}
+
+/** Remove all occupants */
+void TraceRestrictSlot::Clear()
+{
+	for (VehicleID id : this->occupants) {
+		this->DeIndex(id);
+	}
+	this->occupants.clear();
+}
+
+void TraceRestrictSlot::DeIndex(VehicleID id)
+{
+	auto range = slot_vehicle_index.equal_range(id);
+	for (auto it = range.first; it != range.second; ++it) {
+		if (it->second == this->index) {
+			auto next = slot_vehicle_index.erase(it);
+			if (it == range.first && next == range.second) {
+				/* Only one item, which we've just erased, clear the vehicle flag */
+				ClrBit(Train::Get(id)->flags, VRF_HAVE_SLOT);
+			}
+			break;
+		}
+	}
+	SetWindowDirty(WC_VEHICLE_DETAILS, id);
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+}
+
+/** Rebuild slot vehicle index after loading */
+void TraceRestrictSlot::RebuildVehicleIndex()
+{
+	slot_vehicle_index.clear();
+	const TraceRestrictSlot *slot;
+	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+		for (VehicleID id : slot->occupants) {
+			slot_vehicle_index.emplace(id, slot->index);
+		}
+	}
+}
+
+/** Slot pool is about to be cleared */
+void TraceRestrictSlot::PreCleanPool()
+{
+	slot_vehicle_index.clear();
+}
+
+/** Remove vehicle ID from all slot occupants */
+void TraceRestrictRemoveVehicleFromAllSlots(VehicleID id)
+{
+	auto range = slot_vehicle_index.equal_range(id);
+	for (auto it = range.first; it != range.second; ++it) {
+		TraceRestrictSlot *slot = TraceRestrictSlot::Get(it->second);
+		container_unordered_remove(slot->occupants, id);
+	}
+	slot_vehicle_index.erase(range.first, range.second);
+	if (range.first != range.second) InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+}
+
+/** Replace all instance of a vehicle ID with another, in all slot occupants */
+void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to)
+{
+	auto range = slot_vehicle_index.equal_range(from);
+	std::vector<TraceRestrictSlotID> slots;
+	for (auto it = range.first; it != range.second; ++it) {
+		slots.push_back(it->second);
+	}
+	slot_vehicle_index.erase(range.first, range.second);
+	for (TraceRestrictSlotID slot_id : slots) {
+		TraceRestrictSlot *slot = TraceRestrictSlot::Get(slot_id);
+		for (VehicleID &id : slot->occupants) {
+			if (id == from) {
+				id = to;
+				slot_vehicle_index.emplace(to, slot_id);
+			}
+		}
+	}
+	if (!slots.empty()) InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+}
+
+/** Get list of slots occupied by a vehicle ID */
+void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID> &out)
+{
+	auto range = slot_vehicle_index.equal_range(id);
+	for (auto it = range.first; it != range.second; ++it) {
+		out.push_back(it->second);
+	}
+}
+
+/**
+ * This is called when a slot is about to be deleted
+ * Scan program pool and change any references to it to the invalid group ID, to avoid dangling references
+ */
+void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
+{
+	TraceRestrictProgram *prog;
+
+	FOR_ALL_TRACE_RESTRICT_PROGRAMS(prog) {
+		for (size_t i = 0; i < prog->items.size(); i++) {
+			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
+			if ((GetTraceRestrictType(item) == TRIT_SLOT || GetTraceRestrictType(item) == TRIT_COND_SLOT) && GetTraceRestrictValue(item) == index) {
+				SetTraceRestrictValueDefault(item, TRVT_SLOT_INDEX); // this updates the instruction in-place
+			}
+			if (IsTraceRestrictDoubleItem(item)) i++;
+		}
+	}
+
+	// update windows
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+}
+
+static bool IsUniqueSlotName(const char *name)
+{
+	const TraceRestrictSlot *slot;
+	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+		if (slot->name == name) return false;
+	}
+	return true;
+}
+
+/**
+ * Create a new slot.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   unused
+ * @param p2   unused
+ * @param text new slot name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (!TraceRestrictSlot::CanAllocateItem()) return CMD_ERROR;
+	if (StrEmpty(text)) return CMD_ERROR;
+
+	size_t length = Utf8StringLength(text);
+	if (length <= 0) return CMD_ERROR;
+	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+	if (!IsUniqueSlotName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+
+	if (flags & DC_EXEC) {
+		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company);
+		slot->name = text;
+
+		// update windows
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	}
+
+	return CommandCost();
+}
+
+
+/**
+ * Deletes a slot.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   index of array group
+ *      - p1 bit 0-15 : Slot ID
+ * @param p2   unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
+	if (slot == NULL || slot->owner != _current_company) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		/* notify tracerestrict that group is about to be deleted */
+		TraceRestrictRemoveSlotID(slot->index);
+
+		delete slot;
+
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Alter a slot
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   index of array group
+ *   - p1 bit 0-15 : GroupID
+ *   - p1 bit 16: 0 - Rename grouop
+ *                1 - Change max occupancy
+ * @param p2   new max occupancy
+ * @param text the new name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GB(p1, 0, 16));
+	if (slot == NULL || slot->owner != _current_company) return CMD_ERROR;
+
+	if (!HasBit(p1, 16)) {
+		/* Rename slot */
+
+		if (StrEmpty(text)) return CMD_ERROR;
+		size_t length = Utf8StringLength(text);
+		if (length <= 0) return CMD_ERROR;
+		if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+		if (!IsUniqueSlotName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+
+		if (flags & DC_EXEC) {
+			slot->name = text;
+		}
+	} else {
+		/* Change max occupancy */
+
+		if (flags & DC_EXEC) {
+			slot->max_occupancy = p2;
+		}
+	}
+
+	if (flags & DC_EXEC) {
+		// update windows
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Add a vehicle to a slot
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   index of array group
+ *   - p1 bit 0-15 : GroupID
+ * @param p2   index of vehicle
+ *   - p2 bit 0-19 : VehicleID
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdAddVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
+	Vehicle *v = Vehicle::GetIfValid(p2);
+	if (slot == NULL || slot->owner != _current_company) return CMD_ERROR;
+	if (v == NULL || v->owner != _current_company) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		slot->Occupy(v->index, true);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Remove a vehicle from a slot
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   index of array group
+ *   - p1 bit 0-15 : GroupID
+ * @param p2   index of vehicle
+ *   - p2 bit 0-19 : VehicleID
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
+	Vehicle *v = Vehicle::GetIfValid(p2);
+	if (slot == NULL || slot->owner != _current_company) return CMD_ERROR;
+	if (v == NULL) return CMD_ERROR; // permit removing vehicles of other owners from your own slot
+
+	if (flags & DC_EXEC) {
+		slot->Vacate(v->index);
+	}
+
+	return CommandCost();
 }

@@ -108,6 +108,65 @@ static void Save_TRRP()
 	}
 }
 
+/** program length save header struct */
+struct TraceRestrictSlotStub {
+	uint32 length;
+};
+
+static const SaveLoad _trace_restrict_slot_stub_desc[] = {
+	SLE_VAR(TraceRestrictSlotStub, length, SLE_UINT32),
+	SLE_END()
+};
+
+static const SaveLoad _trace_restrict_slot_desc[] = {
+	SLE_VAR(TraceRestrictSlot, max_occupancy, SLE_UINT32),
+	SLE_STDSTR(TraceRestrictSlot, name, SLF_ALLOW_CONTROL),
+	SLE_VAR(TraceRestrictSlot, owner, SLE_UINT8),
+	SLE_END()
+};
+
+/**
+ * Load slot pool
+ */
+static void Load_TRRS()
+{
+	int index;
+	TraceRestrictSlotStub stub;
+	while ((index = SlIterateArray()) != -1) {
+		TraceRestrictSlot *slot = new (index) TraceRestrictSlot();
+		SlObject(slot, _trace_restrict_slot_desc);
+		SlObject(&stub, _trace_restrict_slot_stub_desc);
+		slot->occupants.resize(stub.length);
+		if (stub.length) SlArray(&(slot->occupants[0]), stub.length, SLE_UINT32);
+	}
+	TraceRestrictSlot::RebuildVehicleIndex();
+}
+
+/**
+ * Save a slot, used by SlAutolength
+ */
+static void RealSave_TRRS(TraceRestrictSlot *slot)
+{
+	SlObject(slot, _trace_restrict_slot_desc);
+	TraceRestrictSlotStub stub;
+	stub.length = slot->occupants.size();
+	SlObject(&stub, _trace_restrict_slot_stub_desc);
+	if (stub.length) SlArray(&(slot->occupants[0]), stub.length, SLE_UINT32);
+}
+
+/**
+ * Save slot pool
+ */
+static void Save_TRRS()
+{
+	TraceRestrictSlot *slot;
+
+	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+		SlSetArrayIndex(slot->index);
+		SlAutolength((AutolengthProc*) RealSave_TRRS, slot);
+	}
+}
+
 /**
  * Update program reference counts from just-loaded mapping
  */
@@ -121,5 +180,6 @@ void AfterLoadTraceRestrict()
 
 extern const ChunkHandler _trace_restrict_chunk_handlers[] = {
 	{ 'TRRM', Save_TRRM, Load_TRRM, NULL, NULL, CH_SPARSE_ARRAY},    // Trace Restrict Mapping chunk
-	{ 'TRRP', Save_TRRP, Load_TRRP, NULL, NULL, CH_ARRAY | CH_LAST}, // Trace Restrict Mapping Program Pool chunk
+	{ 'TRRP', Save_TRRP, Load_TRRP, NULL, NULL, CH_ARRAY},           // Trace Restrict Mapping Program Pool chunk
+	{ 'TRRS', Save_TRRS, Load_TRRS, NULL, NULL, CH_ARRAY | CH_LAST}, // Trace Restrict Slot Pool chunk
 };
