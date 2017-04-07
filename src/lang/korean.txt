@@ -3037,8 +3037,11 @@ STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :정박소
 # Industries come directly from their industry names
 
 STR_LAI_TUNNEL_DESCRIPTION_RAILROAD                             :철도용 터널
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_CHUNNEL                     :철도용 해저 터널
 STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL                      :신호기가 설치된 철도용 터널
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL_CHUNNEL              :신호기가 설치된 철도용 해저 터널
 STR_LAI_TUNNEL_DESCRIPTION_ROAD                                 :도로용 터널
+STR_LAI_TUNNEL_DESCRIPTION_ROAD_CHUNNEL                         :도로용 해저 터널
 
 STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :신호기가 설치된 철교
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_SUSPENSION_STEEL                :강철 현수 철교
@@ -4994,8 +4997,14 @@ STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :{WHITE}터널 �
 STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :{WHITE}터널을 먼저 제거하십시오
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}도중에 다른 터널이 있습니다
 STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}터널이 지도 맨끝을 통과합니다
+STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}해저 터널이 지도 맨끝을 통과합니다
 STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}지형 문제로 터널의 반대쪽 출구를 만들 수 없습니다
 STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... 터널이 너무 깁니다!
+STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... 해저 터널을 만들기 위해서는 5칸에서 {NUM}칸 사이 길이의 여유 공간이 필요합니다.
+STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... 터널이 너무 많습니다
+STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL                             :{WHITE}해저 터널 위에 유정을 생성할 수 없습니다.
+STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}다른 터널을 통과하기 위해서는 3칸의 여유 공간이 필요합니다.
+STR_ERROR_CHUNNEL_ONLY_OVER_SEA                                 :{WHITE}해저 터널은 바다에만 건설할 수 있습니다...
 
 # Object related errors
 STR_ERROR_TOO_MANY_OBJECTS                                      :{WHITE}... 오브젝트가 너무 많습니다.
