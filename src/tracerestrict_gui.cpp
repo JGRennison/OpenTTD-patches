@@ -44,6 +44,8 @@
 #include "table/sprites.h"
 #include "core/geometry_func.hpp"
 
+#include "safeguards.h"
+
 /** Widget IDs */
 enum TraceRestrictWindowWidgets {
 	TR_WIDGET_CAPTION,

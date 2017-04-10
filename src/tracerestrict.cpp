@@ -21,6 +21,9 @@
 #include "group.h"
 #include "string_func.h"
 #include "pathfinder/yapf/yapf_cache.h"
+
+#include "safeguards.h"
+
 #include <vector>
 #include <algorithm>
 
