@@ -21,6 +21,9 @@
 #include "group.h"
 #include "string_func.h"
 #include "pathfinder/yapf/yapf_cache.h"
+
+#include "safeguards.h"
+
 #include <vector>
 #include <algorithm>
 
@@ -144,7 +147,7 @@ static void HandleCondition(std::vector<TraceRestrictCondStackFlags> &condstack,
  * Integer condition testing
  * Test value op condvalue
  */
-static bool TestCondition(uint16 value, TraceRestrictCondOp condop, uint16 condvalue)
+static bool TestCondition(int value, TraceRestrictCondOp condop, int condvalue)
 {
 	switch (condop) {
 		case TRCO_IS:
@@ -354,9 +357,30 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
-					case TRIT_COND_SLOT: {
+					case TRIT_COND_TRAIN_IN_SLOT: {
 						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
 						result = TestBinaryConditionCommon(item, slot != NULL && slot->IsOccupant(v->index));
+						break;
+					}
+
+					case TRIT_COND_SLOT_OCCUPANCY: {
+						// TRIT_COND_SLOT_OCCUPANCY value type uses the next slot
+						i++;
+						uint32_t value = this->items[i];
+						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
+						switch (static_cast<TraceRestrictSlotOccupancyCondAuxField>(GetTraceRestrictAuxField(item))) {
+							case TRSOCAF_OCCUPANTS:
+								result = TestCondition(slot != NULL ? slot->occupants.size() : 0, condop, value);
+								break;
+
+							case TRSOCAF_REMAINING:
+								result = TestCondition(slot != NULL ? slot->max_occupancy - slot->occupants.size() : 0, condop, value);
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
 						break;
 					}
 
@@ -578,7 +602,8 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
 				case TRIT_COND_TRAIN_GROUP:
-				case TRIT_COND_SLOT:
+				case TRIT_COND_TRAIN_IN_SLOT:
+				case TRIT_COND_SLOT_OCCUPANCY:
 				case TRIT_COND_PHYS_PROP:
 				case TRIT_COND_PHYS_RATIO:
 				case TRIT_COND_TRAIN_OWNER:
@@ -729,6 +754,10 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_SLOT_INDEX:
 			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID);
 			SetTraceRestrictAuxField(item, 0);
+			break;
+
+		case TRVT_SLOT_INDEX_INT:
+			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID);
 			break;
 
 		default:
@@ -933,6 +962,9 @@ static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
 	switch (GetTraceRestrictType(item)) {
 		case TRIT_COND_PBS_ENTRY_SIGNAL:
 			return INVALID_TILE;
+
+		case TRIT_COND_SLOT_OCCUPANCY:
+			return 0;
 
 		default:
 			NOT_REACHED();
@@ -1532,8 +1564,11 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 	FOR_ALL_TRACE_RESTRICT_PROGRAMS(prog) {
 		for (size_t i = 0; i < prog->items.size(); i++) {
 			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
-			if ((GetTraceRestrictType(item) == TRIT_SLOT || GetTraceRestrictType(item) == TRIT_COND_SLOT) && GetTraceRestrictValue(item) == index) {
+			if ((GetTraceRestrictType(item) == TRIT_SLOT || GetTraceRestrictType(item) == TRIT_COND_TRAIN_IN_SLOT) && GetTraceRestrictValue(item) == index) {
 				SetTraceRestrictValueDefault(item, TRVT_SLOT_INDEX); // this updates the instruction in-place
+			}
+			if ((GetTraceRestrictType(item) == TRIT_COND_SLOT_OCCUPANCY) && GetTraceRestrictValue(item) == index) {
+				SetTraceRestrictValueDefault(item, TRVT_SLOT_INDEX_INT); // this updates the instruction in-place
 			}
 			if (IsTraceRestrictDoubleItem(item)) i++;
 		}

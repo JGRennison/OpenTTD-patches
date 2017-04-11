@@ -134,7 +134,8 @@ enum TraceRestrictItemType {
 	TRIT_COND_TRAIN_GROUP         = 18,   ///< Test train group membership
 	TRIT_COND_PHYS_PROP           = 19,   ///< Test train physical property
 	TRIT_COND_PHYS_RATIO          = 20,   ///< Test train physical property ratio
-	TRIT_COND_SLOT                = 21,   ///< Test train slot membership
+	TRIT_COND_TRAIN_IN_SLOT       = 21,   ///< Test train slot membership
+	TRIT_COND_SLOT_OCCUPANCY      = 22,   ///< Test train slot occupancy state
 	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
 	/* space up to 31 */
 };
@@ -231,6 +232,15 @@ enum TraceRestrictSlotCondOpField {
 	TRSCOF_RELEASE_BACK           = 2,       ///< release a slot (back of train)
 	TRSCOF_RELEASE_FRONT          = 3,       ///< release a slot (front of train)
 	/* space up to 8 */
+};
+
+/**
+ * TraceRestrictItem auxiliary type field, for TRIT_COND_SLOT_OCCUPANCY
+ */
+enum TraceRestrictSlotOccupancyCondAuxField {
+	TRSOCAF_OCCUPANTS             = 0,       ///< value field is the occupancy count of the slot
+	TRSOCAF_REMAINING             = 1,       ///< value field is the remaining occupancy of the slot
+	/* space up to 3 */
 };
 
 /**
@@ -452,7 +462,8 @@ static inline bool IsTraceRestrictConditional(TraceRestrictItem item)
 /** Is TraceRestrictItem a double-item type? */
 static inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
 {
-	return GetTraceRestrictType(item) == TRIT_COND_PBS_ENTRY_SIGNAL;
+	const TraceRestrictItemType type = GetTraceRestrictType(item);
+	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY;
 }
 
 /**
@@ -490,6 +501,7 @@ enum TraceRestrictValueType {
 	TRVT_FORCE_WEIGHT_RATIO       = 17,///< takes a force / weight ratio, * 100
 	TRVT_WAIT_AT_PBS              = 18,///< takes a value 0 = wait at PBS signal, 1 = cancel wait at PBS signal
 	TRVT_SLOT_INDEX               = 19,///< takes a TraceRestrictSlotID
+	TRVT_SLOT_INDEX_INT           = 20,///< takes a TraceRestrictSlotID, and an integer in the next item slot
 	TRVT_OWNER                    = 40,///< takes a CompanyID
 };
 
@@ -557,9 +569,13 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 				out.cond_type = TRCOT_BINARY;
 				break;
 
-			case TRIT_COND_SLOT:
+			case TRIT_COND_TRAIN_IN_SLOT:
 				out.value_type = TRVT_SLOT_INDEX;
 				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_SLOT_OCCUPANCY:
+				out.value_type = TRVT_SLOT_INDEX_INT;
 				break;
 
 			case TRIT_COND_PHYS_PROP:
@@ -635,6 +651,7 @@ static inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
 	switch (type) {
 		case TRIT_COND_PHYS_PROP:
 		case TRIT_COND_PHYS_RATIO:
+		case TRIT_COND_SLOT_OCCUPANCY:
 			return true;
 
 		default:
