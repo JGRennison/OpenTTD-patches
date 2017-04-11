@@ -283,6 +283,10 @@ struct CompanyFinancesWindow : Window {
 
 	CompanyFinancesWindow(WindowDesc *desc, CompanyID company) : Window(desc)
 	{
+		const Company *c = Company::Get(company);
+		if (c->money > CompanyFinancesWindow::max_money) {
+			CompanyFinancesWindow::max_money = max(c->money * 2, CompanyFinancesWindow::max_money * 4);
+		}
 		this->small = false;
 		this->CreateNestedTree();
 		this->SetupWidgets();
