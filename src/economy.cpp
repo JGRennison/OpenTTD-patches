@@ -1242,11 +1242,13 @@ void CargoPayment::PayFinalDelivery(const CargoPacket *cp, uint count)
 	/* Handle end of route payment */
 	Money profit = DeliverGoods(count, this->ct, this->current_station, cp->SourceStationXY(), cp->DaysInTransit(), this->owner, cp->SourceSubsidyType(), cp->SourceSubsidyID());
 
+	profit -= cp->FeederShare(count);
+
 	/* For Infrastructure patch. Handling transfers between other companies */
-	this->route_profit += profit - cp->FeederShare(count);
+	this->route_profit += profit;
 
 	/* The vehicle's profit is whatever route profit there is minus feeder shares. */
-	this->visual_profit += profit - cp->FeederShare(count);
+	this->visual_profit += profit;
 }
 
 /**
@@ -1260,9 +1262,11 @@ Money CargoPayment::PayTransfer(const CargoPacket *cp, uint count)
 	Money profit = GetTransportedGoodsIncome(
 			count,
 			/* pay transfer vehicle for only the part of transfer it has done: ie. cargo_loaded_at_xy to here */
-			DistanceManhattan(cp->LoadedAtXY(), Station::Get(this->current_station)->xy),
+			DistanceManhattan(_settings_game.economy.feeder_payment_src_station ? cp->SourceStationXY() : cp->LoadedAtXY(), Station::Get(this->current_station)->xy),
 			cp->DaysInTransit(),
 			this->ct);
+
+	if (_settings_game.economy.feeder_payment_src_station) profit -= cp->FeederShare(count);
 
 	profit = profit * _settings_game.economy.feeder_payment_share / 100;
 
