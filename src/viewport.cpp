@@ -3290,6 +3290,9 @@ static bool CheckClickOnLandscape(const ViewPort *vp, int x, int y)
 {
 	Point pt = TranslateXYToTileCoord(vp, x, y);
 
+	_tile_fract_coords.x = pt.x & TILE_UNIT_MASK;
+	_tile_fract_coords.y = pt.y & TILE_UNIT_MASK;
+
 	if (pt.x != -1) return ClickTile(TileVirtXY(pt.x, pt.y));
 	return true;
 }
