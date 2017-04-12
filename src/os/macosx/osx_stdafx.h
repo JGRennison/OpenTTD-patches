@@ -12,6 +12,7 @@
 #ifndef MACOS_STDAFX_H
 #define MACOS_STDAFX_H
 
+#define __ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES 0
 
 #include <AvailabilityMacros.h>
 
