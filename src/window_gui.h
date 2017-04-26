@@ -871,6 +871,7 @@ enum TooltipCloseCondition {
 	TCC_RIGHT_CLICK,
 	TCC_LEFT_CLICK,
 	TCC_HOVER,
+	TCC_HOVER_VIEWPORT,
 };
 
 void GuiShowTooltips(Window *parent, StringID str, uint paramcount = 0, const uint64 params[] = NULL, TooltipCloseCondition close_tooltip = TCC_HOVER);

@@ -26,6 +26,7 @@
 #include "core/geometry_func.hpp"
 #include "newgrf_debug.h"
 #include "zoom_func.h"
+#include "viewport_type.h"
 
 #include "widgets/misc_widget.h"
 
@@ -652,6 +653,9 @@ struct TooltipsWindow : public Window
 	uint64 params[5];                 ///< The string parameters.
 	TooltipCloseCondition close_cond; ///< Condition for closing the window.
 	char buffer[DRAW_STRING_BUFFER];  ///< Text to draw
+	int viewport_virtual_left;        ///< Owner viewport state: left
+	int viewport_virtual_top;         ///< Owner viewport state: top
+	bool delete_next_mouse_loop;      ///< Delete window on the next mouse loop
 
 	TooltipsWindow(Window *parent, StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_tooltip) : Window(&_tool_tips_desc)
 	{
@@ -662,7 +666,12 @@ struct TooltipsWindow : public Window
 		memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
 		this->paramcount = paramcount;
 		this->close_cond = close_tooltip;
+		this->delete_next_mouse_loop = false;
 		if (this->paramcount == 0) GetString(this->buffer, str, lastof(this->buffer)); // Get the text while params are available
+		if (close_tooltip == TCC_HOVER_VIEWPORT) {
+			this->viewport_virtual_left = parent->viewport->virtual_left;
+			this->viewport_virtual_top = parent->viewport->virtual_top;
+		}
 
 		this->InitNested();
 
@@ -721,7 +730,7 @@ struct TooltipsWindow : public Window
 	virtual void OnMouseLoop()
 	{
 		/* Always close tooltips when the cursor is not in our window. */
-		if (!_cursor.in_window) {
+		if (!_cursor.in_window || this->delete_next_mouse_loop) {
 			delete this;
 			return;
 		}
@@ -732,6 +741,17 @@ struct TooltipsWindow : public Window
 			case TCC_RIGHT_CLICK: if (!_right_button_down) delete this; break;
 			case TCC_LEFT_CLICK: if (!_left_button_down) delete this; break;
 			case TCC_HOVER: if (!_mouse_hovering) delete this; break;
+
+			case TCC_HOVER_VIEWPORT:
+				if (!_mouse_hovering) {
+					delete this;
+					break;
+				}
+				if (this->viewport_virtual_left != this->parent->viewport->virtual_left ||
+						this->viewport_virtual_top != this->parent->viewport->virtual_top) {
+					this->delete_next_mouse_loop = true;
+				}
+				break;
 		}
 	}
 };
