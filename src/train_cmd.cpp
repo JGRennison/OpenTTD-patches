@@ -4954,7 +4954,7 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 			if (cargo >= NUM_CARGO) return CMD_ERROR;
 			CargoID default_cargo = Engine::Get(eid)->GetDefaultCargoType();
 			if (default_cargo != cargo) {
-				CommandCost refit_res = CmdRefitVehicle(tile, flags, train->index, cargo, NULL);
+				CommandCost refit_res = CmdRefitVehicle(tile, flags, train->index, cargo | (1 << 5), NULL);
 				if (!refit_res.Succeeded()) return refit_res;
 			}
 		}
