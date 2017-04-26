@@ -225,7 +225,7 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 		case MP_HOUSE: {
 			if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES)) return; // No need for a town name tooltip when it is already displayed
 			SetDParam(0, GetTownIndex(tile));
-			GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, NULL, TCC_HOVER);
+			GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, NULL, TCC_HOVER_VIEWPORT);
 			break;
 		}
 		case MP_INDUSTRY: {
@@ -243,7 +243,7 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 					str++;
 				}
 			}
-			GuiShowTooltips(w, str, 0, NULL, TCC_HOVER);
+			GuiShowTooltips(w, str, 0, NULL, TCC_HOVER_VIEWPORT);
 			break;
 		}
 		default:
