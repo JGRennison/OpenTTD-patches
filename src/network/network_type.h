@@ -81,9 +81,9 @@ enum NetworkPasswordType {
 /** Destination of our chat messages. */
 enum DestType {
 	DESTTYPE_BROADCAST, ///< Send message/notice to all clients (All)
-	DESTTYPE_BROADCAST_SS, ///< Send message/notice to all clients (All), but tag the broadcast to self as a self-send
 	DESTTYPE_TEAM,      ///< Send message/notice to everyone playing the same company (Team)
 	DESTTYPE_CLIENT,    ///< Send message/notice to only a certain client (Private)
+	DESTTYPE_BROADCAST_SS, ///< Send message/notice to all clients (All), but tag the broadcast to self as a self-send
 };
 
 /** Actions that can be used for NetworkTextMessage */
