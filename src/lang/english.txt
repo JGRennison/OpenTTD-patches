@@ -1850,6 +1850,8 @@ STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Change s
 
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Close adjacent level crossings: {STRING2}
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Closes all adjacent level crossings on parallel tracks whenever one or more is occupied
+STR_CONFIG_SETTING_SAFER_CROSSINGS                              :Safer level crossings: {STRING2}
+STR_CONFIG_SETTING_SAFER_CROSSINGS_HELPTEXT                     :Changes to level crossings to improve road vehicle safety
 
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Pay for repairing vehicles: {STRING2}
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Pay for repairing vehicles which have broken down

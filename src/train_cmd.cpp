@@ -1866,6 +1866,20 @@ void UpdateLevelCrossing(TileIndex tile, bool sound)
 	}
 }
 
+/**
+ * Check if the level crossing is occupied by road vehicle(s).
+ * @param t The tile to query.
+ * @pre IsLevelCrossing(t)
+ * @return True if the level crossing is marked as occupied.
+ */
+bool IsCrossingOccupiedByRoadVehicle(TileIndex t)
+{
+	if (!IsCrossingPossiblyOccupiedByRoadVehicle(t)) return false;
+	const bool occupied = EnsureNoRoadVehicleOnGround(t).Failed();
+	SetCrossingOccupiedByRoadVehicle(t, occupied);
+	return occupied;
+}
+
 
 /**
  * Bars crossing and plays ding-ding sound if not barred already

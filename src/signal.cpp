@@ -400,6 +400,7 @@ static SigInfo ExploreSegment(Owner owner)
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) continue; // different axis
 
 				if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
+				if (_settings_game.vehicle.safer_crossings) info.flags |= SF_PBS;
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 

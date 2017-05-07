@@ -1887,6 +1887,12 @@ static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int 
 			break;
 		}
 
+		case ROAD_TILE_CROSSING: {
+			if (v->type != VEH_ROAD) break;
+			SetCrossingOccupiedByRoadVehicle(tile, true);
+			break;
+		}
+
 		default: break;
 	}
 	return VETSB_CONTINUE;

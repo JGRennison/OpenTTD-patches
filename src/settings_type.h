@@ -515,6 +515,7 @@ struct VehicleSettings {
 	byte   road_side;                        ///< the side of the road vehicles drive on
 	uint8  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
 	bool   adjacent_crossings;               ///< enable closing of adjacent level crossings
+	bool   safer_crossings;                  ///< enable safer level crossings
 	bool   improved_breakdowns;              ///< different types, chances and severities of breakdowns
 	bool   pay_for_repair;                   ///< pay for repairing vehicle
 	uint8  repair_cost;                      ///< cost of repairing vehicle

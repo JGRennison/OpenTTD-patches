@@ -402,21 +402,27 @@ static inline void SetCrossingBarred(TileIndex t, bool barred)
 }
 
 /**
- * Unbar a level crossing.
- * @param t The tile to change.
+ * Check if the level crossing is possibly occupied by road vehicle(s).
+ * @param t The tile to query.
+ * @pre IsLevelCrossing(t)
+ * @return True if the level crossing is marked as occupied. This may return false positives.
  */
-static inline void UnbarCrossing(TileIndex t)
+static inline bool IsCrossingPossiblyOccupiedByRoadVehicle(TileIndex t)
 {
-	SetCrossingBarred(t, false);
+	assert(IsLevelCrossing(t));
+	return HasBit(_m[t].m5, 1);
 }
 
 /**
- * Bar a level crossing.
- * @param t The tile to change.
+ * Set whether the level crossing is occupied by road vehicle(s).
+ * @param t The tile to modify.
+ * @param barred True if the crossing should be marked as occupied, false otherwise.
+ * @pre IsLevelCrossing(t)
  */
-static inline void BarCrossing(TileIndex t)
+static inline void SetCrossingOccupiedByRoadVehicle(TileIndex t, bool occupied)
 {
-	SetCrossingBarred(t, true);
+	assert(IsLevelCrossing(t));
+	SB(_m[t].m5, 1, 1, occupied ? 1 : 0);
 }
 
 /** Check if a road tile has snow/desert. */

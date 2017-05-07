@@ -25,6 +25,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TRACE_RESTRICT_OWNER,                   ///< Trace restrict: train owner test
 	XSLFI_PROG_SIGS,                              ///< programmable signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
+	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings
 	XSLFI_DEPARTURE_BOARDS,                       ///< Departure boards patch, in ticks mode
 	XSLFI_TIMETABLES_START_TICKS,                 ///< Timetable start time is in ticks, instead of days (from departure boards patch)
 	XSLFI_TOWN_CARGO_ADJ,                         ///< Town cargo adjustment patch

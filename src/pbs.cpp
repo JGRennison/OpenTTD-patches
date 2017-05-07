@@ -125,6 +125,18 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 
 		case MP_ROAD:
 			if (IsLevelCrossing(tile) && !HasCrossingReservation(tile)) {
+				if (_settings_game.vehicle.safer_crossings) {
+					if (IsCrossingOccupiedByRoadVehicle(tile)) return false;
+					if (_settings_game.vehicle.adjacent_crossings) {
+						const Axis axis = GetCrossingRoadAxis(tile);
+						for (TileIndex t = tile; IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, AxisToDiagDir(GetCrossingRoadAxis(t)))) {
+							if (IsCrossingOccupiedByRoadVehicle(t)) return false;
+						}
+						for (TileIndex t = tile; IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, ReverseDiagDir(AxisToDiagDir(GetCrossingRoadAxis(t))))) {
+							if (IsCrossingOccupiedByRoadVehicle(t)) return false;
+						}
+					}
+				}
 				SetCrossingReservation(tile, true);
 				UpdateLevelCrossing(tile, false);
 				return true;

@@ -575,6 +575,40 @@ CommandCost EnsureNoVehicleOnGround(TileIndex tile)
 	return CommandCost();
 }
 
+/**
+ * Callback that returns 'real' vehicles lower or at height \c *(int*)data, for road vehicles.
+ * @param v Vehicle to examine.
+ * @param data Pointer to height data.
+ * @return \a v if conditions are met, else \c NULL.
+ */
+static Vehicle *EnsureNoRoadVehicleProcZ(Vehicle *v, void *data)
+{
+	int z = *(int*)data;
+
+	if (v->type != VEH_ROAD) return NULL;
+	if (v->z_pos > z) return NULL;
+
+	return v;
+}
+
+/**
+ * Ensure there is no road vehicle at the ground at the given position.
+ * @param tile Position to examine.
+ * @return Succeeded command (ground is free) or failed command (a vehicle is found).
+ */
+CommandCost EnsureNoRoadVehicleOnGround(TileIndex tile)
+{
+	int z = GetTileMaxPixelZ(tile);
+
+	/* Value v is not safe in MP games, however, it is used to generate a local
+	 * error message only (which may be different for different machines).
+	 * Such a message does not affect MP synchronisation.
+	 */
+	Vehicle *v = VehicleFromPos(tile, &z, &EnsureNoRoadVehicleProcZ, true);
+	if (v != NULL) return_cmd_error(STR_ERROR_ROAD_VEHICLE_IN_THE_WAY);
+	return CommandCost();
+}
+
 /** Procedure called for every vehicle found in tunnel/bridge in the hash map */
 static Vehicle *GetVehicleTunnelBridgeProc(Vehicle *v, void *data)
 {

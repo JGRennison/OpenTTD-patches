@@ -180,5 +180,6 @@ bool ValParamRoadType(const RoadType rt);
 RoadTypes GetCompanyRoadtypes(const CompanyID company);
 
 void UpdateLevelCrossing(TileIndex tile, bool sound = true);
+bool IsCrossingOccupiedByRoadVehicle(TileIndex t);
 
 #endif /* ROAD_FUNC_H */
