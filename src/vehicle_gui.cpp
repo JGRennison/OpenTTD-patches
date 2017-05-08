@@ -3026,7 +3026,14 @@ public:
 					SetDParam(0, v->GetDisplaySpeed());
 					str = STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL;
 				}
-			} else { // no train
+			} else if (v->type == VEH_ROAD) {
+				if (RoadVehicle::From(v)->IsRoadVehicleStopped()) {
+					str = STR_VEHICLE_STATUS_STOPPED;
+				} else {
+					SetDParam(0, v->GetDisplaySpeed());
+					str = STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL;
+				}
+			} else { // no train/RV
 				str = STR_VEHICLE_STATUS_STOPPED;
 			}
 		} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {

@@ -126,6 +126,20 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	int GetCurrentMaxSpeed() const;
 	int UpdateSpeed();
 
+	inline bool IsRoadVehicleOnLevelCrossing() const
+	{
+		for (const RoadVehicle *u = this; u != NULL; u = u->Next()) {
+			if (IsLevelCrossingTile(u->tile)) return true;
+		}
+		return false;
+	}
+
+	inline bool IsRoadVehicleStopped() const
+	{
+		if (!(this->vehstatus & VS_STOPPED)) return false;
+		return !this->IsRoadVehicleOnLevelCrossing();
+	}
+
 protected: // These functions should not be called outside acceleration code.
 
 	/**
@@ -207,7 +221,7 @@ protected: // These functions should not be called outside acceleration code.
 	 */
 	inline AccelStatus GetAccelerationStatus() const
 	{
-		return (this->vehstatus & VS_STOPPED) ? AS_BRAKE : AS_ACCEL;
+		return this->IsRoadVehicleStopped() ? AS_BRAKE : AS_ACCEL;
 	}
 
 	/**
