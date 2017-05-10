@@ -2,6 +2,26 @@
 
 * * *
 
+### v0.19.0 (2017-05-10)
+* Fix crashes and non-functionality with non-broadcast network chat, regression from v0.18.0.
+* Fix crash when using unrelated buttons in timetable window when also inputting a numeric value.
+* Template-based train replacement:
+  * Fix crash when build and refitting template trains.
+* Viewport:
+  * Fix graphical glitches with re-drawing viewport order lines in some circumstances.
+  * Fix viewport tooltips not being cleared when scrolling using the keyboard.
+* Level crossings:
+  * Prevent road vehicles from being stopped on level crossings.
+  * Add setting to enable improved level crossing safety (default off).
+* Routing restrictions:
+  * Show routing restriction and/or programmable signal windows when ctrl-clicking signal.
+  * Add advanced features: wait at PBS signal, and slots.
+* Add setting for alternative transfer payment mode (default off). Calculate leg payment as a journey from the source to the transfer station, minus transfers.
+* Fix company finance window being too small when first opened.
+* Fix build issues on MacOS/OSX.
+* Add Korean translations by TELK.
+* Bump trunk base from r27846 to r27870
+
 ### v0.18.0 (2017-04-04)
 * Fix incorrect behaviour and crashes with custom bridge heads on steep slopes.
 * Fix day length not being reset to 1 when loading pre day-length savegames.

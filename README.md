@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.18.0
+## JGR's Patchpack version 0.19.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -173,6 +173,14 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Minimum town distance [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=33625) (added in v0.18.0)
 
+* Add setting for alternative transfer payment mode. (added in v0.19.0)  
+  Calculate leg payment as a journey from the source to the transfer station, minus previous transfers.  
+  This is to more fairly distribute profits between transfer vehicles and avoid large negative payments on the final leg.
+
+* Level crossing improvements (added in v0.19.0)  
+  * Prevent road vehicles from being stopped on level crossings.  
+  * Add setting to enable improved level crossing safety.
+
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 2x faster. (~1.3x faster in v0.8.1, further improvements in v0.17.2)  
@@ -194,11 +202,12 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)  
   * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)  
   * Increase maximum setting limits for per-company vehicle-type limits. (added in v0.17.0)  
-  * Increase maximum permitted vehicle name length (added in v0.17.0), and vehicle group name length (added in v0.17.2)
+  * Increase maximum permitted vehicle name length (added in v0.17.0), and vehicle group name length (added in v0.17.2)  
+  * Various minor fixes, see changelog.
 
 * Translations  
   * German (by Auge)  
-  * Korean (by kiwitreekor)
+  * Korean (by kiwitreekor and TELK)
 
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  
