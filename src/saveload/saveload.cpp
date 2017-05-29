@@ -1752,10 +1752,10 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 				case SL_VARVEC: {
 					const size_t size_len = SlCalcConvMemLen(sld->conv);
 					switch (size_len) {
-						case 1: SlVarList<std::vector<byte>>(ptr, 1); break;
-						case 2: SlVarList<std::vector<uint16>>(ptr, 2); break;
-						case 4: SlVarList<std::vector<uint32>>(ptr, 4); break;
-						case 8: SlVarList<std::vector<uint64>>(ptr, 8); break;
+						case 1: SlVarList<std::vector<byte>>(ptr, conv); break;
+						case 2: SlVarList<std::vector<uint16>>(ptr, conv); break;
+						case 4: SlVarList<std::vector<uint32>>(ptr, conv); break;
+						case 8: SlVarList<std::vector<uint64>>(ptr, conv); break;
 						default: NOT_REACHED();
 					}
 					break;
