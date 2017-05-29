@@ -212,6 +212,8 @@ enum SaveLoadTypes {
 	SL_WRITEBYTE   =  8,
 	SL_VEH_INCLUDE =  9,
 	SL_ST_INCLUDE  = 10,
+	/* primitive type vector */
+	SL_VARVEC      = 14,
 	SL_END         = 15
 };
 
@@ -348,6 +350,18 @@ typedef SaveLoad SaveLoadGlobVarList;
  */
 #define SLE_CONDVEC_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_VEC, base, variable, type, 0, from, to, extver)
 #define SLE_CONDVEC(base, variable, type, from, to) SLE_CONDVEC_X(base, variable, type, from, to, SlXvFeatureTest())
+
+/**
+ * Storage of a variable vector in some savegame versions.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLE_CONDVARVEC_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_VARVEC, base, variable, type, 0, from, to, extver)
+#define SLE_CONDVARVEC(base, variable, type, from, to) SLE_CONDVARVEC_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a variable in every version of a savegame.
