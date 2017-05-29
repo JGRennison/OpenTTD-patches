@@ -25,6 +25,7 @@
 #include "vehicle_gui.h"
 #include "settings_type.h"
 #include "viewport_func.h"
+#include "schdispatch.h"
 
 #include "widgets/timetable_widget.h"
 
@@ -356,11 +357,11 @@ struct TimetableWindow : Window {
 			this->SetWidgetDisabledState(WID_VT_CLEAR_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !v->IsOrderListShared());
 
-			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders.list == NULL || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
+			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders.list == NULL || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
 			this->SetWidgetDisabledState(WID_VT_RESET_LATENESS, v->orders.list == NULL);
 			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders.list == NULL || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+			this->SetWidgetDisabledState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
 			this->EnableWidget(WID_VT_AUTOMATE);
-			this->EnableWidget(WID_VT_AUTO_SEPARATION);
 		} else {
 			this->DisableWidget(WID_VT_START_DATE);
 			this->DisableWidget(WID_VT_CHANGE_TIME);
@@ -377,6 +378,9 @@ struct TimetableWindow : Window {
 		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
 		this->SetWidgetLoweredState(WID_VT_AUTOMATE, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 		this->SetWidgetLoweredState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
+		this->SetWidgetLoweredState(WID_VT_SCHEDULED_DISPATCH, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
+		
+		this->SetWidgetDisabledState(WID_VT_SCHEDULED_DISPATCH, v->orders.list == NULL);
 
 		this->DrawWidgets();
 	}
@@ -660,6 +664,11 @@ struct TimetableWindow : Window {
 				break;
 			}
 
+			case WID_VT_SCHEDULED_DISPATCH: {
+				ShowSchdispatchWindow(v);
+				break;
+			}
+
 			case WID_VT_AUTOMATE: {
 				uint32 p2 = 0;
 				if (!HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) SetBit(p2, 0);
@@ -787,20 +796,21 @@ static const NWidgetPart _nested_timetable_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_START_DATE), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_STARTING_DATE, STR_TIMETABLE_STARTING_DATE_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_CHANGE_TIME), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_CHANGE_TIME, STR_TIMETABLE_WAIT_TIME_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_CLEAR_TIME), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_CLEAR_TIME, STR_TIMETABLE_CLEAR_TIME_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_AUTOFILL), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_AUTOFILL, STR_TIMETABLE_AUTOFILL_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_CHANGE_SPEED), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_CHANGE_SPEED, STR_TIMETABLE_CHANGE_SPEED_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_CLEAR_SPEED), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_CLEAR_SPEED, STR_TIMETABLE_CLEAR_SPEED_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_START_DATE), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_STARTING_DATE, STR_TIMETABLE_STARTING_DATE_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_SCHEDULED_DISPATCH), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_SCHEDULED_DISPATCH, STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_AUTO_SEPARATION), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_AUTO_SEPARATION, STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_RESET_LATENESS), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_RESET_LATENESS, STR_TIMETABLE_RESET_LATENESS_TOOLTIP),
 			EndContainer(),
 			NWidget(NWID_VERTICAL, NC_EQUALSIZE),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_AUTOFILL), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_AUTOFILL, STR_TIMETABLE_AUTOFILL_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_AUTOMATE), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_TIMETABLE_AUTOMATE, STR_TIMETABLE_AUTOMATE_TOOLTIP),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VT_EXPECTED_SELECTION),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_EXPECTED), SetResize(1, 0), SetFill(1, 1), SetDataTip(STR_BLACK_STRING, STR_TIMETABLE_EXPECTED_TOOLTIP),

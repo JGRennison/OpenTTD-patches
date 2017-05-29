@@ -4607,6 +4607,9 @@ STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Manage t
 STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}Auto Separation
 STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}Automatically adjust timetable start times to ensure vehicle separation
 
+STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}Scheduled Dispatch
+STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}Open scheduled dispatch windows for automatic setting of timetable start time
+
 STR_TIMETABLE_EXPECTED                                          :{BLACK}Expected
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Scheduled
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Switch between expected and scheduled
@@ -5807,3 +5810,30 @@ STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}Cancel
 STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}Select a vehicle type from each list and press 'Replace All'. If you are happy with the result displayed in the template list, press 'Apply' to actually apply these changes.
 
 STR_TMPL_CANT_CREATE                                            :{WHITE}Can't create template or virtual vehicle...
+
+# Scheduled Dispatch
+STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (Scheduled Dispatch)
+STR_SCHDISPATCH_ENABLED                                         :{BLACK}Enable
+STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Enable scheduled dispatching for this order. Required automatic separation to be off.
+STR_SCHDISPATCH_ADD                                             :{BLACK}Add Departure Slot
+STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Add new departure slot for this schedule.
+STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Departure slot
+STR_SCHDISPATCH_DURATION                                        :{BLACK}Duration
+STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Set duration of this schedule.
+STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Duration (minute)
+STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}Duration (day)
+STR_SCHDISPATCH_START                                           :{BLACK}Start Date
+STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}Select a date to start this schedule.
+STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}Start time (hhmm)
+STR_SCHDISPATCH_DELAY                                           :{BLACK}Delay
+STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}Select a date to start this schedule.
+STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}Delay (minute)
+STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Delay (day)
+STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Reset Last Dispatched
+STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Reset the last dispatch variable. Useful if it stuck with long-future vehicle.
+
+STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Last departure at {DATE_WALLCLOCK_TINY}. Requires {COMMA} vehicle{P "" s}.
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}This schedule repeats every {STRING3} and began on {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Maximum delay of {STRING3} is allow before the slot is skipped.
+STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}This schedule is not active.
+

@@ -931,6 +931,7 @@ void Vehicle::PreDestructor()
 		DeleteWindowById(WC_VEHICLE_REFIT, this->index);
 		DeleteWindowById(WC_VEHICLE_DETAILS, this->index);
 		DeleteWindowById(WC_VEHICLE_TIMETABLE, this->index);
+		DeleteWindowById(WC_SCHDISPATCH_SLOTS, this->index);
 		DeleteWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->index);
 		DeleteWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->index);
 		SetWindowDirty(WC_COMPANY, this->owner);

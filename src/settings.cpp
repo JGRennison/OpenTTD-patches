@@ -1074,6 +1074,7 @@ static bool TownFoundingChanged(int32 p1)
 static bool InvalidateVehTimetableWindow(int32 p1)
 {
 	InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE, VIWD_MODIFY_ORDERS);
+	InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
 	return true;
 }
 

@@ -1816,6 +1816,12 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				} else {
 					ClrBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
 				}
+				/* Set manual dispatch bit if target has it. */
+				if (HasBit(src->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+					SetBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+				} else {
+					ClrBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+				}
 				ClrBit(dst->vehicle_flags, VF_AUTOFILL_TIMETABLE);
 				ClrBit(dst->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 
@@ -1887,6 +1893,22 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					dst->orders.list = new OrderList(first, dst);
 				}
 
+				/* Copy over scheduled dispatch data */
+				for (const auto& slot : src->orders.list->GetScheduledDispatch()) {
+					dst->orders.list->AddScheduledDispatch(slot);
+				}
+				dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
+				dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
+				{
+					Date start_date;
+					uint16 start_full_date_fract;
+					SchdispatchConvertToFullDateFract(
+							src->orders.list->GetScheduledDispatchStartTick(),
+							&start_date, &start_full_date_fract);
+					dst->orders.list->SetScheduledDispatchStartDate(start_date, start_full_date_fract);
+				}
+				/* Don't copy last dispatch, leave it at 0 (default) */
+
 				/* Set automation bit if target has it. */
 				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
 					SetBit(dst->vehicle_flags, VF_AUTOMATE_TIMETABLE);
@@ -1900,6 +1922,12 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					SetBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
 				} else {
 					ClrBit(dst->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				}
+				/* Set manual dispatch bit if target has it. */
+				if (HasBit(src->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+					SetBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+				} else {
+					ClrBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
 				}
 
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);

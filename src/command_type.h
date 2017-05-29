@@ -382,6 +382,14 @@ enum Commands {
 	CMD_REMOVE_SIGNAL_INSTRUCTION,    ///< removes a signal instruction
 	CMD_SIGNAL_PROGRAM_MGMT,          ///< removes a signal program management command
 
+	CMD_SCHEDULED_DISPATCH,                     ///< scheduled dispatch start
+	CMD_SCHEDULED_DISPATCH_ADD,                 ///< scheduled dispatch add
+	CMD_SCHEDULED_DISPATCH_REMOVE,              ///< scheduled dispatch remove
+	CMD_SCHEDULED_DISPATCH_SET_DURATION,        ///< scheduled dispatch set schedule duration
+	CMD_SCHEDULED_DISPATCH_SET_START_DATE,      ///< scheduled dispatch set start date
+	CMD_SCHEDULED_DISPATCH_SET_DELAY,           ///< scheduled dispatch set maximum allow delay
+	CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH, ///< scheduled dispatch reset last dispatch date
+
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,
 	CMD_REMOVE_PLAN,
