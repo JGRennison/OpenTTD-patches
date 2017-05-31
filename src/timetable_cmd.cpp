@@ -872,10 +872,12 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		v->current_order_time = 0;
 		v->current_loading_time = 0;
 	} else if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
-		if (IsVehicleAtFirstWaitingLocation(v) && travelling) {
+		const bool is_first_waiting = IsVehicleAtFirstWaitingLocation(v);
+		if (is_first_waiting) {
 			/* Update scheduled information */
 			v->orders.list->UpdateScheduledDispatch();
-
+		}
+		if (is_first_waiting && travelling) {
 			DateTicksScaled slot = GetScheduledDispatchTime(v);
 			if (slot > -1) {
 				v->lateness_counter = _scaled_date_ticks - slot;
