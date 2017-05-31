@@ -303,13 +303,14 @@ void OrderList::RemoveScheduledDispatch(uint32 offset)
  */
 void OrderList::UpdateScheduledDispatch()
 {
+	bool update_windows = false;
 	/* Most of the time this loop does not runs. It makes sure start date in in past */
 	while (this->GetScheduledDispatchStartTick() > _scaled_date_ticks) {
 		this->scheduled_dispatch_last_dispatch += this->GetScheduledDispatchDuration();
 		SchdispatchConvertToFullDateFract(
 				this->GetScheduledDispatchStartTick() - this->GetScheduledDispatchDuration(),
 				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
-		InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
+		update_windows = true;
 	}
 	/* Most of the time this loop runs once. It makes sure the start date is as close to current time as possible. */
 	while (this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration() <= _scaled_date_ticks) {
@@ -317,8 +318,9 @@ void OrderList::UpdateScheduledDispatch()
 		SchdispatchConvertToFullDateFract(
 				this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration(),
 				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
-		InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
+		update_windows = true;
 	}
+	if (update_windows) InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
 }
 
 /**
