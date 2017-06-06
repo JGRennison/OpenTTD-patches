@@ -30,7 +30,7 @@ enum VehicleRailFlags {
 	VRF_HAVE_SLOT                     = 2, ///< Train has 1 or more slots
 	VRF_POWEREDWAGON                  = 3, ///< Wagon is powered.
 	VRF_REVERSE_DIRECTION             = 4, ///< Reverse the visible direction of the vehicle.
-
+	VRF_HAS_HIT_RV                    = 5, ///< Train has hit road vehicle
 	VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL = 6, ///< Electric train engine is allowed to run on normal rail. */
 	VRF_TOGGLE_REVERSE                = 7, ///< Used for vehicle var 0xFE bit 8 (toggled each time the train is reversed, accurate for first vehicle only).
 	VRF_TRAIN_STUCK                   = 8, ///< Train can't get a path reservation.

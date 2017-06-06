@@ -517,20 +517,35 @@ static bool RoadVehIsCrashed(RoadVehicle *v)
 	return true;
 }
 
+struct CheckRoadVehCrashTrainInfo {
+	const Vehicle *u;
+	bool found = false;
+
+	CheckRoadVehCrashTrainInfo(const Vehicle *u_)
+			: u(u_) { }
+};
+
 /**
  * Check routine whether a road and a train vehicle have collided.
  * @param v    %Train vehicle to test.
- * @param data Road vehicle to test.
+ * @param data Info including road vehicle to test.
  * @return %Train vehicle if the vehicles collided, else \c NULL.
  */
 static Vehicle *EnumCheckRoadVehCrashTrain(Vehicle *v, void *data)
 {
-	const Vehicle *u = (Vehicle*)data;
+	CheckRoadVehCrashTrainInfo *info = (CheckRoadVehCrashTrainInfo*) data;
 
-	return (v->type == VEH_TRAIN &&
-			abs(v->z_pos - u->z_pos) <= 6 &&
-			abs(v->x_pos - u->x_pos) <= 4 &&
-			abs(v->y_pos - u->y_pos) <= 4) ? v : NULL;
+	if (v->type == VEH_TRAIN &&
+			abs(v->z_pos - info->u->z_pos) <= 6 &&
+			abs(v->x_pos - info->u->x_pos) <= 4 &&
+			abs(v->y_pos - info->u->y_pos) <= 4) {
+		info->found = true;
+		extern void TrainRoadVehicleCrashBreakdown(Vehicle *v);
+		TrainRoadVehicleCrashBreakdown(v);
+		return v;
+	} else {
+		return NULL;
+	}
 }
 
 uint RoadVehicle::Crash(bool flooded)
@@ -576,7 +591,9 @@ static bool RoadVehCheckTrainCrash(RoadVehicle *v)
 
 		if (!IsLevelCrossingTile(tile)) continue;
 
-		if (HasVehicleOnPosXY(v->x_pos, v->y_pos, u, EnumCheckRoadVehCrashTrain)) {
+		CheckRoadVehCrashTrainInfo info(u);
+		FindVehicleOnPosXY(v->x_pos, v->y_pos, &info, EnumCheckRoadVehCrashTrain);
+		if (info.found) {
 			RoadVehCrash(v);
 			return true;
 		}
