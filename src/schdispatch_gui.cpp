@@ -150,6 +150,7 @@ struct SchdispatchWindow : Window {
 	uint num_columns;       ///< Number of columns.
 
 	uint item_count = 0;     ///< Number of scheduled item
+	bool last_departure_future; ///< True if last departure is currently displayed in the future
 
 	SchdispatchWindow(WindowDesc *desc, WindowNumber window_number) :
 			Window(desc),
@@ -201,7 +202,7 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = WD_FRAMERECT_TOP + 3 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				size->height = WD_FRAMERECT_TOP + 4 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 				break;
 		}
 	}
@@ -285,6 +286,16 @@ struct SchdispatchWindow : Window {
 		DrawString(text_left, text_right, y + 2, STR_JUST_DATE_WALLCLOCK_TINY, colour);
 	}
 
+	virtual void OnTick() override
+	{
+		const Vehicle *v = this->vehicle;
+		if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != NULL) {
+			if (((v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchLastDispatch()) > _scaled_date_ticks) != this->last_departure_future) {
+				SetWidgetDirty(WID_SCHDISPATCH_SUMMARY_PANEL);
+			}
+		}
+	}
+
 	virtual void DrawWidget(const Rect &r, int widget) const
 	{
 		const Vehicle *v = this->vehicle;
@@ -332,9 +343,16 @@ struct SchdispatchWindow : Window {
 					y += FONT_HEIGHT_NORMAL;
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
 				} else {
-					int required_vehicle = CalculateMaxRequiredVehicle(v->orders.list->GetTimetableTotalDuration(), v->orders.list->GetScheduledDispatchDuration(), v->orders.list->GetScheduledDispatch());
-					SetDParam(0, v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchLastDispatch());
-					SetDParam(1, required_vehicle);
+
+					const DateTicksScaled last_departure = v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchLastDispatch();
+					SetDParam(0, last_departure);
+					const_cast<SchdispatchWindow*>(this)->last_departure_future = (last_departure > _scaled_date_ticks);
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y,
+							this->last_departure_future ? STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE : STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST);
+					y += FONT_HEIGHT_NORMAL;
+
+					const int required_vehicle = CalculateMaxRequiredVehicle(v->orders.list->GetTimetableTotalDuration(), v->orders.list->GetScheduledDispatchDuration(), v->orders.list->GetScheduledDispatch());
+					SetDParam(0, required_vehicle);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L1);
 					y += FONT_HEIGHT_NORMAL;
 

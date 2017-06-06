@@ -5832,7 +5832,9 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Delay (d
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Reset Last Dispatched
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Reset the last dispatch variable. Useful if it stuck with long-future vehicle.
 
-STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Last departure at {DATE_WALLCLOCK_TINY}. Requires {COMMA} vehicle{P "" s}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Last departure has not left yet, it will depart at {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}This schedule requires {COMMA} vehicle{P "" s}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}This schedule repeats every {STRING3} and began on {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Maximum delay of {STRING3} is allowed before the slot is skipped.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}This schedule is not active.
