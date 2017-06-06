@@ -2427,7 +2427,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ogn hjá fyrit�
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upprunalig upphavsrættindi {COPYRIGHT} 1995 Chris Sawyer, Øll rættindi umbiðin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáva {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD toymi
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 OpenTTD toymi
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Goym spæl
@@ -2923,9 +2923,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Tørvar:
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Tørvar: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Farmur ið bíðar eftir at verða viðgjørdur:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Framleiður: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Framleiður: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -2989,6 +2988,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Legg deild flut
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Bein øll flutningstól burtur
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Navngev ein bólk
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nýggj jarnbreyta flutningstól
@@ -3142,10 +3142,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :maglev lokomoti
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kostnaður: {CURRENCY_LONG} Vekt: {WEIGHT_SHORT}{}Ferð: {VELOCITY}  Megi: {POWER}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár{}Pláss: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Kostnaður: {CURRENCY_LONG} Vekt: {WEIGHT_SHORT}{}Ferð: {VELOCITY}  Megi: {POWER}  Maks. D.Ó.: {6:FORCE}{}Rakstrar kostnaður: {4:CURRENCY_LONG}/ár{}Pláss: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY}{}Pláss: {CARGO_LONG}, {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY}{}Pláss: {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY} Vídd: {COMMA} puntar{}Pláss: {CARGO_LONG}, {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY} Vídd: {COMMA} puntar{}Pláss: {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Kostnaður: {CURRENCY_LONG} Maks. Ferð: {VELOCITY}{}Pláss: {CARGO_LONG}{}Rakstrar kostnaður: {CURRENCY_LONG}/ár
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Být um {STRING} - {STRING}
@@ -3231,7 +3228,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ár ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ár ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Maks. ferð: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Maks. ferð: {LTBLUE}{VELOCITY} {BLACK}Vídd: {LTBLUE}{COMMA} puntar
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Vekt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Megi: {LTBLUE}{POWER}{BLACK} Maks. ferð: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Vekt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Megi: {LTBLUE}{POWER}{BLACK} Maks. ferð: {LTBLUE}{VELOCITY} {BLACK}Maks. D.Ó.: {LTBLUE}{FORCE}
 

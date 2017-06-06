@@ -196,6 +196,7 @@ DEFINE_POOL_METHOD(void)::FreeItem(size_t index)
 DEFINE_POOL_METHOD(void)::CleanPool()
 {
 	this->cleaning = true;
+	Titem::PreCleanPool();
 	for (size_t i = 0; i < this->first_unused; i++) {
 		delete this->Get(i); // 'delete NULL;' is very valid
 	}

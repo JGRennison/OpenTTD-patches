@@ -404,19 +404,6 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 	blitter->PostResize();
 
 	InitPalette();
-	switch (blitter->UsePaletteAnimation()) {
-		case Blitter::PALETTE_ANIMATION_NONE:
-		case Blitter::PALETTE_ANIMATION_VIDEO_BACKEND:
-			UpdatePalette();
-			break;
-
-		case Blitter::PALETTE_ANIMATION_BLITTER:
-			if (VideoDriver::GetInstance() != NULL) blitter->PaletteAnimate(_local_palette);
-			break;
-
-		default:
-			NOT_REACHED();
-	}
 
 	seprintf(caption, lastof(caption), "OpenTTD %s", _openttd_revision);
 	SDL_CALL SDL_WM_SetCaption(caption, caption);
@@ -831,10 +818,17 @@ bool VideoDriver_SDL::ToggleFullscreen(bool fullscreen)
 
 bool VideoDriver_SDL::AfterBlitterChange()
 {
+	return CreateMainSurface(_screen.width, _screen.height);
+}
+
+void VideoDriver_SDL::AcquireBlitterLock()
+{
 	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
-	bool ret = CreateMainSurface(_screen.width, _screen.height);
+}
+
+void VideoDriver_SDL::ReleaseBlitterLock()
+{
 	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
-	return ret;
 }
 
 #endif /* WITH_SDL */

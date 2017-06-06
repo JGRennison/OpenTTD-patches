@@ -1625,23 +1625,6 @@ make_cflags_and_ldflags() {
 			CFLAGS="$OSX_SYSROOT $CFLAGS"
 			LDFLAGS="$OSX_LD_SYSROOT $LDFLAGS"
 		fi
-
-		if [ "$enable_universal" = "0" ] && [ $cc_version -gt 400 ]; then
-			# Only set the min version when not doing an universal build.
-			# Universal builds set the version elsewhere.
-			if [ "$cpu_type" = "64" ]; then
-				CFLAGS="$CFLAGS -mmacosx-version-min=10.5"
-			else
-				gcc_cpu=`$cc_host -dumpmachine`
-				if [ "`echo $gcc_cpu | cut -c 1-3`" = "ppc" -o "`echo $gcc_cpu | cut -c 1-7`" = "powerpc" ]; then
-					# PowerPC build can run on 10.3
-					CFLAGS="$CFLAGS -mmacosx-version-min=10.3"
-				else
-					# Intel is only available starting from 10.4
-					CFLAGS="$CFLAGS -mmacosx-version-min=10.4"
-				fi
-			fi
-		fi
 	fi
 
 	if [ "$os" = "BEOS" ] || [ "$os" = "HAIKU" ]; then
@@ -3126,24 +3109,40 @@ detect_nforenum() {
 	log 1 "checking nforenum... found"
 }
 
-detect_cputype() {
-	if [ -n "$cpu_type" ] && [ "$cpu_type" != "DETECT" ]; then
-		log 1 "forcing cpu-type... $cpu_type bits"
-		return;
-	fi
-	echo "#define _SQ64 1" > tmp.64bit.cpp
-	echo "#include \"src/stdafx.h\"" >> tmp.64bit.cpp
-	echo "assert_compile(sizeof(size_t) == 8);" >> tmp.64bit.cpp
-	echo "int main() { return 0; }" >> tmp.64bit.cpp
-	execute="$cxx_host $CFLAGS tmp.64bit.cpp -o tmp.64bit -DTESTING 2>&1"
+_detect_cputype_width() {
+	echo "#define _SQ64 1" > $1.cpp
+	echo "#include \"src/stdafx.h\"" >> $1.cpp
+	echo "assert_compile(sizeof(size_t) == $2);" >> $1.cpp
+	echo "int main() { return 0; }" >> $1.cpp
+	execute="$cxx_host $CFLAGS -std=c++11 $1.cpp -o $1 -DTESTING 2>&1"
 	cpu_type="`eval $execute 2>/dev/null`"
 	ret=$?
 	log 2 "executing $execute"
 	log 2 "  returned $cpu_type"
 	log 2 "  exit code $ret"
-	if [ "$ret" = "0" ]; then cpu_type="64"; else cpu_type="32"; fi
+	rm -f $1 $1.cpp
+	return $ret
+}
+
+detect_cputype() {
+	if [ -n "$cpu_type" ] && [ "$cpu_type" != "DETECT" ]; then
+		log 1 "forcing cpu-type... $cpu_type bits"
+		return;
+	fi
+	_detect_cputype_width tmp.32bit 4
+	result32=$?
+	_detect_cputype_width tmp.64bit 8
+	result64=$?
+
+	if [ "$result32" = 0 ] && [ "$result64" != 0 ]; then
+		cpu_type="32"
+	elif [ "$result32" != 0 ] && [ "$result64" = 0 ]; then
+		cpu_type="64"
+	else
+		log 1 "configure: unable to determine cpu-type (pointer width)"
+		exit 1
+	fi
 	log 1 "detecting cpu-type... $cpu_type bits"
-	rm -f tmp.64bit tmp.64bit.cpp
 }
 
 detect_sse_capable_architecture() {

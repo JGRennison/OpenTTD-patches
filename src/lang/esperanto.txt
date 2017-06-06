@@ -2265,7 +2265,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Kompanie poseda
 STR_ABOUT_OPENTTD                                               :{WHITE}Pri OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Origina kopirajto {COPYRIGHT} 1995 Chris Sawyer, Ĉiuj rajtoj rezervitaj
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD-versio {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 La teamo de OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 La teamo de OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Konservu Ludon
@@ -2451,7 +2451,6 @@ STR_NEWGRF_ERROR_OTTD_VERSION_NUMBER                            :{1:STRING} bezo
 STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE                          :la GRF-dosiero estas farita por traduki
 STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :Tro da NewGRF-oj estas ŝarĝataj
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} enhavas rompitan bildeton. Ĉiuj rompitaj bildetoj aspektos kiel ruĝaj demandsignoj (?)
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}La nuntempe uza baza grafikaĵaro mankas kelkajn da bildetoj.{}Bonvolu renovigu la baza grafikaĵaro
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} estis malaktivata per {STRING}
 
 # NewGRF related 'general' warnings
@@ -2732,9 +2731,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Bezonas:
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Bezonas: {YELLOW}{STRING.n}{STRING}, {STRING.n}{STRING}, {STRING.n}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Kargo atendanta procedon:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produktas: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produktas: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -2797,6 +2795,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Aldonu kunhavaj
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Forigi ĉiujn veturilojn
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Alinomi grupon
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Novaj Relaj Veturiloj
@@ -2956,8 +2955,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :magleva lokomot
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kosto: {CURRENCY_LONG} Pezo: {WEIGHT_SHORT}{}Rapido: {VELOCITY}  Forto: {POWER}{}Irkosto: po {CURRENCY_LONG} jare{}Kapablo: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Kosto: {CURRENCY_LONG} Pezo: {WEIGHT_SHORT}{}Rapido: {VELOCITY}  Povo: {POWER}  Maks. T.E.: {6:FORCE}{}Irkosto: {4:CURRENCY_LONG}/jaro{}Kapacito: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Kosto: {CURRENCY_LONG} Maks. Rapido: {VELOCITY}{}Kapacito: {CARGO_LONG}, {CARGO_LONG}{}Irkosto: {CURRENCY_LONG}/jaro
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Kosto: {CURRENCY_LONG} Maks. Rapido: {VELOCITY}{}Kapacito: {CARGO_LONG}{}Irkosto: {CURRENCY_LONG}/jaro
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Kosto: {CURRENCY_LONG} Maks. Rapido: {VELOCITY}{}Kapacito: {CARGO_LONG}{}Irkosto: {CURRENCY_LONG}/jaro
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Anstataŭu {STRING.n} - {STRING}

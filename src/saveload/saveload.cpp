@@ -41,6 +41,7 @@
 #include "../fileio_func.h"
 #include "../gamelog.h"
 #include "../string_func.h"
+#include "../string_func_extra.h"
 #include "../fios.h"
 #include "../error.h"
 
@@ -267,8 +268,9 @@
  *  193   26802
  *  194   26881   1.5.x, 1.6.0
  *  195   27572   1.6.x
+ *  196   27778   1.7.x
  */
-extern const uint16 SAVEGAME_VERSION = 195; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 196; ///< Current savegame version of OpenTTD.
 const uint16 SAVEGAME_VERSION_EXT = 0x8000; ///< Savegame extension indicator mask
 
 SavegameType _savegame_type; ///< type of savegame we are loading
@@ -1078,6 +1080,18 @@ static inline size_t SlCalcNetStringLen(const char *ptr, size_t length)
 }
 
 /**
+ * Calculate the gross length of the std::string that it
+ * will occupy in the savegame. This includes the real length,
+ * and the length that the index will occupy.
+ * @param str reference to the std::string
+ * @return return the gross length of the string
+ */
+static inline size_t SlCalcStdStrLen(const std::string &str)
+{
+	return str.size() + SlGetArrayLength(str.size()); // also include the length of the index
+}
+
+/**
  * Calculate the gross length of the string that it
  * will occupy in the savegame. This includes the real length, returned
  * by SlCalcNetStringLen and the length that the index will occupy.
@@ -1180,6 +1194,41 @@ static void SlString(void *ptr, size_t length, VarType conv)
 				settings = settings | SVS_ALLOW_NEWLINE;
 			}
 			str_validate((char *)ptr, (char *)ptr + len, settings);
+			break;
+		}
+		case SLA_PTRS: break;
+		case SLA_NULL: break;
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Save/Load a std::string.
+ * @param ptr the std::string being manipulated
+ * @param conv must be SLE_FILE_STRING
+ */
+static void SlStdString(std::string &str, VarType conv)
+{
+	switch (_sl.action) {
+		case SLA_SAVE: {
+			SlWriteArrayLength(str.size());
+			SlCopyBytes(const_cast<char *>(str.data()), str.size());
+			break;
+		}
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD: {
+			size_t len = SlReadArrayLength();
+			str.resize(len);
+			SlCopyBytes(const_cast<char *>(str.c_str()), len);
+
+			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
+			if ((conv & SLF_ALLOW_CONTROL) != 0) {
+				settings = settings | SVS_ALLOW_CONTROL_CODE;
+			}
+			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
+				settings = settings | SVS_ALLOW_NEWLINE;
+			}
+			str_validate(str, settings);
 			break;
 		}
 		case SLA_PTRS: break;
@@ -1490,6 +1539,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 		case SL_LST:
 		case SL_DEQ:
 		case SL_VEC:
+		case SL_STDSTR:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) break;
 
@@ -1501,6 +1551,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 				case SL_LST: return SlCalcListLen<std::list<void *>>(GetVariableAddress(object, sld));
 				case SL_DEQ: return SlCalcListLen<std::deque<void *>>(GetVariableAddress(object, sld));
 				case SL_VEC: return SlCalcListLen<std::vector<void *>>(GetVariableAddress(object, sld));
+				case SL_STDSTR: return SlCalcStdStrLen(*static_cast<std::string *>(GetVariableAddress(object, sld)));
 				default: NOT_REACHED();
 			}
 			break;
@@ -1549,6 +1600,9 @@ static bool IsVariableSizeRight(const SaveLoad *sld)
 			/* These should be pointer sized, or fixed array. */
 			return sld->size == sizeof(void *) || sld->size == sld->length;
 
+		case SL_STDSTR:
+			return sld->size == sizeof(std::string);
+
 		default:
 			return true;
 	}
@@ -1571,6 +1625,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 		case SL_LST:
 		case SL_DEQ:
 		case SL_VEC:
+		case SL_STDSTR:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) return false;
 			if (SlSkipVariableOnLoad(sld)) return false;
@@ -1600,6 +1655,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 				case SL_LST: SlList<std::list<void *>>(ptr, (SLRefType)conv); break;
 				case SL_DEQ: SlList<std::deque<void *>>(ptr, (SLRefType)conv); break;
 				case SL_VEC: SlList<std::vector<void *>>(ptr, (SLRefType)conv); break;
+				case SL_STDSTR: SlStdString(*static_cast<std::string *>(ptr), sld->conv); break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -2081,7 +2137,7 @@ struct LZOLoadFilter : LoadFilter {
 		byte out[LZO_BUFFER_SIZE + LZO_BUFFER_SIZE / 16 + 64 + 3 + sizeof(uint32) * 2];
 		uint32 tmp[2];
 		uint32 size;
-		lzo_uint len;
+		lzo_uint len = ssize;
 
 		/* Read header*/
 		if (this->chain->Read((byte*)tmp, sizeof(tmp)) != sizeof(tmp)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE, "File read failed");
@@ -2103,7 +2159,8 @@ struct LZOLoadFilter : LoadFilter {
 		if (tmp[0] != lzo_adler32(0, out, size + sizeof(uint32))) SlErrorCorrupt("Bad checksum");
 
 		/* Decompress */
-		lzo1x_decompress_safe(out + sizeof(uint32) * 1, size, buf, &len, NULL);
+		int ret = lzo1x_decompress_safe(out + sizeof(uint32) * 1, size, buf, &len, NULL);
+		if (ret != LZO_E_OK) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 		return len;
 	}
 };

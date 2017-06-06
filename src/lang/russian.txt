@@ -1524,6 +1524,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Выкл.
 
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Смещение обзора по нажатию левой кнопки мыши: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Смещение обзора левой кнопкой мыши. Это удобно при использовании сенсорного экрана.
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Закрывать окна щелчком ПКМ: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Закрывать окно щелчком правой кнопкой мыши в его пределах. При этом отключается появление подсказок по правой кнопке.
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Автосохранения: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Укажите интервал между автоматическими сохранениями
@@ -1913,6 +1915,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Найт
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Изменить настройки ИИ / игрового скрипта
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Выйти из OpenTTD
 
+STR_INTRO_BASESET                                               :{BLACK}В выбранном наборе базовой графики отсутствует {NUM} спрайт{P "" а ов}. Пожалуйста, обновите набор графики.
 STR_INTRO_TRANSLATION                                           :{BLACK}На этот язык не переведен{P 0 а ы о} {NUM} строк{P а и ""}. Вы можете помочь проекту, зарегистрировавшись как переводчик. Инструкции в файле readme.txt.
 
 # Quit window
@@ -2868,7 +2871,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Земля в �
 STR_ABOUT_OPENTTD                                               :{WHITE}Об OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Оригинальные авторские права {COPYRIGHT} 1995 Chris Sawyer. Все права защищены.
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD версия {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 Команда разработчиков OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 Команда разработчиков OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Сохранить игру
@@ -3087,8 +3090,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Попытка 
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} содержит повреждённый спрайт. Все повреждённые спрайты будут показаны красным знаком вопроса (?).
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Содержит несколько блоков «Action 8» (спрайт {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Чтение за концом псевдо-спрайта (спрайт {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}В текущем наборе базовой графики отсутствуют изображения некоторых объектов.{}Пожалуйста, обновите модуль базовой графики.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}В используемом наборе базовой графики отсутствуют некоторые изображения.{}Пожалуйста, обновите набор изображений.{}Так как у вас {YELLOW}тестовая версия OpenTTD{WHITE}, вам может понадобиться {YELLOW}тестовая версия графического набора{WHITE}.
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Запрошенные ресурсы GRF недоступны (спрайт {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} был отключён из-за {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Недопустимый/неизвестный формат расположения спрайтов (спрайт {3:NUM})
@@ -3163,8 +3164,8 @@ STR_TOWN_POPULATION                                             :{BLACK}Насе
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Мегаполис)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Население: {ORANGE}{COMMA}{BLACK} Зданий: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Пассажиров за прошлый месяц: {ORANGE}{COMMA}{BLACK}; макс.: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Почты за прошлый месяц: {ORANGE}{COMMA}{BLACK}; макс.: {ORANGE}{COMMA}
+STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Пассажиров в прошлом месяце: {ORANGE}{COMMA}{BLACK}; макс.: {ORANGE}{COMMA}
+STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Почты в прошлом месяце: {ORANGE}{COMMA}{BLACK}; макс.: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Груз, необходимый для роста города:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} требу{G 0 е е е ю}тся
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} требу{G 0 е е е ю}тся зимой
@@ -3300,7 +3301,7 @@ STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPAN
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Рейтинг
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Показать рейтинг станции
-STR_STATION_VIEW_SUPPLY_RATINGS_TITLE                           :{BLACK}Месячный объём поставок и местный рейтинг:
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE                           :{BLACK}Месячный объём перевозок и местный рейтинг:
 STR_STATION_VIEW_CARGO_SUPPLY_RATING                            :{WHITE}{STRING}: {YELLOW}{COMMA} / {STRING} ({COMMA}%)
 
 STR_STATION_VIEW_GROUP                                          :{BLACK}Группировать
@@ -3317,7 +3318,7 @@ STR_STATION_VIEW_VIA_ANY                                        :{RED}{CARGO_SHO
 STR_STATION_VIEW_FROM_HERE                                      :{GREEN}{CARGO_SHORT} с этой станции
 STR_STATION_VIEW_VIA_HERE                                       :{GREEN}{CARGO_SHORT} через эту станцию
 STR_STATION_VIEW_TO_HERE                                        :{GREEN}{CARGO_SHORT} на эту станцию
-STR_STATION_VIEW_NONSTOP                                        :{YELLOW}{CARGO_SHORT} без пересадок
+STR_STATION_VIEW_NONSTOP                                        :{YELLOW}{CARGO_SHORT} без остановок
 
 STR_STATION_VIEW_GROUP_S_V_D                                    :Откуда - Через - Куда
 STR_STATION_VIEW_GROUP_S_D_V                                    :Откуда - Куда - Через
@@ -3463,7 +3464,7 @@ STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Спис
 
 # Industry view
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
-STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Произведено за прошлый месяц:
+STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Произведено в прошлом месяце:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% перевезено)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Показать предприятие в основном окне. Ctrl+щелчок - показать в дополнительном окне.
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Производительность: {YELLOW}{COMMA}%
@@ -3475,9 +3476,13 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Треб
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Требуется: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Требуется:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}ожидает
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Груз, ожидающий переработки:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Производит: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Производит: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3544,6 +3549,11 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Удалить 
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Название группы
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Прибыль в текущем году:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Прибыль в прошлом году:
+STR_GROUP_OCCUPANCY                                             :Средняя загрузка ТС:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Новый поезд
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Новый электропоезд
@@ -3575,6 +3585,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Все типы
 STR_PURCHASE_INFO_ALL_BUT                                       :Всё, кроме {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Макс. тяговое усилие: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Дальность: {GOLD}{COMMA} клет{P ка ки ок}
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Тип возд. судна: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Список локомотивов и вагонов - щёлкните для получения информации. Ctrl+щелчок скроет/покажет ТС.
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Список автотранспорта - щёлкните для получения информации. Ctrl+щелчок скроет/покажет выбранный автомобиль.
@@ -3714,10 +3725,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE.gen                        :магнито�
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Цена: {CURRENCY_LONG} Вес: {WEIGHT_SHORT}{}Скорость: {VELOCITY}  Мощность: {POWER}{}Стоимость обслуж.: {CURRENCY_LONG}/год{}Ёмкость: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Цена: {CURRENCY_LONG} Вес: {WEIGHT_SHORT}{}Скорость: {VELOCITY}  Мощность: {POWER}  Макс. ТУ: {6:FORCE}{}Стоимость обслуж.: {4:CURRENCY_LONG}/год{}Ёмкость: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY}{}Ёмкость: {CARGO_LONG}, {CARGO_LONG}{}Стоимость обслуживания: {CURRENCY_LONG}/год
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY}{}Ёмкость: {CARGO_LONG}{}Стоимость обслуж.: {CURRENCY_LONG}/год
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY} Дальность: {COMMA} клет{P 3 ка ки ок}{}Ёмкость: {CARGO_LONG}, {CARGO_LONG}{}Стоимость обслуживания: {CURRENCY_LONG}/год
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY} Дальность: {COMMA} клет{P 3 ка ки ок}{}Ёмкость: {CARGO_LONG}{}Стоимость обслуживания: {CURRENCY_LONG}/год
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY}{}Ёмкость: {CARGO_LONG}{}Стоимость обслуж.: {CURRENCY_LONG}/год
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY}{}Тип: {STRING}{}Ёмкость: {CARGO_LONG}, {CARGO_LONG}{}Стоимость обслуж.: {CURRENCY_LONG}/год
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY}{}Тип: {STRING}{}Ёмкость: {CARGO_LONG}{}Стоимость обслуж.: {CURRENCY_LONG}/год
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY}{}Тип: {STRING} Дальность: {COMMA} клеток{}Ёмкость: {CARGO_LONG}, {CARGO_LONG}{}Стоимость обслуж.: {CURRENCY_LONG}/год
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Цена: {CURRENCY_LONG} Макс. скорость: {VELOCITY}{}Тип: {STRING} Дальность: {COMMA} клеток{}Ёмкость: {CARGO_LONG}{}Стоимость обслуж.: {CURRENCY_LONG}/год
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Замена {STRING.gen} - {STRING}
@@ -3844,7 +3856,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} {P го
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} {P год года лет} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Макс. скорость: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Макс. скорость: {LTBLUE}{VELOCITY} {BLACK}Дальность: {LTBLUE}{COMMA} клет{P ка ки ок}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Макс. скорость: {LTBLUE}{VELOCITY} {BLACK}Тип возд. судна: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Макс. скорость: {LTBLUE}{VELOCITY} {BLACK}Тип: {LTBLUE}{STRING} {BLACK}Дальность: {LTBLUE}{COMMA} клеток
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Вес: {LTBLUE}{WEIGHT_SHORT} {BLACK}Мощность: {LTBLUE}{POWER}{BLACK} Макс. скорость: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Вес: {LTBLUE}{WEIGHT_SHORT} {BLACK}Мощность: {LTBLUE}{POWER}{BLACK} Макс. скорость: {LTBLUE}{VELOCITY} {BLACK}Макс. ТУ: {LTBLUE}{FORCE}
 

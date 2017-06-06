@@ -2536,7 +2536,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Land í eigu fy
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upphaflegur höfundarréttur {COPYRIGHT} 1995 Chris Sawyer, Öll réttindi áskilin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáfa {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 OpenTTD hópurinn
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 OpenTTD hópurinn
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Vista leik
@@ -2736,8 +2736,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Verið að reyn
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} inniheldur gallaða mynd. Allar gallaðar myndir munu birtast sem rauð spurningamerki (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Inniheldur margþættar aðgerðir, 8 innkomur (hreyfimynd {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Les fyrir endan af gervi-hreyfimynd (hreyfimynd {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Grunnteiknisafnið sem er í notkun vantar hluta af hreyfimyndunum.{}Vinsamlegast uppfærðu grunnteiknisafnið
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Í Grafíska safnið sem nú er í notkun vantar nokkrar myndir.{}Vinsamlegast uppfærið grafíska safnið.{}Þar sem þú ert að spila {YELLOW}þróunar útgáfu af OpenTTD{WHITE}, gæti verið að þú þyrftir líka {YELLOW} þróunar útgáfu af grafíska safninu{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Umbeðin GRF gögn ekki tiltæk (hreyfimynd {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} var óvirkjað af {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Rangt/óþekkt hreyfimyndar snið (hreyfimynd {3:NUM})
@@ -3085,9 +3083,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Þarf: {
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Þarf: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Farmur sem bíður verkunar:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Framleiðir: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Framleiðir: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3151,6 +3148,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Bæta við deil
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Fjarlægja öll farartæki
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Endurnefna hóp
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Lestaúrval
@@ -3304,10 +3302,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :Segulsvifvagn
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Verð: {CURRENCY_LONG} Þyngd: {WEIGHT_SHORT}{}Hraði: {VELOCITY}  Afl: {POWER}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári{}Burðargeta: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Verð: {CURRENCY_LONG} Þyngd: {WEIGHT_SHORT}{}Hámarskhraði: {VELOCITY}  Afl: {POWER}  Hámarks kraftur: {6:FORCE}{}Running Cost: {4:CURRENCY_LONG}/ári{}Burðargeta: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY}{}Burðargeta: {CARGO_LONG}, {CARGO_LONG}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY}{}Burðargeta: {CARGO_LONG}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY} Drægni: {COMMA} reitir{}Capacity: {CARGO_LONG}, {CARGO_LONG}{}Rekstrarkosnaður: {CURRENCY_LONG} á ári
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY} Drægni: {COMMA} reitir{}Burðargeta: {CARGO_LONG}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Verð: {CURRENCY_LONG} Hámarkshraði: {VELOCITY}{}Burðargeta: {CARGO_LONG}{}Rekstrarkostnaður: {CURRENCY_LONG} á ári
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Endurnýja {STRING} - {STRING}
@@ -3425,7 +3420,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ár ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ár ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Hámarkshraði: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Hámarkshraði: {LTBLUE}{VELOCITY} {BLACK}Drægni: {LTBLUE}{COMMA} reitir
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Þyngd: {LTBLUE}{WEIGHT_SHORT} {BLACK}Afl: {LTBLUE}{POWER}{BLACK} Hámarkshraði: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Þyngd: {LTBLUE}{WEIGHT_SHORT} {BLACK}Afl: {LTBLUE}{POWER}{BLACK} Hámarkshraði: {LTBLUE}{VELOCITY} {BLACK}Hámarks dráttarafl.: {LTBLUE}{FORCE}
 

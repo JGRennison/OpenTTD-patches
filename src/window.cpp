@@ -139,7 +139,7 @@ int16 WindowDesc::GetDefaultHeight() const
 void WindowDesc::LoadFromConfig()
 {
 	IniFile *ini = new IniFile();
-	ini->LoadFromDisk(_windows_file, BASE_DIR);
+	ini->LoadFromDisk(_windows_file, NO_DIRECTORY);
 	for (WindowDesc **it = _window_descs->Begin(); it != _window_descs->End(); ++it) {
 		if ((*it)->ini_key == NULL) continue;
 		IniLoadWindowSettings(ini, (*it)->ini_key, *it);
@@ -165,7 +165,7 @@ void WindowDesc::SaveToConfig()
 	QSortT(_window_descs->Begin(), _window_descs->Length(), DescSorter);
 
 	IniFile *ini = new IniFile();
-	ini->LoadFromDisk(_windows_file, BASE_DIR);
+	ini->LoadFromDisk(_windows_file, NO_DIRECTORY);
 	for (WindowDesc **it = _window_descs->Begin(); it != _window_descs->End(); ++it) {
 		if ((*it)->ini_key == NULL) continue;
 		IniSaveWindowSettings(ini, (*it)->ini_key, *it);
@@ -772,7 +772,12 @@ static void DispatchRightClickEvent(Window *w, int x, int y)
 		if (w->OnRightClick(pt, wid->index)) return;
 	}
 
-	if (_settings_client.gui.hover_delay_ms == 0 && wid->tool_tip != 0) GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
+	/* Right-click close is enabled and there is a closebox */
+	if (_settings_client.gui.right_mouse_wnd_close && w->nested_root->GetWidgetOfType(WWT_CLOSEBOX)) {
+		delete w;
+	} else if (_settings_client.gui.hover_delay_ms == 0 && wid->tool_tip != 0) {
+		GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
+	}
 }
 
 /**
@@ -2825,11 +2830,12 @@ static void MouseLoop(MouseClick click, int mousewheel)
 		switch (click) {
 			case MC_DOUBLE_LEFT:
 			case MC_LEFT:
-				if (!HandleViewportClicked(vp, x, y) &&
-						!(w->flags & WF_DISABLE_VP_SCROLL) &&
+				if (HandleViewportClicked(vp, x, y)) return;
+				if (!(w->flags & WF_DISABLE_VP_SCROLL) &&
 						_settings_client.gui.left_mouse_btn_scrolling) {
 					_scrolling_viewport = true;
 					_cursor.fix_at = false;
+					return;
 				}
 				break;
 
@@ -2841,13 +2847,16 @@ static void MouseLoop(MouseClick click, int mousewheel)
 					/* clear 2D scrolling caches before we start a 2D scroll */
 					_cursor.h_wheel = 0;
 					_cursor.v_wheel = 0;
+					return;
 				}
 				break;
 
 			default:
 				break;
 		}
-	} else {
+	}
+
+	if (vp == NULL || (w->flags & WF_DISABLE_VP_SCROLL)) {
 		switch (click) {
 			case MC_LEFT:
 			case MC_DOUBLE_LEFT:

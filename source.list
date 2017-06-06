@@ -344,6 +344,7 @@ story_type.h
 strgen/strgen.h
 string_base.h
 string_func.h
+string_func_extra.h
 string_type.h
 stringfilter_type.h
 strings_func.h
@@ -424,6 +425,7 @@ core/backup_type.hpp
 core/bitmath_func.cpp
 core/bitmath_func.hpp
 core/container_func.hpp
+core/dyn_arena_alloc.hpp
 core/endian_func.hpp
 core/endian_type.hpp
 core/enum_type.hpp

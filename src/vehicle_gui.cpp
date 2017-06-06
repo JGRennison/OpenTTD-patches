@@ -2095,9 +2095,14 @@ struct VehicleDetailsWindow : Window {
 					}
 				} else {
 					SetDParam(0, v->GetDisplayMaxSpeed());
-					if (v->type == VEH_AIRCRAFT && Aircraft::From(v)->GetRange() > 0) {
-						SetDParam(1, Aircraft::From(v)->GetRange());
-						string = STR_VEHICLE_INFO_MAX_SPEED_RANGE;
+					if (v->type == VEH_AIRCRAFT) {
+						SetDParam(1, v->GetEngine()->GetAircraftTypeText());
+						if (Aircraft::From(v)->GetRange() > 0) {
+							SetDParam(2, Aircraft::From(v)->GetRange());
+							string = STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE;
+						} else {
+							string = STR_VEHICLE_INFO_MAX_SPEED_TYPE;
+						}
 					} else {
 						string = STR_VEHICLE_INFO_MAX_SPEED;
 					}
@@ -2501,6 +2506,7 @@ private:
 public:
 	VehicleViewWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
+		this->flags |= WF_DISABLE_VP_SCROLL;
 		this->CreateNestedTree();
 
 		/* Sprites for the 'send to depot' button indexed by vehicle type. */

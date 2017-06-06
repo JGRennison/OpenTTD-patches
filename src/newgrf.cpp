@@ -550,24 +550,29 @@ static StringID TTDPStringIDToOTTDStringIDMapping(StringID str)
  */
 StringID MapGRFStringID(uint32 grfid, StringID str)
 {
-	/* 0xD0 and 0xDC stand for all the TextIDs in the range
-	 * of 0xD000 (misc graphics texts) and 0xDC00 (misc persistent texts).
-	 * These strings are unique to each grf file, and thus require to be used with the
-	 * grfid in which they are declared */
-	switch (GB(str, 8, 8)) {
-		case 0xD0: case 0xD1: case 0xD2: case 0xD3:
-		case 0xDC:
-			return GetGRFStringID(grfid, str);
-
-		case 0xD4: case 0xD5: case 0xD6: case 0xD7:
-			/* Strings embedded via 0x81 have 0x400 added to them (no real
-			 * explanation why...) */
-			return GetGRFStringID(grfid, str - 0x400);
-
-		default: break;
+	if (IsInsideMM(str, 0xD800, 0xE000)) {
+		/* General text provided by NewGRF.
+		 * In the specs this is called the 0xDCxx range (misc presistent texts),
+		 * but we meanwhile extended the range to 0xD800-0xDFFF.
+		 * Note: We are not involved in the "persistent" business, since we do not store
+		 * any NewGRF strings in savegames. */
+		return GetGRFStringID(grfid, str);
+	} else if (IsInsideMM(str, 0xD000, 0xD800)) {
+		/* Callback text provided by NewGRF.
+		 * In the specs this is called the 0xD0xx range (misc graphics texts).
+		 * These texts can be returned by various callbacks.
+		 *
+		 * Due to how TTDP implements the GRF-local- to global-textid translation
+		 * texts included via 0x80 or 0x81 control codes have to add 0x400 to the textid.
+		 * We do not care about that difference and just mask out the 0x400 bit.
+		 */
+		str &= ~0x400;
+		return GetGRFStringID(grfid, str);
+	} else {
+		/* The NewGRF wants to include/reference an original TTD string.
+		 * Try our best to find an equivalent one. */
+		return TTDPStringIDToOTTDStringIDMapping(str);
 	}
-
-	return TTDPStringIDToOTTDStringIDMapping(str);
 }
 
 static std::map<uint32, uint32> _grf_id_overrides;
@@ -5474,13 +5479,12 @@ static void FeatureNewName(ByteReader *buf)
 				}
 				break;
 
-			case GSF_INDUSTRIES: {
-				AddGRFString(_cur.grffile->grfid, id, lang, new_scheme, true, name, STR_UNDEFINED);
-				break;
-			}
-
-			case GSF_HOUSES:
 			default:
+				if (IsInsideMM(id, 0xD000, 0xD400) || IsInsideMM(id, 0xD800, 0xE000)) {
+					AddGRFString(_cur.grffile->grfid, id, lang, new_scheme, true, name, STR_UNDEFINED);
+					break;
+				}
+
 				switch (GB(id, 8, 8)) {
 					case 0xC4: // Station class name
 						if (_cur.grffile->stations == NULL || _cur.grffile->stations[GB(id, 0, 8)] == NULL) {
@@ -5513,14 +5517,6 @@ static void FeatureNewName(ByteReader *buf)
 						} else {
 							_cur.grffile->housespec[GB(id, 0, 8)]->building_name = AddGRFString(_cur.grffile->grfid, id, lang, new_scheme, false, name, STR_UNDEFINED);
 						}
-						break;
-
-					case 0xD0:
-					case 0xD1:
-					case 0xD2:
-					case 0xD3:
-					case 0xDC:
-						AddGRFString(_cur.grffile->grfid, id, lang, new_scheme, true, name, STR_UNDEFINED);
 						break;
 
 					default:
@@ -5621,7 +5617,7 @@ static void GraphicsNew(ByteReader *buf)
 	uint16 offset = HasBit(type, 7) ? buf->ReadExtendedByte() : 0;
 	ClrBit(type, 7); // Clear the high bit as that only indicates whether there is an offset.
 
-	if ((type == 0x0D) && (num == 10) && _cur.grffile->is_ottdfile) {
+	if ((type == 0x0D) && (num == 10) && HasBit(_cur.grfconfig->flags, GCF_SYSTEM)) {
 		/* Special not-TTDP-compatible case used in openttd.grf
 		 * Missing shore sprites and initialisation of SPR_SHORE_BASE */
 		grfmsg(2, "GraphicsNew: Loading 10 missing shore sprites from extra grf.");
@@ -5691,35 +5687,6 @@ static void SkipAct5(ByteReader *buf)
 	_cur.skip_sprites = buf->ReadExtendedByte();
 
 	grfmsg(3, "SkipAct5: Skipping %d sprites", _cur.skip_sprites);
-}
-
-/**
- * Check whether we are (obviously) missing some of the extra
- * (Action 0x05) sprites that we like to use.
- * When missing sprites are found a warning will be shown.
- */
-void CheckForMissingSprites()
-{
-	/* Don't break out quickly, but allow to check the other
-	 * sprites as well, so we can give the best information. */
-	bool missing = false;
-	for (uint8 i = 0; i < lengthof(_action5_types); i++) {
-		const Action5Type *type = &_action5_types[i];
-		if (type->block_type == A5BLOCK_INVALID) continue;
-
-		for (uint j = 0; j < type->max_sprites; j++) {
-			if (!SpriteExists(type->sprite_base + j)) {
-				DEBUG(grf, 0, "%s sprites are missing", type->name);
-				missing = true;
-				/* No need to log more of the same. */
-				break;
-			}
-		}
-	}
-
-	if (missing) {
-		ShowErrorMessage(IsReleasedVersion() ? STR_NEWGRF_ERROR_MISSING_SPRITES : STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE, INVALID_STRING_ID, WL_CRITICAL);
-	}
 }
 
 /**
@@ -6199,7 +6166,7 @@ static void ScanInfo(ByteReader *buf)
 	}
 
 	/* GRF IDs starting with 0xFF are reserved for internal TTDPatch use */
-	if (GB(grfid, 24, 8) == 0xFF) SetBit(_cur.grfconfig->flags, GCF_SYSTEM);
+	if (GB(grfid, 0, 8) == 0xFF) SetBit(_cur.grfconfig->flags, GCF_SYSTEM);
 
 	AddGRFTextToList(&_cur.grfconfig->name->text, 0x7F, grfid, false, name);
 
@@ -7273,7 +7240,7 @@ static void TranslateGRFStrings(ByteReader *buf)
 	byte num_strings = buf->ReadByte();
 	uint16 first_id  = buf->ReadWord();
 
-	if (!((first_id >= 0xD000 && first_id + num_strings <= 0xD3FF) || (first_id >= 0xDC00 && first_id + num_strings <= 0xDCFF))) {
+	if (!((first_id >= 0xD000 && first_id + num_strings <= 0xD400) || (first_id >= 0xD800 && first_id + num_strings <= 0xE000))) {
 		grfmsg(7, "TranslateGRFStrings: Attempting to set out-of-range string IDs in action 13 (first: 0x%4X, number: 0x%2X)", first_id, num_strings);
 		return;
 	}
@@ -8858,11 +8825,10 @@ void LoadNewGRFFile(GRFConfig *config, uint file_index, GrfLoadingStage stage, S
 		if (_cur.grffile == NULL) usererror("File '%s' lost in cache.\n", filename);
 		if (stage == GLS_RESERVE && config->status != GCS_INITIALISED) return;
 		if (stage == GLS_ACTIVATION && !HasBit(config->flags, GCF_RESERVED)) return;
-		_cur.grffile->is_ottdfile = config->IsOpenTTDBaseGRF();
 	}
 
-	if (file_index > LAST_GRF_SLOT) {
-		DEBUG(grf, 0, "'%s' is not loaded as the maximum number of GRFs has been reached", filename);
+	if (file_index >= MAX_FILE_SLOTS) {
+		DEBUG(grf, 0, "'%s' is not loaded as the maximum number of file slots has been reached", filename);
 		config->status = GCS_DISABLED;
 		config->error  = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
 		return;
@@ -9204,8 +9170,9 @@ static void AfterLoadGRFs()
  * Load all the NewGRFs.
  * @param load_index The offset for the first sprite to add.
  * @param file_index The Fio index of the first NewGRF to load.
+ * @param num_baseset Number of NewGRFs at the front of the list to look up in the baseset dir instead of the newgrf dir.
  */
-void LoadNewGRF(uint load_index, uint file_index)
+void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 {
 	/* In case of networking we need to "sync" the start values
 	 * so all NewGRFs are loaded equally. For this we use the
@@ -9264,13 +9231,14 @@ void LoadNewGRF(uint load_index, uint file_index)
 		}
 
 		uint slot = file_index;
+		uint num_non_static = 0;
 
 		_cur.stage = stage;
 		for (GRFConfig *c = _grfconfig; c != NULL; c = c->next) {
 			if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND) continue;
 			if (stage > GLS_INIT && HasBit(c->flags, GCF_INIT_ONLY)) continue;
 
-			Subdirectory subdir = slot == file_index ? BASESET_DIR : NEWGRF_DIR;
+			Subdirectory subdir = slot < file_index + num_baseset ? BASESET_DIR : NEWGRF_DIR;
 			if (!FioCheckFileExists(c->filename, subdir)) {
 				DEBUG(grf, 0, "NewGRF file is missing '%s'; disabling", c->filename);
 				c->status = GCS_NOT_FOUND;
@@ -9278,6 +9246,16 @@ void LoadNewGRF(uint load_index, uint file_index)
 			}
 
 			if (stage == GLS_LABELSCAN) InitNewGRFFile(c);
+
+			if (!HasBit(c->flags, GCF_STATIC) && !HasBit(c->flags, GCF_SYSTEM)) {
+				if (num_non_static == NETWORK_MAX_GRF_COUNT) {
+					DEBUG(grf, 0, "'%s' is not loaded as the maximum number of non-static GRFs has been reached", c->filename);
+					c->status = GCS_DISABLED;
+					c->error  = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
+					continue;
+				}
+				num_non_static++;
+			}
 			LoadNewGRFFile(c, slot++, stage, subdir);
 			if (stage == GLS_RESERVE) {
 				SetBit(c->flags, GCF_RESERVED);
