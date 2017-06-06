@@ -194,7 +194,7 @@ struct SchdispatchWindow : Window {
 				resize->width = base_width;
 				size->width = resize->width * 3;
 				size->height = resize->height * 3;
-				
+
 				fill->width = resize->width;
 				fill->height = resize->height;
 				break;
@@ -248,7 +248,7 @@ struct SchdispatchWindow : Window {
 			this->DisableWidget(WID_SCHDISPATCH_SET_DURATION);
 			this->DisableWidget(WID_SCHDISPATCH_SET_START_DATE);
 		}
-		
+
 		this->vscroll->SetCount(CeilDiv(this->item_count, this->num_columns));
 
 		this->SetWidgetLoweredState(WID_SCHDISPATCH_ENABLED, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
@@ -342,7 +342,7 @@ struct SchdispatchWindow : Window {
 					SetDParam(4, v->orders.list->GetScheduledDispatchStartTick());
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L2);
 					y += FONT_HEIGHT_NORMAL;
-					
+
 					SetTimetableParams(0, v->orders.list->GetScheduledDispatchDelay());
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L3);
 				}
