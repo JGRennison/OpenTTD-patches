@@ -139,6 +139,7 @@ void CheckBreakdownFlags(Train *v)
 			} else if (w->breakdown_ctr == 1) {
 				switch (w->breakdown_type) {
 					case BREAKDOWN_CRITICAL:
+					case BREAKDOWN_RV_CRASH:
 					case BREAKDOWN_EM_STOP:   SetBit(v->flags, VRF_BREAKDOWN_STOPPED); break;
 					case BREAKDOWN_LOW_SPEED: SetBit(v->flags, VRF_BREAKDOWN_SPEED);   break;
 					case BREAKDOWN_LOW_POWER: SetBit(v->flags, VRF_BREAKDOWN_POWER);   break;
@@ -155,6 +156,9 @@ uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, con
 		for (uint i = 0; i < u->critical_breakdown_count; i++) {
 			speed = min(speed - (speed / (front->tcache.cached_num_engines + 2)) + 1, speed);
 		}
+	}
+	if (HasBit(u->flags, VRF_HAS_HIT_RV) && front->IsFrontEngine()) {
+		speed = min(speed, 30);
 	}
 	return speed;
 }
@@ -4117,4 +4121,14 @@ Trackdir Train::GetVehicleTrackdir() const
 	}
 
 	return TrackDirectionToTrackdir(FindFirstTrack(this->track), this->direction);
+}
+
+void TrainRoadVehicleCrashBreakdown(Vehicle *v)
+{
+	Train *t = Train::From(v)->First();
+	t->breakdown_ctr = 2;
+	t->breakdown_delay = 255;
+	t->breakdown_type = BREAKDOWN_RV_CRASH;
+	t->breakdown_severity = 0;
+	t->reliability = 0;
 }

@@ -144,7 +144,8 @@ void VehicleServiceInDepot(Vehicle *v)
 	if (v->type == VEH_TRAIN) {
 		if (v->Next() != NULL) VehicleServiceInDepot(v->Next());
 		if (!(Train::From(v)->IsEngine()) && !(Train::From(v)->IsRearDualheaded())) return;
-		ClrBit(Train::From(v)->flags,VRF_NEED_REPAIR);
+		ClrBit(Train::From(v)->flags, VRF_NEED_REPAIR);
+		ClrBit(Train::From(v)->flags, VRF_HAS_HIT_RV);
 		Train::From(v)->critical_breakdown_count = 0;
 		const RailVehicleInfo *rvi = &e->u.rail;
 		v->vcache.cached_max_speed = rvi->max_speed;
@@ -1395,6 +1396,9 @@ bool Vehicle::HandleBreakdown()
 				if (this->breakdown_type == BREAKDOWN_LOW_POWER ||
 						this->First()->cur_speed <= ((this->breakdown_type == BREAKDOWN_LOW_SPEED) ? this->breakdown_severity : 0)) {
 					switch (this->breakdown_type) {
+						case BREAKDOWN_RV_CRASH:
+							if (_settings_game.vehicle.improved_breakdowns) SetBit(Train::From(this)->flags, VRF_HAS_HIT_RV);
+						/* FALL THROUGH */
 						case BREAKDOWN_CRITICAL:
 							if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
 								bool train_or_ship = this->type == VEH_TRAIN || this->type == VEH_SHIP;
@@ -1495,7 +1499,7 @@ bool Vehicle::HandleBreakdown()
 					}
 				}
 			}
-			return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP);
+			return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP || this->breakdown_type == BREAKDOWN_RV_CRASH);
 
 		default:
 			if (!this->current_order.IsType(OT_LOADING)) this->breakdown_ctr--;

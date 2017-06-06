@@ -3646,6 +3646,7 @@ STR_BREAKDOWN_TYPE_CRITICAL                                     :Mechanical fail
 STR_BREAKDOWN_TYPE_EM_STOP                                      :Emergency stop
 STR_BREAKDOWN_TYPE_LOW_SPEED                                    :Limited to {VELOCITY}
 STR_BREAKDOWN_TYPE_LOW_POWER                                    :{COMMA}% Power
+STR_BREAKDOWN_TYPE_HIT_RV                                       :Collided with road vehicle
 STR_BREAKDOWN_TYPE_DEPOT                                        :Heading to {STATION} Hangar for repairs
 STR_BREAKDOWN_TYPE_LANDING                                      :Heading to {STATION} for emergency landing
 STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE} is too heavy
