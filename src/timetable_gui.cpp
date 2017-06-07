@@ -714,8 +714,10 @@ struct TimetableWindow : Window {
 			}
 
 			case WID_VT_START_DATE: {
-				int32 val = StrEmpty(str) ? 0 : strtoul(str, NULL, 10);
-				if (val > 0) {
+				if (StrEmpty(str)) break;
+				char *end;
+				int32 val = strtol(str, &end, 10);
+				if (val >= 0 && end && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
 					val = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
