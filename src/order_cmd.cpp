@@ -1894,11 +1894,11 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				}
 
 				/* Copy over scheduled dispatch data */
+				dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
+				dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
 				for (const auto& slot : src->orders.list->GetScheduledDispatch()) {
 					dst->orders.list->AddScheduledDispatch(slot);
 				}
-				dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
-				dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
 				{
 					Date start_date;
 					uint16 start_full_date_fract;
