@@ -807,8 +807,8 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	}
 	/* The cost of the digging. */
 	CommandCost cost(EXPENSES_CONSTRUCTION);
-	for (int i = tiles; i > 0; i--) {
-		if (tiles == tiles_bump) {
+	for (int i = 1; i <= tiles; i++) {
+		if (i == tiles_bump) {
 			tiles_coef++;
 			tiles_bump *= 2;
 		}
