@@ -13,6 +13,7 @@
 #include "command_func.h"
 #include "company_func.h"
 #include "date_func.h"
+#include "date_type.h"
 #include "window_func.h"
 #include "vehicle_base.h"
 #include "settings_type.h"
@@ -652,6 +653,48 @@ void UpdateSeparationOrder(Vehicle *v_start)
 	}
 }
 
+static bool IsVehicleAtFirstWaitingLocation(Vehicle *v)
+{
+	/* Check if we arrive at first station */
+	int first_wait_index = -1;
+	for (int i = 0; i < v->orders.list->GetNumOrders(); ++i) {
+		Order* order = v->orders.list->GetOrderAt(i);
+
+		if (order->IsWaitTimetabled() && !order->IsType(OT_IMPLICIT)) {
+			first_wait_index = i;
+			break;
+		}
+	}
+
+	return v->orders.list->IsCompleteTimetable() && (v->cur_implicit_order_index == first_wait_index);
+}
+
+static DateTicksScaled GetScheduledDispatchTime(Vehicle *v)
+{
+	DateTicksScaled first_slot          = -1;
+	const DateTicksScaled begin_time    = v->orders.list->GetScheduledDispatchStartTick();
+	const int32 last_dispatched_offset  = v->orders.list->GetScheduledDispatchLastDispatch();
+	const uint32 dispatch_duration      = v->orders.list->GetScheduledDispatchDuration();
+	const int32 max_delay               = v->orders.list->GetScheduledDispatchDelay();
+
+	/* Find next available slots */
+	for (auto current_offset : v->orders.list->GetScheduledDispatch()) {
+		while (int32(current_offset) <= last_dispatched_offset) {
+			current_offset += dispatch_duration;
+		}
+
+		DateTicksScaled current_departure = begin_time + current_offset;
+		while (current_departure + max_delay < _scaled_date_ticks) {
+			current_departure += dispatch_duration;
+		}
+
+		if (first_slot == -1 || first_slot > current_departure) {
+			first_slot = current_departure;
+		}
+	}
+
+	return first_slot;
+}
 
 /**
  * Update the timetable for the vehicle.
@@ -679,11 +722,26 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 
 	bool just_started = false;
 
+	/* Start scheduled dispatch at first opportunity */
+	if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED) && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+		if (IsVehicleAtFirstWaitingLocation(v) && travelling) {
+			/* Update scheduled information */
+			v->orders.list->UpdateScheduledDispatch();
+
+			DateTicksScaled slot = GetScheduledDispatchTime(v);
+			if (slot > -1) {
+				v->lateness_counter = _scaled_date_ticks - slot;
+				v->orders.list->SetScheduledDispatchLastDispatch(slot - v->orders.list->GetScheduledDispatchStartTick());
+			}
+		}
+	}
+
 	/* Start automated timetables at first opportunity */
 	if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED) && HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
 		v->ClearSeparation();
 		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
-		v->lateness_counter = 0;
+		/* If the lateness is set by scheduled dispatch above, do not reset */
+		if(!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) v->lateness_counter = 0;
 		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) UpdateSeparationOrder(v);
 		for (v = v->FirstShared(); v != NULL; v = v->NextShared()) {
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
@@ -813,6 +871,23 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		UpdateSeparationOrder(v);
 		v->current_order_time = 0;
 		v->current_loading_time = 0;
+	} else if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
+		const bool is_first_waiting = IsVehicleAtFirstWaitingLocation(v);
+		if (is_first_waiting) {
+			/* Update scheduled information */
+			v->orders.list->UpdateScheduledDispatch();
+		}
+		if (is_first_waiting && travelling) {
+			DateTicksScaled slot = GetScheduledDispatchTime(v);
+			if (slot > -1) {
+				v->lateness_counter = _scaled_date_ticks - slot;
+				v->orders.list->SetScheduledDispatchLastDispatch(slot - v->orders.list->GetScheduledDispatchStartTick());
+			} else {
+				v->lateness_counter -= (timetabled - time_taken);
+			}
+		} else {
+			v->lateness_counter -= (timetabled - time_taken);
+		}
 	} else {
 		v->lateness_counter -= (timetabled - time_taken);
 	}

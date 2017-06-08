@@ -338,6 +338,7 @@ screenshot.h
 sdl.h
 sound/sdl_s.h
 video/sdl_v.h
+schdispatch.h
 settings_func.h
 settings_gui.h
 settings_internal.h
@@ -519,6 +520,7 @@ plans_gui.cpp
 rail_gui.cpp
 road_gui.cpp
 roadveh_gui.cpp
+schdispatch_gui.cpp
 settings_gui.cpp
 ship_gui.cpp
 signs_gui.cpp
@@ -616,6 +618,7 @@ plans_cmd.cpp
 rail_cmd.cpp
 road_cmd.cpp
 roadveh_cmd.cpp
+schdispatch_cmd.cpp
 ship_cmd.cpp
 signs_cmd.cpp
 station_cmd.cpp

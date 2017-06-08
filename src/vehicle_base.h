@@ -58,6 +58,7 @@ enum VehicleFlags {
 	// Additional flags not in trunk are added at the end to avoid clashing with any new
 	// flags which get added in future trunk, and to avoid re-ordering flags which are in trunk already,
 	// as this breaks savegame compatibility.
+	VF_SCHEDULED_DISPATCH = 12, ///< Whether the vehicle should follow a timetabled dispatching schedule
 	VF_LAST_LOAD_ST_SEP = 13,   ///< Each vehicle of this chain has its last_loading_station field set separately
 	VF_TIMETABLE_SEPARATION = 14,///< Whether the vehicle should manage the timetable automatically.
 	VF_AUTOMATE_TIMETABLE = 15, ///< Whether the vehicle should manage the timetable automatically.

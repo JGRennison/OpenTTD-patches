@@ -729,6 +729,11 @@ enum WindowClass {
 	WC_DEPARTURES_BOARD,
 
 	/**
+	 * Vehicle scheduled dispatch - departure slots
+	 */
+	WC_SCHDISPATCH_SLOTS,
+
+	/**
 	 * Plans window.
 	 */
 	WC_PLANS,

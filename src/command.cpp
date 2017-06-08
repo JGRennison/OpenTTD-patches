@@ -239,6 +239,14 @@ CommandProc CmdModifySignalInstruction;
 CommandProc CmdRemoveSignalInstruction;
 CommandProc CmdSignalProgramMgmt;
 
+CommandProc CmdScheduledDispatch;
+CommandProc CmdScheduledDispatchAdd;
+CommandProc CmdScheduledDispatchRemove;
+CommandProc CmdScheduledDispatchSetDuration;
+CommandProc CmdScheduledDispatchSetStartDate;
+CommandProc CmdScheduledDispatchSetDelay;
+CommandProc CmdScheduledDispatchResetLastDispatch;
+
 CommandProc CmdAddPlan;
 CommandProc CmdAddPlanLine;
 CommandProc CmdRemovePlan;
@@ -442,6 +450,14 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdModifySignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_MODIFY_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdRemoveSignalInstruction,                        0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_SIGNAL_INSTRUCTION
 	DEF_CMD(CmdSignalProgramMgmt,                              0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_SIGNAL_PROGRAM_MGMT
+
+	DEF_CMD(CmdScheduledDispatch,                              0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH
+	DEF_CMD(CmdScheduledDispatchAdd,                           0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_ADD
+	DEF_CMD(CmdScheduledDispatchRemove,                        0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_REMOVE
+	DEF_CMD(CmdScheduledDispatchSetDuration,                   0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_SET_DURATION
+	DEF_CMD(CmdScheduledDispatchSetStartDate,                  0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_SET_START_DATE
+	DEF_CMD(CmdScheduledDispatchSetDelay,                      0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_SET_DELAY
+	DEF_CMD(CmdScheduledDispatchResetLastDispatch,             0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH
 
 	DEF_CMD(CmdAddPlan,                                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN
 	DEF_CMD(CmdAddPlanLine,                                    0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN_LINE

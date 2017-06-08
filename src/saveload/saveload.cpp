@@ -1448,6 +1448,18 @@ static inline size_t SlCalcListLen(const void *list)
 	return l->size() * type_size + type_size;
 }
 
+/**
+ * Return the size in bytes of a list
+ * @param list The std::list to find the size of
+ */
+ template<typename PtrList>
+static inline size_t SlCalcVarListLen(const void *list, size_t item_size)
+{
+	const PtrList *l = (const PtrList *) list;
+	/* Each entry is saved as item_size bytes, plus 4 bytes are used for the length
+	 * of the list */
+	return l->size() * item_size + 4;
+}
 
 /**
  * Save/Load a list.
@@ -1506,6 +1518,55 @@ static void SlList(void *list, SLRefType conv)
 	}
 }
 
+/**
+ * Save/Load a list.
+ * @param list The list being manipulated
+ * @param conv VarType type of the list
+ */
+template<typename PtrList>
+static void SlVarList(void *list, VarType conv)
+{
+	const size_t size_len = SlCalcConvMemLen(conv);
+	/* Automatically calculate the length? */
+	if (_sl.need_length != NL_NONE) {
+		SlSetLength(SlCalcVarListLen<PtrList>(list, size_len));
+		/* Determine length only? */
+		if (_sl.need_length == NL_CALCLENGTH) return;
+	}
+
+	PtrList *l = (PtrList *)list;
+
+	switch (_sl.action) {
+		case SLA_SAVE: {
+			SlWriteUint32((uint32)l->size());
+
+			typename PtrList::iterator iter;
+			for (iter = l->begin(); iter != l->end(); ++iter) {
+				SlSaveLoadConv(&(*iter), conv);
+			}
+			break;
+		}
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD: {
+			size_t length = SlReadUint32();
+			l->resize(length);
+
+			typename PtrList::iterator iter;
+			iter = l->begin();
+
+			for (size_t i = 0; i < length; i++) {
+				SlSaveLoadConv(&(*iter), conv);
+				++iter;
+			}
+			break;
+		}
+		case SLA_PTRS: break;
+		case SLA_NULL:
+			l->clear();
+			break;
+		default: NOT_REACHED();
+	}
+}
 
 /** Are we going to save this object or not? */
 static inline bool SlIsObjectValidInSavegame(const SaveLoad *sld)
@@ -1561,6 +1622,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 		case SL_DEQ:
 		case SL_VEC:
 		case SL_STDSTR:
+		case SL_VARVEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) break;
 
@@ -1572,6 +1634,16 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 				case SL_LST: return SlCalcListLen<std::list<void *>>(GetVariableAddress(object, sld));
 				case SL_DEQ: return SlCalcListLen<std::deque<void *>>(GetVariableAddress(object, sld));
 				case SL_VEC: return SlCalcListLen<std::vector<void *>>(GetVariableAddress(object, sld));
+				case SL_VARVEC: {
+					const size_t size_len = SlCalcConvMemLen(sld->conv);
+					switch (size_len) {
+						case 1: return SlCalcVarListLen<std::vector<byte>>(GetVariableAddress(object, sld), 1);
+						case 2: return SlCalcVarListLen<std::vector<uint16>>(GetVariableAddress(object, sld), 2);
+						case 4: return SlCalcVarListLen<std::vector<uint32>>(GetVariableAddress(object, sld), 4);
+						case 8: return SlCalcVarListLen<std::vector<uint64>>(GetVariableAddress(object, sld), 8);
+						default: NOT_REACHED();
+					}
+				}
 				case SL_STDSTR: return SlCalcStdStrLen(*static_cast<std::string *>(GetVariableAddress(object, sld)));
 				default: NOT_REACHED();
 			}
@@ -1647,6 +1719,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 		case SL_DEQ:
 		case SL_VEC:
 		case SL_STDSTR:
+		case SL_VARVEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) return false;
 			if (SlSkipVariableOnLoad(sld)) return false;
@@ -1676,6 +1749,17 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 				case SL_LST: SlList<std::list<void *>>(ptr, (SLRefType)conv); break;
 				case SL_DEQ: SlList<std::deque<void *>>(ptr, (SLRefType)conv); break;
 				case SL_VEC: SlList<std::vector<void *>>(ptr, (SLRefType)conv); break;
+				case SL_VARVEC: {
+					const size_t size_len = SlCalcConvMemLen(sld->conv);
+					switch (size_len) {
+						case 1: SlVarList<std::vector<byte>>(ptr, conv); break;
+						case 2: SlVarList<std::vector<uint16>>(ptr, conv); break;
+						case 4: SlVarList<std::vector<uint32>>(ptr, conv); break;
+						case 8: SlVarList<std::vector<uint64>>(ptr, conv); break;
+						default: NOT_REACHED();
+					}
+					break;
+				}
 				case SL_STDSTR: SlStdString(*static_cast<std::string *>(ptr), sld->conv); break;
 				default: NOT_REACHED();
 			}

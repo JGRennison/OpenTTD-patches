@@ -245,7 +245,13 @@ static void Ptrs_ORDR()
 const SaveLoad *GetOrderListDescription()
 {
 	static const SaveLoad _orderlist_desc[] = {
-		SLE_REF(OrderList, first,              REF_ORDER),
+		      SLE_REF(OrderList, first,                                    REF_ORDER),
+		SLE_CONDVARVEC_X(OrderList, scheduled_dispatch,                    SLE_UINT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_duration,              SLE_UINT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_date,            SLE_INT32,  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_full_date_fract, SLE_UINT16, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_last_dispatch,         SLE_INT32,  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_max_delay,             SLE_INT32,  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
 		SLE_END()
 	};
 
