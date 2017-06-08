@@ -572,8 +572,16 @@ struct TimetableWindow : Window {
 			case WID_VT_TIMETABLE_PANEL: { // Main panel.
 				int selected = GetOrderFromTimetableWndPt(pt.y, v);
 
+				/* Allow change time by double-clicking order */
+				if (click_count == 2) {
+					this->sel_index = selected == INVALID_ORDER ? -1 : selected;
+					this->OnClick(pt, WID_VT_CHANGE_TIME, click_count);
+					return;
+				} else {
+					this->sel_index = (selected == INVALID_ORDER || selected == this->sel_index) ? -1 : selected;
+				}
+
 				this->DeleteChildWindows();
-				this->sel_index = (selected == INVALID_ORDER || selected == this->sel_index) ? -1 : selected;
 				break;
 			}
 
