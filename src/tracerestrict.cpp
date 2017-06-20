@@ -1269,7 +1269,8 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 		if (self == source) {
 			return_cmd_error(STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET);
 		}
-
+	}
+	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_COPY || type == TRDCT_PROG_COPY_APPEND) {
 		ret = TraceRestrictCheckTileIsUsable(source_tile, source_track);
 		if (ret.Failed()) {
 			return ret;
@@ -1296,6 +1297,21 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 					return CMD_ERROR;
 				}
 				prog->items = source_prog->items; // copy
+				prog->Validate();
+			}
+			break;
+		}
+
+		case TRDCT_PROG_COPY_APPEND: {
+			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
+			if (source_prog && !source_prog->items.empty()) {
+				TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
+				if (!prog) {
+					// allocation failed
+					return CMD_ERROR;
+				}
+				prog->items.reserve(prog->items.size() + source_prog->items.size()); // this is in case prog == source_prog
+				prog->items.insert(prog->items.end(), source_prog->items.begin(), source_prog->items.end()); // append
 				prog->Validate();
 			}
 			break;

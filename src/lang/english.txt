@@ -2504,6 +2504,7 @@ STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Insert
 STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}Reset
 STR_TRACE_RESTRICT_COPY                                         :{BLACK}Copy
+STR_TRACE_RESTRICT_APPEND                                       :{BLACK}Append
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Share
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Unshare
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Select Target
@@ -2511,7 +2512,7 @@ STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}Select S
 STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Insert an instruction
 STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Remove the selected instruction{}Ctrl+Click to remove the selected conditional instruction but retain its contents
 STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}Reset the current signal (without affecting shared programs)
-STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Copy program from another signal
+STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Copy program from another signal{}Ctrl+click to append program from another signal
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Share program with another signal
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Stop sharing program with other signals, create a copy of the program
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routefinding restriction
@@ -2534,6 +2535,7 @@ STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :Validation fail
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :Source and target signals are the same
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Can't reset signal
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Can't copy program
+STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}Can't append program
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}Can't share program
 STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}Can't unshare program
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}Can't create slot...
