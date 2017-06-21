@@ -2235,6 +2235,12 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 
 				case VEH_ROAD: {
 					RoadVehicle *rv = RoadVehicle::From(v);
+					if (IsRoadCustomBridgeHeadTile(tile)) {
+						RoadBits bits = ROAD_NONE;
+						if (rv->compatible_roadtypes & ROADTYPES_TRAM) bits |= GetCustomBridgeHeadRoadBits(tile, ROADTYPE_TRAM);
+						if (rv->compatible_roadtypes & ROADTYPES_ROAD) bits |= GetCustomBridgeHeadRoadBits(tile, ROADTYPE_ROAD);
+						if (!(bits & DiagDirToRoadBits(GetTunnelBridgeDirection(tile)))) return VETSB_CONTINUE;
+					}
 					rv->cur_image_valid_dir = INVALID_DIR;
 					rv->state = RVSB_WORMHOLE;
 					/* There are no slopes inside bridges / tunnels. */
