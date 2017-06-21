@@ -62,17 +62,19 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 		}
 		SetDParam(0, v->index);
 		b = GetString(b, STR_VEHICLE_NAME, last);
+		b += seprintf(b, last, ", c:%d", (int) v->owner);
 		if (HasBit(v->subtype, GVSF_VIRTUAL)) {
 			b += seprintf(b, last, ", VIRT");
 		}
 		if (v->First() && v->First() != v) {
-			b += seprintf(b, last, "), front: %u: (", v->First()->index);
+			b += seprintf(b, last, ", front: %u: (", v->First()->index);
 			if (Vehicle::GetIfValid(v->First()->index) != v->First()) {
 				b += seprintf(b, last, "INVALID PTR: %p)", v->First());
 				return this->buffer;
 			}
 			SetDParam(0, v->First()->index);
 			b = GetString(b, STR_VEHICLE_NAME, last);
+			b += seprintf(b, last, ")");
 		}
 		b += seprintf(b, last, ")");
 	} else {
