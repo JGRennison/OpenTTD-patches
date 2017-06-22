@@ -352,6 +352,14 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 {
 	time_t cur_time = time(NULL);
 	buffer += seprintf(buffer, last, "*** OpenTTD Crash Report ***\n\n");
+
+	if (GamelogTestEmergency()) {
+		buffer += seprintf(buffer, last, "-=-=- As you loaded an emergency savegame no crash information would ordinarily be generated. -=-=-\n\n");
+	}
+	if (SaveloadCrashWithMissingNewGRFs()) {
+		buffer += seprintf(buffer, last, "-=-=- As you loaded a savegame for which you do not have the required NewGRFs no crash information would ordinarily be generated. -=-=-\n\n");
+	}
+
 	buffer += seprintf(buffer, last, "Crash at: %s", asctime(gmtime(&cur_time)));
 
 	YearMonthDay ymd;
@@ -534,6 +542,22 @@ bool CrashLog::MakeCrashLog() const
 	if (MusicDriver::GetInstance() != NULL) MusicDriver::GetInstance()->Stop();
 	if (SoundDriver::GetInstance() != NULL) SoundDriver::GetInstance()->Stop();
 	if (VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
+}
+
+/* static */ const char *CrashLog::GetAbortCrashlogReason()
+{
+	if (_settings_client.gui.developer > 0) return NULL;
+
+	if (GamelogTestEmergency()) {
+		return "As you loaded an emergency savegame no crash information will be generated.\n";
+	}
+
+	if (SaveloadCrashWithMissingNewGRFs()) {
+		return "As you loaded an savegame for which you do not have the required NewGRFs\n" \
+				"no crash information will be generated.\n";
+	}
+
+	return NULL;
 }
 
 #if defined(WITH_BFD)
