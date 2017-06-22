@@ -519,6 +519,7 @@ static CommandCost CheckRoadSlope(Slope tileh, RoadBits *pieces, RoadBits existi
  * @param p1 bit 0..3 road pieces to build (RoadBits)
  *           bit 4..5 road type
  *           bit 6..7 disallowed directions to toggle
+ *           bit 8    disable custom bridge heads
  * @param p2 the town that is building the road (0 if not applicable)
  * @param text unused
  * @return the cost of this operation or an error
@@ -557,6 +558,8 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	if (!IsValidRoadType(rt) || !ValParamRoadType(rt)) return CMD_ERROR;
 
 	DisallowedRoadDirections toggle_drd = Extract<DisallowedRoadDirections, 6, 2>(p1);
+
+	bool disable_custom_bridge_heads = HasBit(p1, 8);
 
 	Slope tileh = GetTileSlope(tile);
 
@@ -721,7 +724,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				const RoadBits axial_pieces = AxisToRoadBits(DiagDirToAxis(entrance_dir));
 				existing = GetCustomBridgeHeadRoadBits(tile, rt);
 
-				if (!(_settings_game.construction.road_custom_bridge_heads && HasBridgeFlatRamp(tileh, DiagDirToAxis(entrance_dir)))) {
+				if (!(_settings_game.construction.road_custom_bridge_heads && HasBridgeFlatRamp(tileh, DiagDirToAxis(entrance_dir))) || disable_custom_bridge_heads) {
 					/* Ordinary bridge heads only */
 					/* Only allow building the outer roadbit, so building long roads stops at existing bridges */
 					if (MirrorRoadBits(entrance_piece) != pieces) goto do_clear;
@@ -955,7 +958,7 @@ static bool CanConnectToRoad(TileIndex tile, RoadType rt, DiagDirection dir)
  * - p2 = (bit 5) - set road direction
  * - p2 = (bit 6) - defines two different behaviors for this command:
  *      - 0 = Build up to an obstacle. Do not build the first and last roadbits unless they can be connected to something, or if we are building a single tile
- *      - 1 = Fail if an obstacle is found. Always take into account bit 0 and 1. This behavior is used for scripts
+ *      - 1 = Fail if an obstacle is found. Always take into account bit 0 and 1. Disable custom bridge heads. This behavior is used for scripts
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1014,7 +1017,7 @@ CommandCost CmdBuildLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32 p
 			if (tile == start_tile && HasBit(p2, 0)) bits &= DiagDirToRoadBits(dir);
 		}
 
-		CommandCost ret = DoCommand(tile, drd << 6 | rt << 4 | bits, 0, flags, CMD_BUILD_ROAD);
+		CommandCost ret = DoCommand(tile, drd << 6 | rt << 4 | bits | (is_ai ? 1 << 8 : 0), 0, flags, CMD_BUILD_ROAD);
 		if (ret.Failed()) {
 			last_error = ret;
 			if (last_error.GetErrorMessage() != STR_ERROR_ALREADY_BUILT) {
