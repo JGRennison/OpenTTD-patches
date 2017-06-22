@@ -616,8 +616,9 @@ static bool _expanded;
 
 static const TCHAR _crash_desc[] =
 	_T("A serious fault condition occurred in the game. The game will shut down.\n")
-	_T("Please send the crash information and the crash.dmp file (if any) to the developers.\n")
-	_T("This will greatly help debugging. The correct place to do this is http://bugs.openttd.org. ")
+	_T("Please send the crash information and the crash.dmp file (if any) to the patchpack developer.\n")
+	_T("This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469")
+	_T(" or https://github.com/JGRennison/OpenTTD-patches\n")
 	_T("The information contained in the report is displayed below.\n")
 	_T("Press \"Emergency save\" to attempt saving the game. Generated file(s):\n")
 	_T("%s");
