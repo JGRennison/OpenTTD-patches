@@ -391,6 +391,8 @@ static const NWidgetPart _nested_about_widgets[] = {
 			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_A_SCROLLING_TEXT),
 		EndContainer(),
 		NWidget(WWT_LABEL, COLOUR_GREY, WID_A_WEBSITE), SetDataTip(STR_BLACK_RAW_STRING, STR_NULL),
+		NWidget(WWT_LABEL, COLOUR_GREY, WID_A_WEBSITE1), SetDataTip(STR_BLACK_RAW_STRING, STR_NULL),
+		NWidget(WWT_LABEL, COLOUR_GREY, WID_A_WEBSITE2), SetDataTip(STR_BLACK_RAW_STRING, STR_NULL),
 		NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_ABOUT_COPYRIGHT_OPENTTD, STR_NULL),
 	EndContainer(),
 };
@@ -461,6 +463,10 @@ static const char * const _credits[] = {
 	"  Bug Reporters - Without whom OpenTTD would still be full of bugs!",
 	"",
 	"",
+	"Developer of this patchpack:",
+	"  Jonathan G. Rennison (JGR)",
+	"",
+	"",
 	"And last but not least:",
 	"  Chris Sawyer - For an amazing game!"
 };
@@ -481,7 +487,9 @@ struct AboutWindow : public Window {
 
 	virtual void SetStringParameters(int widget) const
 	{
-		if (widget == WID_A_WEBSITE) SetDParamStr(0, "Website: http://www.openttd.org");
+		if (widget == WID_A_WEBSITE) SetDParamStr(0, "Main project website: http://www.openttd.org");
+		if (widget == WID_A_WEBSITE1) SetDParamStr(0, "Patchpack thread: https://www.tt-forums.net/viewtopic.php?f=33&t=73469");
+		if (widget == WID_A_WEBSITE2) SetDParamStr(0, "Patchpack Github: https://github.com/JGRennison/OpenTTD-patches");
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
