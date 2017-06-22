@@ -565,16 +565,10 @@ static void CDECL HandleCrash(int signum)
 		signal(*i, SIG_DFL);
 	}
 
-	if (GamelogTestEmergency()) {
+	const char *abort_reason = CrashLog::GetAbortCrashlogReason();
+	if (abort_reason != NULL) {
 		printf("A serious fault condition occurred in the game. The game will shut down.\n");
-		printf("As you loaded an emergency savegame no crash information will be generated.\n");
-		abort();
-	}
-
-	if (SaveloadCrashWithMissingNewGRFs()) {
-		printf("A serious fault condition occurred in the game. The game will shut down.\n");
-		printf("As you loaded an savegame for which you do not have the required NewGRFs\n");
-		printf("no crash information will be generated.\n");
+		printf(abort_reason);
 		abort();
 	}
 

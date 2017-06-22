@@ -138,6 +138,8 @@ public:
 	static void AfterCrashLogCleanup();
 
 	inline const char *GetMessage() const { return this->message; }
+
+	static const char *GetAbortCrashlogReason();
 };
 
 #endif /* CRASHLOG_H */
