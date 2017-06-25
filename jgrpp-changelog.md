@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.20.0 (2017-06-25)
+* Fix excessive cost of building long rail tunnels.
+* Fix not being able to enter 00:00 as a timetable start time.
+* Fix trams not reversing on road custom bridge heads where tram tracks end on the bridge head in the direction of the bridge.
+* Fix AIs unintentionally building custom bridge heads.
+* Add patch: scheduled dispatch feature
+* Add support for loading SpringPP v2.3, v2.4 savegames.
+* Routing restrictions: Add program append GUI button.
+* Increase maximum permitted depot and station name lengths.
+* Trains now break down after colliding with a road vehicle.
+* Add Korean translations by TELK.
+* Bump trunk base from r27870 to r27886
+
 ### v0.19.0 (2017-05-10)
 * Fix crashes and non-functionality with non-broadcast network chat, regression from v0.18.0.
 * Fix crash when using unrelated buttons in timetable window when also inputting a numeric value.

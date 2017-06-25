@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.19.0
+## JGR's Patchpack version 0.20.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -181,6 +181,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Prevent road vehicles from being stopped on level crossings.  
   * Add setting to enable improved level crossing safety.
 
+* Scheduled dispatch [imported](https://github.com/innocenat/OpenTTD-patches/tree/scheduled-dispatch-sx) (added in v0.20.0)  
+
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 2x faster. (~1.3x faster in v0.8.1, further improvements in v0.17.2)  
@@ -202,7 +204,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)  
   * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)  
   * Increase maximum setting limits for per-company vehicle-type limits. (added in v0.17.0)  
-  * Increase maximum permitted vehicle name length (added in v0.17.0), and vehicle group name length (added in v0.17.2)  
+  * Increase maximum permitted vehicle name length (added in v0.17.0), vehicle group name length (added in v0.17.2), and depot/station name lengths (added in v0.20.0).  
+  * Trains break down after colliding with a road vehicle.  
   * Various minor fixes, see changelog.
 
 * Translations  
