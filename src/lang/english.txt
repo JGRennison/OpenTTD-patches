@@ -5826,7 +5826,7 @@ STR_SCHDISPATCH_START                                           :{BLACK}Start Da
 STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}Select a date to start this schedule.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}Start time (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}Delay
-STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}Select a date to start this schedule.
+STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}Set maximum delay until a slot is skipped.
 STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}Delay (minute)
 STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Delay (day)
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Reset Last Dispatched
