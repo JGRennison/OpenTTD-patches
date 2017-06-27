@@ -36,6 +36,12 @@
 #include "departures_func.h"
 #include "departures_type.h"
 
+#include <map>
+#include <set>
+
+/* A cache of used departure time for scheduled dispatch in departure time calculation */
+typedef std::map<uint32, std::set<DateTicksScaled>> schdispatch_cache_t;
+
 /** A scheduled order. */
 typedef struct OrderDate
 {
@@ -44,6 +50,7 @@ typedef struct OrderDate
 	DateTicks expected_date;///< The date on which the order is expected to complete
 	Ticks lateness;         ///< How late this order is expected to finish
 	DepartureStatus status; ///< Whether the vehicle has arrived to carry out the order yet
+	uint scheduled_waiting_time; ///< Scheduled waiting time if scheduled dispatch is used
 } OrderDate;
 
 static bool IsDeparture(const Order *order, StationID station) {
@@ -68,6 +75,73 @@ static bool IsArrival(const Order *order, StationID station) {
 			(order->GetUnloadType() != OUFB_NO_UNLOAD ||
 			_settings_client.gui.departure_show_all_stops) &&
 			order->GetWaitTime() != 0);
+}
+
+static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, uint *waiting_time, const DateTicksScaled date_only_scaled, const Vehicle *v, const Order *order, bool arrived_at_timing_point, schdispatch_cache_t &dept_schedule_last)
+{
+	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+		/* Loop over all order to find the first waiting order */
+		for (int j = 0; j < v->orders.list->GetNumOrders(); ++j) {
+			Order* iterating_order = v->orders.list->GetOrderAt(j);
+
+			if (iterating_order->IsWaitTimetabled() && !iterating_order->IsType(OT_IMPLICIT)) {
+				/* This condition means that we want departure time for the first order */
+				/* but not if the vehicle has arrived at the first order because the timetable is already shifted */
+				if (iterating_order == order && !(arrived_at_timing_point && v->cur_implicit_order_index == j)) {
+					DateTicksScaled actual_departure    = -1;
+					const DateTicksScaled begin_time    = v->orders.list->GetScheduledDispatchStartTick();
+					const uint32 dispatch_duration      = v->orders.list->GetScheduledDispatchDuration();
+					const int32 max_delay               = v->orders.list->GetScheduledDispatchDelay();
+
+					/* Earliest possible departure according to schedue */
+					DateTicksScaled earliest_departure = begin_time + v->orders.list->GetScheduledDispatchLastDispatch();
+
+					/* Earliest possible departure according to vehicle current timetable */
+					if (earliest_departure + max_delay < date_only_scaled + *previous_departure + order->GetTravelTime()) {
+						earliest_departure = date_only_scaled + *previous_departure + order->GetTravelTime() - max_delay - 1;
+						/* -1 because this number is actually a moment before actual departure */
+					}
+
+					/* Find next available slots */
+					for (auto current_offset : v->orders.list->GetScheduledDispatch()) {
+						DateTicksScaled current_departure = begin_time + current_offset;
+						while (current_departure <= earliest_departure) {
+							current_departure += dispatch_duration;
+						}
+
+						/* Make sure the slots has not already been used previously in this departure board calculation */
+						while (dept_schedule_last[v->orders.list->index].count(current_departure) > 0) {
+							current_departure += dispatch_duration;
+						}
+
+						if (actual_departure == -1 || actual_departure > current_departure) {
+							actual_departure = current_departure;
+						}
+					}
+
+					*waiting_time = order->GetWaitTime() + actual_departure - date_only_scaled - *previous_departure - order->GetTravelTime();
+					*previous_departure = actual_departure - date_only_scaled + order->GetWaitTime();
+					dept_schedule_last[v->orders.list->index].insert(actual_departure);
+
+					/* Return true means that vehicle lateness should be clear from this point onward */
+					return true;
+				}
+
+				/* This is special case for proper calculation of arrival time. */
+				if (arrived_at_timing_point && v->cur_implicit_order_index == j) {
+					*previous_departure += order->GetTravelTime() + order->GetWaitTime();
+					*waiting_time = -v->lateness_counter + order->GetWaitTime();
+					return false;
+				}
+				break;
+			} /* if it is first waiting order */
+		} /* for in order list */
+	} /* if vehicle is on scheduled dispatch */
+
+	/* Not using schedule for this departure time */
+	*previous_departure += order->GetTravelTime() + order->GetWaitTime();
+	*waiting_time = 0;
+	return false;
 }
 
 /**
@@ -101,6 +175,9 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 	/* The scheduled order in next_orders with the earliest expected_date field. */
 	OrderDate *least_order = NULL;
+
+	/* Cache for scheduled departure time */
+	schdispatch_cache_t schdispatch_last_planned_dispatch;
 
 	/* Get all the vehicles stopping at this station. */
 	/* We do this to get the order which is the first time they will stop at this station. */
@@ -141,8 +218,10 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			}
 
 			const Order *order = (*v)->GetOrder((*v)->cur_implicit_order_index % (*v)->GetNumOrders());
-			DateTicksScaled start_date = date_fract_scaled - (*v)->current_order_time;
+			DateTicks start_date = date_fract_scaled - (*v)->current_order_time;
 			DepartureStatus status = D_TRAVELLING;
+			bool should_reset_lateness = false;
+			uint waiting_time = 0;
 
 			/* If the vehicle is stopped in a depot, ignore it. */
 			if ((*v)->IsStoppedInDepot()) {
@@ -163,7 +242,9 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
 			/* We only need to consider each order at most once. */
 			for (int i = (*v)->GetNumOrders(); i > 0; --i) {
-				start_date += order->GetTravelTime() + order->GetWaitTime();
+				if (VehicleSetNextDepartureTime(&start_date, &waiting_time, date_only_scaled, *v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch)) {
+					should_reset_lateness = true;
+				}
 
 				/* If the scheduled departure date is too far in the future, stop. */
 				if (start_date - (*v)->lateness_counter > max_date) {
@@ -230,9 +311,15 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 					od->expected_date = start_date;
 					od->lateness = (*v)->lateness_counter > 0 ? (*v)->lateness_counter : 0;
 					od->status = status;
+					od->scheduled_waiting_time = waiting_time;
+
+					/* Reset lateness if timing is from scheduled dispatch */
+					if (should_reset_lateness) {
+						od->lateness = 0;
+					}
 
 					/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
-					if ((*v)->lateness_counter < 0 && !(*v)->current_order.IsType(OT_LOADING)) {
+					if (!should_reset_lateness && (*v)->lateness_counter < 0 && !(*v)->current_order.IsType(OT_LOADING)) {
 						od->expected_date -= (*v)->lateness_counter;
 					}
 
@@ -289,6 +376,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 		d->vehicle = least_order->v;
 		d->type = type;
 		d->order = least_order->order;
+		d->scheduled_waiting_time = least_order->scheduled_waiting_time;
 
 		/* We'll be going through the order list later, so we need a separate variable for it. */
 		const Order *order = least_order->order;
@@ -467,7 +555,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			/* Again, we define a station as being called at if the vehicle loads from it. */
 
 			/* However, the very first thing we do is use the arrival time as the scheduled time instead of the departure time. */
-			d->scheduled_date -= order->GetWaitTime();
+			d->scheduled_date -= d->scheduled_waiting_time > 0 ? d->scheduled_waiting_time : order->GetWaitTime();
 
 			const Order *candidate_origin = (order->next == NULL) ? least_order->v->GetFirstOrder() : order->next;
 			bool found_origin = false;
@@ -549,7 +637,9 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 		/* Go to the next order so we don't add the current order again. */
 		order = (order->next == NULL) ? least_order->v->GetFirstOrder() : order->next;
-		least_order->expected_date += order->GetTravelTime() + order->GetWaitTime();
+		if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
+			least_order->lateness = 0;
+		}
 
 		/* Go through the order list to find the next candidate departure. */
 		/* We only need to consider each order at most once. */
@@ -608,7 +698,9 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			}
 
 			order = (order->next == NULL) ? least_order->v->GetFirstOrder() : order->next;
-			least_order->expected_date += order->GetTravelTime() + order->GetWaitTime();
+			if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
+				least_order->lateness = 0;
+			}
 		}
 
 		/* If we didn't find a suitable order for being a departure, then we can ignore this vehicle from now on. */

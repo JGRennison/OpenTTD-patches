@@ -74,6 +74,7 @@ typedef struct Departure {
 	DepartureType type;                    ///< The type of the departure (departure or arrival)
 	const Vehicle *vehicle;                ///< The vehicle performing this departure
 	const Order *order;                    ///< The order corresponding to this departure
+	uint scheduled_waiting_time;           ///< Scheduled waiting time if scheduled dispatch is used
 	Departure() : terminus(INVALID_STATION), via(INVALID_STATION), calling_at(), vehicle(NULL) { }
 	~Departure()
 	{
