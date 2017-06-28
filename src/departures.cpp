@@ -30,6 +30,7 @@
 #include "order_base.h"
 #include "settings_type.h"
 #include "core/smallvec_type.hpp"
+#include "core/sort_func.hpp"
 #include "date_type.h"
 #include "company_type.h"
 #include "cargo_type.h"
@@ -38,6 +39,8 @@
 
 #include <map>
 #include <set>
+#include <vector>
+#include <algorithm>
 
 /* A cache of used departure time for scheduled dispatch in departure time calculation */
 typedef std::map<uint32, std::set<DateTicksScaled>> schdispatch_cache_t;
@@ -142,6 +145,52 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 	*previous_departure += order->GetTravelTime() + order->GetWaitTime();
 	*waiting_time = 0;
 	return false;
+}
+
+static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
+{
+	/* Seperate departure by each shared order group */
+	std::map<uint32, std::vector<Departure*>> separated_departure;
+	for (Departure** departure = departure_list->Begin(); departure != departure_list->End(); departure++) {
+		separated_departure[(*departure)->vehicle->orders.list->index].push_back(*departure);
+	}
+
+	for (auto& pair : separated_departure) {
+		auto d_list = pair.second;
+
+		/* If the group is scheduled dispatch, then */
+		if (HasBit(d_list[0]->vehicle->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+			/* Separate departure time and sort them ascendently */
+			std::vector<DateTicksScaled> departure_time_list;
+			for (const auto& d : d_list) {
+				departure_time_list.push_back(d->scheduled_date);
+			}
+			std::sort(departure_time_list.begin(), departure_time_list.end());
+
+			/* Sort the departure list by arrival time */
+			std::sort(d_list.begin(), d_list.end(), [](const Departure * const &a, const Departure * const &b) -> bool {
+				DateTicksScaled arr_a = a->scheduled_date - (a->scheduled_waiting_time > 0 ? a->scheduled_waiting_time : a->order->GetWaitTime());
+				DateTicksScaled arr_b = b->scheduled_date - (b->scheduled_waiting_time > 0 ? b->scheduled_waiting_time : b->order->GetWaitTime());
+				return arr_a < arr_b;
+			});
+
+			/* Re-assign them sequentially */
+			for (size_t i = 0; i < d_list.size(); i++) {
+				const DateTicksScaled arrival = d_list[i]->scheduled_date - (d_list[i]->scheduled_waiting_time > 0 ? d_list[i]->scheduled_waiting_time : d_list[i]->order->GetWaitTime());
+				d_list[i]->scheduled_waiting_time = departure_time_list[i] - arrival;
+				d_list[i]->scheduled_date = departure_time_list[i];
+
+				if (d_list[i]->scheduled_waiting_time == d_list[i]->order->GetWaitTime()) {
+					d_list[i]->scheduled_waiting_time = 0;
+				}
+			}
+		}
+	}
+
+	/* Re-sort the departure list */
+	QSortT<Departure*>(departure_list->Begin(), departure_list->Length(), [](Departure * const *a, Departure * const *b) -> int {
+		return (*a)->scheduled_date - (*b)->scheduled_date;
+	});
 }
 
 /**
@@ -326,7 +375,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 					/* Update least_order if this is the current least order. */
 					if (least_order == NULL) {
 						least_order = od;
-					} else if (least_order->expected_date - least_order->lateness - (type == D_ARRIVAL ? least_order->order->GetWaitTime() : 0) > od->expected_date - od->lateness - (type == D_ARRIVAL ? od->order->GetWaitTime() : 0)) {
+					} else if (int(least_order->expected_date - least_order->lateness - (type == D_ARRIVAL ? (least_order->scheduled_waiting_time > 0 ? least_order->scheduled_waiting_time : least_order->order->GetWaitTime()) : 0)) > int(od->expected_date - od->lateness - (type == D_ARRIVAL ? (od->scheduled_waiting_time > 0 ? od->scheduled_waiting_time : od->order->GetWaitTime()) : 0))) {
+						/* Somehow my compiler perform an unsigned comparition above so integer cast is required */
 						least_order = od;
 					}
 
@@ -454,7 +504,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				}
 
 				if (c.scheduled_date != 0 && (order->GetTravelTime() != 0 || order->IsTravelTimetabled())) {
-					c.scheduled_date += order->GetTravelTime();
+					c.scheduled_date += order->GetTravelTime(); /* TODO smart terminal may not work correctly */
 				} else {
 					c.scheduled_date = 0;
 				}
@@ -659,14 +709,18 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 								break;
 							}
 
-							least_order->expected_date += order->GetWaitTime();
+							if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
+								least_order->lateness = 0;
+							}
 
 							continue;
 						}
 						case 2: {
 							/* Do not take the branch */
 							order = (order->next == NULL) ? least_order->v->GetFirstOrder() : order->next;
-							least_order->expected_date += order->GetTravelTime() + order->GetWaitTime();
+							if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
+								least_order->lateness = 0;
+							}
 							continue;
 						}
 				}
@@ -724,8 +778,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			DateTicks odd = od->expected_date - od->lateness;
 
 			if (type == D_ARRIVAL) {
-				lod -= least_order->order->GetWaitTime();
-				odd -= od->order->GetWaitTime();
+				lod -= least_order->scheduled_waiting_time > 0 ? least_order->scheduled_waiting_time : least_order->order->GetWaitTime();
+				odd -= od->scheduled_waiting_time > 0 ? od->scheduled_waiting_time : od->order->GetWaitTime();
 			}
 
 			if (lod > odd && od->expected_date - od->lateness < max_date) {
@@ -739,6 +793,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 		OrderDate *od = *(next_orders.Get(i));
 		delete od;
 	}
+
+	if (type == D_DEPARTURE) ScheduledDispatchDepartureLocalFix(result);
 
 	/* Done. Phew! */
 	return result;
