@@ -606,7 +606,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 
 		/* Time */
 		SetDParam(0, d->scheduled_date);
-		SetDParam(1, d->scheduled_date - d->order->GetWaitTime());
+		SetDParam(1, d->scheduled_date - (d->scheduled_waiting_time > 0 ? d->scheduled_waiting_time : d->order->GetWaitTime()));
 		ltr ? DrawString(              text_left, text_left + time_width, y + 1, time_str)
 			: DrawString(text_right - time_width,             text_right, y + 1, time_str);
 
