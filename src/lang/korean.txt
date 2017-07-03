@@ -2590,10 +2590,10 @@ STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} 열차의 소속 그룹 {STRING} {GROUP} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} 열차의 소속 그룹 {STRING} {BLACK}{STRING} (이)라면 {STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} (이)라면
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} 열차 {STRING}(이)가 {TRSLOT} 슬롯에 있으면
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} 열차 {STRING}(이)가 {STRING} 슬롯에 있고 {BLACK}{STRING} (이)라면
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} of slot: {TRSLOT} {STRING} {COMMA} then
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} of slot: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} 열차 {STRING} {TRSLOT} 슬롯에 있으면
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} 열차 {STRING} {STRING} 슬롯에 있고 {BLACK}{STRING} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} 슬롯 {STRING}: {TRSLOT} {STRING} {COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} 슬롯 {STRING}: {STRING} {BLACK}{STRING} {STRING} {COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING}(이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING}(이)라면
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :경로 탐색에서 우선순위를 {COMMA} 만큼 뒤로
@@ -2663,6 +2663,7 @@ STR_TRACE_RESTRICT_INSERT                                       :{BLACK}삽입
 STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}제거
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}비우기
 STR_TRACE_RESTRICT_COPY                                         :{BLACK}복사
+STR_TRACE_RESTRICT_APPEND                                       :{BLACK}덧붙이기
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}공유
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}공유 해제
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}선택
@@ -2684,7 +2685,7 @@ STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :프로그램이
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :오프셋이 너무 큽니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :조건을 수정할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :'조건문 종료'만 제거할 수 없습니다.
-STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF           :'else if', 'or if' 또는 'else' 블록이 있는 'if' 블록을 삭제할 수 없습니다.
+STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF           :'아니라면, 조건문', '또는, 조건문' 또는 '아니라면' 블록이 있는 '조건문' 블록을 삭제할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :인증 실패: 출구의 조건스택이 비어있지 않습니다.
 STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :인증 실패: 시작 '조건문' 없이 존재하는 '아니라면', '조건문 종료'
 STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :인증 실패: 중복된 '아니라면'
@@ -2693,6 +2694,7 @@ STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :인증 실패: 
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :자신을 참조할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}구문을 모두 제거할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}구문을 복제할 수 없습니다.
+STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}구문을 덧붙일 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}구문을 공유할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}구문을 공유 해제할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}슬롯을 생성할 수 없습니다...
@@ -3385,6 +3387,9 @@ STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}{1:ENGIN
 STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' 때문에 결과물 콜백 과정에서 무한 루프가 발생하고 있습니다.
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}콜백 함수({1:HEX})가 알 수 없거나 잘못된 결과 값({2:HEX})을 반환했습니다.
 
+STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}NewGRF에서 할당 가능한 문자열 ID 개수보다 많은 문자열을 사용하고 있습니다.
+STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}몇몇 이름이나 텍스트가 잘못된 문자열을 표시할 수 있습니다. NewGRF의 개수를 줄이십시오.
+
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<알 수 없는 화물>
 STR_NEWGRF_INVALID_CARGO_ABBREV                                 :??
@@ -3778,6 +3783,7 @@ STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}회사�
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}상세정보
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}기반시설 상세정보 창을 엽니다.
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}돈 보내기
+STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}다른 회사에 돈 보내기
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}새 얼굴
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}사장의 얼굴을 선택합니다.
@@ -4206,12 +4212,14 @@ STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}고장 - {
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL                           :{RED}멈추는 중, {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}기관차 없음
 STR_VEHICLE_STATUS_TRAIN_STUCK                                  :{ORANGE}빈 경로 탐색중
+STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}경로 제한 신호기에 의해 대기 중
 STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR                             :{ORANGE}다음 목적지가 너무 멀리 있습니다.
 
 STR_BREAKDOWN_TYPE_CRITICAL                                     :기계적 고장
 STR_BREAKDOWN_TYPE_EM_STOP                                      :비상 정지
 STR_BREAKDOWN_TYPE_LOW_SPEED                                    :{VELOCITY}로 속도 제한
 STR_BREAKDOWN_TYPE_LOW_POWER                                    :{COMMA}%의 힘
+STR_BREAKDOWN_TYPE_HIT_RV                                       :차량과 충돌
 STR_BREAKDOWN_TYPE_DEPOT                                        :수리를 위해 {STATION} 격납고로 향하는 중
 STR_BREAKDOWN_TYPE_LANDING                                      :비상 착륙을 위해 {STATION}{G 0 "으" ""}로 향하는 중
 STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE} 이(가) 너무 무겁습니다.
@@ -4602,6 +4610,9 @@ STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}각 운�
 STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}자동 배차 조절
 STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}시간표 시작 시간을 자동으로 조절하여 배차 간격을 맞춰 줍니다.
 
+STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}배차 일정
+STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}시간표 시작 시간 자동 설정을 위한 '배차 일정' 창을 엽니다.
+
 STR_TIMETABLE_EXPECTED                                          :{BLACK}예정일 기준
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}예정 소요시간 기준
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}시간표 검사 기준을 도착 예정일과 도착 예정 시간 기준 중에서 선택합니다.
@@ -4631,8 +4642,8 @@ STR_CARGO_TYPE_ORDERS_DROP_FULL_LOAD                            :가득 싣기
 STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP                         :{BLACK}이 화물 종류는 어떻게 실을 지 설정합니다.
 STR_CARGO_TYPE_UNLOAD_ORDERS_DROP_TOOLTIP                       :{BLACK}이 화물 종류는 어떻게 내릴 지 설정합니다.
 
-STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}Set all to:
-STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}Set all cargo type orders to the one selected by the dropdown
+STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}모두 설정:
+STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}모든 화물의 승/하차 설정을 한 번에 변경합니다.
 
 # AI debug window
 STR_AI_DEBUG                                                    :{WHITE}인공지능/게임 스크립트 디버그
@@ -4725,6 +4736,8 @@ STR_PLANS_ADD_LINES                                             :{BLACK}선 추�
 STR_PLANS_ADDING_LINES                                          :{BLACK}추가 중
 STR_PLANS_HIDE_ALL                                              :{BLACK}모두 숨기기
 STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이지 않게 합니다.
+STR_PLANS_SHOW_ALL                                              :{BLACK}모두 보이기
+STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이게 합니다.
 STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}개인적으로
 STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}공용으로
 STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}계획의 보기 권한을 수정합니다. (개인적은 노랑, 공용은 파랑). 공용 계획은 타사가 계획 창에서 계획을 열람하거나 선을 추가할 수 있습니다.
@@ -5800,3 +5813,31 @@ STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}취소
 STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}각 목록으로부터 차량 종류를 고르고 '모두 교체'를 클릭하십시오. 만약 템플릿 목록에 표시된 결과가 만족스럽다면, '적용'을 클릭해 바뀐 내용을 적용하십시오.
 
 STR_TMPL_CANT_CREATE                                            :{WHITE}템플릿이나 가상 차량을 생성할 수 없습니다...
+
+# Scheduled Dispatch
+STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (배차 일정)
+STR_SCHDISPATCH_ENABLED                                         :{BLACK}활성화
+STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}배차 일정을 활성화합니다. 자동 배차 조절과 같이 사용할 수 없습니다.
+STR_SCHDISPATCH_ADD                                             :{BLACK}출발 슬롯 추가
+STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}이 스케줄에 새 출발 슬롯을 추가합니다.
+STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}출발 슬롯
+STR_SCHDISPATCH_DURATION                                        :{BLACK}반복 주기
+STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}이 스케줄의 반복 주기를 설정합니다.
+STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}반복 주기 (분)
+STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}반복 주기 (일)
+STR_SCHDISPATCH_START                                           :{BLACK}시작 일자
+STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}이 스케줄의 시작 일자를 설정합니다.
+STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}시작 시각 (hhmm)
+STR_SCHDISPATCH_DELAY                                           :{BLACK}지연
+STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}허용할 수 있는 최대 지연 시간을 설정합니다.
+STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}지연 (분)
+STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}지연 (일)
+STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}최근 일정 재설정
+STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 배차 일정을 재설정합니다. 먼 미래의 차량에 대해 오작동할 때 사용하십시오.
+
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {DATE_WALLCLOCK_TINY}에 출발할 예정입니다.
+STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 스케줄에는 {COMMA}대의 열차가 필요합니다.
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 스케줄은 {STRING}마다 반복되고 {DATE_WALLCLOCK_TINY}에 시작됩니다.
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}{STRING} 이상 지연되면 다음 슬롯으로 넘어갑니다.
+STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}이 스케줄은 비활성화되어 있습니다.
