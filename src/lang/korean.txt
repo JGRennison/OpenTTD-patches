@@ -3387,7 +3387,7 @@ STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}{1:ENGIN
 STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' 때문에 결과물 콜백 과정에서 무한 루프가 발생하고 있습니다.
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}콜백 함수({1:HEX})가 알 수 없거나 잘못된 결과 값({2:HEX})을 반환했습니다.
 
-STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}NewGRF에서 할당 가능한 문자열 ID 개수보다 많은 문자열을 사용하고 있습니다.Not enough string IDs available for all NewGRFs.
+STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}NewGRF에서 할당 가능한 문자열 ID 개수보다 많은 문자열을 사용하고 있습니다.
 STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}몇몇 이름이나 텍스트가 잘못된 문자열을 표시할 수 있습니다. NewGRF의 개수를 줄이십시오.
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
