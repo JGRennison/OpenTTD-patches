@@ -179,7 +179,7 @@ int GroundVehicle<T, Type>::GetAcceleration()
 		/* We'd like to cache this, but changing cached_power has too many unwanted side-effects */
 		uint32 power_temp;
 		this->CalculatePower(power_temp, max_te, true);
-		power = power_temp * 74611;
+		power = power_temp * 746ll;
 	}
 
 
