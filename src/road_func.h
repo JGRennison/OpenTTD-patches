@@ -179,6 +179,6 @@ bool HasRoadTypesAvail(const CompanyID company, const RoadTypes rts);
 bool ValParamRoadType(const RoadType rt);
 RoadTypes GetCompanyRoadtypes(const CompanyID company);
 
-void UpdateLevelCrossing(TileIndex tile, bool sound = true);
+void UpdateLevelCrossing(TileIndex tile, bool sound = true, bool force_close = false);
 
 #endif /* ROAD_FUNC_H */
