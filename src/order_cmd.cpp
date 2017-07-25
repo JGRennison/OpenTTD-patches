@@ -1899,20 +1899,22 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				}
 
 				/* Copy over scheduled dispatch data */
-				dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
-				dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
-				for (const auto& slot : src->orders.list->GetScheduledDispatch()) {
-					dst->orders.list->AddScheduledDispatch(slot);
-				}
-				{
+				assert(dst->orders.list != NULL);
+				if (src->orders.list != NULL) {
+					dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
+					dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
+					for (const auto& slot : src->orders.list->GetScheduledDispatch()) {
+						dst->orders.list->AddScheduledDispatch(slot);
+					}
+					
 					Date start_date;
 					uint16 start_full_date_fract;
 					SchdispatchConvertToFullDateFract(
 							src->orders.list->GetScheduledDispatchStartTick(),
 							&start_date, &start_full_date_fract);
 					dst->orders.list->SetScheduledDispatchStartDate(start_date, start_full_date_fract);
+					/* Don't copy last dispatch, leave it at 0 (default) */
 				}
-				/* Don't copy last dispatch, leave it at 0 (default) */
 
 				/* Set automation bit if target has it. */
 				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {
