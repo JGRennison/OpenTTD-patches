@@ -1502,6 +1502,8 @@ STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Define the layo
 
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :Enable building rivers: {STRING2}
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :Enable building rivers outside of the scenario editor
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :Enable removing sea and rivers: {STRING2}
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :Enable removing sea and rivers outside of the scenario editor
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :News ticker: {STRING2}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Play sound for summarised news messages

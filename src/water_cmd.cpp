@@ -476,6 +476,8 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlag flags)
 		case WATER_TILE_CLEAR: {
 			if (flags & DC_NO_WATER) return_cmd_error(STR_ERROR_CAN_T_BUILD_ON_WATER);
 
+			if (!IsCanal(tile) && _game_mode != GM_EDITOR && !_settings_game.construction.enable_remove_water && !(flags & DC_ALLOW_REMOVE_WATER)) return_cmd_error(STR_ERROR_CAN_T_BUILD_ON_WATER);
+
 			Money base_cost = IsCanal(tile) ? _price[PR_CLEAR_CANAL] : _price[PR_CLEAR_WATER];
 			/* Make sure freeform edges are allowed or it's not an edge tile. */
 			if (!_settings_game.construction.freeform_edges && (!IsInsideMM(TileX(tile), 1, MapMaxX() - 1) ||
@@ -512,15 +514,17 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlag flags)
 			CommandCost ret = EnsureNoVehicleOnGround(tile);
 			if (ret.Failed()) return ret;
 
+			if (IsSlopeWithOneCornerRaised(slope)) {
+				if (_game_mode != GM_EDITOR && !_settings_game.construction.enable_remove_water && !(flags & DC_ALLOW_REMOVE_WATER)) return_cmd_error(STR_ERROR_CAN_T_BUILD_ON_WATER);
+				ret = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_WATER]);
+			} else {
+				ret = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_ROUGH]);
+			}
 			if (flags & DC_EXEC) {
 				DoClearSquare(tile);
 				MarkCanalsAndRiversAroundDirty(tile);
 			}
-			if (IsSlopeWithOneCornerRaised(slope)) {
-				return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_WATER]);
-			} else {
-				return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_ROUGH]);
-			}
+			return ret;
 		}
 
 		case WATER_TILE_LOCK: {

@@ -1721,6 +1721,7 @@ static SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("vehicle.disable_elrails"));
 			limitations->Add(new SettingEntry("construction.maximum_signal_evaluations"));
 			limitations->Add(new SettingEntry("construction.enable_build_river"));
+			limitations->Add(new SettingEntry("construction.enable_remove_water"));
 			limitations->Add(new SettingEntry("construction.road_custom_bridge_heads"));
 		}
 

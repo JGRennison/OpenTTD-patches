@@ -356,6 +356,7 @@ struct ConstructionSettings {
 	uint16 maximum_signal_evaluations;       ///< maximum number of programmable signals which may be evaluated in one pass
 	byte   simulated_wormhole_signals;       ///< simulate signals in tunnel
 	bool   enable_build_river;               ///< enable building rivers in-game
+	bool   enable_remove_water;              ///< enable removing sea and rivers in-game
 	uint8  road_custom_bridge_heads;         ///< allow construction of road custom bridge heads
 	bool   chunnel;                          ///< allow construction of tunnels under water
 
