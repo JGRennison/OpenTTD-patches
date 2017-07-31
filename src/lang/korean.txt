@@ -1419,7 +1419,8 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :새 외부 화�
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :차량 경로 보이기: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_NO           :표시 안함
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_SIMPLE       :단순
-STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :차량 경로 표시 방식: {STRING}STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 픽셀 간격의 점선
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :차량 경로 표시 방식: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 픽셀 간격의 점선
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :실선
 
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :오른쪽 클릭 매크로: {STRING}
@@ -1435,6 +1436,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :창 내부를 �
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :자동 저장: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :게임을 자동으로 저장할 간격을 선택하십시오.
+
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :저장 파일의 이름으로 {STRING} 날짜 형식을 사용합니다.
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :게임 저장 파일 이름에 사용할 날짜 형식을 선택합니다.
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :긴 (2012년 1월 1일)
@@ -1473,23 +1475,23 @@ STR_CONFIG_SETTING_DATE_WITH_TIME_NONE                          :표시 안함
 STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :연도만
 STR_CONFIG_SETTING_DATE_WITH_TIME_YM                            :연도와 달
 STR_CONFIG_SETTING_DATE_WITH_TIME_YMD                           :전체 날짜
-STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :시간표 시작 시간을 텍스트로 입력 (시간/분 모드에서만): {STRING}
-STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :시간표 시작 시간을 텍스트로 입력할지 설정합니다. 이 옵션은 분 단위로 게임 시간을 보기로 설정했을 때 사용 가능합니다.
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :배차 간격 유지를 위해 시간표 사용하기: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT                 :자동 시간표를 사용할 때 배차 간격 유지를 위해 시간표를 쓸 지 설정합니다.
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :자동 배차 간격 유지 배수: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :자동 배차 간격 조절을 할 때 한 번에 얼마만큼의 시간표 출발 시간을 조절할지
-STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :시간표에서 출발일과 도착일 표시: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :열차 시간표에서 예상 출발 & 도착 시간을 표시합니다.
-STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :자동 시간표 설정으로 설정한 시간표의 시간을 다음 값의 배수로 어림: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :자동 시간표로 설정한 시간표의 시간은 어림되지 않습니다. 1일은 74틱입니다.
-STR_CONFIG_SETTING_QUICKGOTO                                    :빠른 행선지 설정: {STRING}
-STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :경로 창을 열면 자동으로 '행선지' 버튼을 선택하여 곧바로 행선지를 지정할 수 있도록 합니다.
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :철도 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 철도의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 철도 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 철도 종류를 선택하며 '가장 많이 사용한 것'은 플레이어가 가장 많이 사용한 철도 타입을 선택합니다.
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :처음 사용 가능한 것
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :가장 최근에 개발된 철도
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :가장 많이 사용한 것
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY					:시간표 시작 시간을 텍스트로 입력 (시간/분 모드에서만): {STRING}
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT			:시간표 시작 시간을 텍스트로 입력할지 설정합니다. 이 옵션은 분 단위로 게임 시간을 보기로 설정했을 때 사용 가능합니다.
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION							:배차 간격 유지를 위해 시간표 사용하기: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT				:자동 시간표를 사용할 때 배차 간격 유지를 위해 시간표를 쓸 지 설정합니다.
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE					:자동 배차 간격 유지 배수: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT			:자동 배차 간격 조절을 할 때 한 번에 얼마만큼의 시간표 출발 시간을 조절할지
+STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE				:시간표에서 출발일과 도착일 표시: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT	:열차 시간표에서 예상 출발 & 도착 시간을 표시합니다.
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS			:자동 시간표 설정으로 설정한 시간표의 시간을 다음 값의 배수로 어림: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT	:자동 시간표로 설정한 시간표의 시간은 어림되지 않습니다. 1일은 74틱입니다.
+STR_CONFIG_SETTING_QUICKGOTO									:빠른 행선지 설정: {STRING}
+STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT							:경로 창을 열면 자동으로 '행선지' 버튼을 선택하여 곧바로 행선지를 지정할 수 있도록 합니다.
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE							:철도 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT					:게임을 새로 시작하거나 불러온 뒤에 사용할 철도의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 철도 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 철도 종류를 선택하며 '가장 많이 사용한 것'은 플레이어가 가장 많이 사용한 철도 타입을 선택합니다.
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST						:처음 사용 가능한 것
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST						:가장 최근에 개발된 철도
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED					:가장 많이 사용한 것
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :차량의 다음 진행 경로 보여주기: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :열차가 경로기반 폐색으로 진입할 수 없는 문제를 해결하기 위해 열차가 진행할 경로를 별도의 색으로 표시합니다.
