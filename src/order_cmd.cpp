@@ -1132,6 +1132,11 @@ void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord)
 static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlag flags)
 {
 	if (flags & DC_EXEC) {
+		/* Clear cheduled dispatch flag if any */
+		if (HasBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+			ClrBit(dst->vehicle_flags, VF_SCHEDULED_DISPATCH);
+		}
+
 		DeleteVehicleOrders(dst);
 		InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
@@ -1894,20 +1899,22 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				}
 
 				/* Copy over scheduled dispatch data */
-				dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
-				dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
-				for (const auto& slot : src->orders.list->GetScheduledDispatch()) {
-					dst->orders.list->AddScheduledDispatch(slot);
-				}
-				{
+				assert(dst->orders.list != NULL);
+				if (src->orders.list != NULL) {
+					dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
+					dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
+					for (const auto& slot : src->orders.list->GetScheduledDispatch()) {
+						dst->orders.list->AddScheduledDispatch(slot);
+					}
+					
 					Date start_date;
 					uint16 start_full_date_fract;
 					SchdispatchConvertToFullDateFract(
 							src->orders.list->GetScheduledDispatchStartTick(),
 							&start_date, &start_full_date_fract);
 					dst->orders.list->SetScheduledDispatchStartDate(start_date, start_full_date_fract);
+					/* Don't copy last dispatch, leave it at 0 (default) */
 				}
-				/* Don't copy last dispatch, leave it at 0 (default) */
 
 				/* Set automation bit if target has it. */
 				if (HasBit(src->vehicle_flags, VF_AUTOMATE_TIMETABLE)) {

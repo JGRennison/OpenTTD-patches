@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.20.1 (2017-07-27)
+* Scheduled dispatch:
+  * Fix hang when decloning vehicle orders.
+  * Fix crash when cloning vehicle with no orders.
+  * Improve arrival/departure time prediction in departure board.
+* Fix sending money to companies in single-player mode.
+* Fix circumstances in which PBS reservations are made across level crossings when improved level crossing safety is enabled, in edge cases involving train reversing and non-PBS signal blocks.
+* Fix incorrect unit conversion factor when calculating power and acceleration in improved breakdowns reduced power breakdowns.
+* Add Korean translations by kiwitreekor.
+* Bump trunk base from r27886 to r27891
+
 ### v0.20.0 (2017-06-25)
 * Fix excessive cost of building long rail tunnels.
 * Fix not being able to enter 00:00 as a timetable start time.
