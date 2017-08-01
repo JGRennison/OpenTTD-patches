@@ -1502,6 +1502,8 @@ STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :재정 창에 �
 
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :강 건설 활성화: {STRING}
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :시나리오 편집기 밖에서 강을 건설할 수 있게 할지 설정합니다.
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :바다와 강 제거 허용: {STRING}
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :시나리오 에디터 외부에서 바다와 강을 제거할 수 있게 할지 설정합니다.
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :뉴스 자막: {STRING}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :요약된 뉴스 메시지가 나타나면 효과음을 재생합니다.
