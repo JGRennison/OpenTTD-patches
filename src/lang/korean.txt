@@ -1740,6 +1740,8 @@ STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :지역 당국�
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :지역 당국이 임의로 도로 보수공사를 시행할 확률입니다. (0 = 하지 않음, 1000 = 최대)
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :도시 사이의 최소 거리: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :지도를 생성하고 무작위로 도시를 배치할 때 도시 사이의 최소 거리를 설정합니다.
+STR_CONFIG_SETTING_TOWN_ROAD_OVER_RAIL                          :도시가 철도 위로 다리를 지을 수 있도록 허용: {STRING}
+STR_CONFIG_SETTING_TOWN_ROAD_OVER_RAIL_HELPTEXT                 :도시가 철도 위로 다리를 지을 수 있게 할 지 설정합니다.
 
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :분배 상태를 매 {STRING}일 마다 갱신
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :다음 연결 상태를 재계산하기까지의 시간입니다. 한 번의 재계산할 때마다 그래프의 한 요소를 위한 계획을 계산합니다. 이는 이 설정의 X값에 따라 모든 그래프가 매 X일마다 갱신되는 것이 아니라는 것을 뜻합니다. 일부 요소만 재계산된다는 뜻입니다. 값이 작으면 작을 수록 CPU가 계산해야 할 횟수가 늘어납니다. 값을 크게 설정할 수록 화물 분배 상태가 새롭게 지정되는 데 더 오랜 시간이 걸립니다.
