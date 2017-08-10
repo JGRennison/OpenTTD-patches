@@ -1374,6 +1374,24 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Doppel-Klick
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Einfach-Klick (wenn hervorgehoben)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Einfach-Klick (sofort)
 
+STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :Scanne die Umgebung einer Kachel (verbesserte Anzeige bei hohen Zoomstufen): {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Zeige Geländesteigungen an: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Zeige Brücken an: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :Zeige Tunnel an: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :Zeige beim scrollen an: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :Nichts
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :Umrisse
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :Flächen mit weiß (nur 32bpp)
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :Flächen und Umrisse
+STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :Firmenfarben für Brücken und Tunnel: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :Standardmodus: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_VEGETATION         :Vegetation
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_OWNER              :Besitzer
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_INDUSTRY           :Industrien
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :Funktion des Doppelklicks: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :Keine
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :Zoome direkt auf Faktor 1x
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Öffne die Zusatzansicht
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Rechtsklick-Emulation: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Lege die Methode, die rechte Maustaste zu emulieren, fest
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Kommando+Klick
@@ -1708,6 +1726,7 @@ STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industr
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Warenverteilung
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Mitbewerber
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computerspieler
+STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Kartenmodus
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
