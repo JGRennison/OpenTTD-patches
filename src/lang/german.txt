@@ -1618,6 +1618,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 von {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :keine
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Größe von Großstädten bei Spielbeginn: {STRING}x
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Durchschnittliche Größe von Großstädten relativ zu normalen Städten bei Spielbeginn
+STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Wahrscheinlichkeit zufälliger Straßenreparaturen: {STRING}
+STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :Setze den Wert für die Wahrscheinlichkeit, dass städtische Straßen zufällig repariert werden (0 = aus, 1000 = max)
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimaler Abstand zwischen Städten: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Stelle den Mindestabstand zwischen Städten in Kacheln für die Kartenerzeugung und die zufällige Stadtgründung ein.
 STR_CONFIG_SETTING_TOWN_ROAD_OVER_RAIL                          :Städte können Brücken über Gleise bauen: {STRING}
