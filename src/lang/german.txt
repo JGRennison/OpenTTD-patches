@@ -1172,6 +1172,8 @@ STR_CONFIG_SETTING_AUTOSLOPE                                    :Landschaftsbau 
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Erlaube Erdbauarbeiten unter Gebäuden oder Infrastruktur ohne sie zu entfernen
 STR_CONFIG_SETTING_CATCHMENT                                    :Verschiedene Stationstypen haben unterschiedlich große Einzugsgebiete: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Wird diese Option eingeschaltet, besitzen unterschiedliche Stationsarten bzw. Flughäfen unterschiedlich große Einzugsgebiete
+STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :Vergrößere das Stationseinzugsgebiet: {STRING}
+STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :Vergrößere das Stationseinzugsgebiet um die angegebene Anzahl der Kacheln
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Entfernung von weiteren Straßen, Brücken usw. erlauben: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Erlaubt einfacheres Entfernen von städtischer Infrastruktur und Gebäuden
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maximale Zuglänge: {STRING}
