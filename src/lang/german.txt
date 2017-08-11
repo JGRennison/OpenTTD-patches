@@ -3974,7 +3974,17 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :wahr
 STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :falsch
 
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}Wert, der mit Fahrzeuginformation verglichen wird
+STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}Frachtart, die mit der Stationsinformation verglichen wird
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Wert für den Vergleich eingeben
+
+STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :akzeptiert
+STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :akzeptiert nicht
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :hat
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :hat nicht
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :hat weniger als
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :hat weniger als oder genau
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :hat mehr als
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :hat mehr als oder genau
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Überspringen
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Den aktuellen Auftrag überspringen und den nächsten ausführen. Strg+Klick springt zum ausgewählten Auftrag
