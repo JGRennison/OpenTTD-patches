@@ -567,8 +567,7 @@ static void CDECL HandleCrash(int signum)
 
 	const char *abort_reason = CrashLog::GetAbortCrashlogReason();
 	if (abort_reason != NULL) {
-		printf("A serious fault condition occurred in the game. The game will shut down.\n");
-		printf(abort_reason);
+		printf("A serious fault condition occurred in the game. The game will shut down.\n%s", abort_reason);
 		abort();
 	}
 
