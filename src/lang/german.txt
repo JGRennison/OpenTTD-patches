@@ -1172,6 +1172,8 @@ STR_CONFIG_SETTING_AUTOSLOPE                                    :Landschaftsbau 
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Erlaube Erdbauarbeiten unter Gebäuden oder Infrastruktur ohne sie zu entfernen
 STR_CONFIG_SETTING_CATCHMENT                                    :Verschiedene Stationstypen haben unterschiedlich große Einzugsgebiete: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Wird diese Option eingeschaltet, besitzen unterschiedliche Stationsarten bzw. Flughäfen unterschiedlich große Einzugsgebiete
+STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :Vergrößere das Stationseinzugsgebiet: {STRING}
+STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :Vergrößere das Stationseinzugsgebiet um die angegebene Anzahl der Kacheln
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Entfernung von weiteren Straßen, Brücken usw. erlauben: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Erlaubt einfacheres Entfernen von städtischer Infrastruktur und Gebäuden
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maximale Zuglänge: {STRING}
@@ -1392,6 +1394,13 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :Funktion des Do
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :Keine
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :Zoome direkt auf Faktor 1x
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Öffne die Zusatzansicht
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Zeige die Fahrzeugroute: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_NO           :Nein
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_SIMPLE       :Einfach
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Anzeigeart der Fahrzeugroute: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :gestrichelte Linien mit {COMMA} Pixel{P "" n}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :durchgängige Linien
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Rechtsklick-Emulation: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Lege die Methode, die rechte Maustaste zu emulieren, fest
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Kommando+Klick
@@ -1444,6 +1453,8 @@ STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Lege das Layout
 
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :Aktiviere das Bauen von Flüssen: {STRING}
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :Aktiviere das Bauen von Flüssen außerhalb des Szenarioeditors
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :Aktiviere das entfernen von Meeresteilen und Flüssen: {STRING}
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :Aktiviere das entfernen von Meeresteilen und Flüssen außerhalb des Szenarioeditors
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :Nachrichtenticker: {STRING}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Soundeffekte für Kurzfassungen von Nachrichten abspielen (Ticker)
@@ -1601,6 +1612,18 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Nirgends {RED}(
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Nur im Regenwald
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :überall
 
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Vorgabe für die Platzierung arktischer Bäume: {STRING}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Gebe die Art der Verteilung von Bäumen rund um die Schneegrenze um subarktischen Klima vor. Bäume werden über der Schneegrenze ausgedünnt. Die Bäume sind bis zur Schneegrenze hinab eine Mischung aus Bäumen aus dem subarktischen und dem gemäßigten Klima. Unterhalb der Schneegrenze sind alle Bäume aus dem gemäßigten Klima.
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Bereich mit subarktischen Bäumen: {STRING}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Ungefährer Bereich mit subarktischen Bäumen um die Schneegrenze herum
+
+STR_CONFIG_SETTING_TREE_GROWTH                                  :Wachstumsgeschwindigkeit der Bäume: {STRING}
+STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Lege die Rate des zufälligen Baumwachstums während des Spiels fest. Dies kann Industrien wie die Sägemühle beeinflussen, welche auf nachwachsende Bäume angewiesen sind
+STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
+STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Langsam
+STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Sehr langsam
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extrem langsam
+
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position der Werkzeugleiste: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontale Position der Bauleiste am oberen Bildschirmrand
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Position der Statuszeile: {STRING}
@@ -1724,6 +1747,7 @@ STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Öffent
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Städte
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industrien
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Warenverteilung
+STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}Bäume
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Mitbewerber
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computerspieler
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Kartenmodus
@@ -1741,10 +1765,15 @@ STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS_HELPTEXT                :Pfadsuch-Algori
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automatisches Umdrehen an Signalen: {STRING}
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Erlaube Zügen, an Signalen umzudrehen, wenn sie dort zu lange gewartet haben
 
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :Aktiviere verbesserte Brückenköpfe für Straßen: {STRING}
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Erlaube verbesserte, nichtreguläre Auf- und Abfahrten an Straßenbrücken. Dies erlaubt Abzweigungen und Kreuzungen auf flachen Brückenköpfen.
+
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Wert der Einstellung ändern
 
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Schließe benachbarte Bahnübergänge: {STRING}
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Schließt alle Bahnübergänge benachbarter paralleler Gleise wenn eines oder mehrere der Gleise befahren werden
+STR_CONFIG_SETTING_SAFER_CROSSINGS                              :Sicherere Bahnübergänge: {STRING}
+STR_CONFIG_SETTING_SAFER_CROSSINGS_HELPTEXT                     :Maßnahmen zur Verbesserung der Sicherheit von Straßenfahrzeugen auf Bahnübergängen
 
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Zahle für Reparaturen: {STRING}
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Zahle für die Reparatur der Fahrzeuge nach Pannen.
@@ -3941,6 +3970,10 @@ STR_ORDER_CONDITIONAL_AGE                                       :Fahrzeugalter (
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Wartung erforderlich
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Immer
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Verbleibende Laufzeit (Jahre)
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Wartende Fracht
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Akzeptierte Fracht
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Freie Bahnsteige
+STR_ORDER_CONDITIONAL_PERCENT                                   :Anteil der Halte in Prozent
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Die Bedingung, die erfüllt werden muss
 STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS                         :gleich
@@ -3953,7 +3986,17 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :wahr
 STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :falsch
 
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}Wert, der mit Fahrzeuginformation verglichen wird
+STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}Frachtart, die mit der Stationsinformation verglichen wird
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Wert für den Vergleich eingeben
+
+STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :akzeptiert
+STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :akzeptiert nicht
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :hat
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :hat nicht
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :hat weniger als
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :hat weniger als oder genau
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :hat mehr als
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :hat mehr als oder genau
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Überspringen
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Den aktuellen Auftrag überspringen und den nächsten ausführen. Strg+Klick springt zum ausgewählten Auftrag
