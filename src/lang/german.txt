@@ -1605,6 +1605,18 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Nirgends {RED}(
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Nur im Regenwald
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :überall
 
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Vorgabe für die Platzierung arktischer Bäume: {STRING}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Gebe die Art der Verteilung von Bäumen rund um die Schneegrenze um subarktischen Klima vor. Bäume werden über der Schneegrenze ausgedünnt. Die Bäume sind bis zur Schneegrenze hinab eine Mischung aus Bäumen aus dem subarktischen und dem gemäßigten Klima. Unterhalb der Schneegrenze sind alle Bäume aus dem gemäßigten Klima.
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Bereich mit subarktischen Bäumen: {STRING}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Ungefährer Bereich mit subarktischen Bäumen um die Schneegrenze herum
+
+STR_CONFIG_SETTING_TREE_GROWTH                                  :Wachstumsgeschwindigkeit der Bäume: {STRING}
+STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Lege die Rate des zufälligen Baumwachstums während des Spiels fest. Dies kann Industrien wie die Sägemühle beeinflussen, welche auf nachwachsende Bäume angewiesen sind
+STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
+STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Langsam
+STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Sehr langsam
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extrem langsam
+
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position der Werkzeugleiste: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontale Position der Bauleiste am oberen Bildschirmrand
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Position der Statuszeile: {STRING}
@@ -1728,6 +1740,7 @@ STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Öffent
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Städte
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industrien
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Warenverteilung
+STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}Bäume
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Mitbewerber
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computerspieler
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Kartenmodus
