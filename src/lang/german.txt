@@ -1765,6 +1765,9 @@ STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS_HELPTEXT                :Pfadsuch-Algori
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automatisches Umdrehen an Signalen: {STRING}
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Erlaube Zügen, an Signalen umzudrehen, wenn sie dort zu lange gewartet haben
 
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :Aktiviere verbesserte Brückenköpfe für Straßen: {STRING}
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Erlaube verbesserte, nichtreguläre Auf- und Abfahrten an Straßenbrücken. Dies erlaubt Abzweigungen und Kreuzungen auf flachen Brückenköpfen.
+
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Wert der Einstellung ändern
 
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Schließe benachbarte Bahnübergänge: {STRING}
