@@ -46,7 +46,7 @@ static void OpenBankFile(const char *filename)
 		/* Corrupt sample data? Just leave the allocated memory as those tell
 		 * there is no sound to play (size = 0 due to calloc). Not allocating
 		 * the memory disables valid NewGRFs that replace sounds. */
-		DEBUG(misc, 6, "Incorrect number of sounds in '%s', ignoring.", filename);
+		DEBUG(sound, 6, "Incorrect number of sounds in '%s', ignoring.", filename);
 		return;
 	}
 
@@ -152,7 +152,7 @@ static bool SetBankSource(MixerChannel *mc, const SoundEntry *sound)
 
 void InitializeSound()
 {
-	DEBUG(misc, 1, "Loading sound effects...");
+	DEBUG(sound, 1, "Loading sound effects...");
 	OpenBankFile(BaseSounds::GetUsedSet()->files->filename);
 }
 
