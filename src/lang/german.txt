@@ -1772,6 +1772,8 @@ STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Wert der
 
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Schließe benachbarte Bahnübergänge: {STRING}
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Schließt alle Bahnübergänge benachbarter paralleler Gleise wenn eines oder mehrere der Gleise befahren werden
+STR_CONFIG_SETTING_SAFER_CROSSINGS                              :Sicherere Bahnübergänge: {STRING}
+STR_CONFIG_SETTING_SAFER_CROSSINGS_HELPTEXT                     :Maßnahmen zur Verbesserung der Sicherheit von Straßenfahrzeugen auf Bahnübergängen
 
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Zahle für Reparaturen: {STRING}
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Zahle für die Reparatur der Fahrzeuge nach Pannen.
