@@ -3943,6 +3943,10 @@ STR_ORDER_CONDITIONAL_AGE                                       :Fahrzeugalter (
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Wartung erforderlich
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Immer
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Verbleibende Laufzeit (Jahre)
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Wartende Fracht
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Akzeptierte Fracht
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Freie Bahnsteige
+STR_ORDER_CONDITIONAL_PERCENT                                   :Anteil der Halte in Prozent
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Die Bedingung, die erfüllt werden muss
 STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS                         :gleich
