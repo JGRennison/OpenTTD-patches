@@ -1366,7 +1366,8 @@ void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, co
 		}
 		default:
 			DEBUG(net, 0, "[server] received unknown chat destination type %d. Doing broadcast instead", desttype);
-			/* FALL THROUGH */
+			FALLTHROUGH;
+
 		case DESTTYPE_BROADCAST:
 		case DESTTYPE_BROADCAST_SS:
 			FOR_ALL_CLIENT_SOCKETS(cs) {
@@ -1404,7 +1405,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_CHAT(Packet *p)
 	switch (action) {
 		case NETWORK_ACTION_GIVE_MONEY:
 			if (!Company::IsValidID(ci->client_playas)) break;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 		case NETWORK_ACTION_CHAT:
 		case NETWORK_ACTION_CHAT_CLIENT:
 		case NETWORK_ACTION_CHAT_COMPANY:

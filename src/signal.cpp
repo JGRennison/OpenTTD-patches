@@ -610,7 +610,8 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 					_tbdset.Add(tile, INVALID_DIAGDIR); // start from depot inside
 					break;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case MP_STATION:
 			case MP_ROAD:
 				if ((TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & _enterdir_to_trackbits[dir]) != TRACK_BIT_NONE) {
@@ -619,7 +620,8 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 					_tbdset.Add(tile + TileOffsByDiagDir(dir), ReverseDiagDir(dir));
 					break;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			default:
 				/* jump to next tile */
 				tile = tile + TileOffsByDiagDir(dir);

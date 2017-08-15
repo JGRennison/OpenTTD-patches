@@ -1135,10 +1135,12 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 						if (tbl->show_on_map && tbl->type == _smallmap_industry_highlight) {
 							legend_colour = _smallmap_industry_highlight_state ? PC_WHITE : PC_BLACK;
 						}
-						/* FALL THROUGH */
+						FALLTHROUGH;
+
 					case SMT_LINKSTATS:
 						SetDParam(0, tbl->legend);
-						/* FALL_THROUGH */
+						FALLTHROUGH;
+
 					case SMT_OWNER:
 						if (this->map_type != SMT_OWNER || tbl->company != INVALID_COMPANY) {
 							if (this->map_type == SMT_OWNER) SetDParam(0, tbl->company);
@@ -1152,7 +1154,8 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 							}
 							break;
 						}
-						/* FALL_THROUGH */
+						FALLTHROUGH;
+
 					default:
 						if (this->map_type == SMT_CONTOUR) SetDParam(0, tbl->height * TILE_HEIGHT_STEP);
 						/* Anything that is not an industry or a company is using normal process */
@@ -1373,7 +1376,6 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 			break;
 
 		case WID_SM_ENABLE_ALL:
-			/* FALL THROUGH */
 		case WID_SM_DISABLE_ALL: {
 			LegendAndColour *tbl = NULL;
 			switch (this->map_type) {
