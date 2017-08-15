@@ -41,7 +41,7 @@ FontCache::FontCache(FontSize fs) : parent(FontCache::Get(fs)), fs(fs), height(_
 		ascender(_default_font_ascender[fs]), descender(_default_font_ascender[fs] - _default_font_height[fs]),
 		units_per_em(1)
 {
-	assert(parent == NULL || this->fs == parent->fs);
+	assert(this->parent == NULL || this->fs == this->parent->fs);
 	FontCache::caches[this->fs] = this;
 	Layouter::ResetFontCache(this->fs);
 }
@@ -49,7 +49,7 @@ FontCache::FontCache(FontSize fs) : parent(FontCache::Get(fs)), fs(fs), height(_
 /** Clean everything up. */
 FontCache::~FontCache()
 {
-	assert(this->fs == parent->fs);
+	assert(this->fs == this->parent->fs);
 	FontCache::caches[this->fs] = this->parent;
 	Layouter::ResetFontCache(this->fs);
 }
@@ -126,7 +126,7 @@ void SpriteFontCache::InitializeUnicodeGlyphMap()
 	SpriteID base;
 	switch (this->fs) {
 		default: NOT_REACHED();
-		case FS_MONO:   // Use normal as default for mono spaced font, i.e. FALL THROUGH
+		case FS_MONO:   // Use normal as default for mono spaced font
 		case FS_NORMAL: base = SPR_ASCII_SPACE;       break;
 		case FS_SMALL:  base = SPR_ASCII_SPACE_SMALL; break;
 		case FS_LARGE:  base = SPR_ASCII_SPACE_BIG;   break;
@@ -474,7 +474,7 @@ static bool GetFontAAState(FontSize size)
 
 const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 {
-	if ((key & SPRITE_GLYPH) != 0) return parent->GetGlyph(key);
+	if ((key & SPRITE_GLYPH) != 0) return this->parent->GetGlyph(key);
 
 	/* Check for the glyph in our cache */
 	GlyphEntry *glyph = this->GetGlyphPtr(key);

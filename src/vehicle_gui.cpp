@@ -843,8 +843,8 @@ struct RefitWindow : public Window {
 				Vehicle *v = Vehicle::Get(this->window_number);
 				this->selected_vehicle = v->index;
 				this->num_vehicles = UINT8_MAX;
-				/* FALL THROUGH */
 			}
+			FALLTHROUGH;
 
 			case 2: { // The vehicle selection has changed; rebuild the entire list.
 				if (!gui_scope) break;
@@ -869,8 +869,8 @@ struct RefitWindow : public Window {
 					this->information_width = max_width;
 					this->ReInit();
 				}
-				/* FALL THROUGH */
 			}
+			FALLTHROUGH;
 
 			case 1: // A new cargo has been selected.
 				if (!gui_scope) break;
@@ -931,8 +931,8 @@ struct RefitWindow : public Window {
 					if (_ctrl_pressed) this->num_vehicles = UINT8_MAX;
 					break;
 				}
-				/* FALL THROUGH */
 			}
+			FALLTHROUGH;
 
 			default:
 				/* Clear the selection. */
@@ -966,8 +966,8 @@ struct RefitWindow : public Window {
 				this->InvalidateData(1);
 
 				if (click_count == 1) break;
-				/* FALL THROUGH */
 			}
+			FALLTHROUGH;
 
 			case WID_VR_REFIT: // refit button
 				if (this->cargo != NULL) {
@@ -2719,8 +2719,7 @@ public:
 						str = STR_VEHICLE_STATUS_LEAVING;
 						break;
 					}
-					/* FALL THROUGH, if aircraft. Does this even happen? */
-
+					FALLTHROUGH;
 				default:
 					if (v->GetNumManualOrders() == 0) {
 						str = STR_VEHICLE_STATUS_NO_ORDERS_VEL;
