@@ -263,8 +263,9 @@
  *  193   26802
  *  194   26881   1.5.x, 1.6.0
  *  195   27572   1.6.x
+ *  196   27778   1.7.x
  */
-extern const uint16 SAVEGAME_VERSION = 195; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 196; ///< Current savegame version of OpenTTD.
 
 SavegameType _savegame_type; ///< type of savegame we are loading
 FileToSaveLoad _file_to_saveload; ///< File to save or load in the openttd loop.
@@ -1484,6 +1485,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 	return 0;
 }
 
+#ifdef OTTD_ASSERT
+
 /**
  * Check whether the variable size of the variable in the saveload configuration
  * matches with the actual variable size.
@@ -1524,9 +1527,13 @@ static bool IsVariableSizeRight(const SaveLoad *sld)
 	}
 }
 
+#endif /* OTTD_ASSERT */
+
 bool SlObjectMember(void *ptr, const SaveLoad *sld)
 {
+#ifdef OTTD_ASSERT
 	assert(IsVariableSizeRight(sld));
+#endif
 
 	VarType conv = GB(sld->conv, 0, 8);
 	switch (sld->cmd) {
@@ -1987,7 +1994,7 @@ struct LZOLoadFilter : LoadFilter {
 		byte out[LZO_BUFFER_SIZE + LZO_BUFFER_SIZE / 16 + 64 + 3 + sizeof(uint32) * 2];
 		uint32 tmp[2];
 		uint32 size;
-		lzo_uint len;
+		lzo_uint len = ssize;
 
 		/* Read header*/
 		if (this->chain->Read((byte*)tmp, sizeof(tmp)) != sizeof(tmp)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE, "File read failed");
@@ -2009,7 +2016,8 @@ struct LZOLoadFilter : LoadFilter {
 		if (tmp[0] != lzo_adler32(0, out, size + sizeof(uint32))) SlErrorCorrupt("Bad checksum");
 
 		/* Decompress */
-		lzo1x_decompress_safe(out + sizeof(uint32) * 1, size, buf, &len, NULL);
+		int ret = lzo1x_decompress_safe(out + sizeof(uint32) * 1, size, buf, &len, NULL);
+		if (ret != LZO_E_OK) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 		return len;
 	}
 };
@@ -2585,7 +2593,7 @@ static SaveOrLoadResult DoSave(SaveFilter *writer, bool threaded)
 	SlSaveChunks();
 
 	SaveFileStart();
-	if (!threaded || !ThreadObject::New(&SaveFileToDiskThread, NULL, &_save_thread)) {
+	if (!threaded || !ThreadObject::New(&SaveFileToDiskThread, NULL, &_save_thread, "ottd:savegame")) {
 		if (threaded) DEBUG(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
 
 		SaveOrLoadResult result = SaveFileToDisk(false);
