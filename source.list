@@ -344,6 +344,7 @@ story_type.h
 strgen/strgen.h
 string_base.h
 string_func.h
+string_func_extra.h
 string_type.h
 stringfilter_type.h
 strings_func.h

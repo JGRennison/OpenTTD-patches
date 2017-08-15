@@ -27,7 +27,6 @@
 #define STRING_FUNC_H
 
 #include <stdarg.h>
-#include <string>
 
 #include "core/bitmath_func.hpp"
 #include "string_type.h"
@@ -54,13 +53,6 @@ char *str_validate_intl(char *str, const char *last, StringValidationSettings se
 static inline void str_validate(char *str, const char *last, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
 {
 	*str_validate_intl(str, last, settings) = '\0';
-}
-
-static inline void str_validate(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
-{
-	if (str.empty()) return;
-	char *buf = const_cast<char *>(str.c_str());
-	str.resize(str_validate_intl(buf, buf + str.size(), settings) - buf);
 }
 
 void ValidateString(const char *str);
