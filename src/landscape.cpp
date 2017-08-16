@@ -34,6 +34,7 @@
 #include "pathfinder/npf/aystar.h"
 #include "saveload/saveload.h"
 #include "3rdparty/cpp-btree/btree_set.h"
+#include "scope_info.h"
 #include <deque>
 
 #include "table/strings.h"
@@ -746,6 +747,8 @@ void RunTileLoop()
 	TileIndex tile = _cur_tileloop_tile;
 	/* The LFSR cannot have a zeroed state. */
 	assert(tile != 0);
+
+	SCOPE_INFO_FMT([&], "RunTileLoop: tile: %dx%d", TileX(tile), TileY(tile));
 
 	/* Manually update tile 0 every 256 ticks - the LFSR never iterates over it itself.  */
 	if (_tick_counter % 256 == 0) {
