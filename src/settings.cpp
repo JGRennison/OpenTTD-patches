@@ -1392,6 +1392,7 @@ static bool ImprovedBreakdownsSettingChanged(int32 p1)
 static bool DayLengthChanged(int32 p1)
 {
 	SetScaledTickVariables();
+	MarkWholeScreenDirty();
 	return true;
 }
 
