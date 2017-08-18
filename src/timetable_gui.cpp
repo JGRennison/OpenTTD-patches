@@ -26,6 +26,7 @@
 #include "settings_type.h"
 #include "viewport_func.h"
 #include "schdispatch.h"
+#include "vehiclelist.h"
 
 #include "widgets/timetable_widget.h"
 
@@ -330,6 +331,12 @@ struct TimetableWindow : Window {
 		}
 	}
 
+	virtual EventState OnCTRLStateChange() OVERRIDE
+	{
+		this->UpdateSelectionStates();
+		this->SetDirty();
+		return ES_NOT_HANDLED;
+	}
 
 	virtual void OnPaint()
 	{
@@ -363,6 +370,7 @@ struct TimetableWindow : Window {
 			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders.list == NULL || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 			this->SetWidgetDisabledState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
 			this->EnableWidget(WID_VT_AUTOMATE);
+			this->EnableWidget(WID_VT_ADD_VEH_GROUP);
 		} else {
 			this->DisableWidget(WID_VT_START_DATE);
 			this->DisableWidget(WID_VT_CHANGE_TIME);
@@ -374,6 +382,7 @@ struct TimetableWindow : Window {
 			this->DisableWidget(WID_VT_AUTOMATE);
 			this->DisableWidget(WID_VT_AUTO_SEPARATION);
 			this->DisableWidget(WID_VT_SHARED_ORDER_LIST);
+			this->DisableWidget(WID_VT_ADD_VEH_GROUP);
 		}
 
 		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
@@ -700,6 +709,11 @@ struct TimetableWindow : Window {
 			case WID_VT_SHARED_ORDER_LIST:
 				ShowVehicleListWindow(v);
 				break;
+
+			case WID_VT_ADD_VEH_GROUP: {
+				ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+				break;
+			}
 		}
 
 		this->SetDirty();
@@ -747,6 +761,11 @@ struct TimetableWindow : Window {
 				}
 				break;
 			}
+
+			case WID_VT_ADD_VEH_GROUP: {
+				DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), NULL, str);
+				break;
+			}
 		}
 	}
 
@@ -763,6 +782,7 @@ struct TimetableWindow : Window {
 	{
 		this->GetWidget<NWidgetStacked>(WID_VT_ARRIVAL_DEPARTURE_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_VT_EXPECTED_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : 1);
+		this->GetWidget<NWidgetStacked>(WID_VT_SEL_SHARED)->SetDisplayedPlane(this->vehicle->owner == _local_company && _ctrl_pressed ? 1 : 0);
 	}
 
 	virtual void OnFocus(Window *previously_focused_window)
@@ -830,7 +850,10 @@ static const NWidgetPart _nested_timetable_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL, NC_EQUALSIZE),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VT_SHARED_ORDER_LIST), SetFill(0, 1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VT_SEL_SHARED),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VT_SHARED_ORDER_LIST), SetFill(0, 1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_ADD_VEH_GROUP), SetFill(0, 1), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
+			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY), SetFill(0, 1),
 		EndContainer(),

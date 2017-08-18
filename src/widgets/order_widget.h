@@ -43,7 +43,9 @@ enum OrderWidgets {
 	WID_O_SEL_TOP_ROW_GROUNDVEHICLE, ///< #NWID_SELECTION widget for the top row of the 'your train' order window.
 	WID_O_SEL_TOP_ROW,               ///< #NWID_SELECTION widget for the top row of the 'your non-trains' order window.
 	WID_O_SEL_BOTTOM_MIDDLE,         ///< #NWID_SELECTION widget for the middle part of the bottom row of the 'your train' order window.
+	WID_O_SEL_SHARED,                ///< #NWID_SELECTION widget for WID_O_SHARED_ORDER_LIST and WID_O_ADD_VEH_GROUP
 	WID_O_SHARED_ORDER_LIST,         ///< Open list of shared vehicles.
+	WID_O_ADD_VEH_GROUP,             ///< Add single vehicle to new group button.
 	WID_O_SEL_OCCUPANCY,             ///< #NWID_SELECTION widget for the occupancy list panel.
 	WID_O_OCCUPANCY_LIST,            ///< Occupancy list panel.
 	WID_O_OCCUPANCY_TOGGLE,          ///< Toggle display of occupancy measures.

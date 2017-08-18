@@ -30,6 +30,7 @@
 #include "hotkeys.h"
 #include "aircraft.h"
 #include "engine_func.h"
+#include "vehiclelist.h"
 
 #include "widgets/order_widget.h"
 
@@ -1021,6 +1022,10 @@ private:
 		/* WID_O_SEL_BOTTOM_MIDDLE */
 		DP_BOTTOM_MIDDLE_DELETE       = 0, ///< Display 'delete' in the middle button of the bottom row of the vehicle order window.
 		DP_BOTTOM_MIDDLE_STOP_SHARING = 1, ///< Display 'stop sharing' in the middle button of the bottom row of the vehicle order window.
+
+		/* WID_O_SEL_SHARED */
+		DP_SHARED_LIST       = 0, ///< Display shared order list button
+		DP_SHARED_VEH_GROUP  = 1, ///< Display add veh to new group button
 	};
 
 	int selected_order;
@@ -1032,6 +1037,7 @@ private:
 	bool can_do_autorefit; ///< Vehicle chain can be auto-refitted.
 	StringID cargo_names_list[NUM_CARGO + 1];
 	uint32 cargo_bitmask;
+	int query_text_widget; ///< widget which most recently called ShowQueryString
 
 	/**
 	 * Return the memorised selected order.
@@ -1490,6 +1496,12 @@ public:
 		}
 	}
 
+	virtual EventState OnCTRLStateChange() OVERRIDE
+	{
+		this->UpdateButtonState();
+		return ES_NOT_HANDLED;
+	}
+
 	void UpdateButtonState()
 	{
 		if (this->vehicle->owner != _local_company) return; // No buttons are displayed with competitor order windows.
@@ -1656,6 +1668,8 @@ public:
 					break;
 			}
 		}
+
+		this->GetWidget<NWidgetStacked>(WID_O_SEL_SHARED)->SetDisplayedPlane(_ctrl_pressed ? DP_SHARED_VEH_GROUP : DP_SHARED_LIST);
 
 		/* Disable list of vehicles with the same shared orders if there is no list */
 		this->SetWidgetDisabledState(WID_O_SHARED_ORDER_LIST, !(shared_orders || _settings_client.gui.enable_single_veh_shared_order_gui));
@@ -1973,6 +1987,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
 				uint value = order->GetConditionValue();
 				if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value);
+				this->query_text_widget = WID_O_COND_VALUE;
 				SetDParam(0, value);
 				ShowQueryString(STR_JUST_INT, STR_ORDER_CONDITIONAL_VALUE_CAPT, 5, this, CS_NUMERAL, QSF_NONE);
 				break;
@@ -1981,6 +1996,12 @@ public:
 			case WID_O_SHARED_ORDER_LIST:
 				ShowVehicleListWindow(this->vehicle);
 				break;
+
+			case WID_O_ADD_VEH_GROUP: {
+				this->query_text_widget = WID_O_ADD_VEH_GROUP;
+				ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+				break;
+			}
 
 			case WID_O_OCCUPANCY_TOGGLE:
 				ToggleWidgetLoweredState(WID_O_OCCUPANCY_TOGGLE);
@@ -1992,7 +2013,7 @@ public:
 
 	virtual void OnQueryTextFinished(char *str) OVERRIDE
 	{
-		if (!StrEmpty(str)) {
+		if (this->query_text_widget == WID_O_COND_VALUE && !StrEmpty(str)) {
 			VehicleOrderID sel = this->OrderGetSel();
 			uint value = atoi(str);
 
@@ -2011,6 +2032,10 @@ public:
 					break;
 			}
 			DoCommandP(this->vehicle->tile, this->vehicle->index + (sel << 20), MOF_COND_VALUE | Clamp(value, 0, 2047) << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+		}
+
+		if (this->query_text_widget == WID_O_ADD_VEH_GROUP) {
+			DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), NULL, str);
 		}
 	}
 
@@ -2284,7 +2309,10 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_SHARED),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_ADD_VEH_GROUP), SetMinimalSize(12, 12), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
+		EndContainer(),
 	EndContainer(),
 
 	/* Second button row. */
@@ -2368,7 +2396,10 @@ static const NWidgetPart _nested_orders_widgets[] = {
 		EndContainer(),
 
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_SHARED),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_ADD_VEH_GROUP), SetMinimalSize(12, 12), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
+		EndContainer(),
 	EndContainer(),
 
 	/* Second button row. */

@@ -4469,6 +4469,8 @@ STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Show occ
 STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Order occupancy - this shows running averages of recent occupancy levels when leaving a station, for all vehicles sharing these orders
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
+STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}Create group from single vehicle
+
 # String parts to build the order string
 STR_ORDER_GO_TO_WAYPOINT                                        :Go via {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Go non-stop via {WAYPOINT}
@@ -5723,6 +5725,7 @@ STR_ORANGE_STRING1_LTBLUE                                       :{ORANGE}{STRING
 STR_TINY_BLACK_HEIGHT                                           :{TINY_FONT}{BLACK}{HEIGHT}
 STR_TINY_BLACK_VEHICLE                                          :{TINY_FONT}{BLACK}{VEHICLE}
 STR_TINY_RIGHT_ARROW                                            :{TINY_FONT}{RIGHT_ARROW}
+STR_BLACK_PLUS                                                  :{BLACK}+
 
 STR_WHITE                                                       :{WHITE}
 STR_BLACK                                                       :{BLACK}
