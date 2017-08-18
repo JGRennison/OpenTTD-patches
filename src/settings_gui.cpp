@@ -1599,6 +1599,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
 			interface->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
+			interface->Add(new SettingEntry("gui.enable_single_veh_shared_order_gui"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));

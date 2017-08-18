@@ -1658,7 +1658,7 @@ public:
 		}
 
 		/* Disable list of vehicles with the same shared orders if there is no list */
-		this->SetWidgetDisabledState(WID_O_SHARED_ORDER_LIST, !shared_orders);
+		this->SetWidgetDisabledState(WID_O_SHARED_ORDER_LIST, !(shared_orders || _settings_client.gui.enable_single_veh_shared_order_gui));
 
 		this->GetWidget<NWidgetStacked>(WID_O_SEL_OCCUPANCY)->SetDisplayedPlane(IsWidgetLowered(WID_O_OCCUPANCY_TOGGLE) ? 0 : SZSP_NONE);
 

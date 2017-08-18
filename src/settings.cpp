@@ -1169,6 +1169,17 @@ static bool SimulatedWormholeSignalsChanged(int32 p1)
 	return true;
 }
 
+static bool EnableSingleVehSharedOrderGuiChanged(int32)
+{
+	for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {
+		InvalidateWindowClassesData(GetWindowClassForVehicleType(type), 0);
+	}
+	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
+	InvalidateWindowClassesData(WC_VEHICLE_ORDERS, 0);
+
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {

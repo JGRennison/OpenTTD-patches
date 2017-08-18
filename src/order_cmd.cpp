@@ -37,6 +37,7 @@
 #include "cheat_type.h"
 #include "viewport_func.h"
 #include "order_cmd.h"
+#include "vehiclelist.h"
 
 #include "table/strings.h"
 
@@ -1909,7 +1910,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					for (const auto& slot : src->orders.list->GetScheduledDispatch()) {
 						dst->orders.list->AddScheduledDispatch(slot);
 					}
-					
+
 					Date start_date;
 					uint16 start_full_date_fract;
 					SchdispatchConvertToFullDateFract(
@@ -2157,10 +2158,13 @@ void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indic
 		/* Remove ourself from the shared order list. */
 		v->RemoveFromShared();
 		v->orders.list = NULL;
-	} else if (v->orders.list != NULL) {
-		/* Remove the orders */
-		v->orders.list->FreeChain(keep_orderlist);
-		if (!keep_orderlist) v->orders.list = NULL;
+	} else {
+		DeleteWindowById(GetWindowClassForVehicleType(v->type), VehicleListIdentifier(VL_SHARED_ORDERS, v->type, v->owner, v->index).Pack());
+		if (v->orders.list != NULL) {
+			/* Remove the orders */
+			v->orders.list->FreeChain(keep_orderlist);
+			if (!keep_orderlist) v->orders.list = NULL;
+		}
 	}
 
 	if (reset_order_indices) {

@@ -1923,6 +1923,9 @@ public:
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
 			this->vehicles.ForceRebuild();
+			if (this->vli.type == VL_SHARED_ORDERS && !_settings_client.gui.enable_single_veh_shared_order_gui && this->vehicles.Length() == 1) {
+				delete this;
+			}
 		} else {
 			this->vehicles.ForceResort();
 		}
