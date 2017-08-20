@@ -243,7 +243,7 @@ STR_TOOLTIP_SHADE                                               :{BLACK}Fenster 
 STR_TOOLTIP_DEBUG                                               :{BLACK}Zeige Daten für NewGRF-Fehlerbeseitigung
 STR_TOOLTIP_DEFSIZE                                             :{BLACK}Standardgröße des Fensters wieder herstellen. Strg+Klick um die aktuelle Größe als Standard zu speichern
 STR_TOOLTIP_STICKY                                              :{BLACK}Fenster wird nicht durch die "Schließe alle Fenster"-Taste geschlossen. Strg+Klick, um den Status als Standard zu speichern
-STR_TOOLTIP_RESIZE                                              :{BLACK}Klicken und Ziehen zum Ändern der Größe des Fensters
+STR_TOOLTIP_RESIZE                                              :{BLACK}Klicken und Ziehen zum Ändern der Fenstergröße
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Zwischen Fenstergrößen umschalten
 STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Bildlaufleiste: In der Liste auf- und abwärts blättern
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Bildlaufleiste: In der Liste nach links und rechts blättern
@@ -274,6 +274,7 @@ STR_MEASURE_LENGTH                                              :{BLACK}Länge: 
 STR_MEASURE_AREA                                                :{BLACK}Gebiet: {NUM} × {NUM}
 STR_MEASURE_LENGTH_HEIGHTDIFF                                   :{BLACK}Länge: {NUM}{}Höhenunterschied: {HEIGHT}
 STR_MEASURE_AREA_HEIGHTDIFF                                     :{BLACK}Gebiet: {NUM} × {NUM}{}Höhenunterschied: {HEIGHT}
+STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}Manhattan-Distanz: {NUM}{}Flug-Distanz: {NUM}{}Entfernung von der nächsten Ecke: {NUM}{}Höhe über N.N.: {HEIGHT}{}Höhendifferenz: {HEIGHT}
 
 
 # These are used in buttons
@@ -297,6 +298,7 @@ STR_SORT_BY_VALUE                                               :Wert
 STR_SORT_BY_LENGTH                                              :Länge
 STR_SORT_BY_LIFE_TIME                                           :Verbleibende Betriebsdauer
 STR_SORT_BY_TIMETABLE_DELAY                                     :Verspätung
+STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :Durchschnittliche Auftragsauslastung
 STR_SORT_BY_FACILITY                                            :Stationsart
 STR_SORT_BY_WAITING_TOTAL                                       :Insgesamt wartende Fracht
 STR_SORT_BY_WAITING_AVAILABLE                                   :Verfügbare, wartende Fracht
@@ -329,7 +331,7 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Zeigt di
 STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Zeigt die von einem Spielskript festgelegten Ziele an
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Diagramme anzeigen
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Firmentabelle oder Punktestand anzeigen
-STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Liste aller Industrien oder Errichtung und Finanzierung einer neuen Industrie
+STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Liste aller Industrien anzeigen, sowie Erkundung von Rohstoffen oder Finanzierung einer neuen Industrie
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Zuglisten der Firmen anzeigen. Strg+Klick wechselt zwischen einfacher und erweiterter Liste
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Fahrzeuglisten der Firmen anzeigen. Strg+Klick wechselt zwischen einfacher und erweiterter Liste
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Schiffslisten der Firmen anzeigen. Strg+Klick wechselt zwischen einfacher und erweiterter Liste
@@ -361,6 +363,7 @@ STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Straße 
 STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Bäume pflanzen. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Schild aufstellen
 STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Objekt platzieren. Shift schaltet zwischen Bauen und Kostenvoranschlag um
+STR_SCENEDIT_TOOLBAR_PLACE_HOUSE                                :{BLACK}Platziere Gebäude
 
 ############ range for SE file menu starts
 STR_SCENEDIT_FILE_MENU_SAVE_SCENARIO                            :Szenario speichern
@@ -403,6 +406,7 @@ STR_MAP_MENU_MAP_OF_WORLD                                       :Weltkarte
 STR_MAP_MENU_EXTRA_VIEW_PORT                                    :Zusatzansicht
 STR_MAP_MENU_LINGRAPH_LEGEND                                    :Frachtverbindungen
 STR_MAP_MENU_SIGN_LIST                                          :Schilderliste
+STR_MAP_MENU_PLAN_LIST                                          :Planliste
 
 ############ range for town menu starts
 STR_TOWN_MENU_TOWN_DIRECTORY                                    :Städteverzeichnis
@@ -713,12 +717,12 @@ STR_SMALLMAP_TYPE_OWNERS                                        :Eigentümer
 STR_SMALLMAP_TOOLTIP_SHOW_LAND_CONTOURS_ON_MAP                  :{BLACK}Höhenlinien auf der Weltkarte anzeigen
 STR_SMALLMAP_TOOLTIP_SHOW_VEHICLES_ON_MAP                       :{BLACK}Fahrzeuge auf der Weltkarte anzeigen
 STR_SMALLMAP_TOOLTIP_SHOW_INDUSTRIES_ON_MAP                     :{BLACK}Industrien auf der Weltkarte anzeigen
-STR_SMALLMAP_TOOLTIP_SHOW_LINK_STATS_ON_MAP                     :{BLACK}Zeige Frachtverbindungen auf Karte
+STR_SMALLMAP_TOOLTIP_SHOW_LINK_STATS_ON_MAP                     :{BLACK}Frachtverbindungen auf der Weltkarte anzeigen
 STR_SMALLMAP_TOOLTIP_SHOW_TRANSPORT_ROUTES_ON                   :{BLACK}Transportwege auf der Weltkarte anzeigen
 STR_SMALLMAP_TOOLTIP_SHOW_VEGETATION_ON_MAP                     :{BLACK}Vegetation auf der Weltkarte anzeigen
 STR_SMALLMAP_TOOLTIP_SHOW_LAND_OWNERS_ON_MAP                    :{BLACK}Landeigentümer auf der Weltkarte anzeigen
 STR_SMALLMAP_TOOLTIP_INDUSTRY_SELECTION                         :{BLACK}Ein Mausklick auf eine der Industriearten zeigt diese auf der Karte an bzw. blendet sie wieder aus. Bei Strg+Klick wird nur die ausgewählte Industrieart angezeigt, alle anderen werden ausgeblendet. Ein weiteres Mal Strg+Klick zeigt wieder alle Industrien an.
-STR_SMALLMAP_TOOLTIP_COMPANY_SELECTION                          :{BLACK}Anzeigeeigenschaften mit Klick auf Firma ändern. Strg+Klick deaktiviert alle Firmen außer die ausgewählte. Wiederholtes Strg+Klick aktiviert alle Firmen
+STR_SMALLMAP_TOOLTIP_COMPANY_SELECTION                          :{BLACK}Anzeigeeigenschaften mit Klick auf Firma ändern. Strg+Klick deaktiviert alle Firmen außer der ausgewählten. Wiederholtes Strg+Klick aktiviert alle Firmen
 STR_SMALLMAP_TOOLTIP_CARGO_SELECTION                            :{BLACK}Klick auf eine Fracht ändert die Anzeige der Eigenschaften. Strg+Klick zeigt nur die ausgewählte Fracht. Nochmaliger Strg+Klick wählt alle Frachtarten
 
 STR_SMALLMAP_LEGENDA_ROADS                                      :{TINY_FONT}{BLACK}Straßen
@@ -756,6 +760,7 @@ STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STR
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
 STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHITE}{TOWN}
+STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Screenshot
 STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}Alles ausblenden
 STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}Alles einblenden
 STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}Zeige Höhe
@@ -771,6 +776,7 @@ STR_SMALLMAP_TOOLTIP_ENABLE_ALL_CARGOS                          :{BLACK}Zeige al
 STR_STATUSBAR_TOOLTIP_SHOW_LAST_NEWS                            :{BLACK}Letzte Nachricht oder letzten Bericht anzeigen
 STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {COMPANY}  - -
 STR_STATUSBAR_PAUSED                                            :{YELLOW}*  *  ANGEHALTEN  *  *
+STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  *  ANGEHALTEN (warte auf Update der Warenverteilung) *  *
 STR_STATUSBAR_AUTOSAVE                                          :{RED}Autosicherung
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  SPEICHERE SPIEL  *  *
 
@@ -1173,7 +1179,7 @@ STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Erlaube Erdbaua
 STR_CONFIG_SETTING_CATCHMENT                                    :Verschiedene Stationstypen haben unterschiedlich große Einzugsgebiete: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Wird diese Option eingeschaltet, besitzen unterschiedliche Stationsarten bzw. Flughäfen unterschiedlich große Einzugsgebiete
 STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :Vergrößere das Stationseinzugsgebiet: {STRING}
-STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :Vergrößere das Stationseinzugsgebiet um die angegebene Anzahl der Kacheln
+STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :Vergrößere das Stationseinzugsgebiet um die angegebene Anzahl an Kacheln
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Entfernung von weiteren Straßen, Brücken usw. erlauben: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Erlaubt einfacheres Entfernen von städtischer Infrastruktur und Gebäuden
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maximale Zuglänge: {STRING}
@@ -1262,6 +1268,12 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Unterhaltskoste
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Schiffe vermeiden Kollisionen: {STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :Falls aktiviert, versuchen Schiffe, das durcheinander hindurch fahren zu vermeiden. Schiffen müssen dazu 90°-Kurven verboten sein.
 
+STR_CONFIG_SETTING_CHUNNEL                                      :Erlaube den Bau von Unterwassertunneln: {STRING}
+STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Wenn aktiviert, können Tunnel unter Wasserflächen auf Meeresniveau gebaut werden. Hierzu müssen beide Enden des Tunnels mindestens 3 Kacheln von der Küste entfernt liegen.
+
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Züge verschiedener Firmen stoßen nicht mehr zusammen: {STRING}
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Diese Einstellung ist in erster Linie dafür da um zu verhindern, dass Spielern denen man nicht vertraut bewusst Zusammenstöße mit Zügen anderer Firmen in Multiplayer-Spielen mit Infrastructure Sharing provozieren.
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Flughäfen veralten nie: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Wird diese Option aktiviert, können Flughäfen, die einmal eingeführt wurden, das ganze Spiel über gebaut werden und veralten nie
 
@@ -1299,11 +1311,19 @@ STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :Zuglänge in de
 STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :Zeige die Zuglänge im Fenster für die Fahrzeugdetails an
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS                :Gruppe in den Fahrzeugdetails anzeigen: {STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :Zeige die Fahrzeuggruppe im Fenster für die Fahrzeugdetails an
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Zeige die Gewichtsverhältnisse von Zügen im Einzelheitenfenster: {STRING}
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Zeige die Gewichtsverhältnisse von Zügen im Fenster der Fahrzeugeinzelheiten.
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Zeige beschränkte Lichtsignale in den Standard-Grafiken: {STRING}
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Zeige Lichtsignale mit Routing-Beschränkungen in den Standard-Grafiken mit blauem Pfosten anstelle von NewGRF-Grafiken, um diese zur leichteren Erkennbarkeit visuell hervorzuheben.
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :Zeige erweiterte Features der Routing-Beschränkungen: {STRING}
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Zeige die erweiterten Features der Routing-Beschränkungen. Wenn inaktiv, werden einige erweiterte Features zwar nicht in der GUI angezeigt, stehen aber allen Spielern dennoch zur Verfügung.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :Landschaftstyp: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Landschaftstype definiert grundlegende Spielscenarien in Bezug auf verfügbare Fracht und Wachstumsvoraussetzungen für Städte. NewGRFs und Spielskripte erlauben weitgehendere Kontrolle dieser Parameter
 STR_CONFIG_SETTING_LAND_GENERATOR                               :Algorithmus zur Landschaftserzeugung: {STRING}
 STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Der orginale Generator hängt von den verwendeten Basisgrafiken ab und setzt vorgefertigte Landschaftsformen zusammen. terraGenesis ist ein auf Perlinrauschen basierter Generator mit erweiterten Einstellmöglichkeiten
+STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :Maximal erlaubte Anzahl von gleichzeitigen Veränderungen an Programmierbaren Signalen: {STRING}
+STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :Setzt die maximal erlaubte Anzahl von gleichzeitigen Veränderungen an Programmierbaren Signalen.
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Original
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Landschaftstyp: {STRING}
@@ -1375,31 +1395,34 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DISABLED                      :Deaktiviert
 STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Doppel-Klick
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Einfach-Klick (wenn hervorgehoben)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Einfach-Klick (sofort)
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :Zeige die Verbindungspunkte von Fahrzeugrouten: {STRING}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :Markiere die Fahrzeuge anderer Firmen in den Listen in deren Firmenfarbe: {STRING}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :Fahrzeuge in Fahrzeuglisten, die Eigentum anderer Firmen als die des Eigentümers der Fahrzeugliste sind, werden mit einem Kästchen in der entsprechenden Firmenfarbe markiert.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :Scanne die Umgebung einer Kachel (verbesserte Anzeige bei hohen Zoomstufen): {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Zeige Geländesteigungen an: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Zeige Brücken an: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :Zeige Tunnel an: {STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :Zeige beim scrollen an: {STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :Nichts
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :Zeige Ausschnitt für scrollende Zusatzansicht: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :Aus
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :Umrisse
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :Flächen mit weiß (nur 32bpp)
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :Flächen und Umrisse
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :transparente weiße Fläche (nur 32bpp)
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :Fläche und Umrisse
 STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :Firmenfarben für Brücken und Tunnel: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :Standardmodus: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_VEGETATION         :Vegetation
-STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_OWNER              :Besitzer
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_OWNER              :Landeigentümer
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_INDUSTRY           :Industrien
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :Funktion des Doppelklicks: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :Keine
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :Zoome direkt auf Faktor 1x
-STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Öffne die Zusatzansicht
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Öffne eine neue Zusatzansicht
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Zeige die Fahrzeugroute: {STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_NO           :Nein
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_NO           :Aus
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_SIMPLE       :Einfach
-STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Anzeigeart der Fahrzeugroute: {STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :gestrichelte Linien mit {COMMA} Pixel{P "" n}
-STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :durchgängige Linien
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Zeichenstil der Fahrzeugroute: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :gestrichelte Linie von {COMMA} Pixel{P "" n} Länge
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :durchgezogene Linie
 
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Rechtsklick-Emulation: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Lege die Methode, die rechte Maustaste zu emulieren, fest
@@ -1433,10 +1456,36 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Erweiterte Fahr
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Nutze erweiterte Fahrzeuglisten für die Gruppierung von Fahrzeugen
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Ladestandanzeiger verwenden: {STRING}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Auswählen, ob beim Be- oder Entladen der Ladestand in Prozent über dem Fahrzeug angezeigt werden soll
+STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT                    :Benutze standardmäßig automatische Fahrpläne: {STRING}
+STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :Wähle ob für neue Fahrzeuge standardmäßig automatische Fahrpläne aktiviert werden sollen.
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Benutze standardmäßig Fahrpläne um Fahrzeugseparierung zu gewährleisten: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Wähle ob für neue Fahrzeuge standardmäßig Fahrpläne mit Fahrzeugseparierung aktiviert werden sollen.
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Fahrpläne in Ticks anstatt in Tagen anzeigen: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Zeige Fahrtzeiten in Fahrplänen in Ticks statt Tagen
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Zeige restliche Ticks im Farplan: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :Zeige beim Konvertieren des Farplans von Ticks zu Tage/Minuten die restlichen Ticks an.
+STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Zeige Zeit in Minuten anstelle von Tagen: {STRING}
+STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :Wähle ob Stunden und Minuten anstelle von Tagen benutzt werden sollen.
+STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :Ticks pro Minute: {STRING}
+STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :Die Anzahl der Ticks des Spiels pro Minute.
+STR_CONFIG_SETTING_DATE_WITH_TIME                               :Zeige in der Statusleiste das Datum mit Zeit: {STRING}
+STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :Zeige neben der Zeit auch das Datum des Spiels in der Statusleiste.
+STR_CONFIG_SETTING_CLOCK_OFFSET                                 :Offset der Uhr in Minuten: {STRING}
+STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :Die Anzahl der Minuten, die die Uhr des Spiels verstellt sein soll.
+STR_CONFIG_SETTING_DATE_WITH_TIME_NONE                          :Aus
+STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :Jahr
+STR_CONFIG_SETTING_DATE_WITH_TIME_YM                            :Monat und Jahr
+STR_CONFIG_SETTING_DATE_WITH_TIME_YMD                           :Langes Datumsformat
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :Eingeben des Anfangsdatums eines Fahrplans als Text (benötigt Zeit in Minuten): {STRING}
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :Wähle ob Anfangsdaten von Fahrplänen auch als Text eingegeben werden können, sofern die Zeit in Minuten angezeigt wird.
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :Benutze Fahrplan um Fahrzeugseparierung zu gewährleisten: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT                :Wähle ob die Fahrzeugseparierung bei Verwendung von automatischen Fahrplänen gewährleistet werden soll.
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :Faktor der Fahrzeugseparierung in automatischen Fahrplänen: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :Stellt ein wie sehr die Einträge von automatischen Fahrplänen für die Fahrzeugseparierung verändert werden sollen.
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Zeige Ankunft und Abfahrt im Fahrplan: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Zeige geschätzte Ankunfts- und Abfahrtzeiten in Fahrplänen
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :Runde automatisch erfasste Fahrplanzeiten auf Vielfache der folgenden Anzahl von Ticks: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :Fahrplanzeiten, die durch automatische Fahrpläne angepasst wurden, werden nicht gerundet. Ein Tag im Spiel hat in einer Tageslänge von 1 eine Dauer von 74 Ticks.
 STR_CONFIG_SETTING_QUICKGOTO                                    :Schnelle Erzeugung von Aufträgen für Fahrzeuge: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Setze die Vorauswahl des Mauszeigers auf 'Fahre zu', wenn ein Auftragsfenster mit weniger als zwei Einträgen geöffnet wird.
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Gleistyp bei Spielbeginn/geladenem Spiel: {STRING}
@@ -1444,6 +1493,7 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Vorausgewählte
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :Erster verfügbarer
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :Letzter verfügbarer
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Meistbenutzter
+
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Reservierte Gleise hervorheben: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Hebt reservierte Fahrabschnitte hervor, um bei der Problemanalyse zu helfen, wenn Züge die Einfahrt in Pfad-basierte Streckenabschnitte verweigern
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Belasse Bauwerkzeuge aktiv nach Benutzung: {STRING}
@@ -1453,8 +1503,8 @@ STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Lege das Layout
 
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :Aktiviere das Bauen von Flüssen: {STRING}
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :Aktiviere das Bauen von Flüssen außerhalb des Szenarioeditors
-STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :Aktiviere das entfernen von Meeresteilen und Flüssen: {STRING}
-STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :Aktiviere das entfernen von Meeresteilen und Flüssen außerhalb des Szenarioeditors
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :Aktiviere das entfernen von Meereskacheln und Flüssen: {STRING}
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :Aktiviere das entfernen von Meereskacheln und Flüssen außerhalb des Szenarioeditors
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :Nachrichtenticker: {STRING}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Soundeffekte für Kurzfassungen von Nachrichten abspielen (Ticker)
@@ -1503,6 +1553,22 @@ STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :KI im Mehrspiel
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :Erlaube die Teilnahme von Computerspielern im Mehrspielermodus
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :Rechenoperationen, bevor das Skript angehalten wird: {STRING}
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Maximale Anzahl Rechenschritte, die ein Skript in einer Runde zur Verfügung hat
+
+STR_CONFIG_SETTING_SHARING_RAIL                                 :Aktiviere Sharing für Eisenbahnnetze: {STRING}
+STR_CONFIG_SETTING_SHARING_ROAD                                 :Aktiviere Sharing für Haltestellen, Ladeplätze und Depots: {STRING}
+STR_CONFIG_SETTING_SHARING_WATER                                :Aktiviere Sharing für Häfen und Werften: {STRING}
+STR_CONFIG_SETTING_SHARING_AIR                                  :Aktiviere Sharing für Flughäfen: {STRING}
+STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :Tägliche Gleisnutzungsgebür für Züge: {STRING} pro 1000 Tonnen
+STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :Anhaltegebühr für Straßenfahrzeuge: {STRING} pro Tag
+STR_CONFIG_SETTING_SHARING_FEE_WATER                            :Anlegegebühr in Häfen für Schiffe: {STRING} pro Tag
+STR_CONFIG_SETTING_SHARING_FEE_AIR                              :Terminalnutzungsgebühr für Flugzeuge: {STRING} pro Tag
+STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Erlaube verschuldeten Firmen das Zahlen von Gebühren: {STRING}
+STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Einstellung kann nicht geändert werden, da Fahrzeuge die geteilte Infrastruktur benutzen.
+STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Einstellung kann nicht geändert werden, da Fahrzeuge Aufträge haben die auf fremdes Eigentum zeigen.
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :Erlaube Mitbewerbern in fremden Depots Züge zu kaufen und zu erneuern: {STRING}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :Erlaube Mitbewerbern in fremden Depots Straßenfahrzeuge zu kaufen und zu erneuern: {STRING}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Erlaube Mitbewerbern in fremden Werften Schiffe zu kaufen und zu erneuern: {STRING}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Erlaube Mitbewerbern in fremden Hangars Flugzeuge zu kaufen und zu erneuern: {STRING}
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Wartungsintervalle in Prozent: {STRING}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Lege fest, ob Fahrzeuge zur Wartung geschickt werden basierend auf der verstrichenen Zeit seit der letzten Wartung oder dem Absinken der Zuverlässigkeit auf einen gewissen Prozentsatz der maximalen Zuverlässigkeit des Fahrzeugtyps
@@ -1567,6 +1633,12 @@ STR_CONFIG_SETTING_ALLOW_SHARES                                 :Handel mit Firm
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Erlaube das Kaufen und Verkaufen von Firmenanteilen. Firmenanteile sind nur verfügbar für Firmen, die hinreichend lange existieren
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Prozentsatz des Profits für Teilstrecken: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Um das Einkommen der einzelnen Fahrzeuge einer Lieferkette ungefähr abschätzen zu können, wird vom Transporterlös bei Ablieferung einer Fracht der gewählte Prozentsatz den Zulieferfahrzeugen zugeschlagen
+STR_CONFIG_SETTING_FEEDER_PAYMENT_SRC_STATION                   :Kalkuliere Profit für Teilstrecken relativ zur Ursprungsstation: {STRING}
+STR_CONFIG_SETTING_FEEDER_PAYMENT_SRC_STATION_HELPTEXT          :Wenn aktiviert, wird der Profit für Teilstrecken von der Ursprungsstation bis zum aktuellen Punkt, abzüglich der zuvor gezahlten Transfer-Einnahmen, berechnet, anstatt Teilstrecken als eigenständige Fahrten zu berechnen.
+STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :Simuliere Signale in Tunneln und Brücken aller: {STRING}
+STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} Kachel{P 0 "" n}
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :Faktor für Tageslänge: {STRING}
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :Die Spielgeschwindigkeit wird um diesen Faktor reduziert.
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :Signalabstand beim Ziehen: {STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :Lege den Abstand fest, in dem Signale auf Gleisen bis zum nächsten Hindernis (Signal, Weiche) gebaut werden, wenn sie gezogen werden
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_VALUE                   :{COMMA} Feld{P 0 "" er}
@@ -1605,6 +1677,8 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Erlaube Spieler
 STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Verboten
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Erlaubt
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Erlaubt, mit wählbarem Straßenbauplan
+STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :Faktor für die Erzeugung von städtischer Fracht (weniger < 0 < mehr): {STRING}
+STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :Passagiere, Post und andere städtische Frachtproduktion wird um ungefähr 2^Faktor (exponentiell) skaliert.
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Platzierung von Bäumen während des Spiels: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Lege das Ausmaß des zufälligen Baumwachstums während des Spiels fest. Dies kann Industrien wie die Sägemühle beeinflussen, welche auf nachwachsende Bäume angewiesen sind
@@ -1612,10 +1686,10 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Nirgends {RED}(
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Nur im Regenwald
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :überall
 
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Vorgabe für die Platzierung arktischer Bäume: {STRING}
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Gebe die Art der Verteilung von Bäumen rund um die Schneegrenze um subarktischen Klima vor. Bäume werden über der Schneegrenze ausgedünnt. Die Bäume sind bis zur Schneegrenze hinab eine Mischung aus Bäumen aus dem subarktischen und dem gemäßigten Klima. Unterhalb der Schneegrenze sind alle Bäume aus dem gemäßigten Klima.
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Bereich mit subarktischen Bäumen: {STRING}
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Ungefährer Bereich mit subarktischen Bäumen um die Schneegrenze herum
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Angepasste Platzierung von subarktischen Bäumen: {STRING}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Passt die Platzierung von Bäumen um die Schneegrenze im arktischen Klima an. Bäume dünnen oberhalb der Schneegrenze aus. Bäume direkt unterhalb der Schneegrenze sind eine Mischung aus subarktischen und gemäßigten Bäumen. Darunter werden gemäßigte Bäume platziert.
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Reichweite für subarktische Bäume: {STRING}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Ungefähre Reichweite für subarktische Bäume um die Schneegrenze.
 
 STR_CONFIG_SETTING_TREE_GROWTH                                  :Wachstumsgeschwindigkeit der Bäume: {STRING}
 STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Lege die Rate des zufälligen Baumwachstums während des Spiels fest. Dies kann Industrien wie die Sägemühle beeinflussen, welche auf nachwachsende Bäume angewiesen sind
@@ -1646,6 +1720,10 @@ STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :Normal
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X                              :2x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_16X                             :16x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_32X                             :32x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Wachstumsgeschwindigkeit von Städten: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Geschwindigkeit des Städtewachstums
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :Keine
@@ -1662,7 +1740,7 @@ STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Durchschnittlic
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Wahrscheinlichkeit zufälliger Straßenreparaturen: {STRING}
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :Setze den Wert für die Wahrscheinlichkeit, dass städtische Straßen zufällig repariert werden (0 = aus, 1000 = max)
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimaler Abstand zwischen Städten: {STRING}
-STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Stelle den Mindestabstand zwischen Städten in Kacheln für die Kartenerzeugung und die zufällige Stadtgründung ein.
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Stelle den Mindestabstand zwischen Städten in Kacheln für die Kartenerzeugung und zufällige Stadtgründungen ein.
 STR_CONFIG_SETTING_TOWN_ROAD_OVER_RAIL                          :Städte können Brücken über Gleise bauen: {STRING}
 STR_CONFIG_SETTING_TOWN_ROAD_OVER_RAIL_HELPTEXT                 :Erlaube den Städten, Straßenbrücken über Gleise hinweg zu errichten.
 
@@ -1670,6 +1748,8 @@ STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Neuberechnung d
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Zeit zwischen zwei Neuberechnungen des Verteilungsgraphen. Jede Neuberechnung berechnet die Verteilungspläne für eine Komponente des Graphen. Das heißt dass ein Wert X für diese Einstellung nicht zu einer Neuberechnung der gesamten Verteilung alle X Tage führt, sofern es mehrere getrennte Komponenten gibt. Je kleiner der Wert, desto rechenaufwändiger ist die Berechnung. Je größer er ist, desto länger dauert es bis Änderungen an den Fahrplänen sich auf die Verteilung auswirken.
 STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Laufzeit für jede Neuberechnung der Warenverteilung: {STRING}{NBSP}Tag{P 0:2 "" e}
 STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :Laufzeit für jede Neuberechnung des Verteilungsgraphen. Für jede Neuberechnung wird ein Thread gestartet, der diese Zeit bekommt, um fertig zu werden. Wenn die Zeit gering ist, ist die Wahrscheinlichkeit hoch, dass er zum gegebenen Zeitpunkt noch nicht fertig ist. Das manifestiert sich darin, dass das Spiel "stehen bleibt", bis der Thread fertig wird. Wenn die Zeit sehr lang ist, dauert es länger bis Änderungen an den Fahrplänen sich auf die Verteilung auswirken.
+STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :Skaliere die Laufzeit für jede Neuberechnung der Warenverteilung nicht um den Faktor der Tageslänge: {STRING}
+STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :Wenn aktiviert, wird die Laufzeit das Intervall für jede Neuberechnung des Verteilungsgraphen in Tagen im Maßstab der originalen Tageslänge angegeben, anstelle der um den Tageslänge-Faktoren skalierten Kalendertage.
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manuell
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetrisch
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetrisch
@@ -1733,6 +1813,8 @@ STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Oberfl�
 STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Allgemein
 STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Kartenansichten
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Konstruktion
+STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Abfahrtstafeln
+STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Uhr
 STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Nachrichten und Hinweise
 STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Firma
 STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Finanzen
@@ -1750,7 +1832,8 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Warenve
 STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}Bäume
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Mitbewerber
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computerspieler
-STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Kartenmodus
+STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Zusätzliche Kartenansicht
+STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastruktur-Sharing
 
 STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
@@ -1779,6 +1862,9 @@ STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Zahle für Repa
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Zahle für die Reparatur der Fahrzeuge nach Pannen.
 STR_CONFIG_SETTING_REPAIR_COST                                  :Reparaturkosten: 1/{STRING} der Beschaffungskosten
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Kosten der Reparatur nach Pannen.
+
+STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :Glättung der Auslastungsmessung für Aufträge: {STRING}
+STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0% setzt den angezeigte Messwert auf den zuletzt gemessenen, 100% lässt ihn unverändert.
 
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Fehler in der Konfigurations-Datei...
@@ -2248,11 +2334,13 @@ STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_1                  :Spiel weiterhin
 STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_2                  :Spiel weiterhin angehalten ({STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_3                  :Spiel weiterhin angehalten ({STRING}, {STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_4                  :Spiel immer noch angehalten ({STRING}, {STRING}, {STRING}, {STRING})
+STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_5                  :Spiel immer noch angehalten ({STRING}, {STRING}, {STRING}, {STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_UNPAUSED                        :Spiel fortgesetzt ({STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS       :Spieleranzahl
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS       :Teilnehmer meldet sich an
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL                   :manuell
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :Skript
+STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :warte auf Update des Verteilungsgraphen
 ############ End of leave-in-this-order
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :geht
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} ist dem Spiel beigetreten
@@ -2264,6 +2352,8 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ha
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} hat seinen/ihren Namen in {STRING} geändert
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} gab der eigenen Firma {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Die eigene Firma übergab {1:STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_MONEY_GIVEN                                 :*** {STRING} gab {1:STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Der Server hat das Spiel beendet
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Der Server startet neu...{}Bitte warten...
 
@@ -2351,6 +2441,7 @@ STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Transpar
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Transparenz für Bauten wie Leuchttürme und Sendemasten einstellen. Strg+Klick, um Umschalten zu verhindern bzw. wieder zu erlauben
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Transparenz für Oberleitungen einstellen. Strg+Klick, um Umschalten zu verhindern bzw. wieder zu erlauben
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparenz für Ladestandsanzeige einstellen. Strg+Klick, um Umschalten zu verhindern bzw. wieder zu erlauben
+STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Transparenz für Fahrzeuge innerhalb von Tunneln einstellen. Strg+Klick, um Umschalten zu verhindern bzw. wieder zu erlauben.
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Objekte unsichtbar statt transparent machen
 
 # Linkgraph legend window
@@ -2358,6 +2449,7 @@ STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}Legende 
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}Alle
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Keine
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Anzuzeigende Firmen auswählen
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}unbenutzt
@@ -2388,6 +2480,7 @@ STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :Magnetschwebeba
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Gleise legen. Strg halten, um zwischen Bauen und Entfernen umzuschalten. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Gleise legen mit automatischer Wahl der Ausrichtung. Strg halten, um zwischen Bauen und Entfernen umzuschalten. Shift schaltet zwischen Bauen und Kostenvoranschlag um
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Gleise legen mit automatischem Legen mehrerer Gleise. Strg halten, um zwischen Bauen und Entfernen umzuschalten. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}Zugdepot bauen (zum Kauf und zur Wartung von Zügen). Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}Wegpunkt (auf vorhandenem Gleis) bauen. Strg+Klick, um Wegpunkte zu verbinden. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}Bahnhof bauen. Strg+Klick, um Stationen zu verbinden. Shift schaltet zwischen Bauen und Kostenvoranschlag um
@@ -2433,12 +2526,14 @@ STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Blocksig
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Einfahrsignal (Formsignal){}Zeigt grün, wenn im nächsten Block mindestens ein Ausfahrsignal grün zeigt. Andernfalls zeigt es rot
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Ausfahrsignal (Formsignal){}Verhält sich wie ein Blocksignal, wird jedoch benötigt, um den Einfahr- oder Kombinationssignalen des Blockes "frei" zu melden
 STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}Kombinationssignal (Formsignal){}Das Kombinationssignal ist gleichzeitig Aus- und Einfahrsignal. Somit werden umfangreiche Signalverschaltungen möglich
+STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}Programmierbares Signal (Formsignal){}Das programmierbare Signal ist ein Kombinationssignal, welches programmiert werden kann sich komplex zu verhalten.
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}Pfadsignal (Formsignal){}Erlaubt mehreren Zügen gleichzeitig, einen Signalabschnitt zu befahren, sofern sie separate Gleisabschnitte belegen können. Pfadsignale können von hinten durchfahren werden
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}Einseitiges Pfadsignal (Formsignal):{}Erlaubt mehreren Zügen, einen Signalabschnitt zu befahren, sofern sie separate Gleisabschnitte belegen können. Einseitige Pfadsignale können nicht von hinten durchfahren werden
 STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}Blocksignal (Lichtsignal){}Dies ist der einfachste Signaltyp. Bei Verwendung dieses Signaltyps darf sich immer nur ein Zug im Signalabschnitt aufhalten
 STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}Einfahrsignal (Lichtsignal){}Zeigt grün, wenn im folgenden Block mindestens ein Ausfahrsignal grün zeigt. Andernfalls zeigt es rot
 STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Ausfahrsignal (Lichtsignal){}Verhält sich wie ein Blocksignal, gibt jedoch das Signal an Einfahr- und Kombinationssignale im vorherliegenden Block weiter
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Kombinationssignal (Lichtsignal){}Das Kombinationssignal ist gleichzeitig Aus- und Einfahrsignal. Somit werden umfangreiche Signalverschaltungen möglich
+STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}Programmierbares Signal (Lichtsignal){}Das programmierbare Signal ist ein Kombinationssignal, welches programmiert werden kann sich komplex zu verhalten.
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Pfadsignal (Lichtsignal){}Erlaubt mehreren Zügen gleichzeitig, einen Signalbereich zu befahren, sofern sie separate Gleisabschnitte belegen können. Normale Pfadsignale können von hinten durchfahren werden
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Einseitiges Pfadsignal (Lichtsignal):{}Erlaubt mehreren Zügen, einen Signalbereich zu befahren, sofern sie separate Gleisabschnitte belegen können. Einseitige Pfadsignale können nicht von hinten durchfahren werden
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Signalumbau{}Wenn ausgewählt, werden bestehende Signale durch Anklicken zum ausgewählten Signaltyp umgebaut. Strg+Klick ändert die bestehende Bauform. Shift+Klick zeigt Kostenvoranschlag
@@ -2467,16 +2562,59 @@ STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :nächster Auftr
 STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :zuletzt besuchte Station
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :Fracht
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :Einfahrtrichtung
-
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :Einfahr-Pfadsignal
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :Einfahrsignal für einen Pfadsignal-Block
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :Zuggruppe
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :Zug im Slot
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :Slotnutzung
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :verbleibende Slotnutzung
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :Nutzung
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :verbleibende Nutzung
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :Gewicht
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :Leistung
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :max. Zugkraft
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER_WEIGHT_RATIO            :Leistung / Gewicht (Verhältnis)
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO           :max. Zugkraft / Gewicht (Verhältnis)
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :Zugbesitzer
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefiniert
-
+STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{RED}undefiniert
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} dann
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} dann
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT                   :{STRING} {STRING} {STRING} {WEIGHT_SHORT} dann
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER                    :{STRING} {STRING} {STRING} {POWER} dann
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE                    :{STRING} {STRING} {STRING} {FORCE} dann
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER_WEIGHT_RATIO       :{STRING} {STRING} {STRING} {POWER_WEIGHT_RATIO} dann
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO       :{STRING} {STRING} {STRING} {FORCE_WEIGHT_RATIO} dann
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING} {STRING} {STRING} {STATION} dann
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING} {STRING} {STRING} {WAYPOINT} dann
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRING} {STRING} {DEPOT} dann
+STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} Zug {STRING} Fracht: {STRING} dann
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} Zug {STRING} kommt von {STRING} Kachelecke dann
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} Zug {STRING} kommt von {STRING} des Signals dann
+STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} auf {NUM} x {NUM} dann
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} Zug {STRING} in Gruppe: {GROUP} dann
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} Zug {STRING} in Gruppe: {STRING} {BLACK}{STRING}dann
+STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} dann
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} Zug {STRING} in Slot: {TRSLOT} dann
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} Zug {STRING} in Slot: {STRING} {BLACK}{STRING}dann
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} von Slot: {TRSLOT} {STRING} {COMMA} dann
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} von Slot: {STRING} {BLACK}{STRING} {STRING} {COMMA} dann
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefiniert {BLACK}{STRING}dann
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefiniert {BLACK}{STRING}dann
+STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Gebe Wegfindungsstrafe: {COMMA}
+STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :Gebe {STRING} Wegfindungsstrafe
+STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
 STR_TRACE_RESTRICT_START                                        :Start
 STR_TRACE_RESTRICT_END                                          :Ende
 STR_TRACE_RESTRICT_PF_DENY                                      :Verbiete
 STR_TRACE_RESTRICT_PF_ALLOW                                     :Erlaube
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :Erlaube (übergehe vorheriges Verbot)
-STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserviere durch
-STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Übergehe Reservierung durch
+STR_TRACE_RESTRICT_RESERVE_THROUGH                              :Reserviere hindurch
+STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Übergehe Reservierung hindurch
+STR_TRACE_RESTRICT_LONG_RESERVE                                 :Lange Reservierung hindurch
+STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Übergehe lange Reservierung hindurch
+STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :Warte am Pfadsignal
+STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :Übergehe Warten am Pfadsignal
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Strafe
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :klein
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :mittel
@@ -2484,42 +2622,155 @@ STR_TRACE_RESTRICT_PF_VALUE_LARGE                               :groß
 STR_TRACE_RESTRICT_PF_VALUE_CUSTOM                              :selbstdefiniert
 STR_TRACE_RESTRICT_DIRECTION_FRONT                              :Vorderseite
 STR_TRACE_RESTRICT_DIRECTION_BACK                               :Rückseite
-STR_TRACE_RESTRICT_DIRECTION_NE                                 :nord-ost
-STR_TRACE_RESTRICT_DIRECTION_SE                                 :süd-ost
-STR_TRACE_RESTRICT_DIRECTION_SW                                 :süd-west
-STR_TRACE_RESTRICT_DIRECTION_NW                                 :nord-west
-
+STR_TRACE_RESTRICT_DIRECTION_NE                                 :Nordosten
+STR_TRACE_RESTRICT_DIRECTION_SE                                 :Südosten
+STR_TRACE_RESTRICT_DIRECTION_SW                                 :Südwesten
+STR_TRACE_RESTRICT_DIRECTION_NW                                 :Nordwesten
+STR_TRACE_RESTRICT_COMPANY                                      :Firma
+STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :Undefinierte Firma
+STR_TRACE_RESTRICT_SLOT_OP                                      :Slot-Operation
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :erwerbe oder warte
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :versuche zu erwerben
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :löse (davor)
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :löse (dahinter)
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Erwerbe Slot: {STRING}{BLACK}{STRING}, oder warte am Pfadsignal
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Versuche Slot: {STRING}{BLACK}{STRING} zu erwerben, oder fahre dennoch
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Löse Slot: {STRING}{BLACK}{STRING} (vor dem Zug)
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Löse Slot: {STRING}{BLACK}{STRING} (hinter dem Zug)
+STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
+STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
+STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
+STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Wert
+STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routing-Beschränkungen
+STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routing-Beschränkungen - geteilt durch {COMMA} Signale
+STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}Bewege die ausgewählte Anweisung (Block) nach Oben{}Strg+Klick, um die einzelne Anweisung anstelle des gesamten Blocks zu verschieben
+STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP                             :{BLACK}Bewege die ausgewählte Anweisung (Block) nach Unten{}Strg+Klick, um die einzelne Anweisung anstelle des gesamten Blocks zu verschieben
 STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}Typ
 STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}Vergleichsoperator
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}Wert
 STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}Bedingungstyp
-
+STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}Gehe zum Signal
+STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}Slot-Operationstyp
+STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}Slots - klicke auf einen Slot, um alle Fahrzeuge dieses Slots anzuzeigen.
+STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Neuen Slot erstellen
+STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Ausgewählten Slot löschen
+STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Ausgewählten Slot umbenennen
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Set die maximale Auslastung des ausgewählten Slots
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Routing-Beschränkungen - Slot-Verwaltung
+STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Verwalte Slots
+STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
+STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Benenne einen Slot
+STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}Erstelle einen Slot
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}Setze die maximale Auslastung eines Slots
+STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}Lösche Slot
+STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}Sicher, dass dieser Slot gelöscht werden soll?
 STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Einfügen
 STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Entfernen
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}Zurücksetzen
 STR_TRACE_RESTRICT_COPY                                         :{BLACK}Kopieren
+STR_TRACE_RESTRICT_APPEND                                       :{BLACK}Anfügen
 STR_TRACE_RESTRICT_SHARE                                        :{BLACK}Teilen
 STR_TRACE_RESTRICT_UNSHARE                                      :{BLACK}Teilen zurücknehmen
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}Wähle Ziel
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}Wähle Signal
 STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}Füge eine Anweisung ein
 STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}Entferne die ausgewählte Anweisung
-
+STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}Setze das aktuelle Signal zurück (beeinflusst keine geteilten Anweisungen)
 STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}Kopiere die Anweisungen von einem anderen Signal
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Teile die Anweisungen mit einem anderen Signal
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Beende das Teilen der Anweisungen mit einem anderen Signal und erstelle stattdessen eine Kopie der Anweisungen
-
+STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routing-Beschränkungen
+STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Klicke auf eine Anweisung, um diese auszuwählen{}Strg+Klick, um (wenn möglich) zum Ziel der Anweisung zu scrollen
 STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Kann die Anweisung nicht einfügen
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Kann die Anweisung nicht ändern
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Kann die Anweisung nicht entfernen
+STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}Kann die Anweisung nicht bewegen
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}Wert zu groß, der größtmögiche Wert ist {DECIMAL}
-
+STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :Es existieren keine Routing-beschränkenden Anweisungen
+STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :Offset zu groß
+STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :Kann die Bedingung nicht ändern
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :Ein 'Ende Wenn' kann nicht entfernt werden
-
+STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF           :Kann einen 'Wenn'-Block nicht indirekt durch einen oder mehrere 'Sonst Wenn'-, 'Oder Wenn'- oder 'Sonst'-Blöcke ersetzen
+STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :Validierung fehlgeschlagen: Stack von Bedingungen nicht leer beim Beenden
+STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :Validierung fehlgeschlagen: 'Sonst'/'Sonst Wenn' ohne öffnendes 'Wenn'
+STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :Validierung fehlgeschlagen: Doppeltes 'Sonst'
+STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :Validierung fehlgeschlagen: 'Sonst Wenn' ohne öffnendes 'Wenn'
+STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :Validierung fehlgeschlagen: unbekannte Anweisung
+STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :Ursprungs- und Zielsignal sind das Selbe
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}Kann das Signal nicht zurücksetzen
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}Kann die Anweisungen nicht kopieren
+STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}Kann die Anweisungen nicht anfügen
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}Kann die Anweisungen nicht teilen
-STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}Kann ddas Teilen der Anweisungen nicht aufheben
+STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}Kann das Teilen der Anweisungen nicht aufheben
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}Kann den Slot nicht erstellen...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}Kann den Slot nicht entfernen...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}Kann den Slot nicht umbenennen...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}Kann das Fahrzeug nicht diesem Slot hinzufügen...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}Kann das Fahrzeug nicht aus diesem Slot entfernen...
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}Kann die maximale Auslastung dieses Slots nicht setzen...
+
+# Programmable Signals
+STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Programmierbares Signal
+
+STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}Kann Anweisung nicht nach einer Anweisung mit einer ungültigen ID einfügen
+STR_ERR_PROGSIG_INVALID_OPCODE                                  :{WHITE}Kann keine Anweisung nach diesem Befehlscode einfügen
+STR_ERR_PROGSIG_NOT_THERE                                       :{WHITE}Hier ist kein programmierbares Signal
+STR_ERR_PROGSIG_INVALID_SIGNAL_STATE                            :{WHITE}Dieser Signalzustand ist ungültig
+STR_ERR_PROGSIG_INVALID_CONDITION                               :{WHITE}Diese Bedingung ist ungültig
+STR_ERR_PROGSIG_INVALID_CONDITION_FIELD                         :{WHITE}Dieses Feld ist nicht für die Bedingung gültig
+STR_ERR_PROGSIG_INVALID_COMPARATOR                              :{WHITE}Dieser Vergleichsoperator ist nicht gültig
+STR_ERR_PROGSIG_INVALID_SIGNAL                                  :{WHITE}Ungültiges Signal ausgewählt
+
+STR_PROGSIG_CAPTION                                             :{WHITE}Signal-Programm
+STR_PROGSIG_COND_VARIABLE_TOOLTIP                               :{BLACK}Bedingung, die vergleicht werden soll
+STR_PROGSIG_COND_COMPARATOR_TOOLTIP                             :{BLACK}Operator, der zum Vergleichen der Variable benutzt werden soll
+STR_PROGSIG_COND_VALUE_TOOLTIP                                  :{BLACK}Wert, mit dem die Variable verglichen werden soll
+STR_PROGSIG_SIGNAL_STATE_TOOLTIP                                :{BLACK}Setze Signal in den Zustand
+STR_PROGSIG_COND_SET_SIGNAL                                     :{BLACK}Setze Signal
+STR_PROGSIG_COND_SET_SIGNAL_TOOLTIP                             :{BLACK}Sete das Signal, welches beobachtet werden soll
+STR_PROGSIG_GOTO_SIGNAL                                         :{BLACK}Gehe zum Signal
+STR_PROGSIG_GOTO_SIGNAL_TOOLTIP                                 :{BLACK}Gehe zum gewählten Signal
+STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}Füge eine Anweisung ein
+STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}Entferne die gewählte Anweisung
+STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}Entferne das gesamte Programm
+STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}Kopiere ein Programm von einem bereits vorhandenen Signal
+
+STR_PROGSIG_REMOVE_PROGRAM                                      :{RED}Entferne Programm
+STR_PROGSIG_COPY_PROGRAM                                        :{BLUE}Kopiere Programm
+STR_PROGSIG_REMOVE                                              :{BLACK}Entfernen
+STR_PROGSIG_INSERT                                              :Einfügen
+STR_PROGSIG_INSERT_IF                                           :Bedingung
+STR_PROGSIG_INSERT_SET_SIGNAL                                   :Setze Signalzustand
+
+STR_PROGSIG_FIRST                                               :Start
+STR_PROGSIG_LAST                                                :Ende
+
+STR_PROGSIG_IF                                                  :Wenn {STRING} dann
+STR_PROGSIG_ELSE                                                :Sonst
+STR_PROGSIG_ENDIF                                               :Ende Wenn
+
+STR_PROGSIG_SET_SIGNAL                                          :Stelle Signal auf {STRING}
+
+STR_PROGSIG_COND_ALWAYS                                         :immer
+STR_PROGSIG_COND_NEVER                                          :nie
+STR_PROGSIG_COND_COMPARE                                        :{STRING} {STRING} {NUM}
+STR_PROGSIG_COND_SIGNAL_STATE                                   :Signalzustand
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :Signal auf {NUM} x {NUM} ist Grün
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}undefiniertes Signal{STRING} ist Grün
+STR_PROGSIG_CONDVAR_NUM_RED                                     :rote Signale
+STR_PROGSIG_CONDVAR_NUM_GREEN                                   :grüne Signale
+
+STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}Bedingungswert
+
+STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}Kann Anweisungen nicht einfügen
+STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}Kann Anweisungen nicht ändern
+STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}Kann Anweisungen nicht entfernen
+STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}Kann nicht zu undefiniertem Signal gehen
+STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}Kein Ausfahrsignal
+STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Kein programmierbares Signal
+STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Kann kein Programm von sich selbst kopieren
+STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Kann nicht bedingt von einem bidirektionalen Signal abhängen
+STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Ungültiges Signal
 
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Eisenbahnbrücke auswählen
@@ -2626,6 +2877,7 @@ STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}Land abs
 STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}Land anheben. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_LANDSCAPING_LEVEL_LAND_TOOLTIP                              :{BLACK}Höhe ausgleichen. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Land für künftige Nutzung kaufen. Shift schaltet zwischen Bauen und Kostenvoranschlag um
+STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Benutze einen virtuellen Zollstock, um Entfernung und Höhe zu messen
 
 # Object construction window
 STR_OBJECT_BUILD_CAPTION                                        :{WHITE}Objektauswahl
@@ -2637,6 +2889,36 @@ STR_OBJECT_BUILD_SIZE                                           :{BLACK}Größe:
 STR_OBJECT_CLASS_LTHS                                           :Leuchttürme
 STR_OBJECT_CLASS_TRNS                                           :Sendemasten
 
+#House construction window (for SE only)
+STR_HOUSE_BUILD_CAPTION                                         :{WHITE}Gebäudeauswahl
+STR_HOUSE_BUILD_CUSTOM_CAPTION                                  :{WHITE}{STRING}
+STR_HOUSE_BUILD_HOUSESET_LIST_TOOLTIP                           :{BLACK}Wähle ein Set an Gebäuden
+STR_HOUSE_BUILD_SELECT_HOUSE_TOOLTIP                            :{BLACK}Wähle ein zu bauendes Gebäude
+STR_HOUSE_BUILD_HOUSE_NAME                                      :{GOLD}{STRING}
+STR_HOUSE_BUILD_HISTORICAL_BUILDING                             :{GOLD}(historisches Gebäude)
+STR_HOUSE_BUILD_HOUSE_POPULATION                                :{BLACK}Einwohner: {GOLD}{NUM}
+STR_HOUSE_BUILD_HOUSE_ZONES                                     :{BLACK}Zone: {STRING} {STRING} {STRING} {STRING} {STRING}
+STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED                             :{GRAY}{NUM}
+STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED                              :{GOLD}{NUM}
+STR_HOUSE_BUILD_LANDSCAPE                                       :{BLACK}Landschaft: {STRING}
+STR_HOUSE_BUILD_LANDSCAPE_ABOVE_OR_BELOW_SNOWLINE               :{GOLD}ober- oder unterhalb der Schneelinie
+STR_HOUSE_BUILD_LANDSCAPE_ONLY_ABOVE_SNOWLINE                   :{GOLD}nur oberhalb der Schneelinie
+STR_HOUSE_BUILD_LANDSCAPE_ONLY_BELOW_SNOWLINE                   :{GOLD}nur unterhalb der Schneelinie
+STR_HOUSE_BUILD_YEARS                                           :{BLACK}Jahre: {STRING}{GOLD} - {STRING}
+STR_HOUSE_BUILD_YEARS_BAD_YEAR                                  :{RED}{NUM}
+STR_HOUSE_BUILD_YEARS_GOOD_YEAR                                 :{GOLD}{NUM}
+STR_HOUSE_BUILD_SUPPLIED_CARGO                                  :{BLACK}Liefert: {GOLD}{CARGO_LIST}
+STR_HOUSE_BUILD_ACCEPTED_CARGO                                  :{BLACK}Nimmt an: {GOLD}{STRING}
+STR_HOUSE_BUILD_CARGO_FIRST                                     :{STRING}
+STR_HOUSE_BUILD_CARGO_SEPARATED                                 :, {STRING}
+STR_HOUSE_BUILD_CARGO_VALUE_JUST_NAME                           :{1:STRING}
+STR_HOUSE_BUILD_CARGO_VALUE_EIGHTS                              :({COMMA}/8 {STRING})
+STR_BASIC_HOUSE_SET_NAME                                        :Standard-Gebäude
+
+#Town select window (for SE only)
+STR_SELECT_TOWN_CAPTION                                         :{WHITE}Wähle Stadt
+STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
+
 # Tree planting window (last two for SE only)
 STR_PLANT_TREE_CAPTION                                          :{WHITE}Bäume
 STR_PLANT_TREE_TOOLTIP                                          :{BLACK}Wähle die zu pflanzende Baumart. Wenn auf dem Feld schon ein Baum steht, wird eine zufällige Baumart gepflanzt
@@ -2644,6 +2926,8 @@ STR_TREES_RANDOM_TYPE                                           :{BLACK}Zufälli
 STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}Zufällige Baumart pflanzen. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_TREES_RANDOM_TREES_BUTTON                                   :{BLACK}Zufällige Bäume
 STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK}Bäume zufällig über die Landschaft verteilen
+STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Entferne alle Bäume
+STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Entferne alle Bäume in der Landschaft
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Land erstellen
@@ -2758,24 +3042,33 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Schienen: Gleis
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Schienen: Gleise mit Vorsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Schienen: Gleise mit Ausfahrtsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Schienen: Gleise mit Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PROGSIGNALS                 :Schienen: Gleise mit programmierbarem Signal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Schienen: Gleise mit Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Schienen: Gleise mit einseitigem Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Schienen: Gleise mit Block- und Vorsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Schienen: Gleise mit Block- und Ausfahrtsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Schienen: Gleise mit Block- und Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PROGSIGNALS          :Schienen: Gleise mit Blocksignal und programmierbarem Signal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Schienen: Gleise mit Block- und Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Schienen: Gleise mit Blocksignal und einseitigem Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Schienen: Gleise mit Vor- und Ausfahrtsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Schienen mit Vor- und Kombinationssignalen
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Schienen: Gleise mit Vor- und Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PROGSIGNALS             :Schienen: Gleise mit Vorsignal und programmierbarem Signal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Schienen: Gleise mit Vor- und Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Schienen: Gleise mit Vorsignal und einseitigem Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Schienen: Gleise mit Ausfahrts- und Kombinationssignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Schienen: Gleise mit Ausfahrts- und Pfadsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Schienen: Gleise mit Ausfahrtssignal und einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Schienen: Gleise mit Ausfahr- und Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PROGSIGNALS            :Schienen: Gleise mit Ausfahrsignal und programmierbarem Signal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Schienen: Gleise mit Ausfahr- und Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Schienen: Gleise mit Ausfahrsignal und einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PROGSIGNALS           :Schienen: Gleise mit Kombinationssignal und programmierbarem Signal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Schienen: Gleise mit Kombinations- und Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Schienen: Gleise mit Kombinationssignal und einseitigem Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Schienen: Gleise mit Pfadsignal und einseitigem Pfadsignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_PROGSIGNALS             :Schienen: Gleise mit Pfadsignal und programmierbarem Signal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRY_PROGSIGNALS         :Schienen: Gleise mit einseitigem Pfadsignal und programmierbarem Signal
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Schienen: Zugdepot
+
+STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :{STRING} (restricted)
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Straße
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Straße mit Laternen
@@ -2810,8 +3103,13 @@ STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :Werft
 # Industries come directly from their industry names
 
 STR_LAI_TUNNEL_DESCRIPTION_RAILROAD                             :Eisenbahntunnel
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_CHUNNEL                     :Eisenbahntunnel (unterwasser)
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL                      :Eisenbahntunnel mit simulierten Signalen
+STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL_CHUNNEL              :Eisenbahntunnel mit simulierten Signalen (unterwasser)
 STR_LAI_TUNNEL_DESCRIPTION_ROAD                                 :Straßentunnel
+STR_LAI_TUNNEL_DESCRIPTION_ROAD_CHUNNEL                         :Straßentunnel (unterwasser)
 
+STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :Eisenbahnbrücke mit simulierten Signalen
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_SUSPENSION_STEEL                :Stahlhängebrücke
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_GIRDER_STEEL                    :Stahlträgerbrücke
 STR_LAI_BRIDGE_DESCRIPTION_RAIL_CANTILEVER_STEEL                :Auslegerbrücke (Stahl)
@@ -2905,6 +3203,7 @@ STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Reliefka
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Reliefkartenname:
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Größe:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
+STR_MAPGEN_TOO_MANY_TILES_MESSAGE                               :{YELLOW}Zu viele Kacheln auf der Karte. Die maximale Anzahl an Kacheln beträgt {NUM}, ausgewählt sind {NUM}.
 
 STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Maximalhöhe der Karte ändern
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Höhe der Schneegrenze ändern
@@ -3092,6 +3391,9 @@ STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '
 STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Fracht / Ersetzungs - Informationen für '{1:ENGINE}' weichen von der Einkaufsliste nach dem Kauf ab. Das kann dazu führen, dass das Umrüsten beim autmatisches Ersetzen oder Erneuern nicht korrekt funktioniert
 STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' verursachte eine Endlosschleife im 'Production callback'
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Callback {1:HEX} lieferte des unbekannte und ungülte Resultat {2:HEX}
+
+STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}Nicht genügend String-IDs für alle NewGRFs vorhanden.
+STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}Einige Namen oder Textfelder können falsch dargestellt werden. Versuche weniger NewGRFs zu benutzen.
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<ungültige Frachtart>
@@ -3295,6 +3597,9 @@ STR_STATION_VIEW_GROUP_V_D_S                                    :Via-Ziel-Start
 STR_STATION_VIEW_GROUP_D_S_V                                    :Ziel-Start-Via
 STR_STATION_VIEW_GROUP_D_V_S                                    :Ziel-Via-Start
 
+STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}Abfahrten
+STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Zeige Liste der geplanten Abfahrten
+
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :Furchtbar
 STR_CARGO_RATING_VERY_POOR                                      :Sehr schlecht
@@ -3315,9 +3620,101 @@ STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Alle Flu
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Alle Schiffe, die diesen Hafen ansteuern, anzeigen
 
 STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Station/Ladeplatz umbenennen
-
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Flughafen schließen
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Luftfahrzeugen die Landeerlaubnis verweigern
+
+# Departures window
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Ankunfts- und Abfahrtszeiten
+STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Ankunfts- und Abfahrtszeiten
+STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}Ab
+STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}An
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}Durch
+STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Zeige geplante Abfahrten
+STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Zeige geplante Ankünfte
+STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Zeige geplante Durchfahrten (halten nicht an)
+STR_DEPARTURES_EMPTY                                            :{ORANGE}Aktuell sind für diese Station keine Fahrzeuge geplant.
+STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}Es wurde keine Fahrplanauskunft angefordert.
+STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} über {STATION}{STRING}
+STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} über
+STR_DEPARTURES_VIA                                              :{ORANGE}über {STATION}{STRING}
+STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
+STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
+STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
+STR_DEPARTURES_CALLING_AT                                       :{TINY_FONT}{ORANGE}Hält in:
+STR_DEPARTURES_CALLING_AT_LARGE                                 :{ORANGE}Hält in:
+STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
+STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STATION}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} und {STATION}
+STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{TINY_FONT}{ORANGE}{STRING}. Diese Fahrt verkehrt über {STATION}.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE             :{ORANGE}{STRING}. Diese Fahrt verkehrt über {STATION}.
+
+STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
+STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
+STR_DEPARTURES_TYPE_BUS                                         :{ORANGE}{BUS}
+STR_DEPARTURES_TYPE_BUS_SILVER                                  :{SILVER}{BUS}
+STR_DEPARTURES_TYPE_LORRY                                       :{ORANGE}{LORRY}
+STR_DEPARTURES_TYPE_LORRY_SILVER                                :{SILVER}{LORRY}
+STR_DEPARTURES_TYPE_PLANE                                       :{ORANGE}{PLANE}
+STR_DEPARTURES_TYPE_PLANE_SILVER                                :{SILVER}{PLANE}
+STR_DEPARTURES_TYPE_SHIP                                        :{ORANGE}{SHIP}
+STR_DEPARTURES_TYPE_SHIP_SILVER                                 :{SILVER}{SHIP}
+
+STR_DEPARTURES_STATION_NONE                                     :
+STR_DEPARTURES_STATION_PORT                                     :{ORANGE} {SHIP}
+STR_DEPARTURES_STATION_AIRPORT                                  :{ORANGE} {PLANE}
+STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP} {PLANE}
+
+############ possible statuses start
+STR_DEPARTURES_ON_TIME                                          :{GREEN}Pünktlich
+STR_DEPARTURES_ARRIVED                                          :{GREEN}Eingetroffen
+STR_DEPARTURES_DELAYED                                          :{YELLOW}Verspätet
+STR_DEPARTURES_EXPECTED                                         :{YELLOW}Erwartet am {DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_CANCELLED                                        :{RED}Gestrichen
+
+############ config settings
+STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Abfahrtstafeln
+STR_CONFIG_MAX_DEPARTURES                                       :Zeige max. {STRING} Abfahrten an jeder Station
+STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :Die maximale Anzahl an Abfahrten, die an der Abfahrtstafel angezeigt werden soll
+STR_CONFIG_MAX_DEPARTURE_TIME                                   :Zeige Abfahrten max. {STRING} Tage im Voraus
+STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :Wie weit im Voraus die Abfahrten angezeigt werden sollen, in Tagen
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :Berechne Abfahrten aller {STRING} ticks
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :Wie oft Abfahrtstafeln aufgefrischt werden sollen, in Ticks
+STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :Zeige Fahrzeugname neben der Abfahrt: {STRING}
+STR_CONFIG_DEPARTURE_VEHICLE_NAME_HELPTEXT                      :Ob neben der Abfahrt der Name des Fahrzeugs angezeigt werden sollen
+STR_CONFIG_DEPARTURE_GROUP_NAME                                 :Zeige Gruppenname neben der Abfahrt: {STRING}
+STR_CONFIG_DEPARTURE_GROUP_NAME_HELPTEXT                        :Ob neben der Abfahrt die Fahrzeuggruppe, der das Fahrzeug angehört, angezeigt werden soll
+STR_CONFIG_DEPARTURE_COMPANY_NAME                               :Zeige Firmenname neben der Abfahrt: {STRING}
+STR_CONFIG_DEPARTURE_COMPANY_NAME_HELPTEXT                      :Ob neben der Abfahrt der Firmenname des Fahrzeugbesitzers angezeigt werden soll
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :Zeige Fahrzeugtyp als Piktogramm zusammen mit der Abfahrt: {STRING}
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :Ob neben der Abfahrt der Farzeugtyp als Piktogramm angezeigt werden soll
+STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :Zeige Fahrzeugtyp als silbernes Piktogramm: {STRING}
+STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :Ob das Piktogramm des Fahrzeugtyps in Silber angezeigt werden soll
+STR_CONFIG_DEPARTURE_LARGER_FONT                                :Benutze größere Schriftart für Haltepunkte: {STRING}
+STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :Ob eine größere Schriftart für die Liste der Stationen, an denen das Fahrzeug hält, benutzt werden soll
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Zeige Piktogramm für Ziele, die Häfen oder Flughäfen sind: {STRING}
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Ob neben der Abfahrt des Fahrzeugs ein Piktogramm angezeigt werden soll, wenn das Ziel entweder ein Hafen oder ein Flughafen ist
+STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Zeige Ankunfts- und Abfahrtszeiten auf der selben Linie: {STRING}
+STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Bestimmt, ob sowohl Abfahrts-, als auch Ankunftszeiten auf einer Höhe angezeigt werden sollen
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Zeige nur Abfahrten von Fahrzeugen, die Passagiere befördern können: {STRING}
+STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Ob nur Abfahrten von Fahrzeugen, die Passagiere befördern können, angezeigt werden sollen
+STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Zeige keine Ziele, die mit einem später abfahrenden Fahrzeug schneller erreicht werden können: {STRING}
+STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Ob Ziele angezeigt werden sollen, die mit einem später abfahrenden Fahrzeug eher erreicht werden können
+STR_CONFIG_DEPARTURE_CONDITIONALS                               :Behandle bedingte Sprünge durch: {STRING}
+STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :Wie mit bedingten Sprüngen umgegangen werden soll, wenn die Abfahrten berechnet werden
+STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :aufgeben
+STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :annehmen sie würden genommen
+STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :annehmen sie würden nicht genommen
+STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Zeige alle Haltepunkte, gleich ob be- oder entladen wird: {STRING}
+STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Ob Stationen, an denen das Fahrzeug nur belädt, in der Liste der Stationen, an denen das Fahrzeug hält, angezeigt werden sollent
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Zusammenführen von identischen Abfahrten: {STRING}
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Ob identische Abfahrten zu einer einzelnen Abfahrt zusammengeführt werden sollen
 
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
@@ -3345,6 +3742,8 @@ STR_FINANCES_SECTION_AIRCRAFT_INCOME                            :{GOLD}Einnahmen
 STR_FINANCES_SECTION_SHIP_INCOME                                :{GOLD}Einnahmen Schiffe
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Kreditzinsen
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Sonstiges
+STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}Kosten für Infrastruktur-Sharing
+STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}Einnahmen aus Infrastruktur-Sharing
 STR_FINANCES_NEGATIVE_INCOME                                    :{BLACK}-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Gesamt:
@@ -3389,6 +3788,7 @@ STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Errichte
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Details
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Detaillierte Informationen zur Infrastruktur dieser Firma anzeigen
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Geld schenken
+STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Überweise Geld an eine andere Firma
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Neues Gesicht
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Neues Gesicht für Manager aussuchen
@@ -3439,6 +3839,14 @@ STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Hauptansicht zur Industrie scrollen. Strg+Klick öffnet neue Zusatzansicht zentriert auf die Industrie
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produktionsrate: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Diese Industrie wird in Kürze schließen!
+
+# Industry tooltip
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP                           :{BLACK}{STRING}
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_TOOLTIP                   :{BLACK}{STRING}{}{CARGO_LONG} ({COMMA}%)
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_TOOLTIP_TOOLTIP           :{BLACK}{STRING}{}{CARGO_LONG} ({COMMA}%){}{BLACK}{CARGO_LONG} ({COMMA}%)
+
+# Town tooltip
+STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
 
 ############ range for requires starts
 STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Benötigt: {YELLOW}{STRING}{STRING}
@@ -3494,6 +3902,15 @@ STR_VEHICLE_LIST_MASS_START_LIST_TOOLTIP                        :{BLACK}Alle Fah
 
 STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION                     :{WHITE}Gemeinsamer Fahrplan von {COMMA} Fahrzeug{P "" en}
 
+STR_VEHICLE_LIST_CHANGE_ORDER_STATION                           :Verschiebe Auftrag zu einer anderen Station
+STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT                          :Verschiebe Auftrag zu einem anderen Wegpunkt
+STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT                       :Verschiebe Auftrag zu einem anderen Depot
+STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :Verschiebe Auftrag zu einem anderen Depot
+STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :Verschiebe Auftrag zu einer anderen Werft
+STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :Verschiebe Auftrag zu einem anderen Hangar
+
+STR_VEHICLE_LIST_CREATE_GROUP                                   :Erstelle Gruppe aus Liste
+
 # Group window
 STR_GROUP_ALL_TRAINS                                            :Alle Züge
 STR_GROUP_ALL_ROAD_VEHICLES                                     :Alle Straßenfahrzeuge
@@ -3509,6 +3926,12 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Gruppen 
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Neue Gruppe erstellen
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Ausgewählte Gruppe löschen
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Ausgewählte Gruppe umbenennen
+STR_GROUP_COLLAPSE                                              :{BLACK}Einklappen
+STR_GROUP_EXPAND                                                :{BLACK}Ausklappen
+STR_GROUP_EXPAND_ALL                                            :{BLACK}Alles ausklappen
+STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Alles einklappen
+STR_GROUP_COLLAPSE_TOOLTIP                                      :{BLACK}Klicke, um die ausgewählte Gruppe einzuklappen
+STR_GROUP_EXPAND_TOOLTIP                                        :{BLACK}Klicke, um die ausgewählte Gruppe auszuklappen
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Diese Gruppe von der automatischen Fahrzeugersetzung ausschließen
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Gruppe löschen
@@ -3561,6 +3984,9 @@ STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Schienen
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Straßenfahrzeugsliste - Klicke auf ein Fahrzeug für Einzelheiten. Strg+Klick schaltet um zwischen Verstecken und Zeigen des Fahrzeugtyps
 STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}Schiffsliste - für Einzelheiten auf das Schiff klicken. Strg+Klick schaltet um zwischen Verstecken und Zeigen des Schiffstyps
 STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Flugzeugliste - Klick auf das Flugzeug zeigt weitere Einzelheiten an. Strg+Klick schaltet um zwischen Verstecken und Zeigen des Fahrzeugtyps
+
+STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}Nach Kauf umrüsten
+STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}Rüste das ausgewählte Fahrzeug nach dem Kauf automatisch für die gewählte Frachtart um
 
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}Fahrzeug kaufen
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Fahrzeug kaufen
@@ -3748,6 +4174,8 @@ STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}Das Fahr
 STR_VEHICLE_VIEW_SHIP_SEND_TO_DEPOT_TOOLTIP                     :{BLACK}Das Schiff zur Werft schicken. Strg+Klick, um dort nur Wartung durchzuführen
 STR_VEHICLE_VIEW_AIRCRAFT_SEND_TO_DEPOT_TOOLTIP                 :{BLACK}Das Flugzeug in den Hangar schicken. Strg+Klick, um dort nur Wartung durchzuführen
 
+STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift+Klick, um auszuwählen welches
+
 STR_VEHICLE_VIEW_CLONE_TRAIN_INFO                               :{BLACK}Kauft eine Kopie des Zuges mit allen Waggons. Strg+Klick erzeugt gemeinsamen Fahrplan. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_VEHICLE_VIEW_CLONE_ROAD_VEHICLE_INFO                        :{BLACK}Kauft eine Kopie des Fahrzeuges. Strg+Klick erzeugt gemeinsamen Fahrplan. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 STR_VEHICLE_VIEW_CLONE_SHIP_INFO                                :{BLACK}Kauft eine Kopie des Schiffes. Strg+Klick erzeugt gemeinsamen Fahrplan. Shift schaltet zwischen Bauen und Kostenvoranschlag um
@@ -3785,15 +4213,18 @@ STR_VEHICLE_STATUS_CRASHED                                      :{RED}Unfall!
 STR_VEHICLE_STATUS_BROKEN_DOWN                                  :{RED}Panne
 STR_VEHICLE_STATUS_STOPPED                                      :{RED}Angehalten
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}Panne - {STRING}, {LTBLUE} {VELOCITY}
+STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}Panne - {STRING}
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL                           :{RED}Halte an, {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}Keine Energie
 STR_VEHICLE_STATUS_TRAIN_STUCK                                  :{ORANGE}Warte auf freie Wege
+STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}Warte aufgrund von Routing-Beschränkung
 STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR                             :{ORANGE}Zu weit zum nächsten Ziel
 
 STR_BREAKDOWN_TYPE_CRITICAL                                     :Mechanische Störung
 STR_BREAKDOWN_TYPE_EM_STOP                                      :Nothalt
 STR_BREAKDOWN_TYPE_LOW_SPEED                                    :Auf {VELOCITY} beschränkte Geschwindigkeit
 STR_BREAKDOWN_TYPE_LOW_POWER                                    :{COMMA}% Leistung
+STR_BREAKDOWN_TYPE_HIT_RV                                       :Mit Straßenfahrzeug zusammengestoßen
 STR_BREAKDOWN_TYPE_DEPOT                                        :Unterwegs nach {STATION} Hangar für Reparaturen
 STR_BREAKDOWN_TYPE_LANDING                                      :Unterwegs nach {STATION} zur Notlandung
 STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE} ist zu schwer
@@ -3836,6 +4267,7 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Gewicht:
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Gewicht: {LTBLUE}{WEIGHT_SHORT} {BLACK}Leistung: {LTBLUE}{POWER}{BLACK} Max. Geschw.: {LTBLUE}{VELOCITY} {BLACK}Max. Zugkraft: {LTBLUE}{FORCE}
 
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}Zuglänge: {LTBLUE}{DECIMAL} Kachel{P "" n} {STRING}
+STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{BLACK}Leistung / Gewicht: {LTBLUE}{POWER_WEIGHT_RATIO} {BLACK} Max. Zugkraft / Gewicht: {LTBLUE}{FORCE_WEIGHT_RATIO}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Gewinn dieses Jahr: {LTBLUE}{CURRENCY_LONG} (letztes Jahr: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (seit Inbetriebnahme: {CURRENCY_LONG})
@@ -3868,7 +4300,9 @@ STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}Flugzeug
 
 # Extra buttons for train details windows
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE                :{LTBLUE}{ENGINE}{BLACK}   Gebaut: {LTBLUE}{NUM}{BLACK}  Wert: {LTBLUE}{CURRENCY_LONG}
+STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE}{BLACK}   Gebaut: {LTBLUE}{NUM}{BLACK} Wert: {LTBLUE}{CURRENCY_LONG} {BLACK}Max. Geschw.: {LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE                           :{LTBLUE}{ENGINE}{BLACK} Wert: {LTBLUE}{CURRENCY_LONG}
+STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   Wert: {LTBLUE}{CURRENCY_LONG} {BLACK}Max. Geschw.: {LTBLUE}{VELOCITY}
 
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT                   :{BLACK}Frachtkapazität dieses Zuges:
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY                        :{LTBLUE}{CARGO_LONG} ({CARGO_SHORT})
@@ -3938,6 +4372,7 @@ STR_ORDER_DROP_LOAD_IF_POSSIBLE                                 :Lade, wenn verf
 STR_ORDER_DROP_FULL_LOAD_ALL                                    :Vollladen jeder Fracht
 STR_ORDER_DROP_FULL_LOAD_ANY                                    :Vollladen einer Fracht
 STR_ORDER_DROP_NO_LOADING                                       :Nicht beladen
+STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :Lade nach Frachttyp
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Ändert Ladeverhalten des ausgewählten Auftrags
 
 STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Alles entladen
@@ -3945,6 +4380,7 @@ STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Entladen, falls
 STR_ORDER_DROP_UNLOAD                                           :Alles entladen
 STR_ORDER_DROP_TRANSFER                                         :Umladen
 STR_ORDER_DROP_NO_UNLOADING                                     :Nicht entladen
+STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :Entlade nach Frachttyp
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Ändert Entladeverhalten des ausgewählten Auftrags
 
 STR_ORDER_REFIT                                                 :{BLACK}Umrüsten
@@ -3953,6 +4389,9 @@ STR_ORDER_REFIT_AUTO                                            :{BLACK}Umrüstu
 STR_ORDER_REFIT_AUTO_TOOLTIP                                    :{BLACK}Auswählen, auf welche Frachtart umgerüstet wird. Strg+Klick um Auftrag zum Umrüsten zu entfernen. Umrüsten wird vorgenommen, wenn das Fahrzeug es zuläßt.
 STR_ORDER_DROP_REFIT_AUTO                                       :Vorgegebene Fracht
 STR_ORDER_DROP_REFIT_AUTO_ANY                                   :Verfügbare Fracht
+
+STR_ORDER_REVERSE                                               :{BLACK}Wende
+STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}Ändere das Wendeverhalten des ausgewählten Auftrags
 
 STR_ORDER_SERVICE                                               :{BLACK}Wartung
 STR_ORDER_DROP_GO_ALWAYS_DEPOT                                  :Fahre immer
@@ -3973,7 +4412,15 @@ STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Verbleibende La
 STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Wartende Fracht
 STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Akzeptierte Fracht
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Freie Bahnsteige
-STR_ORDER_CONDITIONAL_PERCENT                                   :Anteil der Halte in Prozent
+STR_ORDER_CONDITIONAL_PERCENT                                   :Prozent der Fälle
+
+STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Wartung erforderlich {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :nächste Station {STRING} wartende{G 1 n "" s ""} {STRING}
+STR_ORDER_CONDITIONAL_ACCEPTANCE                                :nächste Station {STRING} {STRING}
+STR_CONDITIONAL_FREE_PLATFORMS                                  :Springe zu Auftrag {COMMA} wenn die nächste Station {STRING} {COMMA} freie{P n ""} Bahnsteig{P "" e}
+STR_CONDITIONAL_PERCENT                                         :Springe zu Auftrag {COMMA} in {COMMA} Prozent der Fälle
+
+STR_ORDER_CONDITIONAL_NEXT_STATION                              :nächste Station
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Die Bedingung, die erfüllt werden muss
 STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS                         :gleich
@@ -3990,9 +4437,9 @@ STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}Frachtar
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Wert für den Vergleich eingeben
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :akzeptiert
-STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :akzeptiert nicht
+STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :akzeptiert keine
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :hat
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :hat nicht
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :hat keine
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :hat weniger als
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :hat weniger als oder genau
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :hat mehr als
@@ -4016,9 +4463,16 @@ STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Einen ne
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}Alle Fahrzeuge mit demselben Fahrplan anzeigen
 
+STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
+STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Zeige durchschnittliche Auslastung{}Der angezeigte Prozentwert ist der Durchschnitt der Auslastungen der Aufträge
+STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Auftragsauslastung - zeigt den laufenden Durchschnitt der letzten Auslastungen beim Verlassen der Station, für alle Fahrzeuge, die diese Aufträge teilen
+STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
+
 # String parts to build the order string
 STR_ORDER_GO_TO_WAYPOINT                                        :Fahre über {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Fahre ohne Zwischenhalt über {WAYPOINT}
+STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :Fahre über und wende bei {WAYPOINT}
+STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :Fahre ohne Zwischenhalt über und wende bei {WAYPOINT}
 
 STR_ORDER_SERVICE_AT                                            :Falls nötig, fahre zwecks Wartung zu
 STR_ORDER_SERVICE_NON_STOP_AT                                   :Fahre ohne Zwischenhalt zwecks Wartung zu
@@ -4042,31 +4496,48 @@ STR_ORDER_IMPLICIT                                              :(Implizit)
 STR_ORDER_FULL_LOAD                                             :(Voll beladen)
 STR_ORDER_FULL_LOAD_ANY                                         :(Mit einer Fracht voll beladen)
 STR_ORDER_NO_LOAD                                               :(Nicht beladen)
+STR_ORDER_CARGO_TYPE_LOAD                                       :(Laden nach Frachttyp)
 STR_ORDER_UNLOAD                                                :(Entladen und laden)
 STR_ORDER_UNLOAD_FULL_LOAD                                      :(Entladen und auf volle Ladung warten)
 STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :(Entladen und voll beladen mit beliebiger Fracht)
 STR_ORDER_UNLOAD_NO_LOAD                                        :(Entladen und leer verlassen)
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD                                :(Entladen und laden nach Frachttyp)
 STR_ORDER_TRANSFER                                              :(Umladen und laden)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :(Umladen und auf volle Ladung warten)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :(Umladen und voll beladen mit beliebiger Fracht)
 STR_ORDER_TRANSFER_NO_LOAD                                      :(Umladen und leer verlassen)
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD                              :(Umladen und laden nach Frachttyp)
 STR_ORDER_NO_UNLOAD                                             :(Nicht entladen, aber laden)
 STR_ORDER_NO_UNLOAD_FULL_LOAD                                   :(Nicht entladen, aber auf volle Ladung warten)
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY                               :(Nicht entladen, aber voll beladen mit beliebiger Fracht)
 STR_ORDER_NO_UNLOAD_NO_LOAD                                     :(Weder entladen noch beladen)
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD                             :(Nicht entladen, aber laden nach Frachttyp)
+STR_ORDER_CARGO_TYPE_UNLOAD                                     :(Entladen nach Frachttyp)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD                           :(Entladen nach Frachttyp und auf volle Ladung warten)
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY                       :(Entladen nach Frachttyp und beladen mit beliebiger Fracht)
+STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD                             :(Entladen nach Frachttyp und leer verlassen)
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD                     :(Entladen nach Frachttyp und laden nach Frachttyp)
 
 STR_ORDER_AUTO_REFIT                                            :(Umrüstung auf {STRING})
 STR_ORDER_FULL_LOAD_REFIT                                       :(Volladen mit Umrüstung auf {STRING})
-STR_ORDER_FULL_LOAD_ANY_REFIT                                   :(Volladen einer Frachtart und Umrüstung auf {STRING})
+STR_ORDER_FULL_LOAD_ANY_REFIT                                   :(Volladen einer Frachtart mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_LOAD_REFIT                                 :(Laden nach Frachttyp mit Umrüstung auf {STRING})
 STR_ORDER_UNLOAD_REFIT                                          :(Entladen und laden mit Umrüstung auf {STRING})
 STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :(Umladen und warten auf volle Zuladung mit Umrüstung auf {STRING})
 STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :(Entladen und warten auf volle Zuladung einer Frachtart mit Umrüstung auf {STRING})
+STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT                          :(Entladen und laden nach Frachttyp mit Umrüstung auf {STRING})
 STR_ORDER_TRANSFER_REFIT                                        :(Umladen und laden mit Umrüstung auf {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :(Umladen und warten auf volle Zuladung mit Umrüstung auf {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :(Umladen und warten auf volle Zuladung einer Frachtart mit Umrüstung auf {STRING})
+STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT                        :(Umladen und laden nach Frachttyp mit Umrüstung auf {STRING})
 STR_ORDER_NO_UNLOAD_REFIT                                       :(Nicht entladen und laden mit Umrüstung auf {STRING})
 STR_ORDER_NO_UNLOAD_FULL_LOAD_REFIT                             :(Nicht entladen und warten auf volle Zuladung mit Umrüstung auf {STRING})
 STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT                         :(Nicht entladen und warten auf volle Zuladung einer Fracht mit Umrüstung auf {STRING})
+STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT                       :(Nicht entladen und laden nach Frachttyp mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_REFIT                               :(Entladen nach Frachttyp und laden mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :(Entladen nach Frachttyp und warten auf volle Zuladung mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :(Entladen nach Frachttyp und warten auf volle Zuladung einer Frachtart mit Umrüstung auf {STRING})
+STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :(Entladen nach Frachttyp und laden nach Frachttyp mit Umrüstung auf {STRING})
 
 STR_ORDER_AUTO_REFIT_ANY                                        :verfügbare Fracht
 
@@ -4078,6 +4549,7 @@ STR_ORDER_OUT_OF_RANGE                                          :{RED} (Nächste
 
 STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :Springe zu Auftrag {COMMA}
 STR_ORDER_CONDITIONAL_NUM                                       :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} {COMMA} ist
+STR_ORDER_CONDITIONAL_CARGO                                     :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} ist
 
 STR_INVALID_ORDER                                               :{RED} (Ungültiger Auftrag)
@@ -4103,6 +4575,9 @@ STR_TIMETABLE_STAY_FOR                                          :und {STRING} la
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :und {STRING} lang unterwegs
 STR_TIMETABLE_DAYS                                              :{COMMA}{NBSP}Tag{P "" e}
 STR_TIMETABLE_TICKS                                             :{COMMA}{NBSP}Tick{P "" s}
+STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}Minute{P "" n}
+
+STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} Tick{P "" s}
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Dieser Fahrplan benötigt {STRING}
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Dieser Fahrplan benötigt mindestens {STRING} (nicht alle geplant)
@@ -4134,6 +4609,15 @@ STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}Verspät
 STR_TIMETABLE_AUTOFILL                                          :{BLACK}Erfassen
 STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}Zeiten automatisch bei der nächsten Fahrt eintragen (Mit Strg+Klick wird versucht, die aktuellen Wartezeiten beizubehalten)
 
+STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatisieren
+STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Verwalte den Fahrplan durch automatisches Erfassen der Werte jeder Fahrt (Strg+Klick, um beim Deaktivieren den aktuellen Fahrplan beizubehalten)
+
+STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}Auto-Separierung
+STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}Passe automatisch die Anfangsdaten des Fahrplans an, um die Fahrzeug-Separierung zu gewährleisten
+
+STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}Geplante Beförderung
+STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}Öffne das Fenster für die geplante Beförderung, um die Anfangsdaten des Fahrplans automatisch setzen zu lassen
+
 STR_TIMETABLE_EXPECTED                                          :{BLACK}Voraussichtlich
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Fahrplanmäßig
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Umschalten zwischen Anzeige der erwarteten Ankunftszeit und des Fahrplans
@@ -4149,7 +4633,22 @@ STR_DATE_SET_DATE_TOOLTIP                                       :{BLACK}Setze de
 STR_DATE_DAY_TOOLTIP                                            :{BLACK}Tag auswählen
 STR_DATE_MONTH_TOOLTIP                                          :{BLACK}Monat auswählen
 STR_DATE_YEAR_TOOLTIP                                           :{BLACK}Jahr auswählen
+STR_DATE_MINUTES_DAY_TOOLTIP                                    :{BLACK}Minute auswählen
+STR_DATE_MINUTES_MONTH_TOOLTIP                                  :{BLACK}Stunde auswählen
 
+# Cargo type orders Window
+STR_CARGO_TYPE_ORDERS_LOAD_CAPTION                              :{WHITE}{VEHICLE} ({NUM}: Lade in {STATION})
+STR_CARGO_TYPE_ORDERS_UNLOAD_CAPTION                            :{WHITE}{VEHICLE} ({NUM}: Entlade in {STATION})
+STR_CARGO_TYPE_ORDERS_LOAD_TITLE                                :{GOLD}Wähle Ladeauftrag nach Frachttyp:
+STR_CARGO_TYPE_ORDERS_UNLOAD_TITLE                              :{GOLD}Wähle Entladeauftrag nach Frachttyp:
+STR_CARGO_TYPE_ORDERS_CLOSE_BUTTON                              :{BLACK}Schließen
+
+STR_CARGO_TYPE_ORDERS_DROP_FULL_LOAD                            :Volladen
+STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP                         :{BLACK}Ändere das Ladeverhalten für diesen Frachttyp
+STR_CARGO_TYPE_UNLOAD_ORDERS_DROP_TOOLTIP                       :{BLACK}Ändere das Entladeverhalten für diesen Frachttyp
+
+STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}Setze alle auf:
+STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}Lege für alle Frachttypaufträge das hier gewählten Verhalten fest
 
 # AI debug window
 STR_AI_DEBUG                                                    :{WHITE}KI- und Skript-Debug
@@ -4234,6 +4733,24 @@ STR_TEXTFILE_VIEW_README                                        :{BLACK}Liesmich
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Änderungen
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Lizenz
 
+# Plans window
+STR_PLANS_CAPTION                                               :{WHITE}Pläne
+STR_PLANS_NEW_PLAN                                              :{BLACK}Neu
+STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}Erstelle einen neuen Plan
+STR_PLANS_ADD_LINES                                             :{BLACK}Strecken hinzufügen
+STR_PLANS_ADDING_LINES                                          :{BLACK}Füge hinzu...
+STR_PLANS_HIDE_ALL                                              :{BLACK}Alle verstecken
+STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}Setze die Sichtbarkeit aller Pläne und all ihrer Strecken auf falsch
+STR_PLANS_SHOW_ALL                                              :{BLACK}Alle zeigen
+STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}Setze die Sichtbarkeit aller Pläne und all ihrer Strecken auf wahr
+STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}Privat
+STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}Öffentlich
+STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}Stellt die Sichtbarkeit für Mitbewerber ein (gelb ist privat, blau ist öffentlich). Öffentliche Pläne werden in der Planliste von anderen Firmen angezeigt, aber nur deren Besitzer kann diesem Strecken hinzufügen oder entfernen.
+STR_PLANS_DELETE                                                :{BLACK}Entfernen
+STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Entferne den ausgewählten Eintrag aus der Liste
+STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} Strecke{P 0 "" n} ({DATE_SHORT})
+STR_PLANS_LIST_ITEM_LINE                                        : -- Strecke #{NUM}: {NUM} Segment{P 0 "" e}
+STR_PLANS_LIST_TOOLTIP                                          :{BLACK}Doppelklick auf einen Eintrag, um den dazugehörigen Plan aus- bzw. einzuklappen.{}Strg+Klick, um zu dem Eintrag zu scrollen.
 
 # Vehicle loading indicators
 STR_PERCENT_UP_SMALL                                            :{TINY_FONT}{WHITE}{NUM}%{UP_ARROW}
@@ -4363,6 +4880,7 @@ STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Bau von 
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Die Stadt kann nicht umbenannt werden...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Stadt kann hier nicht gegründet werden...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Stadt kann nicht vergrößert werden...
+STR_ERROR_CAN_T_BUILD_HOUSE_HERE                                :{WHITE}Kann Gebäude hier nicht bauen...
 STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... zu dicht am Spielfeldrand
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... zu dicht an einer anderen Stadt
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... zu viele Städte
@@ -4371,6 +4889,15 @@ STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE}Städte 
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Straßenarbeiten sind im Gange
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Stadt kann nicht gelöscht werden...{}Eine Station oder ein Depot bezieht sich auf diese Stadt oder ein Feld im städtischen Besitz kann nicht entfernt werden.
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... es gibt keinen geeigneten Standort für die Statue im Zentrum dieser Stadt
+STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE                :{WHITE}... in dieser Stadtzone nicht erlaubt
+STR_ERROR_BUILDING_NOT_ALLOWED_ABOVE_SNOW_LINE                  :{WHITE}... oberhalb der Schneegrenze nicht erlaubt
+STR_ERROR_BUILDING_NOT_ALLOWED_BELOW_SNOW_LINE                  :{WHITE}... unterhalb der Schneegrenze nicht erlaubt
+STR_ERROR_TOO_MANY_HOUSE_SETS                                   :{WHITE}... zu viele Gebäudesets in der Stadt
+STR_ERROR_TOO_MANY_HOUSE_TYPES                                  :{WHITE}... zu viele Gebäudetypen in der Stadt
+STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... Gebäude ist zu alt
+STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... Gebäude ist zu modern
+STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... nur ein Gebäude dieses Typs ist in einer Stadt erlaubt
+STR_ERROR_BUILDING_NOT_ALLOWED                                  :{WHITE}... der Bau ist nicht erlaubt
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... zu viele Industrien
@@ -4497,6 +5024,8 @@ STR_ERROR_THERE_ARE_NO_SIGNALS                                  :{WHITE}... hier
 
 STR_ERROR_CAN_T_CONVERT_RAIL                                    :{WHITE}Gleistyp kann hier nicht geändert werden...
 
+STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Anzahl der Auswertungen von programmierbaren Signalen übersteigt das Limit
+
 # Road construction errors
 STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :{WHITE}Straße muss erst entfernt werden
 STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION                      :{WHITE}... Einbahnstraßen können keine Abzweigung haben
@@ -4542,8 +5071,14 @@ STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :{WHITE}Platz is
 STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :{WHITE}Der Tunnel muss zuerst abgerissen werden
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}Ein anderer Tunnel ist im Weg
 STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}Tunnel würde außerhalb des Spielfelds enden
+STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}Unterwassertunnel würde außerhalb der Karte enden
 STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}Gebiet am anderen Ende des Tunnels kann nicht geebnet werden
 STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... Tunnel zu lang
+STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... nur eine Rampenlänge zwischen 5 und {NUM} Kacheln ist für Unterwassertunnel erlaubt.
+STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... zu viele Tunnel
+STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL                             :{WHITE}Keine Ölplattformen über Unterwassertunneln erlaubt
+STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}Drei Kacheln sind notwendig, um einen Tunnel unter dem anderen hindurch zu führen
+STR_ERROR_CHUNNEL_ONLY_OVER_SEA                                 :{WHITE}Unterwassertunnel dürfen nur Meer durchqueren...
 
 # Object related errors
 STR_ERROR_TOO_MANY_OBJECTS                                      :{WHITE}... zu viele Objekte
@@ -4656,6 +5191,11 @@ STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... zu v
 STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :{WHITE}Schild kann hier nicht aufgestellt werden...
 STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :{WHITE}Schildtext kann nicht geändert werden...
 STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}Kann Schild nicht löschen...
+
+# Plan related errors
+STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... zu viele Pläne
+STR_ERROR_TOO_MANY_NODES                                        :{WHITE}... zu viele Segmente in geplanter Strecke
+STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}Kein weiterer Platz für neue Strecken
 
 # Translatable comment for OpenTTD's desktop shortcut
 STR_DESKTOP_SHORTCUT_COMMENT                                    :Ein auf der Idee von Transport Tycoon Deluxe basierendes Spiel
@@ -5052,6 +5592,11 @@ STR_FORMAT_DATE_SHORT                                           :{STRING} {NUM}
 STR_FORMAT_DATE_LONG                                            :{STRING} {STRING} {NUM}
 STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:STRING}-{0:STRING}
 
+STR_FORMAT_DATE_MINUTES                                         :{0:STRING}:{1:STRING}
+STR_FORMAT_DATE_MINUTES_WITH_Y                                  :{0:STRING}:{1:STRING} / {2:NUM}
+STR_FORMAT_DATE_MINUTES_WITH_YM                                 :{0:STRING}:{1:STRING} / {2:DATE_SHORT}
+STR_FORMAT_DATE_MINUTES_WITH_YMD                                :{0:STRING}:{1:STRING} / {2:DATE_LONG}
+
 STR_FORMAT_BUOY_NAME                                            :{TOWN} Boje
 STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} Boje #{COMMA}
 STR_FORMAT_COMPANY_NUM                                          :(Firma {COMMA})
@@ -5076,10 +5621,25 @@ STR_SAVEGAME_NAME_DEFAULT                                       :{COMPANY}, {STR
 STR_SAVEGAME_NAME_SPECTATOR                                     :Zuschauer, {1:STRING}
 
 # Viewport strings
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP                            :{BROWN}{NUM} {STRING}
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION                    :{BLACK}ST
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT                   :{GRAY}WP
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT                   :{GRAY}IM
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT                      :{RED}DE
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW                   :{RED}{NUM}x
+
+STR_VIEWPORT_TOWN_POP_VERY_POOR_RATING                          :{WHITE}{TOWN} {RED}({COMMA})
+STR_VIEWPORT_TOWN_POP_MEDIOCRE_RATING                           :{WHITE}{TOWN} {ORANGE}({COMMA})
+STR_VIEWPORT_TOWN_POP_GOOD_RATING                               :{WHITE}{TOWN} {YELLOW}({COMMA})
 STR_VIEWPORT_TOWN_POP                                           :{WHITE}{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_POP_EXCELLENT_RATING                          :{WHITE}{TOWN} {GREEN}({COMMA})
 STR_VIEWPORT_TOWN                                               :{WHITE}{TOWN}
 STR_VIEWPORT_TOWN_TINY_BLACK                                    :{TINY_FONT}{BLACK}{TOWN}
+STR_VIEWPORT_TOWN_TINY_VERY_POOR_RATING                         :{TINY_FONT}{RED}{TOWN}
+STR_VIEWPORT_TOWN_TINY_MEDIOCRE_RATING                          :{TINY_FONT}{ORANGE}{TOWN}
+STR_VIEWPORT_TOWN_TINY_GOOD_RATING                              :{TINY_FONT}{YELLOW}{TOWN}
 STR_VIEWPORT_TOWN_TINY_WHITE                                    :{TINY_FONT}{WHITE}{TOWN}
+STR_VIEWPORT_TOWN_TINY_EXCELLENT_RATING                         :{TINY_FONT}{GREEN}{TOWN}
 
 STR_VIEWPORT_SIGN_SMALL_BLACK                                   :{TINY_FONT}{BLACK}{SIGN}
 STR_VIEWPORT_SIGN_SMALL_WHITE                                   :{TINY_FONT}{WHITE}{SIGN}
@@ -5112,10 +5672,16 @@ STR_JUST_CURRENCY_SHORT                                         :{CURRENCY_SHORT
 STR_JUST_CURRENCY_LONG                                          :{CURRENCY_LONG}
 STR_JUST_CARGO_LIST                                             :{CARGO_LIST}
 STR_JUST_INT                                                    :{NUM}
+STR_JUST_DECIMAL                                                :{DECIMAL}
+STR_JUST_DECIMAL1                                               :{DECIMAL1}
 STR_JUST_DATE_TINY                                              :{DATE_TINY}
 STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
+STR_JUST_DATE_WALLCLOCK_TINY                                    :{DATE_WALLCLOCK_TINY}
+STR_JUST_DATE_WALLCLOCK_SHORT                                   :{DATE_WALLCLOCK_SHORT}
+STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK_LONG}
+STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
@@ -5128,15 +5694,19 @@ STR_TINY_COMMA                                                  :{TINY_FONT}{COM
 STR_BLUE_COMMA                                                  :{BLUE}{COMMA}
 STR_RED_COMMA                                                   :{RED}{COMMA}
 STR_WHITE_COMMA                                                 :{WHITE}{COMMA}
+STR_BLACK_DECIMAL                                               :{BLACK}{DECIMAL}
 STR_TINY_BLACK_DECIMAL                                          :{TINY_FONT}{BLACK}{DECIMAL}
 STR_COMPANY_MONEY                                               :{WHITE}{CURRENCY_LONG}
 STR_BLACK_DATE_LONG                                             :{BLACK}{DATE_LONG}
 STR_WHITE_DATE_LONG                                             :{WHITE}{DATE_LONG}
+STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WALLCLOCK_LONG}
+STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
 STR_TINY_GROUP                                                  :{TINY_FONT}{GROUP}
 STR_BLACK_INT                                                   :{BLACK}{NUM}
 STR_ORANGE_INT                                                  :{ORANGE}{NUM}
+STR_RED_INT                                                     :{RED}{NUM}
 STR_WHITE_SIGN                                                  :{WHITE}{SIGN}
 STR_TINY_BLACK_STATION                                          :{TINY_FONT}{BLACK}{STATION}
 STR_BLACK_STRING                                                :{BLACK}{STRING}
@@ -5150,6 +5720,8 @@ STR_TINY_BLACK_HEIGHT                                           :{TINY_FONT}{BLA
 STR_TINY_BLACK_VEHICLE                                          :{TINY_FONT}{BLACK}{VEHICLE}
 STR_TINY_RIGHT_ARROW                                            :{TINY_FONT}{RIGHT_ARROW}
 
+STR_WHITE                                                       :{WHITE}
+STR_BLACK                                                       :{BLACK}
 STR_BLACK_1                                                     :{BLACK}1
 STR_BLACK_2                                                     :{BLACK}2
 STR_BLACK_3                                                     :{BLACK}3
@@ -5177,7 +5749,95 @@ STR_ZONING_INNER_INFO                                           :{BLACK}Wähle d
 STR_ZONING_NO_ZONING                                            :Nichts
 STR_ZONING_AUTHORITY                                            :Einflussbereich der Verwaltungen
 STR_ZONING_CAN_BUILD                                            :Bereiche, die nicht bebaut werden können
-STR_ZONING_STA_CATCH                                            :Einzugsgebiete der Stationen
+STR_ZONING_STA_CATCH                                            :Stationeneinzugsgebiete
+STR_ZONING_STA_CATCH_OPEN                                       :Stationeneinzugsgebiet des geöffneten Fensters
 STR_ZONING_BUL_UNSER                                            :Nicht bediente Gebäude
 STR_ZONING_IND_UNSER                                            :Nicht bediente Industrien
-STR_ZONING_TRACERESTRICT                                        :Restriktierende Signale
+STR_ZONING_TRACERESTRICT                                        :Routing-beschränkte Signale
+
+STR_TMPL_RPL_TITLE                                              :{WHITE}Fahrzeugersetzung nach Vorlage
+STR_TMPL_TEMPLATE_REPLACEMENT                                   :Ersetzung nach Vorlage
+STR_TMPL_TRAINS_IN_GROUP                                        :{BLACK}gruppierte Züge
+STR_TMPL_AVAILABLE_TEMPLATES                                    :{BLACK}Verfügbare Vorlagen
+STR_TMPL_DEFINE_TEMPLATE                                        :{BLACK}Neu
+STR_TMPL_EDIT_TEMPLATE                                          :{BLACK}Bearbeiten
+STR_TMPL_CREATE_CLONE_VEH                                       :{BLACK}Klonen
+STR_TMPL_DELETE_TEMPLATE                                        :{BLACK}Löschen
+STR_TMPL_RPL_ALL_TMPL                                           :{BLACK}Ersetze alle Vorlagen
+STR_TMPL_NEW_VEHICLE                                            :{BLACK}Neues Fahrzeug
+STR_TMPL_CONFIRM                                                :{BLACK}Ok
+STR_TMPL_CANCEL                                                 :{BLACK}Abbrechen
+STR_TMPL_NEW                                                    :{BLACK}Neues Fahrzeug der Vorlage
+STR_TMPL_REFIT                                                  :{BLACK}Umrüsten
+STR_TMPL_GROUP_INFO                                             :{BLACK}Gruppen-Info: {ORANGE}
+STR_TMPL_TEMPLATE_INFO                                          :{BLACK}Vorlagen-Info: {ORANGE}
+STR_TMPL_RPL_START                                              :{BLACK}Fahrzeugersetzung an
+STR_TMPL_RPL_STOP                                               :{BLACK}Fahrzeugersetzung aus
+STR_TMPL_TRAIN_OVR_VALUE                                        :{TINY_FONT}{BLACK}Wert des Zuges: {CURRENCY_SHORT}
+STR_TMPL_TEMPLATE_OVR_VALUE                                     :{TINY_FONT}{BLACK}Anschaffungskosten: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_nogold                              :{TINY_FONT}{BLACK}Anschaffungskosten: {CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_nogoldandcurrency                   :{TINY_FONT}{BLACK}Anschaffungskosten:
+STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont                          :{BLACK}Anschaffungskosten: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_notinyfontandblack                  :Anschaffungskosten: {GOLD}{CURRENCY_LONG}
+STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Unvollständiger Antriebsstrang: Zug kann nicht bewegt werden!
+STR_TMPL_TEST                                                   :{ORANGE}Test String: {STRING} {STRING}
+STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Vorlage in Benutzung: {NUM}
+STR_TMP_TEMPLATE_IN_USE                                         :Vorlage ist in Benutzung
+STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
+STR_TMPL_CREATEGUI_TITLE                                        :{WHITE}Erstelle/Bearbeite Fahrzeuge der Vorlage
+STR_TMPL_MAINGUI_DEFINEDGROUPS                                  :{BLACK}Vorhandene Gruppen der Firma
+STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE                               :Benutzt Vorlagen verschiedener Gleistypen
+
+STR_TMPL_SET_USEDEPOT                                           :{BLACK}Benutze Fahrzeuge im Depot
+STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}Benutze zur Komposition Fahrzeuge, welche innerhalb des Depots in einem neutralen und unbenutzten Zustand zur Verfügung stehen, um die Anschaffungskosten zu reduzieren.
+STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Bereithaltung verbleibender Fahrzeuge 
+STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}Behalte nach erfolgreicher Ersetzung alle verbleibenden Fahrzeuge des alten Zugs in einem neutralen und unbenutzen Zustand für spätere Benutzung bereit.
+STR_TMPL_SET_REFIT                                              :{BLACK}Benutze Umrüstungen
+STR_TMPL_SET_REFIT_TIP                                          :{BLACK}Benutze die exakten Umrüstungen, die in der Vorlage angegeben sind. Wenn nicht jedes Fahrzeug, das neu angeschafft oder aus dem Depot geholt wurde, umgerüstet werden kann, wird für jedes Fahrzeug zumindest *versucht* die Umrüstung durchzuführen. Bei nicht erfolgbarer Umrüstung eines Fahrzeugs wird dessen Standardfracht benutzt.
+
+STR_TMPL_CONFIG_USEDEPOT                                        :Depotnutzung
+STR_TMPL_CONFIG_KEEPREMAINDERS                                  :Bereithaltung
+STR_TMPL_CONFIG_REFIT                                           :Umrüstungen
+
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# Züge zu ersetzen:
+
+STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
+STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})
+
+STR_TMPL_RPLALLGUI_TITLE                                        :{WHITE}Ersetze alle Fahrzeuge der Vorlagen
+STR_TMPL_RPLALLGUI_INSET_TOP                                    :{BLACK}Wähle Fahrzeugtyp und Ersetzung
+STR_TMPL_RPLALLGUI_INSET_TOP_1                                  :{BLACK}Lokomotiven der Vorlagen
+STR_TMPL_RPLALLGUI_INSET_TOP_2                                  :{BLACK}Verfügbare Lokomotiven
+STR_TMPL_RPLALLGUI_INSET_BOTTOM                                 :{BLACK}Aktuelle Vorlagenliste (nur nach der Ersetzung geupdatet)
+STR_TMPL_RPLALLGUI_BUTTON_RPLALL                                :{BLACK}Ersetze alle
+STR_TMPL_RPLALLGUI_BUTTON_APPLY                                 :{BLACK}Anwenden
+STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}Abbrechen
+STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}Wähle einen Fahrzeugtyp aus jeder Liste aus und drücke 'Ersetze alle'. Erscheint das gewünschte Resultat in der Vorlagenliste, drücke 'Anwenden', um die Änderungen tatsächlich anzuwenden.
+
+STR_TMPL_CANT_CREATE                                            :{WHITE}Vorlage oder virtuelles Fahrzeug kann nicht erstellt werden...
+
+# Scheduled Dispatch
+STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (geplante Beförderung)
+STR_SCHDISPATCH_ENABLED                                         :{BLACK}Aktivieren
+STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Aktiviert geplante Beförderung für diesen Auftrag. Hierfür muss die automatische Verteilung ausgeschaltet sein.
+STR_SCHDISPATCH_ADD                                             :{BLACK}Füge Abfahrtslot hinzu
+STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Füge für diesen Fahrplan einen neuen Abfahrtslot hinzu.
+STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Abfahrtslot
+STR_SCHDISPATCH_DURATION                                        :{BLACK}Dauer
+STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Setze die Dauer für diesen Fahrplan.
+STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Dauer (Minuten)
+STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}Dauer (Tage)
+STR_SCHDISPATCH_START                                           :{BLACK}Anfangsdatum
+STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}Wähle ein Anfangsdatum für diesen Fahrplan aus.
+STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}Anfangsdatum (hhmm)
+STR_SCHDISPATCH_DELAY                                           :{BLACK}Verspätung
+STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}Setze die maximal mögliche Verspätung bis der Slot übersprungen wird.
+STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}Verspätung (Minuten)
+STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Verspätung (Tage)
+
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Letzte Abfahrt am {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Letzte Abfahrt hat den Bahnhof noch nicht verlassen; Abfahrt am {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Dieser Fahrplan erfordert {COMMA} Fahrzeug{P "" e}.
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Dieser Fahrplan wiederholt sich alle {STRING} und begann am {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Es ist eine maximale Verspätung von {STRING} erlaubt, ehe der Slot übersprungen wird.
+STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}Dieser Fahrplan ist nicht aktiv.
