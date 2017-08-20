@@ -77,6 +77,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_CUSTOM_BRIDGE_HEADS,    XSCF_NULL,                1,   1, "custom_bridge_heads",       NULL, NULL, NULL        },
 	{ XSLFI_CHUNNEL,                XSCF_NULL,                1,   1, "chunnel",                   NULL, NULL, "TUNN"      },
 	{ XSLFI_SCHEDULED_DISPATCH,     XSCF_NULL,                1,   1, "scheduled_dispatch",        NULL, NULL, NULL        },
+	{ XSLFI_MORE_TOWN_GROWTH_RATES, XSCF_NULL,                1,   1, "more_town_growth_rates",    NULL, NULL, NULL        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 

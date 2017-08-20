@@ -1445,6 +1445,21 @@ static bool UpdateClientConfigValues(int32 p1)
 
 /* End - Callback Functions */
 
+/* Begin - GUI order callbacks */
+
+static int OrderTownGrowthRate(uint nth)
+{
+	if (nth == 0) {
+		return 0;
+	} else if (nth <= 2) {
+		return nth - 3;
+	} else {
+		return nth - 2;
+	}
+}
+
+/* End - GUI order callbacks */
+
 /**
  * Prepare for reading and old diff_custom by zero-ing the memory.
  */

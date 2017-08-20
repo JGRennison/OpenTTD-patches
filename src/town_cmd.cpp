@@ -3389,9 +3389,20 @@ static void UpdateTownGrowRate(Town *t)
 
 	/* Use the normal growth rate values if new buildings have been funded in
 	 * this town and the growth rate is set to none. */
-	uint growth_multiplier = _settings_game.economy.town_growth_rate != 0 ? _settings_game.economy.town_growth_rate - 1 : 1;
+	int growth_multiplier;
+	if (_settings_game.economy.town_growth_rate == 0) {
+		growth_multiplier = 1;
+	} else if (_settings_game.economy.town_growth_rate > 0) {
+		growth_multiplier = _settings_game.economy.town_growth_rate - 1;
+	} else {
+		growth_multiplier = _settings_game.economy.town_growth_rate;
+	}
 
-	m >>= growth_multiplier;
+	if (growth_multiplier < 0) {
+		m <<= (-growth_multiplier);
+	} else {
+		m >>= growth_multiplier;
+	}
 	if (t->larger_town) m /= 2;
 
 	t->growth_rate = m / (t->cache.num_houses / 50 + 1);

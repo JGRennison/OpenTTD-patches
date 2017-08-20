@@ -1727,6 +1727,8 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Town growth speed: {STRING2}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Speed of town growth
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extremely slow
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Very slow
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :None
 STR_CONFIG_SETTING_TOWN_GROWTH_SLOW                             :Slow
 STR_CONFIG_SETTING_TOWN_GROWTH_NORMAL                           :Normal
