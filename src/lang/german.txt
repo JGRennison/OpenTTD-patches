@@ -1398,6 +1398,8 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Einfach-Klick (
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :Zeige die Verbindungspunkte von Fahrzeugrouten: {STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :Markiere die Fahrzeuge anderer Firmen in den Listen in deren Firmenfarbe: {STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :Fahrzeuge in Fahrzeuglisten, die Eigentum anderer Firmen als die des Eigentümers der Fahrzeugliste sind, werden mit einem Kästchen in der entsprechenden Firmenfarbe markiert.
+STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :Erlaube ein einzelnes Fahrzeug im Fenster einer Gruppe mit gemeinsam genutzten Fahrplan: {STRING2}
+STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :Erlaube die Benutzung des Fensters für Gruppen mit gemeinsam genutzten Fahrplan auch mit nur einem Fahrzeug ohne gemeinsam genutzten Fahrplan.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :Scanne die Umgebung einer Kachel (verbesserte Anzeige bei hohen Zoomstufen): {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Zeige Geländesteigungen an: {STRING}
@@ -1726,6 +1728,8 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Wachstumsgeschwindigkeit von Städten: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Geschwindigkeit des Städtewachstums
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extrem langsam
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Sehr langsam
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :Keine
 STR_CONFIG_SETTING_TOWN_GROWTH_SLOW                             :Langsam
 STR_CONFIG_SETTING_TOWN_GROWTH_NORMAL                           :Mittel
@@ -4468,6 +4472,8 @@ STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}Zeige du
 STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}Auftragsauslastung - zeigt den laufenden Durchschnitt der letzten Auslastungen beim Verlassen der Station, für alle Fahrzeuge, die diese Aufträge teilen
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
+STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}Erstelle Gruppe aus einzelnem Fahrzeug
+
 # String parts to build the order string
 STR_ORDER_GO_TO_WAYPOINT                                        :Fahre über {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :Fahre ohne Zwischenhalt über {WAYPOINT}
@@ -5719,6 +5725,7 @@ STR_ORANGE_STRING1_LTBLUE                                       :{ORANGE}{STRING
 STR_TINY_BLACK_HEIGHT                                           :{TINY_FONT}{BLACK}{HEIGHT}
 STR_TINY_BLACK_VEHICLE                                          :{TINY_FONT}{BLACK}{VEHICLE}
 STR_TINY_RIGHT_ARROW                                            :{TINY_FONT}{RIGHT_ARROW}
+STR_BLACK_PLUS                                                  :{BLACK}+
 
 STR_WHITE                                                       :{WHITE}
 STR_BLACK                                                       :{BLACK}
