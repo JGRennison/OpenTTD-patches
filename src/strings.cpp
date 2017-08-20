@@ -413,12 +413,12 @@ static char *FormatBytes(char *buff, int64 number, const char *last)
 	return buff;
 }
 
-static char *FormatWallClockString(char *buff, DateTicks ticks, const char *last, bool show_date, uint case_index)
+static char *FormatWallClockString(char *buff, DateTicksScaled ticks, const char *last, bool show_date, uint case_index)
 {
 	Minutes minutes = ticks / _settings_client.gui.ticks_per_minute + _settings_client.gui.clock_offset;
 	char hour[3], minute[3];
-	seprintf(hour,   lastof(hour),   "%02i", MINUTES_HOUR(minutes)  );
-	seprintf(minute, lastof(minute), "%02i", MINUTES_MINUTE(minutes));
+	seprintf(hour,   lastof(hour),   "%02i", (int) MINUTES_HOUR(minutes)  );
+	seprintf(minute, lastof(minute), "%02i", (int) MINUTES_MINUTE(minutes));
 	if (show_date) {
 		int64 args[3] = { (int64)hour, (int64)minute, (int64)ticks / (DAY_TICKS * _settings_game.economy.day_length_factor) };
 		if (_settings_client.gui.date_with_time == 1) {
