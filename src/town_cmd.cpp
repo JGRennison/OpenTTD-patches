@@ -3405,6 +3405,19 @@ static void UpdateTownGrowRate(Town *t)
 	}
 	if (t->larger_town) m /= 2;
 
+	if (_settings_game.economy.town_growth_cargo_transported > 0) {
+		uint32 inverse_m = UINT32_MAX / m;
+		auto calculate_cargo_ratio_fix15 = [](const TransportedCargoStat<uint32> &stat) -> uint32 {
+			return stat.old_max ? ((uint64) (stat.old_act << 15)) / stat.old_max : 1 << 15;
+		};
+		uint32 cargo_ratio_fix16 = calculate_cargo_ratio_fix15(t->supplied[CT_PASSENGERS]) + calculate_cargo_ratio_fix15(t->supplied[CT_MAIL]);
+		uint32 cargo_dependant_part = (((uint64) cargo_ratio_fix16) * ((uint64) inverse_m) * _settings_game.economy.town_growth_cargo_transported) >> 16;
+		uint32 non_cargo_dependant_part = ((uint64) inverse_m) * (100 - _settings_game.economy.town_growth_cargo_transported);
+		uint32 total = (cargo_dependant_part + non_cargo_dependant_part);
+		if (total == 0) return;
+		m = ((uint64) UINT32_MAX * 100) / total;
+	}
+
 	t->growth_rate = m / (t->cache.num_houses / 50 + 1);
 	t->grow_counter = min(t->growth_rate, t->grow_counter);
 

@@ -1771,6 +1771,7 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *towns = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_TOWNS));
 			{
 				towns->Add(new SettingEntry("economy.town_growth_rate"));
+				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
 				towns->Add(new SettingEntry("economy.found_town"));

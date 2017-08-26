@@ -541,6 +541,7 @@ struct EconomySettings {
 	bool   mod_road_rebuild;                 ///< roadworks remove unnecessary RoadBits
 	bool   multiple_industry_per_town;       ///< allow many industries of the same type per town
 	int8   town_growth_rate;                 ///< town growth rate
+	uint8  town_growth_cargo_transported;    ///< percentage of town growth rate which depends on proportion of transported cargo in the last month
 	uint8  larger_towns;                     ///< the number of cities to build. These start off larger and grow twice as fast
 	uint8  initial_city_size;                ///< multiplier for the initial size of the cities compared to towns
 	TownLayoutByte town_layout;              ///< select town layout, @see TownLayout
