@@ -1396,7 +1396,9 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :한 번 클릭 
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :한 번 클릭 (즉시)
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :차량의 경로를 보여주기: {STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :타사의 차량을 목록에서 그 회사의 색으로 표시하기: {STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :차량 목록 창에서 다른 회사의 차량은 그 회사의 색으로 색칠된 사각형을 표시해 구별하기 좋게 합니다.
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :차량 목록 창에서 다른 회사의 차량은 그 회사의 색으로 색칠된 사각형을 표시해 구분하기 좋게 합니다.
+STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :경로를 공유하는 차량 창을 한 차량만 있을 때에도 활성화: {STRING}
+STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :경로를 공유하는 모든 차량을 표시할 때 경로를 공유하는 차량이 한 대밖에 없어도 표시할지 설정합니다.
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SCAN_SURROUNDINGS               :주변 스캔하기 (맵을 축소했을 때 유용): {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :경사 표시: {STRING}
@@ -1725,6 +1727,8 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :도시 성장 속도: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :도시의 성장 속도를 설정합니다.
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :없음
 STR_CONFIG_SETTING_TOWN_GROWTH_SLOW                             :느림
 STR_CONFIG_SETTING_TOWN_GROWTH_NORMAL                           :보통
@@ -4467,6 +4471,8 @@ STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}평균 �
 STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}경로 사용률 - 역의 최근 경로 사용률을 보여줍니다. 이는 모든 경로가 공유된 차량에 공유됩니다.
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
+STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}한 차량으로 그룹 만들기
+
 # String parts to build the order string
 STR_ORDER_GO_TO_WAYPOINT                                        :완행 경유 {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :직행 경유 {WAYPOINT}
@@ -5721,6 +5727,7 @@ STR_ORANGE_STRING1_LTBLUE                                       :{ORANGE}{STRING
 STR_TINY_BLACK_HEIGHT                                           :{TINY_FONT}{BLACK}{HEIGHT}
 STR_TINY_BLACK_VEHICLE                                          :{TINY_FONT}{BLACK}{VEHICLE}
 STR_TINY_RIGHT_ARROW                                            :{TINY_FONT}{RIGHT_ARROW}
+STR_BLACK_PLUS                                                  :{BLACK}+
 
 STR_WHITE                                                       :{WHITE}
 STR_BLACK                                                       :{BLACK}
