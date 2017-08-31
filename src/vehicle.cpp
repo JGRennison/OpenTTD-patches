@@ -1287,6 +1287,37 @@ static void DoDrawVehicle(const Vehicle *v)
 	EndSpriteCombine();
 }
 
+struct ViewportHashBound {
+	int xl, xu, yl, yu;
+};
+
+static ViewportHashBound GetViewportHashBound(int l, int r, int t, int b) {
+	int xl = (l - (70 * ZOOM_LVL_BASE)) >> (7 + ZOOM_LVL_SHIFT);
+	int xu = (r                       ) >> (7 + ZOOM_LVL_SHIFT);
+	/* compare after shifting instead of before, so that lower bits don't affect comparison result */
+	if (xu - xl < (1 << 6)) {
+		xl &= 0x3F;
+		xu &= 0x3F;
+	} else {
+		/* scan whole hash row */
+		xl = 0;
+		xu = 0x3F;
+	}
+
+	int yl = (t - (70 * ZOOM_LVL_BASE)) >> (6 + ZOOM_LVL_SHIFT);
+	int yu = (b                       ) >> (6 + ZOOM_LVL_SHIFT);
+	/* compare after shifting instead of before, so that lower bits don't affect comparison result */
+	if (yu - yl < (1 << 6)) {
+		yl = (yl & 0x3F) << 6;
+		yu = (yu & 0x3F) << 6;
+	} else {
+		/* scan whole column */
+		yl = 0;
+		yu = 0x3F << 6;
+	}
+	return { xl, xu, yl, yu };
+};
+
 /**
  * Add the vehicle sprites that should be drawn at a part of the screen.
  * @param dpi Rectangle being drawn.
@@ -1300,28 +1331,10 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 	const int b = dpi->top + dpi->height;
 
 	/* The hash area to scan */
-	int xl, xu, yl, yu;
+	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b);
 
-	if (dpi->width + (70 * ZOOM_LVL_BASE) < (1 << (7 + 6 + ZOOM_LVL_SHIFT))) {
-		xl = GB(l - (70 * ZOOM_LVL_BASE), 7 + ZOOM_LVL_SHIFT, 6);
-		xu = GB(r,                        7 + ZOOM_LVL_SHIFT, 6);
-	} else {
-		/* scan whole hash row */
-		xl = 0;
-		xu = 0x3F;
-	}
-
-	if (dpi->height + (70 * ZOOM_LVL_BASE) < (1 << (6 + 6 + ZOOM_LVL_SHIFT))) {
-		yl = GB(t - (70 * ZOOM_LVL_BASE), 6 + ZOOM_LVL_SHIFT, 6) << 6;
-		yu = GB(b,                        6 + ZOOM_LVL_SHIFT, 6) << 6;
-	} else {
-		/* scan whole column */
-		yl = 0;
-		yu = 0x3F << 6;
-	}
-
-	for (int y = yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
-		for (int x = xl;; x = (x + 1) & 0x3F) {
+	for (int y = vhb.yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
+		for (int x = vhb.xl;; x = (x + 1) & 0x3F) {
 			const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
 
 			while (v != NULL) {
@@ -1335,10 +1348,10 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 				v = v->hash_viewport_next;
 			}
 
-			if (x == xu) break;
+			if (x == vhb.xu) break;
 		}
 
-		if (y == yu) break;
+		if (y == vhb.yu) break;
 	}
 }
 
@@ -1351,31 +1364,13 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi)
 	const int b = dpi->top + dpi->height;
 
 	/* The hash area to scan */
-	int xl, xu, yl, yu;
-
-	if (dpi->width + (70 * ZOOM_LVL_BASE) < (1 << (7 + 6 + ZOOM_LVL_SHIFT))) {
-		xl = GB(l - (70 * ZOOM_LVL_BASE), 7 + ZOOM_LVL_SHIFT, 6);
-		xu = GB(r,                        7 + ZOOM_LVL_SHIFT, 6);
-	} else {
-		/* scan whole hash row */
-		xl = 0;
-		xu = 0x3F;
-	}
-
-	if (dpi->height + (70 * ZOOM_LVL_BASE) < (1 << (6 + 6 + ZOOM_LVL_SHIFT))) {
-		yl = GB(t - (70 * ZOOM_LVL_BASE), 6 + ZOOM_LVL_SHIFT, 6) << 6;
-		yu = GB(b,                        6 + ZOOM_LVL_SHIFT, 6) << 6;
-	} else {
-		/* scan whole column */
-		yl = 0;
-		yu = 0x3F << 6;
-	}
+	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b);
 
 	const int w = UnScaleByZoom(dpi->width, dpi->zoom);
 	const int h = UnScaleByZoom(dpi->height, dpi->zoom);
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-	for (int y = yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
-		for (int x = xl;; x = (x + 1) & 0x3F) {
+	for (int y = vhb.yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
+		for (int x = vhb.xl;; x = (x + 1) & 0x3F) {
 			const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
 
 			while (v != NULL) {
@@ -1391,10 +1386,10 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi)
 				v = v->hash_viewport_next;
 			}
 
-			if (x == xu) break;
+			if (x == vhb.xu) break;
 		}
 
-		if (y == yu) break;
+		if (y == vhb.yu) break;
 	}
 }
 
