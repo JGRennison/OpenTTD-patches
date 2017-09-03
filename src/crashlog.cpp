@@ -489,7 +489,7 @@ bool CrashLog::MakeCrashLog() const
 	crashlogged = true;
 
 	char filename[MAX_PATH];
-	char buffer[65536];
+	char buffer[65536 * 4];
 	bool ret = true;
 
 	printf("Crash encountered, generating crash log...\n");

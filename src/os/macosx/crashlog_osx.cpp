@@ -175,7 +175,7 @@ public:
 	/** Generate the crash log. */
 	bool MakeCrashLog()
 	{
-		char buffer[65536];
+		char buffer[65536 * 4];
 		bool ret = true;
 
 		printf("Crash encountered, generating crash log...\n");
