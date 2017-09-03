@@ -961,7 +961,7 @@ static void NPFFollowTrack(AyStar *aystar, OpenListNode *current)
  * multiple targets that are spread around, we should perform a breadth first
  * search by specifiying CalcZero as our heuristic.
  */
-static NPFFoundTargetData NPFRouteInternal(AyStarNode *start1, bool ignore_start_tile1, AyStarNode *start2, bool ignore_start_tile2, NPFFindStationOrTileData *target, AyStar_EndNodeCheck target_proc, AyStar_CalculateH heuristic_proc, AyStarUserData *user, uint reverse_penalty)
+static NPFFoundTargetData NPFRouteInternal(AyStarNode *start1, bool ignore_start_tile1, AyStarNode *start2, bool ignore_start_tile2, NPFFindStationOrTileData *target, AyStar_EndNodeCheck target_proc, AyStar_CalculateH heuristic_proc, AyStarUserData *user, uint reverse_penalty, bool ignore_reserved = false)
 {
 	int r;
 	NPFFoundTargetData result;
@@ -982,12 +982,14 @@ static NPFFoundTargetData NPFRouteInternal(AyStarNode *start1, bool ignore_start
 	start1->user_data[NPF_TRACKDIR_CHOICE] = INVALID_TRACKDIR;
 	start1->user_data[NPF_NODE_FLAGS] = 0;
 	NPFSetFlag(start1, NPF_FLAG_IGNORE_START_TILE, ignore_start_tile1);
+	NPFSetFlag(start1, NPF_FLAG_IGNORE_RESERVED, ignore_reserved);
 	_npf_aystar.AddStartNode(start1, 0);
 	if (start2 != NULL) {
 		start2->user_data[NPF_TRACKDIR_CHOICE] = INVALID_TRACKDIR;
 		start2->user_data[NPF_NODE_FLAGS] = 0;
 		NPFSetFlag(start2, NPF_FLAG_IGNORE_START_TILE, ignore_start_tile2);
 		NPFSetFlag(start2, NPF_FLAG_REVERSE, true);
+		NPFSetFlag(start2, NPF_FLAG_IGNORE_RESERVED, ignore_reserved);
 		_npf_aystar.AddStartNode(start2, reverse_penalty);
 	}
 
@@ -1031,12 +1033,8 @@ static NPFFoundTargetData NPFRouteToStationOrTileTwoWay(TileIndex tile1, Trackdi
 
 	start1.tile = tile1;
 	start2.tile = tile2;
-	/* We set this in case the target is also the start tile, we will just
-	 * return a not found then */
-	start1.user_data[NPF_TRACKDIR_CHOICE] = INVALID_TRACKDIR;
 	start1.direction = trackdir1;
 	start2.direction = trackdir2;
-	start2.user_data[NPF_TRACKDIR_CHOICE] = INVALID_TRACKDIR;
 
 	return NPFRouteInternal(&start1, ignore_start_tile1, (IsValidTile(tile2) ? &start2 : NULL), ignore_start_tile2, target, NPFFindStationOrTile, NPFCalcStationOrTileHeuristic, user, 0);
 }
@@ -1063,12 +1061,8 @@ static NPFFoundTargetData NPFRouteToDepotBreadthFirstTwoWay(TileIndex tile1, Tra
 
 	start1.tile = tile1;
 	start2.tile = tile2;
-	/* We set this in case the target is also the start tile, we will just
-	 * return a not found then */
-	start1.user_data[NPF_TRACKDIR_CHOICE] = INVALID_TRACKDIR;
 	start1.direction = trackdir1;
 	start2.direction = trackdir2;
-	start2.user_data[NPF_TRACKDIR_CHOICE] = INVALID_TRACKDIR;
 
 	/* perform a breadth first search. Target is NULL,
 	 * since we are just looking for any depot...*/
@@ -1233,11 +1227,7 @@ bool NPFTrainFindNearestSafeTile(const Train *v, TileIndex tile, Trackdir trackd
 
 	AyStarNode start1;
 	start1.tile = tile;
-	/* We set this in case the target is also the start tile, we will just
-	 * return a not found then */
-	start1.user_data[NPF_TRACKDIR_CHOICE] = INVALID_TRACKDIR;
 	start1.direction = trackdir;
-	NPFSetFlag(&start1, NPF_FLAG_IGNORE_RESERVED, true);
 
 	RailTypes railtypes = v->compatible_railtypes;
 	if (override_railtype) railtypes |= GetRailTypeInfo(v->railtype)->compatible_railtypes;
@@ -1245,7 +1235,7 @@ bool NPFTrainFindNearestSafeTile(const Train *v, TileIndex tile, Trackdir trackd
 	/* perform a breadth first search. Target is NULL,
 	 * since we are just looking for any safe tile...*/
 	AyStarUserData user = { v->owner, TRANSPORT_RAIL, railtypes, ROADTYPES_NONE };
-	return NPFRouteInternal(&start1, true, NULL, false, &fstd, NPFFindSafeTile, NPFCalcZero, &user, 0).res_okay;
+	return NPFRouteInternal(&start1, true, NULL, false, &fstd, NPFFindSafeTile, NPFCalcZero, &user, 0, true).res_okay;
 }
 
 bool NPFTrainCheckReverse(const Train *v)

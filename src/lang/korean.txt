@@ -479,7 +479,7 @@ STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :스크린샷 �
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD'에 대해서
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :스프라이트 정렬도구
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :박스 경계선 보기 전환
-STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :더러운 블록 색상 전환
+STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :시각적 업데이트 블록 표시 전환
 ############ range ends here
 
 ############ range for ordinal numbers used for the place in the highscore window
@@ -3117,8 +3117,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}받음
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}받는 화물의 목록 표시
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}받음: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}이 역은 도시의 수송권을 독점하고 있는 역입니다.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} 이(가) 이 도시의 수송 독점권을 구매하였습니다.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}이 역은 도시의 수송권을 독점하고 있는 역입니다.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} 이(가) 이 도시의 수송 독점권을 구매하였습니다.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}등급
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}역의 등급 표시
