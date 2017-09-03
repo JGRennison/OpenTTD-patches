@@ -63,7 +63,7 @@ public:
 
 
 	/** Buffer for the generated crash log */
-	char crashlog[65536];
+	char crashlog[65536 * 4];
 	/** Buffer for the filename of the crash log */
 	char crashlog_filename[MAX_PATH];
 	/** Buffer for the filename of the crash dump */
