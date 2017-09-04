@@ -56,8 +56,6 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	if (ret.Failed()) return ret;
 
 	if (flags & DC_EXEC) {
-		if (!v->orders.list->IsScheduledDispatchValid()) v->orders.list->ResetScheduledDispatch();
-
 		for (Vehicle *v2 = v->FirstShared(); v2 != NULL; v2 = v2->NextShared()) {
 			if (HasBit(p2, 0)) {
 				SetBit(v2->vehicle_flags, VF_SCHEDULED_DISPATCH);
@@ -331,22 +329,36 @@ void OrderList::UpdateScheduledDispatch()
  */
 void OrderList::ResetScheduledDispatch()
 {
+	uint32 windex = this->first_shared->index;
+	
+	Date start_date;
+	uint16 start_full_date_fract;
+	uint32 duration;
+
 	if (_settings_client.gui.time_in_minutes) {
+		/* Set to 00:00 of today, and 1 day */
+
 		DateTicksScaled val;
 		val = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), 0, 0);
 		val -= _settings_client.gui.clock_offset;
 		val *= _settings_client.gui.ticks_per_minute;
-
-		Date start_date;
-		uint16 start_full_date_fract;
 		SchdispatchConvertToFullDateFract(val, &start_date, &start_full_date_fract);
 
-		/* Set to 00:00 of today, and 1 day */
-		this->SetScheduledDispatchStartDate(start_date, start_full_date_fract);
-		this->SetScheduledDispatchDuration(24 * 60 * _settings_client.gui.ticks_per_minute);
+		duration = 24 * 60 * _settings_client.gui.ticks_per_minute;
 	} else {
 		/* Set Jan 1st and 365 day */
-		this->SetScheduledDispatchStartDate(DAYS_TILL(_cur_year), 0);
-		this->SetScheduledDispatchDuration(365*DAY_TICKS);
+		start_date = DAYS_TILL(_cur_year);
+		start_full_date_fract = 0;
+		duration = 365*DAY_TICKS;
 	}
+	
+	DoCommandP(0, windex, duration, CMD_SCHEDULED_DISPATCH_SET_DURATION | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+
+	uint32 p1 = 0, p2 = 0;
+	SB(p1, 0, 20, windex);
+	SB(p1, 20, 12, GB(start_full_date_fract, 2, 12));
+	SB(p2, 0, 30, start_date);
+	SB(p2, 30, 2, GB(start_full_date_fract, 0, 2));
+
+	DoCommandP(0, p1, p2, CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 }
