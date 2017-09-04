@@ -318,7 +318,8 @@ struct CompanyFinancesWindow : Window {
 			case WID_CF_EXPS_PRICE2:
 			case WID_CF_EXPS_PRICE3:
 				size->height = _expenses_list_types[type].GetHeight();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_CF_BALANCE_VALUE:
 			case WID_CF_LOAN_VALUE:
 			case WID_CF_TOTAL_VALUE:
@@ -636,7 +637,8 @@ public:
 					size->width = 0;
 					break;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_SCL_PRI_COL_DROPDOWN: {
 				int padding = this->square.width + NWidgetScrollbar::GetVerticalDimension().width + 10;
 				for (const StringID *id = _colour_dropdown; id != endof(_colour_dropdown); id++) {
@@ -892,7 +894,7 @@ void DrawCompanyManagerFace(CompanyManagerFace cmf, int colour, int x, int y)
 	for (CompanyManagerFaceVariable cmfv = CMFV_CHEEKS; cmfv < CMFV_END; cmfv++) {
 		switch (cmfv) {
 			case CMFV_MOUSTACHE:   if (!has_moustache)   continue; break;
-			case CMFV_LIPS:        // FALL THROUGH
+			case CMFV_LIPS:
 			case CMFV_NOSE:        if (has_moustache)    continue; break;
 			case CMFV_TIE_EARRING: if (!has_tie_earring) continue; break;
 			case CMFV_GLASSES:     if (!has_glasses)     continue; break;
@@ -1365,7 +1367,7 @@ public:
 			/* OK button */
 			case WID_SCMF_ACCEPT:
 				DoCommandP(0, 0, this->face, CMD_SET_COMPANY_MANAGER_FACE);
-				/* FALL THROUGH */
+				FALLTHROUGH;
 
 			/* Cancel button */
 			case WID_SCMF_CANCEL:
@@ -1764,7 +1766,8 @@ struct CompanyInfrastructureWindow : Window
 
 				if (this->railtypes != RAILTYPES_NONE) {
 					/* Draw name of each valid railtype. */
-					for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+					RailType rt;
+					FOR_ALL_SORTED_RAILTYPES(rt) {
 						if (HasBit(this->railtypes, rt)) {
 							SetDParam(0, GetRailTypeInfo(rt)->strings.name);
 							DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_WHITE_STRING);
@@ -1781,7 +1784,8 @@ struct CompanyInfrastructureWindow : Window
 			case WID_CI_RAIL_COUNT: {
 				/* Draw infrastructure count for each valid railtype. */
 				uint32 rail_total = c->infrastructure.GetRailTotal();
-				for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+				RailType rt;
+				FOR_ALL_SORTED_RAILTYPES(rt) {
 					if (HasBit(this->railtypes, rt)) {
 						this->DrawCountLine(r, y, c->infrastructure.rail[rt], RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
 					}
@@ -2379,7 +2383,7 @@ struct CompanyWindow : Window
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)
 	{
-		if (DoCommandP(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS))) {
+		if (DoCommandP(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS)) && !_shift_pressed) {
 			ResetObjectToPlace();
 			this->RaiseButtons();
 		}

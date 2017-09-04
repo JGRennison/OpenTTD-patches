@@ -197,31 +197,31 @@ STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}me
 
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}dk
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}dk
-STR_UNITS_POWER_SI                                              :{COMMA}kW
+STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
 
-STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}t
-STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
-STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
+STR_UNITS_WEIGHT_SHORT_IMPERIAL                                 :{COMMA}{NBSP}t
+STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}{NBSP}t
+STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}{NBSP}kg
 
-STR_UNITS_WEIGHT_LONG_IMPERIAL                                  :{COMMA} ton
+STR_UNITS_WEIGHT_LONG_IMPERIAL                                  :{COMMA}{NBSP}ton
 STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA} ton
-STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA} kg
+STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA}{NBSP}kg
 
-STR_UNITS_VOLUME_SHORT_IMPERIAL                                 :{COMMA}gal
-STR_UNITS_VOLUME_SHORT_METRIC                                   :{COMMA}l
-STR_UNITS_VOLUME_SHORT_SI                                       :{COMMA}m³
+STR_UNITS_VOLUME_SHORT_IMPERIAL                                 :{COMMA}{NBSP}gal
+STR_UNITS_VOLUME_SHORT_METRIC                                   :{COMMA}{NBSP}l
+STR_UNITS_VOLUME_SHORT_SI                                       :{COMMA}{NBSP}m³
 
-STR_UNITS_VOLUME_LONG_IMPERIAL                                  :{COMMA} gallon
-STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA} liter
-STR_UNITS_VOLUME_LONG_SI                                        :{COMMA} m³
+STR_UNITS_VOLUME_LONG_IMPERIAL                                  :{COMMA}{NBSP}gallon
+STR_UNITS_VOLUME_LONG_METRIC                                    :{COMMA}{NBSP}litre
+STR_UNITS_VOLUME_LONG_SI                                        :{COMMA}{NBSP}m³
 
-STR_UNITS_FORCE_IMPERIAL                                        :{COMMA} lbf
-STR_UNITS_FORCE_METRIC                                          :{COMMA} kgf
-STR_UNITS_FORCE_SI                                              :{COMMA} kN
+STR_UNITS_FORCE_IMPERIAL                                        :{COMMA}{NBSP}lbf
+STR_UNITS_FORCE_METRIC                                          :{COMMA}{NBSP}kgf
+STR_UNITS_FORCE_SI                                              :{COMMA}{NBSP}kN
 
-STR_UNITS_HEIGHT_IMPERIAL                                       :{COMMA} ft
-STR_UNITS_HEIGHT_METRIC                                         :{COMMA} m
-STR_UNITS_HEIGHT_SI                                             :{COMMA} m
+STR_UNITS_HEIGHT_IMPERIAL                                       :{COMMA}{NBSP}kaki
+STR_UNITS_HEIGHT_METRIC                                         :{COMMA}{NBSP}m
+STR_UNITS_HEIGHT_SI                                             :{COMMA}{NBSP}m
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Kata penyaring:
@@ -1098,7 +1098,7 @@ STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Nilai s
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Tipe setting: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Setting klien (tidak disimpan di penyimpanan; mempengaruhi semua permainan)
 STR_CONFIG_SETTING_TYPE_GAME_MENU                               :Setting permainan (disimpan dalam penyimpanan; hanya mempengaruhi permainan baru)
-STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :Setting permainan (disimpan dalam penyimpanan; hanya mempengaruhi permainan saat ini))
+STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :Pengaturan permainan (disimpan dalam penyimpanan; hanya mempengaruhi permainan saat ini)
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :Setting perusahaan (disimpan dalam penyimpanan; hanya mempengaruhi permainan baru)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Setting perusahaan (disimpan dalam penyimpanan; hanya mempengaruhi permainan saat ini)
 
@@ -1113,9 +1113,9 @@ STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW                 :Pengaturan deng
 
 STR_CONFIG_SETTING_TYPE_DROPDOWN_HELPTEXT                       :{BLACK}Membatasi urutan / tabel di bawah ke setting tertentu
 STR_CONFIG_SETTING_TYPE_DROPDOWN_ALL                            :Semua setting
-STR_CONFIG_SETTING_TYPE_DROPDOWN_CLIENT                         :Setting klien (tidak disimpan di penyimpanan; mempengaruhi semua permainan)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_CLIENT                         :Pengaturan klien (tidak disimpan di penyimpanan; mempengaruhi semua permainan)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :Pengaturan permainan (ikut tersimpan; hanya memiliki efek pada permainan baru)
-STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Pengaturan permainan (ikut tersimpan; hanya memiliki efek pada permainan aktif)
+STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Pengaturan permainan (ikut tersimpan; hanya memiliki efek pada permainan saat ini)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Pengaturan perusahaan (ikut tersimpan; hanya memiliki efek pada permainan baru)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Pengaturan perusahaan (ikut tersimpan; hanya memiliki efek pada perusahaan aktif)
 STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Tampilkan semua pencarian berdasarkan pengaturan{}{SILVER}Kategori {BLACK}sampai {WHITE}{STRING}
@@ -1165,7 +1165,7 @@ STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Pilih seberapa 
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Tinggi peta maksimum: {STRING}
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Atur ketinggian pegunungan maksimum yang diijinkan untuk peta ini
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Kamu tidak bisa mengubah ketinggian peta maksimum di angka itu. Setidaknya ada satu gunung di peta yang lebih tinggi
-STR_CONFIG_SETTING_AUTOSLOPE                                    :Ijinkan pembentukan slop dibawah bangunan, rel, dsb. (otomatiskan): {STRING}
+STR_CONFIG_SETTING_AUTOSLOPE                                    :Ijinkan pembentukan slop dibawah bangunan, rel, dsb.: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Ijinkan pembentukan tanah dibawah bangunan dan trek tanpa merusaknya
 STR_CONFIG_SETTING_CATCHMENT                                    :Ijinkan ukuran jangkauan wilayah lebih realistik: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Gunakan area penarikan berbeda untuk tipe stasiun dan airport yang berbeda
@@ -1281,7 +1281,7 @@ STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Durasi penampil
 STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} detik
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Tampilkan tooltips: {STRING}
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Delay sebelum bantuan peralatan ditampilkan saat mouse diatas sebuah ikon. Selain itu bantuan peralatan juga dapat ditampilkan dengan klik kanan
-STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Melayang untuk {COMMA} detik
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Melayang untuk {COMMA} mili detik
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :Klik kanan
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Tampilkan populasi kota di label nama kota: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Tampilkan populasi kota di label nama kota pada peta
@@ -1343,7 +1343,7 @@ STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Pergeseran pand
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Menyetel bagaimana tampilan utama menggeser posisi di peta kecil. Jika dinyalakan, peta akan bergeser secara halus. Jika dimatikan, peta langsung menuju tempat yang di klik
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Tampilkan ukuran ketika menggunakan alat pembangun: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Tampilkan perbedaan jarak dan tinggi ubin saat proses pembangunan
-STR_CONFIG_SETTING_LIVERIES                                     :Tampilkan warna perusahaan: {STRING}
+STR_CONFIG_SETTING_LIVERIES                                     :Tampilkan warna tergantung jenis kendaraan: {STRING}
 STR_CONFIG_SETTING_LIVERIES_HELPTEXT                            :Kontrol penggunaan tipe kendaraan spesifik untuk kendaraan (dalam perusahaan tertentu)
 STR_CONFIG_SETTING_LIVERIES_NONE                                :Tidak ada
 STR_CONFIG_SETTING_LIVERIES_OWN                                 :Perusahaan milik sendiri
@@ -1390,7 +1390,7 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_NO_ACTIONS               :Tidak ada tinda
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_CONSTRUCTION     :Semua tindakan kecuali pembangunan
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_LANDSCAPING      :Semua kecuali mengubah dataran
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :Semua tindakan
-STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Gunakan daftar kendaraan tingkat lanjut: {STRING}
+STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Gunakan grup dalam daftar kendaraan: {STRING}
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Mengaktifkan penggunaan daftar kendaraan lebih lanjut dalam pengelompokkan kendaraan
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Tampilkan indikator pengangkutan: {STRING}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Pilih apakah petunjuk beban ditayangkan di atas kendaran yang sedang mengisi atau menurunkan beban
@@ -1405,7 +1405,7 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Jenis rel yang 
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :Tersedia pertama
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :Tersedia terakhir
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Sering dipakai
-STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Sorot rel yang akan terpakai: {STRING}
+STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Tampilkan rel yang akan terpakai: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Beri warna yang berbeda untuk jalur-jalur yang dicadangkan untuk menolong ketika terdapat kereta yang menolak masuk ke blok menurut jalurnya
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Toolbar tetap aktif setelah dipakai: {STRING}
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Menjagakan alat pembangunan untuk jembatan, terowongan, etc. buka setelah dipakai
@@ -1433,11 +1433,11 @@ STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING                  :Matikan infrast
 STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING_HELPTEXT         :Jika diaktifkan, infrastruktur cuma tersedia jika ada kendaraan tersedia, mencegah buang waktu dan uang di infrastruktur yang tidak bisa digunakan
 STR_CONFIG_SETTING_MAX_TRAINS                                   :Maks. kereta tiap pemain: {STRING}
 STR_CONFIG_SETTING_MAX_TRAINS_HELPTEXT                          :Batas jumlah kereta yang boleh dimiliki satu perusahaan
-STR_CONFIG_SETTING_MAX_ROAD_VEHICLES                            :Maks. kendaraan jalan raya tiap pemain: {STRING}
+STR_CONFIG_SETTING_MAX_ROAD_VEHICLES                            :Maks. kendaraan jalan raya tiap perusahaan: {STRING}
 STR_CONFIG_SETTING_MAX_ROAD_VEHICLES_HELPTEXT                   :Batas jumlah kendaraan jalan raya yang boleh dimiliki satu perusahaan
-STR_CONFIG_SETTING_MAX_AIRCRAFT                                 :Maks. pesawat tiap pemain: {STRING}
+STR_CONFIG_SETTING_MAX_AIRCRAFT                                 :Maks. pesawat tiap perusahaan: {STRING}
 STR_CONFIG_SETTING_MAX_AIRCRAFT_HELPTEXT                        :Batas jumlah pesawat yang boleh dimiliki satu perusahaan
-STR_CONFIG_SETTING_MAX_SHIPS                                    :Maks. kapal tiap pemain: {STRING}
+STR_CONFIG_SETTING_MAX_SHIPS                                    :Maks. kapal tiap perusahaan: {STRING}
 STR_CONFIG_SETTING_MAX_SHIPS_HELPTEXT                           :Jumlah maximum kapal yang boleh dimilki sebuah perusahaan
 
 STR_CONFIG_SETTING_AI_BUILDS_TRAINS                             :Non-aktifkan kereta bagi pemain komputer: {STRING}
@@ -1464,7 +1464,7 @@ STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Jangka waktu pe
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Pilih apakah servis kendaraan dipicu oleh waktu terlewat sejak servis terakhir atau dari kehandalan menjatuh beberapa persentase dari kehandalan maximum
 STR_CONFIG_SETTING_SERVINT_TRAINS                               :Interval dasar untuk kereta: {STRING}
 STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :Setel interval dasar untuk kereta, jika tidak ada interval tetap
-STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA} hari/%
+STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA}{NBSP}hari/%
 STR_CONFIG_SETTING_SERVINT_DISABLED                             :Di non-aktifkan
 STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES                        :Interval dasar untuk kendaraan jalan raya: {STRING}
 STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES_HELPTEXT               :Setel Interval perbaikan untuk kendaraan jalan raya baru, jika tidak ada interval tetap
@@ -1604,9 +1604,9 @@ STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Tidak ada
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Faktor kali ukuran kota awal: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Ukuran rata-rata kota besar terhadap kota kecil saat permainan dimulai
 
-STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Perbarui grafik distribusi setiap {STRING} hari
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Perbarui grafik distribusi setiap {STRING}{NBSP}hari
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Waktu diantara dua penghitungan linkgraph berurutan. Setiap penghitungan hanya menghitung satu komponen perencanaan dari grafik. Namun, angka yang diberikan untuk seting ini bukan berarti seluruh grafik akan diperbaharui dalam angka hari yang sama, hanya beberapa bagian. Semakin sedikit semakin banyak proses CPU yang diperlukan untuk menghitung. Semakin banyak semakin lama waktu sebelum cargo distribution dimulai pada rute baru.
-STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Ambil {STRING} hari untuk menghitung grafik distribusi
+STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Ambil {STRING}{NBSP}hari untuk menghitung grafik distribusi
 STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :Waktu dibutuhkan untuk setiap perhitungan dari komponen 'linkgraph'. Ketika perhitungan dimulai, ada utas 'dibuat' yang boleh dijalankan untuk jumlah hari ini. Semakin pendek anda mengatur ini lebih mungkin utas ini belum selesai ketika itu seharusnya. Kemudian permainan berhenti sampai itu ("lag"). Semakin lama anda mengatur semakin lama itu untuk distribusinya untuk memperbarui ketika rute mengganti.
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimetris
@@ -1618,7 +1618,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :"simetris" bera
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Modus distribusi untuk kelas kargo BERLAPIS BAJA: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Kelas kargo BERLAPIS BAJA meliputi barang berharga pada iklim sedang, intan pada sub tropis atau emas pada iklim sub arktik. NewGRF mungkin mengubah itu. "simetris" berarti bahwa jumlah kargo kira-kira akan terkirim sama dari stasiun A ke stasiun B sebagaimana dari B ke A. "asimetris" berarti jumlah kargo terkirim bisa berbeda pada kedua arah. "manual" berarti bahwa tidak ada distribusi otomatis akan dilakukan untuk kargo itu. Disarankan untuk memilih asimetris atau manual ketika bermain sub arktik, karena bank tidak mengirim emas kembali ke tambang emas. Untuk iklim tropis dan sub tropis anda juga bisah pilih simetris karena bank akan mengirim kembali beberapa barang berharga ke bank asalnya.
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Modus distribusi untuk kelas kargo yang lain: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"simetris" berarti bahwa kira-kira sama jumlah kargo akan pergi dari stasiun A ke stasiun B sebagai dari B ke A. "asimetris" berarti sewenang-wenang jumlah kargo bisa pergi di kedua arah. "manual" berarti bahwa tidak ada distribusi otomatis akan dilakukan untuk kargo. Anda mungkin mau mengaturkan ini untuk "asimetris" atau manual.
+STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"asimetris" berarti jumlah kargo yang pergi ke kedua arah bisa berbeda-beda. "manual" berarti bahwa tidak ada distribusi otomatis akan dilakukan untuk kargo.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Ketepatan distribusi: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Semakin tinggi anda mengatur ini semakin banyak waktu CPU perhitungan "linkgraph" akan mengambil. Jika waktu terlalu lama anda mungkin melihat "lag".Jika anda mengatur itu ke nilai rendah, tetapi, distribusi akan menjadi tidak akurat, dan anda mungkin melihat kargo tidak dikirim ke tempat anda berharap untuk pergi.
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Efek jarak kepada permintaan : {STRING}
@@ -1666,7 +1666,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Lokalisasi
 STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafik
-STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Efek suara
+STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Suara
 STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Antaramuka
 STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Umum
 STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Jendela
@@ -1684,7 +1684,7 @@ STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Linkung
 STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Berwenang
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Kota
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industri
-STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distribusi Kargo
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distribusi kargo
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Pesaing
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Pemain Komputer
 
@@ -1966,13 +1966,13 @@ STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Lindungi
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Tidak
 STR_NETWORK_START_SERVER_ADVERTISED                             :Ya
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klien
-STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Maksimum klien:
+STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Maksimum jumlah klien:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Pilih jumlah klien maksimal. Tidak semua slot harus diisi
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} Perusahaan
-STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Maksimum perusahaan:
+STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Maksimum jumlah perusahaan:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Batasi jumlah perusahaan pada server
 STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} Penonton
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Maksimum penonton:
+STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Maksimum jumlah penonton:
 STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}Batasi jumlah penonton pada server
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Bahasa pembicaraan:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Agar pemain lain mengetahui bahasa apa yang digunakan pada sever
@@ -2601,29 +2601,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Ladang
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Daerah tertutup salju
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Gurun Pasir
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} track
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} Lintasan dengan "block signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} lintasan dengan "pre-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} lintasan dengan "exit-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING}lintasan dengan "combo-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} lintasan dengan "path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} lintasan dengan sinyal satu arah
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} lintasan dengan "block and pre-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} lintasan dengan "block and exit-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} lintasan dengan "block and combo-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} lintasan dengan "block and path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} lintasan dengan "block and one-way path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} lintasan dengan "pre- and exit-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} lintasan dengan "pre- and combo-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} lintasan dengan "pre- and path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} lintasan dengan "pre- and one-way path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} lintasan dengan "exit- and combo-signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} lintasan dengan "exit- and path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} lintasan dengan "exit- and one-way path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} lintasan dengan "combo- and path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} lintasan dengan "combo- and one-way path signals"
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} lintasan dengan "path and one-way path signals"
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} depo kereta
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Rel Kereta track
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Rel Kereta Lintasan dengan "block signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Rel Kereta lintasan dengan "pre-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Rel Kereta lintasan dengan "exit-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Rel Keretalintasan dengan "combo-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Rel Kereta lintasan dengan "path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Rel Kereta lintasan dengan sinyal satu arah
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Rel Kereta lintasan dengan "block and pre-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Rel Kereta lintasan dengan "block and exit-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Rel Kereta lintasan dengan "block and combo-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Rel Kereta lintasan dengan "block and path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Rel Kereta lintasan dengan "block and one-way path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Rel Kereta lintasan dengan "pre- and exit-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Rel Kereta lintasan dengan "pre- and combo-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Rel Kereta lintasan dengan "pre- and path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Rel Kereta lintasan dengan "pre- and one-way path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Rel Kereta lintasan dengan "exit- and combo-signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Rel Kereta lintasan dengan "exit- and path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Rel Kereta lintasan dengan "exit- and one-way path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Rel Kereta lintasan dengan "combo- and path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Rel Kereta lintasan dengan "combo- and one-way path signals"
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Rel Kereta lintasan dengan "path and one-way path signals"
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Rel Kereta depo kereta
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Jalan
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Jalan raya dengan lampu
@@ -2687,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Tanah milik Per
 STR_ABOUT_OPENTTD                                               :{WHITE}Tentang OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Hak Cipta asli {COPYRIGHT} 1995 Chris Sawyer, Hak Cipta dilindungi
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versi {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 Tim OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 Tim OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Simpan Permainan
@@ -2885,7 +2885,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Peringatan: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Kesalahan: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Kesalahan fatal NewGRF telah terjadi: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Kesalahan fatal NewGRF telah terjadi:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} tidak akan bekerja dengan versi TTDPatch yang telah dilaporkan oleh OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} untuk TTD versi {STRING}
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} didesain untuk digunakan dengan {STRING}
@@ -2902,15 +2902,13 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Mencoba menggun
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} terdapat sprite yang rusak. Semua sprite rusak akan ditandai dengan tanda tanya merah (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Memuat beberapa entri Action 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Baca akhir sprite palsu (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Beberapa 'sprite' tidak terdapat pada Set Grafik Dasar yang sedang digunakan.{}Silahkan update Set Grafik Dasar
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Set grafis dasar kekurangan beberapa sprite.{}Tolong perbarui set grafis dasar.{}Karena anda memainkan {YELLOW}snapshot pengembangan OpenTTD{WHITE}, anda mungkin memerlukan{YELLOW}snapshot pengembangan set grafis dasar{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Sumber GRF yang diminta tidak tersedia (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} dinonaktifkan oleh {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Format sprite salah/tidak diketahui (sprite {3:NUM})
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Peringatan!
-STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Anda akan mengubah game yg sudah berjalan. Ini dapat menghentikan OpenTTD. Jangan melaporkan kesalahan tentang hal ini. {}Apakah anda yakin?
+STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Anda akan mengubah game yg sudah berjalan. Ini dapat menghentikan OpenTTD. Jangan melaporkan kesalahan tentang hal ini.{}Apakah anda yakin?
 
 STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Tidak dapat menambahkan: GRF ID sudah ada
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Berkas yang cocok tidak diketemukan (GRF kompatibel telah dimuat)
@@ -2986,8 +2984,8 @@ STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} terkirim
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (masih dibutuhkan)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{GREEN} (terkirim)
-STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}Kota tumbuh setiap {ORANGE}{COMMA}{BLACK} hari
-STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}Kota tumbuh setiap {ORANGE}{COMMA}{BLACK} hari (didanai)
+STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}Kota tumbuh setiap {ORANGE}{COMMA}{BLACK}{NBSP}hari
+STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}Kota tumbuh setiap {ORANGE}{COMMA}{BLACK}{NBSP}hari (didanai)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}Kota {RED}tidak{BLACK} tumbuh
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}Batas kebisingan di kota : {ORANGE}{COMMA}{BLACK}  maks.: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Arahkan pandangan utama pada lokasi kota. Ctrl+Click akan membuka viewport baru pada lokasi kota
@@ -3110,8 +3108,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Menerima
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Tampilkan daftar kargo yang bisa diterima
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Menerima: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Stasiun memiliki hak transportasi eksklusif di kota ini
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} beli hak transportasi eksklusif di kota ini
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Stasiun memiliki hak transportasi eksklusif di kota ini
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} beli hak transportasi eksklusif di kota ini
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Peringkat
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Tampilkna peringkat dari stasiun
@@ -3196,7 +3194,7 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 STR_FINANCES_TOTAL_CAPTION                                      :{WHITE}Total:
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Saldo Bank
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Pinjaman
-STR_FINANCES_MAX_LOAN                                           :{WHITE}Pinjaman Maks: {BLACK}{CURRENCY_LONG}
+STR_FINANCES_MAX_LOAN                                           :{WHITE}Pinjaman maks.: {BLACK}{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
 STR_FINANCES_BORROW_BUTTON                                      :{BLACK}Pinjam {CURRENCY_LONG}
 STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}Tambah jumlah pinjaman. Tekan Ctrl+Click untuk meminjam sebanyak mungkin.
@@ -3290,9 +3288,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Membutuh
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Membutuhkan: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Kargo yang sedang menunggu di proses:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Menghasilkan: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Menghasilkan: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3358,6 +3355,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Tambah kendaraa
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Jual semua
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Ubah nama kelompok
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Kereta Baru
@@ -3523,10 +3521,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :lokomotif magle
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Biaya: {CURRENCY_LONG} Berat: {WEIGHT_SHORT}{}Kecepatan: {VELOCITY}  Daya: {POWER}{}Biaya ops.: {CURRENCY_LONG}/thn{}Kapasitas: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Biaya: {CURRENCY_LONG} Berat: {WEIGHT_SHORT}{}Kecepatan: {VELOCITY}  Power: {POWER}  Max. T.E.: {6:FORCE}{}Biaya Operasional: {4:CURRENCY_LONG}/yr{}Kapasitas: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Biaya: {CURRENCY_LONG} Kec. Max: {VELOCITY}{}Kapasitas: {CARGO_LONG}, {CARGO_LONG}{}Bea Berjalan: {CURRENCY_LONG}/thn
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Biaya: {CURRENCY_LONG} Kec. Max: {VELOCITY}{}Kapasitas: {CARGO_LONG}{}Bea Berjalan: {CURRENCY_LONG}/thn
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Biaya: {CURRENCY_LONG} Kecepatan Max.: {VELOCITY} Jangkauan: {COMMA} kotak{}Kapasitas: {CARGO_LONG}, {CARGO_LONG}{}Biaya Operasi: {CURRENCY_LONG}/thn
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Biaya: {CURRENCY_LONG} Kecepatan Max.: {VELOCITY} Jangkauan: {COMMA} kotak{}Kapasitas: {CARGO_LONG}{}Biaya Operasi: {CURRENCY_LONG}/thn
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Biaya: {CURRENCY_LONG} Kec. Max: {VELOCITY}{}Kapasitas: {CARGO_LONG}{}Bea Berjalan: {CURRENCY_LONG}/thn
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Ganti {STRING} - {STRING}
@@ -3553,7 +3548,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} saat t
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Berhenti Mengganti
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Tekan untuk menghentikan penggantian jenis kendaraan terpilih di sisi kiri
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Mengganti: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Pindah tampilan penggantian lokomitif atau gerbong
 STR_REPLACE_ENGINES                                             :Lokomotif
 STR_REPLACE_WAGONS                                              :Gerbong
@@ -3649,7 +3643,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} tahun (
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} tahun ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Kec. Max: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Kecepatan Max.: {LTBLUE}{VELOCITY} {BLACK}Jangkauan: {LTBLUE}{COMMA} kotak
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Berat: {LTBLUE}{WEIGHT_SHORT} {BLACK}Tenaga: {LTBLUE}{POWER}{BLACK} Kec. Max: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Berat: {LTBLUE}{WEIGHT_SHORT} {BLACK}Tenaga: {LTBLUE}{POWER}{BLACK} Kec. Max: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 
@@ -3664,7 +3657,7 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Daya Mua
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Nilai Transfer: {LTBLUE}{CURRENCY_LONG}
 
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Jangka waktu perbaikan: {LTBLUE}{COMMA} hari{BLACK}   Perbaikan terakhir: {LTBLUE}{DATE_LONG}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Jangka waktu perbaikan: {LTBLUE}{COMMA}{NBSP}hari{BLACK}   Perbaikan terakhir: {LTBLUE}{DATE_LONG}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Jangka waktu perbaikan: {LTBLUE}{COMMA} %{BLACK}   Perbaikan terakhir: {LTBLUE}{DATE_LONG}
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Tambah jarak waktu perbaikan dengan 10. Ctrl+Click menambah jarak waktu perbaikan dengan 5.
 STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Kurangi jarak waktu perbaikan dengan 10. Ctrl+Click mengurangi jarak waktu perbaikan dengan 5
@@ -3900,8 +3893,8 @@ STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(menetap untuk 
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(perjalan untuk {STRING}, tidak berjadwal)
 STR_TIMETABLE_STAY_FOR                                          :dan tinggal selama {STRING}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :dan berjalan selama {STRING}
-STR_TIMETABLE_DAYS                                              :{COMMA} hari
-STR_TIMETABLE_TICKS                                             :{COMMA} titik
+STR_TIMETABLE_DAYS                                              :{COMMA}{NBSP}hari
+STR_TIMETABLE_TICKS                                             :{COMMA}{NBSP}titik
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Total durasi seluruh perjalanan akan memakan waktu {STRING}
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Total durasi seluruh perjalanan akan memakan waktu kurang lebih {STRING} untuk terpenuhi (blm semuanya terjadwal)

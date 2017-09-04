@@ -20,14 +20,20 @@ protected:
 	uint16 *anim_buf;    ///< In this buffer we keep track of the 8bpp indexes so we can do palette animation
 	int anim_buf_width;  ///< The width of the animation buffer.
 	int anim_buf_height; ///< The height of the animation buffer.
+	int anim_buf_pitch;  ///< The pitch of the animation buffer.
 	Palette palette;     ///< The current palette.
 
 public:
 	Blitter_32bppAnim() :
 		anim_buf(NULL),
 		anim_buf_width(0),
-		anim_buf_height(0)
-	{}
+		anim_buf_height(0),
+		anim_buf_pitch(0)
+	{
+		this->palette = _cur_palette;
+	}
+
+	~Blitter_32bppAnim();
 
 	/* virtual */ void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom);
 	/* virtual */ void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal);

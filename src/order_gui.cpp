@@ -841,7 +841,7 @@ public:
 			case VIWD_AUTOREPLACE:
 				/* Autoreplace replaced the vehicle */
 				this->vehicle = Vehicle::Get(this->window_number);
-				/* FALL THROUGH */
+				FALLTHROUGH;
 
 			case VIWD_CONSIST_CHANGED:
 				/* Vehicle composition was changed. */
@@ -1713,6 +1713,12 @@ void ShowOrdersWindow(const Vehicle *v)
 	DeleteWindowById(WC_VEHICLE_TIMETABLE, v->index, false);
 	if (BringWindowToFrontById(WC_VEHICLE_ORDERS, v->index) != NULL) return;
 
+	/* Using a different WindowDescs for _local_company causes problems.
+	 * Due to this we have to close order windows in ChangeWindowOwner/DeleteCompanyWindows,
+	 * because we cannot change switch the WindowDescs and keeping the old WindowDesc results
+	 * in crashed due to missing widges.
+	 * TODO Rewrite the order GUI to not use different WindowDescs.
+	 */
 	if (v->owner != _local_company) {
 		new OrdersWindow(&_other_orders_desc, v);
 	} else {

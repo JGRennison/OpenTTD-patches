@@ -35,7 +35,9 @@
 #include "window_func.h"
 #include "debug.h"
 #include "game/game_text.hpp"
-#include "network/network_content_gui.h"
+#ifdef ENABLE_NETWORK
+#	include "network/network_content_gui.h"
+#endif /* ENABLE_NETWORK */
 #include <stack>
 
 #include "table/strings.h"
@@ -49,9 +51,9 @@ const LanguageMetadata *_current_language = NULL; ///< The currently loaded lang
 
 TextDirection _current_text_dir; ///< Text direction of the currently selected language.
 
-#ifdef WITH_ICU
+#ifdef WITH_ICU_SORT
 Collator *_current_collator = NULL;               ///< Collator for the language currently in use.
-#endif /* WITH_ICU */
+#endif /* WITH_ICU_SORT */
 
 static uint64 _global_string_params_data[20];     ///< Global array of string parameters. To access, use #SetDParam.
 static WChar _global_string_params_type[20];      ///< Type of parameters stored in #_decode_parameters
@@ -185,21 +187,19 @@ struct LanguagePack : public LanguagePackHeader {
 
 static char **_langpack_offs;
 static LanguagePack *_langpack;
-static uint _langtab_num[TAB_COUNT];   ///< Offset into langpack offs
-static uint _langtab_start[TAB_COUNT]; ///< Offset into langpack offs
+static uint _langtab_num[TEXT_TAB_END];   ///< Offset into langpack offs
+static uint _langtab_start[TEXT_TAB_END]; ///< Offset into langpack offs
 static bool _scan_for_gender_data = false;  ///< Are we scanning for the gender of the current string? (instead of formatting it)
 
 
 const char *GetStringPtr(StringID string)
 {
-	switch (GB(string, TAB_COUNT_OFFSET, TAB_COUNT_BITS)) {
-		case GAME_TEXT_TAB: return GetGameStringPtr(GB(string, TAB_SIZE_OFFSET, TAB_SIZE_BITS));
+	switch (GetStringTab(string)) {
+		case TEXT_TAB_GAMESCRIPT_START: return GetGameStringPtr(GetStringIndex(string));
 		/* 0xD0xx and 0xD4xx IDs have been converted earlier. */
-		case 26: NOT_REACHED();
-		case 28: return GetGRFStringPtr(GB(string, TAB_SIZE_OFFSET, TAB_SIZE_BITS));
-		case 29: return GetGRFStringPtr(GB(string, TAB_SIZE_OFFSET, TAB_SIZE_BITS) + 0x0800);
-		case 30: return GetGRFStringPtr(GB(string, TAB_SIZE_OFFSET, TAB_SIZE_BITS) + 0x1000);
-		default: return _langpack_offs[_langtab_start[GB(string, TAB_COUNT_OFFSET, TAB_COUNT_BITS)] + GB(string, TAB_SIZE_OFFSET, TAB_SIZE_BITS)];
+		case TEXT_TAB_OLD_NEWGRF: NOT_REACHED();
+		case TEXT_TAB_NEWGRF_START: return GetGRFStringPtr(GetStringIndex(string));
+		default: return _langpack_offs[_langtab_start[GetStringTab(string)] + GetStringIndex(string)];
 	}
 }
 
@@ -217,43 +217,40 @@ char *GetStringWithArgs(char *buffr, StringID string, StringParameters *args, co
 {
 	if (string == 0) return GetStringWithArgs(buffr, STR_UNDEFINED, args, last);
 
-	uint index = GB(string, TAB_SIZE_OFFSET,  TAB_SIZE_BITS);
-	uint tab   = GB(string, TAB_COUNT_OFFSET, TAB_COUNT_BITS);
+	uint index = GetStringIndex(string);
+	StringTab tab = GetStringTab(string);
 
 	switch (tab) {
-		case 4:
+		case TEXT_TAB_TOWN:
 			if (index >= 0xC0 && !game_script) {
 				return GetSpecialTownNameString(buffr, index - 0xC0, args->GetInt32(), last);
 			}
 			break;
 
-		case 14:
+		case TEXT_TAB_SPECIAL:
 			if (index >= 0xE4 && !game_script) {
 				return GetSpecialNameString(buffr, index - 0xE4, args, last);
 			}
 			break;
 
-		case 15:
+		case TEXT_TAB_OLD_CUSTOM:
 			/* Old table for custom names. This is no longer used */
 			if (!game_script) {
 				error("Incorrect conversion of custom name string.");
 			}
 			break;
 
-		case GAME_TEXT_TAB:
+		case TEXT_TAB_GAMESCRIPT_START:
 			return FormatString(buffr, GetGameStringPtr(index), args, last, case_index, true);
 
-		case 26:
+		case TEXT_TAB_OLD_NEWGRF:
 			NOT_REACHED();
 
-		case 28:
+		case TEXT_TAB_NEWGRF_START:
 			return FormatString(buffr, GetGRFStringPtr(index), args, last, case_index);
 
-		case 29:
-			return FormatString(buffr, GetGRFStringPtr(index + 0x0800), args, last, case_index);
-
-		case 30:
-			return FormatString(buffr, GetGRFStringPtr(index + 0x1000), args, last, case_index);
+		default:
+			break;
 	}
 
 	if (index >= _langtab_num[tab]) {
@@ -820,17 +817,16 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				sub_args.ClearTypeInformation();
 				memset(sub_args_need_free, 0, sizeof(sub_args_need_free));
 
-				uint16 stringid;
 				const char *s = str;
 				char *p;
-				stringid = strtol(str, &p, 16);
+				uint32 stringid = strtoul(str, &p, 16);
 				if (*p != ':' && *p != '\0') {
 					while (*p != '\0') p++;
 					str = p;
 					buff = strecat(buff, "(invalid SCC_ENCODED)", last);
 					break;
 				}
-				if (stringid >= TAB_SIZE) {
+				if (stringid >= TAB_SIZE_GAMESCRIPT) {
 					while (*p != '\0') p++;
 					str = p;
 					buff = strecat(buff, "(invalid StringID)", last);
@@ -878,13 +874,13 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 						param = strtoull(s, &p, 16);
 
 						if (lookup) {
-							if (param >= TAB_SIZE) {
+							if (param >= TAB_SIZE_GAMESCRIPT) {
 								while (*p != '\0') p++;
 								str = p;
 								buff = strecat(buff, "(invalid sub-StringID)", last);
 								break;
 							}
-							param = (GAME_TEXT_TAB << TAB_COUNT_OFFSET) + param;
+							param = MakeStringID(TEXT_TAB_GAMESCRIPT_START, param);
 						}
 
 						sub_args.SetParam(i++, param);
@@ -899,7 +895,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				/* If we didn't error out, we can actually print the string. */
 				if (*str != '\0') {
 					str = p;
-					buff = GetStringWithArgs(buff, (GAME_TEXT_TAB << TAB_COUNT_OFFSET) + stringid, &sub_args, last, true);
+					buff = GetStringWithArgs(buff, MakeStringID(TEXT_TAB_GAMESCRIPT_START, stringid), &sub_args, last, true);
 				}
 
 				for (int i = 0; i < 20; i++) {
@@ -1015,7 +1011,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 
 			case SCC_STRING: {// {STRING}
 				StringID str = args->GetInt32(SCC_STRING);
-				if (game_script && GB(str, TAB_COUNT_OFFSET, TAB_COUNT_BITS) != GAME_TEXT_TAB) break;
+				if (game_script && GetStringTab(str) != TEXT_TAB_GAMESCRIPT_START) break;
 				/* WARNING. It's prohibited for the included string to consume any arguments.
 				 * For included strings that consume argument, you should use STRING1, STRING2 etc.
 				 * To debug stuff you can set argv to NULL and it will tell you */
@@ -1034,7 +1030,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			case SCC_STRING7: { // {STRING1..7}
 				/* Strings that consume arguments */
 				StringID str = args->GetInt32(b);
-				if (game_script && GB(str, TAB_COUNT_OFFSET, TAB_COUNT_BITS) != GAME_TEXT_TAB) break;
+				if (game_script && GetStringTab(str) != TEXT_TAB_GAMESCRIPT_START) break;
 				uint size = b - SCC_STRING1 + 1;
 				if (game_script && size > args->GetDataLeft()) {
 					buff = strecat(buff, "(too many parameters)", last);
@@ -1275,7 +1271,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (c == NULL) break;
 
 				if (c->name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)c->name};
+					int64 args_array[] = {(int64)(size_t)c->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1301,7 +1297,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			case SCC_DEPOT_NAME: { // {DEPOT}
 				VehicleType vt = (VehicleType)args->GetInt32(SCC_DEPOT_NAME);
 				if (vt == VEH_AIRCRAFT) {
-					uint64 args_array[] = {args->GetInt32()};
+					uint64 args_array[] = {(uint64)args->GetInt32()};
 					WChar types_array[] = {SCC_STATION_NAME};
 					StringParameters tmp_params(args_array, 1, types_array);
 					buff = GetStringWithArgs(buff, STR_FORMAT_DEPOT_NAME_AIRCRAFT, &tmp_params, last);
@@ -1310,7 +1306,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 
 				const Depot *d = Depot::Get(args->GetInt32());
 				if (d->name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)d->name};
+					int64 args_array[] = {(int64)(size_t)d->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1326,7 +1322,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (e == NULL) break;
 
 				if (e->name != NULL && e->IsEnabled()) {
-					int64 args_array[] = {(uint64)(size_t)e->name};
+					int64 args_array[] = {(int64)(size_t)e->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1341,7 +1337,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (g == NULL) break;
 
 				if (g->name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)g->name};
+					int64 args_array[] = {(int64)(size_t)g->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1378,7 +1374,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (c == NULL) break;
 
 				if (c->president_name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)c->president_name};
+					int64 args_array[] = {(int64)(size_t)c->president_name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1403,7 +1399,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				}
 
 				if (st->name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)st->name};
+					int64 args_array[] = {(int64)(size_t)st->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1432,7 +1428,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (t == NULL) break;
 
 				if (t->name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)t->name};
+					int64 args_array[] = {(int64)(size_t)t->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1446,7 +1442,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (wp == NULL) break;
 
 				if (wp->name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)wp->name};
+					int64 args_array[] = {(int64)(size_t)wp->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1464,7 +1460,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (v == NULL) break;
 
 				if (v->name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)v->name};
+					int64 args_array[] = {(int64)(size_t)v->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1490,7 +1486,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				if (si == NULL) break;
 
 				if (si->name != NULL) {
-					int64 args_array[] = {(uint64)(size_t)si->name};
+					int64 args_array[] = {(int64)(size_t)si->name};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
 				} else {
@@ -1734,13 +1730,13 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	}
 
 #if TTD_ENDIAN == TTD_BIG_ENDIAN
-	for (uint i = 0; i < TAB_COUNT; i++) {
+	for (uint i = 0; i < TEXT_TAB_END; i++) {
 		lang_pack->offsets[i] = ReadLE16Aligned(&lang_pack->offsets[i]);
 	}
 #endif /* TTD_ENDIAN == TTD_BIG_ENDIAN */
 
 	uint count = 0;
-	for (uint i = 0; i < TAB_COUNT; i++) {
+	for (uint i = 0; i < TEXT_TAB_END; i++) {
 		uint16 num = lang_pack->offsets[i];
 		if (num > TAB_SIZE) {
 			free(lang_pack);
@@ -1790,7 +1786,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	strecpy(_config_language_file, c_file, lastof(_config_language_file));
 	SetCurrentGrfLangID(_current_language->newgrflangid);
 
-#ifdef WITH_ICU
+#ifdef WITH_ICU_SORT
 	/* Delete previous collator. */
 	if (_current_collator != NULL) {
 		delete _current_collator;
@@ -1807,7 +1803,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 		delete _current_collator;
 		_current_collator = NULL;
 	}
-#endif /* WITH_ICU */
+#endif /* WITH_ICU_SORT */
 
 	/* Some lists need to be sorted again after a language change. */
 	ReconsiderGameScriptLanguage();
@@ -1815,7 +1811,9 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	SortIndustryTypes();
 	BuildIndustriesLegend();
 	SortNetworkLanguages();
+#ifdef ENABLE_NETWORK
 	BuildContentTypeStringList();
+#endif /* ENABLE_NETWORK */
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
 	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
 	InvalidateWindowClassesData(WC_ROADVEH_LIST);       // Road vehicle group window.
@@ -2047,12 +2045,12 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 
 	/* virtual */ const char *NextString()
 	{
-		if (this->i >= TAB_COUNT) return NULL;
+		if (this->i >= TEXT_TAB_END) return NULL;
 
 		const char *ret = _langpack_offs[_langtab_start[this->i] + this->j];
 
 		this->j++;
-		while (this->i < TAB_COUNT && this->j >= _langtab_num[this->i]) {
+		while (this->i < TEXT_TAB_END && this->j >= _langtab_num[this->i]) {
 			this->i++;
 			this->j = 0;
 		}
@@ -2132,7 +2130,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	/* Update the font with cache */
 	LoadStringWidthTable(searcher->Monospace());
 
-#if !defined(WITH_ICU)
+#if !defined(WITH_ICU_LAYOUT)
 	/*
 	 * For right-to-left languages we need the ICU library. If
 	 * we do not have support for that library we warn the user
@@ -2152,5 +2150,5 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		SetDParamStr(0, err_str);
 		ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);
 	}
-#endif
+#endif /* !WITH_ICU_LAYOUT */
 }

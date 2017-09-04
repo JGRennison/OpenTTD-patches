@@ -35,14 +35,14 @@ STR_CARGO_PLURAL_PASSENGERS.big                                 :Cestující
 STR_CARGO_PLURAL_COAL                                           :Uhlí
 STR_CARGO_PLURAL_COAL.big                                       :Uhlí
 STR_CARGO_PLURAL_MAIL                                           :{G=f}Pošta
-STR_CARGO_PLURAL_MAIL.nom                                       :{G=f}pošta
-STR_CARGO_PLURAL_MAIL.gen                                       :{G=f}pošty
-STR_CARGO_PLURAL_MAIL.dat                                       :{G=f}poštu
-STR_CARGO_PLURAL_MAIL.acc                                       :{G=f}poštu
-STR_CARGO_PLURAL_MAIL.loc                                       :{G=f}poště
-STR_CARGO_PLURAL_MAIL.ins                                       :{G=f}poštou
+STR_CARGO_PLURAL_MAIL.nom                                       :pošta
+STR_CARGO_PLURAL_MAIL.gen                                       :pošty
+STR_CARGO_PLURAL_MAIL.dat                                       :poštu
+STR_CARGO_PLURAL_MAIL.acc                                       :poštu
+STR_CARGO_PLURAL_MAIL.loc                                       :poště
+STR_CARGO_PLURAL_MAIL.ins                                       :poštou
 STR_CARGO_PLURAL_MAIL.big                                       :Pošta
-STR_CARGO_PLURAL_MAIL.small                                     :{G=f}pošta
+STR_CARGO_PLURAL_MAIL.small                                     :pošta
 STR_CARGO_PLURAL_OIL                                            :Ropa
 STR_CARGO_PLURAL_OIL.gen                                        :Ropy
 STR_CARGO_PLURAL_OIL.acc                                        :Ropu
@@ -1205,9 +1205,9 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :Nastavení hry 
 STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Nastavení hry (uchováno v uložené hře; ovlivní pouze stávající hru)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Nastavení společnosti (uchováno v uložených hrách; ovlivní pouze nové hry)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Nastavení společnosti (uchováno v uložené hře; ovlivní pouze stávající společnost)
-STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Všechny výsledky vyhledávání zobrazíš nastavením {}{SILVER}kategorie {BLACK}na {WHITE}{STRING}
-STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Všechny výsledky vyhledávání zobrazíš nastavením {}{SILVER}typu {BLACK}na {WHITE}Všechny typy nastavení
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Všechny výsledky vyhledávání zobrazíš nastavením {}{SILVER}kategorie {BLACK}na {WHITE}{STRING} {BLACK}a {SILVER}typu {BLACK}na {WHITE}Všechny typy nastavení
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Všechny výsledky vyhledávání zobrazíš nastavením{}{SILVER}kategorie {BLACK}na {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Všechny výsledky vyhledávání zobrazíš nastavením{}{SILVER}typu {BLACK}na {WHITE}Všechny typy nastavení
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Všechny výsledky vyhledávání zobrazíš nastavením{}{SILVER}kategorie {BLACK}na {WHITE}{STRING} {BLACK}a {SILVER}typu {BLACK}na {WHITE}Všechny typy nastavení
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Nic -
 
 STR_CONFIG_SETTING_OFF                                          :Vypnuto
@@ -1390,7 +1390,7 @@ STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Ropné rafineri
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Výška sněhové čáry: {STRING}
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Určuje o jaké výšky se vyskytuje sníh u subarktického klimatu. Sníh rovněž ovlivňuje vytváření průmyslu a požadavky na růst měst
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Členitost krajiny: {STRING}
-STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Pouze TerraGenesis) Zvol množství hor: Rovinatý terén má méně hor, které jsou však rozlehlejší. Členitý terén má mnoho hor, u kterých se může zdát, že se upakují
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Pouze TerraGenesis) Zvol množství hor: Rovinatý terén má méně hor, které jsou však rozlehlejší. Členitý terén má mnoho hor, u kterých se může zdát, že se opakují
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :velmi rovná
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :rovná
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :členitá
@@ -1459,6 +1459,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :vypnutá
 
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Posouvání levým tlačítkem: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Povolit posouvání mapy chycením pomocí levého tlačítka myši. Toto je velmi užitečné hlavně při použití s dotykovou obrazovkou.
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zavírat okno kliknutím pravým tlačítkem myši: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Zavírat okno kliknutím pravým tlačítkem na něj. Znemožňuje využívat nápovědu zobrazující se při stisknutí pravého tlačítka myši!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Automaticky ukládat: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Zvol frekvenci automatického ukládání
@@ -1848,6 +1850,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Ukázat,
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Zobrazit nastavení AI a hry
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Ukončit 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}V aktuálně zvolené základní sadě grafiky chybí {NUM} sprit{P "" y ů}. Zkuste, prosím, vyhledat aktualizovanou základní sadu.
 STR_INTRO_TRANSLATION                                           :{BLACK}Tento překlad postrádá {NUM} řetěz{P ec ce ců}. Prosím pomozte OpenTTD udělat lepším a přihlaste se jako překladatel. Pro více informací, čtěte readme.txt.
 
 # Quit window
@@ -1883,7 +1886,7 @@ STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magick�
 STR_CHEAT_CROSSINGTUNNELS                                       :{LTBLUE}Tunely se mohou křížit: {ORANGE}{STRING}
 STR_CHEAT_NO_JETCRASH                                           :{LTBLUE}Letadla nebudou na malých letištích havarovat (tak často): {ORANGE}{STRING}
 STR_CHEAT_EDIT_MAX_HL                                           :{LTBLUE}Upravit maximální výšku mapy: {ORANGE}{NUM}
-STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{BLACK}Upravit maximální výšku hor na mapě
+STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Upravit maximální výšku hor na mapě
 STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :krajina mírného pásma
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :subarktická krajina
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :subtropická kraina
@@ -2682,6 +2685,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Název d
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Přijímané zboží: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Druh kolejí: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Rychlostní omezení tratě: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Rychlostní omezení silnice: {LTBLUE}{VELOCITY}
 
@@ -2694,29 +2698,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Pole
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Zasněžená země
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Poušť
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} trať
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} trať s obyčejným návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} trať s vjezdovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} trať s výjezdovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} trať s kombinovaným návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} trať s dokonalejším (PBS) návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} trať s dokonalejším (PBS) jednosměrným návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} trať s obyčejným a vjezdovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} trať s obyčejným a odjezdovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} trať s obyčejným a kombinovaným návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} trať s obyčejným a cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} trať s obyčejným a jednosměrným cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} trať s vjezdovým a odjezdovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} trať s vjezdovým a kombinovaným návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} trať s vjezdovým a cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} trať s vjezdovým a jednosměrným cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} trať s výjezdovým a kombinovaným návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} trať s výjezdovým a cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} trať s výjezdovým a jednosměrným cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} trať s kombinovaným a cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} trať s kombinovaným a jednosměrným cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} trať s cestovým a jednosměrným cestovým návěstidlem
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} železniční depo
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Železniční trať
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Železniční trať s obyčejnými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Železniční trať s vjezdovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Železniční trať s odjezdovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Železniční trať s kombinovanými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Železniční trať s dokonalejšími (PBS) návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Železniční trať s jednosměrnými cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Železniční trať s obyčejnými a vjezdovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Železniční trať s obyčejnými a odjezdovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Železniční trať s obyčejnými a kombinovanými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Železniční trať s obyčejnými a cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Železniční trať s obyčejnými a jednosměrnými cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Železniční trať s vjezdovými a odjezdovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Železniční trať s vjezdovými a kombinovanými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Železniční trať s vjezdovými a cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Železniční trať s vjezdovými a jednosměrnými cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Železniční trať s odjezdovými a kombinovanými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Železniční trať s odjezdovými a cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Železniční trať s odjezdovými a jednosměrnými cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Železniční trať s kombinovanými a cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Železniční trať s kombinovanými a jednosměrnými cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Železniční trať s cestovými a jednosměrnými cestovými návěstidly
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Železniční depo
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Silnice
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Silnice s pouličním osvětlením
@@ -2780,7 +2784,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Půda vlastněn
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Původní copyright: {COPYRIGHT} 1995 Chris Sawyer, všechna práva vyhrazena
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verze {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 Tým OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 Tým OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Uložit hru
@@ -2967,7 +2971,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Jít na 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Předchozí sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Jít na předchozí normální sprite (s grafikou), přičemž se přeskakují pseudo-/barvící/znakové sprity a při dosažení začátku se jde na konec
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Zobrazení vybraného spritu. Posun se při jeho vykreslení neuvažoval
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Posouvání spritu změnou souřadnic X a Y
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Posouvání spritu změnou souřadnic X a Y. Ctrl+kliknutí posouvá o osm jednotek najednou.
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Resetovat
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Resetovat aktuání relativní posunutí
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Posunutí v ose X: {NUM}, Posunutí v ose Y: {NUM} (Absolutní)
@@ -2982,7 +2986,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Varování: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Chyba: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Závažná chyba: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Vyskytla se kritická chyba v NewGRF: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Vyskytla se kritická chyba v NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} nebude fungovat s verzí TTDPatche, kterou OpenTTD hlásí
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} je pro TTD verzi {STRING}
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} je navržen pro práci s {STRING}
@@ -2999,8 +3003,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Pokus o použit
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} obsahuje poškozený sprite. Všechny takové se zobrazí jako červený otazník (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Obsahuje vícero Akce 8 záznamů (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Čtení konce pseudo-spritu (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Právě používanému základnímu grafickému setu chybí obrázky.{}Prosím, updatujte ho
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Aktuálnímu grafickému setu chybí nějaké části.{}Aktualizuj prosím grafický set.{}Pokud hraješ{YELLOW}vývojovou verzi OpenTTD{WHITE}, možná potřebuješ {YELLOW}vývojovou verzi základních grafik{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Požadované zdroje GRF nejsou dostupné (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} byla vypnuta {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Neplatný/neznámý sprite layout formát (sprite {3:NUM})
@@ -3207,8 +3209,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Přijím
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Ukázat seznam přijímaného nákladu
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Přijímá: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Tato stanice má v tomto městě výhradní přepravní práva.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :Společnost {YELLOW}{COMPANY}{BLACK} koupila v tomto městě výhradní přepravní práva.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Tato stanice má v tomto městě výhradní přepravní práva.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :Společnost {YELLOW}{COMPANY}{BLACK} koupila v tomto městě výhradní přepravní práva.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Hodnocení
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Ukázat hodnocení společností
@@ -3225,7 +3227,7 @@ STR_STATION_VIEW_VIA                                            :{YELLOW}{CARGO_
 STR_STATION_VIEW_TO                                             :{YELLOW}{CARGO_SHORT} do {STATION}
 STR_STATION_VIEW_FROM_ANY                                       :{RED}{CARGO_SHORT} z neznámé stanice
 STR_STATION_VIEW_TO_ANY                                         :{RED}{CARGO_SHORT} do kterékoliv stanice
-STR_STATION_VIEW_VIA_ANY                                        :{GREEN}{CARGO_SHORT} přes jakoukoliv stanici
+STR_STATION_VIEW_VIA_ANY                                        :{RED}{CARGO_SHORT} přes jakoukoliv stanici
 STR_STATION_VIEW_FROM_HERE                                      :{GREEN}{CARGO_SHORT} z této stanice
 STR_STATION_VIEW_VIA_HERE                                       :{GREEN}{CARGO_SHORT} zastavuje v této stanici
 STR_STATION_VIEW_TO_HERE                                        :{GREEN}{CARGO_SHORT} do této stanice
@@ -3387,9 +3389,13 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Vyžaduj
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Vyžaduje: {YELLOW}{STRING.acc}{STRING}, {STRING.acc}{STRING}, {STRING.acc}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Vyžaduje
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}ček{P á ají á}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Náklad čekající na zpracování:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produkuje: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produkuje: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3456,6 +3462,11 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Odstranit všec
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Přejmenovat skupinu
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Letošní zisk:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Loňský zisk:
+STR_GROUP_OCCUPANCY                                             :Současné využití:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nové lokomotivy a vagony
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nové elektrické lokomotivy a vagony
@@ -3487,6 +3498,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Všechny druhy 
 STR_PURCHASE_INFO_ALL_BUT                                       :Všechny kromě {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Max. tažná síla: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Dosah: {GOLD}{COMMA} polí
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typ letadla: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Seznam vlaků - pro informace klikni na vlak. Ctrl+kliknutí způsobí přepínání skrytí typů lokomotiv a vagónů.
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Seznam silničních vozidel - klikni na vozidlo pro informace. Ctrl+kliknutí způsobí přepínání skrytí typu silničního vozidla.
@@ -3612,24 +3624,22 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Chceš 
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Zpráva od výrobce dopravních prostředků
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Právě jsme vyvinuli nov{G ý ou é é é é á} {STRING.acc}. Měl byste zájem o roční výhradní právo na používání tohoto prostředku, aby byl otestován před uvedením na trh?
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}lokomotiva
-STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE.dat                      :
-STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE.acc                      :{G=f}lokomotivu
+STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE.acc                      :lokomotivu
 STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :{G=n}silniční vozidlo
 STR_ENGINE_PREVIEW_AIRCRAFT                                     :{G=n}letadlo
 STR_ENGINE_PREVIEW_SHIP                                         :{G=f}loď
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :{G=f}lokomotiva pro monorail
-STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE.dat                      :
-STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE.acc                      :{G=f}lokomotivu pro monorail
+STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE.acc                      :lokomotivu pro monorail
 STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :{G=f}lokomotiva Maglev
-STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE.dat                        :
-STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE.acc                        :{G=f}lokomotivu Maglev
+STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE.acc                        :lokomotivu Maglev
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Cena: {CURRENCY_LONG} Hmotnost: {WEIGHT_SHORT}{}Rychlost: {VELOCITY}  Výkon: {POWER}{}Cena provozu: {CURRENCY_LONG} ročně{}Kapacita: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Cena: {CURRENCY_LONG} Váha: {WEIGHT_SHORT}{}Rychlost: {VELOCITY}  Síla: {POWER}  Maximální tažná síla: {6:FORCE}{}Provozní náklady: {4:CURRENCY_LONG}/rok{}Kapacita: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Cena: {CURRENCY_LONG} Max. rychlost: {VELOCITY}{}Kapacita: {CARGO_LONG}, {CARGO_LONG}{}Cena provozu: {CURRENCY_LONG} ročně
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Cena: {CURRENCY_LONG} Max. rychlost: {VELOCITY}{}Kapacita: {CARGO_LONG}{}Cena provozu: {CURRENCY_LONG} ročně
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Cena {CURRENCY_LONG} Max. Rychlost: {VELOCITY} Dosah: {COMMA} polí{}Kapacita: {CARGO_LONG}, {CARGO_LONG}{}Provozní náklady: {CURRENCY_LONG}/rok
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Cena {CURRENCY_LONG} Max. Rychlost {VELOCITY} Dosah: {COMMA} polí{}Kapacita: {CARGO_LONG}{}Provozní náklady: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Cena: {CURRENCY_LONG} Max. rychlost: {VELOCITY}{}Kapacita: {CARGO_LONG}{}Cena provozu: {CURRENCY_LONG} ročně
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Cena: {CURRENCY_LONG} Max. rychlost: {VELOCITY}{}Typ letadla: {STRING}{}Kapacita: {CARGO_LONG}, {CARGO_LONG}{}Provozní náklady: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Cena: {CURRENCY_LONG} Max. rychlost: {VELOCITY}{}Typ letadla: {STRING}{}Kapacita: {CARGO_LONG}{}Provozní náklady: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Cena: {CURRENCY_LONG} Max. rychlost: {VELOCITY}{}Typ letadla: {STRING} Dosah: {COMMA} políč{P ko ka ek}{}Kapacita: {CARGO_LONG}, {CARGO_LONG}{}Provozní náklady: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Cena: {CURRENCY_LONG} Max. rychlost: {VELOCITY}{}Typ letadla: {STRING} Dosah: {COMMA} políč{P ko ka ek}{}Kapacita: {CARGO_LONG}{}Provozní náklady: {CURRENCY_LONG}/rok
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Vyměňování {STRING} - {STRING}
@@ -3656,10 +3666,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} když 
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Vypnout vyměňování
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Zmáčkni toto tlačítko, když nechceš vyměňovat typ lokomotivy vybraný v levém seznamu
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Vyměňování: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Přepne mezi okny na výměnu lokomotiv a vagonů
 STR_REPLACE_ENGINES                                             :lokomotivy
 STR_REPLACE_WAGONS                                              :vagony
+STR_REPLACE_ALL_RAILTYPE                                        :Všechna drážní vozidla
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Vyber typ kolejí, pro které chceš měnit lokomotivy
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Tady je zobrazeno, za jakou lokomotivu se ta v levém seznamu vyměňuje
@@ -3752,7 +3762,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} {P rok 
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} {P rok roky let} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Max. rychlost: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. rychlost: {LTBLUE}{VELOCITY} {BLACK}Dosah: {LTBLUE}{COMMA} polí
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Max. rychlost: {LTBLUE}{VELOCITY} {BLACK}Typ letadla: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Max. rychlost: {LTBLUE}{VELOCITY} {BLACK}Typ letadla: {LTBLUE}{STRING} {BLACK}Dosah: {LTBLUE}{COMMA} políč{P ko ka ek}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Hmotnost: {LTBLUE}{WEIGHT_SHORT} {BLACK}Výkon: {LTBLUE}{POWER}{BLACK} Max. rychlost: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Hmotnost: {LTBLUE}{WEIGHT_SHORT} {BLACK}Výkon: {LTBLUE}{POWER}{BLACK} Max. rychlost: {LTBLUE}{VELOCITY} {BLACK}Max. tažná síla: {LTBLUE}{FORCE}
 
@@ -4192,7 +4203,7 @@ STR_ERROR_BMPMAP_IMAGE_TYPE                                     :{WHITE}... nelz
 STR_ERROR_HEIGHTMAP_TOO_LARGE                                   :{WHITE}... obrázek je příliš velký
 
 STR_WARNING_HEIGHTMAP_SCALE_CAPTION                             :{WHITE}Varování kvůli velikosti
-STR_WARNING_HEIGHTMAP_SCALE_MESSAGE                             :{YELLOW}Tak velká zmena velikosti zdrojové mapy není doporučena. Pokračovat s generováním?
+STR_WARNING_HEIGHTMAP_SCALE_MESSAGE                             :{YELLOW}Tak velká změna velikosti zdrojové mapy není doporučena. Pokračovat v generování?
 
 # Soundset messages
 STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Byl nalezen pouze nouzový zvukový soubor. Pokud chcete zvuky, nainstalujte prosim zvukové soubory skrze systém stahování obsahu
@@ -4618,153 +4629,153 @@ STR_TOWN_BUILDING_NAME_PIGGY_BANK_1                             :Banka prasátko
 ##id 0x4800
 # industry names
 STR_INDUSTRY_NAME_COAL_MINE                                     :{G=m}Uhelný důl
-STR_INDUSTRY_NAME_COAL_MINE.gen                                 :{G=m}uhelného dolu
-STR_INDUSTRY_NAME_COAL_MINE.loc                                 :{G=m}v uhelném dole
-STR_INDUSTRY_NAME_COAL_MINE.small                               :{G=m}uhelný důl
+STR_INDUSTRY_NAME_COAL_MINE.gen                                 :uhelného dolu
+STR_INDUSTRY_NAME_COAL_MINE.loc                                 :v uhelném dole
+STR_INDUSTRY_NAME_COAL_MINE.small                               :uhelný důl
 STR_INDUSTRY_NAME_POWER_STATION                                 :{G=f}Elektrárna
-STR_INDUSTRY_NAME_POWER_STATION.gen                             :{G=f}elektrárny
-STR_INDUSTRY_NAME_POWER_STATION.loc                             :{G=f}v elektrárně
-STR_INDUSTRY_NAME_POWER_STATION.small                           :{G=f}elektrárna
+STR_INDUSTRY_NAME_POWER_STATION.gen                             :elektrárny
+STR_INDUSTRY_NAME_POWER_STATION.loc                             :v elektrárně
+STR_INDUSTRY_NAME_POWER_STATION.small                           :elektrárna
 STR_INDUSTRY_NAME_SAWMILL                                       :{G=f}Pila
-STR_INDUSTRY_NAME_SAWMILL.gen                                   :{G=f}pily
-STR_INDUSTRY_NAME_SAWMILL.loc                                   :{G=f}na pile
-STR_INDUSTRY_NAME_SAWMILL.small                                 :{G=f}pila
+STR_INDUSTRY_NAME_SAWMILL.gen                                   :pily
+STR_INDUSTRY_NAME_SAWMILL.loc                                   :na pile
+STR_INDUSTRY_NAME_SAWMILL.small                                 :pila
 STR_INDUSTRY_NAME_FOREST                                        :{G=m}Les
-STR_INDUSTRY_NAME_FOREST.gen                                    :{G=m}lesa
-STR_INDUSTRY_NAME_FOREST.loc                                    :{G=m}v lese
-STR_INDUSTRY_NAME_FOREST.small                                  :{G=m}les
+STR_INDUSTRY_NAME_FOREST.gen                                    :lesa
+STR_INDUSTRY_NAME_FOREST.loc                                    :v lese
+STR_INDUSTRY_NAME_FOREST.small                                  :les
 STR_INDUSTRY_NAME_OIL_REFINERY                                  :{G=f}Rafinerie
-STR_INDUSTRY_NAME_OIL_REFINERY.gen                              :{G=f}rafinerie
-STR_INDUSTRY_NAME_OIL_REFINERY.loc                              :{G=f}v rafinerii
-STR_INDUSTRY_NAME_OIL_REFINERY.small                            :{G=f}rafinerie
+STR_INDUSTRY_NAME_OIL_REFINERY.gen                              :rafinerie
+STR_INDUSTRY_NAME_OIL_REFINERY.loc                              :v rafinerii
+STR_INDUSTRY_NAME_OIL_REFINERY.small                            :rafinerie
 STR_INDUSTRY_NAME_OIL_RIG                                       :{G=f}Ropná plošina
-STR_INDUSTRY_NAME_OIL_RIG.gen                                   :{G=f}ropné plošiny
-STR_INDUSTRY_NAME_OIL_RIG.loc                                   :{G=f}na ropné plošině
-STR_INDUSTRY_NAME_OIL_RIG.small                                 :{G=f}ropná plošina
+STR_INDUSTRY_NAME_OIL_RIG.gen                                   :ropné plošiny
+STR_INDUSTRY_NAME_OIL_RIG.loc                                   :na ropné plošině
+STR_INDUSTRY_NAME_OIL_RIG.small                                 :ropná plošina
 STR_INDUSTRY_NAME_FACTORY                                       :{G=f}Továrna
-STR_INDUSTRY_NAME_FACTORY.gen                                   :{G=f}továrny
-STR_INDUSTRY_NAME_FACTORY.loc                                   :{G=f}v továrně
-STR_INDUSTRY_NAME_FACTORY.small                                 :{G=f}továrna
+STR_INDUSTRY_NAME_FACTORY.gen                                   :továrny
+STR_INDUSTRY_NAME_FACTORY.loc                                   :v továrně
+STR_INDUSTRY_NAME_FACTORY.small                                 :továrna
 STR_INDUSTRY_NAME_PRINTING_WORKS                                :{G=f}Tiskárna
-STR_INDUSTRY_NAME_PRINTING_WORKS.gen                            :{G=f}tiskárny
-STR_INDUSTRY_NAME_PRINTING_WORKS.loc                            :{G=f}v tiskárně
-STR_INDUSTRY_NAME_PRINTING_WORKS.small                          :{G=f}tiskárna
+STR_INDUSTRY_NAME_PRINTING_WORKS.gen                            :tiskárny
+STR_INDUSTRY_NAME_PRINTING_WORKS.loc                            :v tiskárně
+STR_INDUSTRY_NAME_PRINTING_WORKS.small                          :tiskárna
 STR_INDUSTRY_NAME_STEEL_MILL                                    :{G=f}Ocelárna
-STR_INDUSTRY_NAME_STEEL_MILL.gen                                :{G=f}ocelárny
-STR_INDUSTRY_NAME_STEEL_MILL.loc                                :{G=f}v ocelárně
-STR_INDUSTRY_NAME_STEEL_MILL.small                              :{G=f}ocelárna
+STR_INDUSTRY_NAME_STEEL_MILL.gen                                :ocelárny
+STR_INDUSTRY_NAME_STEEL_MILL.loc                                :v ocelárně
+STR_INDUSTRY_NAME_STEEL_MILL.small                              :ocelárna
 STR_INDUSTRY_NAME_FARM                                          :{G=f}Farma
-STR_INDUSTRY_NAME_FARM.gen                                      :{G=f}farmy
-STR_INDUSTRY_NAME_FARM.loc                                      :{G=f}na farmě
-STR_INDUSTRY_NAME_FARM.small                                    :{G=f}farma
+STR_INDUSTRY_NAME_FARM.gen                                      :farmy
+STR_INDUSTRY_NAME_FARM.loc                                      :na farmě
+STR_INDUSTRY_NAME_FARM.small                                    :farma
 STR_INDUSTRY_NAME_COPPER_ORE_MINE                               :{G=m}Důl na měděnou rudu
-STR_INDUSTRY_NAME_COPPER_ORE_MINE.gen                           :{G=m}dolu na měděnou rudu
-STR_INDUSTRY_NAME_COPPER_ORE_MINE.loc                           :{G=m}v dole na měděnou rudu
-STR_INDUSTRY_NAME_COPPER_ORE_MINE.small                         :{G=m}důl na měděnou rudu
+STR_INDUSTRY_NAME_COPPER_ORE_MINE.gen                           :dolu na měděnou rudu
+STR_INDUSTRY_NAME_COPPER_ORE_MINE.loc                           :v dole na měděnou rudu
+STR_INDUSTRY_NAME_COPPER_ORE_MINE.small                         :důl na měděnou rudu
 STR_INDUSTRY_NAME_OIL_WELLS                                     :{G=m}Ropný vrt
-STR_INDUSTRY_NAME_OIL_WELLS.gen                                 :{G=m}ropného vrtu
-STR_INDUSTRY_NAME_OIL_WELLS.loc                                 :{G=m}v ropném vrtu
-STR_INDUSTRY_NAME_OIL_WELLS.small                               :{G=m}ropný vrt
+STR_INDUSTRY_NAME_OIL_WELLS.gen                                 :ropného vrtu
+STR_INDUSTRY_NAME_OIL_WELLS.loc                                 :v ropném vrtu
+STR_INDUSTRY_NAME_OIL_WELLS.small                               :ropný vrt
 STR_INDUSTRY_NAME_BANK                                          :{G=f}Banka
-STR_INDUSTRY_NAME_BANK.gen                                      :{G=f}banky
-STR_INDUSTRY_NAME_BANK.loc                                      :{G=f}v bance
-STR_INDUSTRY_NAME_BANK.small                                    :{G=f}banka
+STR_INDUSTRY_NAME_BANK.gen                                      :banky
+STR_INDUSTRY_NAME_BANK.loc                                      :v bance
+STR_INDUSTRY_NAME_BANK.small                                    :banka
 STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT                         :{G=m}Potravinářský závod
-STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.gen                     :{G=m}potravinářského závodu
-STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.loc                     :{G=m}v potravinářském závodu
-STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.small                   :{G=m}potravinářský závod
+STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.gen                     :potravinářského závodu
+STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.loc                     :v potravinářském závodu
+STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT.small                   :potravinářský závod
 STR_INDUSTRY_NAME_PAPER_MILL                                    :{G=f}Papírna
-STR_INDUSTRY_NAME_PAPER_MILL.gen                                :{G=f}papírny
-STR_INDUSTRY_NAME_PAPER_MILL.loc                                :{G=f}v papírně
-STR_INDUSTRY_NAME_PAPER_MILL.small                              :{G=f}papírna
+STR_INDUSTRY_NAME_PAPER_MILL.gen                                :papírny
+STR_INDUSTRY_NAME_PAPER_MILL.loc                                :v papírně
+STR_INDUSTRY_NAME_PAPER_MILL.small                              :papírna
 STR_INDUSTRY_NAME_GOLD_MINE                                     :{G=m}Zlatý důl
-STR_INDUSTRY_NAME_GOLD_MINE.gen                                 :{G=m}zlatého dolu
-STR_INDUSTRY_NAME_GOLD_MINE.loc                                 :{G=m}ve zlatém dole
-STR_INDUSTRY_NAME_GOLD_MINE.small                               :{G=m}zlatý důl
+STR_INDUSTRY_NAME_GOLD_MINE.gen                                 :zlatého dolu
+STR_INDUSTRY_NAME_GOLD_MINE.loc                                 :ve zlatém dole
+STR_INDUSTRY_NAME_GOLD_MINE.small                               :zlatý důl
 STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC                            :{G=f}Banka
-STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.gen                        :{G=f}banky
-STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.loc                        :{G=f}v bance
-STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.small                      :{G=f}banka
+STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.gen                        :banky
+STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.loc                        :v bance
+STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC.small                      :banka
 STR_INDUSTRY_NAME_DIAMOND_MINE                                  :{G=m}Diamantový důl
-STR_INDUSTRY_NAME_DIAMOND_MINE.gen                              :{G=m}diamantového dolu
-STR_INDUSTRY_NAME_DIAMOND_MINE.loc                              :{G=m}v diamantovém dole
-STR_INDUSTRY_NAME_DIAMOND_MINE.small                            :{G=m}diamantový důl
+STR_INDUSTRY_NAME_DIAMOND_MINE.gen                              :diamantového dolu
+STR_INDUSTRY_NAME_DIAMOND_MINE.loc                              :v diamantovém dole
+STR_INDUSTRY_NAME_DIAMOND_MINE.small                            :diamantový důl
 STR_INDUSTRY_NAME_IRON_ORE_MINE                                 :{G=m}Důl na železnou rudu
-STR_INDUSTRY_NAME_IRON_ORE_MINE.gen                             :{G=m}dolu na železnou rudu
-STR_INDUSTRY_NAME_IRON_ORE_MINE.loc                             :{G=m}v dole na železnou rudu
-STR_INDUSTRY_NAME_IRON_ORE_MINE.small                           :{G=m}důl na železnou rudu
+STR_INDUSTRY_NAME_IRON_ORE_MINE.gen                             :dolu na železnou rudu
+STR_INDUSTRY_NAME_IRON_ORE_MINE.loc                             :v dole na železnou rudu
+STR_INDUSTRY_NAME_IRON_ORE_MINE.small                           :důl na železnou rudu
 STR_INDUSTRY_NAME_FRUIT_PLANTATION                              :{G=m}Ovocný sad
-STR_INDUSTRY_NAME_FRUIT_PLANTATION.gen                          :{G=m}ovocného sadu
-STR_INDUSTRY_NAME_FRUIT_PLANTATION.loc                          :{G=m}v ovocném sadu
-STR_INDUSTRY_NAME_FRUIT_PLANTATION.small                        :{G=m}ovocný sad
+STR_INDUSTRY_NAME_FRUIT_PLANTATION.gen                          :ovocného sadu
+STR_INDUSTRY_NAME_FRUIT_PLANTATION.loc                          :v ovocném sadu
+STR_INDUSTRY_NAME_FRUIT_PLANTATION.small                        :ovocný sad
 STR_INDUSTRY_NAME_RUBBER_PLANTATION                             :{G=f}Kaučuková plantáž
-STR_INDUSTRY_NAME_RUBBER_PLANTATION.gen                         :{G=f}kaučukové plantáže
-STR_INDUSTRY_NAME_RUBBER_PLANTATION.loc                         :{G=f}na kaučukové plantáži
-STR_INDUSTRY_NAME_RUBBER_PLANTATION.small                       :{G=f}kaučuková plantáž
+STR_INDUSTRY_NAME_RUBBER_PLANTATION.gen                         :kaučukové plantáže
+STR_INDUSTRY_NAME_RUBBER_PLANTATION.loc                         :na kaučukové plantáži
+STR_INDUSTRY_NAME_RUBBER_PLANTATION.small                       :kaučuková plantáž
 STR_INDUSTRY_NAME_WATER_SUPPLY                                  :{G=m}Zdroj vody
-STR_INDUSTRY_NAME_WATER_SUPPLY.gen                              :{G=m}zdroje vody
-STR_INDUSTRY_NAME_WATER_SUPPLY.loc                              :{G=m}ve zdroji vody
-STR_INDUSTRY_NAME_WATER_SUPPLY.small                            :{G=m}zdroj vody
+STR_INDUSTRY_NAME_WATER_SUPPLY.gen                              :zdroje vody
+STR_INDUSTRY_NAME_WATER_SUPPLY.loc                              :ve zdroji vody
+STR_INDUSTRY_NAME_WATER_SUPPLY.small                            :zdroj vody
 STR_INDUSTRY_NAME_WATER_TOWER                                   :{G=m}Vodojem
-STR_INDUSTRY_NAME_WATER_TOWER.gen                               :{G=m}vodojemu
-STR_INDUSTRY_NAME_WATER_TOWER.loc                               :{G=m}ve vodojemu
-STR_INDUSTRY_NAME_WATER_TOWER.small                             :{G=m}vodojem
+STR_INDUSTRY_NAME_WATER_TOWER.gen                               :vodojemu
+STR_INDUSTRY_NAME_WATER_TOWER.loc                               :ve vodojemu
+STR_INDUSTRY_NAME_WATER_TOWER.small                             :vodojem
 STR_INDUSTRY_NAME_FACTORY_2                                     :{G=f}Továrna
-STR_INDUSTRY_NAME_FACTORY_2.gen                                 :{G=f}továrny
-STR_INDUSTRY_NAME_FACTORY_2.loc                                 :{G=f}v továrně
-STR_INDUSTRY_NAME_FACTORY_2.small                               :{G=f}továrna
+STR_INDUSTRY_NAME_FACTORY_2.gen                                 :továrny
+STR_INDUSTRY_NAME_FACTORY_2.loc                                 :v továrně
+STR_INDUSTRY_NAME_FACTORY_2.small                               :továrna
 STR_INDUSTRY_NAME_FARM_2                                        :{G=f}Farma
-STR_INDUSTRY_NAME_FARM_2.gen                                    :{G=f}farmy
-STR_INDUSTRY_NAME_FARM_2.loc                                    :{G=f}na farmě
-STR_INDUSTRY_NAME_FARM_2.small                                  :{G=f}farma
+STR_INDUSTRY_NAME_FARM_2.gen                                    :farmy
+STR_INDUSTRY_NAME_FARM_2.loc                                    :na farmě
+STR_INDUSTRY_NAME_FARM_2.small                                  :farma
 STR_INDUSTRY_NAME_LUMBER_MILL                                   :{G=f}Pila
-STR_INDUSTRY_NAME_LUMBER_MILL.gen                               :{G=f}pily
-STR_INDUSTRY_NAME_LUMBER_MILL.loc                               :{G=f}na pile
-STR_INDUSTRY_NAME_LUMBER_MILL.small                             :{G=f}pila
+STR_INDUSTRY_NAME_LUMBER_MILL.gen                               :pily
+STR_INDUSTRY_NAME_LUMBER_MILL.loc                               :na pile
+STR_INDUSTRY_NAME_LUMBER_MILL.small                             :pila
 STR_INDUSTRY_NAME_COTTON_CANDY_FOREST                           :{G=m}Les cukrové vaty
-STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.gen                       :{G=m}lesa cukrové vaty
-STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.loc                       :{G=m}v lese cukrové vaty
-STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.small                     :{G=m}les cukrové vaty
+STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.gen                       :lesa cukrové vaty
+STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.loc                       :v lese cukrové vaty
+STR_INDUSTRY_NAME_COTTON_CANDY_FOREST.small                     :les cukrové vaty
 STR_INDUSTRY_NAME_CANDY_FACTORY                                 :{G=f}Továrna na sladkosti
-STR_INDUSTRY_NAME_CANDY_FACTORY.gen                             :{G=f}továrny na sladkosti
-STR_INDUSTRY_NAME_CANDY_FACTORY.loc                             :{G=f}továrně na sladkosti
-STR_INDUSTRY_NAME_CANDY_FACTORY.small                           :{G=f}továrna na sladkosti
+STR_INDUSTRY_NAME_CANDY_FACTORY.gen                             :továrny na sladkosti
+STR_INDUSTRY_NAME_CANDY_FACTORY.loc                             :továrně na sladkosti
+STR_INDUSTRY_NAME_CANDY_FACTORY.small                           :továrna na sladkosti
 STR_INDUSTRY_NAME_BATTERY_FARM                                  :{G=f}Farma na baterie
-STR_INDUSTRY_NAME_BATTERY_FARM.gen                              :{G=f}farmy na baterie
-STR_INDUSTRY_NAME_BATTERY_FARM.loc                              :{G=f}na farmě na baterie
-STR_INDUSTRY_NAME_BATTERY_FARM.small                            :{G=f}farma na baterie
+STR_INDUSTRY_NAME_BATTERY_FARM.gen                              :farmy na baterie
+STR_INDUSTRY_NAME_BATTERY_FARM.loc                              :na farmě na baterie
+STR_INDUSTRY_NAME_BATTERY_FARM.small                            :farma na baterie
 STR_INDUSTRY_NAME_COLA_WELLS                                    :{G=fp}Kolové studny
-STR_INDUSTRY_NAME_COLA_WELLS.gen                                :{G=fp}kolových studen
-STR_INDUSTRY_NAME_COLA_WELLS.loc                                :{G=fp}v kolových studnách
-STR_INDUSTRY_NAME_COLA_WELLS.small                              :{G=fp}kolové studny
+STR_INDUSTRY_NAME_COLA_WELLS.gen                                :kolových studen
+STR_INDUSTRY_NAME_COLA_WELLS.loc                                :v kolových studnách
+STR_INDUSTRY_NAME_COLA_WELLS.small                              :kolové studny
 STR_INDUSTRY_NAME_TOY_SHOP                                      :{G=n}Hračkářství
-STR_INDUSTRY_NAME_TOY_SHOP.gen                                  :{G=n}hračkářství
-STR_INDUSTRY_NAME_TOY_SHOP.loc                                  :{G=n}v hračkářství
-STR_INDUSTRY_NAME_TOY_SHOP.small                                :{G=n}hračkářství
+STR_INDUSTRY_NAME_TOY_SHOP.gen                                  :hračkářství
+STR_INDUSTRY_NAME_TOY_SHOP.loc                                  :v hračkářství
+STR_INDUSTRY_NAME_TOY_SHOP.small                                :hračkářství
 STR_INDUSTRY_NAME_TOY_FACTORY                                   :{G=f}Továrna na hračky
-STR_INDUSTRY_NAME_TOY_FACTORY.gen                               :{G=f}továrny na hračky
-STR_INDUSTRY_NAME_TOY_FACTORY.loc                               :{G=f}v továrně na hračky
-STR_INDUSTRY_NAME_TOY_FACTORY.small                             :{G=f}továrna na hračky
+STR_INDUSTRY_NAME_TOY_FACTORY.gen                               :továrny na hračky
+STR_INDUSTRY_NAME_TOY_FACTORY.loc                               :v továrně na hračky
+STR_INDUSTRY_NAME_TOY_FACTORY.small                             :továrna na hračky
 STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS                             :{G=fp}Plastové fontány
-STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.gen                         :{G=fp}plastových fontán
-STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.loc                         :{G=fp}v plastových fontánách
-STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.small                       :{G=fp}plastové fontány
+STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.gen                         :plastových fontán
+STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.loc                         :v plastových fontánách
+STR_INDUSTRY_NAME_PLASTIC_FOUNTAINS.small                       :plastové fontány
 STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY                           :{G=f}Sodovkárna
-STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.gen                       :{G=f}sodovkárny
-STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.loc                       :{G=f}v sodovkárně
-STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.small                     :{G=f}sodovkárna
+STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.gen                       :sodovkárny
+STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.loc                       :v sodovkárně
+STR_INDUSTRY_NAME_FIZZY_DRINK_FACTORY.small                     :sodovkárna
 STR_INDUSTRY_NAME_BUBBLE_GENERATOR                              :{G=m}Generátor bublin
-STR_INDUSTRY_NAME_BUBBLE_GENERATOR.gen                          :{G=m}generátoru bublin
-STR_INDUSTRY_NAME_BUBBLE_GENERATOR.loc                          :{G=m}v generátoru bublin
-STR_INDUSTRY_NAME_BUBBLE_GENERATOR.small                        :{G=m}generátor bublin
+STR_INDUSTRY_NAME_BUBBLE_GENERATOR.gen                          :generátoru bublin
+STR_INDUSTRY_NAME_BUBBLE_GENERATOR.loc                          :v generátoru bublin
+STR_INDUSTRY_NAME_BUBBLE_GENERATOR.small                        :generátor bublin
 STR_INDUSTRY_NAME_TOFFEE_QUARRY                                 :{G=m}Karamelolom
-STR_INDUSTRY_NAME_TOFFEE_QUARRY.gen                             :{G=m}karamelolomu
-STR_INDUSTRY_NAME_TOFFEE_QUARRY.loc                             :{G=m}v karamelolomu
-STR_INDUSTRY_NAME_TOFFEE_QUARRY.small                           :{G=m}karamelolom
+STR_INDUSTRY_NAME_TOFFEE_QUARRY.gen                             :karamelolomu
+STR_INDUSTRY_NAME_TOFFEE_QUARRY.loc                             :v karamelolomu
+STR_INDUSTRY_NAME_TOFFEE_QUARRY.small                           :karamelolom
 STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=m}Cukerný důl
-STR_INDUSTRY_NAME_SUGAR_MINE.gen                                :{G=m}cukerného dolu
-STR_INDUSTRY_NAME_SUGAR_MINE.loc                                :{G=m}v cukerném dole
-STR_INDUSTRY_NAME_SUGAR_MINE.small                              :{G=m}cukerný důl
+STR_INDUSTRY_NAME_SUGAR_MINE.gen                                :cukerného dolu
+STR_INDUSTRY_NAME_SUGAR_MINE.loc                                :v cukerném dole
+STR_INDUSTRY_NAME_SUGAR_MINE.small                              :cukerný důl
 
 ############ WARNING, using range 0x6000 for strings that are stored in the savegame
 ############ These strings may never get a new id, or savegames will break!

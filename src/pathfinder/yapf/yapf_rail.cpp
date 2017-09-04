@@ -48,7 +48,7 @@ protected:
 	/** to access inherited pathfinder */
 	inline Tpf& Yapf()
 	{
-		return *static_cast<Tpf*>(this);
+		return *static_cast<Tpf *>(this);
 	}
 
 private:
@@ -200,7 +200,7 @@ protected:
 	/** to access inherited path finder */
 	inline Tpf& Yapf()
 	{
-		return *static_cast<Tpf*>(this);
+		return *static_cast<Tpf *>(this);
 	}
 
 public:
@@ -209,7 +209,7 @@ public:
 	 *  reachable trackdir on the new tile creates new node, initializes it
 	 *  and adds it to the open list by calling Yapf().AddNewNode(n)
 	 */
-	inline void PfFollowNode(Node& old_node)
+	inline void PfFollowNode(Node &old_node)
 	{
 		TrackFollower F(Yapf().GetVehicle());
 		if (F.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir())) {
@@ -223,7 +223,7 @@ public:
 		return 't';
 	}
 
-	static bool stFindNearestDepotTwoWay(const Train *v, TileIndex t1, Trackdir td1, TileIndex t2, Trackdir td2, int max_penalty, int reverse_penalty, TileIndex *depot_tile, bool *reversed)
+	static FindDepotData stFindNearestDepotTwoWay(const Train *v, TileIndex t1, Trackdir td1, TileIndex t2, Trackdir td2, int max_penalty, int reverse_penalty)
 	{
 		Tpf pf1;
 		/*
@@ -236,16 +236,16 @@ public:
 		 * depot orders and you do not disable automatic servicing.
 		 */
 		if (max_penalty != 0) pf1.DisableCache(true);
-		bool result1 = pf1.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty, depot_tile, reversed);
+		FindDepotData result1 = pf1.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty);
 
 		if (_debug_desync_level >= 2) {
 			Tpf pf2;
-			TileIndex depot_tile2 = INVALID_TILE;
-			bool reversed2 = false;
 			pf2.DisableCache(true);
-			bool result2 = pf2.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty, &depot_tile2, &reversed2);
-			if (result1 != result2 || (result1 && (*depot_tile != depot_tile2 || *reversed != reversed2))) {
-				DEBUG(desync, 2, "CACHE ERROR: FindNearestDepotTwoWay() = [%s, %s]", result1 ? "T" : "F", result2 ? "T" : "F");
+			FindDepotData result2 = pf2.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty);
+			if (result1.tile != result2.tile || (result1.reverse != result2.reverse)) {
+				DEBUG(desync, 2, "CACHE ERROR: FindNearestDepotTwoWay() = [%s, %s]",
+						result1.tile != INVALID_TILE ? "T" : "F",
+						result2.tile != INVALID_TILE ? "T" : "F");
 				DumpState(pf1, pf2);
 			}
 		}
@@ -253,7 +253,7 @@ public:
 		return result1;
 	}
 
-	inline bool FindNearestDepotTwoWay(const Train *v, TileIndex t1, Trackdir td1, TileIndex t2, Trackdir td2, int max_penalty, int reverse_penalty, TileIndex *depot_tile, bool *reversed)
+	inline FindDepotData FindNearestDepotTwoWay(const Train *v, TileIndex t1, Trackdir td1, TileIndex t2, Trackdir td2, int max_penalty, int reverse_penalty)
 	{
 		/* set origin and destination nodes */
 		Yapf().SetOrigin(t1, td1, t2, td2, reverse_penalty, true);
@@ -261,13 +261,10 @@ public:
 		Yapf().SetMaxCost(max_penalty);
 
 		/* find the best path */
-		bool bFound = Yapf().FindPath(v);
-		if (!bFound) return false;
+		if (!Yapf().FindPath(v)) return FindDepotData();
 
-		/* some path found
-		 * get found depot tile */
+		/* Some path found. */
 		Node *n = Yapf().GetBestNode();
-		*depot_tile = n->GetLastTile();
 
 		/* walk through the path back to the origin */
 		Node *pNode = n;
@@ -277,9 +274,7 @@ public:
 
 		/* if the origin node is our front vehicle tile/Trackdir then we didn't reverse
 		 * but we can also look at the cost (== 0 -> not reversed, == reverse_penalty -> reversed) */
-		*reversed = (pNode->m_cost != 0);
-
-		return true;
+		return FindDepotData(n->GetLastTile(), n->m_cost, pNode->m_cost != 0);
 	}
 };
 
@@ -296,7 +291,7 @@ protected:
 	/** to access inherited path finder */
 	inline Tpf& Yapf()
 	{
-		return *static_cast<Tpf*>(this);
+		return *static_cast<Tpf *>(this);
 	}
 
 public:
@@ -305,7 +300,7 @@ public:
 	 *  reachable trackdir on the new tile creates new node, initializes it
 	 *  and adds it to the open list by calling Yapf().AddNewNode(n)
 	 */
-	inline void PfFollowNode(Node& old_node)
+	inline void PfFollowNode(Node &old_node)
 	{
 		TrackFollower F(Yapf().GetVehicle(), Yapf().GetCompatibleRailTypes());
 		if (F.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir()) && F.MaskReservedTracks()) {
@@ -379,7 +374,7 @@ protected:
 	/** to access inherited path finder */
 	inline Tpf& Yapf()
 	{
-		return *static_cast<Tpf*>(this);
+		return *static_cast<Tpf *>(this);
 	}
 
 public:
@@ -388,7 +383,7 @@ public:
 	 *  reachable trackdir on the new tile creates new node, initializes it
 	 *  and adds it to the open list by calling Yapf().AddNewNode(n)
 	 */
-	inline void PfFollowNode(Node& old_node)
+	inline void PfFollowNode(Node &old_node)
 	{
 		TrackFollower F(Yapf().GetVehicle());
 		if (F.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir())) {
@@ -453,7 +448,7 @@ public:
 				this->FindSafePositionOnNode(pPrev);
 			}
 			/* return trackdir from the best origin node (one of start nodes) */
-			Node& best_next_node = *pPrev;
+			Node &best_next_node = *pPrev;
 			next_trackdir = best_next_node.GetTrackdir();
 
 			if (reserve_track && path_found) this->TryReservePath(target, pNode->GetLastTile());
@@ -502,7 +497,7 @@ public:
 		}
 
 		/* check if it was reversed origin */
-		Node& best_org_node = *pNode;
+		Node &best_org_node = *pNode;
 		bool reversed = (best_org_node.m_cost != 0);
 		return reversed;
 	}
@@ -611,15 +606,13 @@ bool YapfTrainCheckReverse(const Train *v)
 
 FindDepotData YapfTrainFindNearestDepot(const Train *v, int max_penalty)
 {
-	FindDepotData fdd;
-
 	const Train *last_veh = v->Last();
 
 	PBSTileInfo origin = FollowTrainReservation(v);
 	TileIndex last_tile = last_veh->tile;
 	Trackdir td_rev = ReverseTrackdir(last_veh->GetVehicleTrackdir());
 
-	typedef bool (*PfnFindNearestDepotTwoWay)(const Train*, TileIndex, Trackdir, TileIndex, Trackdir, int, int, TileIndex*, bool*);
+	typedef FindDepotData (*PfnFindNearestDepotTwoWay)(const Train*, TileIndex, Trackdir, TileIndex, Trackdir, int, int);
 	PfnFindNearestDepotTwoWay pfnFindNearestDepotTwoWay = &CYapfAnyDepotRail1::stFindNearestDepotTwoWay;
 
 	/* check if non-default YAPF type needed */
@@ -627,9 +620,7 @@ FindDepotData YapfTrainFindNearestDepot(const Train *v, int max_penalty)
 		pfnFindNearestDepotTwoWay = &CYapfAnyDepotRail2::stFindNearestDepotTwoWay; // Trackdir, forbid 90-deg
 	}
 
-	bool ret = pfnFindNearestDepotTwoWay(v, origin.tile, origin.trackdir, last_tile, td_rev, max_penalty, YAPF_INFINITE_PENALTY, &fdd.tile, &fdd.reverse);
-	fdd.best_length = ret ? max_penalty / 2 : UINT_MAX; // some fake distance or NOT_FOUND
-	return fdd;
+	return pfnFindNearestDepotTwoWay(v, origin.tile, origin.trackdir, last_tile, td_rev, max_penalty, YAPF_INFINITE_PENALTY);
 }
 
 bool YapfTrainFindNearestSafeTile(const Train *v, TileIndex tile, Trackdir td, bool override_railtype)
