@@ -1820,6 +1820,7 @@ STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Viewpor
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Construction
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Departure boards
 STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Wall clock
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Timetables
 STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}News / Advisors
 STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Company
 STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Accounting

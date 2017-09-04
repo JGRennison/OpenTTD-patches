@@ -1585,14 +1585,18 @@ static SettingsContainer &GetSettingsTree()
 				wallclock->Add(new SettingEntry("gui.clock_offset"));
 			}
 
+			SettingsPage *timetable = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_TIMETABLE));
+			{
+				timetable->Add(new SettingEntry("gui.timetable_in_ticks"));
+				timetable->Add(new SettingEntry("gui.timetable_leftover_ticks"));
+				timetable->Add(new SettingEntry("gui.timetable_arrival_departure"));
+			}
+
 			interface->Add(new SettingEntry("gui.autosave"));
 			interface->Add(new SettingEntry("gui.toolbar_pos"));
 			interface->Add(new SettingEntry("gui.statusbar_pos"));
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
 			interface->Add(new SettingEntry("gui.advanced_vehicle_list"));
-			interface->Add(new SettingEntry("gui.timetable_in_ticks"));
-			interface->Add(new SettingEntry("gui.timetable_leftover_ticks"));
-			interface->Add(new SettingEntry("gui.timetable_arrival_departure"));
 			interface->Add(new SettingEntry("gui.expenses_layout"));
 			interface->Add(new SettingEntry("gui.show_train_length_in_details"));
 			interface->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
