@@ -192,6 +192,7 @@ GRFConfig *_all_grfs;
 GRFConfig *_grfconfig;
 GRFConfig *_grfconfig_newgame;
 GRFConfig *_grfconfig_static;
+uint _missing_extra_graphics = 0;
 
 /**
  * Construct a new GRFError.
@@ -420,12 +421,12 @@ bool FillGRFDetails(GRFConfig *config, bool is_static, Subdirectory subdir)
 	config->SetSuitablePalette();
 	config->FinalizeParameterInfo();
 
-	/* Skip if the grfid is 0 (not read) or 0xFFFFFFFF (ttdp system grf) */
-	if (config->ident.grfid == 0 || config->ident.grfid == 0xFFFFFFFF || config->IsOpenTTDBaseGRF()) return false;
+	/* Skip if the grfid is 0 (not read) or if it is an internal GRF */
+	if (config->ident.grfid == 0 || HasBit(config->flags, GCF_SYSTEM)) return false;
 
 	if (is_static) {
 		/* Perform a 'safety scan' for static GRFs */
-		LoadNewGRFFile(config, 62, GLS_SAFETYSCAN, subdir);
+		LoadNewGRFFile(config, CONFIG_SLOT, GLS_SAFETYSCAN, subdir);
 
 		/* GCF_UNSAFE is set if GLS_SAFETYSCAN finds unsafe actions */
 		if (HasBit(config->flags, GCF_UNSAFE)) return false;
@@ -914,15 +915,6 @@ char *GRFBuildParamList(char *dst, const GRFConfig *c, const char *last)
 
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
 static const uint32 OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
-
-/**
- * Checks whether this GRF is a OpenTTD base graphic GRF.
- * @return true if and only if it is a base GRF.
- */
-bool GRFConfig::IsOpenTTDBaseGRF() const
-{
-	return (this->ident.grfid & 0x00FFFFFF) == OPENTTD_GRAPHICS_BASE_GRF_ID;
-}
 
 /**
  * Search a textfile file next to this NewGRF.

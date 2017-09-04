@@ -2589,6 +2589,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}空港�
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}受入れ貨物: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             : {BLACK}線路の種類: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}線路の制限速度: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}道路の最高速度: {LTBLUE}{VELOCITY}
 
@@ -2687,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :社有地
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTDについて
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}オリジナル版権{COPYRIGHT} 1995 Chris Sawyer All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD バージョン {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ゲームを保存
@@ -2906,8 +2907,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :不正なIDが�
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING}には破損スプライトがあります。破損スプライトは赤疑問符({RED}?{YELLOW})として表示されます
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :アクション8のエントリが複数含まれています (スプライト {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :疑似スプライトのデータが十分にありません (スプライト {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}使用中の基本グラフィックセットから複数のスプライトが欠落しています。{}セットを更新して下さいますよう、お願いします
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}使用中の基本グラフィックセットから複数のスプライトが欠落しています。{}セットを更新して下さいますよう、お願いします{}{YELLOW}OpenTTDの速報開発版{WHITE}をお使いの際は、{YELLOW}速報開発版に即したグラフィックセット{WHITE}が必要となる場合があります
 STR_NEWGRF_ERROR_GRM_FAILED                                     :要求されたGRFのリソースは使用できません (スプライト {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING}は{STRING}により無効にされました
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :不正なレイアウト書式です (スプライト {3:NUM})
@@ -3035,7 +3034,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}買収�
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} 目標
-STR_GOALS_SPECTATOR_CAPTION                                     :{BLACK}大目標
+STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}大目標
 STR_GOALS_GLOBAL_TITLE                                          :{BLACK}大目標:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- なし -
@@ -3114,8 +3113,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}受入�
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}受入れる貨物のリストを表示します
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}受入れ貨物: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}この停留施設は街の独占輸送契約の恩恵下にあります
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK}はこの街と独占輸送契約を締結しています
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}この停留施設は街の独占輸送契約の恩恵下にあります
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK}はこの街と独占輸送契約を締結しています
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}評価
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}停留施設の評価を表示します
@@ -3176,7 +3175,7 @@ STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}中継�
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}メイン画面をこのブイの場所に移動します。Ctrl+クリックでこのブイの場所を新たなビューポートに表示します
 STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}ブイの名称を変更
 
-STR_EDIT_WAYPOINT_NAME                                          :中継駅名を表示
+STR_EDIT_WAYPOINT_NAME                                          :{WHITE}中継駅名を表示
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} 経営状況　{BLACK}{COMPANY_NUM}
@@ -3294,9 +3293,10 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}必要�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}必要資源: {YELLOW}{STRING}{STRING}、{STRING}{STRING}、{STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      : {BLACK}必要物資
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      : {YELLOW}{CARGO_LONG}{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}加工待ちの貨物:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}生産品: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}生産品: {YELLOW}{STRING}{STRING}、{STRING}{STRING}
 ############ range for produces ends
@@ -3362,6 +3362,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :共有輸送機
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :全輸送機器を削除
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}グループ名を変更
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :新規機関車(非電化)
@@ -3527,10 +3528,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :リニア列車
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}価格: {CURRENCY_LONG} 重量: {WEIGHT_SHORT}{}最高速度: {VELOCITY}{}出力: {POWER}{}運用費: {CURRENCY_LONG}/年{}収容量: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}価格: {CURRENCY_LONG} 重量: {WEIGHT_SHORT}{}最高速度: {VELOCITY} 出力: {POWER} 最大牽引力: {6:FORCE}{}運用費: {4:CURRENCY_LONG}/年{}収容量 {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY}{}収容量: {CARGO_LONG}、{CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY}{}収容量: {CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY} 航続距離: {COMMA}タイル{}収容量: {CARGO_LONG}、{CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY} 航続距離: {COMMA}タイル{}収容量: {CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY}{}収容量: {CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}{STRING}の自動置換 - {STRING}
@@ -3560,6 +3558,7 @@ STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}クリ�
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}置換対象を機関車/貨車に切り替えます
 STR_REPLACE_ENGINES                                             :機関車
 STR_REPLACE_WAGONS                                              :貨車
+STR_REPLACE_ALL_RAILTYPE                                        :全ての鉄道車両
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}置換対象となる線路種類を切り替えます
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}左で選択された機関車の置換対象を(あれば)表示します
@@ -3652,7 +3651,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA}年({COM
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA}年({COMMA}年)
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}最高速度: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}最高速度: {LTBLUE}{VELOCITY} {BLACK}航続距離: {LTBLUE}{COMMA}タイル
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}重量: {LTBLUE}{WEIGHT_SHORT}　{BLACK}出力: {LTBLUE}{POWER}{BLACK}　最高速度: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}重量: {LTBLUE}{WEIGHT_SHORT}　{BLACK}出力: {LTBLUE}{POWER}{BLACK}　最高速度: {LTBLUE}{VELOCITY}　{BLACK}最大牽引力: {LTBLUE}{FORCE}
 

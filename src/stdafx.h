@@ -152,6 +152,17 @@
 	 * is the format string, second argument is start of values passed to printf. */
 	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
 	#define FINAL final
+
+	/* Use fallthrough attribute where supported */
+	#if __GNUC__ >= 7
+		#if __cplusplus > 201402L // C++17
+			#define FALLTHROUGH [[fallthrough]]
+		#else
+			#define FALLTHROUGH __attribute__((fallthrough))
+		#endif
+	#else
+		#define FALLTHROUGH
+	#endif
 #endif /* __GNUC__ || __clang__ */
 
 #if defined(__WATCOMC__)
@@ -160,6 +171,7 @@
 	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL
+	#define FALLTHROUGH
 	#include <malloc.h>
 #endif /* __WATCOMC__ */
 
@@ -230,6 +242,13 @@
 	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL sealed
+
+	/* fallthrough attribute, VS 2017 */
+	#if (_MSC_VER >= 1910)
+		#define FALLTHROUGH [[fallthrough]]
+	#else
+		#define FALLTHROUGH
+	#endif
 
 	#if defined(WINCE)
 		int CDECL vsnprintf(char *str, size_t size, const char *format, va_list ap);

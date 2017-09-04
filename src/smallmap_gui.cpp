@@ -477,6 +477,12 @@ static const byte _vehicle_type_colours[6] = {
 };
 
 
+/** Notify the industry chain window to stop sending newly selected industries. */
+/* static */ void SmallMapWindow::BreakIndustryChainLink()
+{
+	InvalidateWindowClassesData(WC_INDUSTRY_CARGOES, NUM_INDUSTRYTYPES);
+}
+
 inline Point SmallMapWindow::SmallmapRemapCoords(int x, int y) const
 {
 	Point pt;
@@ -974,6 +980,12 @@ SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(des
 	this->SetOverlayCargoMask();
 }
 
+SmallMapWindow::~SmallMapWindow()
+{
+	delete this->overlay;
+	this->BreakIndustryChainLink();
+}
+
 /**
  * Rebuilds the colour indices used for fast access to the smallmap contour colours based on the heightlevel.
  */
@@ -1134,10 +1146,12 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 						if (tbl->show_on_map && tbl->type == _smallmap_industry_highlight) {
 							legend_colour = _smallmap_industry_highlight_state ? PC_WHITE : PC_BLACK;
 						}
-						/* FALL THROUGH */
+						FALLTHROUGH;
+
 					case SMT_LINKSTATS:
 						SetDParam(0, tbl->legend);
-						/* FALL_THROUGH */
+						FALLTHROUGH;
+
 					case SMT_OWNER:
 						if (this->map_type != SMT_OWNER || tbl->company != INVALID_COMPANY) {
 							if (this->map_type == SMT_OWNER) SetDParam(0, tbl->company);
@@ -1151,7 +1165,8 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 							}
 							break;
 						}
-						/* FALL_THROUGH */
+						FALLTHROUGH;
+
 					default:
 						if (this->map_type == SMT_CONTOUR) SetDParam(0, tbl->height * TILE_HEIGHT_STEP);
 						/* Anything that is not an industry or a company is using normal process */
@@ -1180,6 +1195,7 @@ void SmallMapWindow::SwitchMapType(SmallMapType map_type)
 	this->SetupWidgetData();
 
 	if (map_type == SMT_LINKSTATS) this->overlay->RebuildCache();
+	if (map_type != SMT_INDUSTRY) this->BreakIndustryChainLink();
 	this->SetDirty();
 }
 
@@ -1231,6 +1247,8 @@ void SmallMapWindow::SelectLegendItem(int click_pos, LegendAndColour *legend, in
 	} else {
 		legend[click_pos].show_on_map = !legend[click_pos].show_on_map;
 	}
+
+	if (this->map_type == SMT_INDUSTRY) this->BreakIndustryChainLink();
 }
 
 /**
@@ -1285,9 +1303,6 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 
 /* virtual */ void SmallMapWindow::OnClick(Point pt, int widget, int click_count)
 {
-	/* User clicked something, notify the industry chain window to stop sending newly selected industries. */
-	InvalidateWindowClassesData(WC_INDUSTRY_CARGOES, NUM_INDUSTRYTYPES);
-
 	switch (widget) {
 		case WID_SM_MAP: { // Map window
 			/*
@@ -1372,13 +1387,13 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 			break;
 
 		case WID_SM_ENABLE_ALL:
-			/* FALL THROUGH */
 		case WID_SM_DISABLE_ALL: {
 			LegendAndColour *tbl = NULL;
 			switch (this->map_type) {
 				case SMT_INDUSTRY:
 					tbl = _legend_from_industries;
 					NotifyAllViewports(VPMT_INDUSTRY);
+					this->BreakIndustryChainLink();
 					break;
 				case SMT_OWNER:
 					tbl = &(_legend_land_owners[NUM_NO_COMPANY_ENTRIES]);

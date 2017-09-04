@@ -2321,6 +2321,7 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}گزشت
 ############ range for requires starts
 ############ range for requires ends
 
+
 ############ range for produces starts
 ############ range for produces ends
 
@@ -2344,6 +2345,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}فہرس
 
 
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}گروپ ۔ اس گروپ ک تمام گاڑیاں دیکھنے کے لیے اسے دبایں۔ پکڑ کے اوپر نیچے بھی کر سکتے ہیں۔
+
 
 
 
@@ -2404,8 +2406,6 @@ STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} 
 
 # Engine preview window
 
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}قیمت: {CURRENCY_LONG} حد رفتار: {VELOCITY} پہنچ: {COMMA} ٹائلیں{} گنجائش: {CARGO_LONG}, {CARGO_LONG}{}چلانے کا خرچہ: {CURRENCY_LONG} سالانہ
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}قیمت: {CURRENCY_LONG} حد رفتار: {VELOCITY} پہنچ: {COMMA} ٹائلیں{} گنجائش: {CARGO_LONG}{}چلانے کا خرچہ: {CURRENCY_LONG} سالانہ
 
 # Autoreplace window
 
@@ -2446,7 +2446,6 @@ STR_VEHICLE_COMMAND_STARTED                                     :{GREEN} شرو�
 
 # The next two need to stay in this order
 
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}حد رفتار: {LTBLUE}{VELOCITY} {BLACK} پہنچ: {LTBLUE}{COMMA} ٹائلیں
 
 
 

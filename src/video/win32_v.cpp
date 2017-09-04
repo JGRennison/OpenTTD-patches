@@ -680,7 +680,7 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 
 		case WM_PALETTECHANGED:
 			if ((HWND)wParam == hwnd) return 0;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		case WM_QUERYNEWPALETTE: {
 			HDC hDC = GetWindowDC(hwnd);
@@ -1334,10 +1334,17 @@ bool VideoDriver_Win32::ToggleFullscreen(bool full_screen)
 
 bool VideoDriver_Win32::AfterBlitterChange()
 {
+	return AllocateDibSection(_screen.width, _screen.height, true) && this->MakeWindow(_fullscreen);
+}
+
+void VideoDriver_Win32::AcquireBlitterLock()
+{
 	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
-	bool ret = AllocateDibSection(_screen.width, _screen.height, true) && this->MakeWindow(_fullscreen);
+}
+
+void VideoDriver_Win32::ReleaseBlitterLock()
+{
 	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
-	return ret;
 }
 
 void VideoDriver_Win32::EditBoxLostFocus()

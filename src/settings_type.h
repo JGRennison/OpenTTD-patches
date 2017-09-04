@@ -123,6 +123,7 @@ struct GUISettings {
 	bool   use_owner_colour_for_tunnelbridge;///< bridges and tunnels are rendered with their owner's colour
 	bool   timetable_arrival_departure;      ///< show arrivals and departures in vehicle timetables
 	bool   left_mouse_btn_scrolling;         ///< left mouse button scroll
+	bool   right_mouse_wnd_close;            ///< close window with right click
 	bool   pause_on_newgame;                 ///< whether to start new games paused or not
 	bool   enable_signal_gui;                ///< show the signal GUI when the signal button is pressed
 	Year   coloured_news_year;               ///< when does newspaper become coloured?

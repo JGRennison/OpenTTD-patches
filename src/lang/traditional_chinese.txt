@@ -2085,7 +2085,7 @@ STR_NETWORK_CLIENT                                              :用戶端
 STR_NETWORK_SPECTATORS                                          :旁觀者
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}請輸入你要付出多少資金
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :(BLACK)旁觀者
+STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}旁觀者
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}不要儲存所輸入的密碼
@@ -2687,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :公司所有土
 STR_ABOUT_OPENTTD                                               :{WHITE}關於 OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}原著作權為 {COPYRIGHT} 1995 Chris Sawyer，保留所有權利
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD 版本 {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD 開發小組
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 OpenTTD 開發小組
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}儲存遊戲
@@ -2906,8 +2906,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :子畫面企圖
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} 包含了毀損的 sprite。所有毀損的 sprite 會以紅色問號 (？) 顯示。
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :過多的 Action 8 資料 (發生於第 {3:NUM} 個子畫面)
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :子畫面資料不足 (發生於第 {3:NUM} 個子畫面)
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}目前使用的基本圖形集少了某些 sprite。{}請更新基本圖形集。
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}你正在使用的圖形集缺少了一些圖形.{}請更新圖形集.{}因為你正在使用一個{YELLOW}開發中的OpenTTD{WHITE},你可能需要一個{YELLOW}開發中的圖形集{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :要求的 GRF 資料不存在或無法讀取 (發生於第 {3:NUM} 個子畫面)
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{2:STRING} 使 {1:STRING} 被停用
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :無效或無法識別的子畫面配置格式 (發生於第 {3:NUM} 個子畫面)
@@ -3091,7 +3089,7 @@ STR_STORY_BOOK_PREV_PAGE                                        :{BLACK}上一�
 STR_STORY_BOOK_PREV_PAGE_TOOLTIP                                :{BLACK}前往上一頁繼續觀看
 STR_STORY_BOOK_NEXT_PAGE                                        :{BLACK}下一頁
 STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}前往下一頁繼續觀看
-STR_STORY_BOOK_INVALID_GOAL_REF                                 :(RED)無效的目標參照
+STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}無效的目標參照
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}車站名稱 - 點選名稱可將車站置於畫面中央。按住 Ctrl 點選可於車站位置開啟新視窗視野
@@ -3114,8 +3112,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}接受�
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}顯示接受的貨物種類
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}接受：{WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}此車站享有所屬市鎮的專屬運輸權
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK}已購買此市鎮的專屬運輸權
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}此車站享有所屬市鎮的專屬運輸權
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK}已購買此市鎮的專屬運輸權
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}評價
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}顯示車站評價
@@ -3294,9 +3292,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}需要�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}需要：{YELLOW}{STRING}{STRING}，{STRING}{STRING}，{STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}囤積的貨物：
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}產出：{YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}產出：{YELLOW}{STRING}{STRING}，{STRING}{STRING}
 ############ range for produces ends
@@ -3362,6 +3359,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :加入共享指
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :移去所有運具
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}重新命名群組
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :新購鐵路列車
@@ -3527,10 +3525,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :磁浮機車頭
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}費用：{CURRENCY_LONG} 載重：{WEIGHT_SHORT}{}速度：{VELOCITY}  功率：{POWER}{}營運成本：{CURRENCY_LONG} / 年{}容量：{CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}費用：{CURRENCY_LONG} 載重：{WEIGHT_SHORT}{}速度：{VELOCITY}  功率：{POWER}  最大牽引力：{6:FORCE}{}營運成本：{4:CURRENCY_LONG}/年{}容量：{5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}費用：{CURRENCY_LONG} 最高速度：{VELOCITY}{}容量：{CARGO_LONG}, {CARGO_LONG}{}營運成本：{CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}費用：{CURRENCY_LONG} 最高速度：{VELOCITY}{}容量：{CARGO_LONG}{}營運成本：{CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}成本： {CURRENCY_LONG} 最高速度： {VELOCITY} 範圍： {COMMA} 格{}容量： {CARGO_LONG}, {CARGO_LONG}{}營運成本： {CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}成本： {CURRENCY_LONG} 最高速度： {VELOCITY} 範圍： {COMMA} 格{}容量： {CARGO_LONG}{}營運成本： {CURRENCY_LONG}/年
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}費用：{CURRENCY_LONG} 最高速度：{VELOCITY}{}容量：{CARGO_LONG}{}營運成本：{CURRENCY_LONG}/年
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}替換 {STRING} - {STRING}
@@ -3652,7 +3647,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} 年 ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} 年 ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}最高速度：{LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}最高速度： {LTBLUE}{VELOCITY} {BLACK}範圍： {LTBLUE}{COMMA} 格
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}載重：{LTBLUE}{WEIGHT_SHORT} {BLACK}功率：{LTBLUE}{POWER}{BLACK} 最高速度：{LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}載重：{LTBLUE}{WEIGHT_SHORT} {BLACK}功率：{LTBLUE}{POWER}{BLACK} 最高速度：{LTBLUE}{VELOCITY} {BLACK}最大牽引力：{LTBLUE}{FORCE}
 

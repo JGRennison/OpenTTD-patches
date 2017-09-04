@@ -1321,7 +1321,7 @@ bool Vehicle::HandleBreakdown()
 			SetWindowDirty(WC_VEHICLE_VIEW, this->index);
 			SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 
-			/* FALL THROUGH */
+			FALLTHROUGH;
 		case 1:
 			/* Aircraft breakdowns end only when arriving at the airport */
 			if (this->type == VEH_AIRCRAFT) return false;
@@ -2214,6 +2214,7 @@ void Vehicle::LeaveStation()
 	st->loading_vehicles.remove(this);
 
 	HideFillingPercent(&this->fill_percent_te_id);
+	trip_occupancy = CalcPercentVehicleFilled(this, NULL);
 
 	if (this->type == VEH_TRAIN && !(this->vehstatus & VS_CRASHED)) {
 		/* Trigger station animation (trains only) */
@@ -2730,7 +2731,7 @@ void Vehicle::RemoveFromShared()
 	if (this->orders.list->GetNumVehicles() == 1) {
 		/* When there is only one vehicle, remove the shared order list window. */
 		DeleteWindowById(GetWindowClassForVehicleType(this->type), vli.Pack());
-		InvalidateVehicleOrder(this->FirstShared(), 0);
+		InvalidateVehicleOrder(this->FirstShared(), VIWD_MODIFY_ORDERS);
 	} else if (were_first) {
 		/* If we were the first one, update to the new first one.
 		 * Note: FirstShared() is already the new first */

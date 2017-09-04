@@ -1468,6 +1468,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Isključeno
 
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Skrolanje lijevim klikom: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Uključi pomicanje karte povlačenjem pomoću lijevog gumba miša. Ovo je posebno korisno kada se koristi zaslon osjetljiv na dodir
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zatvori prozor nakon desnog klika: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Zatvara prozor nakon desnog klika unutar prozora. S desnim klikom zatvaraju se i upute alata!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Automatsko snimanje: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Odaberite interval između automatskog snimanja igre
@@ -1857,6 +1859,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Provjeri
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Prikaži postavke UI-ja/Skripte igre
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Izzađi it 'OpenTTD'-a
 
+STR_INTRO_BASESET                                               :{BLACK}Trenutno odabranom osnovnom grafičkom setu nedostaje {NUM} sprite{P "" a a}. Potražite nadogradnju grafičkog seta.
 STR_INTRO_TRANSLATION                                           :{BLACK}Ovom prijevodu nedostaje {NUM} slijed. Molimo, pomognite učiniti OpenTTD boljim tako da se prijavite kao prevoditelj. Pogledajte readme.txt za detalje.
 
 # Quit window
@@ -2784,7 +2787,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Zemlja u posjed
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD-u
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Izvorno autorsko pravo {COPYRIGHT} 1995 Chris Sawyer, sva prava pridržana
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verzija {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD tim
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 OpenTTD tim
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spremi igru
@@ -3003,8 +3006,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Pokušaj koriš
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} sadrži neispravan sprite. Svi neispravni grafički znakovi bit će pokazani kao crveni upitnik (?).
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Sadrži višestruke unose za Action 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Pročitaj nakon kraja od pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Baznom grafičkom setu u uporabi nedostaju neki spriteovi.{}Ažurirajte bazni grafički set
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Trenutno korištenom osnovnom grafičkom setu nedostaju pojedini crteži.{}Molimo da nadogradite osnovni grafički set.{}Pošto igrate {YELLOW}razvojnu inačicu OpenTTD-a{WHITE}, možda će vam trebati i {YELLOW}razvojna inačica osnovnog grafičkog seta{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Zatraženi GRF resursi nisu dostupni (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} je isključen od strane {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Pogrešan/nepoznat format raspored sprite-a (sprite {3:NUM})
@@ -3211,8 +3212,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Prihvać
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Pokaži popis tereta koji se prihvaća
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Prihvaća: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Ova stanica ima ekskluzivna prava trasnporta u ovom gradu.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} kupljena ekskluzivna prava transporta u ovom gradu.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Ova stanica ima ekskluzivna prava trasnporta u ovom gradu.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} kupljena ekskluzivna prava transporta u ovom gradu.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Ocjene
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Pokaži ocjene postaje
@@ -3391,9 +3392,13 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Treba: {
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Treba: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Treba
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}čeka
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Teret koji čeka obradu:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Proizvodi: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Proizvodi: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3460,6 +3465,11 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Ukloni sva vozi
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Preimenuj grupu
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Dobit ove godine:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Dobit prošle godine:
+STR_GROUP_OCCUPANCY                                             :Trenutna uporaba:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nova željeznička vozila
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nova električna pružna vozila
@@ -3491,6 +3501,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Sve vrste teret
 STR_PURCHASE_INFO_ALL_BUT                                       :Sve osim {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK} Najveća vučna sila: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Domet: {GOLD}{COMMA} polja
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Vrsta zrakoplova: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Popis vlakova za odabir. Klikni na vozilo za informacije. Ctrl+klik za uključivanje ili isključivanje prikaza vrste vozila
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Popis cestovnih vozila za odabir. Klikni na vozilo za informacije. Ctrl+klik za uključivanje ili isključivanje prikaza vrste cestovnog vozila
@@ -3624,10 +3635,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :maglev lokomoti
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Cijena: {CURRENCY_LONG} Težina: {WEIGHT_SHORT}{}Brzina: {VELOCITY} Snaga: {POWER}{}Trošak uporabe: {CURRENCY_LONG}/god{}Kapacitet: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Trošak: {CURRENCY_LONG} Težina: {WEIGHT_SHORT}{}Brzina: {VELOCITY}  Snaga: {POWER}  Maks. T.E.: {6:FORCE}{}Trošak uporabe: {4:CURRENCY_LONG}/god{}Nosivost: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Trošak: {CURRENCY_LONG} Maks. brzina: {VELOCITY}{}Nosivost: {CARGO_LONG}, {CARGO_LONG}{}Trošak uporabe: {CURRENCY_LONG}/god
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Trošak: {CURRENCY_LONG} Maks. brzina: {VELOCITY}{}Nosivost: {CARGO_LONG}{}Trošak uporabe: {CURRENCY_LONG}/god
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Cijena: {CURRENCY_LONG} Maks. brzina: {VELOCITY} Domet: {COMMA} tiles{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Trošak vožnje: {CURRENCY_LONG}/god
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Cijena: {CURRENCY_LONG} Maks. Brzina: {VELOCITY} Domet: {COMMA} tiles{}Kapacitet: {CARGO_LONG}{}Trošak vožnje: {CURRENCY_LONG}/god
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Trošak: {CURRENCY_LONG} Maks. brzina: {VELOCITY}{}Nosivost: {CARGO_LONG}{}Trošak uporabe: {CURRENCY_LONG}/god
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Trošak: {CURRENCY_LONG} Maks. brzina: {VELOCITY}{}Vrsta zrakoplova: {STRING}{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Trošak uporabe: {CURRENCY_LONG}/god
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Trošak: {CURRENCY_LONG} Maks. brzina: {VELOCITY}{}Vrsta zrakoplova: {STRING}{}Kapacitet: {CARGO_LONG}{}Trošak uporabe: {CURRENCY_LONG}/god
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Trošak: {CURRENCY_LONG} Maks. brzina: {VELOCITY}{}Vrsta zrakoplova: {STRING} Doseg: {COMMA} polja{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Trošak uporabe: {CURRENCY_LONG}/god
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Trošak: {CURRENCY_LONG} Maks. brzina: {VELOCITY}{}Vrsta zrakoplova: {STRING} Doseg: {COMMA} polja{}Kapacitet: {CARGO_LONG}{}Trošak uporabe: {CURRENCY_LONG}/god
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Zamijeni {STRING} - {STRING}
@@ -3750,7 +3762,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} godin{P
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} godin{P a e a} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Najveća brzina: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Najveća brzina: {LTBLUE}{VELOCITY} {BLACK}Domet: {LTBLUE}{COMMA} polj{P e a a}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Maks. brzina: {LTBLUE}{VELOCITY} {BLACK}Vrsta zrakoplova: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Maks. brzina: {LTBLUE}{VELOCITY} {BLACK}Vrsta zrakoplova: {LTBLUE}{STRING} {BLACK}Doseg: {LTBLUE}{COMMA} polja
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Težina: {LTBLUE}{WEIGHT_SHORT} {BLACK}Snaga: {LTBLUE}{POWER}{BLACK} Najveća brzina: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Težina: {LTBLUE}{WEIGHT_SHORT} {BLACK}Snaga: {LTBLUE}{POWER}{BLACK} Najveća brzina: {LTBLUE}{VELOCITY} {BLACK}Najveća vučna sila: {LTBLUE}{FORCE}
 

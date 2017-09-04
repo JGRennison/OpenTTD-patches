@@ -1373,6 +1373,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Aus
 
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Scrollen mit linker Maustaste: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Scrolle die Karte, indem mit der linken Maustaste gezogen wird. Dies ist besonders sinnvoll, wenn ein Touchscreen zum Scrollen genutzt wird
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Fenster mit Rechtsklick schließen: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Schließt ein Fenster mittels Rechts-Klick. Schaltet Tooltip mit Rechts-Klick ab!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autosave: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Wähle das Interval zwischen automatischen Speicherungen
@@ -1762,6 +1764,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Prüfe, 
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Zeige KI- und Skripteinstellungen
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}OpenTTD beenden
 
+STR_INTRO_BASESET                                               :{BLACK}Dem momentan ausgewählten Basisgrafiken fehl{P 0 "t" "en"} {NUM} Sprite{P 0 "" s}. Bitte überprüfe, ob es Updates für die Basisgrafiken gibt.
 STR_INTRO_TRANSLATION                                           :{BLACK}Dieser Übersetzung fehl{P 0 t en} {NUM} String{P "" s}. Bitte hilf, OpenTTD zu verbessern und melde Dich als Übersetzer an. Siehe readme.txt für weitere Details.
 
 # Quit window
@@ -2590,6 +2593,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Name des
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Angenommene Frachtarten: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Gleistyp: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Höchstgeschwindigkeit Schiene: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Höchstgeschwindigkeit Straße: {LTBLUE}{VELOCITY}
 
@@ -2602,7 +2606,7 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Ackerland
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Schneebedecktes Land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Wüste
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Schienen: Gleise
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Schienen
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Schienen: Gleise mit Blocksignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Schienen: Gleise mit Vorsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Schienen: Gleise mit Ausfahrtsignal
@@ -2615,7 +2619,7 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Schienen: Gleis
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Schienen: Gleise mit Block- und Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Schienen: Gleise mit Blocksignal und einseitigem Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Schienen: Gleise mit Vor- und Ausfahrtsignal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Schienen: Gleise mit Vor- und Kombinationssignal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Schienen mit Vor- und Kombinationssignalen
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Schienen: Gleise mit Vor- und Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Schienen: Gleise mit Vorsignal und einseitigem Pfadsignal
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Schienen: Gleise mit Ausfahrts- und Kombinationssignal
@@ -2688,7 +2692,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Firmeneigenes G
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Transport Tycoon-Urheberrecht {COPYRIGHT} 1995 Chris Sawyer, alle Rechte vorbehalten
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD-Version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD-Team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 OpenTTD-Team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spiel speichern
@@ -2907,8 +2911,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Zugriff auf ein
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} enthält fehlerhafte Grafiken. Diese werden als Fragezeichen (?) dargestellt
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Enthält mehrere Action 8 - Einträge (Sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lesezugriff über das Ende des Pseudosprites hinaus (Sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Den momentan verwendeten Basisgrafiken fehlen Sprites.{}Durch ein Update der Basisgrafiken kann dieser Fehler behoben werden
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Den momentan verwendeten Basisgrafiken fehlen einige Sprites.{}Bitte update die Basisgrafiken.{}Weil dieses eine {YELLOW}Entwickler-Version von OpenTTD{WHITE} ist, ist es möglich, dass auch eine {YELLOW}Entwickler-Version der Basisgrafiken{WHITE} benötigt wird.
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Die angeforderte GRF-Ressource ist nicht verfügbar (Sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} wurde von {STRING} deaktiviert
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ungültiges oder unbekanntes Format für Spritelayout (Sprite {3:NUM})
@@ -3115,8 +3117,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Angenomm
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Zeige Liste der angenommenen Frachtarten
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Nimmt an: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Diese Station hat in der zugehörigen Stadt exklusive Transportrechte .
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} hat die exklusiven Transportrechte in dieser Stadt erworben.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Diese Station hat in der zugehörigen Stadt exklusive Transportrechte .
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} hat die exklusiven Transportrechte in dieser Stadt erworben.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Bewertung
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Stationsbewertung anzeigen
@@ -3295,9 +3297,13 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Benötig
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Benötigt: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}benötigt
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}wartend
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Zur Verarbeitung bereitstehende Fracht:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produziert: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produziert: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3364,13 +3370,18 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Liste leeren
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Gruppe umbenennen
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Gewinn in diesem Jahr:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Gewinn im letzten Jahr:
+STR_GROUP_OCCUPANCY                                             :Aktuelle Nutzung:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Neue Schienenfahrzeuge
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Neue elektrische Schienenfahrzeuge
 STR_BUY_VEHICLE_TRAIN_MONORAIL_CAPTION                          :Neue Einschienenbahnfahrzeuge
 STR_BUY_VEHICLE_TRAIN_MAGLEV_CAPTION                            :Neue Magnetbahnfahrzeuge
 
-STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :Neue Eisenbahnfahrzeuge
+STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :Neue Schienenfahrzeuge
 STR_BUY_VEHICLE_ROAD_VEHICLE_CAPTION                            :Neue Fahrzeuge
 STR_BUY_VEHICLE_SHIP_CAPTION                                    :Neue Schiffe
 STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Neue Flugzeuge
@@ -3395,6 +3406,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Alle Frachtarte
 STR_PURCHASE_INFO_ALL_BUT                                       :Alles außer {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Max. Zugkraft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Reichweite: {GOLD}{COMMA} Felder
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Flugzeugtyp: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Schienenfahrzeugsliste - Einzelheiten durch Anklicken des Fahrzeuges. Strg+Klick schaltet um zwischen Verstecken und Zeigen des Fahrzeugtyps
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Straßenfahrzeugsliste - Klicke auf ein Fahrzeug für Einzelheiten. Strg+Klick schaltet um zwischen Verstecken und Zeigen des Fahrzeugtyps
@@ -3528,10 +3540,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :{G=w}Magnetschw
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kosten: {CURRENCY_LONG}   Gewicht: {WEIGHT_SHORT}{}Geschwindigk.: {VELOCITY} Leistung: {POWER}{}Betriebskosten: {CURRENCY_LONG} pro Jahr{}Kapazität: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Preis: {CURRENCY_LONG} Gewicht: {WEIGHT_SHORT}{}Max. Geschwindigkeit: {VELOCITY}  Leistung: {POWER}  Max. Zugkraft: {6:FORCE}{}Betriebskosten: {4:CURRENCY_LONG}/yr{}Kapazität: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Preis: {CURRENCY_LONG} Höchstgeschw.: {VELOCITY}{}Kapazität: {CARGO_LONG}, {CARGO_LONG}{}Betriebskosten: {CURRENCY_LONG}/yr
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Preis: {CURRENCY_LONG} Höchstgeschw.: {VELOCITY}{}Kapazität: {CARGO_LONG}{}Betriebskosten: {CURRENCY_LONG}/Jahr
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Kosten: {CURRENCY_LONG} Höchstgeschwindigkeit: {VELOCITY} Reichweite: {COMMA} Felder{}Kapazität: {CARGO_LONG}, {CARGO_LONG}{}Betriebskosten: {CURRENCY_LONG}/a
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Kosten: {CURRENCY_LONG} Höchstgeschwindigkeit: {VELOCITY} Reichweite: {COMMA} Felder{}Kapazität: {CARGO_LONG}{}Betriebskosten: {CURRENCY_LONG}/a
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Preis: {CURRENCY_LONG} Höchstgeschw.: {VELOCITY}{}Kapazität: {CARGO_LONG}{}Betriebskosten: {CURRENCY_LONG}/Jahr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Kosten: {CURRENCY_LONG} Max. Geschw.: {VELOCITY}{}Flugzeugtyp: {STRING}{}Kapazität: {CARGO_LONG}, {CARGO_LONG}{}Betriebskosten: {CURRENCY_LONG}/Jahr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Kosten: {CURRENCY_LONG} Max. Geschw.: {VELOCITY}{}Flugzeugtyp: {STRING}{}Kapazität: {CARGO_LONG}{}Betriebskosten: {CURRENCY_LONG}/Jahr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Kosten: {CURRENCY_LONG} Max. Geschw.: {VELOCITY}{}Flugzeugtyp: {STRING} Reichweite: {COMMA} Felder{}Capacity: {CARGO_LONG}, {CARGO_LONG}{}Betriebskosten: {CURRENCY_LONG}/Jahr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Kosten: {CURRENCY_LONG} Max. Geschw.: {VELOCITY}{}Flugzeugtyp: {STRING} Reichweite: {COMMA} tiles{}Kapazität: {CARGO_LONG}{}Laufende Kosten: {CURRENCY_LONG}/yr
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}{STRING} ersetzen - {STRING}
@@ -3561,10 +3574,11 @@ STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Klick zu
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Umschalter für Lok- oder Waggonersetzung
 STR_REPLACE_ENGINES                                             :Schienenfahrzeuge
 STR_REPLACE_WAGONS                                              :Waggons
+STR_REPLACE_ALL_RAILTYPE                                        :Alle Schienenfahrzeuge
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Gleistyp auswählen, für den Loks ersetzt werden sollen
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Hier wird angezeigt, gegen welches Fahrzeug das auf der linken Seite gewählte ersetzt wird
-STR_REPLACE_RAIL_VEHICLES                                       :Eisenbahn
+STR_REPLACE_RAIL_VEHICLES                                       :Schienenfahrzeuge
 STR_REPLACE_ELRAIL_VEHICLES                                     :elektrische Schienenfahrzeuge
 STR_REPLACE_MONORAIL_VEHICLES                                   :Einschienenbahn
 STR_REPLACE_MAGLEV_VEHICLES                                     :Magnetschwebebahn
@@ -3653,7 +3667,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} Jahr{P 
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} Jahr{P "" e} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Max. Geschw.: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. Geschwindigkeit: {LTBLUE}{VELOCITY} {BLACK}Reichweite: {LTBLUE}{COMMA} Felder
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Max. Geschw.: {LTBLUE}{VELOCITY} {BLACK}Flugzeugtyp: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Max. Geschw.: {LTBLUE}{VELOCITY} {BLACK}Flugzeugtyp: {LTBLUE}{STRING} {BLACK}Reichweite: {LTBLUE}{COMMA} Felder
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Gewicht: {LTBLUE}{WEIGHT_SHORT} {BLACK}Leistung: {LTBLUE}{POWER}{BLACK} Max. Geschw.: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Gewicht: {LTBLUE}{WEIGHT_SHORT} {BLACK}Leistung: {LTBLUE}{POWER}{BLACK} Max. Geschw.: {LTBLUE}{VELOCITY} {BLACK}Max. Zugkraft: {LTBLUE}{FORCE}
 

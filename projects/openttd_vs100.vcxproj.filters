@@ -1245,6 +1245,12 @@
     <ClInclude Include="..\src\core\bitmath_func.hpp">
       <Filter>Core Source Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\core\container_func.hpp">
+      <Filter>Core Source Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\dyn_arena_alloc.hpp">
+      <Filter>Core Source Code</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\core\endian_func.hpp">
       <Filter>Core Source Code</Filter>
     </ClInclude>

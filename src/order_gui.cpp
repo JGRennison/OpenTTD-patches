@@ -848,7 +848,7 @@ public:
 			case VIWD_AUTOREPLACE:
 				/* Autoreplace replaced the vehicle */
 				this->vehicle = Vehicle::Get(this->window_number);
-				/* FALL THROUGH */
+				FALLTHROUGH;
 
 			case VIWD_CONSIST_CHANGED:
 				/* Vehicle composition was changed. */
