@@ -3341,7 +3341,7 @@ void Vehicle::RemoveFromShared()
 	if (this->next_shared != NULL) this->next_shared->previous_shared = this->previous_shared;
 
 
-	if (this->orders.list->GetNumVehicles() == 1) InvalidateVehicleOrder(this->FirstShared(), 0);
+	if (this->orders.list->GetNumVehicles() == 1) InvalidateVehicleOrder(this->FirstShared(), VIWD_MODIFY_ORDERS);
 
 	if (this->orders.list->GetNumVehicles() == 1 && !_settings_client.gui.enable_single_veh_shared_order_gui) {
 		/* When there is only one vehicle, remove the shared order list window. */
