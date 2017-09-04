@@ -151,6 +151,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -198,6 +201,9 @@
       <TargetMachine>MachineX86</TargetMachine>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -257,6 +263,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -306,6 +315,9 @@
       <TargetMachine>MachineX64</TargetMachine>
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\airport.cpp" />
@@ -684,6 +696,8 @@
     <ClInclude Include="..\src\core\backup_type.hpp" />
     <ClCompile Include="..\src\core\bitmath_func.cpp" />
     <ClInclude Include="..\src\core\bitmath_func.hpp" />
+    <ClInclude Include="..\src\core\container_func.hpp" />
+    <ClInclude Include="..\src\core\dyn_arena_alloc.hpp" />
     <ClInclude Include="..\src\core\endian_func.hpp" />
     <ClInclude Include="..\src\core\endian_type.hpp" />
     <ClInclude Include="..\src\core\enum_type.hpp" />

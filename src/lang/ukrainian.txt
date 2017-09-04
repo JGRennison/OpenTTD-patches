@@ -2732,29 +2732,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Поле
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Засніжена земля
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Пустеля
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} з блок-сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} з пресигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} з вихідними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} з комбосигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} з маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} з односторонніми маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} з блок-сигналами і пресигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} з блок-сигналами і вихідними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} з блок-сигналами і комбосигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} з блок-сигналами та маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} з блок-сигналами та одност. маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} з пресигналами і вихідними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} з пресигналами і комбосигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} з пресигналами і маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} з пресигналами і одност. маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} з вихідними сигналами та комбосигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} з вихідними та маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} з вихідними та одност. маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} з комбосигналами і маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} з комбосигналами та одност. маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} з маршрутними та одност. маршрутними сигналами
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} залізничне депо
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Звичайна колія
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Звичайна колія з блок-сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Звичайна колія з пресигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Звичайна колія з вихідними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Звичайна колія з комбосигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Звичайна колія з маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Звичайна колія з односторонніми маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Звичайна колія з блок-сигналами і пресигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Звичайна колія з блок-сигналами і вихідними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Звичайна колія з блок-сигналами і комбосигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Звичайна колія з блок-сигналами та маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Звичайна колія з блок-сигналами та одност. маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Звичайна колія з пресигналами і вихідними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Звичайна колія з пресигналами і комбосигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Звичайна колія з пресигналами і маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Звичайна колія з пресигналами і одност. маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Звичайна колія з вихідними сигналами та комбосигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Звичайна колія з вихідними та маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Звичайна колія з вихідними та одност. маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Звичайна колія з комбосигналами і маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Звичайна колія з комбосигналами та одност. маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Звичайна колія з маршрутними та одност. маршрутними сигналами
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Звичайна колія залізничне депо
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Дорога
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Дорога з вуличними ліхтарями
@@ -2818,7 +2818,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ця ділян
 STR_ABOUT_OPENTTD                                               :{WHITE}Про OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Авторське право {COPYRIGHT} 1995 Кріс Сойєр, Всі права захищені
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD версія {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 команда OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 команда OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Зберегти гру
@@ -3037,8 +3037,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Спроба в
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} містить зіпсований спрайт. Усі зіпсовані спрайти будуть показані як червоний знак питання (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Містить декілька записів Action 8 (спрайт {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Вихід за границю псевдо-спрайта при читанні (спрайт {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}У базовому наборі графіки, що зараз використовується не вистачає спрайтів.{}Будь-ласка оновіть базовий набір графіки
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}В наборі графіки, який використовується на даний момент відсутній ряд спрайтів.{}Будь ласка, поновіть базовий набір графіки.{}Оскільки ви граєте у {YELLOW} тестову версію OpenTTD{WHITE}, вам також може знадобитися {YELLOW}тестовий набір базової графіки{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Недоступні необхідні ресурси GRF (спрайт {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} був вимкнений {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Некоректний або невідомий формат розміщення спрайтів (спрайт {3:NUM})
@@ -3245,8 +3243,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Прий
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Показати список приймання вантажів
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Приймає: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Ця станція має ексклюзивні права на перевезення.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} отримала ексклюзивні права на перевезення.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Ця станція має ексклюзивні права на перевезення.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} отримала ексклюзивні права на перевезення.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Рейтинг
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Показати рейтинг станції
@@ -3425,9 +3423,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Потр
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Потребує: {YELLOW}{STRING.z}{STRING.z}, {STRING.z}{STRING.z}, {STRING.z}{STRING.z}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Вантаж чекає на обробку:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Продукція: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Продукція: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3493,6 +3490,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Додати с
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Позбутися всього транспорту
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Перейменувати групу
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Новий неелектрифікований поїзд
@@ -3658,10 +3656,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :магнітн�
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Ціна: {CURRENCY_LONG} Вага: {WEIGHT_SHORT}{}Швидкість: {VELOCITY}{}Потужність: {POWER}{}Вартість експлуатації: {CURRENCY_LONG}/рік{}Місткість: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Вартість: {CURRENCY_LONG} Вага: {WEIGHT_SHORT}{}Швидкість: {VELOCITY}  Потужність: {POWER}  Макс. тяга: {6:FORCE}{}Вартість експлуатації: {4:CURRENCY_LONG}/рік{}Місткість: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Вартість: {CURRENCY_LONG} Макс. швидкість: {VELOCITY}{}Місткість: {CARGO_LONG}, {CARGO_LONG}{}Вартість експлуатації: {CURRENCY_LONG}/рік
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Вартість: {CURRENCY_LONG} Макс. швидкість: {VELOCITY}{}Місткість: {CARGO_LONG}{}Вартість експлуатації: {CURRENCY_LONG}/рік
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Ціна: {CURRENCY_LONG} Макс. швидкість: {VELOCITY} Дальність: {COMMA} клітинок{}Місткість: {CARGO_LONG}, {CARGO_LONG}{}Вартість експлуатації: {CURRENCY_LONG}/рік
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Вартість: {CURRENCY_LONG} Макс. швидкість: {VELOCITY} Дальність: {COMMA} клітинок{}Місткість: {CARGO_LONG}{}Витрати від експлуатації: {CURRENCY_LONG}/рік
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Вартість: {CURRENCY_LONG} Макс. швидкість: {VELOCITY}{}Місткість: {CARGO_LONG}{}Вартість експлуатації: {CURRENCY_LONG}/рік
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Оновити {STRING} - {STRING}
@@ -3688,7 +3683,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} кол
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Зупинити оновлення
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Натисніть для припинення процесу оновлення потягів, що вибрані ліворуч
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Оновлення: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Переключення між вікнами заміни потягів та вагонів.
 STR_REPLACE_ENGINES                                             :Локомотиви
 STR_REPLACE_WAGONS                                              :Вагони
@@ -3784,7 +3778,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} р{P і
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} р{P ік оки оків} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Макс. швидкість: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Макс. швидкість: {LTBLUE}{VELOCITY} {BLACK}Дальність: {LTBLUE}{COMMA} клітинок
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Вага: {LTBLUE}{WEIGHT_SHORT} {BLACK}Потужність: {LTBLUE}{POWER}{BLACK} Макс. швидкість: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Вага: {LTBLUE}{WEIGHT_SHORT} {BLACK}Потужність: {LTBLUE}{POWER}{BLACK} Макс. швидкість: {LTBLUE}{VELOCITY} {BLACK}Макс. тяга: {LTBLUE}{FORCE}
 
@@ -3804,7 +3797,7 @@ STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Інте
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Збільшити інтервал техогляду на 10. Ctrl+клац мишою збільшує інтервал техогляду на 5
 STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Зменшити період техогляду на 10. Ctrl+клац мишою зменшує інтервал техогляду на 5
 
-STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :Відлік інтервалу між техоглядами
+STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}Відлік інтервалу між техоглядами
 STR_VEHICLE_DETAILS_DEFAULT                                     :Стандартно
 STR_VEHICLE_DETAILS_DAYS                                        :Дні
 STR_VEHICLE_DETAILS_PERCENT                                     :Проценти

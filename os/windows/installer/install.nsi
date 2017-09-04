@@ -1,6 +1,6 @@
 # Version numbers to update
 !define APPV_MAJOR 1
-!define APPV_MINOR 7
+!define APPV_MINOR 8
 !define APPV_MAINT 0
 !define APPV_BUILD 0
 !define APPV_EXTRA "-beta1"
@@ -408,6 +408,7 @@ Section "Uninstall"
 	; Baseset files
 	Delete "$INSTDIR\baseset\opntitle.dat"
 	Delete "$INSTDIR\baseset\openttd.grf"
+	Delete "$INSTDIR\baseset\orig_extra.grf"
 	Delete "$INSTDIR\baseset\orig_win.obg"
 	Delete "$INSTDIR\baseset\orig_dos.obg"
 	Delete "$INSTDIR\baseset\orig_dos_de.obg"

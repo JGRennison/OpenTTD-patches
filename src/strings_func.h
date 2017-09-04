@@ -15,6 +15,49 @@
 #include "strings_type.h"
 #include "string_type.h"
 #include "gfx_type.h"
+#include "core/bitmath_func.hpp"
+
+/**
+ * Extract the StringTab from a StringID.
+ * @param str String identifier
+ * @return StringTab from \a str
+ */
+static inline StringTab GetStringTab(StringID str)
+{
+	StringTab result = (StringTab)(str >> TAB_SIZE_BITS);
+	if (result >= TEXT_TAB_NEWGRF_START) return TEXT_TAB_NEWGRF_START;
+	if (result >= TEXT_TAB_GAMESCRIPT_START) return TEXT_TAB_GAMESCRIPT_START;
+	return result;
+}
+
+/**
+ * Extract the StringIndex from a StringID.
+ * @param str String identifier
+ * @return StringIndex from \a str
+ */
+static inline uint GetStringIndex(StringID str)
+{
+	return str - (GetStringTab(str) << TAB_SIZE_BITS);
+}
+
+/**
+ * Create a StringID
+ * @param tab StringTab
+ * @param index StringIndex
+ * @return StringID composed from \a tab and \a index
+ */
+static inline StringID MakeStringID(StringTab tab, uint index)
+{
+	if (tab == TEXT_TAB_NEWGRF_START) {
+		assert(index < TAB_SIZE_NEWGRF);
+	} else if (tab == TEXT_TAB_GAMESCRIPT_START) {
+		assert(index < TAB_SIZE_GAMESCRIPT);
+	} else {
+		assert(tab < TEXT_TAB_END);
+		assert(index < TAB_SIZE);
+	}
+	return (tab << TAB_SIZE_BITS) + index;
+}
 
 class StringParameters {
 	StringParameters *parent; ///< If not NULL, this instance references data from this parent instance.

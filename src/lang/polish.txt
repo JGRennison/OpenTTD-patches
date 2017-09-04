@@ -705,7 +705,7 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}Wyświet
 STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Pokaż okno opowieści
 STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Pokaż listę celów
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Wyświetl wykresy
-STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Wyświetl tabele firm
+STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Wyświetl ranking firm
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Ufunduj budowę nowego przedsiębiorstwa
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Wyświetl listę pociągów firmy. Ctrl+klik otwiera listę grup/pojazdów
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Wyświetl listę pojazdów firmy. Ctrl+klik otwiera listę grup/pojazdów
@@ -799,7 +799,7 @@ STR_GRAPH_MENU_CARGO_PAYMENT_RATES                              :Stawki za ładu
 ############ range ends here
 
 ############ range for company league menu starts
-STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE                             :Wykres Ligi Firm
+STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE                             :Ranking Firm
 STR_GRAPH_MENU_DETAILED_PERFORMANCE_RATING                      :Szczegółowa tabela efektywności
 STR_GRAPH_MENU_HIGHSCORE                                        :Tabela wyników
 ############ range ends here
@@ -971,7 +971,7 @@ STR_GRAPH_KEY_CAPTION                                           :{WHITE}Legenda 
 STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP                         :{BLACK}Kliknij tutaj aby wł./wył. wyświetlanie danych firmy na wykresie
 
 # Company league window
-STR_COMPANY_LEAGUE_TABLE_CAPTION                                :{WHITE}Tabela Ligi Firm
+STR_COMPANY_LEAGUE_TABLE_CAPTION                                :{WHITE}Ranking Firm
 STR_COMPANY_LEAGUE_COMPANY_NAME                                 :{ORANGE}{COMPANY} {BLACK}{COMPANY_NUM} '{STRING}'
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_ENGINEER                   :Inżynier
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRAFFIC_MANAGER            :Administrator Ruchu
@@ -1062,7 +1062,7 @@ STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Kliknij 
 
 # Highscore window
 STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED                         :{BIG_FONT}{BLACK}Ranking firm, które osiągnęły rok {NUM}
-STR_HIGHSCORE_TOP_COMPANIES_NETWORK_GAME                        :{BIG_FONT}{BLACK}Tabela Ligi Firm w {NUM}
+STR_HIGHSCORE_TOP_COMPANIES_NETWORK_GAME                        :{BIG_FONT}{BLACK}Ranking Firm w {NUM}
 STR_HIGHSCORE_POSITION                                          :{BIG_FONT}{BLACK}{COMMA}.
 STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN                     :Biznesmen
 STR_HIGHSCORE_PERFORMANCE_TITLE_ENTREPRENEUR                    :Przedsiębiorca
@@ -1752,6 +1752,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Wyłączona
 
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Przewijanie lewym przyciskiem myszy: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Włącz przewijanie mapy przeciąganiem lewym przyciskiem myszki. Jest to przydatne podczas używania ekranu dotykowego do przewijania
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zamknij okno prawym przyciskiem: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Zamyka okno poprzez kliknięcie prawym przyciskiem. Wyłącza pomoc kontekstową!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autozapis: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Częstotliwość automatycznego zapisu stanu gry
@@ -2141,6 +2143,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Poszukaj
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Pokaż ustawienia SI / Game Script
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Wyjdź z 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}Aktualnie używany podstawowy zestaw graficzny nie posiada {NUM} wymagan{P ego ych ych} sprite{P 'u 'ów 'ów}. Proszę poszukać aktualizacji dla zestawu podstawowego.
 STR_INTRO_TRANSLATION                                           :{BLACK}Tej wersji językowej brakuje jeszcze {NUM} wpis{P "" y ów}. Możesz pomóc ulepszyć nam OpenTTD rejestrując się jako tłumacz. Szczegóły znajdziesz w pliku readme.txt.
 
 # Quit window
@@ -2969,6 +2972,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nazwa po
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Akceptowany ładunek: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Typ torów: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Limit prędkości linii kolejowej: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Drogowe ograniczenie prędkości: {LTBLUE}{VELOCITY}
 
@@ -2981,29 +2985,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Pola
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Zaśnieżony teren
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Pustynia
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{G=m}{STRING} odcinek
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} tor z semaforam blokowymi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} tor z semaforami wejściowymi
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} tor z semaforem wyjściowym
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} tor z semaforami złożonymi (combo)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} tor z semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} tor z jednokierunkowymi semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} tor z semaforami blokowymi i semaforami wejścia
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} tor z semaforami blokowymi i semaforami wyjścia
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} tor z semaforami blokowymi i semaforami złożonymi (combo)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} tor z semaforami blokowymi i semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} tor z semaforami blokowymi i jednokierunkowymi semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} tor z semaforami wejścia i wyjścia
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} tor z semaforami wejścia i semaforami złożonymi (combo)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} tor z semaforami wejścia i semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} tor z semaforami wejścia i jednokierunkowymi semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} tor z semaforami wyjścia i semaforami złożonymi (combo)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} tor z semaforami wyjścia i semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} tor z semaforami wyjścia i jednokierunkowymi semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} tor z semaforami złożonymi (combo) i semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} tor z semaforami złożonymi (combo) i jednokierunkowymi semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} tor z semaforami trasy i jednokierunkowymi semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{G=f}Warsztaty - {STRING}
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{G=m}Tor kolejowy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Tor kolejowy z semaforam blokowymi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Tor kolejowy z semaforami wejściowymi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Tor kolejowy z semaforem wyjściowym
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Tor kolejowy z semaforami złożonymi (combo)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Tor kolejowy z semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Tor kolejowy z jednokierunkowymi semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Tor kolejowy z semaforami blokowymi i semaforami wejścia
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Tor kolejowy z semaforami blokowymi i semaforami wyjścia
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Tor kolejowy z semaforami blokowymi i semaforami złożonymi (combo)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Tor kolejowy z semaforami blokowymi i semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Tor kolejowy z semaforami blokowymi i jednokierunkowymi semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Tor kolejowy z semaforami wejścia i wyjścia
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Tor kolejowy z semaforami wejścia i semaforami złożonymi (combo)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Tor kolejowy z semaforami wejścia i semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Tor kolejowy z semaforami wejścia i jednokierunkowymi semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Tor kolejowy z semaforami wyjścia i semaforami złożonymi (combo)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Tor kolejowy z semaforami wyjścia i semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Tor kolejowy z semaforami wyjścia i jednokierunkowymi semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Tor kolejowy z semaforami złożonymi (combo) i semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Tor kolejowy z semaforami złożonymi (combo) i jednokierunkowymi semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Tor kolejowy z semaforami trasy i jednokierunkowymi semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{G=f}Warsztaty kolejowe
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Droga
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Droga z oświetleniem ulicznym
@@ -3067,7 +3071,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Teren w posiada
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Prawa Autorskie {COPYRIGHT} 1995 Chris Sawyer, Wszelkie prawa zastrzeżone
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD wersja {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 Zespół OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 Zespół OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Zapisz grę
@@ -3286,8 +3290,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Próba użycia 
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} zawiera uszkodzoną teksturę. Wszystkie uszkodzone tekstury będą pokazane jako czerwony znak zapytania (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Zawiera wiele wpisów Action 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Odczyt poza obszar pseudo-sprite'u (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Aktualnie używany zestaw grafik jest niekompletny.{}Proszę zaktualizować podstawowy zestaw grafik
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}W aktualnie używanym podstawowym zestawie graficznym brakuje pewnej ilości sprite'ów.{}Proszę zaktualizowaćswój zestaw graficzny.{}Z powodu tego, że używasz {YELLOW}rozwojowej wersji OpenTTD{WHITE}, możesz potrzebować również {YELLOW}rozwojowej wersji podstawowego zestawu graficznego{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Potrzebne źródło GRF nie jest dostępne (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} został wyłączony przez {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Niepoprawny/nieznany format układu sprite'u (sprite {3:NUM})
@@ -3494,8 +3496,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Akceptuj
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Pokaż listę akceptowanych ładunków
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Akceptuje: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Ta stacja posiada wyłączność na usługi transportowe w tym mieście.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :Firma {YELLOW}{COMPANY}{BLACK} kupiła wyłączność na usługi transportowe w tym mieście.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Ta stacja posiada wyłączność na usługi transportowe w tym mieście.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :Firma {YELLOW}{COMPANY}{BLACK} kupiła wyłączność na usługi transportowe w tym mieście.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Oceny
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Pokaż ocenę stacji
@@ -3674,9 +3676,13 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Wymaga: 
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Wymaga: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Potrzebuje
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}oczekuje
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Ładunek oczekujący na przetworzenie:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produkuje: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produkuje: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3743,6 +3749,11 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Usuń wszystkie
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Zmień nazwę grupy
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Zysk w tym roku:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Zysk w zeszłym roku:
+STR_GROUP_OCCUPANCY                                             :Aktualne wykorzystanie:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nowe pociągi
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nowe elektryczne pojazdy szynowe
@@ -3774,6 +3785,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :wszystkie typy 
 STR_PURCHASE_INFO_ALL_BUT                                       :wszystko oprócz {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks. siła pociągowa: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Zasięg: {GOLD}{COMMA} pól
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typ samolotu: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Lista wyboru pociągów - kliknij na pojeździe, aby uzyskać informacje. Ctrl+klik przełącza ukrywanie typu pojazdu
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Lista wyboru pojazdów drogowych - kliknij na pojeździe, aby uzyskać więcej informacji. Ctrl+klik przełącza ukrywanie typu pojazdu
@@ -3913,10 +3925,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE.b                          :lokomotywę Mag
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Koszt: {CURRENCY_LONG} Masa: {WEIGHT_SHORT}{}Prędkość: {VELOCITY}  Moc: {POWER}{}Koszt utrzymania: {CURRENCY_LONG}/rok{}Ładowność: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Koszt: {CURRENCY_LONG} Masa: {WEIGHT_SHORT}{}Prędkość: {VELOCITY}  Moc: {POWER}  Maksymalna siła pociągowa: {6:FORCE}{}Koszt utrzymania: {4:CURRENCY_LONG}/rok{}Ładowność: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Koszt: {CURRENCY_LONG} Prędkość maksymalna: {VELOCITY}{}Ładowność: {CARGO_LONG}, {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Koszt: {CURRENCY_LONG} Prędkość maksymalna: {VELOCITY}{}Ładowność: {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Koszt: {CURRENCY_LONG} Prędkość maksymalna: {VELOCITY} Zasięg: {COMMA} pól{}Ładowność: {CARGO_LONG}, {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Koszt: {CURRENCY_LONG} Prędkość maksymalna: {VELOCITY} Zasięg: {COMMA} pól{}Ładowność: {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Koszt: {CURRENCY_LONG} Prędkość maksymalna: {VELOCITY}{}Ładowność: {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Koszt: {CURRENCY_LONG} Max. prędkość: {VELOCITY}{}Typ samolotu: {STRING}{}Ładowność: {CARGO_LONG}, {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Koszt: {CURRENCY_LONG} Max. prędkość: {VELOCITY}{}Typ samolotu: {STRING}{}Ładowność: {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Koszt: {CURRENCY_LONG} Max. prędkość: {VELOCITY}{}Typ samolotu: {STRING} Zasięg: {COMMA}{}Ładowność: {CARGO_LONG}, {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Koszt: {CURRENCY_LONG} Max. prędkość: {VELOCITY}{}Typ samolotu: {STRING} Zasięg: {COMMA}{}Ładowność: {CARGO_LONG}{}Koszt utrzymania: {CURRENCY_LONG}/rok
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Zastąp {STRING} - {STRING}
@@ -3927,7 +3940,7 @@ STR_REPLACE_VEHICLE_AIRCRAFT                                    :Samolot
 
 STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}Używane pojazdy
 STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :{BLACK}Lista posiadanych pojazdów
-STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{BLACK}Dostępne pojazdy
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}Dostępne pojazdy
 STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK}Lista pojazdów dostępnych do zamiany
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Wybierz typ pojazdu do zamiany
@@ -3943,10 +3956,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} kiedy 
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Zatrzymaj zastępowanie
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Wciśnij ten przycisk jeśli nie chcesz zmieniać pojazdu zaznaczone po lewej stronie
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Zastępowanie: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Przejdź pomiędzy oknami zamiany lokomotyw i wagonów
 STR_REPLACE_ENGINES                                             :Lokomotywy
 STR_REPLACE_WAGONS                                              :Wagony
+STR_REPLACE_ALL_RAILTYPE                                        :Wszystkie pojazdy szynowe
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Wybierz dla jakiego typu torów chcesz zastąpić lokomotywy
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Wyświetla typ pojazdu na jaki będzie zastąpiony pojazd zaznaczony po lewej stronie
@@ -4039,7 +4052,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} {P rok 
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} {P rok lata lat} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Prędkość maksymalna: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Prędkość maksymalna: {LTBLUE}{VELOCITY} {BLACK}Zasięg: {LTBLUE}{COMMA} pól
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Max. prędkość: {LTBLUE}{VELOCITY} {BLACK}Typ samolotu: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Max. prędkość: {LTBLUE}{VELOCITY} {BLACK}Typ samolotu: {LTBLUE}{STRING} {BLACK}Zasięg: {LTBLUE}{COMMA}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Masa: {LTBLUE}{WEIGHT_SHORT} {BLACK}Moc: {LTBLUE}{POWER}{BLACK} Prędkość maksymalna: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Masa: {LTBLUE}{WEIGHT_SHORT} {BLACK}Moc: {LTBLUE}{POWER}{BLACK} Prędkość maksymalna: {LTBLUE}{VELOCITY} {BLACK}Maksymalna siła pociągowa: {LTBLUE}{FORCE}
 
