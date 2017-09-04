@@ -4636,6 +4636,13 @@ STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Switch b
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 
+STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE                      :{BLACK}This timetable is not being auto separated because it is incomplete
+STR_TIMETABLE_AUTOSEP_OK                                        :{BLACK}This timetable is being auto separated
+STR_TIMETABLE_AUTOSEP_SINGLE_VEH                                :{BLACK}This timetable is not being auto separated because there is only 1 vehicle
+STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}Cannot auto separate timetable: conditional order(s) present
+STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}Cannot auto separate timetable: wait or travel time(s) missing
+STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}Timetabling full-load orders is not recommended
+
 
 # Date window (for timetable)
 STR_DATE_CAPTION                                                :{WHITE}Set date

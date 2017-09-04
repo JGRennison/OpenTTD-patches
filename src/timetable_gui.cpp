@@ -182,6 +182,7 @@ struct TimetableWindow : Window {
 	bool query_is_speed_query; ///< The currently open query window is a speed query and not a time query.
 	bool set_start_date_all;   ///< Set start date using minutes text entry: this is a set all vehicle (ctrl-click) action
 	bool change_timetable_all; ///< Set wait time or speed for all timetable entries (ctrl-click) action
+	int summary_warnings = 0;  ///< NUmber of summary warnings shown
 
 	TimetableWindow(WindowDesc *desc, WindowNumber window_number) :
 			Window(desc),
@@ -240,9 +241,11 @@ struct TimetableWindow : Window {
 				size->height = WD_FRAMERECT_TOP + 8 * resize->height + WD_FRAMERECT_BOTTOM;
 				break;
 
-			case WID_VT_SUMMARY_PANEL:
-				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+			case WID_VT_SUMMARY_PANEL: {
+				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
+				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + this->summary_warnings * max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
 				break;
+			}
 		}
 	}
 
@@ -552,6 +555,88 @@ struct TimetableWindow : Window {
 					SetTimetableParams(0, abs(v->lateness_counter));
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE);
 				}
+				y += FONT_HEIGHT_NORMAL;
+
+				{
+					bool have_conditional = false;
+					bool have_missing_wait = false;
+					bool have_missing_travel = false;
+					bool have_bad_full_load = false;
+
+					const bool assume_timetabled = HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE) || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+					for (int n = 0; n < v->GetNumOrders(); n++) {
+						const Order *order = v->GetOrder(n);
+						if (order->IsType(OT_CONDITIONAL)) {
+							have_conditional = true;
+						} else {
+							if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION)) {
+								have_missing_wait = true;
+							}
+							if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
+								have_missing_travel = true;
+							}
+						}
+
+						if (!have_bad_full_load && (assume_timetabled || order->IsWaitTimetabled())) {
+							if (order->GetLoadType() & OLFB_FULL_LOAD) have_bad_full_load = true;
+							if (order->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+								for (CargoID c = 0; c < NUM_CARGO; c++) {
+									if (order->GetCargoLoadTypeRaw(c) & OLFB_FULL_LOAD) {
+										have_bad_full_load = true;
+										break;
+									}
+								}
+							}
+						}
+					}
+
+					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+					const int step_height = max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+					const int text_offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
+					const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
+					const bool rtl = _current_text_dir == TD_RTL;
+
+					int warning_count = 0;
+
+					auto draw_info = [&](StringID text, bool warning) {
+						int left = r.left + WD_FRAMERECT_LEFT;
+						int right = r.right - WD_FRAMERECT_RIGHT;
+						if (warning) {
+							DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + warning_offset_y);
+							if (rtl) {
+								right -= (warning_dimensions.width + 10);
+							} else {
+								left += (warning_dimensions.width + 10);
+							}
+						}
+						DrawString(left, right, y + text_offset_y, text);
+						y += step_height;
+						warning_count++;
+					};
+
+					if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+						if (have_conditional) draw_info(STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL, true);
+						if (have_missing_wait || have_missing_travel) {
+							if (assume_timetabled) {
+								draw_info(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
+							} else {
+								draw_info(STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS, true);
+							}
+						} else if (v->GetNumOrders() == 0) {
+							draw_info(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
+						} else if (!have_conditional) {
+							draw_info(v->IsOrderListShared() ? STR_TIMETABLE_AUTOSEP_OK : STR_TIMETABLE_AUTOSEP_SINGLE_VEH, false);
+						}
+					}
+					if (have_bad_full_load) draw_info(STR_TIMETABLE_WARNING_FULL_LOAD, true);
+
+					if (warning_count != this->summary_warnings) {
+						TimetableWindow *mutable_this = const_cast<TimetableWindow *>(this);
+						mutable_this->summary_warnings = warning_count;
+						mutable_this->ReInit();
+					}
+				}
+
 				break;
 			}
 		}
