@@ -94,7 +94,7 @@ static inline SignalType NextSignalType(SignalType cur, uint which_signals)
 		case SIGTYPE_NORMAL:     return block ? SIGTYPE_ENTRY      : SIGTYPE_PBS;
 		case SIGTYPE_ENTRY:      return block ? SIGTYPE_EXIT       : SIGTYPE_PBS;
 		case SIGTYPE_EXIT:       return block ? SIGTYPE_COMBO      : SIGTYPE_PBS;
-		case SIGTYPE_COMBO:      return block ? SIGTYPE_PROG       : SIGTYPE_PBS;
+		case SIGTYPE_COMBO:      return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
 		case SIGTYPE_PROG:       return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
 		case SIGTYPE_PBS:        return pbs   ? SIGTYPE_PBS_ONEWAY : SIGTYPE_NORMAL;
 		case SIGTYPE_PBS_ONEWAY: return block ? SIGTYPE_NORMAL     : SIGTYPE_PBS;
