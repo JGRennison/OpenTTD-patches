@@ -99,6 +99,9 @@ enum BuildSignalWidgets {
 	WID_BS_DRAG_SIGNALS_DENSITY_LABEL,    ///< The current signal density.
 	WID_BS_DRAG_SIGNALS_DENSITY_DECREASE, ///< Decrease the signal density.
 	WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, ///< Increase the signal density.
+	WID_BS_SEMAPHORE_PROG_SEL, ///< NWID_SELECTION for WID_BS_SEMAPHORE_PROG
+	WID_BS_ELECTRIC_PROG_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_PROG
+	WID_BS_PROGRAM_SEL,        ///< NWID_SELECTION for WID_BS_PROGRAM
 };
 
 /** Widgets of the #BuildRailDepotWindow class. */

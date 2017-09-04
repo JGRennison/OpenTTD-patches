@@ -1592,6 +1592,12 @@ static SettingsContainer &GetSettingsTree()
 				timetable->Add(new SettingEntry("gui.timetable_arrival_departure"));
 			}
 
+			SettingsPage *advsig = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS));
+			{
+				advsig->Add(new SettingEntry("gui.show_progsig_ui"));
+				advsig->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
+			}
+
 			interface->Add(new SettingEntry("gui.autosave"));
 			interface->Add(new SettingEntry("gui.toolbar_pos"));
 			interface->Add(new SettingEntry("gui.statusbar_pos"));
@@ -1602,7 +1608,6 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
-			interface->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
