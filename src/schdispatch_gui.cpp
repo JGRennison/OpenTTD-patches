@@ -415,6 +415,8 @@ struct SchdispatchWindow : Window {
 			case WID_SCHDISPATCH_ENABLED: {
 				uint32 p2 = 0;
 				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) SetBit(p2, 0);
+
+				if (!v->orders.list->IsScheduledDispatchValid()) v->orders.list->ResetScheduledDispatch();
 				DoCommandP(0, v->index, p2, CMD_SCHEDULED_DISPATCH | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
