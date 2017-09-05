@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.20.1
+## JGR's Patchpack version 0.21.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -28,7 +28,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)
 
 * Programmable signals: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=47690)  
-  This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)
+  This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)  
+  These are not shown in the build signal window by default.
 
 * Upgrade airports: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=35867)
 
@@ -181,7 +182,14 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Prevent road vehicles from being stopped on level crossings.  
   * Add setting to enable improved level crossing safety.
 
-* Scheduled dispatch [imported](https://github.com/innocenat/OpenTTD-patches/tree/scheduled-dispatch-sx) (added in v0.20.0)  
+* Scheduled dispatch [imported](https://github.com/innocenat/OpenTTD-patches/tree/scheduled-dispatch-sx) (added in v0.20.0)
+
+* Add a setting to disable removing sea/rivers (added in v0.21.0)
+
+* Town growth  
+  * Towns build bridges over rails [imported](https://www.tt-forums.net/viewtopic.php?f=33t=76052) (added in v0.21.0)  
+  * Add very and extremely slow options to town growth rate setting. (added in v0.21.0)  
+  * Add a setting to scale town growth rate by proportion of town cargo transported. (added in v0.21.0)
 
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
@@ -205,7 +213,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)  
   * Increase maximum setting limits for per-company vehicle-type limits. (added in v0.17.0)  
   * Increase maximum permitted vehicle name length (added in v0.17.0), vehicle group name length (added in v0.17.2), and depot/station name lengths (added in v0.20.0).  
-  * Trains break down after colliding with a road vehicle.  
+  * Trains break down after colliding with a road vehicle. (added in v0.20.0).  
+  * Add warning/info messages to timetable window. (added in v0.21.0).  
+  * Add ctrl+click on shared list button in order/timetable window to add single vehicle to a new group. (added in v0.21.0).  
   * Various minor fixes, see changelog.
 
 * Translations  

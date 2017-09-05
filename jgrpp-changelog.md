@@ -2,6 +2,26 @@
 
 * * *
 
+### v0.21.0 (2017-09-05)
+* Fix numerical overflow in date display/conversion when using high day lengths
+* Fix assertion when a GRF supplies an invalid sound.
+* Fix flickering when drawing vehicles in viewport, particularly in viewport map mode.
+* Fix possible desync when using scheduled dispatch in multiplayer.
+* Towns:
+  * Add towns build bridges over rails patch (default off).
+  * Add very and extremely slow options to town growth rate setting.
+  * Add setting to scale town growth rate by proportion of town cargo transported.
+* Add setting to disable removing sea/rivers.
+* Programmable signals:
+  * Add UI setting for whether programmable signals shown in UI (default off).
+  * Remove programmable signals from ctrl-click signal type cycling.
+* Add warning/info messages to timetable window.
+* Add ctrl+click on shared list button in order/timetable window to add single vehicle to a new group.
+* Move some settings in interface category of settings window.
+* Add Korean translations by kiwitreekor.
+* Add German translations by Auge and kruemelmagic.
+* Bump trunk base from r27891 to r27912
+
 ### v0.20.1 (2017-07-27)
 * Scheduled dispatch:
   * Fix hang when decloning vehicle orders.
