@@ -350,6 +350,7 @@
     <ClCompile Include="..\src\departures.cpp" />
     <ClCompile Include="..\src\depot.cpp" />
     <ClCompile Include="..\src\disaster_vehicle.cpp" />
+    <ClCompile Include="..\src\dock.cpp" />
     <ClCompile Include="..\src\driver.cpp" />
     <ClCompile Include="..\src\economy.cpp" />
     <ClCompile Include="..\src\effectvehicle.cpp" />
@@ -486,6 +487,7 @@
     <ClInclude Include="..\src\direction_type.h" />
     <ClInclude Include="..\src\disaster_vehicle.h" />
     <ClInclude Include="..\src\music\dmusic.h" />
+    <ClInclude Include="..\src\dock_base.h" />
     <ClInclude Include="..\src\driver.h" />
     <ClInclude Include="..\src\economy_base.h" />
     <ClInclude Include="..\src\economy_func.h" />
@@ -627,6 +629,7 @@
     <ClInclude Include="..\src\sdl.h" />
     <ClInclude Include="..\src\sound\sdl_s.h" />
     <ClInclude Include="..\src\video\sdl_v.h" />
+    <ClInclude Include="..\src\schdispatch.h" />
     <ClInclude Include="..\src\settings_func.h" />
     <ClInclude Include="..\src\settings_gui.h" />
     <ClInclude Include="..\src\settings_internal.h" />
@@ -658,6 +661,7 @@
     <ClInclude Include="..\src\strgen\strgen.h" />
     <ClInclude Include="..\src\string_base.h" />
     <ClInclude Include="..\src\string_func.h" />
+    <ClInclude Include="..\src\string_func_extra.h" />
     <ClInclude Include="..\src\string_type.h" />
     <ClInclude Include="..\src\stringfilter_type.h" />
     <ClInclude Include="..\src\strings_func.h" />
@@ -788,6 +792,7 @@
     <ClCompile Include="..\src\rail_gui.cpp" />
     <ClCompile Include="..\src\road_gui.cpp" />
     <ClCompile Include="..\src\roadveh_gui.cpp" />
+    <ClCompile Include="..\src\schdispatch_gui.cpp" />
     <ClCompile Include="..\src\settings_gui.cpp" />
     <ClCompile Include="..\src\ship_gui.cpp" />
     <ClCompile Include="..\src\signs_gui.cpp" />
@@ -881,6 +886,7 @@
     <ClCompile Include="..\src\rail_cmd.cpp" />
     <ClCompile Include="..\src\road_cmd.cpp" />
     <ClCompile Include="..\src\roadveh_cmd.cpp" />
+    <ClCompile Include="..\src\schdispatch_cmd.cpp" />
     <ClCompile Include="..\src\ship_cmd.cpp" />
     <ClCompile Include="..\src\signs_cmd.cpp" />
     <ClCompile Include="..\src\station_cmd.cpp" />

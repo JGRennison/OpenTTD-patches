@@ -2525,7 +2525,7 @@ bool ProcessOrders(Vehicle *v)
 
 	/* If it is unchanged, keep it. */
 	if (order->Equals(v->current_order) && (v->type == VEH_AIRCRAFT || v->dest_tile != 0) &&
-			(v->type != VEH_SHIP || !order->IsType(OT_GOTO_STATION) || Station::Get(order->GetDestination())->dock_tile != INVALID_TILE)) {
+			(v->type != VEH_SHIP || !order->IsType(OT_GOTO_STATION) || Station::Get(order->GetDestination())->HasFacilities(FACIL_DOCK))) {
 		return false;
 	}
 
