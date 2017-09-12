@@ -1016,6 +1016,22 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (IsPatchPackSavegameVersionBefore(SL_PATCH_PACK_1_18)) {
+		/* Dock type has changed. */
+		Station *st;
+		FOR_ALL_STATIONS(st) {
+			if (st->dock_station.tile == INVALID_TILE) continue;
+			assert(Dock::CanAllocateItem());
+			if (IsOilRig(st->dock_station.tile)) {
+				/* Set dock station tile to dest tile instead of station. */
+				st->docks = new Dock(st->dock_station.tile, st->dock_station.tile + ToTileIndexDiff({ 1, 0 }));
+			}
+			else { /* A normal two-tiles dock. */
+				st->docks = new Dock(st->dock_station.tile, TileAddByDiagDir(st->dock_station.tile, GetDockDirection(st->dock_station.tile)));
+			}
+		}
+	}
+
 	for (TileIndex t = 0; t < map_size; t++) {
 		switch (GetTileType(t)) {
 			case MP_STATION: {
@@ -3342,21 +3358,6 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(127)) {
 		Station *st;
 		FOR_ALL_STATIONS(st) UpdateStationAcceptance(st, false);
-	}
-
-	if (IsPatchPackSavegameVersionBefore(SL_PATCH_PACK_1_18)) {
-		/* Dock type has changed. */
-		Station *st;
-		FOR_ALL_STATIONS(st) {
-			if (st->dock_station.tile == INVALID_TILE) continue;
-			assert(Dock::CanAllocateItem());
-			if (IsOilRig(st->dock_station.tile)) {
-				/* Set dock station tile to dest tile instead of station. */
-				st->docks = new Dock(st->dock_station.tile, st->dock_station.tile + ToTileIndexDiff({1, 0}));
-			} else { /* A normal two-tiles dock. */
-				st->docks = new Dock(st->dock_station.tile, TileAddByDiagDir(st->dock_station.tile, GetDockDirection(st->dock_station.tile)));
-			}
-		}
 	}
 
 	// setting moved from game settings to company settings
