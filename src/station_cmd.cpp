@@ -2704,9 +2704,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 	TileIndex tile1 = removing_dock->sloped;
 	TileIndex tile2 = removing_dock->flat;
 
-	DiagDirection direction = GetInclinedSlopeDirection(GetTileSlope(removing_dock->sloped));
-	direction = ReverseDiagDir(direction);
-
+	DiagDirection direction = DiagdirBetweenTiles(removing_dock->sloped, removing_dock->flat);
 	TileIndex docking_location = removing_dock->flat + TileOffsByDiagDir(direction);
 
 	ret = EnsureNoVehicleOnGround(tile1);
