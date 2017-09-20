@@ -878,7 +878,7 @@ bool AfterLoadGame()
 			if (st->airport.tile == INVALID_TILE) continue;
 			StringID err = INVALID_STRING_ID;
 			if (st->airport.type == 9) {
-				if (st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
+				if (st->dock_station.tile != INVALID_TILE && IsOilRig(st->dock_station.tile)) {
 					/* this airport is probably an oil rig, not a huge airport */
 				} else {
 					err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
@@ -905,7 +905,7 @@ bool AfterLoadGame()
 		Aircraft *v;
 		FOR_ALL_AIRCRAFT(v) {
 			Station *st = GetTargetAirportIfValid(v);
-			if (st != NULL && ((st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) || st->airport.type == AT_OILRIG)) {
+			if (st != NULL && ((st->dock_station.tile != INVALID_TILE && IsOilRig(st->dock_station.tile)) || st->airport.type == AT_OILRIG)) {
 				/* aircraft is on approach to an oil rig, bail out now */
 				SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG);
 				/* Restore the signals */
@@ -1016,7 +1016,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsPatchPackSavegameVersionBefore(SL_PATCH_PACK_1_18)) {
+	if (SlXvIsFeatureMissing(XSLFI_MULTIPLE_DOCKS)) {
 		/* Dock type has changed. */
 		Station *st;
 		FOR_ALL_STATIONS(st) {

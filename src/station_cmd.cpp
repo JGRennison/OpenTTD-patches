@@ -2714,9 +2714,6 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 	if (flags & DC_EXEC) {
 		ZoningMarkDirtyStationCoverageArea(st);
 
-		st->catchment.AfterRemoveTile(tile1, CA_DOCK);
-		st->catchment.AfterRemoveTile(tile2, CA_DOCK);
-
 		if (st->docks == removing_dock) {
 			/* The first dock in the list is removed. */
 			st->docks = removing_dock->next;

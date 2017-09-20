@@ -439,8 +439,8 @@ static const SaveLoad _station_desc[] = {
 
 	      SLE_REF(Station, bus_stops,                  REF_ROADSTOPS),
 	      SLE_REF(Station, truck_stops,                REF_ROADSTOPS),
-      SLE_CONDVAR(Station, dock_station.tile,          SLE_UINT32,                  0, SL_PATCH_PACK_1_18 - 1),
-      SLE_CONDREF(Station, docks,                      REF_DOCKS,  SL_PATCH_PACK_1_18, SL_MAX_VERSION),
+    SLE_CONDVAR_X(Station, dock_station.tile,          SLE_UINT32,                  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MULTIPLE_DOCKS, 0, 0)),
+    SLE_CONDREF_X(Station, docks,                      REF_DOCKS,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MULTIPLE_DOCKS, 1)),
 	      SLE_VAR(Station, airport.tile,               SLE_UINT32),
 	  SLE_CONDVAR(Station, airport.w,                  SLE_FILE_U8 | SLE_VAR_U16, 140, SL_MAX_VERSION),
 	  SLE_CONDVAR(Station, airport.h,                  SLE_FILE_U8 | SLE_VAR_U16, 140, SL_MAX_VERSION),
