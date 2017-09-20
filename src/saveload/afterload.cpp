@@ -1025,9 +1025,13 @@ bool AfterLoadGame()
 			if (IsOilRig(st->dock_station.tile)) {
 				/* Set dock station tile to dest tile instead of station. */
 				st->docks = new Dock(st->dock_station.tile, st->dock_station.tile + ToTileIndexDiff({ 1, 0 }));
-			}
-			else { /* A normal two-tiles dock. */
+			} else if (IsDock(st->dock_station.tile)) {
+				/* A normal two-tiles dock. */
 				st->docks = new Dock(st->dock_station.tile, TileAddByDiagDir(st->dock_station.tile, GetDockDirection(st->dock_station.tile)));
+			} else if (IsBuoy(st->dock_station.tile)) {
+				/* A buoy. */
+			} else {
+				NOT_REACHED();
 			}
 		}
 	}
