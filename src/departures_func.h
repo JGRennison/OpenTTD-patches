@@ -16,6 +16,7 @@
 #include "core/smallvec_type.hpp"
 #include "departures_type.h"
 
-DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[4], DepartureType type = D_DEPARTURE, bool show_vehicles_via = false);
+DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[4], DepartureType type = D_DEPARTURE,
+		bool show_vehicles_via = false, bool show_pax = true, bool show_freight = true);
 
 #endif /* DEPARTURES_FUNC_H */

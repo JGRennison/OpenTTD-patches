@@ -76,9 +76,11 @@ static bool IsArrival(const Order *order, StationID station) {
  * @param show_vehicle_types the types of vehicles to include in the departure list
  * @param type the type of departures to get (departures or arrivals)
  * @param show_vehicles_via whether to include vehicles that have this station in their orders but do not stop at it
+ * @param show_pax whether to include passenger vehicles
+ * @param show_freight whether to include freight vehicles
  * @return a list of departures, which is empty if an error occurred
  */
-DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], DepartureType type, bool show_vehicles_via)
+DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], DepartureType type, bool show_vehicles_via, bool show_pax, bool show_freight)
 {
 	/* This function is the meat of the departure boards functionality. */
 	/* As an overview, it works by repeatedly considering the best possible next departure to show. */
@@ -89,6 +91,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 	/* The list of departures which will be returned as a result. */
 	SmallVector<Departure*, 32> *result = new SmallVector<Departure*, 32>();
+
+	if (!show_pax && !show_freight) return result;
 
 	/* A list of the next scheduled orders to be considered for inclusion in the departure list. */
 	SmallVector<OrderDate*, 32> next_orders;
@@ -120,19 +124,19 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 		/* Get the first order for each vehicle for the station we're interested in that doesn't have No Loading set. */
 		/* We find the least order while we're at it. */
 		for (const Vehicle **v = vehicles.Begin(); v != vehicles.End(); v++) {
-			if (_settings_client.gui.departure_only_passengers) {
+			if (show_pax != show_freight) {
 				bool carries_passengers = false;
 
 				const Vehicle *u = *v;
 				while (u != NULL) {
-					if (u->cargo_type == CT_PASSENGERS && u->cargo_cap > 0) {
+					if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
 						carries_passengers = true;
 						break;
 					}
 					u = u->Next();
 				}
 
-				if (carries_passengers == false) {
+				if (carries_passengers != show_pax) {
 					continue;
 				}
 			}
