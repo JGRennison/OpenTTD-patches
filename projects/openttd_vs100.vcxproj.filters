@@ -195,6 +195,9 @@
     <ClCompile Include="..\src\disaster_vehicle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\dock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -601,6 +604,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\music\dmusic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dock_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\driver.h">
@@ -1026,6 +1032,9 @@
     <ClInclude Include="..\src\video\sdl_v.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\schdispatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\settings_func.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1117,6 +1126,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\string_func.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\string_func_extra.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\string_type.h">
@@ -1509,6 +1521,9 @@
     <ClCompile Include="..\src\roadveh_gui.cpp">
       <Filter>GUI Source Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\schdispatch_gui.cpp">
+      <Filter>GUI Source Code</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\settings_gui.cpp">
       <Filter>GUI Source Code</Filter>
     </ClCompile>
@@ -1786,6 +1801,9 @@
       <Filter>Command handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\roadveh_cmd.cpp">
+      <Filter>Command handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\schdispatch_cmd.cpp">
       <Filter>Command handlers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ship_cmd.cpp">

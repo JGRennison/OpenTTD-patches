@@ -30,6 +30,7 @@ dedicated.cpp
 departures.cpp
 depot.cpp
 disaster_vehicle.cpp
+dock.cpp
 driver.cpp
 economy.cpp
 effectvehicle.cpp
@@ -197,6 +198,7 @@ direction_func.h
 direction_type.h
 disaster_vehicle.h
 music/dmusic.h
+dock_base.h
 driver.h
 economy_base.h
 economy_func.h

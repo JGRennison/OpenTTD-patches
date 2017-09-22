@@ -555,6 +555,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\dock.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\driver.cpp"
 				>
 			</File>
@@ -1100,6 +1104,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\music\dmusic.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\dock_base.h"
 				>
 			</File>
 			<File
@@ -1667,6 +1675,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\schdispatch.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\settings_func.h"
 				>
 			</File>
@@ -1788,6 +1800,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\string_func.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\string_func_extra.h"
 				>
 			</File>
 			<File
@@ -2319,6 +2335,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\schdispatch_gui.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\settings_gui.cpp"
 				>
 			</File>
@@ -2696,6 +2716,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\roadveh_cmd.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\schdispatch_cmd.cpp"
 				>
 			</File>
 			<File

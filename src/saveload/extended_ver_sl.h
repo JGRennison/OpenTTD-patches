@@ -52,6 +52,7 @@ enum SlXvFeatureIndex {
 	XSLFI_CHUNNEL,                                ///< Tunnels under water (channel tunnel)
 	XSLFI_SCHEDULED_DISPATCH,                     ///< Scheduled vehicle dispatching
 	XSLFI_MORE_TOWN_GROWTH_RATES,                 ///< More town growth rates
+	XSLFI_MULTIPLE_DOCKS,                         ///< Multiple docks
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

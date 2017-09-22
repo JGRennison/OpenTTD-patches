@@ -30,6 +30,7 @@
 #include "../station_base.h"
 #include "../waypoint_base.h"
 #include "../roadstop_base.h"
+#include "../dock_base.h"
 #include "../tunnelbridge_map.h"
 #include "../pathfinder/yapf/yapf_cache.h"
 #include "../elrail_func.h"
@@ -728,9 +729,9 @@ bool AfterLoadGame()
 		/* no station is determined by 'tile == INVALID_TILE' now (instead of '0') */
 		Station *st;
 		FOR_ALL_STATIONS(st) {
-			if (st->airport.tile       == 0) st->airport.tile = INVALID_TILE;
-			if (st->dock_tile          == 0) st->dock_tile    = INVALID_TILE;
-			if (st->train_station.tile == 0) st->train_station.tile   = INVALID_TILE;
+			if (st->airport.tile       == 0) st->airport.tile       = INVALID_TILE;
+			if (st->dock_station.tile  == 0) st->dock_station.tile  = INVALID_TILE;
+			if (st->train_station.tile == 0) st->train_station.tile = INVALID_TILE;
 		}
 
 		/* the same applies to Company::location_of_HQ */
@@ -877,7 +878,7 @@ bool AfterLoadGame()
 			if (st->airport.tile == INVALID_TILE) continue;
 			StringID err = INVALID_STRING_ID;
 			if (st->airport.type == 9) {
-				if (st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) {
+				if (st->dock_station.tile != INVALID_TILE && IsOilRig(st->dock_station.tile)) {
 					/* this airport is probably an oil rig, not a huge airport */
 				} else {
 					err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
@@ -904,7 +905,7 @@ bool AfterLoadGame()
 		Aircraft *v;
 		FOR_ALL_AIRCRAFT(v) {
 			Station *st = GetTargetAirportIfValid(v);
-			if (st != NULL && ((st->dock_tile != INVALID_TILE && IsOilRig(st->dock_tile)) || st->airport.type == AT_OILRIG)) {
+			if (st != NULL && ((st->dock_station.tile != INVALID_TILE && IsOilRig(st->dock_station.tile)) || st->airport.type == AT_OILRIG)) {
 				/* aircraft is on approach to an oil rig, bail out now */
 				SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG);
 				/* Restore the signals */
@@ -1011,6 +1012,26 @@ bool AfterLoadGame()
 					SB(_me[t].m6, 3, 3, st);
 					break;
 				}
+			}
+		}
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_MULTIPLE_DOCKS)) {
+		/* Dock type has changed. */
+		Station *st;
+		FOR_ALL_STATIONS(st) {
+			if (st->dock_station.tile == INVALID_TILE) continue;
+			assert(Dock::CanAllocateItem());
+			if (IsOilRig(st->dock_station.tile)) {
+				/* Set dock station tile to dest tile instead of station. */
+				st->docks = new Dock(st->dock_station.tile, st->dock_station.tile + ToTileIndexDiff({ 1, 0 }));
+			} else if (IsDock(st->dock_station.tile)) {
+				/* A normal two-tiles dock. */
+				st->docks = new Dock(st->dock_station.tile, TileAddByDiagDir(st->dock_station.tile, GetDockDirection(st->dock_station.tile)));
+			} else if (IsBuoy(st->dock_station.tile)) {
+				/* A buoy. */
+			} else {
+				NOT_REACHED();
 			}
 		}
 	}

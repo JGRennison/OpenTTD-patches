@@ -156,6 +156,16 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 		return (this->facilities & ~FACIL_WAYPOINT) != 0;
 	}
 
+	/**
+	 * Check whether the base station has given facilities.
+	 * @param facilities The facilities to check.
+	 * @return True if station has at least one of the given \a facilities.
+	 */
+	inline bool HasFacilities(StationFacility facilities) const
+	{
+		return (this->facilities & facilities) != 0;
+	}
+
 	static void PostDestructor(size_t index);
 };
 

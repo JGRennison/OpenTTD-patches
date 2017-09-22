@@ -19,10 +19,12 @@
 
 typedef uint16 StationID;
 typedef uint16 RoadStopID;
+typedef uint16 DockID;
 
 struct BaseStation;
 struct Station;
 struct RoadStop;
+struct Dock;
 struct StationSpec;
 struct Waypoint;
 

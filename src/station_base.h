@@ -458,9 +458,10 @@ public:
 	TileArea bus_station;   ///< Tile area the bus 'station' part covers
 	RoadStop *truck_stops;  ///< All the truck stops
 	TileArea truck_station; ///< Tile area the truck 'station' part covers
+	Dock *docks;            ///< All the docks
+	TileArea dock_station;  ///< Tile area dock 'station' part covers
 
 	Airport airport;        ///< Tile area the airport covers
-	TileIndex dock_tile;    ///< The location of the dock
 
 	IndustryType indtype;   ///< Industry type to get the name from
 
@@ -489,6 +490,8 @@ public:
 	/* virtual */ uint GetPlatformLength(TileIndex tile) const;
 	void RecomputeIndustriesNear();
 	static void RecomputeIndustriesNearForAll();
+
+	Dock *GetPrimaryDock() const { return docks; }
 
 	uint GetCatchmentRadius() const;
 	Rect GetCatchmentRectUsingRadius(uint radius) const;

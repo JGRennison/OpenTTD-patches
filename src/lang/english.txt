@@ -4959,6 +4959,7 @@ STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Too many
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Too many lorry stations
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Too close to another station/loading area
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Too close to another dock
+STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Too many docks
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Too close to another airport
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Can't rename station...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... this is a town owned road
