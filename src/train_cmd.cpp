@@ -4926,8 +4926,6 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID 
 	v->SetFrontEngine();
 	v->SetEngine();
 
-	v->UpdateViewport(true, false);
-
 	if (rvi->railveh_type == RAILVEH_MULTIHEAD) {
 		AddRearEngineToMultiheadedTrain(v);
 	} else {
@@ -4938,6 +4936,8 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID 
 	for (Train* train_part = v; train_part != NULL; train_part = train_part->Next()) {
 		train_part->SetVirtual();
 	}
+
+	v->UpdateViewport(true, false);
 
 	v->ConsistChanged(CCF_ARRANGE);
 
