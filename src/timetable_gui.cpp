@@ -577,7 +577,7 @@ struct TimetableWindow : Window {
 							}
 						}
 
-						if (!have_bad_full_load && (assume_timetabled || order->IsWaitTimetabled())) {
+						if (order->IsType(OT_GOTO_STATION) && !have_bad_full_load && (assume_timetabled || order->IsWaitTimetabled())) {
 							if (order->GetLoadType() & OLFB_FULL_LOAD) have_bad_full_load = true;
 							if (order->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
 								for (CargoID c = 0; c < NUM_CARGO; c++) {
