@@ -2628,7 +2628,7 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	/* Get the water class of the water tile before it is cleared.*/
 	WaterClass wc = GetWaterClass(flat_tile);
 
-	ret = DoCommand(flat_tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	ret = DoCommand(flat_tile, 0, 0, flags | DC_ALLOW_REMOVE_WATER, CMD_LANDSCAPE_CLEAR);
 	if (ret.Failed()) return ret;
 
 	TileIndex adjacent_tile = flat_tile + TileOffsByDiagDir(direction);
