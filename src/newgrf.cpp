@@ -3750,7 +3750,7 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, B
 				const AirportTileTable *copy_from;
 				try {
 					for (byte j = 0; j < as->num_table; j++) {
-						as->rotation[j] = (Direction)buf->ReadByte();
+						const_cast<Direction&>(as->rotation[j]) = (Direction)buf->ReadByte();
 						for (int k = 0;; k++) {
 							att[k].ti.x = buf->ReadByte(); // Offsets from northermost tile
 							att[k].ti.y = buf->ReadByte();
@@ -7915,6 +7915,7 @@ static void ResetCustomAirports()
 					}
 					free(as->table);
 					free(as->depot_table);
+					free(as->rotation);
 
 					free(as);
 				}
