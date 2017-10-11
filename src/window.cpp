@@ -2751,7 +2751,7 @@ static int _input_events_this_tick = 0;
  */
 static void HandleAutoscroll()
 {
-	if (_game_mode == GM_MENU || HasModalProgress()) return;
+	if (_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP || HasModalProgress()) return;
 	if (_settings_client.gui.auto_scrolling == VA_DISABLED) return;
 	if (_settings_client.gui.auto_scrolling == VA_MAIN_VIEWPORT_FULLSCREEN && !_fullscreen) return;
 
@@ -2797,7 +2797,7 @@ extern EventState VpHandlePlaceSizingDrag();
 
 static void ScrollMainViewport(int x, int y)
 {
-	if (_game_mode != GM_MENU) {
+	if (_game_mode != GM_MENU && _game_mode != GM_BOOTSTRAP) {
 		Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
 		assert(w);
 
@@ -2877,7 +2877,7 @@ static void MouseLoop(MouseClick click, int mousewheel)
 	ViewPort *vp = IsPtInWindowViewport(w, x, y);
 
 	/* Don't allow any action in a viewport if either in menu or when having a modal progress window */
-	if (vp != NULL && (_game_mode == GM_MENU || HasModalProgress())) return;
+	if (vp != NULL && (_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP || HasModalProgress())) return;
 
 	if (mousewheel != 0) {
 		/* Send mousewheel event to window */

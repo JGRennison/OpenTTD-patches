@@ -291,7 +291,7 @@ void IncreaseDate()
 	/* increase day, and check if a new day is there? */
 	_tick_counter++;
 
-	if (_game_mode == GM_MENU) return;
+	if (_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) return;
 
 	_date_fract++;
 	if (_date_fract < DAY_TICKS) return;
