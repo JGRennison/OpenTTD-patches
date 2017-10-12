@@ -3680,6 +3680,9 @@ static void DuplicateTileTable(AirportSpec *as)
 		MemCpyT(depot_table, as->depot_table, as->nof_depots);
 	}
 	as->depot_table = depot_table;
+	Direction *rotation = MallocT<Direction>(as->num_table);
+	MemCpyT(rotation, as->rotation, as->num_table);
+	as->rotation = rotation;
 }
 
 /**
@@ -3750,6 +3753,7 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, B
 
 			case 0x0A: { // Set airport layout
 				as->num_table = buf->ReadByte(); // Number of layaouts
+				free(as->rotation);
 				as->rotation = MallocT<Direction>(as->num_table);
 				uint32 defsize = buf->ReadDWord();  // Total size of the definition
 				AirportTileTable **tile_table = CallocT<AirportTileTable*>(as->num_table); // Table with tiles to compose the airport
