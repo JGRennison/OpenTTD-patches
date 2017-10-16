@@ -197,6 +197,7 @@ private:
 		/* Add item for disabling filtering. */
 		this->cargo_filter[filter_items] = CF_ANY;
 		this->cargo_filter_texts[filter_items] = STR_PURCHASE_INFO_ALL_TYPES;
+		this->cargo_filter_criteria = filter_items;
 		filter_items++;
 
 		/* Add item for vehicles not carrying anything, e.g. train engines.
@@ -215,17 +216,6 @@ private:
 
 		/* Terminate the filter list. */
 		this->cargo_filter_texts[filter_items] = INVALID_STRING_ID;
-
-		/* If not found, the cargo criteria will be set to all cargoes. */
-		this->cargo_filter_criteria = 0;
-
-		/* Find the last cargo filter criteria. */
-		for (uint i = 0; i < filter_items; i++) {
-			if (this->cargo_filter[i] == CF_ANY) {
-				this->cargo_filter_criteria = i;
-				break;
-			}
-		}
 
 		this->vehicles.SetFilterFuncs(_filter_funcs);
 		this->vehicles.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
@@ -665,7 +655,7 @@ public:
 		/* Set text of sort by dropdown */
 		this->GetWidget<NWidgetCore>(WID_GL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
 
-		this->GetWidget<NWidgetCore>(WID_GL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->vehicles.FilterType()];
+		this->GetWidget<NWidgetCore>(WID_GL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
 
 
 		bool is_non_collapsable_group = (this->vli.index == ALL_GROUP) || (this->vli.index == DEFAULT_GROUP)
