@@ -1069,6 +1069,17 @@ static bool ProgrammableSignalsShownChanged(int32)
 	return true;
 }
 
+static bool VehListCargoFilterShownChanged(int32)
+{
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
+	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);
+	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
+	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
+
+	return true;
+}
+
 static bool TownFoundingChanged(int32 p1)
 {
 	if (_game_mode != GM_EDITOR && _settings_game.economy.found_town == TF_FORBIDDEN) {

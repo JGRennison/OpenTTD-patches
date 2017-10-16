@@ -33,7 +33,6 @@
 #include "table/sprites.h"
 
 #include "safeguards.h"
-//#include "engine_gui.h"
 
 static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
 
@@ -81,7 +80,9 @@ static const NWidgetPart _nested_group_widgets[] = {
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_SORT_BY_ORDER), SetMinimalSize(81, 12), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_SORT_BY_DROPDOWN), SetMinimalSize(167, 12), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GL_FILTER_BY_CARGO_SEL),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+				EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetResize(1, 0), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
@@ -356,6 +357,8 @@ public:
 	{
 		this->CreateNestedTree();
 
+		this->CheckCargoFilterEnableState(WID_GL_FILTER_BY_CARGO_SEL, false);
+
 		this->vscroll = this->GetScrollbar(WID_GL_LIST_VEHICLE_SCROLLBAR);
 		this->group_sb = this->GetScrollbar(WID_GL_LIST_GROUP_SCROLLBAR);
 
@@ -488,6 +491,9 @@ public:
 			this->vli.index = ALL_GROUP;
 			HideDropDownMenu(this);
 		}
+
+		this->CheckCargoFilterEnableState(WID_GL_FILTER_BY_CARGO_SEL, true);
+
 		this->SetDirty();
 	}
 

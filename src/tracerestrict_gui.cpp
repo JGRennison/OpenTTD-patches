@@ -2597,6 +2597,7 @@ enum TraceRestrictSlotWindowWidgets {
 	WID_TRSL_SORT_BY_ORDER,
 	WID_TRSL_SORT_BY_DROPDOWN,
 	WID_TRSL_FILTER_BY_CARGO,
+	WID_TRSL_FILTER_BY_CARGO_SEL,
 	WID_TRSL_LIST_VEHICLE,
 	WID_TRSL_LIST_VEHICLE_SCROLLBAR,
 };
@@ -2637,7 +2638,9 @@ static const NWidgetPart _nested_slot_widgets[] = {
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRSL_SORT_BY_ORDER), SetMinimalSize(81, 12), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_SORT_BY_DROPDOWN), SetMinimalSize(167, 12), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
-				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TRSL_FILTER_BY_CARGO_SEL),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+				EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetResize(1, 0), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
@@ -2780,6 +2783,8 @@ public:
 	{
 		this->CreateNestedTree();
 
+		this->CheckCargoFilterEnableState(WID_TRSL_FILTER_BY_CARGO_SEL, false);
+
 		this->vscroll = this->GetScrollbar(WID_TRSL_LIST_VEHICLE_SCROLLBAR);
 		this->slot_sb = this->GetScrollbar(WID_TRSL_LIST_SLOTS_SCROLLBAR);
 		this->sorting = &_sorting.train;
@@ -2878,6 +2883,9 @@ public:
 		if (this->vli.index != ALL_TRAINS_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(this->vli.index)) {
 			this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
 		}
+
+		if (gui_scope) this->CheckCargoFilterEnableState(WID_TRSL_FILTER_BY_CARGO_SEL, true);
+
 		this->SetDirty();
 	}
 
