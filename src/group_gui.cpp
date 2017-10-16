@@ -108,15 +108,25 @@ static const NWidgetPart _nested_group_widgets[] = {
 static const CargoID CF_ANY = CT_NO_REFIT; ///< Show all vehicles independent of carried cargo (i.e. no filtering)
 static const CargoID CF_NONE = CT_INVALID;  ///< Show only vehicles which do not carry cargo (e.g. train engines)
 /** Cargo filter functions */
-static bool CDECL CargoFilter(const Vehicle *const*vid, const CargoID cid)
+static bool CDECL CargoFilter(const Vehicle * const *vid, const CargoID cid)
 {
-	if (cid == CF_ANY) return true;
-	for (const Vehicle *w = (*vid); w != NULL; w = w->Next()) {
-		if (w->cargo_cap > 0 && w->cargo_type == cid) {
-			return true;
+	if (cid == CF_ANY) {
+		return true;
+	} else if (cid == CF_NONE) {
+		for (const Vehicle *w = (*vid); w != NULL; w = w->Next()) {
+			if (w->cargo_cap > 0) {
+				return false;
+			}
 		}
+		return true;
+	} else {
+		for (const Vehicle *w = (*vid); w != NULL; w = w->Next()) {
+			if (w->cargo_cap > 0 && w->cargo_type == cid) {
+				return true;
+			}
+		}
+		return false;
 	}
-	return false;
 }
 
 static GUIVehicleList::FilterFunction * const _filter_funcs[] = {
