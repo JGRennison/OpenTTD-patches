@@ -16,8 +16,9 @@
 #include "vehiclelist.h"
 #include "window_gui.h"
 #include "widgets/dropdown_type.h"
+#include "cargo_type.h"
 
-typedef GUIList<const Vehicle*> GUIVehicleList;
+typedef GUIList<const Vehicle*, CargoID> GUIVehicleList;
 
 struct BaseVehicleListWindow : public Window {
 	GUIVehicleList vehicles;  ///< The list of vehicles

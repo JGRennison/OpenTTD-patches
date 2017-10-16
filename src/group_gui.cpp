@@ -33,6 +33,7 @@
 #include "table/sprites.h"
 
 #include "safeguards.h"
+#include "engine_gui.h"
 
 static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
 
@@ -80,6 +81,7 @@ static const NWidgetPart _nested_group_widgets[] = {
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_SORT_BY_ORDER), SetMinimalSize(81, 12), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_SORT_BY_DROPDOWN), SetMinimalSize(167, 12), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetResize(1, 0), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
@@ -101,6 +103,24 @@ static const NWidgetPart _nested_group_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
+};
+/** Special cargo filter criteria */
+static const CargoID CF_ANY = CT_NO_REFIT; ///< Show all vehicles independent of carried cargo (i.e. no filtering)
+static const CargoID CF_NONE = CT_INVALID;  ///< Show only vehicles which do not carry cargo (e.g. train engines)
+/** Cargo filter functions */
+static bool CDECL CargoFilter(const Vehicle *const*vid, const CargoID cid)
+{
+	if (cid == CF_ANY) return true;
+	for (const Vehicle *w = (*vid); w != NULL; w = w->Next()) {
+		if (w->cargo_cap > 0 && w->cargo_type == cid) {
+			return true;
+		}
+	}
+	return false;
+}
+
+static GUIVehicleList::FilterFunction * const _filter_funcs[] = {
+	&CargoFilter,
 };
 
 /** Sort the groups by their name */
@@ -151,10 +171,71 @@ private:
 	SmallVector<GroupID, 16> all_groups;          ///< List of all groups, including hidden ones
 	SmallVector<GroupID, 16> collapsed_groups;    ///< List of collapsed groups
 	SmallVector<GroupID, 16> collapsable_groups;  ///< List of collapsable groups
+	CargoID cargo_filter[NUM_CARGO + 2];        ///< Available cargo filters; CargoID or CF_ANY or CF_NONE
+	StringID cargo_filter_texts[NUM_CARGO + 3]; ///< Texts for filter_cargo, terminated by INVALID_STRING_ID
+	byte cargo_filter_criteria;                 ///< Selected cargo filter
 
 	SmallVector<int, 16> indents; ///< Indentation levels
 
 	Dimension column_size[VGC_END]; ///< Size of the columns in the group list.
+
+									/** Populate the filter list and set the cargo filter criteria. */
+	void SetCargoFilterArray()
+	{
+		uint filter_items = 0;
+
+		/* Add item for disabling filtering. */
+		this->cargo_filter[filter_items] = CF_ANY;
+		this->cargo_filter_texts[filter_items] = STR_PURCHASE_INFO_ALL_TYPES;
+		filter_items++;
+
+		/* Add item for vehicles not carrying anything, e.g. train engines.
+		* This could also be useful for eyecandy vehicles of other types, but is likely too confusing for joe, */
+		this->cargo_filter[filter_items] = CF_NONE;
+		this->cargo_filter_texts[filter_items] = STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE;
+		filter_items++;
+
+		/* Collect available cargo types for filtering. */
+		const CargoSpec *cs;
+		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			this->cargo_filter[filter_items] = cs->Index();
+			this->cargo_filter_texts[filter_items] = cs->name;
+			filter_items++;
+		}
+
+		/* Terminate the filter list. */
+		this->cargo_filter_texts[filter_items] = INVALID_STRING_ID;
+
+		/* If not found, the cargo criteria will be set to all cargoes. */
+		this->cargo_filter_criteria = 0;
+
+		/* Find the last cargo filter criteria. */
+		for (uint i = 0; i < filter_items; i++) {
+			if (this->cargo_filter[i] == CF_ANY) {
+				this->cargo_filter_criteria = i;
+				break;
+			}
+		}
+
+		this->vehicles.SetFilterFuncs(_filter_funcs);
+		this->vehicles.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
+	}
+	/** Filter the engine list against the currently selected cargo filter */
+	void FilterVehicleList()
+	{
+		this->vehicles.Filter(this->cargo_filter[this->cargo_filter_criteria]);
+		if (0 == this->vehicles.Length()) { // no engine passed through the filter, invalidate the previously selected engine
+			this->vehicle_sel = INVALID_VEHICLE;
+		}
+		else if (this->vehicle_sel != INVALID_VEHICLE && !this->vehicles.Contains(Vehicle::Get(this->vehicle_sel))) { // previously selected engine didn't pass the filter, select the first engine of the list
+			this->vehicle_sel =  this->vehicles[0]->index;
+		}
+	}
+
+	void OnInit()
+	{
+		this->SetCargoFilterArray();
+	}
 
 	/** return true if group has children */
 	bool AddParents(GUIGroupList *source, GroupID parent, int indent, bool parent_collapsed)
@@ -494,6 +575,10 @@ public:
 	virtual void SetStringParameters(int widget) const
 	{
 		switch (widget) {
+
+			case WID_GL_FILTER_BY_CARGO:
+				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
+				break;
 			case WID_GL_AVAILABLE_VEHICLES:
 				SetDParam(0, STR_VEHICLE_LIST_AVAILABLE_TRAINS + this->vli.vtype);
 				break;
@@ -524,6 +609,7 @@ public:
 		 * else this->list will contain all vehicles which belong to the selected group */
 		this->BuildVehicleList();
 		this->SortVehicleList();
+		this->FilterVehicleList();
 
 		this->BuildGroupList(this->owner);
 
@@ -568,6 +654,8 @@ public:
 
 		/* Set text of sort by dropdown */
 		this->GetWidget<NWidgetCore>(WID_GL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
+
+		this->GetWidget<NWidgetCore>(WID_GL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->vehicles.FilterType()];
 
 
 		bool is_non_collapsable_group = (this->vli.index == ALL_GROUP) || (this->vli.index == DEFAULT_GROUP)
@@ -702,6 +790,10 @@ public:
 				ShowDropDownMenu(this, this->vehicle_sorter_names, this->vehicles.SortType(),  WID_GL_SORT_BY_DROPDOWN, 0,
 						(this->vli.vtype == VEH_TRAIN || this->vli.vtype == VEH_ROAD) ? 0 : this->vehicle_sorter_non_ground_veh_disable_mask);
 				return;
+
+			case WID_GL_FILTER_BY_CARGO: // Select filtering criteria dropdown menu
+				ShowDropDownMenu(this, this->cargo_filter_texts, this->cargo_filter_criteria, WID_GL_FILTER_BY_CARGO, 0, 0);
+				break;
 
 			case WID_GL_ALL_VEHICLES: // All vehicles button
 				if (!IsAllGroupID(this->vli.index)) {
@@ -926,7 +1018,15 @@ public:
 			case WID_GL_SORT_BY_DROPDOWN:
 				this->vehicles.SetSortType(index);
 				break;
-
+			case WID_GL_FILTER_BY_CARGO: // Select a cargo filter criteria
+				if (this->cargo_filter_criteria != index) {
+					this->cargo_filter_criteria = index;
+					/* deactivate filter if criteria is 'Show All', activate it otherwise */
+					this->vehicles.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
+					this->vehicles.SetFilterType(0);
+					this->vehicles.ForceRebuild();
+				}
+				break;
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN:
 				assert(this->ShouldShowActionDropdownList());
 
