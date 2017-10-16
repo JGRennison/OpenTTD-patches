@@ -26,6 +26,17 @@ struct BaseVehicleListWindow : public Window {
 	byte unitnumber_digits;   ///< The number of digits of the highest unit number
 	Scrollbar *vscroll;
 	VehicleListIdentifier vli; ///< Identifier of the vehicle list we want to currently show.
+	VehicleID vehicle_sel;    ///< Selected vehicle
+
+	/** Special cargo filter criteria */
+	enum CargoFilterSpecialType {
+		CF_ANY = CT_NO_REFIT,                   ///< Show all vehicles independent of carried cargo (i.e. no filtering)
+		CF_NONE = CT_INVALID,                   ///< Show only vehicles which do not carry cargo (e.g. train engines)
+	};
+
+	CargoID cargo_filter[NUM_CARGO + 2];        ///< Available cargo filters; CargoID or CF_ANY or CF_NONE
+	StringID cargo_filter_texts[NUM_CARGO + 3]; ///< Texts for filter_cargo, terminated by INVALID_STRING_ID
+	byte cargo_filter_criteria;                 ///< Selected cargo filter
 
 	enum ActionDropdownItem {
 		ADI_TEMPLATE_REPLACE,
@@ -46,12 +57,17 @@ struct BaseVehicleListWindow : public Window {
 
 	BaseVehicleListWindow(WindowDesc *desc, WindowNumber wno) : Window(desc), vli(VehicleListIdentifier::UnPack(wno))
 	{
+		this->vehicle_sel = INVALID_VEHICLE;
 		this->vehicles.SetSortFuncs(this->vehicle_sorter_funcs);
 	}
 
 	void DrawVehicleListItems(VehicleID selected_vehicle, int line_height, const Rect &r) const;
 	void SortVehicleList();
 	void BuildVehicleList();
+	void SetCargoFilterIndex(int index);
+	void SetCargoFilterArray();
+	void FilterVehicleList();
+	void OnInit() override;
 	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
 	DropDownList *BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
 			StringID change_order_str = 0, bool show_create_group = false);

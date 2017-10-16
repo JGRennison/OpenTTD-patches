@@ -142,10 +142,99 @@ void BaseVehicleListWindow::BuildVehicleList()
 
 	GenerateVehicleSortList(&this->vehicles, this->vli);
 
+	this->FilterVehicleList();
+
 	this->unitnumber_digits = GetUnitNumberDigits(this->vehicles);
 
 	this->vehicles.RebuildDone();
 	this->vscroll->SetCount(this->vehicles.Length());
+}
+
+/** Cargo filter functions */
+static bool CDECL CargoFilter(const Vehicle * const *vid, const CargoID cid)
+{
+	if (cid == BaseVehicleListWindow::CF_ANY) {
+		return true;
+	} else if (cid == BaseVehicleListWindow::CF_NONE) {
+		for (const Vehicle *w = (*vid); w != NULL; w = w->Next()) {
+			if (w->cargo_cap > 0) {
+				return false;
+			}
+		}
+		return true;
+	} else {
+		for (const Vehicle *w = (*vid); w != NULL; w = w->Next()) {
+			if (w->cargo_cap > 0 && w->cargo_type == cid) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+static GUIVehicleList::FilterFunction * const _filter_funcs[] = {
+	&CargoFilter,
+};
+
+/** Set cargo filter list item index. */
+void BaseVehicleListWindow::SetCargoFilterIndex(int index)
+{
+	if (this->cargo_filter_criteria != index) {
+		this->cargo_filter_criteria = index;
+		/* deactivate filter if criteria is 'Show All', activate it otherwise */
+		this->vehicles.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
+		this->vehicles.SetFilterType(0);
+		this->vehicles.ForceRebuild();
+	}
+}
+
+/** Populate the filter list and set the cargo filter criteria. */
+void BaseVehicleListWindow::SetCargoFilterArray()
+{
+	uint filter_items = 0;
+
+	/* Add item for disabling filtering. */
+	this->cargo_filter[filter_items] = CF_ANY;
+	this->cargo_filter_texts[filter_items] = STR_PURCHASE_INFO_ALL_TYPES;
+	this->cargo_filter_criteria = filter_items;
+	filter_items++;
+
+	/* Add item for vehicles not carrying anything, e.g. train engines.
+	* This could also be useful for eyecandy vehicles of other types, but is likely too confusing for joe, */
+	this->cargo_filter[filter_items] = CF_NONE;
+	this->cargo_filter_texts[filter_items] = STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE;
+	filter_items++;
+
+	/* Collect available cargo types for filtering. */
+	const CargoSpec *cs;
+	FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		this->cargo_filter[filter_items] = cs->Index();
+		this->cargo_filter_texts[filter_items] = cs->name;
+		filter_items++;
+	}
+
+	/* Terminate the filter list. */
+	this->cargo_filter_texts[filter_items] = INVALID_STRING_ID;
+
+	this->vehicles.SetFilterFuncs(_filter_funcs);
+	this->vehicles.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
+}
+
+/** Filter the engine list against the currently selected cargo filter */
+void BaseVehicleListWindow::FilterVehicleList()
+{
+	this->vehicles.Filter(this->cargo_filter[this->cargo_filter_criteria]);
+	if (0 == this->vehicles.Length()) {
+		// no vehicle passed through the filter, invalidate the previously selected vehicle
+		this->vehicle_sel = INVALID_VEHICLE;
+	} else if (this->vehicle_sel != INVALID_VEHICLE && !this->vehicles.Contains(Vehicle::Get(this->vehicle_sel))) { // previously selected engine didn't pass the filter, remove selection
+		this->vehicle_sel = INVALID_VEHICLE;
+	}
+}
+
+void BaseVehicleListWindow::OnInit()
+{
+	this->SetCargoFilterArray();
 }
 
 /**
@@ -1384,6 +1473,9 @@ static const NWidgetPart _nested_vehicle_list[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VL_SORT_ORDER), SetMinimalSize(81, 12), SetFill(0, 1), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_VL_SORT_BY_PULLDOWN), SetMinimalSize(167, 12), SetFill(0, 1), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VL_FILTER_BY_CARGO_SEL),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_VL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetFill(0, 1), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+		EndContainer(),
 		NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetFill(1, 1), SetResize(1, 0),
 		EndContainer(),
 	EndContainer(),
@@ -1603,6 +1695,8 @@ public:
 
 		this->CreateNestedTree();
 
+		this->GetWidget<NWidgetStacked>(WID_VL_FILTER_BY_CARGO_SEL)->SetDisplayedPlane((this->vli.type == VL_SHARED_ORDERS || this->vli.type == VL_SINGLE_VEH) ? SZSP_NONE : 0);
+
 		this->vscroll = this->GetScrollbar(WID_VL_SCROLLBAR);
 
 		this->vehicles.SetListing(*this->sorting);
@@ -1672,6 +1766,10 @@ public:
 		switch (widget) {
 			case WID_VL_AVAILABLE_VEHICLES:
 				SetDParam(0, STR_VEHICLE_LIST_AVAILABLE_TRAINS + this->vli.vtype);
+				break;
+
+			case WID_VL_FILTER_BY_CARGO:
+				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
 				break;
 
 			case WID_VL_CAPTION: {
@@ -1753,6 +1851,8 @@ public:
 		/* Set text of sort by dropdown widget. */
 		this->GetWidget<NWidgetCore>(WID_VL_SORT_BY_PULLDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
 
+		this->GetWidget<NWidgetCore>(WID_VL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
+
 		this->DrawWidgets();
 	}
 
@@ -1768,6 +1868,10 @@ public:
 				ShowDropDownMenu(this, this->vehicle_sorter_names, this->vehicles.SortType(), WID_VL_SORT_BY_PULLDOWN, 0,
 						(this->vli.vtype == VEH_TRAIN || this->vli.vtype == VEH_ROAD) ? 0 : this->vehicle_sorter_non_ground_veh_disable_mask, 0, DDSF_LOST_FOCUS);
 				return;
+
+			case WID_VL_FILTER_BY_CARGO: // Cargo filter dropdown
+				ShowDropDownMenu(this, this->cargo_filter_texts, this->cargo_filter_criteria, WID_VL_FILTER_BY_CARGO, 0, 0);
+				break;
 
 			case WID_VL_LIST: { // Matrix to show vehicles
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_VL_LIST);
@@ -1801,6 +1905,9 @@ public:
 		switch (widget) {
 			case WID_VL_SORT_BY_PULLDOWN:
 				this->vehicles.SetSortType(index);
+				break;
+			case WID_VL_FILTER_BY_CARGO:
+				this->SetCargoFilterIndex(index);
 				break;
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN:
 				assert(this->ShouldShowActionDropdownList());
