@@ -32,10 +32,11 @@ struct BaseVehicleListWindow : public Window {
 	enum CargoFilterSpecialType {
 		CF_ANY = CT_NO_REFIT,                   ///< Show all vehicles independent of carried cargo (i.e. no filtering)
 		CF_NONE = CT_INVALID,                   ///< Show only vehicles which do not carry cargo (e.g. train engines)
+		CF_FREIGHT = CT_AUTO_REFIT,             ///< Show only vehicles which carry any freight (non-passenger) cargo
 	};
 
-	CargoID cargo_filter[NUM_CARGO + 2];        ///< Available cargo filters; CargoID or CF_ANY or CF_NONE
-	StringID cargo_filter_texts[NUM_CARGO + 3]; ///< Texts for filter_cargo, terminated by INVALID_STRING_ID
+	CargoID cargo_filter[NUM_CARGO + 3];        ///< Available cargo filters; CargoID or CF_ANY or CF_NONE
+	StringID cargo_filter_texts[NUM_CARGO + 4]; ///< Texts for filter_cargo, terminated by INVALID_STRING_ID
 	byte cargo_filter_criteria;                 ///< Selected cargo filter
 
 	enum ActionDropdownItem {

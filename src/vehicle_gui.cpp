@@ -162,6 +162,18 @@ static bool CDECL CargoFilter(const Vehicle * const *vid, const CargoID cid)
 			}
 		}
 		return true;
+	} else if (cid == BaseVehicleListWindow::CF_FREIGHT) {
+		bool have_capacity = false;
+		for (const Vehicle *w = (*vid); w != NULL; w = w->Next()) {
+			if (w->cargo_cap) {
+				if (IsCargoInClass(w->cargo_type, CC_PASSENGERS)) {
+					return false;
+				} else {
+					have_capacity = true;
+				}
+			}
+		}
+		return have_capacity;
 	} else {
 		for (const Vehicle *w = (*vid); w != NULL; w = w->Next()) {
 			if (w->cargo_cap > 0 && w->cargo_type == cid) {
@@ -197,6 +209,11 @@ void BaseVehicleListWindow::SetCargoFilterArray()
 	this->cargo_filter[filter_items] = CF_ANY;
 	this->cargo_filter_texts[filter_items] = STR_PURCHASE_INFO_ALL_TYPES;
 	this->cargo_filter_criteria = filter_items;
+	filter_items++;
+
+	/* Add item for freight (i.e. vehicles with cargo capacity and with no passenger capacity) */
+	this->cargo_filter[filter_items] = CF_FREIGHT;
+	this->cargo_filter_texts[filter_items] = STR_CARGO_TYPE_FREIGHT;
 	filter_items++;
 
 	/* Add item for vehicles not carrying anything, e.g. train engines.
