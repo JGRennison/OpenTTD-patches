@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.21.0
+## JGR's Patchpack version 0.22.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -196,6 +196,12 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Improve cargodest link graph calculation performance. Up to approximately 2x faster. (~1.3x faster in v0.8.1, further improvements in v0.17.2)  
   * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator. (added in v0.9.0)  
   * Various minor changes (see changelog).
+
+* Multiple docs per station [imported](https://github.com/KeldorKatarn/OpenTTD_PatchPack/tree/feature/multiple_docks) (added in v0.22.0)
+
+* Cargo type filter in vehicle list windows [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=77147) (added in v0.22.0)  
+  This has been modified to support more windows and more cargo options.  
+  This is enabled by a setting (on by default).
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  

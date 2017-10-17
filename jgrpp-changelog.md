@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.22.0 (2017-10-17)
+* Template-based train replacement:
+  * Fix crash when creating template vehicle in some cases
+* Fix crash in bootstrap mode (base graphics not installed yet) when attempting to perform keyboard scrolling
+* Fix crash involving freeing of NewGRF modified airport data
+* Fix timetabled full-load order warning being shown for non station orders in timetable window
+* Fix not being allowed to build docks or ship depots, when removing sea/rivers is disabled
+* Fix incorrect scheduling of linkgraph jobs with a large number of nodes which caused poor performance
+* Add support for multiple docks per station
+* Add show passenger and show freight buttons to departure window
+* Add cargo type list filter to vehicle list windows, controlled by a setting
+* Bump trunk base from r27912 to r27927
+
 ### v0.21.0 (2017-09-05)
 * Fix numerical overflow in date display/conversion when using high day lengths
 * Fix assertion when a GRF supplies an invalid sound.
@@ -254,7 +267,7 @@
 * Allow changing the timetabled waiting time for all of a vehicle's orders at once.
 * Run tile animations at the normal rate regardless of day length factor.
 * Routing restrictions:
-  * Fix unreserving through a green PBS signal not setting the state to red.  
+  * Fix unreserving through a green PBS signal not setting the state to red.
     This also fixes unsuccessful reservation attempts though a reserve-through signal erroneously leaving the signal set to green.
 * Infrastructure sharing:
   * Add company settings to enable competitors to buy/renew vehicles in this company's depots.
@@ -455,7 +468,7 @@
 * Pause the game instead of blocking when cargo dest link graph jobs lag.
 * Update routing restrictions patch:
   * Program GUI changes to make 'or if' conditions easier to add, remove and use.
-  * Add a 'reserve through' program command.  
+  * Add a 'reserve through' program command.
     If a restricted PBS signal uses this command, PBS reservations which would otherwise stop at this signal instead continue through it to the next signal/waiting point. In effect this allows the 'safe waiting point' property of a PBS signal to be conditionally turned off.
   * Improvements to the correctness and thoroughness of the program validator.
 * Bump trunk base from r27389 to r27394
