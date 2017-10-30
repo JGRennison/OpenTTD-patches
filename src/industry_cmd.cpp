@@ -1423,7 +1423,9 @@ static CommandCost CheckIfIndustryTilesAreFree(TileIndex tile, const IndustryTil
 				if (ret.Failed()) return ret;
 			} else {
 				/* Clear the tiles, but do not affect town ratings */
-				CommandCost ret = DoCommand(cur_tile, 0, 0, DC_AUTO | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING, CMD_LANDSCAPE_CLEAR);
+				DoCommandFlag flags = DC_AUTO | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING;
+				if ((ind_behav & INDUSTRYBEH_BUILT_ONWATER) && IsWaterTile(cur_tile)) flags |= DC_ALLOW_REMOVE_WATER;
+				CommandCost ret = DoCommand(cur_tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 
 				if (ret.Failed()) return ret;
 			}
