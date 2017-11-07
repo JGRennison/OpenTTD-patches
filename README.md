@@ -225,7 +225,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Various minor fixes, see changelog.
 
 * Translations  
-  * German (by Auge)  
+  * German (by Auge and Kruemelchen)  
   * Korean (by kiwitreekor and TELK)
 
 
