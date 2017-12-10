@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.22.1 (2017-12-10)
+* Fix not being able to build water industries when removing water is disabled
+* Bump trunk base from r27927 to r27935 (includes trunk fix for right mouse scrolling on recent Windows 10 update)
+
 ### v0.22.0 (2017-10-17)
 * Template-based train replacement:
   * Fix crash when creating template vehicle in some cases
