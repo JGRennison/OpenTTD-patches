@@ -2137,6 +2137,8 @@ static const byte TUNNEL_SOUND_FRAME = 1;
  */
 extern const byte _tunnel_visibility_frame[DIAGDIR_END] = {12, 8, 8, 12};
 
+extern const byte _tunnel_turnaround_pre_visibility_frame[DIAGDIR_END] = {31, 27, 27, 31};
+
 static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex tile, int x, int y)
 {
 	int z = GetSlopePixelZ(x, y) - v->z_pos;
@@ -2187,7 +2189,8 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 			if (rv->state != RVSB_WORMHOLE && dir == vdir) {
 				if (frame == _tunnel_visibility_frame[dir]) {
 					/* Frame should be equal to the next frame number in the RV's movement */
-					assert(frame == rv->frame + 1);
+					assert_msg(frame == rv->frame + 1 || rv->frame == _tunnel_turnaround_pre_visibility_frame[dir],
+							"frame: %u, rv->frame: %u, dir: %u, _tunnel_turnaround_pre_visibility_frame[dir]: %u", frame, rv->frame, dir, _tunnel_turnaround_pre_visibility_frame[dir]);
 					rv->tile = tile;
 					rv->cur_image_valid_dir = INVALID_DIR;
 					rv->state = RVSB_WORMHOLE;
