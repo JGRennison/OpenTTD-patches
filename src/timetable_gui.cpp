@@ -217,6 +217,13 @@ struct TimetableWindow : Window {
 
 		bool travelling = (!(v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_WAITING)) || v->current_order.GetNonStopType() == ONSF_STOP_EVERYWHERE);
 		Ticks start_time = -v->current_order_time;
+		if (v->cur_timetable_order_index != INVALID_VEH_ORDER_ID && v->cur_timetable_order_index != v->cur_real_order_index) {
+			/* vehicle is taking a conditional order branch, adjust start time to compensate */
+			const Order *real_current_order = v->GetOrder(v->cur_real_order_index);
+			const Order *real_timetable_order = v->GetOrder(v->cur_timetable_order_index);
+			assert(real_timetable_order->IsType(OT_CONDITIONAL));
+			start_time += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+		}
 
 		FillTimetableArrivalDepartureTable(v, v->cur_real_order_index % v->GetNumOrders(), travelling, table, start_time);
 

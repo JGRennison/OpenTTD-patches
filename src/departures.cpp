@@ -272,6 +272,13 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 			const Order *order = (*v)->GetOrder((*v)->cur_implicit_order_index % (*v)->GetNumOrders());
 			DateTicks start_date = date_fract_scaled - (*v)->current_order_time;
+			if ((*v)->cur_timetable_order_index != INVALID_VEH_ORDER_ID && (*v)->cur_timetable_order_index != (*v)->cur_real_order_index) {
+				/* vehicle is taking a conditional order branch, adjust start time to compensate */
+				const Order *real_current_order = (*v)->GetOrder((*v)->cur_real_order_index);
+				const Order *real_timetable_order = (*v)->GetOrder((*v)->cur_timetable_order_index);
+				assert(real_timetable_order->IsType(OT_CONDITIONAL));
+				start_date += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+			}
 			DepartureStatus status = D_TRAVELLING;
 			bool should_reset_lateness = false;
 			uint waiting_time = 0;

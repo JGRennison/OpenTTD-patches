@@ -41,6 +41,7 @@ void BaseConsist::CopyConsistPropertiesFrom(const BaseConsist *src)
 
 	this->cur_real_order_index = src->cur_real_order_index;
 	this->cur_implicit_order_index = src->cur_implicit_order_index;
+	this->cur_timetable_order_index = src->cur_timetable_order_index;
 
 	if (HasBit(src->vehicle_flags, VF_TIMETABLE_STARTED)) SetBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 	if (HasBit(src->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE);
