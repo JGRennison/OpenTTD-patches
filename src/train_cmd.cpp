@@ -4754,6 +4754,8 @@ void DeleteVisibleTrain(Train *v)
 {
 	SCOPE_INFO_FMT([v], "DeleteVisibleTrain: %s", scope_dumper().VehicleInfo(v));
 
+	assert(!v->IsVirtual());
+
 	FreeTrainTrackReservation(v);
 	TileIndex crossing = TrainApproachingCrossingTile(v);
 

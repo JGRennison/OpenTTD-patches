@@ -175,7 +175,7 @@ static void RemoveAndSellVehicle(Vehicle *v, bool give_money)
 	}
 
 	/* take special measures for trains, but not when sharing is disabled or when the train is a free wagon chain */
-	if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN] && v->type == VEH_TRAIN && Train::From(v)->IsFrontEngine()) {
+	if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN] && v->type == VEH_TRAIN && Train::From(v)->IsFrontEngine() && !Train::From(v)->IsVirtual()) {
  		DeleteVisibleTrain(Train::From(v));
 	} else {
 		delete v;
