@@ -41,6 +41,7 @@
 #include "autoreplace_func.h"
 #include "engine_func.h"
 #include "bridge_signal_map.h"
+#include "scope_info.h"
 
 #include "table/strings.h"
 #include "table/train_cmd.h"
@@ -4751,6 +4752,8 @@ Trackdir Train::GetVehicleTrackdir() const
  */
 void DeleteVisibleTrain(Train *v)
 {
+	SCOPE_INFO_FMT([v], "DeleteVisibleTrain: %s", scope_dumper().VehicleInfo(v));
+
 	FreeTrainTrackReservation(v);
 	TileIndex crossing = TrainApproachingCrossingTile(v);
 
