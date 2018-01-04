@@ -151,12 +151,17 @@ void CheckBreakdownFlags(Train *v)
 
 uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, const Train *front)
 {
-	uint16 speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u->max_speed);
+	const uint16 base_speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, rvi_u->max_speed);
+	uint16 speed = base_speed;
 	if (HasBit(u->flags, VRF_NEED_REPAIR) && front->IsFrontEngine()) {
 		for (uint i = 0; i < u->critical_breakdown_count; i++) {
 			speed = min(speed - (speed / (front->tcache.cached_num_engines + 2)) + 1, speed);
 		}
 	}
+
+	/* clamp speed to be no less than lower of 5mph and 1/8 of base speed */
+	speed = max<uint16>(speed, min<uint16>(5, (base_speed + 7) >> 3));
+
 	if (HasBit(u->flags, VRF_HAS_HIT_RV) && front->IsFrontEngine()) {
 		speed = min(speed, 30);
 	}
