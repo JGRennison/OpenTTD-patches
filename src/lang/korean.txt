@@ -4256,7 +4256,7 @@ STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}항공�
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}연령: {LTBLUE}{STRING}{BLACK}   유지비: {LTBLUE}{CURRENCY_LONG}/년
 
 STR_RUNNING                                                     :{LTBLUE}운행 중
-STR_NEED_REPAIR                                                 :{ORANGE}열차를 수리해야 합니다. 최고 속도가 {VELOCITY}로 감소하였습니다.
+STR_NEED_REPAIR                                                 :{ORANGE}차량를 수리해야 합니다. 최고 속도가 {VELOCITY}로 감소하였습니다.
 STR_CURRENT_STATUS                                              :{BLACK}현재 상태: {STRING}
 
 # The next two need to stay in this order

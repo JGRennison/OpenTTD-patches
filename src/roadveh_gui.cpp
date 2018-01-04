@@ -117,6 +117,11 @@ void DrawRoadVehDetails(const Vehicle *v, int left, int right, int y)
 	/* Draw Transfer credits text */
 	SetDParam(0, feeder_share);
 	DrawString(left, right, y + 3 * FONT_HEIGHT_NORMAL + 3 + y_offset, STR_VEHICLE_INFO_FEEDER_CARGO_VALUE);
+
+	if (RoadVehicle::From(v)->critical_breakdown_count > 0) {
+		SetDParam(0, RoadVehicle::From(v)->GetDisplayEffectiveMaxSpeed());
+		DrawString(left, right, y + 4 * FONT_HEIGHT_NORMAL + 4 + y_offset, STR_NEED_REPAIR);
+	}
 }
 
 /**

@@ -4270,7 +4270,7 @@ STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Name air
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Age: {LTBLUE}{STRING2}{BLACK}   Running Cost: {LTBLUE}{CURRENCY_LONG}/yr
 
 STR_RUNNING                                                     :{LTBLUE}Running
-STR_NEED_REPAIR                                                 :{ORANGE}Train needs repair - max speed reduced to {VELOCITY}
+STR_NEED_REPAIR                                                 :{ORANGE}Vehicle needs repair - max speed reduced to {VELOCITY}
 STR_CURRENT_STATUS                                              :{BLACK}Current status: {STRING3}
 
 # The next two need to stay in this order

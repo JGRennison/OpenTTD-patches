@@ -767,6 +767,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL(4,                                                              69, 130),
 		SLE_CONDNULL(2,                                                               6, 130),
 		SLE_CONDNULL(16,                                                              2, 143), // old reserved space
+		SLE_CONDVAR_X(RoadVehicle, critical_breakdown_count, SLE_UINT8,               0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 6)),
 
 		     SLE_END()
 	};

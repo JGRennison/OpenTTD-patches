@@ -4257,7 +4257,7 @@ STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Flugzeug
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Alter: {LTBLUE}{STRING}{BLACK}   Betriebskosten: {LTBLUE}{CURRENCY_LONG}/Jahr
 
 STR_RUNNING                                                     :{LTBLUE}Funktionierend
-STR_NEED_REPAIR                                                 :{ORANGE}Der Zug ist reparaturbedürftig - die Höchstgeschwindigkeit ist auf {VELOCITY} reduziert
+STR_NEED_REPAIR                                                 :{ORANGE}Der Fahrzeuge ist reparaturbedürftig - die Höchstgeschwindigkeit ist auf {VELOCITY} reduziert
 STR_CURRENT_STATUS                                              :{BLACK}Momentaner Status: {STRING}
 
 # The next two need to stay in this order
