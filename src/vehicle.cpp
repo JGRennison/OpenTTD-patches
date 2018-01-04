@@ -153,6 +153,8 @@ void VehicleServiceInDepot(Vehicle *v)
 			Train::From(v)->ConsistChanged(CCF_REFIT);
 			CLRBITS(Train::From(v)->flags, (1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN );
 		}
+	} else if (v->type == VEH_ROAD) {
+		RoadVehicle::From(v)->critical_breakdown_count = 0;
 	}
 	v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
@@ -185,7 +187,8 @@ bool Vehicle::NeedsServicing() const
 	if ((this->ServiceIntervalIsPercent() ?
 			(this->reliability >= this->GetEngine()->reliability * (100 - this->service_interval) / 100) :
 			(this->date_of_last_service + this->service_interval >= _date))
-			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_NEED_REPAIR))) {
+			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_NEED_REPAIR))
+			&& !(this->type == VEH_ROAD && RoadVehicle::From(this)->critical_breakdown_count > 0)) {
 		return false;
 	}
 
@@ -1457,6 +1460,13 @@ bool Vehicle::HandleBreakdown()
 						if (!(this->vehstatus & VS_HIDDEN) && !HasBit(EngInfo(this->engine_type)->misc_flags, EF_NO_BREAKDOWN_SMOKE) && this->breakdown_delay > 0) {
 							EffectVehicle *u = CreateEffectVehicleRel(this, 4, 4, 5, EV_BREAKDOWN_SMOKE);
 							if (u != NULL) u->animation_state = this->breakdown_delay * 2;
+						}
+						if (_settings_game.vehicle.improved_breakdowns) {
+							if (this->type == VEH_ROAD) {
+								if (RoadVehicle::From(this)->critical_breakdown_count != 255) {
+									RoadVehicle::From(this)->critical_breakdown_count++;
+								}
+							}
 						}
 					/* FALL THROUGH */
 					case BREAKDOWN_EM_STOP:

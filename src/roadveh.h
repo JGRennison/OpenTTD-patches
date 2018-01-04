@@ -97,6 +97,8 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	RoadType roadtype;
 	RoadTypes compatible_roadtypes;
 
+	byte critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
+
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	RoadVehicle() : GroundVehicleBase() {}
 	/** We want to 'destruct' the right class. */
@@ -124,6 +126,8 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	bool IsBus() const;
 
 	int GetCurrentMaxSpeed() const;
+	int GetEffectiveMaxSpeed() const;
+	int GetDisplayEffectiveMaxSpeed() const { return this->GetEffectiveMaxSpeed() / 2; }
 	int UpdateSpeed();
 
 protected: // These functions should not be called outside acceleration code.
