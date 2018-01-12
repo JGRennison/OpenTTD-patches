@@ -95,6 +95,8 @@ bool SlXvFeatureTest::IsFeaturePresent(uint16 savegame_version, uint16 savegame_
 {
 	bool savegame_version_ok = savegame_version >= savegame_version_from && savegame_version <= savegame_version_to;
 
+	if (this->functor) return (*this->functor)(savegame_version, savegame_version_ok);
+
 	if (this->feature == XSLFI_NULL) return savegame_version_ok;
 
 	bool feature_ok = SlXvIsFeaturePresent(this->feature, this->min_version, this->max_version);
