@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.22.2 (2018-01-14)
+* Fix crash when trams attempted do a short turnaround in a tunnel mouth.
+* Timetabling:
+  * Implement autofill/automate for taken conditional orders.
+  * Add UI warnings for conditional order timetabling.
+* Fix crash when a company went bankrupt whilst having template replacement virtual trains.
+* Vehicle breakdowns:
+  * Implement critical breakdown speed reduction for road vehicles.
+  * Set a minimum speed for critical breakdown speed reductions.
+* Fix incorrect vehicle running costs for day lengths > 3.
+* Bump trunk base from r27935 to r27963.
+
 ### v0.22.1 (2017-12-10)
 * Fix not being able to build water industries when removing water is disabled
 * Bump trunk base from r27927 to r27935 (includes trunk fix for right mouse scrolling on recent Windows 10 update)

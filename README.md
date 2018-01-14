@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.22.1
+## JGR's Patchpack version 0.22.2
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -197,7 +197,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator. (added in v0.9.0)  
   * Various minor changes (see changelog).
 
-* Multiple docs per station [imported](https://github.com/KeldorKatarn/OpenTTD_PatchPack/tree/feature/multiple_docks) (added in v0.22.0)
+* Multiple docks per station [imported](https://github.com/KeldorKatarn/OpenTTD_PatchPack/tree/feature/multiple_docks) (added in v0.22.0)
 
 * Cargo type filter in vehicle list windows [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=77147) (added in v0.22.0)  
   This has been modified to support more windows and more cargo options.  
