@@ -569,6 +569,7 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_NOVAL('x'),
 	 GETOPT_SHORT_VALUE('q'),
 	 GETOPT_SHORT_NOVAL('h'),
+	 GETOPT_SHORT_VALUE('J'),
 	GETOPT_END()
 };
 
@@ -717,6 +718,7 @@ int openttd_main(int argc, char *argv[])
 		case 'G': scanner->generation_seed = atoi(mgo.opt); break;
 		case 'c': free(_config_file); _config_file = stredup(mgo.opt); break;
 		case 'x': scanner->save_config = false; break;
+		case 'J': _quit_after_days = Clamp(atoi(mgo.opt), 0, INT_MAX); break;
 		case 'h':
 			i = -2; // Force printing of help.
 			break;

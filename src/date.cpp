@@ -21,6 +21,7 @@
 #include "linkgraph/linkgraph.h"
 #include "saveload/saveload.h"
 #include "console_func.h"
+#include "debug.h"
 
 #include "safeguards.h"
 
@@ -32,6 +33,7 @@ uint16 _tick_counter;  ///< Ever incrementing (and sometimes wrapping) tick coun
 uint8 _tick_skip_counter; ///< Counter for ticks, when only vehicles are moving and nothing else happens
 uint32 _scaled_tick_counter; ///< Tick counter in daylength-scaled ticks
 DateTicksScaled _scaled_date_ticks; ///< Date as ticks in daylength-scaled ticks
+uint32    _quit_after_days;  ///< Quit after this many days of run time
 
 /**
  * Set the date.
@@ -280,6 +282,13 @@ static void OnNewDay()
 	/* Refresh after possible snowline change */
 	SetWindowClassesDirty(WC_TOWN_VIEW);
 	IConsoleCmdExec("exec scripts/on_newday.scr 0");
+
+	if (_quit_after_days > 0) {
+		if (--_quit_after_days == 0) {
+			DEBUG(misc, 0, "Quitting as day limit reached");
+			_exit_game = true;
+		}
+	}
 }
 
 /**

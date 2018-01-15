@@ -22,6 +22,7 @@ extern uint16    _tick_counter;
 extern uint8     _tick_skip_counter;
 extern uint32    _scaled_tick_counter;
 extern DateTicksScaled _scaled_date_ticks;
+extern uint32    _quit_after_days;
 
 void SetDate(Date date, DateFract fract);
 void ConvertDateToYMD(Date date, YearMonthDay *ymd);
