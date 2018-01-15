@@ -1731,7 +1731,7 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :도시 성장 속도: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :도시의 성장 속도를 설정합니다.
-STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :도시의 화물 수송량이 도시 성장 속도에 미치는 영향: {STRING2}
+STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :도시의 화물 수송량이 도시 성장 속도에 미치는 영향: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :지난 달의 도시 화물 수송량이 도시 성장 속도에 미치는 영향에 대한 백분율입니다.
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
