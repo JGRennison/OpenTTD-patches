@@ -59,6 +59,8 @@ Window *_z_back_window  = NULL;
 /** If false, highlight is white, otherwise the by the widget defined colour. */
 bool _window_highlight_colour = false;
 
+uint64 _window_update_number = 1;
+
 /*
  * Window that currently has focus. - The main purpose is to generate
  * #FocusLost events, not to give next window in z-order focus when a
@@ -3096,6 +3098,8 @@ void UpdateWindows()
 {
 	Window *w;
 
+	_window_update_number++;
+
 	static int highlight_timer = 1;
 	if (--highlight_timer == 0) {
 		highlight_timer = 15;
@@ -3138,6 +3142,8 @@ void UpdateWindows()
 	NetworkDrawChatMessage();
 	/* Redraw mouse cursor in case it was hidden */
 	DrawMouseCursor();
+
+	_window_update_number++;
 }
 
 /**
