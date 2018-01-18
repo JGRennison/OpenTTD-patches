@@ -300,7 +300,7 @@ void DeleteWindowViewport(Window *w)
 
 	container_unordered_remove(_viewport_window_cache, w->viewport);
 	delete w->viewport->overlay;
-	free(w->viewport);
+	delete w->viewport;
 	w->viewport = NULL;
 }
 
@@ -321,8 +321,9 @@ void InitializeWindowViewport(Window *w, int x, int y,
 {
 	assert(w->viewport == NULL);
 
-	ViewportData *vp = CallocT<ViewportData>(1);
+	ViewportData *vp = new ViewportData();
 
+	vp->overlay = NULL;
 	vp->left = x + w->left;
 	vp->top = y + w->top;
 	vp->width = width;
@@ -330,8 +331,12 @@ void InitializeWindowViewport(Window *w, int x, int y,
 
 	vp->zoom = static_cast<ZoomLevel>(Clamp(zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
 
+	vp->virtual_left = 0;
+	vp->virtual_top = 0;
 	vp->virtual_width = ScaleByZoom(width, zoom);
 	vp->virtual_height = ScaleByZoom(height, zoom);
+
+	vp->map_type = VPMT_BEGIN;
 
 	Point pt;
 
@@ -356,11 +361,7 @@ void InitializeWindowViewport(Window *w, int x, int y,
 	vp->dest_scrollpos_x = pt.x;
 	vp->dest_scrollpos_y = pt.y;
 
-	vp->overlay = NULL;
-
 	w->viewport = vp;
-	vp->virtual_left = 0; // pt.x;
-	vp->virtual_top = 0;  // pt.y;
 	_viewport_window_cache.push_back(vp);
 }
 
