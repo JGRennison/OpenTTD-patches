@@ -2614,30 +2614,14 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 	_vd.child_screen_sprites_to_draw.Clear();
 }
 
-/**
- * Make sure we don't draw a too big area at a time.
- * If we do, the sprite memory will overflow.
- */
 static void ViewportDrawChk(const ViewPort *vp, int left, int top, int right, int bottom)
 {
-	if ((vp->zoom < ZOOM_LVL_DRAW_MAP) && (ScaleByZoom(bottom - top, vp->zoom) * ScaleByZoom(right - left, vp->zoom) > 180000 * ZOOM_LVL_BASE * ZOOM_LVL_BASE)) {
-		if ((bottom - top) > (right - left)) {
-			int t = (top + bottom) >> 1;
-			ViewportDrawChk(vp, left, top, right, t);
-			ViewportDrawChk(vp, left, t, right, bottom);
-		} else {
-			int t = (left + right) >> 1;
-			ViewportDrawChk(vp, left, top, t, bottom);
-			ViewportDrawChk(vp, t, top, right, bottom);
-		}
-	} else {
-		ViewportDoDraw(vp,
-			ScaleByZoom(left - vp->left, vp->zoom) + vp->virtual_left,
-			ScaleByZoom(top - vp->top, vp->zoom) + vp->virtual_top,
-			ScaleByZoom(right - vp->left, vp->zoom) + vp->virtual_left,
-			ScaleByZoom(bottom - vp->top, vp->zoom) + vp->virtual_top
-		);
-	}
+	ViewportDoDraw(vp,
+		ScaleByZoom(left - vp->left, vp->zoom) + vp->virtual_left,
+		ScaleByZoom(top - vp->top, vp->zoom) + vp->virtual_top,
+		ScaleByZoom(right - vp->left, vp->zoom) + vp->virtual_left,
+		ScaleByZoom(bottom - vp->top, vp->zoom) + vp->virtual_top
+	);
 }
 
 static inline void ViewportDraw(const ViewPort *vp, int left, int top, int right, int bottom)
