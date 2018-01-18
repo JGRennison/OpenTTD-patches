@@ -22,6 +22,8 @@
 
 #include "table/strings.h"
 
+#include "../3rdparty/cpp-btree/btree_map.h"
+
 #include "../safeguards.h"
 
 /**
@@ -58,6 +60,40 @@ void LinkGraphOverlay::RebuildCache()
 	DrawPixelInfo dpi;
 	this->GetWidgetDpi(&dpi);
 
+	struct LinkCacheItem {
+		Point from_pt;
+		Point to_pt;
+		LinkProperties prop;
+	};
+	btree::btree_map<std::pair<StationID, StationID>, LinkCacheItem> link_cache_map;
+
+	auto AddLinks = [&](const Station *from, const Station *to, Point from_pt, Point to_pt) {
+		LinkCacheItem *item = nullptr;
+		CargoID c;
+		FOR_EACH_SET_CARGO_ID(c, this->cargo_mask) {
+			if (!CargoSpec::Get(c)->IsValid()) continue;
+			const GoodsEntry &ge = from->goods[c];
+			if (!LinkGraph::IsValidID(ge.link_graph) ||
+					ge.link_graph != to->goods[c].link_graph) {
+				continue;
+			}
+			const LinkGraph &lg = *LinkGraph::Get(ge.link_graph);
+			ConstEdge edge = lg[ge.node][to->goods[c].node];
+			if (edge.Capacity() > 0) {
+				if (!item) {
+					item = &link_cache_map[std::make_pair(from->index, to->index)];
+					if (item->prop.capacity == 0) {
+						item->from_pt = from_pt;
+						item->to_pt = to_pt;
+					}
+				}
+				this->AddStats(lg.Monthly(edge.Capacity()), lg.Monthly(edge.Usage()),
+						ge.flows.GetFlowVia(to->index), from->owner == OWNER_NONE || to->owner == OWNER_NONE,
+						item->prop);
+			}
+		}
+	};
+
 	const Station *sta;
 	FOR_ALL_STATIONS(sta) {
 		if (sta->rect.IsEmpty()) continue;
@@ -65,7 +101,6 @@ void LinkGraphOverlay::RebuildCache()
 		Point pta = this->GetStationMiddle(sta);
 
 		StationID from = sta->index;
-		StationLinkMap &seen_links = this->cached_links[from];
 
 		uint supply = 0;
 		CargoID c;
@@ -79,7 +114,7 @@ void LinkGraphOverlay::RebuildCache()
 			for (ConstEdgeIterator i = from_node.Begin(); i != from_node.End(); ++i) {
 				StationID to = lg[i->first].Station();
 				assert(from != to);
-				if (!Station::IsValidID(to) || seen_links.find(to) != seen_links.end()) {
+				if (!Station::IsValidID(to) || link_cache_map.count(std::make_pair(from, to))) {
 					continue;
 				}
 				const Station *stb = Station::Get(to);
@@ -89,15 +124,21 @@ void LinkGraphOverlay::RebuildCache()
 				if (stb->owner != OWNER_NONE && sta->owner != OWNER_NONE && !HasBit(this->company_mask, stb->owner)) continue;
 				if (stb->rect.IsEmpty()) continue;
 
-				if (!this->IsLinkVisible(pta, this->GetStationMiddle(stb), &dpi)) continue;
+				Point ptb = this->GetStationMiddle(stb);
 
-				this->AddLinks(sta, stb);
-				seen_links[to]; // make sure it is created and marked as seen
+				if (!this->IsLinkVisible(pta, ptb, &dpi)) continue;
+
+				AddLinks(sta, stb, pta, ptb);
 			}
 		}
 		if (this->IsPointVisible(pta, &dpi)) {
-			this->cached_stations.push_back(std::make_pair(from, supply));
+			this->cached_stations.push_back({ from, supply, pta });
 		}
+	}
+
+	this->cached_links.reserve(link_cache_map.size());
+	for (auto &iter : link_cache_map) {
+		this->cached_links.push_back({ iter.first.first, iter.first.second, iter.second.from_pt, iter.second.to_pt, iter.second.prop });
 	}
 }
 
@@ -134,31 +175,6 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 }
 
 /**
- * Add all "interesting" links between the given stations to the cache.
- * @param from The source station.
- * @param to The destination station.
- */
-void LinkGraphOverlay::AddLinks(const Station *from, const Station *to)
-{
-	CargoID c;
-	FOR_EACH_SET_CARGO_ID(c, this->cargo_mask) {
-		if (!CargoSpec::Get(c)->IsValid()) continue;
-		const GoodsEntry &ge = from->goods[c];
-		if (!LinkGraph::IsValidID(ge.link_graph) ||
-				ge.link_graph != to->goods[c].link_graph) {
-			continue;
-		}
-		const LinkGraph &lg = *LinkGraph::Get(ge.link_graph);
-		ConstEdge edge = lg[ge.node][to->goods[c].node];
-		if (edge.Capacity() > 0) {
-			this->AddStats(lg.Monthly(edge.Capacity()), lg.Monthly(edge.Usage()),
-					ge.flows.GetFlowVia(to->index), from->owner == OWNER_NONE || to->owner == OWNER_NONE,
-					this->cached_links[from->index][to->index]);
-		}
-	}
-}
-
-/**
  * Add information from a given pair of link stat and flow stat to the given
  * link properties. The shown usage or plan is always the maximum of all link
  * stats involved.
@@ -180,12 +196,35 @@ void LinkGraphOverlay::AddLinks(const Station *from, const Station *to)
 	if (new_shared) cargo.shared = true;
 }
 
+void LinkGraphOverlay::RefreshDrawCache()
+{
+	for (StationSupplyList::iterator i(this->cached_stations.begin()); i != this->cached_stations.end(); ++i) {
+		const Station *st = Station::GetIfValid(i->id);
+		if (st == NULL) continue;
+
+		i->pt = this->GetStationMiddle(st);
+	}
+	for (LinkList::iterator i(this->cached_links.begin()); i != this->cached_links.end(); ++i) {
+		const Station *sta = Station::GetIfValid(i->from_id);
+		if (sta == NULL) continue;
+		const Station *stb = Station::GetIfValid(i->to_id);
+		if (stb == NULL) continue;
+
+		i->from_pt = this->GetStationMiddle(sta);
+		i->to_pt = this->GetStationMiddle(stb);
+	}
+}
+
 /**
  * Draw the linkgraph overlay or some part of it, in the area given.
  * @param dpi Area to be drawn to.
  */
-void LinkGraphOverlay::Draw(const DrawPixelInfo *dpi) const
+void LinkGraphOverlay::Draw(const DrawPixelInfo *dpi)
 {
+	if (this->last_update_number != GetWindowUpdateNumber()) {
+		this->last_update_number = GetWindowUpdateNumber();
+		this->RefreshDrawCache();
+	}
 	this->DrawLinks(dpi);
 	this->DrawStationDots(dpi);
 }
@@ -196,15 +235,11 @@ void LinkGraphOverlay::Draw(const DrawPixelInfo *dpi) const
  */
 void LinkGraphOverlay::DrawLinks(const DrawPixelInfo *dpi) const
 {
-	for (LinkMap::const_iterator i(this->cached_links.begin()); i != this->cached_links.end(); ++i) {
-		if (!Station::IsValidID(i->first)) continue;
-		Point pta = this->GetStationMiddle(Station::Get(i->first));
-		for (StationLinkMap::const_iterator j(i->second.begin()); j != i->second.end(); ++j) {
-			if (!Station::IsValidID(j->first)) continue;
-			Point ptb = this->GetStationMiddle(Station::Get(j->first));
-			if (!this->IsLinkVisible(pta, ptb, dpi, this->scale + 2)) continue;
-			this->DrawContent(pta, ptb, j->second);
-		}
+	for (LinkList::const_iterator i(this->cached_links.begin()); i != this->cached_links.end(); ++i) {
+		if (!this->IsLinkVisible(i->from_pt, i->to_pt, dpi, this->scale + 2)) continue;
+		if (!Station::IsValidID(i->from_id)) continue;
+		if (!Station::IsValidID(i->to_id)) continue;
+		this->DrawContent(i->from_pt, i->to_pt, i->prop);
 	}
 }
 
@@ -241,12 +276,13 @@ void LinkGraphOverlay::DrawContent(Point pta, Point ptb, const LinkProperties &c
 void LinkGraphOverlay::DrawStationDots(const DrawPixelInfo *dpi) const
 {
 	for (StationSupplyList::const_iterator i(this->cached_stations.begin()); i != this->cached_stations.end(); ++i) {
-		const Station *st = Station::GetIfValid(i->first);
-		if (st == NULL) continue;
-		Point pt = this->GetStationMiddle(st);
+		const Point &pt = i->pt;
 		if (!this->IsPointVisible(pt, dpi, 3 * this->scale)) continue;
 
-		uint r = this->scale * 2 + this->scale * 2 * min(200, i->second) / 200;
+		const Station *st = Station::GetIfValid(i->id);
+		if (st == NULL) continue;
+
+		uint r = this->scale * 2 + this->scale * 2 * min(200, i->quantity) / 200;
 
 		LinkGraphOverlay::DrawVertex(pt.x, pt.y, r,
 				_colour_gradient[st->owner != OWNER_NONE ?
