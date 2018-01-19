@@ -439,20 +439,24 @@ void AfterLoadVehicles(bool part_of_load)
 			case VEH_TRAIN:
 			case VEH_SHIP:
 				v->GetImage(v->direction, EIT_ON_MAP, &v->sprite_seq);
+				v->UpdateSpriteSeqBound();
 				break;
 
 			case VEH_AIRCRAFT:
 				if (Aircraft::From(v)->IsNormalAircraft()) {
 					v->GetImage(v->direction, EIT_ON_MAP, &v->sprite_seq);
+					v->UpdateSpriteSeqBound();
 
 					/* The plane's shadow will have the same image as the plane, but no colour */
 					Vehicle *shadow = v->Next();
 					shadow->sprite_seq.CopyWithoutPalette(v->sprite_seq);
+					shadow->sprite_seq_bounds = v->sprite_seq_bounds;
 
 					/* In the case of a helicopter we will update the rotor sprites */
 					if (v->subtype == AIR_HELICOPTER) {
 						Vehicle *rotor = shadow->Next();
 						GetRotorImage(Aircraft::From(v), EIT_ON_MAP, &rotor->sprite_seq);
+						rotor->UpdateSpriteSeqBound();
 					}
 
 					UpdateAircraftCache(Aircraft::From(v), true);

@@ -609,9 +609,8 @@ void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engin
 		GetRailIcon(engine, false, yf, image_type, &seqf);
 		GetRailIcon(engine, true, yr, image_type, &seqr);
 
-		Rect rectf, rectr;
-		seqf.GetBounds(&rectf);
-		seqr.GetBounds(&rectr);
+		Rect16 rectf = seqf.GetBounds();
+		Rect16 rectr = seqr.GetBounds();
 
 		preferred_x = SoftClamp(preferred_x,
 				left - UnScaleGUI(rectf.left) + ScaleGUITrad(14),
@@ -623,8 +622,7 @@ void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engin
 		VehicleSpriteSeq seq;
 		GetRailIcon(engine, false, y, image_type, &seq);
 
-		Rect rect;
-		seq.GetBounds(&rect);
+		Rect16 rect = seq.GetBounds();
 		preferred_x = Clamp(preferred_x,
 				left - UnScaleGUI(rect.left),
 				right - UnScaleGUI(rect.right));
@@ -649,8 +647,7 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
 	VehicleSpriteSeq seq;
 	GetRailIcon(engine, false, y, image_type, &seq);
 
-	Rect rect;
-	seq.GetBounds(&rect);
+	Rect16 rect = seq.GetBounds();
 
 	width  = UnScaleGUI(rect.right - rect.left + 1);
 	height = UnScaleGUI(rect.bottom - rect.top + 1);
@@ -659,7 +656,7 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
 
 	if (RailVehInfo(engine)->railveh_type == RAILVEH_MULTIHEAD) {
 		GetRailIcon(engine, true, y, image_type, &seq);
-		seq.GetBounds(&rect);
+		rect = seq.GetBounds();
 
 		/* Calculate values relative to an imaginary center between the two sprites. */
 		width = ScaleGUITrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) + UnScaleGUI(rect.right) - xoffs;

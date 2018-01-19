@@ -191,7 +191,7 @@ struct VehicleSpriteSeq {
 		}
 	}
 
-	void GetBounds(Rect *bounds) const;
+	Rect16 GetBounds() const;
 	void Draw(int x, int y, PaletteID default_pal, bool force_pal) const;
 };
 
@@ -288,6 +288,7 @@ public:
 	 */
 	byte spritenum;
 	VehicleSpriteSeq sprite_seq;        ///< Vehicle appearance.
+	Rect16 sprite_seq_bounds;
 	byte x_extent;                      ///< x-extent of vehicle bounding box
 	byte y_extent;                      ///< y-extent of vehicle bounding box
 	byte z_extent;                      ///< z-extent of vehicle bounding box
@@ -1054,6 +1055,11 @@ public:
 	}
 
 	bool IsDrawn() const;
+
+	inline void UpdateSpriteSeqBound()
+	{
+		this->sprite_seq_bounds = this->sprite_seq.GetBounds();
+	}
 };
 
 /**
@@ -1236,6 +1242,7 @@ struct SpecializedVehicle : public Vehicle {
 			_sprite_group_resolve_check_veh_check = false;
 			if (force_update || this->sprite_seq != seq) {
 				this->sprite_seq = seq;
+				this->UpdateSpriteSeqBound();
 				this->Vehicle::UpdateViewport(true);
 			}
 		} else if (force_update) {

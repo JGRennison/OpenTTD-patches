@@ -38,8 +38,7 @@ void DrawShipImage(const Vehicle *v, int left, int right, int y, VehicleID selec
 	VehicleSpriteSeq seq;
 	v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
 
-	Rect rect;
-	seq.GetBounds(&rect);
+	Rect16 rect = seq.GetBounds();
 
 	int width = UnScaleGUI(rect.right - rect.left + 1);
 	int x_offs = UnScaleGUI(rect.left);

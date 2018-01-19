@@ -83,25 +83,27 @@ static btree::btree_set<Vehicle *> _vehicles_to_pay_repair;
  * Determine shared bounds of all sprites.
  * @param [out] bounds Shared bounds.
  */
-void VehicleSpriteSeq::GetBounds(Rect *bounds) const
+Rect16 VehicleSpriteSeq::GetBounds() const
 {
-	bounds->left = bounds->top = bounds->right = bounds->bottom = 0;
+	Rect16 bounds;
+	bounds.left = bounds.top = bounds.right = bounds.bottom = 0;
 	for (uint i = 0; i < this->count; ++i) {
 		const Sprite *spr = GetSprite(this->seq[i].sprite, ST_NORMAL);
 		if (i == 0) {
-			bounds->left = spr->x_offs;
-			bounds->top  = spr->y_offs;
-			bounds->right  = spr->width  + spr->x_offs - 1;
-			bounds->bottom = spr->height + spr->y_offs - 1;
+			bounds.left = spr->x_offs;
+			bounds.top  = spr->y_offs;
+			bounds.right  = spr->width  + spr->x_offs - 1;
+			bounds.bottom = spr->height + spr->y_offs - 1;
 		} else {
-			if (spr->x_offs < bounds->left) bounds->left = spr->x_offs;
-			if (spr->y_offs < bounds->top)  bounds->top  = spr->y_offs;
+			if (spr->x_offs < bounds.left) bounds.left = spr->x_offs;
+			if (spr->y_offs < bounds.top)  bounds.top  = spr->y_offs;
 			int right  = spr->width  + spr->x_offs - 1;
 			int bottom = spr->height + spr->y_offs - 1;
-			if (right  > bounds->right)  bounds->right  = right;
-			if (bottom > bounds->bottom) bounds->bottom = bottom;
+			if (right  > bounds.right)  bounds.right  = right;
+			if (bottom > bounds.bottom) bounds.bottom = bottom;
 		}
 	}
+	return bounds;
 }
 
 /**
@@ -2013,8 +2015,7 @@ void Vehicle::UpdatePosition()
  */
 void Vehicle::UpdateViewport(bool dirty)
 {
-	Rect new_coord;
-	this->sprite_seq.GetBounds(&new_coord);
+	Rect new_coord = ConvertRect<Rect16, Rect>(this->sprite_seq_bounds);
 
 	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
 	new_coord.left   += pt.x;

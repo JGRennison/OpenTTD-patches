@@ -1270,6 +1270,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 				sprite += 1385; // rotor or disaster-related vehicles
 			}
 			v->sprite_seq.seq[0].sprite = sprite;
+			v->UpdateSpriteSeqBound();
 
 			switch (v->type) {
 				case VEH_TRAIN: {
