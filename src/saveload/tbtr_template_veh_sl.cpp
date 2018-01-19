@@ -89,7 +89,7 @@ void AfterLoadTemplateVehicles()
 	FOR_ALL_TEMPLATES(tv) {
 		/* Reinstate the previous pointer */
 		if (tv->next != NULL) tv->next->previous = tv;
-		tv->first =NULL;
+		tv->first = NULL;
 	}
 	FOR_ALL_TEMPLATES(tv) {
 		/* Fill the first pointers */
