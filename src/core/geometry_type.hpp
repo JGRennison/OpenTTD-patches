@@ -44,6 +44,24 @@ struct Rect {
 	int bottom;
 };
 
+struct Rect16 {
+	int16 left;
+	int16 top;
+	int16 right;
+	int16 bottom;
+};
+
+template <typename IN, typename OUT>
+OUT ConvertRect(const IN &in)
+{
+	OUT out;
+	out.left = in.left;
+	out.top = in.top;
+	out.right = in.right;
+	out.bottom = in.bottom;
+	return out;
+}
+
 /**
  * Specification of a rectangle with an absolute top-left coordinate and a
  * (relative) width/height
