@@ -284,6 +284,8 @@ Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, Alloc
 		if (zoom_max == zoom_min) zoom_max = ZOOM_LVL_DRAW_SPR;
 	}
 
+	BlitterSpriteFlags flags = SF_NO_REMAP | SF_NO_ANIM;
+
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_orig = &sprite[z];
 
@@ -323,8 +325,12 @@ Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, Alloc
 
 				if (a != 0) {
 					dst_px->a = a;
+					if (a != 0 && a != 255) flags |= SF_TRANSLUCENT;
 					*dst_n = src->m;
 					if (src->m != 0) {
+						flags &= ~SF_NO_REMAP;
+						if (src->m >= PALETTE_ANIM_START) flags &= ~SF_NO_ANIM;
+
 						/* Get brightest value */
 						uint8 rgb_max = max(src->r, max(src->g, src->b));
 
@@ -385,6 +391,8 @@ Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, Alloc
 
 	SpriteData *dst = (SpriteData *)dest_sprite->data;
 	memset(dst, 0, sizeof(*dst));
+	/* Store sprite flags. */
+	dst->flags = flags;
 
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		dst->offset[z][0] = z == zoom_min ? 0 : lengths[z - 1][1] + dst->offset[z - 1][1];

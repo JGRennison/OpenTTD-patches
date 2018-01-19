@@ -27,6 +27,19 @@ enum BlitterMode {
 	BM_BLACK_REMAP,  ///< Perform remapping to a completely blackened sprite
 };
 
+/** Helper for using specialised functions designed to prevent whenever it's possible things like:
+ *  - IO (reading video buffer),
+ *  - calculations (alpha blending),
+ *  - heavy branching (remap lookups and animation buffer handling).
+ */
+enum BlitterSpriteFlags {
+	SF_NONE        = 0,
+	SF_TRANSLUCENT = 1 << 1, ///< The sprite has at least 1 translucent pixel.
+	SF_NO_REMAP    = 1 << 2, ///< The sprite has no remappable colour pixel.
+	SF_NO_ANIM     = 1 << 3, ///< The sprite has no palette animated pixel.
+};
+DECLARE_ENUM_AS_BIT_SET(BlitterSpriteFlags);
+
 /**
  * How all blitters should look like. Extend this class to make your own.
  */

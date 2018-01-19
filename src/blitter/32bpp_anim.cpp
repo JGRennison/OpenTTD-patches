@@ -25,7 +25,7 @@ Blitter_32bppAnim::~Blitter_32bppAnim()
 	free(this->anim_alloc);
 }
 
-template <BlitterMode mode>
+template <BlitterMode mode, bool no_anim_translucent>
 inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom)
 {
 	const SpriteData *src = (const SpriteData *)bp->sprite;
@@ -217,7 +217,14 @@ inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 					break;
 
 				default:
-					if (src_px->a == 255) {
+					if (no_anim_translucent) {
+						do {
+							*anim++ = 0;
+							*dst++ = src_px->data;
+							src_px++;
+							src_n++;
+						} while (--n != 0);
+					} else if (src_px->a == 255) {
 						do {
 							/* Compiler assumes pointer aliasing, can't optimise this on its own */
 							uint m = GB(*src_n, 0, 8);
@@ -260,13 +267,29 @@ void Blitter_32bppAnim::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 		return;
 	}
 
+	const BlitterSpriteFlags sprite_flags = ((const SpriteData *) bp->sprite)->flags;
+
 	switch (mode) {
 		default: NOT_REACHED();
-		case BM_NORMAL:       Draw<BM_NORMAL>      (bp, zoom); return;
-		case BM_COLOUR_REMAP: Draw<BM_COLOUR_REMAP>(bp, zoom); return;
-		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT> (bp, zoom); return;
-		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP> (bp, zoom); return;
-		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP> (bp, zoom); return;
+
+		case BM_COLOUR_REMAP:
+			if (!(sprite_flags & SF_NO_REMAP)) {
+				Draw<BM_COLOUR_REMAP, false>(bp, zoom);
+				return;
+			}
+			/* FALL THROUGH */
+
+		case BM_NORMAL:
+			if ((sprite_flags & SF_NO_ANIM) && !(sprite_flags & SF_TRANSLUCENT)) {
+				Draw<BM_NORMAL, true>(bp, zoom);
+			} else {
+				Draw<BM_NORMAL, false>(bp, zoom);
+			}
+			return;
+
+		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT, false> (bp, zoom); return;
+		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP, false> (bp, zoom); return;
+		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP, false> (bp, zoom); return;
 	}
 }
 

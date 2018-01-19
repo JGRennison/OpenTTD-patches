@@ -72,7 +72,7 @@ public:
 		return across + (lines * this->anim_buf_pitch);
 	}
 
-	template <BlitterMode mode> void Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom);
+	template <BlitterMode mode, bool no_anim_translucent> void Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom);
 };
 
 /** Factory for the 32bpp blitter with animation. */
