@@ -36,6 +36,7 @@
 #include "game/game.hpp"
 #include "goal_base.h"
 #include "story_base.h"
+#include "zoning.h"
 
 #include "table/strings.h"
 
@@ -119,6 +120,7 @@ void SetLocalCompany(CompanyID new_company)
 	/* ... and redraw the whole screen. */
 	MarkWholeScreenDirty();
 	InvalidateWindowClassesData(WC_SIGN_LIST, -1);
+	ClearZoningCaches();
 }
 
 /**

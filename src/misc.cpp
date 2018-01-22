@@ -33,6 +33,7 @@
 #include "viewport_func.h"
 #include "bridge_signal_map.h"
 #include "command_func.h"
+#include "zoning.h"
 
 #include "safeguards.h"
 
@@ -89,6 +90,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 
 	FreeSignalPrograms();
 	FreeSignalDependencies();
+
+	ClearZoningCaches();
 
 	ResetPersistentNewGRFData();
 

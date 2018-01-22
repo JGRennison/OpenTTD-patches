@@ -103,15 +103,14 @@ struct ZoningWindow : public Window {
 	{
 		switch(widget) {
 			case ZTW_OUTER_DROPDOWN:
-				_zoning.outer = DropDownIndexToZoningEvaluationMode(index);
+				SetZoningMode(false, DropDownIndexToZoningEvaluationMode(index));
 				break;
 
 			case ZTW_INNER_DROPDOWN:
-				_zoning.inner = DropDownIndexToZoningEvaluationMode(index);
+				SetZoningMode(true, DropDownIndexToZoningEvaluationMode(index));
 				break;
 		}
 		this->InvalidateData();
-		MarkWholeScreenDirty();
 	}
 
 	virtual void SetStringParameters(int widget) const

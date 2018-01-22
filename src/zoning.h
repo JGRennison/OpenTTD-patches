@@ -30,6 +30,17 @@ enum ZoningEvaluationMode {
 };
 
 /**
+ * Zoning evaluation modes
+ */
+enum ZoningModeMask {
+	ZMM_NOTHING = 0,   ///< No zoning mask
+	ZMM_INNER,         ///< Inner
+	ZMM_OUTER,         ///< Outer
+	ZMM_ALL = ZMM_INNER | ZMM_OUTER,
+};
+DECLARE_ENUM_AS_BIT_SET(ZoningModeMask)
+
+/**
  * Global Zoning state structure
  */
 struct Zoning {
@@ -47,12 +58,13 @@ void DrawTileZoning(const TileInfo *ti);
 
 void ShowZoningToolbar();
 
-void ZoningMarkDirtyStationCoverageArea(const Station *st);
+void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask = ZMM_ALL);
 inline void ZoningMarkDirtyStationCoverageArea(const Waypoint *st) { } // no-op
 
-inline void ZoningStationWindowOpenClose(const Station *st)
-{
-	if (_zoning.inner == ZEM_STA_CATCH_WIN || _zoning.outer == ZEM_STA_CATCH_WIN) ZoningMarkDirtyStationCoverageArea(st);
-}
+void ZoningStationWindowOpenClose(const Station *st);
+
+void SetZoningMode(bool inner, ZoningEvaluationMode mode);
+
+void ClearZoningCaches();
 
 #endif /* ZONING_H */
