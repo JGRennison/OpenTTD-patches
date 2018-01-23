@@ -2619,7 +2619,7 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 
 /**
  * Make sure we don't draw a too big area at a time.
- * If we do, the sprite memory will overflow.
+ * If we do, the sprite sorter will run into major performance problems and the sprite memory may overflow.
  */
 static void ViewportDrawChk(const ViewPort *vp, int left, int top, int right, int bottom)
 {
