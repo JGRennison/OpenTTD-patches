@@ -15,6 +15,8 @@
 #include "vehicle_base.h"
 #include "water_map.h"
 
+extern const DiagDirection _ship_search_directions[TRACK_END][DIAGDIR_END];
+
 void GetShipSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 WaterClass GetEffectiveWaterClass(TileIndex tile);
 

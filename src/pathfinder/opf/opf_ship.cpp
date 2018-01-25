@@ -121,7 +121,7 @@ static void OPFShipFollowTrack(TileIndex tile, DiagDirection direction, TrackPat
 }
 
 /** Directions to search towards given track bits and the ship's enter direction. */
-static const DiagDirection _ship_search_directions[6][4] = {
+extern const DiagDirection _ship_search_directions[6][4] = {
 	{ DIAGDIR_NE,      INVALID_DIAGDIR, DIAGDIR_SW,      INVALID_DIAGDIR },
 	{ INVALID_DIAGDIR, DIAGDIR_SE,      INVALID_DIAGDIR, DIAGDIR_NW      },
 	{ INVALID_DIAGDIR, DIAGDIR_NE,      DIAGDIR_NW,      INVALID_DIAGDIR },

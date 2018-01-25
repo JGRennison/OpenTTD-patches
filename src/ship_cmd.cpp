@@ -509,16 +509,6 @@ static const byte _ship_subcoord[4][6][3] = {
 	}
 };
 
-/* Used for finding tile exit direction using the enter direction and following track */
-static const DiagDirection _diagdir_tile_exit[TRACK_END][DIAGDIR_END] = {
-	{ DIAGDIR_NE     , INVALID_DIAGDIR, DIAGDIR_SW     , INVALID_DIAGDIR}, // 	TRACK_X     = 0
-	{ INVALID_DIAGDIR, DIAGDIR_SE     , INVALID_DIAGDIR, DIAGDIR_NW     }, // 	TRACK_Y     = 1
-	{ INVALID_DIAGDIR, DIAGDIR_NE     , DIAGDIR_NW     , INVALID_DIAGDIR}, // 	TRACK_UPPER = 2
-	{ DIAGDIR_SE     , INVALID_DIAGDIR, INVALID_DIAGDIR, DIAGDIR_SW     }, // 	TRACK_LOWER = 3
-	{ DIAGDIR_NW     , DIAGDIR_SW     , INVALID_DIAGDIR, INVALID_DIAGDIR}, // 	TRACK_LEFT  = 4
-	{ INVALID_DIAGDIR, INVALID_DIAGDIR, DIAGDIR_SE     , DIAGDIR_NE     }  // 	TRACK_RIGHT = 5
-};
-
 struct ShipCollideChecker {
 
 	TrackBits track_bits; ///< Trackbits (track that was chosen by the pathfinder converted in trackbits.) .
@@ -556,7 +546,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 
 	Track track = *track_old;
 
-	TileIndex tile_plus_one = TileAddByDiagDir(tile, _diagdir_tile_exit[track][diagdir]);
+	TileIndex tile_plus_one = TileAddByDiagDir(tile, _ship_search_directions[track][diagdir]);
 	if (!IsValidTile(tile_plus_one)) tile_plus_one = tile;
 
 	ShipCollideChecker scc;
@@ -579,7 +569,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 			case TRACK_BIT_3WAY_NW: track == TRACK_UPPER ? track = TRACK_Y : track = TRACK_LEFT;  break;
 		}
 		/* Don't bump in coast, don't get stuck. */
-		if (track != *track_old && !IsWaterTile(TileAddByDiagDir(tile, _diagdir_tile_exit[track][diagdir]))) return;
+		if (track != *track_old && !IsWaterTile(TileAddByDiagDir(tile, _ship_search_directions[track][diagdir]))) return;
 		*track_old = track;
 	}
 }
