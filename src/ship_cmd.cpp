@@ -514,6 +514,7 @@ struct ShipCollideChecker {
 
 	TrackBits track_bits; ///< Pathfinder chosen track converted to trackbits, or is v->state of requesting ship. (one bit set)
 	TileIndex tile;       ///< Tile where ship was found, used to determine distance between ships.
+	int32 z_pos;          ///< z_pos of requesting ship.
 };
 
 /** Helper function for collision avoidance. */
@@ -526,6 +527,9 @@ static Vehicle *FindShipOnTile(Vehicle *v, void *data)
 	/* Don't detect vehicles on different parallel tracks. */
 	TrackBits bits = scc->track_bits | Ship::From(v)->state;
 	if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) return NULL;
+
+	/* Don't detect ships passing on aquaduct. */
+	if (abs(v->z_pos - scc->z_pos) >= 8) return NULL;
 
 	scc->tile = v->tile;
 
@@ -551,7 +555,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 	/* Only check for collision when pathfinder did not change direction.
 	 * This is done in order to keep ships moving towards the intended target. */
 	TrackBits combine = (v->state | track_bits);
-	if (combine != TRACK_BIT_HORZ && combine != TRACK_BIT_VERT && combine != track_bits) return;
+	if (combine != TRACK_BIT_HORZ && combine != TRACK_BIT_VERT && combine != track_bits && v->state != TRACK_BIT_WORMHOLE) return;
 
 	TileIndex tile_plus_one = TileAddByDiagDir(tile, _ship_search_directions[track][diagdir]);
 	if (!IsValidTile(tile_plus_one)) tile_plus_one = tile;
@@ -559,6 +563,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 	if (!IsValidTile(tile_plus_two)) tile_plus_two = tile_plus_one;
 
 	ShipCollideChecker scc;
+	scc.z_pos = v->z_pos;
 
 	scc.track_bits = track_bits;
 	bool found = HasVehicleOnPos(tile, &scc, FindShipOnTile);
@@ -572,7 +577,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 		/* Speed adjustment related to distance. */
 		v->cur_speed /= scc.tile == tile ? 8 : 2;
 
-		/* Clean none wanted trackbits, including pathfinder track and no 90 degree turns. */
+		/* Clean none wanted trackbits, including pathfinder track, TRACK_BIT_WORMHOLE and no 90 degree turns. */
 		tracks = IsDiagonalTrack(track) ? KillFirstBit(tracks) : (tracks & TRACK_BIT_CROSS);
 
 		/* Just follow track 1 tile and see if there is a track to follow. (try not to bang in coast or ship) */
@@ -714,6 +719,12 @@ static void ShipController(Ship *v)
 	} else {
 		/* On a bridge */
 		if (!IsTileType(gp.new_tile, MP_TUNNELBRIDGE) || !HasBit(VehicleEnterTile(v, gp.new_tile, gp.x, gp.y), VETS_ENTERED_WORMHOLE)) {
+			if (_settings_game.vehicle.ship_collision_avoidance && gp.old_tile != gp.new_tile){
+				DiagDirection diagdir = DiagdirBetweenTiles(gp.old_tile, gp.new_tile);
+				track = AxisToTrack(DiagDirToAxis(diagdir));
+				CheckDistanceBetweenShips(gp.new_tile, v, v->state, &track, diagdir);
+				v->tile = gp.new_tile; // Note! Trains and cars keep v->tile fixed on tunnel entrance ships not!! (avoid spaghetti code)
+			}
 			v->x_pos = gp.x;
 			v->y_pos = gp.y;
 			v->UpdatePosition();
