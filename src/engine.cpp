@@ -30,6 +30,7 @@
 #include "company_base.h"
 #include "vehicle_func.h"
 #include "articulated_vehicles.h"
+#include "settings_type.h"
 #include "error.h"
 
 #include "table/strings.h"
@@ -275,6 +276,15 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16 *mail_capacity) const
 	}
 
 	return capacity;
+}
+
+/**
+ * Return display value of how much the running costs of this engine are.
+ * @return Yearly running cost of the engine.
+ */
+Money Engine::GetDisplayRunningCost() const
+{
+	return this->GetRunningCost() * _settings_game.economy.day_length_factor;
 }
 
 /**

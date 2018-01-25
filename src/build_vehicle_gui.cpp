@@ -586,7 +586,7 @@ static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine
 
 	/* Running cost */
 	if (rvi->running_cost_class != INVALID_PRICE) {
-		SetDParam(0, e->GetRunningCost());
+		SetDParam(0, e->GetDisplayRunningCost());
 		DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 		y += FONT_HEIGHT_NORMAL;
 	}
@@ -620,7 +620,7 @@ static int DrawRailEnginePurchaseInfo(int left, int right, int y, EngineID engin
 
 	/* Running cost */
 	if (rvi->running_cost_class != INVALID_PRICE) {
-		SetDParam(0, e->GetRunningCost());
+		SetDParam(0, e->GetDisplayRunningCost());
 		DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 		y += FONT_HEIGHT_NORMAL;
 	}
@@ -674,7 +674,7 @@ static int DrawRoadVehPurchaseInfo(int left, int right, int y, EngineID engine_n
 	}
 
 	/* Running cost */
-	SetDParam(0, e->GetRunningCost());
+	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 	y += FONT_HEIGHT_NORMAL;
 
@@ -717,7 +717,7 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 	y += FONT_HEIGHT_NORMAL;
 
 	/* Running cost */
-	SetDParam(0, e->GetRunningCost());
+	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 	y += FONT_HEIGHT_NORMAL;
 
@@ -764,7 +764,7 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
 	y += FONT_HEIGHT_NORMAL;
 
 	/* Running cost */
-	SetDParam(0, e->GetRunningCost());
+	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 	y += FONT_HEIGHT_NORMAL;
 

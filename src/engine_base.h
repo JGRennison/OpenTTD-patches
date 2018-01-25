@@ -104,6 +104,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	}
 
 	Money GetRunningCost() const;
+	Money GetDisplayRunningCost() const;
 	Money GetCost() const;
 	uint GetDisplayMaxSpeed() const;
 	uint GetPower() const;
