@@ -28,6 +28,7 @@
 #include "core/pool_type.hpp"
 #include "game/game.hpp"
 #include "linkgraph/linkgraphschedule.h"
+#include "cargopacket.h"
 
 #include "safeguards.h"
 
@@ -72,6 +73,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	}
 
 	LinkGraphSchedule::Clear();
+	ClearCargoPacketDeferredPayments();
 	PoolBase::Clean(PT_NORMAL);
 
 	ResetPersistentNewGRFData();
