@@ -845,6 +845,7 @@ STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} tem uma ordem nula
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} tem ordens duplicadas
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} tem uma ordem inválida no seu horário
+STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE} tem um aeroporto nas ordens cuja pista de aterragem é muito curta
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} está a ficar velho
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} está a ficar muito velho
@@ -1288,17 +1289,21 @@ STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Mostrar a popul
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Grossura das linhas nos gráficos: {STRING}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Largura da linha nos gráficos. Uma linha mais estreita é de leitura mais precisa, enquanto uma linha mais espessa é mais fácil de ver e as cores distinguem-se melhor.
 
-STR_CONFIG_SETTING_LAND_GENERATOR                               :Gerador de terra: {STRING}
+STR_CONFIG_SETTING_LANDSCAPE                                    :Cenário: {STRING}
+STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Os estilos dos cenários definem a jogabilidade base, cada um com cargas e requerimentos diferentes para o desenvolvimento das cidades. NewGRF e Scripts de Jogo permitem um controlo mais refinado
+STR_CONFIG_SETTING_LAND_GENERATOR                               :Gerador de terreno: {STRING}
+STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :O gerador original é dependente do conjunto gráfico base, e compõe formas de terreno já afixadas. TerraGenesis é um gerador baseado no algoritmo de ruído de Perlin que permite definições mais refinadas
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Original
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Tipo de terreno: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :(Apenas TerraGenesis) Relevo do terreno
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Densidade industrial: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Define quantas indústrias devem ser geradas e que nível deve ser mantido durante o jogo
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Distância máxima entre o limite do mapa e Refinarias de Petróleo: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Refinarias de petróleo são construídas apenas próximo da borda do mapa, isto é, na costa para mapas de ilha
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Altura da linha de neve: {STRING}
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Controla a que altura a neve começa em paisagens sub-árticas. A neve também afecta a geração de indústrias e os requisitos de crescimento das cidades
-STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Rudeza do terreno (apenas TerraGenesis) : {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Rudeza do terreno: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Apenas TerraGenesis) Escolhe a frequência de montes: paisagens macias têm menos montes e mais espalhados. Paisagens duras têm muitos montes, que podem parecer repetitivos
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Muito suave
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Suave
@@ -1597,8 +1602,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS                                 :Proporção de 
 STR_CONFIG_SETTING_LARGER_TOWNS_HELPTEXT                        :Quantidade de povoações que se tornarão cidades, logo cidades que começarão maiores e crescerão mais depressa
 STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 em {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Nenhum
-STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Multiplicador inicial para dimensão da metrópole: {STRING}
-STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Tamanho relativo das cidades em relação ao tamanho normal das mesmas aquando o inicio do jogo
+STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Multiplicador inicial para a dimensão das metrópoles: {STRING}
+STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Tamanho relativo das metrópoles em relação ao tamanho normal das cidades aquando o início do jogo
 
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Actualizar gráfico de distribuição a cada {STRING} dia{P 0:2 "" s}
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Tempo entre recalculos subsequentes de cada gráfico. Cada recalculo calcula os planos para cada componente do gráfico. Isto significa que um valor X para essa configuração não indica que o gráfico será todo actualizado a cada X dias. Apenas alguns componentes serão. Quanto mais curto o definir, mais tempo será necessário ao CPU para o calcular. Quanto mais longo, mais tempo levará até que a distribuição da carga inicie em novas rotas.
@@ -1661,13 +1666,23 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Métrico (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Localização
+STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Gráficos
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Efeitos sonoros
 STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Interface
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Geral
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Visualizadores
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Construção
+STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Notícias / Assessores
 STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Empresa
+STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Contabilidade
 STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Veículos
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Física
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Em rota
+STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Limitações
 STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Desastres / Acidentes
+STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Geração do mundo
+STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Meio Ambiente
+STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Autoridades
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Cidades
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industrias
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distribuição de Carga
@@ -1741,7 +1756,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Seleccio
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Mostrar opções de jogo
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Mostrar tabela de classificações
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Definições de Display
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Mostrar definições
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Mostrar definições de NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Verificar conteúdo novo e actualizado para descarga
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Mostrar definições de IA e de script de jogo
@@ -2587,29 +2602,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Campos
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Neve
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Deserto
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} linha
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} linha com sinais de bloqueio
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} linha com pre-sinais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} linha com sinais de saída
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} linha com sinais combinados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} linha com sinais de caminho
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} linha com sinais de sentido único
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} linha com bloqueio e pré-sinais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} linha com bloqueio e sinais de saida
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} linha com bloqueio e sinais combinados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} linha com bloqueio e sinais de rota
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} linha com bloqueio e sinais de sentido único
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} linha com pré-sinais e sinais de saida
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} linha com pré-sinais e sinais combinados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} linha com pré-sinais e sinais de rota
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} linha com pré-sinais e sinais de sentido único
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} linha com sinais de saida e sinais combinados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} linha com sinais de saida e sinais de rota
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} linha com sinais de saida e de sentido único
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} linha com sinais combinados e sinais de rota
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} linha com sinais combinados e sentido unico
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} linha com sinais de rota e de sentido unico
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} depósito de comboios
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Caminhos-de-ferro linha
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Caminhos-de-ferro linha com sinais de bloqueio
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Caminhos-de-ferro linha com pre-sinais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Caminhos-de-ferro linha com sinais de saída
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Caminhos-de-ferro linha com sinais combinados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Caminhos-de-ferro linha com sinais de caminho
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Caminhos-de-ferro linha com sinais de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Caminhos-de-ferro linha com bloqueio e pré-sinais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Caminhos-de-ferro linha com bloqueio e sinais de saida
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Caminhos-de-ferro linha com bloqueio e sinais combinados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Caminhos-de-ferro linha com bloqueio e sinais de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Caminhos-de-ferro linha com bloqueio e sinais de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Caminhos-de-ferro linha com pré-sinais e sinais de saida
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Caminhos-de-ferro linha com pré-sinais e sinais combinados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Caminhos-de-ferro linha com pré-sinais e sinais de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Caminhos-de-ferro linha com pré-sinais e sinais de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Caminhos-de-ferro linha com sinais de saida e sinais combinados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Caminhos-de-ferro linha com sinais de saida e sinais de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Caminhos-de-ferro linha com sinais de saida e de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Caminhos-de-ferro linha com sinais combinados e sinais de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Caminhos-de-ferro linha com sinais combinados e sentido unico
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Caminhos-de-ferro linha com sinais de rota e de sentido unico
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Caminhos-de-ferro depósito de comboios
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Estrada
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Estrada com iluminação
@@ -2673,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terreno proprie
 STR_ABOUT_OPENTTD                                               :{WHITE}Sobre o OpenTTD...
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Direitos de autor originais {COPYRIGHT} 1995 Chris Sawyer, Todos os direitos reservados
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versão {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 A equipa do OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 A equipa do OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Guardar Jogo
@@ -2827,7 +2842,7 @@ STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista de
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Intriduza um nome para a predefinição
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nome seleccionado actualmente para gravação da predefinição
 STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancelar
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :Não mudar a predefinição
+STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Não mudar a predefinição
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Grava
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Grava a predefinição com o nome seleccionado
 
@@ -2860,7 +2875,11 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Ir para 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Gráfico anterior
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Proceder ao gráfico normal anterior, ignorando quaisquer gráficos pseudo/recolorir/tipo-de-letra e dando a volta no início
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representação do gráfico seleccionado actualmente. O alinhamento é ignorado a desenhar este gráfico
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Mover o gráfico, mudando os desvios X e Y
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Desloca o gráfico, alterando os intervalos  X e Y. Ctrl+Clique desloca o gráfico 8 unidades de uma só vez
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Repor relativo
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Repor intervalos relativos atuais
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Intervalo X: {NUM}, Intervalo Y: {NUM} (Absoluto)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}Intervalo X: {NUM}, Intervalo Y: {NUM} (Relativo)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Escolher gráfico
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Escolha um gráfico de qualquer lado no ecrã
 
@@ -2888,8 +2907,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Tentativa de us
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} contém um objecto gráfico corrompido. Todos os objectos gráficos corrompidos serão apresentados como um ponto de interrogação (?) vermelho.
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contém múltiplas entradas Action 8 - (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Leitura além dos limites do pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}O conjunto de gráficos base actual tem objectos gráficos em falta.{}Por favor faça a sua actualização.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}O conjunto de gráficos base actualmente em uso tem um conjunto de gráficos em falta.{}Por favor actualize o conjunto de gráficos base.{}Visto que está a usar uma {YELLOW}imagem de desenvolvimento do OpenTTD{WHITE}, poderá também precisar de {YELLOW}uma imagem dos gráficos base de desenvolvimento{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Recursos GRF pedidos não disponíveis (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} foi desactivado por {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Formato de Gráfico Inválido ou desconhecido (sprite {3:NUM})
@@ -3096,8 +3113,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Aceita
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Mostrar lista de carga aceite
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Aceita: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Esta estação tem direitos de transporte exclusivos nesta cidade.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} comprou direitos exclusivos de transporte nesta cidade.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Esta estação tem direitos de transporte exclusivos nesta cidade.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} comprou direitos exclusivos de transporte nesta cidade.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Avaliações
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Mostrar avaliações da estação
@@ -3276,9 +3293,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Necessá
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Necessário: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Carga aguardando processamento:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produz: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produz: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3338,11 +3354,13 @@ STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Mudar o 
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Clique para proteger este grupo da autosubstituição global
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Apagar Grupo
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Tem a certeza de que quer apagar este grupo e quaisquer descendentes?
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Adic. veíc. partilh.
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Remover todos os veículos
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Renomear um grupo
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Novos Veículos Ferroviários
@@ -3508,10 +3526,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :locomotiva magl
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Custo: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade: {VELOCITY}  Potência: {POWER}{}Custo de circulação: {CURRENCY_LONG}/ano{}Capacidade: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Custo: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade: {VELOCITY}  Potência: {POWER}  Máx. F.T.: {6:FORCE}{}Custo de circulação: {4:CURRENCY_LONG}/ano{}Capacidade: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Custo: {CURRENCY_LONG} Máx. Velocidade: {VELOCITY}{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo de circulação: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Custo: {CURRENCY_LONG} Máx. Velocidade: {VELOCITY}{}Capacidade: {CARGO_LONG}{}Custo de circulação: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Preço: {CURRENCY_LONG} Velocidade max.: {VELOCITY} Alcance: {COMMA} quadrados{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo de manutenção: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Preço: {CURRENCY_LONG} Velocidade max.: {VELOCITY} Alcance: {COMMA} quadrados{}Capacidade: {CARGO_LONG}{}Custo de manutenção: {CURRENCY_LONG}/ano
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Custo: {CURRENCY_LONG} Máx. Velocidade: {VELOCITY}{}Capacidade: {CARGO_LONG}{}Custo de circulação: {CURRENCY_LONG}/ano
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Substituir {STRING} - {STRING}
@@ -3538,7 +3553,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} quando
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Parar Subst. de Veículos
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Pressione para parar a subsituição do tipo de motor que seleccionou à esquerda
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Trocando: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Alternar entre a janela de substituição de locomotivas e a janela de substituição de vagões
 STR_REPLACE_ENGINES                                             :Locomotivas
 STR_REPLACE_WAGONS                                              :Vagões
@@ -3634,7 +3648,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ano{P "
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ano{P "" s} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Máx. velocidade: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Velocidade max.: {LTBLUE}{VELOCITY} {BLACK}Alcance: {LTBLUE}{COMMA} quadrados
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potência: {LTBLUE}{POWER}{BLACK} Max. velocidade: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potência: {LTBLUE}{POWER}{BLACK} Máx. velocidade: {LTBLUE}{VELOCITY} {BLACK}Máx. E.T.: {LTBLUE}{FORCE}
 
@@ -3879,6 +3892,10 @@ STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Viagem (sem pro
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Viajar no máximo a {2:VELOCITY} (sem programação)
 STR_TIMETABLE_TRAVEL_FOR                                        :Viajar durante {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Viajar por {STRING} no máximo a {VELOCITY}
+STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Viajar (durante {STRING}, sem programação)
+STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Viajar (por {STRING}, sem programação) no máximo a {VELOCITY}
+STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(permanecer durante {STRING}, sem programação)
+STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(viajar durante {STRING}, sem programação)
 STR_TIMETABLE_STAY_FOR                                          :e ficar durante {STRING}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :e viaja para {STRING}
 STR_TIMETABLE_DAYS                                              :{COMMA} dia{P "" s}

@@ -110,7 +110,7 @@ void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const char *m
 void NetworkReInitChatBoxSize()
 {
 	_chatmsg_box.y       = 3 * FONT_HEIGHT_NORMAL;
-	_chatmsg_box.height  = MAX_CHAT_MESSAGES * (FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING) + 2;
+	_chatmsg_box.height  = MAX_CHAT_MESSAGES * (FONT_HEIGHT_NORMAL + NETWORK_CHAT_LINE_SPACING) + 4;
 	_chatmessage_backup  = ReallocT(_chatmessage_backup, _chatmsg_box.width * _chatmsg_box.height * BlitterFactory::GetCurrentBlitter()->GetBytesPerPixel());
 }
 
@@ -492,10 +492,13 @@ struct NetworkChatWindow : public Window {
 	virtual void OnClick(Point pt, int widget, int click_count)
 	{
 		switch (widget) {
-			/* Send */
-			case WID_NC_SENDBUTTON: SendChat(this->message_editbox.text.buf, this->dtype, this->dest);
-				/* FALL THROUGH */
-			case WID_NC_CLOSE: /* Cancel */ delete this; break;
+			case WID_NC_SENDBUTTON: /* Send */
+				SendChat(this->message_editbox.text.buf, this->dtype, this->dest);
+				FALLTHROUGH;
+
+			case WID_NC_CLOSE: /* Cancel */
+				delete this;
+				break;
 		}
 	}
 

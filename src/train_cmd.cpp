@@ -483,41 +483,40 @@ static SpriteID GetDefaultTrainSprite(uint8 spritenum, Direction direction)
  * @param image_type Visualisation context.
  * @return Sprite to display.
  */
-SpriteID Train::GetImage(Direction direction, EngineImageType image_type) const
+void Train::GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const
 {
 	uint8 spritenum = this->spritenum;
-	SpriteID sprite;
 
 	if (HasBit(this->flags, VRF_REVERSE_DIRECTION)) direction = ReverseDir(direction);
 
 	if (is_custom_sprite(spritenum)) {
-		sprite = GetCustomVehicleSprite(this, (Direction)(direction + 4 * IS_CUSTOM_SECONDHEAD_SPRITE(spritenum)), image_type);
-		if (sprite != 0) return sprite;
+		GetCustomVehicleSprite(this, (Direction)(direction + 4 * IS_CUSTOM_SECONDHEAD_SPRITE(spritenum)), image_type, result);
+		if (result->IsValid()) return;
 
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
 	assert(IsValidImageIndex<VEH_TRAIN>(spritenum));
-	sprite = GetDefaultTrainSprite(spritenum, direction);
+	SpriteID sprite = GetDefaultTrainSprite(spritenum, direction);
 
 	if (this->cargo.StoredCount() >= this->cargo_cap / 2U) sprite += _wagon_full_adder[spritenum];
 
-	return sprite;
+	result->Set(sprite);
 }
 
-static SpriteID GetRailIcon(EngineID engine, bool rear_head, int &y, EngineImageType image_type)
+static void GetRailIcon(EngineID engine, bool rear_head, int &y, EngineImageType image_type, VehicleSpriteSeq *result)
 {
 	const Engine *e = Engine::Get(engine);
 	Direction dir = rear_head ? DIR_E : DIR_W;
 	uint8 spritenum = e->u.rail.image_index;
 
 	if (is_custom_sprite(spritenum)) {
-		SpriteID sprite = GetCustomVehicleIcon(engine, dir, image_type);
-		if (sprite != 0) {
+		GetCustomVehicleIcon(engine, dir, image_type, result);
+		if (result->IsValid()) {
 			if (e->GetGRF() != NULL) {
 				y += ScaleGUITrad(e->GetGRF()->traininfo_vehicle_pitch);
 			}
-			return sprite;
+			return;
 		}
 
 		spritenum = Engine::Get(engine)->original_image_index;
@@ -525,7 +524,7 @@ static SpriteID GetRailIcon(EngineID engine, bool rear_head, int &y, EngineImage
 
 	if (rear_head) spritenum++;
 
-	return GetDefaultTrainSprite(spritenum, DIR_W);
+	result->Set(GetDefaultTrainSprite(spritenum, DIR_W));
 }
 
 void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engine, PaletteID pal, EngineImageType image_type)
@@ -534,24 +533,31 @@ void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engin
 		int yf = y;
 		int yr = y;
 
-		SpriteID spritef = GetRailIcon(engine, false, yf, image_type);
-		SpriteID spriter = GetRailIcon(engine, true, yr, image_type);
-		const Sprite *real_spritef = GetSprite(spritef, ST_NORMAL);
-		const Sprite *real_spriter = GetSprite(spriter, ST_NORMAL);
+		VehicleSpriteSeq seqf, seqr;
+		GetRailIcon(engine, false, yf, image_type, &seqf);
+		GetRailIcon(engine, true, yr, image_type, &seqr);
+
+		Rect rectf, rectr;
+		seqf.GetBounds(&rectf);
+		seqr.GetBounds(&rectr);
 
 		preferred_x = Clamp(preferred_x,
-				left - UnScaleGUI(real_spritef->x_offs) + ScaleGUITrad(14),
-				right - UnScaleGUI(real_spriter->width) - UnScaleGUI(real_spriter->x_offs) - ScaleGUITrad(15));
+				left - UnScaleGUI(rectf.left) + ScaleGUITrad(14),
+				right - UnScaleGUI(rectr.right) - ScaleGUITrad(15));
 
-		DrawSprite(spritef, pal, preferred_x - ScaleGUITrad(14), yf);
-		DrawSprite(spriter, pal, preferred_x + ScaleGUITrad(15), yr);
+		seqf.Draw(preferred_x - ScaleGUITrad(14), yf, pal, pal == PALETTE_CRASH);
+		seqr.Draw(preferred_x + ScaleGUITrad(15), yr, pal, pal == PALETTE_CRASH);
 	} else {
-		SpriteID sprite = GetRailIcon(engine, false, y, image_type);
-		const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
+		VehicleSpriteSeq seq;
+		GetRailIcon(engine, false, y, image_type, &seq);
+
+		Rect rect;
+		seq.GetBounds(&rect);
 		preferred_x = Clamp(preferred_x,
-				left - UnScaleGUI(real_sprite->x_offs),
-				right - UnScaleGUI(real_sprite->width) - UnScaleGUI(real_sprite->x_offs));
-		DrawSprite(sprite, pal, preferred_x, y);
+				left - UnScaleGUI(rect.left),
+				right - UnScaleGUI(rect.right));
+
+		seq.Draw(preferred_x, y, pal, pal == PALETTE_CRASH);
 	}
 }
 
@@ -568,23 +574,26 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
 {
 	int y = 0;
 
-	SpriteID sprite = GetRailIcon(engine, false, y, image_type);
-	const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
+	VehicleSpriteSeq seq;
+	GetRailIcon(engine, false, y, image_type, &seq);
 
-	width  = UnScaleGUI(real_sprite->width);
-	height = UnScaleGUI(real_sprite->height);
-	xoffs  = UnScaleGUI(real_sprite->x_offs);
-	yoffs  = UnScaleGUI(real_sprite->y_offs);
+	Rect rect;
+	seq.GetBounds(&rect);
+
+	width  = UnScaleGUI(rect.right - rect.left + 1);
+	height = UnScaleGUI(rect.bottom - rect.top + 1);
+	xoffs  = UnScaleGUI(rect.left);
+	yoffs  = UnScaleGUI(rect.top);
 
 	if (RailVehInfo(engine)->railveh_type == RAILVEH_MULTIHEAD) {
-		sprite = GetRailIcon(engine, true, y, image_type);
-		real_sprite = GetSprite(sprite, ST_NORMAL);
+		GetRailIcon(engine, true, y, image_type, &seq);
+		seq.GetBounds(&rect);
 
 		/* Calculate values relative to an imaginary center between the two sprites. */
-		width = ScaleGUITrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) + UnScaleGUI(real_sprite->width) + UnScaleGUI(real_sprite->x_offs) - xoffs;
-		height = max<uint>(height, UnScaleGUI(real_sprite->height));
+		width = ScaleGUITrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) + UnScaleGUI(rect.right) - xoffs;
+		height = max<uint>(height, UnScaleGUI(rect.bottom - rect.top + 1));
 		xoffs  = xoffs - ScaleGUITrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) / 2;
-		yoffs  = min(yoffs, UnScaleGUI(real_sprite->y_offs));
+		yoffs  = min(yoffs, UnScaleGUI(rect.top));
 	}
 }
 
@@ -637,8 +646,9 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 
 		v->railtype = rvi->railtype;
 
+		v->date_of_last_service = _date;
 		v->build_year = _cur_year;
-		v->cur_image = SPR_IMG_QUERY;
+		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = VehicleRandomBits();
 
 		v->group_id = DEFAULT_GROUP;
@@ -706,8 +716,9 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->refit_cap = v->refit_cap;
 	u->railtype = v->railtype;
 	u->engine_type = v->engine_type;
+	u->date_of_last_service = v->date_of_last_service;
 	u->build_year = v->build_year;
-	u->cur_image = SPR_IMG_QUERY;
+	u->sprite_seq.Set(SPR_IMG_QUERY);
 	u->random_bits = VehicleRandomBits();
 	v->SetMultiheaded();
 	u->SetMultiheaded();
@@ -773,7 +784,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_trains);
 		v->date_of_last_service = _date;
 		v->build_year = _cur_year;
-		v->cur_image = SPR_IMG_QUERY;
+		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = VehicleRandomBits();
 
 		if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) SetBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE);
@@ -1692,8 +1703,8 @@ void UpdateLevelCrossing(TileIndex tile, bool sound)
 {
 	assert(IsLevelCrossingTile(tile));
 
-	/* train on crossing || train approaching crossing || reserved */
-	bool new_state = HasVehicleOnPos(tile, NULL, &TrainOnTileEnum) || TrainApproachingCrossing(tile) || HasCrossingReservation(tile);
+	/* reserved || train on crossing || train approaching crossing */
+	bool new_state = HasCrossingReservation(tile) || HasVehicleOnPos(tile, NULL, &TrainOnTileEnum) || TrainApproachingCrossing(tile);
 
 	if (new_state != IsCrossingBarred(tile)) {
 		if (new_state && sound) {
@@ -2246,16 +2257,14 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 /**
  * Free the reserved path in front of a vehicle.
  * @param v %Train owning the reserved path.
- * @param origin %Tile to start clearing (if #INVALID_TILE, use the current tile of \a v).
- * @param orig_td Track direction (if #INVALID_TRACKDIR, use the track direction of \a v).
  */
-void FreeTrainTrackReservation(const Train *v, TileIndex origin, Trackdir orig_td)
+void FreeTrainTrackReservation(const Train *v)
 {
 	assert(v->IsFrontEngine());
 
-	TileIndex tile = origin != INVALID_TILE ? origin : v->tile;
-	Trackdir  td = orig_td != INVALID_TRACKDIR ? orig_td : v->GetVehicleTrackdir();
-	bool      free_tile = tile != v->tile || !(IsRailStationTile(v->tile) || IsTileType(v->tile, MP_TUNNELBRIDGE));
+	TileIndex tile = v->tile;
+	Trackdir  td = v->GetVehicleTrackdir();
+	bool      free_tile = !(IsRailStationTile(v->tile) || IsTileType(v->tile, MP_TUNNELBRIDGE));
 	StationID station_id = IsRailStationTile(v->tile) ? GetStationIndex(v->tile) : INVALID_STATION;
 
 	/* Can't be holding a reservation if we enter a depot. */
@@ -2496,6 +2505,7 @@ public:
 				case OT_GOTO_DEPOT:
 					/* Skip service in depot orders when the train doesn't need service. */
 					if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !this->v->NeedsServicing()) break;
+					FALLTHROUGH;
 				case OT_GOTO_STATION:
 				case OT_GOTO_WAYPOINT:
 					this->v->current_order = *order;
@@ -3524,14 +3534,14 @@ static void ChangeTrainDirRandomly(Train *v)
 		/* We don't need to twist around vehicles if they're not visible */
 		if (!(v->vehstatus & VS_HIDDEN)) {
 			v->direction = ChangeDir(v->direction, delta[GB(Random(), 0, 2)]);
-			v->UpdateDeltaXY(v->direction);
-			v->cur_image = v->GetImage(v->direction, EIT_ON_MAP);
 			/* Refrain from updating the z position of the vehicle when on
 			 * a bridge, because UpdateInclination() will put the vehicle under
 			 * the bridge in that case */
 			if (v->track != TRACK_BIT_WORMHOLE) {
 				v->UpdatePosition();
-				v->UpdateInclination(false, false);
+				v->UpdateInclination(false, true);
+			} else {
+				v->UpdateViewport(false, true);
 			}
 		}
 	} while ((v = v->Next()) != NULL);
@@ -3604,7 +3614,7 @@ static bool TrainApproachingLineEnd(Train *v, bool signal, bool reverse)
 	 * for other directions, it will be 1, 3, 5, ..., 15 */
 	switch (v->direction) {
 		case DIR_N : x = ~x + ~y + 25; break;
-		case DIR_NW: x = y;            // FALL THROUGH
+		case DIR_NW: x = y;            FALLTHROUGH;
 		case DIR_NE: x = ~x + 16;      break;
 		case DIR_E : x = ~x + y + 9;   break;
 		case DIR_SE: x = y;            break;

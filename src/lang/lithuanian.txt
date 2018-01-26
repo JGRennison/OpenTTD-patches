@@ -2820,29 +2820,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Laukai
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Užpustyta žemė
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Dykuma
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} bėgiai
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} bėgiai su paprastais šviesoforais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} ebgiai su prie signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} bėgiai su išvažiavimo signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} bėgiai su kombinuotais signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} bėgiai su trasos signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} bėgiai su vienpusiais trasos signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} begiai su paprastais ir prie signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} bėgiai su paprastais ir išvažiavimo signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} bėgiai su paprastais ir kombinuotais signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} bėgiai su paprastais ir trasos signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} bėgiai su paprastais ir vienpusiais trasos signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} bėgiai su pre ir išvažiavimo signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} bėgiai su prie ir kombinuotais signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} bėgiai su prie ir trasos signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} bėgiai su prie ir vienpusiais trasos signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} bėgiai su išvažiavimo ir kombinuotais signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} bėgiai su išvažiavimo ir trasos signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} bėgiai su išvažiavimo ir vienpusiais signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} bėgiai su kombinuotais ir trasos signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} bėgiai su kombinuotais ir vienpusiais signalais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} bėgiai su trasos ir vienpusiais signalais
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} traukinių depas
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Geležinkelis bėgiai
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Geležinkelis bėgiai su paprastais šviesoforais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Geležinkelis ebgiai su prie signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Geležinkelis bėgiai su išvažiavimo signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Geležinkelis bėgiai su kombinuotais signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Geležinkelis bėgiai su trasos signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Geležinkelis bėgiai su vienpusiais trasos signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Geležinkelis begiai su paprastais ir prie signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Geležinkelis bėgiai su paprastais ir išvažiavimo signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Geležinkelis bėgiai su paprastais ir kombinuotais signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Geležinkelis bėgiai su paprastais ir trasos signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Geležinkelis bėgiai su paprastais ir vienpusiais trasos signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Geležinkelis bėgiai su pre ir išvažiavimo signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Geležinkelis bėgiai su prie ir kombinuotais signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Geležinkelis bėgiai su prie ir trasos signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Geležinkelis bėgiai su prie ir vienpusiais trasos signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Geležinkelis bėgiai su išvažiavimo ir kombinuotais signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Geležinkelis bėgiai su išvažiavimo ir trasos signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Geležinkelis bėgiai su išvažiavimo ir vienpusiais signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Geležinkelis bėgiai su kombinuotais ir trasos signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Geležinkelis bėgiai su kombinuotais ir vienpusiais signalais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Geležinkelis bėgiai su trasos ir vienpusiais signalais
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Geležinkelis traukinių depas
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Kelias
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Kelias su žibintais
@@ -2906,7 +2906,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Kompanijos žem
 STR_ABOUT_OPENTTD                                               :{WHITE}Apie OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Pradinės versijos teisės priklauso {COPYRIGHT} 1995 Chris Sawyer, Visos teisės saugomos
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versija {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 OpenTTD komanda
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2017 OpenTTD komanda
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Išsaugoti žaidimą
@@ -3125,8 +3125,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Bandymas panaud
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} turi sugadintą spruklį. Visi sugadinti sprukliai bus rodomi kaip raudoni klaustukai (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Susideda iš keleto veiksmo 8 įrašų (spruklys {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Skaitymas už pseudospruklio pabaigos (spruklys {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Šiuo metu naudojamam grafikos rinkiniui trūksta keleto spruklių.{}Atnaujinkite pagrindinį grafikos rinkinį
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Šiuo metu naudojamam pagrindinės grafikos rinkiniui trūsta keleto spruklių.{}Atnaujinkite pagrindinės grafikos rinkinį.{} Kadangi žaidžiate {YELLOW} negalutinę, vis dar kuriamą OpenTTD versiją, {WHITE}, jums, ko gero, reikėtų įdiegti atitinkamą{YELLOW}naujausią, negalutinį pagrindinės grafikos rinkinį.{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Pageidautas GRF resursas yra neprieinamas (spruklys {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} buvo išjungtas {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Neteisingas/nežinomas spruklio išdėstymo formatas (spruklys {3:NUM})
@@ -3333,8 +3331,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Priima
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Rodyti priimamų krovinių sąrašą
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Priima: {WHITE}{CARGO_LIST.ka}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Šiai stotelei priklauso išskirtinės šio miesto pervežimo teisės
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} įsigijo išskirtines pervežimo teises šiame mieste.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Šiai stotelei priklauso išskirtinės šio miesto pervežimo teisės
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} įsigijo išskirtines pervežimo teises šiame mieste.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Reitingai
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Rodyti stoties reitingus
@@ -3513,9 +3511,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Reikalau
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Reikalauja: {YELLOW}{STRING.ko}{STRING}, {STRING.ko}{STRING}, {STRING.ko}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Krovinys, kuris bus perdirbtas:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Gamina: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Gamina: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3581,6 +3578,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Įkelti bendras
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Iškelti visas transporto priemones
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Pervadinti grupę
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nauji lokomotyvai
@@ -3782,10 +3780,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE.kur                        :„Maglev“ lo
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kaina: {CURRENCY_LONG} Svoris: {WEIGHT_SHORT}{}Greitis: {VELOCITY}  Galia: {POWER}{}Eksploatavimo išlaidos: {CURRENCY_LONG} per metus{}Talpa: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Kaina: {CURRENCY_LONG} Svoris: {WEIGHT_SHORT}{}Greitis: {VELOCITY}  Galia: {POWER}  Maks. T.E.: {6:FORCE}{}Einamosios išlaidos: {4:CURRENCY_LONG}/yr{}Talpa: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Kaina: {CURRENCY_LONG} Didž. greitis: {VELOCITY}{}Talpa: {CARGO_LONG}, {CARGO_LONG}{}Eksploatavimo išlaidos: {CURRENCY_LONG} per metus
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Kaina: {CURRENCY_LONG} Didž. Greitis: {VELOCITY}{}Talpa: {CARGO_LONG}{}Eksploatacijos išlaidos: {CURRENCY_LONG}/metams
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Kaina: {CURRENCY_LONG} Didž. greitis: {VELOCITY} Nuotolis: {COMMA} langeliai{}Talpa: {CARGO_LONG}, {CARGO_LONG}{}Eksploatavimo išlaidos: {CURRENCY_LONG} per metus
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Kaina: {CURRENCY_LONG} Didž. greitis: {VELOCITY} Nuotolis: {COMMA} langeliai{}Talpa: {CARGO_LONG}{}Eksploatavimo išlaidos: {CURRENCY_LONG} per metus
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Kaina: {CURRENCY_LONG} Didž. Greitis: {VELOCITY}{}Talpa: {CARGO_LONG}{}Eksploatacijos išlaidos: {CURRENCY_LONG}/metams
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Keisti tr. priemones {STRING} - {STRING}
@@ -3797,7 +3792,7 @@ STR_REPLACE_VEHICLE_SHIP                                        :Laivas
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Lėktuvas
 
 STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}Naudojamos transporto priemonės
-STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :BLACK}Stulpelis su informacija apie transporto priemones, kurias šiuo metu naudojate
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :{BLACK}Stulpelis su informacija apie transporto priemones, kurias šiuo metu naudojate
 STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}Galimos transporto priemonės
 STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK}Stulpelis su informacija apie transporto priemones, kuriomis galite pakeisti jau turimas
 
@@ -3814,7 +3809,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} jei pa
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stabdyti tr. priemonių keitimą
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Spustelk, jei nori sustabdyti šiuo metu vykdomą keitimo procedūrą
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Keičiama: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Pereidinėti tarp garvežių ir vagonų pakeitimo langų
 STR_REPLACE_ENGINES                                             :Varikliai
 STR_REPLACE_WAGONS                                              :Vagonai
@@ -3910,7 +3904,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} met{P a
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} met{P ai ai ų} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Didž. greitis: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Didž. greitis: {LTBLUE}{VELOCITY} {BLACK}Nuotolis: {LTBLUE}{COMMA} langeliai
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Svoris: {LTBLUE}{WEIGHT_SHORT} {BLACK}Galia: {LTBLUE}{POWER}{BLACK} Didž. greitis: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Svoris: {LTBLUE}{WEIGHT_SHORT} {BLACK}Galia: {LTBLUE}{POWER}{BLACK} Didž. greitis: {LTBLUE}{VELOCITY} {BLACK}Didž. traukos jėga: {LTBLUE}{FORCE}
 

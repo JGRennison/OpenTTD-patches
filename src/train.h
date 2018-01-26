@@ -61,7 +61,7 @@ byte FreightWagonMult(CargoID cargo);
 
 void CheckTrainsLengths();
 
-void FreeTrainTrackReservation(const Train *v, TileIndex origin = INVALID_TILE, Trackdir orig_td = INVALID_TRACKDIR);
+void FreeTrainTrackReservation(const Train *v);
 bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false);
 
 void DeleteVisibleTrain(Train *v);
@@ -116,7 +116,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_TRAIN_INC : EXPENSES_TRAIN_RUN; }
 	void PlayLeaveStationSound() const;
 	bool IsPrimaryVehicle() const { return this->IsFrontEngine(); }
-	SpriteID GetImage(Direction direction, EngineImageType image_type) const;
+	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
 	int GetDisplaySpeed() const { return this->gcache.last_speed; }
 	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed; }
 	Money GetRunningCost() const;

@@ -177,7 +177,7 @@ public:
 		y = y + WD_FRAMERECT_BOTTOM - nwid->pos_y; // Compute needed size of the widget.
 		if (y > nwid->current_y) {
 			/* If the company list is too big to fit, mark ourself dirty and draw again. */
-			ResizeWindow(this, 0, y - nwid->current_y);
+			ResizeWindow(this, 0, y - nwid->current_y, false);
 		}
 	}
 
@@ -267,9 +267,10 @@ public:
 					this->sel_index = y;
 					this->SetDirty();
 				}
-				/* FALL THROUGH, when double-clicking. */
+				/* When double-clicking, continue */
 				if (click_count == 1 || y < 0) break;
 			}
+			FALLTHROUGH;
 
 			case WID_TA_EXECUTE:
 				DoCommandP(this->town->xy, this->window_number, this->sel_index, CMD_DO_TOWN_ACTION | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));

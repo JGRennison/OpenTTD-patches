@@ -951,6 +951,9 @@
     <ClInclude Include="..\src\safeguards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\screenshot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1234,6 +1237,12 @@
       <Filter>Core Source Code</Filter>
     </ClCompile>
     <ClInclude Include="..\src\core\bitmath_func.hpp">
+      <Filter>Core Source Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\container_func.hpp">
+      <Filter>Core Source Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\dyn_arena_alloc.hpp">
       <Filter>Core Source Code</Filter>
     </ClInclude>
     <ClInclude Include="..\src\core\endian_func.hpp">

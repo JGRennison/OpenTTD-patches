@@ -520,7 +520,7 @@ bool ClientNetworkGameSocketHandler::IsConnected()
  *   DEF_CLIENT_RECEIVE_COMMAND has parameter: Packet *p
  ************/
 
-extern bool SafeLoad(const char *filename, int mode, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL);
+extern bool SafeLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL);
 
 NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FULL(Packet *p)
 {
@@ -836,7 +836,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 
 	/* The map is done downloading, load it */
 	ClearErrorMessages();
-	bool load_success = SafeLoad(NULL, SL_LOAD, GM_NORMAL, NO_DIRECTORY, lf);
+	bool load_success = SafeLoad(NULL, SLO_LOAD, DFT_GAME_FILE, GM_NORMAL, NO_DIRECTORY, lf);
 
 	/* Long savegame loads shouldn't affect the lag calculation! */
 	this->last_packet = _realtime_tick;
@@ -965,7 +965,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHAT(Packet *p)
 			/* For speaking to company or giving money, we need the company-name */
 			case NETWORK_ACTION_GIVE_MONEY:
 				if (!Company::IsValidID(ci_to->client_playas)) return NETWORK_RECV_STATUS_OKAY;
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case NETWORK_ACTION_CHAT_COMPANY: {
 				StringID str = Company::IsValidID(ci_to->client_playas) ? STR_COMPANY_NAME : STR_NETWORK_SPECTATORS;
 				SetDParam(0, ci_to->client_playas);

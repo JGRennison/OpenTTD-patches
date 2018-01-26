@@ -167,7 +167,7 @@ STR_ABBREV_ALL                                                  :{TINY_FONT}ALL
 
 # 'Mode' of transport for cargoes
 STR_PASSENGERS                                                  :{COMMA}{NBSP}passager{P "" s}
-STR_BAGS                                                        :{COMMA}{NBSP}sac{P "" s}
+STR_BAGS                                                        :{COMMA}{NBSP}sac{P 0 "" s}
 STR_TONS                                                        :{COMMA}{NBSP}tonne{P "" s}
 STR_LITERS                                                      :{COMMA}{NBSP}litre{P "" s}
 STR_ITEMS                                                       :{COMMA}{NBSP}unité{P "" s}
@@ -815,8 +815,8 @@ STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDE
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING} a sponsorisé la construction de la nouvelle ville {TOWN}{NBSP}!
 
-STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}Un{G "" "" e} nouv{G eau el elle} {STRING} en construction près de {TOWN}{NBSP}!
-STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}Un{G "" "" e} nouv{G eau el elle} {STRING} s'implante près de {TOWN}{NBSP}!
+STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}Un{G 0 "" "" e} nouv{G 0 eau el elle} {STRING} en construction près de {TOWN}{NBSP}!
+STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}Un{G 0 "" "" e} nouv{G 0 eau el elle} {STRING} s'implante près de {TOWN}{NBSP}!
 
 STR_NEWS_INDUSTRY_CLOSURE_GENERAL                               :{BIG_FONT}{BLACK}{STRING} annonce une fermeture imminente{NBSP}!
 STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS                       :{BIG_FONT}{BLACK}Des problèmes d'approvisionnement obligent {STRING} à fermer bientôt{NBSP}!
@@ -858,9 +858,9 @@ STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE
 STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}L'échec du réaménagement a stoppé {VEHICLE}
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Le renouvellement automatique de {VEHICLE} a échoué{}{STRING}
 
-STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Nouv{G eau el elle} {STRING} disponible{NBSP}!
+STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Nouv{G 0 eau el elle} {STRING} disponible{NBSP}!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
-STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nouv{G eau el elle} {STRING} disponible{NBSP}!  -  {ENGINE}
+STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nouv{G 0 eau el elle} {STRING} disponible{NBSP}!  -  {ENGINE}
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} n'accepte plus {STRING}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} n'accepte plus {STRING} ou {STRING}
@@ -1215,8 +1215,8 @@ STR_CONFIG_SETTING_SIGNALSIDE_RIGHT                             :à droite de la
 STR_CONFIG_SETTING_SHOWFINANCES                                 :Afficher le bilan financier en fin d'année{NBSP}: {STRING}
 STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :Si activé, le bilan financier sera affiché à la fin de chaque année pour permettre un contrôle rapide de l'état de la compagnie.
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :Les nouveaux ordres sont « sans arrêt » par défaut{NBSP}: {STRING}
-STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :Normalement, un véhicule s'arrête dans chaque station qu'il traverse. En activant ce paramètre, il traversera toutes les stations sur le chemin de sa destination finale sans s'arrêter. Noter que ce paramètre défini uniquement une valeur par défaut pour les nouveaux ordres. Les ordres peuvent par ailleurs être réglés individuellement avec un autre comportement
-STR_CONFIG_SETTING_STOP_LOCATION                                :Les nouveaux ordres arrêtent les trains {G 0:2 au au "à la"} {STRING} du quai par défaut
+STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :Normalement, un véhicule s'arrête dans chaque station qu'il traverse. En activant ce paramètre, il traversera toutes les stations sur le chemin de sa destination finale sans s'arrêter. Noter que ce paramètre définit uniquement une valeur par défaut pour les nouveaux ordres. Les ordres peuvent par après être réglés individuellement avec un autre comportement
+STR_CONFIG_SETTING_STOP_LOCATION                                :Les nouveaux ordres arrêtent les trains {G 0 au au "à la"} {STRING} du quai par défaut
 STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Endroit du quai où un train s'arrête par défaut. "queue" signifie proche du point d'entrée. "milieu" signifie au milieu du quai. "tête" signifie à l'opposé du point d'entrée. Noter que ce paramètre défini uniquement une valeur par défaut pour les nouveaux ordres. Les ordres peuvent par ailleurs être réglés individuellement avec un autre comportement
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :{G=f}queue
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :{G=m}milieu
@@ -1407,7 +1407,7 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :Premier disponi
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :Dernier disponible
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Le plus utilisé
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Afficher les réservations de chemin sur les voies{NBSP}: {STRING}
-STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Donne une couleur différente aux voies réservées pour aider à résoudre les problèmes de trains refusant d'entrer dans des blocs basés sur le chemin
+STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Donne une couleur différente aux voies réservées afin d'aider à résoudre les problèmes de trains refusant de s'engager dans des tronçons encadrés par des signaux de passage
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Conserver les outils de construction actifs après usage{NBSP}: {STRING}
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Garde les outils de construction de ponts, tunnels, etc. ouverts après usage
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Regrouper les dépenses dans la fenêtre des finances{NBSP}: {STRING}
@@ -1464,15 +1464,15 @@ STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Nombre maximum 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Les intervalles de service sont en pourcentage{NBSP}: {STRING}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Choisir si l'entretien des véhicule est activé par le temps passé depuis le dernier entretien ou par la fiabilité passant sous un pourcentage de la fiabilité maximum
 STR_CONFIG_SETTING_SERVINT_TRAINS                               :Intervalle d'entretien par défaut pour les trains{NBSP}: {STRING}
-STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :Défini l'intervalle d'entretien par défaut des nouveaux véhicules ferroviaires, si aucun intervalle d'entretien n'est définit pour le véhicule
+STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :Définit l'intervalle d'entretien par défaut des nouveaux véhicules ferroviaires, si aucun intervalle d'entretien n'est défini pour le véhicule
 STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA}{NBSP}jour{P 0 "" s}/%
 STR_CONFIG_SETTING_SERVINT_DISABLED                             :Désactivé
 STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES                        :Intervalle d'entretien par défaut pour les véhicules routiers{NBSP}: {STRING}
-STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES_HELPTEXT               :Défini l'intervalle d'entretien par défaut des nouveaux véhicules routiers, si aucun intervalle d'entretien n'est définit pour le véhicule
+STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES_HELPTEXT               :Définit l'intervalle d'entretien par défaut des nouveaux véhicules routiers, si aucun intervalle d'entretien n'est défini pour le véhicule
 STR_CONFIG_SETTING_SERVINT_AIRCRAFT                             :Intervalle d'entretien par défaut pour les aéronefs{NBSP}: {STRING}
-STR_CONFIG_SETTING_SERVINT_AIRCRAFT_HELPTEXT                    :Défini l'intervalle d'entretien par défaut des nouveaux aéronefs, si aucun intervalle d'entretien n'est définit pour le véhicule
+STR_CONFIG_SETTING_SERVINT_AIRCRAFT_HELPTEXT                    :Définit l'intervalle d'entretien par défaut des nouveaux aéronefs, si aucun intervalle d'entretien n'est défini pour le véhicule
 STR_CONFIG_SETTING_SERVINT_SHIPS                                :Intervalle d'entretien par défaut pour les navires{NBSP}: {STRING}
-STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :Défini l'intervalle d'entretien par défaut des nouveaux navires, si aucun intervalle d'entretien n'est définit pour le véhicule
+STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :Définit l'intervalle d'entretien par défaut des nouveaux navires, si aucun intervalle d'entretien n'est défini pour le véhicule
 STR_CONFIG_SETTING_NOSERVICE                                    :Désactiver l'entretien quand les pannes sont inactives{NBSP}: {STRING}
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :Lorsqu'il est activé, les véhicules ne sont pas entretenus s'ils ne peuvent pas tomber en panne
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Activer la vitesse limite des wagons{NBSP}: {STRING}
@@ -1762,6 +1762,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Vérifie
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Afficher la configuration des scripts
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Quitter OpenTTD
 
+STR_INTRO_BASESET                                               :{BLACK}{NUM} sprite{P "" s} manque{P "" "nt"} dans les graphiques de base actuellement sélectionnés. Veuillez vérifier les mises à jours pour les graphiques de base.
 STR_INTRO_TRANSLATION                                           :{BLACK}Il manque {NUM} chaîne{P "" s} dans cette traduction. Merci d'aider à améliorer OpenTTD en vous inscrivant comme traducteur. Voir readme.txt pour les détails.
 
 # Quit window
@@ -2221,7 +2222,7 @@ STR_CONTENT_DETAIL_SUBTITLE_SELECTED                            :{SILVER}Pré-s�
 STR_CONTENT_DETAIL_SUBTITLE_AUTOSELECTED                        :{SILVER}Cette dépendance a été sélectionnée pour être téléchargée
 STR_CONTENT_DETAIL_SUBTITLE_ALREADY_HERE                        :{SILVER}Vous avez déjà ceci
 STR_CONTENT_DETAIL_SUBTITLE_DOES_NOT_EXIST                      :{SILVER}Ce module est inconnu et ne peut pas être téléchargé dans OpenTTD
-STR_CONTENT_DETAIL_UPDATE                                       :{SILVER}Ceci est un remplacement pour {G "un" "des" "une"} {STRING} existant{G 0 "" "s" "e"}
+STR_CONTENT_DETAIL_UPDATE                                       :{SILVER}Ceci est un remplacement pour {G 0 "un" "des" "une"} {STRING} existant{G 0 "" "s" "e"}
 STR_CONTENT_DETAIL_NAME                                         :{SILVER}Nom{NBSP}: {WHITE}{STRING}
 STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Version{NBSP}: {WHITE}{STRING}
 STR_CONTENT_DETAIL_DESCRIPTION                                  :{SILVER}Description{NBSP}: {WHITE}{STRING}
@@ -2322,7 +2323,7 @@ STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}Construi
 STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}Alterner entre construire et retirer des voies, des signaux, des points de contrôle et des gares.{}Ctrl pour retirer également la voie lors du retrait des points de contrôle et des gares.
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL                           :{BLACK}Convertir/Améliorer le type de rail.{}Shift pour afficher seulement le coût estimé.
 
-STR_RAIL_NAME_RAILROAD                                          :Voie ferrée simple
+STR_RAIL_NAME_RAILROAD                                          :Voie ferrée
 STR_RAIL_NAME_ELRAIL                                            :Voie ferrée électrifiée
 STR_RAIL_NAME_MONORAIL                                          :Monorail
 STR_RAIL_NAME_MAGLEV                                            :Maglev
@@ -2590,6 +2591,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nom de l
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF{NBSP}: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Cargaison acceptée{NBSP}: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Type de rail{NBSP}: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Vitesse limite de la voie{NBSP}: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Vitesse limite de la route{NBSP}: {LTBLUE}{VELOCITY}
 
@@ -2602,29 +2604,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Champs
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terre enneigée
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Désert
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING}{NBSP}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} avec signaux de bloc
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} avec pré-signaux
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} avec signaux de sortie
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} avec signaux combinés
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} avec signaux de chemin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} avec signaux de chemin à sens unique
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} avec signal de bloc et pré-signaux
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} avec signal de bloc et signaux de sortie
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} avec signal de bloc et signaux combinés
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} avec signaux de bloc et de chemin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} avec signaux de bloc et de chemin à sens unique
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} avec pré-signal et signal de sortie
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} avec pré-signal et signal combiné
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} avec pré-signal et signal de chemin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} avec pré-signal et signal de chemin à sens unique
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} avec signal de sortie et signal combiné
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} avec signal de sortie et signal de chemin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} avec signal de sortie et signal de chemin à sens unique
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} avec signal combiné et signal de chemin
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} avec signal combiné et signal de chemin à sens unique
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} avec signal de chemin et signal de chemin à sens unique
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Dépôt de trains de {STRING}
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Voie ferrée
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Voie ferrée avec signaux de bloc
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Voie ferrée avec pré-signaux
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Voie ferrée avec signaux de sortie
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Voie ferrée avec signaux combinés
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Voie ferrée avec signaux de chemin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Voie ferrée avec signaux de chemin à sens unique
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Voie ferrée avec signal de bloc et pré-signaux
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Voie ferrée avec signal de bloc et signaux de sortie
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Voie ferrée avec signal de bloc et signaux combinés
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Voie ferrée avec signaux de bloc et de chemin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Voie ferrée avec signaux de bloc et de chemin à sens unique
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Voie ferrée avec pré-signal et signal de sortie
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Voie ferrée avec pré-signal et signal combiné
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Voie ferrée avec pré-signal et signal de chemin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Voie ferrée avec pré-signal et signal de chemin à sens unique
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Voie ferrée avec signal de sortie et signal combiné
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Voie ferrée avec signal de sortie et signal de chemin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Voie ferrée avec signal de sortie et signal de chemin à sens unique
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Voie ferrée avec signal combiné et signal de chemin
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Voie ferrée avec signal combiné et signal de chemin à sens unique
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Voie ferrée avec signal de chemin et signal de chemin à sens unique
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Dépôt ferroviaire
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Route
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Route avec lampadaires
@@ -2688,7 +2690,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terrain apparte
 STR_ABOUT_OPENTTD                                               :{WHITE}À propos de OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyright original {COPYRIGHT} 1995 Chris Sawyer, Tous droits réservés
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 L'équipe OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 L'équipe OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Sauvegarder la partie
@@ -2907,8 +2909,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Tentative d'uti
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} contient un sprite corrompu. Tous les sprites corrompus seront remplacés par un point d'interrogation rouge (?).
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Présence multiple de l'Action 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lecture après la fin des pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Il manque certains sprites dans les graphiques de base actuellement utilisés.{}Veuillez mettre à jour les graphiques de base.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Il manque un certain nombre de sprites dans les graphiques de base actuellement utilisés.{}Veuillez mettre à jour les graphiques de base.{}Comme vous jouez avec une {YELLOW}version de développement d'OpenTTD{WHITE}, vous devriez utiliser une {YELLOW}version de développement des graphiques de base{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Indisponibilité de la ressource demandée (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} a été désactivé par {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Format de sprite invalide ou inconnu (sprite {3:NUM})
@@ -3115,8 +3115,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Accepte
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Afficher les marchandises acceptées
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Accepte{NBSP}: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Cette station a les droits de transport exclusifs dans cette ville.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} a acheté les droits de transport exclusifs dans cette ville.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Cette station a les droits de transport exclusifs dans cette ville.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} a acheté les droits de transport exclusifs dans cette ville.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Qualité
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Afficher la qualité de service de la station
@@ -3295,9 +3295,13 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Nécessi
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Nécessite{NBSP}: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Nécessite
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}en attente
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Marchandise en attente d'être utilisée{NBSP}:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produit{NBSP}: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produit{NBSP}: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3364,6 +3368,7 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Retirer tous le
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Renommer un groupe
 
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nouveaux véhicules ferroviaires
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nouveaux véhicules ferroviaires électriques
@@ -3395,6 +3400,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Tous les types 
 STR_PURCHASE_INFO_ALL_BUT                                       :Tous sauf {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Effort de traction max.{NBSP}: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rayon d'action{NBSP}: {GOLD}{COMMA}{NBSP}cases
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Type d'aéronef{NBSP}: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Choix du véhicule. Cliquer sur un véhicule pour obtenir des informations. Ctrl-clic pour basculer le masquage du type de véhicule
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Choix du véhicule routier. Cliquer sur un véhicule pour obtenir des informations. Ctrl-clic pour basculer le masquage du type de véhicule
@@ -3528,10 +3534,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :{G=f}locomotive
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Prix{NBSP}: {CURRENCY_LONG} − Poids{NBSP}: {WEIGHT_SHORT}{}Vitesse{NBSP}: {VELOCITY} − Puissance{NBSP}: {POWER}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an{}Capacité{NBSP}: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Prix{NBSP}: {CURRENCY_LONG} − Poids{NBSP}: {WEIGHT_SHORT}{}Vitesse{NBSP}: {VELOCITY} − Puissance{NBSP}: {POWER}{}Effort de traction max.{NBSP}: {6:FORCE}{}Coûts d'entretien{NBSP}: {4:CURRENCY_LONG}/an{}Capacité{NBSP}: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Prix{NBSP}: {CURRENCY_LONG} − Vitesse max.{NBSP}: {VELOCITY}{}Capacité{NBSP}: {CARGO_LONG}, {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Prix{NBSP}: {CURRENCY_LONG} − Vitesse max.{NBSP}: {VELOCITY}{}Capacité{NBSP}: {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Coût{NBSP}: {CURRENCY_LONG} − Vitesse max.{NBSP}: {VELOCITY} − Rayon d'action{NBSP}: {COMMA} cases{}Capacité{NBSP}: {CARGO_LONG}, {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Coût{NBSP}: {CURRENCY_LONG} − Vitesse max.{NBSP}: {VELOCITY} − Rayon d'action{NBSP}: {COMMA} cases{}Capacité{NBSP}: {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Prix{NBSP}: {CURRENCY_LONG} − Vitesse max.{NBSP}: {VELOCITY}{}Capacité{NBSP}: {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Prix{NBSP}: {CURRENCY_LONG} - Vitesse max.{NBSP}: {VELOCITY}{}Type d'aéronef{NBSP}: {STRING}{}Capacité{NBSP}: {CARGO_LONG}, {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Prix{NBSP}: {CURRENCY_LONG} - Vitesse max.{NBSP}: {VELOCITY}{}Type d'aéronef{NBSP}: {STRING}{}Capacité{NBSP}: {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Prix{NBSP}: {CURRENCY_LONG} - Vitesse max.{NBSP}: {VELOCITY}{}Type d'aéronef{NBSP}: {STRING} - Rayon d'action{NBSP}: {COMMA} cases{}Capacité{NBSP}: {CARGO_LONG}, {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Prix{NBSP}: {CURRENCY_LONG} - Vitesse max.{NBSP}: {VELOCITY}{}Type d'aéronef{NBSP}: {STRING} - Rayon d'action{NBSP}: {COMMA} cases{}Capacité{NBSP}: {CARGO_LONG}{}Coûts d'entretien{NBSP}: {CURRENCY_LONG}/an
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Remplacer {STRING} - {STRING}
@@ -3558,10 +3565,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} si vie
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stopper le remplacement
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Appuyer sur ce bouton pour arrêter le remplacement du type de véhicule sélectionné à gauche
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}En remplacement{NBSP}: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Alterner entre les fenêtres de remplacement des locomotives ou des wagons
 STR_REPLACE_ENGINES                                             :Locomotives
 STR_REPLACE_WAGONS                                              :Wagons
+STR_REPLACE_ALL_RAILTYPE                                        :Tous le véhicules sur rail
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Choisir un type de rail pour le remplacement de locomotives
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Ceci affiche par quel type de véhicule sera remplacé celui sélectionné à gauche, si possible
@@ -3654,7 +3661,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} an{P ""
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} an{P "" nées} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Vitesse max.{NBSP}: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Vitesse max.{NBSP}: {LTBLUE}{VELOCITY}{BLACK} − Rayon d'action{NBSP}: {LTBLUE}{COMMA} cases
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Vitesse max.{NBSP}: {LTBLUE}{VELOCITY}{BLACK} - Type d'aéronef{NBSP}: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Vitesse max.{NBSP}: {LTBLUE}{VELOCITY}{BLACK} - Type d'aéronef{NBSP}: {LTBLUE}{STRING}{BLACK} - Rayon d'action{NBSP}: {LTBLUE}{COMMA} cases
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Poids{NBSP}: {LTBLUE}{NBSP}{WEIGHT_SHORT} − {BLACK}Puissance{NBSP}: {LTBLUE}{NBSP}{POWER}{BLACK} − Vitesse max.{NBSP}: {LTBLUE}{NBSP}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Poids{NBSP}: {LTBLUE}{WEIGHT_SHORT}{BLACK} − Puissance{NBSP}: {LTBLUE}{POWER}{BLACK} − Vitesse max.{NBSP}: {LTBLUE}{VELOCITY}{BLACK} − E.T. max.{NBSP}: {LTBLUE}{FORCE}
 

@@ -1326,7 +1326,8 @@ static uint GetLoadAmount(Vehicle *v)
 	/* Scale load amount the same as capacity */
 	if (HasBit(e->info.misc_flags, EF_NO_DEFAULT_CARGO_MULTIPLIER) && !air_mail) load_amount = CeilDiv(load_amount * CargoSpec::Get(v->cargo_type)->multiplier, 0x100);
 
-	return load_amount;
+	/* Zero load amount breaks a lot of things. */
+	return max(1u, load_amount);
 }
 
 /**
@@ -1651,15 +1652,14 @@ static void LoadUnloadVehicle(Vehicle *front)
 		if (v->cargo_cap == 0) continue;
 		artic_part++;
 
-		uint load_amount = GetLoadAmount(v);
-
 		GoodsEntry *ge = &st->goods[v->cargo_type];
 
 		if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && (front->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
 			uint cargo_count = v->cargo.UnloadCount();
-			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, load_amount) : cargo_count;
+			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, GetLoadAmount(v)) : cargo_count;
 			bool remaining = false; // Are there cargo entities in this vehicle that can still be unloaded here?
 
+			assert(payment != NULL);
 			payment->SetCargo(v->cargo_type);
 
 			if (!HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE) && v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER) > 0) {
@@ -1735,7 +1735,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		/* update stats */
 		int t;
 		switch (front->type) {
-			case VEH_TRAIN: /* FALL THROUGH */
+			case VEH_TRAIN:
 			case VEH_SHIP:
 				t = front->vcache.cached_max_speed;
 				break;
@@ -1761,8 +1761,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 		 * has capacity for it, load it on the vehicle. */
 		uint cap_left = v->cargo_cap - v->cargo.StoredCount();
 		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0)) {
-			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, load_amount);
 			if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
+			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, GetLoadAmount(v));
 
 			uint loaded = ge->cargo.Load(cap_left, &v->cargo, st->xy, next_station);
 			if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {

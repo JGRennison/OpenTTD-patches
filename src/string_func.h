@@ -41,7 +41,20 @@ int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap)
 char *CDECL str_fmt(const char *str, ...) WARN_FORMAT(1, 2);
 char *str_vfmt(const char *str, va_list ap);
 
-void str_validate(char *str, const char *last, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
+char *str_validate_intl(char *str, const char *last, StringValidationSettings settings);
+
+/**
+ * Scans the string for valid characters and if it finds invalid ones,
+ * replaces them with a question mark '?' (if not ignored)
+ * @param str the string to validate
+ * @param last the last valid character of str
+ * @param settings the settings for the string validation.
+ */
+static inline void str_validate(char *str, const char *last, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+{
+	*str_validate_intl(str, last, settings) = '\0';
+}
+
 void ValidateString(const char *str);
 
 void str_fix_scc_encoded(char *str, const char *last);

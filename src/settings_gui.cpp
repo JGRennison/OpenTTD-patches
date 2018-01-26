@@ -532,6 +532,7 @@ struct GameOptionsWindow : Window {
 				_gui_zoom = (ZoomLevel)(ZOOM_LVL_OUT_4X - index);
 				UpdateCursorSize();
 				LoadStringWidthTable();
+				UpdateAllVirtCoords();
 				break;
 
 			case WID_GO_BASE_GRF_DROPDOWN:
@@ -1501,6 +1502,7 @@ static SettingsContainer &GetSettingsTree()
 				general->Add(new SettingEntry("gui.errmsg_duration"));
 				general->Add(new SettingEntry("gui.window_snap_radius"));
 				general->Add(new SettingEntry("gui.window_soft_limit"));
+				general->Add(new SettingEntry("gui.right_mouse_wnd_close"));
 			}
 
 			SettingsPage *viewports = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_VIEWPORTS));
@@ -2108,7 +2110,9 @@ struct GameSettingsWindow : Window {
 
 					DropDownList *list = new DropDownList();
 					for (int i = sdb->min; i <= (int)sdb->max; i++) {
-						*list->Append() = new DropDownListStringItem(sdb->str_val + i - sdb->min, i, false);
+						int val = sd->orderproc ? sd->orderproc(i - sdb->min) : i;
+						assert_msg(val >= sdb->min && val <= (int)sdb->max, "min: %d, max: %d, val: %d", sdb->min, sdb->max, val);
+						*list->Append() = new DropDownListStringItem(sdb->str_val + val - sdb->min, val, false);
 					}
 
 					ShowDropDownListAt(this, list, value, -1, wi_rect, COLOUR_ORANGE, true);

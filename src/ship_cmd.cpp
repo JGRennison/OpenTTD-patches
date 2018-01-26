@@ -28,6 +28,7 @@
 #include "vehicle_func.h"
 #include "sound_func.h"
 #include "ai/ai.hpp"
+#include "game/game.hpp"
 #include "pathfinder/opf/opf_ship.h"
 #include "engine_base.h"
 #include "company_base.h"
@@ -71,30 +72,34 @@ static inline TrackBits GetTileShipTrackStatus(TileIndex tile)
 	return TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_WATER, 0));
 }
 
-static SpriteID GetShipIcon(EngineID engine, EngineImageType image_type)
+static void GetShipIcon(EngineID engine, EngineImageType image_type, VehicleSpriteSeq *result)
 {
 	const Engine *e = Engine::Get(engine);
 	uint8 spritenum = e->u.ship.image_index;
 
 	if (is_custom_sprite(spritenum)) {
-		SpriteID sprite = GetCustomVehicleIcon(engine, DIR_W, image_type);
-		if (sprite != 0) return sprite;
+		GetCustomVehicleIcon(engine, DIR_W, image_type, result);
+		if (result->IsValid()) return;
 
 		spritenum = e->original_image_index;
 	}
 
 	assert(IsValidImageIndex<VEH_SHIP>(spritenum));
-	return DIR_W + _ship_sprites[spritenum];
+	result->Set(DIR_W + _ship_sprites[spritenum]);
 }
 
 void DrawShipEngine(int left, int right, int preferred_x, int y, EngineID engine, PaletteID pal, EngineImageType image_type)
 {
-	SpriteID sprite = GetShipIcon(engine, image_type);
-	const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
+	VehicleSpriteSeq seq;
+	GetShipIcon(engine, image_type, &seq);
+
+	Rect rect;
+	seq.GetBounds(&rect);
 	preferred_x = Clamp(preferred_x,
-			left - UnScaleGUI(real_sprite->x_offs),
-			right - UnScaleGUI(real_sprite->width) - UnScaleGUI(real_sprite->x_offs));
-	DrawSprite(sprite, pal, preferred_x, y);
+			left - UnScaleGUI(rect.left),
+			right - UnScaleGUI(rect.right));
+
+	seq.Draw(preferred_x, y, pal, pal == PALETTE_CRASH);
 }
 
 /**
@@ -108,27 +113,31 @@ void DrawShipEngine(int left, int right, int preferred_x, int y, EngineID engine
  */
 void GetShipSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type)
 {
-	const Sprite *spr = GetSprite(GetShipIcon(engine, image_type), ST_NORMAL);
+	VehicleSpriteSeq seq;
+	GetShipIcon(engine, image_type, &seq);
 
-	width  = UnScaleGUI(spr->width);
-	height = UnScaleGUI(spr->height);
-	xoffs  = UnScaleGUI(spr->x_offs);
-	yoffs  = UnScaleGUI(spr->y_offs);
+	Rect rect;
+	seq.GetBounds(&rect);
+
+	width  = UnScaleGUI(rect.right - rect.left + 1);
+	height = UnScaleGUI(rect.bottom - rect.top + 1);
+	xoffs  = UnScaleGUI(rect.left);
+	yoffs  = UnScaleGUI(rect.top);
 }
 
-SpriteID Ship::GetImage(Direction direction, EngineImageType image_type) const
+void Ship::GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const
 {
 	uint8 spritenum = this->spritenum;
 
 	if (is_custom_sprite(spritenum)) {
-		SpriteID sprite = GetCustomVehicleSprite(this, direction, image_type);
-		if (sprite != 0) return sprite;
+		GetCustomVehicleSprite(this, direction, image_type, result);
+		if (result->IsValid()) return;
 
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
 	assert(IsValidImageIndex<VEH_SHIP>(spritenum));
-	return _ship_sprites[spritenum] + direction;
+	result->Set(_ship_sprites[spritenum] + direction);
 }
 
 static const Depot *FindClosestShipDepot(const Vehicle *v, uint max_distance)
@@ -310,11 +319,6 @@ void Ship::UpdateDeltaXY(Direction direction)
 	this->z_extent      = 6;
 }
 
-static const TileIndexDiffC _ship_leave_depot_offs[] = {
-	{-1,  0},
-	{ 0, -1}
-};
-
 static bool CheckShipLeaveDepot(Ship *v)
 {
 	if (!v->IsChainInDepot()) return false;
@@ -330,9 +334,9 @@ static bool CheckShipLeaveDepot(Ship *v)
 	Axis axis = GetShipDepotAxis(tile);
 
 	DiagDirection north_dir = ReverseDiagDir(AxisToDiagDir(axis));
-	TileIndex north_neighbour = TILE_ADD(tile, ToTileIndexDiff(_ship_leave_depot_offs[axis]));
+	TileIndex north_neighbour = TILE_ADD(tile, TileOffsByDiagDir(north_dir));
 	DiagDirection south_dir = AxisToDiagDir(axis);
-	TileIndex south_neighbour = TILE_ADD(tile, -2 * ToTileIndexDiff(_ship_leave_depot_offs[axis]));
+	TileIndex south_neighbour = TILE_ADD(tile, 2 * TileOffsByDiagDir(south_dir));
 
 	TrackBits north_tracks = DiagdirReachesTracks(north_dir) & GetTileShipTrackStatus(north_neighbour);
 	TrackBits south_tracks = DiagdirReachesTracks(south_dir) & GetTileShipTrackStatus(south_neighbour);
@@ -419,6 +423,7 @@ static void ShipArrivesAt(const Vehicle *v, Station *st)
 			st->index
 		);
 		AI::NewEvent(v->owner, new ScriptEventStationFirstVehicle(st->index, v->index));
+		Game::NewEvent(new ScriptEventStationFirstVehicle(st->index, v->index));
 	}
 }
 
@@ -447,27 +452,6 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 
 	v->HandlePathfindingResult(path_found);
 	return track;
-}
-
-static const Direction _new_vehicle_direction_table[] = {
-	DIR_N , DIR_NW, DIR_W , INVALID_DIR,
-	DIR_NE, DIR_N , DIR_SW, INVALID_DIR,
-	DIR_E , DIR_SE, DIR_S
-};
-
-static Direction ShipGetNewDirectionFromTiles(TileIndex new_tile, TileIndex old_tile)
-{
-	uint offs = (TileY(new_tile) - TileY(old_tile) + 1) * 4 +
-							TileX(new_tile) - TileX(old_tile) + 1;
-	assert(offs < 11 && offs != 3 && offs != 7);
-	return _new_vehicle_direction_table[offs];
-}
-
-static Direction ShipGetNewDirection(Vehicle *v, int x, int y)
-{
-	uint offs = (y - v->y_pos + 1) * 4 + (x - v->x_pos + 1);
-	assert(offs < 11 && offs != 3 && offs != 7);
-	return _new_vehicle_direction_table[offs];
 }
 
 static inline TrackBits GetAvailShipTracks(TileIndex tile, DiagDirection dir)
@@ -592,9 +576,8 @@ static void ShipController(Ship *v)
 			/* New tile */
 			if (!IsValidTile(gp.new_tile)) goto reverse_direction;
 
-			dir = ShipGetNewDirectionFromTiles(gp.new_tile, gp.old_tile);
-			assert(dir == DIR_NE || dir == DIR_SE || dir == DIR_SW || dir == DIR_NW);
-			DiagDirection diagdir = DirToDiagDir(dir);
+			DiagDirection diagdir = DiagdirBetweenTiles(gp.old_tile, gp.new_tile);
+			assert(diagdir != INVALID_DIAGDIR);
 			tracks = GetAvailShipTracks(gp.new_tile, diagdir);
 			if (tracks == TRACK_BIT_NONE) goto reverse_direction;
 
@@ -635,7 +618,6 @@ static void ShipController(Ship *v)
 	}
 
 	/* update image of ship, as well as delta XY */
-	dir = ShipGetNewDirection(v, gp.x, gp.y);
 	v->x_pos = gp.x;
 	v->y_pos = gp.y;
 	v->z_pos = GetSlopePixelZ(gp.x, gp.y);
@@ -711,7 +693,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, u
 		v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_ships);
 		v->date_of_last_service = _date;
 		v->build_year = _cur_year;
-		v->cur_image = SPR_IMG_QUERY;
+		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = VehicleRandomBits();
 
 		v->UpdateCache();
