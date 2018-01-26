@@ -719,12 +719,6 @@ static void ShipController(Ship *v)
 	} else {
 		/* On a bridge */
 		if (!IsTileType(gp.new_tile, MP_TUNNELBRIDGE) || !HasBit(VehicleEnterTile(v, gp.new_tile, gp.x, gp.y), VETS_ENTERED_WORMHOLE)) {
-			if (_settings_game.vehicle.ship_collision_avoidance && gp.old_tile != gp.new_tile){
-				DiagDirection diagdir = DiagdirBetweenTiles(gp.old_tile, gp.new_tile);
-				track = AxisToTrack(DiagDirToAxis(diagdir));
-				CheckDistanceBetweenShips(gp.new_tile, v, v->state, &track, diagdir);
-				v->tile = gp.new_tile; // Note! Trains and cars keep v->tile fixed on tunnel entrance ships not!! (avoid spaghetti code)
-			}
 			v->x_pos = gp.x;
 			v->y_pos = gp.y;
 			v->UpdatePosition();
