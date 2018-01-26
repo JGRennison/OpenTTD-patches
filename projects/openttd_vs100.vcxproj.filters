@@ -100,6 +100,9 @@
     <Filter Include="Threading">
       <UniqueIdentifier>{c76ff9f1-1e62-46d8-8d55-000000000032}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Btree containers">
+      <UniqueIdentifier>{c76ff9f1-1e62-46d8-8d55-000000000033}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\airport.cpp">
@@ -3066,6 +3069,27 @@
     <ClCompile Include="..\src\thread\thread_win32.cpp">
       <Filter>Threading</Filter>
     </ClCompile>
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree.h">
+      <Filter>Btree containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_container.h">
+      <Filter>Btree containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_map.h">
+      <Filter>Btree containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_set.h">
+      <Filter>Btree containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree.h">
+      <Filter>Btree containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree_map.h">
+      <Filter>Btree containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree_set.h">
+      <Filter>Btree containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />
