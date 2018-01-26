@@ -319,6 +319,18 @@ static inline uint CeilDiv(uint a, uint b)
 }
 
 /**
+ * Computes ceil(a / b) for non-negative a and b (templated).
+ * @param a Numerator
+ * @param b Denominator
+ * @return Quotient, rounded up
+ */
+template <typename T>
+static inline T CeilDivT(T a, T b)
+{
+	return (a + b - 1) / b;
+}
+
+/**
  * Computes ceil(a / b) * b for non-negative a and b.
  * @param a Numerator
  * @param b Denominator
@@ -327,6 +339,18 @@ static inline uint CeilDiv(uint a, uint b)
 static inline uint Ceil(uint a, uint b)
 {
 	return CeilDiv(a, b) * b;
+}
+
+/**
+ * Computes ceil(a / b) * b for non-negative a and b (templated).
+ * @param a Numerator
+ * @param b Denominator
+ * @return a rounded up to the nearest multiple of b.
+ */
+template <typename T>
+static inline T CeilT(T a, T b)
+{
+	return CeilDivT<T>(a, b) * b;
 }
 
 /**
