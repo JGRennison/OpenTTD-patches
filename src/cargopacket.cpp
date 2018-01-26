@@ -16,6 +16,9 @@
 #include "economy_base.h"
 #include "cargoaction.h"
 #include "order_type.h"
+#include "company_func.h"
+#include "core/backup_type.hpp"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include <vector>
 
@@ -24,6 +27,51 @@
 /* Initialize the cargopacket-pool */
 CargoPacketPool _cargopacket_pool("CargoPacket");
 INSTANTIATE_POOL_METHODS(CargoPacket)
+
+btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
+
+void ClearCargoPacketDeferredPayments() {
+	_cargo_packet_deferred_payments.clear();
+}
+
+void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_owner)
+{
+	std::vector<std::pair<uint64, Money>> to_merge;
+	auto iter = _cargo_packet_deferred_payments.begin();
+	while (iter != _cargo_packet_deferred_payments.end()) {
+		uint64 k = iter->first;
+		if ((CompanyID) GB(k, 24, 8) == old_owner) {
+			if (new_owner != INVALID_OWNER) {
+				SB(k, 24, 8, new_owner);
+				to_merge.push_back({ k, iter->second });
+			}
+			iter = _cargo_packet_deferred_payments.erase(iter);
+		} else {
+			++iter;
+		}
+	}
+	for (auto &m : to_merge) {
+		_cargo_packet_deferred_payments[m.first] += m.second;
+	}
+}
+
+inline uint64 CargoPacketDeferredPaymentKey(CargoPacketID id, CompanyID cid, VehicleType type)
+{
+	return (((uint64) id) << 32) | (cid << 24) | (type << 22);
+}
+
+template <typename F>
+inline void IterateCargoPacketDeferredPayments(CargoPacketID index, bool erase_range, F functor)
+{
+	auto start_iter = _cargo_packet_deferred_payments.lower_bound(CargoPacketDeferredPaymentKey(index, (CompanyID) 0, (VehicleType) 0));
+	auto iter = start_iter;
+	for (; iter != _cargo_packet_deferred_payments.end() && iter->first >> 32 == index; ++iter) {
+		functor(iter->second, (CompanyID) GB(iter->first, 24, 8), (VehicleType) GB(iter->first, 22, 2));
+	}
+	if (erase_range) {
+		_cargo_packet_deferred_payments.erase(start_iter, iter);
+	}
+}
 
 /**
  * Create a new packet for savegame loading.
@@ -85,6 +133,16 @@ CargoPacket::CargoPacket(uint16 count, byte days_in_transit, StationID source, T
 	this->source_type = source_type;
 }
 
+/** Destroy the packet. */
+CargoPacket::~CargoPacket()
+{
+	if (CleaningPool()) return;
+
+	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		IterateCargoPacketDeferredPayments(this->index, true, [](Money &payment, CompanyID cid, VehicleType type) { });
+	}
+}
+
 /**
  * Split this packet in two and return the split off part.
  * @param new_size Size of the split part.
@@ -97,6 +155,20 @@ CargoPacket *CargoPacket::Split(uint new_size)
 	Money fs = this->FeederShare(new_size);
 	CargoPacket *cp_new = new CargoPacket(new_size, this->days_in_transit, this->source, this->source_xy, this->loaded_at_xy, fs, this->source_type, this->source_id);
 	this->feeder_share -= fs;
+
+	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		std::vector<std::pair<uint64, Money>> to_add;
+		IterateCargoPacketDeferredPayments(this->index, false, [&](Money &payment, CompanyID cid, VehicleType type) {
+			Money share = payment * new_size / static_cast<uint>(this->count);
+			payment -= share;
+			to_add.push_back({ CargoPacketDeferredPaymentKey(cp_new->index, cid, type), share });
+		});
+		for (auto &m : to_add) {
+			_cargo_packet_deferred_payments[m.first] = m.second;
+		}
+		cp_new->flags |= CPF_HAS_DEFERRED_PAYMENT;
+	}
+
 	this->count -= new_size;
 	return cp_new;
 }
@@ -109,6 +181,20 @@ void CargoPacket::Merge(CargoPacket *cp)
 {
 	this->count += cp->count;
 	this->feeder_share += cp->feeder_share;
+
+	if (cp->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		std::vector<std::pair<uint64, Money>> to_merge;
+		IterateCargoPacketDeferredPayments(cp->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
+			to_merge.push_back({ CargoPacketDeferredPaymentKey(this->index, cid, type), payment });
+		});
+		cp->flags &= ~CPF_HAS_DEFERRED_PAYMENT;
+
+		for (auto &m : to_merge) {
+			_cargo_packet_deferred_payments[m.first] += m.second;
+		}
+		this->flags |= CPF_HAS_DEFERRED_PAYMENT;
+	}
+
 	delete cp;
 }
 
@@ -120,7 +206,40 @@ void CargoPacket::Reduce(uint count)
 {
 	assert(count < this->count);
 	this->feeder_share -= this->FeederShare(count);
+	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		IterateCargoPacketDeferredPayments(this->index, false, [&](Money &payment, CompanyID cid, VehicleType type) {
+			payment -= payment * count / static_cast<uint>(this->count);
+		});
+	}
 	this->count -= count;
+}
+
+void CargoPacket::RegisterDeferredCargoPayment(CompanyID cid, VehicleType type, Money payment)
+{
+	this->flags |= CPF_HAS_DEFERRED_PAYMENT;
+	_cargo_packet_deferred_payments[CargoPacketDeferredPaymentKey(this->index, cid, type)] += payment;
+}
+
+void CargoPacket::PayDeferredPayments()
+{
+	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		IterateCargoPacketDeferredPayments(this->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
+			Backup<CompanyByte> cur_company(_current_company, cid, FILE_LINE);
+
+			ExpensesType exp;
+			switch (type) {
+				case VEH_TRAIN: exp = EXPENSES_TRAIN_INC; break;
+				case VEH_ROAD: exp = EXPENSES_ROADVEH_INC; break;
+				case VEH_SHIP: exp = EXPENSES_SHIP_INC; break;
+				case VEH_AIRCRAFT: exp = EXPENSES_AIRCRAFT_INC; break;
+				default: NOT_REACHED();
+			}
+			SubtractMoneyFromCompany(CommandCost(exp, -payment));
+
+			cur_company.Restore();
+		});
+		this->flags &= ~CPF_HAS_DEFERRED_PAYMENT;
+	}
 }
 
 /**

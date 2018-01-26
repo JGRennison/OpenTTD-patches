@@ -587,6 +587,9 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	/* Change colour of existing windows */
 	if (new_owner != INVALID_OWNER) ChangeWindowOwner(old_owner, new_owner);
 
+	/* Change owner of deferred cargo payments */
+	ChangeOwnershipOfCargoPacketDeferredPayments(old_owner, new_owner);
+
 	cur_company.Restore();
 
 	MarkWholeScreenDirty();
@@ -1233,7 +1236,7 @@ CargoPayment::~CargoPayment()
  * @param cp The cargo packet to pay for.
  * @param count The number of packets to pay for.
  */
-void CargoPayment::PayFinalDelivery(const CargoPacket *cp, uint count)
+void CargoPayment::PayFinalDelivery(CargoPacket *cp, uint count)
 {
 	if (this->owner == NULL) {
 		this->owner = Company::Get(this->front->owner);
@@ -1246,6 +1249,7 @@ void CargoPayment::PayFinalDelivery(const CargoPacket *cp, uint count)
 
 	/* For Infrastructure patch. Handling transfers between other companies */
 	this->route_profit += profit;
+	cp->PayDeferredPayments();
 
 	/* The vehicle's profit is whatever route profit there is minus feeder shares. */
 	this->visual_profit += profit;
@@ -1257,7 +1261,7 @@ void CargoPayment::PayFinalDelivery(const CargoPacket *cp, uint count)
  * @param count The number of packets to pay for.
  * @return The amount of money paid for the transfer.
  */
-Money CargoPayment::PayTransfer(const CargoPacket *cp, uint count)
+Money CargoPayment::PayTransfer(CargoPacket *cp, uint count)
 {
 	Money profit = GetTransportedGoodsIncome(
 			count,
@@ -1271,7 +1275,7 @@ Money CargoPayment::PayTransfer(const CargoPacket *cp, uint count)
 	profit = profit * _settings_game.economy.feeder_payment_share / 100;
 
 	/* For Infrastructure patch. Handling transfers between other companies */
-	this->route_profit += profit;
+	cp->RegisterDeferredCargoPayment(this->front->owner, this->front->type, profit);
 
 	this->visual_transfer += profit; // accumulate transfer profits for whole vehicle
 	return profit; // account for the (virtual) profit already made for the cargo packet

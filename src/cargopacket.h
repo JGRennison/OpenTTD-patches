@@ -18,6 +18,7 @@
 #include "order_type.h"
 #include "cargo_type.h"
 #include "vehicle_type.h"
+#include "company_type.h"
 #include "core/multimap.hpp"
 #include <deque>
 
@@ -38,6 +39,9 @@ extern const struct SaveLoad *GetCargoPacketDesc();
 
 typedef uint32 TileOrStationID;
 
+void ClearCargoPacketDeferredPayments();
+void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_owner);
+
 /**
  * Container for cargo from the same location and time.
  */
@@ -54,6 +58,12 @@ private:
 		TileOrStationID loaded_at_xy; ///< Location where this cargo has been loaded into the vehicle.
 		TileOrStationID next_station; ///< Station where the cargo wants to go next.
 	};
+	uint flags = 0;             ///< NOSAVE: temporary flags
+
+	/** Vehicle status bits in #Vehicle::vehstatus. */
+	enum CargoPacketFlags {
+		CPF_HAS_DEFERRED_PAYMENT = 0x01, ///< Cargo packet has 1 or more deferred payment(s)
+	};
 
 	/** The CargoList caches, thus needs to know about it. */
 	template <class Tinst, class Tcont> friend class CargoList;
@@ -61,6 +71,7 @@ private:
 	friend class StationCargoList;
 	/** We want this to be saved, right? */
 	friend const struct SaveLoad *GetCargoPacketDesc();
+	friend void Load_CPDP();
 public:
 	/** Maximum number of items in a single cargo packet. */
 	static const uint16 MAX_COUNT = UINT16_MAX;
@@ -68,9 +79,7 @@ public:
 	CargoPacket();
 	CargoPacket(StationID source, TileIndex source_xy, uint16 count, SourceType source_type, SourceID source_id);
 	CargoPacket(uint16 count, byte days_in_transit, StationID source, TileIndex source_xy, TileIndex loaded_at_xy, Money feeder_share = 0, SourceType source_type = ST_INDUSTRY, SourceID source_id = INVALID_SOURCE);
-
-	/** Destroy the packet. */
-	~CargoPacket() { }
+	~CargoPacket();
 
 	CargoPacket *Split(uint new_size);
 	void Merge(CargoPacket *cp);
@@ -123,6 +132,9 @@ public:
 	{
 		return this->feeder_share * part / static_cast<uint>(this->count);
 	}
+
+	void RegisterDeferredCargoPayment(CompanyID cid, VehicleType type, Money payment);
+	void PayDeferredPayments();
 
 	/**
 	 * Gets the number of days this cargo has been in transit.

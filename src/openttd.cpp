@@ -70,6 +70,7 @@
 #include "thread/thread.h"
 #include "bridge_signal_map.h"
 #include "zoning.h"
+#include "cargopacket.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -344,6 +345,7 @@ static void ShutdownGame()
 	LinkGraphSchedule::Clear();
 	ClearTraceRestrictMapping();
 	ClearBridgeSimulatedSignalMapping();
+	ClearCargoPacketDeferredPayments();
 	PoolBase::Clean(PT_ALL);
 
 	FreeSignalPrograms();
