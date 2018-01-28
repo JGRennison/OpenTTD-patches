@@ -1976,6 +1976,20 @@ DEF_CONSOLE_CMD(ConDumpInflation)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpCpdpStats)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump cargo packet deferred payment stats.");
+		return true;
+	}
+
+	extern void DumpCargoPacketDeferredPaymentStats(char *buffer, const char *last);
+	char buffer[32768];
+	DumpCargoPacketDeferredPaymentStats(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2142,6 +2156,7 @@ void IConsoleStdLibRegister()
 #endif
 	IConsoleCmdRegister("dump_command_log", ConDumpCommandLog, nullptr, true);
 	IConsoleCmdRegister("dump_inflation", ConDumpInflation, nullptr, true);
+	IConsoleCmdRegister("dump_cpdp_stats", ConDumpCpdpStats, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 
 	/* NewGRF development stuff */
