@@ -42,6 +42,7 @@
 #include "aircraft.h"
 #include "airport.h"
 #include "station_base.h"
+#include "economy_func.h"
 
 #include "safeguards.h"
 
@@ -1959,6 +1960,22 @@ DEF_CONSOLE_CMD(ConDumpCommandLog)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpInflation)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump inflation data.");
+		return true;
+	}
+
+	IConsolePrintF(CC_DEFAULT, "interest_rate: %u", _economy.interest_rate);
+	IConsolePrintF(CC_DEFAULT, "infl_amount: %u", _economy.infl_amount);
+	IConsolePrintF(CC_DEFAULT, "infl_amount_pr: %u", _economy.infl_amount_pr);
+	IConsolePrintF(CC_DEFAULT, "inflation_prices: %f", _economy.inflation_prices / 65536.0);
+	IConsolePrintF(CC_DEFAULT, "inflation_payment: %f", _economy.inflation_payment / 65536.0);
+	IConsolePrintF(CC_DEFAULT, "inflation ratio: %f", (double) _economy.inflation_prices / (double) _economy.inflation_payment);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2124,6 +2141,7 @@ void IConsoleStdLibRegister()
 	IConsoleDebugLibRegister();
 #endif
 	IConsoleCmdRegister("dump_command_log", ConDumpCommandLog, nullptr, true);
+	IConsoleCmdRegister("dump_inflation", ConDumpInflation, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 
 	/* NewGRF development stuff */
