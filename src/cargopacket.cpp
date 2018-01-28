@@ -18,6 +18,8 @@
 #include "order_type.h"
 #include "company_func.h"
 #include "core/backup_type.hpp"
+#include "string_func.h"
+#include "strings_func.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include "safeguards.h"
@@ -69,6 +71,29 @@ inline void IterateCargoPacketDeferredPayments(CargoPacketID index, bool erase_r
 	if (erase_range) {
 		_cargo_packet_deferred_payments.erase(start_iter, iter);
 	}
+}
+
+void DumpCargoPacketDeferredPaymentStats(char *buffer, const char *last)
+{
+	Money payments[256][4] = {};
+	for (auto &it : _cargo_packet_deferred_payments) {
+		payments[GB(it.first, 24, 8)][GB(it.first, 22, 2)] += it.second;
+	}
+	for (uint i = 0; i < 256; i++) {
+		for (uint j = 0; j < 4; j++) {
+			if (payments[i][j] != 0) {
+				SetDParam(0, i);
+				buffer = GetString(buffer, STR_COMPANY_NAME, last);
+				buffer += seprintf(buffer, last, " (");
+				buffer = GetString(buffer, STR_REPLACE_VEHICLE_TRAIN + j, last);
+				buffer += seprintf(buffer, last, "): ");
+				SetDParam(0, payments[i][j]);
+				buffer = GetString(buffer, STR_JUST_CURRENCY_LONG, last);
+				buffer += seprintf(buffer, last, "\n");
+			}
+		}
+	}
+	buffer += seprintf(buffer, last, "Deferred payment count: %u\n", (uint) _cargo_packet_deferred_payments.size());
 }
 
 /**

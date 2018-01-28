@@ -1882,6 +1882,20 @@ DEF_CONSOLE_CMD(ConNewGRFReload)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpCpdpStats)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump cargo packet deferred payment stats.");
+		return true;
+	}
+
+	extern void DumpCargoPacketDeferredPaymentStats(char *buffer, const char *last);
+	char buffer[32768];
+	DumpCargoPacketDeferredPaymentStats(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -2025,6 +2039,7 @@ void IConsoleStdLibRegister()
 #ifdef _DEBUG
 	IConsoleDebugLibRegister();
 #endif
+	IConsoleCmdRegister("dump_cpdp_stats", ConDumpCpdpStats);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
