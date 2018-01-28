@@ -60,7 +60,7 @@ private:
 	};
 	uint flags = 0;             ///< NOSAVE: temporary flags
 
-	/** Vehicle status bits in #Vehicle::vehstatus. */
+	/** Cargo packet flag bits in CargoPacket::flags. */
 	enum CargoPacketFlags {
 		CPF_HAS_DEFERRED_PAYMENT = 0x01, ///< Cargo packet has 1 or more deferred payment(s)
 	};
