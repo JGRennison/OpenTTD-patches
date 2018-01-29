@@ -1211,6 +1211,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	src = src->GetFirstEnginePart();
 	if (dst != NULL) {
 		dst = dst->GetFirstEnginePart();
+		assert(HasBit(dst->subtype, GVSF_VIRTUAL) == HasBit(src->subtype, GVSF_VIRTUAL));
 	}
 
 	/* don't move the same vehicle.. */
@@ -1218,9 +1219,11 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 	/* locate the head of the two chains */
 	Train *src_head = src->First();
+	assert(HasBit(src_head->subtype, GVSF_VIRTUAL) == HasBit(src->subtype, GVSF_VIRTUAL));
 	Train *dst_head;
 	if (dst != NULL) {
 		dst_head = dst->First();
+		assert(HasBit(dst_head->subtype, GVSF_VIRTUAL) == HasBit(dst->subtype, GVSF_VIRTUAL));
 		if (dst_head->tile != src_head->tile) return CMD_ERROR;
 		/* Now deal with articulated part of destination wagon */
 		dst = dst->GetLastEnginePart();

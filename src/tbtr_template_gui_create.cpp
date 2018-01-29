@@ -188,6 +188,9 @@ public:
 		}
 
 		virtual_train = train;
+		if (virtual_train != NULL) {
+			assert(HasBit(virtual_train->subtype, GVSF_VIRTUAL));
+		}
 		UpdateButtonState();
 	}
 
@@ -542,6 +545,7 @@ public:
 	void RearrangeVirtualTrain()
 	{
 		virtual_train = virtual_train->First();
+		assert(HasBit(virtual_train->subtype, GVSF_VIRTUAL));
 	}
 
 
