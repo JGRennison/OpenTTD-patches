@@ -1034,12 +1034,48 @@ void CallVehicleTicks()
 		}
 	}
 
+	/* do Template Replacement */
+	Backup<CompanyByte> tmpl_cur_company(_current_company, FILE_LINE);
+	for (TemplateReplacementMap::iterator it = _vehicles_to_templatereplace.Begin(); it != _vehicles_to_templatereplace.End(); it++) {
+		Train *t = it->first;
+
+		_vehicles_to_autoreplace.Erase(t);
+
+		/* Store the position of the effect as the vehicle pointer will become invalid later */
+		int x = t->x_pos;
+		int y = t->y_pos;
+		int z = t->z_pos;
+
+		tmpl_cur_company.Change(t->owner);
+
+		bool stayInDepot = it->second;
+
+		it->first->vehstatus |= VS_STOPPED;
+		CommandCost res = DoCommand(t->tile, t->index, stayInDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
+
+		if (!IsLocalCompany()) continue;
+
+		if (res.Succeeded()) {
+			if (res.GetCost() != 0) {
+				ShowCostOrIncomeAnimation(x, y, z, res.GetCost());
+			}
+			continue;
+		}
+
+		ShowAutoReplaceAdviceMessage(res, t);
+	}
+	tmpl_cur_company.Restore();
+
 	/* do Auto Replacement */
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
 	for (AutoreplaceMap::iterator it = _vehicles_to_autoreplace.Begin(); it != _vehicles_to_autoreplace.End(); it++) {
 		v = it->first;
 		/* Autoreplace needs the current company set as the vehicle owner */
 		cur_company.Change(v->owner);
+
+		if (v->type == VEH_TRAIN) {
+			assert(!_vehicles_to_templatereplace.Contains(Train::From(v)));
+		}
 
 		/* Start vehicle if we stopped them in VehicleEnteredDepotThisTick()
 		 * We need to stop them between VehicleEnteredDepotThisTick() and here or we risk that
@@ -1066,38 +1102,6 @@ void CallVehicleTicks()
 		ShowAutoReplaceAdviceMessage(res, v);
 	}
 	cur_company.Restore();
-
-	/* do Template Replacement */
-	Backup<CompanyByte> tmpl_cur_company(_current_company, FILE_LINE);
-	for (TemplateReplacementMap::iterator it = _vehicles_to_templatereplace.Begin(); it != _vehicles_to_templatereplace.End(); it++) {
-		Train *t = it->first;
-
-		assert(!_vehicles_to_autoreplace.Contains(t));
-
-		/* Store the position of the effect as the vehicle pointer will become invalid later */
-		int x = t->x_pos;
-		int y = t->y_pos;
-		int z = t->z_pos;
-
-		tmpl_cur_company.Change(t->owner);
-
-		bool stayInDepot = it->second;
-
-		it->first->vehstatus |= VS_STOPPED;
-		CommandCost res = DoCommand(t->tile, t->index, stayInDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
-
-		if (!IsLocalCompany()) continue;
-
-		if (res.Succeeded()) {
-			if (res.GetCost() != 0) {
-				ShowCostOrIncomeAnimation(x, y, z, res.GetCost());
-			}
-			continue;
-		}
-
-		ShowAutoReplaceAdviceMessage(res, t);
-	}
-	tmpl_cur_company.Restore();
 }
 
 /**
