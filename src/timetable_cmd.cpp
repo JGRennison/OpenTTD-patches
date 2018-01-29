@@ -803,7 +803,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			return;
 		}
 	} else {
-		assert(real_timetable_order == real_current_order);
+		assert_msg(real_timetable_order == real_current_order, "%u, %u", v->cur_real_order_index, v->cur_timetable_order_index);
 	}
 
 	if (just_started) return;

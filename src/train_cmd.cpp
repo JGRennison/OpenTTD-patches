@@ -200,7 +200,8 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		const RailVehicleInfo *rvi_u = RailVehInfo(u->engine_type);
 
 		/* Check the this->first cache. */
-		assert(u->First() == this);
+		assert_msg(u->First() == this, "u: %s, this: %s",
+				scope_dumper().VehicleInfo(u), scope_dumper().VehicleInfo(this));
 
 		/* update the 'first engine' */
 		u->gcache.first_engine = this == u ? INVALID_ENGINE : first_engine;
