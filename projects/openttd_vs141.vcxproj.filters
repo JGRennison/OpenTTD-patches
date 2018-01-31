@@ -3042,9 +3042,70 @@
     <ClCompile Include="..\src\thread\thread_win32.cpp">
       <Filter>Threading</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\departures.cpp" />
+    <ClCompile Include="..\src\departures_gui.cpp" />
+    <ClCompile Include="..\src\dock.cpp" />
+    <ClCompile Include="..\src\endian_check.cpp" />
+    <ClCompile Include="..\src\infrastructure.cpp" />
+    <ClCompile Include="..\src\plans.cpp" />
+    <ClCompile Include="..\src\plans_cmd.cpp" />
+    <ClCompile Include="..\src\plans_gui.cpp" />
+    <ClCompile Include="..\src\programmable_signals.cpp" />
+    <ClCompile Include="..\src\programmable_signals_gui.cpp" />
+    <ClCompile Include="..\src\schdispatch_cmd.cpp" />
+    <ClCompile Include="..\src\schdispatch_gui.cpp" />
+    <ClCompile Include="..\src\scope_info.cpp" />
+    <ClCompile Include="..\src\tbtr_template_gui_create.cpp" />
+    <ClCompile Include="..\src\tbtr_template_gui_main.cpp" />
+    <ClCompile Include="..\src\tbtr_template_vehicle.cpp" />
+    <ClCompile Include="..\src\tbtr_template_vehicle_func.cpp" />
+    <ClCompile Include="..\src\tracerestrict.cpp" />
+    <ClCompile Include="..\src\tracerestrict_gui.cpp" />
+    <ClCompile Include="..\src\zoning_cmd.cpp" />
+    <ClCompile Include="..\src\zoning_gui.cpp" />
+    <ClCompile Include="..\src\saveload\bridge_signal_sl.cpp" />
+    <ClCompile Include="..\src\saveload\extended_ver_sl.cpp" />
+    <ClCompile Include="..\src\saveload\plans_sl.cpp" />
+    <ClCompile Include="..\src\saveload\signal_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tbtr_template_replacement_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tbtr_template_veh_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tracerestrict_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tunnel_sl.cpp" />
+    <ClCompile Include="..\src\blitter\32bpp_anim_sse2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />
     <None Include="..\readme.txt" />
+    <None Include="..\src\rev.cpp.in" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\bridge_signal_map.h" />
+    <ClInclude Include="..\src\crashlog_bfd.h" />
+    <ClInclude Include="..\src\departures_func.h" />
+    <ClInclude Include="..\src\departures_gui.h" />
+    <ClInclude Include="..\src\departures_type.h" />
+    <ClInclude Include="..\src\dock_base.h" />
+    <ClInclude Include="..\src\infrastructure_func.h" />
+    <ClInclude Include="..\src\order_cmd.h" />
+    <ClInclude Include="..\src\plans_base.h" />
+    <ClInclude Include="..\src\plans_func.h" />
+    <ClInclude Include="..\src\plans_type.h" />
+    <ClInclude Include="..\src\programmable_signals.h" />
+    <ClInclude Include="..\src\schdispatch.h" />
+    <ClInclude Include="..\src\scope.h" />
+    <ClInclude Include="..\src\scope_info.h" />
+    <ClInclude Include="..\src\smallmap_colours.h" />
+    <ClInclude Include="..\src\string_func_extra.h" />
+    <ClInclude Include="..\src\tbtr_template_gui_create.h" />
+    <ClInclude Include="..\src\tbtr_template_gui_main.h" />
+    <ClInclude Include="..\src\tbtr_template_vehicle.h" />
+    <ClInclude Include="..\src\tbtr_template_vehicle_func.h" />
+    <ClInclude Include="..\src\town_gui.h" />
+    <ClInclude Include="..\src\tracerestrict.h" />
+    <ClInclude Include="..\src\tunnel_base.h" />
+    <ClInclude Include="..\src\unit_conversion.h" />
+    <ClInclude Include="..\src\zoning.h" />
+    <ClInclude Include="..\src\saveload\extended_ver_sl.h" />
+    <ClInclude Include="..\src\blitter\32bpp_anim_sse2.hpp" />
   </ItemGroup>
 </Project>
