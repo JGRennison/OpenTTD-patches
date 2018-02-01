@@ -4548,7 +4548,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
             if (st->index == v->current_order.GetDestination()) {
                 v->last_station_visited = st->index;
                 v->BeginLoading();
-                return false;
+                return true;
             }
         }
 
