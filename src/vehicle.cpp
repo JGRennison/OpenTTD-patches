@@ -2801,7 +2801,9 @@ void Vehicle::HandleLoading(bool mode)
 			/* Not the first call for this tick, or still loading */
 			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || this->current_order_time < wait_time) return;
 
-			this->PlayLeaveStationSound();
+            // EDIT: Do not play this sound here, as this function is hit even if we stay
+            //  at the station, causing an endless cacophony
+            //this->PlayLeaveStationSound();
 
 			this->LeaveStation();
 
