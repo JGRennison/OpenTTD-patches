@@ -1569,7 +1569,26 @@ again:
 	}
 
 	if (v->current_order.IsType(OT_LEAVESTATION) && IsDriveThroughStopTile(v->tile)) {
-		v->current_order.Free();
+        // EDIT: check if we are heading to an identical station, and let us
+        //  immediately re-enter the station, if so
+
+        Station *st = Station::GetByTile(v->tile);
+
+        v->current_order.Free();
+
+        ProcessOrders(v);
+
+        if (v->current_order.IsType(OT_GOTO_STATION)) {
+            if (st->index == v->current_order.GetDestination()) {
+                v->last_station_visited = st->index;
+                v->BeginLoading();
+                return false;
+            }
+        }
+
+        // We play the sound here, as this is the one situation in which we know
+        //  for sure we are heading elsewhere
+        StartRoadVehSound(v);
 	}
 
 	/* Move to next frame unless vehicle arrived at a stop position
