@@ -24,6 +24,7 @@ public:
 protected:
 	TileIndex    m_orgTile;                       ///< origin tile
 	TrackdirBits m_orgTrackdirs;                  ///< origin trackdir mask
+	TileIndex    m_aheadTiles[4];                  ///< tile vehicles ahead of us going to
 
 	/** to access inherited path finder */
 	inline Tpf& Yapf()
@@ -37,6 +38,20 @@ public:
 	{
 		m_orgTile = tile;
 		m_orgTrackdirs = trackdirs;
+	}
+
+	/** */
+	void SetAheadTiles(TileIndex tile[4])
+	{
+        for (int i = 0; i < 4; i++) {
+		    m_aheadTiles[i] = tile[i];
+        }
+	}
+
+	/** */
+	const TileIndex* GetAheadTiles()
+	{
+		return m_aheadTiles;
 	}
 
 	/** Called when YAPF needs to place origin nodes into open list */
