@@ -65,6 +65,19 @@ protected:
 	inline int OneTileCost(TileIndex tile, Trackdir trackdir)
 	{
 		int cost = 0;
+        bool predictedOccupied = false;
+        
+        const TileIndex *aheadTiles = Yapf().GetAheadTiles();
+        for (int i = 0; i < 4; i++) {
+            if (aheadTiles[i] == 0xFFFF)
+                break;
+            if (aheadTiles[i] == tile) {
+                cost += Yapf().PfGetSettings().road_curve_penalty * 3;
+                predictedOccupied = true;
+                break;
+            }
+        }
+
 		/* set base cost */
 		if (IsDiagonalTrackdir(trackdir)) {
 			cost += YAPF_TILE_LENGTH;
@@ -86,11 +99,17 @@ protected:
 							/* When we're the first road stop in a 'queue' of them we increase
 							 * cost based on the fill percentage of the whole queue. */
 							const RoadStop::Entry *entry = rs->GetEntry(dir);
-							cost += entry->GetOccupied() * Yapf().PfGetSettings().road_stop_occupied_penalty / entry->GetLength();
+                            
+							cost += entry->GetOccupied() * Yapf().PfGetSettings().road_stop_occupied_penalty / entry->GetLength() * 2;
+
+                            if (predictedOccupied)
+                                cost += Yapf().PfGetSettings().road_stop_occupied_penalty * 2;
 						}
 					} else {
 						/* Increase cost for filled road stops */
-						cost += Yapf().PfGetSettings().road_stop_bay_occupied_penalty * (!rs->IsFreeBay(0) + !rs->IsFreeBay(1)) / 2;
+						cost += Yapf().PfGetSettings().road_stop_bay_occupied_penalty * (!rs->IsFreeBay(0) + !rs->IsFreeBay(1)) / 2 * 2;
+                        if (predictedOccupied)
+                            cost += Yapf().PfGetSettings().road_stop_bay_occupied_penalty * 2;
 					}
 					break;
 				}
