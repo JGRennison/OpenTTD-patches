@@ -15,6 +15,7 @@
 #include "../../roadstop_base.h"
 
 #include "../../safeguards.h"
+#include "../../vehicle_func.h"
 
 /**
  * This used to be MAX_MAP_SIZE, but is now its own constant.
@@ -351,6 +352,33 @@ public:
 		return pf.ChooseRoadTrack(v, tile, enterdir, path_found);
 	}
 
+    struct findVehiclesOnTileProcData {
+        const Vehicle *originVehicle;
+        TileIndex *indices;
+    };
+
+    static Vehicle * findVehiclesOnTileProc(Vehicle *v, void *_data)
+    {
+        findVehiclesOnTileProcData *data = (findVehiclesOnTileProcData*)(_data);
+
+        if (data->originVehicle == v)
+            return nullptr;
+
+        TileIndex ti = v->tile + TileOffsByDir(v->direction);
+
+        for (int i = 0; i < 4; i++) {
+            if (data->indices[i] != 0xFFFF) {
+                if (data->indices[i] == ti)
+                    return nullptr;
+                continue;
+            }
+            data->indices[i] = ti;
+            break;
+        }
+
+        return nullptr;
+    }
+
 	inline Trackdir ChooseRoadTrack(const RoadVehicle *v, TileIndex tile, DiagDirection enterdir, bool &path_found)
 	{
 		/* Handle special case - when next tile is destination tile.
@@ -371,6 +399,14 @@ public:
 		/* set origin and destination nodes */
 		Yapf().SetOrigin(src_tile, src_trackdirs);
 		Yapf().SetDestination(v);
+        
+        TileIndex aheadTiles[4] = { 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF };
+        findVehiclesOnTileProcData procData;
+        procData.originVehicle = v;
+        procData.indices = aheadTiles;
+        TileIndex ti = v->tile + TileOffsByDir(v->direction);
+		FindVehicleOnPos(ti, &procData, &findVehiclesOnTileProc);
+        Yapf().SetAheadTiles(aheadTiles);
 
 		/* find the best path */
 		path_found = Yapf().FindPath(v);
