@@ -512,9 +512,9 @@ static const byte _ship_subcoord[4][6][3] = {
 /** Temporary data storage for testing collisions. */
 struct ShipCollideChecker {
 
-	TrackBits track_bits; ///< Pathfinder chosen track converted to trackbits, or is v->state of requesting ship. (one bit set)
-	TileIndex tile;       ///< The tile that we really want to check.
-	Ship *v;              ///< Ship we are testing for collision.
+	TrackBits track_bits;   ///< Pathfinder chosen track converted to trackbits, or is v->state of requesting ship. (one bit set)
+	TileIndex search_tile;  ///< The tile that we really want to check.
+	Ship *v;                ///< Ship we are testing for collision.
 };
 
 /** Helper function for collision avoidance. */
@@ -531,7 +531,8 @@ static Vehicle *FindShipOnTile(Vehicle *v, void *data)
 	/* Don't detect ships passing on aquaduct. */
 	if (abs(v->z_pos - scc->v->z_pos) >= 8) return NULL;
 
-	scc->tile = v->tile;
+	/* Only requested tiles are checked. avoid desync. */
+	if (TileVirtXY(v->x_pos, v->y_pos) != scc->search_tile) return NULL;
 
 	return v;
 }
@@ -555,27 +556,34 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 	/* Only check for collision when pathfinder did not change direction.
 	 * This is done in order to keep ships moving towards the intended target. */
 	TrackBits combine = (v->state | track_bits);
-	if (combine != TRACK_BIT_HORZ && combine != TRACK_BIT_VERT && combine != track_bits && v->state != TRACK_BIT_WORMHOLE) return;
-
-	TileIndex tile_plus_one = TileAddByDiagDir(tile, _ship_search_directions[track][diagdir]);
-	if (!IsValidTile(tile_plus_one)) tile_plus_one = tile;
-	TileIndex tile_plus_two =  TileAddByDiagDir(tile_plus_one, diagdir);
-	if (!IsValidTile(tile_plus_two)) tile_plus_two = tile_plus_one;
+	if (combine != TRACK_BIT_HORZ && combine != TRACK_BIT_VERT && combine != track_bits) return;
 
 	ShipCollideChecker scc;
 	scc.v = v;
+	scc.track_bits = track_bits;
+	scc.search_tile = tile;
 
-	scc.track_bits = track_bits;
 	bool found = HasVehicleOnPos(tile, &scc, FindShipOnTile);
-	scc.track_bits = v->state;
-	if (!found) found = HasVehicleOnPos(tile_plus_one, &scc, FindShipOnTile);
-	scc.track_bits = track_bits;
-	if (!found) found = HasVehicleOnPos(tile_plus_two, &scc, FindShipOnTile);
+
+	if (!found) {
+		scc.track_bits = v->state;
+		scc.search_tile = TileAddByDiagDir(tile, _ship_search_directions[track][diagdir]);
+		if (!IsValidTile(scc.search_tile)) return;
+
+		found = HasVehicleOnPos(scc.search_tile, &scc, FindShipOnTile);
+	}
+	if (!found) {
+		scc.track_bits = track_bits;
+		scc.search_tile = TileAddByDiagDir(scc.search_tile, diagdir);
+		if (!IsValidTile(scc.search_tile)) return;
+
+		found = HasVehicleOnPos(scc.search_tile, &scc, FindShipOnTile);
+	}
 
 	if (found) {
 
 		/* Speed adjustment related to distance. */
-		v->cur_speed /= scc.tile == tile ? 8 : 2;
+		v->cur_speed /= scc.search_tile == tile ? 8 : 2;
 
 		/* Clean none wanted trackbits, including pathfinder track, TRACK_BIT_WORMHOLE and no 90 degree turns. */
 		tracks = IsDiagonalTrack(track) ? KillFirstBit(tracks) : (tracks & TRACK_BIT_CROSS);
@@ -587,7 +595,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 			TileIndex tile_check = TileAddByDiagDir(tile, _ship_search_directions[track][diagdir]);
 			if (!IsValidTile(tile_check)) continue;
 
-			if (HasVehicleOnPos(tile_check, &scc,  &FindShipOnTile)) continue;
+			if (HasVehicleOnPos(tile_check, &scc, FindShipOnTile)) continue;
 
 			TrackBits bits = GetAvailShipTracks(tile_check, _ship_search_directions[track][diagdir]);
 			if (!IsDiagonalTrack(track)) bits &= TRACK_BIT_CROSS;  // No 90 degree turns.
