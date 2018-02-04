@@ -513,8 +513,8 @@ static const byte _ship_subcoord[4][6][3] = {
 struct ShipCollideChecker {
 
 	TrackBits track_bits; ///< Pathfinder chosen track converted to trackbits, or is v->state of requesting ship. (one bit set)
-	TileIndex tile;       ///< Tile where ship was found, used to determine distance between ships.
-	int32 z_pos;          ///< z_pos of requesting ship.
+	TileIndex tile;       ///< The tile that we really want to check.
+	Ship *v;              ///< Ship we are testing for collision.
 };
 
 /** Helper function for collision avoidance. */
@@ -529,7 +529,7 @@ static Vehicle *FindShipOnTile(Vehicle *v, void *data)
 	if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) return NULL;
 
 	/* Don't detect ships passing on aquaduct. */
-	if (abs(v->z_pos - scc->z_pos) >= 8) return NULL;
+	if (abs(v->z_pos - scc->v->z_pos) >= 8) return NULL;
 
 	scc->tile = v->tile;
 
@@ -563,7 +563,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 	if (!IsValidTile(tile_plus_two)) tile_plus_two = tile_plus_one;
 
 	ShipCollideChecker scc;
-	scc.z_pos = v->z_pos;
+	scc.v = v;
 
 	scc.track_bits = track_bits;
 	bool found = HasVehicleOnPos(tile, &scc, FindShipOnTile);
