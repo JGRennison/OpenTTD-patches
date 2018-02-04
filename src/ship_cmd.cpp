@@ -546,10 +546,14 @@ static Vehicle *FindShipOnTile(Vehicle *v, void *data)
  */
 static bool HandleSpeedOnAqueduct(Ship *v, TileIndex tile, TileIndex ramp)
 {
+	TileIndexDiffC ti = TileIndexDiffCByDir(v->direction);
+
 	ShipCollideChecker scc;
-	scc.search_tile = tile + TileOffsByDir(v->direction);
 	scc.v = v;
 	scc.track_bits = TRACK_BIT_NONE;
+	scc.search_tile = TileAddWrap(tile, ti.x, ti.y);
+
+	if (scc.search_tile == INVALID_TILE) return false;
 
 	if (IsValidTile(scc.search_tile) &&
 			(HasVehicleOnPos(ramp, &scc, FindShipOnTile) ||
@@ -580,6 +584,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 	TrackBits combine = (v->state | track_bits);
 	if (combine != TRACK_BIT_HORZ && combine != TRACK_BIT_VERT && combine != track_bits) return;
 
+	TileIndexDiffC ti;
 	ShipCollideChecker scc;
 	scc.v = v;
 	scc.track_bits = track_bits;
@@ -592,15 +597,17 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 		if (IsBridgeTile(tile) && HandleSpeedOnAqueduct(v, tile, tile)) return;
 
 		scc.track_bits = v->state;
-		scc.search_tile = TileAddByDiagDir(tile, _ship_search_directions[track][diagdir]);
-		if (!IsValidTile(scc.search_tile)) return;
+		ti = TileIndexDiffCByDiagDir(_ship_search_directions[track][diagdir]);
+		scc.search_tile = TileAddWrap(tile, ti.x, ti.y);
+		if (scc.search_tile == INVALID_TILE) return;
 
 		found = HasVehicleOnPos(scc.search_tile, &scc, FindShipOnTile);
 	}
 	if (!found) {
 		scc.track_bits = track_bits;
-		scc.search_tile = TileAddByDiagDir(scc.search_tile, diagdir);
-		if (!IsValidTile(scc.search_tile)) return;
+		ti = TileIndexDiffCByDiagDir(diagdir);
+		scc.search_tile = TileAddWrap(scc.search_tile, ti.x, ti.y);
+		if (scc.search_tile == INVALID_TILE) return;
 
 		found = HasVehicleOnPos(scc.search_tile, &scc, FindShipOnTile);
 	}
@@ -616,8 +623,9 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 		while (tracks != TRACK_BIT_NONE) {
 			track = RemoveFirstTrack(&tracks);
 
-			TileIndex tile_check = TileAddByDiagDir(tile, _ship_search_directions[track][diagdir]);
-			if (!IsValidTile(tile_check)) continue;
+			ti = TileIndexDiffCByDiagDir(_ship_search_directions[track][diagdir]);
+			TileIndex tile_check = TileAddWrap(tile, ti.x, ti.y);
+			if (tile_check == INVALID_TILE) continue;
 
 			if (HasVehicleOnPos(tile_check, &scc, FindShipOnTile)) continue;
 
