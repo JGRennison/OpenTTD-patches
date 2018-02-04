@@ -1254,7 +1254,7 @@ STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Changing
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Infrastructure maintenance: {STRING2}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :When enabled, infrastructure causes maintenance costs. The cost grows over-proportional with the network size, thus affecting bigger companies more than smaller ones
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Ships avoid collisions: {STRING2}
-STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :When enabled, ships try to avoid passing through each other. Requires 90° turns to be forbidden.
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :When enabled, ships try to avoid passing through each other. The best results are obtained when 90° turns are forbidden.
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Airports never expire: {STRING2}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Enabling this setting makes each airport type stay available forever after its introduction
