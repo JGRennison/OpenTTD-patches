@@ -320,6 +320,14 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\tbtr_template_gui_main.cpp" />
+    <ClCompile Include="..\src\tbtr_template_gui_create.cpp" />
+    <ClCompile Include="..\src\tbtr_template_vehicle.cpp" />
+    <ClCompile Include="..\src\tbtr_template_vehicle_func.cpp" />
+    <ClInclude Include="..\src\tbtr_template_gui_main.h" />
+    <ClInclude Include="..\src\tbtr_template_gui_create.h" />
+    <ClInclude Include="..\src\tbtr_template_vehicle.h" />
+    <ClInclude Include="..\src\tbtr_template_vehicle_func.h" />
     <ClCompile Include="..\src\airport.cpp" />
     <ClCompile Include="..\src\animated_tile.cpp" />
     <ClCompile Include="..\src\articulated_vehicles.cpp" />
@@ -339,8 +347,10 @@
     <ClCompile Include="..\src\date.cpp" />
     <ClCompile Include="..\src\debug.cpp" />
     <ClCompile Include="..\src\dedicated.cpp" />
+    <ClCompile Include="..\src\departures.cpp" />
     <ClCompile Include="..\src\depot.cpp" />
     <ClCompile Include="..\src\disaster_vehicle.cpp" />
+    <ClCompile Include="..\src\dock.cpp" />
     <ClCompile Include="..\src\driver.cpp" />
     <ClCompile Include="..\src\economy.cpp" />
     <ClCompile Include="..\src\effectvehicle.cpp" />
@@ -360,6 +370,7 @@
     <ClCompile Include="..\src\ground_vehicle.cpp" />
     <ClCompile Include="..\src\heightmap.cpp" />
     <ClCompile Include="..\src\highscore.cpp" />
+    <ClCompile Include="..\src\infrastructure.cpp" />
     <ClCompile Include="..\src\hotkeys.cpp" />
     <ClCompile Include="..\src\ini.cpp" />
     <ClCompile Include="..\src\ini_load.cpp" />
@@ -386,6 +397,7 @@
     <ClCompile Include="..\src\openttd.cpp" />
     <ClCompile Include="..\src\order_backup.cpp" />
     <ClCompile Include="..\src\pbs.cpp" />
+    <ClCompile Include="..\src\plans.cpp" />
     <ClCompile Include="..\src\progress.cpp" />
     <ClCompile Include="..\src\rail.cpp" />
     <ClCompile Include="..\src\rev.cpp" />
@@ -395,6 +407,8 @@
     <ClCompile Include="..\src\sdl.cpp" />
     <ClCompile Include="..\src\settings.cpp" />
     <ClCompile Include="..\src\signal.cpp" />
+    <ClCompile Include="..\src\programmable_signals.cpp" />
+    <ClCompile Include="..\src\programmable_signals_gui.cpp" />
     <ClCompile Include="..\src\signs.cpp" />
     <ClCompile Include="..\src\sound.cpp" />
     <ClCompile Include="..\src\sprite.cpp" />
@@ -455,12 +469,16 @@
     <ClInclude Include="..\src\console_type.h" />
     <ClInclude Include="..\src\cpu.h" />
     <ClInclude Include="..\src\crashlog.h" />
+    <ClInclude Include="..\src\crashlog_bfd.h" />
     <ClInclude Include="..\src\currency.h" />
     <ClInclude Include="..\src\date_func.h" />
     <ClInclude Include="..\src\date_gui.h" />
     <ClInclude Include="..\src\date_type.h" />
     <ClInclude Include="..\src\debug.h" />
     <ClInclude Include="..\src\video\dedicated_v.h" />
+    <ClInclude Include="..\src\departures_func.h" />
+    <ClInclude Include="..\src\departures_gui.h" />
+    <ClInclude Include="..\src\departures_type.h" />
     <ClInclude Include="..\src\depot_base.h" />
     <ClInclude Include="..\src\depot_func.h" />
     <ClInclude Include="..\src\depot_map.h" />
@@ -469,6 +487,7 @@
     <ClInclude Include="..\src\direction_type.h" />
     <ClInclude Include="..\src\disaster_vehicle.h" />
     <ClInclude Include="..\src\music\dmusic.h" />
+    <ClInclude Include="..\src\dock_base.h" />
     <ClInclude Include="..\src\driver.h" />
     <ClInclude Include="..\src\economy_base.h" />
     <ClInclude Include="..\src\economy_func.h" />
@@ -510,6 +529,7 @@
     <ClInclude Include="..\src\industry.h" />
     <ClInclude Include="..\src\industry_type.h" />
     <ClInclude Include="..\src\industrytype.h" />
+    <ClInclude Include="..\src\infrastructure_func.h" />
     <ClInclude Include="..\src\ini_type.h" />
     <ClInclude Include="..\src\landscape.h" />
     <ClInclude Include="..\src\landscape_type.h" />
@@ -583,9 +603,13 @@
     <ClInclude Include="..\src\openttd.h" />
     <ClInclude Include="..\src\order_backup.h" />
     <ClInclude Include="..\src\order_base.h" />
+    <ClInclude Include="..\src\order_cmd.h" />
     <ClInclude Include="..\src\order_func.h" />
     <ClInclude Include="..\src\order_type.h" />
     <ClInclude Include="..\src\pbs.h" />
+    <ClInclude Include="..\src\plans_base.h" />
+    <ClInclude Include="..\src\plans_func.h" />
+    <ClInclude Include="..\src\plans_type.h" />
     <ClInclude Include="..\src\progress.h" />
     <ClInclude Include="..\src\querystring_gui.h" />
     <ClInclude Include="..\src\rail.h" />
@@ -600,10 +624,12 @@
     <ClInclude Include="..\src\roadstop_base.h" />
     <ClInclude Include="..\src\roadveh.h" />
     <ClInclude Include="..\src\safeguards.h" />
+    <ClInclude Include="..\src\scope.h" />
     <ClInclude Include="..\src\screenshot.h" />
     <ClInclude Include="..\src\sdl.h" />
     <ClInclude Include="..\src\sound\sdl_s.h" />
     <ClInclude Include="..\src\video\sdl_v.h" />
+    <ClInclude Include="..\src\schdispatch.h" />
     <ClInclude Include="..\src\settings_func.h" />
     <ClInclude Include="..\src\settings_gui.h" />
     <ClInclude Include="..\src\settings_internal.h" />
@@ -611,11 +637,13 @@
     <ClInclude Include="..\src\ship.h" />
     <ClInclude Include="..\src\signal_func.h" />
     <ClInclude Include="..\src\signal_type.h" />
+    <ClInclude Include="..\src\programmable_signals.h" />
     <ClInclude Include="..\src\signs_base.h" />
     <ClInclude Include="..\src\signs_func.h" />
     <ClInclude Include="..\src\signs_type.h" />
     <ClInclude Include="..\src\slope_func.h" />
     <ClInclude Include="..\src\slope_type.h" />
+    <ClInclude Include="..\src\smallmap_colours.h" />
     <ClInclude Include="..\src\smallmap_gui.h" />
     <ClInclude Include="..\src\sortlist_type.h" />
     <ClInclude Include="..\src\sound_func.h" />
@@ -633,6 +661,7 @@
     <ClInclude Include="..\src\strgen\strgen.h" />
     <ClInclude Include="..\src\string_base.h" />
     <ClInclude Include="..\src\string_func.h" />
+    <ClInclude Include="..\src\string_func_extra.h" />
     <ClInclude Include="..\src\string_type.h" />
     <ClInclude Include="..\src\stringfilter_type.h" />
     <ClInclude Include="..\src\strings_func.h" />
@@ -657,6 +686,7 @@
     <ClInclude Include="..\src\timetable.h" />
     <ClInclude Include="..\src\toolbar_gui.h" />
     <ClInclude Include="..\src\town.h" />
+    <ClInclude Include="..\src\town_gui.h" />
     <ClInclude Include="..\src\town_type.h" />
     <ClInclude Include="..\src\townname_func.h" />
     <ClInclude Include="..\src\townname_type.h" />
@@ -667,6 +697,7 @@
     <ClInclude Include="..\src\transparency_gui.h" />
     <ClInclude Include="..\src\transport_type.h" />
     <ClInclude Include="..\src\tunnelbridge.h" />
+    <ClInclude Include="..\src\tunnel_base.h" />
     <ClInclude Include="..\src\vehicle_base.h" />
     <ClInclude Include="..\src\vehicle_func.h" />
     <ClInclude Include="..\src\vehicle_gui.h" />
@@ -683,18 +714,22 @@
     <ClInclude Include="..\src\os\windows\win32.h" />
     <ClInclude Include="..\src\music\win32_m.h" />
     <ClInclude Include="..\src\sound\win32_s.h" />
+    <ClInclude Include="..\src\unit_conversion.h" />
     <ClInclude Include="..\src\video\win32_v.h" />
     <ClInclude Include="..\src\window_func.h" />
     <ClInclude Include="..\src\window_gui.h" />
     <ClInclude Include="..\src\window_type.h" />
     <ClInclude Include="..\src\zoom_func.h" />
     <ClInclude Include="..\src\zoom_type.h" />
+    <ClInclude Include="..\src\zoning.h" />
     <ClCompile Include="..\src\core\alloc_func.cpp" />
     <ClInclude Include="..\src\core\alloc_func.hpp" />
     <ClInclude Include="..\src\core\alloc_type.hpp" />
     <ClInclude Include="..\src\core\backup_type.hpp" />
     <ClCompile Include="..\src\core\bitmath_func.cpp" />
     <ClInclude Include="..\src\core\bitmath_func.hpp" />
+    <ClInclude Include="..\src\core\container_func.hpp" />
+    <ClInclude Include="..\src\core\dyn_arena_alloc.hpp" />
     <ClInclude Include="..\src\core\endian_func.hpp" />
     <ClInclude Include="..\src\core\endian_type.hpp" />
     <ClInclude Include="..\src\core\enum_type.hpp" />
@@ -727,6 +762,7 @@
     <ClCompile Include="..\src\company_gui.cpp" />
     <ClCompile Include="..\src\console_gui.cpp" />
     <ClCompile Include="..\src\date_gui.cpp" />
+    <ClCompile Include="..\src\departures_gui.cpp" />
     <ClCompile Include="..\src\depot_gui.cpp" />
     <ClCompile Include="..\src\dock_gui.cpp" />
     <ClCompile Include="..\src\engine_gui.cpp" />
@@ -752,9 +788,11 @@
     <ClCompile Include="..\src\object_gui.cpp" />
     <ClCompile Include="..\src\order_gui.cpp" />
     <ClCompile Include="..\src\osk_gui.cpp" />
+    <ClCompile Include="..\src\plans_gui.cpp" />
     <ClCompile Include="..\src\rail_gui.cpp" />
     <ClCompile Include="..\src\road_gui.cpp" />
     <ClCompile Include="..\src\roadveh_gui.cpp" />
+    <ClCompile Include="..\src\schdispatch_gui.cpp" />
     <ClCompile Include="..\src\settings_gui.cpp" />
     <ClCompile Include="..\src\ship_gui.cpp" />
     <ClCompile Include="..\src\signs_gui.cpp" />
@@ -774,6 +812,7 @@
     <ClCompile Include="..\src\vehicle_gui.cpp" />
     <ClCompile Include="..\src\viewport_gui.cpp" />
     <ClCompile Include="..\src\waypoint_gui.cpp" />
+    <ClCompile Include="..\src\zoning_gui.cpp" />
     <ClInclude Include="..\src\widgets\airport_widget.h" />
     <ClInclude Include="..\src\widgets\ai_widget.h" />
     <ClInclude Include="..\src\widgets\autoreplace_widget.h" />
@@ -784,6 +823,7 @@
     <ClInclude Include="..\src\widgets\company_widget.h" />
     <ClInclude Include="..\src\widgets\console_widget.h" />
     <ClInclude Include="..\src\widgets\date_widget.h" />
+    <ClInclude Include="..\src\widgets\departures_widget.h" />
     <ClInclude Include="..\src\widgets\depot_widget.h" />
     <ClInclude Include="..\src\widgets\dock_widget.h" />
     <ClCompile Include="..\src\widgets\dropdown.cpp" />
@@ -813,6 +853,7 @@
     <ClInclude Include="..\src\widgets\object_widget.h" />
     <ClInclude Include="..\src\widgets\order_widget.h" />
     <ClInclude Include="..\src\widgets\osk_widget.h" />
+    <ClInclude Include="..\src\widgets\plans_widget.h" />
     <ClInclude Include="..\src\widgets\rail_widget.h" />
     <ClInclude Include="..\src\widgets\road_widget.h" />
     <ClInclude Include="..\src\widgets\settings_widget.h" />
@@ -841,9 +882,11 @@
     <ClCompile Include="..\src\misc_cmd.cpp" />
     <ClCompile Include="..\src\object_cmd.cpp" />
     <ClCompile Include="..\src\order_cmd.cpp" />
+    <ClCompile Include="..\src\plans_cmd.cpp" />
     <ClCompile Include="..\src\rail_cmd.cpp" />
     <ClCompile Include="..\src\road_cmd.cpp" />
     <ClCompile Include="..\src\roadveh_cmd.cpp" />
+    <ClCompile Include="..\src\schdispatch_cmd.cpp" />
     <ClCompile Include="..\src\ship_cmd.cpp" />
     <ClCompile Include="..\src\signs_cmd.cpp" />
     <ClCompile Include="..\src\station_cmd.cpp" />
@@ -857,6 +900,7 @@
     <ClCompile Include="..\src\void_cmd.cpp" />
     <ClCompile Include="..\src\water_cmd.cpp" />
     <ClCompile Include="..\src\waypoint_cmd.cpp" />
+    <ClCompile Include="..\src\zoning_cmd.cpp" />
     <ClCompile Include="..\src\saveload\afterload.cpp" />
     <ClCompile Include="..\src\saveload\ai_sl.cpp" />
     <ClCompile Include="..\src\saveload\airport_sl.cpp" />
@@ -885,6 +929,7 @@
     <ClInclude Include="..\src\saveload\oldloader.h" />
     <ClCompile Include="..\src\saveload\oldloader_sl.cpp" />
     <ClCompile Include="..\src\saveload\order_sl.cpp" />
+    <ClCompile Include="..\src\saveload\plans_sl.cpp" />
     <ClCompile Include="..\src\saveload\saveload.cpp" />
     <ClInclude Include="..\src\saveload\saveload.h" />
     <ClInclude Include="..\src\saveload\saveload_filter.h" />
@@ -896,8 +941,15 @@
     <ClCompile Include="..\src\saveload\story_sl.cpp" />
     <ClCompile Include="..\src\saveload\subsidy_sl.cpp" />
     <ClCompile Include="..\src\saveload\town_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tunnel_sl.cpp" />
     <ClCompile Include="..\src\saveload\vehicle_sl.cpp" />
     <ClCompile Include="..\src\saveload\waypoint_sl.cpp" />
+    <ClCompile Include="..\src\saveload\signal_sl.cpp" />
+    <ClInclude Include="..\src\saveload\extended_ver_sl.h" />
+    <ClCompile Include="..\src\saveload\extended_ver_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tbtr_template_replacement_sl.cpp" />
+    <ClCompile Include="..\src\saveload\tbtr_template_veh_sl.cpp" />
+    <ClCompile Include="..\src\saveload\bridge_signal_sl.cpp" />
     <ClInclude Include="..\src\table\airport_defaults.h" />
     <ClInclude Include="..\src\table\airport_movement.h" />
     <ClInclude Include="..\src\table\airporttile_ids.h" />
@@ -909,6 +961,7 @@
     <ClInclude Include="..\src\table\cargo_const.h" />
     <ClInclude Include="..\src\table\clear_land.h" />
     <ClInclude Include="..\src\table\control_codes.h" />
+    <ClInclude Include="..\src\table\darklight_colours.h" />
     <ClInclude Include="..\src\table\elrail_data.h" />
     <ClInclude Include="..\src\table\engines.h" />
     <ClInclude Include="..\src\table\genland.h" />
@@ -1147,6 +1200,8 @@
     <ClCompile Include="..\src\script\api\script_window.cpp" />
     <ClCompile Include="..\src\blitter\32bpp_anim.cpp" />
     <ClInclude Include="..\src\blitter\32bpp_anim.hpp" />
+    <ClCompile Include="..\src\blitter\32bpp_anim_sse2.cpp" />
+    <ClInclude Include="..\src\blitter\32bpp_anim_sse2.hpp" />
     <ClCompile Include="..\src\blitter\32bpp_anim_sse4.cpp" />
     <ClInclude Include="..\src\blitter\32bpp_anim_sse4.hpp" />
     <ClCompile Include="..\src\blitter\32bpp_base.cpp" />
@@ -1169,7 +1224,6 @@
     <ClInclude Include="..\src\blitter\8bpp_optimized.hpp" />
     <ClCompile Include="..\src\blitter\8bpp_simple.cpp" />
     <ClInclude Include="..\src\blitter\8bpp_simple.hpp" />
-    <ClCompile Include="..\src\blitter\base.cpp" />
     <ClInclude Include="..\src\blitter\base.hpp" />
     <ClInclude Include="..\src\blitter\factory.hpp" />
     <ClCompile Include="..\src\blitter\null.cpp" />
@@ -1203,6 +1257,7 @@
     <ClCompile Include="..\src\newgrf_townname.cpp" />
     <ClCompile Include="..\src\bridge_map.cpp" />
     <ClInclude Include="..\src\bridge_map.h" />
+    <ClInclude Include="..\src\bridge_signal_map.h" />
     <ClInclude Include="..\src\clear_map.h" />
     <ClInclude Include="..\src\industry_map.h" />
     <ClInclude Include="..\src\object_map.h" />
@@ -1300,6 +1355,19 @@
     <ClCompile Include="..\src\os\windows\win32.cpp" />
     <ClInclude Include="..\src\thread\thread.h" />
     <ClCompile Include="..\src\thread\thread_win32.cpp" />
+    <ClInclude Include="..\src\tracerestrict.h" />
+    <ClCompile Include="..\src\tracerestrict.cpp" />
+    <ClCompile Include="..\src\tracerestrict_gui.cpp" />
+    <ClCompile Include="..\src\saveload\tracerestrict_sl.cpp" />
+    <ClCompile Include="..\src\scope_info.cpp" />
+    <ClInclude Include="..\src\scope_info.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_container.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_map.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\btree_set.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree_map.h" />
+    <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree_set.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />
