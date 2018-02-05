@@ -284,48 +284,13 @@ void Ship::PlayLeaveStationSound() const
 	PlayShipSound(this);
 }
 
-/**
- * Of all the docks a station has, return the best destination for a ship.
- * @param v The ship.
- * @param st Station the ship \a v is heading for.
- * @return The free and closest (if none is free, just closest) dock of station \a st to ship \a v.
- */
-const Dock* GetBestDock(const Ship *v, const Station *st)
-{
-	assert(st != NULL && st->HasFacilities(FACIL_DOCK) && st->docks != NULL);
-	if (st->docks->next == NULL) return st->docks;
-
-	Dock *best_dock = NULL;
-	uint best_distance = UINT_MAX;
-
-	for (Dock *dock = st->docks; dock != NULL; dock = dock->next) {
-		uint new_distance = DistanceManhattan(v->tile, dock->flat);
-
-		if (new_distance < best_distance) {
-			best_dock = dock;
-			best_distance = new_distance;
-		}
-	}
-
-	assert(best_dock != NULL);
-
-	return best_dock;
-}
-
 TileIndex Ship::GetOrderStationLocation(StationID station)
 {
 	if (station == this->last_station_visited) this->last_station_visited = INVALID_STATION;
 
 	const Station *st = Station::Get(station);
 	if (st->HasFacilities(FACIL_DOCK)) {
-		if (st->docks == NULL) {
-			return st->xy; // A buoy
-		} else {
-			const Dock* dock = GetBestDock(this, st);
-
-			DiagDirection direction = DiagdirBetweenTiles(dock->sloped, dock->flat);
-			return dock->flat + TileOffsByDiagDir(direction);
-		}
+		return st->xy;
 	} else {
 		this->IncrementRealOrderIndex();
 		return 0;
@@ -732,26 +697,23 @@ static void ShipController(Ship *v)
 						UpdateVehicleTimetable(v, true);
 						v->IncrementRealOrderIndex();
 						v->current_order.MakeDummy();
-					} else {
-						/* Non-buoy orders really need to reach the tile */
-						if (v->dest_tile == gp.new_tile) {
-							if (v->current_order.IsType(OT_GOTO_DEPOT)) {
-								if ((gp.x & 0xF) == 8 && (gp.y & 0xF) == 8) {
-									VehicleEnterDepot(v);
-									return;
-								}
-							} else if (v->current_order.IsType(OT_GOTO_STATION)) {
-								v->last_station_visited = v->current_order.GetDestination();
+					} else if (v->current_order.IsType(OT_GOTO_DEPOT)) {
+						if (v->dest_tile == gp.new_tile && (gp.x & 0xF) == 8 && (gp.y & 0xF) == 8) {
+							VehicleEnterDepot(v);
+							return;
+						}
+					} else if (v->current_order.IsType(OT_GOTO_STATION)) {
+						Station *st = Station::Get(v->current_order.GetDestination());
+						if (st->IsDockingTile(gp.new_tile)) {
+							v->last_station_visited = v->current_order.GetDestination();
 
-								/* Process station in the orderlist. */
-								Station *st = Station::Get(v->current_order.GetDestination());
-								if (st->facilities & FACIL_DOCK) { // ugly, ugly workaround for problem with ships able to drop off cargo at wrong stations
-									ShipArrivesAt(v, st);
-									v->BeginLoading();
-								} else { // leave stations without docks right aways
-									v->current_order.MakeLeaveStation();
-									v->IncrementRealOrderIndex();
-								}
+							/* Process station in the orderlist. */
+							if (st->facilities & FACIL_DOCK) { // ugly, ugly workaround for problem with ships able to drop off cargo at wrong stations
+								ShipArrivesAt(v, st);
+								v->BeginLoading();
+							} else { // leave stations without docks right aways
+								v->current_order.MakeLeaveStation();
+								v->IncrementRealOrderIndex();
 							}
 						}
 					}

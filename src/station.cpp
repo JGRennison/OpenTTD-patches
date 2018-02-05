@@ -313,6 +313,14 @@ Rect Station::GetCatchmentRectUsingRadius(uint catchment_radius) const
 	return ret;
 }
 
+bool Station::IsDockingTile(TileIndex tile) const
+{
+	for (const Dock *d = this->docks; d != NULL; d = d->next) {
+		if (tile == d->GetDockingTile()) return true;
+	}
+	return false;
+}
+
 /** Rect and pointer to IndustryVector */
 struct RectAndIndustryVector {
 	Rect rect;                       ///< The rectangle to search the industries in.

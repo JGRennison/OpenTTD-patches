@@ -13,6 +13,7 @@
 #include "../../tunnelbridge_map.h"
 #include "../../tunnelbridge.h"
 #include "../../ship.h"
+#include "../../station_base.h"
 #include "../../core/random_func.hpp"
 
 #include "../../safeguards.h"
@@ -25,6 +26,7 @@ struct RememberData {
 
 struct TrackPathFinder {
 	TileIndex skiptile;
+	StationID dest_station;
 	TileIndex dest_coords;
 	uint best_bird_dist;
 	uint best_length;
@@ -35,7 +37,14 @@ struct TrackPathFinder {
 static bool ShipTrackFollower(TileIndex tile, TrackPathFinder *pfs, uint length)
 {
 	/* Found dest? */
-	if (tile == pfs->dest_coords) {
+	if (pfs->dest_station != INVALID_STATION) {
+		if (Station::Get(pfs->dest_station)->IsDockingTile(tile)) {
+			pfs->best_bird_dist = 0;
+
+			pfs->best_length = minu(pfs->best_length, length);
+			return true;
+		}
+	} else if (tile == pfs->dest_coords) {
 		pfs->best_bird_dist = 0;
 
 		pfs->best_length = minu(pfs->best_length, length);
@@ -140,6 +149,7 @@ static uint FindShipTrack(const Ship *v, TileIndex tile, DiagDirection dir, Trac
 	uint best_length    = 0;
 	byte ship_dir = v->direction & 3;
 
+	pfs.dest_station = v->current_order.IsType(OT_GOTO_STATION) ? v->current_order.GetDestination() : INVALID_STATION;
 	pfs.dest_coords = v->dest_tile;
 	pfs.skiptile = skiptile;
 

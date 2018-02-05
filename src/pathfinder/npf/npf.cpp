@@ -160,8 +160,8 @@ static int32 NPFCalcStationOrTileHeuristic(AyStar *as, AyStarNode *current, Open
 	uint dist;
 	AyStarUserData *user = (AyStarUserData *)as->user_data;
 
-	/* for train-stations, we are going to aim for the closest station tile */
-	if (user->type != TRANSPORT_WATER && fstd->station_index != INVALID_STATION) {
+	/* for stations, we are going to aim for the closest station tile */
+	if (fstd->station_index != INVALID_STATION) {
 		to = CalcClosestStationTile(fstd->station_index, from, fstd->station_type);
 	}
 
@@ -558,16 +558,16 @@ static int32 NPFFindStationOrTile(AyStar *as, OpenListNode *current)
 	AyStarNode *node = &current->path.node;
 	TileIndex tile = node->tile;
 
-	if (fstd->station_index == INVALID_STATION && tile == fstd->dest_coords) return AYSTAR_FOUND_END_NODE;
-
-	if (IsTileType(tile, MP_STATION) && GetStationIndex(tile) == fstd->station_index) {
-		if (fstd->v->type == VEH_TRAIN) return AYSTAR_FOUND_END_NODE;
-
-		assert(fstd->v->type == VEH_ROAD);
-		/* Only if it is a valid station *and* we can stop there */
-		if (GetStationType(tile) == fstd->station_type && (fstd->not_articulated || IsDriveThroughStopTile(tile))) return AYSTAR_FOUND_END_NODE;
+	if (fstd->station_index == INVALID_STATION) {
+		return (tile == fstd->dest_coords) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
 	}
-	return AYSTAR_DONE;
+
+	switch (fstd->v->type) {
+		default: NOT_REACHED();
+		case VEH_TRAIN: return (IsTileType(tile, MP_STATION) && GetStationIndex(tile) == fstd->station_index) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
+		case VEH_ROAD:  return (IsTileType(tile, MP_STATION) && GetStationIndex(tile) == fstd->station_index && GetStationType(tile) == fstd->station_type && (fstd->not_articulated || IsDriveThroughStopTile(tile))) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
+		case VEH_SHIP:  return Station::Get(fstd->station_index)->IsDockingTile(tile) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
+	}
 }
 
 /**
@@ -1099,16 +1099,12 @@ void InitializeNPF()
 
 static void NPFFillWithOrderData(NPFFindStationOrTileData *fstd, const Vehicle *v, bool reserve_path = false)
 {
-	/* Ships don't really reach their stations, but the tile in front. So don't
-	 * save the station id for ships. For roadvehs we don't store it either,
-	 * because multistop depends on vehicles actually reaching the exact
-	 * dest_tile, not just any stop of that station.
-	 * So only for train orders to stations we fill fstd->station_index, for all
-	 * others only dest_coords */
-	if (v->type != VEH_SHIP && (v->current_order.IsType(OT_GOTO_STATION) || v->current_order.IsType(OT_GOTO_WAYPOINT))) {
-		assert(v->IsGroundVehicle());
+	/* Fill station_index for station orders, else only dest_coords. */
+	if (v->current_order.IsType(OT_GOTO_STATION) || (v->type != VEH_SHIP && v->current_order.IsType(OT_GOTO_WAYPOINT))) {
 		fstd->station_index = v->current_order.GetDestination();
-		fstd->station_type = (v->type == VEH_TRAIN) ? (v->current_order.IsType(OT_GOTO_STATION) ? STATION_RAIL : STATION_WAYPOINT) : (RoadVehicle::From(v)->IsBus() ? STATION_BUS : STATION_TRUCK);
+		fstd->station_type = (v->type == VEH_SHIP) ? STATION_DOCK :
+			(v->type == VEH_TRAIN) ? (v->current_order.IsType(OT_GOTO_STATION) ? STATION_RAIL : STATION_WAYPOINT) :
+			(RoadVehicle::From(v)->IsBus() ? STATION_BUS : STATION_TRUCK);
 		fstd->not_articulated = v->type == VEH_ROAD && !RoadVehicle::From(v)->HasArticulatedPart();
 		/* Let's take the closest tile of the station as our target for vehicles */
 		fstd->dest_coords = CalcClosestStationTile(fstd->station_index, v->tile, fstd->station_type);

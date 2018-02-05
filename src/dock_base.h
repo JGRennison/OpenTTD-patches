@@ -14,6 +14,7 @@
 
 #include "station_type.h"
 #include "tile_type.h"
+#include "map_func.h"
 #include "core/pool_type.hpp"
 
 typedef Pool<Dock, DockID, 32, 64000> DockPool;
@@ -30,6 +31,11 @@ struct Dock : DockPool::PoolItem<&_dock_pool> {
 	~Dock() {}
 
 	inline Dock *GetNextDock() const { return this->next; }
+
+	inline TileIndex GetDockingTile() const
+	{
+		return this->flat + TileOffsByDiagDir(DiagdirBetweenTiles(this->sloped, this->flat));
+	}
 
 	static Dock *GetByTile(TileIndex tile);
 };
