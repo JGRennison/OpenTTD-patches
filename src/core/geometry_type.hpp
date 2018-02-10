@@ -51,10 +51,10 @@ struct Rect16 {
 	int16 bottom;
 };
 
-template <typename IN, typename OUT>
-OUT ConvertRect(const IN &in)
+template <typename InT, typename OutT>
+OutT ConvertRect(const InT &in)
 {
-	OUT out;
+	OutT out;
 	out.left = in.left;
 	out.top = in.top;
 	out.right = in.right;
