@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.23.0 (2018-02-10)
+* Template-based train replacement:
+  * Fix crashes/failures when both template-based train replacement and autoreplace/autorenew were active on the same vehicle.
+  * Enable autorenew when template-based train replacement is active.
+* Ship pathfinding:
+  * Fix ship pathfinder support for multiple docks. Ships can now head to docks other than the linearly closest one.
+  * Improve ship collision avoidance.
+* Cargo transfer payments are now paid to companies when the cargo eventually reaches its destination, instead of at the point of transfer.
+* Scale displayed vehicle running costs by the day length factor.
+* Show stops with timetabled wait time of 0 in departure boards.
+* Cargo dest:
+  * Improve performance of link graph visual map overlay.
+  * Slightly improve link graph calculation performance.
+* Slightly improve blitter performance of (32bpp animated) sprite rendering, and line drawing.
+* Improve performance of zoning overlays.
+* Bump trunk base from r27963 to r27698.
+
 ### v0.22.2 (2018-01-14)
 * Fix crash when trams attempted do a short turnaround in a tunnel mouth.
 * Timetabling:
