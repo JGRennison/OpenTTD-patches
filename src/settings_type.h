@@ -147,7 +147,7 @@ struct GUISettings {
 	bool   timetable_leftover_ticks;         ///< whether to show leftover ticks after converting to minutes/days, in the timetable
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
 	bool   timetable_start_text_entry;       ///< whether to enter timetable start times as text (hhmm format)
-	uint8  ticks_per_minute;                 ///< how many ticks per minute
+	uint16 ticks_per_minute;                 ///< how many ticks per minute
 	uint8  date_with_time;                   ///< whether to show the month and year with the time
 	uint16 clock_offset;                     ///< clock offset in minutes
 	bool   quick_goto;                       ///< Allow quick access to 'goto button' in vehicle orders window
