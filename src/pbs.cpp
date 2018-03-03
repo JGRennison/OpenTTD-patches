@@ -488,7 +488,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(ft.m_new_tile, TrackdirToTrack(td));
 				if (prog && prog->actions_used_flags & TRPAUF_RESERVE_THROUGH) {
 					TraceRestrictProgramResult out;
-					prog->Execute(v, TraceRestrictProgramInput(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, NULL), out);
+					prog->Execute(v, TraceRestrictProgramInput(ft.m_new_tile, td, &VehiclePosTraceRestrictPreviousSignalCallback, NULL), out);
 					if (out.flags & TRPRF_RESERVE_THROUGH) {
 						return false;
 					}
