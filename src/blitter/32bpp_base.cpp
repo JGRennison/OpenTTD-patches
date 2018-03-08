@@ -175,12 +175,12 @@ Colour Blitter_32bppBase::ReallyAdjustBrightness(Colour colour, uint8 brightness
 {
 	assert(DEFAULT_BRIGHTNESS == 1 << 7);
 
-	uint64 combined = (((uint64) colour.r) << 32) | (colour.g << 16) | colour.b;
+	uint64 combined = (((uint64) colour.r) << 32) | (((uint64) colour.g) << 16) | ((uint64) colour.b);
 	combined *= brightness;
 
-	uint16 r = GB(combined, 39, 8);
-	uint16 g = GB(combined, 23, 8);
-	uint16 b = GB(combined, 7, 8);
+	uint16 r = GB(combined, 39, 9);
+	uint16 g = GB(combined, 23, 9);
+	uint16 b = GB(combined, 7, 9);
 
 	if ((combined & 0x800080008000L) == 0L) {
 		return Colour(r, g, b, colour.a);
