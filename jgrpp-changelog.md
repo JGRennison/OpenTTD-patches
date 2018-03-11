@@ -17,7 +17,7 @@
   * Slightly improve link graph calculation performance.
 * Slightly improve blitter performance of (32bpp animated) sprite rendering, and line drawing.
 * Improve performance of zoning overlays.
-* Bump trunk base from r27963 to r27698.
+* Bump trunk base from r27963 to r27968.
 
 ### v0.22.2 (2018-01-14)
 * Fix crash when trams attempted do a short turnaround in a tunnel mouth.
