@@ -235,13 +235,6 @@ static uint32 GetRailContinuationInfo(TileIndex tile)
 }
 
 
-/* virtual */ void StationScopeResolver::SetTriggers(int triggers) const
-{
-	BaseStation *st = const_cast<BaseStation *>(this->st);
-	assert(st != NULL);
-	st->waiting_triggers = triggers;
-}
-
 /**
  * Station variable cache
  * This caches 'expensive' station variable lookups which iterate over
@@ -583,23 +576,6 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 StationResolverObject::~StationResolverObject()
 {
 	delete this->town_scope;
-}
-
-/**
- * Constructor for station scopes.
- * @param ro Surrounding resolver.
- * @param statspec Station (type) specification.
- * @param st Instance of the station.
- * @param tile %Tile of the station.
- */
-StationScopeResolver::StationScopeResolver(ResolverObject &ro, const StationSpec *statspec, BaseStation *st, TileIndex tile)
-	: ScopeResolver(ro)
-{
-	this->tile = tile;
-	this->st = st;
-	this->statspec = statspec;
-	this->cargo_type = CT_INVALID;
-	this->axis = INVALID_AXIS;
 }
 
 /**
@@ -997,8 +973,9 @@ void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigg
 		}
 	}
 
-	/* Convert trigger to bit */
-	uint8 trigger_bit = 1 << trigger;
+	/* Store triggers now for var 5F */
+	SetBit(st->waiting_triggers, trigger);
+	uint32 used_triggers = 0;
 
 	/* Check all tiles over the station to check if the specindex is still in use */
 	TILE_AREA_LOOP(tile, area) {
@@ -1014,10 +991,12 @@ void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigg
 
 			if (cargo_type == CT_INVALID || HasBit(ss->cargo_triggers, cargo_type)) {
 				StationResolverObject object(ss, st, tile, CBID_RANDOM_TRIGGER, 0);
-				object.trigger = trigger_bit;
+				object.waiting_triggers = st->waiting_triggers;
 
 				const SpriteGroup *group = object.Resolve();
 				if (group == NULL) continue;
+
+				used_triggers |= object.used_triggers;
 
 				uint32 reseed = object.GetReseedSum();
 				if (reseed != 0) {
@@ -1037,6 +1016,7 @@ void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigg
 	}
 
 	/* Update whole station random bits */
+	st->waiting_triggers &= ~used_triggers;
 	if ((whole_reseed & 0xFFFF) != 0) {
 		st->random_bits &= ~whole_reseed;
 		st->random_bits |= Random() & whole_reseed;

@@ -58,7 +58,30 @@
 
 #include "safeguards.h"
 
-#define GEN_HASH(x, y) ((GB((y), 6 + ZOOM_LVL_SHIFT, 6) << 6) + GB((x), 7 + ZOOM_LVL_SHIFT, 6))
+/* Number of bits in the hash to use from each vehicle coord */
+static const uint GEN_HASHX_BITS = 6;
+static const uint GEN_HASHY_BITS = 6;
+
+/* Size of each hash bucket */
+static const uint GEN_HASHX_BUCKET_BITS = 7;
+static const uint GEN_HASHY_BUCKET_BITS = 6;
+
+/* Compute hash for vehicle coord */
+#define GEN_HASHX(x)    GB((x), GEN_HASHX_BUCKET_BITS + ZOOM_LVL_SHIFT, GEN_HASHX_BITS)
+#define GEN_HASHY(y)   (GB((y), GEN_HASHY_BUCKET_BITS + ZOOM_LVL_SHIFT, GEN_HASHY_BITS) << GEN_HASHX_BITS)
+#define GEN_HASH(x, y) (GEN_HASHY(y) + GEN_HASHX(x))
+
+/* Maximum size until hash repeats */
+static const int GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_LVL_SHIFT);
+static const int GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_LVL_SHIFT);
+
+/* Increments to reach next bucket in hash table */
+static const int GEN_HASHX_INC = 1;
+static const int GEN_HASHY_INC = 1 << GEN_HASHX_BITS;
+
+/* Mask to wrap-around buckets */
+static const uint GEN_HASHX_MASK =  (1 << GEN_HASHX_BITS) - 1;
+static const uint GEN_HASHY_MASK = ((1 << GEN_HASHY_BITS) - 1) << GEN_HASHX_BITS;
 
 VehicleID _new_vehicle_id;
 uint16 _returned_refit_capacity;      ///< Stores the capacity after a refit operation.
@@ -619,7 +642,7 @@ static void UpdateVehicleTileHash(Vehicle *v, bool remove)
 	v->hash_tile_current = new_hash;
 }
 
-static Vehicle *_vehicle_viewport_hash[0x1000];
+static Vehicle *_vehicle_viewport_hash[1 << (GEN_HASHX_BITS + GEN_HASHY_BITS)];
 
 static void UpdateVehicleViewportHash(Vehicle *v, int x, int y)
 {
