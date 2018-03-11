@@ -10,6 +10,7 @@
 /** @file newgrf_spritegroup.cpp Handling of primarily NewGRF action 2. */
 
 #include "stdafx.h"
+#include <algorithm>
 #include "debug.h"
 #include "newgrf_spritegroup.h"
 #include "core/pool_func.hpp"
@@ -61,11 +62,7 @@ RandomizedSpriteGroup::~RandomizedSpriteGroup()
 
 static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *scope, byte variable, uint32 parameter, bool *available)
 {
-	/* First handle variables common with Action7/9/D */
 	uint32 value;
-	if (GetGlobalVariable(variable, &value, object.grffile)) return value;
-
-	/* Non-common variable */
 	switch (variable) {
 		case 0x0C: return object.callback;
 		case 0x10: return object.callback_param1;
@@ -80,17 +77,13 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
 			if (object.grffile == NULL) return 0;
 			return object.grffile->GetParam(parameter);
 
-		/* Not a common variable, so evaluate the feature specific variables */
-		default: return scope->GetVariable(variable, parameter, available);
+		default:
+			/* First handle variables common with Action7/9/D */
+			if (variable < 0x40 && GetGlobalVariable(variable, &value, object.grffile)) return value;
+			/* Not a common variable, so evaluate the feature specific variables */
+			return scope->GetVariable(variable, parameter, available);
 	}
 }
-
-ScopeResolver::ScopeResolver(ResolverObject &ro)
-		: ro(ro)
-{
-}
-
-ScopeResolver::~ScopeResolver() {}
 
 /**
  * Get a few random bits. Default implementation has no random bits.
@@ -130,27 +123,6 @@ ScopeResolver::~ScopeResolver() {}
  * @param value Value to store.
  */
 /* virtual */ void ScopeResolver::StorePSA(uint reg, int32 value) {}
-
-/**
- * Resolver constructor.
- * @param grffile NewGRF file associated with the object (or \c NULL if none).
- * @param callback Callback code being resolved (default value is #CBID_NO_CALLBACK).
- * @param callback_param1 First parameter (var 10) of the callback (only used when \a callback is also set).
- * @param callback_param2 Second parameter (var 18) of the callback (only used when \a callback is also set).
- */
-ResolverObject::ResolverObject(const GRFFile *grffile, CallbackID callback, uint32 callback_param1, uint32 callback_param2)
-		: default_scope(*this)
-{
-	this->callback = callback;
-	this->callback_param1 = callback_param1;
-	this->callback_param2 = callback_param2;
-	this->ResetState();
-
-	this->grffile = grffile;
-	this->root_spritegroup = NULL;
-}
-
-ResolverObject::~ResolverObject() {}
 
 /**
  * Get the real sprites of the grf.
@@ -196,11 +168,9 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust *adjust, ScopeResolver
 	value >>= adjust->shift_num;
 	value  &= adjust->and_mask;
 
-	if (adjust->type != DSGA_TYPE_NONE) value += (S)adjust->add_val;
-
 	switch (adjust->type) {
-		case DSGA_TYPE_DIV:  value = (S)value / (S)adjust->divmod_val; break;
-		case DSGA_TYPE_MOD:  value = (S)value % (S)adjust->divmod_val; break;
+		case DSGA_TYPE_DIV:  value = ((S)value + (S)adjust->add_val) / (S)adjust->divmod_val; break;
+		case DSGA_TYPE_MOD:  value = ((S)value + (S)adjust->add_val) % (S)adjust->divmod_val; break;
 		case DSGA_TYPE_NONE: break;
 	}
 
@@ -234,6 +204,11 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust *adjust, ScopeResolver
 
 bool _sprite_group_resolve_check_veh_check = false;
 VehicleType _sprite_group_resolve_check_veh_type;
+
+static bool RangeHighComparator(const DeterministicSpriteGroupRange& range, uint32 value)
+{
+	return range.high < value;
+}
 
 const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) const
 {
@@ -315,7 +290,7 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		if (!available) {
 			/* Unsupported variable: skip further processing and return either
 			 * the group from the first range or the default group. */
-			return SpriteGroup::Resolve(this->num_ranges > 0 ? this->ranges[0].group : this->default_group, object, false);
+			return SpriteGroup::Resolve(this->error_group, object, false);
 		}
 
 		switch (this->size) {
@@ -329,7 +304,7 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 
 	object.last_value = last_value;
 
-	if (this->num_ranges == 0) {
+	if (this->calculated_result) {
 		/* nvar == 0 is a special case -- we turn our value into a callback result */
 		if (value != CALLBACK_FAILED) value = GB(value, 0, 15);
 		static CallbackResultSpriteGroup nvarzero(0, true);
@@ -337,9 +312,17 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		return &nvarzero;
 	}
 
-	for (i = 0; i < this->num_ranges; i++) {
-		if (this->ranges[i].low <= value && value <= this->ranges[i].high) {
-			return SpriteGroup::Resolve(this->ranges[i].group, object, false);
+	if (this->num_ranges > 4) {
+		DeterministicSpriteGroupRange *lower = std::lower_bound(this->ranges + 0, this->ranges + this->num_ranges, value, RangeHighComparator);
+		if (lower != this->ranges + this->num_ranges && lower->low <= value) {
+			assert(lower->low <= value && value <= lower->high);
+			return SpriteGroup::Resolve(lower->group, object, false);
+		}
+	} else {
+		for (i = 0; i < this->num_ranges; i++) {
+			if (this->ranges[i].low <= value && value <= this->ranges[i].high) {
+				return SpriteGroup::Resolve(this->ranges[i].group, object, false);
+			}
 		}
 	}
 
