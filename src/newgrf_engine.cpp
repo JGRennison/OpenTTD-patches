@@ -347,21 +347,6 @@ static byte MapAircraftMovementAction(const Aircraft *v)
 	return this->v == NULL ? 0 : this->v->waiting_triggers;
 }
 
-/* virtual */ void VehicleScopeResolver::SetTriggers(int triggers) const
-{
-	/* Evil cast to get around const-ness. This used to be achieved by an
-	 * innocent looking function pointer cast... Currently I cannot see a
-	 * way of avoiding this without removing consts deep within gui code.
-	 */
-	Vehicle *v = const_cast<Vehicle *>(this->v);
-
-	/* This function must only be called when processing triggers -- any
-	 * other time is an error. */
-	assert(this->ro.trigger != 0);
-
-	if (v != NULL) v->waiting_triggers = triggers;
-}
-
 
 /* virtual */ ScopeResolver *VehicleResolverObject::GetScope(VarSpriteGroupScope scope, byte relative)
 {
@@ -953,21 +938,6 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 }
 
 /**
- * Scope resolver of a single vehicle.
- * @param ro Surrounding resolver.
- * @param engine_type Engine type
- * @param v %Vehicle being resolved.
- * @param info_view Indicates if the item is being drawn in an info window.
- */
-VehicleScopeResolver::VehicleScopeResolver(ResolverObject &ro, EngineID engine_type, const Vehicle *v, bool info_view)
-		: ScopeResolver(ro)
-{
-	this->v = v;
-	this->self_type = engine_type;
-	this->info_view = info_view;
-}
-
-/**
  * Get the grf file associated with an engine type.
  * @param engine_type Engine to query.
  * @return grf file associated with the engine.
@@ -1140,13 +1110,18 @@ static void DoTriggerVehicle(Vehicle *v, VehicleTrigger trigger, byte base_rando
 	assert(v != NULL);
 
 	VehicleResolverObject object(v->engine_type, v, VehicleResolverObject::WO_CACHED, false, CBID_RANDOM_TRIGGER);
-	object.trigger = trigger;
+	object.waiting_triggers = v->waiting_triggers | trigger;
+	v->waiting_triggers = object.waiting_triggers; // store now for var 5F
 
 	const SpriteGroup *group = object.Resolve();
 	if (group == NULL) return;
 
+	/* Store remaining triggers. */
+	v->waiting_triggers = object.GetRemainingTriggers();
+
+	/* Rerandomise bits. Scopes other than SELF are invalid for rerandomisation. For bug-to-bug-compatibility with TTDP we ignore the scope. */
 	byte new_random_bits = Random();
-	uint32 reseed = object.GetReseedSum(); // The scope only affects triggers, not the reseeding
+	uint32 reseed = object.GetReseedSum();
 	v->random_bits &= ~reseed;
 	v->random_bits |= (first ? new_random_bits : base_random_bits) & reseed;
 
