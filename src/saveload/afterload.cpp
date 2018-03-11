@@ -3427,7 +3427,10 @@ bool AfterLoadGame()
 		Order *order;
 		FOR_ALL_ORDERS(order) {
 			if (order->IsType(OT_CONDITIONAL)) {
-				assert(order->GetTravelTime() == 0);
+				if (order->GetTravelTime() != 0) {
+					DEBUG(sl, 1, "Fixing: order->GetTravelTime() != 0, %u", order->GetTravelTime());
+					order->SetTravelTime(0);
+				}
 			}
 		}
 		OrderList *order_list;
