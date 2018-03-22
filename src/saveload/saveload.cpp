@@ -2911,6 +2911,7 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 		}
 
 		GamelogStopAction();
+		SlXvSetCurrentState();
 	}
 
 	return SL_OK;
