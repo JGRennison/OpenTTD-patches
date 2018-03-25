@@ -49,6 +49,7 @@
 #include "safeguards.h"
 
 static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool force_res, bool *p_got_reservation, bool mark_stuck);
+static bool TrainApproachingLineEnd(Train *v, bool signal, bool reverse);
 static bool TrainCheckIfLineEnds(Train *v, bool reverse = true);
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // Also used in vehicle_sl.cpp.
 static TileIndex TrainApproachingCrossingTile(const Train *v);
@@ -3492,48 +3493,63 @@ static Vehicle *CheckTrainAtSignal(Vehicle *v, void *data)
 	return t;
 }
 
+struct FindSpaceBetweenTrainsChecker {
+	int32 pos;
+	uint16 distance;
+	DirectionByte direction;
+};
+
 /** Find train in front and keep distance between trains in tunnel/bridge. */
 static Vehicle *FindSpaceBetweenTrainsEnum(Vehicle *v, void *data)
 {
 	/* Don't look at wagons between front and back of train. */
 	if (v->type != VEH_TRAIN || (v->Previous() != NULL && v->Next() != NULL)) return NULL;
 
-	const Vehicle *u = (Vehicle*)data;
+	const FindSpaceBetweenTrainsChecker *checker = (FindSpaceBetweenTrainsChecker*) data;
 	int32 a, b = 0;
 
-	switch (u->direction) {
+	switch (checker->direction) {
 		default: NOT_REACHED();
-		case DIR_NE: a = u->x_pos; b = v->x_pos; break;
-		case DIR_SE: a = v->y_pos; b = u->y_pos; break;
-		case DIR_SW: a = v->x_pos; b = u->x_pos; break;
-		case DIR_NW: a = u->y_pos; b = v->y_pos; break;
+		case DIR_NE: a = checker->pos; b = v->x_pos; break;
+		case DIR_SE: a = v->y_pos; b = checker->pos; break;
+		case DIR_SW: a = v->x_pos; b = checker->pos; break;
+		case DIR_NW: a = checker->pos; b = v->y_pos; break;
 	}
 
-	if (a > b && a <= (b + (int)(Train::From(u)->wait_counter)) + (int)(TILE_SIZE)) return v;
+	if (a > b && a <= (b + (int)(checker->distance)) + (int)(TILE_SIZE) - 1) return v;
 	return NULL;
 }
 
-static bool IsToCloseBehindTrain(Vehicle *v, TileIndex tile, bool check_endtile)
+static bool IsTooCloseBehindTrain(Vehicle *v, TileIndex tile, uint16 distance, bool check_endtile)
 {
-	Train *t = (Train *)v;
+	Train *t = Train::From(v);
 
 	if (t->force_proceed != 0) return false;
 
-	if (HasVehicleOnPos(t->tile, v, &FindSpaceBetweenTrainsEnum)) {
+	FindSpaceBetweenTrainsChecker checker;
+	checker.distance = distance;
+	checker.direction = t->direction;
+	switch (checker.direction) {
+		default: NOT_REACHED();
+		case DIR_NE: checker.pos = (TileX(tile) * TILE_SIZE) + TILE_UNIT_MASK; break;
+		case DIR_SE: checker.pos = (TileY(tile) * TILE_SIZE); break;
+		case DIR_SW: checker.pos = (TileX(tile) * TILE_SIZE); break;
+		case DIR_NW: checker.pos = (TileY(tile) * TILE_SIZE) + TILE_UNIT_MASK; break;
+	}
+
+	if (HasVehicleOnPos(t->tile, &checker, &FindSpaceBetweenTrainsEnum)) {
 		/* Revert train if not going with tunnel direction. */
 		if (DirToDiagDir(t->direction) != GetTunnelBridgeDirection(t->tile)) {
-			v->cur_speed = 0;
-			ToggleBit(t->flags, VRF_REVERSING);
+			SetBit(t->flags, VRF_REVERSING);
 		}
 		return true;
 	}
     /* Cover blind spot at end of tunnel bridge. */
 	if (check_endtile){
-		if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(t->tile), v, &FindSpaceBetweenTrainsEnum)) {
+		if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(t->tile), &checker, &FindSpaceBetweenTrainsEnum)) {
 			/* Revert train if not going with tunnel direction. */
 			if (DirToDiagDir(t->direction) != GetTunnelBridgeDirection(t->tile)) {
-				v->cur_speed = 0;
-				ToggleBit(t->flags, VRF_REVERSING);
+				SetBit(t->flags, VRF_REVERSING);
 			}
 			return true;
 		}
@@ -3568,8 +3584,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 
 	/* When not exit reverse train. */
 	if (!IsTunnelBridgeSignalSimulationExit(tile)) {
-		t->cur_speed = 0;
-		ToggleBit(t->flags, VRF_REVERSING);
+		SetBit(t->flags, VRF_REVERSING);
 		return true;
 	}
 	SigSegState seg_state = (_settings_game.pf.reserve_paths || IsTunnelBridgePBS(tile)) ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
@@ -3587,7 +3602,6 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 	}
 	if (seg_state == SIGSEG_FULL || (seg_state == SIGSEG_PBS && !CheckTrainStayInWormHolePathReserve(t, tile))) {
 		t->vehstatus |= VS_TRAIN_SLOWING;
-		t->cur_speed = 0;
 		return true;
 	}
 
@@ -3924,10 +3938,13 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					/* Check if track in front is free and see if we can leave wormhole. */
 					int z = GetSlopePixelZ(gp.x, gp.y) - v->z_pos;
 					if (IsTileType(gp.new_tile, MP_TUNNELBRIDGE) &&	!(abs(z) > 2)) {
-						if (CheckTrainStayInWormHole(v, gp.new_tile)) return false;
+						if (CheckTrainStayInWormHole(v, gp.new_tile)) {
+							v->cur_speed = 0;
+							return false;
+						}
 						leaving = true;
 					} else {
-						if (IsToCloseBehindTrain(v, gp.new_tile, distance == 0)) {
+						if (IsTooCloseBehindTrain(v, gp.new_tile, v->wait_counter, distance == 0)) {
 							if (distance == 0) v->wait_counter = 0;
 							v->cur_speed = 0;
 							v->vehstatus |= VS_TRAIN_SLOWING;
@@ -3963,6 +3980,18 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					v->UpdateViewport(false, false);
 					UpdateSignalsOnSegment(gp.new_tile, INVALID_DIAGDIR, v->owner);
 					continue;
+				}
+			}
+			if (old_tile == gp.new_tile && IsTunnelBridgeWithSignalSimulation(v->tile) && v->IsFrontEngine()) {
+				TileIndex next_tile = old_tile + TileOffsByDir(v->direction);
+				if (IsTileType(next_tile, MP_TUNNELBRIDGE) && ReverseDiagDir(GetTunnelBridgeDirection(next_tile)) == DirToDiagDir(v->direction)) {
+					if (CheckTrainStayInWormHole(v, next_tile)) {
+						TrainApproachingLineEnd(v, true, false);
+					}
+				} else if (v->wait_counter == 0) {
+					if (IsTooCloseBehindTrain(v, next_tile, TILE_SIZE * _settings_game.construction.simulated_wormhole_signals, true)) {
+						TrainApproachingLineEnd(v, true, false);
+					}
 				}
 			}
 
@@ -4438,6 +4467,11 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 
 	/* approaching a rail/road crossing? then make it red */
 	if (IsLevelCrossingTile(tile)) MaybeBarCrossingWithSound(tile);
+
+	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL &&
+			IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeSignalState(tile) == SIGNAL_STATE_RED) {
+		return TrainApproachingLineEnd(v, true, reverse);
+	}
 
 	return true;
 }
