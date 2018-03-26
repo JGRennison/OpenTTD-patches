@@ -41,6 +41,9 @@ enum VehicleRailFlags {
 	VRF_BREAKDOWN_STOPPED             = 13,///< used to mark a train that is stopped because of a breakdown
 	VRF_NEED_REPAIR                   = 14,///< used to mark a train that has a reduced maximum speed because of a critical breakdown
 	VRF_TOO_HEAVY                     = 15,
+	VRF_BEYOND_PLATFORM_END           = 16,
+	VRF_NOT_YET_IN_PLATFORM           = 17,
+	VRF_ADVANCE_IN_PLATFORM           = 18,
 
 	VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED), ///< Bitmask of all flags that indicate a broken train (braking is not included)
 };
@@ -76,7 +79,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay =
 
 void DeleteVisibleTrain(Train *v);
 
-int GetTrainStopLocation(StationID station_id, TileIndex tile, const Train *v, int *station_ahead, int *station_length);
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length);
 void CheckBreakdownFlags(Train *v);
 void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
@@ -204,6 +207,18 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 		 * length of the next vehicle but may not round the length of the current
 		 * vehicle. */
 		return this->gcache.cached_veh_length / 2 + (this->Next() != NULL ? this->Next()->gcache.cached_veh_length + 1 : 0) / 2;
+	}
+
+	const Train *GetStationLoadingVehicle() const
+	{
+		const Train *v = this->First();
+		while (v && HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) v = v->Next();
+		return v;
+	}
+
+	Train *GetStationLoadingVehicle()
+	{
+		return const_cast<Train *>(const_cast<const Train *>(this)->GetStationLoadingVehicle());
 	}
 
 protected: // These functions should not be called outside acceleration code.

@@ -1849,8 +1849,18 @@ public:
 					this->selected_order = -1;
 				} else if (sel == this->selected_order) {
 					if (this->vehicle->type == VEH_TRAIN && sel < this->vehicle->GetNumOrders()) {
+						int osl = ((this->vehicle->GetOrder(sel)->GetStopLocation() + 1) % OSL_END);
+						if (osl == OSL_PLATFORM_THROUGH) {
+							for (const Vehicle *u = this->vehicle; u != NULL; u = u->Next()) {
+								/* Passengers may not be through-loaded */
+								if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+									osl = OSL_PLATFORM_NEAR_END;
+									break;
+								}
+							}
+						}
 						DoCommandP(this->vehicle->tile, this->vehicle->index + (sel << 20),
-								MOF_STOP_LOCATION | ((this->vehicle->GetOrder(sel)->GetStopLocation() + 1) % OSL_END) << 4,
+								MOF_STOP_LOCATION | osl << 4,
 								CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
 					}
 				} else {

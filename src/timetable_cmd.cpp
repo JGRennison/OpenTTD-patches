@@ -292,8 +292,8 @@ static int CDECL VehicleTimetableSorter(Vehicle * const *ap, Vehicle * const *bp
 	int j = (int)b_order - (int)a_order;
 
 	/* Are we currently at an ordered station (un)loading? */
-	bool a_load = a->current_order.IsType(OT_LOADING) && a->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE;
-	bool b_load = b->current_order.IsType(OT_LOADING) && b->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE;
+	bool a_load = (a->current_order.IsType(OT_LOADING) && a->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) || a->current_order.IsType(OT_LOADING_ADVANCE);
+	bool b_load = (b->current_order.IsType(OT_LOADING) && b->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) || b->current_order.IsType(OT_LOADING_ADVANCE);
 
 	/* If the current order is not loading at the ordered station, decrease the order index by one since we have
 	 * not yet arrived at the station (and thus the timetable entry; still in the travelling of the previous one).

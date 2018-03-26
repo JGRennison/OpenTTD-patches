@@ -354,6 +354,7 @@ public:
 	void BeginLoading();
 	void CancelReservation(StationID next, Station *st);
 	void LeaveStation();
+	void AdvanceLoadingInStation();
 
 	GroundVehicleCache *GetGroundVehicleCache();
 	const GroundVehicleCache *GetGroundVehicleCache() const;

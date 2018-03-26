@@ -46,6 +46,7 @@ enum OrderType {
 	OT_CONDITIONAL   = 7,
 	OT_IMPLICIT     = 8,
 	OT_WAITING      = 9,
+	OT_LOADING_ADVANCE = 10,
 	OT_END
 };
 
@@ -95,6 +96,7 @@ enum OrderStopLocation {
 	OSL_PLATFORM_NEAR_END = 0, ///< Stop at the near end of the platform
 	OSL_PLATFORM_MIDDLE   = 1, ///< Stop at the middle of the platform
 	OSL_PLATFORM_FAR_END  = 2, ///< Stop at the far end of the platform
+	OSL_PLATFORM_THROUGH  = 3, ///< Load/unload through the platform
 	OSL_END
 };
 

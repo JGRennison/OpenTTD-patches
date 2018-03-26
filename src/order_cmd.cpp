@@ -193,6 +193,12 @@ void Order::MakeWaiting()
 	this->type = OT_WAITING;
 }
 
+void Order::MakeLoadingAdvance(StationID destination)
+{
+	this->type = OT_LOADING_ADVANCE;
+	this->dest = destination;
+}
+
 /**
  * Make this depot/station order also a refit order.
  * @param cargo   the cargo type to change to.
@@ -898,6 +904,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			switch (new_order.GetStopLocation()) {
 				case OSL_PLATFORM_NEAR_END:
 				case OSL_PLATFORM_MIDDLE:
+				case OSL_PLATFORM_THROUGH:
 					if (v->type != VEH_TRAIN) return CMD_ERROR;
 					FALLTHROUGH;
 
@@ -1232,6 +1239,11 @@ CommandCost CmdDeleteOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
  */
 static void CancelLoadingDueToDeletedOrder(Vehicle *v)
 {
+	if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
+		SetBit(v->vehicle_flags, VF_LOADING_FINISHED);
+		return;
+	}
+
 	assert(v->current_order.IsType(OT_LOADING));
 	/* NON-stop flag is misused to see if a train is in a station that is
 	 * on his order list or not */
@@ -1255,7 +1267,7 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 	for (; u != NULL; u = u->NextShared()) {
 		assert(v->orders.list == u->orders.list);
 
-		if (sel_ord == u->cur_real_order_index && u->current_order.IsType(OT_LOADING)) {
+		if (sel_ord == u->cur_real_order_index && u->current_order.IsAnyLoadingType()) {
 			CancelLoadingDueToDeletedOrder(u);
 		}
 
@@ -1332,7 +1344,7 @@ CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	if (ret.Failed()) return ret;
 
 	if (flags & DC_EXEC) {
-		if (v->current_order.IsType(OT_LOADING)) v->LeaveStation();
+		if (v->current_order.IsAnyLoadingType()) v->LeaveStation();
 		if (v->current_order.IsType(OT_WAITING)) v->HandleWaiting(true);
 
 		v->cur_implicit_order_index = v->cur_real_order_index = sel_ord;
@@ -1741,7 +1753,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			 * when this function is called.
 			 */
 			if (sel_ord == u->cur_real_order_index &&
-					(u->current_order.IsType(OT_GOTO_STATION) || u->current_order.IsType(OT_LOADING)) &&
+					(u->current_order.IsType(OT_GOTO_STATION) || u->current_order.IsAnyLoadingType()) &&
 					u->current_order.GetLoadType() != order->GetLoadType()) {
 				u->current_order.SetLoadType(order->GetLoadType());
 			}
@@ -2214,7 +2226,7 @@ void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indic
 	if (reset_order_indices) {
 		v->cur_implicit_order_index = v->cur_real_order_index = 0;
 		v->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
-		if (v->current_order.IsType(OT_LOADING)) {
+		if (v->current_order.IsAnyLoadingType()) {
 			CancelLoadingDueToDeletedOrder(v);
 		}
 	}
@@ -2512,6 +2524,9 @@ bool ProcessOrders(Vehicle *v)
 		case OT_LOADING:
 			return false;
 
+		case OT_LOADING_ADVANCE:
+			return false;
+
 		case OT_WAITING:
 			return false;
 
@@ -2605,6 +2620,7 @@ bool ProcessOrders(Vehicle *v)
  */
 bool Order::ShouldStopAtStation(const Vehicle *v, StationID station) const
 {
+	if (this->IsType(OT_LOADING_ADVANCE) && this->dest == station) return true;
 	bool is_dest_station = this->IsType(OT_GOTO_STATION) && this->dest == station;
 
 	return (!this->IsType(OT_GOTO_DEPOT) || (this->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0) &&

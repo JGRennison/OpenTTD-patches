@@ -147,6 +147,7 @@ static bool OrderDestinationIsAllowed(const Order *order, const Vehicle *v, Owne
 		case OT_GOTO_STATION:
 		case OT_GOTO_WAYPOINT: dest_owner = BaseStation::Get(order->GetDestination())->owner; break;
 		case OT_GOTO_DEPOT:    dest_owner = (v->type == VEH_AIRCRAFT) ? Station::Get(order->GetDestination())->owner : GetTileOwner(Depot::Get(order->GetDestination())->xy); break;
+		case OT_LOADING_ADVANCE:
 		case OT_LOADING:       dest_owner = Station::Get(v->last_station_visited)->owner; break;
 		default: return true;
 	}
@@ -290,7 +291,7 @@ void HandleSharingCompanyDeletion(Owner owner)
 		}
 		/* current order */
 		if (!OrderDestinationIsAllowed(&v->current_order, v, owner)) {
-			if (v->current_order.IsType(OT_LOADING)) {
+			if (v->current_order.IsAnyLoadingType()) {
 				v->LeaveStation();
 			} else {
 				v->current_order.MakeDummy();

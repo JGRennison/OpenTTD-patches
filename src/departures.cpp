@@ -295,7 +295,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				status = D_CANCELLED;
 			}
 
-			if ((*v)->current_order.IsType(OT_LOADING)) {
+			if ((*v)->current_order.IsAnyLoadingType()) {
 				/* Account for the vehicle having reached the current order and being in the loading phase. */
 				status = D_ARRIVED;
 				start_date -= order->GetTravelTime() + (((*v)->lateness_counter < 0) ? (*v)->lateness_counter : 0);
@@ -381,7 +381,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 					}
 
 					/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
-					if (!should_reset_lateness && (*v)->lateness_counter < 0 && !(*v)->current_order.IsType(OT_LOADING)) {
+					if (!should_reset_lateness && (*v)->lateness_counter < 0 && !(*v)->current_order.IsAnyLoadingType()) {
 						od->expected_date -= (*v)->lateness_counter;
 					}
 

@@ -115,6 +115,12 @@ public:
 	inline bool IsType(OrderType type) const { return this->GetType() == type; }
 
 	/**
+	 * Check whether this order is either of OT_LOADING or OT_LOADING_ADVANCE.
+	 * @return true if the order matches.
+	 */
+	inline bool IsAnyLoadingType() const { return this->GetType() == OT_LOADING || this->GetType() == OT_LOADING_ADVANCE; }
+
+	/**
 	 * Get the type of order of this order.
 	 * @return the order type.
 	 */
@@ -131,6 +137,7 @@ public:
 	void MakeConditional(VehicleOrderID order);
 	void MakeImplicit(StationID destination);
 	void MakeWaiting();
+	void MakeLoadingAdvance(StationID destination);
 
 	/**
 	 * Is this a 'goto' order with a real destination?

@@ -3180,6 +3180,8 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 	/* this routine applies only to trains in depot tiles */
 	if (u->type != VEH_TRAIN || !IsRailDepotTile(tile)) return VETSB_CONTINUE;
 
+	if (u->current_order.IsType(OT_LOADING_ADVANCE)) u->LeaveStation();
+
 	Train *v = Train::From(u);
 
 	/* depot direction */

@@ -3213,6 +3213,12 @@ public:
 					str = STR_VEHICLE_STATUS_LOADING_UNLOADING;
 					break;
 
+				case OT_LOADING_ADVANCE:
+					str = STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE;
+					SetDParam(0, STR_VEHICLE_STATUS_LOADING_UNLOADING);
+					SetDParam(1, v->GetDisplaySpeed());
+					break;
+
 				case OT_GOTO_WAYPOINT: {
 					assert(v->type == VEH_TRAIN || v->type == VEH_SHIP);
 					SetDParam(0, v->current_order.GetDestination());

@@ -4223,6 +4223,7 @@ STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}Current 
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}Loading / Unloading
+STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
 STR_VEHICLE_STATUS_LEAVING                                      :{LTBLUE}Leaving
 STR_VEHICLE_STATUS_CRASHED                                      :{RED}Crashed!
 STR_VEHICLE_STATUS_BROKEN_DOWN                                  :{RED}Broken down
@@ -4561,6 +4562,7 @@ STR_ORDER_AUTO_REFIT_ANY                                        :available cargo
 STR_ORDER_STOP_LOCATION_NEAR_END                                :[near end]
 STR_ORDER_STOP_LOCATION_MIDDLE                                  :[middle]
 STR_ORDER_STOP_LOCATION_FAR_END                                 :[far end]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :[through load]
 
 STR_ORDER_OUT_OF_RANGE                                          :{RED} (Next destination is out of range)
 

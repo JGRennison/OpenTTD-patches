@@ -1646,12 +1646,13 @@ static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft,
  * @param front The vehicle to be updated.
  * @param st The station the vehicle is loading at.
  * @param ticks The time it would normally wait, based on cargo loaded and unloaded.
+ * @param platform_length_left Platform length left, negative values indicate train is overhanging platform
  */
-static void UpdateLoadUnloadTicks(Vehicle *front, const Station *st, int ticks)
+static void UpdateLoadUnloadTicks(Vehicle *front, const Station *st, int ticks, int platform_length_left)
 {
 	if (front->type == VEH_TRAIN) {
 		/* Each platform tile is worth 2 rail vehicles. */
-		int overhang = front->GetGroundVehicleCache()->cached_total_length - st->GetPlatformLength(front->tile) * TILE_SIZE;
+		int overhang = -platform_length_left;
 		if (overhang > 0) {
 			ticks <<= 1;
 			ticks += (overhang * ticks) / 8;
@@ -1672,13 +1673,39 @@ static void LoadUnloadVehicle(Vehicle *front)
 	StationID last_visited = front->last_station_visited;
 	Station *st = Station::Get(last_visited);
 
+	TileIndex station_tile = front->tile;
+	if (front->type == VEH_TRAIN) station_tile = Train::From(front)->GetStationLoadingVehicle()->tile;
+
+	bool pull_through_mode = false;
+	bool load_unload_not_yet_in_station = false;
+	if (front->type == VEH_TRAIN && front->cur_real_order_index < front->GetNumOrders()) {
+		Order *order = front->GetOrder(front->cur_real_order_index);
+		if (order->IsType(OT_GOTO_STATION) && order->GetDestination() == last_visited &&
+				order->GetStopLocation() == OSL_PLATFORM_THROUGH) {
+			pull_through_mode = true;
+			for (Vehicle *v = front; v != NULL; v = v->Next()) {
+				/* Passengers may not be through-loaded */
+				if (v->cargo_cap > 0 && IsCargoInClass(v->cargo_type, CC_PASSENGERS)) {
+					pull_through_mode = false;
+					break;
+				}
+			}
+		}
+	}
+	int platform_length_left = 0;
+	if (pull_through_mode) {
+		platform_length_left = st->GetPlatformLength(station_tile) * TILE_SIZE;
+	} else if (front->type == VEH_TRAIN) {
+		platform_length_left = st->GetPlatformLength(station_tile) * TILE_SIZE - front->GetGroundVehicleCache()->cached_total_length;
+	}
+
 	CargoStationIDStackSet next_station = front->GetNextStoppingStation();
 
 	bool use_autorefit = front->current_order.IsRefit() && front->current_order.GetRefitCargo() == CT_AUTO_REFIT;
 	CargoArray consist_capleft;
 	bool should_reserve_consist = false;
 	bool reserve_consist_cargo_type_loading = false;
-	if (_settings_game.order.improved_load && use_autorefit) {
+	if ((_settings_game.order.improved_load && use_autorefit) || pull_through_mode) {
 		if (front->cargo_payment == NULL) should_reserve_consist = true;
 	} else {
 		if ((front->current_order.GetLoadType() & OLFB_FULL_LOAD) || (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD)) {
@@ -1696,7 +1723,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	/* We have not waited enough time till the next round of loading/unloading */
 	if (front->load_unload_ticks != 0) return;
 
-	if (front->type == VEH_TRAIN && (!IsTileType(front->tile, MP_STATION) || GetStationIndex(front->tile) != st->index)) {
+	if (front->type == VEH_TRAIN && (!IsTileType(station_tile, MP_STATION) || GetStationIndex(station_tile) != st->index)) {
 		/* The train reversed in the station. Take the "easy" way
 		 * out and let the train just leave as it always did. */
 		SetBit(front->vehicle_flags, VF_LOADING_FINISHED);
@@ -1722,6 +1749,25 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	uint artic_part = 0; // Articulated part we are currently trying to load. (not counting parts without capacity)
 	for (Vehicle *v = front; v != NULL; v = v->Next()) {
+		if (pull_through_mode && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) continue;
+		if (pull_through_mode && !v->IsArticulatedPart()) {
+			int length = Train::From(v)->gcache.cached_veh_length;
+			Vehicle *u = v;
+			while (u->HasArticulatedPart()) {
+				u = u->GetNextArticulatedPart();
+				length += Train::From(u)->gcache.cached_veh_length;
+			}
+			if (v != front && !HasBit(Train::From(v->Previous())->flags, VRF_BEYOND_PLATFORM_END) && length > platform_length_left) {
+				for (Vehicle *skip = v; skip != NULL; skip = skip->Next()) {
+					SetBit(Train::From(skip)->flags, VRF_NOT_YET_IN_PLATFORM);
+					if (skip->cargo.ReservedCount() || skip->cargo.UnloadCount()) {
+						load_unload_not_yet_in_station = true;
+					}
+				}
+				break; // articulated vehicle won't fit in platform, no loading
+			}
+			platform_length_left -= length;
+		}
 		if (v == front || !v->Previous()->HasArticulatedPart()) artic_part = 0;
 		if (v->cargo_cap == 0) continue;
 		artic_part++;
@@ -1895,7 +1941,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	/* Only set completely_emptied, if we just unloaded all remaining cargo */
 	completely_emptied &= anything_unloaded;
 
-	if (!anything_unloaded) delete payment;
+	if (!anything_unloaded && !load_unload_not_yet_in_station) delete payment;
 
 	ClrBit(front->vehicle_flags, VF_STOP_LOADING);
 
@@ -1923,9 +1969,9 @@ static void LoadUnloadVehicle(Vehicle *front)
 			SetBit(front->vehicle_flags, VF_STOP_LOADING);
 		}
 
-		UpdateLoadUnloadTicks(front, st, new_load_unload_ticks);
+		UpdateLoadUnloadTicks(front, st, new_load_unload_ticks, platform_length_left);
 	} else {
-		UpdateLoadUnloadTicks(front, st, 20); // We need the ticks for link refreshing.
+		UpdateLoadUnloadTicks(front, st, 20, platform_length_left); // We need the ticks for link refreshing.
 		bool finished_loading = true;
 		if (has_full_load_order) {
 			if (front->current_order.GetLoadType() == OLF_FULL_LOAD_ANY) {
@@ -1938,14 +1984,19 @@ static void LoadUnloadVehicle(Vehicle *front)
 			} else if (cargo_not_full != 0) {
 				finished_loading = false;
 			}
-
-			/* Refresh next hop stats if we're full loading to make the links
-			 * known to the distribution algorithm and allow cargo to be sent
-			 * along them. Otherwise the vehicle could wait for cargo
-			 * indefinitely if it hasn't visited the other links yet, or if the
-			 * links die while it's loading. */
-			if (!finished_loading) LinkRefresher::Run(front, true, true);
 		}
+
+		if (pull_through_mode && (front->current_order.IsRefit() || load_unload_not_yet_in_station)) {
+			finished_loading = false;
+			SetBit(Train::From(front)->flags, VRF_ADVANCE_IN_PLATFORM);
+		}
+
+		/* Refresh next hop stats if we're full loading to make the links
+		 * known to the distribution algorithm and allow cargo to be sent
+		 * along them. Otherwise the vehicle could wait for cargo
+		 * indefinitely if it hasn't visited the other links yet, or if the
+		 * links die while it's loading. */
+		if (!finished_loading) LinkRefresher::Run(front, true, true);
 
 		SB(front->vehicle_flags, VF_LOADING_FINISHED, 1, finished_loading);
 	}
@@ -1956,7 +2007,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 	 * if _settings_client.gui.loading_indicators == 1, _local_company must be the owner or must be a spectator to show ind., so 1 > 0
 	 * if _settings_client.gui.loading_indicators == 0, do not display indicators ... 0 is never greater than anything
 	 */
-	if (_game_mode != GM_MENU && (_settings_client.gui.loading_indicators > (uint)(front->owner != _local_company && _local_company != COMPANY_SPECTATOR))) {
+	if (_game_mode != GM_MENU && (_settings_client.gui.loading_indicators > (uint)(front->owner != _local_company && _local_company != COMPANY_SPECTATOR))
+			&& !front->current_order.IsType(OT_LOADING_ADVANCE)) {
 		StringID percent_up_down = STR_NULL;
 		int percent = CalcPercentVehicleFilled(front, &percent_up_down);
 		if (front->fill_percent_te_id == INVALID_TE_ID) {
@@ -1999,7 +2051,7 @@ void LoadUnloadStation(Station *st)
 
 	/* Check if anything will be loaded at all. Otherwise we don't need to reserve either. */
 	for (Vehicle *v : st->loading_vehicles) {
-		if ((v->vehstatus & (VS_STOPPED | VS_CRASHED))) continue;
+		if ((v->vehstatus & (VS_STOPPED | VS_CRASHED)) || v->current_order.IsType(OT_LOADING_ADVANCE)) continue;
 
 		assert(v->load_unload_ticks != 0);
 		if (--v->load_unload_ticks == 0) last_loading = v;
@@ -2015,7 +2067,7 @@ void LoadUnloadStation(Station *st)
 	if (last_loading == NULL) return;
 
 	for (Vehicle *v : st->loading_vehicles) {
-		if (!(v->vehstatus & (VS_STOPPED | VS_CRASHED))) LoadUnloadVehicle(v);
+		if (!(v->vehstatus & (VS_STOPPED | VS_CRASHED)) && !v->current_order.IsType(OT_LOADING_ADVANCE)) LoadUnloadVehicle(v);
 		if (v == last_loading) break;
 	}
 

@@ -294,6 +294,7 @@ bool Vehicle::NeedsAutomaticServicing() const
 {
 	if (this->HasDepotOrder()) return false;
 	if (this->current_order.IsType(OT_LOADING)) return false;
+	if (this->current_order.IsType(OT_LOADING_ADVANCE)) return false;
 	if (this->current_order.IsType(OT_GOTO_DEPOT) && this->current_order.GetDepotOrderType() != ODTFB_SERVICE) return false;
 	return NeedsServicing();
 }
@@ -2530,8 +2531,13 @@ static void VehicleIncreaseStats(const Vehicle *front)
  */
 void Vehicle::BeginLoading()
 {
-	assert(IsTileType(this->tile, MP_STATION) || this->type == VEH_SHIP);
+	if (this->type == VEH_TRAIN) {
+		assert(IsTileType(Train::From(this)->GetStationLoadingVehicle()->tile, MP_STATION));
+	} else {
+		assert(IsTileType(this->tile, MP_STATION) || this->type == VEH_SHIP);
+	}
 
+	bool no_load_prepare = false;
 	if (this->current_order.IsType(OT_GOTO_STATION) &&
 			this->current_order.GetDestination() == this->last_station_visited) {
 		this->DeleteUnreachedImplicitOrders();
@@ -2546,7 +2552,9 @@ void Vehicle::BeginLoading()
 		 * whether the train is lost or not; not marking a train lost
 		 * that arrives at random stations is bad. */
 		this->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
-
+	} else if (this->current_order.IsType(OT_LOADING_ADVANCE)) {
+		this->current_order.MakeLoading(true);
+		no_load_prepare = true;
 	} else {
 		/* We weren't scheduled to stop here. Insert an implicit order
 		 * to show that we are stopping here.
@@ -2634,9 +2642,11 @@ void Vehicle::BeginLoading()
 		this->current_order.MakeLoading(false);
 	}
 
-	VehicleIncreaseStats(this);
+	if (!no_load_prepare) {
+		VehicleIncreaseStats(this);
 
-	PrepareUnload(this);
+		PrepareUnload(this);
+	}
 
 	SetWindowDirty(GetWindowClassForVehicleType(this->type), this->owner);
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -2687,10 +2697,17 @@ uint32 Vehicle::GetLastLoadingStationValidCargoMask() const
  */
 void Vehicle::LeaveStation()
 {
-	assert(this->current_order.IsType(OT_LOADING));
+	assert(this->current_order.IsAnyLoadingType());
 
 	delete this->cargo_payment;
 	assert(this->cargo_payment == NULL); // cleared by ~CargoPayment
+
+	if (this->type == VEH_TRAIN) {
+		for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
+			ClrBit(v->flags, VRF_BEYOND_PLATFORM_END);
+			ClrBit(v->flags, VRF_NOT_YET_IN_PLATFORM);
+		}
+	}
 
 	/* Only update the timetable if the vehicle was supposed to stop here. */
 	if (this->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) UpdateVehicleTimetable(this, false);
@@ -2756,9 +2773,10 @@ void Vehicle::LeaveStation()
 
 	if (this->type == VEH_TRAIN && !(this->vehstatus & VS_CRASHED)) {
 		/* Trigger station animation (trains only) */
-		if (IsTileType(this->tile, MP_STATION)) {
-			TriggerStationRandomisation(st, this->tile, SRT_TRAIN_DEPARTS);
-			TriggerStationAnimation(st, this->tile, SAT_TRAIN_DEPARTS);
+		TileIndex station_tile = Train::From(this)->GetStationLoadingVehicle()->tile;
+		if (IsTileType(station_tile, MP_STATION)) {
+			TriggerStationRandomisation(st, station_tile, SRT_TRAIN_DEPARTS);
+			TriggerStationAnimation(st, station_tile, SAT_TRAIN_DEPARTS);
 		}
 
 		SetBit(Train::From(this)->flags, VRF_LEAVING_STATION);
@@ -2789,6 +2807,30 @@ void Vehicle::LeaveStation()
 		}
 	}
 
+	this->MarkDirty();
+}
+/**
+ * Perform all actions when switching to advancing within a station for loading/unloading
+ * @pre this->current_order.IsType(OT_LOADING)
+ * @pre this->type == VEH_TRAIN
+ */
+void Vehicle::AdvanceLoadingInStation()
+{
+	assert(this->current_order.IsType(OT_LOADING));
+	assert(this->type == VEH_TRAIN);
+
+	ClrBit(Train::From(this)->flags, VRF_ADVANCE_IN_PLATFORM);
+
+	for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
+		if (HasBit(v->flags, VRF_NOT_YET_IN_PLATFORM)) {
+			ClrBit(v->flags, VRF_NOT_YET_IN_PLATFORM);
+		} else {
+			SetBit(v->flags, VRF_BEYOND_PLATFORM_END);
+		}
+	}
+
+	HideFillingPercent(&this->fill_percent_te_id);
+	this->current_order.MakeLoadingAdvance(this->last_station_visited);
 	this->MarkDirty();
 }
 
@@ -2839,7 +2881,10 @@ void Vehicle::HandleLoading(bool mode)
 			if (!mode && this->type != VEH_TRAIN) PayStationSharingFee(this, Station::Get(this->last_station_visited));
 
 			/* Not the first call for this tick, or still loading */
-			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || this->current_order_time < wait_time) return;
+			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || this->current_order_time < wait_time) {
+				if (!mode && this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_ADVANCE_IN_PLATFORM)) this->AdvanceLoadingInStation();
+				return;
+			}
 
 			this->PlayLeaveStationSound();
 
@@ -2966,7 +3011,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 	}
 
 	if (flags & DC_EXEC) {
-		if (this->current_order.IsType(OT_LOADING)) this->LeaveStation();
+		if (this->current_order.IsAnyLoadingType()) this->LeaveStation();
 
 		if (this->IsGroundVehicle() && this->GetNumManualOrders() > 0) {
 			uint16 &gv_flags = this->GetGroundVehicleFlags();

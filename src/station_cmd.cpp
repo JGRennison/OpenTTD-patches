@@ -3300,8 +3300,12 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			// reverse at waypoint
 			if (t->reverse_distance == 0) t->reverse_distance = t->gcache.cached_total_length;
 		}
-		if (!v->current_order.ShouldStopAtStation(v, station_id)) return VETSB_CONTINUE;
-		if (!IsRailStation(tile) || !v->IsFrontEngine()) return VETSB_CONTINUE;
+		if (HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return VETSB_CONTINUE;
+		Train *front = Train::From(v)->First();
+		if (!front->IsFrontEngine()) return VETSB_CONTINUE;
+		if (!(v == front || HasBit(Train::From(v)->Previous()->flags, VRF_BEYOND_PLATFORM_END))) return VETSB_CONTINUE;
+		if (!IsRailStation(tile)) return VETSB_CONTINUE;
+		if (!front->current_order.ShouldStopAtStation(front, station_id)) return VETSB_CONTINUE;
 
 		int station_ahead;
 		int station_length;
@@ -3326,9 +3330,9 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			if (x == stop) {
 				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id << VETS_STATION_ID_OFFSET); // enter station
 			} else if (x < stop) {
-				v->vehstatus |= VS_TRAIN_SLOWING;
+				front->vehstatus |= VS_TRAIN_SLOWING;
 				uint16 spd = max(0, (stop - x) * 20 - 15);
-				if (spd < v->cur_speed) v->cur_speed = spd;
+				if (spd < front->cur_speed) front->cur_speed = spd;
 			}
 		}
 	} else if (v->type == VEH_ROAD) {

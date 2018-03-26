@@ -341,8 +341,9 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
  * @param station_length 'return' the station length in 1/16th tiles
  * @return the location, calculated from the begin of the station to stop at.
  */
-int GetTrainStopLocation(StationID station_id, TileIndex tile, const Train *v, int *station_ahead, int *station_length)
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length)
 {
+	Train *front = v->First();
 	const Station *st = Station::Get(station_id);
 	*station_ahead  = st->GetPlatformLength(tile, DirToDiagDir(v->direction)) * TILE_SIZE;
 	*station_length = st->GetPlatformLength(tile) * TILE_SIZE;
@@ -350,11 +351,49 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, const Train *v, i
 	/* Default to the middle of the station for stations stops that are not in
 	 * the order list like intermediate stations when non-stop is disabled */
 	OrderStopLocation osl = OSL_PLATFORM_MIDDLE;
-	if (v->gcache.cached_total_length >= *station_length) {
+	if (front->current_order.IsType(OT_GOTO_STATION) && front->current_order.GetDestination() == station_id) {
+		osl = front->current_order.GetStopLocation();
+	}
+	int overhang = front->gcache.cached_total_length - *station_length;
+	int adjust = 0;
+	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
+		for (Train *u = front; u != NULL; u = u->Next()) {
+			/* Passengers may not be through-loaded */
+			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+				osl = OSL_PLATFORM_FAR_END;
+				break;
+			}
+		}
+	}
+	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
+		/* The train is longer than the station, and we can run through the station to load/unload */
+		for (Train *u = v; u != nullptr; u = u->Next()) {
+			if (overhang > 0 && !HasBit(u->flags, VRF_BEYOND_PLATFORM_END) && !u->IsArticulatedPart()) {
+				bool skip = true;
+				for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
+					if (part->cargo_cap != 0) {
+						skip = false;
+						break;
+					}
+				}
+				if (skip) {
+					for (Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
+						SetBit(part->flags, VRF_BEYOND_PLATFORM_END);
+					}
+				}
+			}
+			if (HasBit(u->flags, VRF_BEYOND_PLATFORM_END)) {
+				overhang -= u->gcache.cached_veh_length;
+				adjust += u->gcache.cached_veh_length;
+			} else {
+				break;
+			}
+		}
+		for (Train *u = front; u != v; u = u->Next()) overhang -= u->gcache.cached_veh_length; // only advance until rear of train is in platform
+		if (overhang < 0) adjust += overhang;
+	} else if (overhang >= 0) {
 		/* The train is longer than the station, make it stop at the far end of the platform */
 		osl = OSL_PLATFORM_FAR_END;
-	} else if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id) {
-		osl = v->current_order.GetStopLocation();
 	}
 
 	/* The stop location of the FRONT! of the train */
@@ -363,21 +402,22 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, const Train *v, i
 		default: NOT_REACHED();
 
 		case OSL_PLATFORM_NEAR_END:
-			stop = v->gcache.cached_total_length;
+			stop = front->gcache.cached_total_length;
 			break;
 
 		case OSL_PLATFORM_MIDDLE:
-			stop = *station_length - (*station_length - v->gcache.cached_total_length) / 2;
+			stop = *station_length - (*station_length -front->gcache.cached_total_length) / 2;
 			break;
 
 		case OSL_PLATFORM_FAR_END:
+		case OSL_PLATFORM_THROUGH:
 			stop = *station_length;
 			break;
 	}
 
 	/* Subtract half the front vehicle length of the train so we get the real
 	 * stop location of the train. */
-	return stop - (v->gcache.cached_veh_length + 1) / 2;
+	return stop - ((v->gcache.cached_veh_length + 1) / 2) + adjust;
 }
 
 
@@ -460,27 +500,31 @@ int Train::GetCurrentMaxSpeed() const
 			this->gcache.cached_max_track_speed :
 			this->tcache.cached_max_curve_speed;
 
-	if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC && IsRailStationTile(this->tile)) {
-		StationID sid = GetStationIndex(this->tile);
-		if (this->current_order.ShouldStopAtStation(this, sid)) {
-			int station_ahead;
-			int station_length;
-			int stop_at = GetTrainStopLocation(sid, this->tile, this, &station_ahead, &station_length);
+	if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC) {
+		Train *v_platform = const_cast<Train *>(this->GetStationLoadingVehicle());
+		TileIndex platform_tile = v_platform->tile;
+		if (IsRailStationTile(platform_tile)) {
+			StationID sid = GetStationIndex(platform_tile);
+			if (this->current_order.ShouldStopAtStation(this, sid)) {
+				int station_ahead;
+				int station_length;
+				int stop_at = GetTrainStopLocation(sid, platform_tile, v_platform, &station_ahead, &station_length);
 
-			/* The distance to go is whatever is still ahead of the train minus the
-			 * distance from the train's stop location to the end of the platform */
-			int distance_to_go = station_ahead / TILE_SIZE - (station_length - stop_at) / TILE_SIZE;
+				/* The distance to go is whatever is still ahead of the train minus the
+				 * distance from the train's stop location to the end of the platform */
+				int distance_to_go = station_ahead / TILE_SIZE - (station_length - stop_at) / TILE_SIZE;
 
-			if (distance_to_go > 0) {
-				int st_max_speed = 120;
+				if (distance_to_go > 0) {
+					int st_max_speed = 120;
 
-				int delta_v = this->cur_speed / (distance_to_go + 1);
-				if (max_speed > (this->cur_speed - delta_v)) {
-					st_max_speed = this->cur_speed - (delta_v / 10);
+					int delta_v = this->cur_speed / (distance_to_go + 1);
+					if (max_speed > (this->cur_speed - delta_v)) {
+						st_max_speed = this->cur_speed - (delta_v / 10);
+					}
+
+					st_max_speed = max(st_max_speed, 25 * distance_to_go);
+					max_speed = min(max_speed, st_max_speed);
 				}
-
-				st_max_speed = max(st_max_speed, 25 * distance_to_go);
-				max_speed = min(max_speed, st_max_speed);
 			}
 		}
 	}
@@ -2008,6 +2052,8 @@ void ReverseTrainDirection(Train *v)
 		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 	}
 
+	if (v->current_order.IsType(OT_LOADING_ADVANCE)) v->LeaveStation();
+
 	v->reverse_distance = 0;
 
 	/* Clear path reservation in front if train is not stuck. */
@@ -2145,12 +2191,14 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 
 		if (flags & DC_EXEC) {
 			/* Properly leave the station if we are loading and won't be loading anymore */
-			if (v->current_order.IsType(OT_LOADING)) {
+			if (v->current_order.IsAnyLoadingType()) {
 				const Vehicle *last = v;
 				while (last->Next() != NULL) last = last->Next();
 
 				/* not a station || different station --> leave the station */
-				if (!IsTileType(last->tile, MP_STATION) || GetStationIndex(last->tile) != GetStationIndex(v->tile)) {
+				if (!IsTileType(last->tile, MP_STATION) || !IsTileType(v->tile, MP_STATION) ||
+						GetStationIndex(last->tile) != GetStationIndex(v->tile) ||
+						HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) {
 					v->LeaveStation();
 				}
 			}
@@ -2931,7 +2979,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 	 * order list itself is empty. */
 	if (v->current_order.IsType(OT_LEAVESTATION)) {
 		orders.SwitchToNextOrder(false);
-	} else if (v->current_order.IsType(OT_LOADING) || (!v->current_order.IsType(OT_GOTO_DEPOT) && (
+	} else if (v->current_order.IsAnyLoadingType() || (!v->current_order.IsType(OT_GOTO_DEPOT) && (
 			v->current_order.IsType(OT_GOTO_STATION) ?
 			IsRailStationTile(v->tile) && v->current_order.GetDestination() == GetStationIndex(v->tile) :
 			v->tile == v->dest_tile))) {
@@ -3233,8 +3281,9 @@ static void TrainEnterStation(Train *v, StationID station)
 
 	v->BeginLoading();
 
-	TriggerStationRandomisation(st, v->tile, SRT_TRAIN_ARRIVES);
-	TriggerStationAnimation(st, v->tile, SAT_TRAIN_ARRIVES);
+	TileIndex station_tile = v->GetStationLoadingVehicle()->tile;
+	TriggerStationRandomisation(st, station_tile, SRT_TRAIN_ARRIVES);
+	TriggerStationAnimation(st, station_tile, SAT_TRAIN_ARRIVES);
 }
 
 /* Check if the vehicle is compatible with the specified tile */
@@ -3691,7 +3740,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					}
 					if (HasBit(r, VETS_ENTERED_STATION)) {
 						/* The new position is the end of the platform */
-						TrainEnterStation(v, r >> VETS_STATION_ID_OFFSET);
+						TrainEnterStation(v->First(), r >> VETS_STATION_ID_OFFSET);
 					}
 				}
 			} else {
@@ -3916,7 +3965,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 				if (HasBit(r, VETS_ENTERED_STATION)) {
 					/* The new position is the location where we want to stop */
-					TrainEnterStation(v, r >> VETS_STATION_ID_OFFSET);
+					TrainEnterStation(v->First(), r >> VETS_STATION_ID_OFFSET);
 				}
 			}
 		} else {
