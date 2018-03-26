@@ -1881,7 +1881,7 @@ void ReverseTrainDirection(Train *v)
 		MarkTileDirtyByTile(v->tile);
 		/* Clear counters. */
 		v->wait_counter = 0;
-		v->load_unload_ticks = 0;
+		v->tunnel_bridge_signal_num = 0;
 		return;
 	}
 
@@ -3603,7 +3603,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if (v->IsFrontEngine() && v->force_proceed == 0 && IsTunnelBridgeSignalSimulationExit(v->tile)) goto invalid_rail;
 					/* Entered wormhole set counters. */
 					v->wait_counter = (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) - TILE_SIZE;
-					v->load_unload_ticks = 0;
+					v->tunnel_bridge_signal_num = 0;
 				}
 
 				uint distance = v->wait_counter;
@@ -3628,13 +3628,13 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						}
 						/* flip signal in front to red on bridges*/
 						if (distance == 0 && IsBridge(v->tile)) {
-							SetBridgeEntranceSimulatedSignalState(v->tile, v->load_unload_ticks, SIGNAL_STATE_RED);
+							SetBridgeEntranceSimulatedSignalState(v->tile, v->tunnel_bridge_signal_num, SIGNAL_STATE_RED);
 							MarkTileDirtyByTile(gp.new_tile);
 						}
 					}
 				}
 				if (v->Next() == NULL) {
-					if (v->load_unload_ticks > 0 && distance == (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) - TILE_SIZE) HandleSignalBehindTrain(v, v->load_unload_ticks - 2);
+					if (v->tunnel_bridge_signal_num > 0 && distance == (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) - TILE_SIZE) HandleSignalBehindTrain(v, v->tunnel_bridge_signal_num - 2);
 					if (old_tile == v->tile) {
 						/* We left ramp into wormhole. */
 						v->x_pos = gp.x;
@@ -3643,13 +3643,13 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						UnreserveBridgeTunnelTile(old_tile);
 					}
 				}
-				if (distance == 0) v->load_unload_ticks++;
+				if (distance == 0) v->tunnel_bridge_signal_num++;
 				v->wait_counter -= TILE_SIZE;
 
 				if (leaving) { // Reset counters.
 					v->force_proceed = 0;
 					v->wait_counter = 0;
-					v->load_unload_ticks = 0;
+					v->tunnel_bridge_signal_num = 0;
 					v->x_pos = gp.x;
 					v->y_pos = gp.y;
 					v->UpdatePosition();
