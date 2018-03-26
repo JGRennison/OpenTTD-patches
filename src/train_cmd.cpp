@@ -3660,7 +3660,18 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 			}
 			if (old_tile == gp.new_tile && IsTunnelBridgeWithSignalSimulation(v->tile) && v->IsFrontEngine()) {
 				TileIndex next_tile = old_tile + TileOffsByDir(v->direction);
-				if (IsTileType(next_tile, MP_TUNNELBRIDGE) && ReverseDiagDir(GetTunnelBridgeDirection(next_tile)) == DirToDiagDir(v->direction)) {
+				bool is_exit = false;
+				if (IsTileType(next_tile, MP_TUNNELBRIDGE) && IsTunnelBridgeWithSignalSimulation(next_tile) &&
+						ReverseDiagDir(GetTunnelBridgeDirection(next_tile)) == DirToDiagDir(v->direction)) {
+					if (IsBridge(next_tile) && IsBridge(v->tile)) {
+						// bridge ramp facing towards us
+						is_exit = true;
+					} else if (IsTunnel(next_tile) && IsTunnel(v->tile)) {
+						// tunnel exit at same height
+						is_exit = (GetTileZ(next_tile) == GetTileZ(v->tile));
+					}
+				}
+				if (is_exit) {
 					if (CheckTrainStayInWormHole(v, next_tile)) {
 						TrainApproachingLineEnd(v, true, false);
 					}
