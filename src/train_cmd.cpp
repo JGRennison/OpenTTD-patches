@@ -353,6 +353,8 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *st
 	OrderStopLocation osl = OSL_PLATFORM_MIDDLE;
 	if (front->current_order.IsType(OT_GOTO_STATION) && front->current_order.GetDestination() == station_id) {
 		osl = front->current_order.GetStopLocation();
+	} else if (front->current_order.IsType(OT_LOADING_ADVANCE) && front->current_order.GetDestination() == station_id) {
+		osl = OSL_PLATFORM_THROUGH;
 	}
 	int overhang = front->gcache.cached_total_length - *station_length;
 	int adjust = 0;
