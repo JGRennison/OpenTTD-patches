@@ -1543,11 +1543,13 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 	IterateVehicleParts(v_start, PrepareRefitAction(consist_capleft, refit_mask));
 
 	bool is_auto_refit = new_cid == CT_AUTO_REFIT;
+	bool check_order = (v->First()->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD);
 	if (is_auto_refit) {
 		/* Get a refittable cargo type with waiting cargo for next_station or INVALID_STATION. */
 		CargoID cid;
 		new_cid = v_start->cargo_type;
 		FOR_EACH_SET_CARGO_ID(cid, refit_mask) {
+			if (check_order && v->First()->current_order.GetCargoLoadType(cid) == OLFB_NO_LOAD) continue;
 			if (st->goods[cid].cargo.HasCargoFor(next_station.Get(cid))) {
 				/* Try to find out if auto-refitting would succeed. In case the refit is allowed,
 				 * the returned refit capacity will be greater than zero. */
