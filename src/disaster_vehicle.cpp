@@ -113,6 +113,7 @@ void DisasterVehicle::UpdateImage()
 	SpriteID img = this->image_override;
 	if (img == 0) img = _disaster_images[this->subtype][this->direction];
 	this->sprite_seq.Set(img);
+	this->UpdateSpriteSeqBound();
 }
 
 /**
