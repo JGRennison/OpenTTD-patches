@@ -2010,6 +2010,19 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDoDisaster)
+{
+	if (argc == 0) {
+		IConsoleHelp("Debug: Do disaster");
+		return true;
+	}
+
+	extern void DoDisaster();
+	DoDisaster();
+
+	return true;
+}
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -2161,6 +2174,7 @@ void IConsoleStdLibRegister()
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
+	IConsoleCmdRegister("do_disaster", ConDoDisaster, ConHookNewGRFDeveloperTool, true);
 
 	/* Bug workarounds */
 	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);

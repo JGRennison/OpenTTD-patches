@@ -905,7 +905,7 @@ static const Disaster _disasters[] = {
 	{Disaster_CoalMine_Init,        1950, 1985}, // coalmine
 };
 
-static void DoDisaster()
+void DoDisaster()
 {
 	byte buf[lengthof(_disasters)];
 
