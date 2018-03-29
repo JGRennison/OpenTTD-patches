@@ -1850,6 +1850,9 @@ public:
 				} else if (sel == this->selected_order) {
 					if (this->vehicle->type == VEH_TRAIN && sel < this->vehicle->GetNumOrders()) {
 						int osl = ((this->vehicle->GetOrder(sel)->GetStopLocation() + 1) % OSL_END);
+						if (osl == OSL_PLATFORM_THROUGH && !_settings_client.gui.show_adv_load_mode_features) {
+							osl = OSL_PLATFORM_NEAR_END;
+						}
 						if (osl == OSL_PLATFORM_THROUGH) {
 							for (const Vehicle *u = this->vehicle; u != NULL; u = u->Next()) {
 								/* Passengers may not be through-loaded */

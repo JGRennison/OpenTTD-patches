@@ -1609,6 +1609,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
 			interface->Add(new SettingEntry("gui.show_veh_list_cargo_filter"));
+			interface->Add(new SettingEntry("gui.show_adv_load_mode_features"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
