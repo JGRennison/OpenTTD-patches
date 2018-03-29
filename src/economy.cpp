@@ -1941,8 +1941,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	if (anything_loaded || anything_unloaded) {
 		if (front->type == VEH_TRAIN) {
-			TriggerStationRandomisation(st, front->tile, SRT_TRAIN_LOADS);
-			TriggerStationAnimation(st, front->tile, SAT_TRAIN_LOADS);
+			TriggerStationRandomisation(st, station_tile, SRT_TRAIN_LOADS);
+			TriggerStationAnimation(st, station_tile, SAT_TRAIN_LOADS);
 		}
 	}
 
