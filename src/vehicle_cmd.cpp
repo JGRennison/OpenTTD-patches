@@ -1496,11 +1496,11 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 /**
  * Send all vehicles of type to depots
  * @param flags   the flags used for DoCommand()
- * @param service should the vehicles only get service in the depots
+ * @param depot_flags depot command flags
  * @param vli     identifier of the vehicle list
  * @return 0 for success and CMD_ERROR if no vehicle is able to go to depot
  */
-static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, bool service, const VehicleListIdentifier &vli)
+static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, DepotCommand depot_flags, const VehicleListIdentifier &vli)
 {
 	VehicleList list;
 
@@ -1510,7 +1510,7 @@ static CommandCost SendAllVehiclesToDepot(DoCommandFlag flags, bool service, con
 	bool had_success = false;
 	for (uint i = 0; i < list.Length(); i++) {
 		const Vehicle *v = list[i];
-		CommandCost ret = DoCommand(v->tile, v->index | (service ? DEPOT_SERVICE : 0U) | DEPOT_DONT_CANCEL, 0, flags, GetCmdSendToDepot(vli.vtype));
+		CommandCost ret = DoCommand(v->tile, v->index | depot_flags, 0, flags, GetCmdSendToDepot(vli.vtype));
 
 		if (ret.Succeeded()) {
 			had_success = true;
@@ -1543,7 +1543,9 @@ CommandCost CmdSendVehicleToDepot(TileIndex tile, DoCommandFlag flags, uint32 p1
 		/* Mass goto depot requested */
 		VehicleListIdentifier vli;
 		if (!vli.UnpackIfValid(p2)) return CMD_ERROR;
-		return SendAllVehiclesToDepot(flags, (p1 & DEPOT_SERVICE) != 0, vli);
+		uint32 depot_flags = (p1 & (DEPOT_SERVICE | DEPOT_CANCEL));
+		if (!(p1 & DEPOT_CANCEL)) depot_flags |= DEPOT_DONT_CANCEL;
+		return SendAllVehiclesToDepot(flags, (DepotCommand) depot_flags, vli);
 	}
 
 	Vehicle *v = Vehicle::GetIfValid(GB(p1, 0, 20));

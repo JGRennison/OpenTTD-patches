@@ -3906,6 +3906,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}Manage l
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}Send instructions to all vehicles in this list
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Replace vehicles
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Send for Servicing
+STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :Cancel Servicing/Send to
 
 STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT                            :Send to Depot
 STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT                     :Send to Depot

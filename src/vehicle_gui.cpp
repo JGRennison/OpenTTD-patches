@@ -322,6 +322,7 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 	}
 	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, disable);
 	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, disable);
+	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, disable);
 
 	if (show_group) {
 		*list->Append() = new DropDownListStringItem(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, disable);

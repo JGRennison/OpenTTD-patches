@@ -44,6 +44,7 @@ struct BaseVehicleListWindow : public Window {
 		ADI_REPLACE,
 		ADI_SERVICE,
 		ADI_DEPOT,
+		ADI_CANCEL_DEPOT,
 		ADI_ADD_SHARED,
 		ADI_REMOVE_ALL,
 		ADI_CHANGE_ORDER,

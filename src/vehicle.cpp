@@ -2950,23 +2950,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 	if (this->vehstatus & VS_CRASHED) return CMD_ERROR;
 	if (this->IsStoppedInDepot()) return CMD_ERROR;
 
-	if (this->current_order.IsType(OT_GOTO_DEPOT) && !(command & DEPOT_SPECIFIC)) {
-		bool halt_in_depot = (this->current_order.GetDepotActionType() & ODATFB_HALT) != 0;
-		if (!!(command & DEPOT_SERVICE) == halt_in_depot) {
-			/* We called with a different DEPOT_SERVICE setting.
-			 * Now we change the setting to apply the new one and let the vehicle head for the same depot.
-			 * Note: the if is (true for requesting service == true for ordered to stop in depot)          */
-			if (flags & DC_EXEC) {
-				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
-				this->current_order.SetDepotActionType(halt_in_depot ? ODATF_SERVICE_ONLY : ODATFB_HALT);
-				this->ClearSeparation();
-				if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
-				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
-			}
-			return CommandCost();
-		}
-
-		if (command & DEPOT_DONT_CANCEL) return CMD_ERROR; // Requested no cancelation of depot orders
+	auto cancel_order = [&]() {
 		if (flags & DC_EXEC) {
 			/* If the orders to 'goto depot' are in the orders list (forced servicing),
 			 * then skip to the next order; effectively cancelling this forced service */
@@ -2991,6 +2975,35 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 			/* prevent any attempt to update timetable for current order, as actual travel time will be incorrect due to depot command */
 			this->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
 		}
+	};
+
+	if (command & DEPOT_CANCEL) {
+		if (this->current_order.IsType(OT_GOTO_DEPOT)) {
+			cancel_order();
+			return CommandCost();
+		} else {
+			return CMD_ERROR;
+		}
+	}
+
+	if (this->current_order.IsType(OT_GOTO_DEPOT) && !(command & DEPOT_SPECIFIC)) {
+		bool halt_in_depot = (this->current_order.GetDepotActionType() & ODATFB_HALT) != 0;
+		if (!!(command & DEPOT_SERVICE) == halt_in_depot) {
+			/* We called with a different DEPOT_SERVICE setting.
+			 * Now we change the setting to apply the new one and let the vehicle head for the same depot.
+			 * Note: the if is (true for requesting service == true for ordered to stop in depot)          */
+			if (flags & DC_EXEC) {
+				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
+				this->current_order.SetDepotActionType(halt_in_depot ? ODATF_SERVICE_ONLY : ODATFB_HALT);
+				this->ClearSeparation();
+				if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
+				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+			}
+			return CommandCost();
+		}
+
+		if (command & DEPOT_DONT_CANCEL) return CMD_ERROR; // Requested no cancelation of depot orders
+		cancel_order();
 		return CommandCost();
 	}
 
