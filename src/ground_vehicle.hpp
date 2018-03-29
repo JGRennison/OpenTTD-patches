@@ -418,8 +418,6 @@ protected:
 			}
 		}
 
-		if (this->current_order.IsType(OT_LOADING_ADVANCE)) tempmax = min(tempmax, 15);
-
 		if (this->cur_speed > max_speed) {
 			tempmax = max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
 		}

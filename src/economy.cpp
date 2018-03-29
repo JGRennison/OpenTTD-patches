@@ -1675,8 +1675,9 @@ static void LoadUnloadVehicle(Vehicle *front)
 	StationID last_visited = front->last_station_visited;
 	Station *st = Station::Get(last_visited);
 
-	TileIndex station_tile = front->tile;
-	if (front->type == VEH_TRAIN) station_tile = Train::From(front)->GetStationLoadingVehicle()->tile;
+	Vehicle *station_vehicle = front;
+	if (front->type == VEH_TRAIN) station_vehicle = Train::From(front)->GetStationLoadingVehicle();
+	TileIndex station_tile = station_vehicle->tile;
 
 	bool pull_through_mode = false;
 	bool load_unload_not_yet_in_station = false;
@@ -1691,12 +1692,17 @@ static void LoadUnloadVehicle(Vehicle *front)
 					pull_through_mode = false;
 					break;
 				}
+				/* Disallow through-load when any part of train is in a depot, to prevent cheating */
+				if (Train::From(v)->IsInDepot()) {
+					pull_through_mode = false;
+					break;
+				}
 			}
 		}
 	}
 	int platform_length_left = 0;
 	if (pull_through_mode) {
-		platform_length_left = st->GetPlatformLength(station_tile) * TILE_SIZE;
+		platform_length_left = st->GetPlatformLength(station_tile, ReverseDiagDir(DirToDiagDir(station_vehicle->direction))) * TILE_SIZE - GetTileMarginInFrontOfTrain(Train::From(station_vehicle));
 	} else if (front->type == VEH_TRAIN) {
 		platform_length_left = st->GetPlatformLength(station_tile) * TILE_SIZE - front->GetGroundVehicleCache()->cached_total_length;
 	}
@@ -1707,10 +1713,10 @@ static void LoadUnloadVehicle(Vehicle *front)
 	CargoArray consist_capleft;
 	bool should_reserve_consist = false;
 	bool reserve_consist_cargo_type_loading = false;
-	if ((_settings_game.order.improved_load && use_autorefit) || pull_through_mode) {
+	if (_settings_game.order.improved_load && use_autorefit) {
 		if (front->cargo_payment == NULL) should_reserve_consist = true;
 	} else {
-		if ((front->current_order.GetLoadType() & OLFB_FULL_LOAD) || (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD)) {
+		if ((front->current_order.GetLoadType() & OLFB_FULL_LOAD) || (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) || pull_through_mode) {
 			should_reserve_consist = true;
 			reserve_consist_cargo_type_loading = (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD);
 		}

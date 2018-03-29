@@ -3309,7 +3309,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 
 		int station_ahead;
 		int station_length;
-		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), &station_ahead, &station_length);
+		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), &station_ahead, &station_length, x, y);
 
 		/* Stop whenever that amount of station ahead + the distance from the
 		 * begin of the platform to the stop location is longer than the length

@@ -4270,6 +4270,9 @@ STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Name air
 
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Age: {LTBLUE}{STRING2}{BLACK}   Running Cost: {LTBLUE}{CURRENCY_LONG}/yr
 
+STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: through load aborted due to insufficient track at {STATION}
+STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: through load aborted due to depot at {STATION}
+
 STR_RUNNING                                                     :{LTBLUE}Running
 STR_NEED_REPAIR                                                 :{ORANGE}Vehicle needs repair - max speed reduced to {VELOCITY}
 STR_CURRENT_STATUS                                              :{BLACK}Current status: {STRING3}

@@ -51,11 +51,14 @@
 static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool force_res, bool *p_got_reservation, bool mark_stuck);
 static bool TrainApproachingLineEnd(Train *v, bool signal, bool reverse);
 static bool TrainCheckIfLineEnds(Train *v, bool reverse = true);
+static bool TrainCanLeaveTile(const Train *v);
+static inline bool CheckCompatibleRail(const Train *v, TileIndex tile);
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // Also used in vehicle_sl.cpp.
 static TileIndex TrainApproachingCrossingTile(const Train *v);
 static void CheckIfTrainNeedsService(Train *v);
 static void CheckNextTrainTile(Train *v);
 TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *);
+static void TrainEnterStation(Train *v, StationID station);
 
 static const byte _vehicle_initial_x_fract[4] = {10, 8, 4,  8};
 static const byte _vehicle_initial_y_fract[4] = { 8, 4, 8, 10};
@@ -332,16 +335,56 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 }
 
 /**
+ * Get the fraction of the vehicle's current tile which is in front of it.
+ * This is equal to how many more steps it could travel without having to stop/reverse if it was an end of line.
+ *
+ * See also wrapper without x_pos, y_pos in train.h
+ *
+ * @param v              the vehicle to use (not required to be the front)
+ * @param x_pos          vehicle x position
+ * @param y_pos          vehicle y position
+ * @return the fraction of the current tile in front of the vehicle
+ */
+int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos)
+{
+	if (IsDiagonalDirection(v->direction)) {
+		DiagDirection dir = DirToDiagDir(v->direction);
+		int offset = ((DiagDirToAxis(dir) == AXIS_X) ? x_pos : y_pos) & 0xF;
+		return ((dir == DIAGDIR_SE || dir == DIAGDIR_SW) ? TILE_SIZE - 1 - offset : offset) - ((v->gcache.cached_veh_length + 1) / 2);
+	} else {
+		/* Calc position within the current tile */
+		uint x = x_pos & 0xF;
+		uint y = y_pos & 0xF;
+
+		/* for non-diagonal directions, x will be 1, 3, 5, ..., 15 */
+		switch (v->direction) {
+			case DIR_N : x = ~x + ~y + 25; break;
+			case DIR_E : x = ~x + y + 9;   break;
+			case DIR_S : x = x + y - 7;    break;
+			case DIR_W : x = ~y + x + 9;   break;
+			default: break;
+		}
+		x >>= 1; // x is now in range 0 ... 7
+		return (TILE_SIZE / 2) - 1 - x - (v->gcache.cached_veh_length + 1) / 2;
+	}
+}
+
+/**
  * Get the stop location of (the center) of the front vehicle of a train at
  * a platform of a station.
+ *
+ * See also wrapper without x_pos, y_pos in train.h
+ *
  * @param station_id     the ID of the station where we're stopping
  * @param tile           the tile where the vehicle currently is
  * @param v              the vehicle to get the stop location of
  * @param station_ahead  'return' the amount of 1/16th tiles in front of the train
  * @param station_length 'return' the station length in 1/16th tiles
+ * @param x_pos          vehicle x position
+ * @param y_pos          vehicle y position
  * @return the location, calculated from the begin of the station to stop at.
  */
-int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length)
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length, int x_pos, int y_pos)
 {
 	Train *front = v->First();
 	const Station *st = Station::Get(station_id);
@@ -419,7 +462,38 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *st
 
 	/* Subtract half the front vehicle length of the train so we get the real
 	 * stop location of the train. */
-	return stop - ((v->gcache.cached_veh_length + 1) / 2) + adjust;
+	int result = stop - ((v->gcache.cached_veh_length + 1) / 2) + adjust;
+
+	if (osl == OSL_PLATFORM_THROUGH && v != front) {
+		/* Check front of train for obstructions */
+
+		if (TrainCanLeaveTile(front)) {
+			/* Determine the non-diagonal direction in which we will exit this tile */
+			DiagDirection dir = TrainExitDir(front->direction, front->track);
+			/* Calculate next tile */
+			TileIndex tile = front->tile + TileOffsByDiagDir(dir);
+
+			/* Determine the track status on the next tile */
+			TrackStatus ts = GetTileTrackStatus(tile, TRANSPORT_RAIL, 0, ReverseDiagDir(dir));
+			TrackdirBits trackdirbits = TrackStatusToTrackdirBits(ts) & DiagdirReachesTrackdirs(dir);
+
+			/* mask unreachable track bits if we are forbidden to do 90deg turns */
+			TrackBits bits = TrackdirBitsToTrackBits(trackdirbits);
+			if (_settings_game.pf.forbid_90_deg) {
+				bits &= ~TrackCrossesTracks(FindFirstTrack(front->track));
+			}
+
+			if (bits == TRACK_BIT_NONE || !CheckCompatibleRail(front, tile) || IsRailDepotTile(tile) ||
+					(KillFirstBit(trackdirbits) == TRACKDIR_BIT_NONE && HasOnewaySignalBlockingTrackdir(tile, FindFirstTrackdir(trackdirbits)))) {
+				/* next tile is an effective dead end */
+				int current_platform_remaining = *station_ahead - TILE_SIZE + GetTileMarginInFrontOfTrain(v);
+				int limit = GetTileMarginInFrontOfTrain(front) + (*station_length - current_platform_remaining) - ((v->gcache.cached_veh_length + 1) / 2);
+				result = min(limit, result);
+			}
+		}
+	}
+
+	return result;
 }
 
 
@@ -547,6 +621,8 @@ int Train::GetCurrentMaxSpeed() const
 	if (HasBit(this->flags, VRF_BREAKDOWN_SPEED)) {
 		max_speed = min(max_speed, this->GetBreakdownSpeed());
 	}
+
+	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = min(max_speed, 15);
 
 	return min(max_speed, this->gcache.cached_max_track_speed);
 }
@@ -2054,7 +2130,27 @@ void ReverseTrainDirection(Train *v)
 		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 	}
 
-	if (v->current_order.IsType(OT_LOADING_ADVANCE)) v->LeaveStation();
+	if (_local_company == v->owner && (v->current_order.IsType(OT_LOADING_ADVANCE) || HasBit(v->flags, VRF_BEYOND_PLATFORM_END))) {
+		SetDParam(0, v->index);
+		SetDParam(1, v->current_order.GetDestination());
+		AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
+				NR_VEHICLE, v->index,
+				NR_STATION, v->current_order.GetDestination());
+	}
+	if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
+		v->LeaveStation();
+
+		/* Only advance to next order if we are loading at the current one */
+		const Order *order = v->GetOrder(v->cur_implicit_order_index);
+		if (order != NULL && order->IsType(OT_GOTO_STATION) && order->GetDestination() == v->last_station_visited) {
+			v->IncrementImplicitOrderIndex();
+		}
+	}
+
+	for (Train *u = v; u != nullptr; u = u->Next()) {
+		ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
+		ClrBit(u->flags, VRF_NOT_YET_IN_PLATFORM);
+	}
 
 	v->reverse_distance = 0;
 
@@ -2200,7 +2296,8 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 				/* not a station || different station --> leave the station */
 				if (!IsTileType(last->tile, MP_STATION) || !IsTileType(v->tile, MP_STATION) ||
 						GetStationIndex(last->tile) != GetStationIndex(v->tile) ||
-						HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) {
+						HasBit(v->flags, VRF_BEYOND_PLATFORM_END) ||
+						v->current_order.IsType(OT_LOADING_ADVANCE)) {
 					v->LeaveStation();
 				}
 			}

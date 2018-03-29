@@ -79,7 +79,6 @@ bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay =
 
 void DeleteVisibleTrain(Train *v);
 
-int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length);
 void CheckBreakdownFlags(Train *v);
 void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
@@ -405,6 +404,20 @@ CommandCost CmdMoveVirtualRailVehicle(TileIndex, DoCommandFlag, uint32, uint32, 
 
 Train* CmdBuildVirtualRailWagon(const Engine*);
 Train* CmdBuildVirtualRailVehicle(EngineID, bool lax_engine_check, StringID &error);
+
+int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos);
+
+inline int GetTileMarginInFrontOfTrain(const Train *v)
+{
+	return GetTileMarginInFrontOfTrain(v, v->x_pos, v->y_pos);
+}
+
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length, int x_pos, int y_pos);
+
+inline int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length)
+{
+	return GetTrainStopLocation(station_id, tile, v, station_ahead, station_length, v->x_pos, v->y_pos);
+}
 
 #define FOR_ALL_TRAINS(var) FOR_ALL_VEHICLES_OF_TYPE(Train, var)
 
