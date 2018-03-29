@@ -93,6 +93,11 @@ static inline bool IsAllGroupID(GroupID id_g)
 	return id_g == ALL_GROUP;
 }
 
+static inline bool IsTopLevelGroupID(GroupID index)
+{
+	return index == DEFAULT_GROUP || index == ALL_GROUP;
+}
+
 #define FOR_ALL_GROUPS_FROM(var, start) FOR_ALL_ITEMS_FROM(Group, group_index, var, start)
 #define FOR_ALL_GROUPS(var) FOR_ALL_GROUPS_FROM(var, 0)
 

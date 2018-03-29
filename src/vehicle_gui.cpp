@@ -311,18 +311,19 @@ bool BaseVehicleListWindow::ShouldShowActionDropdownList() const
  * @return Itemlist for dropdown
  */
 DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
-		StringID change_order_str, bool show_create_group)
+		StringID change_order_str, bool show_create_group, bool consider_top_level)
 {
 	DropDownList *list = new DropDownList();
 	bool disable = this->vehicles.Length() == 0;
+	bool mass_action_disable = disable || (_settings_client.gui.disable_top_veh_list_mass_actions && consider_top_level);
 
 	if (show_autoreplace) *list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, disable);
 	if (show_autoreplace && show_template_replace) {
 		*list->Append() = new DropDownListStringItem(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, disable);
 	}
-	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, disable);
-	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, disable);
-	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, disable);
+	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, mass_action_disable);
+	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, mass_action_disable);
+	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, mass_action_disable);
 
 	if (show_group) {
 		*list->Append() = new DropDownListStringItem(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, disable);
@@ -1870,7 +1871,7 @@ public:
 		if (this->owner == _local_company) {
 			this->SetWidgetDisabledState(WID_VL_AVAILABLE_VEHICLES, this->vli.type != VL_STANDARD);
 			this->SetWidgetDisabledState(WID_VL_MANAGE_VEHICLES_DROPDOWN, !this->ShouldShowActionDropdownList());
-			this->SetWidgetsDisabledState(this->vehicles.Length() == 0,
+			this->SetWidgetsDisabledState(this->vehicles.Length() == 0 || (this->vli.type == VL_STANDARD && _settings_client.gui.disable_top_veh_list_mass_actions),
 				WID_VL_STOP_ALL,
 				WID_VL_START_ALL,
 				WIDGET_LIST_END);
@@ -1915,8 +1916,9 @@ public:
 				break;
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
-				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier::UnPack(this->window_number).type == VL_STANDARD, false,
-						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID(), true);
+				VehicleListIdentifier vli = VehicleListIdentifier::UnPack(this->window_number);
+				DropDownList *list = this->BuildActionDropdownList(vli.type == VL_STANDARD, false,
+						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID(), true, vli.type == VL_STANDARD);
 				ShowDropDownList(this, list, -1, WID_VL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
