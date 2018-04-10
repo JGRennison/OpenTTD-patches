@@ -66,6 +66,25 @@ static GUIVehicleList::SortFunction VehicleTimeToLiveSorter;
 static GUIVehicleList::SortFunction VehicleTimetableDelaySorter;
 static GUIVehicleList::SortFunction VehicleAverageOrderOccupancySorter;
 
+enum VehicleSortType
+{
+	VST_NUMBER,
+	VST_NAME,
+	VST_AGE,
+	VST_PROFIT_THIS_YEAR,
+	VST_PROFIT_LAST_YEAR,
+	VST_PROFIT_LIFETIME,
+	VST_CARGO,
+	VST_RELIABILITY,
+	VST_MAX_SPEED,
+	VST_MODEL,
+	VST_VALUE,
+	VST_LENGTH,
+	VST_TIME_TO_LIVE,
+	VST_TIMETABLE_DELAY,
+	VST_AVERAGE_ORDER_OCCUPANCY,
+};
+
 GUIVehicleList::SortFunction * const BaseVehicleListWindow::vehicle_sorter_funcs[] = {
 	&VehicleNumberSorter,
 	&VehicleNameSorter,
@@ -1643,13 +1662,110 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 	uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->vehicles.Length());
 	for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
 		const Vehicle *v = this->vehicles[i];
-		StringID str;
 
-		SetDParam(0, v->GetDisplayProfitThisYear());
-		SetDParam(1, v->GetDisplayProfitLastYear());
+		SetDParam(0, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
+		SetDParam(1, v->GetDisplayProfitThisYear());
+		SetDParam(2, v->GetDisplayProfitLastYear());
+
+		StringID str;
+		switch (this->vehicles.SortType()) {
+			case VST_AGE: {
+				str = (v->age + DAYS_IN_YEAR < v->max_age) ? STR_VEHICLE_LIST_AGE : STR_VEHICLE_LIST_AGE_RED;
+				SetDParam(3, v->age / DAYS_IN_LEAP_YEAR);
+				SetDParam(4, v->max_age / DAYS_IN_LEAP_YEAR);
+				break;
+			}
+
+			case VST_CARGO: {
+				CargoTypes cargoes = 0;
+				for (const Vehicle *u = v; u != NULL; u = u->Next()) {
+					if (u->cargo_cap > 0) SetBit(cargoes, u->cargo_type);
+				}
+				str = STR_VEHICLE_LIST_CARGO;
+				SetDParam(3, cargoes);
+				break;
+			}
+
+			case VST_RELIABILITY: {
+				str = ToPercent16(v->reliability) >= 50 ? STR_VEHICLE_LIST_RELIABILITY : STR_VEHICLE_LIST_RELIABILITY_RED;
+				SetDParam(3, ToPercent16(v->reliability));
+				break;
+			}
+
+			case VST_MAX_SPEED: {
+				str = STR_VEHICLE_LIST_MAX_SPEED;
+				SetDParam(3, v->GetDisplayMaxSpeed());
+				break;
+			}
+
+			case VST_MODEL: {
+				str = STR_VEHICLE_LIST_ENGINE_BUILT;
+				SetDParam(3, v->engine_type);
+				SetDParam(4, v->build_year);
+				break;
+			}
+
+			case VST_VALUE: {
+				Money total_value = 0;
+				for (const Vehicle *u = v; u != NULL; u = u->GetNextVehicle()) {
+					total_value += u->value;
+				}
+				str = STR_VEHICLE_LIST_VALUE;
+				SetDParam(3, total_value);
+				break;
+			}
+
+			case VST_LENGTH: {
+				const GroundVehicleCache* gcache = v->GetGroundVehicleCache();
+				assert(gcache != nullptr);
+				str = STR_VEHICLE_LIST_LENGTH;
+				SetDParam(3, CeilDiv(gcache->cached_total_length * 10, TILE_SIZE));
+				SetDParam(4, 1);
+				break;
+			}
+
+			case VST_TIME_TO_LIVE: {
+				auto years_remaining = (v->max_age / DAYS_IN_LEAP_YEAR) - (v->age / DAYS_IN_LEAP_YEAR);
+				str = (years_remaining > 1) ? STR_VEHICLE_LIST_TIME_TO_LIVE : ((years_remaining < 0) ? STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE : STR_VEHICLE_LIST_TIME_TO_LIVE_RED);
+				SetDParam(3, std::abs(years_remaining));
+				break;
+			}
+
+			case VST_TIMETABLE_DELAY: {
+				if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / DATE_UNIT_SIZE == 0)) {
+					str = STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME;
+				} else {
+					str = v->lateness_counter > 0 ? STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE : STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY;
+					SetTimetableParams(3, std::abs(v->lateness_counter));
+				}
+				break;
+			}
+
+			case VST_PROFIT_LIFETIME: {
+				str = STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME;
+				SetDParam(3, v->GetDisplayProfitLifetime());
+				break;
+			}
+
+			case VST_AVERAGE_ORDER_OCCUPANCY: {
+				uint8 occupancy_average = v->GetOrderOccupancyAverage();
+				if (occupancy_average >= 16) {
+					str = STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE;
+					SetDParam(3, occupancy_average - 16);
+				} else {
+					str = STR_JUST_STRING2;
+				}
+				break;
+			}
+
+			default: {
+				str = STR_JUST_STRING2;
+				break;
+			}
+		}
 
 		DrawVehicleImage(v, image_left, image_right, y + FONT_HEIGHT_SMALL - 1, selected_vehicle, EIT_IN_LIST, 0);
-		DrawString(text_left, text_right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 1, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
+		DrawString(text_left, text_right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 1, str);
 
 		/* company colour stripe along vehicle description row */
 		if (_settings_client.gui.show_vehicle_list_company_colour && v->owner != this->vli.company) {

@@ -3980,6 +3980,23 @@ STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}Ships - 
 STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}Aircraft - click on aircraft for information
 
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Profit this year: {CURRENCY_LONG} (last year: {CURRENCY_LONG})
+STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING2} (lifetime: {CURRENCY_LONG})
+STR_VEHICLE_LIST_AGE                                            :{STRING2}, Age: {COMMA} year{P "" s} ({COMMA})
+STR_VEHICLE_LIST_AGE_RED                                        :{STRING2}, Age: {RED}{COMMA} {BLACK}year{P "" s} ({COMMA})
+STR_VEHICLE_LIST_CARGO                                          :{STRING2}, Cargoes: {CARGO_LIST}
+STR_VEHICLE_LIST_RELIABILITY                                    :{STRING2}, Reliability: {COMMA}%
+STR_VEHICLE_LIST_RELIABILITY_RED                                :{STRING2}, Reliability: {RED}{COMMA}%
+STR_VEHICLE_LIST_MAX_SPEED                                      :{STRING2}, Max. speed: {VELOCITY}
+STR_VEHICLE_LIST_ENGINE_BUILT                                   :{STRING2}, Model: {ENGINE}, Built: {NUM}
+STR_VEHICLE_LIST_VALUE                                          :{STRING2}, Value: {CURRENCY_LONG}
+STR_VEHICLE_LIST_LENGTH                                         :{STRING2}, Length: {DECIMAL} tile{P "" s}
+STR_VEHICLE_LIST_TIME_TO_LIVE                                   :{STRING2}, Lifetime: {COMMA} year{P "" s} remaining
+STR_VEHICLE_LIST_TIME_TO_LIVE_RED                               :{STRING2}, Lifetime: {RED}{COMMA} {BLACK}year{P "" s} remaining
+STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE                           :{STRING2}, Lifetime: {RED}{COMMA} {BLACK}year{P "" s} overdue
+STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING2}, Timetable status: {RED}{STRING3} late
+STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING2}, Timetable status: {STRING3} early
+STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING2}, Timetable status: On time
+STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING2}, Average order occupancy: {COMMA}%
 
 STR_VEHICLE_LIST_AVAILABLE_TRAINS                               :Available Trains
 STR_VEHICLE_LIST_AVAILABLE_ROAD_VEHICLES                        :Available Vehicles
@@ -5838,6 +5855,8 @@ STR_JUST_DATE_WALLCLOCK_SHORT                                   :{DATE_WALLCLOCK
 STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK_LONG}
 STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
 STR_JUST_STRING                                                 :{STRING}
+STR_JUST_STRING1                                                :{STRING1}
+STR_JUST_STRING2                                                :{STRING2}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{RAW_STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{RAW_STRING}
