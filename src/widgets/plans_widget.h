@@ -24,6 +24,7 @@ enum PlansWidgets {
 	WID_PLN_SHOW_ALL,
 	WID_PLN_DELETE,
 	WID_PLN_HIDE_ALL_SEL,
+	WID_PLN_RENAME,
 };
 
 #endif /* WIDGETS_PLANS_WIDGET_H */

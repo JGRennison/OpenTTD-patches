@@ -334,6 +334,7 @@ enum Commands {
 	CMD_REMOVE_PLAN,
 	CMD_REMOVE_PLAN_LINE,
 	CMD_CHANGE_PLAN_VISIBILITY,
+	CMD_RENAME_PLAN,
 
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
