@@ -27,6 +27,7 @@
 
 Year      _cur_year;   ///< Current year, starting at 0
 Month     _cur_month;  ///< Current month (0..11)
+YearMonthDay _cur_date_ymd; ///< Current date as YearMonthDay struct
 Date      _date;       ///< Current date in days (day counter)
 DateFract _date_fract; ///< Fractional part of the day.
 uint16 _tick_counter;  ///< Ever incrementing (and sometimes wrapping) tick counter for setting off various events
@@ -51,6 +52,7 @@ void SetDate(Date date, DateFract fract)
 	ConvertDateToYMD(date, &ymd);
 	_cur_year = ymd.year;
 	_cur_month = ymd.month;
+	_cur_date_ymd = ymd;
 	SetScaledTickVariables();
 }
 
@@ -319,6 +321,7 @@ void IncreaseDate()
 	bool new_year = ymd.year != _cur_year;
 
 	/* update internal variables before calling the daily/monthly/yearly loops */
+	_cur_date_ymd = ymd;
 	_cur_month = ymd.month;
 	_cur_year  = ymd.year;
 

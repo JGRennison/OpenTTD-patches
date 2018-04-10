@@ -571,9 +571,7 @@ byte GetSnowLine()
 {
 	if (_snow_line == NULL) return _settings_game.game_creation.snow_line_height;
 
-	YearMonthDay ymd;
-	ConvertDateToYMD(_date, &ymd);
-	return _snow_line->table[ymd.month][ymd.day];
+	return _snow_line->table[_cur_date_ymd.month][_cur_date_ymd.day];
 }
 
 /**

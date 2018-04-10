@@ -16,6 +16,7 @@
 
 extern Year      _cur_year;
 extern Month     _cur_month;
+extern YearMonthDay _cur_date_ymd;
 extern Date      _date;
 extern DateFract _date_fract;
 extern uint16    _tick_counter;
