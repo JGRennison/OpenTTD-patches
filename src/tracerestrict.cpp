@@ -1462,8 +1462,11 @@ void TraceRestrictSlot::DeIndex(VehicleID id)
 	auto range = slot_vehicle_index.equal_range(id);
 	for (auto it = range.first; it != range.second; ++it) {
 		if (it->second == this->index) {
+			bool is_first_in_range = (it == range.first);
+
 			auto next = slot_vehicle_index.erase(it);
-			if (it == range.first && next == range.second) {
+
+			if (is_first_in_range && next == range.second) {
 				/* Only one item, which we've just erased, clear the vehicle flag */
 				ClrBit(Train::Get(id)->flags, VRF_HAVE_SLOT);
 			}
