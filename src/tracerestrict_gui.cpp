@@ -457,7 +457,7 @@ static int CDECL SlotNameSorter(const TraceRestrictSlot * const *a, const TraceR
 /**
  * Get a DropDownList of the group list
  */
-static DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected)
+DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected)
 {
 	GUIList<const TraceRestrictSlot*> list;
 

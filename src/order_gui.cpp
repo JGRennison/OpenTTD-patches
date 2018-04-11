@@ -31,6 +31,7 @@
 #include "aircraft.h"
 #include "engine_func.h"
 #include "vehiclelist.h"
+#include "tracerestrict.h"
 
 #include "widgets/order_widget.h"
 
@@ -62,6 +63,8 @@ static const StringID _cargo_type_unload_order_drowdown[] = {
 	INVALID_STRING_ID
 };
 static const uint32 _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 01000
+
+DropDownList* GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected);
 
 struct CargoTypeOrdersWindow : public Window {
 private:
@@ -244,7 +247,7 @@ public:
 			if (action_type == order_action_type) return;
 
 			ModifyOrderFlags mof = (this->variant == CTOWV_LOAD) ? MOF_CARGO_TYPE_LOAD : MOF_CARGO_TYPE_UNLOAD;
-			DoCommandP(this->vehicle->tile, this->vehicle->index + (this->order_id << 20), mof | (action_type << 4) | (cargo_id << 16), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+			DoCommandP(this->vehicle->tile, this->vehicle->index + (this->order_id << 20), mof | (action_type << 4) | (cargo_id << 20), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
 
 			this->GetWidget<NWidgetCore>(widget)->SetDataTip(this->cargo_type_order_dropdown[this->GetOrderActionTypeForCargo(cargo_id)], STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant);
 			this->SetWidgetDirty(widget);
@@ -602,6 +605,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_CARGO_WAITING,
 	OCV_CARGO_ACCEPTANCE,
 	OCV_FREE_PLATFORMS,
+	OCV_SLOT_OCCUPANCY,
 	OCV_PERCENT,
 	OCV_UNCONDITIONALLY,
 };
@@ -639,6 +643,18 @@ static const StringID _order_conditional_condition_accepts[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS,
 	STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT,
+	INVALID_STRING_ID,
+};
+
+static const StringID _order_conditional_condition_is_fully_occupied[] = {
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED,
+	STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED,
 	INVALID_STRING_ID,
 };
 
@@ -813,6 +829,15 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(0, STR_CONDITIONAL_FREE_PLATFORMS );
 				SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_HAS + order->GetConditionComparator());
 				SetDParam(3, order->GetConditionValue());
+			} else if (ocv == OCV_SLOT_OCCUPANCY) {
+				if (TraceRestrictSlot::IsValidID(order->GetXData())) {
+					SetDParam(0, STR_ORDER_CONDITIONAL_SLOT);
+					SetDParam(2, order->GetXData());
+				} else {
+					SetDParam(0, STR_ORDER_CONDITIONAL_INVALID_SLOT);
+					SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
+				}
+				SetDParam(3, order->GetConditionComparator() == OCC_IS_TRUE ? STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED : STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED);
 			} else {
 				OrderConditionComparator occ = order->GetConditionComparator();
 				bool is_cargo = ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING;
@@ -1016,6 +1041,7 @@ private:
 		/* WID_O_SEL_COND_VALUE */
 		DP_COND_VALUE_NUMBER = 0, ///< Display number widget
 		DP_COND_VALUE_CARGO  = 1, ///< Display dropdown widget cargo types
+		DP_COND_VALUE_SLOT   = 2, ///< Display dropdown widget tracerestrict slots
 
 		DP_ROW_CONDITIONAL = 2, ///< Display the conditional order buttons in the top row of the ship/airplane order window.
 
@@ -1086,6 +1112,9 @@ private:
 
 			case OCV_CARGO_ACCEPTANCE:
 				return _order_conditional_condition_accepts;
+
+			case OCV_SLOT_OCCUPANCY:
+				return _order_conditional_condition_is_fully_occupied;
 
 			default:
 				return _order_conditional_condition;
@@ -1634,12 +1663,19 @@ public:
 					} else {
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_CONDITIONAL);
 					}
-					OrderConditionVariable ocv = (order == NULL) ? OCV_LOAD_PERCENTAGE : order->GetConditionVariable();
+
+					OrderConditionVariable ocv = (order == nullptr) ? OCV_LOAD_PERCENTAGE : order->GetConditionVariable();
 					bool is_cargo = (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING);
+					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY);
 
 					if (is_cargo) {
 						this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = cargo_names_list[(order == NULL) ? 0 : order->GetConditionValue()];
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_CARGO);
+					} else if (is_slot_occupancy) {
+						TraceRestrictSlotID slot_id = (order != nullptr && TraceRestrictSlot::IsValidID(order->GetXData()) ? order->GetXData() : INVALID_TRACE_RESTRICT_SLOT_ID);
+
+						this->GetWidget<NWidgetCore>(WID_O_COND_SLOT)->widget_data = (slot_id != INVALID_TRACE_RESTRICT_SLOT_ID) ? STR_TRACE_RESTRICT_SLOT_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT);
 					} else {
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER);
 					}
@@ -1792,6 +1828,17 @@ public:
 				if (order != NULL && order->IsType(OT_CONDITIONAL)) {
 					uint value = order->GetConditionValue();
 					if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value);
+					SetDParam(0, value);
+				}
+				break;
+			}
+
+			case WID_O_COND_SLOT: {
+				VehicleOrderID sel = this->OrderGetSel();
+				const Order *order = this->vehicle->GetOrder(sel);
+
+				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
+					TraceRestrictSlotID value = order->GetXData();
 					SetDParam(0, value);
 				}
 				break;
@@ -1958,6 +2005,14 @@ public:
 				}
 				break;
 
+			case WID_O_COND_SLOT: {
+				int selected;
+				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetXData();
+				DropDownList *list = GetSlotDropDownList(this->vehicle->owner, value, selected);
+				if (list != nullptr) ShowDropDownList(this, list, selected, WID_O_COND_SLOT, 0, true);
+				break;
+			}
+
 			case WID_O_REVERSE: {
 				VehicleOrderID sel_ord = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel_ord);
@@ -1992,7 +2047,10 @@ public:
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 				OrderConditionVariable cond_var = o->GetConditionVariable();
 				ShowDropDownMenu(this, GetComparatorStrings(o), o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0,
-						(cond_var == OCV_REQUIRES_SERVICE || cond_var == OCV_CARGO_ACCEPTANCE || cond_var == OCV_CARGO_WAITING) ? 0x3F : 0xC0, 0, DDSF_LOST_FOCUS);
+					(cond_var == OCV_REQUIRES_SERVICE ||
+					 cond_var == OCV_CARGO_ACCEPTANCE ||
+					 cond_var == OCV_CARGO_WAITING ||
+					 cond_var == OCV_SLOT_OCCUPANCY) ? 0x3F : 0xC0, 0, DDSF_LOST_FOCUS);
 				break;
 			}
 
@@ -2094,6 +2152,10 @@ public:
 				break;
 
 			case WID_O_COND_CARGO:
+				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE | index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				break;
+
+			case WID_O_COND_SLOT:
 				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE | index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
 				break;
 		}
@@ -2318,6 +2380,8 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 															SetDataTip(STR_BLACK_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SLOT_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),
@@ -2403,7 +2467,9 @@ static const NWidgetPart _nested_orders_widgets[] = {
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COND_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_BLACK_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
-															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
+													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
+													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SLOT_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),

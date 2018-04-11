@@ -140,10 +140,11 @@ enum OrderConditionVariable {
 	OCV_REQUIRES_SERVICE,   ///< Skip when the vehicle requires service
 	OCV_UNCONDITIONALLY,    ///< Always skip
 	OCV_REMAINING_LIFETIME, ///< Skip based on the remaining lifetime
-	OCV_CARGO_WAITING,    ///< Skip if specified cargo is waiting at next station
-	OCV_CARGO_ACCEPTANCE, ///< Skip if specified cargo is accepted at next station
-	OCV_FREE_PLATFORMS,   ///< Skip based on free platforms at next station
-	OCV_PERCENT,          ///< Skip xx percent of times
+	OCV_CARGO_WAITING,      ///< Skip if specified cargo is waiting at next station
+	OCV_CARGO_ACCEPTANCE,   ///< Skip if specified cargo is accepted at next station
+	OCV_FREE_PLATFORMS,     ///< Skip based on free platforms at next station
+	OCV_PERCENT,            ///< Skip xx percent of times
+	OCV_SLOT_OCCUPANCY,     ///< Test if train slot is fully occupied
 	OCV_END
 };
 
