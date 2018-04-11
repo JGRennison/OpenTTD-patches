@@ -1693,8 +1693,13 @@ static inline TileIndex GetLastValidOrderLocation(const Vehicle *veh)
 
 static inline Order *GetFinalOrder(const Vehicle *veh, Order *order)
 {
-	while (order->IsType(OT_CONDITIONAL))
+	auto original_order = order;
+
+	while (order->IsType(OT_CONDITIONAL)) {
 		order = veh->GetOrder(order->GetConditionSkipToOrder());
+
+		if (original_order == order) return nullptr;
+	}
 	return order;
 }
 
@@ -1709,6 +1714,7 @@ static bool ViewportMapPrepareVehicleRoute(const Vehicle * const veh)
 		Order *order;
 		FOR_VEHICLE_ORDERS(veh, order) {
 			Order *final_order = GetFinalOrder(veh, order);
+			if (final_order == nullptr) continue;
 			const TileIndex to_tile = final_order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
 			if (to_tile == INVALID_TILE) continue;
 
