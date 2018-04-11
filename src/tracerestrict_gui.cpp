@@ -2915,6 +2915,7 @@ public:
 			case WID_TRSL_ALL_VEHICLES: // All vehicles button
 				if (this->vli.index != ALL_TRAINS_TRACE_RESTRICT_SLOT_ID) {
 					this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
+					this->slot_sel = INVALID_TRACE_RESTRICT_SLOT_ID;
 					this->vehicles.ForceRebuild();
 					this->SetDirty();
 				}
@@ -2973,12 +2974,14 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_ALL_VEHICLES: // All vehicles
-				DoCommandP(0, this->slot_sel, this->vehicle_sel, CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE));
+				if (this->slot_sel != INVALID_TRACE_RESTRICT_SLOT_ID) {
+					DoCommandP(0, this->slot_sel, this->vehicle_sel, CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE));
 
-				this->vehicle_sel = INVALID_VEHICLE;
-				this->slot_over = INVALID_GROUP;
+					this->vehicle_sel = INVALID_VEHICLE;
+					this->slot_over = INVALID_GROUP;
 
-				this->SetDirty();
+					this->SetDirty();
+				}
 				break;
 
 			case WID_TRSL_LIST_SLOTS: { // Matrix slot
