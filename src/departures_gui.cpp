@@ -204,18 +204,32 @@ public:
 			case WID_DB_SHOW_TRAINS:   // Show trains to this station
 			case WID_DB_SHOW_ROADVEHS: // Show road vehicles to this station
 			case WID_DB_SHOW_SHIPS:    // Show ships to this station
-			case WID_DB_SHOW_PLANES:   // Show aircraft to this station
-				this->show_types[widget - WID_DB_SHOW_TRAINS] = !this->show_types[widget - WID_DB_SHOW_TRAINS];
-				if (this->show_types[widget - WID_DB_SHOW_TRAINS]) {
-					this->LowerWidget(widget);
+			case WID_DB_SHOW_PLANES: {  // Show aircraft to this station
+				if (_ctrl_pressed) {
+					for (int w = WID_DB_SHOW_TRAINS; w <= WID_DB_SHOW_PLANES; w++) {
+						if (w == widget) {
+							this->show_types[w - WID_DB_SHOW_TRAINS] = true;
+							this->LowerWidget(w);
+						} else {
+							this->show_types[w - WID_DB_SHOW_TRAINS] = false;
+							this->RaiseWidget(w);
+						}
+					}
 				} else {
-					this->RaiseWidget(widget);
+					this->show_types[widget - WID_DB_SHOW_TRAINS] = !this->show_types[widget - WID_DB_SHOW_TRAINS];
+					if (this->show_types[widget - WID_DB_SHOW_TRAINS]) {
+						this->LowerWidget(widget);
+					}
+					else {
+						this->RaiseWidget(widget);
+					}
 				}
 				/* We need to recompute the departures list. */
 				this->calc_tick_countdown = 0;
 				/* We need to redraw the button that was pressed. */
 				this->SetWidgetDirty(widget);
 				break;
+			}
 
 			case WID_DB_SHOW_DEPS:
 			case WID_DB_SHOW_ARRS:
