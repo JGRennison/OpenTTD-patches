@@ -56,6 +56,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TIMETABLE_EXTRA,                        ///< Vehicle timetable extra fields
 	XSLFI_TRAIN_FLAGS_EXTRA,                      ///< Train flags field extra size
 	XSLFI_TRAIN_THROUGH_LOAD,                     ///< Train through load/unload
+	XSLFI_ORDER_EXTRA_DATA,                       ///< Order extra data field(s)
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

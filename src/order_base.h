@@ -32,6 +32,7 @@ extern OrderListPool _orderlist_pool;
 
 struct OrderExtraInfo {
 	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
+	uint32 xdata = 0;                       ///< Extra arbitrary data
 	uint8 xflags = 0;                       ///< Extra flags
 };
 
@@ -85,6 +86,17 @@ private:
 	}
 
 public:
+	inline uint32 GetXData() const
+	{
+		return this->extra != nullptr ? this->extra->xdata : 0;
+	}
+
+	inline uint32 &GetXDataRef()
+	{
+		CheckExtraInfoAlloced();
+		return this->extra->xdata;
+	}
+
 	Order *next;          ///< Pointer to next order. If NULL, end of list
 
 	Order() : refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
