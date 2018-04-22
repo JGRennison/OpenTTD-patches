@@ -1575,6 +1575,7 @@ void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID>
 /**
  * This is called when a slot is about to be deleted
  * Scan program pool and change any references to it to the invalid group ID, to avoid dangling references
+ * Scan order list and change any references to it to the invalid group ID, to avoid dangling slot condition references
  */
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 {
@@ -1593,8 +1594,21 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 		}
 	}
 
+	bool changed_order = false;
+	Order *o;
+	FOR_ALL_ORDERS(o) {
+		if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_SLOT_OCCUPANCY && o->GetXData() == index) {
+			o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
+			changed_order = true;
+		}
+	}
+
 	// update windows
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	if (changed_order) {
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+		InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE);
+	}
 }
 
 static bool IsUniqueSlotName(const char *name)
