@@ -198,7 +198,8 @@ static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
 		DestinationID condvalue = GetTraceRestrictValue(item);
 		switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
 			case TROCAF_STATION:
-				result = order->IsType(OT_GOTO_STATION) && order->GetDestination() == condvalue;
+				result = (order->IsType(OT_GOTO_STATION) || order->IsType(OT_LOADING_ADVANCE))
+						&& order->GetDestination() == condvalue;
 				break;
 
 			case TROCAF_WAYPOINT:
