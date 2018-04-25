@@ -163,10 +163,24 @@ static inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Ow
  * @param bridgetype the type of bridge this bridge ramp belongs to
  * @param d          the direction this ramp must be facing
  * @param r          the rail type of the bridge
+ * @param upgrade    whether the bridge is an upgrade instead of a totally new bridge
  */
-static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, RailType r)
+static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, RailType r, bool upgrade)
 {
+	// Backup bridge signal data.
+	auto m2_backup = _m[t].m2;
+	auto m5_backup = _m[t].m5;
+	auto m6_backup = _me[t].m6;
+
 	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_RAIL, r);
+
+	// Restore bridge signal data if we're upgrading an existing bridge.
+	if (upgrade) {
+		_m[t].m2 = m2_backup;
+		SB(_m[t].m5, 4, 3, GB(m5_backup, 4, 3));
+		SB(_me[t].m6, 0, 2, GB(m6_backup, 0, 2));
+		SB(_me[t].m6, 6, 1, GB(m6_backup, 6, 1));
+	}
 }
 
 /**
