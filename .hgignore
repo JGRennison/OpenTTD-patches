@@ -1,6 +1,7 @@
 syntax: glob
 
 .svn
+*.aps
 bin/baseset/openttd.32.bmp
 bin/lang/*
 bin/openttd*
@@ -22,6 +23,7 @@ Makefile.bundle
 media/openttd.desktop
 media/openttd.desktop.install
 objs/*
+projects/.vs
 projects/*.ncb
 projects/*.suo
 projects/*.sdf

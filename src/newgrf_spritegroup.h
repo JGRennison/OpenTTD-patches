@@ -174,12 +174,15 @@ struct DeterministicSpriteGroup : SpriteGroup {
 	VarSpriteGroupScope var_scope;
 	DeterministicSpriteGroupSize size;
 	uint num_adjusts;
-	byte num_ranges;
+	uint num_ranges;
+	bool calculated_result;
 	DeterministicSpriteGroupAdjust *adjusts;
 	DeterministicSpriteGroupRange *ranges; // Dynamically allocated
 
 	/* Dynamically allocated, this is the sole owner */
 	const SpriteGroup *default_group;
+
+	const SpriteGroup *error_group; // was first range, before sorting ranges
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const;
@@ -288,12 +291,11 @@ struct IndustryProductionSpriteGroup : SpriteGroup {
 struct ScopeResolver {
 	ResolverObject &ro; ///< Surrounding resolver object.
 
-	ScopeResolver(ResolverObject &ro);
-	virtual ~ScopeResolver();
+	ScopeResolver(ResolverObject &ro) : ro(ro) {}
+	virtual ~ScopeResolver() {}
 
 	virtual uint32 GetRandomBits() const;
 	virtual uint32 GetTriggers() const;
-	virtual void SetTriggers(int triggers) const;
 
 	virtual uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
 	virtual void StorePSA(uint reg, int32 value);
@@ -306,8 +308,20 @@ struct ScopeResolver {
  * to get the results of callbacks, rerandomisations or normal sprite lookups.
  */
 struct ResolverObject {
-	ResolverObject(const GRFFile *grffile, CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
-	virtual ~ResolverObject();
+	/**
+	 * Resolver constructor.
+	 * @param grffile NewGRF file associated with the object (or \c NULL if none).
+	 * @param callback Callback code being resolved (default value is #CBID_NO_CALLBACK).
+	 * @param callback_param1 First parameter (var 10) of the callback (only used when \a callback is also set).
+	 * @param callback_param2 Second parameter (var 18) of the callback (only used when \a callback is also set).
+	 */
+	ResolverObject(const GRFFile *grffile, CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0)
+		: default_scope(*this), callback(callback), callback_param1(callback_param1), callback_param2(callback_param2), grffile(grffile), root_spritegroup(NULL)
+	{
+		this->ResetState();
+	}
+
+	virtual ~ResolverObject() {}
 
 	ScopeResolver default_scope; ///< Default implementation of the grf scope.
 
@@ -315,9 +329,10 @@ struct ResolverObject {
 	uint32 callback_param1;     ///< First parameter (var 10) of the callback.
 	uint32 callback_param2;     ///< Second parameter (var 18) of the callback.
 
-	byte trigger;
-
 	uint32 last_value;          ///< Result of most recent DeterministicSpriteGroup (including procedure calls)
+
+	uint32 waiting_triggers;    ///< Waiting triggers to be used by any rerandomisation. (scope independent)
+	uint32 used_triggers;       ///< Subset of cur_triggers, which actually triggered some rerandomisation. (scope independent)
 	uint32 reseed[VSG_END];     ///< Collects bits to rerandomise while triggering triggers.
 
 	const GRFFile *grffile;     ///< GRFFile the resolved SpriteGroup belongs to
@@ -347,6 +362,14 @@ struct ResolverObject {
 	virtual ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0);
 
 	/**
+	 * Returns the waiting triggers that did not trigger any rerandomisation.
+	 */
+	uint32 GetRemainingTriggers() const
+	{
+		return this->waiting_triggers & ~this->used_triggers;
+	}
+
+	/**
 	 * Returns the OR-sum of all bits that need reseeding
 	 * independent of the scope they were accessed with.
 	 * @return OR-sum of the bits.
@@ -367,7 +390,8 @@ struct ResolverObject {
 	void ResetState()
 	{
 		this->last_value = 0;
-		this->trigger    = 0;
+		this->waiting_triggers = 0;
+		this->used_triggers = 0;
 		memset(this->reseed, 0, sizeof(this->reseed));
 	}
 };
