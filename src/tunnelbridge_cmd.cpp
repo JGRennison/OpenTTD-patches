@@ -399,15 +399,6 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 		is_new_owner = (owner == OWNER_NONE);
 		if (is_new_owner) owner = company;
 
-		switch (transport_type) {
-			case TRANSPORT_ROAD:
-				/* Do not remove road types when upgrading a bridge */
-				roadtypes |= GetRoadTypes(tile_start);
-				break;
-
-			default: break;
-		}
-
 		is_upgrade = true;
 	} else {
 		/* Build a new bridge. */
@@ -527,17 +518,26 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 				break;
 
 			case TRANSPORT_ROAD: {
-				RoadTypes prev_roadtypes = IsBridgeTile(tile_start) ? GetRoadTypes(tile_start) : ROADTYPES_NONE;
-				if (is_new_owner) {
-					/* Also give unowned present roadtypes to new owner */
-					if (HasBit(prev_roadtypes, ROADTYPE_ROAD) && GetRoadOwner(tile_start, ROADTYPE_ROAD) == OWNER_NONE) ClrBit(prev_roadtypes, ROADTYPE_ROAD);
-					if (HasBit(prev_roadtypes, ROADTYPE_TRAM) && GetRoadOwner(tile_start, ROADTYPE_TRAM) == OWNER_NONE) ClrBit(prev_roadtypes, ROADTYPE_TRAM);
-				}
 				if (is_upgrade) SubtractRoadTunnelBridgeInfrastructure(tile_start, tile_end);
-				Owner owner_road = HasBit(prev_roadtypes, ROADTYPE_ROAD) ? GetRoadOwner(tile_start, ROADTYPE_ROAD) : company;
-				Owner owner_tram = HasBit(prev_roadtypes, ROADTYPE_TRAM) ? GetRoadOwner(tile_start, ROADTYPE_TRAM) : company;
-				MakeRoadBridgeRamp(tile_start, owner, owner_road, owner_tram, bridge_type, dir,                 roadtypes, is_upgrade);
-				MakeRoadBridgeRamp(tile_end,   owner, owner_road, owner_tram, bridge_type, ReverseDiagDir(dir), roadtypes, is_upgrade);
+				auto make_bridge_ramp = [company, owner, is_upgrade, is_new_owner, bridge_type, roadtypes](TileIndex t, DiagDirection d) {
+					RoadTypes new_roadtypes = roadtypes | GetRoadTypes(t);
+					RoadTypes prev_roadtypes = IsBridgeTile(t) ? GetRoadTypes(t) : ROADTYPES_NONE;
+					if (is_new_owner) {
+						/* Also give unowned present roadtypes to new owner */
+						if (HasBit(prev_roadtypes, ROADTYPE_ROAD) && GetRoadOwner(t, ROADTYPE_ROAD) == OWNER_NONE) ClrBit(prev_roadtypes, ROADTYPE_ROAD);
+						if (HasBit(prev_roadtypes, ROADTYPE_TRAM) && GetRoadOwner(t, ROADTYPE_TRAM) == OWNER_NONE) ClrBit(prev_roadtypes, ROADTYPE_TRAM);
+					}
+
+					Owner owner_road = HasBit(prev_roadtypes, ROADTYPE_ROAD) ? GetRoadOwner(t, ROADTYPE_ROAD) : company;
+					Owner owner_tram = HasBit(prev_roadtypes, ROADTYPE_TRAM) ? GetRoadOwner(t, ROADTYPE_TRAM) : company;
+					MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, new_roadtypes, is_upgrade);
+					if (is_upgrade) {
+						if (HasBit(roadtypes, ROADTYPE_ROAD)) SetCustomBridgeHeadRoadBits(t, ROADTYPE_ROAD, GetCustomBridgeHeadRoadBits(t, ROADTYPE_ROAD) | DiagDirToRoadBits(d));
+						if (HasBit(roadtypes, ROADTYPE_TRAM)) SetCustomBridgeHeadRoadBits(t, ROADTYPE_TRAM, GetCustomBridgeHeadRoadBits(t, ROADTYPE_TRAM) | DiagDirToRoadBits(d));
+					}
+				};
+				make_bridge_ramp(tile_start, dir);
+				make_bridge_ramp(tile_end, ReverseDiagDir(dir));
 				AddRoadTunnelBridgeInfrastructure(tile_start, tile_end);
 				break;
 			}
