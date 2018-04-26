@@ -2688,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :公司属地
 STR_ABOUT_OPENTTD                                               :{WHITE}关于 OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}原始版权由 {COPYRIGHT} 1995 Chris Sawyer 所有，保留一切权力。
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD 版本 {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 OpenTTD 团队
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD 团队
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}保存游戏
@@ -3293,8 +3293,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}需要�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}需要：{YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}等待中
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} 等待中{STRING}
 
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}产出: {YELLOW}{STRING}{STRING}
@@ -3363,6 +3363,7 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :移除所有车
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}重命名分组
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :今年利润：
 STR_GROUP_PROFIT_LAST_YEAR                                      :去年利润
 STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
@@ -3562,6 +3563,7 @@ STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}点击�
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}可以切换 机车/挂车 替换项目
 STR_REPLACE_ENGINES                                             :机车
 STR_REPLACE_WAGONS                                              :挂车
+STR_REPLACE_ALL_RAILTYPE                                        :所有铁路车辆
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}选择要更新的车辆对应的铁路类型
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}显示用来替换左侧被选定车辆的新车辆

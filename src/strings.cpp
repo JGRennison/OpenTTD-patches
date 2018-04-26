@@ -52,7 +52,7 @@ const LanguageMetadata *_current_language = NULL; ///< The currently loaded lang
 TextDirection _current_text_dir; ///< Text direction of the currently selected language.
 
 #ifdef WITH_ICU_SORT
-Collator *_current_collator = NULL;               ///< Collator for the language currently in use.
+icu::Collator *_current_collator = NULL;          ///< Collator for the language currently in use.
 #endif /* WITH_ICU_SORT */
 
 static uint64 _global_string_params_data[20];     ///< Global array of string parameters. To access, use #SetDParam.
@@ -449,6 +449,8 @@ static char *FormatGenericCurrency(char *buff, const CurrencySpec *spec, Money n
 
 	/* convert from negative */
 	if (number < 0) {
+		if (buff + Utf8CharLen(SCC_PUSH_COLOUR) > last) return buff;
+		buff += Utf8Encode(buff, SCC_PUSH_COLOUR);
 		if (buff + Utf8CharLen(SCC_RED) > last) return buff;
 		buff += Utf8Encode(buff, SCC_RED);
 		buff = strecpy(buff, "-", last);
@@ -485,8 +487,8 @@ static char *FormatGenericCurrency(char *buff, const CurrencySpec *spec, Money n
 	if (spec->symbol_pos != 0) buff = strecpy(buff, spec->suffix, last);
 
 	if (negative) {
-		if (buff + Utf8CharLen(SCC_PREVIOUS_COLOUR) > last) return buff;
-		buff += Utf8Encode(buff, SCC_PREVIOUS_COLOUR);
+		if (buff + Utf8CharLen(SCC_POP_COLOUR) > last) return buff;
+		buff += Utf8Encode(buff, SCC_POP_COLOUR);
 		*buff = '\0';
 	}
 
@@ -1795,7 +1797,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 
 	/* Create a collator instance for our current locale. */
 	UErrorCode status = U_ZERO_ERROR;
-	_current_collator = Collator::createInstance(Locale(_current_language->isocode), status);
+	_current_collator = icu::Collator::createInstance(icu::Locale(_current_language->isocode), status);
 	/* Sort number substrings by their numerical value. */
 	if (_current_collator != NULL) _current_collator->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_ON, status);
 	/* Avoid using the collator if it is not correctly set. */
@@ -2014,10 +2016,8 @@ bool MissingGlyphSearcher::FindMissingGlyphs(const char **str)
 		FontSize size = this->DefaultSize();
 		if (str != NULL) *str = text;
 		for (WChar c = Utf8Consume(&text); c != '\0'; c = Utf8Consume(&text)) {
-			if (c == SCC_TINYFONT) {
-				size = FS_SMALL;
-			} else if (c == SCC_BIGFONT) {
-				size = FS_LARGE;
+			if (c >= SCC_FIRST_FONT && c <= SCC_LAST_FONT) {
+				size = (FontSize)(c - SCC_FIRST_FONT);
 			} else if (!IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END) && IsPrintable(c) && !IsTextDirectionChar(c) && c != '?' && GetGlyph(size, c) == question_mark[size]) {
 				/* The character is printable, but not in the normal font. This is the case we were testing for. */
 				return true;
