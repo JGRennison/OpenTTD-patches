@@ -37,8 +37,10 @@ extern void EmitGender(Buffer *buffer, char *buf, int value);
 
 static const CmdStruct _cmd_structs[] = {
 	/* Font size */
+	{"NORMAL_FONT",       EmitSingleChar, SCC_NORMALFONT,         0, -1, C_NONE},
 	{"TINY_FONT",         EmitSingleChar, SCC_TINYFONT,           0, -1, C_NONE},
 	{"BIG_FONT",          EmitSingleChar, SCC_BIGFONT,            0, -1, C_NONE},
+	{"MONO_FONT",         EmitSingleChar, SCC_MONOFONT,           0, -1, C_NONE},
 
 	/* Colours */
 	{"BLUE",              EmitSingleChar, SCC_BLUE,               0, -1, C_DONTCOUNT},
@@ -58,6 +60,8 @@ static const CmdStruct _cmd_structs[] = {
 	{"GRAY",              EmitSingleChar, SCC_GRAY,               0, -1, C_DONTCOUNT},
 	{"DKBLUE",            EmitSingleChar, SCC_DKBLUE,             0, -1, C_DONTCOUNT},
 	{"BLACK",             EmitSingleChar, SCC_BLACK,              0, -1, C_DONTCOUNT},
+	{"PUSH_COLOUR",       EmitSingleChar, SCC_PUSH_COLOUR,        0, -1, C_DONTCOUNT},
+	{"POP_COLOUR",        EmitSingleChar, SCC_POP_COLOUR,         0, -1, C_DONTCOUNT},
 
 	{"REV",               EmitSingleChar, SCC_REVISION,           0, -1, C_NONE}, // openttd revision string
 

@@ -26,9 +26,13 @@ enum StringControlCode {
 	/* This must be the first entry. It's encoded in strings that are saved. */
 	SCC_ENCODED = SCC_CONTROL_START,
 
-	/* Display control codes */
-	SCC_TINYFONT,  ///< Switch to small font
-	SCC_BIGFONT,   ///< Switch to large font
+	/* Font selection codes, must be in same order as FontSize enum */
+	SCC_FIRST_FONT,
+	SCC_NORMALFONT = SCC_FIRST_FONT, ///< Switch to normal size font
+	SCC_TINYFONT,   ///< Switch to small font
+	SCC_BIGFONT,    ///< Switch to large font
+	SCC_MONOFONT,   ///< Switch to monospaced font
+	SCC_LAST_FONT = SCC_MONOFONT,
 
 	/* Formatting control codes */
 	SCC_REVISION,
@@ -111,7 +115,8 @@ enum StringControlCode {
 	SCC_GRAY,
 	SCC_DKBLUE,
 	SCC_BLACK,
-	SCC_PREVIOUS_COLOUR,
+	SCC_PUSH_COLOUR,
+	SCC_POP_COLOUR,
 
 	/**
 	 * The next variables are part of a NewGRF subsystem for creating text strings.

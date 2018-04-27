@@ -1372,6 +1372,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :I ffwrdd
 
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Sgrolio Clic-chwith: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Galluogi sgrolio ar y map drwy ei lusgo gyda botwm chwith y llygoden. Mae hyn yn arbennig o ddefnyddiol pan yn defnyddio sgrin-gyffwrdd ar gyfer sgrolio
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Cau ffenest wrth dde-glicio: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Cau ffenest wrth dde-glicio tu fewn iddo. Mae hyn yn analluogi dangos gwybodaeth ar dde-clicio!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Awtogadw: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Dewis pa mor aml y dylid awtogadw gemau
@@ -1761,6 +1763,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Gwirio a
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Dangos gosodiadau AI a sgript Gêm
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Gadael 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}Mae {NUM} corlun ar goll o'r set raffeg sylfaenol a ddewiswyd. Gwiriwch am ddiweddariadau i'r set raffeg.
 STR_INTRO_TRANSLATION                                           :{BLACK}Mae'r cyfieithiad yma'n brin o {NUM} llinyn. Helpwch wella OpenTTD drwy ymaelodi fel cyfieithydd. Gweler readme.txt am fanylion.
 
 # Quit window
@@ -3100,7 +3103,7 @@ STR_STATION_LIST_STATION                                        :{YELLOW}{STATIO
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Dim -
 STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Dewis pob cyfleuster
-STR_STATION_LIST_SELECT_ALL_TYPES                               :{BLACK}Dewis pob math llwyth (gan gynnwys llwythi dim aros)
+STR_STATION_LIST_SELECT_ALL_TYPES                               :{BLACK}Dewis pob math llwyth (gan gynnwys llwythi lle nad oes dim yn disgwyl)
 STR_STATION_LIST_NO_WAITING_CARGO                               :{BLACK}Nid oes llwyth o unrhyw fath yn disgwyl
 
 # Station view window
@@ -3293,6 +3296,9 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Angen: {
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Angen: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Angen:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} yn disgwyl{STRING}
 
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Cynhyrchu: {YELLOW}{STRING}{STRING}
@@ -3361,6 +3367,10 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Dileu pob cerby
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Ailenwi grŵp
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Elw eleni:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Elw llynedd:
+STR_GROUP_OCCUPANCY                                             :Defnydd presennol:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Cerbydau Rheilffordd Newydd
@@ -3393,6 +3403,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Pob math o lwyt
 STR_PURCHASE_INFO_ALL_BUT                                       :Popeth ond{CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Grym Tynnu Uchaf: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Pellter cyrhaeddiad: {GOLD}{COMMA} teil
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Math awyren: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Rhestr dewis trenau. Cliciwch ar gerbyd am wybodaeth. Mae Ctrl+Clicio'n toglu cuddio'r math cerbyd
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Rhestr dewis cerbydau ffordd. Cliciwch ar gerbyd am wybodaeth. Mae Ctrl+Clicio'n toglu cuddio'r math cerbyd
@@ -3527,6 +3538,10 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :trên maglef
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Côst: {CURRENCY_LONG} Pwysau: {WEIGHT_SHORT}{}Cyflymder: {VELOCITY}  Pŵer: {POWER}{}Côst Rhedeg: {CURRENCY_LONG}/bl{}Gallu cludo: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Cost: {CURRENCY_LONG} Pwysau: {WEIGHT_SHORT}{}Cyflymder: {VELOCITY}  Pŵer: {POWER}  Grym Uchaf: {6:FORCE}{}Cost Rhedeg: {4:CURRENCY_LONG}/bl{}Cynhwysedd: {5:CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Cost: {CURRENCY_LONG} Cyflym. Uchaf: {VELOCITY}{}Cynhwysedd: {CARGO_LONG}{}Cost Rhedeg: {CURRENCY_LONG}/bl
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Cost: {CURRENCY_LONG} Cyflym. Uchaf: {VELOCITY}{}Math awyren: {STRING}{}Cynhwysedd: {CARGO_LONG}, {CARGO_LONG}{}Cost rhedeg: {CURRENCY_LONG}/bl
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Cost: {CURRENCY_LONG} Cyflym. Uchaf: {VELOCITY}{}Math awyren: {STRING}{}Cynhwysedd: {CARGO_LONG}{}Cost Rhedeg: {CURRENCY_LONG}/bl
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Cost: {CURRENCY_LONG} Cyflym. Uchaf: {VELOCITY}{}Math awyren: {STRING} Pellter hedfan: {COMMA} teil{}Cynhwysedd: {CARGO_LONG}, {CARGO_LONG}{}Cost Rhedeg: {CURRENCY_LONG}/bl
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Cost: {CURRENCY_LONG} Cyflym. Uchaf: {VELOCITY}{}Math awyren: {STRING} Pellter hedfan: {COMMA} teil{}Cynhwysedd: {CARGO_LONG}{}Cost Rhedeg: {CURRENCY_LONG}/bl
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Disodli {STRING} - {STRING}
@@ -3649,6 +3664,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} blwyddy
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} blwyddyn ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}cyflymder uchaf: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Cyflym. uchaf: {LTBLUE}{VELOCITY} {BLACK}Math awyren: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Cyflym. uchaf: {LTBLUE}{VELOCITY} {BLACK}Math awyren: {LTBLUE}{STRING} {BLACK}Pellter hedfan: {LTBLUE}{COMMA} teil
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Pwys: {LTBLUE}{WEIGHT_SHORT} {BLACK}Pŵer: {LTBLUE}{POWER}{BLACK} Cyflym. Max: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Pwys: {LTBLUE}{WEIGHT_SHORT} {BLACK}Pŵer: {LTBLUE}{POWER}{BLACK} Cyflym. Max: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 

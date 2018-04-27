@@ -15,9 +15,20 @@
  * functions may still be available if you return an older API version
  * in GetAPIVersion() in info.nut.
  *
+ * \b 1.9.0
+ *
+ * 1.9.0 is not yet released. The following changes are not set in stone yet.
+ * API additions:
+ * \li GSClient
+ * \li GSClientList
+ * \li GSClientList_Company
+ * \li GSViewport::ScrollEveryoneTo
+ * \li GSViewport::ScrollCompanyClientsTo
+ * \li GSViewport::ScrollClientTo
+ *
  * \b 1.8.0
  *
- * 1.8.0 is not yet released. The following changes are not set in stone yet.
+ * No changes
  *
  * \b 1.7.0 - 1.7.2
  *
