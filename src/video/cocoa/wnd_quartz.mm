@@ -110,14 +110,22 @@ static CGColorSpaceRef QZ_GetCorrectColorSpace()
 	static CGColorSpaceRef colorSpace = NULL;
 
 	if (colorSpace == NULL) {
-		CMProfileRef sysProfile;
-
-		if (CMGetSystemProfile(&sysProfile) == noErr) {
-			colorSpace = CGColorSpaceCreateWithPlatformColorSpace(sysProfile);
-			CMCloseProfile(sysProfile);
-		} else {
-			colorSpace = CGColorSpaceCreateDeviceRGB();
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
+		if (MacOSVersionIsAtLeast(10, 5, 0)) {
+			colorSpace = CGDisplayCopyColorSpace(CGMainDisplayID());
+		} else
+#endif
+		{
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5) && !defined(HAVE_OSX_1011_SDK)
+			CMProfileRef sysProfile;
+			if (CMGetSystemProfile(&sysProfile) == noErr) {
+				colorSpace = CGColorSpaceCreateWithPlatformColorSpace(sysProfile);
+				CMCloseProfile(sysProfile);
+			}
+#endif
 		}
+
+		if (colorSpace == NULL) colorSpace = CGColorSpaceCreateDeviceRGB();
 
 		if (colorSpace == NULL) error("Could not get system colour space. You might need to recalibrate your monitor.");
 	}
@@ -325,7 +333,9 @@ bool WindowQuartzSubdriver::SetVideoMode(int width, int height, int bpp)
 		[ this->window setAcceptsMouseMovedEvents:YES ];
 		[ this->window setViewsNeedDisplay:NO ];
 
-		[ this->window useOptimizedDrawing:YES ];
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_10
+		if ([ this->window respondsToSelector:@selector(useOptimizedDrawing:) ]) [ this->window useOptimizedDrawing:YES ];
+#endif
 
 		delegate = [ [ OTTD_CocoaWindowDelegate alloc ] init ];
 		[ delegate setDriver:this ];
@@ -509,7 +519,16 @@ CGPoint WindowQuartzSubdriver::PrivateLocalToCG(NSPoint *p)
 	p->y = this->window_height - p->y;
 	*p = [ this->cocoaview convertPoint:*p toView:nil ];
 
-	*p = [ this->window convertBaseToScreen:*p ];
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+	if ([ this->window respondsToSelector:@selector(convertRectToScreen:) ]) {
+		*p = [ this->window convertRectToScreen:NSMakeRect(p->x, p->y, 0, 0) ].origin;
+	} else
+#endif
+	{
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_7
+		*p = [ this->window convertBaseToScreen:*p ];
+#endif
+	}
 	p->y = this->device_height - p->y;
 
 	CGPoint cgp;
@@ -531,7 +550,9 @@ NSPoint WindowQuartzSubdriver::GetMouseLocation(NSEvent *event)
 		else
 #endif
 		{
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_7
 			pt = [ this->cocoaview convertPoint:[ [ this->cocoaview window ] convertScreenToBase:[ event locationInWindow ] ] fromView:nil ];
+#endif
 		}
 	} else {
 		pt = [ event locationInWindow ];

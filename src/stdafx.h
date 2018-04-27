@@ -156,6 +156,17 @@
 	#else
 		#define FINAL
 	#endif
+
+	/* Use fallthrough attribute where supported */
+	#if __GNUC__ >= 7
+		#if __cplusplus > 201402L // C++17
+			#define FALLTHROUGH [[fallthrough]]
+		#else
+			#define FALLTHROUGH __attribute__((fallthrough))
+		#endif
+	#else
+		#define FALLTHROUGH
+	#endif
 #endif /* __GNUC__ */
 
 #if defined(__WATCOMC__)
@@ -164,6 +175,7 @@
 	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL
+	#define FALLTHROUGH
 	#include <malloc.h>
 #endif /* __WATCOMC__ */
 
@@ -234,6 +246,13 @@
 	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL sealed
+
+	/* fallthrough attribute, VS 2017 */
+	#if (_MSC_VER >= 1910)
+		#define FALLTHROUGH [[fallthrough]]
+	#else
+		#define FALLTHROUGH
+	#endif
 
 	#if defined(WINCE)
 		int CDECL vsnprintf(char *str, size_t size, const char *format, va_list ap);
@@ -364,8 +383,7 @@ typedef unsigned char byte;
 /* Compile time assertions. Prefer c++0x static_assert().
  * Older compilers cannot evaluate some expressions at compile time,
  * typically when templates are involved, try assert_tcompile() in those cases. */
-#if defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__) || defined(static_assert)
-	/* __STDCXX_VERSION__ is c++0x feature macro, __GXX_EXPERIMENTAL_CXX0X__ is used by gcc, __GXX_EXPERIMENTAL_CPP0X__ by icc */
+#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1600)
 	#define assert_compile(expr) static_assert(expr, #expr )
 	#define assert_tcompile(expr) assert_compile(expr)
 #elif defined(__OS2__)

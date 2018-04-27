@@ -2602,29 +2602,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Velde
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Sneeu-bedekte land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Woestyn
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} spoor
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} spoor met blok seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} spoor met voor-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} spoor met uitgang-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} spoor met kombinasie-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} spoor met roete seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} spoor met een-rigting pad seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} spoor met blok en voor-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} spoor met blok en uitgang-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} spoor met blok en kombinasie-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} spoor met blok en pad seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} spoor met blok en een-rigting pad seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} spoor met voor en uitgang seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} spoor met voor en kombinasie-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} spoor met voor en pad-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} spoor met voor en een-rigting pad seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} spoor met uitgang en kombinasie-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} spoor met uitgang en pad-seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} spoor met uitgang en een-rigting pad seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} spoor met kombinasie en pad seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} spoor met kombinasie en eenrigting-pad seine
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} spoor met pad en een-rigting pad seine
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} trein diensstasie
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Spoorweg spoor
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Spoorweg spoor met blok seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Spoorweg spoor met voor-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Spoorweg spoor met uitgang-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Spoorweg spoor met kombinasie-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Spoorweg spoor met roete seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Spoorweg spoor met een-rigting pad seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Spoorweg spoor met blok en voor-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Spoorweg spoor met blok en uitgang-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Spoorweg spoor met blok en kombinasie-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Spoorweg spoor met blok en pad seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Spoorweg spoor met blok en een-rigting pad seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Spoorweg spoor met voor en uitgang seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Spoorweg spoor met voor en kombinasie-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Spoorweg spoor met voor en pad-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Spoorweg spoor met voor en een-rigting pad seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Spoorweg spoor met uitgang en kombinasie-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Spoorweg spoor met uitgang en pad-seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Spoorweg spoor met uitgang en een-rigting pad seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Spoorweg spoor met kombinasie en pad seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Spoorweg spoor met kombinasie en eenrigting-pad seine
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Spoorweg spoor met pad en een-rigting pad seine
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Spoorweg trein diensstasie
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Pad
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Pad met straatligte
@@ -2688,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Maatskappy-besi
 STR_ABOUT_OPENTTD                                               :{WHITE}Oor OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Oorspronklike kopiereg {COPYRIGHT} 1995 Chris Sawyer, Alle regte voorbehou
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD uitgawe {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 Die OpenTTD span
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 Die OpenTTD span
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spaar Spel
@@ -2875,7 +2875,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Gaan na 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Vorige sprite
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Gaan na vorige normale sprite, en ignoreer enige pseudo/her-kleur/font sprite en spring terug na die einde
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Voorstelling van geselekteerde sprite. Die belyning word geignoreer waneer sprite geteken word
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Beweeg die sprite rond, verander die X en Y afwyking
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Beweeg die sprite rond, verander die X en Y afwyking. Ctrl-klik om die sprite agt lengtes rond te beweeg op 'n slag
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Relatiewe herstel
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Herstel die huidige relatiewe verplasing
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X verplasing: {NUM}, Y verplasing: {NUM} (Werklik)
@@ -2890,7 +2890,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Waarskuwing: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Fout: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fataal: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}'n Fataale NewGRF fout het gebeur: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}'n Fataale NewGRF fout het gebeur:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} sal nie met die TTDPatch uitgawe rapporteer deur OpenTTD werk nie.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} is vir die {STRING} uitgawe van TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} is onderwerp om saam met {STRING} gebruik te word
@@ -2907,8 +2907,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Poging on 'n on
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} bevat 'n korrupte prent. Korrupte prente sal as 'n rooi vraagteken gewys word (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Bevat veelvoudige Aksie 8 inskrywings (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lees verby die einde van die pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :WHITE}Die huidige basis-grafikastel ontbreek sommige sprites.{}Opdateer die basis-grafikastel.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Die huidige basis-grafikastel ontbreek sommige sprites.{}Opdateer die basis-grafikastel.{}Aangesien jy 'n {YELLOW}ontwikkelingsweergawe van OpenTTD{WHITE} het, mag jy dalk 'n {YELLOW}ontwikkelingsweergawe{WHITE} van die basis-grafikastel benodig{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Aangevraagde GRF hulpbronne is nie beskikbaar nie (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} was gedeaktiveer deur {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ongeldige/onbekende sprite uitleg formaat (sprite {3:NUM})
@@ -2924,7 +2922,7 @@ STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Kan nie 
 STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Versoenbare GRF(s) gelaai vir vermiste lêers
 STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Vermiste GRF lêers is gedeaktiveer
 STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}GRF leêr(s) ontbreek
-STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Hervatting kan veroorsaak dat OpenTTD bots. Moet nie daaropeenvolgende botsings verslae rapporteer nie. {}Will jy rêrig unpause?
+STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Hervatting kan veroorsaak dat OpenTTD bots. Moet nie daaropeenvolgende botsings verslae rapporteer nie.{}Will jy rêrig unpause?
 
 # NewGRF status
 STR_NEWGRF_LIST_NONE                                            :Geen
@@ -3115,8 +3113,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Aanvaar
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Wys lys van aanvaarde vrag
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Aanvaar: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Die stasie het eksklusiewe vervoer regte vir die dorp
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} het eksklusiewe vervoer regte in die dorp gekoop.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Die stasie het eksklusiewe vervoer regte vir die dorp
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} het eksklusiewe vervoer regte in die dorp gekoop.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Graderings
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Toon stasie graderings
@@ -3295,9 +3293,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Vereis: 
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Vereis: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Vrag wag om geprosesseer te word:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produseer: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produseer: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3363,6 +3360,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Voeg gedeelde v
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Verwyder alle voertuie
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Hernoem 'n groep
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nuwe treine
@@ -3528,10 +3526,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :maglev lokomoti
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Koste: {CURRENCY_LONG} Massa: {WEIGHT_SHORT}{}Spoed: {VELOCITY}  Krag: {POWER}{}Loopkoste: {CURRENCY_LONG}/jr{}Kapasitiet: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Koste: {CURRENCY_LONG} Gewig: {WEIGHT_SHORT}{}Spoed: {VELOCITY}  Krag: {POWER}  Maks. Treg Krag: {6:FORCE}{}Lopende Koste: {4:CURRENCY_LONG}/jaar{}Kapasitiet: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Koste: {CURRENCY_LONG} Maks. Spoed: {VELOCITY}{}Kapasiteit: {CARGO_LONG}, {CARGO_LONG}{}Lopende Koste: {CURRENCY_LONG}/jaar
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Koste: {CURRENCY_LONG} Maks. Spoed: {VELOCITY}{}Kapasiteit: {CARGO_LONG}{}Lopende Koste: {CURRENCY_LONG}/jaar
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Koste: {CURRENCY_LONG} Max. Spoed: {VELOCITY} Afstand: {COMMA} teëls{}Kapasiteit: {CARGO_LONG}, {CARGO_LONG}{}Hardloop Koste: {CURRENCY_LONG}/jaar
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Koste: {CURRENCY_LONG} Max. Spoed: {VELOCITY} Afstand: {COMMA} teels{}Kapasiteit: {CARGO_LONG}{}Hardloop Koste: {CURRENCY_LONG}/jaar
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Koste: {CURRENCY_LONG} Maks. Spoed: {VELOCITY}{}Kapasiteit: {CARGO_LONG}{}Lopende Koste: {CURRENCY_LONG}/jaar
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Vervang {STRING} - {STRING}
@@ -3558,7 +3553,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} waneer
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Staak vervanging
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Druk om die vervanging van die linker gekose enjin tipe te stop
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Vervang: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Skakel tussen enjin en wa vervang vensters
 STR_REPLACE_ENGINES                                             :Enjin
 STR_REPLACE_WAGONS                                              :Waens
@@ -3654,7 +3648,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ja{P ar
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ja{P ar re} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Maks. spoed: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. spoed: {LTBLUE}{VELOCITY} {BLACK}Afstand: {LTBLUE}{COMMA} teëls
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Gewig: {LTBLUE}{WEIGHT_SHORT} {BLACK}Krag: {LTBLUE}{POWER}{BLACK} Maks. spoed: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Massa: {LTBLUE}{WEIGHT_SHORT} {BLACK}Krag: {LTBLUE}{POWER}{BLACK} Maks. spoed: {LTBLUE}{VELOCITY} {BLACK}Maks. T.E.: {LTBLUE}{FORCE}
 
@@ -4064,7 +4057,7 @@ STR_MESSAGE_ESTIMATED_COST                                      :{WHITE}Beraamde
 STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Beraamde Inkomste: {CURRENCY_LONG}
 
 # Saveload messages
-STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Stoor van speletjie is nog besig, {}wag asb tot dit klaar is!
+STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Stoor van speletjie is nog besig,{}wag asb tot dit klaar is!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Outostoor het misluk
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Kan nie skyf lees nie
 STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Speletjie Spaar Misluk{}{STRING}
@@ -4173,7 +4166,7 @@ STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... te v
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... daar is nie meer spasie oor op die kaart nie
 STR_ERROR_TOWN_EXPAND_WARN_NO_ROADS                             :{WHITE} Die dorp sal nie paaie bou nie. Jy kan dit verander deur die bou van paaie via Stellings-> Omgewings-> Dorpe te aktiveer
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Pad werke in verloop
-STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Kan nie die dorp verwyder nie... {}'n Stasie of depot verwys na die dorp of die blok wat deur die dorp besit word kan nie verwyder word nie.
+STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Kan nie die dorp verwyder nie...{}'n Stasie of depot verwys na die dorp of die blok wat deur die dorp besit word kan nie verwyder word nie.
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... daar is geen plek vir 'n standbeeld in die middel van die dorp
 
 # Industry related errors

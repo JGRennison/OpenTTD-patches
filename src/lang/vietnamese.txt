@@ -844,6 +844,7 @@ STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} chưa có lệnh
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} có các lệnh trùng lặp
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} có trạm bất hợp lệ trong lệnh
+STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE} có trong lộ trình một sân bay có đường băng quá ngắn
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} đang cũ đi
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} đang xuống cấp
@@ -1117,9 +1118,9 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :Thiết lập t
 STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Thiết lập trò chơi (chứa trong save; chỉ có tác dụng với ván chơi hiện tại)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Thiết lập công ty (chứa trong save; chỉ tác động với ván chơi mới)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Thiết lập công ty (lưu trong save; chỉ tác động tới công ty hiện tại)
-STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Hiện tất cả kết quả tìm kiếm theo {}{SILVER}Phân loại {BLACK}cho {WHITE}{STRING}
-STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Hiện tất cả kết quả tìm kiếm theo {}{SILVER}Kiểu {BLACK}cho {WHITE}tất cả kiểu thiết lập
-STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Hiện tất cả kết quả tìm kiếm theo {}{SILVER}Phân loại {BLACK}cho {WHITE}{STRING} {BLACK}và {SILVER}Kiểu {BLACK}cho {WHITE}tất cả kiểu thiết lập
+STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Hiện tất cả kết quả tìm kiếm theo{}{SILVER}Phân loại {BLACK}cho {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Hiện tất cả kết quả tìm kiếm theo{}{SILVER}Kiểu {BLACK}cho {WHITE}tất cả kiểu thiết lập
+STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Hiện tất cả kết quả tìm kiếm theo{}{SILVER}Phân loại {BLACK}cho {WHITE}{STRING} {BLACK}và {SILVER}Kiểu {BLACK}cho {WHITE}tất cả kiểu thiết lập
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Không -
 
 STR_CONFIG_SETTING_OFF                                          :Tắt
@@ -1287,17 +1288,28 @@ STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Hiển thị d�
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Độ đậm của đường kẻ trong đồ thị: {STRING}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Độ đậm của đường vẽ trên đồ thị. Một đường mảnh sẽ chính xác hơn, trong khi đó đường đậm sẽ dễ nhìn hơn và màu sắc dễ phân biệt hơn
 
+STR_CONFIG_SETTING_LANDSCAPE                                    :Nền đất: {STRING}
+STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Nền đất là định nghĩa cơ bản của các màn chơi với các kiểu hàng hóa và yêu cầu cho sự phát triển đô thị khác nhau. NewGRF và kịch bản chơi cho phép các điều chỉnh nhỏ hơn.
 STR_CONFIG_SETTING_LAND_GENERATOR                               :Tạo nền đất: {STRING}
+STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Bộ khởi tạo nguyên bản chỉ dựa vào tập hợp đồ họa đối tượng cơ bản, rồi sinh ra các dạng địa hình cố đinh. Với TerraGenesis thì dựa trên có chế nhiễu loạn (noise) kiểu Perlin và cho phép các điều chỉnh nhỏ hơn.
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Nguyên Bản
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Kiểu nền đất: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :(Chỉ cho TerraGenesis) Địa hình nhiều đồi núi
+STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Mật độ nhà máy: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Thiết lập số nhà máy sẽ được tạo ra và mức độ dùy trì trong ván chơi
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Khoảng cách tối đa từ lề bản đồ tới nhà máy lọc dầu: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Nhà máy hóa dầu chỉ có thể xây gần rìa bản đồ, tương ứng là ven biển với những bản đồ dạng đảo
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Độ cao tuyết phủ: {STRING}
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Điều chỉnh độ cao của tuyết phủ đối với địa hình xứ lanh. Tuyết phủ có thể ảnh hưởng tới việc tạo ra nhà máy và các yêu cầu cho sự tăng trưởng đô thị
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Độ gồ ghề của địa chất: {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Chỉ cho TerraGenesis) Chọn mức độ trùng điệp của núi: địa hình bằng phẳng thì ít hơn, địa hình đồi núi thì nhiều hơn. Địa hình gồ ghề có nhiều núi và trông có vẻ lặp lại
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Rất Phẳng
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Phẳng
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Gồ Ghề
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Rất Gồ Ghề
+STR_CONFIG_SETTING_VARIETY                                      :Phân bổ sự đa dạng: {STRING}
+STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(Chỉ cho TerraGenesis) Điều chỉnh liệu rằng bản đồ gồm cả vùng núi cao và vùng đồng bằng. Đây chỉ là điều chỉnh cho sự bằng phẳng hơn, các thiết lập khác sẽ điều chỉnh cho vùng núi.
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :Số lượng sông ngòi: {STRING}
 STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Chọn số lượng sông ngòi được khởi tạo
 STR_CONFIG_SETTING_TREE_PLACER                                  :Thuật toán đặt cây: {STRING}
@@ -1360,6 +1372,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Tắt
 
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Cuộn chuột trái: {STRING}
 STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Cho phép cuộn bản đồ bằng cách kéo với nút trái chuột. Tùy chọn này sẽ hữu ích khi dùng màn hình cảm ứng
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Đóng cửa số khi click chuột phải: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Đóng cửa sổ bằng cách bấm chuột phải vào đó. Ngăn tooltip bằng cách bấm phải!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Tự động save: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Chọn chu kỳ giữa mỗi lần tự động save
@@ -1653,11 +1667,21 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metric (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Tiêu Chuẩn Đo Lường
+STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Đồ họa
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Âm thanh
 STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Giao Diện
+STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}Tổng quát
+STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Vùng nhìn
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Xây Dựng
+STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Tin tức / Cố vấn
+STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Công ty
+STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Kế toán
 STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Phương Tiện
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}Vật lý
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Tìm đường
+STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Giới hạn
+STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Thiên tai / Tai nạn
+STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Khởi tạo bản đồ
 STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Môi trường
 STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Chính quyền
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Đô thị
@@ -1739,6 +1763,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Kiểm t
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Hiển thị thiết lập AI và Game script
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Thoát 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}Gói đồ họa cơ sở đang chọn bị thiếu  {NUM} sprite. Hãy cập nhật gói cơ sở này.
 STR_INTRO_TRANSLATION                                           :{BLACK}Bản dịch này thiếu {NUM} chuỗi. Hãy giúp OpenTTD hoàn thiện hơn bằng cách đăng ký làm biên dịch viên. Xem readme.txt để biết thêm chi tiết.
 
 # Quit window
@@ -2293,7 +2318,7 @@ STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Xây d�
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}Xây xưởng tàu hoả (để chế tạo và bảo dưỡng tàu). Shift để xem chi phí dự tính
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}Chuyển từ ray sang điểm mốc. Ctrl để nối các điểm mốc. Shift để xem chi phí dự tính
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}Xây nhà ga tàu hoả. Ctrl để nối các nhà ga. Shift để xem chi phí dự tính
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}Xây đèn tín hiệu đường sắt. Ctrl đổi dùng đèn/cờ tín hiệu{}Kéo thả để xây đèn tín hiệu theo đoạn kéo thả. Ctrl + kéo chuột theo đường ray khi xây sẽ xây loạt đèn tín hiệu cho tới điểm ngã ba, tư kế tiếp {}Ctrl+Click để mở cửa sổ chọn loại đèn tin hiệu. Shift để xem chi phí dự tính
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}Xây đèn tín hiệu đường sắt. Ctrl đổi dùng đèn/cờ tín hiệu{}Kéo thả để xây đèn tín hiệu theo đoạn kéo thả. Ctrl + kéo chuột theo đường ray khi xây sẽ xây loạt đèn tín hiệu cho tới điểm ngã ba, tư kế tiếp{}Ctrl+Click để mở cửa sổ chọn loại đèn tin hiệu. Shift để xem chi phí dự tính
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_BRIDGE                  :{BLACK}Xây cầu tàu hoả. Shift để xem chi phí dự tính
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}Xây hầm tàu hoả. Shift để xem chi phí dự tính
 STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}Chuyển chế độ xây/phá cho đường ray, đèn tín hiệu, điểm mốc và nhà ga. Giữ Ctrl để phá bỏ đường ray tính từ điểm mốc hay nhà ga
@@ -2337,7 +2362,7 @@ STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Đèn (c
 STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}Đèn (cờ) tín hiệu kết hợp{}Nó vừa là đèn tín hiệu cửa thoát (với đèn nhập ở phía trước nó) và vừa là đèn tín hiệu cửa nhập (đối với đèn thoát ở sau nó). Loại đèn này cho phép tạo nhiều lớp đèn cho một hệ thống tín hiệu phức tạp.
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}Đèn (cờ) tín hiệu giành đường{}Đèn tín hiệu giành đường cho phép nhiều hơn 1 đoàn tàu có thể đi vào 1 khu vực khoá, nếu như mỗi đoàn tàu có thể giành lấy một con đường tới một điểm đến một cách an toàn. Đèn tín hiệu giành đường tiêu chuẩn cho thể cho phép đi qua từ phía sau của đèn.
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}Đèn (cờ) tín hiệu giành đường một chiều{}Đèn tín hiệu giành đường cho phép nhiều hơn 1 đoàn tàu có thể đi vào 1 khu vực khoá, nếu như mỗi đoàn tàu có thể giành lấy một con đường tới một điểm đến một cách an toàn. Đèn tín hiệu giành đường tiêu chuẩn cho thể cho phép đi qua từ phía sau của đèn.
-STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}Đèn tín hiệu (điện) {}Đèn tín hiệu cơ bản, chỉ cho phép một đoàn toàn đi vào một khu vực khoá của đèn.
+STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}Đèn tín hiệu (điện){}Đèn tín hiệu cơ bản, chỉ cho phép một đoàn toàn đi vào một khu vực khoá của đèn.
 STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}Đèn tín hiệu cửa nhập (điện){}Sẽ xanh nếu một hoặc nhiều đèn tín hiệu cửa thoát ở phía sau màu xanh. Không thì sẽ đỏ.
 STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Đèn tín hiệu cửa thoát (điện){}Tương tự đèn tín hiệu khoá, nhưng cần có để đổi trạng thái của đèn tín hiệu loại cửa nhập & kết hợp nằm trước nó.
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Đèn tín hiệu kết hợp (điện){}Nó vừa là đèn tín hiệu cửa thoát (với đèn nhập ở phía trước nó) và vừa là đèn tín hiệu cửa nhập (đối với đèn thoát ở sau nó). Loại đèn này cho phép tạo nhiều lớp đèn cho một hệ thống tín hiệu phức tạp.
@@ -2567,6 +2592,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Tên sâ
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Hàng hoá chấp nhận: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Kiểu đường ray: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Giới hạn tốc độ đường ray: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Hạn chế tốc độ đường bộ: {LTBLUE}{VELOCITY}
 
@@ -2579,29 +2605,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Cánh đồng
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Đất tuyết phủ
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Hoang mạc
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Đường ray {STRING}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Đường ray {STRING} với đèn hiệu khóa
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Đường ray {STRING} với đèn tín hiệu báo trước
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Đường ray {STRING} với đèn tín hiệu cửa thoát
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Đường ray {STRING} với đèn tín hiệu kết hợp
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Đường ray {STRING} với đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Đường ray {STRING} với đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Đường ray {STRING} với đèn hiệu khóa và đèn tín hiệu báo trước
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Đường ray {STRING} với đèn hiệu khóa và đèn tín hiệu cửa thoát
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Đường ray {STRING} với đèn hiệu khóa và đèn tín hiệu kết hợp
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Đường ray {STRING} với đèn hiệu khóa và đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Đường ray {STRING} với đèn hiệu khóa và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Đường ray {STRING} với đèn tín hiệu báo trước và đèn tín hiệu cửa thoát
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Đường ray {STRING} với đèn tín hiệu báo trước và đèn tín hiệu kết hợp
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Đường ray {STRING} với đèn tín hiệu báo trước và đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Đường ray {STRING} với đèn tín hiệu báo trước và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Đường ray {STRING} với đèn tín hiệu cửa thoát và đèn tín hiệu kết hợp
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Đường ray {STRING} với đèn tín hiệu cửa thoát và đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Đường ray {STRING} với đèn tín hiệu cửa thoát và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Đường ray {STRING} với đèn tín hiệu kết hợp và đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Đường ray {STRING} với đèn tín hiệu kết hợp và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Đường ray {STRING} với đèn dẫn đường và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Xưởng tàu hỏa {STRING}
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Đường ray
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Đường ray với đèn hiệu khóa
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Đường ray với đèn tín hiệu báo trước
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Đường ray với đèn tín hiệu cửa thoát
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Đường ray với đèn tín hiệu kết hợp
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Đường ray với đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Đường ray với đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Đường ray với đèn hiệu khóa và đèn tín hiệu báo trước
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Đường ray với đèn hiệu khóa và đèn tín hiệu cửa thoát
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Đường ray với đèn hiệu khóa và đèn tín hiệu kết hợp
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Đường ray với đèn hiệu khóa và đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Đường ray với đèn hiệu khóa và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Đường ray với đèn tín hiệu báo trước và đèn tín hiệu cửa thoát
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Đường ray với đèn tín hiệu báo trước và đèn tín hiệu kết hợp
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Đường ray với đèn tín hiệu báo trước và đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Đường ray với đèn tín hiệu báo trước và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Đường ray với đèn tín hiệu cửa thoát và đèn tín hiệu kết hợp
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Đường ray với đèn tín hiệu cửa thoát và đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Đường ray với đèn tín hiệu cửa thoát và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Đường ray với đèn tín hiệu kết hợp và đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Đường ray với đèn tín hiệu kết hợp và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Đường ray với đèn dẫn đường và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Xưởng tàu hỏa
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Đường bộ
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Đường phố có đèn
@@ -2665,7 +2691,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Đất công ty
 STR_ABOUT_OPENTTD                                               :{WHITE}Về OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Nguyên tác bản quyền {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD phiên bản {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 Nhóm OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 Nhóm OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Lưu Ván Chơi
@@ -2684,6 +2710,7 @@ STR_SAVELOAD_SAVE_BUTTON                                        :{BLACK}Lưu
 STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}Lưu ván chơi hiện tại, sử dụng tên đã chọn
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Nạp
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Nạp ván chơi được chọn
+STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Nạp bản đồ địa hình đang chọn
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Chi Tiết Trò Chơi
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Không có thông tin gì cả.
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -2851,7 +2878,11 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Nhảy t
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Sprite trước
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Xử lý sprite bình thường ở trước, bỏ qua các loại pseudo/recolour/font sprite căn theo điểm bắt đầu
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Theo những thông tin của sprite đã chọn. Thì việc căn chỉnh khi vẽ đối với sprite này sẽ bị bỏ qua
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Di chuyển sprite xung quanh, thay đổi X và Y offsets
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Di chuyển sprite xung quanh, thay đổi X và Y offsets. Ctrl+Click để di chuyển sprite tám đơn vị một lúc
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Đặt lại tương đối
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Đặt lại các dịch chuyển tương đối hiện tại
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK} dịch X: {NUM}, dịch Y: {NUM} (tuyệt đối)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}toạ độ X: {NUM}, toạ độ Y: {NUM} (tương đối)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Chọn sprite
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Chọn sprite ở bất cứ đâu trên màn hình
 
@@ -2862,7 +2893,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Cảnh báo: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Lỗi: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Lỗi nghiêm trọng: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Xảy ra lỗi NewGRF nghiêm trọng: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}Xảy ra lỗi NewGRF nghiêm trọng:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING} sẽ không hoạt động với phiên bản TTDPatch version theo như báo cáo của OpenTTD.
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} để dành cho phiên bản {STRING} của TTD.
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} được thiết kế để xài với {STRING}
@@ -2879,8 +2910,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Sử dụng IT 
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} bị hỏng sprite. Tất cả các sprite sẽ hiện thị với dấu hỏi (?) màu đỏ.
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Có nhiều mục thực thi 8 (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Đọc quá giới hạn của sprite giả (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Gói đồ họa bạn đang dùng thiếu một số mẫu đồ họa.{}Hãy cập nhật gói đồ họa lên phiên bản mới.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Bộ file đồ họa hiện tại thiết một số sprites.{}Hãy cập nhật phiên bản mới.{}Bởi vì bạn chơi {YELLOW}một phiên bản thử nghiệm đang phát triển OpenTTD{WHITE}, bạn cần phải có cả {YELLOW}bộ file đồ họa đang được phát triển nữa{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Dữ liệu GRF theo yêu cầu không hợp lệ (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} bị tắt bởi {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Định dạng Sprite không hợp lệ hoặc chưa định nghĩa (sprite {3:NUM})
@@ -3087,8 +3116,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Chấp n
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Liệt kê hàng hoá được chấp nhận
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Chấp nhận: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Trạm này độc quyền vận tải tại thị trấn này.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} đã mua quyền vận tải độc quyền ở đô thị này.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Trạm này độc quyền vận tải tại thị trấn này.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} đã mua quyền vận tải độc quyền ở đô thị này.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Uy tín
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Hiện uy tín ga, bến, cảng
@@ -3267,9 +3296,11 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Yêu c�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Yêu cầu: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Cần cung cấp:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} đang chờ{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Toa xe đợi để xử lý:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Sản xuất: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Sản xuất: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3328,11 +3359,18 @@ STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Xoá nh�
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Đổi tên nhóm
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Không để nhóm này tự thay thế (thiết lập chung) khi hết hạn
 
+STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Xóa Nhóm
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Bạn có chắc chắn muốn xóa nhóm này và tất cả con của nó?
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Thêm phương tiện được chia sẻ
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Xoá tất cả phương tiện
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Đổi tên nhóm
+
+STR_GROUP_PROFIT_THIS_YEAR                                      :Lợi nhuận năm nay:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Lợi nhuận năm trước:
+STR_GROUP_OCCUPANCY                                             :Hiện đang dùng:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Tàu Hỏa Mới
@@ -3365,6 +3403,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Tất cả ki�
 STR_PURCHASE_INFO_ALL_BUT                                       :Tất cả trừ {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Lực kéo tối đa: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Tầm xa: {GOLD}{COMMA} ô
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Kiểu máy bay: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Danh sách tàu hỏa có thể chọn. Click vào tàu hỏa để xem thông tin. Ctrl+Click để ẩn/hiện loại được chọn
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Danh sách xe có thể chọn. Click vào xe để xem thông tin. Ctrl+Click để ẩn/hiện loại được chọn
@@ -3498,10 +3537,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :đầu máy đ�
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Giá thành: {CURRENCY_LONG} Tải trọng: {WEIGHT_SHORT}{}Tốc độ: {VELOCITY}  Công suất: {POWER}{}Chi phí hoạt động: {CURRENCY_LONG}/năm{}Sức chứa: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Giá: {CURRENCY_LONG} Nặng: {WEIGHT_SHORT}{}Tốc độ: {VELOCITY}  Công suất: {POWER}  Max. T.E.: {6:FORCE}{}Giá vận hành: {4:CURRENCY_LONG}/yr{}Năng suất: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Giá thành: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Sức chứa: {CARGO_LONG}, {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Giá thành: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Sức chứa: {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Gía: {CURRENCY_LONG} Tốc độ max: {VELOCITY} Tầm xa: {COMMA} ô{}Trọng tải: {CARGO_LONG}, {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Giá: {CURRENCY_LONG} Tốc độ max: {VELOCITY} Tầm xa: {COMMA} ô{}Trọng tải: {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Giá thành: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Sức chứa: {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Giá: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Kiểu máy bay: {STRING}{}Sức chứa: {CARGO_LONG}, {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}GIá: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Kiểu máy bay: {STRING}{}Sức chứa: {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Giá: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Kiểu máy bay: {STRING} Tầm xa: {COMMA} ô{}Sức chứa: {CARGO_LONG}, {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Giá: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Kiểu máy bay: {STRING} Tầm xa: {COMMA} ô{}Sức chứa: {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Thay thế {STRING} - {STRING}
@@ -3528,10 +3568,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} khi đ
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Ngừng thay thế phương tiện
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Bấm để ngừng việc thay thế kiểu đầu máy đã chọn
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Thay thế: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Chuyển qua lại cửa sổ thay thế đầu máy và toa xe
 STR_REPLACE_ENGINES                                             :Đầu máy
 STR_REPLACE_WAGONS                                              :Toa xe
+STR_REPLACE_ALL_RAILTYPE                                        :Tất cả toa xe đầu máy
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Chọn kiểu đường ray bạn muốn thay thế
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Hiện thị đầu máy nào đang được thay thế, nếu có
@@ -3624,7 +3664,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} năm ({
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} năm ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Tốc độ tối đa: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Tốc độ max: {LTBLUE}{VELOCITY} {BLACK} Tầm xa: {LTBLUE}{COMMA} ô
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Tốc độ tối đa: {LTBLUE}{VELOCITY} {BLACK}Kiểu máy bay: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Tốc độ tối đa: {LTBLUE}{VELOCITY} {BLACK}Kiểu máy bay: {LTBLUE}{STRING} {BLACK}Tầm bay: {LTBLUE}{COMMA} ô
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Tải trọng: {LTBLUE}{WEIGHT_SHORT} {BLACK}Công suất: {LTBLUE}{POWER}{BLACK} Tốc độ tối đa: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Tải trọng: {LTBLUE}{WEIGHT_SHORT} {BLACK}Công suất: {LTBLUE}{POWER}{BLACK} Tốc độ tối đa: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 
@@ -3869,6 +3910,10 @@ STR_TIMETABLE_TRAVEL_NOT_TIMETABLED                             :Di chuyển (kh
 STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED                       :Hành trình với tốc độ tối đa là {2:VELOCITY} (chưa dựng lịch trình)
 STR_TIMETABLE_TRAVEL_FOR                                        :Di chuyển trong {STRING}
 STR_TIMETABLE_TRAVEL_FOR_SPEED                                  :Lộ trình {STRING} với tốc độ tối đa {VELOCITY}
+STR_TIMETABLE_TRAVEL_FOR_ESTIMATED                              :Lộ trình (cho {STRING}, chưa có lịch trình)
+STR_TIMETABLE_TRAVEL_FOR_SPEED_ESTIMATED                        :Lộ trình (cho {STRING}, chưa có lịch trình) với tốc độ đối đa {VELOCITY}
+STR_TIMETABLE_STAY_FOR_ESTIMATED                                :(ở lại {STRING}, chưa có lịch trình)
+STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :(di chuyển đến {STRING}, chưa có lịch trình)
 STR_TIMETABLE_STAY_FOR                                          :và ở lại trong {STRING}
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :và di chuyển trong {STRING}
 STR_TIMETABLE_DAYS                                              :{COMMA}{NBSP}ngày
@@ -4327,6 +4372,7 @@ STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... bạ
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Không thể tạo nhóm...
 STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Không thể xoá bỏ nhóm...
 STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Không thể đổi tên nhóm...
+STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Không thể thiết đặt nhóm cha...
 STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}Không thể bỏ các phương tiện trong nhóm này...
 STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}Không thể thêm phương tiện vào nhóm này...
 STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}Không thể thêm phương tiện được chia sẻ vào nhóm...

@@ -250,6 +250,7 @@ STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}ทำ�
 
 # Show engines button
 
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}ถ้าได้อนุญาตที่ปุ่มนี้แล้ว อากาศยานที่ซ่อนจะถูกแสดงออกมา
 
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}ค่าปกติ
@@ -316,7 +317,7 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}แส�
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}แสดงข้อมูลทางการเงินของบริษัท
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}แสดงข้อมูลทั่วไปของบริษัท
 STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}แสดงสมุดบันทึก
-STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :แสดงรายการเป้าหมายที่ต้องทำ
+STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}แสดงรายการเป้าหมายที่ต้องทำ
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}แสดงกราฟ
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}แสดงตารางอันดับบริษัท
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}ลงทุนก่อสร้างอุตสาหกรรมใหม่ หรือ แสดงรายชื่ออุตสาหกรรมทั้งหมด
@@ -780,13 +781,13 @@ STR_NEWS_FIRST_AIRCRAFT_ARRIVAL                                 :{BIG_FONT}{BLAC
 
 STR_NEWS_TRAIN_CRASH                                            :{BIG_FONT}{BLACK}อุบัติเหตุรถไฟชนกัน!!{}มีผู้เสียชีวิต{COMMA}คนจากอุบัติเหตุครั้งนี้
 STR_NEWS_ROAD_VEHICLE_CRASH_DRIVER                              :{BIG_FONT}{BLACK}เกิดอุบัติเหตุรถไฟชนรถยนต์!!{}หลังจากเจ้าหน้าที่เข้าตรวจสอบพื้นที่ พบว่าคนขับรถยนต์เสียชีวิต
-STR_NEWS_ROAD_VEHICLE_CRASH                                     :{BIG_FONT}{BLACK}เกิดอุบัติเหตุรถไฟชนรถยนต์ {}มีผู้เสียชีวิต {COMMA} คนหลังรถไฟมรณะพุ่งชน
+STR_NEWS_ROAD_VEHICLE_CRASH                                     :{BIG_FONT}{BLACK}เกิดอุบัติเหตุรถไฟชนรถยนต์{}มีผู้เสียชีวิต {COMMA} คนหลังรถไฟมรณะพุ่งชน
 STR_NEWS_AIRCRAFT_CRASH                                         :{BIG_FONT}{BLACK}เกิดอุบัติเหตุเครื่องบินตก{}คร่าชีวิตผู้โดยสารและลูกเรือรวม {COMMA} ศพที่ {STATION}
 STR_NEWS_PLANE_CRASH_OUT_OF_FUEL                                :{BIG_FONT}{BLACK}เครื่องบินตกตก!{}ด้วยสาเหตุ เชื้อเพลิงหมดกลางอากาศ, ผู้โดยสารและลูกเรือ {COMMA} ชีวิตตายอนาถ
 
 STR_NEWS_DISASTER_ZEPPELIN                                      :{BIG_FONT}{BLACK}เกิดเหตุบอลลูนระเบิดที่{STATION}!
 STR_NEWS_DISASTER_SMALL_UFO                                     :{BIG_FONT}{BLACK}รถยนต์ถูกทำลายโดย UFO!
-STR_NEWS_DISASTER_AIRPLANE_OIL_REFINERY                         :{BIG_FONT}{BLACK}เกิดเหตุโรงกลั่นน้ำมันระเบิดใกล้เมือง {TOWN}! {}ทางการกำลังสั่งอพยพผู้คนในละแวกใกล้เคียงออกนอกพื้นที่
+STR_NEWS_DISASTER_AIRPLANE_OIL_REFINERY                         :{BIG_FONT}{BLACK}เกิดเหตุโรงกลั่นน้ำมันระเบิดใกล้เมือง {TOWN}!{}ทางการกำลังสั่งอพยพผู้คนในละแวกใกล้เคียงออกนอกพื้นที่
 STR_NEWS_DISASTER_HELICOPTER_FACTORY                            :{BIG_FONT}{BLACK}โรงงานอุตสาหกรรมถูกทำลายอย่างไม่ทราบสาเหตุใกล้ {TOWN}!
 STR_NEWS_DISASTER_BIG_UFO                                       :{BIG_FONT}{BLACK}มี 'UFO' มาลงใกล้ๆ{TOWN}!
 STR_NEWS_DISASTER_COAL_MINE_SUBSIDENCE                          :{BIG_FONT}{BLACK}เกิดเหตุเหมืองถ่านหินถล่มใกล้กับเมืองเมือง {TOWN}!
@@ -970,6 +971,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}คว�
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}เลือกความละเอียดของหน้าจอที่จะใช้
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :อื่นๆ
 
+STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}ขนาดของแผงควบคุม
 
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}ตั้งค่า Graphic พื้นฐาน
@@ -1064,6 +1066,7 @@ STR_TERRAIN_TYPE_VERY_FLAT                                      :แบนรา
 STR_TERRAIN_TYPE_FLAT                                           :แบนราบ
 STR_TERRAIN_TYPE_HILLY                                          :เนินเขา
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :ภูเขาสูง
+STR_TERRAIN_TYPE_ALPINIST                                       :นักไต่เขา
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :อนุญาต
 STR_CITY_APPROVAL_TOLERANT                                      :พอผ่อนผันให้ได้
@@ -1084,6 +1087,8 @@ STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :ตั้งค
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :ตั้งค่าองค์กร (ถูกเก็บไว้ในการบันทึกเกม; มีผลเฉพาะการเริ่มเกมใหม่)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :ตั้งค่าองค์กร (ถูกเก็บไว้ในการบันทึกเกม; มีผลเฉพาะเกมปัจจุบัน)
 
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}หมวดหมู่:
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}ชนิด:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}จำกัดรายการด้านล่างให้แสดงเฉพาะการตั้งค่าที่มีการเปลี่ยนแปลง
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :ตั้งค่าพื้นฐาน
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :ตั้งค่าขั้นสูง
@@ -1166,6 +1171,7 @@ STR_CONFIG_SETTING_INFLATION                                    :ภาวะเ
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :เมื่อเปิดการใช้งานอัตราเงินเฟ้อ ค่าเงินจะถูกลงและต้องใช้เงินมากขึ้นในการซื้อหรือสร้าง แต่ผลตอบแทนจากการขนส่งก็จะเพิ่มขึ้นด้วยเช่นกัน
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :ความยาวสูงสุดของสะพาน: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :ปรับความยาวสูงสุดสำหรับการสร้างสะพาน
+STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :ความสูงของสะพาน: {STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :ความยาวสูงสุดของอุโมงค์: {STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :ปรับความยาวสูงสุดสำหรับการสร้างอุโมงค์
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :กำหนดวิธีหลักในการก่อสร้างอุตสาหกรรมเอง: {STRING}
@@ -1265,7 +1271,9 @@ STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :ระยะห่างที่สุดจากขอบแผนที่ของโรงกลั่นน้ำมัน: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :โรงกลั่นน้ำมันจะสามารถตั้งได้เฉพาะบริเวณใกล้ๆขอบแผนที่เท่านั้น การตั้งค่านี้จะสามารถตั้งให้สร้างโรงกลั่นน้ำมันได้ห่างสูงสุดเท่าใดจากของแผนที่
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :ระดับความสูงแนวหิมะ: {STRING}
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :ควบคุมความสูงเริ่มต้นของหิมะบนพื้นภูมิทัศน์อาร์ติคย่อยๆ, หิมะยังมีผลการสร้างอุตสาหกรรม และการเติบโตของเมือง
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :ความหยาบของพื้นที่ (เฉพาะ TerraGenesis): {STRING}
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(TerraGenesis only) Choose the frequency of hills: Smooth landscapes have fewer, more wide-spread hills. Rough landscapes have many hills, which may look repetitive
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :ราบเรียบมาก
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :ราบเรียบ
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :หยาบ
@@ -1622,7 +1630,9 @@ STR_CONFIG_SETTING_SOUND                                        :{ORANGE}เส�
 STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}ส่วนเชื่อมต่อผู้ใช้
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}การก่อสร้าง
 STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}ยานพาหนะ
+STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :{ORANGE}กายภาพ
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}การค้นหาเส้นทางของพาหนะ
+STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}สิ่งแวดล้อม
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}เมือง
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}อุตสาหกรรม
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}การกระจายสินค้า
@@ -1676,6 +1686,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}เล�
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}ตัวเลือกเกม
 STR_INTRO_HIGHSCORE                                             :{BLACK}ตารางคะแนนสูงสุด
+STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}ตั้งค่า
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}การตั้งค่า NewGRF
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}ตรวจสอบเนื้อหาออนไลน์
 STR_INTRO_SCRIPT_SETTINGS                                       :{BLACK}ตั้งค่า AI/Game Script
@@ -1695,6 +1706,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}เล�
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}แสดงตัวเลือกเกม
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}แสดงตารางคะแนนสูงสุด
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}การตั้งค่า หน้าจอ
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}แสดงการกำหนดค่า NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}ตรวจสอบเนื้อหาใหม่และการปรับปรุงสำหรับดาวโหลด
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}แสดงการตั้งค่า AI/Game script
@@ -2215,7 +2227,7 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}เป�
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}ตั้งให้วัตถุมองไม่เห็นแทนการโปร่งใส
 
 # Linkgraph legend window
-STR_LINKGRAPH_LEGEND_CAPTION                                    :{WHITE}แสดงเส้นทางและความหนาแน่น
+STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}แสดงเส้นทางและความหนาแน่น
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}ทั้งหมด
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}ไม่เลือก
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}เลือกบริษัทที่จะแสดง
@@ -2537,29 +2549,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :ทุ่งห
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :พื้นที่หิมะปกคลุม
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :ทะเลทราย
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} ราง
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING}ทางรถไฟกับ Block Signal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING}ทางรถไฟกับ Pre-Signal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING}ทางรถไฟกับ Exit-Signal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING}ทางรถไฟกับ Combo-Signal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING}ทางรถไฟกับ Path Signal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING}ทางรถไฟกับ Path Signal แบบเดินทางเดียว
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING}ทางรถไฟกับ Block และ Pre-Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING}ทางรถไฟกับ Block และ Exit-Signal
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING}ทางรถไฟกับ Block และ Combo-Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING}ทางรถไฟกับ Block และ Path Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING}ทางรถไฟกับ Block และ Path Signals แบบเดินรถทางเดียว
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING}ทางรถไฟกับ Pre- และ Exit-Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING}ทางรถไฟกับ Pre- และ Combo-Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING}ทางรถไฟกับ Pre- และ Path Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING}ทางรถไฟและ Pre- และ Path Signals แบบเดินรถทางเดียว
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING}ทางรถไฟกับ Exit- และ Combo-Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING}ทางรถไฟกับ Exit- และ Path Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING}ทางรถไฟและ Exit- และ Path Signals แบบเดินรถทางเดียว
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING}ทางรถไฟและ Combo- และ Path Signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING}ทางรถไฟและ Combo- และ Path Signals แบบเดินรถทางเดียว
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING}ทางรถไฟกับ Path และ Path Signals แบบเดินรถทางเดียว
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} โรงซ่อมบำรุงรถไฟ
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :รางรถไฟ ราง
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :รางรถไฟทางรถไฟกับ Block Signal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :รางรถไฟทางรถไฟกับ Pre-Signal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :รางรถไฟทางรถไฟกับ Exit-Signal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :รางรถไฟทางรถไฟกับ Combo-Signal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :รางรถไฟทางรถไฟกับ Path Signal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :รางรถไฟทางรถไฟกับ Path Signal แบบเดินทางเดียว
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :รางรถไฟทางรถไฟกับ Block และ Pre-Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :รางรถไฟทางรถไฟกับ Block และ Exit-Signal
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :รางรถไฟทางรถไฟกับ Block และ Combo-Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :รางรถไฟทางรถไฟกับ Block และ Path Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :รางรถไฟทางรถไฟกับ Block และ Path Signals แบบเดินรถทางเดียว
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :รางรถไฟทางรถไฟกับ Pre- และ Exit-Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :รางรถไฟทางรถไฟกับ Pre- และ Combo-Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :รางรถไฟทางรถไฟกับ Pre- และ Path Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :รางรถไฟทางรถไฟและ Pre- และ Path Signals แบบเดินรถทางเดียว
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :รางรถไฟทางรถไฟกับ Exit- และ Combo-Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :รางรถไฟทางรถไฟกับ Exit- และ Path Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :รางรถไฟทางรถไฟและ Exit- และ Path Signals แบบเดินรถทางเดียว
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :รางรถไฟทางรถไฟและ Combo- และ Path Signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :รางรถไฟทางรถไฟและ Combo- และ Path Signals แบบเดินรถทางเดียว
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :รางรถไฟทางรถไฟกับ Path และ Path Signals แบบเดินรถทางเดียว
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :รางรถไฟ โรงซ่อมบำรุงรถไฟ
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :ถนน
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :ถนนพร้อมไฟถนน
@@ -2623,7 +2635,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :บริษั
 STR_ABOUT_OPENTTD                                               :{WHITE}เกี่ยวกับ OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}ลิขสิทธิ์เดิม {COPYRIGHT} ค.ศ.1995 ของ Chris Sawyer, สงวนลิขสิทธิ์
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD รุ่นที่ {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}ลิขสิทธิ์ OpenTTD {COPYRIGHT}2002-2015 ของ The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}ลิขสิทธิ์ OpenTTD {COPYRIGHT}2002-2018 ของ The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}บันทึกเกม
@@ -2657,6 +2669,7 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}จำนวนเมือง
 STR_MAPGEN_DATE                                                 :{BLACK}วันที่:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}จำนวนอุตสาหกรรม:
+STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}ขนาดความสูงของแผนที่สูงสุด:
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}เส้นความสูงเขตหิมะ:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}ปรับเปลี่ยนความสูงของหิมะขึ้นไป 1 ระดับ
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}ปรับเปลี่ยนความสูงของหิมะลงมา 1 ระดับ
@@ -2740,6 +2753,8 @@ STR_NEWGRF_SETTINGS_MOVEUP                                      :{BLACK}ย้�
 STR_NEWGRF_SETTINGS_MOVEUP_TOOLTIP                              :{BLACK}เลื่อน NewGRF ที่เลือกไว้ขึ้นไปในรายการ
 STR_NEWGRF_SETTINGS_MOVEDOWN                                    :{BLACK}ย้ายตำแหน่งลง
 STR_NEWGRF_SETTINGS_MOVEDOWN_TOOLTIP                            :{BLACK}เลื่อน NewGRF ที่เลือกไว้ลงไปในรายการ
+STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}อัพเกรด
+STR_NEWGRF_SETTINGS_UPGRADE_TOOLTIP                             :{BLACK}ปรับปรุงรุ่นไฟล์ NewGRF สำหรับเวอร์ชันที่ได้ติดตั้งไปแล้วก่อนหน้า
 STR_NEWGRF_SETTINGS_FILE_TOOLTIP                                :{BLACK}รายการของ NewGRF ที่มีการติดตั้งในปัจจุบัน
 
 STR_NEWGRF_SETTINGS_SET_PARAMETERS                              :{BLACK}ตั้งค่า parameters
@@ -2765,6 +2780,7 @@ STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}ไม่�
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}ไม่รองรับกับ OpenTTD เวอร์ชั่นนี้
 
 # NewGRF save preset window
+STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}บันทึก ชุดการตั้งค่า ตามที่ได้เลือกไว้
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}เปลี่ยนแปลง NewGRF parameters
@@ -2806,7 +2822,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}อันตราย: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Error: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}ร้ายแรง: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}เกิดความผิดพลาดร้ายแรงเกี่ยวกับ NewGRF: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}เกิดความผิดพลาดร้ายแรงเกี่ยวกับ NewGRF:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING}ไม่สามารถทำงานได้บน TTDPatchเวอร์ชั่นนี่ รายงานโดย OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING} สำหรับ {STRING} version of TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING} ออกแบบมาสำหรับใช้งานกับ {STRING}
@@ -2823,15 +2839,13 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Attempt to use 
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} บรรจุ sprites ที่สูญหาย. สิ่งที่สูญหายจะแสดงเป็นเครื่องหมายตกใจสีแดง (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contains multiple Action 8 entries (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Read past end of pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}กราฟิกพื้นฐานที่ใช้อยู่มี Sprite ไม่สมบูรณ์{}กรุณาปรับรุ่นของ Base Graphic
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}ไฟล์ในกราฟฟิคพื้นฐานหายไปบางส่วน{}กรุณาอัพเดตกราฟฟิคพื้นฐาน.{}ตั้งแต่คุณเริ่มเล่น {YELLOW}ภาพของ OpenTTD{WHITE},คุณอาจต้องการ {YELLOW}ภาพของกราฟฟิคพื้นฐาน{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :ต้นแบบ GRF ที่ต้องการสามารถใช้การได้(sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} ถูกยกเลิกโดย {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :ไม่ถูกต้อง/ไม่ทราบ รูปแบบ sprite (sprite {3:NUM})
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}คำเตือน!
-STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}คุณต้องการที่จะปรับเปลี่ยนในเกมที่กำลังทำงานอยู่. การกระทำนี้สามารถทำให้เกมเสียหาย หรือหยุดการทำงานของเกม หากพบปัญหา ไม่ต้องทำการแจ้งบั๊กเข้ามาเกี่ยวกับประเด็นนี้ {} คุณยังต้องการดำเนินการต่อหรือไม่?
+STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}คุณต้องการที่จะปรับเปลี่ยนในเกมที่กำลังทำงานอยู่. การกระทำนี้สามารถทำให้เกมเสียหาย หรือหยุดการทำงานของเกม หากพบปัญหา ไม่ต้องทำการแจ้งบั๊กเข้ามาเกี่ยวกับประเด็นนี้{} คุณยังต้องการดำเนินการต่อหรือไม่?
 
 STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}ไม่สามารถเพิ่มเข้าไปได้: GRF ID ซ้ำกัน
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}หาไฟล์ที่เข้ากันได้ไม่ครบ (compatible GRF loaded)
@@ -2946,7 +2960,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}กา�
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}ให้เงินกับเมืองเพื่อทำถนนใหม่,การจราจรจะเป็นอัมพาทเป็นเวลา 6 เดือน. ส่งผลทำให้การจราจรในเมืองเป็นอัมพาธ{}ใช้งบประมาณ: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}สร้างอนุเสาวรีย์แห่งความภาคภูมิใจของบริษัท.{}ใช้งบประมาณ: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}ให้เงินเพื่อสร้างสิ่งปลูกสร้างทางธุรกิจแห่งใหม่ของเมือง.{}ใช้งบประมาณ: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}ซื้อสัมปทานเป็นเวลา 1 ปีสำหรับเมืองเมืองหนึ่ง ผู้โดยสารและสินค้าจะใช้บริการเฉพาะของบริษัทเราเพียงอย่างเดียว {}ใช้งบประมาณ: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}ซื้อสัมปทานเป็นเวลา 1 ปีสำหรับเมืองเมืองหนึ่ง ผู้โดยสารและสินค้าจะใช้บริการเฉพาะของบริษัทเราเพียงอย่างเดียว{}ใช้งบประมาณ: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}จ่ายเงินใต้โต๊ะติดสินบนให้เจ้าหน้าที่ในท้องถิ่น เพื่อเพิ่มความพึงพอใจ ทำให้สามารถสร้างสิ่งก่อสร้าง รื้อถอนสิ่งก่อสร้างของเมืองได้โดยไม่ติดขัด.{}ใช้งบประมาณ: {CURRENCY_LONG}
 
 # Goal window
@@ -3030,8 +3044,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}ปิ�
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}ปิดหน้าต่างความนิยมลงและแสดงเฉพาะรายการสินค้าที่สถานีรองรับและรอการขนส่ง
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}กำลังต้องการ: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}สถานนีนี้มีสัมปทานขนส่งจากเมืองนี้
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} ซื้อสัมปทานขนส่งที่เมืองนี้
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}สถานนีนี้มีสัมปทานขนส่งจากเมืองนี้
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} ซื้อสัมปทานขนส่งที่เมืองนี้
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}ความพึงพอใจ
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}แสดงความพึงพอใจของสถานี
@@ -3076,9 +3090,9 @@ STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}จุ�
 STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}เปลี่ยนชื่อสถานี
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}แสดงขบวนรถไฟที่มีรายการเข้าจอดที่สถานีนี้
-STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :แสดงยานพาหนะทางบกที่มีรายการเข้าจอดที่สถานีนี้
-STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :แสดงอากาศยานที่มีรายการลงจอดจอดที่สถานีนี้
-STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :แสดงเรือที่มีรายการเข้าเทียบท่าที่ท่านี้
+STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}แสดงยานพาหนะทางบกที่มีรายการเข้าจอดที่สถานีนี้
+STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}แสดงอากาศยานที่มีรายการลงจอดจอดที่สถานีนี้
+STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}แสดงเรือที่มีรายการเข้าเทียบท่าที่ท่านี้
 
 STR_STATION_VIEW_RENAME_STATION_CAPTION                         :เปลี่ยนชื่อสถานี/พื้นที่รับส่งสินค้า
 
@@ -3210,9 +3224,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}มี�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}มีความต้องการ: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}พัสดุและสิ่งของที่รอการผลิต:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}ผลผลิต: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}ผลผลิต: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3277,6 +3290,7 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :ลบยาน
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}เปลี่ยนชื่อกลุ่ม
 
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :รถไฟใหม่
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :รถไฟฟ้าใหม่
@@ -3334,8 +3348,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}เป�
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}เปลี่ยนชื่อชนิดของเรือ
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}เปลี่ยนชื่อชนิดของเครื่องบิน
 
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_TOGGLE_BUTTON                     :{BLACK}ซ่อน
 
+STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON                        :{BLACK}การแสดงผล
+STR_BUY_VEHICLE_ROAD_VEHICLE_SHOW_TOGGLE_BUTTON                 :{BLACK}การแสดงผล
 
+STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}ปรับเปลี่ยน ซ่อน/แสดง ของชนิดเครื่องอากาศยาน
 
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}เปลี่ยนชื่อชนิดของรถไฟ
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}เปลี่ยนชื่อชนิดของรถ
@@ -3371,7 +3389,7 @@ STR_DEPOT_SELL_ALL_BUTTON_SHIP_TOOLTIP                          :{BLACK}ขา�
 STR_DEPOT_SELL_ALL_BUTTON_AIRCRAFT_TOOLTIP                      :{BLACK}ขายอากาศยานทั้งหมดในโรงซ่อมบำรุง
 
 STR_DEPOT_AUTOREPLACE_TRAIN_TOOLTIP                             :{BLACK}แทนที่อัตโนมัติสำหรับรถไฟทั้งหมดในโรงซ่อมบำรุง
-STR_DEPOT_AUTOREPLACE_ROAD_VEHICLE_TOOLTIP                      :แทนที่อัตโนมัติสำหรับยานพาหนะทางบกทั้งหมดในโรงซ่อมบำรุง
+STR_DEPOT_AUTOREPLACE_ROAD_VEHICLE_TOOLTIP                      :{BLACK}แทนที่อัตโนมัติสำหรับยานพาหนะทางบกทั้งหมดในโรงซ่อมบำรุง
 STR_DEPOT_AUTOREPLACE_SHIP_TOOLTIP                              :{BLACK}แทนที่อัตโนมัติสำหรับยานพาหนะทางน้ำทั้งหมดในอู่
 STR_DEPOT_AUTOREPLACE_AIRCRAFT_TOOLTIP                          :{BLACK}แทนที่อัตโนมัติสำหรับอากาศยานทั้งหมดในโรงซ่อมบำรุง
 
@@ -3419,7 +3437,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}คุ�
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}ข้อความจากผู้ผลิตยานพาหนะ
-STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}เราได้ออกแบบ {STRING} ใหม่ - หากคุณต้องการที่จะนำไปทดลองใช้ เราจะให้คุณนำไปใช้งานก่อนที่จะนำออกไปจำหน่ายในตลาดปกติ {}คุณต้องการนำไปทดลองใช้หรือไม่ ?
+STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}เราได้ออกแบบ {STRING} ใหม่ - หากคุณต้องการที่จะนำไปทดลองใช้ เราจะให้คุณนำไปใช้งานก่อนที่จะนำออกไปจำหน่ายในตลาดปกติ{}คุณต้องการนำไปทดลองใช้หรือไม่ ?
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :หัวรถจักร
 STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :ยานพาหนะทางบก
 STR_ENGINE_PREVIEW_AIRCRAFT                                     :อากาศยาน
@@ -3429,10 +3447,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :รถไฟร
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}มูลค่า: {CURRENCY_LONG} น้ำหนัก: {WEIGHT_SHORT}{}ความเร็ว: {VELOCITY}พลังขับเคลื่อน: {POWER}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี{}ความจุ: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}มูลค่า: {CURRENCY_LONG} น้ำหนัก: {WEIGHT_SHORT}{}ความเร็ว: {VELOCITY}พลังขับเคลื่อน: {POWER}  กำัลังลากจูงสูงสุด: {6:FORCE}{}ค่าปฎิบัติการ: {4:CURRENCY_LONG}/ปี{}ความจุ: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY}{}ความจุ: {CARGO_LONG}, {CARGO_LONG}{}ค่าปฎิบัติการ: {CURRENCY_LONG}/ปี
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY}{}ความจุ: {CARGO_LONG}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY} พิสัย: {COMMA} ช่อง{}ความจุ: {CARGO_LONG}, {CARGO_LONG}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY} พิสัย: {COMMA} tiles{}ความจุ: {CARGO_LONG}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}มูลค่า: {CURRENCY_LONG} ความเร็วสูงสุด: {VELOCITY}{}ความจุ: {CARGO_LONG}{}ค่าปฏิบัติการ: {CURRENCY_LONG}/ปี
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}เปลี่ยน {STRING} - {STRING}
@@ -3441,6 +3456,7 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :ยานพา
 STR_REPLACE_VEHICLE_SHIP                                        :ยานพาหนะทางน้ำ
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :อากาศยาน
 
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}พาหนะถูกใช้งานอยู่
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}เลือกประเภทของรถจักรที่จะแทนที่
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}เลือกประเภทของพาหนะที่จะแทนที่ทางซ้ายมือ
@@ -3455,7 +3471,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} เม
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}หยุดการแทนที่ยานพาหนะ
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}กดเพื่อเริ่มหยุดการแทนที่ยานพาหนะตามที่เลือกไว้ในรายการ
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}กำลังแทนที่: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}สลับระหว่างหน้าต่างการแทนที่ของรถจักรและรถพ่วง
 STR_REPLACE_ENGINES                                             :รถจักร
 STR_REPLACE_WAGONS                                              :รถพ่วง
@@ -3551,7 +3566,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ปี 
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ปี ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}ความเร็วสูงสุด: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}ความเร็วสูงสุด: {LTBLUE}{VELOCITY} {BLACK}พิสัย: {LTBLUE}{COMMA} ช่อง
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}น้ำหนัก: {LTBLUE}{WEIGHT_SHORT} {BLACK}พลังขับเคลื่อน: {LTBLUE}{POWER}{BLACK} ความเร็วสูงสุด: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}น้ำหนัก: {LTBLUE}{WEIGHT_SHORT} {BLACK}พลังขับเคลื่อน: {LTBLUE}{POWER}{BLACK} ความเร็วสูงสุด: {LTBLUE}{VELOCITY} {BLACK}กำลังลากจูงสูงสุด: {LTBLUE}{FORCE}
 
@@ -4037,6 +4051,7 @@ STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}กา�
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... ตอนนี้อยู่ที่ระดับน้ำทะเลแล้ว
 STR_ERROR_TOO_HIGH                                              :{WHITE}... สูงเกินไป
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... อยู่ในสภาพที่ต่ำที่สุดแล้ว
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}สะพานที่อยู่ด้านบนจะสูงเกินไป
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}ไม่สามารถเปลี่ยนชื่อบริษัทได้

@@ -2357,14 +2357,14 @@ STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}閉塞�
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}入口信号 (腕木式){}この信号の先にある出口信号のうち最低でも1つが緑であれば緑になりますが、そうでなければ赤になります。場内信号に良く使われます
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}出口信号 (腕木式){}動作は普通の閉塞信号と同様ですが、入口/コンボ信号を使用する場合に必要になります。ホームの入り口に良く使われます
 STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}コンボ信号 (腕木式){}コンボ信号は入口信号と出口信号の機能を併せ持つ信号です。この信号を使うと多数の分岐のあるような場内信号網を作ることができます
-STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}パス信号 (腕木式) {}パス信号では、互いに衝突しない経路が確保できる場合には1つの閉塞内に複数の列車が入ることを許容します。汎用性は高いですが、一方向式しか使えず信号の背面から進行してくる列車を防護することができません。この信号で列車が停車中に正面から対向列車が来ると問答無用で衝突事故を起こします!
-STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}一方通行パス信号 (腕木式) {}パス信号では、互いに衝突しない経路が確保できる場合には1つの閉塞内に複数の列車が入ることを許容します。このタイプのパス信号は信号の背面から通過することはできません
+STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}パス信号 (腕木式){}パス信号では、互いに衝突しない経路が確保できる場合には1つの閉塞内に複数の列車が入ることを許容します。汎用性は高いですが、一方向式しか使えず信号の背面から進行してくる列車を防護することができません。この信号で列車が停車中に正面から対向列車が来ると問答無用で衝突事故を起こします!
+STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}一方通行パス信号 (腕木式){}パス信号では、互いに衝突しない経路が確保できる場合には1つの閉塞内に複数の列車が入ることを許容します。このタイプのパス信号は信号の背面から通過することはできません
 STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}閉塞信号 (色灯式){}最も一般的な信号で、1つの閉塞内(信号同士の間の区間)には1編成のみが進入できます。配置した信号をクリックすると信号の向きを「一方向→一方向(逆)→二方向」の順で変えられます。一方向式の信号は背面から通過できません
 STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}入口信号 (色灯式){}この信号の先にある出口信号のうち最低でも1つが緑であれば緑になりますが、そうでなければ赤になります。場内信号に良く使われます
 STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}出口信号 (色灯式){}動作は普通の閉塞信号と同様ですが、入口/コンボ信号を使用する場合に必要になります。ホームの入り口に良く使われます
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}コンボ信号 (色灯式){}コンボ信号は入口信号と出口信号の機能を併せ持つ信号です。この信号を使うと多数の分岐のあるような場内信号網を作ることができます
-STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}パス信号 (色灯式) {}パス信号では、互いに衝突しない経路が確保できる場合には1つの閉塞内に複数の列車が入ることを許容します。汎用性は高いですが、一方向式しか使えず信号の背面から進行してくる列車を防護することができません。この信号で列車が停車中に正面から対向列車が来ると問答無用で衝突事故を起こします!
-STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}一方通行パス信号 (色灯式) {}パス信号では、互いに衝突しない経路が確保できる場合には1つの閉塞内に複数の列車が入ることを許容します。このタイプのパス信号は信号の背面から通過することはできません
+STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}パス信号 (色灯式){}パス信号では、互いに衝突しない経路が確保できる場合には1つの閉塞内に複数の列車が入ることを許容します。汎用性は高いですが、一方向式しか使えず信号の背面から進行してくる列車を防護することができません。この信号で列車が停車中に正面から対向列車が来ると問答無用で衝突事故を起こします!
+STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}一方通行パス信号 (色灯式){}パス信号では、互いに衝突しない経路が確保できる場合には1つの閉塞内に複数の列車が入ることを許容します。このタイプのパス信号は信号の背面から通過することはできません
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}信号交換{}既存の信号を今選択している信号に交換します。Ctrl+クリックで種類は替えずに腕木/色灯の形式のみ切り替えます。Shift+クリックで費用を見積もります
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}ドラッグ時の信号設置間隔を指定します
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}ドラッグ時の信号設置間隔を減らします
@@ -2589,6 +2589,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}空港�
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}受入れ貨物: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             : {BLACK}線路の種類: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}線路の制限速度: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}道路の最高速度: {LTBLUE}{VELOCITY}
 
@@ -2601,29 +2602,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :耕作地
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :積雪地帯
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :砂漠
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} 線路
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} 信号付線路 (閉塞)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} 信号付線路 (入口)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} 信号付線路 (出口)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} 信号付線路 (コンボ)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} 信号付線路 (パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} 信号付線路 (一方通行パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} 信号付線路 (閉塞+入口)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} 信号付線路 (閉塞+出口)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} 信号付線路 (閉塞+コンボ)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} 信号付線路 (閉塞+パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} 信号付線路 (閉塞+一方通行パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} 信号付線路 (入口+出口)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} 信号付線路 (入口+コンボ)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} 信号付線路 (入口+パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} 信号付線路 (入口+一方通行パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} 信号付線路 (出口+コンボ)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} 信号付線路 (出口+パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} 信号付線路 (出口+一方通行パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} 信号付線路 (コンボ+パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} 信号付線路 (コンボ+一方通行パス)
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} 信号付線路 (パス+一方通行パス)
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} 列車庫
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :鉄道 (非電化) 線路
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :鉄道 (非電化) 信号付線路 (閉塞)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :鉄道 (非電化) 信号付線路 (入口)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :鉄道 (非電化) 信号付線路 (出口)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :鉄道 (非電化) 信号付線路 (コンボ)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :鉄道 (非電化) 信号付線路 (パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :鉄道 (非電化) 信号付線路 (一方通行パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :鉄道 (非電化) 信号付線路 (閉塞+入口)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :鉄道 (非電化) 信号付線路 (閉塞+出口)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :鉄道 (非電化) 信号付線路 (閉塞+コンボ)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :鉄道 (非電化) 信号付線路 (閉塞+パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :鉄道 (非電化) 信号付線路 (閉塞+一方通行パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :鉄道 (非電化) 信号付線路 (入口+出口)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :鉄道 (非電化) 信号付線路 (入口+コンボ)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :鉄道 (非電化) 信号付線路 (入口+パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :鉄道 (非電化) 信号付線路 (入口+一方通行パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :鉄道 (非電化) 信号付線路 (出口+コンボ)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :鉄道 (非電化) 信号付線路 (出口+パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :鉄道 (非電化) 信号付線路 (出口+一方通行パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :鉄道 (非電化) 信号付線路 (コンボ+パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :鉄道 (非電化) 信号付線路 (コンボ+一方通行パス)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :鉄道 (非電化) 信号付線路 (パス+一方通行パス)
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :鉄道 (非電化) 列車庫
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :道路
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :街灯付道路
@@ -2687,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :社有地
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTDについて
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}オリジナル版権{COPYRIGHT} 1995 Chris Sawyer All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD バージョン {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ゲームを保存
@@ -2875,6 +2876,10 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}前の�
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}前のノーマルスプライトに戻ります。始端と終端は連続しているものとみなし、疑似/リカラー/フォントスプライトはスキップします
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}現在選択されているスプライトの代表絵を示します。この配列はスプライトを描画するときには無視されます
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}X・Yオフセットを変更し、スプライトを移動します
+STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK} 相対値リセット
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK} 現在の相対オフセットをリセットします。
+STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}Xオフセット : {NUM},Yオフセット : {NUM} (絶対値)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  : {BLACK}X オフセット : {NUM}, Y オフセット : {NUM} (相対値)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}スプライトを選ぶ
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}画面内からスプライトを選びます
 
@@ -2885,7 +2890,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}警告: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}エラー: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}致命的エラー: {SILVER}{STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRFに致命的なエラーが発生しました: {}{STRING}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRFに致命的なエラーが発生しました:{}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING}はOpenTTDのTTDPatchバージョンには対応していません
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING}はTTDのバージョン{STRING}にのみ対応しています
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING}を使用時には{STRING}を有効にしなければなりません
@@ -2902,8 +2907,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :不正なIDが�
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING}には破損スプライトがあります。破損スプライトは赤疑問符({RED}?{YELLOW})として表示されます
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :アクション8のエントリが複数含まれています (スプライト {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :疑似スプライトのデータが十分にありません (スプライト {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}使用中の基本グラフィックセットから複数のスプライトが欠落しています。{}セットを更新して下さいますよう、お願いします
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}使用中の基本グラフィックセットから複数のスプライトが欠落しています。{}セットを更新して下さいますよう、お願いします{}{YELLOW}OpenTTDの速報開発版{WHITE}をお使いの際は、{YELLOW}速報開発版に即したグラフィックセット{WHITE}が必要となる場合があります
 STR_NEWGRF_ERROR_GRM_FAILED                                     :要求されたGRFのリソースは使用できません (スプライト {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING}は{STRING}により無効にされました
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :不正なレイアウト書式です (スプライト {3:NUM})
@@ -3031,7 +3034,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}買収�
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} 目標
-STR_GOALS_SPECTATOR_CAPTION                                     :{BLACK}大目標
+STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}大目標
 STR_GOALS_GLOBAL_TITLE                                          :{BLACK}大目標:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- なし -
@@ -3110,8 +3113,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}受入�
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}受入れる貨物のリストを表示します
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}受入れ貨物: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}この停留施設は街の独占輸送契約の恩恵下にあります
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK}はこの街と独占輸送契約を締結しています
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}この停留施設は街の独占輸送契約の恩恵下にあります
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK}はこの街と独占輸送契約を締結しています
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}評価
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}停留施設の評価を表示します
@@ -3172,7 +3175,7 @@ STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}中継�
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}メイン画面をこのブイの場所に移動します。Ctrl+クリックでこのブイの場所を新たなビューポートに表示します
 STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}ブイの名称を変更
 
-STR_EDIT_WAYPOINT_NAME                                          :中継駅名を表示
+STR_EDIT_WAYPOINT_NAME                                          :{WHITE}中継駅名を表示
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} 経営状況　{BLACK}{COMPANY_NUM}
@@ -3290,9 +3293,9 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}必要�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}必要資源: {YELLOW}{STRING}{STRING}、{STRING}{STRING}、{STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      : {BLACK}必要物資:
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}加工待ちの貨物:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}生産品: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}生産品: {YELLOW}{STRING}{STRING}、{STRING}{STRING}
 ############ range for produces ends
@@ -3358,6 +3361,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :共有輸送機
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :全輸送機器を削除
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}グループ名を変更
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :新規機関車(非電化)
@@ -3523,10 +3527,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :リニア列車
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}価格: {CURRENCY_LONG} 重量: {WEIGHT_SHORT}{}最高速度: {VELOCITY}{}出力: {POWER}{}運用費: {CURRENCY_LONG}/年{}収容量: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}価格: {CURRENCY_LONG} 重量: {WEIGHT_SHORT}{}最高速度: {VELOCITY} 出力: {POWER} 最大牽引力: {6:FORCE}{}運用費: {4:CURRENCY_LONG}/年{}収容量 {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY}{}収容量: {CARGO_LONG}、{CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY}{}収容量: {CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY} 航続距離: {COMMA}タイル{}収容量: {CARGO_LONG}、{CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY} 航続距離: {COMMA}タイル{}収容量: {CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}価格: {CURRENCY_LONG} 最高速度: {VELOCITY}{}収容量: {CARGO_LONG}{}運用費: {CURRENCY_LONG}/年
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}{STRING}の自動置換 - {STRING}
@@ -3553,10 +3554,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :老朽化した
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}置換終了
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}クリックすると選択した輸送機器の置換を終了します
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}置換対象: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}置換対象を機関車/貨車に切り替えます
 STR_REPLACE_ENGINES                                             :機関車
 STR_REPLACE_WAGONS                                              :貨車
+STR_REPLACE_ALL_RAILTYPE                                        :全ての鉄道車両
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}置換対象となる線路種類を切り替えます
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}左で選択された機関車の置換対象を(あれば)表示します
@@ -3649,7 +3650,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA}年({COM
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA}年({COMMA}年)
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}最高速度: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}最高速度: {LTBLUE}{VELOCITY} {BLACK}航続距離: {LTBLUE}{COMMA}タイル
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}重量: {LTBLUE}{WEIGHT_SHORT}　{BLACK}出力: {LTBLUE}{POWER}{BLACK}　最高速度: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}重量: {LTBLUE}{WEIGHT_SHORT}　{BLACK}出力: {LTBLUE}{POWER}{BLACK}　最高速度: {LTBLUE}{VELOCITY}　{BLACK}最大牽引力: {LTBLUE}{FORCE}
 

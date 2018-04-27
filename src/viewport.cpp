@@ -84,6 +84,9 @@
 #include "linkgraph/linkgraph_gui.h"
 #include "viewport_sprite_sorter.h"
 #include "bridge_map.h"
+#include "company_base.h"
+#include "command_func.h"
+#include "network/network_func.h"
 
 #include <map>
 
@@ -2633,8 +2636,8 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 			byte style_t = (byte)(TileX(end_tile) > TileX(start_tile));
 			start_tile = TILE_ADD(start_tile, ToTileIndexDiff(heightdiff_area_by_dir[style_t]));
 			end_tile   = TILE_ADD(end_tile, ToTileIndexDiff(heightdiff_area_by_dir[2 + style_t]));
-			/* FALL THROUGH */
 		}
+		FALLTHROUGH;
 
 		case HT_POINT:
 			h0 = TileHeight(start_tile);
@@ -2979,7 +2982,7 @@ void VpSelectTilesWithMethod(int x, int y, ViewportPlaceMethod method)
 
 		case VPM_X_LIMITED: // Drag in X direction (limited size).
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		case VPM_FIX_X: // drag in Y direction
 			x = sx;
@@ -2988,7 +2991,7 @@ void VpSelectTilesWithMethod(int x, int y, ViewportPlaceMethod method)
 
 		case VPM_Y_LIMITED: // Drag in Y direction (limited size).
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		case VPM_FIX_Y: // drag in X direction
 			y = sy;
@@ -3026,7 +3029,7 @@ calc_heightdiff_single_direction:;
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
 			x = sx + Clamp(x - sx, -limit, limit);
 			y = sy + Clamp(y - sy, -limit, limit);
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		case VPM_X_AND_Y: // drag an X by Y area
 			if (_settings_client.gui.measure_tooltip) {
@@ -3249,4 +3252,41 @@ void InitializeSpriteSorter()
 		}
 	}
 	assert(_vp_sprite_sorter != NULL);
+}
+
+/**
+ * Scroll players main viewport.
+ * @param tile tile to center viewport on
+ * @param flags type of operation
+ * @param p1 ViewportScrollTarget of scroll target
+ * @param p2 company or client id depending on the target
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScrollViewport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (_current_company != OWNER_DEITY) return CMD_ERROR;
+	ViewportScrollTarget target = (ViewportScrollTarget)p1;
+	switch (target) {
+		case VST_EVERYONE:
+			break;
+		case VST_COMPANY:
+			if (_local_company != (CompanyID)p2) return CommandCost();
+			break;
+		case VST_CLIENT:
+#ifdef ENABLE_NETWORK
+			if (_network_own_client_id != (ClientID)p2) return CommandCost();
+			break;
+#else
+			return CommandCost();
+#endif
+		default:
+			return CMD_ERROR;
+	}
+
+	if (flags & DC_EXEC) {
+		ResetObjectToPlace();
+		ScrollMainWindowToTile(tile);
+	}
+	return CommandCost();
 }

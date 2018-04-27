@@ -2085,7 +2085,7 @@ STR_NETWORK_CLIENT                                              :用戶端
 STR_NETWORK_SPECTATORS                                          :旁觀者
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}請輸入你要付出多少資金
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :(BLACK)旁觀者
+STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}旁觀者
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}不要儲存所輸入的密碼
@@ -2601,29 +2601,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :田地
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :覆雪地
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :沙漠
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} 鐵軌
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :設有閉塞號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :設有預警號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :設有出口號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :設有預警-出口複合號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :設有路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :設有單向路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :設有閉塞與預警號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :設有閉塞與出口號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :設有閉塞與複合號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :設有閉塞與路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :設有閉塞與單向路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :分別設有預警與出口號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :分別設有預警與複合號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :設有預警與路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :設有預警與單向路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :分別設有出口與複合號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :設有出口與路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :設有出口與單向路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :設有複合與路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :設有複合與單向路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :分別設有一般路徑與單向路徑號誌的{STRING}軌道
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING}機廠
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :鐵路 鐵軌
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :設有閉塞號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :設有預警號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :設有出口號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :設有預警-出口複合號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :設有路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :設有單向路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :設有閉塞與預警號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :設有閉塞與出口號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :設有閉塞與複合號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :設有閉塞與路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :設有閉塞與單向路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :分別設有預警與出口號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :分別設有預警與複合號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :設有預警與路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :設有預警與單向路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :分別設有出口與複合號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :設有出口與路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :設有出口與單向路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :設有複合與路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :設有複合與單向路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :分別設有一般路徑與單向路徑號誌的鐵路軌道
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :鐵路機廠
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :公路
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :有路燈的公路
@@ -2687,7 +2687,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :公司所有土
 STR_ABOUT_OPENTTD                                               :{WHITE}關於 OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}原著作權為 {COPYRIGHT} 1995 Chris Sawyer，保留所有權利
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD 版本 {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD 開發小組
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD 開發小組
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}儲存遊戲
@@ -2874,7 +2874,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}前往�
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}上一個子畫面
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}繼續處理上一個正常的子畫面，略過任何虛位／重新著色／文字字型相關的子畫面，並在到達第一個子畫面後，返回最後的子畫面繼續進行處理。
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}顯示目前選取的 sprite。當 sprite 正在描繪時會忽略其定位
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}移動 sprite 到指定的 X 及 Y 座標位移
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}移動 sprite 到指定的 X 及 Y 座標位移。Ctrl+點擊可以一次移動8個單元格。
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}重設相對值
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}重設目前的相對位移值
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X 位移：{NUM}，Y 位移：{NUM}（絕對值）
@@ -2906,8 +2906,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :子畫面企圖
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} 包含了毀損的 sprite。所有毀損的 sprite 會以紅色問號 (？) 顯示。
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :過多的 Action 8 資料 (發生於第 {3:NUM} 個子畫面)
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :子畫面資料不足 (發生於第 {3:NUM} 個子畫面)
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}目前使用的基本圖形集少了某些 sprite。{}請更新基本圖形集。
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}你正在使用的圖形集缺少了一些圖形.{}請更新圖形集. {}因為你正在使用一個{YELLOW}開發中的OpenTTD{WHITE},你可能需要一個{YELLOW}開發中的圖形集{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :要求的 GRF 資料不存在或無法讀取 (發生於第 {3:NUM} 個子畫面)
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{2:STRING} 使 {1:STRING} 被停用
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :無效或無法識別的子畫面配置格式 (發生於第 {3:NUM} 個子畫面)
@@ -3091,7 +3089,7 @@ STR_STORY_BOOK_PREV_PAGE                                        :{BLACK}上一�
 STR_STORY_BOOK_PREV_PAGE_TOOLTIP                                :{BLACK}前往上一頁繼續觀看
 STR_STORY_BOOK_NEXT_PAGE                                        :{BLACK}下一頁
 STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}前往下一頁繼續觀看
-STR_STORY_BOOK_INVALID_GOAL_REF                                 :(RED)無效的目標參照
+STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}無效的目標參照
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}車站名稱 - 點選名稱可將車站置於畫面中央。按住 Ctrl 點選可於車站位置開啟新視窗視野
@@ -3114,8 +3112,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}接受�
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}顯示接受的貨物種類
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}接受：{WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}此車站享有所屬市鎮的專屬運輸權
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK}已購買此市鎮的專屬運輸權
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}此車站享有所屬市鎮的專屬運輸權
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK}已購買此市鎮的專屬運輸權
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}評價
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}顯示車站評價
@@ -3294,9 +3292,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}需要�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}需要：{YELLOW}{STRING}{STRING}，{STRING}{STRING}，{STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}囤積的貨物：
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}產出：{YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}產出：{YELLOW}{STRING}{STRING}，{STRING}{STRING}
 ############ range for produces ends
@@ -3362,6 +3359,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :加入共享指
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :移去所有運具
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}重新命名群組
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :新購鐵路列車
@@ -3527,10 +3525,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :磁浮機車頭
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}費用：{CURRENCY_LONG} 載重：{WEIGHT_SHORT}{}速度：{VELOCITY}  功率：{POWER}{}營運成本：{CURRENCY_LONG} / 年{}容量：{CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}費用：{CURRENCY_LONG} 載重：{WEIGHT_SHORT}{}速度：{VELOCITY}  功率：{POWER}  最大牽引力：{6:FORCE}{}營運成本：{4:CURRENCY_LONG}/年{}容量：{5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}費用：{CURRENCY_LONG} 最高速度：{VELOCITY}{}容量：{CARGO_LONG}, {CARGO_LONG}{}營運成本：{CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}費用：{CURRENCY_LONG} 最高速度：{VELOCITY}{}容量：{CARGO_LONG}{}營運成本：{CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}成本： {CURRENCY_LONG} 最高速度： {VELOCITY} 範圍： {COMMA} 格{}容量： {CARGO_LONG}, {CARGO_LONG}{}營運成本： {CURRENCY_LONG}/年
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}成本： {CURRENCY_LONG} 最高速度： {VELOCITY} 範圍： {COMMA} 格{}容量： {CARGO_LONG}{}營運成本： {CURRENCY_LONG}/年
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}費用：{CURRENCY_LONG} 最高速度：{VELOCITY}{}容量：{CARGO_LONG}{}營運成本：{CURRENCY_LONG}/年
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}替換 {STRING} - {STRING}
@@ -3557,7 +3552,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :更換舊運具
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}停止替換運輸工具
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}按下之後會停止替換左方指定的車頭
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}替換：{ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}在車頭及車廂替換畫面間切換。
 STR_REPLACE_ENGINES                                             :車頭
 STR_REPLACE_WAGONS                                              :車廂
@@ -3653,7 +3647,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} 年 ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} 年 ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}最高速度：{LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}最高速度： {LTBLUE}{VELOCITY} {BLACK}範圍： {LTBLUE}{COMMA} 格
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}載重：{LTBLUE}{WEIGHT_SHORT} {BLACK}功率：{LTBLUE}{POWER}{BLACK} 最高速度：{LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}載重：{LTBLUE}{WEIGHT_SHORT} {BLACK}功率：{LTBLUE}{POWER}{BLACK} 最高速度：{LTBLUE}{VELOCITY} {BLACK}最大牽引力：{LTBLUE}{FORCE}
 

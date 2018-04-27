@@ -491,7 +491,12 @@ static CommandCost ClearTile_Industry(TileIndex tile, DoCommandFlag flags)
 	return CommandCost(EXPENSES_CONSTRUCTION, indspec->GetRemovalCost());
 }
 
-static void TransportIndustryGoods(TileIndex tile)
+/**
+ * Move produced cargo from industry to nearby stations.
+ * @param tile Industry tile
+ * @return true if any cargo was moved.
+ */
+static bool TransportIndustryGoods(TileIndex tile)
 {
 	Industry *i = Industry::GetByTile(tile);
 	const IndustrySpec *indspec = GetIndustrySpec(i->type);
@@ -516,16 +521,7 @@ static void TransportIndustryGoods(TileIndex tile)
 		}
 	}
 
-	if (moved_cargo && !StartStopIndustryTileAnimation(i, IAT_INDUSTRY_DISTRIBUTES_CARGO)) {
-		uint newgfx = GetIndustryTileSpec(GetIndustryGfx(tile))->anim_production;
-
-		if (newgfx != INDUSTRYTILE_NOANIM) {
-			ResetIndustryConstructionStage(tile);
-			SetIndustryCompleted(tile);
-			SetIndustryGfx(tile, newgfx);
-			MarkTileDirtyByTile(tile);
-		}
-	}
+	return moved_cargo;
 }
 
 
@@ -810,7 +806,17 @@ static void TileLoop_Industry(TileIndex tile)
 
 	if (_game_mode == GM_EDITOR) return;
 
-	TransportIndustryGoods(tile);
+	if (TransportIndustryGoods(tile) && !StartStopIndustryTileAnimation(Industry::GetByTile(tile), IAT_INDUSTRY_DISTRIBUTES_CARGO)) {
+		uint newgfx = GetIndustryTileSpec(GetIndustryGfx(tile))->anim_production;
+
+		if (newgfx != INDUSTRYTILE_NOANIM) {
+			ResetIndustryConstructionStage(tile);
+			SetIndustryCompleted(tile);
+			SetIndustryGfx(tile, newgfx);
+			MarkTileDirtyByTile(tile);
+			return;
+		}
+	}
 
 	if (StartStopIndustryTileAnimation(tile, IAT_TILELOOP)) return;
 
@@ -1383,7 +1389,7 @@ static CommandCost CheckIfIndustryTilesAreFree(TileIndex tile, const IndustryTil
 		}
 
 		if (gfx == GFX_WATERTILE_SPECIALCHECK) {
-			if (!IsTileType(cur_tile, MP_WATER) ||
+			if (!IsWaterTile(cur_tile) ||
 					!IsTileFlat(cur_tile)) {
 				return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 			}
