@@ -54,6 +54,13 @@
 #define MAC_OS_X_VERSION_10_9 1090
 #endif
 
+#ifndef MAC_OS_X_VERSION_10_10
+#define MAC_OS_X_VERSION_10_10 101000
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_11
+#define MAC_OS_X_VERSION_10_11 101100
+#endif
 
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>

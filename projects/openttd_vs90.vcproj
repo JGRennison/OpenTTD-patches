@@ -121,6 +121,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description=""
+				CommandLine="copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;$(SolutionDir)..\bin\$(TargetName)$(TargetExt)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -215,6 +217,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description=""
+				CommandLine="copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;$(SolutionDir)..\bin\$(TargetName)$(TargetExt)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -324,6 +328,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description=""
+				CommandLine="copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;$(SolutionDir)..\bin\$(TargetName)$(TargetExt)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -422,6 +428,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description=""
+				CommandLine="copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;$(SolutionDir)..\bin\$(TargetName)$(TargetExt)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -3536,6 +3544,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\script\api\script_client.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_clientlist.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\script\api\script_company.hpp"
 				>
 			</File>
@@ -3797,6 +3813,14 @@
 			</File>
 			<File
 				RelativePath=".\..\src\script\api\script_cargomonitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_client.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_clientlist.cpp"
 				>
 			</File>
 			<File
@@ -4761,7 +4785,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\..\readme.txt"
+			RelativePath=".\..\README.md"
 			>
 		</File>
 	</Files>

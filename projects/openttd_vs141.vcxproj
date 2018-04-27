@@ -152,8 +152,12 @@
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
     </Link>
     <Manifest>
+      <AdditionalManifestFiles>os_versions.manifest</AdditionalManifestFiles>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)..\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -202,8 +206,12 @@
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
     </Link>
     <Manifest>
+      <AdditionalManifestFiles>os_versions.manifest</AdditionalManifestFiles>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)..\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -264,8 +272,12 @@
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
     </Link>
     <Manifest>
+      <AdditionalManifestFiles>os_versions.manifest</AdditionalManifestFiles>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)..\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -316,8 +328,12 @@
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
     </Link>
     <Manifest>
+      <AdditionalManifestFiles>os_versions.manifest</AdditionalManifestFiles>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)..\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tbtr_template_gui_main.cpp" />
@@ -1080,6 +1096,8 @@
     <ClInclude Include="..\src\script\api\script_cargo.hpp" />
     <ClInclude Include="..\src\script\api\script_cargolist.hpp" />
     <ClInclude Include="..\src\script\api\script_cargomonitor.hpp" />
+    <ClInclude Include="..\src\script\api\script_client.hpp" />
+    <ClInclude Include="..\src\script\api\script_clientlist.hpp" />
     <ClInclude Include="..\src\script\api\script_company.hpp" />
     <ClInclude Include="..\src\script\api\script_companymode.hpp" />
     <ClInclude Include="..\src\script\api\script_controller.hpp" />
@@ -1145,6 +1163,8 @@
     <ClCompile Include="..\src\script\api\script_cargo.cpp" />
     <ClCompile Include="..\src\script\api\script_cargolist.cpp" />
     <ClCompile Include="..\src\script\api\script_cargomonitor.cpp" />
+    <ClCompile Include="..\src\script\api\script_client.cpp" />
+    <ClCompile Include="..\src\script\api\script_clientlist.cpp" />
     <ClCompile Include="..\src\script\api\script_company.cpp" />
     <ClCompile Include="..\src\script\api\script_companymode.cpp" />
     <ClCompile Include="..\src\script\api\script_controller.cpp" />
@@ -1371,7 +1391,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />
-    <None Include="..\readme.txt" />
+    <None Include="..\README.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="langs_vs141.vcxproj">

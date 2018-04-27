@@ -110,8 +110,6 @@ char *DumpDebugFacilityNames(char *buf, char *last)
 	return buf;
 }
 
-#if !defined(NO_DEBUG_MESSAGES)
-
 /**
  * Internal function for outputting the debug line.
  * @param dbg Debug category.
@@ -208,7 +206,6 @@ void CDECL debug(const char *dbg, const char *format, ...)
 
 	debug_print(dbg, buf);
 }
-#endif /* NO_DEBUG_MESSAGES */
 
 /**
  * Set debugging levels by parsing the text in \a s.

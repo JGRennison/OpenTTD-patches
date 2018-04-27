@@ -183,9 +183,9 @@ public:
 	inline void Push(const Titem &item)
 	{
 		if (this->value != Tinvalid) {
-			Tindex new_item = _pool.Create();
+			Tindex new_item = SmallStack::GetPool().Create();
 			if (new_item != Tmax_size) {
-				PooledSmallStack &pushed = _pool.Get(new_item);
+				PooledSmallStack &pushed = SmallStack::GetPool().Get(new_item);
 				pushed.value = this->value;
 				pushed.next = this->next;
 				pushed.branch_count = 0;
@@ -205,14 +205,14 @@ public:
 		if (this->next == Tmax_size) {
 			this->value = Tinvalid;
 		} else {
-			PooledSmallStack &popped = _pool.Get(this->next);
+			PooledSmallStack &popped = SmallStack::GetPool().Get(this->next);
 			this->value = popped.value;
 			if (popped.branch_count == 0) {
-				_pool.Destroy(this->next);
+				SmallStack::GetPool().Destroy(this->next);
 			} else {
 				--popped.branch_count;
 				if (popped.next != Tmax_size) {
-					++(_pool.Get(popped.next).branch_count);
+					++(SmallStack::GetPool().Get(popped.next).branch_count);
 				}
 			}
 			/* Accessing popped here is no problem as the pool will only set
@@ -245,7 +245,7 @@ public:
 			const SmallStack *in_list = this;
 			do {
 				in_list = static_cast<const SmallStack *>(
-						static_cast<const Item *>(&_pool.Get(in_list->next)));
+						static_cast<const Item *>(&SmallStack::GetPool().Get(in_list->next)));
 				if (in_list->value == item) return true;
 			} while (in_list->next != Tmax_size);
 		}
@@ -253,7 +253,11 @@ public:
 	}
 
 protected:
-	static SmallStackPool _pool;
+	static SmallStackPool &GetPool()
+	{
+		static SmallStackPool pool;
+		return pool;
+	}
 
 	/**
 	 * Create a branch in the pool if necessary.
@@ -261,7 +265,7 @@ protected:
 	inline void Branch()
 	{
 		if (this->next != Tmax_size) {
-			++(_pool.Get(this->next).branch_count);
+			++(SmallStack::GetPool().Get(this->next).branch_count);
 		}
 	}
 };
