@@ -1563,15 +1563,20 @@ void TraceRestrictSlot::PreCleanPool()
 }
 
 /** Remove vehicle ID from all slot occupants */
-void TraceRestrictRemoveVehicleFromAllSlots(VehicleID id)
+void TraceRestrictRemoveVehicleFromAllSlots(VehicleID vehicle_id)
 {
-	auto range = slot_vehicle_index.equal_range(id);
+	const auto range = slot_vehicle_index.equal_range(vehicle_id);
+
 	for (auto it = range.first; it != range.second; ++it) {
-		TraceRestrictSlot *slot = TraceRestrictSlot::Get(it->second);
-		container_unordered_remove(slot->occupants, id);
+		auto slot = TraceRestrictSlot::Get(it->second);
+		container_unordered_remove(slot->occupants, vehicle_id);
 	}
+
+	const bool anything_to_erase = range.first != range.second;
+
 	slot_vehicle_index.erase(range.first, range.second);
-	if (range.first != range.second) InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+
+	if (anything_to_erase) InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 }
 
 /** Replace all instance of a vehicle ID with another, in all slot occupants */
