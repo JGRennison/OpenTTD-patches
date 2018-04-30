@@ -446,6 +446,35 @@ void VehicleCargoList::ShiftCargo(Taction action)
 }
 
 /**
+ * Shifts cargo from the front of the packet list and applies some action to it.
+ * @tparam Taction Action class or function to be used. It should define
+ *                 "bool operator()(CargoPacket *, std::vector<CargoPacket*> &)". If true is returned the
+ *                 cargo packet will be removed from the list. Otherwise it
+ *                 will be kept and the loop will be aborted.
+ *                 The second method parameter can be appended to, to prepend items to the packet list
+ * @param action Action instance to be applied.
+ */
+template<class Taction>
+void VehicleCargoList::ShiftCargoWithFrontInsert(Taction action)
+{
+	std::vector<CargoPacket *> packets_to_front_insert;
+
+	Iterator it(this->packets.begin());
+	while (it != this->packets.end() && action.MaxMove() > 0) {
+		CargoPacket *cp = *it;
+		if (action(cp, packets_to_front_insert)) {
+			it = this->packets.erase(it);
+		} else {
+			break;
+		}
+	}
+
+	for (CargoPacket *cp : packets_to_front_insert) {
+		this->packets.push_front(cp);
+	}
+}
+
+/**
  * Pops cargo from the back of the packet list and applies some action to it.
  * @tparam Taction Action class or function to be used. It should define
  *                 "bool operator()(CargoPacket *)". If true is returned the
@@ -732,7 +761,11 @@ uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList:
 		if (sum > this->action_counts[MTA_TRANSFER] + max_move) {
 			CargoPacket *cp_split = cp->Split(sum - this->action_counts[MTA_TRANSFER] + max_move);
 			sum -= cp_split->Count();
-			this->packets.insert(it, cp_split);
+			it = this->packets.insert(it, cp_split);
+			/* it points to the inserted value, which is just before the previous value of it.
+			 * Increment it so that it points to the same element as it did before the insert.
+			 */
+			++it;
 		}
 		cp->next_station = next_station;
 	}
@@ -818,7 +851,7 @@ uint VehicleCargoList::Truncate(uint max_move)
 uint VehicleCargoList::Reroute(uint max_move, VehicleCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge)
 {
 	max_move = min(this->action_counts[MTA_TRANSFER], max_move);
-	this->ShiftCargo(VehicleCargoReroute(this, dest, max_move, avoid, avoid2, ge));
+	this->ShiftCargoWithFrontInsert(VehicleCargoReroute(this, dest, max_move, avoid, avoid2, ge));
 	return max_move;
 }
 

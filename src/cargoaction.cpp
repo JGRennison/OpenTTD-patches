@@ -215,22 +215,26 @@ bool StationCargoReroute::operator()(CargoPacket *cp)
 /**
  * Reroutes some cargo in a VehicleCargoList.
  * @param cp Packet to be rerouted.
+ * @param front_insert Front insert list.
  * @return True if the packet was completely rerouted, false if part of it was.
  */
-bool VehicleCargoReroute::operator()(CargoPacket *cp)
+bool VehicleCargoReroute::operator()(CargoPacket *cp, std::vector<CargoPacket *> &front_insert)
 {
 	CargoPacket *cp_new = this->Preprocess(cp);
 	if (cp_new == NULL) cp_new = cp;
 	if (cp_new->NextStation() == this->avoid || cp_new->NextStation() == this->avoid2) {
 		cp->SetNextStation(this->ge->GetVia(cp_new->SourceStation(), this->avoid, this->avoid2));
 	}
-	if (this->source != this->destination) {
+	if (unlikely(this->source != this->destination)) {
 		this->source->RemoveFromMeta(cp_new, VehicleCargoList::MTA_TRANSFER, cp_new->Count());
 		this->destination->AddToMeta(cp_new, VehicleCargoList::MTA_TRANSFER);
 	}
 
-	/* Legal, as front pushing doesn't invalidate iterators in std::list. */
-	this->destination->packets.push_front(cp_new);
+	if (likely(this->source == this->destination)) {
+		front_insert.push_back(cp_new);
+	} else {
+		this->destination->packets.push_front(cp_new);
+	}
 	return cp_new == cp;
 }
 

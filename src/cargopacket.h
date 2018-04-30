@@ -304,6 +304,9 @@ protected:
 	void ShiftCargo(Taction action);
 
 	template<class Taction>
+	void ShiftCargoWithFrontInsert(Taction action);
+
+	template<class Taction>
 	void PopCargo(Taction action);
 
 	/**
