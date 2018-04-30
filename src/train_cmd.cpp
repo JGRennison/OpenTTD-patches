@@ -3627,6 +3627,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						v->y_pos = gp.y;
 						UpdateSignalsOnSegment(old_tile, INVALID_DIAGDIR, v->owner);
 						UnreserveBridgeTunnelTile(old_tile);
+						if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(old_tile);
 					}
 				}
 				if (distance == 0) v->tunnel_bridge_signal_num++;
