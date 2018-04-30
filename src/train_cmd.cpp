@@ -2625,43 +2625,29 @@ static void UnreserveBridgeTunnelTile(TileIndex tile)
  * @param v %Train owning the reservation.
  * @param tile Tile with reservation to clear.
  * @param track_dir Track direction to clear.
+ * @param tunbridge_clear_unsignaled_other_end Whether to clear the far end of unsignalled tunnels/bridges.
  */
-static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_dir)
+static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_dir, bool tunbridge_clear_unsignaled_other_end = false)
 {
 	DiagDirection dir = TrackdirToExitdir(track_dir);
 
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-		/* Are we just leaving a tunnel/bridge? */
-		if (GetTunnelBridgeDirection(tile) == ReverseDiagDir(dir)) {
-			TileIndex end = GetOtherTunnelBridgeEnd(tile);
+		TileIndex end = GetOtherTunnelBridgeEnd(tile);
+		UnreserveBridgeTunnelTile(tile);
 
-			bool free = TunnelBridgeIsFree(tile, end, v).Succeeded();
-			if (IsTunnelBridgeWithSignalSimulation(tile)) {
-				UnreserveBridgeTunnelTile(tile);
+		if (IsTunnelBridgeWithSignalSimulation(tile)) {
+			/* Are we just leaving a tunnel/bridge? */
+			if (GetTunnelBridgeDirection(tile) == ReverseDiagDir(dir)) {
+				bool free = TunnelBridgeIsFree(tile, end, v).Succeeded();
 				HandleLastTunnelBridgeSignals(tile, end, dir, free);
-				if (_settings_client.gui.show_track_reservation) {
-					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
-				}
-			} else if (free) {
-				/* Free the reservation only if no other train is on the tiles. */
-				UnreserveBridgeTunnelTile(tile);
-				UnreserveBridgeTunnelTile(end);
+			}
+		} else if (tunbridge_clear_unsignaled_other_end) {
+			UnreserveBridgeTunnelTile(end);
+		}
 
-				if (_settings_client.gui.show_track_reservation) {
-					if (IsBridge(tile)) {
-						MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
-					} else {
-						MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
-						MarkTileDirtyByTile(end, ZOOM_LVL_DRAW_MAP);
-					}
-				}
-			}
-		} else if (GetTunnelBridgeDirection(tile) == dir && IsTunnelBridgeWithSignalSimulation(tile)) {
-			/* cancelling reservation of entry ramp, due to reverse */
-			UnreserveBridgeTunnelTile(tile);
-			if (_settings_client.gui.show_track_reservation) {
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
-			}
+		if (_settings_client.gui.show_track_reservation) {
+			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(end, ZOOM_LVL_DRAW_MAP);
 		}
 	} else if (IsRailStationTile(tile)) {
 		TileIndex new_tile = TileAddByDiagDir(tile, dir);
@@ -2729,6 +2715,11 @@ void FreeTrainTrackReservation(const Train *v, TileIndex origin, Trackdir orig_t
 			} else if (HasSignalOnTrackdir(tile, ReverseTrackdir(td)) && IsOnewaySignal(tile, TrackdirToTrack(td))) {
 				break;
 			}
+		} else if (IsTunnelBridgeWithSignalSimulation(tile)) {
+			TileIndex end = GetOtherTunnelBridgeEnd(tile);
+			bool free = TunnelBridgeIsFree(tile, end, v).Succeeded();
+
+			if (!free && GetTunnelBridgeDirection(tile) == ReverseDiagDir(TrackdirToExitdir(td))) break;
 		}
 
 		/* Don't free first station/bridge/tunnel if we are on it. */
@@ -3488,12 +3479,7 @@ uint Train::Crash(bool flooded)
 		 * Also clear all reserved tracks the train is currently on. */
 		if (!HasBit(this->flags, VRF_TRAIN_STUCK)) FreeTrainTrackReservation(this);
 		for (const Train *v = this; v != NULL; v = v->Next()) {
-			ClearPathReservation(v, v->tile, v->GetVehicleTrackdir());
-			if (IsTileType(v->tile, MP_TUNNELBRIDGE)) {
-				/* ClearPathReservation will not free the wormhole exit
-				 * if the train has just entered the wormhole. */
-				UnreserveBridgeTunnelTile(GetOtherTunnelBridgeEnd(v->tile));
-			}
+			ClearPathReservation(v, v->tile, v->GetVehicleTrackdir(), true);
 		}
 
 		/* we may need to update crossing we were approaching,
@@ -4025,7 +4011,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					}
 
 					/* Clear any track reservation when the last vehicle leaves the tile */
-					if (v->Next() == NULL) ClearPathReservation(v, v->tile, v->GetVehicleTrackdir());
+					if (v->Next() == NULL) ClearPathReservation(v, v->tile, v->GetVehicleTrackdir(), true);
 
 					v->tile = gp.new_tile;
 
@@ -4113,6 +4099,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						v->y_pos = gp.y;
 						UpdateSignalsOnSegment(old_tile, INVALID_DIAGDIR, v->owner);
 						UnreserveBridgeTunnelTile(old_tile);
+						if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(old_tile, ZOOM_LVL_DRAW_MAP);
 					}
 				}
 				if (distance == 0) v->tunnel_bridge_signal_num++;
