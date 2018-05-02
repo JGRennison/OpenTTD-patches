@@ -4582,7 +4582,7 @@ STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :Jump to order {
 STR_ORDER_CONDITIONAL_NUM                                       :Jump to order {COMMA} when {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO                                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_SLOT                                      :Jump to order {COMMA} when {TRSLOT} {STRING}
-STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Jump to order {COMMA} when {RED}{STRING} {PREVIOUS_COLOUR}{STRING}
+STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Jump to order {COMMA} when {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Jump to order {COMMA} when {STRING} {STRING}
 
 STR_INVALID_ORDER                                               :{RED} (Invalid Order)
