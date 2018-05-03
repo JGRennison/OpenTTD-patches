@@ -175,9 +175,7 @@ static void debug_print(const char *dbg, const char *buf)
 	/* do not write desync messages to the console on Windows platforms, as they do
 	 * not seem able to handle text direction change characters in a console without
 	 * crashing, and NetworkTextMessage includes these */
-#if defined(WINCE)
-	if (strcmp(dbg, "desync") != 0) NKDbgPrintfW(OTTD2FS(buffer));
-#elif defined(WIN32) || defined(WIN64)
+#if defined(WIN32) || defined(WIN64)
 	if (strcmp(dbg, "desync") != 0) _fputts(OTTD2FS(buffer, true), stderr);
 #else
 	fputs(buffer, stderr);

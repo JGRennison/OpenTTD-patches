@@ -1035,8 +1035,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					break;
 				}
 				/* With double click, continue */
+				FALLTHROUGH;
 			}
-			FALLTHROUGH;
 
 			case WID_NS_REMOVE: { // Remove GRF
 				if (this->active_sel == NULL || !this->editable) break;
@@ -1091,8 +1091,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					break;
 				}
 				/* With double click, continue */
+				FALLTHROUGH;
 			}
-			FALLTHROUGH;
 
 			case WID_NS_ADD:
 				if (this->avail_sel == NULL || !this->editable || HasBit(this->avail_sel->flags, GCF_INVALID)) break;
