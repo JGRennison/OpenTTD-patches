@@ -1484,6 +1484,18 @@
        </tr>
       </table>
      </li>
+     <li style="color: blue">m2 bits 15..0: tunnel ID (tunnel entrance/exits only)<br>
+      <table style="color: blue">
+       <tr>
+        <td align=left>0000 - FFFE</td>
+        <td>Tunnel ID value</td>
+       </tr>
+       <tr>
+        <td align=left>FFFF</td>
+        <td>Sentinel value: tunnel ID is >= FFFF, it must be looked up in a separate off-map index for tunnels with high IDs</td>
+       </tr>
+      </table>
+     </li>
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of tram</li>
      <li style="color: purple">m3 bits 3..0: bits 3..0 of <a href="#TrackType">track type</a> for railway</li>
      <li>m5 bit 4: pbs reservation state for railway</li>
