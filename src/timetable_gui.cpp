@@ -578,7 +578,7 @@ struct TimetableWindow : Window {
 							have_conditional = true;
 							if (!order->IsWaitTimetabled()) have_non_timetabled_conditional_branch = true;
 						} else {
-							if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION)) {
+							if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
 								have_missing_wait = true;
 							}
 							if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {

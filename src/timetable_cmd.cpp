@@ -547,7 +547,7 @@ static inline bool IsOrderUsableForSeparation(const Order *order)
 		return false;
 	}
 
-	if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION)) {
+	if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
 		// non-station orders are permitted to have 0 wait times
 		return false;
 	}
