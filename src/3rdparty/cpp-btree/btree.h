@@ -147,14 +147,6 @@ struct big_ {
   char dummy[2];
 };
 
-// A compile-time assertion.
-template <bool>
-struct CompileAssert {
-};
-
-#define COMPILE_ASSERT(expr, msg) \
-  typedef CompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1]
-
 // A helper type used to indicate that a key-compare-to functor has been
 // provided. A user can specify a key-compare-to functor by doing:
 //
@@ -166,7 +158,7 @@ struct CompileAssert {
 //  };
 //
 // Note that the return type is an int and not a bool. There is a
-// COMPILE_ASSERT which enforces this return type.
+// static_assert which enforces this return type.
 struct btree_key_compare_to_tag {
 };
 
@@ -1393,20 +1385,20 @@ class btree : public Params::key_compare {
   // key_compare_checker() to instantiate and then figure out the size of the
   // return type of key_compare_checker() at compile time which we then check
   // against the sizeof of big_.
-  COMPILE_ASSERT(
+  static_assert(
       sizeof(key_compare_checker(key_compare_helper()(key_type(), key_type()))) ==
       sizeof(big_),
-      key_comparison_function_must_return_bool);
+      "key_comparison_function_must_return_bool");
 
   // Note: We insist on kTargetValues, which is computed from
   // Params::kTargetNodeSize, must fit the base_fields::field_type.
-  COMPILE_ASSERT(kNodeValues <
+  static_assert(kNodeValues <
                  (1 << (8 * sizeof(typename base_fields::field_type))),
-                 target_node_size_too_large);
+                 "target_node_size_too_large");
 
   // Test the assumption made in setting kNodeValueSpace.
-  COMPILE_ASSERT(sizeof(base_fields) >= 2 * sizeof(void*),
-                 node_space_assumption_incorrect);
+  static_assert(sizeof(base_fields) >= 2 * sizeof(void*),
+                 "node_space_assumption_incorrect");
 };
 
 ////
