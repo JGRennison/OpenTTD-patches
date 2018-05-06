@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.23.0
+## JGR's Patchpack version 0.24.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -202,6 +202,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Cargo type filter in vehicle list windows [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=77147) (added in v0.22.0)  
   This has been modified to support more windows and more cargo options.  
   This is enabled by a setting (on by default).
+
+* Freight train through load (added in v0.24.0)  
+  This is an alternative loading mode for freight trains for the case where the train is longer then the platform.
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
