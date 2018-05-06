@@ -1490,8 +1490,8 @@ make_compiler_cflags() {
 }
 
 test_compile_libbfd() {
-	log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.bfd -x c++ - $1"
-	"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.bfd -x c++ - $1 2> /dev/null << EOL
+	log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.bfd -x c++ - $1"
+	"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.bfd -x c++ - $1 2> /dev/null << EOL
 		#define PACKAGE 1
 		#define PACKAGE_VERSION 1
 		#include <bfd.h>
@@ -1654,8 +1654,8 @@ make_cflags_and_ldflags() {
 		LIBS="$LIBS -lpthread"
 	fi
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.libdl -x c++ - -ldl"
-		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.libdl -x c++ - -ldl 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.libdl -x c++ - -ldl"
+		"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.libdl -x c++ - -ldl 2> /dev/null << EOL
 			#include <dlfcn.h>
 			int main() {
 				Dl_info info;
@@ -1693,8 +1693,8 @@ EOL
 
 		HAVE_GDB_DBG=
 		if [ "$with_self_gdb_debug" = "1" ]; then
-			log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdb -x c++ -"
-			"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdb -x c++ - 2> /dev/null << EOL
+			log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.dbggdb -x c++ -"
+			"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.dbggdb -x c++ - 2> /dev/null << EOL
 				#include <unistd.h>
 				#include <sys/stat.h>
 				#include <fcntl.h>
@@ -1718,8 +1718,8 @@ EOL
 				CFLAGS="$CFLAGS -DWITH_DBG_GDB"
 				HAVE_GDB_DBG=1
 
-				log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdbprctl -x c++ -"
-				"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.dbggdbprctl -x c++ - 2> /dev/null << EOL
+				log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.dbggdbprctl -x c++ -"
+				"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.dbggdbprctl -x c++ - 2> /dev/null << EOL
 					#include <sys/prctl.h>
 					int main() {
 						return prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
@@ -1747,8 +1747,8 @@ EOL
 			fi
 		fi
 
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.sigaction -x c++ - -ldl"
-		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.sigaction -x c++ - -ldl 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.sigaction -x c++ - -ldl"
+		"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.sigaction -x c++ - -ldl 2> /dev/null << EOL
 			#include <signal.h>
 			void *addr;
 			int code;
@@ -1775,8 +1775,8 @@ EOL
 			CFLAGS="$CFLAGS -DWITH_SIGACTION"
 		fi
 
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.ucontext -x c++ - -ldl"
-		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.ucontext -x c++ - -ldl 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.ucontext -x c++ - -ldl"
+		"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.ucontext -x c++ - -ldl 2> /dev/null << EOL
 			#include <ucontext.h>
 			int main() {
 				ucontext_t context;
@@ -1802,8 +1802,8 @@ EOL
 	fi
 
 	if [ "$os" = "MINGW" ]; then
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS -o tmp.config.dbghelp -x c++ -"
-		"$cc_host" $CFLAGS $LDFLAGS -o tmp.config.dbghelp -x c++ - 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.dbghelp -x c++ -"
+		"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.dbghelp -x c++ - 2> /dev/null << EOL
 			#include <windows.h>
 			#include <dbghelp.h>
 			int main() {
@@ -1857,8 +1857,8 @@ EOL
 	fi
 
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
-		log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.demangle -x c++ - -lstdc++"
-		"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL
+		log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.demangle -x c++ - -lstdc++"
+		"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL
 			#include <cxxabi.h>
 			int main() {
 				int status = -1;
