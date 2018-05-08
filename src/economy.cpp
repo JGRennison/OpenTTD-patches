@@ -1768,7 +1768,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			if (v != front && !HasBit(Train::From(v->Previous())->flags, VRF_BEYOND_PLATFORM_END) && length > platform_length_left) {
 				for (Vehicle *skip = v; skip != NULL; skip = skip->Next()) {
 					SetBit(Train::From(skip)->flags, VRF_NOT_YET_IN_PLATFORM);
-					if (skip->cargo.ReservedCount() || skip->cargo.UnloadCount()) {
+					if (skip->cargo.ReservedCount() || skip->cargo.UnloadCount() || (skip->cargo_cap != 0 && front->current_order.IsRefit())) {
 						load_unload_not_yet_in_station = true;
 					}
 				}
@@ -1994,7 +1994,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			}
 		}
 
-		if (pull_through_mode && (front->current_order.IsRefit() || load_unload_not_yet_in_station)) {
+		if (pull_through_mode && load_unload_not_yet_in_station) {
 			finished_loading = false;
 			SetBit(Train::From(front)->flags, VRF_ADVANCE_IN_PLATFORM);
 		}
