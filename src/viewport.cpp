@@ -149,14 +149,6 @@ struct ChildScreenSpriteToDraw {
 	int next;                       ///< next child to draw (-1 at the end)
 };
 
-/** Enumeration of multi-part foundations */
-enum FoundationPart {
-	FOUNDATION_PART_NONE     = 0xFF,  ///< Neither foundation nor groundsprite drawn yet.
-	FOUNDATION_PART_NORMAL   = 0,     ///< First part (normal foundation or no foundation)
-	FOUNDATION_PART_HALFTILE = 1,     ///< Second part (halftile foundation)
-	FOUNDATION_PART_END
-};
-
 /**
  * Mode of "sprite combining"
  * @see StartSpriteCombine
@@ -1015,16 +1007,17 @@ static void AddStringToDraw(int x, int y, StringID string, uint64 params_1, uint
  * @param ti TileInfo Tile that is being drawn
  * @param z_offset Z offset relative to the groundsprite. Only used for the sprite position, not for sprite sorting.
  * @param foundation_part Foundation part the sprite belongs to.
+ * @param sub Sub-section of sprite to draw.
  */
-static void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part)
+void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, const SubSprite *sub)
 {
 	/* FIXME: This is not totally valid for some autorail highlights that extend over the edges of the tile. */
 	if (_vd.foundation[foundation_part] == -1) {
 		/* draw on real ground */
-		AddTileSpriteToDraw(image, pal, ti->x, ti->y, ti->z + z_offset);
+		AddTileSpriteToDraw(image, pal, ti->x, ti->y, ti->z + z_offset, sub);
 	} else {
 		/* draw on top of foundation */
-		AddChildSpriteToFoundation(image, pal, NULL, foundation_part, 0, -z_offset * ZOOM_LVL_BASE);
+		AddChildSpriteToFoundation(image, pal, sub, foundation_part, 0, -z_offset * ZOOM_LVL_BASE);
 	}
 }
 
@@ -1034,7 +1027,7 @@ static void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *t
  * @param ti TileInfo Tile that is being drawn
  * @param pal Palette to apply.
  */
-static void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal)
+void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal)
 {
 	if (!IsValidTile(ti->tile)) return;
 

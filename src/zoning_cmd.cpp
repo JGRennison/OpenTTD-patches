@@ -26,6 +26,7 @@
 #include "tracerestrict.h"
 #include "window_func.h"
 #include "zoning.h"
+#include "viewport_func.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;
@@ -391,11 +392,34 @@ void DrawTileZoning(const TileInfo *ti)
 	}
 
 	if (_zoning.outer != ZEM_NOTHING) {
-		DrawZoningSprites(SPR_SELECT_TILE, TileZoningSpriteEvaluationCached(ti->tile, _local_company, _zoning.outer, false), ti);
+		const SpriteID colour = TileZoningSpriteEvaluationCached(ti->tile, _local_company, _zoning.outer, false);
+
+		if (colour != ZONING_INVALID_SPRITE_ID) {
+			DrawTileSelectionRect(ti, colour);
+		}
 	}
 
 	if (_zoning.inner != ZEM_NOTHING) {
-		DrawZoningSprites(SPR_ZONING_INNER_HIGHLIGHT_BASE, TileZoningSpriteEvaluationCached(ti->tile, _local_company, _zoning.inner, true), ti);
+		const SpriteID colour = TileZoningSpriteEvaluationCached(ti->tile, _local_company, _zoning.inner, true);
+
+		if (colour != ZONING_INVALID_SPRITE_ID) {
+			SpriteID sprite = SPR_ZONING_INNER_HIGHLIGHT_BASE;
+
+			if (IsHalftileSlope(ti->tileh)) {
+				const int INF = 1000;
+				static const SubSprite sub_sprites[4] = {
+					{ -INF    , -INF   , 32 - 33, INF     }, // CORNER_W, clip 33 pixels from right
+					{ -INF    ,  0 + 22, INF    , INF     }, // CORNER_S, clip 22 pixels from top
+					{ -31 + 34, -INF   , INF    , INF     }, // CORNER_E, clip 34 pixels from left
+					{ -INF    , -INF   , INF    , 30 - 8  }  // CORNER_N, clip  8 pixels from bottom
+				};
+
+				DrawSelectionSprite(sprite, colour, ti, 7 + TILE_HEIGHT, FOUNDATION_PART_HALFTILE, &(sub_sprites[GetHalftileSlopeCorner(ti->tileh)]));
+			} else {
+				sprite += SlopeToSpriteOffset(ti->tileh);
+			}
+			DrawSelectionSprite(sprite, colour, ti, 7, FOUNDATION_PART_NORMAL);
+		}
 	}
 }
 

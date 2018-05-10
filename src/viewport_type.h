@@ -149,4 +149,12 @@ enum ViewportScrollTarget {
 	VST_CLIENT,   ///< Single player
 };
 
+/** Enumeration of multi-part foundations */
+enum FoundationPart {
+	FOUNDATION_PART_NONE     = 0xFF,  ///< Neither foundation nor groundsprite drawn yet.
+	FOUNDATION_PART_NORMAL   = 0,     ///< First part (normal foundation or no foundation)
+	FOUNDATION_PART_HALFTILE = 1,     ///< Second part (halftile foundation)
+	FOUNDATION_PART_END
+};
+
 #endif /* VIEWPORT_TYPE_H */
