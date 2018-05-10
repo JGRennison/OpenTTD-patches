@@ -46,6 +46,7 @@
 #include "ai/ai.hpp"
 #include "game/game.hpp"
 #include "zoom_func.h"
+#include "zoning.h"
 
 #include "table/strings.h"
 #include "table/town_land.h"
@@ -3622,7 +3623,8 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 		return;
 	}
 
-	int rating = GetRating(t);
+	const int prev_rating = GetRating(t);
+	int rating = prev_rating;
 	if (add < 0) {
 		if (rating > max) {
 			rating += add;
@@ -3637,6 +3639,9 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 	if (_town_rating_test) {
 		_town_test_ratings[t] = rating;
 	} else {
+		if (_local_company == _current_company && (!HasBit(t->have_ratings, _current_company) || ((prev_rating > 0) != (rating > 0)))) {
+			ZoningTownAuthorityRatingChange();
+		}
 		SetBit(t->have_ratings, _current_company);
 		t->ratings[_current_company] = rating;
 		t->UpdateVirtCoord();

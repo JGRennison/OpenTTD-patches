@@ -62,6 +62,7 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask =
 inline void ZoningMarkDirtyStationCoverageArea(const Waypoint *st) { } // no-op
 
 void ZoningStationWindowOpenClose(const Station *st);
+void ZoningTownAuthorityRatingChange();
 
 void SetZoningMode(bool inner, ZoningEvaluationMode mode);
 

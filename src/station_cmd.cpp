@@ -694,6 +694,9 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 			(*st)->string_id = GenerateStationName(*st, area.tile, name_class);
 
 			if (Company::IsValidID(_current_company)) {
+				if (_local_company == _current_company && !HasBit((*st)->town->have_ratings, _current_company)) {
+					ZoningTownAuthorityRatingChange();
+				}
 				SetBit((*st)->town->have_ratings, _current_company);
 			}
 		}

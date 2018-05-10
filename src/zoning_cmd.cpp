@@ -477,6 +477,16 @@ void ZoningStationWindowOpenClose(const Station *st)
 	if (mask != ZMM_NOTHING) ZoningMarkDirtyStationCoverageArea(st, mask);
 }
 
+void ZoningTownAuthorityRatingChange()
+{
+	ZoningModeMask mask = ZMM_NOTHING;
+	if (_zoning.inner == ZEM_AUTHORITY) mask |= ZMM_INNER;
+	if (_zoning.outer == ZEM_AUTHORITY) mask |= ZMM_OUTER;
+	if (mask != ZMM_NOTHING) {
+		MarkWholeScreenDirty();
+	}
+}
+
 void ClearZoningCaches()
 {
 	_zoning_cache_inner.clear();
