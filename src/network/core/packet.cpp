@@ -42,14 +42,8 @@ Packet::Packet(NetworkSocketHandler *cs)
  */
 Packet::Packet(PacketType type)
 {
-	this->cs                   = NULL;
-	this->next                 = NULL;
-
-	/* Skip the size so we can write that in before sending the packet */
-	this->pos                  = 0;
-	this->size                 = sizeof(PacketSize);
-	this->buffer               = MallocT<byte>(SHRT_MAX);
-	this->buffer[this->size++] = type;
+	this->buffer = MallocT<byte>(SHRT_MAX);
+	this->ResetState(type);
 }
 
 /**
@@ -58,6 +52,17 @@ Packet::Packet(PacketType type)
 Packet::~Packet()
 {
 	free(this->buffer);
+}
+
+void Packet::ResetState(PacketType type)
+{
+	this->cs                   = NULL;
+	this->next                 = NULL;
+
+	/* Skip the size so we can write that in before sending the packet */
+	this->pos                  = 0;
+	this->size                 = sizeof(PacketSize);
+	this->buffer[this->size++] = type;
 }
 
 /**
@@ -181,16 +186,17 @@ void Packet::Send_binary(const char *data, const size_t size)
 /**
  * Is it safe to read from the packet, i.e. didn't we run over the buffer ?
  * @param bytes_to_read The amount of bytes we want to try to read.
+ * @param non_fatal True if a false return value is considered non-fatal, and will not raise an error.
  * @return True if that is safe, otherwise false.
  */
-bool Packet::CanReadFromPacket(uint bytes_to_read)
+bool Packet::CanReadFromPacket(uint bytes_to_read, bool non_fatal)
 {
 	/* Don't allow reading from a quit client/client who send bad data */
 	if (this->cs->HasClientQuit()) return false;
 
 	/* Check if variable is within packet-size */
 	if (this->pos + bytes_to_read > this->size) {
-		this->cs->NetworkSocketHandler::CloseConnection();
+		if (!non_fatal) this->cs->NetworkSocketHandler::CloseConnection();
 		return false;
 	}
 

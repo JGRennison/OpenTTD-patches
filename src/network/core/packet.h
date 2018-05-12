@@ -64,6 +64,8 @@ public:
 	Packet(PacketType type);
 	~Packet();
 
+	void ResetState(PacketType type);
+
 	/* Sending/writing of packets */
 	void PrepareToSend();
 
@@ -79,7 +81,7 @@ public:
 	void ReadRawPacketSize();
 	void PrepareToRead();
 
-	bool   CanReadFromPacket (uint bytes_to_read);
+	bool   CanReadFromPacket (uint bytes_to_read, bool non_fatal = false);
 	bool   Recv_bool  ();
 	uint8  Recv_uint8 ();
 	uint16 Recv_uint16();

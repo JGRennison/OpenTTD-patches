@@ -27,6 +27,7 @@
 #include "../gfx_func.h"
 #include "../error.h"
 #include "../rev.h"
+#include "../fios.h"
 #include "network.h"
 #include "network_base.h"
 #include "network_client.h"
@@ -684,7 +685,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHECK_NEWGRFS(P
 {
 	if (this->status != STATUS_JOIN) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
-	uint grf_count = p->Recv_uint8();
+	uint grf_count = p->Recv_uint32();
+	if (grf_count > MAX_NEWGRFS) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	NetworkRecvStatus ret = NETWORK_RECV_STATUS_OKAY;
 
 	/* Check all GRFs */

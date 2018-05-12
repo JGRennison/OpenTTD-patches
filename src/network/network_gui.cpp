@@ -1179,10 +1179,6 @@ struct NetworkStartServerWindow : public Window {
 			}
 
 			case WID_NSS_GENERATE_GAME: // Start game
-				if (CountSelectedGRFs(_grfconfig_newgame) > NETWORK_MAX_GRF_COUNT) {
-					ShowErrorMessage(STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED, INVALID_STRING_ID, WL_ERROR);
-					break;
-				}
 				_is_network_server = true;
 				if (_ctrl_pressed) {
 					StartNewGameWithoutGUI(GENERATE_NEW_SEED);

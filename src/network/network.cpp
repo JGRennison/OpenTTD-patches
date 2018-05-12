@@ -1124,9 +1124,9 @@ void NetworkShutDown()
  * Checks whether the given version string is compatible with our version.
  * @param other the version string to compare to
  */
-bool IsNetworkCompatibleVersion(const char *other)
+bool IsNetworkCompatibleVersion(const char *other, bool extended)
 {
-	return strncmp(_openttd_revision, other, NETWORK_REVISION_LENGTH - 1) == 0;
+	return strncmp(_openttd_revision, other, (extended ? NETWORK_LONG_REVISION_LENGTH : NETWORK_REVISION_LENGTH) - 1) == 0;
 }
 
 #endif /* ENABLE_NETWORK */

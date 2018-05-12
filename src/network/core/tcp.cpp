@@ -184,11 +184,6 @@ Packet *NetworkTCPSocketHandler::ReceivePacket()
 
 		/* Read the packet size from the received packet */
 		p->ReadRawPacketSize();
-
-		if (p->size > SEND_MTU) {
-			this->CloseConnection();
-			return NULL;
-		}
 	}
 
 	/* Read rest of packet */

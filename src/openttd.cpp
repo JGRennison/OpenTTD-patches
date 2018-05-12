@@ -895,13 +895,6 @@ int openttd_main(int argc, char *argv[])
 	DriverFactoryBase::SelectDriver(musicdriver, Driver::DT_MUSIC);
 	free(musicdriver);
 
-	// Check if not too much GRFs are loaded for network game
-	if (dedicated && CountSelectedGRFs(_grfconfig) > NETWORK_MAX_GRF_COUNT) {
-		DEBUG(net, 0, "Too many GRF loaded. Max %d are allowed.\nExiting ...", NETWORK_MAX_GRF_COUNT);
-		ShutdownGame();
-		goto exit_normal;
-	}
-
 	/* Take our initial lock on whatever we might want to do! */
 	_modal_progress_paint_mutex->BeginCritical();
 	_modal_progress_work_mutex->BeginCritical();
