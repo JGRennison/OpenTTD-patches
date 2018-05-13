@@ -129,7 +129,6 @@ class TemplateCreateWindow : public Window {
 private:
 	Scrollbar *hscroll;
 	Scrollbar *vscroll;
-	int line_height;
 	Train* virtual_train;
 	bool *create_window_open;         /// used to notify main window of progress (dummy way of disabling 'delete' while editing a template)
 	VehicleID sel;
@@ -138,9 +137,8 @@ private:
 	uint32 template_index;
 
 public:
-	TemplateCreateWindow(WindowDesc* _wdesc, TemplateVehicle *to_edit, bool *window_open, int step_h) : Window(_wdesc)
+	TemplateCreateWindow(WindowDesc* _wdesc, TemplateVehicle *to_edit, bool *window_open) : Window(_wdesc)
 	{
-		this->line_height = step_h;
 		this->CreateNestedTree(_wdesc != NULL);
 		this->hscroll = this->GetScrollbar(TCW_SCROLLBAR_H_NEW_TMPL);
 		this->vscroll = this->GetScrollbar(TCW_SCROLLBAR_V_NEW_TMPL);
@@ -293,7 +291,7 @@ public:
 		switch(widget) {
 			case TCW_NEW_TMPL_PANEL: {
 				if (this->virtual_train) {
-					DrawTrainImage(virtual_train, r.left+TRAIN_FRONT_SPACE, r.right - 25, r.top + 2, this->sel, EIT_PURCHASE, this->hscroll->GetPosition(), this->vehicle_over);
+					DrawTrainImage(virtual_train, r.left + TRAIN_FRONT_SPACE, r.right - 25, r.top + 2, this->sel, EIT_IN_DEPOT, this->hscroll->GetPosition(), this->vehicle_over);
 					SetDParam(0, CeilDiv(virtual_train->gcache.cached_total_length * 10, TILE_SIZE));
 					SetDParam(1, 1);
 					DrawString(r.left, r.right, r.top, STR_TINY_BLACK_DECIMAL, TC_BLACK, SA_RIGHT);
@@ -327,7 +325,7 @@ public:
 							SetDParam(0, i);
 							SetDParam(1, cargo_caps[i]);
 							DrawString(8, r.right, y, STR_TMPL_CARGO_SUMMARY, TC_LIGHT_BLUE, SA_LEFT);
-							y += this->line_height / 3;
+							y += FONT_HEIGHT_NORMAL;
 						}
 					}
 
@@ -453,7 +451,7 @@ public:
 
 			for (CargoID i = 0; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
-					height += this->line_height / 3;
+					height += FONT_HEIGHT_NORMAL;
 				}
 			}
 		}
@@ -555,10 +553,10 @@ public:
 	}
 };
 
-void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open, int step_h)
+void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open)
 {
 	if (BringWindowToFrontById(WC_CREATE_TEMPLATE, VEH_TRAIN) != NULL) return;
-	new TemplateCreateWindow(&_template_create_window_desc, to_edit, create_window_open, step_h);
+	new TemplateCreateWindow(&_template_create_window_desc, to_edit, create_window_open);
 }
 
 void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)

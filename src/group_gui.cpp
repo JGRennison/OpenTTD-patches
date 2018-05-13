@@ -952,7 +952,7 @@ public:
 				switch (index) {
 					case ADI_TEMPLATE_REPLACE: // TemplateReplace Window
 						if (vli.vtype == VEH_TRAIN) {
-							ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
+							ShowTemplateReplaceWindow(this->unitnumber_digits);
 						}
 						break;
 					case ADI_REPLACE: // Replace window

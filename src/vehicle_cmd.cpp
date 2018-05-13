@@ -860,9 +860,8 @@ inline void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicl
 	tmp->weight = gcache->cached_weight;
 	tmp->max_te = gcache->cached_max_te / 1000;
 
-	tmp->spritenum = virt->spritenum;
-	virt->GetImage(DIR_W, EIT_PURCHASE, &tmp->sprite_seq);
-	tmp->image_width = virt->GetDisplayImageWidth();
+	virt->GetImage(DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
+	tmp->image_dimensions.SetFromTrain(virt);
 }
 
 /**

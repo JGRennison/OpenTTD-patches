@@ -44,7 +44,7 @@ bool ChainContainsVehicle(Train*, Train*);
 Train* ChainContainsEngine(EngineID, Train*);
 Train* DepotContainsEngine(TileIndex, EngineID, Train*);
 
-int NumTrainsNeedTemplateReplacement(GroupID, TemplateVehicle*);
+int NumTrainsNeedTemplateReplacement(GroupID, const TemplateVehicle*);
 
 CommandCost TestBuyAllTemplateVehiclesInChain(TemplateVehicle *tv, TileIndex tile);
 
@@ -57,7 +57,7 @@ void TransferCargoForTrain(Train*, Train*);
 
 void NeutralizeStatus(Train *t);
 
-bool TrainMatchesTemplate(const Train *t, TemplateVehicle *tv);
-bool TrainMatchesTemplateRefit(const Train *t, TemplateVehicle *tv);
+bool TrainMatchesTemplate(const Train *t, const TemplateVehicle *tv);
+bool TrainMatchesTemplateRefit(const Train *t, const TemplateVehicle *tv);
 
 #endif

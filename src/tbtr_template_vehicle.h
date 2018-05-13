@@ -29,6 +29,8 @@
 
 #include "sortlist_type.h"
 
+#include "zoom_func.h"
+
 #define FOR_ALL_TEMPLATES_FROM(var, start) FOR_ALL_ITEMS_FROM(TemplateVehicle, template_index, var, start)
 #define FOR_ALL_TEMPLATES(var) FOR_ALL_TEMPLATES_FROM(var, 0)
 
@@ -51,6 +53,29 @@ extern TemplatePool _template_pool;
 /// listing/sorting templates
 typedef GUIList<const TemplateVehicle*> GUITemplateList;
 
+struct TemplateVehicleImageDimensions {
+	int reference_width;
+	int vehicle_pitch;
+	int cached_veh_length;
+
+	void SetFromTrain(const Train *t);
+
+	int GetDisplayImageWidth() const
+	{
+		return ScaleGUITrad(this->cached_veh_length * this->reference_width / VEHICLE_LENGTH);
+	}
+
+	int GetOffsetX() const
+	{
+		return ScaleGUITrad(this->reference_width) / 2;
+	}
+
+	int GetOffsetY() const
+	{
+		return ScaleGUITrad(this->vehicle_pitch);
+	}
+};
+
 struct TemplateVehicle : TemplatePool::PoolItem<&_template_pool>, BaseVehicle {
 private:
 	TemplateVehicle *next;                      ///< pointer to the next vehicle in the chain
@@ -69,8 +94,7 @@ public:
 	// Things derived from a virtual train
 	TemplateVehicle *other_multiheaded_part; ///< Multiheaded Engine support
 	Money value;                        ///< Value of the vehicle
-	Owner owner;
-	OwnerByte owner_b;
+	OwnerByte owner;
 
 	EngineID engine_type;               ///< The type of engine used for this vehicle.
 	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
@@ -89,9 +113,8 @@ public:
 	uint32 weight;
 	uint32 max_te;
 
-	byte spritenum;
-	VehicleSpriteSeq sprite_seq;        ///< Vehicle appearance.
-	uint32 image_width;
+	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.
+	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions
 
 	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, byte B = 0, Owner = _local_company);
 	TemplateVehicle(EngineID, RailVehicleInfo*);
