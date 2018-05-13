@@ -309,17 +309,26 @@ protected:
 	template<class Taction>
 	void PopCargo(Taction action);
 
+public:
+
 	/**
 	 * Assert that the designation counts add up.
 	 */
 	inline void AssertCountConsistency() const
 	{
-		assert(this->action_counts[MTA_KEEP] +
+		assert_msg(this->action_counts[MTA_KEEP] +
 				this->action_counts[MTA_DELIVER] +
 				this->action_counts[MTA_TRANSFER] +
-				this->action_counts[MTA_LOAD] == this->count);
+				this->action_counts[MTA_LOAD] == this->count,
+				"%u + %u + %u + %u != %u",
+				this->action_counts[MTA_KEEP],
+				this->action_counts[MTA_DELIVER],
+				this->action_counts[MTA_TRANSFER],
+				this->action_counts[MTA_LOAD],
+				this->count);
 	}
 
+protected:
 	void AddToCache(const CargoPacket *cp);
 	void RemoveFromCache(const CargoPacket *cp, uint count);
 

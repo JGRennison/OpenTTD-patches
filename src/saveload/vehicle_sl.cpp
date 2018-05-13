@@ -20,6 +20,8 @@
 #include "../company_base.h"
 #include "../company_func.h"
 #include "../disaster_vehicle.h"
+#include "../scope_info.h"
+#include "../string_func.h"
 
 #include "saveload.h"
 
@@ -248,8 +250,8 @@ extern byte _age_cargo_skip_counter; // From misc_sl.cpp
 /** Called after load to update coordinates */
 void AfterLoadVehicles(bool part_of_load)
 {
-	Vehicle *v;
-
+	Vehicle *v = nullptr;
+	SCOPE_INFO_FMT([&v], "AfterLoadVehicles: %s", scope_dumper().VehicleInfo(v));
 	FOR_ALL_VEHICLES(v) {
 		/* Reinstate the previous pointer */
 		if (v->Next() != NULL) v->Next()->previous = v;
@@ -326,6 +328,7 @@ void AfterLoadVehicles(bool part_of_load)
 			/* The road vehicle subtype was converted to a flag. */
 			RoadVehicle *rv;
 			FOR_ALL_ROADVEHICLES(rv) {
+				v = rv;
 				if (rv->subtype == 0) {
 					/* The road vehicle is at the front. */
 					rv->SetFrontEngine();
@@ -369,6 +372,7 @@ void AfterLoadVehicles(bool part_of_load)
 			}
 		}
 	}
+	v = nullptr;
 
 	CheckValidVehicles();
 
@@ -469,6 +473,7 @@ void AfterLoadVehicles(bool part_of_load)
 		v->coord.left = INVALID_COORD;
 		v->UpdatePosition();
 		v->UpdateViewport(false);
+		v->cargo.AssertCountConsistency();
 	}
 }
 
