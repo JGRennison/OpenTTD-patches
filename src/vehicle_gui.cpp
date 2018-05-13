@@ -1678,7 +1678,7 @@ public:
 						break;
 					case ADI_TEMPLATE_REPLACE:
 						if (vli.vtype == VEH_TRAIN) {
-							ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
+							ShowTemplateReplaceWindow(this->unitnumber_digits);
 						}
 						break;
 					case ADI_SERVICE: // Send for servicing

@@ -51,6 +51,19 @@ TemplateReplacementPool _template_replacement_pool("TemplateReplacementPool");
 INSTANTIATE_POOL_METHODS(TemplateReplacement)
 
 
+void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
+{
+	this->reference_width = TRAININFO_DEFAULT_VEHICLE_WIDTH;
+	this->vehicle_pitch = 0;
+	this->cached_veh_length = t->gcache.cached_veh_length;
+
+	const Engine *e = t->GetEngine();
+	if (e->GetGRF() != NULL && is_custom_sprite(e->u.rail.image_index)) {
+		this->reference_width = e->GetGRF()->traininfo_vehicle_width;
+		this->vehicle_pitch = e->GetGRF()->traininfo_vehicle_pitch;
+	}
+}
+
 TemplateVehicle::TemplateVehicle(VehicleType ty, EngineID eid, byte subtypeflag, Owner current_owner)
 {
 	this->type = ty;
@@ -62,7 +75,6 @@ TemplateVehicle::TemplateVehicle(VehicleType ty, EngineID eid, byte subtypeflag,
 	this->first = this;
 	this->next = 0x0;
 	this->previous = 0x0;
-	this->owner_b = _current_company;
 
 	this->sprite_seq.Set(SPR_IMG_QUERY);
 

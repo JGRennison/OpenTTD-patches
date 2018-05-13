@@ -4223,8 +4223,6 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID 
 		train_part->SetVirtual();
 	}
 
-	v->UpdateViewport(true, false);
-
 	v->ConsistChanged(CCF_ARRANGE);
 
 	CheckConsistencyOfArticulatedVehicle(v);
