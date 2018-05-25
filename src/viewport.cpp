@@ -2784,7 +2784,7 @@ void UpdateViewportPosition(Window *w)
 
 		ClampViewportToMap(vp, w->viewport->scrollpos_x, w->viewport->scrollpos_y);
 
-		if (_scrolling_viewport == w && _settings_client.gui.show_scrolling_viewport_on_map) {
+		if (_scrolling_viewport == w && _settings_client.gui.show_scrolling_viewport_on_map && vp->zoom < ZOOM_LVL_DRAW_MAP) {
 			const int gap = ScaleByZoom(1, ZOOM_LVL_MAX);
 
 			int lr_low = vp->virtual_left;
