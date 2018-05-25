@@ -225,6 +225,8 @@ TemplateVehicle* GetTemplateVehicleByGroupID(GroupID gid) {
  */
 bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle *tv, RailType type)
 {
+	if (type == INVALID_RAILTYPE) return true;
+
 	/* For standard rail engines, allow only those */
 	if (type == RAILTYPE_BEGIN || type == RAILTYPE_RAIL) {
 		while (tv) {

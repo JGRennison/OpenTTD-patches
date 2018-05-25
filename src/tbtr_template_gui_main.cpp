@@ -218,21 +218,7 @@ public:
 		// From BaseVehicleListWindow
 		this->unitnumber_digits = unitnumber_digits;
 
-		/* Find the most used vehicle type, which is usually
-		 * better than 'just' the first/previous vehicle type. */
-		uint type_count[RAILTYPE_END];
-		memset(type_count, 0, sizeof(type_count));
-
-		const Engine *e;
-		FOR_ALL_ENGINES_OF_TYPE(e, VEH_TRAIN) {
-			if (e->u.rail.railveh_type == RAILVEH_WAGON) continue;
-			type_count[e->u.rail.railtype] += GetGroupNumEngines(_local_company, ALL_GROUP, e->index);
-		}
-
-		this->sel_railtype = RAILTYPE_BEGIN;
-		for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
-			if (type_count[this->sel_railtype] < type_count[rt]) this->sel_railtype = rt;
-		}
+		this->sel_railtype = INVALID_RAILTYPE;
 
 		this->details_height = 10 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 
@@ -277,7 +263,7 @@ public:
 				size->height = 4 * resize->height;
 				break;
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: {
-				Dimension d = {0, 0};
+				Dimension d = GetStringBoundingBox(STR_REPLACE_ALL_RAILTYPE);
 				for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 					const RailtypeInfo *rti = GetRailTypeInfo(rt);
 					// Skip rail type if it has no label
@@ -333,7 +319,7 @@ public:
 		this->GetWidget<NWidgetCore>(TRW_WIDGET_TRAIN_FLUFF_RIGHT)->colour = _company_colours[_local_company];
 
 		/* Show the selected railtype in the pulldown menu */
-		this->GetWidget<NWidgetCore>(TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN)->widget_data = GetRailTypeInfo(sel_railtype)->strings.replace_text;
+		this->GetWidget<NWidgetCore>(TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN)->widget_data = (this->sel_railtype == INVALID_RAILTYPE) ? STR_REPLACE_ALL_RAILTYPE : GetRailTypeInfo(this->sel_railtype)->strings.replace_text;
 
 		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.Length())) {
 			this->vscroll[2]->SetCount(24);
@@ -436,7 +422,7 @@ public:
 				}
 				break;
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: // Railtype selection dropdown menu
-				ShowDropDownList(this, GetRailTypeDropDownList(true), sel_railtype, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN);
+				ShowDropDownList(this, GetRailTypeDropDownList(true, true), this->sel_railtype, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN);
 				break;
 			case TRW_WIDGET_TOP_MATRIX: {
 				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (WD_MATRIX_TOP + FONT_HEIGHT_NORMAL+ WD_MATRIX_BOTTOM) ) + this->vscroll[0]->GetPosition();
