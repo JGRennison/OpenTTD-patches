@@ -2822,9 +2822,11 @@ static void MarkViewportDirty(const ViewPort * const vp, int left, int top, int 
 
 	right -= vp->virtual_left;
 	if (right <= 0) return;
+	right = min(right, vp->virtual_width);
 
 	bottom -= vp->virtual_top;
 	if (bottom <= 0) return;
+	bottom = min(bottom, vp->virtual_height);
 
 	left = max(0, left - vp->virtual_left);
 
