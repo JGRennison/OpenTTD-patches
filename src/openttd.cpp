@@ -724,11 +724,6 @@ int openttd_main(int argc, char *argv[])
 		goto exit_noshutdown;
 	}
 
-#if defined(WINCE) && defined(_DEBUG)
-	/* Switch on debug lvl 4 for WinCE if Debug release, as you can't give params, and you most likely do want this information */
-	SetDebugString("4");
-#endif
-
 	DeterminePaths(argv[0]);
 	TarScanner::DoScan(TarScanner::BASESET);
 
@@ -1438,11 +1433,6 @@ void StateGameLoop()
 static void DoAutosave()
 {
 	char buf[MAX_PATH];
-
-#if defined(PSP)
-	/* Autosaving in networking is too time expensive for the PSP */
-	if (_networking) return;
-#endif /* PSP */
 
 	if (_settings_client.gui.keep_all_autosave) {
 		GenerateDefaultSaveName(buf, lastof(buf));

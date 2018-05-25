@@ -2442,7 +2442,7 @@ static EventState HandleViewportScroll()
 	 * outside of the window and should not left-mouse scroll anymore. */
 	if (_last_scroll_window == NULL) _last_scroll_window = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
 
-	if (_last_scroll_window == NULL || !(_right_button_down || scrollwheel_scrolling || (_settings_client.gui.left_mouse_btn_scrolling && _left_button_down))) {
+	if (_last_scroll_window == NULL || !((_settings_client.gui.scroll_mode != VSM_MAP_LMB && _right_button_down) || scrollwheel_scrolling || (_settings_client.gui.scroll_mode == VSM_MAP_LMB && _left_button_down))) {
 		_cursor.fix_at = false;
 		_scrolling_viewport = false;
 		_last_scroll_window = NULL;
@@ -2457,7 +2457,7 @@ static EventState HandleViewportScroll()
 	}
 
 	Point delta;
-	if (_settings_client.gui.reverse_scroll || (_settings_client.gui.left_mouse_btn_scrolling && _left_button_down)) {
+	if (_settings_client.gui.scroll_mode != VSM_VIEWPORT_RMB_FIXED) {
 		delta.x = -_cursor.delta.x;
 		delta.y = -_cursor.delta.y;
 	} else {
@@ -2858,8 +2858,8 @@ static void MouseLoop(MouseClick click, int mousewheel)
 	if (vp != NULL && (_game_mode == GM_MENU || HasModalProgress())) return;
 
 	if (mousewheel != 0) {
-		/* Send mousewheel event to window */
-		w->OnMouseWheel(mousewheel);
+		/* Send mousewheel event to window, unless we're scrolling a viewport or the map */
+		if (!scrollwheel_scrolling || (vp == NULL && w->window_class != WC_SMALLMAP)) w->OnMouseWheel(mousewheel);
 
 		/* Dispatch a MouseWheelEvent for widgets if it is not a viewport */
 		if (vp == NULL) DispatchMouseWheelEvent(w, w->nested_root->GetWidgetFromPos(x - w->left, y - w->top), mousewheel);
@@ -2872,7 +2872,7 @@ static void MouseLoop(MouseClick click, int mousewheel)
 			case MC_LEFT:
 				if (HandleViewportClicked(vp, x, y)) return;
 				if (!(w->flags & WF_DISABLE_VP_SCROLL) &&
-						_settings_client.gui.left_mouse_btn_scrolling) {
+						_settings_client.gui.scroll_mode == VSM_MAP_LMB) {
 					_scrolling_viewport = true;
 					_cursor.fix_at = false;
 					return;
@@ -2880,9 +2880,11 @@ static void MouseLoop(MouseClick click, int mousewheel)
 				break;
 
 			case MC_RIGHT:
-				if (!(w->flags & WF_DISABLE_VP_SCROLL)) {
+				if (!(w->flags & WF_DISABLE_VP_SCROLL) &&
+						_settings_client.gui.scroll_mode != VSM_MAP_LMB) {
 					_scrolling_viewport = true;
-					_cursor.fix_at = true;
+					_cursor.fix_at = (_settings_client.gui.scroll_mode == VSM_VIEWPORT_RMB_FIXED ||
+							_settings_client.gui.scroll_mode == VSM_MAP_RMB_FIXED);
 
 					/* clear 2D scrolling caches before we start a 2D scroll */
 					_cursor.h_wheel = 0;
