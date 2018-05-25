@@ -429,6 +429,7 @@ video/win32_v.h
 window_func.h
 window_gui.h
 window_type.h
+sound/xaudio2_s.h
 zoom_func.h
 zoom_type.h
 zoning.h
@@ -1190,6 +1191,7 @@ sound/null_s.cpp
 #end
 #if WIN32
 	sound/win32_s.cpp
+	sound/xaudio2_s.cpp
 #end
 #end
 

@@ -318,9 +318,7 @@ void Blitter_32bppAnim::DrawColourMappingRect(void *dst, int width, int height, 
 	}
 
 	Colour *udst = (Colour *)dst;
-	uint16 *anim;
-
-	anim = this->anim_buf + this->ScreenToAnimOffset((uint32 *)dst);
+	uint16 *anim = this->anim_buf + this->ScreenToAnimOffset((uint32 *)dst);
 
 	if (pal == PALETTE_TO_TRANSPARENT) {
 		do {
@@ -432,9 +430,7 @@ void Blitter_32bppAnim::DrawRect(void *video, int width, int height, uint8 colou
 	}
 
 	Colour colour32 = LookupColourInPalette(colour);
-	uint16 *anim_line;
-
-	anim_line = this->ScreenToAnimOffset((uint32 *)video) + this->anim_buf;
+	uint16 *anim_line = this->ScreenToAnimOffset((uint32 *)video) + this->anim_buf;
 
 	do {
 		Colour *dst = (Colour *)video;
@@ -616,8 +612,8 @@ void Blitter_32bppAnim::PostResize()
 	if (_screen.width != this->anim_buf_width || _screen.height != this->anim_buf_height) {
 		/* The size of the screen changed; we can assume we can wipe all data from our buffer */
 		free(this->anim_alloc);
-		this->anim_buf_height = _screen.height;
 		this->anim_buf_width = _screen.width;
+		this->anim_buf_height = _screen.height;
 		this->anim_buf_pitch = (_screen.width + 7) & ~7;
 		this->anim_alloc = CallocT<uint16>(this->anim_buf_pitch * this->anim_buf_height + 8);
 

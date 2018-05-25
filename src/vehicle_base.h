@@ -381,9 +381,8 @@ public:
 	/**
 	 * Updates the x and y offsets and the size of the sprite used
 	 * for this vehicle.
-	 * @param direction the direction the vehicle is facing
 	 */
-	virtual void UpdateDeltaXY(Direction direction) {}
+	virtual void UpdateDeltaXY() {}
 
 	/**
 	 * Determines the effective direction-specific vehicle movement speed.
@@ -1233,7 +1232,7 @@ struct SpecializedVehicle : public Vehicle {
 
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
-		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);
+		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
 		if (this->cur_image_valid_dir != this->direction) {
 			_sprite_group_resolve_check_veh_check = true;
 			_sprite_group_resolve_check_veh_type = EXPECTED_TYPE;

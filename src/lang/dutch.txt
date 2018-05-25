@@ -476,7 +476,7 @@ STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Ingezoomd scree
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Screenshot met standaard zoom
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Screenshot van hele kaart
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Over 'OpenTTD'
-STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Sprite uitlijner
+STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Sprite-uitlijner
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Schakel selectiekaders
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :Schakel kleuren van braakliggende grond aan/uit
 ############ range ends here
@@ -1144,7 +1144,7 @@ STR_CONFIG_SETTING_RUNNING_COSTS                                :Onderhoudskoste
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Het niveau van onderhoud en bedrijfskosten van voertuigen en infrastuctuur
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Bouwsnelheid: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Beperk de hoeveelheid bouwactiviteiten voor computerspeler
-STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS                           :Voertuig storingen: {STRING}
+STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS                           :Voertuigstoringen: {STRING}
 STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS_HELPTEXT                  :Controle hoe vaak onvoldoende onderhouden voertuigen kapot kunnen gaan
 STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER                           :Subsidie indicator: {STRING}
 STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Instellen hoeveel wordt betaald voor gesubsidieerde verbindingen
