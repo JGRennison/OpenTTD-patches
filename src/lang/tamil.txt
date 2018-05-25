@@ -659,10 +659,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_1_USER_DEFINED                  :{BLACK}'பய�
 STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}'பயனரால் மாற்றியமைக்கப்பட்ட 2' பிரோகிராமினைத் தேர்ந்தெடுக்கவும்
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}இசைத் த்டத்தினைத் தேர்ந்தெடுக்கும் திரையினைக் காட்டு
 
-STR_ERROR_NO_SONGS                                              :{WHITE}இசைத்தடமே இல்லாதப் பட்டியல் தேர்ந்தெடுக்கப்பட்டுள்ளது. எந்த பாட்டும் ஒலிக்காது
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}இசை பிரோகிராம் தேர்ந்தெடுத்தல்
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}இசைத்தடம் வரிசை
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}பிரோகிராம் - '{STRING}'
@@ -1231,7 +1228,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :சிறுப
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :பச்சை
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :கரும் பச்சை
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :ஊதா
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :திருப்பப்பட்ட பக்கமுருட்டி திசை : {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :பார்படத்தின் இலகுவான பக்கமுருட்டல்: {STRING}
 STR_CONFIG_SETTING_LIVERIES                                     :நிறுவன livery களைக் காட்டு: {STRING}
 STR_CONFIG_SETTING_LIVERIES_NONE                                :ஒன்றுமில்லை
@@ -2292,29 +2288,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :வயல்வ
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :பனி-படர்ந்த நிலம்
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :பாலைவனம்
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} தடம்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} தடம் கட்ட சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} தடம் முன் சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} தடம் வெளியேறு சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} தடம் இணைந்த சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} தடம் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} தடம் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} தடம் கட்டம் மற்றும் முன் சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} தடம் கட்டம் மற்றும் வெளியேறு சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} தடம் கட்டம் மற்றும் இணைந்த சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} தடம் கட்டம் மற்றும் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} தடம் கட்டம் மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} தடம் முன் மற்றும் வெளியேறு சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} தடம் முன் மற்றும் இணைந்த சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} தடம் முன் மற்றும் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} தடம் முன் மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} தடம் வெளியேறு மற்றும் இணைந்த சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} தடம் வெளியேறு மற்றும் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} தடம் வெளியேறு மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} தடம் இணைந்த மற்றும் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} தடம் இணைந்த மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} தடம் பாதை மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} இரயில் பணிமனை
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :இரயில்வே தடம்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :இரயில்வே தடம் கட்ட சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :இரயில்வே தடம் முன் சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :இரயில்வே தடம் வெளியேறு சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :இரயில்வே தடம் இணைந்த சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :இரயில்வே தடம் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :இரயில்வே தடம் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :இரயில்வே தடம் கட்டம் மற்றும் முன் சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :இரயில்வே தடம் கட்டம் மற்றும் வெளியேறு சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :இரயில்வே தடம் கட்டம் மற்றும் இணைந்த சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :இரயில்வே தடம் கட்டம் மற்றும் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :இரயில்வே தடம் கட்டம் மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :இரயில்வே தடம் முன் மற்றும் வெளியேறு சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :இரயில்வே தடம் முன் மற்றும் இணைந்த சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :இரயில்வே தடம் முன் மற்றும் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :இரயில்வே தடம் முன் மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :இரயில்வே தடம் வெளியேறு மற்றும் இணைந்த சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :இரயில்வே தடம் வெளியேறு மற்றும் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :இரயில்வே தடம் வெளியேறு மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :இரயில்வே தடம் இணைந்த மற்றும் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :இரயில்வே தடம் இணைந்த மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :இரயில்வே தடம் பாதை மற்றும் ஒருவழிப் பாதை சிக்னல்களுடன்
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :இரயில்வே இரயில் பணிமனை
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :சாலை
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :தெரு விளக்குகளுடன் சாலை
@@ -2378,7 +2374,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :நிறுவ
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD-ஐ பற்றி
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}அசல் உரிமைகள் {COPYRIGHT} 1995 கிறிஸ் சாயர், எல்லா உரிமைகளும் பதிவுசெய்யப்பட்டது
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD பதிப்பு {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD குழுமம்
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD குழுமம்
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ஆட்டத்தை பதிவு செய்
@@ -2747,8 +2743,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}ஏற�
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}ஏற்றுக்கொள்ளப்படும் சரக்குகளின் பட்டியலினைக் காட்டு
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}ஏற்றுக்கொள்பவை: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}இந்த நிலையம் இந்த நகரின் முழு போக்குவரத்து உரிமைகளையும் பெற்றுள்ளது.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} இந்த நகரின் மொத்த போக்குவரத்து உரிமைகளையும் வாங்கியது.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}இந்த நிலையம் இந்த நகரின் முழு போக்குவரத்து உரிமைகளையும் பெற்றுள்ளது.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} இந்த நகரின் மொத்த போக்குவரத்து உரிமைகளையும் வாங்கியது.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}தரங்கள்
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}நிலைய தரத்தினைக் காட்டவும்
@@ -2912,9 +2908,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}தே�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}தேவைப்படுகிறது: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}பதனிப்பட காத்திருக்கும் சரக்கு:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}தயாரிப்பு: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}தயாரிக்கிறது: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -2976,6 +2971,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :பகிர்
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :அனைத்து வாகனங்களையும் நீக்கு
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}குழுவின் பெயரினை மாற்றவும்
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :புது இரயில் வாகனங்கள்
@@ -3119,10 +3115,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :மேக்ல
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}செலவு: {CURRENCY_LONG} எடை: {WEIGHT_SHORT}{}வேகம்: {VELOCITY}  திறன்: {POWER}{}ஓட்டுவதற்கான செலவு: {CURRENCY_LONG}/வரு{}கொள்ளளவு: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}செலவு: {CURRENCY_LONG} எடை: {WEIGHT_SHORT}{}வேகம்: {VELOCITY} திறன்: {POWER}  அதி. T.E.: {6:FORCE}{}ஓட்டுவதற்கான செலவு: {4:CURRENCY_LONG}/வரு{}கொள்ளளவு: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY}{}கொள்ளளவு: {CARGO_LONG}, {CARGO_LONG}{}ஓட்டும் செலவு: {CURRENCY_LONG}/ஆண்டிற்கு
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY}{}கொள்ளளவு: {CARGO_LONG}{}ஓட்டும் செலவு: {CURRENCY_LONG}/ஆண்டிற்கு
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY} எல்லை: {COMMA} கட்டங்கள்{}கொள்ளளவு: {CARGO_LONG}, {CARGO_LONG}{}ஓட்டும் செலவு: {CURRENCY_LONG}/ஆண்டிற்கு
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY} வரையறை: {COMMA} கட்டங்கள்{}கொள்ளளவு: {CARGO_LONG}{}இயக்குவதற்கான செலவு: {CURRENCY_LONG}/வரு
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}செலவு: {CURRENCY_LONG} அதி. வேகம்: {VELOCITY}{}கொள்ளளவு: {CARGO_LONG}{}ஓட்டும் செலவு: {CURRENCY_LONG}/ஆண்டிற்கு
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}மாற்று {STRING} - {STRING}
@@ -3142,7 +3135,6 @@ STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}எந�
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} காலாவதியான பிறகு
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}வாகனங்களை மாற்றுவதை நிறுத்தவும்
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}மாற்றல்: {ORANGE}{STRING}
 STR_REPLACE_ENGINES                                             :பொறிகள்
 STR_REPLACE_WAGONS                                              :வாகனங்கள்
 
@@ -3230,7 +3222,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} வர�
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} வருடம்{P "" கள்} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}அதி. வேகம்: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}அதி. வேகம்: {LTBLUE}{VELOCITY} {BLACK}வரையறை: {LTBLUE}{COMMA} கட்டங்கள்
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}எடை: {LTBLUE}{WEIGHT_SHORT} {BLACK}திறன்: {LTBLUE}{POWER}{BLACK} அதி. வேகம்: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}எடை: {LTBLUE}{WEIGHT_SHORT} {BLACK}திறன்: {LTBLUE}{POWER}{BLACK} அதி. வேகம்: {LTBLUE}{VELOCITY} {BLACK}அதி. T.E.: {LTBLUE}{FORCE}
 

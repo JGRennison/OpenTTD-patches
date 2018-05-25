@@ -670,10 +670,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Seleccio
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Ligar/Desligar programa aleatório
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Mostrar janela de selecção de faixas de música
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Um conjunto de música vazio foi seleccionado. Nenhuma música vai ser tocada.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Programação Musical
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} '{STRING}'
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Índice de faixas
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programa - '{STRING}'
@@ -1199,9 +1196,9 @@ STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT_HELPTEXT                   :Altura máxima 
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH                            :Tamanho máximo de túneis: {STRING}
 STR_CONFIG_SETTING_MAX_TUNNEL_LENGTH_HELPTEXT                   :Tamanho máximo para construção de túneis
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD             :Método de financiamento de indústrias primárias: {STRING}
-STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_HELPTEXT    :Método de financiar uma indústria pirmária. 'nenhum' significa que não é possível financiar nenhuma, 'prospecção' significa que é possível financiar, mas a construção é feita num local arbitrário no mapa e até pode falhar, 'como outras indústrias' significa que as indústrias de matérias primas podem ser construídas por companhias como indústrias de processamento em qualquer sítio que elas escolham
+STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_HELPTEXT    :Método de financiar uma indústria primária. 'nenhum' significa que não é possível financiar nenhuma, 'prospecção' significa que é possível financiar, mas a construção é feita num local arbitrário no mapa e até pode falhar, 'como as outras' significa que as indústrias de matérias primas podem ser construídas em qualquer sítio pelas empresas, como se fossem indústrias de processamento
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_NONE        :Nenhum
-STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_NORMAL      :Mesmo método
+STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_NORMAL      :Como as outras
 STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_PROSPECTING :Prospecção
 STR_CONFIG_SETTING_INDUSTRY_PLATFORM                            :Área plana à volta das industrias: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_PLATFORM_HELPTEXT                   :Quantidade de terreno plano á volta de uma industria. Isto garante que terreno vazio esteja disponível para construir linhas, etc
@@ -1338,8 +1335,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Cor do terreno 
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Verde
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Verde Escuro
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violeta
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Ao deslizar com o rato, mover a vista na direcção oposta: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Comportamento ao navegar pelo mapa com o botão direito do rato. Quando desactivado, o rato move a câmara. Quando activo, o rato move o mapa
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Suavizar deslocamento da navegação no mapa: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controla como a vista principal navega para uma posição específica ao clicar no mapa pequeno ou ao dar um comando para navegar para um objecto específico no mapa. Se activo, a vista principal navega suavemente, se inactivo a vista salta directamente para o destino.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Mostrar medidas nas várias ferramentas de construção: {STRING}
@@ -1371,8 +1366,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :<Command> + Cli
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :<CTRL> + clique
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Desligado
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Deslocar com botão esquerdo: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Activar deslocamento do mapa através de arrastamento com o botão esquerdo do rato. Esta opção é particularmente útil quando é usado um ecran de toque para deslocamento
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Fechar janelas ao fazer clique direito: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Fecha uma janela ao fazer clique direito dentro dela. Desactiva os textos de ajuda ao fazer clique direito!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Guardar automaticamente: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Seleccione o intervalo entre gravações automáticas
@@ -1402,7 +1397,7 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Mostrar horári
 STR_CONFIG_SETTING_QUICKGOTO                                    :Criação rápida de ordens de veículos: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Pré-seleccionar o 'cursor Ir Para' ao abrir a janela de ordens
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Tipo padrão de ferrovia (ao criar ou abrir jogo): {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Tipo de carrir seleccionado após o início ou carregamento de um jogo. 'primeiro disponível' selecciona o tipo mais antigo de carril, 'último disponível' selecciona o tipo mais recente de carril e 'mais utilizado' selecciona o tipo mais utilizado actualmente
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Tipo de carril seleccionado após o início ou carregamento de um jogo. 'primeiro disponível' selecciona o tipo mais antigo de carril, 'último disponível' selecciona o tipo mais recente de carril e 'mais utilizado' selecciona o tipo mais utilizado actualmente
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :Primeiro disponível
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :Último disponível
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :Mais utilizado
@@ -1762,6 +1757,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Verifica
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Mostrar definições de IA e de script de jogo
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Sair de 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}O conjunto de gráficos base seleccionado tem {NUM} sprite{P "" s} em falta. Por favor verifique se existem atualizações para o conjunto.
 STR_INTRO_TRANSLATION                                           :{BLACK}Faltam {NUM} string{P "" s} nesta tradução. Ajude o OpenTTD em inscrever-se como tradutor. Leia readme.txt para mais detalhes.
 
 # Quit window
@@ -2590,6 +2586,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nome do 
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Carga aceite: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Tipo de carril: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Limite de velocidade da linha: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Limite de velocidade da estrada: {LTBLUE}{VELOCITY}
 
@@ -2602,29 +2599,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Campos
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Neve
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Deserto
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} linha
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} linha com sinais de bloqueio
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} linha com pre-sinais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} linha com sinais de saída
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} linha com sinais combinados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} linha com sinais de caminho
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} linha com sinais de sentido único
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} linha com bloqueio e pré-sinais
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} linha com bloqueio e sinais de saida
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} linha com bloqueio e sinais combinados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} linha com bloqueio e sinais de rota
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} linha com bloqueio e sinais de sentido único
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} linha com pré-sinais e sinais de saida
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} linha com pré-sinais e sinais combinados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} linha com pré-sinais e sinais de rota
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} linha com pré-sinais e sinais de sentido único
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} linha com sinais de saida e sinais combinados
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} linha com sinais de saida e sinais de rota
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} linha com sinais de saida e de sentido único
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} linha com sinais combinados e sinais de rota
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} linha com sinais combinados e sentido unico
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} linha com sinais de rota e de sentido unico
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} depósito de comboios
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Linha de caminhos-de-ferro
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Linha de caminhos-de-ferro com sinais de bloqueio
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Linha de caminhos-de-ferro com pre-sinais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Linha de caminhos-de-ferro com sinais de saída
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Linha de caminhos-de-ferro com sinais combinados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Linha de caminhos-de-ferro com sinais de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Linha de caminhos-de-ferro com sinais de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Linha de caminhos-de-ferro com sinais de bloqueio e pré-sinais
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Linha de caminhos-de-ferro com sinais de bloqueio e de saida
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Linha de caminhos-de-ferro com sinais de bloqueio e combinados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Linha de caminhos-de-ferro com sinais de bloqueio e de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Linha de caminhos-de-ferro com sinais de bloqueio e de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Linha de caminhos-de-ferro com pré-sinais e sinais de saida
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Linha de caminhos-de-ferro com pré-sinais e sinais combinados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Linha de caminhos-de-ferro com pré-sinais e sinais de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Linha de caminhos-de-ferro com pré-sinais e sinais de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Linha de caminhos-de-ferro com sinais de saida e combinados
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Linha de caminhos-de-ferro com sinais de saida e de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Linha de caminhos-de-ferro com sinais de saida e de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Linha de caminhos-de-ferro com sinais combinados e de rota
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Linha de caminhos-de-ferro com sinais combinados e de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Linha de caminhos-de-ferro com sinais de rota e de sentido único
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Depósito de comboios de caminhos-de-ferro
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Estrada
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Estrada com iluminação
@@ -2688,7 +2685,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terreno proprie
 STR_ABOUT_OPENTTD                                               :{WHITE}Sobre o OpenTTD...
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Direitos de autor originais {COPYRIGHT} 1995 Chris Sawyer, Todos os direitos reservados
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versão {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 A equipa do OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 A equipa do OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Guardar Jogo
@@ -2842,7 +2839,7 @@ STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista de
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Intriduza um nome para a predefinição
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nome seleccionado actualmente para gravação da predefinição
 STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancelar
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :Não mudar a predefinição
+STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Não mudar a predefinição
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Grava
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Grava a predefinição com o nome seleccionado
 
@@ -2907,8 +2904,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Tentativa de us
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} contém um objecto gráfico corrompido. Todos os objectos gráficos corrompidos serão apresentados como um ponto de interrogação (?) vermelho.
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contém múltiplas entradas Action 8 - (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Leitura além dos limites do pseudo-sprite (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}O conjunto de gráficos base actual tem objectos gráficos em falta.{}Por favor faça a sua actualização.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}O conjunto de gráficos base actualmente em uso tem um conjunto de gráficos em falta.{}Por favor actualize o conjunto de gráficos base.{}Visto que está a usar uma {YELLOW}imagem de desenvolvimento do OpenTTD{WHITE}, poderá também precisar de {YELLOW}uma imagem dos gráficos base de desenvolvimento{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Recursos GRF pedidos não disponíveis (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} foi desactivado por {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Formato de Gráfico Inválido ou desconhecido (sprite {3:NUM})
@@ -3115,8 +3110,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Aceita
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Mostrar lista de carga aceite
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Aceita: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Esta estação tem direitos de transporte exclusivos nesta cidade.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} comprou direitos exclusivos de transporte nesta cidade.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Esta estação tem direitos de transporte exclusivos nesta cidade.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} comprou direitos exclusivos de transporte nesta cidade.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Avaliações
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Mostrar avaliações da estação
@@ -3295,9 +3290,11 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Necessá
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Necessário: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Requer:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} a aguardar{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Carga aguardando processamento:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produz: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produz: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3364,6 +3361,11 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Remover todos o
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Renomear um grupo
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Lucro deste ano:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Lucro no último ano:
+STR_GROUP_OCCUPANCY                                             :Utilização actual:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Novos Veículos Ferroviários
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Novos comboios para carris electrificados
@@ -3395,6 +3397,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Todos os tipos 
 STR_PURCHASE_INFO_ALL_BUT                                       :Todas menos {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Máx. Força de Tracção: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Alcance: {GOLD}{COMMA} quadrados
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tipo de aeronave: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Lista de veículos ferroviários - clique num veículo para informações
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Lista de veículos rodoviários - clique num veículo para informações
@@ -3526,12 +3529,13 @@ STR_ENGINE_PREVIEW_SHIP                                         :barco
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :locomotiva monocarril
 STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :locomotiva maglev
 
-STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Custo: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade: {VELOCITY}  Potência: {POWER}{}Custo de circulação: {CURRENCY_LONG}/ano{}Capacidade: {CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Custo: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade: {VELOCITY}  Potência: {POWER}  Máx. F.T.: {6:FORCE}{}Custo de circulação: {4:CURRENCY_LONG}/ano{}Capacidade: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Custo: {CURRENCY_LONG} Máx. Velocidade: {VELOCITY}{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo de circulação: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Custo: {CURRENCY_LONG} Máx. Velocidade: {VELOCITY}{}Capacidade: {CARGO_LONG}{}Custo de circulação: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Preço: {CURRENCY_LONG} Velocidade max.: {VELOCITY} Alcance: {COMMA} quadrados{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo de manutenção: {CURRENCY_LONG}/ano
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Preço: {CURRENCY_LONG} Velocidade max.: {VELOCITY} Alcance: {COMMA} quadrados{}Capacidade: {CARGO_LONG}{}Custo de manutenção: {CURRENCY_LONG}/ano
+STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Custo: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade Máx.: {VELOCITY}  Potência: {POWER}{}Custo de Circulação: {CURRENCY_LONG}/ano{}Capacidade: {CARGO_LONG}
+STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Custo: {CURRENCY_LONG} Peso: {WEIGHT_SHORT}{}Velocidade Máx.: {VELOCITY}  Potência: {POWER}  F.T. Máx.: {6:FORCE}{}Custo de Circulação: {4:CURRENCY_LONG}/ano{}Capacidade: {5:CARGO_LONG}
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Custo: {CURRENCY_LONG} Velocidade Máx.: {VELOCITY}{}Capacidade: {CARGO_LONG}{}Custo de Circulação: {CURRENCY_LONG}/ano
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Custo: {CURRENCY_LONG} Velocidade Máx.: {VELOCITY}{}Tipo de Aeronave: {STRING}{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo de Circulação: {CURRENCY_LONG}/ano
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Custo: {CURRENCY_LONG} Velocidade Máx.: {VELOCITY}{}Tipo de Aeronave: {STRING}{}Capacidade: {CARGO_LONG}{}Custo de Circulação: {CURRENCY_LONG}/ano
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Custo: {CURRENCY_LONG} Velocidade Máx.: {VELOCITY}{}Tipo de Aeronave: {STRING} Alcance: {COMMA} quadrados{}Capacidade: {CARGO_LONG}, {CARGO_LONG}{}Custo de Circulação: {CURRENCY_LONG}/ano
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Custo: {CURRENCY_LONG} Velocidade Máx.: {VELOCITY}{}Tipo de Aeronave: {STRING} Alcance: {COMMA} quadrados{}Capacidade: {CARGO_LONG}{}Custo de Circulação: {CURRENCY_LONG}/ano
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Substituir {STRING} - {STRING}
@@ -3558,10 +3562,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} quando
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Parar Subst. de Veículos
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Pressione para parar a subsituição do tipo de motor que seleccionou à esquerda
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Trocando: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Alternar entre a janela de substituição de locomotivas e a janela de substituição de vagões
 STR_REPLACE_ENGINES                                             :Locomotivas
 STR_REPLACE_WAGONS                                              :Vagões
+STR_REPLACE_ALL_RAILTYPE                                        :Todos os veículos ferroviários
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Seleccione o tipo de carril para o qual deseja efectuar a substituição dos motores
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Exibe o tipo de motor que substituirá o que está seleccionado à esquerda, se algum
@@ -3654,7 +3658,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ano{P "
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ano{P "" s} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Máx. velocidade: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Velocidade max.: {LTBLUE}{VELOCITY} {BLACK}Alcance: {LTBLUE}{COMMA} quadrados
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Vel. máxima: {LTBLUE}{VELOCITY} {BLACK}Tipo de Aeronave: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Velocidade Máx.: {LTBLUE}{VELOCITY} {BLACK}Tipo de Aeronave: {LTBLUE}{STRING} {BLACK}Alcance: {LTBLUE}{COMMA} quadrados
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potência: {LTBLUE}{POWER}{BLACK} Max. velocidade: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potência: {LTBLUE}{POWER}{BLACK} Máx. velocidade: {LTBLUE}{VELOCITY} {BLACK}Máx. E.T.: {LTBLUE}{FORCE}
 
@@ -4025,7 +4030,7 @@ STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Script de Jogo
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Fechar
 STR_AI_SETTINGS_RESET                                           :{BLACK}Repor
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
-STR_AI_SETTINGS_START_DELAY                                     :Número de dias para iniciar esta IA depois da anterior (tomar ou lorgar): {ORANGE}{STRING}
+STR_AI_SETTINGS_START_DELAY                                     :Número de dias para iniciar esta IA depois da anterior (aproximadamente): {ORANGE}{STRING}
 
 
 # Textfile window

@@ -857,10 +857,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Eligere 
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Incipere desinereve admixtionem carminum
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Monstrare fenestram electionis carminum
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Compositio sine carminibus electa est. Nulla carmina canentur
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Electio Compositionis Musicae
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Index Carminum
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Compositio - '{STRING}'
@@ -1525,8 +1522,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Color terrae in
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Viridis
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Viridis Obscurus
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Purpureus
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Revertere cursum vagationis: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Quomodo tabula vagatur globulo dextri presso. Neglecta, mus conspectum movet. Electa, mus tabulam movet
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Vagari conspectum leniter: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Quomodo conspectus vagatur ad quemdam locum globulo sinistro in tabula premendi aut cum iubetur vagari ad quamdam rem in tabula. Electa, conspectus leniter vagatur. Neglecta, statim salit ad locum
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Ostendere nuntium adiuvans apud varia ferramenta construendi: {STRING}
@@ -1558,8 +1553,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Cmd+Premere
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Premere
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Neglecta
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Vagatio globuli sinistri: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Annuere tabulam vagari trahendo globuli sinistri. Magnopere utilis est cum tangendo navigas in scrinio
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Claudere fenestras globulo muris dextro: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Facit ut globulus muris dexter fenestras claudat. Cave: hac electa, non apparent nuntia adiuvantia globulo dextro.
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Servare automatice: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Eligere crebritatem automatice ludum servandi
@@ -1949,6 +1944,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Inspicer
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Monstrare optiones IA/Ludi scriptorum
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Exire OpenTTD
 
+STR_INTRO_BASESET                                               :{BLACK}Hoc fundamento graphico desunt spiritus {NUM}. Quaere novam editionem huius fundamenti.
 STR_INTRO_TRANSLATION                                           :{BLACK}In hac interpretatione, {NUM} series desunt. Quaesimus, iuva OpenTTD meliorari et dic te velle interpretem esse. Vide readme.txt in quo plura sunt.
 
 # Quit window
@@ -2791,6 +2787,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nomen te
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Onera accepta: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Typus ferriviae: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Velocitas maxima ferriviae: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Velocitas maxima viae: {LTBLUE}{VELOCITY}
 
@@ -2803,29 +2800,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Agri
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Terra Nivea
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Deserta
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Astarium {STRING.gen}
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Astarium {STRING.gen} cum signalibus zonalibus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Astarium {STRING.gen} cum signalibus aditus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Astarium {STRING.gen} cum signalibus exitus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Astarium {STRING.gen} cum signalibus compositis
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Astarium {STRING.gen} cum signalibus itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Astarium {STRING.gen} cum signalibus itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Astarium {STRING.gen} cum signalibus zonalibus et aditus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Astarium {STRING.gen} cum signalibus zonalibus et exitus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Astarium {STRING.gen} cum signalibus zonalibus et compositis
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Astarium {STRING.gen} cum signalibus zonalibus et itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Astarium {STRING.gen} cum signalibus zonalibus et itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Astarium {STRING.gen} cum signalibus aditus et exitus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Astarium {STRING.gen} cum signalibus aditus et compositis
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Astarium {STRING.gen} cum signalibus aditus et itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Astarium {STRING.gen} cum signalibus aditus et itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Astarium {STRING.gen} cum signalibus exitus et compositis
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Astarium {STRING.gen} cum signalibus exitus et itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Astarium {STRING.gen} cum signalibus exitus et itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Astarium {STRING.gen} cum signalibus compositis et itineris
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Astarium {STRING.gen} cum signalibus compositis et itineris unius cursus
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Astarium {STRING.gen} cum signalibus itineris et unius cursus itineris
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Receptaculum {STRING.gen}
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Astarium Ferriviae
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Ferrivia cum signalibus zonalibus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Ferrivia cum signalibus aditus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Ferrivia cum signalibus exitus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Ferrivia cum signalibus compositis
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Ferrivia cum signalibus itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Ferrivia cum signalibus itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Ferrivia cum signalibus zonalibus et aditus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Ferrivia cum signalibus zonalibus et exitus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Ferrivia cum signalibus zonalibus et compositis
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Ferrivia cum signalibus zonalibus et itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Ferrivia cum signalibus zonalibus et itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Ferrivia cum signalibus aditus et exitus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Ferrivia cum signalibus aditus et compositis
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Ferrivia cum signalibus aditus et itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Ferrivia cum signalibus aditus et itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Ferrivia cum signalibus exitus et compositis
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Ferrivia cum signalibus exitus et itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Ferrivia cum signalibus exitus et itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Ferrivia cum signalibus compositis et itineris
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Ferrivia cum signalibus compositis et itineris unius cursus
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Ferrivia cum signalibus itineris et unius cursus itineris
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Receptaculum ferriviarium
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Via
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Via cum lampadibus
@@ -2889,7 +2886,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terra societati
 STR_ABOUT_OPENTTD                                               :{WHITE}De OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Privilegium impressorium originale {COPYRIGHT} MCMXCV Chris Sawyer, Omnia proprietatis iura reservantur
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD editio {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} MMII-MMXVI Manus OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} MMII-MMXVII Manus OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Servare Ludum
@@ -3108,8 +3105,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Conatus agnosca
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} spiritum corruptum habet. Omnes spiritus corrupti monstrabuntur forma rubro puncto interrogativo - ?
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Continet plures Actiones 8 (spiritus {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lectio post terminum pseudospiritus (spiritus {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Fundamento graphico adhibito deest nonulli spiritus.{}Utinam arcessas novam editionem
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Fundamento graphico adhibito deest nonulli spiritus.{}Utinam arcessas novam editionem.{}Quoniam ludis {YELLOW}editionem OpenTTD adhuc in explicando{WHITE}, fortasse etiam tibi necesse est {YELLOW}editio fundamenti graphici OpenTTD in explicando{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Opes GRF desideratae non parabiles (spiritus {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} neglectus est a {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Irrita/ignota dispositio spiritus (spiritus {3:NUM})
@@ -3316,8 +3311,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Accipit
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Monstrare index onerum acceptorum
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Onera accepta: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Haec statio monopolio benefit.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} monopolium emit in hoc oppido.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Haec statio monopolio benefit.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} monopolium emit in hoc oppido.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Censiones
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Monstrare censiones stationum
@@ -3496,9 +3491,11 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Postulat
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Postulat: {YELLOW}{STRING.acc}{STRING}, {STRING.acc}{STRING}, {STRING.acc}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Postulat:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING.acc}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} manet{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Onera utenda manentia:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Efficit: {YELLOW}{STRING.acc}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Efficit: {YELLOW}{STRING.acc}{STRING}, {STRING.acc}{STRING}
 ############ range for produces ends
@@ -3565,6 +3562,11 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Removere omnia 
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Renominare gregem
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Lucrum huius anni:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Lucrum anni prioris:
+STR_GROUP_OCCUPANCY                                             :Usus currens:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Vehicula Ferriviaria Nova
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Vehicula Ferriviaria Electrica Nova
@@ -3596,6 +3598,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Omnibus onerum 
 STR_PURCHASE_INFO_ALL_BUT                                       :Omnibus praeterquam {CARGO_LIST.dat}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Vis Tractionis Maxima: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Max. distantia volatus: {GOLD}{COMMA} tegulas
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typus aeroplani: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Index electionis vehiculorum ferriviariorum. Preme in vehiculum ut plura indicia monstrentur. Ctrl+Preme ut typus vehiculi celetur
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Index electionis vehiculorum viariorum. Preme in vehiculum ut plura indicia monstrentur. Ctrl+Preme ut typus vehiculi celetur
@@ -3729,10 +3732,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :{G=f}hamaxam ma
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Pretium: {CURRENCY_LONG} Pondus: {WEIGHT_SHORT}{}Velocitas: {VELOCITY}  Potestas: {POWER}{}Pretium Operandi: {CURRENCY_LONG} per annum{}Capacitas: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Pretium: {CURRENCY_LONG} Pondus: {WEIGHT_SHORT}{}Velocitas: {VELOCITY}  Potestas: {POWER}  V.T. Max.: {6:FORCE}{}Pretium Operandi: {4:CURRENCY_LONG} per annum{}Capacitas: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY}{}Capacitas: {CARGO_LONG}, {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY}{}Capacitas: {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY} Range: {COMMA} tiles{}Capacitas: {CARGO_LONG}, {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY} Range: {COMMA} tiles{}Capacitas: {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY}{}Capacitas: {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY}{}Typus Aeroplani: {STRING}{}Capacitas: {CARGO_LONG}, {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY}{}Typus Aeroplani: {STRING}{}Capacitas: {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY}{}Typus Aeroplani: {STRING} Max. Distantia Volatus: {COMMA} tegulas{}Capacitas: {CARGO_LONG}, {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Pretium: {CURRENCY_LONG} Velocitas Maxima: {VELOCITY}{}Typus Aeroplani: {STRING} Max. Distantia Volatus: {COMMA} tegulas{}Capacitas: {CARGO_LONG}{}Pretium Operandi: {CURRENCY_LONG} per annum
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Mutare {STRING} - {STRING}
@@ -3759,10 +3763,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} cum ve
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Consistere mutationem vehiculorum
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Preme ut mutatio vehiculi sinistri consistatur
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Mutatio: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Mutare inter mutationem hamaxarum curruumque
 STR_REPLACE_ENGINES                                             :Hamaxarum
 STR_REPLACE_WAGONS                                              :Curruum
+STR_REPLACE_ALL_RAILTYPE                                        :Omnia vehicula ferriviaria
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Eligere typum astarii cui est hamaxas commutandas
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Haec monstrat novum vehiculum desideratum, si adest
@@ -3855,7 +3859,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} ann{P u
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ann{P us i} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Velocitas maxima: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Velocitas maxima: {LTBLUE}{VELOCITY} {BLACK}Max. distantia volatus: {LTBLUE}{COMMA} tegulas
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Velocitas maxima: {LTBLUE}{VELOCITY} {BLACK}Typus aeroplani: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Velocitas maxima: {LTBLUE}{VELOCITY} {BLACK}Typus aeroplani: {LTBLUE}{STRING} {BLACK}Max. distantia volatus: {LTBLUE}{COMMA} tegulas
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Pondus: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potestas: {LTBLUE}{POWER}{BLACK} Velocitas maxima: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Pondus: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potestas: {LTBLUE}{POWER}{BLACK} Velocitas maxima: {LTBLUE}{VELOCITY} {BLACK}V.T. Max.: {LTBLUE}{FORCE}
 

@@ -22,6 +22,15 @@ then
 	exit 1
 fi
 
+# openttd_vs141.sln             is for MSVC 2017
+# openttd_vs141.vcxproj         is for MSVC 2017
+# openttd_vs141.vcxproj.filters is for MSVC 2017
+# langs_vs141.vcxproj           is for MSVC 2017
+# strgen_vs141.vcxproj          is for MSVC 2017
+# strgen_vs141.vcxproj.filters  is for MSVC 2017
+# generate_vs141.vcxproj        is for MSVC 2017
+# version_vs141.vcxproj         is for MSVC 2017
+
 # openttd_vs140.sln             is for MSVC 2015
 # openttd_vs140.vcxproj         is for MSVC 2015
 # openttd_vs140.vcxproj.filters is for MSVC 2015
@@ -114,7 +123,6 @@ load_main_data() {
 			if ($0 == "PNG"         && "'$png_config'" == "")          { next; }
 			if ($0 == "OSX"         && "'$os'" != "OSX")               { next; }
 			if ($0 == "OS2"         && "'$os'" != "OS2")               { next; }
-			if ($0 == "PSP"         && "'$os'" != "PSP")               { next; }
 			if ($0 == "DOS"         && "'$os'" != "DOS")               { next; }
 			if ($0 == "DEDICATED"   && "'$enable_dedicated'" != "1")   { next; }
 			if ($0 == "AI"          && "'$enable_ai'" == "0")          { next; }
@@ -122,7 +130,6 @@ load_main_data() {
 			if ($0 == "BEOS"        && "'$os'" != "BEOS")              { next; }
 			if ($0 == "WIN32"       && "'$os'" != "MINGW" &&
 											"'$os'" != "CYGWIN" && "'$os'" != "MSVC" ) { next; }
-			if ($0 == "WINCE"       && "'$os'" != "WINCE")             { next; }
 			if ($0 == "MSVC"        && "'$os'" != "MSVC")              { next; }
 			if ($0 == "DIRECTMUSIC" && "'$enable_directmusic'" != "1") { next; }
 			if ($0 == "LIBTIMIDITY" && "'$libtimidity'" == "" )        { next; }
@@ -183,9 +190,11 @@ load_main_data() {
 
 load_lang_data() {
 	RES=""
-	for i in `ls $1`
+	# Windows Folder sort and Linux Folder sort are slightly different.
+	# By removing the extension and sorting it on Linux, they are the same.
+	for i in `ls $1 | sed s~.txt$~~g | sort`
 	do
-		i=`basename $i | sed s~.txt$~~g`
+		i=`basename $i`
 		if [ "$i" == "english" ]
 		then
 			continue
@@ -317,15 +326,21 @@ generate "$openttdvcxproj" "openttd_vs100.vcxproj"
 generate "$openttdfiles" "openttd_vs100.vcxproj.filters" "$openttdfilters"
 generate "$openttdvcxproj" "openttd_vs140.vcxproj"
 generate "$openttdfiles" "openttd_vs140.vcxproj.filters" "$openttdfilters"
+generate "$openttdvcxproj" "openttd_vs141.vcxproj"
+generate "$openttdfiles" "openttd_vs141.vcxproj.filters" "$openttdfilters"
 generate "$lang" "langs_vs80.vcproj"
 generate "$lang" "langs_vs90.vcproj"
 generate "$langvcxproj" "langs_vs100.vcxproj"
 generate "$langfiles" "langs_vs100.vcxproj.filters"
 generate "$langvcxproj" "langs_vs140.vcxproj"
 generate "$langfiles" "langs_vs140.vcxproj.filters"
+generate "$langvcxproj" "langs_vs141.vcxproj"
+generate "$langfiles" "langs_vs141.vcxproj.filters"
 generate "$settings" "settings_vs80.vcproj" "$settingscommand"
 generate "$settings" "settings_vs90.vcproj" "$settingscommand"
 generate "$settingsvcxproj" "settings_vs100.vcxproj" "$settingscommand"
 generate "$settingsfiles" "settings_vs100.vcxproj.filters"
 generate "$settingsvcxproj" "settings_vs140.vcxproj" "$settingscommand"
 generate "$settingsfiles" "settings_vs140.vcxproj.filters"
+generate "$settingsvcxproj" "settings_vs141.vcxproj" "$settingscommand"
+generate "$settingsfiles" "settings_vs141.vcxproj.filters"

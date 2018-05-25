@@ -14,6 +14,7 @@
 #include "../town.h"
 #include "../landscape.h"
 #include "../subsidy_func.h"
+#include "../strings_func.h"
 
 #include "saveload.h"
 #include "newgrf_sl.h"
@@ -285,7 +286,7 @@ static void Load_TOWN()
 			SlObject(&t->received[i], _town_received_desc);
 		}
 
-		if (t->townnamegrfid == 0 && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_LAST + 1) && GB(t->townnametype, 11, 5) != 15) {
+		if (t->townnamegrfid == 0 && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_LAST + 1) && GetStringTab(t->townnametype) != TEXT_TAB_OLD_CUSTOM) {
 			SlErrorCorrupt("Invalid town name generator");
 		}
 
@@ -294,7 +295,7 @@ static void Load_TOWN()
 		SlObject(&t->cargo_accepted, GetTileMatrixDesc());
 		if (t->cargo_accepted.area.w != 0) {
 			uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
-			t->cargo_accepted.data = MallocT<uint32>(arr_len);
+			t->cargo_accepted.data = MallocT<CargoTypes>(arr_len);
 			SlArray(t->cargo_accepted.data, arr_len, SLE_UINT32);
 
 			/* Rebuild total cargo acceptance. */

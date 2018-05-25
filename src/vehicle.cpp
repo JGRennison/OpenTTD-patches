@@ -58,7 +58,30 @@
 
 #include "safeguards.h"
 
-#define GEN_HASH(x, y) ((GB((y), 6 + ZOOM_LVL_SHIFT, 6) << 6) + GB((x), 7 + ZOOM_LVL_SHIFT, 6))
+/* Number of bits in the hash to use from each vehicle coord */
+static const uint GEN_HASHX_BITS = 6;
+static const uint GEN_HASHY_BITS = 6;
+
+/* Size of each hash bucket */
+static const uint GEN_HASHX_BUCKET_BITS = 7;
+static const uint GEN_HASHY_BUCKET_BITS = 6;
+
+/* Compute hash for vehicle coord */
+#define GEN_HASHX(x)    GB((x), GEN_HASHX_BUCKET_BITS + ZOOM_LVL_SHIFT, GEN_HASHX_BITS)
+#define GEN_HASHY(y)   (GB((y), GEN_HASHY_BUCKET_BITS + ZOOM_LVL_SHIFT, GEN_HASHY_BITS) << GEN_HASHX_BITS)
+#define GEN_HASH(x, y) (GEN_HASHY(y) + GEN_HASHX(x))
+
+/* Maximum size until hash repeats */
+static const int GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_LVL_SHIFT);
+static const int GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_LVL_SHIFT);
+
+/* Increments to reach next bucket in hash table */
+static const int GEN_HASHX_INC = 1;
+static const int GEN_HASHY_INC = 1 << GEN_HASHX_BITS;
+
+/* Mask to wrap-around buckets */
+static const uint GEN_HASHX_MASK =  (1 << GEN_HASHX_BITS) - 1;
+static const uint GEN_HASHY_MASK = ((1 << GEN_HASHY_BITS) - 1) << GEN_HASHX_BITS;
 
 VehicleID _new_vehicle_id;
 uint16 _returned_refit_capacity;      ///< Stores the capacity after a refit operation.
@@ -197,7 +220,7 @@ bool Vehicle::NeedsServicing() const
 		if (replace_when_old && !v->NeedsAutorenewing(c, false)) continue;
 
 		/* Check refittability */
-		uint32 available_cargo_types, union_mask;
+		CargoTypes available_cargo_types, union_mask;
 		GetArticulatedRefitMasks(new_engine, true, &union_mask, &available_cargo_types);
 		/* Is there anything to refit? */
 		if (union_mask != 0) {
@@ -619,7 +642,7 @@ static void UpdateVehicleTileHash(Vehicle *v, bool remove)
 	v->hash_tile_current = new_hash;
 }
 
-static Vehicle *_vehicle_viewport_hash[0x1000];
+static Vehicle *_vehicle_viewport_hash[1 << (GEN_HASHX_BITS + GEN_HASHY_BITS)];
 
 static void UpdateVehicleViewportHash(Vehicle *v, int x, int y)
 {
@@ -1159,26 +1182,26 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 	/* The hash area to scan */
 	int xl, xu, yl, yu;
 
-	if (dpi->width + (70 * ZOOM_LVL_BASE) < (1 << (7 + 6 + ZOOM_LVL_SHIFT))) {
-		xl = GB(l - (70 * ZOOM_LVL_BASE), 7 + ZOOM_LVL_SHIFT, 6);
-		xu = GB(r,                        7 + ZOOM_LVL_SHIFT, 6);
+	if (dpi->width + (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE) < GEN_HASHX_SIZE) {
+		xl = GEN_HASHX(l - MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE);
+		xu = GEN_HASHX(r);
 	} else {
 		/* scan whole hash row */
 		xl = 0;
-		xu = 0x3F;
+		xu = GEN_HASHX_MASK;
 	}
 
-	if (dpi->height + (70 * ZOOM_LVL_BASE) < (1 << (6 + 6 + ZOOM_LVL_SHIFT))) {
-		yl = GB(t - (70 * ZOOM_LVL_BASE), 6 + ZOOM_LVL_SHIFT, 6) << 6;
-		yu = GB(b,                        6 + ZOOM_LVL_SHIFT, 6) << 6;
+	if (dpi->height + (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE) < GEN_HASHY_SIZE) {
+		yl = GEN_HASHY(t - MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE);
+		yu = GEN_HASHY(b);
 	} else {
 		/* scan whole column */
 		yl = 0;
-		yu = 0x3F << 6;
+		yu = GEN_HASHY_MASK;
 	}
 
-	for (int y = yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
-		for (int x = xl;; x = (x + 1) & 0x3F) {
+	for (int y = yl;; y = (y + GEN_HASHY_INC) & GEN_HASHY_MASK) {
+		for (int x = xl;; x = (x + GEN_HASHX_INC) & GEN_HASHX_MASK) {
 			const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
 
 			while (v != NULL) {
@@ -1340,7 +1363,7 @@ bool Vehicle::HandleBreakdown()
 			SetWindowDirty(WC_VEHICLE_VIEW, this->index);
 			SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 
-			/* FALL THROUGH */
+			FALLTHROUGH;
 		case 1:
 			/* Aircraft breakdowns end only when arriving at the airport */
 			if (this->type == VEH_AIRCRAFT) return false;
@@ -2231,6 +2254,7 @@ void Vehicle::LeaveStation()
 	st->loading_vehicles.remove(this);
 
 	HideFillingPercent(&this->fill_percent_te_id);
+	trip_occupancy = CalcPercentVehicleFilled(this, NULL);
 
 	if (this->type == VEH_TRAIN && !(this->vehstatus & VS_CRASHED)) {
 		/* Trigger station animation (trains only) */
@@ -2747,7 +2771,7 @@ void Vehicle::RemoveFromShared()
 	if (this->orders.list->GetNumVehicles() == 1) {
 		/* When there is only one vehicle, remove the shared order list window. */
 		DeleteWindowById(GetWindowClassForVehicleType(this->type), vli.Pack());
-		InvalidateVehicleOrder(this->FirstShared(), 0);
+		InvalidateVehicleOrder(this->FirstShared(), VIWD_MODIFY_ORDERS);
 	} else if (were_first) {
 		/* If we were the first one, update to the new first one.
 		 * Note: FirstShared() is already the new first */

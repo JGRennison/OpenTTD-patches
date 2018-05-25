@@ -525,7 +525,7 @@ const StringID _engine_sort_listing[][12] = {{
 static bool CDECL CargoFilter(const EngineID *eid, const CargoID cid)
 {
 	if (cid == CF_ANY) return true;
-	uint32 refit_mask = GetUnionOfArticulatedRefitMasks(*eid, true) & _standard_cargo_mask;
+	CargoTypes refit_mask = GetUnionOfArticulatedRefitMasks(*eid, true) & _standard_cargo_mask;
 	return (cid == CF_NONE ? refit_mask == 0 : HasBit(refit_mask, cid));
 }
 
@@ -536,7 +536,7 @@ static GUIEngineList::FilterFunction * const _filter_funcs[] = {
 static int DrawCargoCapacityInfo(int left, int right, int y, EngineID engine)
 {
 	CargoArray cap;
-	uint32 refits;
+	CargoTypes refits;
 	GetArticulatedVehicleCargoesAndRefits(engine, &cap, &refits);
 
 	for (CargoID c = 0; c < NUM_CARGO; c++) {
@@ -720,7 +720,15 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 	return y;
 }
 
-/* Draw aircraft specific details */
+/**
+ * Draw aircraft specific details in the buy window.
+ * @param left Left edge of the window to draw in.
+ * @param right Right edge of the window to draw in.
+ * @param y Top of the area to draw in.
+ * @param engine_number Engine to display.
+ * @param refittable If set, the aircraft can be refitted.
+ * @return Bottom of the used area.
+ */
 static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_number, bool refittable)
 {
 	const Engine *e = Engine::Get(engine_number);
@@ -756,6 +764,12 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 	y += FONT_HEIGHT_NORMAL;
 
+	/* Aircraft type */
+	SetDParam(0, e->GetAircraftTypeText());
+	DrawString(left, right, y, STR_PURCHASE_INFO_AIRCRAFT_TYPE);
+	y += FONT_HEIGHT_NORMAL;
+
+	/* Aircraft range, if available. */
 	uint16 range = e->GetRange();
 	if (range != 0) {
 		SetDParam(0, range);

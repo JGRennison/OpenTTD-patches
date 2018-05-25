@@ -64,14 +64,14 @@ static int HighlightDragPosition(int px, int max_width, VehicleID selection, boo
 	bool rtl = _current_text_dir == TD_RTL;
 
 	assert(selection != INVALID_VEHICLE);
-	int dragged_width = WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+	int dragged_width = 0;
 	for (Train *t = Train::Get(selection); t != NULL; t = chain ? t->Next() : (t->HasArticulatedPart() ? t->GetNextArticulatedPart() : NULL)) {
 		dragged_width += t->GetDisplayImageWidth(NULL);
 	}
 
-	int drag_hlight_left = rtl ? max(px -dragged_width, 0) : px;
-	int drag_hlight_right = rtl ? px : min(px + dragged_width, max_width);
-	int drag_hlight_width = max(drag_hlight_right - drag_hlight_left, 0);
+	int drag_hlight_left = rtl ? max(px - dragged_width + 1, 0) : px;
+	int drag_hlight_right = rtl ? px : min(px + dragged_width, max_width) - 1;
+	int drag_hlight_width = max(drag_hlight_right - drag_hlight_left + 1, 0);
 
 	if (drag_hlight_width > 0) {
 		GfxFillRect(drag_hlight_left + WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP + 1,
@@ -126,7 +126,7 @@ void DrawTrainImage(const Train *v, int left, int right, int y, VehicleID select
 			PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 			VehicleSpriteSeq seq;
 			v->GetImage(dir, image_type, &seq);
-			seq.Draw(px + (rtl ? -offset.x : offset.x), height / 2 + offset.y, pal, v->vehstatus & VS_CRASHED);
+			seq.Draw(px + (rtl ? -offset.x : offset.x), height / 2 + offset.y, pal, (v->vehstatus & VS_CRASHED) != 0);
 		}
 
 		if (!v->IsArticulatedPart()) sel_articulated = false;
@@ -387,7 +387,7 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 					PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 					VehicleSpriteSeq seq;
 					u->GetImage(dir, EIT_IN_DETAILS, &seq);
-					seq.Draw(px + (rtl ? -offset.x : offset.x), y - line_height * vscroll_pos + sprite_y_offset + pitch, pal, v->vehstatus & VS_CRASHED);
+					seq.Draw(px + (rtl ? -offset.x : offset.x), y - line_height * vscroll_pos + sprite_y_offset + pitch, pal, (v->vehstatus & VS_CRASHED) != 0);
 				}
 				px += rtl ? -width : width;
 				dx += width;

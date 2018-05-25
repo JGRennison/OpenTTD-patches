@@ -162,6 +162,7 @@ public:
 		td.airport_class = STR_NULL;
 		td.airport_name = STR_NULL;
 		td.airport_tile_name = STR_NULL;
+		td.railtype = STR_NULL;
 		td.rail_speed = 0;
 		td.road_speed = 0;
 
@@ -269,6 +270,13 @@ public:
 		if (td.airport_tile_name != STR_NULL) {
 			SetDParam(0, td.airport_tile_name);
 			GetString(this->landinfo_data[line_nr], STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME, lastof(this->landinfo_data[line_nr]));
+			line_nr++;
+		}
+
+		/* Rail type name */
+		if (td.railtype != STR_NULL) {
+			SetDParam(0, td.railtype);
+			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_RAIL_TYPE, lastof(this->landinfo_data[line_nr]));
 			line_nr++;
 		}
 
@@ -389,6 +397,7 @@ static const char * const _credits[] = {
 	"Original graphics by Simon Foster",
 	"",
 	"The OpenTTD team (in alphabetical order):",
+	"  Grzegorz Duczy\xC5\x84ski (adf88) - General coding (since 1.7.2)",
 	"  Albert Hofkamp (Alberth) - GUI expert (since 0.7)",
 	"  Matthijs Kooijman (blathijs) - Pathfinder-guru, Debian port (since 0.3)",
 	"  Ulf Hermann (fonsinchen) - Cargo Distribution (since 1.3)",
@@ -999,10 +1008,12 @@ struct QueryStringWindow : public Window
 		switch (widget) {
 			case WID_QS_DEFAULT:
 				this->editbox.text.DeleteAll();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_QS_OK:
 				this->OnOk();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_QS_CANCEL:
 				delete this;
 				break;
@@ -1152,7 +1163,8 @@ struct QueryWindow : public Window {
 					this->proc(this->parent, true);
 					this->proc = NULL;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WKC_ESC:
 				delete this;
 				return ES_HANDLED;

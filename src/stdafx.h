@@ -100,12 +100,6 @@
 	#define strcasecmp stricmp
 #endif
 
-#if defined(PSP)
-	#include <psptypes.h>
-	#include <pspdebug.h>
-	#include <pspthreadman.h>
-#endif
-
 #if defined(SUNOS) || defined(HPUX)
 	#include <alloca.h>
 #endif
@@ -134,16 +128,8 @@
 	#define CLIB_USERGROUP_PROTOS_H
 #endif /* __MORPHOS__ */
 
-#if defined(PSP)
-	/* PSP can only have 10 file-descriptors open at any given time, but this
-	 *  switch only limits reads via the Fio system. So keep 2 fds free for things
-	 *  like saving a game. */
-	#define LIMITED_FDS 8
-	#define printf pspDebugScreenPrintf
-#endif /* PSP */
-
 /* Stuff for GCC */
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__clang__)
 	#define NORETURN __attribute__ ((noreturn))
 	#define CDECL
 	#define __int64 long long
@@ -151,12 +137,19 @@
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
 	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
-	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)
-		#define FINAL final
+	#define FINAL final
+
+	/* Use fallthrough attribute where supported */
+	#if __GNUC__ >= 7
+		#if __cplusplus > 201402L // C++17
+			#define FALLTHROUGH [[fallthrough]]
+		#else
+			#define FALLTHROUGH __attribute__((fallthrough))
+		#endif
 	#else
-		#define FINAL
+		#define FALLTHROUGH
 	#endif
-#endif /* __GNUC__ */
+#endif /* __GNUC__ || __clang__ */
 
 #if defined(__WATCOMC__)
 	#define NORETURN
@@ -164,6 +157,7 @@
 	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL
+	#define FALLTHROUGH
 	#include <malloc.h>
 #endif /* __WATCOMC__ */
 
@@ -191,9 +185,7 @@
 		#define NTDDI_VERSION NTDDI_WIN2K // Windows 2000
 		#define _WIN32_WINNT 0x0500       // Windows 2000
 		#define _WIN32_WINDOWS 0x400      // Windows 95
-		#if !defined(WINCE)
-			#define WINVER 0x0400     // Windows NT 4.0 / Windows 95
-		#endif
+		#define WINVER 0x0400             // Windows NT 4.0 / Windows 95
 		#define _WIN32_IE_ 0x0401         // 4.01 (win98 and NT4SP5+)
 	#endif
 	#define NOMINMAX                // Disable min/max macros in windows.h.
@@ -227,16 +219,16 @@
 		#define inline __forceinline
 	#endif
 
-	#if !defined(WINCE)
-		#define CDECL _cdecl
-	#endif
-
+	#define CDECL _cdecl
 	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL sealed
 
-	#if defined(WINCE)
-		int CDECL vsnprintf(char *str, size_t size, const char *format, va_list ap);
+	/* fallthrough attribute, VS 2017 */
+	#if (_MSC_VER >= 1910)
+		#define FALLTHROUGH [[fallthrough]]
+	#else
+		#define FALLTHROUGH
 	#endif
 
 	#if defined(WIN32) && !defined(_WIN64) && !defined(WIN64)
@@ -259,15 +251,8 @@
 		#endif
 	#endif
 
-	#if defined(WINCE)
-		#define strcasecmp _stricmp
-		#define strncasecmp _strnicmp
-		#undef DEBUG
-	#else
-		#define strcasecmp stricmp
-		#define strncasecmp strnicmp
-	#endif
-
+	#define strcasecmp stricmp
+	#define strncasecmp strnicmp
 	#define strtoull _strtoui64
 
 	/* MSVC doesn't have these :( */
@@ -285,10 +270,6 @@
 	#define SIGBUS SIGNOFP
 #endif
 
-#if defined(WINCE)
-	#define stredup _stredup
-#endif /* WINCE */
-
 /* NOTE: the string returned by these functions is only valid until the next
  * call to the same function and is not thread- or reentrancy-safe */
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
@@ -297,12 +278,9 @@
 		#include <tchar.h>
 		#include <io.h>
 
-		/* XXX - WinCE without MSVCRT doesn't support wfopen, so it seems */
-		#if !defined(WINCE)
-			namespace std { using ::_tfopen; }
-			#define fopen(file, mode) _tfopen(OTTD2FS(file), _T(mode))
-			#define unlink(file) _tunlink(OTTD2FS(file))
-		#endif /* WINCE */
+		namespace std { using ::_tfopen; }
+		#define fopen(file, mode) _tfopen(OTTD2FS(file), _T(mode))
+		#define unlink(file) _tunlink(OTTD2FS(file))
 
 		const char *FS2OTTD(const TCHAR *name);
 		const TCHAR *OTTD2FS(const char *name, bool console_cp = false);
@@ -324,10 +302,12 @@
 /* MSVCRT of course has to have a different syntax for long long *sigh* */
 #if defined(_MSC_VER) || defined(__MINGW32__)
 	#define OTTD_PRINTF64 "%I64d"
+	#define OTTD_PRINTF64U "%I64u"
 	#define OTTD_PRINTFHEX64 "%I64x"
 	#define PRINTF_SIZE "%Iu"
 #else
 	#define OTTD_PRINTF64 "%lld"
+	#define OTTD_PRINTF64U "%llu"
 	#define OTTD_PRINTFHEX64 "%llx"
 	#define PRINTF_SIZE "%zu"
 #endif
@@ -361,21 +341,8 @@ typedef unsigned char byte;
 	#define PERSONAL_DIR ""
 #endif
 
-/* Compile time assertions. Prefer c++0x static_assert().
- * Older compilers cannot evaluate some expressions at compile time,
- * typically when templates are involved, try assert_tcompile() in those cases. */
-#if defined(__STDCXX_VERSION__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(__GXX_EXPERIMENTAL_CPP0X__) || defined(static_assert)
-	/* __STDCXX_VERSION__ is c++0x feature macro, __GXX_EXPERIMENTAL_CXX0X__ is used by gcc, __GXX_EXPERIMENTAL_CPP0X__ by icc */
-	#define assert_compile(expr) static_assert(expr, #expr )
-	#define assert_tcompile(expr) assert_compile(expr)
-#elif defined(__OS2__)
-	/* Disabled for OS/2 */
-	#define assert_compile(expr)
-	#define assert_tcompile(expr) assert_compile(expr)
-#else
-	#define assert_compile(expr) typedef int __ct_assert__[1 - 2 * !(expr)]
-	#define assert_tcompile(expr) assert(expr)
-#endif
+#define assert_compile(expr) static_assert(expr, #expr )
+#define assert_tcompile(expr) assert_compile(expr)
 
 /* Check if the types have the bitsizes like we are using them */
 assert_compile(sizeof(uint64) == 8);
@@ -444,8 +411,17 @@ assert_compile(SIZE_MAX >= UINT32_MAX);
 	#define CloseConnection OTTD_CloseConnection
 #endif /* __APPLE__ */
 
+#if defined(__GNUC__) || defined(__clang__)
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+#else
+#define likely(x)       (x)
+#define unlikely(x)     (x)
+#endif /* __GNUC__ || __clang__ */
+
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
+void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...) WARN_FORMAT(4, 5);
 #define NOT_REACHED() error("NOT_REACHED triggered at line %i of %s", __LINE__, __FILE__)
 
 /* For non-debug builds with assertions enabled use the special assertion handler:
@@ -454,12 +430,15 @@ void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
  */
 #if (defined(_MSC_VER) && defined(NDEBUG) && defined(WITH_ASSERT)) || (!defined(_MSC_VER) && !defined(NDEBUG) && !defined(_DEBUG))
 	#undef assert
-	#define assert(expression) if (!(expression)) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
+	#define assert(expression) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
 #endif
 
 /* Asserts are enabled if NDEBUG isn't defined, or if we are using MSVC and WITH_ASSERT is defined. */
 #if !defined(NDEBUG) || (defined(_MSC_VER) && defined(WITH_ASSERT))
 	#define OTTD_ASSERT
+	#define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, __VA_ARGS__);
+#else
+	#define assert_msg(expression, ...)
 #endif
 
 #if defined(MORPHOS) || defined(__NDS__) || defined(__DJGPP__)

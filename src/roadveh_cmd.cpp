@@ -69,23 +69,9 @@ bool IsValidImageIndex<VEH_ROAD>(uint8 image_index)
 	return image_index < lengthof(_roadveh_images);
 }
 
-/** 'Convert' the DiagDirection where a road vehicle enters to the trackdirs it can drive onto */
-static const TrackdirBits _road_enter_dir_to_reachable_trackdirs[DIAGDIR_END] = {
-	TRACKDIR_BIT_LEFT_N  | TRACKDIR_BIT_LOWER_E | TRACKDIR_BIT_X_NE,    // Enter from north east
-	TRACKDIR_BIT_LEFT_S  | TRACKDIR_BIT_UPPER_E | TRACKDIR_BIT_Y_SE,    // Enter from south east
-	TRACKDIR_BIT_UPPER_W | TRACKDIR_BIT_X_SW    | TRACKDIR_BIT_RIGHT_S, // Enter from south west
-	TRACKDIR_BIT_RIGHT_N | TRACKDIR_BIT_LOWER_W | TRACKDIR_BIT_Y_NW     // Enter from north west
-};
-
 static const Trackdir _road_reverse_table[DIAGDIR_END] = {
 	TRACKDIR_RVREV_NE, TRACKDIR_RVREV_SE, TRACKDIR_RVREV_SW, TRACKDIR_RVREV_NW
 };
-
-/** Converts the exit direction of a depot to trackdir the vehicle is going to drive to */
-static const Trackdir _roadveh_depot_exit_trackdir[DIAGDIR_END] = {
-	TRACKDIR_X_NE, TRACKDIR_Y_SE, TRACKDIR_X_SW, TRACKDIR_Y_NW
-};
-
 
 /**
  * Check whether a roadvehicle is a bus
@@ -417,7 +403,7 @@ void RoadVehicle::MarkDirty()
 	this->CargoChanged();
 }
 
-void RoadVehicle::UpdateDeltaXY(Direction direction)
+void RoadVehicle::UpdateDeltaXY()
 {
 	static const int8 _delta_xy_table[8][10] = {
 		/* y_extent, x_extent, y_offs, x_offs, y_bb_offs, x_bb_offs, y_extent_shorten, x_extent_shorten, y_bb_offs_shorten, x_bb_offs_shorten */
@@ -432,9 +418,9 @@ void RoadVehicle::UpdateDeltaXY(Direction direction)
 	};
 
 	int shorten = VEHICLE_LENGTH - this->gcache.cached_veh_length;
-	if (!IsDiagonalDirection(direction)) shorten >>= 1;
+	if (!IsDiagonalDirection(this->direction)) shorten >>= 1;
 
-	const int8 *bb = _delta_xy_table[direction];
+	const int8 *bb = _delta_xy_table[this->direction];
 	this->x_bb_offs     = bb[5] + bb[9] * shorten;
 	this->y_bb_offs     = bb[4] + bb[8] * shorten;;
 	this->x_offs        = bb[3];
@@ -935,7 +921,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 	 */
 
 	/* Remove tracks unreachable from the enter dir */
-	trackdirs &= _road_enter_dir_to_reachable_trackdirs[enterdir];
+	trackdirs &= DiagdirReachesTrackdirs(enterdir);
 	if (trackdirs == TRACKDIR_BIT_NONE) {
 		/* No reachable tracks, so we'll reverse */
 		return_track(_road_reverse_table[enterdir]);
@@ -1001,7 +987,7 @@ static bool RoadVehLeaveDepot(RoadVehicle *v, bool first)
 	DiagDirection dir = GetRoadDepotDirection(v->tile);
 	v->direction = DiagDirToDir(dir);
 
-	Trackdir tdir = _roadveh_depot_exit_trackdir[dir];
+	Trackdir tdir = DiagDirToDiagTrackdir(dir);
 	const RoadDriveEntry *rdp = _road_drive_data[v->roadtype][(_settings_game.vehicle.road_side << RVS_DRIVE_SIDE) + tdir];
 
 	int x = TileX(v->tile) * TILE_SIZE + (rdp[RVC_DEPOT_START_FRAME].x & 0xF);
@@ -1463,7 +1449,7 @@ again:
 			/* Vehicle has arrived at a bay in a road stop */
 
 			if (IsDriveThroughStopTile(v->tile)) {
-				TileIndex next_tile = TILE_ADD(v->tile, TileOffsByDir(v->direction));
+				TileIndex next_tile = TileAddByDir(v->tile, v->direction);
 
 				/* Check if next inline bay is free and has compatible road. */
 				if (RoadStop::IsDriveThroughRoadStopContinuation(v->tile, next_tile) && (GetRoadTypes(next_tile) & v->compatible_roadtypes) != 0) {

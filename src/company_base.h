@@ -52,10 +52,10 @@ extern CompanyPool _company_pool;
 /** Statically loadable part of Company pool item */
 struct CompanyProperties {
 	uint32 name_2;                   ///< Parameter of #name_1.
-	uint16 name_1;                   ///< Name of the company if the user did not change it.
+	StringID name_1;                 ///< Name of the company if the user did not change it.
 	char *name;                      ///< Name of the company if the user changed it.
 
-	uint16 president_name_1;         ///< Name of the president if the user did not change it.
+	StringID president_name_1;       ///< Name of the president if the user did not change it.
 	uint32 president_name_2;         ///< Parameter of #president_name_1
 	char *president_name;            ///< Name of the president if the user changed it.
 
@@ -66,8 +66,6 @@ struct CompanyProperties {
 	Money current_loan;              ///< Amount of money borrowed from the bank.
 
 	byte colour;                     ///< Company colour.
-
-	RailTypes avail_railtypes;       ///< Rail types available to the company.
 
 	byte block_preview;              ///< Number of quarters that the company is not allowed to get new exclusive engine previews (see CompaniesGenStatistics).
 
@@ -112,6 +110,7 @@ struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {
 	~Company();
 
 	Livery livery[LS_END];
+	RailTypes avail_railtypes;         ///< Rail types available to this company.
 	RoadTypes avail_roadtypes;         ///< Road types available to this company.
 
 	class AIInstance *ai_instance;

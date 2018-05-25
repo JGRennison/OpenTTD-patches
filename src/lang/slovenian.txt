@@ -822,10 +822,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Izberi g
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Preklapljaj mešan program vključeno/izključeno
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Prikaži okno z izborom glasbe
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Izbran je bil komplet glasbe brez skladb. Nobena skladba ne bo predvajana
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Izbor glasbenega programa
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Kazalo skladb
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Program - '{STRING}'
@@ -1490,8 +1487,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Barva ozemlja n
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Zelena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Temno zelena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Vijolična
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Obrni smer premika okna: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Sistem delovanja avtomatskega pomika z miško na robu. Onemogočeno - miška premika pogled, omogočeno - miška premika zemljevid.
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Gladek premik pogleda: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Način pomika pogleda na določen objekt majhnega zemljevida (centriranje pogleda). Omogočeno - pogled drsi, onemogočeno - pogled preskoči.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Prikaz merilnega nasveta med uporabo gradbenih orodij: {STRING}
@@ -1523,8 +1518,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Ukaz-klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Kontrola-klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Izklop
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Premik slike z levim klikom: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Omogoči pomik pogleda z levim klikom miške in vlečenjem. Primerno za dotične zaslone.
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zapri okno z desnim klikom: {STRING}
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Samodejno shrani: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Izberi časovni interval samodejnega shranjevanja igre
@@ -2754,29 +2748,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Polja
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Zasnežen teren
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Puščava
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} tiri
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING}tiri s signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} tiri s pred-signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} tiri z izhodnimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} tiri s kombiniranimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} tiri s signali steze
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} tiri s signali za enosmerno stezo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} tiri z normalnimi in pred-signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} tiri z normalnimi in izhodnimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} tiri z normalnimi in kombiniranimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} tiri z normalnimi in steznimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} tiri z normalnimi in enosmernimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} tiri s pred in izhodnimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} tiri s pred in kombiniranimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} tiri s pred in steznimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} tiri s pred in enosmernimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} tiri z izhodnimi in kombiniranimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} tiri z izhodnimi in steznimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} tiri z izhodnimi in enosmernimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} tiri s kombiniranimi in steznimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} tiri s kombiniranimi in enosmernimi signali
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} tiri s steznimi in enosmernimi signali
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} železniška garaža
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Železnica tiri
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Železnicatiri s signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Železnica tiri s pred-signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Železnica tiri z izhodnimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Železnica tiri s kombiniranimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Železnica tiri s signali steze
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Železnica tiri s signali za enosmerno stezo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Železnica tiri z normalnimi in pred-signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Železnica tiri z normalnimi in izhodnimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Železnica tiri z normalnimi in kombiniranimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Železnica tiri z normalnimi in steznimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Železnica tiri z normalnimi in enosmernimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Železnica tiri s pred in izhodnimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Železnica tiri s pred in kombiniranimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Železnica tiri s pred in steznimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Železnica tiri s pred in enosmernimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Železnica tiri z izhodnimi in kombiniranimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Železnica tiri z izhodnimi in steznimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Železnica tiri z izhodnimi in enosmernimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Železnica tiri s kombiniranimi in steznimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Železnica tiri s kombiniranimi in enosmernimi signali
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Železnica tiri s steznimi in enosmernimi signali
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Železnica železniška garaža
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Cesta
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Cesta z razsvetljavo
@@ -2840,7 +2834,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ozemlje v lasti
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Prvotne avtorske pravice {COPYRIGHT} 1995 Chris Sawyer, vse pravice pridržane
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD različica {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 ekipa OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 ekipa OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Shrani igro
@@ -3059,8 +3053,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Poskus uporabe 
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} vsebuje eno poškodovano sličico. Vse poškodovane sličice se bodo prikazale kot rdeči vprašaji (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Vsebuje več Ukaz 8 vnosov (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Prebrana datoteka preko meje za sličice (sprite {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}V uporabljenem osnovnem setu grafik manjkajo sličice.{}Prosim, posodobi osnovni set grafik
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Trenutni set osnovnih grafik ne vsebuje določenih sličic. Posodobi osnovni set.{}Odkar igraš {YELLOW} razvojni pogled OpenTTD{WHITE}, nogoče potrebuješ tudi {YELLOW}razvojni pogled osnovnih grafik{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Zahtevani viri GRF niso na voljo (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} je bil izklopljen zaradi {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Neveljaven/neznan format zapisa sličic (sprite {3:NUM})
@@ -3267,8 +3259,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Sprejema
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Prikaži seznam sprejetega tovora
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Sprejema: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Ta postaja ima ekskluzivne pravice v tem mestu.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} je odkupilo ekskluzivne prevozne pravice v tem mestu.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Ta postaja ima ekskluzivne pravice v tem mestu.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} je odkupilo ekskluzivne prevozne pravice v tem mestu.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Ocene
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Prikaz ocen postaje
@@ -3447,9 +3439,8 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Potrebuj
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Potrebuje: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Tovor na čakanju obdelave:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Proizvaja: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Proizvaja: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3515,6 +3506,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Vsa izmenljiva 
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Odstrani vsa vozila
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Preimenuj eno skupino
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nova železniška vozila
@@ -3680,10 +3672,8 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :magnetna lokomo
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Cena: {CURRENCY_LONG} Teža: {WEIGHT_SHORT}{}Hitrost: {VELOCITY}  Moč: {POWER}{}Cena delovanja: {CURRENCY_LONG}/leto{}Zmogljivost: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Cena: {CURRENCY_LONG} Teža: {WEIGHT_SHORT}{}Hitrost: {VELOCITY}  Moč: {POWER}  Max. T.E.: {6:FORCE}{}Stroški: {4:CURRENCY_LONG}/yr{}Zmogljivost: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Cena: {CURRENCY_LONG} Max. hitrost: {VELOCITY}{}Zmogljivost: {CARGO_LONG}, {CARGO_LONG}{}Cena delovanja: {CURRENCY_LONG}/leto
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Cena: {CURRENCY_LONG} Max. hitrost: {VELOCITY}{}Zmogljivost: {CARGO_LONG}{}Cena delovanja: {CURRENCY_LONG}/leto
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Cena: {CURRENCY_LONG} Max. Hitrost: {VELOCITY} Domet: {COMMA} polj{}Zmogljivost: {CARGO_LONG}, {CARGO_LONG}{}Stroški delovanja: {CURRENCY_LONG}/leto
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Cena: {CURRENCY_LONG} Max. Hitrost: {VELOCITY} Domet: {COMMA} polj{}Zmogljivost: {CARGO_LONG}{}Stroški delovanja: {CURRENCY_LONG}/leto
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Cena: {CURRENCY_LONG} Max. hitrost: {VELOCITY}{}Zmogljivost: {CARGO_LONG}{}Cena delovanja: {CURRENCY_LONG}/leto
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Cena: {CURRENCY_LONG} Max. hitrost: {VELOCITY}{}Vrsta letala: {STRING}{}Zmogljivost: {CARGO_LONG}{}Stroški obratovanja: {CURRENCY_LONG}/leto
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Zamenjaj {STRING} - {STRING}
@@ -3710,7 +3700,6 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} ko se 
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Ustavi menjavo vozil
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Pritisni za zaustavitev zamenjave na levi izbranega tipa lokomotive
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Zamenjuje: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Preklop med okni za menjavo lokomotiv in vagonov
 STR_REPLACE_ENGINES                                             :Lokomotive
 STR_REPLACE_WAGONS                                              :Vagoni
@@ -3806,7 +3795,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} let{P o
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} let{P o i a ""} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Max. hitrost: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. hitrost: {LTBLUE}{VELOCITY} {BLACK}Domet: {LTBLUE}{COMMA} polj
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Teža: {LTBLUE}{WEIGHT_SHORT} {BLACK}Moč: {LTBLUE}{POWER}{BLACK} Max. hitrost: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Teža: {LTBLUE}{WEIGHT_SHORT} {BLACK}Moč: {LTBLUE}{POWER}{BLACK} Max. hitrost: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 

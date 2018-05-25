@@ -28,6 +28,7 @@
 #include "../engine_func.h"
 #include "../company_base.h"
 #include "../disaster_vehicle.h"
+#include "../core/smallvec_type.hpp"
 #include "saveload_internal.h"
 #include "oldloader.h"
 
@@ -490,8 +491,7 @@ static inline uint RemapOrderIndex(uint x)
 	return _savegame_type == SGT_TTO ? (x - 0x1AC4) / 2 : (x - 0x1C18) / 2;
 }
 
-extern TileIndex *_animated_tile_list;
-extern uint _animated_tile_count;
+extern SmallVector<TileIndex, 256> _animated_tiles;
 extern char *_old_name_array;
 
 static uint32 _old_town_index;
@@ -640,22 +640,18 @@ static bool LoadOldOrder(LoadgameState *ls, int num)
 
 static bool LoadOldAnimTileList(LoadgameState *ls, int num)
 {
-	/* This is slightly hackish - we must load a chunk into an array whose
-	 * address isn't static, but instead pointed to by _animated_tile_list.
-	 * To achieve that, create an OldChunks list on the stack on the fly.
-	 * The list cannot be static because the value of _animated_tile_list
-	 * can change between calls. */
-
+	TileIndex anim_list[256];
 	const OldChunks anim_chunk[] = {
-		OCL_VAR (   OC_TILE, 256, _animated_tile_list ),
+		OCL_VAR (   OC_TILE, 256, anim_list ),
 		OCL_END ()
 	};
 
 	if (!LoadChunk(ls, NULL, anim_chunk)) return false;
 
-	/* Update the animated tile counter by counting till the first zero in the array */
-	for (_animated_tile_count = 0; _animated_tile_count < 256; _animated_tile_count++) {
-		if (_animated_tile_list[_animated_tile_count] == 0) break;
+	/* The first zero in the loaded array indicates the end of the list. */
+	for (int i = 0; i < 256; i++) {
+		if (anim_list[i] == 0) break;
+		*_animated_tiles.Append() = anim_list[i];
 	}
 
 	return true;
@@ -950,7 +946,7 @@ static const OldChunks _company_chunk[] = {
 
 	OCL_SVAR(  OC_UINT8, Company, block_preview ),
 	OCL_CNULL( OC_TTD, 1 ),           // Old AI
-	OCL_SVAR( OC_TTD | OC_UINT8, Company, avail_railtypes ),
+	OCL_CNULL( OC_TTD, 1 ), // avail_railtypes
 	OCL_SVAR(   OC_TILE, Company, location_of_HQ ),
 	OCL_SVAR( OC_TTD | OC_UINT8, Company, share_owners[0] ),
 	OCL_SVAR( OC_TTD | OC_UINT8, Company, share_owners[1] ),

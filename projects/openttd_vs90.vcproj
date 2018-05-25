@@ -121,6 +121,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description=""
+				CommandLine="copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;$(SolutionDir)..\bin\$(TargetName)$(TargetExt)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -215,6 +217,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description=""
+				CommandLine="copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;$(SolutionDir)..\bin\$(TargetName)$(TargetExt)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -324,6 +328,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description=""
+				CommandLine="copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;$(SolutionDir)..\bin\$(TargetName)$(TargetExt)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -422,6 +428,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description=""
+				CommandLine="copy &quot;$(OutDir)$(TargetName)$(TargetExt)&quot; &quot;$(SolutionDir)..\bin\$(TargetName)$(TargetExt)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -1484,6 +1492,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\music\midi.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\music\midifile.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\music\null_m.h"
 				>
 			</File>
@@ -1585,6 +1601,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\safeguards.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\scope.h"
 				>
 			</File>
 			<File
@@ -1936,6 +1956,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\sound\xaudio2_s.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\zoom_func.h"
 				>
 			</File>
@@ -1969,6 +1993,14 @@
 			</File>
 			<File
 				RelativePath=".\..\src\core\bitmath_func.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\core\container_func.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\core\dyn_arena_alloc.hpp"
 				>
 			</File>
 			<File
@@ -3372,6 +3404,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\script\api\script_client.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_clientlist.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\script\api\script_company.hpp"
 				>
 			</File>
@@ -3636,6 +3676,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\script\api\script_client.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\script\api\script_clientlist.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\script\api\script_company.cpp"
 				>
 			</File>
@@ -3857,6 +3905,14 @@
 			</File>
 			<File
 				RelativePath=".\..\src\blitter\32bpp_anim.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_anim_sse2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\blitter\32bpp_anim_sse2.hpp"
 				>
 			</File>
 			<File
@@ -4480,6 +4536,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\music\midifile.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\music\win32_m.cpp"
 				>
 			</File>
@@ -4497,6 +4557,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\sound\win32_s.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\sound\xaudio2_s.cpp"
 				>
 			</File>
 		</Filter>
@@ -4533,7 +4597,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\..\readme.txt"
+			RelativePath=".\..\README.md"
 			>
 		</File>
 	</Files>

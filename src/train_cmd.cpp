@@ -1461,7 +1461,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 	return cost;
 }
 
-void Train::UpdateDeltaXY(Direction direction)
+void Train::UpdateDeltaXY()
 {
 	/* Set common defaults. */
 	this->x_offs    = -1;
@@ -1472,7 +1472,7 @@ void Train::UpdateDeltaXY(Direction direction)
 	this->x_bb_offs =  0;
 	this->y_bb_offs =  0;
 
-	if (!IsDiagonalDirection(direction)) {
+	if (!IsDiagonalDirection(this->direction)) {
 		static const int _sign_table[] =
 		{
 			/* x, y */
@@ -1485,12 +1485,12 @@ void Train::UpdateDeltaXY(Direction direction)
 		int half_shorten = (VEHICLE_LENGTH - this->gcache.cached_veh_length) / 2;
 
 		/* For all straight directions, move the bound box to the centre of the vehicle, but keep the size. */
-		this->x_offs -= half_shorten * _sign_table[direction];
-		this->y_offs -= half_shorten * _sign_table[direction + 1];
+		this->x_offs -= half_shorten * _sign_table[this->direction];
+		this->y_offs -= half_shorten * _sign_table[this->direction + 1];
 		this->x_extent += this->x_bb_offs = half_shorten * _sign_table[direction];
 		this->y_extent += this->y_bb_offs = half_shorten * _sign_table[direction + 1];
 	} else {
-		switch (direction) {
+		switch (this->direction) {
 				/* Shorten southern corner of the bounding box according the vehicle length
 				 * and center the bounding box on the vehicle. */
 			case DIR_NE:
@@ -1719,8 +1719,8 @@ void UpdateLevelCrossing(TileIndex tile, bool sound)
 {
 	assert(IsLevelCrossingTile(tile));
 
-	/* train on crossing || train approaching crossing || reserved */
-	bool new_state = HasVehicleOnPos(tile, NULL, &TrainOnTileEnum) || TrainApproachingCrossing(tile) || HasCrossingReservation(tile);
+	/* reserved || train on crossing || train approaching crossing */
+	bool new_state = HasCrossingReservation(tile) || HasVehicleOnPos(tile, NULL, &TrainOnTileEnum) || TrainApproachingCrossing(tile);
 
 	if (new_state != IsCrossingBarred(tile)) {
 		if (new_state && sound) {
@@ -2273,16 +2273,14 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 /**
  * Free the reserved path in front of a vehicle.
  * @param v %Train owning the reserved path.
- * @param origin %Tile to start clearing (if #INVALID_TILE, use the current tile of \a v).
- * @param orig_td Track direction (if #INVALID_TRACKDIR, use the track direction of \a v).
  */
-void FreeTrainTrackReservation(const Train *v, TileIndex origin, Trackdir orig_td)
+void FreeTrainTrackReservation(const Train *v)
 {
 	assert(v->IsFrontEngine());
 
-	TileIndex tile = origin != INVALID_TILE ? origin : v->tile;
-	Trackdir  td = orig_td != INVALID_TRACKDIR ? orig_td : v->GetVehicleTrackdir();
-	bool      free_tile = tile != v->tile || !(IsRailStationTile(v->tile) || IsTileType(v->tile, MP_TUNNELBRIDGE));
+	TileIndex tile = v->tile;
+	Trackdir  td = v->GetVehicleTrackdir();
+	bool      free_tile = !(IsRailStationTile(v->tile) || IsTileType(v->tile, MP_TUNNELBRIDGE));
 	StationID station_id = IsRailStationTile(v->tile) ? GetStationIndex(v->tile) : INVALID_STATION;
 
 	/* Can't be holding a reservation if we enter a depot. */
@@ -2523,6 +2521,7 @@ public:
 				case OT_GOTO_DEPOT:
 					/* Skip service in depot orders when the train doesn't need service. */
 					if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !this->v->NeedsServicing()) break;
+					FALLTHROUGH;
 				case OT_GOTO_STATION:
 				case OT_GOTO_WAYPOINT:
 					this->v->current_order = *order;
@@ -3381,7 +3380,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		}
 
 		/* update image of train, as well as delta XY */
-		v->UpdateDeltaXY(v->direction);
+		v->UpdateDeltaXY();
 
 		v->x_pos = gp.x;
 		v->y_pos = gp.y;
@@ -3629,7 +3628,7 @@ static bool TrainApproachingLineEnd(Train *v, bool signal, bool reverse)
 	 * for other directions, it will be 1, 3, 5, ..., 15 */
 	switch (v->direction) {
 		case DIR_N : x = ~x + ~y + 25; break;
-		case DIR_NW: x = y;            // FALL THROUGH
+		case DIR_NW: x = y;            FALLTHROUGH;
 		case DIR_NE: x = ~x + 16;      break;
 		case DIR_E : x = ~x + y + 9;   break;
 		case DIR_SE: x = y;            break;

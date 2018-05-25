@@ -671,10 +671,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Velg pro
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Skru av/på tilfeldig program
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Vis musikkspormeny
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Et musikksett uten sanger er valgt. Ingen sanger vil bli avspilt
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Musikkprogram
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Sporliste
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Program - '{STRING}'
@@ -1003,7 +1000,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Velg mus
 STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM} ødelagt{P "" e} fil{P "" er}
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Ytterligere informasjon om det originale musikksettet
 
-STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Mislytes med å hente en liste over støttede oppløsninger
+STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Mislyktes med å hente en liste over støttede oppløsninger
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}Fullskjermmodus mislyktes
 
 # Custom currency window
@@ -1340,8 +1337,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Farge på terre
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Grønn
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Mørkegrønn
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Fiolett
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Snu rulleretningen: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Opptreden ved rulling av kartet med høyre museknapp. Når deaktivert, beveger musen kameraet. Når aktivert, beveger musen kartet
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Myk rulling: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Velge hvordan synsfeltet ruller til en bestemt posisjon når du klikker på det lille kartet, eller ved utstedelse av en kommando for å gå til et bestemt objekt på kartet. Hvis aktivert, ruller synsfeltet jevnt, og hvis deaktivert hopper det direkte til det valgte punktet
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Vis målingsverktøy ved bruk av byggingsverktøy: {STRING}
@@ -1373,8 +1368,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Kommando+klikk
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+klikk
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Av
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Venstre-klikk rulling: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Tillat rulling av kartet ved å dra det med den venstre museknappen. Dette er spesielt nyttig når du bruker en berøringsskjerm
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Lukk vinduet med høyreklikk: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Lukker et vindu ved å høyreklikke i det. Deaktiverer verktøytipset med høyreklikk!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autolagring: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Velg intervall mellom automatiske lagringer av spillet
@@ -1764,6 +1759,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Se etter
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Vis AI/Spillskript-innstillinger
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Avslutt 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}Det valgte innebygde grafikksettet mangler {NUM} sprite{P "" r}. Se etter oppdateringer for settet.
 STR_INTRO_TRANSLATION                                           :{BLACK}Denne oversettelsen mangler {NUM} streng{P "" er}. Vennligst hjelp til å gjøre OpenTTD bedre ved å bli med i oversettergruppen. For detaljer, sjekk readme.txt.
 
 # Quit window
@@ -2593,6 +2589,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Flyplass
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Godtatte varer: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Skinnetype: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Fartsgrense for jernbanespor: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Veiens fartsgrense: {LTBLUE}{VELOCITY}
 
@@ -2605,29 +2602,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Jorder
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Snødekket land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Ørken
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING}spor
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING}spor med blokksignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING}spor med forsignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING}spor med utgangssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING}spor med kombinasjonssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING}spor med avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} spor med enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} spor med blokk- og forsignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} spor med blokk- og utgangssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} spor med blokk- og kombinasjonssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} spor med blokk- og avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} spor med blokk- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} spor med for- og utgangssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} spor med for- og kombinasjonssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} spor med for- og avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} spor med for- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} spor med utgangs- og kombinasjonssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} spor med utgangs- og avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} spor med utgangs- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} spor med kombinasjon- og avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} spor med kombinasjon- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} spor med avanserte- og enveis avanserte signaler
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} togstall
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Jernbanespor
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Jernbanespor med blokksignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Jernbanespor med forsignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Jernbanespor med utgangssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Jernbanespor med kombinasjonssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Jernbanespor med avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Jernbanespor med enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Jernbanespor med blokk- og forsignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Jernbane spor med blokk- og utgangssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Jernbanespor med blokk- og kombinasjonssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Jernbane spor med blokk- og avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Jernbanespor med blokk- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Jernbanespor med for- og utgangssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Jernbanespor med for- og kombinasjonssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Jernbane spor med forsignaler og avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Jernbanespor med for- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Jernbanespor med utgangs- og kombinasjonssignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Jernbanespor med utgangs- og avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Jernbanespor med utgangs- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Jernbanespor med kombinasjon- og avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Jernbanespor med kombinasjon- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Jernbanespor med avanserte- og enveis avanserte signaler
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Jernbane-togstall
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Vei
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Vei med gatelykter
@@ -2691,7 +2688,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Firma-eid lando
 STR_ABOUT_OPENTTD                                               :{WHITE}Om OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Opprinnelig opphavsbeskyttet {COPYRIGHT} 1995 Chris Sawyer, Alle rettigheter reservert
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versjon {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD-teamet
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD-teamet
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Lagre spill
@@ -2910,8 +2907,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Forsøk på å 
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} inneholder en ødelagt sprite. Alle ødelagte spriter blir vist som røde spørsmålstegn (?).
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Inneholder flere Handling 8-oppføringer (figur {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Leste forbi slutten av pseudo-sprite (figur {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Det benyttede grafikksettet mangler en del spriter.{}Du må oppdatere grafikksettet.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Den benyttede grafikkpakken mangler en mengde bildeelementer.{}Du må oppdatere grafikkpakken.{}Siden du spiller en {YELLOW}utviklingsversjon av OpenTTD{WHITE}, kan det være at du også trenger en {YELLOW}utviklingsversjon av grafikkpakken{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Etterspurte GRF-ressurser ikke tilgjengelig (figur {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} ble deaktivert av {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ugyldig/ukjent sprite layout-format (figur {3:NUM})
@@ -3118,8 +3113,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Godtar
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Vis liste over godtatte varer
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Godtar: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Denne stasjonen har eksklusive transportrettigheter i denne byen.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} kjøpte eksklusive transportrettigheter i denne byen.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Denne stasjonen har eksklusive transportrettigheter i denne byen.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} kjøpte eksklusive transportrettigheter i denne byen.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Vurderinger
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Vis stasjonsvurdering
@@ -3279,8 +3274,8 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL                           :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Industrier
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ingen -
-STR_INDUSTRY_DIRECTORY_ITEM                                     :{ORANGE}{INDUSTRY}{BLACK} ({CARGO_LONG}{STRING}){YELLOW} ({COMMA}{NBSP}% transportert)
-STR_INDUSTRY_DIRECTORY_ITEM_TWO                                 :{ORANGE}{INDUSTRY}{BLACK} ({CARGO_LONG}{STRING}/{CARGO_LONG}{STRING}){YELLOW} ({COMMA}{NBSP}%/{COMMA}{NBSP}% transportert)
+STR_INDUSTRY_DIRECTORY_ITEM                                     :{ORANGE}{INDUSTRY}{BLACK} ({CARGO_LONG}{STRING}){YELLOW} ({COMMA}% transportert)
+STR_INDUSTRY_DIRECTORY_ITEM_TWO                                 :{ORANGE}{INDUSTRY}{BLACK} ({CARGO_LONG}{STRING}/{CARGO_LONG}{STRING}){YELLOW} ({COMMA}%/{COMMA}% transportert)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrinavn - klikk på navn for å gå til industri. Ctrl+klikk åpner et nytt tilleggsvindu over industrien
 
@@ -3298,9 +3293,11 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Trenger:
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Trenger: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Krever:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} venter{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Varer som venter på behandling:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produserer: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produserer: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3367,6 +3364,11 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Fjern alle kjø
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Endre navn på gruppe
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Profitt i år:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Profitt i fjor:
+STR_GROUP_OCCUPANCY                                             :Gjeldende bruk:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM} %
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nye tog/vogner for jernbane
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nye tog/vogner for elektrisk jernbane
@@ -3398,6 +3400,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Alle varetyper
 STR_PURCHASE_INFO_ALL_BUT                                       :Alt utenom {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks trekkraft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rekkevidde: {GOLD}{COMMA} ruter
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Flytype: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Liste over tog/vogner - klikk på tog/vogn for mer informasjon. Ctrl+klikk for å skjule/vise denne typen
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Liste over kjøretøy - klikk på kjøretøy for mer informasjon. Ctrl+klikk for å skjule/vise kjøretøytypen
@@ -3531,10 +3534,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :{G=neuter}magle
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kostnad: {CURRENCY_LONG} Vekt: {WEIGHT_SHORT}{}Hastighet: {VELOCITY}  Kraft: {POWER}{}Driftskostnader: {CURRENCY_LONG}/år{}Kapasitet: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Kostnad: {CURRENCY_LONG} Vekt: {WEIGHT_SHORT}{}Hastighet: {VELOCITY}  Kraft: {POWER}  Maks trekkraft: {6:FORCE}{}Vedlikehold: {4:CURRENCY_LONG}/år{}Kapasitet: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Kostnad: {CURRENCY_LONG} Maks hastighet: {VELOCITY}{}Kapasitet: {CARGO_LONG}, {CARGO_LONG}{}Driftskostnader: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Kostnad: {CURRENCY_LONG} Maks hastighet: {VELOCITY}{}Kapasitet: {CARGO_LONG}{}Driftskostnader: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Kostnad: {CURRENCY_LONG} Maks hastighet: {VELOCITY} Rekkevidde: {COMMA} ruter{}Kapasitet: {CARGO_LONG}, {CARGO_LONG}{}Driftskostnad: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Kostnad: {CURRENCY_LONG} Maks hastighet: {VELOCITY} Rekkevidde: {COMMA} ruter{}Kapasitet: {CARGO_LONG}{}Driftskostnad: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Kostnad: {CURRENCY_LONG} Maks hastighet: {VELOCITY}{}Kapasitet: {CARGO_LONG}{}Driftskostnader: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Kostnad: {CURRENCY_LONG} Maks. hastighet: {VELOCITY}{}Flytype: {STRING}{}Kapasitet: {CARGO_LONG}, {CARGO_LONG}{}Driftskostnader: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Kostnad: {CURRENCY_LONG} Maks. hastighet: {VELOCITY}{}Flytype: {STRING}{}Kapasitet: {CARGO_LONG}{}Driftskostnad: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Kostnad: {CURRENCY_LONG} Maks. hastighet: {VELOCITY}{}Flytype: {STRING} Rekkevidde: {COMMA} ruter{}kapasitet: {CARGO_LONG}, {CARGO_LONG}{}Driftskostnader: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Kostnad: {CURRENCY_LONG} Maks. hastighet: {VELOCITY}{}Flytype: {STRING} Rekkevidde: {COMMA} ruter{}Kapasitet: {CARGO_LONG}{}Driftskostnad: {CURRENCY_LONG}/år
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Erstatte {STRING} - {STRING}
@@ -3561,10 +3565,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} når g
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stopp erstatning av kjøretøy
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Klikk denne knappen for å stoppe erstatning av lokomotivet som er valgt på venstresiden
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Erstatter: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Veksle mellom tog- og vognerstatningsvinduet
 STR_REPLACE_ENGINES                                             :Lokomotiv
 STR_REPLACE_WAGONS                                              :Vogner
+STR_REPLACE_ALL_RAILTYPE                                        :Status: Mangler
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Velg jernbanetypen du vil bytte ut lokomotiv på
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Viser hvilket lokomotiv som overtar for det valgte lokomotivet på venstresiden
@@ -3657,7 +3661,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} år ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} år ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Maks hastighet: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Maks hastighet: {LTBLUE}{VELOCITY} {BLACK}Rekkevidde: {LTBLUE}{COMMA} ruter
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Maks. hastighet: {LTBLUE}{VELOCITY} {BLACK}Flytype: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Maks. hastighet: {LTBLUE}{VELOCITY} {BLACK}Flytype: {LTBLUE}{STRING} {BLACK}Rekkevidde: {LTBLUE}{COMMA} ruter
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Vekt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Kraft: {LTBLUE}{POWER}{BLACK} Maks hastighet: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Vekt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Kraft: {LTBLUE}{POWER}{BLACK} Maks hastighet: {LTBLUE}{VELOCITY} {BLACK}Maks trekkraft: {LTBLUE}{FORCE}
 

@@ -24,6 +24,7 @@ description.en_US = Original Transport Tycoon Deluxe DOS edition graphics.
 description.es_ES = Gráficos originales de Transport Tycoon Deluxe versión DOS.
 description.es_MX = Gráficos originales de Transport Tycoon Deluxe para DOS.
 description.et_EE = Algse Transport Tycoon Deluxe DOSi versiooni graafika.
+description.eu_ES = Transport Tycoon Deluxe originaleko DOS edizioko grafikoak.
 description.fi_FI = Alkuperäiset Transport Tycoon Deluxen DOS-version grafiikat.
 description.fr_FR = Graphiques originaux de Transport Tycoon Deluxe (version DOS).
 description.ga_IE = Grafaicí bunaidhTransport Tycoon Deluxe, eagrán DOS.
@@ -63,21 +64,21 @@ description.zh_CN = 运输大亨DOS豪华版原版图形包.
 description.zh_TW = 原版 Transport Tycoon Deluxe DOS 版的圖形。
 
 [files]
-base         = TRG1.GRF
-logos        = TRGI.GRF
-arctic       = TRGC.GRF
-tropical     = TRGH.GRF
-toyland      = TRGT.GRF
-extra        = OPENTTD.GRF
+base              = TRG1.GRF
+logos             = TRGI.GRF
+arctic            = TRGC.GRF
+tropical          = TRGH.GRF
+toyland           = TRGT.GRF
+extra             = ORIG_EXTRA.GRF
 
 [md5s]
-TRG1.GRF     = 9311676280e5b14077a8ee41c1b42192
-TRGI.GRF     = da6a6c9dcc451eec88d79211437b76a8
-TRGC.GRF     = ed446637e034104c5559b32c18afe78d
-TRGH.GRF     = ee6616fb0e6ef6b24892c58c93d86fc9
-TRGT.GRF     = e30e8a398ae86c03dc534a8ac7dfb3b6
-OPENTTD.GRF  = 505d96061556d3bb5cec6234096ec5bc
+TRG1.GRF          = 9311676280e5b14077a8ee41c1b42192
+TRGI.GRF          = da6a6c9dcc451eec88d79211437b76a8
+TRGC.GRF          = ed446637e034104c5559b32c18afe78d
+TRGH.GRF          = ee6616fb0e6ef6b24892c58c93d86fc9
+TRGT.GRF          = e30e8a398ae86c03dc534a8ac7dfb3b6
+ORIG_EXTRA.GRF    = 67bcfac5911667309d86b7749ea8d08c
 
 [origin]
-default      = You can find it on your Transport Tycoon Deluxe CD-ROM.
-OPENTTD.GRF  = This file was part of your OpenTTD installation.
+default           = You can find it on your Transport Tycoon Deluxe CD-ROM.
+ORIG_EXTRA.GRF    = This file was part of your OpenTTD installation.

@@ -311,6 +311,7 @@ public:
 	uint16 refit_cap;                   ///< Capacity left over from before last refit.
 	VehicleCargoList cargo;             ///< The cargo this vehicle is carrying
 	uint16 cargo_age_counter;           ///< Ticks till cargo is aged next.
+	int8 trip_occupancy;                ///< NOSAVE: Occupancy of vehicle of the current trip (updated after leaving a station).
 
 	byte day_counter;                   ///< Increased by one for each day
 	byte tick_counter;                  ///< Increased by one for each tick
@@ -368,9 +369,8 @@ public:
 	/**
 	 * Updates the x and y offsets and the size of the sprite used
 	 * for this vehicle.
-	 * @param direction the direction the vehicle is facing
 	 */
-	virtual void UpdateDeltaXY(Direction direction) {}
+	virtual void UpdateDeltaXY() {}
 
 	/**
 	 * Determines the effective direction-specific vehicle movement speed.
@@ -1142,7 +1142,7 @@ struct SpecializedVehicle : public Vehicle {
 
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
-		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);
+		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
 		VehicleSpriteSeq seq;
 		((T *)this)->T::GetImage(this->direction, EIT_ON_MAP, &seq);
 		if (force_update || this->sprite_seq != seq) {

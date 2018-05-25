@@ -161,7 +161,8 @@ static void PlaceRail_Waypoint(TileIndex tile)
 	Axis axis = GetAxisForNewWaypoint(tile);
 	if (IsValidAxis(axis)) {
 		/* Valid tile for waypoints */
-		VpStartPlaceSizing(tile, axis == AXIS_X ? VPM_FIX_X : VPM_FIX_Y, DDSP_BUILD_STATION);
+		VpStartPlaceSizing(tile, axis == AXIS_X ? VPM_X_LIMITED : VPM_Y_LIMITED, DDSP_BUILD_STATION);
+		VpSetPlaceSizingLimit(_settings_game.station.station_spread);
 	} else {
 		/* Tile where we can't build rail waypoints. This is always going to fail,
 		 * but provides the user with a proper error message. */
@@ -728,7 +729,7 @@ struct BuildRailToolbarWindow : Window {
 							DoCommandP(end_tile, start_tile, _ctrl_pressed ? 0 : 1, CMD_REMOVE_FROM_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_REMOVE_TRAIN_WAYPOINT), CcPlaySound_SPLAT_RAIL);
 						} else {
 							TileArea ta(start_tile, end_tile);
-							uint32 p1 = _cur_railtype | (select_method == VPM_FIX_X ? AXIS_X : AXIS_Y) << 4 | ta.w << 8 | ta.h << 16 | _ctrl_pressed << 24;
+							uint32 p1 = _cur_railtype | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 4 | ta.w << 8 | ta.h << 16 | _ctrl_pressed << 24;
 							uint32 p2 = STAT_CLASS_WAYP | _cur_waypoint_type << 8 | INVALID_STATION << 16;
 
 							CommandContainer cmdcont = { ta.tile, p1, p2, CMD_BUILD_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT), CcPlaySound_SPLAT_RAIL, "" };
@@ -1981,9 +1982,10 @@ void InitializeRailGUI()
 /**
  * Create a drop down list for all the rail types of the local company.
  * @param for_replacement Whether this list is for the replacement window.
+ * @param all_option Whether to add an 'all types' item.
  * @return The populated and sorted #DropDownList.
  */
-DropDownList *GetRailTypeDropDownList(bool for_replacement)
+DropDownList *GetRailTypeDropDownList(bool for_replacement, bool all_option)
 {
 	RailTypes used_railtypes = RAILTYPES_NONE;
 
@@ -2000,6 +2002,12 @@ DropDownList *GetRailTypeDropDownList(bool for_replacement)
 
 	const Company *c = Company::Get(_local_company);
 	DropDownList *list = new DropDownList();
+
+	if (all_option) {
+		DropDownListStringItem *item = new DropDownListStringItem(STR_REPLACE_ALL_RAILTYPE, INVALID_RAILTYPE, false);
+		*list->Append() = item;
+	}
+
 	RailType rt;
 	FOR_ALL_SORTED_RAILTYPES(rt) {
 		/* If it's not used ever, don't show it to the user. */

@@ -475,7 +475,7 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	byte new_subtype = GB(p2, 8, 8);
 	if (new_cid >= NUM_CARGO) return CMD_ERROR;
 
-	/* For ships and aircrafts there is always only one. */
+	/* For ships and aircraft there is always only one. */
 	bool only_this = HasBit(p2, 7) || front->type == VEH_SHIP || front->type == VEH_AIRCRAFT;
 	uint8 num_vehicles = GB(p2, 16, 8);
 
@@ -622,7 +622,7 @@ CommandCost CmdMassStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32 
 	bool vehicle_list_window = HasBit(p1, 1);
 
 	VehicleListIdentifier vli;
-	if (!vli.Unpack(p2)) return CMD_ERROR;
+	if (!vli.UnpackIfValid(p2)) return CMD_ERROR;
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
 
 	if (vehicle_list_window) {
@@ -1489,7 +1489,7 @@ CommandCost CmdSendVehicleToDepot(TileIndex tile, DoCommandFlag flags, uint32 p1
 	if (p1 & DEPOT_MASS_SEND) {
 		/* Mass goto depot requested */
 		VehicleListIdentifier vli;
-		if (!vli.Unpack(p2)) return CMD_ERROR;
+		if (!vli.UnpackIfValid(p2)) return CMD_ERROR;
 		return SendAllVehiclesToDepot(flags, (p1 & DEPOT_SERVICE) != 0, vli);
 	}
 
