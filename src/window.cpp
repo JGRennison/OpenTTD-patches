@@ -73,6 +73,7 @@ int _scrollbar_size;
 byte _scroller_click_timeout = 0;
 
 Window *_scrolling_viewport; ///< A viewport is being scrolled with the mouse.
+Rect _scrolling_viewport_bound; ///< A viewport is being scrolled with the mouse, the overlay currently covers this viewport rectangle.
 bool _mouse_hovering;      ///< The mouse is hovering over the same point.
 
 SpecialMouseMode _special_mouse_mode; ///< Mode of the mouse.
@@ -1878,6 +1879,7 @@ void InitWindowSystem()
 	_mouseover_last_w = NULL;
 	_last_scroll_window = NULL;
 	_scrolling_viewport = NULL;
+	_scrolling_viewport_bound = { 0, 0, 0, 0 };
 	_mouse_hovering = false;
 
 	NWidgetLeaf::InvalidateDimensionCache(); // Reset cached sizes of several widgets.
@@ -2448,6 +2450,7 @@ static EventState HandleViewportScroll()
 		_cursor.fix_at = false;
 		_scrolling_viewport = NULL;
 		_last_scroll_window = NULL;
+		UpdateActiveScrollingViewport(nullptr);
 		return ES_NOT_HANDLED;
 	}
 

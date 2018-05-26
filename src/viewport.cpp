@@ -2784,24 +2784,54 @@ void UpdateViewportPosition(Window *w)
 
 		ClampViewportToMap(vp, w->viewport->scrollpos_x, w->viewport->scrollpos_y);
 
-		if (_scrolling_viewport == w && _settings_client.gui.show_scrolling_viewport_on_map && vp->zoom < ZOOM_LVL_DRAW_MAP) {
-			const int gap = ScaleByZoom(1, ZOOM_LVL_MAX);
-
-			int lr_low = vp->virtual_left;
-			int lr_hi = w->viewport->scrollpos_x;
-			if (lr_low > lr_hi) Swap(lr_low, lr_hi);
-			int right = lr_hi + vp->virtual_width + gap;
-
-			int tb_low = vp->virtual_top;
-			int tb_hi = w->viewport->scrollpos_y;
-			if (tb_low > tb_hi) Swap(tb_low, tb_hi);
-			int bottom = tb_hi + vp->virtual_height + gap;
-
-			MarkAllViewportMapsDirty(lr_low, tb_low, right, bottom);
-		}
+		if (_scrolling_viewport == w) UpdateActiveScrollingViewport(w);
 
 		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y);
 		if (update_overlay) RebuildViewportOverlay(w);
+	}
+}
+
+void UpdateActiveScrollingViewport(Window *w)
+{
+	if (w && (!_settings_client.gui.show_scrolling_viewport_on_map || w->viewport->zoom >= ZOOM_LVL_DRAW_MAP)) w = nullptr;
+
+	const bool bound_valid = (_scrolling_viewport_bound.left != _scrolling_viewport_bound.right);
+
+	if (!w && !bound_valid) return;
+
+	const int gap = ScaleByZoom(1, ZOOM_LVL_MAX);
+
+	auto get_bounds = [&gap](const ViewportData *vp) -> Rect {
+		int lr_low = vp->virtual_left;
+		int lr_hi = vp->dest_scrollpos_x;
+		if (lr_low > lr_hi) Swap(lr_low, lr_hi);
+		int right = lr_hi + vp->virtual_width + gap;
+
+		int tb_low = vp->virtual_top;
+		int tb_hi = vp->scrollpos_y;
+		if (tb_low > tb_hi) Swap(tb_low, tb_hi);
+		int bottom = tb_hi + vp->virtual_height + gap;
+
+		return { lr_low, tb_low, right, bottom };
+	};
+
+	if (w && !bound_valid) {
+		const Rect bounds = get_bounds(w->viewport);
+		MarkAllViewportMapsDirty(bounds.left, bounds.top, bounds.right, bounds.bottom);
+		_scrolling_viewport_bound = bounds;
+	} else if (!w && bound_valid) {
+		const Rect &bounds = _scrolling_viewport_bound;
+		MarkAllViewportMapsDirty(bounds.left, bounds.top, bounds.right, bounds.bottom);
+		_scrolling_viewport_bound = { 0, 0, 0, 0 };
+	} else {
+		/* Calculate symmetric difference of two rectangles */
+		const Rect a = get_bounds(w->viewport);
+		const Rect &b = _scrolling_viewport_bound;
+		if (a.left != b.left) MarkAllViewportMapsDirty(min(a.left, b.left) - gap, min(a.top, b.top) - gap, max(a.left, b.left) + gap, max(a.bottom, b.bottom) + gap);
+		if (a.top != b.top) MarkAllViewportMapsDirty(min(a.left, b.left) - gap, min(a.top, b.top) - gap, max(a.right, b.right) + gap, max(a.top, b.top) + gap);
+		if (a.right != b.right) MarkAllViewportMapsDirty(min(a.right, b.right) - (2 * gap), min(a.top, b.top) - gap, max(a.right, b.right) + gap, max(a.bottom, b.bottom) + gap);
+		if (a.bottom != b.bottom) MarkAllViewportMapsDirty(min(a.left, b.left) - gap, min(a.bottom, b.bottom) - (2 * gap), max(a.right, b.right) + gap, max(a.bottom, b.bottom) + gap);
+		_scrolling_viewport_bound = a;
 	}
 }
 
