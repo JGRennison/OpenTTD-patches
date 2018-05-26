@@ -78,6 +78,8 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 bool ScrollWindowToTile(TileIndex tile, Window *w, bool instant = false);
 bool ScrollWindowTo(int x, int y, int z, Window *w, bool instant = false);
 
+void UpdateActiveScrollingViewport(Window *w);
+
 void RebuildViewportOverlay(Window *w);
 
 bool ScrollMainWindowToTile(TileIndex tile, bool instant = false);

@@ -904,6 +904,7 @@ extern int _scrollbar_size;
 extern byte _scroller_click_timeout;
 
 extern Window *_scrolling_viewport;
+extern Rect _scrolling_viewport_bound;
 extern bool _mouse_hovering;
 
 /** Mouse modes. */
