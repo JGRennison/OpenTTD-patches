@@ -429,7 +429,7 @@ static void DoSetViewportPosition(const Window *w, int left, int top, int width,
 	}
 }
 
-static void SetViewportPosition(Window *w, int x, int y)
+static void SetViewportPosition(Window *w, int x, int y, bool force_update_overlay)
 {
 	ViewPort *vp = w->viewport;
 	int old_left = vp->virtual_left;
@@ -439,6 +439,8 @@ static void SetViewportPosition(Window *w, int x, int y)
 
 	vp->virtual_left = x;
 	vp->virtual_top = y;
+
+	if (force_update_overlay || IsViewportOverlayOutsideCachedRegion(w)) RebuildViewportOverlay(w, true);
 
 	/* Viewport is bound to its left top corner, so it must be rounded down (UnScaleByZoomLower)
 	 * else glitch described in FS#1412 will happen (offset by 1 pixel with zoom level > NORMAL)
@@ -2823,7 +2825,7 @@ void UpdateViewportPosition(Window *w)
 
 		w->viewport->scrollpos_x = pt.x;
 		w->viewport->scrollpos_y = pt.y;
-		SetViewportPosition(w, pt.x, pt.y);
+		SetViewportPosition(w, pt.x, pt.y, false);
 	} else {
 		/* Ensure the destination location is within the map */
 		ClampViewportToMap(vp, w->viewport->dest_scrollpos_x, w->viewport->dest_scrollpos_y);
@@ -2850,8 +2852,7 @@ void UpdateViewportPosition(Window *w)
 
 		if (_scrolling_viewport == w) UpdateActiveScrollingViewport(w);
 
-		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y);
-		if (update_overlay) RebuildViewportOverlay(w);
+		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y, update_overlay);
 	}
 }
 
@@ -3438,13 +3439,24 @@ bool HandleViewportClicked(const ViewPort *vp, int x, int y, bool double_click)
 	return result;
 }
 
-void RebuildViewportOverlay(Window *w)
+void RebuildViewportOverlay(Window *w, bool incremental)
 {
 	if (w->viewport->overlay != NULL &&
 			w->viewport->overlay->GetCompanyMask() != 0 &&
 			w->viewport->overlay->GetCargoMask() != 0) {
-		w->viewport->overlay->RebuildCache();
-		w->SetDirty();
+		w->viewport->overlay->RebuildCache(incremental);
+		if (!incremental) w->SetDirty();
+	}
+}
+
+bool IsViewportOverlayOutsideCachedRegion(Window *w)
+{
+	if (w->viewport->overlay != NULL &&
+			w->viewport->overlay->GetCompanyMask() != 0 &&
+			w->viewport->overlay->GetCargoMask() != 0) {
+		return !w->viewport->overlay->CacheStillValid();
+	} else {
+		return false;
 	}
 }
 
@@ -3477,7 +3489,7 @@ bool ScrollWindowTo(int x, int y, int z, Window *w, bool instant)
 	if (instant) {
 		w->viewport->scrollpos_x = pt.x;
 		w->viewport->scrollpos_y = pt.y;
-		RebuildViewportOverlay(w);
+		RebuildViewportOverlay(w, true);
 	}
 
 	w->viewport->dest_scrollpos_x = pt.x;

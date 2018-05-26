@@ -17,12 +17,15 @@
 #include "../date_func.h"
 #include "../viewport_func.h"
 #include "../smallmap_gui.h"
+#include "../zoom_func.h"
 #include "../core/geometry_func.hpp"
 #include "../widgets/link_graph_legend_widget.h"
 
 #include "table/strings.h"
 
 #include "../3rdparty/cpp-btree/btree_map.h"
+
+#include <algorithm>
 
 #include "../safeguards.h"
 
@@ -40,25 +43,53 @@ const uint8 LinkGraphOverlay::LINK_COLOURS[] = {
  * Get a DPI for the widget we will be drawing to.
  * @param dpi DrawPixelInfo to fill with the desired dimensions.
  */
-void LinkGraphOverlay::GetWidgetDpi(DrawPixelInfo *dpi) const
+void LinkGraphOverlay::GetWidgetDpi(DrawPixelInfo *dpi, uint margin) const
 {
 	const NWidgetBase *wi = this->window->GetWidget<NWidgetBase>(this->widget_id);
-	dpi->left = dpi->top = 0;
-	dpi->width = wi->current_x;
-	dpi->height = wi->current_y;
+	dpi->left = dpi->top = -margin;
+	dpi->width = wi->current_x + 2 * margin;
+	dpi->height = wi->current_y + 2 * margin;
+}
+
+bool LinkGraphOverlay::CacheStillValid() const
+{
+	if (this->window->viewport) {
+		const ViewPort *vp = this->window->viewport;
+		Rect region { vp->virtual_left, vp->virtual_top,
+				vp->virtual_left + vp->virtual_width, vp->virtual_top + vp->virtual_height };
+		return (region.left >= this->cached_region.left &&
+				region.right <= this->cached_region.right &&
+				region.top >= this->cached_region.top &&
+				region.bottom <= this->cached_region.bottom);
+	} else {
+		return true;
+	}
 }
 
 /**
  * Rebuild the cache and recalculate which links and stations to be shown.
  */
-void LinkGraphOverlay::RebuildCache()
+void LinkGraphOverlay::RebuildCache(bool incremental)
 {
-	this->cached_links.clear();
-	this->cached_stations.clear();
+	if (!incremental) {
+		this->cached_links.clear();
+		this->cached_stations.clear();
+	}
 	if (this->company_mask == 0) return;
 
 	DrawPixelInfo dpi;
-	this->GetWidgetDpi(&dpi);
+	bool cache_all = false;
+	if (this->window->viewport) {
+		const ViewPort *vp = this->window->viewport;
+		const int pixel_margin = 256;
+		const int vp_margin = ScaleByZoom(pixel_margin, vp->zoom);
+		this->GetWidgetDpi(&dpi, pixel_margin);
+		this->cached_region = Rect({ vp->virtual_left - vp_margin, vp->virtual_top - vp_margin,
+				vp->virtual_left + vp->virtual_width + vp_margin, vp->virtual_top + vp->virtual_height + vp_margin });
+	} else {
+		this->GetWidgetDpi(&dpi);
+		cache_all = true;
+	}
 
 	struct LinkCacheItem {
 		Point from_pt;
@@ -66,8 +97,23 @@ void LinkGraphOverlay::RebuildCache()
 		LinkProperties prop;
 	};
 	btree::btree_map<std::pair<StationID, StationID>, LinkCacheItem> link_cache_map;
+	std::vector<StationID> incremental_station_exclude;
+	std::vector<std::pair<StationID, StationID>> incremental_link_exclude;
 
-	auto AddLinks = [&](const Station *from, const Station *to, Point from_pt, Point to_pt) {
+	if (incremental) {
+		incremental_station_exclude.reserve(this->cached_stations.size());
+		for (StationSupplyList::iterator i(this->cached_stations.begin()); i != this->cached_stations.end(); ++i) {
+			incremental_station_exclude.push_back(i->id);
+		}
+		std::sort(incremental_station_exclude.begin(), incremental_station_exclude.end());
+		incremental_link_exclude.reserve(this->cached_links.size());
+		for (LinkList::iterator i(this->cached_links.begin()); i != this->cached_links.end(); ++i) {
+			incremental_link_exclude.push_back(std::make_pair(i->from_id, i->to_id));
+		}
+		std::sort(incremental_link_exclude.begin(), incremental_link_exclude.end());
+	}
+
+	auto AddLinks = [&](const Station *from, const Station *to, Point from_pt, Point to_pt, btree::btree_map<std::pair<StationID, StationID>, LinkCacheItem>::iterator insert_iter) {
 		LinkCacheItem *item = nullptr;
 		CargoID c;
 		FOR_EACH_SET_CARGO_ID(c, this->cargo_mask) {
@@ -81,11 +127,10 @@ void LinkGraphOverlay::RebuildCache()
 			ConstEdge edge = lg[ge.node][to->goods[c].node];
 			if (edge.Capacity() > 0) {
 				if (!item) {
-					item = &link_cache_map[std::make_pair(from->index, to->index)];
-					if (item->prop.capacity == 0) {
-						item->from_pt = from_pt;
-						item->to_pt = to_pt;
-					}
+					auto iter = link_cache_map.insert(insert_iter, std::make_pair(std::make_pair(from->index, to->index), LinkCacheItem()));
+					item = &(iter->second);
+					item->from_pt = from_pt;
+					item->to_pt = to_pt;
 				}
 				this->AddStats(lg.Monthly(edge.Capacity()), lg.Monthly(edge.Usage()),
 						ge.flows.GetFlowVia(to->index), from->owner == OWNER_NONE || to->owner == OWNER_NONE,
@@ -97,6 +142,8 @@ void LinkGraphOverlay::RebuildCache()
 	const Station *sta;
 	FOR_ALL_STATIONS(sta) {
 		if (sta->rect.IsEmpty()) continue;
+
+		if (incremental && std::binary_search(incremental_station_exclude.begin(), incremental_station_exclude.end(), sta->index)) continue;
 
 		Point pta = this->GetStationMiddle(sta);
 
@@ -114,9 +161,8 @@ void LinkGraphOverlay::RebuildCache()
 			for (ConstEdgeIterator i = from_node.Begin(); i != from_node.End(); ++i) {
 				StationID to = lg[i->first].Station();
 				assert(from != to);
-				if (!Station::IsValidID(to) || link_cache_map.count(std::make_pair(from, to))) {
-					continue;
-				}
+				if (!Station::IsValidID(to)) continue;
+
 				const Station *stb = Station::Get(to);
 				assert(sta != stb);
 
@@ -124,19 +170,28 @@ void LinkGraphOverlay::RebuildCache()
 				if (stb->owner != OWNER_NONE && sta->owner != OWNER_NONE && !HasBit(this->company_mask, stb->owner)) continue;
 				if (stb->rect.IsEmpty()) continue;
 
+				if (incremental && std::binary_search(incremental_station_exclude.begin(), incremental_station_exclude.end(), to)) continue;
+				if (incremental && std::binary_search(incremental_link_exclude.begin(), incremental_link_exclude.end(), std::make_pair(from, to))) continue;
+
+				auto key = std::make_pair(from, to);
+				auto iter = link_cache_map.lower_bound(key);
+				if (iter != link_cache_map.end() && !(link_cache_map.key_comp()(key, iter->first))) {
+					continue;
+				}
+
 				Point ptb = this->GetStationMiddle(stb);
 
-				if (!this->IsLinkVisible(pta, ptb, &dpi)) continue;
+				if (!cache_all && !this->IsLinkVisible(pta, ptb, &dpi)) continue;
 
-				AddLinks(sta, stb, pta, ptb);
+				AddLinks(sta, stb, pta, ptb, iter);
 			}
 		}
-		if (this->IsPointVisible(pta, &dpi)) {
+		if (cache_all || this->IsPointVisible(pta, &dpi)) {
 			this->cached_stations.push_back({ from, supply, pta });
 		}
 	}
 
-	this->cached_links.reserve(link_cache_map.size());
+	this->cached_links.reserve(this->cached_links.size() + link_cache_map.size());
 	for (auto &iter : link_cache_map) {
 		this->cached_links.push_back({ iter.first.first, iter.first.second, iter.second.from_pt, iter.second.to_pt, iter.second.prop });
 	}

@@ -156,7 +156,7 @@ bool DoZoomInOutWindow(ZoomStateChange how, Window *w)
 	/* Update the windows that have zoom-buttons to perhaps disable their buttons */
 	w->InvalidateData();
 	if (how != ZOOM_NONE) {
-		RebuildViewportOverlay(w);
+		RebuildViewportOverlay(w, false);
 	}
 	return true;
 }

@@ -68,7 +68,8 @@ public:
 			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale)
 	{}
 
-	void RebuildCache();
+	void RebuildCache(bool incremental = false);
+	bool CacheStillValid() const;
 	void Draw(const DrawPixelInfo *dpi);
 	void SetCargoMask(CargoTypes cargo_mask);
 	void SetCompanyMask(uint32 company_mask);
@@ -86,6 +87,7 @@ protected:
 	uint32 company_mask;               ///< Bitmask of companies to be displayed.
 	LinkList cached_links;             ///< Cache for links to reduce recalculation.
 	StationSupplyList cached_stations; ///< Cache for stations to be drawn.
+	Rect cached_region;                ///< Region covered by cached_links and cached_stations.
 	uint scale;                        ///< Width of link lines.
 	uint64 last_update_number = 0;     ///< Last window update number
 
@@ -97,7 +99,7 @@ protected:
 	void DrawContent(Point pta, Point ptb, const LinkProperties &cargo) const;
 	bool IsLinkVisible(Point pta, Point ptb, const DrawPixelInfo *dpi, int padding = 0) const;
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
-	void GetWidgetDpi(DrawPixelInfo *dpi) const;
+	void GetWidgetDpi(DrawPixelInfo *dpi, uint margin = 0) const;
 
 	static void AddStats(uint new_cap, uint new_usg, uint new_flow, bool new_shared, LinkProperties &cargo);
 	static void DrawVertex(int x, int y, int size, int colour, int border_colour);
