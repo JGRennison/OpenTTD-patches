@@ -377,7 +377,7 @@ static GRFLineToSpriteOverride _grf_line_to_action6_sprite_override;
  * @param severity debugging severity level, see debug.h
  * @param str message in printf() format
  */
-void CDECL grfmsg(int severity, const char *str, ...)
+void CDECL _intl_grfmsg(int severity, const char *str, ...)
 {
 	char buf[1024];
 	va_list va;

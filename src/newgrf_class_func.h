@@ -9,6 +9,7 @@
 
 /** @file newgrf_class_func.h Implementation of the NewGRF class' functions. */
 
+#include "newgrf.h"
 #include "newgrf_class.h"
 
 #include "table/strings.h"

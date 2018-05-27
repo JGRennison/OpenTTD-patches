@@ -15,6 +15,7 @@
 #include "cargotype.h"
 #include "rail_type.h"
 #include "fileio_type.h"
+#include "debug.h"
 #include "core/bitmath_func.hpp"
 #include "core/alloc_type.hpp"
 #include "core/smallvec_type.hpp"
@@ -188,7 +189,8 @@ void ReloadNewGRFData(); // in saveload/afterload.cpp
 void ResetNewGRFData();
 void ResetPersistentNewGRFData();
 
-void CDECL grfmsg(int severity, const char *str, ...) WARN_FORMAT(2, 3);
+#define grfmsg(severity, ...) if ((severity) == 0 || _debug_grf_level >= (severity)) _intl_grfmsg(severity, __VA_ARGS__)
+void CDECL _intl_grfmsg(int severity, const char *str, ...) WARN_FORMAT(2, 3);
 
 bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile);
 
