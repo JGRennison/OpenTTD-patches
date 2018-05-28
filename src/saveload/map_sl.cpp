@@ -12,9 +12,12 @@
 #include "../stdafx.h"
 #include "../map_func.h"
 #include "../core/bitmath_func.hpp"
+#include "../core/endian_func.hpp"
+#include "../core/endian_type.hpp"
 #include "../fios.h"
 
 #include "saveload.h"
+#include "saveload_buffer.h"
 
 #include "../safeguards.h"
 
@@ -63,18 +66,6 @@ static void Load_MAPT()
 	}
 }
 
-static void Save_MAPT()
-{
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	SlSetLength(size);
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _m[i++].type;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
-	}
-}
-
 static void Load_MAPH()
 {
 	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
@@ -86,18 +77,6 @@ static void Load_MAPH()
 	}
 }
 
-static void Save_MAPH()
-{
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	SlSetLength(size);
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _m[i++].height;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
-	}
-}
-
 static void Load_MAP1()
 {
 	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
@@ -106,18 +85,6 @@ static void Load_MAP1()
 	for (TileIndex i = 0; i != size;) {
 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m1 = buf[j];
-	}
-}
-
-static void Save_MAP1()
-{
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	SlSetLength(size);
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _m[i++].m1;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
 	}
 }
 
@@ -135,18 +102,6 @@ static void Load_MAP2()
 	}
 }
 
-static void Save_MAP2()
-{
-	SmallStackSafeStackAlloc<uint16, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	SlSetLength(size * sizeof(uint16));
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _m[i++].m2;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT16);
-	}
-}
-
 static void Load_MAP3()
 {
 	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
@@ -155,18 +110,6 @@ static void Load_MAP3()
 	for (TileIndex i = 0; i != size;) {
 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m3 = buf[j];
-	}
-}
-
-static void Save_MAP3()
-{
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	SlSetLength(size);
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _m[i++].m3;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
 	}
 }
 
@@ -181,18 +124,6 @@ static void Load_MAP4()
 	}
 }
 
-static void Save_MAP4()
-{
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	SlSetLength(size);
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _m[i++].m4;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
-	}
-}
-
 static void Load_MAP5()
 {
 	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
@@ -201,18 +132,6 @@ static void Load_MAP5()
 	for (TileIndex i = 0; i != size;) {
 		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m5 = buf[j];
-	}
-}
-
-static void Save_MAP5()
-{
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	SlSetLength(size);
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _m[i++].m5;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
 	}
 }
 
@@ -240,18 +159,6 @@ static void Load_MAP6()
 	}
 }
 
-static void Save_MAP6()
-{
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	SlSetLength(size);
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _me[i++].m6;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
-	}
-}
-
 static void Load_MAP7()
 {
 	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
@@ -263,27 +170,72 @@ static void Load_MAP7()
 	}
 }
 
-static void Save_MAP7()
+static void Load_WMAP()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
+	assert_compile(sizeof(Tile) == 8);
+	assert_compile(sizeof(TileExtended) == 2);
+	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1);
 
-	SlSetLength(size);
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = _me[i++].m7;
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+	ReadBuffer *reader = ReadBuffer::GetCurrent();
+	const TileIndex size = MapSize();
+
+#if TTD_ENDIAN == TTD_LITTLE_ENDIAN && 0
+	reader->CopyBytes((byte *) _m, size * 8);
+#else
+	for (TileIndex i = 0; i != size; i++) {
+		reader->CheckBytes(8);
+		_m[i].type = reader->RawReadByte();
+		_m[i].height = reader->RawReadByte();
+		uint16 m2 = reader->RawReadByte();
+		m2 |= ((uint16) reader->RawReadByte()) << 8;
+		_m[i].m2 = m2;
+		_m[i].m1 = reader->RawReadByte();
+		_m[i].m3 = reader->RawReadByte();
+		_m[i].m4 = reader->RawReadByte();
+		_m[i].m5 = reader->RawReadByte();
 	}
+#endif
+	reader->CopyBytes((byte *) _me, size * 2);
+}
+
+static void Save_WMAP()
+{
+	assert_compile(sizeof(Tile) == 8);
+	assert_compile(sizeof(TileExtended) == 2);
+	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1);
+
+	MemoryDumper *dumper = MemoryDumper::GetCurrent();
+	const TileIndex size = MapSize();
+	SlSetLength(size * 10);
+
+#if TTD_ENDIAN == TTD_LITTLE_ENDIAN && 0
+	dumper->CopyBytes((byte *) _m, size * 8);
+#else
+	for (TileIndex i = 0; i != size; i++) {
+		dumper->CheckBytes(8);
+		dumper->RawWriteByte(_m[i].type);
+		dumper->RawWriteByte(_m[i].height);
+		dumper->RawWriteByte(GB(_m[i].m2, 0, 8));
+		dumper->RawWriteByte(GB(_m[i].m2, 8, 8));
+		dumper->RawWriteByte(_m[i].m1);
+		dumper->RawWriteByte(_m[i].m3);
+		dumper->RawWriteByte(_m[i].m4);
+		dumper->RawWriteByte(_m[i].m5);
+	}
+#endif
+	dumper->CopyBytes((byte *) _me, size * 2);
 }
 
 extern const ChunkHandler _map_chunk_handlers[] = {
 	{ 'MAPS', Save_MAPS, Load_MAPS, NULL, Check_MAPS, CH_RIFF },
-	{ 'MAPT', Save_MAPT, Load_MAPT, NULL, NULL,       CH_RIFF },
-	{ 'MAPH', Save_MAPH, Load_MAPH, NULL, NULL,       CH_RIFF },
-	{ 'MAPO', Save_MAP1, Load_MAP1, NULL, NULL,       CH_RIFF },
-	{ 'MAP2', Save_MAP2, Load_MAP2, NULL, NULL,       CH_RIFF },
-	{ 'M3LO', Save_MAP3, Load_MAP3, NULL, NULL,       CH_RIFF },
-	{ 'M3HI', Save_MAP4, Load_MAP4, NULL, NULL,       CH_RIFF },
-	{ 'MAP5', Save_MAP5, Load_MAP5, NULL, NULL,       CH_RIFF },
-	{ 'MAPE', Save_MAP6, Load_MAP6, NULL, NULL,       CH_RIFF },
-	{ 'MAP7', Save_MAP7, Load_MAP7, NULL, NULL,       CH_RIFF | CH_LAST },
+	{ 'MAPT', NULL,      Load_MAPT, NULL, NULL,       CH_RIFF },
+	{ 'MAPH', NULL,      Load_MAPH, NULL, NULL,       CH_RIFF },
+	{ 'MAPO', NULL,      Load_MAP1, NULL, NULL,       CH_RIFF },
+	{ 'MAP2', NULL,      Load_MAP2, NULL, NULL,       CH_RIFF },
+	{ 'M3LO', NULL,      Load_MAP3, NULL, NULL,       CH_RIFF },
+	{ 'M3HI', NULL,      Load_MAP4, NULL, NULL,       CH_RIFF },
+	{ 'MAP5', NULL,      Load_MAP5, NULL, NULL,       CH_RIFF },
+	{ 'MAPE', NULL,      Load_MAP6, NULL, NULL,       CH_RIFF },
+	{ 'MAP7', NULL,      Load_MAP7, NULL, NULL,       CH_RIFF },
+	{ 'WMAP', Save_WMAP, Load_WMAP, NULL, NULL,       CH_RIFF | CH_LAST },
 };
