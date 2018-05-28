@@ -365,13 +365,32 @@ static inline T ROR(const T x, const uint8 n)
 	 * (since it will use hardware swapping if available).
 	 * Even though they should return uint16 and uint32, we get
 	 * warnings if we don't cast those (why?) */
+	#define BSWAP64(x) ((uint32)CFSwapInt64(x))
 	#define BSWAP32(x) ((uint32)CFSwapInt32(x))
 	#define BSWAP16(x) ((uint16)CFSwapInt16(x))
 #elif defined(_MSC_VER)
 	/* MSVC has intrinsics for swapping, resulting in faster code */
+	#define BSWAP64(x) (_byteswap_uint64(x))
 	#define BSWAP32(x) (_byteswap_ulong(x))
 	#define BSWAP16(x) (_byteswap_ushort(x))
 #else
+	/**
+	 * Perform a 64 bits endianness bitswap on x.
+	 * @param x the variable to bitswap
+	 * @return the bitswapped value.
+	 */
+	static inline uint64 BSWAP64(uint64 x)
+	{
+#if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
+		/* GCC >= 4.3 provides a builtin, resulting in faster code */
+		return (uint64)__builtin_bswap64((uint64)x);
+#else
+		return ((x >> 56) & 0xFFULL) | ((x >> 40) & 0xFF00ULL) | ((x >> 24) & 0xFF0000ULL) | ((x >> 8) & 0xFF000000ULL) |
+				((x << 8) & 0xFF00000000ULL) | ((x << 24) & 0xFF0000000000ULL) | ((x << 40) & 0xFF000000000000ULL) | ((x << 56) & 0xFF000000000000ULL);
+				;
+#endif /* __GNUC__ || __clang__ */
+	}
+
 	/**
 	 * Perform a 32 bits endianness bitswap on x.
 	 * @param x the variable to bitswap
