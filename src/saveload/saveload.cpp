@@ -49,6 +49,7 @@
 
 #include "saveload_internal.h"
 #include "saveload_filter.h"
+#include "saveload_buffer.h"
 #include "extended_ver_sl.h"
 
 #include "../safeguards.h"
@@ -300,331 +301,111 @@ enum NeedLength {
 	NL_WANTLENGTH = 1, ///< writing length and data
 };
 
-/** Save in chunks of 128 KiB. */
-static const size_t MEMORY_CHUNK_SIZE = 128 * 1024;
-
-/** A buffer for reading (and buffering) savegame data. */
-struct ReadBuffer {
-	byte buf[MEMORY_CHUNK_SIZE]; ///< Buffer we're going to read from.
-	byte *bufp;                  ///< Location we're at reading the buffer.
-	byte *bufe;                  ///< End of the buffer we can read from.
-	LoadFilter *reader;          ///< The filter used to actually read.
-	size_t read;                 ///< The amount of read bytes so far from the filter.
-
-	/**
-	 * Initialise our variables.
-	 * @param reader The filter to actually read data.
-	 */
-	ReadBuffer(LoadFilter *reader) : bufp(NULL), bufe(NULL), reader(reader), read(0)
-	{
-	}
-
-	void SkipBytesSlowPath(size_t bytes)
-	{
-		bytes -= (this->bufe - this->bufp);
-		while (true) {
-			size_t len = this->reader->Read(this->buf, lengthof(this->buf));
-			if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
-			this->read += len;
-			if (len >= bytes) {
-				this->bufp = this->buf + bytes;
-				this->bufe = this->buf + len;
-				return;
-			} else {
-				bytes -= len;
-			}
-		}
-	}
-
-	inline void SkipBytes(size_t bytes)
-	{
-		byte *b = this->bufp + bytes;
-		if (likely(b <= this->bufe)) {
-			this->bufp = b;
-		} else {
-			SkipBytesSlowPath(bytes);
-		}
-	}
-
-	void AcquireBytes()
-	{
-		size_t remainder = this->bufe - this->bufp;
-		if (remainder) {
-			memmove(this->buf, this->bufp, remainder);
-		}
-		size_t len = this->reader->Read(this->buf + remainder, lengthof(this->buf) - remainder);
+void ReadBuffer::SkipBytesSlowPath(size_t bytes)
+{
+	bytes -= (this->bufe - this->bufp);
+	while (true) {
+		size_t len = this->reader->Read(this->buf, lengthof(this->buf));
 		if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
-
 		this->read += len;
-		this->bufp = this->buf;
-		this->bufe = this->buf + remainder + len;
-	}
-
-	inline byte RawReadByte()
-	{
-		return *this->bufp++;
-	}
-
-	inline byte ReadByte()
-	{
-		if (unlikely(this->bufp == this->bufe)) {
-			this->AcquireBytes();
-		}
-
-		return RawReadByte();
-	}
-
-	inline void CheckBytes(size_t bytes)
-	{
-		while (unlikely(this->bufp + bytes > this->bufe)) this->AcquireBytes();
-	}
-
-	inline int RawReadUint16()
-	{
-#if OTTD_ALIGNMENT == 0
-		int x = FROM_BE16(*((const uint16*) this->bufp));
-		this->bufp += 2;
-		return x;
-#else
-		int x = this->RawReadByte() << 8;
-		return x | this->RawReadByte();
-#endif
-	}
-
-	inline uint32 RawReadUint32()
-	{
-#if OTTD_ALIGNMENT == 0
-		uint32 x = FROM_BE32(*((const uint32*) this->bufp));
-		this->bufp += 4;
-		return x;
-#else
-		uint32 x = this->RawReadUint16() << 16;
-		return x | this->RawReadUint16();
-#endif
-	}
-
-	inline uint64 RawReadUint64()
-	{
-#if OTTD_ALIGNMENT == 0
-		uint64 x = FROM_BE64(*((const uint64*) this->bufp));
-		this->bufp += 8;
-		return x;
-#else
-		uint32 x = this->RawReadUint32();
-		uint32 y = this->RawReadUint32();
-		return (uint64)x << 32 | y;
-#endif
-	}
-
-	inline void CopyBytes(byte *ptr, size_t length)
-	{
-		while (length) {
-			if (unlikely(this->bufp == this->bufe)) {
-				this->AcquireBytes();
-			}
-			size_t to_copy = min<size_t>(this->bufe - this->bufp, length);
-			memcpy(ptr, this->bufp, to_copy);
-			this->bufp += to_copy;
-			ptr += to_copy;
-			length -= to_copy;
-		}
-	}
-
-	/**
-	 * Get the size of the memory dump made so far.
-	 * @return The size.
-	 */
-	size_t GetSize() const
-	{
-		return this->read - (this->bufe - this->bufp);
-	}
-};
-
-
-/** Container for dumping the savegame (quickly) to memory. */
-struct MemoryDumper {
-	struct BufferInfo {
-		byte *data;
-		size_t size = 0;
-
-		BufferInfo(byte *d) : data(d) {}
-		~BufferInfo() { free(this->data); }
-
-		BufferInfo(const BufferInfo &) = delete;
-		BufferInfo(BufferInfo &&other) : data(other.data), size(other.size) { other.data = nullptr; };
-	};
-
-	std::vector<BufferInfo> blocks;         ///< Buffer with blocks of allocated memory.
-	byte *buf = nullptr;                    ///< Buffer we're going to write to.
-	byte *bufe = nullptr;                   ///< End of the buffer we write to.
-	size_t completed_block_bytes = 0;       ///< Total byte count of completed blocks.
-
-	byte *autolen_buf = nullptr;
-	byte *autolen_buf_end = nullptr;
-	byte *saved_buf = nullptr;
-	byte *saved_bufe = nullptr;
-
-	MemoryDumper()
-	{
-		const size_t size = 8192;
-		this->autolen_buf = CallocT<byte>(size);
-		this->autolen_buf_end = this->autolen_buf + size;
-	}
-
-	~MemoryDumper()
-	{
-		free(this->autolen_buf);
-	}
-
-	void FinaliseBlock()
-	{
-		assert(this->saved_buf == nullptr);
-		if (!this->blocks.empty()) {
-			size_t s = MEMORY_CHUNK_SIZE - (this->bufe - this->buf);
-			this->blocks.back().size = s;
-			this->completed_block_bytes += s;
-		}
-		this->buf = this->bufe = nullptr;
-	}
-
-	void AllocateBuffer()
-	{
-		if (this->saved_buf) {
-			const size_t offset = this->buf - this->autolen_buf;
-			const size_t size = (this->autolen_buf_end - this->autolen_buf) * 2;
-			this->autolen_buf = ReallocT<byte>(this->autolen_buf, size);
-			this->autolen_buf_end = this->autolen_buf + size;
-			this->buf = this->autolen_buf + offset;
-			this->bufe = this->autolen_buf_end;
+		if (len >= bytes) {
+			this->bufp = this->buf + bytes;
+			this->bufe = this->buf + len;
 			return;
-		}
-		this->FinaliseBlock();
-		this->buf = CallocT<byte>(MEMORY_CHUNK_SIZE);
-		this->blocks.emplace_back(this->buf);
-		this->bufe = this->buf + MEMORY_CHUNK_SIZE;
-	}
-
-	void CheckBytes(size_t bytes)
-	{
-		if (unlikely(this->buf + bytes > this->bufe)) this->AllocateBuffer();
-	}
-
-	/**
-	 * Write a single byte into the dumper.
-	 * @param b The byte to write.
-	 */
-	inline void WriteByte(byte b)
-	{
-		/* Are we at the end of this chunk? */
-		if (unlikely(this->buf == this->bufe)) {
-			this->AllocateBuffer();
-		}
-
-		*this->buf++ = b;
-	}
-
-	inline void CopyBytes(byte *ptr, size_t length)
-	{
-		while (length) {
-			if (unlikely(this->buf == this->bufe)) {
-				this->AllocateBuffer();
-			}
-			size_t to_copy = min<size_t>(this->bufe - this->buf, length);
-			memcpy(this->buf, ptr, to_copy);
-			this->buf += to_copy;
-			ptr += to_copy;
-			length -= to_copy;
+		} else {
+			bytes -= len;
 		}
 	}
+}
 
-	inline void RawWriteUint16(uint16 v)
-	{
-#if OTTD_ALIGNMENT == 0
-		*((uint16 *) this->buf) = TO_BE16(v);
-#else
-		this->buf[0] = GB(v, 8, 8));
-		this->buf[1] = GB(v, 0, 8));
-#endif
-		this->buf += 2;
+void ReadBuffer::AcquireBytes()
+{
+	size_t remainder = this->bufe - this->bufp;
+	if (remainder) {
+		memmove(this->buf, this->bufp, remainder);
 	}
+	size_t len = this->reader->Read(this->buf + remainder, lengthof(this->buf) - remainder);
+	if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
 
-	inline void RawWriteUint32(uint32 v)
-	{
-#if OTTD_ALIGNMENT == 0
-		*((uint32 *) this->buf) = TO_BE32(v);
-#else
-		this->buf[0] = GB(v, 24, 8));
-		this->buf[1] = GB(v, 16, 8));
-		this->buf[2] = GB(v, 8, 8));
-		this->buf[3] = GB(v, 0, 8));
-#endif
-		this->buf += 4;
+	this->read += len;
+	this->bufp = this->buf;
+	this->bufe = this->buf + remainder + len;
+}
+
+void MemoryDumper::FinaliseBlock()
+{
+	assert(this->saved_buf == nullptr);
+	if (!this->blocks.empty()) {
+		size_t s = MEMORY_CHUNK_SIZE - (this->bufe - this->buf);
+		this->blocks.back().size = s;
+		this->completed_block_bytes += s;
 	}
+	this->buf = this->bufe = nullptr;
+}
 
-	inline void RawWriteUint64(uint64 v)
-	{
-#if OTTD_ALIGNMENT == 0
-		*((uint64 *) this->buf) = TO_BE64(v);
-#else
-		this->buf[0] = GB(v, 56, 8));
-		this->buf[1] = GB(v, 48, 8));
-		this->buf[2] = GB(v, 40, 8));
-		this->buf[3] = GB(v, 32, 8));
-		this->buf[4] = GB(v, 24, 8));
-		this->buf[5] = GB(v, 16, 8));
-		this->buf[6] = GB(v, 8, 8));
-		this->buf[7] = GB(v, 0, 8));
-#endif
-		this->buf += 8;
-	}
-
-	/**
-	 * Flush this dumper into a writer.
-	 * @param writer The filter we want to use.
-	 */
-	void Flush(SaveFilter *writer)
-	{
-		this->FinaliseBlock();
-
-		uint block_count = this->blocks.size();
-		for (uint i = 0; i < block_count; i++) {
-			writer->Write(this->blocks[i].data, this->blocks[i].size);
-		}
-
-		writer->Finish();
-	}
-
-	/**
-	 * Get the size of the memory dump made so far.
-	 * @return The size.
-	 */
-	size_t GetSize() const
-	{
-		assert(this->saved_buf == nullptr);
-		return this->completed_block_bytes + (this->bufe ? (MEMORY_CHUNK_SIZE - (this->bufe - this->buf)) : 0);
-	}
-
-	void StartAutoLength()
-	{
-		assert(this->saved_buf == nullptr);
-
-		this->saved_buf = this->buf;
-		this->saved_bufe = this->bufe;
-		this->buf = this->autolen_buf;
+void MemoryDumper::AllocateBuffer()
+{
+	if (this->saved_buf) {
+		const size_t offset = this->buf - this->autolen_buf;
+		const size_t size = (this->autolen_buf_end - this->autolen_buf) * 2;
+		this->autolen_buf = ReallocT<byte>(this->autolen_buf, size);
+		this->autolen_buf_end = this->autolen_buf + size;
+		this->buf = this->autolen_buf + offset;
 		this->bufe = this->autolen_buf_end;
+		return;
+	}
+	this->FinaliseBlock();
+	this->buf = CallocT<byte>(MEMORY_CHUNK_SIZE);
+	this->blocks.emplace_back(this->buf);
+	this->bufe = this->buf + MEMORY_CHUNK_SIZE;
+}
+
+/**
+ * Flush this dumper into a writer.
+ * @param writer The filter we want to use.
+ */
+void MemoryDumper::Flush(SaveFilter *writer)
+{
+	this->FinaliseBlock();
+
+	uint block_count = this->blocks.size();
+	for (uint i = 0; i < block_count; i++) {
+		writer->Write(this->blocks[i].data, this->blocks[i].size);
 	}
 
-	std::pair<byte *, size_t> StopAutoLength()
-	{
-		assert(this->saved_buf != nullptr);
-		auto res = std::make_pair(this->autolen_buf, this->buf - this->autolen_buf);
+	writer->Finish();
+}
 
-		this->buf = this->saved_buf;
-		this->bufe = this->saved_bufe;
-		this->saved_buf = this->saved_bufe = nullptr;
-		return res;
-	}
-};
+void MemoryDumper::StartAutoLength()
+{
+	assert(this->saved_buf == nullptr);
+
+	this->saved_buf = this->buf;
+	this->saved_bufe = this->bufe;
+	this->buf = this->autolen_buf;
+	this->bufe = this->autolen_buf_end;
+}
+
+std::pair<byte *, size_t> MemoryDumper::StopAutoLength()
+{
+	assert(this->saved_buf != nullptr);
+	auto res = std::make_pair(this->autolen_buf, this->buf - this->autolen_buf);
+
+	this->buf = this->saved_buf;
+	this->bufe = this->saved_bufe;
+	this->saved_buf = this->saved_bufe = nullptr;
+	return res;
+}
+
+/**
+ * Get the size of the memory dump made so far.
+ * @return The size.
+ */
+size_t MemoryDumper::GetSize() const
+{
+	assert(this->saved_buf == nullptr);
+	return this->completed_block_bytes + (this->bufe ? (MEMORY_CHUNK_SIZE - (this->bufe - this->buf)) : 0);
+}
 
 /** The saveload struct, containing reader-writer functions, buffer, version, etc. */
 struct SaveLoadParams {
@@ -650,6 +431,16 @@ struct SaveLoadParams {
 };
 
 static SaveLoadParams _sl; ///< Parameters used for/at saveload.
+
+ReadBuffer *ReadBuffer::GetCurrent()
+{
+	return _sl.reader;
+}
+
+MemoryDumper *MemoryDumper::GetCurrent()
+{
+	return _sl.dumper;
+}
 
 /* these define the chunks */
 extern const ChunkHandler _version_ext_chunk_handlers[];

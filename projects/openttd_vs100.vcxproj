@@ -890,6 +890,7 @@
     <ClInclude Include="..\src\saveload\saveload.h" />
     <ClInclude Include="..\src\saveload\saveload_filter.h" />
     <ClInclude Include="..\src\saveload\saveload_internal.h" />
+    <ClInclude Include="..\src\saveload\saveload_buffer.h" />
     <ClCompile Include="..\src\saveload\signs_sl.cpp" />
     <ClCompile Include="..\src\saveload\station_sl.cpp" />
     <ClCompile Include="..\src\saveload\storage_sl.cpp" />
