@@ -298,7 +298,6 @@ enum SaveLoadAction {
 enum NeedLength {
 	NL_NONE = 0,       ///< not working in NeedLength mode
 	NL_WANTLENGTH = 1, ///< writing length and data
-	NL_CALCLENGTH = 2, ///< need to calculate the length
 };
 
 /** Save in chunks of 128 KiB. */
@@ -456,17 +455,30 @@ struct MemoryDumper {
 	};
 
 	std::vector<BufferInfo> blocks;         ///< Buffer with blocks of allocated memory.
-	byte *buf;                              ///< Buffer we're going to write to.
-	byte *bufe;                             ///< End of the buffer we write to.
-	size_t completed_block_bytes;           ///< Total byte count of completed blocks
+	byte *buf = nullptr;                    ///< Buffer we're going to write to.
+	byte *bufe = nullptr;                   ///< End of the buffer we write to.
+	size_t completed_block_bytes = 0;       ///< Total byte count of completed blocks.
 
-	/** Initialise our variables. */
-	MemoryDumper() : buf(NULL), bufe(NULL), completed_block_bytes(0)
+	byte *autolen_buf = nullptr;
+	byte *autolen_buf_end = nullptr;
+	byte *saved_buf = nullptr;
+	byte *saved_bufe = nullptr;
+
+	MemoryDumper()
 	{
+		const size_t size = 8192;
+		this->autolen_buf = CallocT<byte>(size);
+		this->autolen_buf_end = this->autolen_buf + size;
+	}
+
+	~MemoryDumper()
+	{
+		free(this->autolen_buf);
 	}
 
 	void FinaliseBlock()
 	{
+		assert(this->saved_buf == nullptr);
 		if (!this->blocks.empty()) {
 			size_t s = MEMORY_CHUNK_SIZE - (this->bufe - this->buf);
 			this->blocks.back().size = s;
@@ -477,6 +489,15 @@ struct MemoryDumper {
 
 	void AllocateBuffer()
 	{
+		if (this->saved_buf) {
+			const size_t offset = this->buf - this->autolen_buf;
+			const size_t size = (this->autolen_buf_end - this->autolen_buf) * 2;
+			this->autolen_buf = ReallocT<byte>(this->autolen_buf, size);
+			this->autolen_buf_end = this->autolen_buf + size;
+			this->buf = this->autolen_buf + offset;
+			this->bufe = this->autolen_buf_end;
+			return;
+		}
 		this->FinaliseBlock();
 		this->buf = CallocT<byte>(MEMORY_CHUNK_SIZE);
 		this->blocks.emplace_back(this->buf);
@@ -579,7 +600,29 @@ struct MemoryDumper {
 	 */
 	size_t GetSize() const
 	{
+		assert(this->saved_buf == nullptr);
 		return this->completed_block_bytes + (this->bufe ? (MEMORY_CHUNK_SIZE - (this->bufe - this->buf)) : 0);
+	}
+
+	void StartAutoLength()
+	{
+		assert(this->saved_buf == nullptr);
+
+		this->saved_buf = this->buf;
+		this->saved_bufe = this->bufe;
+		this->buf = this->autolen_buf;
+		this->bufe = this->autolen_buf_end;
+	}
+
+	std::pair<byte *, size_t> StopAutoLength()
+	{
+		assert(this->saved_buf != nullptr);
+		auto res = std::make_pair(this->autolen_buf, this->buf - this->autolen_buf);
+
+		this->buf = this->saved_buf;
+		this->bufe = this->saved_bufe;
+		this->saved_buf = this->saved_bufe = nullptr;
+		return res;
 	}
 };
 
@@ -1153,10 +1196,6 @@ void SlSetLength(size_t length)
 			}
 			break;
 
-		case NL_CALCLENGTH:
-			_sl.obj_len += (int)length;
-			break;
-
 		default: NOT_REACHED();
 	}
 }
@@ -1490,8 +1529,6 @@ void SlArray(void *array, size_t length, VarType conv)
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcArrayLen(length, conv));
-		/* Determine length only? */
-		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
 	/* NOTICE - handle some buggy stuff, in really old versions everything was saved
@@ -1681,8 +1718,6 @@ static void SlList(void *list, SLRefType conv)
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcListLen<PtrList>(list));
-		/* Determine length only? */
-		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
 	PtrList *l = (PtrList *)list;
@@ -1739,8 +1774,6 @@ static void SlVarList(void *list, VarType conv)
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcVarListLen<PtrList>(list, size_len));
-		/* Determine length only? */
-		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
 	PtrList *l = (PtrList *)list;
@@ -2014,7 +2047,6 @@ void SlObject(void *object, const SaveLoad *sld)
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcObjLength(object, sld));
-		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
 	for (; sld->cmd != SL_END; sld++) {
@@ -2039,25 +2071,17 @@ void SlGlobList(const SaveLoadGlobVarList *sldg)
  */
 void SlAutolength(AutolengthProc *proc, void *arg)
 {
-	size_t offs;
-
 	assert(_sl.action == SLA_SAVE);
+	assert(_sl.need_length == NL_WANTLENGTH);
 
-	/* Tell it to calculate the length */
-	_sl.need_length = NL_CALCLENGTH;
-	_sl.obj_len = 0;
+	_sl.need_length = NL_NONE;
+	_sl.dumper->StartAutoLength();
 	proc(arg);
-
+	auto result = _sl.dumper->StopAutoLength();
 	/* Setup length */
 	_sl.need_length = NL_WANTLENGTH;
-	SlSetLength(_sl.obj_len);
-
-	offs = _sl.dumper->GetSize() + _sl.obj_len;
-
-	/* And write the stuff */
-	proc(arg);
-
-	if (offs != _sl.dumper->GetSize()) SlErrorCorrupt("Invalid chunk size");
+	SlSetLength(result.second);
+	_sl.dumper->CopyBytes(result.first, result.second);
 }
 
 /*
