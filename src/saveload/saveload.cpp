@@ -444,13 +444,48 @@ struct ReadBuffer {
 
 /** Container for dumping the savegame (quickly) to memory. */
 struct MemoryDumper {
-	AutoFreeSmallVector<byte *, 16> blocks; ///< Buffer with blocks of allocated memory.
+	struct BufferInfo {
+		byte *data;
+		size_t size = 0;
+
+		BufferInfo(byte *d) : data(d) {}
+		~BufferInfo() { free(this->data); }
+
+		BufferInfo(const BufferInfo &) = delete;
+		BufferInfo(BufferInfo &&other) : data(other.data), size(other.size) { other.data = nullptr; };
+	};
+
+	std::vector<BufferInfo> blocks;         ///< Buffer with blocks of allocated memory.
 	byte *buf;                              ///< Buffer we're going to write to.
 	byte *bufe;                             ///< End of the buffer we write to.
+	size_t completed_block_bytes;           ///< Total byte count of completed blocks
 
 	/** Initialise our variables. */
-	MemoryDumper() : buf(NULL), bufe(NULL)
+	MemoryDumper() : buf(NULL), bufe(NULL), completed_block_bytes(0)
 	{
+	}
+
+	void FinaliseBlock()
+	{
+		if (!this->blocks.empty()) {
+			size_t s = MEMORY_CHUNK_SIZE - (this->bufe - this->buf);
+			this->blocks.back().size = s;
+			this->completed_block_bytes += s;
+		}
+		this->buf = this->bufe = nullptr;
+	}
+
+	void AllocateBuffer()
+	{
+		this->FinaliseBlock();
+		this->buf = CallocT<byte>(MEMORY_CHUNK_SIZE);
+		this->blocks.emplace_back(this->buf);
+		this->bufe = this->buf + MEMORY_CHUNK_SIZE;
+	}
+
+	void CheckBytes(size_t bytes)
+	{
+		if (unlikely(this->buf + bytes > this->bufe)) this->AllocateBuffer();
 	}
 
 	/**
@@ -460,13 +495,66 @@ struct MemoryDumper {
 	inline void WriteByte(byte b)
 	{
 		/* Are we at the end of this chunk? */
-		if (this->buf == this->bufe) {
-			this->buf = CallocT<byte>(MEMORY_CHUNK_SIZE);
-			*this->blocks.Append() = this->buf;
-			this->bufe = this->buf + MEMORY_CHUNK_SIZE;
+		if (unlikely(this->buf == this->bufe)) {
+			this->AllocateBuffer();
 		}
 
 		*this->buf++ = b;
+	}
+
+	inline void CopyBytes(byte *ptr, size_t length)
+	{
+		while (length) {
+			if (unlikely(this->buf == this->bufe)) {
+				this->AllocateBuffer();
+			}
+			size_t to_copy = min<size_t>(this->bufe - this->buf, length);
+			memcpy(this->buf, ptr, to_copy);
+			this->buf += to_copy;
+			ptr += to_copy;
+			length -= to_copy;
+		}
+	}
+
+	inline void RawWriteUint16(uint16 v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((uint16 *) this->buf) = TO_BE16(v);
+#else
+		this->buf[0] = GB(v, 8, 8));
+		this->buf[1] = GB(v, 0, 8));
+#endif
+		this->buf += 2;
+	}
+
+	inline void RawWriteUint32(uint32 v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((uint32 *) this->buf) = TO_BE32(v);
+#else
+		this->buf[0] = GB(v, 24, 8));
+		this->buf[1] = GB(v, 16, 8));
+		this->buf[2] = GB(v, 8, 8));
+		this->buf[3] = GB(v, 0, 8));
+#endif
+		this->buf += 4;
+	}
+
+	inline void RawWriteUint64(uint64 v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((uint64 *) this->buf) = TO_BE64(v);
+#else
+		this->buf[0] = GB(v, 56, 8));
+		this->buf[1] = GB(v, 48, 8));
+		this->buf[2] = GB(v, 40, 8));
+		this->buf[3] = GB(v, 32, 8));
+		this->buf[4] = GB(v, 24, 8));
+		this->buf[5] = GB(v, 16, 8));
+		this->buf[6] = GB(v, 8, 8));
+		this->buf[7] = GB(v, 0, 8));
+#endif
+		this->buf += 8;
 	}
 
 	/**
@@ -475,14 +563,11 @@ struct MemoryDumper {
 	 */
 	void Flush(SaveFilter *writer)
 	{
-		uint i = 0;
-		size_t t = this->GetSize();
+		this->FinaliseBlock();
 
-		while (t > 0) {
-			size_t to_write = min(MEMORY_CHUNK_SIZE, t);
-
-			writer->Write(this->blocks[i++], to_write);
-			t -= to_write;
+		uint block_count = this->blocks.size();
+		for (uint i = 0; i < block_count; i++) {
+			writer->Write(this->blocks[i].data, this->blocks[i].size);
 		}
 
 		writer->Finish();
@@ -494,7 +579,7 @@ struct MemoryDumper {
 	 */
 	size_t GetSize() const
 	{
-		return this->blocks.Length() * MEMORY_CHUNK_SIZE - (this->bufe - this->buf);
+		return this->completed_block_bytes + (this->bufe ? (MEMORY_CHUNK_SIZE - (this->bufe - this->buf)) : 0);
 	}
 };
 
@@ -780,6 +865,24 @@ uint64 SlReadUint64()
 void SlWriteByte(byte b)
 {
 	_sl.dumper->WriteByte(b);
+}
+
+void SlWriteUint16(uint16 v)
+{
+	_sl.dumper->CheckBytes(2);
+	_sl.dumper->RawWriteUint16(v);
+}
+
+void SlWriteUint32(uint32 v)
+{
+	_sl.dumper->CheckBytes(4);
+	_sl.dumper->RawWriteUint32(v);
+}
+
+void SlWriteUint64(uint64 v)
+{
+	_sl.dumper->CheckBytes(8);
+	_sl.dumper->RawWriteUint64(v);
 }
 
 /**
@@ -1074,7 +1177,7 @@ static void SlCopyBytes(void *ptr, size_t length)
 			_sl.reader->CopyBytes(p, length);
 			break;
 		case SLA_SAVE:
-			for (; length != 0; length--) SlWriteByte(*p++);
+			_sl.dumper->CopyBytes(p, length);
 			break;
 		default: NOT_REACHED();
 	}

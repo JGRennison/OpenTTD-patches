@@ -683,23 +683,9 @@ int SlReadUint16();
 uint32 SlReadUint32();
 uint64 SlReadUint64();
 
-static inline void SlWriteUint16(uint16 v)
-{
-	SlWriteByte(GB(v, 8, 8));
-	SlWriteByte(GB(v, 0, 8));
-}
-
-static inline void SlWriteUint32(uint32 v)
-{
-	SlWriteUint16(GB(v, 16, 16));
-	SlWriteUint16(GB(v,  0, 16));
-}
-
-static inline void SlWriteUint64(uint64 x)
-{
-	SlWriteUint32((uint32)(x >> 32));
-	SlWriteUint32((uint32)x);
-}
+void SlWriteUint16(uint16 v);
+void SlWriteUint32(uint32 v);
+void SlWriteUint64(uint64 v);
 
 void SlSkipBytes(size_t length);
 
