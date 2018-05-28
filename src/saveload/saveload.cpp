@@ -320,18 +320,115 @@ struct ReadBuffer {
 	{
 	}
 
-	inline byte ReadByte()
+	void SkipBytesSlowPath(size_t bytes)
 	{
-		if (this->bufp == this->bufe) {
+		bytes -= (this->bufe - this->bufp);
+		while (true) {
 			size_t len = this->reader->Read(this->buf, lengthof(this->buf));
 			if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
-
 			this->read += len;
-			this->bufp = this->buf;
-			this->bufe = this->buf + len;
+			if (len >= bytes) {
+				this->bufp = this->buf + bytes;
+				this->bufe = this->buf + len;
+				return;
+			} else {
+				bytes -= len;
+			}
+		}
+	}
+
+	inline void SkipBytes(size_t bytes)
+	{
+		byte *b = this->bufp + bytes;
+		if (likely(b <= this->bufe)) {
+			this->bufp = b;
+		} else {
+			SkipBytesSlowPath(bytes);
+		}
+	}
+
+	void AcquireBytes()
+	{
+		size_t remainder = this->bufe - this->bufp;
+		if (remainder) {
+			memmove(this->buf, this->bufp, remainder);
+		}
+		size_t len = this->reader->Read(this->buf + remainder, lengthof(this->buf) - remainder);
+		if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
+
+		this->read += len;
+		this->bufp = this->buf;
+		this->bufe = this->buf + remainder + len;
+	}
+
+	inline byte RawReadByte()
+	{
+		return *this->bufp++;
+	}
+
+	inline byte ReadByte()
+	{
+		if (unlikely(this->bufp == this->bufe)) {
+			this->AcquireBytes();
 		}
 
-		return *this->bufp++;
+		return RawReadByte();
+	}
+
+	inline void CheckBytes(size_t bytes)
+	{
+		while (unlikely(this->bufp + bytes > this->bufe)) this->AcquireBytes();
+	}
+
+	inline int RawReadUint16()
+	{
+#if OTTD_ALIGNMENT == 0
+		int x = FROM_BE16(*((const uint16*) this->bufp));
+		this->bufp += 2;
+		return x;
+#else
+		int x = this->RawReadByte() << 8;
+		return x | this->RawReadByte();
+#endif
+	}
+
+	inline uint32 RawReadUint32()
+	{
+#if OTTD_ALIGNMENT == 0
+		uint32 x = FROM_BE32(*((const uint32*) this->bufp));
+		this->bufp += 4;
+		return x;
+#else
+		uint32 x = this->RawReadUint16() << 16;
+		return x | this->RawReadUint16();
+#endif
+	}
+
+	inline uint64 RawReadUint64()
+	{
+#if OTTD_ALIGNMENT == 0
+		uint64 x = FROM_BE64(*((const uint64*) this->bufp));
+		this->bufp += 8;
+		return x;
+#else
+		uint32 x = this->RawReadUint32();
+		uint32 y = this->RawReadUint32();
+		return (uint64)x << 32 | y;
+#endif
+	}
+
+	inline void CopyBytes(byte *ptr, size_t length)
+	{
+		while (length) {
+			if (unlikely(this->bufp == this->bufe)) {
+				this->AcquireBytes();
+			}
+			size_t to_copy = min<size_t>(this->bufe - this->bufp, length);
+			memcpy(ptr, this->bufp, to_copy);
+			this->bufp += to_copy;
+			ptr += to_copy;
+			length -= to_copy;
+		}
 	}
 
 	/**
@@ -649,6 +746,34 @@ byte SlReadByte()
 }
 
 /**
+ * Read in bytes from the file/data structure but don't do
+ * anything with them, discarding them in effect
+ * @param length The amount of bytes that is being treated this way
+ */
+void SlSkipBytes(size_t length)
+{
+	return _sl.reader->SkipBytes(length);
+}
+
+int SlReadUint16()
+{
+	_sl.reader->CheckBytes(2);
+	return _sl.reader->RawReadUint16();
+}
+
+uint32 SlReadUint32()
+{
+	_sl.reader->CheckBytes(4);
+	return _sl.reader->RawReadUint32();
+}
+
+uint64 SlReadUint64()
+{
+	_sl.reader->CheckBytes(8);
+	return _sl.reader->RawReadUint64();
+}
+
+/**
  * Wrapper for writing a byte to the dumper.
  * @param b The byte to write.
  */
@@ -946,7 +1071,7 @@ static void SlCopyBytes(void *ptr, size_t length)
 	switch (_sl.action) {
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD:
-			for (; length != 0; length--) *p++ = SlReadByte();
+			_sl.reader->CopyBytes(p, length);
 			break;
 		case SLA_SAVE:
 			for (; length != 0; length--) SlWriteByte(*p++);
