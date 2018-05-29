@@ -105,12 +105,10 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		for (StationSupplyList::iterator i(this->cached_stations.begin()); i != this->cached_stations.end(); ++i) {
 			incremental_station_exclude.push_back(i->id);
 		}
-		std::sort(incremental_station_exclude.begin(), incremental_station_exclude.end());
 		incremental_link_exclude.reserve(this->cached_links.size());
 		for (LinkList::iterator i(this->cached_links.begin()); i != this->cached_links.end(); ++i) {
 			incremental_link_exclude.push_back(std::make_pair(i->from_id, i->to_id));
 		}
-		std::sort(incremental_link_exclude.begin(), incremental_link_exclude.end());
 	}
 
 	auto AddLinks = [&](const Station *from, const Station *to, Point from_pt, Point to_pt, btree::btree_map<std::pair<StationID, StationID>, LinkCacheItem>::iterator insert_iter) {
@@ -139,6 +137,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		}
 	};
 
+	const size_t previous_cached_stations_count = this->cached_stations.size();
 	const Station *sta;
 	FOR_ALL_STATIONS(sta) {
 		if (sta->rect.IsEmpty()) continue;
@@ -191,9 +190,23 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		}
 	}
 
+	const size_t previous_cached_links_count = this->cached_links.size();
 	this->cached_links.reserve(this->cached_links.size() + link_cache_map.size());
 	for (auto &iter : link_cache_map) {
 		this->cached_links.push_back({ iter.first.first, iter.first.second, iter.second.from_pt, iter.second.to_pt, iter.second.prop });
+	}
+
+	if (previous_cached_stations_count > 0) {
+		std::inplace_merge(this->cached_stations.begin(), this->cached_stations.begin() + previous_cached_stations_count, this->cached_stations.end(),
+				[](const StationSupplyInfo &a, const StationSupplyInfo &b) {
+					return a.id < b.id;
+				});
+	}
+	if (previous_cached_links_count > 0) {
+		std::inplace_merge(this->cached_links.begin(), this->cached_links.begin() + previous_cached_links_count, this->cached_links.end(),
+				[](const LinkInfo &a, const LinkInfo &b) {
+					return std::make_pair(a.from_id, a.to_id) < std::make_pair(b.from_id, b.to_id);
+				});
 	}
 }
 
