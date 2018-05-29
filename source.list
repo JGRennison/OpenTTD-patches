@@ -670,6 +670,7 @@ saveload/saveload.cpp
 saveload/saveload.h
 saveload/saveload_filter.h
 saveload/saveload_internal.h
+saveload/saveload_buffer.h
 saveload/signs_sl.cpp
 saveload/station_sl.cpp
 saveload/storage_sl.cpp

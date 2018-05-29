@@ -2935,6 +2935,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\saveload\saveload_buffer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\saveload\signs_sl.cpp"
 				>
 			</File>

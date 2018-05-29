@@ -52,6 +52,7 @@
 
 #include "saveload_internal.h"
 #include "saveload_filter.h"
+#include "saveload_buffer.h"
 #include "extended_ver_sl.h"
 
 #include "../safeguards.h"
@@ -301,108 +302,113 @@ enum SaveLoadAction {
 enum NeedLength {
 	NL_NONE = 0,       ///< not working in NeedLength mode
 	NL_WANTLENGTH = 1, ///< writing length and data
-	NL_CALCLENGTH = 2, ///< need to calculate the length
 };
 
-/** Save in chunks of 128 KiB. */
-static const size_t MEMORY_CHUNK_SIZE = 128 * 1024;
-
-/** A buffer for reading (and buffering) savegame data. */
-struct ReadBuffer {
-	byte buf[MEMORY_CHUNK_SIZE]; ///< Buffer we're going to read from.
-	byte *bufp;                  ///< Location we're at reading the buffer.
-	byte *bufe;                  ///< End of the buffer we can read from.
-	LoadFilter *reader;          ///< The filter used to actually read.
-	size_t read;                 ///< The amount of read bytes so far from the filter.
-
-	/**
-	 * Initialise our variables.
-	 * @param reader The filter to actually read data.
-	 */
-	ReadBuffer(LoadFilter *reader) : bufp(NULL), bufe(NULL), reader(reader), read(0)
-	{
-	}
-
-	inline byte ReadByte()
-	{
-		if (this->bufp == this->bufe) {
-			size_t len = this->reader->Read(this->buf, lengthof(this->buf));
-			if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
-
-			this->read += len;
-			this->bufp = this->buf;
+void ReadBuffer::SkipBytesSlowPath(size_t bytes)
+{
+	bytes -= (this->bufe - this->bufp);
+	while (true) {
+		size_t len = this->reader->Read(this->buf, lengthof(this->buf));
+		if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
+		this->read += len;
+		if (len >= bytes) {
+			this->bufp = this->buf + bytes;
 			this->bufe = this->buf + len;
+			return;
+		} else {
+			bytes -= len;
 		}
+	}
+}
 
-		return *this->bufp++;
+void ReadBuffer::AcquireBytes()
+{
+	size_t remainder = this->bufe - this->bufp;
+	if (remainder) {
+		memmove(this->buf, this->bufp, remainder);
+	}
+	size_t len = this->reader->Read(this->buf + remainder, lengthof(this->buf) - remainder);
+	if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
+
+	this->read += len;
+	this->bufp = this->buf;
+	this->bufe = this->buf + remainder + len;
+}
+
+void MemoryDumper::FinaliseBlock()
+{
+	assert(this->saved_buf == nullptr);
+	if (!this->blocks.empty()) {
+		size_t s = MEMORY_CHUNK_SIZE - (this->bufe - this->buf);
+		this->blocks.back().size = s;
+		this->completed_block_bytes += s;
+	}
+	this->buf = this->bufe = nullptr;
+}
+
+void MemoryDumper::AllocateBuffer()
+{
+	if (this->saved_buf) {
+		const size_t offset = this->buf - this->autolen_buf;
+		const size_t size = (this->autolen_buf_end - this->autolen_buf) * 2;
+		this->autolen_buf = ReallocT<byte>(this->autolen_buf, size);
+		this->autolen_buf_end = this->autolen_buf + size;
+		this->buf = this->autolen_buf + offset;
+		this->bufe = this->autolen_buf_end;
+		return;
+	}
+	this->FinaliseBlock();
+	this->buf = CallocT<byte>(MEMORY_CHUNK_SIZE);
+	this->blocks.emplace_back(this->buf);
+	this->bufe = this->buf + MEMORY_CHUNK_SIZE;
+}
+
+/**
+ * Flush this dumper into a writer.
+ * @param writer The filter we want to use.
+ */
+void MemoryDumper::Flush(SaveFilter *writer)
+{
+	this->FinaliseBlock();
+
+	uint block_count = this->blocks.size();
+	for (uint i = 0; i < block_count; i++) {
+		writer->Write(this->blocks[i].data, this->blocks[i].size);
 	}
 
-	/**
-	 * Get the size of the memory dump made so far.
-	 * @return The size.
-	 */
-	size_t GetSize() const
-	{
-		return this->read - (this->bufe - this->bufp);
-	}
-};
+	writer->Finish();
+}
 
+void MemoryDumper::StartAutoLength()
+{
+	assert(this->saved_buf == nullptr);
 
-/** Container for dumping the savegame (quickly) to memory. */
-struct MemoryDumper {
-	AutoFreeSmallVector<byte *, 16> blocks; ///< Buffer with blocks of allocated memory.
-	byte *buf;                              ///< Buffer we're going to write to.
-	byte *bufe;                             ///< End of the buffer we write to.
+	this->saved_buf = this->buf;
+	this->saved_bufe = this->bufe;
+	this->buf = this->autolen_buf;
+	this->bufe = this->autolen_buf_end;
+}
 
-	/** Initialise our variables. */
-	MemoryDumper() : buf(NULL), bufe(NULL)
-	{
-	}
+std::pair<byte *, size_t> MemoryDumper::StopAutoLength()
+{
+	assert(this->saved_buf != nullptr);
+	auto res = std::make_pair(this->autolen_buf, this->buf - this->autolen_buf);
 
-	/**
-	 * Write a single byte into the dumper.
-	 * @param b The byte to write.
-	 */
-	inline void WriteByte(byte b)
-	{
-		/* Are we at the end of this chunk? */
-		if (this->buf == this->bufe) {
-			this->buf = CallocT<byte>(MEMORY_CHUNK_SIZE);
-			*this->blocks.Append() = this->buf;
-			this->bufe = this->buf + MEMORY_CHUNK_SIZE;
-		}
+	this->buf = this->saved_buf;
+	this->bufe = this->saved_bufe;
+	this->saved_buf = this->saved_bufe = nullptr;
+	return res;
+}
 
-		*this->buf++ = b;
-	}
-
-	/**
-	 * Flush this dumper into a writer.
-	 * @param writer The filter we want to use.
-	 */
-	void Flush(SaveFilter *writer)
-	{
-		uint i = 0;
-		size_t t = this->GetSize();
-
-		while (t > 0) {
-			size_t to_write = min(MEMORY_CHUNK_SIZE, t);
-
-			writer->Write(this->blocks[i++], to_write);
-			t -= to_write;
-		}
-
-		writer->Finish();
-	}
-
-	/**
-	 * Get the size of the memory dump made so far.
-	 * @return The size.
-	 */
-	size_t GetSize() const
-	{
-		return this->blocks.Length() * MEMORY_CHUNK_SIZE - (this->bufe - this->buf);
-	}
-};
+/**
+ * Get the size of the memory dump made so far.
+ * @return The size.
+ */
+size_t MemoryDumper::GetSize() const
+{
+	assert(this->saved_buf == nullptr);
+	return this->completed_block_bytes + (this->bufe ? (MEMORY_CHUNK_SIZE - (this->bufe - this->buf)) : 0);
+}
 
 /** The saveload struct, containing reader-writer functions, buffer, version, etc. */
 struct SaveLoadParams {
@@ -428,6 +434,16 @@ struct SaveLoadParams {
 };
 
 static SaveLoadParams _sl; ///< Parameters used for/at saveload.
+
+ReadBuffer *ReadBuffer::GetCurrent()
+{
+	return _sl.reader;
+}
+
+MemoryDumper *MemoryDumper::GetCurrent()
+{
+	return _sl.dumper;
+}
 
 /* these define the chunks */
 extern const ChunkHandler _version_ext_chunk_handlers[];
@@ -666,12 +682,58 @@ byte SlReadByte()
 }
 
 /**
+ * Read in bytes from the file/data structure but don't do
+ * anything with them, discarding them in effect
+ * @param length The amount of bytes that is being treated this way
+ */
+void SlSkipBytes(size_t length)
+{
+	return _sl.reader->SkipBytes(length);
+}
+
+int SlReadUint16()
+{
+	_sl.reader->CheckBytes(2);
+	return _sl.reader->RawReadUint16();
+}
+
+uint32 SlReadUint32()
+{
+	_sl.reader->CheckBytes(4);
+	return _sl.reader->RawReadUint32();
+}
+
+uint64 SlReadUint64()
+{
+	_sl.reader->CheckBytes(8);
+	return _sl.reader->RawReadUint64();
+}
+
+/**
  * Wrapper for writing a byte to the dumper.
  * @param b The byte to write.
  */
 void SlWriteByte(byte b)
 {
 	_sl.dumper->WriteByte(b);
+}
+
+void SlWriteUint16(uint16 v)
+{
+	_sl.dumper->CheckBytes(2);
+	_sl.dumper->RawWriteUint16(v);
+}
+
+void SlWriteUint32(uint32 v)
+{
+	_sl.dumper->CheckBytes(4);
+	_sl.dumper->RawWriteUint32(v);
+}
+
+void SlWriteUint64(uint64 v)
+{
+	_sl.dumper->CheckBytes(8);
+	_sl.dumper->RawWriteUint64(v);
 }
 
 /**
@@ -942,10 +1004,6 @@ void SlSetLength(size_t length)
 			}
 			break;
 
-		case NL_CALCLENGTH:
-			_sl.obj_len += (int)length;
-			break;
-
 		default: NOT_REACHED();
 	}
 }
@@ -963,10 +1021,10 @@ static void SlCopyBytes(void *ptr, size_t length)
 	switch (_sl.action) {
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD:
-			for (; length != 0; length--) *p++ = SlReadByte();
+			_sl.reader->CopyBytes(p, length);
 			break;
 		case SLA_SAVE:
-			for (; length != 0; length--) SlWriteByte(*p++);
+			_sl.dumper->CopyBytes(p, length);
 			break;
 		default: NOT_REACHED();
 	}
@@ -1279,8 +1337,6 @@ void SlArray(void *array, size_t length, VarType conv)
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcArrayLen(length, conv));
-		/* Determine length only? */
-		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
 	/* NOTICE - handle some buggy stuff, in really old versions everything was saved
@@ -1480,8 +1536,6 @@ static void SlList(void *list, SLRefType conv)
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcListLen<PtrList>(list));
-		/* Determine length only? */
-		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
 	PtrList *l = (PtrList *)list;
@@ -1538,8 +1592,6 @@ static void SlVarList(void *list, VarType conv)
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcVarListLen<PtrList>(list, size_len));
-		/* Determine length only? */
-		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
 	PtrList *l = (PtrList *)list;
@@ -1813,7 +1865,6 @@ void SlObject(void *object, const SaveLoad *sld)
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcObjLength(object, sld));
-		if (_sl.need_length == NL_CALCLENGTH) return;
 	}
 
 	for (; sld->cmd != SL_END; sld++) {
@@ -1838,25 +1889,17 @@ void SlGlobList(const SaveLoadGlobVarList *sldg)
  */
 void SlAutolength(AutolengthProc *proc, void *arg)
 {
-	size_t offs;
-
 	assert(_sl.action == SLA_SAVE);
+	assert(_sl.need_length == NL_WANTLENGTH);
 
-	/* Tell it to calculate the length */
-	_sl.need_length = NL_CALCLENGTH;
-	_sl.obj_len = 0;
+	_sl.need_length = NL_NONE;
+	_sl.dumper->StartAutoLength();
 	proc(arg);
-
+	auto result = _sl.dumper->StopAutoLength();
 	/* Setup length */
 	_sl.need_length = NL_WANTLENGTH;
-	SlSetLength(_sl.obj_len);
-
-	offs = _sl.dumper->GetSize() + _sl.obj_len;
-
-	/* And write the stuff */
-	proc(arg);
-
-	if (offs != _sl.dumper->GetSize()) SlErrorCorrupt("Invalid chunk size");
+	SlSetLength(result.second);
+	_sl.dumper->CopyBytes(result.first, result.second);
 }
 
 /*
