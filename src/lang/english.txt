@@ -1450,6 +1450,9 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Closes a window
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autosave: {STRING2}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Select interval between automatic game saves
 
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autosave on network disconnection: {STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :When enabled, multiplayer clients automatically save the game when disconnected from the server
+
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Use the {STRING2} date format for savegame names
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Format of the date in save game filenames
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_LONG               :long (31st Dec 2008)
