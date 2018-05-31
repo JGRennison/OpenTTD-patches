@@ -17,6 +17,7 @@
 #include <vector>
 
 struct Vehicle;
+struct BaseStation;
 
 extern std::vector<std::function<int(char *, const char *)>> _scope_stack;
 
@@ -61,6 +62,7 @@ int WriteScopeLog(char *buf, const char *last);
 struct scope_dumper {
 	const char *CompanyInfo(int company_id);
 	const char *VehicleInfo(const Vehicle *v);
+	const char *StationInfo(const BaseStation *st);
 
 private:
 	char buffer[256];
