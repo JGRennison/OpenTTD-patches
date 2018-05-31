@@ -1684,6 +1684,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	bool pull_through_mode = false;
 	bool load_unload_not_yet_in_station = false;
+	bool unload_payment_not_yet_in_station = false;
 	if (front->type == VEH_TRAIN && front->cur_real_order_index < front->GetNumOrders()) {
 		Order *order = front->GetOrder(front->cur_real_order_index);
 		if (order->IsType(OT_GOTO_STATION) && order->GetDestination() == last_visited &&
@@ -1768,10 +1769,13 @@ static void LoadUnloadVehicle(Vehicle *front)
 				u = u->GetNextArticulatedPart();
 				length += Train::From(u)->gcache.cached_veh_length;
 			}
-			if (v != front && !HasBit(Train::From(v->Previous())->flags, VRF_BEYOND_PLATFORM_END) && length > platform_length_left) {
+			if (v != station_vehicle && !HasBit(Train::From(v->Previous())->flags, VRF_BEYOND_PLATFORM_END) && length > platform_length_left) {
 				for (Vehicle *skip = v; skip != NULL; skip = skip->Next()) {
 					SetBit(Train::From(skip)->flags, VRF_NOT_YET_IN_PLATFORM);
-					if (skip->cargo.ReservedCount() || skip->cargo.UnloadCount() || (skip->cargo_cap != 0 && front->current_order.IsRefit())) {
+					if (HasBit(skip->vehicle_flags, VF_CARGO_UNLOADING)) {
+						unload_payment_not_yet_in_station = true;
+						load_unload_not_yet_in_station = true;
+					} else if (skip->cargo.ReservedCount() || skip->cargo.UnloadCount() || (skip->cargo_cap != 0 && front->current_order.IsRefit())) {
 						load_unload_not_yet_in_station = true;
 					}
 				}
@@ -1849,6 +1853,9 @@ static void LoadUnloadVehicle(Vehicle *front)
 			}
 
 			continue;
+		} else if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && payment == nullptr) {
+			/* Once the payment has been made, never attempt to unload again */
+			ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
 		}
 
 		/* Do not pick up goods when we have no-load set or loading is stopped. */
@@ -1952,7 +1959,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	/* Only set completely_emptied, if we just unloaded all remaining cargo */
 	completely_emptied &= anything_unloaded;
 
-	if (!anything_unloaded && !load_unload_not_yet_in_station) delete payment;
+	if (!anything_unloaded && !unload_payment_not_yet_in_station) delete payment;
 
 	ClrBit(front->vehicle_flags, VF_STOP_LOADING);
 
