@@ -87,7 +87,8 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 
 	if (st) {
 		const bool waypoint = Waypoint::IsExpected(st);
-		b += seprintf(b, last, "%s: %u: ", waypoint ? "waypoint" : "station", st->index);
+		b += seprintf(b, last, "%s: %u: (", waypoint ? "waypoint" : "station", st->index);
+		SetDParam(0, st->index);
 		b = GetString(b, waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME, last);
 		b += seprintf(b, last, ", c:%d, facil: ", (int) st->owner);
 		auto dump_facil = [&](char c, StationFacility flag) {
@@ -99,6 +100,7 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 		dump_facil('A', FACIL_AIRPORT);
 		dump_facil('D', FACIL_DOCK);
 		dump_facil('W', FACIL_WAYPOINT);
+		b += seprintf(b, last, ")");
 	} else {
 		b += seprintf(b, last, "station/waypoint: NULL");
 	}
