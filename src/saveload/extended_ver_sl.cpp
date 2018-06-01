@@ -82,7 +82,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_MULTIPLE_DOCKS,         XSCF_NULL,                1,   1, "multiple_docks",            NULL, NULL, "DOCK"      },
 	{ XSLFI_TIMETABLE_EXTRA,        XSCF_NULL,                1,   1, "timetable_extra",           NULL, NULL, "ORDX"      },
 	{ XSLFI_TRAIN_FLAGS_EXTRA,      XSCF_NULL,                1,   1, "train_flags_extra",         NULL, NULL, NULL        },
-	{ XSLFI_TRAIN_THROUGH_LOAD,     XSCF_NULL,                1,   1, "train_through_load",        NULL, NULL, NULL        },
+	{ XSLFI_TRAIN_THROUGH_LOAD,     XSCF_NULL,                2,   2, "train_through_load",        NULL, NULL, NULL        },
 	{ XSLFI_ORDER_EXTRA_DATA,       XSCF_NULL,                1,   1, "order_extra_data",          NULL, NULL, NULL        },
 	{ XSLFI_WHOLE_MAP_CHUNK,        XSCF_NULL,                1,   1, "whole_map_chunk",           NULL, NULL, "WMAP"      },
 	{ XSLFI_ST_LAST_VEH_TYPE,       XSCF_NULL,                1,   1, "station_last_veh_type",     NULL, NULL, NULL        },

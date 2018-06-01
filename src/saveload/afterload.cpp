@@ -3458,6 +3458,17 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_TRAIN_THROUGH_LOAD, 0, 1)) {
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			if (v->cargo_payment == nullptr) {
+				for (Vehicle *u = v; u != NULL; u = u->Next()) {
+					if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING)) ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
+				}
+			}
+		}
+	}
+
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
 	AfterLoadLabelMaps();
