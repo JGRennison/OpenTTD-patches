@@ -2705,7 +2705,10 @@ void Vehicle::LeaveStation()
 	delete this->cargo_payment;
 	assert(this->cargo_payment == NULL); // cleared by ~CargoPayment
 
+	TileIndex station_tile = INVALID_TILE;
+
 	if (this->type == VEH_TRAIN) {
+		station_tile = Train::From(this)->GetStationLoadingVehicle()->tile;
 		for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
 			ClrBit(v->flags, VRF_BEYOND_PLATFORM_END);
 			ClrBit(v->flags, VRF_NOT_YET_IN_PLATFORM);
@@ -2777,8 +2780,7 @@ void Vehicle::LeaveStation()
 
 	if (this->type == VEH_TRAIN && !(this->vehstatus & VS_CRASHED)) {
 		/* Trigger station animation (trains only) */
-		TileIndex station_tile = Train::From(this)->GetStationLoadingVehicle()->tile;
-		if (IsTileType(station_tile, MP_STATION)) {
+		if (IsRailStationTile(station_tile)) {
 			TriggerStationRandomisation(st, station_tile, SRT_TRAIN_DEPARTS);
 			TriggerStationAnimation(st, station_tile, SAT_TRAIN_DEPARTS);
 		}
