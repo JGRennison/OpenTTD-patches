@@ -17,6 +17,10 @@
 #include "fileio_func.h"
 #include "settings_type.h"
 
+#if defined(WIN32) || defined(WIN64)
+#include "os/windows/win32.h"
+#endif
+
 #include <time.h>
 
 #if defined(ENABLE_NETWORK)
@@ -176,7 +180,11 @@ static void debug_print(const char *dbg, const char *buf)
 	 * not seem able to handle text direction change characters in a console without
 	 * crashing, and NetworkTextMessage includes these */
 #if defined(WIN32) || defined(WIN64)
-	if (strcmp(dbg, "desync") != 0) _fputts(OTTD2FS(buffer, true), stderr);
+	if (strcmp(dbg, "desync") != 0) {
+		TCHAR system_buf[512];
+		convert_to_fs(buffer, system_buf, lengthof(system_buf), true);
+		_fputts(system_buf, stderr);
+	}
 #else
 	fputs(buffer, stderr);
 #endif
