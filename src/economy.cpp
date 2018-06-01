@@ -1754,6 +1754,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 	CargoTypes cargo_not_full   = 0;
 	CargoTypes cargo_full       = 0;
 	CargoTypes reservation_left = 0;
+	CargoTypes not_yet_in_station_cargo_not_full   = 0;
+	CargoTypes not_yet_in_station_cargo_full       = 0;
 
 	front->cur_speed = 0;
 
@@ -1777,6 +1779,13 @@ static void LoadUnloadVehicle(Vehicle *front)
 						load_unload_not_yet_in_station = true;
 					} else if (skip->cargo.ReservedCount() || skip->cargo.UnloadCount() || (skip->cargo_cap != 0 && front->current_order.IsRefit())) {
 						load_unload_not_yet_in_station = true;
+					}
+					if (skip->cargo_cap != 0) {
+						if (skip->cargo.StoredCount() >= skip->cargo_cap) {
+							SetBit(not_yet_in_station_cargo_full, skip->cargo_type);
+						} else {
+							SetBit(not_yet_in_station_cargo_not_full, skip->cargo_type);
+						}
 					}
 				}
 				break; // articulated vehicle won't fit in platform, no loading
@@ -1992,7 +2001,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 		UpdateLoadUnloadTicks(front, st, 20, platform_length_left); // We need the ticks for link refreshing.
 		bool finished_loading = true;
 		if (has_full_load_order) {
-			if (front->current_order.GetLoadType() == OLF_FULL_LOAD_ANY) {
+			const bool full_load_any_order = front->current_order.GetLoadType() == OLF_FULL_LOAD_ANY;
+			if (full_load_any_order) {
 				/* if the aircraft carries passengers and is NOT full, then
 				 * continue loading, no matter how much mail is in */
 				if ((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CC_PASSENGERS) && front->cargo_cap > front->cargo.StoredCount()) ||
@@ -2002,9 +2012,21 @@ static void LoadUnloadVehicle(Vehicle *front)
 			} else if (cargo_not_full != 0) {
 				finished_loading = false;
 			}
+			if (finished_loading && pull_through_mode) {
+				if (full_load_any_order) {
+					if (not_yet_in_station_cargo_not_full != 0 &&
+							((cargo_full | not_yet_in_station_cargo_full) & ~(cargo_not_full | not_yet_in_station_cargo_not_full)) == 0) {
+						finished_loading = false;
+						SetBit(Train::From(front)->flags, VRF_ADVANCE_IN_PLATFORM);
+					}
+				} else if (not_yet_in_station_cargo_not_full) {
+					finished_loading = false;
+					SetBit(Train::From(front)->flags, VRF_ADVANCE_IN_PLATFORM);
+				}
+			}
 		}
 
-		if (pull_through_mode && load_unload_not_yet_in_station) {
+		if (finished_loading && pull_through_mode && load_unload_not_yet_in_station) {
 			finished_loading = false;
 			SetBit(Train::From(front)->flags, VRF_ADVANCE_IN_PLATFORM);
 		}
