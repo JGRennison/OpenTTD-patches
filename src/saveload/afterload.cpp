@@ -1480,7 +1480,9 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(26)) {
 		Station *st;
 		FOR_ALL_STATIONS(st) {
-			st->last_vehicle_type = VEH_INVALID;
+			for (CargoID c = 0; c < NUM_CARGO; c++) {
+				st->goods[c].last_vehicle_type = VEH_INVALID;
+			}
 		}
 	}
 

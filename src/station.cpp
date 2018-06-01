@@ -60,8 +60,7 @@ Station::Station(TileIndex tile) :
 	dock_station(INVALID_TILE, 0, 0),
 	indtype(IT_INVALID),
 	time_since_load(255),
-	time_since_unload(255),
-	last_vehicle_type(VEH_INVALID)
+	time_since_unload(255)
 {
 	/* this->random_bits is set in Station::AddFacility() */
 }

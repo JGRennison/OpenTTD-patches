@@ -3485,7 +3485,7 @@ static void UpdateStationRating(Station *st)
 
 				uint32 var18 = min(ge->time_since_pickup, 0xFF) | (min(ge->max_waiting_cargo, 0xFFFF) << 8) | (min(last_speed, 0xFF) << 24);
 				/* Convert to the 'old' vehicle types */
-				uint32 var10 = (st->last_vehicle_type == VEH_INVALID) ? 0x0 : (st->last_vehicle_type + 0x10);
+				uint32 var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
 				uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, cs);
 				if (callback != CALLBACK_FAILED) {
 					skip = true;
@@ -3501,7 +3501,7 @@ static void UpdateStationRating(Station *st)
 				if (b >= 0) rating += b >> 2;
 
 				byte waittime = ge->time_since_pickup;
-				if (st->last_vehicle_type == VEH_SHIP) waittime >>= 2;
+				if (ge->last_vehicle_type == VEH_SHIP) waittime >>= 2;
 				(waittime > 21) ||
 				(rating += 25, waittime > 12) ||
 				(rating += 25, waittime > 6) ||

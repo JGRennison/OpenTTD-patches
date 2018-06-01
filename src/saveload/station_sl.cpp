@@ -23,6 +23,8 @@
 
 #include "../safeguards.h"
 
+static byte _old_last_vehicle_type;
+
 /**
  * Update the buoy orders to be waypoint orders.
  * @param o the order 'list' to check.
@@ -219,7 +221,7 @@ static const SaveLoad _old_station_desc[] = {
 	SLE_CONDVAR(Station, airport.flags,              SLE_UINT64,                 46, SL_MAX_VERSION),
 
 	SLE_CONDNULL(2, 0, 25), ///< last-vehicle
-	SLE_CONDVAR(Station, last_vehicle_type,          SLE_UINT8,                  26, SL_MAX_VERSION),
+	SLEG_CONDVAR_X(_old_last_vehicle_type,           SLE_UINT8,                  26, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ST_LAST_VEH_TYPE, 0, 0)),
 
 	SLE_CONDNULL(2, 3, 25), ///< custom station class and id
 	SLE_CONDVAR(Station, build_date,                 SLE_FILE_U16 | SLE_VAR_I32,  3, 30),
@@ -306,6 +308,7 @@ const SaveLoad *GetGoodsDesc()
 		 SLE_CONDVAR(GoodsEntry, node,                 SLE_UINT16,                183, SL_MAX_VERSION),
 		SLEG_CONDVAR(            _num_flows,           SLE_UINT32,                183, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, max_waiting_cargo,    SLE_UINT32,                183, SL_MAX_VERSION),
+		SLE_CONDVAR_X(GoodsEntry, last_vehicle_type,   SLE_UINT8,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ST_LAST_VEH_TYPE, 1)),
 		SLE_END()
 	};
 
@@ -379,6 +382,7 @@ static void Load_STNS()
 					SB(ge->status, GoodsEntry::GES_RATING, 1, 1);
 				}
 			}
+			if (SlXvIsFeatureMissing(XSLFI_ST_LAST_VEH_TYPE)) ge->last_vehicle_type = _old_last_vehicle_type;
 		}
 
 		if (st->num_specs != 0) {
@@ -460,7 +464,7 @@ static const SaveLoad _station_desc[] = {
 
 	      SLE_VAR(Station, time_since_load,            SLE_UINT8),
 	      SLE_VAR(Station, time_since_unload,          SLE_UINT8),
-	      SLE_VAR(Station, last_vehicle_type,          SLE_UINT8),
+	SLEG_CONDVAR_X(_old_last_vehicle_type,             SLE_UINT8,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ST_LAST_VEH_TYPE, 0, 0)),
 	      SLE_VAR(Station, had_vehicle_of_type,        SLE_UINT8),
 	      SLE_VEC(Station, loading_vehicles,           REF_VEHICLE),
 	  SLE_CONDVAR(Station, always_accepted,            SLE_UINT32, 127, SL_MAX_VERSION),
@@ -601,6 +605,7 @@ static void Load_STNN()
 						assert(pair.second.empty());
 					}
 				}
+				if (SlXvIsFeatureMissing(XSLFI_ST_LAST_VEH_TYPE)) st->goods[i].last_vehicle_type = _old_last_vehicle_type;
 			}
 		}
 

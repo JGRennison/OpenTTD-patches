@@ -1928,7 +1928,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				anything_loaded = true;
 
 				st->time_since_load = 0;
-				st->last_vehicle_type = v->type;
+				ge->last_vehicle_type = v->type;
 
 				if (ge->cargo.TotalCount() == 0) {
 					TriggerStationRandomisation(st, st->xy, SRT_CARGO_TAKEN, v->cargo_type);

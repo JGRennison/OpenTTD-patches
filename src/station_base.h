@@ -216,6 +216,7 @@ struct GoodsEntry {
 	GoodsEntry() :
 		status(0),
 		time_since_pickup(255),
+		last_vehicle_type(VEH_INVALID),
 		rating(INITIAL_STATION_RATING),
 		last_speed(0),
 		last_age(255),
@@ -233,6 +234,8 @@ struct GoodsEntry {
 	 * This does not imply there was any cargo to load.
 	 */
 	byte time_since_pickup;
+
+	byte last_vehicle_type;
 
 	byte rating;            ///< %Station rating for this cargo.
 
@@ -470,7 +473,6 @@ public:
 	byte time_since_load;
 	byte time_since_unload;
 
-	byte last_vehicle_type;
 	std::vector<Vehicle *> loading_vehicles;
 	GoodsEntry goods[NUM_CARGO];  ///< Goods at this station
 	CargoTypes always_accepted;       ///< Bitmask of always accepted cargo types (by houses, HQs, industry tiles when industry doesn't accept cargo)
