@@ -2709,6 +2709,7 @@ void Vehicle::LeaveStation()
 		for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
 			ClrBit(v->flags, VRF_BEYOND_PLATFORM_END);
 			ClrBit(v->flags, VRF_NOT_YET_IN_PLATFORM);
+			ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
 		}
 	}
 
