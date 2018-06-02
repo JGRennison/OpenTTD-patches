@@ -1394,15 +1394,16 @@ static uint GetLoadAmount(Vehicle *v)
  * @tparam Taction Class of action to be applied. Must implement bool operator()([const] Vehicle *).
  * @param v First articulated part.
  * @param action Instance of Taction.
+ * @param ignore_multihead_rear Don't call action on multihead rear.
  * @return false if any of the action invocations returned false, true otherwise.
  */
 template<class Taction>
-bool IterateVehicleParts(Vehicle *v, Taction action)
+bool IterateVehicleParts(Vehicle *v, Taction action, bool ignore_multihead_rear = false)
 {
 	for (Vehicle *w = v; w != NULL;
 			w = w->HasArticulatedPart() ? w->GetNextArticulatedPart() : NULL) {
 		if (!action(w)) return false;
-		if (w->type == VEH_TRAIN) {
+		if (!ignore_multihead_rear && w->type == VEH_TRAIN) {
 			Train *train = Train::From(w);
 			if (train->IsMultiheaded() && !action(train->other_multiheaded_part)) return false;
 		}
@@ -1424,6 +1425,23 @@ struct IsEmptyAction
 	bool operator()(const Vehicle *v)
 	{
 		return v->cargo.StoredCount() == 0;
+	}
+};
+
+/**
+ * Action to check whether a vehicle is wholly in the platform.
+ */
+struct ThroughLoadTrainInPlatformAction
+{
+	/**
+	 * Checks if the vehicle has stored cargo.
+	 * @param v Vehicle to be checked.
+	 * @return true if v is either empty or has only reserved cargo, false otherwise.
+	 */
+	bool operator()(const Vehicle *v)
+	{
+		assert(v->type == VEH_TRAIN);
+		return !HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END) && !HasBit(Train::From(v)->flags, VRF_NOT_YET_IN_PLATFORM);
 	}
 };
 
@@ -1535,6 +1553,7 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 {
 	Vehicle *v_start = v->GetFirstEnginePart();
 	if (!IterateVehicleParts(v_start, IsEmptyAction())) return;
+	if (v->type == VEH_TRAIN && !IterateVehicleParts(v_start, ThroughLoadTrainInPlatformAction())) return;
 
 	Backup<CompanyByte> cur_company(_current_company, v->owner, FILE_LINE);
 
@@ -1599,6 +1618,9 @@ struct ReserveCargoAction {
 
 	bool operator()(Vehicle *v)
 	{
+		/* Don't try to reserve cargo if the vehicle has already advanced beyond the station platform */
+		if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return true;
+
 		if (cargo_type_loading != NULL && !(cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD)) return true;
 		if (v->cargo_cap > v->cargo.RemainingCount()) {
 			st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
@@ -1618,8 +1640,10 @@ struct ReserveCargoAction {
  * @param consist_capleft If given, save free capacities after reserving there.
  * @param next_station Station(s) the vehicle will stop at next.
  * @param cargo_type_loading check cargo-specific loading type
+ * @param through_load through load mode
  */
-static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft, const CargoStationIDStackSet &next_station, bool cargo_type_loading)
+static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft, const CargoStationIDStackSet &next_station,
+		bool cargo_type_loading, bool through_load)
 {
 	/* If there is a cargo payment not all vehicles of the consist have tried to do the refit.
 	 * In that case, only reserve if it's a fixed refit and the equivalent of "articulated chain"
@@ -1635,7 +1659,9 @@ static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft,
 				(v->type != VEH_TRAIN || !Train::From(v)->IsRearDualheaded()) &&
 				(v->type != VEH_AIRCRAFT || Aircraft::From(v)->IsNormalAircraft()) &&
 				(must_reserve || u->current_order.GetRefitCargo() == v->cargo_type)) {
-			IterateVehicleParts(v, ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL));
+			IterateVehicleParts(v, ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL), through_load);
+		} else if (through_load && v->type == VEH_TRAIN && Train::From(v)->IsRearDualheaded()) {
+			ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL)(v);
 		}
 		if (consist_capleft == NULL || v->cargo_cap == 0) continue;
 		if (cargo_type_loading && !(u->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD)) continue;
@@ -1729,7 +1755,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 		ReserveConsist(st, front,
 				(use_autorefit && front->load_unload_ticks != 0) ? &consist_capleft : NULL,
 				next_station,
-				reserve_consist_cargo_type_loading);
+				reserve_consist_cargo_type_loading,
+				pull_through_mode);
 	}
 
 	/* We have not waited enough time till the next round of loading/unloading */
