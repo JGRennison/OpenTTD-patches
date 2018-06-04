@@ -3500,7 +3500,18 @@ static void UpdateStationRating(Station *st)
 				int b = ge->last_speed - 85;
 				if (b >= 0) rating += b >> 2;
 
-				byte waittime = ge->time_since_pickup;
+				uint waittime = ge->time_since_pickup;
+				if (_settings_game.station.cargo_class_rating_wait_time) {
+					if (cs->classes & CC_PASSENGERS) {
+						waittime *= 3;
+					} else if (cs->classes & CC_REFRIGERATED) {
+						waittime *= 2;
+					} else if (cs->classes & (CC_MAIL | CC_ARMOURED | CC_EXPRESS)) {
+						waittime += (waittime >> 1);
+					} else if (cs->classes & (CC_BULK | CC_LIQUID)) {
+						waittime >>= 2;
+					}
+				}
 				if (ge->last_vehicle_type == VEH_SHIP) waittime >>= 2;
 				(waittime > 21) ||
 				(rating += 25, waittime > 12) ||

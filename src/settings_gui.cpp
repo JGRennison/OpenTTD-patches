@@ -1830,6 +1830,7 @@ static SettingsContainer &GetSettingsTree()
 
 			environment->Add(new SettingEntry("station.modified_catchment"));
 			environment->Add(new SettingEntry("station.catchment_increase"));
+			environment->Add(new SettingEntry("station.cargo_class_rating_wait_time"));
 		}
 
 		SettingsPage *ai = main->Add(new SettingsPage(STR_CONFIG_SETTING_AI));
