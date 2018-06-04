@@ -2,6 +2,26 @@
 
 * * *
 
+### v0.25.0 (2018-06-04)
+* Multiplayer:
+  * Allow up to 256 NewGRFs in multiplayer.
+  * Fix displayed game info for maps with one or more dimensions >= 65536 tiles.
+* Template-based train replacement:
+  * Fix display of vehicle sprites for some NewGRFs.
+  * Fix sizing issues in large UI modes.
+  * Add 'all rail types' option to rail type dropdown, use by default.
+* Through load:
+  * Fix crash in handling of unload/transfer cargo payment finalisation.
+  * Fix/improve handling of full-load orders, in particular when also using in-station refit.
+  * Fix crash when leaving a station when the train head was on a waypoint tile.
+  * Fix/improve handling of multi-head engines.
+* Improve performance of show scrolling viewport on map feature.
+* Improve scrolling rendering and performance of link graph overlays on viewport and smallmap.
+* Add setting to automatically save when losing connection to a network game.
+* Station rating: Track "last visited vehicle type" separately per cargo.
+* Various minor performance improvements.
+* Bump trunk base from commit 228f8fba55f55b4233ff635223ceb89f720638a5 to commit 2406500140fa3114d446be667f2bc5152f5cbe30.
+
 ### v0.24.1 (2018-05-11)
 * Fix crash when using through-load orders with refits.
 * Fix configure script not being able to detect clanf on Mac OSX.

@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.24.1
+## JGR's Patchpack version 0.25.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -205,6 +205,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Freight train through load (added in v0.24.0)  
   This is an alternative loading mode for freight trains for the case where the train is longer then the platform.
+  
+* Up to 256 NewGRFs in multiplayer (added in v0.25.0)
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
@@ -225,6 +227,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Trains break down after colliding with a road vehicle. (added in v0.20.0).  
   * Add warning/info messages to timetable window. (added in v0.21.0).  
   * Add ctrl+click on shared list button in order/timetable window to add single vehicle to a new group. (added in v0.21.0).  
+  * Improve scrolling rendering of link graph overlay on viewport and small map. (added in v0.25.0).  
+  * Add setting to automatically save when losing connection to a network game. (added in v0.25.0).  
+  * Station rating: track "last visited vehicle type" separately per cargo. (added in v0.25.0).  
   * Various minor fixes, see changelog.
 
 * Translations  
