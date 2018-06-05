@@ -3498,6 +3498,21 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	dump('X', this->vehstatus & VS_SHADOW);
 	dump('B', this->vehstatus & VS_AIRCRAFT_BROKEN);
 	dump('C', this->vehstatus & VS_CRASHED);
+	b += seprintf(b, last, ", vf:");
+	dump('F', HasBit(this->vehicle_flags, VF_LOADING_FINISHED));
+	dump('U', HasBit(this->vehicle_flags, VF_CARGO_UNLOADING));
+	dump('P', HasBit(this->vehicle_flags, VF_BUILT_AS_PROTOTYPE));
+	dump('T', HasBit(this->vehicle_flags, VF_TIMETABLE_STARTED));
+	dump('A', HasBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE));
+	dump('w', HasBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME));
+	dump('S', HasBit(this->vehicle_flags, VF_STOP_LOADING));
+	dump('L', HasBit(this->vehicle_flags, VF_PATHFINDER_LOST));
+	dump('c', HasBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM));
+	dump('p', HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT));
+	dump('D', HasBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH));
+	dump('x', HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP));
+	dump('s', HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION));
+	dump('a', HasBit(this->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
 		b += seprintf(b, last, ", tf:");
@@ -3525,6 +3540,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 		b += seprintf(b, last, ", rvs:%X, rvf:%X", r->state, r->frame);
 	}
 	b += seprintf(b, last, ", t:%X", this->tile);
+	if (this->cargo_payment) b += seprintf(b, last, ", CP");
 	return b;
 }
 
