@@ -57,27 +57,7 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 	char *b = this->buffer;
 	const char *last = lastof(this->buffer);
 	auto dump_flags = [&](const Vehicle *u) {
-		auto dump = [&](char c, bool flag) {
-			if (flag) b += seprintf(b, last, "%c", c);
-		};
-		b += seprintf(b, last, "st:");
-		dump('F', HasBit(u->subtype, GVSF_FRONT));
-		dump('A', HasBit(u->subtype, GVSF_ARTICULATED_PART));
-		dump('W', HasBit(u->subtype, GVSF_WAGON));
-		dump('E', HasBit(u->subtype, GVSF_ENGINE));
-		dump('f', HasBit(u->subtype, GVSF_FREE_WAGON));
-		dump('M', HasBit(u->subtype, GVSF_MULTIHEADED));
-		dump('V', HasBit(u->subtype, GVSF_VIRTUAL));
-		b += seprintf(b, last, ", vs:");
-		dump('H', u->vehstatus & VS_HIDDEN);
-		dump('S', u->vehstatus & VS_STOPPED);
-		dump('U', u->vehstatus & VS_UNCLICKABLE);
-		dump('D', u->vehstatus & VS_DEFPAL);
-		dump('s', u->vehstatus & VS_TRAIN_SLOWING);
-		dump('X', u->vehstatus & VS_SHADOW);
-		dump('B', u->vehstatus & VS_AIRCRAFT_BROKEN);
-		dump('C', u->vehstatus & VS_CRASHED);
-		b += seprintf(b, last, ", t:%X", u->tile);
+		b = u->DumpVehicleFlags(b, last);
 	};
 	if (v) {
 		b += seprintf(b, last, "veh: %u: (", v->index);

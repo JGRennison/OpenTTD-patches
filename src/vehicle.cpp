@@ -3476,6 +3476,59 @@ void Vehicle::RemoveFromShared()
 	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 
+char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
+{
+	auto dump = [&](char c, bool flag) {
+		if (flag) b += seprintf(b, last, "%c", c);
+	};
+	b += seprintf(b, last, "st:");
+	dump('F', HasBit(this->subtype, GVSF_FRONT));
+	dump('A', HasBit(this->subtype, GVSF_ARTICULATED_PART));
+	dump('W', HasBit(this->subtype, GVSF_WAGON));
+	dump('E', HasBit(this->subtype, GVSF_ENGINE));
+	dump('f', HasBit(this->subtype, GVSF_FREE_WAGON));
+	dump('M', HasBit(this->subtype, GVSF_MULTIHEADED));
+	dump('V', HasBit(this->subtype, GVSF_VIRTUAL));
+	b += seprintf(b, last, ", vs:");
+	dump('H', this->vehstatus & VS_HIDDEN);
+	dump('S', this->vehstatus & VS_STOPPED);
+	dump('U', this->vehstatus & VS_UNCLICKABLE);
+	dump('D', this->vehstatus & VS_DEFPAL);
+	dump('s', this->vehstatus & VS_TRAIN_SLOWING);
+	dump('X', this->vehstatus & VS_SHADOW);
+	dump('B', this->vehstatus & VS_AIRCRAFT_BROKEN);
+	dump('C', this->vehstatus & VS_CRASHED);
+	if (this->type == VEH_TRAIN) {
+		const Train *t = Train::From(this);
+		b += seprintf(b, last, ", tf:");
+		dump('R', HasBit(t->flags, VRF_REVERSING));
+		dump('W', HasBit(t->flags, VRF_WAITING_RESTRICTION));
+		dump('S', HasBit(t->flags, VRF_HAVE_SLOT));
+		dump('P', HasBit(t->flags, VRF_POWEREDWAGON));
+		dump('r', HasBit(t->flags, VRF_REVERSE_DIRECTION));
+		dump('h', HasBit(t->flags, VRF_HAS_HIT_RV));
+		dump('e', HasBit(t->flags, VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL));
+		dump('q', HasBit(t->flags, VRF_TOGGLE_REVERSE));
+		dump('s', HasBit(t->flags, VRF_TRAIN_STUCK));
+		dump('L', HasBit(t->flags, VRF_LEAVING_STATION));
+		dump('b', HasBit(t->flags, VRF_BREAKDOWN_BRAKING));
+		dump('p', HasBit(t->flags, VRF_BREAKDOWN_POWER));
+		dump('v', HasBit(t->flags, VRF_BREAKDOWN_SPEED));
+		dump('z', HasBit(t->flags, VRF_BREAKDOWN_STOPPED));
+		dump('F', HasBit(t->flags, VRF_NEED_REPAIR));
+		dump('H', HasBit(t->flags, VRF_TOO_HEAVY));
+		dump('B', HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
+		dump('Y', HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
+		dump('A', HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
+	} else if (this->type == VEH_ROAD) {
+		const RoadVehicle *r = RoadVehicle::From(this);
+		b += seprintf(b, last, ", rvs:%X, rvf:%X", r->state, r->frame);
+	}
+	b += seprintf(b, last, ", t:%X", this->tile);
+	return b;
+}
+
+
 void VehiclesYearlyLoop()
 {
 	Vehicle *v;

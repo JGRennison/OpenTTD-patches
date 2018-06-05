@@ -1060,6 +1060,8 @@ public:
 	{
 		this->sprite_seq_bounds = this->sprite_seq.GetBounds();
 	}
+
+	char *DumpVehicleFlags(char *b, const char *last) const;
 };
 
 /**
