@@ -419,6 +419,16 @@ assert_compile(SIZE_MAX >= UINT32_MAX);
 #define unlikely(x)     (x)
 #endif /* __GNUC__ || __clang__ */
 
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((aligned(1))) typedef uint16 unaligned_uint16;
+__attribute__((aligned(1))) typedef uint32 unaligned_uint32;
+__attribute__((aligned(1))) typedef uint64 unaligned_uint64;
+#else
+typedef uint16 unaligned_uint16;
+typedef uint32 unaligned_uint32;
+typedef uint64 unaligned_uint64;
+#endif /* __GNUC__ || __clang__ */
+
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...) WARN_FORMAT(4, 5);
