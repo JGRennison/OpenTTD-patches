@@ -1899,7 +1899,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 					NewGRFSpriteLayout *dts = &statspec->renderdata[t];
 					dts->consistent_max_offset = UINT16_MAX; // Spritesets are unknown, so no limit.
 
-					if (buf->HasData(4) && *(uint32*)buf->Data() == 0) {
+					if (buf->HasData(4) && *(unaligned_uint32*)buf->Data() == 0) {
 						buf->Skip(4);
 						extern const DrawTileSprites _station_display_datas_rail[8];
 						dts->Clone(&_station_display_datas_rail[t % 8]);
