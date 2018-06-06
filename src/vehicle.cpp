@@ -977,6 +977,10 @@ void Vehicle::PreDestructor()
 	StopGlobalFollowVehicle(this);
 
 	ReleaseDisastersTargetingVehicle(this->index);
+
+	/* sometimes, eg. for disaster vehicles, when company bankrupts, when removing crashed/flooded vehicles,
+	 * it may happen that vehicle chain is deleted when visible */
+	if (this->IsDrawn()) this->MarkAllViewportsDirty();
 }
 
 Vehicle::~Vehicle()
@@ -988,9 +992,12 @@ Vehicle::~Vehicle()
 
 	if (this->breakdowns_since_last_service) _vehicles_to_pay_repair.erase(this);
 
-	/* sometimes, eg. for disaster vehicles, when company bankrupts, when removing crashed/flooded vehicles,
-	 * it may happen that vehicle chain is deleted when visible */
-	if (this->IsDrawn()) this->MarkAllViewportsDirty();
+	if (this->type < VEH_BEGIN || this->type >= VEH_COMPANY_END) {
+		/* sometimes, eg. for disaster vehicles, when company bankrupts, when removing crashed/flooded vehicles,
+		 * it may happen that vehicle chain is deleted when visible.
+		 * Do not redo this for vehicle types where it is done in PreDestructor(). */
+		if (this->IsDrawn()) this->MarkAllViewportsDirty();
+	}
 
 	Vehicle *v = this->Next();
 	this->SetNext(NULL);
