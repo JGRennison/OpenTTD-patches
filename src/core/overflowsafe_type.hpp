@@ -13,6 +13,7 @@
 #define OVERFLOWSAFE_TYPE_HPP
 
 #include "math_func.hpp"
+#include <type_traits>
 
 /**
  * Overflow safe template for integers, i.e. integers that will never overflow
@@ -28,6 +29,7 @@ class OverflowSafeInt
 private:
 	/** The non-overflow safe backend to store the value in. */
 	T m_value;
+	typedef typename std::make_unsigned<T>::type T_unsigned;
 public:
 	OverflowSafeInt() : m_value(0) { }
 
@@ -103,7 +105,7 @@ public:
 	inline OverflowSafeInt  operator %  (const int  divisor) const { OverflowSafeInt result = *this; result %= divisor; return result; }
 
 	/* Operators for shifting */
-	inline OverflowSafeInt& operator <<= (const int shift)       { this->m_value <<= shift; return *this; }
+	inline OverflowSafeInt& operator <<= (const int shift)       { this->m_value = ((T_unsigned) this->m_value) << shift; return *this; }
 	inline OverflowSafeInt  operator <<  (const int shift) const { OverflowSafeInt result = *this; result <<= shift; return result; }
 	inline OverflowSafeInt& operator >>= (const int shift)       { this->m_value >>= shift; return *this; }
 	inline OverflowSafeInt  operator >>  (const int shift) const { OverflowSafeInt result = *this; result >>= shift; return result; }

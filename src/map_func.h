@@ -232,7 +232,7 @@ static inline uint TileY(TileIndex tile)
  */
 static inline TileIndexDiff ToTileIndexDiff(TileIndexDiffC tidc)
 {
-	return (tidc.y << MapLogX()) + tidc.x;
+	return (((uint) tidc.y) << MapLogX()) + tidc.x;
 }
 
 
