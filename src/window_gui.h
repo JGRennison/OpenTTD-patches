@@ -145,8 +145,8 @@ void DrawFrameRect(int left, int top, int right, int bottom, Colours colour, Fra
 void DrawCaption(const Rect &r, Colours colour, Owner owner, StringID str);
 
 /* window.cpp */
-extern Window *_z_front_window;
-extern Window *_z_back_window;
+extern WindowBase *_z_front_window;
+extern WindowBase *_z_back_window;
 extern Window *_focused_window;
 
 inline uint64 GetWindowUpdateNumber()
@@ -277,10 +277,48 @@ struct ViewportData : ViewPort {
 
 struct QueryString;
 
+struct WindowBase {
+	WindowBase *z_front;             ///< The window in front of us in z-order.
+	WindowBase *z_back;              ///< The window behind us in z-order.
+	WindowClass window_class;        ///< Window class
+
+	virtual ~WindowBase() {}
+
+	/**
+	 * Memory allocator for a single class instance.
+	 * @param size the amount of bytes to allocate.
+	 * @return the given amounts of bytes zeroed.
+	 */
+	inline void *operator new(size_t size) { return CallocT<byte>(size); }
+
+protected:
+	WindowBase() {}
+
+private:
+	/**
+	 * Memory allocator for an array of class instances.
+	 * @param size the amount of bytes to allocate.
+	 * @return the given amounts of bytes zeroed.
+	 */
+	inline void *operator new[](size_t size) { NOT_REACHED(); }
+
+	/**
+	 * Memory release for a single class instance.
+	 * @param ptr  the memory to free.
+	 */
+	inline void operator delete(void *ptr) { NOT_REACHED(); }
+
+	/**
+	 * Memory release for an array of class instances.
+	 * @param ptr  the memory to free.
+	 */
+	inline void operator delete[](void *ptr) { NOT_REACHED(); }
+};
+
 /**
  * Data structure for an opened window
  */
-struct Window : ZeroedMemoryAllocator {
+struct Window : WindowBase {
 protected:
 	void InitializeData(WindowNumber window_number);
 	void InitializePositionSize(int x, int y, int min_width, int min_height);
@@ -315,7 +353,6 @@ public:
 
 	WindowDesc *window_desc;    ///< Window description
 	WindowFlags flags;          ///< Window flags
-	WindowClass window_class;   ///< Window class
 	WindowNumber window_number; ///< Window number within the window class
 
 	uint8 timeout_timer;      ///< Timer value of the WF_TIMEOUT for flags.
@@ -342,8 +379,6 @@ public:
 	int scrolling_scrollbar;         ///< Widgetindex of just being dragged scrollbar. -1 if none is active.
 
 	Window *parent;                  ///< Parent window.
-	Window *z_front;                 ///< The window in front of us in z-order.
-	Window *z_back;                  ///< The window behind us in z-order.
 
 	template <class NWID>
 	inline const NWID *GetWidget(uint widnum) const;
@@ -891,9 +926,37 @@ void GuiShowTooltips(Window *parent, StringID str, uint paramcount = 0, const ui
 /* widget.cpp */
 int GetWidgetFromPos(const Window *w, int x, int y);
 
+inline const Window *FromBaseWindowFront(const WindowBase *w)
+{
+	while (w) {
+		if (w->window_class != WC_INVALID) return (const Window *) w;
+		w = w->z_front;
+	}
+	return nullptr;
+}
+
+inline Window *FromBaseWindowFront(WindowBase *w)
+{
+	return const_cast<Window *>(FromBaseWindowFront(const_cast<const WindowBase *>(w)));
+}
+
+inline const Window *FromBaseWindowBack(const WindowBase *w)
+{
+	while (w) {
+		if (w->window_class != WC_INVALID) return (const Window *) w;
+		w = w->z_back;
+	}
+	return nullptr;
+}
+
+inline Window *FromBaseWindowBack(WindowBase *w)
+{
+	return const_cast<Window *>(FromBaseWindowBack(const_cast<const WindowBase *>(w)));
+}
+
 /** Iterate over all windows */
-#define FOR_ALL_WINDOWS_FROM_BACK_FROM(w, start)  for (w = start; w != NULL; w = w->z_front) if (w->window_class != WC_INVALID)
-#define FOR_ALL_WINDOWS_FROM_FRONT_FROM(w, start) for (w = start; w != NULL; w = w->z_back) if (w->window_class != WC_INVALID)
+#define FOR_ALL_WINDOWS_FROM_BACK_FROM(w, start)  for (w = FromBaseWindowFront(start); w != NULL; w = FromBaseWindowFront(w->z_front))
+#define FOR_ALL_WINDOWS_FROM_FRONT_FROM(w, start) for (w = FromBaseWindowBack(start); w != NULL; w = FromBaseWindowBack(w->z_back))
 #define FOR_ALL_WINDOWS_FROM_BACK(w)  FOR_ALL_WINDOWS_FROM_BACK_FROM(w, _z_back_window)
 #define FOR_ALL_WINDOWS_FROM_FRONT(w) FOR_ALL_WINDOWS_FROM_FRONT_FROM(w, _z_front_window)
 

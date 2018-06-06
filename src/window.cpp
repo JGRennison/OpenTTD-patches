@@ -52,9 +52,9 @@ static Window *_mouseover_last_w = NULL; ///< Window of the last #MOUSEOVER even
 static Window *_last_scroll_window = NULL; ///< Window of the last scroll event.
 
 /** List of windows opened at the screen sorted from the front. */
-Window *_z_front_window = NULL;
+WindowBase *_z_front_window = NULL;
 /** List of windows opened at the screen sorted from the back. */
-Window *_z_back_window  = NULL;
+WindowBase *_z_back_window  = NULL;
 
 /** If false, highlight is white, otherwise the by the widget defined colour. */
 bool _window_highlight_colour = false;
@@ -1359,7 +1359,7 @@ static void AddWindowToZOrdering(Window *w)
 		w->z_front = w->z_back = NULL;
 	} else {
 		/* Search down the z-ordering for its location. */
-		Window *v = _z_front_window;
+		WindowBase *v = _z_front_window;
 		uint last_z_priority = UINT_MAX;
 		while (v != NULL && (v->window_class == WC_INVALID || GetWindowZPriority(v->window_class) > GetWindowZPriority(w->window_class))) {
 			if (v->window_class != WC_INVALID) {
@@ -1398,7 +1398,7 @@ static void AddWindowToZOrdering(Window *w)
  * Removes a window from the z-ordering.
  * @param w Window to remove
  */
-static void RemoveWindowFromZOrdering(Window *w)
+static void RemoveWindowFromZOrdering(WindowBase *w)
 {
 	if (w->z_front == NULL) {
 		assert(_z_front_window == w);
@@ -1897,11 +1897,11 @@ void UnInitWindowSystem()
 {
 	UnshowCriticalError();
 
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) delete w;
+	Window *v;
+	FOR_ALL_WINDOWS_FROM_FRONT(v) delete v;
 
-	for (w = _z_front_window; w != NULL; /* nothing */) {
-		Window *to_del = w;
+	for (WindowBase *w = _z_front_window; w != NULL; /* nothing */) {
+		WindowBase *to_del = w;
 		w = w->z_back;
 		free(to_del);
 	}
@@ -3080,8 +3080,8 @@ void InputLoop()
 	HandleKeyScrolling();
 
 	/* Do the actual free of the deleted windows. */
-	for (Window *v = _z_front_window; v != NULL; /* nothing */) {
-		Window *w = v;
+	for (WindowBase *v = _z_front_window; v != NULL; /* nothing */) {
+		WindowBase *w = v;
 		v = v->z_back;
 
 		if (w->window_class != WC_INVALID) continue;

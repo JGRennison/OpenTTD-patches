@@ -480,7 +480,7 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		i = top + height - _screen.height;
 		if (i >= 0) height -= i;
 
-		if (height > 0) DoSetViewportPosition(w->z_front, left, top, width, height);
+		if (height > 0) DoSetViewportPosition((const Window *) w->z_front, left, top, width, height);
 	}
 }
 
