@@ -97,7 +97,7 @@ void LinkGraphSchedule::SpawnNext()
 
 	LinkGraphJobGroup::ExecuteJobSet(std::move(jobs_to_execute));
 
-	DEBUG(linkgraph, 2, "LinkGraphSchedule::SpawnNext(): Linkgraph job totals: cost: " OTTD_PRINTF64U ", budget: " OTTD_PRINTF64U ", scaling: %u, scheduled: %zu, running: %zu",
+	DEBUG(linkgraph, 2, "LinkGraphSchedule::SpawnNext(): Linkgraph job totals: cost: " OTTD_PRINTF64U ", budget: " OTTD_PRINTF64U ", scaling: %u, scheduled: " PRINTF_SIZE ", running: " PRINTF_SIZE,
 			total_cost, cost_budget, scaling, this->schedule.size(), this->running.size());
 }
 
@@ -286,7 +286,7 @@ void LinkGraphJobGroup::JoinThread() {
 	uint bucket_cost = 0;
 	auto flush_bucket = [&]() {
 		if (!bucket_cost) return;
-		DEBUG(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: %zu, cost: %u", bucket.size(), bucket_cost);
+		DEBUG(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: " PRINTF_SIZE ", cost: %u", bucket.size(), bucket_cost);
 		auto group = std::make_shared<LinkGraphJobGroup>(constructor_token(), std::move(bucket));
 		group->SpawnThread();
 		bucket_cost = 0;
