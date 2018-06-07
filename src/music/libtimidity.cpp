@@ -14,6 +14,8 @@
 #include "../sound_type.h"
 #include "../debug.h"
 #include "libtimidity.h"
+#include "midifile.hpp"
+#include "../base_media_base.h"
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -73,11 +75,14 @@ void MusicDriver_LibTimidity::Stop()
 	mid_exit();
 }
 
-void MusicDriver_LibTimidity::PlaySong(const char *filename)
+void MusicDriver_LibTimidity::PlaySong(const MusicSongInfo &song)
 {
-	this->StopSong();
+	std::string filename = MidiFile::GetSMFFile(song);
 
-	_midi.stream = mid_istream_open_file(filename);
+	this->StopSong();
+	if (filename.empty()) return;
+
+	_midi.stream = mid_istream_open_file(filename.c_str());
 	if (_midi.stream == NULL) {
 		DEBUG(driver, 0, "Could not open music file");
 		return;

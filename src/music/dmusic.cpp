@@ -21,6 +21,7 @@
 #include "../core/mem_func.hpp"
 #include "../thread/thread.h"
 #include "../fileio_func.h"
+#include "../base_media_base.h"
 #include "dmusic.h"
 #include "midifile.hpp"
 #include "midi.h"
@@ -1225,11 +1226,12 @@ void MusicDriver_DMusic::Stop()
 }
 
 
-void MusicDriver_DMusic::PlaySong(const char *filename)
+void MusicDriver_DMusic::PlaySong(const MusicSongInfo &song)
 {
 	ThreadMutexLocker lock(_thread_mutex);
 
-	_playback.next_file.LoadFile(filename);
+	if (!_playback.next_file.LoadSong(song)) return;
+
 	_playback.next_segment.start = 0;
 	_playback.next_segment.end = 0;
 	_playback.next_segment.loop = false;
