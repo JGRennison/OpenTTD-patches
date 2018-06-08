@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.25.1 (2018-06-08)
+* Fix savegame save/load and multiplayer join for clients running on Apple/Mac OSX.
+* Add setting: station rating tolerance to waiting time depends on cargo class.
+* Various minor changes to remove undefined behaviour.
+* Bump trunk base from commit 2406500140fa3114d446be667f2bc5152f5cbe30 to commit 11d1690acb73e77995558dad8fbdde1034e969ed.
+
 ### v0.25.0 (2018-06-04)
 * Multiplayer:
   * Allow up to 256 NewGRFs in multiplayer.
