@@ -221,8 +221,8 @@ struct MemoryDumper {
 #if OTTD_ALIGNMENT == 0
 		*((unaligned_uint16 *) this->buf) = TO_BE16(v);
 #else
-		this->buf[0] = GB(v, 8, 8));
-		this->buf[1] = GB(v, 0, 8));
+		this->buf[0] = GB(v, 8, 8);
+		this->buf[1] = GB(v, 0, 8);
 #endif
 		this->buf += 2;
 	}
@@ -232,10 +232,10 @@ struct MemoryDumper {
 #if OTTD_ALIGNMENT == 0
 		*((unaligned_uint32 *) this->buf) = TO_BE32(v);
 #else
-		this->buf[0] = GB(v, 24, 8));
-		this->buf[1] = GB(v, 16, 8));
-		this->buf[2] = GB(v, 8, 8));
-		this->buf[3] = GB(v, 0, 8));
+		this->buf[0] = GB(v, 24, 8);
+		this->buf[1] = GB(v, 16, 8);
+		this->buf[2] = GB(v, 8, 8);
+		this->buf[3] = GB(v, 0, 8);
 #endif
 		this->buf += 4;
 	}
@@ -245,14 +245,14 @@ struct MemoryDumper {
 #if OTTD_ALIGNMENT == 0
 		*((unaligned_uint64 *) this->buf) = TO_BE64(v);
 #else
-		this->buf[0] = GB(v, 56, 8));
-		this->buf[1] = GB(v, 48, 8));
-		this->buf[2] = GB(v, 40, 8));
-		this->buf[3] = GB(v, 32, 8));
-		this->buf[4] = GB(v, 24, 8));
-		this->buf[5] = GB(v, 16, 8));
-		this->buf[6] = GB(v, 8, 8));
-		this->buf[7] = GB(v, 0, 8));
+		this->buf[0] = GB(v, 56, 8);
+		this->buf[1] = GB(v, 48, 8);
+		this->buf[2] = GB(v, 40, 8);
+		this->buf[3] = GB(v, 32, 8);
+		this->buf[4] = GB(v, 24, 8);
+		this->buf[5] = GB(v, 16, 8);
+		this->buf[6] = GB(v, 8, 8);
+		this->buf[7] = GB(v, 0, 8);
 #endif
 		this->buf += 8;
 	}
