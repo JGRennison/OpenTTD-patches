@@ -316,10 +316,31 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_GET_NEWGRFS(Packet *p, Networ
 
 	size_t packet_len = 0;
 
-	DEBUG(net, 6, "[udp] newgrf data request from %s", client_addr->GetAddressAsString());
-
 	num_grfs = p->Recv_uint8 ();
+	DEBUG(net, 6, "[udp] newgrf data request (%u) from %s", num_grfs, client_addr->GetAddressAsString());
+
 	if (num_grfs > NETWORK_MAX_GRF_COUNT) return;
+
+	auto flush_response = [&]() {
+		if (in_reply.empty()) return;
+
+		Packet packet(PACKET_UDP_SERVER_NEWGRFS);
+		packet.Send_uint8(in_reply.size());
+		for (const GRFInfo &info : in_reply) {
+			char name[NETWORK_GRF_NAME_LENGTH];
+
+			/* The name could be an empty string, if so take the filename */
+			strecpy(name, info.name, lastof(name));
+			this->SendGRFIdentifier(&packet, &info.ident);
+			packet.Send_string(name);
+		}
+
+		this->SendPacket(&packet, client_addr);
+		DEBUG(net, 6, "[udp] sent newgrf data response (%u of %u) to %s", (uint) in_reply.size(), num_grfs, client_addr->GetAddressAsString());
+
+		packet_len = 0;
+		in_reply.clear();
+	};
 
 	for (i = 0; i < num_grfs; i++) {
 		GRFInfo info;
@@ -344,29 +365,17 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_GET_NEWGRFS(Packet *p, Networ
 		/* If the reply might exceed the size of the packet, only reply
 		 * the current list and do not send the other data.
 		 * The name could be an empty string, if so take the filename. */
-		packet_len += sizeof(info.ident.grfid) + sizeof(info.ident.md5sum) +
+		size_t required_length = sizeof(info.ident.grfid) + sizeof(info.ident.md5sum) +
 				min(strlen(info.name) + 1, (size_t)NETWORK_GRF_NAME_LENGTH);
-		if (packet_len > SEND_MTU - 4) { // 4 is 3 byte header + grf count in reply
-			break;
+		if (packet_len + required_length > SEND_MTU - 4) { // 4 is 3 byte header + grf count in reply
+			flush_response();
 		}
+		packet_len += required_length;
 
 		in_reply.push_back(info);
 	}
 
-	if (in_reply.empty()) return;
-
-	Packet packet(PACKET_UDP_SERVER_NEWGRFS);
-	packet.Send_uint8(in_reply.size());
-	for (const GRFInfo &info : in_reply) {
-		char name[NETWORK_GRF_NAME_LENGTH];
-
-		/* The name could be an empty string, if so take the filename */
-		strecpy(name, info.name, lastof(name));
-		this->SendGRFIdentifier(&packet, &info.ident);
-		packet.Send_string(name);
-	}
-
-	this->SendPacket(&packet, client_addr);
+	flush_response();
 }
 
 ///*** Communication with servers (we are client) ***/
@@ -438,6 +447,8 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 			}
 
 			this->SendPacket(&packet, &item->address);
+
+			DEBUG(net, 4, "[udp] sent newgrf data request (%u) to %s", in_request_count, client_addr->GetAddressAsString());
 
 			in_request_count = 0;
 		};
@@ -511,9 +522,9 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_NEWGRFS(Packet *p, NetworkAdd
 	uint8 num_grfs;
 	uint i;
 
-	DEBUG(net, 6, "[udp] newgrf data reply from %s", client_addr->GetAddressAsString());
-
 	num_grfs = p->Recv_uint8 ();
+	DEBUG(net, 6, "[udp] newgrf data reply (%u) from %s", num_grfs, client_addr->GetAddressAsString());
+
 	if (num_grfs > NETWORK_MAX_GRF_COUNT) return;
 
 	for (i = 0; i < num_grfs; i++) {
