@@ -147,11 +147,6 @@ public:
 	{
 		return this->parent != NULL;
 	}
-
-	/**
-	 * Is this a built-in sprite font?
-	 */
-	virtual bool IsBuiltInFont() = 0;
 };
 
 /** Get the SpriteID mapped to the given font size and key */
