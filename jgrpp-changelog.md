@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.25.2 (2018-06-13)
+* Revert upstream trunk changes to font/text rendering on Windows which were merged in v0.25.1. This is to fix various crashes and rendering errors.
+* Fix crash when attempting to request information on a large number of unknown GRFs from a multiplayer server.
+* Fix compilation failures on ARM and Alpha platforms.
+* Minor changes to acquiring of GRF information from multiplayer servers.
+
 ### v0.25.1 (2018-06-08)
 * Fix savegame save/load and multiplayer join for clients running on Apple/Mac OSX.
 * Add setting: station rating tolerance to waiting time depends on cargo class.
