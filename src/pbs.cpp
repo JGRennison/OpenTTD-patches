@@ -125,7 +125,6 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 		case MP_TUNNELBRIDGE:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && !GetTunnelBridgeReservationTrackBits(tile)) {
 				SetTunnelBridgeReservation(tile, true);
-				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_GREEN);
 				MarkTileDirtyByTile(tile);
 				return true;
 			}
@@ -434,7 +433,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 			return include_line_end;
 		}
 		if (IsTileType(ft.m_new_tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(ft.m_new_tile) == TRANSPORT_RAIL &&
-				IsTunnelBridgeSignalSimulationExit(ft.m_new_tile) && IsTunnelBridgePBS(ft.m_new_tile)) {
+				IsTunnelBridgeSignalSimulationExitOnly(ft.m_new_tile) && IsTunnelBridgePBS(ft.m_new_tile)) {
 			return include_line_end;
 		}
 	}
@@ -462,7 +461,19 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	/* Not reserved and depot or not a pbs signal -> free. */
 	if (IsRailDepotTile(tile)) return true;
 	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) return true;
-	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(tile)) return true;
+	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+		if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
+			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
+			if (HasTunnelBridgeReservation(other_end) && GetTunnelBridgeExitSignalState(other_end) == SIGNAL_STATE_RED) return false;
+			Direction dir = DiagDirToDir(GetTunnelBridgeDirection(other_end));
+			if (HasVehicleOnPos(other_end, &dir, [](Vehicle *v, void *data) -> Vehicle * {
+				if (v->type != VEH_TRAIN) return nullptr;
+				if (v->direction != *((Direction *) data)) return nullptr;
+				return v;
+			})) return false;
+		}
+		return true;
+	}
 
 	/* Check the next tile, if it's a PBS signal, it has to be free as well. */
 	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);

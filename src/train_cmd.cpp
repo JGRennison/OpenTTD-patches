@@ -2263,13 +2263,15 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 	if (free) {
 	/* Open up the wormhole and clear m2. */
 		if (IsBridge(end)) {
-			SetAllBridgeEntranceSimulatedSignalsGreen(end);
+			if (IsTunnelBridgeSignalSimulationEntrance(tile)) SetAllBridgeEntranceSimulatedSignalsGreen(tile);
+			if (IsTunnelBridgeSignalSimulationEntrance(end)) SetAllBridgeEntranceSimulatedSignalsGreen(end);
 		}
 
 		if (IsTunnelBridgeSignalSimulationEntrance(end) && GetTunnelBridgeEntranceSignalState(end) == SIGNAL_STATE_RED) {
 			SetTunnelBridgeEntranceSignalState(end, SIGNAL_STATE_GREEN);
 			MarkTileDirtyByTile(end);
-		} else if (IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
+		}
+		if (IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
 			SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
 			MarkTileDirtyByTile(tile);
 		}
@@ -2790,7 +2792,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 		}
 	}
 
-	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(v->tile) &&
+	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExitOnly(v->tile) &&
 			DiagDirToDiagTrackBits(GetTunnelBridgeDirection(v->tile)) == v->track) {
 		// prevent any attempt to reserve the wrong way onto a tunnel/bridge exit
 		return false;
@@ -3520,13 +3522,19 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							v->vehstatus |= VS_TRAIN_SLOWING;
 							return false;
 						}
-						if (IsTunnelBridgeSignalSimulationExit(gp.new_tile)) {
+						if (IsTunnelBridgeSignalSimulationExitOnly(gp.new_tile)) {
 							v->cur_speed = 0;
 							goto invalid_rail;
 						}
 						/* Flip signal on tunnel entrance tile red. */
 						SetTunnelBridgeEntranceSignalState(gp.new_tile, SIGNAL_STATE_RED);
 						MarkTileDirtyByTile(gp.new_tile);
+						if (IsTunnelBridgeSignalSimulationBidirectional(gp.new_tile)) {
+							/* Set incoming signal in other direction to red as well */
+							TileIndex other_end = GetOtherTunnelBridgeEnd(gp.new_tile);
+							SetTunnelBridgeEntranceSignalState(other_end, SIGNAL_STATE_RED);
+							MarkTileDirtyByTile(other_end);
+						}
 					}
 				}
 
@@ -3586,7 +3594,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 			TileIndex old_tile = TileVirtXY(v->x_pos, v->y_pos);
 			if (old_tile != gp.new_tile && IsTunnelBridgeWithSignalSimulation(v->tile) && (v->IsFrontEngine() || v->Next() == NULL)) {
 				if (old_tile == v->tile) {
-					if (v->IsFrontEngine() && v->force_proceed == 0 && IsTunnelBridgeSignalSimulationExit(v->tile)) goto invalid_rail;
+					if (v->IsFrontEngine() && v->force_proceed == 0 && IsTunnelBridgeSignalSimulationExitOnly(v->tile)) goto invalid_rail;
 					/* Entered wormhole set counters. */
 					v->wait_counter = (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) - TILE_SIZE;
 					v->tunnel_bridge_signal_num = 0;
@@ -3842,17 +3850,21 @@ static void DeleteLastWagon(Train *v)
 		if (IsTunnelBridgeWithSignalSimulation(tile)) {
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
 			UpdateSignalsOnSegment(end, INVALID_DIAGDIR, owner);
-			bool is_entrance = IsTunnelBridgeSignalSimulationEntrance(tile);
-			TileIndex entrance = is_entrance ? tile : end;
 			if (TunnelBridgeIsFree(tile, end, nullptr).Succeeded()) {
-				if (IsBridge(entrance)) {
-					SetAllBridgeEntranceSimulatedSignalsGreen(entrance);
-					MarkBridgeDirty(entrance);
-				}
-				if (IsTunnelBridgeSignalSimulationEntrance(entrance) && GetTunnelBridgeEntranceSignalState(entrance) == SIGNAL_STATE_RED) {
-					SetTunnelBridgeEntranceSignalState(entrance, SIGNAL_STATE_GREEN);
-					MarkTileDirtyByTile(entrance);
-				}
+				auto process_tile = [](TileIndex t) {
+					if (IsTunnelBridgeSignalSimulationEntrance(t)) {
+						if (IsBridge(t)) {
+							SetAllBridgeEntranceSimulatedSignalsGreen(t);
+							MarkBridgeDirty(t);
+						}
+						if (IsTunnelBridgeSignalSimulationEntrance(t) && GetTunnelBridgeEntranceSignalState(t) == SIGNAL_STATE_RED) {
+							SetTunnelBridgeEntranceSignalState(t, SIGNAL_STATE_GREEN);
+							MarkTileDirtyByTile(t);
+						}
+					}
+				};
+				process_tile(tile);
+				process_tile(end);
 			}
 		}
 	} else if (IsRailDepotTile(tile)) {

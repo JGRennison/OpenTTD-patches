@@ -97,12 +97,15 @@ void MarkBridgeOrTunnelDirty(TileIndex tile)
 
 /**
  * Get number of signals on bridge or tunnel with signal simulation.
- * @param length Length of bridge/tunnel middle
- * @return Number of signals on signalled bridge/tunnel of this length
+ * @param begin The begin of the tunnel or bridge.
+ * @param end   The end of the tunnel or bridge.
+ * @pre IsTunnelBridgeWithSignalSimulation(begin)
  */
-uint GetTunnelBridgeSignalSimulationSignalCount(uint length)
+uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end)
 {
-	return 2 + (length / _settings_game.construction.simulated_wormhole_signals);
+	uint result = 2 + (GetTunnelBridgeLength(begin, end) / _settings_game.construction.simulated_wormhole_signals);
+	if (IsTunnelBridgeSignalSimulationBidirectional(begin)) result *= 2;
+	return result;
 }
 
 /** Reset the data been eventually changed by the grf loaded. */
@@ -1157,10 +1160,10 @@ static void DrawBridgeTramBits(int x, int y, int z, int offset, bool overlay, bo
 	}
 }
 
-/* Draws a signal on tunnel / bridge entrance tile. */
-static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
+static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, uint position, SignalType type, bool show_exit)
 {
 	bool side = (_settings_game.vehicle.road_side != 0) &&_settings_game.construction.train_signal_side;
+	DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
 
 	static const Point SignalPositions[2][4] = {
 		{   /*  X         X         Y         Y     Signals on the left side */
@@ -1169,30 +1172,6 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 			{14, 13}, { 3,  3}, {13,  2}, { 3, 13}
 		}
 	};
-
-	uint position;
-	DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
-
-	switch (dir) {
-		default: NOT_REACHED();
-		case DIAGDIR_NE: position = 0; break;
-		case DIAGDIR_SE: position = 2; break;
-		case DIAGDIR_SW: position = 1; break;
-		case DIAGDIR_NW: position = 3; break;
-	}
-
-	SignalType type = SIGTYPE_NORMAL;
-
-	bool is_green, show_exit;
-	if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
-		is_green = (GetTunnelBridgeExitSignalState(ti->tile) == SIGNAL_STATE_GREEN);
-		show_exit = true;
-		position ^= 1;
-		if (IsTunnelBridgePBS(ti->tile)) type = SIGTYPE_PBS_ONEWAY;
-	} else {
-		is_green = (GetTunnelBridgeEntranceSignalState(ti->tile) == SIGNAL_STATE_GREEN);
-		show_exit = false;
-	}
 
 	uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ show_exit].x;
 	uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ show_exit].y;
@@ -1214,6 +1193,32 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 	}
 
 	AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+}
+
+/* Draws a signal on tunnel / bridge entrance tile. */
+static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
+{
+	DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
+
+	uint position;
+	switch (dir) {
+		default: NOT_REACHED();
+		case DIAGDIR_NE: position = 0; break;
+		case DIAGDIR_SE: position = 2; break;
+		case DIAGDIR_SW: position = 1; break;
+		case DIAGDIR_NW: position = 3; break;
+	}
+
+	if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
+		SignalType type = SIGTYPE_NORMAL;
+		if (IsTunnelBridgePBS(ti->tile)) {
+			type = IsTunnelBridgeSignalSimulationEntrance(ti->tile) ? SIGTYPE_PBS : SIGTYPE_PBS_ONEWAY;
+		}
+		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeExitSignalState(ti->tile) == SIGNAL_STATE_GREEN), position ^ 1, type, true);
+	}
+	if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
+		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeEntranceSignalState(ti->tile) == SIGNAL_STATE_GREEN), position, SIGTYPE_NORMAL, false);
+	}
 }
 
 /* Draws a signal on tunnel / bridge entrance tile. */
@@ -1646,9 +1651,8 @@ void DrawBridgeMiddle(const TileInfo *ti)
 		if (HasRailCatenaryDrawn(GetRailType(rampsouth))) {
 			DrawRailCatenaryOnBridge(ti);
 		}
-		if (IsTunnelBridgeWithSignalSimulation(rampsouth)) {
-			IsTunnelBridgeSignalSimulationExit(rampsouth) ? DrawBrigeSignalOnMiddlePart(ti, rampnorth, z): DrawBrigeSignalOnMiddlePart(ti, rampsouth, z);
-		}
+		if (IsTunnelBridgeSignalSimulationEntrance(rampsouth)) DrawBridgeSignalOnMiddlePart(ti, rampsouth, z);
+		if (IsTunnelBridgeSignalSimulationEntrance(rampnorth)) DrawBridgeSignalOnMiddlePart(ti, rampnorth, z);
 	}
 
 	/* draw roof, the component of the bridge which is logically between the vehicle and the camera */

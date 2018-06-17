@@ -183,7 +183,7 @@ static inline bool IsTunnelBridgeWithSignalSimulation(TileIndex t)
 static inline bool IsTunnelBridgeSignalSimulationEntrance(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
-	return HasBit(_m[t].m5, 5) && !HasBit(_m[t].m5, 6);
+	return HasBit(_m[t].m5, 5);
 }
 
 /**
@@ -195,7 +195,31 @@ static inline bool IsTunnelBridgeSignalSimulationEntrance(TileIndex t)
 static inline bool IsTunnelBridgeSignalSimulationExit(TileIndex t)
 {
 	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	return HasBit(_m[t].m5, 6);
+}
+
+/**
+ * Is this a tunnel/bridge exit only?
+ * @param t the tile that might be a tunnel/bridge.
+ * @pre IsTileType(t, MP_TUNNELBRIDGE)
+ * @return true if and only if this tile is a tunnel/bridge exit only.
+ */
+static inline bool IsTunnelBridgeSignalSimulationExitOnly(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
 	return !HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
+}
+
+/**
+ * Is this a tunnel/bridge entrance and exit?
+ * @param t the tile that might be a tunnel/bridge.
+ * @pre IsTileType(t, MP_TUNNELBRIDGE)
+ * @return true if and only if this tile is a tunnel/bridge entrance and exit.
+ */
+static inline bool IsTunnelBridgeSignalSimulationBidirectional(TileIndex t)
+{
+	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	return HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
 }
 
 /**
