@@ -2813,9 +2813,19 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		cur_td = FindFirstTrackdir(ft.m_new_td_bits);
 
 		if (IsSafeWaitingPosition(v, tile, cur_td, true, _settings_game.pf.forbid_90_deg)) {
-			bool wp_free = IsWaitingPositionFree(v, tile, cur_td, _settings_game.pf.forbid_90_deg);
+			PBSWaitingPositionRestrictedSignalInfo restricted_signal_info;
+			bool wp_free = IsWaitingPositionFree(v, tile, cur_td, _settings_game.pf.forbid_90_deg, &restricted_signal_info);
 			if (!(wp_free && TryReserveRailTrack(tile, TrackdirToTrack(cur_td)))) break;
 			/* Safe position is all good, path valid and okay. */
+			if (restricted_signal_info.tile != INVALID_TILE) {
+				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
+				if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT) {
+					TraceRestrictProgramResult out;
+					TraceRestrictProgramInput input(restricted_signal_info.tile, restricted_signal_info.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, NULL);
+					input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE | TRPISP_PBS_RES_END_RELEASE;
+					prog->Execute(v, input, out);
+				}
+			}
 			return PBSTileInfo(tile, cur_td, true);
 		}
 

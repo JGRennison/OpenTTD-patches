@@ -550,7 +550,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
  * @param forbid_90deg Don't allow trains to make 90 degree turns
  * @return True if the position is free
  */
-bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg)
+bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg, PBSWaitingPositionRestrictedSignalInfo *restricted_signal_info)
 {
 	Track     track = TrackdirToTrack(trackdir);
 	TrackBits reserved = GetReservedTrackbits(tile);
@@ -560,7 +560,31 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 
 	/* Not reserved and depot or not a pbs signal -> free. */
 	if (IsRailDepotTile(tile)) return true;
-	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) return true;
+
+	auto pbs_res_end_wait_test = [v, restricted_signal_info](TileIndex t, Trackdir td) -> bool {
+		if (IsRestrictedSignal(t)) {
+			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(t, TrackdirToTrack(td));
+			if (restricted_signal_info && prog) {
+				restricted_signal_info->tile = t;
+				restricted_signal_info->trackdir = td;
+			}
+			if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
+				TraceRestrictProgramInput input(t, td, &VehiclePosTraceRestrictPreviousSignalCallback, NULL);
+				input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQ_DRY;
+				TraceRestrictProgramResult out;
+				prog->Execute(v, input, out);
+				if (out.flags & TRPRF_PBS_RES_END_WAIT) {
+					return false;
+				}
+			}
+		}
+		return true;
+	};
+
+	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) {
+		return pbs_res_end_wait_test(tile, trackdir);
+	}
+
 	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(tile)) {
 		if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
 			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
@@ -584,5 +608,15 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	ft.m_new_td_bits &= DiagdirReachesTrackdirs(ft.m_exitdir);
 	if (forbid_90deg) ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(trackdir);
 
-	return !HasReservedTracks(ft.m_new_tile, TrackdirBitsToTrackBits(ft.m_new_td_bits));
+	if (HasReservedTracks(ft.m_new_tile, TrackdirBitsToTrackBits(ft.m_new_td_bits))) return false;
+
+	if (ft.m_new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE) {
+		Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);
+		/* PBS signal on next trackdir? */
+		if (HasPbsSignalOnTrackdir(ft.m_new_tile, td)) {
+			return pbs_res_end_wait_test(ft.m_new_tile, td);
+		}
+	}
+
+	return true;
 }

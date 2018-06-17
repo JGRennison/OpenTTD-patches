@@ -2641,6 +2641,10 @@ STR_TRACE_RESTRICT_LONG_RESERVE                                 :Long reserve
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Cancel long reserve
 STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :Wait at PBS signal
 STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :Cancel wait at PBS signal
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :Wait at start PBS signal for reservation ending here
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL                      :Cancel wait at start PBS signal for reservation ending here
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT                       :Wait at start PBS...
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT                :Cancel wait at start PBS...
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
@@ -2659,10 +2663,16 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Acquire or wait
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Release (front)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :Release (back)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :PBS end: Acquire or wait
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :PBS end: Try to acquire
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :PBS end: Release
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Acquire slot: {STRING1}{BLACK}{STRING}, or wait at PBS signal
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Try to acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Release slot: {STRING1}{BLACK}{STRING} (front of train)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Release slot: {STRING1}{BLACK}{STRING} (back of train)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :PBS reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or wait at start
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :PBS reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :PBS reservation ending here: Release slot: {STRING1}{BLACK}{STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
