@@ -1616,6 +1616,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.show_veh_list_cargo_filter"));
 			interface->Add(new SettingEntry("gui.show_adv_load_mode_features"));
 			interface->Add(new SettingEntry("gui.disable_top_veh_list_mass_actions"));
+			interface->Add(new SettingEntry("gui.adv_sig_bridge_tun_modes"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));

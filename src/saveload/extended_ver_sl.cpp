@@ -56,7 +56,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_DEPARTURE_BOARDS,       XSCF_IGNORABLE_UNKNOWN,   1,   1, "departure_boards",          NULL, NULL, NULL        },
 	{ XSLFI_TIMETABLES_START_TICKS, XSCF_NULL,                2,   2, "timetable_start_ticks",     NULL, NULL, NULL        },
 	{ XSLFI_TOWN_CARGO_ADJ,         XSCF_IGNORABLE_UNKNOWN,   2,   2, "town_cargo_adj",            NULL, NULL, NULL        },
-	{ XSLFI_SIG_TUNNEL_BRIDGE,      XSCF_NULL,                5,   5, "signal_tunnel_bridge",      NULL, NULL, "XBSS"      },
+	{ XSLFI_SIG_TUNNEL_BRIDGE,      XSCF_NULL,                6,   6, "signal_tunnel_bridge",      NULL, NULL, "XBSS"      },
 	{ XSLFI_IMPROVED_BREAKDOWNS,    XSCF_NULL,                6,   6, "improved_breakdowns",       NULL, NULL, NULL        },
 	{ XSLFI_TT_WAIT_IN_DEPOT,       XSCF_NULL,                1,   1, "tt_wait_in_depot",          NULL, NULL, NULL        },
 	{ XSLFI_AUTO_TIMETABLE,         XSCF_NULL,                4,   4, "auto_timetables",           NULL, NULL, NULL        },

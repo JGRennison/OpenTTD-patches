@@ -3351,7 +3351,7 @@ bool AfterLoadGame()
 					/* signalled tunnel entrance */
 					SignalState state = HasBit(_m[t].m5, 6) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
 					ClrBit(_m[t].m5, 6);
-					SetTunnelBridgeSignalState(t, state);
+					SetTunnelBridgeEntranceSignalState(t, state);
 				}
 			}
 		}
@@ -3364,6 +3364,14 @@ bool AfterLoadGame()
 			if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeWithSignalSimulation(tile)) {
 				t->tunnel_bridge_signal_num = t->load_unload_ticks;
 				t->load_unload_ticks = 0;
+			}
+		}
+	}
+	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 5)) {
+		/* entrance and exit signal red/green states now have separate bits */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationExit(t)) {
+				SetTunnelBridgeExitSignalState(t, HasBit(_me[t].m6, 0) ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED);
 			}
 		}
 	}

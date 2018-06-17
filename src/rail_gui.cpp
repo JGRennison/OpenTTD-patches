@@ -284,6 +284,7 @@ static void GenericPlaceSignals(TileIndex tile)
 		SB(p1, 8, 1, 0);
 		SB(p1, 9, 6, _settings_client.gui.cycle_signal_types);
 	}
+	SB(p1, 18, 1, _settings_client.gui.adv_sig_bridge_tun_modes);
 
 	DoCommandP(tile, p1, 0, CMD_BUILD_SIGNALS |
 			CMD_MSG((w != NULL && _convert_signal_button) ? STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE : STR_ERROR_CAN_T_BUILD_SIGNALS_HERE),
