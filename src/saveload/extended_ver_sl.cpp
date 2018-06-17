@@ -45,8 +45,7 @@ std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version os SLXI chunk
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
-	{ XSLFI_SIG_TUNNEL_BRIDGE,      XSCF_NULL,                5,   5, "signal_tunnel_bridge",      NULL, NULL, "XBSS"      },
-	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
+	{ XSLFI_SIG_TUNNEL_BRIDGE,      XSCF_NULL,                6,   6, "signal_tunnel_bridge",      NULL, NULL, "XBSS"      },
 };
 
 /**

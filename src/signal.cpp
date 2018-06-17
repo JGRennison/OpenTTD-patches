@@ -455,10 +455,10 @@ static void UpdateSignalsAroundSegment(SigFlags flags)
 	while (_tbuset.Get(&tile, &trackdir)) {
 		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile)) {
 			if (IsTunnelBridgePBS(tile)) continue;
-			SignalState old_state = GetTunnelBridgeSignalState(tile);
+			SignalState old_state = GetTunnelBridgeExitSignalState(tile);
 			SignalState new_state = (flags & SF_TRAIN) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
 			if (old_state != new_state) {
-				SetTunnelBridgeSignalState(tile, new_state);
+				SetTunnelBridgeExitSignalState(tile, new_state);
 				MarkTileDirtyByTile(tile);
 			}
 			continue;

@@ -125,7 +125,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 		case MP_TUNNELBRIDGE:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && !GetTunnelBridgeReservationTrackBits(tile)) {
 				SetTunnelBridgeReservation(tile, true);
-				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeSignalState(tile, SIGNAL_STATE_GREEN);
+				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_GREEN);
 				MarkTileDirtyByTile(tile);
 				return true;
 			}
@@ -181,7 +181,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 		case MP_TUNNELBRIDGE:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 				SetTunnelBridgeReservation(tile, false);
-				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeSignalState(tile, SIGNAL_STATE_RED);
+				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
 				MarkTileDirtyByTile(tile);
 			}
 			break;

@@ -1183,13 +1183,14 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 
 	SignalType type = SIGTYPE_NORMAL;
 
-	bool is_green = (GetTunnelBridgeSignalState(ti->tile) == SIGNAL_STATE_GREEN);
-	bool show_exit;
+	bool is_green, show_exit;
 	if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
+		is_green = (GetTunnelBridgeExitSignalState(ti->tile) == SIGNAL_STATE_GREEN);
 		show_exit = true;
 		position ^= 1;
 		if (IsTunnelBridgePBS(ti->tile)) type = SIGTYPE_PBS_ONEWAY;
 	} else {
+		is_green = (GetTunnelBridgeEntranceSignalState(ti->tile) == SIGNAL_STATE_GREEN);
 		show_exit = false;
 	}
 
@@ -1216,7 +1217,7 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 }
 
 /* Draws a signal on tunnel / bridge entrance tile. */
-static void DrawBrigeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_start_tile, uint z)
+static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_start_tile, uint z)
 {
 
 	uint bridge_signal_position = 0;

@@ -1022,7 +1022,7 @@ static void ClearBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
 static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit)
 {
 	SetTunnelBridgeSignalSimulationEntrance(entrance);
-	SetTunnelBridgeSignalState(entrance, SIGNAL_STATE_GREEN);
+	SetTunnelBridgeEntranceSignalState(entrance, SIGNAL_STATE_GREEN);
 	SetTunnelBridgeSignalSimulationExit(exit);
 }
 
@@ -1144,8 +1144,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					SetTunnelBridgePBS(tile_exit, is_pbs);
 				}
 			}
-			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile) && !HasTunnelBridgeReservation(tile)) SetTunnelBridgeSignalState(tile, SIGNAL_STATE_RED);
-			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgePBS(tile_exit) && !HasTunnelBridgeReservation(tile_exit)) SetTunnelBridgeSignalState(tile_exit, SIGNAL_STATE_RED);
+			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile) && !HasTunnelBridgeReservation(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
+			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgePBS(tile_exit) && !HasTunnelBridgeReservation(tile_exit)) SetTunnelBridgeExitSignalState(tile_exit, SIGNAL_STATE_RED);
 			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
