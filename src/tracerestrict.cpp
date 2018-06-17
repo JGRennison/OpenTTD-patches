@@ -519,6 +519,22 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								if (input.permitted_slot_operations & TRPISP_RELEASE_FRONT) slot->Vacate(v->index);
 								break;
 
+							case TRSCOF_PBS_RES_END_ACQ_WAIT:
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
+									if (!slot->Occupy(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
+								} else if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) {
+									if (!slot->OccupyDryRun(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
+								}
+								break;
+
+							case TRSCOF_PBS_RES_END_ACQ_TRY:
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) slot->Occupy(v->index);
+								break;
+
+							case TRSCOF_PBS_RES_END_RELEASE:
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_RELEASE) slot->Vacate(v->index);
+								break;
+
 							default:
 								NOT_REACHED();
 								break;
@@ -671,6 +687,15 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 						case TRSCOF_RELEASE_FRONT:
 							actions_used_flags |= TRPAUF_SLOT_RELEASE_FRONT;
+							break;
+
+						case TRSCOF_PBS_RES_END_ACQ_WAIT:
+							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT | TRPAUF_PBS_RES_END_WAIT;
+							break;
+
+						case TRSCOF_PBS_RES_END_ACQ_TRY:
+						case TRSCOF_PBS_RES_END_RELEASE:
+							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
 							break;
 
 						default:
@@ -1464,6 +1489,18 @@ bool TraceRestrictSlot::Occupy(VehicleID id, bool force)
 	SetBit(Train::Get(id)->flags, VRF_HAVE_SLOT);
 	SetWindowDirty(WC_VEHICLE_DETAILS, id);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	return true;
+}
+
+/**
+ * Dry-run adding vehicle ID to occupants if possible and not already an occupant
+ * @param id Vehicle ID
+ * @return whether vehicle IDwould be an occupant
+ */
+bool TraceRestrictSlot::OccupyDryRun(VehicleID id)
+{
+	if (this->IsOccupant(id)) return true;
+	if (this->occupants.size() >= this->max_occupancy) return false;
 	return true;
 }
 

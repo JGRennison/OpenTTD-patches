@@ -240,6 +240,9 @@ enum TraceRestrictSlotCondOpField {
 	TRSCOF_ACQUIRE_TRY            = 1,       ///< try to acquire a slot, or carry on otherwise
 	TRSCOF_RELEASE_BACK           = 2,       ///< release a slot (back of train)
 	TRSCOF_RELEASE_FRONT          = 3,       ///< release a slot (front of train)
+	TRSCOF_PBS_RES_END_ACQ_WAIT   = 4,       ///< PBS reservations ending at this signal: acquire a slot, or wait
+	TRSCOF_PBS_RES_END_ACQ_TRY    = 5,       ///< PBS reservations ending at this signal: acquire a slot, or carry on otherwise
+	TRSCOF_PBS_RES_END_RELEASE    = 6,       ///< PBS reservations ending at this signal: release a slot
 	/* space up to 8 */
 };
 
@@ -287,6 +290,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_SLOT_RELEASE_BACK      = 1 << 5,  ///< Slot release (back) action is present
 	TRPAUF_SLOT_RELEASE_FRONT     = 1 << 6,  ///< Slot release (front) action is present
 	TRPAUF_PBS_RES_END_WAIT       = 1 << 7,  ///< PBS reservations ending at this signal wait action is present
+	TRPAUF_PBS_RES_END_SLOT       = 1 << 8,  ///< PBS reservations ending at this signal slot action is present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -297,6 +301,9 @@ enum TraceRestrictProgramInputSlotPermissions {
 	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire is permitted
 	TRPISP_RELEASE_BACK           = 1 << 1,  ///< Slot release (back) is permitted
 	TRPISP_RELEASE_FRONT          = 1 << 2,  ///< Slot release (front) is permitted
+	TRPISP_PBS_RES_END_ACQUIRE    = 1 << 3,  ///< Slot acquire (PBS reservations ending at this signal) is permitted
+	TRPISP_PBS_RES_END_ACQ_DRY    = 1 << 4,  ///< Dry-run slot acquire (PBS reservations ending at this signal) is permitted
+	TRPISP_PBS_RES_END_RELEASE    = 1 << 5,  ///< Slot release (PBS reservations ending at this signal) is permitted
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 
@@ -781,6 +788,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	}
 
 	bool Occupy(VehicleID id, bool force = false);
+	bool OccupyDryRun(VehicleID ids);
 	void Vacate(VehicleID id);
 	void Clear();
 

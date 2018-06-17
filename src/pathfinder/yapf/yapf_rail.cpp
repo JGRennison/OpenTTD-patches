@@ -18,6 +18,7 @@
 #include "yapf_destrail.hpp"
 #include "../../viewport_func.h"
 #include "../../newgrf_station.h"
+#include "../../tracerestrict.h"
 
 #include "../../safeguards.h"
 
@@ -159,7 +160,8 @@ public:
 		}
 
 		/* Don't bother if the target is reserved. */
-		if (!IsWaitingPositionFree(Yapf().GetVehicle(), m_res_dest, m_res_dest_td)) return false;
+		PBSWaitingPositionRestrictedSignalInfo restricted_signal_info;
+		if (!IsWaitingPositionFree(Yapf().GetVehicle(), m_res_dest, m_res_dest_td, false, &restricted_signal_info)) return false;
 
 		for (Node *node = m_res_node; node->m_parent != NULL; node = node->m_parent) {
 			node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::ReserveSingleTrack);
@@ -174,6 +176,18 @@ public:
 				} while (fail_node != node && (fail_node = fail_node->m_parent) != NULL);
 
 				return false;
+			}
+		}
+
+		if (restricted_signal_info.tile != INVALID_TILE) {
+			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
+			if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT) {
+				extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *);
+
+				TraceRestrictProgramResult out;
+				TraceRestrictProgramInput input(restricted_signal_info.tile, restricted_signal_info.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, NULL);
+				input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE | TRPISP_PBS_RES_END_RELEASE;
+				prog->Execute(Yapf().GetVehicle(), input, out);
 			}
 		}
 
