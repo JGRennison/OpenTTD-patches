@@ -223,11 +223,15 @@ static const TraceRestrictDropDownListSet _long_reserve_value = {
 static const StringID _wait_at_pbs_value_str[] = {
 	STR_TRACE_RESTRICT_WAIT_AT_PBS,
 	STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL,
+	STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT,
+	STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT,
 	INVALID_STRING_ID
 };
 static const uint _wait_at_pbs_value_val[] = {
-	0,
-	1,
+	TRWAPVF_WAIT_AT_PBS,
+	TRWAPVF_CANCEL_WAIT_AT_PBS,
+	TRWAPVF_PBS_RES_END_WAIT,
+	TRWAPVF_CANCEL_PBS_RES_END_WAIT,
 };
 
 /** value drop down list for wait at PBS types strings and values */
@@ -1034,7 +1038,27 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 
 			case TRIT_WAIT_AT_PBS:
-				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL : STR_TRACE_RESTRICT_WAIT_AT_PBS;
+				switch (static_cast<TraceRestrictWaitAtPbsValueField>(GetTraceRestrictValue(item))) {
+					case TRWAPVF_WAIT_AT_PBS:
+						instruction_string = STR_TRACE_RESTRICT_WAIT_AT_PBS;
+						break;
+
+					case TRWAPVF_CANCEL_WAIT_AT_PBS:
+						instruction_string = STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL;
+						break;
+
+					case TRWAPVF_PBS_RES_END_WAIT:
+						instruction_string = STR_TRACE_RESTRICT_PBS_RES_END_WAIT;
+						break;
+
+					case TRWAPVF_CANCEL_PBS_RES_END_WAIT:
+						instruction_string = STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
 				break;
 
 			case TRIT_SLOT:
@@ -2245,7 +2269,7 @@ private:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL : STR_TRACE_RESTRICT_WAIT_AT_PBS;
+									GetDropDownStringByValue(&_wait_at_pbs_value, GetTraceRestrictValue(item));
 							break;
 
 						case TRVT_GROUP_INDEX:

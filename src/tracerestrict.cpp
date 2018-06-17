@@ -473,10 +473,26 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_WAIT_AT_PBS:
-						if (GetTraceRestrictValue(item)) {
-							out.flags &= ~TRPRF_WAIT_AT_PBS;
-						} else {
-							out.flags |= TRPRF_WAIT_AT_PBS;
+						switch (static_cast<TraceRestrictWaitAtPbsValueField>(GetTraceRestrictValue(item))) {
+							case TRWAPVF_WAIT_AT_PBS:
+								out.flags |= TRPRF_WAIT_AT_PBS;
+								break;
+
+							case TRWAPVF_CANCEL_WAIT_AT_PBS:
+								out.flags &= ~TRPRF_WAIT_AT_PBS;
+								break;
+
+							case TRWAPVF_PBS_RES_END_WAIT:
+								out.flags |= TRPRF_PBS_RES_END_WAIT;
+								break;
+
+							case TRWAPVF_CANCEL_PBS_RES_END_WAIT:
+								out.flags &= ~TRPRF_PBS_RES_END_WAIT;
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
 						}
 						break;
 
@@ -622,7 +638,21 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					break;
 
 				case TRIT_WAIT_AT_PBS:
-					actions_used_flags |= TRPAUF_WAIT_AT_PBS;
+					switch (static_cast<TraceRestrictWaitAtPbsValueField>(GetTraceRestrictValue(item))) {
+						case TRWAPVF_WAIT_AT_PBS:
+						case TRWAPVF_CANCEL_WAIT_AT_PBS:
+							actions_used_flags |= TRPAUF_WAIT_AT_PBS;
+							break;
+
+						case TRWAPVF_PBS_RES_END_WAIT:
+						case TRWAPVF_CANCEL_PBS_RES_END_WAIT:
+							actions_used_flags |= TRPAUF_PBS_RES_END_WAIT;
+							break;
+
+						default:
+							NOT_REACHED();
+							break;
+					}
 					break;
 
 				case TRIT_SLOT:

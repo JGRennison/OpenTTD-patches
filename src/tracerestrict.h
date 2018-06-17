@@ -223,6 +223,16 @@ enum TraceRestrictPathfinderPenaltyAuxField {
 };
 
 /**
+ * TraceRestrictItem value field, for TRIT_WAIT_AT_PBS
+ */
+enum TraceRestrictWaitAtPbsValueField {
+	TRWAPVF_WAIT_AT_PBS                = 0,       ///< Wait at PBS
+	TRWAPVF_CANCEL_WAIT_AT_PBS         = 1,       ///< Cancel wait at PBS
+	TRWAPVF_PBS_RES_END_WAIT           = 2,       ///< PBS reservations ending at this signal wait
+	TRWAPVF_CANCEL_PBS_RES_END_WAIT    = 3,       ///< Cancel PBS reservations ending at this signal wait
+};
+
+/**
  * TraceRestrictItem repurposed condition operator field, for slot operation type actions
  */
 enum TraceRestrictSlotCondOpField {
@@ -261,6 +271,7 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_RESERVE_THROUGH         = 1 << 1,  ///< Reserve through is set
 	TRPRF_LONG_RESERVE            = 1 << 2,  ///< Long reserve is set
 	TRPRF_WAIT_AT_PBS             = 1 << 3,  ///< Wait at PBS signal is set
+	TRPRF_PBS_RES_END_WAIT        = 1 << 4,  ///< PBS reservations ending at this signal wait is set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -275,6 +286,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_SLOT_ACQUIRE           = 1 << 4,  ///< Slot acquire action is present
 	TRPAUF_SLOT_RELEASE_BACK      = 1 << 5,  ///< Slot release (back) action is present
 	TRPAUF_SLOT_RELEASE_FRONT     = 1 << 6,  ///< Slot release (front) action is present
+	TRPAUF_PBS_RES_END_WAIT       = 1 << 7,  ///< PBS reservations ending at this signal wait action is present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -498,7 +510,7 @@ enum TraceRestrictValueType {
 	TRVT_FORCE                    = 15,///< takes a force
 	TRVT_POWER_WEIGHT_RATIO       = 16,///< takes a power / weight ratio, * 100
 	TRVT_FORCE_WEIGHT_RATIO       = 17,///< takes a force / weight ratio, * 100
-	TRVT_WAIT_AT_PBS              = 18,///< takes a value 0 = wait at PBS signal, 1 = cancel wait at PBS signal
+	TRVT_WAIT_AT_PBS              = 18,///< takes a TraceRestrictWaitAtPbsValueField value
 	TRVT_SLOT_INDEX               = 19,///< takes a TraceRestrictSlotID
 	TRVT_SLOT_INDEX_INT           = 20,///< takes a TraceRestrictSlotID, and an integer in the next item slot
 };
