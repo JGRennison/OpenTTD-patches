@@ -1612,16 +1612,21 @@ struct ReserveCargoAction {
 	Station *st;
 	const CargoStationIDStackSet &next_station;
 	Vehicle *cargo_type_loading;
+	bool through_load;
 
-	ReserveCargoAction(Station *st, const CargoStationIDStackSet &next_station, Vehicle *cargo_type_loading) :
-		st(st), next_station(next_station), cargo_type_loading(cargo_type_loading) {}
+	ReserveCargoAction(Station *st, const CargoStationIDStackSet &next_station, Vehicle *cargo_type_loading, bool through_load) :
+		st(st), next_station(next_station), cargo_type_loading(cargo_type_loading), through_load(through_load) {}
 
 	bool operator()(Vehicle *v)
 	{
 		/* Don't try to reserve cargo if the vehicle has already advanced beyond the station platform */
 		if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return true;
 
-		if (cargo_type_loading != NULL && !(cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD)) return true;
+		if (cargo_type_loading != NULL) {
+			OrderLoadFlags flags = cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type);
+			if (flags & OLFB_NO_LOAD) return true;
+			if (!(flags & OLFB_FULL_LOAD) && !through_load) return true;
+		}
 		if (v->cargo_cap > v->cargo.RemainingCount()) {
 			st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
 					&v->cargo, st->xy, next_station.Get(v->cargo_type));
@@ -1659,12 +1664,16 @@ static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft,
 				(v->type != VEH_TRAIN || !Train::From(v)->IsRearDualheaded()) &&
 				(v->type != VEH_AIRCRAFT || Aircraft::From(v)->IsNormalAircraft()) &&
 				(must_reserve || u->current_order.GetRefitCargo() == v->cargo_type)) {
-			IterateVehicleParts(v, ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL), through_load);
+			IterateVehicleParts(v, ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL, through_load), through_load);
 		} else if (through_load && v->type == VEH_TRAIN && Train::From(v)->IsRearDualheaded()) {
-			ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL)(v);
+			ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL, through_load)(v);
 		}
 		if (consist_capleft == NULL || v->cargo_cap == 0) continue;
-		if (cargo_type_loading && !(u->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD)) continue;
+		if (cargo_type_loading) {
+			OrderLoadFlags flags = u->current_order.GetCargoLoadTypeRaw(v->cargo_type);
+			if (flags & OLFB_NO_LOAD) continue;
+			if (!(flags & OLFB_FULL_LOAD) && !through_load) continue;
+		 }
 		(*consist_capleft)[v->cargo_type] += v->cargo_cap - v->cargo.RemainingCount();
 	}
 }
