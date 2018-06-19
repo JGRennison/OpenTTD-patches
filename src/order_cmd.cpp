@@ -1781,9 +1781,25 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			 * when this function is called.
 			 */
 			if (sel_ord == u->cur_real_order_index &&
-					(u->current_order.IsType(OT_GOTO_STATION) || u->current_order.IsAnyLoadingType()) &&
-					u->current_order.GetLoadType() != order->GetLoadType()) {
-				u->current_order.SetLoadType(order->GetLoadType());
+					(u->current_order.IsType(OT_GOTO_STATION) || u->current_order.IsAnyLoadingType())) {
+				if (u->current_order.GetLoadType() != order->GetLoadType()) {
+					u->current_order.SetLoadType(order->GetLoadType());
+				}
+				if (u->current_order.GetUnloadType() != order->GetUnloadType()) {
+					u->current_order.SetUnloadType(order->GetUnloadType());
+				}
+				switch (mof) {
+					case MOF_CARGO_TYPE_UNLOAD:
+						u->current_order.SetUnloadType((OrderUnloadFlags)data, cargo_id);
+						break;
+
+					case MOF_CARGO_TYPE_LOAD:
+						u->current_order.SetLoadType((OrderLoadFlags)data, cargo_id);
+						break;
+
+					default:
+						break;
+				}
 			}
 			InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
 		}
