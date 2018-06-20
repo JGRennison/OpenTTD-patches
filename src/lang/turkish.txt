@@ -670,10 +670,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}'Özel 2
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Rastgele programı aç/kapa
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Şarkı seçim penceresini göster
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Şarkısız bir müzik kümesi seçildi. Hiçbir şarkı çalınmayacak
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Müzik Program Seçimi
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Parça Listesi
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Program - '{STRING}'
@@ -1338,8 +1335,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Küçük harita
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Yeşil
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Koyu yeşil
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Mor
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Fareyle kaydırma hareketini ters çevir: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Haritayı sağ fare tuşuyla kaydırırken davranış biçimi. Etkisiz kılındığında, fare kamerayı hareket ettirir. Etkinleştirildiğinde ise fare haritayı hareket ettirir.
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Düzgün viewport kaydırması: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Küçük haritaya tıklandığında veya harita üzerindeki belli bir nesneye gidilmesi için komut verildiğinde ana görüntünün nasıl kaydırılacağını kontrol eder. Etkinleştirildiğinde harita kayarak ilerler, kapatıldığında ise doğrudan hedeflenen noktaya atlama yapar.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :İnşa araçları kullanılırken ölçüm ipucu göster: {STRING}
@@ -1371,8 +1366,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Komut-tıklama
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Kontrol-tıklama
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Kapalı
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Sol tık ile ekran kaydır: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Sol fare tuşuyla sürükleyerek harita kaydırma özelliğini etkinleştir. Özellikle dokunmatik-ekran kullanırken kaydırma yapmak için kullanılabilir.
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Sağ tıklama ile pencereyi kapat: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :İçerisinde sağ tıklandığında pencereyi kapatır. Sağ tıklandığında ipuçları gösterimini devre dışı bırakır!
 
@@ -2690,7 +2683,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Satın alınmı
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD Hakkında
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Telif hakkı {COPYRIGHT} 1995 Chris Sawyer, Her hakkı saklıdır
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD sürüm {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 OpenTTD ekibi
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD ekibi
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Oyunu Kaydet
@@ -2983,8 +2976,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Dünya n
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Şehir)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Nüfus: {ORANGE}{COMMA}{BLACK}  Ev: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Geçen ayki yolcu: {ORANGE}{COMMA}{BLACK} azami: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Geçen ayki posta: {ORANGE}{COMMA}{BLACK}  azami: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Kasaba büyümesi için gerekli kargo:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} gerekli
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} kışın gerekir
@@ -3115,8 +3106,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}İstenen
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}İstenen kargoların listesini göster
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}İstenen: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Bu istasyon şehrin ulaşım haklarına sahip.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} bu şehirdeki ulaşım haklarını satın aldı.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Bu istasyon şehrin ulaşım haklarına sahip.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} bu şehirdeki ulaşım haklarını satın aldı.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Değerlendirmeler
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}İstasyon değerlendirmelerini göster
@@ -3297,11 +3288,9 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}İstenen
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}İstenenler: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
-STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Gereken
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}bekliyor
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Gereken:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} bekliyor{STRING}
 
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Üretir: {YELLOW}{STRING}{STRING}

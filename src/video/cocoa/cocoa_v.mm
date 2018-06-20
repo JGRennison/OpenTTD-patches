@@ -48,6 +48,9 @@
 
 
 @interface OTTDMain : NSObject
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
+	<NSApplicationDelegate>
+#endif
 @end
 
 
@@ -211,9 +214,14 @@ static void setupApplication()
 	}
 #endif
 
+	/* Disable the system-wide tab feature as we only have one window. */
+	if ([ NSWindow respondsToSelector:@selector(setAllowsAutomaticWindowTabbing:) ]) {
+		/* We use nil instead of NO as withObject requires an id. */
+		[ NSWindow performSelector:@selector(setAllowsAutomaticWindowTabbing:) withObject:nil];
+	}
+
 	/* Become the front process, important when start from the command line. */
-	OSErr err = SetFrontProcess(&psn);
-	if (err != 0) DEBUG(driver, 0, "Could not bring the application to front. Error %d", (int)err);
+	[ [ NSApplication sharedApplication ] activateIgnoringOtherApps:YES ];
 
 	/* Set up the menubar */
 	[ NSApp setMainMenu:[ [ NSMenu alloc ] init ] ];
@@ -235,22 +243,39 @@ static int CDECL ModeSorter(const OTTD_Point *p1, const OTTD_Point *p2)
 	return 0;
 }
 
-uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_id, int device_depth)
+static void QZ_GetDisplayModeInfo(CFArrayRef modes, CFIndex i, int &bpp, uint16 &width, uint16 &height)
 {
-	CFArrayRef mode_list  = CGDisplayAvailableModes(display_id);
-	CFIndex    num_modes = CFArrayGetCount(mode_list);
+	bpp = 0;
+	width = 0;
+	height = 0;
 
-	/* Build list of modes with the requested bpp */
-	uint count = 0;
-	for (CFIndex i = 0; i < num_modes && count < max_modes; i++) {
-		int intvalue, bpp;
-		uint16 width, height;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+	if (MacOSVersionIsAtLeast(10, 6, 0)) {
+		CGDisplayModeRef mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(modes, i);
 
-		CFDictionaryRef onemode = (const __CFDictionary*)CFArrayGetValueAtIndex(mode_list, i);
+		width = (uint16)CGDisplayModeGetWidth(mode);
+		height = (uint16)CGDisplayModeGetHeight(mode);
+
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_11)
+		/* Extract bit depth from mode string. */
+		CFStringRef pixEnc = CGDisplayModeCopyPixelEncoding(mode);
+		if (CFStringCompare(pixEnc, CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo) bpp = 32;
+		if (CFStringCompare(pixEnc, CFSTR(IO16BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo) bpp = 16;
+		if (CFStringCompare(pixEnc, CFSTR(IO8BitIndexedPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo) bpp = 8;
+		CFRelease(pixEnc);
+#else
+		/* CGDisplayModeCopyPixelEncoding is deprecated on OSX 10.11+, but there are no 8 bpp modes anyway... */
+		bpp = 32;
+#endif
+	} else
+#endif
+	{
+		int intvalue;
+
+		CFDictionaryRef onemode = (const __CFDictionary*)CFArrayGetValueAtIndex(modes, i);
 		CFNumberRef number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayBitsPerPixel);
-		CFNumberGetValue(number, kCFNumberSInt32Type, &bpp);
-
-		if (bpp != device_depth) continue;
+		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
+		bpp = intvalue;
 
 		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayWidth);
 		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
@@ -259,6 +284,29 @@ uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_i
 		number = (const __CFNumber*)CFDictionaryGetValue(onemode, kCGDisplayHeight);
 		CFNumberGetValue(number, kCFNumberSInt32Type, &intvalue);
 		height = (uint16)intvalue;
+	}
+}
+
+uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_id, int device_depth)
+{
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6) && (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6)
+	CFArrayRef mode_list = MacOSVersionIsAtLeast(10, 6, 0) ? CGDisplayCopyAllDisplayModes(display_id, NULL) : CGDisplayAvailableModes(display_id);
+#elif (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+	CFArrayRef mode_list = CGDisplayCopyAllDisplayModes(display_id, NULL);
+#else
+	CFArrayRef mode_list = CGDisplayAvailableModes(display_id);
+#endif
+	CFIndex    num_modes = CFArrayGetCount(mode_list);
+
+	/* Build list of modes with the requested bpp */
+	uint count = 0;
+	for (CFIndex i = 0; i < num_modes && count < max_modes; i++) {
+		int bpp;
+		uint16 width, height;
+
+		QZ_GetDisplayModeInfo(mode_list, i, bpp, width, height);
+
+		if (bpp != device_depth) continue;
 
 		/* Check if mode is already in the list */
 		bool hasMode = false;
@@ -279,6 +327,10 @@ uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_i
 
 	/* Sort list smallest to largest */
 	QSortT(modes, count, &ModeSorter);
+
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+	if (MacOSVersionIsAtLeast(10, 6, 0)) CFRelease(mode_list);
+#endif
 
 	return count;
 }
@@ -575,9 +627,12 @@ void VideoDriver_Cocoa::EditBoxLostFocus()
 	if (_cocoa_subdriver != NULL) {
 		if ([ _cocoa_subdriver->cocoaview respondsToSelector:@selector(inputContext) ] && [ [ _cocoa_subdriver->cocoaview performSelector:@selector(inputContext) ] respondsToSelector:@selector(discardMarkedText) ]) {
 			[ [ _cocoa_subdriver->cocoaview performSelector:@selector(inputContext) ] performSelector:@selector(discardMarkedText) ];
-		} else {
+		}
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6)
+		else {
 			[ [ NSInputManager currentInputManager ] markedTextAbandoned:_cocoa_subdriver->cocoaview ];
 		}
+#endif
 	}
 	/* Clear any marked string from the current edit box. */
 	HandleTextInput(NULL, true);
@@ -604,7 +659,22 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 		return;
 	}
 
-	NSRunAlertPanel([ NSString stringWithUTF8String:title ], [ NSString stringWithUTF8String:message ], [ NSString stringWithUTF8String:buttonLabel ], nil, nil);
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_3)
+	if (MacOSVersionIsAtLeast(10, 3, 0)) {
+		NSAlert *alert = [ [ NSAlert alloc ] init ];
+		[ alert setAlertStyle: NSCriticalAlertStyle ];
+		[ alert setMessageText:[ NSString stringWithUTF8String:title ] ];
+		[ alert setInformativeText:[ NSString stringWithUTF8String:message ] ];
+		[ alert addButtonWithTitle: [ NSString stringWithUTF8String:buttonLabel ] ];
+		[ alert runModal ];
+		[ alert release ];
+	} else
+#endif
+	{
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3)
+		NSRunAlertPanel([ NSString stringWithUTF8String:title ], [ NSString stringWithUTF8String:message ], [ NSString stringWithUTF8String:buttonLabel ], nil, nil);
+#endif
+	}
 
 	if (!wasstarted && VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
 
@@ -1032,7 +1102,17 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 {
 	if (!EditBoxInGlobalFocus()) return NSNotFound;
 
-	NSPoint view_pt = [ self convertPoint:[ [ self window ] convertScreenToBase:thePoint ] fromView:nil ];
+	NSPoint view_pt = NSZeroPoint;
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
+	if ([ [ self window ] respondsToSelector:@selector(convertRectFromScreen:) ]) {
+		view_pt = [ self convertRect:[ [ self window ] convertRectFromScreen:NSMakeRect(thePoint.x, thePoint.y, 0, 0) ] fromView:nil ].origin;
+	} else
+#endif
+	{
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_7)
+		view_pt = [ self convertPoint:[ [ self window ] convertScreenToBase:thePoint ] fromView:nil ];
+#endif
+	}
 
 	Point pt = { (int)view_pt.x, (int)[ self frame ].size.height - (int)view_pt.y };
 
@@ -1061,9 +1141,13 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	}
 #endif
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_7
 	NSRect window_rect = [ self convertRect:view_rect toView:nil ];
 	NSPoint origin = [ [ self window ] convertBaseToScreen:window_rect.origin ];
 	return NSMakeRect(origin.x, origin.y, window_rect.size.width, window_rect.size.height);
+#else
+	return NSMakeRect(0, 0, 0, 0);;
+#endif
 }
 
 /** Get the bounding rect for the given range. */
@@ -1271,7 +1355,12 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	NSPoint loc = [ driver->cocoaview convertPoint:[ [ aNotification object ] mouseLocationOutsideOfEventStream ] fromView:nil ];
 	BOOL inside = ([ driver->cocoaview hitTest:loc ] == driver->cocoaview);
 
-	if (inside) [ driver->cocoaview mouseEntered:NULL ];
+	if (inside) {
+		/* We don't care about the event, but the compiler does. */
+		NSEvent *e = [ [ NSEvent alloc ] init ];
+		[ driver->cocoaview mouseEntered:e ];
+		[ e release ];
+	}
 }
 
 @end

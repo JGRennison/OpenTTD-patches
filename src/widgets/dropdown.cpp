@@ -485,8 +485,8 @@ void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int butt
 	DropDownList *list = new DropDownList();
 
 	for (uint i = 0; strings[i] != INVALID_STRING_ID; i++) {
-		if (!HasBit(hidden_mask, i)) {
-			*list->Append() = new DropDownListStringItem(strings[i], i, HasBit(disabled_mask, i));
+		if (i >= 32 || !HasBit(hidden_mask, i)) {
+			*list->Append() = new DropDownListStringItem(strings[i], i, i < 32 && HasBit(disabled_mask, i));
 		}
 	}
 

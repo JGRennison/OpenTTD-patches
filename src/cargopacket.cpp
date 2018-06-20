@@ -16,6 +16,11 @@
 #include "economy_base.h"
 #include "cargoaction.h"
 #include "order_type.h"
+#include "company_func.h"
+#include "core/backup_type.hpp"
+#include "string_func.h"
+#include "strings_func.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include <vector>
 
@@ -24,6 +29,74 @@
 /* Initialize the cargopacket-pool */
 CargoPacketPool _cargopacket_pool("CargoPacket");
 INSTANTIATE_POOL_METHODS(CargoPacket)
+
+btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
+
+void ClearCargoPacketDeferredPayments() {
+	_cargo_packet_deferred_payments.clear();
+}
+
+void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_owner)
+{
+	std::vector<std::pair<uint64, Money>> to_merge;
+	auto iter = _cargo_packet_deferred_payments.begin();
+	while (iter != _cargo_packet_deferred_payments.end()) {
+		uint64 k = iter->first;
+		if ((CompanyID) GB(k, 24, 8) == old_owner) {
+			if (new_owner != INVALID_OWNER) {
+				SB(k, 24, 8, new_owner);
+				to_merge.push_back({ k, iter->second });
+			}
+			iter = _cargo_packet_deferred_payments.erase(iter);
+		} else {
+			++iter;
+		}
+	}
+	for (auto &m : to_merge) {
+		_cargo_packet_deferred_payments[m.first] += m.second;
+	}
+}
+
+inline uint64 CargoPacketDeferredPaymentKey(CargoPacketID id, CompanyID cid, VehicleType type)
+{
+	return (((uint64) id) << 32) | (cid << 24) | (type << 22);
+}
+
+template <typename F>
+inline void IterateCargoPacketDeferredPayments(CargoPacketID index, bool erase_range, F functor)
+{
+	auto start_iter = _cargo_packet_deferred_payments.lower_bound(CargoPacketDeferredPaymentKey(index, (CompanyID) 0, (VehicleType) 0));
+	auto iter = start_iter;
+	for (; iter != _cargo_packet_deferred_payments.end() && iter->first >> 32 == index; ++iter) {
+		functor(iter->second, (CompanyID) GB(iter->first, 24, 8), (VehicleType) GB(iter->first, 22, 2));
+	}
+	if (erase_range) {
+		_cargo_packet_deferred_payments.erase(start_iter, iter);
+	}
+}
+
+void DumpCargoPacketDeferredPaymentStats(char *buffer, const char *last)
+{
+	Money payments[256][4] = {};
+	for (auto &it : _cargo_packet_deferred_payments) {
+		payments[GB(it.first, 24, 8)][GB(it.first, 22, 2)] += it.second;
+	}
+	for (uint i = 0; i < 256; i++) {
+		for (uint j = 0; j < 4; j++) {
+			if (payments[i][j] != 0) {
+				SetDParam(0, i);
+				buffer = GetString(buffer, STR_COMPANY_NAME, last);
+				buffer += seprintf(buffer, last, " (");
+				buffer = GetString(buffer, STR_REPLACE_VEHICLE_TRAIN + j, last);
+				buffer += seprintf(buffer, last, "): ");
+				SetDParam(0, payments[i][j]);
+				buffer = GetString(buffer, STR_JUST_CURRENCY_LONG, last);
+				buffer += seprintf(buffer, last, "\n");
+			}
+		}
+	}
+	buffer += seprintf(buffer, last, "Deferred payment count: %u\n", (uint) _cargo_packet_deferred_payments.size());
+}
 
 /**
  * Create a new packet for savegame loading.
@@ -85,6 +158,16 @@ CargoPacket::CargoPacket(uint16 count, byte days_in_transit, StationID source, T
 	this->source_type = source_type;
 }
 
+/** Destroy the packet. */
+CargoPacket::~CargoPacket()
+{
+	if (CleaningPool()) return;
+
+	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		IterateCargoPacketDeferredPayments(this->index, true, [](Money &payment, CompanyID cid, VehicleType type) { });
+	}
+}
+
 /**
  * Split this packet in two and return the split off part.
  * @param new_size Size of the split part.
@@ -97,6 +180,20 @@ CargoPacket *CargoPacket::Split(uint new_size)
 	Money fs = this->FeederShare(new_size);
 	CargoPacket *cp_new = new CargoPacket(new_size, this->days_in_transit, this->source, this->source_xy, this->loaded_at_xy, fs, this->source_type, this->source_id);
 	this->feeder_share -= fs;
+
+	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		std::vector<std::pair<uint64, Money>> to_add;
+		IterateCargoPacketDeferredPayments(this->index, false, [&](Money &payment, CompanyID cid, VehicleType type) {
+			Money share = payment * new_size / static_cast<uint>(this->count);
+			payment -= share;
+			to_add.push_back({ CargoPacketDeferredPaymentKey(cp_new->index, cid, type), share });
+		});
+		for (auto &m : to_add) {
+			_cargo_packet_deferred_payments[m.first] = m.second;
+		}
+		cp_new->flags |= CPF_HAS_DEFERRED_PAYMENT;
+	}
+
 	this->count -= new_size;
 	return cp_new;
 }
@@ -109,6 +206,20 @@ void CargoPacket::Merge(CargoPacket *cp)
 {
 	this->count += cp->count;
 	this->feeder_share += cp->feeder_share;
+
+	if (cp->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		std::vector<std::pair<uint64, Money>> to_merge;
+		IterateCargoPacketDeferredPayments(cp->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
+			to_merge.push_back({ CargoPacketDeferredPaymentKey(this->index, cid, type), payment });
+		});
+		cp->flags &= ~CPF_HAS_DEFERRED_PAYMENT;
+
+		for (auto &m : to_merge) {
+			_cargo_packet_deferred_payments[m.first] += m.second;
+		}
+		this->flags |= CPF_HAS_DEFERRED_PAYMENT;
+	}
+
 	delete cp;
 }
 
@@ -120,7 +231,40 @@ void CargoPacket::Reduce(uint count)
 {
 	assert(count < this->count);
 	this->feeder_share -= this->FeederShare(count);
+	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		IterateCargoPacketDeferredPayments(this->index, false, [&](Money &payment, CompanyID cid, VehicleType type) {
+			payment -= payment * count / static_cast<uint>(this->count);
+		});
+	}
 	this->count -= count;
+}
+
+void CargoPacket::RegisterDeferredCargoPayment(CompanyID cid, VehicleType type, Money payment)
+{
+	this->flags |= CPF_HAS_DEFERRED_PAYMENT;
+	_cargo_packet_deferred_payments[CargoPacketDeferredPaymentKey(this->index, cid, type)] += payment;
+}
+
+void CargoPacket::PayDeferredPayments()
+{
+	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
+		IterateCargoPacketDeferredPayments(this->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
+			Backup<CompanyByte> cur_company(_current_company, cid, FILE_LINE);
+
+			ExpensesType exp;
+			switch (type) {
+				case VEH_TRAIN: exp = EXPENSES_TRAIN_INC; break;
+				case VEH_ROAD: exp = EXPENSES_ROADVEH_INC; break;
+				case VEH_SHIP: exp = EXPENSES_SHIP_INC; break;
+				case VEH_AIRCRAFT: exp = EXPENSES_AIRCRAFT_INC; break;
+				default: NOT_REACHED();
+			}
+			SubtractMoneyFromCompany(CommandCost(exp, -payment));
+
+			cur_company.Restore();
+		});
+		this->flags &= ~CPF_HAS_DEFERRED_PAYMENT;
+	}
 }
 
 /**
@@ -298,6 +442,35 @@ void VehicleCargoList::ShiftCargo(Taction action)
 		} else {
 			break;
 		}
+	}
+}
+
+/**
+ * Shifts cargo from the front of the packet list and applies some action to it.
+ * @tparam Taction Action class or function to be used. It should define
+ *                 "bool operator()(CargoPacket *, std::vector<CargoPacket*> &)". If true is returned the
+ *                 cargo packet will be removed from the list. Otherwise it
+ *                 will be kept and the loop will be aborted.
+ *                 The second method parameter can be appended to, to prepend items to the packet list
+ * @param action Action instance to be applied.
+ */
+template<class Taction>
+void VehicleCargoList::ShiftCargoWithFrontInsert(Taction action)
+{
+	std::vector<CargoPacket *> packets_to_front_insert;
+
+	Iterator it(this->packets.begin());
+	while (it != this->packets.end() && action.MaxMove() > 0) {
+		CargoPacket *cp = *it;
+		if (action(cp, packets_to_front_insert)) {
+			it = this->packets.erase(it);
+		} else {
+			break;
+		}
+	}
+
+	for (CargoPacket *cp : packets_to_front_insert) {
+		this->packets.push_front(cp);
 	}
 }
 
@@ -588,7 +761,11 @@ uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList:
 		if (sum > this->action_counts[MTA_TRANSFER] + max_move) {
 			CargoPacket *cp_split = cp->Split(sum - this->action_counts[MTA_TRANSFER] + max_move);
 			sum -= cp_split->Count();
-			this->packets.insert(it, cp_split);
+			it = this->packets.insert(it, cp_split);
+			/* it points to the inserted value, which is just before the previous value of it.
+			 * Increment it so that it points to the same element as it did before the insert.
+			 */
+			++it;
 		}
 		cp->next_station = next_station;
 	}
@@ -674,7 +851,7 @@ uint VehicleCargoList::Truncate(uint max_move)
 uint VehicleCargoList::Reroute(uint max_move, VehicleCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge)
 {
 	max_move = min(this->action_counts[MTA_TRANSFER], max_move);
-	this->ShiftCargo(VehicleCargoReroute(this, dest, max_move, avoid, avoid2, ge));
+	this->ShiftCargoWithFrontInsert(VehicleCargoReroute(this, dest, max_move, avoid, avoid2, ge));
 	return max_move;
 }
 

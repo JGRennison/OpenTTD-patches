@@ -37,9 +37,22 @@ struct LinkProperties {
  */
 class LinkGraphOverlay {
 public:
-	typedef std::map<StationID, LinkProperties> StationLinkMap;
-	typedef std::map<StationID, StationLinkMap> LinkMap;
-	typedef std::vector<std::pair<StationID, uint> > StationSupplyList;
+	struct StationSupplyInfo {
+		StationID id;
+		uint quantity;
+		Point pt;
+	};
+
+	struct LinkInfo {
+		StationID from_id;
+		StationID to_id;
+		Point from_pt;
+		Point to_pt;
+		LinkProperties prop;
+	};
+
+	typedef std::vector<StationSupplyInfo> StationSupplyList;
+	typedef std::vector<LinkInfo> LinkList;
 
 	static const uint8 LINK_COLOURS[];
 
@@ -51,17 +64,18 @@ public:
 	 * @param company_mask Bitmask of companies to be shown.
 	 * @param scale Desired thickness of lines and size of station dots.
 	 */
-	LinkGraphOverlay(const Window *w, uint wid, uint32 cargo_mask, uint32 company_mask, uint scale) :
+	LinkGraphOverlay(const Window *w, uint wid, CargoTypes cargo_mask, uint32 company_mask, uint scale) :
 			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale)
 	{}
 
-	void RebuildCache();
-	void Draw(const DrawPixelInfo *dpi) const;
-	void SetCargoMask(uint32 cargo_mask);
+	void RebuildCache(bool incremental = false);
+	bool CacheStillValid() const;
+	void Draw(const DrawPixelInfo *dpi);
+	void SetCargoMask(CargoTypes cargo_mask);
 	void SetCompanyMask(uint32 company_mask);
 
 	/** Get a bitmask of the currently shown cargoes. */
-	uint32 GetCargoMask() { return this->cargo_mask; }
+	CargoTypes GetCargoMask() { return this->cargo_mask; }
 
 	/** Get a bitmask of the currently shown companies. */
 	uint32 GetCompanyMask() { return this->company_mask; }
@@ -69,21 +83,23 @@ public:
 protected:
 	const Window *window;              ///< Window to be drawn into.
 	const uint widget_id;              ///< ID of Widget in Window to be drawn to.
-	uint32 cargo_mask;                 ///< Bitmask of cargos to be displayed.
+	CargoTypes cargo_mask;             ///< Bitmask of cargos to be displayed.
 	uint32 company_mask;               ///< Bitmask of companies to be displayed.
-	LinkMap cached_links;              ///< Cache for links to reduce recalculation.
+	LinkList cached_links;             ///< Cache for links to reduce recalculation.
 	StationSupplyList cached_stations; ///< Cache for stations to be drawn.
+	Rect cached_region;                ///< Region covered by cached_links and cached_stations.
 	uint scale;                        ///< Width of link lines.
+	uint64 last_update_number = 0;     ///< Last window update number
 
 	Point GetStationMiddle(const Station *st) const;
 
-	void AddLinks(const Station *sta, const Station *stb);
+	void RefreshDrawCache();
 	void DrawLinks(const DrawPixelInfo *dpi) const;
 	void DrawStationDots(const DrawPixelInfo *dpi) const;
 	void DrawContent(Point pta, Point ptb, const LinkProperties &cargo) const;
 	bool IsLinkVisible(Point pta, Point ptb, const DrawPixelInfo *dpi, int padding = 0) const;
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
-	void GetWidgetDpi(DrawPixelInfo *dpi) const;
+	void GetWidgetDpi(DrawPixelInfo *dpi, uint margin = 0) const;
 
 	static void AddStats(uint new_cap, uint new_usg, uint new_flow, bool new_shared, LinkProperties &cargo);
 	static void DrawVertex(int x, int y, int size, int colour, int border_colour);

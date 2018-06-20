@@ -144,7 +144,7 @@ void NetworkAddServer(const char *b);
 void NetworkRebuildHostList();
 void UpdateNetworkGameWindow();
 
-bool IsNetworkCompatibleVersion(const char *version);
+bool IsNetworkCompatibleVersion(const char *version, bool extended = false);
 
 /* From network_command.cpp */
 /**

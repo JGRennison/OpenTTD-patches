@@ -857,10 +857,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Eligere 
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Incipere desinereve admixtionem carminum
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Monstrare fenestram electionis carminum
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Compositio sine carminibus electa est. Nulla carmina canentur
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Electio Compositionis Musicae
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Index Carminum
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Compositio - '{STRING}'
@@ -1525,8 +1522,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Color terrae in
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Viridis
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Viridis Obscurus
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Purpureus
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Revertere cursum vagationis: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Quomodo tabula vagatur globulo dextri presso. Neglecta, mus conspectum movet. Electa, mus tabulam movet
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Vagari conspectum leniter: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Quomodo conspectus vagatur ad quemdam locum globulo sinistro in tabula premendi aut cum iubetur vagari ad quamdam rem in tabula. Electa, conspectus leniter vagatur. Neglecta, statim salit ad locum
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Ostendere nuntium adiuvans apud varia ferramenta construendi: {STRING}
@@ -1558,8 +1553,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Cmd+Premere
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Premere
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Neglecta
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Vagatio globuli sinistri: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Annuere tabulam vagari trahendo globuli sinistri. Magnopere utilis est cum tangendo navigas in scrinio
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Claudere fenestras globulo muris dextro: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Facit ut globulus muris dexter fenestras claudat. Cave: hac electa, non apparent nuntia adiuvantia globulo dextro.
 
@@ -3184,8 +3177,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Incolae 
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Urbs)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Incolae: {ORANGE}{COMMA}{BLACK}  Aedificia: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Vectores mensis prioris: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Epistulae mensis prioris: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Onera mandata ad oppidum crescendum:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} mandatur
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} hieme mandatur
@@ -3316,8 +3307,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Accipit
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Monstrare index onerum acceptorum
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Onera accepta: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Haec statio monopolio benefit.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} monopolium emit in hoc oppido.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Haec statio monopolio benefit.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} monopolium emit in hoc oppido.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Censiones
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Monstrare censiones stationum
@@ -3498,11 +3489,9 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Postulat
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Postulat: {YELLOW}{STRING.acc}{STRING}, {STRING.acc}{STRING}, {STRING.acc}{STRING}
 ############ range for requires ends
 
-STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Postulat
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING.acc}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}manet
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING.acc}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Postulat:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING.acc}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} manet{STRING}
 
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Efficit: {YELLOW}{STRING.acc}{STRING}

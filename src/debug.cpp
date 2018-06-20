@@ -17,6 +17,10 @@
 #include "fileio_func.h"
 #include "settings_type.h"
 
+#if defined(WIN32) || defined(WIN64)
+#include "os/windows/win32.h"
+#endif
+
 #include <time.h>
 
 #if defined(ENABLE_NETWORK)
@@ -47,6 +51,7 @@ int _debug_desync_level;
 int _debug_yapfdesync_level;
 int _debug_console_level;
 int _debug_linkgraph_level;
+int _debug_sound_level;
 #ifdef RANDOM_DEBUG
 int _debug_random_level;
 #endif
@@ -77,6 +82,7 @@ struct DebugLevel {
 	DEBUG_LEVEL(yapfdesync),
 	DEBUG_LEVEL(console),
 	DEBUG_LEVEL(linkgraph),
+	DEBUG_LEVEL(sound),
 #ifdef RANDOM_DEBUG
 	DEBUG_LEVEL(random),
 #endif
@@ -107,8 +113,6 @@ char *DumpDebugFacilityNames(char *buf, char *last)
 	}
 	return buf;
 }
-
-#if !defined(NO_DEBUG_MESSAGES)
 
 /**
  * Internal function for outputting the debug line.
@@ -175,10 +179,12 @@ static void debug_print(const char *dbg, const char *buf)
 	/* do not write desync messages to the console on Windows platforms, as they do
 	 * not seem able to handle text direction change characters in a console without
 	 * crashing, and NetworkTextMessage includes these */
-#if defined(WINCE)
-	if (strcmp(dbg, "desync") != 0) NKDbgPrintfW(OTTD2FS(buffer));
-#elif defined(WIN32) || defined(WIN64)
-	if (strcmp(dbg, "desync") != 0) _fputts(OTTD2FS(buffer, true), stderr);
+#if defined(WIN32) || defined(WIN64)
+	if (strcmp(dbg, "desync") != 0) {
+		TCHAR system_buf[512];
+		convert_to_fs(buffer, system_buf, lengthof(system_buf), true);
+		_fputts(system_buf, stderr);
+	}
 #else
 	fputs(buffer, stderr);
 #endif
@@ -206,7 +212,6 @@ void CDECL debug(const char *dbg, const char *format, ...)
 
 	debug_print(dbg, buf);
 }
-#endif /* NO_DEBUG_MESSAGES */
 
 /**
  * Set debugging levels by parsing the text in \a s.

@@ -26,9 +26,14 @@
 #include "tracerestrict.h"
 #include "window_func.h"
 #include "zoning.h"
+#include "viewport_func.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;
 static const SpriteID ZONING_INVALID_SPRITE_ID = UINT_MAX;
+
+static btree::btree_set<uint32> _zoning_cache_inner;
+static btree::btree_set<uint32> _zoning_cache_outer;
 
 /**
  * Draw the zoning sprites.
@@ -338,6 +343,42 @@ SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, ZoningEvaluatio
 	}
 }
 
+inline SpriteID TileZoningSpriteEvaluationCached(TileIndex tile, Owner owner, ZoningEvaluationMode ev_mode, bool is_inner)
+{
+	if (ev_mode == ZEM_BUL_UNSER && !IsTileType(tile, MP_HOUSE)) return ZONING_INVALID_SPRITE_ID;
+	if (ev_mode == ZEM_IND_UNSER && !IsTileType(tile, MP_INDUSTRY)) return ZONING_INVALID_SPRITE_ID;
+	if (ev_mode >= ZEM_STA_CATCH && ev_mode <= ZEM_IND_UNSER) {
+		// cacheable
+		btree::btree_set<uint32> &cache = is_inner ? _zoning_cache_inner : _zoning_cache_outer;
+		auto iter = cache.lower_bound(tile << 3);
+		if (iter != cache.end() && *iter >> 3 == tile) {
+			switch (*iter & 7) {
+				case 0: return ZONING_INVALID_SPRITE_ID;
+				case 1: return SPR_ZONING_INNER_HIGHLIGHT_RED;
+				case 2: return SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
+				case 3: return SPR_ZONING_INNER_HIGHLIGHT_BLACK;
+				case 4: return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+				default: NOT_REACHED();
+			}
+		} else {
+			SpriteID s = TileZoningSpriteEvaluation(tile, owner, ev_mode);
+			uint val = tile << 3;
+			switch (s) {
+				case ZONING_INVALID_SPRITE_ID:              val |= 0; break;
+				case SPR_ZONING_INNER_HIGHLIGHT_RED:        val |= 1; break;
+				case SPR_ZONING_INNER_HIGHLIGHT_ORANGE:     val |= 2; break;
+				case SPR_ZONING_INNER_HIGHLIGHT_BLACK:      val |= 3; break;
+				case SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE: val |= 4; break;
+				default: NOT_REACHED();
+			}
+			cache.insert(iter, val);
+			return s;
+		}
+	} else {
+		return TileZoningSpriteEvaluation(tile, owner, ev_mode);
+	}
+}
+
 /**
  * Draw the the zoning on the tile.
  *
@@ -351,11 +392,34 @@ void DrawTileZoning(const TileInfo *ti)
 	}
 
 	if (_zoning.outer != ZEM_NOTHING) {
-		DrawZoningSprites(SPR_SELECT_TILE, TileZoningSpriteEvaluation(ti->tile, _local_company, _zoning.outer), ti);
+		const SpriteID colour = TileZoningSpriteEvaluationCached(ti->tile, _local_company, _zoning.outer, false);
+
+		if (colour != ZONING_INVALID_SPRITE_ID) {
+			DrawTileSelectionRect(ti, colour);
+		}
 	}
 
 	if (_zoning.inner != ZEM_NOTHING) {
-		DrawZoningSprites(SPR_ZONING_INNER_HIGHLIGHT_BASE, TileZoningSpriteEvaluation(ti->tile, _local_company, _zoning.inner), ti);
+		const SpriteID colour = TileZoningSpriteEvaluationCached(ti->tile, _local_company, _zoning.inner, true);
+
+		if (colour != ZONING_INVALID_SPRITE_ID) {
+			SpriteID sprite = SPR_ZONING_INNER_HIGHLIGHT_BASE;
+
+			if (IsHalftileSlope(ti->tileh)) {
+				const int INF = 1000;
+				static const SubSprite sub_sprites[4] = {
+					{ -INF    , -INF   , 32 - 33, INF     }, // CORNER_W, clip 33 pixels from right
+					{ -INF    ,  0 + 22, INF    , INF     }, // CORNER_S, clip 22 pixels from top
+					{ -31 + 34, -INF   , INF    , INF     }, // CORNER_E, clip 34 pixels from left
+					{ -INF    , -INF   , INF    , 30 - 8  }  // CORNER_N, clip  8 pixels from bottom
+				};
+
+				DrawSelectionSprite(sprite, colour, ti, 7 + TILE_HEIGHT, FOUNDATION_PART_HALFTILE, &(sub_sprites[GetHalftileSlopeCorner(ti->tileh)]));
+			} else {
+				sprite += SlopeToSpriteOffset(ti->tileh);
+			}
+			DrawSelectionSprite(sprite, colour, ti, 7, FOUNDATION_PART_NORMAL);
+		}
 	}
 }
 
@@ -376,18 +440,67 @@ static uint GetZoningModeDependantStationCoverageRadius(const Station *st, Zonin
  * @param const Station *st
  *        The station to use
  */
-void ZoningMarkDirtyStationCoverageArea(const Station *st)
+void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 {
 	if (st->rect.IsEmpty()) return;
 
-	uint radius = max<uint>(GetZoningModeDependantStationCoverageRadius(st, _zoning.outer), GetZoningModeDependantStationCoverageRadius(st, _zoning.inner));
+	uint outer_radius = mask & ZMM_OUTER ? GetZoningModeDependantStationCoverageRadius(st, _zoning.outer) : 0;
+	uint inner_radius = mask & ZMM_INNER ? GetZoningModeDependantStationCoverageRadius(st, _zoning.inner) : 0;
+	uint radius = max<uint>(outer_radius, inner_radius);
 
 	if (radius > 0) {
 		Rect rect = st->GetCatchmentRectUsingRadius(radius);
-		for (int x = rect.left; x <= rect.right; x++) {
-			for (int y = rect.top; y <= rect.bottom; y++) {
+		for (int y = rect.top; y <= rect.bottom; y++) {
+			for (int x = rect.left; x <= rect.right; x++) {
 				MarkTileDirtyByTile(TileXY(x, y));
 			}
 		}
+		auto invalidate_cache_rect = [&](btree::btree_set<uint32> &cache) {
+			for (int y = rect.top; y <= rect.bottom; y++) {
+				auto iter = cache.lower_bound(TileXY(rect.left, y) << 3);
+				auto end_iter = iter;
+				uint end = TileXY(rect.right, y) << 3;
+				while (end_iter != cache.end() && *end_iter < end) ++end_iter;
+				cache.erase(iter, end_iter);
+			}
+		};
+		if (outer_radius) invalidate_cache_rect(_zoning_cache_outer);
+		if (inner_radius) invalidate_cache_rect(_zoning_cache_inner);
 	}
+}
+
+void ZoningStationWindowOpenClose(const Station *st)
+{
+	ZoningModeMask mask = ZMM_NOTHING;
+	if (_zoning.inner == ZEM_STA_CATCH_WIN) mask |= ZMM_INNER;
+	if (_zoning.outer == ZEM_STA_CATCH_WIN) mask |= ZMM_OUTER;
+	if (mask != ZMM_NOTHING) ZoningMarkDirtyStationCoverageArea(st, mask);
+}
+
+void ZoningTownAuthorityRatingChange()
+{
+	ZoningModeMask mask = ZMM_NOTHING;
+	if (_zoning.inner == ZEM_AUTHORITY) mask |= ZMM_INNER;
+	if (_zoning.outer == ZEM_AUTHORITY) mask |= ZMM_OUTER;
+	if (mask != ZMM_NOTHING) {
+		MarkWholeScreenDirty();
+	}
+}
+
+void ClearZoningCaches()
+{
+	_zoning_cache_inner.clear();
+	_zoning_cache_outer.clear();
+}
+
+void SetZoningMode(bool inner, ZoningEvaluationMode mode)
+{
+	ZoningEvaluationMode &current_mode = inner ? _zoning.inner : _zoning.outer;
+	btree::btree_set<uint32> &cache = inner ? _zoning_cache_inner : _zoning_cache_outer;
+
+	if (current_mode == mode) return;
+
+	current_mode = mode;
+	cache.clear();
+	MarkWholeScreenDirty();
 }

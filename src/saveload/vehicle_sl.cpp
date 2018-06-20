@@ -20,6 +20,8 @@
 #include "../company_base.h"
 #include "../company_func.h"
 #include "../disaster_vehicle.h"
+#include "../scope_info.h"
+#include "../string_func.h"
 
 #include "saveload.h"
 
@@ -248,8 +250,8 @@ extern byte _age_cargo_skip_counter; // From misc_sl.cpp
 /** Called after load to update coordinates */
 void AfterLoadVehicles(bool part_of_load)
 {
-	Vehicle *v;
-
+	Vehicle *v = nullptr;
+	SCOPE_INFO_FMT([&v], "AfterLoadVehicles: %s", scope_dumper().VehicleInfo(v));
 	FOR_ALL_VEHICLES(v) {
 		/* Reinstate the previous pointer */
 		if (v->Next() != NULL) v->Next()->previous = v;
@@ -326,6 +328,7 @@ void AfterLoadVehicles(bool part_of_load)
 			/* The road vehicle subtype was converted to a flag. */
 			RoadVehicle *rv;
 			FOR_ALL_ROADVEHICLES(rv) {
+				v = rv;
 				if (rv->subtype == 0) {
 					/* The road vehicle is at the front. */
 					rv->SetFrontEngine();
@@ -369,6 +372,7 @@ void AfterLoadVehicles(bool part_of_load)
 			}
 		}
 	}
+	v = nullptr;
 
 	CheckValidVehicles();
 
@@ -433,26 +437,30 @@ void AfterLoadVehicles(bool part_of_load)
 				RoadVehicle *rv = RoadVehicle::From(v);
 				rv->roadtype = HasBit(EngInfo(v->First()->engine_type)->misc_flags, EF_ROAD_TRAM) ? ROADTYPE_TRAM : ROADTYPE_ROAD;
 				rv->compatible_roadtypes = RoadTypeToRoadTypes(rv->roadtype);
-				/* FALL THROUGH */
+				FALLTHROUGH;
 			}
 
 			case VEH_TRAIN:
 			case VEH_SHIP:
 				v->GetImage(v->direction, EIT_ON_MAP, &v->sprite_seq);
+				v->UpdateSpriteSeqBound();
 				break;
 
 			case VEH_AIRCRAFT:
 				if (Aircraft::From(v)->IsNormalAircraft()) {
 					v->GetImage(v->direction, EIT_ON_MAP, &v->sprite_seq);
+					v->UpdateSpriteSeqBound();
 
 					/* The plane's shadow will have the same image as the plane, but no colour */
 					Vehicle *shadow = v->Next();
 					shadow->sprite_seq.CopyWithoutPalette(v->sprite_seq);
+					shadow->sprite_seq_bounds = v->sprite_seq_bounds;
 
 					/* In the case of a helicopter we will update the rotor sprites */
 					if (v->subtype == AIR_HELICOPTER) {
 						Vehicle *rotor = shadow->Next();
 						GetRotorImage(Aircraft::From(v), EIT_ON_MAP, &rotor->sprite_seq);
+						rotor->UpdateSpriteSeqBound();
 					}
 
 					UpdateAircraftCache(Aircraft::From(v), true);
@@ -461,10 +469,11 @@ void AfterLoadVehicles(bool part_of_load)
 			default: break;
 		}
 
-		v->UpdateDeltaXY(v->direction);
+		v->UpdateDeltaXY();
 		v->coord.left = INVALID_COORD;
 		v->UpdatePosition();
 		v->UpdateViewport(false);
+		v->cargo.AssertCountConsistency();
 	}
 }
 
@@ -627,11 +636,16 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 
 		     SLE_VAR(Vehicle, day_counter,           SLE_UINT8),
 		     SLE_VAR(Vehicle, tick_counter,          SLE_UINT8),
-		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_UINT8,                   88, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP, 0, 2)),
-		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_FILE_U16  | SLE_VAR_U8,  88, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP, 2)),
+		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_FILE_U8  | SLE_VAR_U16,  88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range) -> bool {
+			return version_in_range && !(SlXvIsFeaturePresent(XSLFI_SPRINGPP, 3) || SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 2));
+		})),
+		SLE_CONDVAR_X(Vehicle, running_ticks,        SLE_UINT16,                  88, SL_MAX_VERSION, SlXvFeatureTest([](uint16 version, bool version_in_range) -> bool {
+			return version_in_range && (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 2) || SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 2));
+		})),
 
 		     SLE_VAR(Vehicle, cur_implicit_order_index,  SLE_UINT8),
 		 SLE_CONDVAR(Vehicle, cur_real_order_index,  SLE_UINT8,                  158, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, cur_timetable_order_index, SLE_UINT8,               0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
 		/* num_orders is now part of OrderList and is not saved but counted */
 		SLE_CONDNULL(1,                                                            0, 104),
 
@@ -735,11 +749,13 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		     SLE_VAR(Train, railtype,            SLE_UINT8),
 		     SLE_VAR(Train, track,               SLE_UINT8),
 
-		 SLE_CONDVAR(Train, flags,               SLE_FILE_U8  | SLE_VAR_U16,   2,  99),
-		 SLE_CONDVAR(Train, flags,               SLE_UINT16,                 100, SL_MAX_VERSION),
+		 SLE_CONDVAR(Train, flags,               SLE_FILE_U8  | SLE_VAR_U32,   2,  99),
+		SLE_CONDVAR_X(Train, flags,              SLE_FILE_U16 | SLE_VAR_U32, 100, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_FLAGS_EXTRA, 0, 0)),
+		SLE_CONDVAR_X(Train, flags,              SLE_UINT32,                   0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_FLAGS_EXTRA, 1)),
 		SLE_CONDNULL(2, 2, 59),
 
 		 SLE_CONDVAR(Train, wait_counter,        SLE_UINT16,                 136, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Train, tunnel_bridge_signal_num, SLE_UINT16,             0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SIG_TUNNEL_BRIDGE, 5)),
 
 		SLE_CONDNULL(2, 2, 19),
 		 SLE_CONDVAR(Train, gv_flags,            SLE_UINT16,                 139, SL_MAX_VERSION),
@@ -766,6 +782,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL(4,                                                              69, 130),
 		SLE_CONDNULL(2,                                                               6, 130),
 		SLE_CONDNULL(16,                                                              2, 143), // old reserved space
+		SLE_CONDVAR_X(RoadVehicle, critical_breakdown_count, SLE_UINT8,               0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 6)),
 
 		     SLE_END()
 	};

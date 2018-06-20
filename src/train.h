@@ -41,6 +41,9 @@ enum VehicleRailFlags {
 	VRF_BREAKDOWN_STOPPED             = 13,///< used to mark a train that is stopped because of a breakdown
 	VRF_NEED_REPAIR                   = 14,///< used to mark a train that has a reduced maximum speed because of a critical breakdown
 	VRF_TOO_HEAVY                     = 15,
+	VRF_BEYOND_PLATFORM_END           = 16,
+	VRF_NOT_YET_IN_PLATFORM           = 17,
+	VRF_ADVANCE_IN_PLATFORM           = 18,
 
 	VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED), ///< Bitmask of all flags that indicate a broken train (braking is not included)
 };
@@ -76,7 +79,6 @@ bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay =
 
 void DeleteVisibleTrain(Train *v);
 
-int GetTrainStopLocation(StationID station_id, TileIndex tile, const Train *v, int *station_ahead, int *station_length);
 void CheckBreakdownFlags(Train *v);
 void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
@@ -104,9 +106,10 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	/* Link between the two ends of a multiheaded engine */
 	Train *other_multiheaded_part;
 
+	uint32 flags;
+
 	uint16 crash_anim_pos; ///< Crash animation counter.
 
-	uint16 flags;
 	TrackBitsByte track;
 	TrainForceProceedingByte force_proceed;
 	RailTypeByte railtype;
@@ -117,6 +120,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	uint16 wait_counter;
 
 	uint16 reverse_distance;
+	uint16 tunnel_bridge_signal_num;
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	Train() : GroundVehicleBase() {}
@@ -126,7 +130,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	friend struct GroundVehicle<Train, VEH_TRAIN>; // GroundVehicle needs to use the acceleration functions defined at Train.
 
 	void MarkDirty();
-	void UpdateDeltaXY(Direction direction);
+	void UpdateDeltaXY();
 	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_TRAIN_INC : EXPENSES_TRAIN_RUN; }
 	void PlayLeaveStationSound() const;
 	bool IsPrimaryVehicle() const { return this->IsFrontEngine(); }
@@ -202,6 +206,18 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 		 * length of the next vehicle but may not round the length of the current
 		 * vehicle. */
 		return this->gcache.cached_veh_length / 2 + (this->Next() != NULL ? this->Next()->gcache.cached_veh_length + 1 : 0) / 2;
+	}
+
+	const Train *GetStationLoadingVehicle() const
+	{
+		const Train *v = this->First();
+		while (v && HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) v = v->Next();
+		return v;
+	}
+
+	Train *GetStationLoadingVehicle()
+	{
+		return const_cast<Train *>(const_cast<const Train *>(this)->GetStationLoadingVehicle());
 	}
 
 protected: // These functions should not be called outside acceleration code.
@@ -388,6 +404,20 @@ CommandCost CmdMoveVirtualRailVehicle(TileIndex, DoCommandFlag, uint32, uint32, 
 
 Train* CmdBuildVirtualRailWagon(const Engine*);
 Train* CmdBuildVirtualRailVehicle(EngineID, bool lax_engine_check, StringID &error);
+
+int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos);
+
+inline int GetTileMarginInFrontOfTrain(const Train *v)
+{
+	return GetTileMarginInFrontOfTrain(v, v->x_pos, v->y_pos);
+}
+
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length, int x_pos, int y_pos);
+
+inline int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length)
+{
+	return GetTrainStopLocation(station_id, tile, v, station_ahead, station_length, v->x_pos, v->y_pos);
+}
 
 #define FOR_ALL_TRAINS(var) FOR_ALL_VEHICLES_OF_TYPE(Train, var)
 

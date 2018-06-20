@@ -484,10 +484,10 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 	while (_tbuset.Get(&tile, &trackdir)) {
 		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile)) {
 			if (IsTunnelBridgePBS(tile)) continue;
-			SignalState old_state = GetTunnelBridgeSignalState(tile);
+			SignalState old_state = GetTunnelBridgeExitSignalState(tile);
 			SignalState new_state = (info.flags & SF_TRAIN) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
 			if (old_state != new_state) {
-				SetTunnelBridgeSignalState(tile, new_state);
+				SetTunnelBridgeExitSignalState(tile, new_state);
 				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 			}
 			continue;
@@ -610,7 +610,8 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 					_tbdset.Add(tile, INVALID_DIAGDIR); // start from depot inside
 					break;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case MP_STATION:
 			case MP_ROAD:
 				if ((TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & _enterdir_to_trackbits[dir]) != TRACK_BIT_NONE) {
@@ -619,7 +620,8 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 					_tbdset.Add(tile + TileOffsByDiagDir(dir), ReverseDiagDir(dir));
 					break;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			default:
 				/* jump to next tile */
 				tile = tile + TileOffsByDiagDir(dir);

@@ -155,7 +155,6 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 		case MP_TUNNELBRIDGE:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && !GetTunnelBridgeReservationTrackBits(tile)) {
 				SetTunnelBridgeReservation(tile, true);
-				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeSignalState(tile, SIGNAL_STATE_GREEN);
 				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 				return true;
 			}
@@ -225,7 +224,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 		case MP_TUNNELBRIDGE:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 				SetTunnelBridgeReservation(tile, false);
-				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeSignalState(tile, SIGNAL_STATE_RED);
+				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
 				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 			}
 			break;
@@ -520,7 +519,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(ft.m_new_tile, TrackdirToTrack(td));
 				if (prog && prog->actions_used_flags & TRPAUF_RESERVE_THROUGH) {
 					TraceRestrictProgramResult out;
-					prog->Execute(v, TraceRestrictProgramInput(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, NULL), out);
+					prog->Execute(v, TraceRestrictProgramInput(ft.m_new_tile, td, &VehiclePosTraceRestrictPreviousSignalCallback, NULL), out);
 					if (out.flags & TRPRF_RESERVE_THROUGH) {
 						return false;
 					}
@@ -534,7 +533,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 			return include_line_end;
 		}
 		if (IsTileType(ft.m_new_tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(ft.m_new_tile) == TRANSPORT_RAIL &&
-				IsTunnelBridgeSignalSimulationExit(ft.m_new_tile) && IsTunnelBridgePBS(ft.m_new_tile)) {
+				IsTunnelBridgeSignalSimulationExitOnly(ft.m_new_tile) && IsTunnelBridgePBS(ft.m_new_tile)) {
 			return include_line_end;
 		}
 	}
@@ -551,7 +550,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
  * @param forbid_90deg Don't allow trains to make 90 degree turns
  * @return True if the position is free
  */
-bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg)
+bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg, PBSWaitingPositionRestrictedSignalInfo *restricted_signal_info)
 {
 	Track     track = TrackdirToTrack(trackdir);
 	TrackBits reserved = GetReservedTrackbits(tile);
@@ -561,8 +560,44 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 
 	/* Not reserved and depot or not a pbs signal -> free. */
 	if (IsRailDepotTile(tile)) return true;
-	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) return true;
-	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(tile)) return true;
+
+	auto pbs_res_end_wait_test = [v, restricted_signal_info](TileIndex t, Trackdir td) -> bool {
+		if (IsRestrictedSignal(t)) {
+			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(t, TrackdirToTrack(td));
+			if (restricted_signal_info && prog) {
+				restricted_signal_info->tile = t;
+				restricted_signal_info->trackdir = td;
+			}
+			if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
+				TraceRestrictProgramInput input(t, td, &VehiclePosTraceRestrictPreviousSignalCallback, NULL);
+				input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQ_DRY;
+				TraceRestrictProgramResult out;
+				prog->Execute(v, input, out);
+				if (out.flags & TRPRF_PBS_RES_END_WAIT) {
+					return false;
+				}
+			}
+		}
+		return true;
+	};
+
+	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) {
+		return pbs_res_end_wait_test(tile, trackdir);
+	}
+
+	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+		if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
+			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
+			if (HasTunnelBridgeReservation(other_end) && GetTunnelBridgeExitSignalState(other_end) == SIGNAL_STATE_RED) return false;
+			Direction dir = DiagDirToDir(GetTunnelBridgeDirection(other_end));
+			if (HasVehicleOnPos(other_end, &dir, [](Vehicle *v, void *data) -> Vehicle * {
+				if (v->type != VEH_TRAIN) return nullptr;
+				if (v->direction != *((Direction *) data)) return nullptr;
+				return v;
+			})) return false;
+		}
+		return true;
+	}
 
 	/* Check the next tile, if it's a PBS signal, it has to be free as well. */
 	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);
@@ -573,5 +608,15 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	ft.m_new_td_bits &= DiagdirReachesTrackdirs(ft.m_exitdir);
 	if (forbid_90deg) ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(trackdir);
 
-	return !HasReservedTracks(ft.m_new_tile, TrackdirBitsToTrackBits(ft.m_new_td_bits));
+	if (HasReservedTracks(ft.m_new_tile, TrackdirBitsToTrackBits(ft.m_new_td_bits))) return false;
+
+	if (ft.m_new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE) {
+		Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);
+		/* PBS signal on next trackdir? */
+		if (HasPbsSignalOnTrackdir(ft.m_new_tile, td)) {
+			return pbs_res_end_wait_test(ft.m_new_tile, td);
+		}
+	}
+
+	return true;
 }

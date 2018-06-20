@@ -328,7 +328,7 @@
 	if (v->breakdown_ctr != 0) return ScriptVehicle::VS_BROKEN;
 	if (v->IsStoppedInDepot()) return ScriptVehicle::VS_IN_DEPOT;
 	if (vehstatus & ::VS_STOPPED) return ScriptVehicle::VS_STOPPED;
-	if (v->current_order.IsType(OT_LOADING)) return ScriptVehicle::VS_AT_STATION;
+	if (v->current_order.IsAnyLoadingType()) return ScriptVehicle::VS_AT_STATION;
 	return ScriptVehicle::VS_RUNNING;
 }
 

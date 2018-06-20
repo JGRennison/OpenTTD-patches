@@ -248,25 +248,31 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 
 	this->Connect();
 
-	assert(cv->Length() < 255);
-	assert(cv->Length() < (SEND_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint8)) /
-			(sizeof(uint8) + sizeof(uint32) + (send_md5sum ? /*sizeof(ContentInfo::md5sum)*/16 : 0)));
+	const uint max_per_packet = min<uint>(255, (SEND_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint8)) /
+			(sizeof(uint8) + sizeof(uint32) + (send_md5sum ? /*sizeof(ContentInfo::md5sum)*/16 : 0))) - 1;
 
-	Packet *p = new Packet(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID);
-	p->Send_uint8(cv->Length());
+	uint offset = 0;
 
-	for (ContentIterator iter = cv->Begin(); iter != cv->End(); iter++) {
-		const ContentInfo *ci = *iter;
-		p->Send_uint8((byte)ci->type);
-		p->Send_uint32(ci->unique_id);
-		if (!send_md5sum) continue;
+	while (cv->Length() > offset) {
+		Packet *p = new Packet(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID);
+		const uint to_send = min<uint>(cv->Length() - offset, max_per_packet);
+		p->Send_uint8(to_send);
 
-		for (uint j = 0; j < sizeof(ci->md5sum); j++) {
-			p->Send_uint8(ci->md5sum[j]);
+		for (uint i = 0; i < to_send; i++) {
+			const ContentInfo *ci = (*cv)[offset + i];
+			p->Send_uint8((byte)ci->type);
+			p->Send_uint32(ci->unique_id);
+			if (!send_md5sum) continue;
+
+			for (uint j = 0; j < sizeof(ci->md5sum); j++) {
+				p->Send_uint8(ci->md5sum[j]);
+			}
 		}
-	}
 
-	this->SendPacket(p);
+		this->SendPacket(p);
+
+		offset += to_send;
+	}
 
 	for (ContentIterator iter = cv->Begin(); iter != cv->End(); iter++) {
 		ContentInfo *ci = *iter;

@@ -14,6 +14,7 @@
 #include "../../rev.h"
 #include "macos.h"
 #include "../../string_func.h"
+#include <pthread.h>
 
 #define Rect  OTTDRect
 #define Point OTTDPoint
@@ -21,11 +22,25 @@
 #undef Rect
 #undef Point
 
+#ifndef __clang__
+#define __bridge
+#endif
+
 /*
  * This file contains objective C
  * Apple uses objective C instead of plain C to interact with OS specific/native functions
  */
 
+
+#if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_10)
+typedef struct {
+	NSInteger majorVersion;
+	NSInteger minorVersion;
+	NSInteger patchVersion;
+} OTTDOperatingSystemVersion;
+
+#define NSOperatingSystemVersion OTTDOperatingSystemVersion
+#endif
 
 /**
  * Get the version of the MacOS we are running under. Code adopted
@@ -40,6 +55,19 @@ void GetMacOSVersion(int *return_major, int *return_minor, int *return_bugfix)
 	*return_major = -1;
 	*return_minor = -1;
 	*return_bugfix = -1;
+
+	if ([[ NSProcessInfo processInfo] respondsToSelector:@selector(operatingSystemVersion) ]) {
+		IMP sel = [ [ NSProcessInfo processInfo] methodForSelector:@selector(operatingSystemVersion) ];
+		NSOperatingSystemVersion ver = ((NSOperatingSystemVersion (*)(id, SEL))sel)([ NSProcessInfo processInfo], @selector(operatingSystemVersion));
+
+		*return_major = (int)ver.majorVersion;
+		*return_minor = (int)ver.minorVersion;
+		*return_bugfix = (int)ver.patchVersion;
+
+		return;
+	}
+
+#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_10)
 	SInt32 systemVersion, version_major, version_minor, version_bugfix;
 	if (Gestalt(gestaltSystemVersion, &systemVersion) == noErr) {
 		if (systemVersion >= 0x1040) {
@@ -52,6 +80,7 @@ void GetMacOSVersion(int *return_major, int *return_minor, int *return_bugfix)
 			*return_bugfix = (int)GB(systemVersion, 0, 4);
 		}
 	}
+#endif
 }
 
 #ifdef WITH_SDL
@@ -182,7 +211,7 @@ uint GetCPUCoreCount()
 	uint count = 1;
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
 	if (MacOSVersionIsAtLeast(10, 5, 0)) {
-		count = [ [ NSProcessInfo processInfo ] activeProcessorCount ];
+		count = (uint)[ [ NSProcessInfo processInfo ] activeProcessorCount ];
 	} else
 #endif
 	{
@@ -201,7 +230,25 @@ uint GetCPUCoreCount()
  */
 bool IsMonospaceFont(CFStringRef name)
 {
-	NSFont *font = [ NSFont fontWithName:(NSString *)name size:0.0f ];
+	NSFont *font = [ NSFont fontWithName:(__bridge NSString *)name size:0.0f ];
 
 	return font != NULL ? [ font isFixedPitch ] : false;
+}
+
+/**
+ * Set the name of the current thread for the debugger.
+ * @param name The new name of the current thread.
+ */
+void MacOSSetThreadName(const char *name)
+{
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+	if (MacOSVersionIsAtLeast(10, 6, 0)) {
+		pthread_setname_np(name);
+	}
+#endif
+
+	NSThread *cur = [ NSThread currentThread ];
+	if (cur != NULL && [ cur respondsToSelector:@selector(setName:) ]) {
+		[ cur performSelector:@selector(setName:) withObject:[ NSString stringWithUTF8String:name ] ];
+	}
 }

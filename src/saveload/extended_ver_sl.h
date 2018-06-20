@@ -23,6 +23,7 @@ enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
 	XSLFI_TRACE_RESTRICT,                         ///< Trace restrict
 	XSLFI_TRACE_RESTRICT_OWNER,                   ///< Trace restrict: train owner test
+	XSLFI_TRACE_RESTRICT_ORDRCND,                 ///< Trace restrict: slot conditional order
 	XSLFI_PROG_SIGS,                              ///< programmable signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings
@@ -51,6 +52,14 @@ enum SlXvFeatureIndex {
 	XSLFI_CUSTOM_BRIDGE_HEADS,                    ///< Custom bridge heads
 	XSLFI_CHUNNEL,                                ///< Tunnels under water (channel tunnel)
 	XSLFI_SCHEDULED_DISPATCH,                     ///< Scheduled vehicle dispatching
+	XSLFI_MORE_TOWN_GROWTH_RATES,                 ///< More town growth rates
+	XSLFI_MULTIPLE_DOCKS,                         ///< Multiple docks
+	XSLFI_TIMETABLE_EXTRA,                        ///< Vehicle timetable extra fields
+	XSLFI_TRAIN_FLAGS_EXTRA,                      ///< Train flags field extra size
+	XSLFI_TRAIN_THROUGH_LOAD,                     ///< Train through load/unload
+	XSLFI_ORDER_EXTRA_DATA,                       ///< Order extra data field(s)
+	XSLFI_WHOLE_MAP_CHUNK,                        ///< Whole map chunk
+	XSLFI_ST_LAST_VEH_TYPE,                       ///< Per-cargo station last vehicle type
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
@@ -76,11 +85,14 @@ enum SlXvFeatureTestOperator {
  * Structure to describe an extended feature version test, and how it combines with a traditional savegame version test
  */
 struct SlXvFeatureTest {
+	using TestFunctorPtr = bool (*)(uint16, bool);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
+
 	private:
 	uint16 min_version;
 	uint16 max_version;
 	SlXvFeatureIndex feature;
 	SlXvFeatureTestOperator op;
+	TestFunctorPtr functor = nullptr;
 
 	public:
 	SlXvFeatureTest()
@@ -88,6 +100,9 @@ struct SlXvFeatureTest {
 
 	SlXvFeatureTest(SlXvFeatureTestOperator op_, SlXvFeatureIndex feature_, uint16 min_version_ = 1, uint16 max_version_ = 0xFFFF)
 			: min_version(min_version_), max_version(max_version_), feature(feature_), op(op_) { }
+
+	SlXvFeatureTest(TestFunctorPtr functor_)
+			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR), functor(functor_) { }
 
 	bool IsFeaturePresent(uint16 savegame_version, uint16 savegame_version_from, uint16 savegame_version_to) const;
 };

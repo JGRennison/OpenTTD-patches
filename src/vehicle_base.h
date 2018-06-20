@@ -191,7 +191,7 @@ struct VehicleSpriteSeq {
 		}
 	}
 
-	void GetBounds(Rect *bounds) const;
+	Rect16 GetBounds() const;
 	void Draw(int x, int y, PaletteID default_pal, bool force_pal) const;
 };
 
@@ -288,6 +288,7 @@ public:
 	 */
 	byte spritenum;
 	VehicleSpriteSeq sprite_seq;        ///< Vehicle appearance.
+	Rect16 sprite_seq_bounds;
 	byte x_extent;                      ///< x-extent of vehicle bounding box
 	byte y_extent;                      ///< y-extent of vehicle bounding box
 	byte z_extent;                      ///< z-extent of vehicle bounding box
@@ -322,7 +323,7 @@ public:
 
 	byte day_counter;                   ///< Increased by one for each day
 	byte tick_counter;                  ///< Increased by one for each tick
-	byte running_ticks;                 ///< Number of ticks this vehicle was not stopped this day
+	uint16 running_ticks;               ///< Number of ticks this vehicle was not stopped this day
 
 	byte vehstatus;                     ///< Status
 
@@ -353,6 +354,7 @@ public:
 	void BeginLoading();
 	void CancelReservation(StationID next, Station *st);
 	void LeaveStation();
+	void AdvanceLoadingInStation();
 
 	GroundVehicleCache *GetGroundVehicleCache();
 	const GroundVehicleCache *GetGroundVehicleCache() const;
@@ -379,9 +381,8 @@ public:
 	/**
 	 * Updates the x and y offsets and the size of the sprite used
 	 * for this vehicle.
-	 * @param direction the direction the vehicle is facing
 	 */
-	virtual void UpdateDeltaXY(Direction direction) {}
+	virtual void UpdateDeltaXY() {}
 
 	/**
 	 * Determines the effective direction-specific vehicle movement speed.
@@ -571,7 +572,7 @@ public:
 	 * Gets the running cost of a vehicle  that can be sent into SetDParam for string processing.
 	 * @return the vehicle's running cost
 	 */
-	Money GetDisplayRunningCost() const { return (this->GetRunningCost() >> 8); }
+	Money GetDisplayRunningCost() const { return (this->GetRunningCost() >> 8) * _settings_game.economy.day_length_factor; }
 
 	/**
 	 * Gets the profit vehicle had this year. It can be sent into SetDParam for string processing.
@@ -855,8 +856,10 @@ private:
 				this->cur_real_order_index++;
 				if (this->cur_real_order_index >= this->GetNumOrders()) this->cur_real_order_index = 0;
 			} while (this->GetOrder(this->cur_real_order_index)->IsType(OT_IMPLICIT));
+			this->cur_timetable_order_index = this->cur_real_order_index;
 		} else {
 			this->cur_real_order_index = 0;
+			this->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
 		}
 	}
 
@@ -929,6 +932,16 @@ public:
 	inline Order *GetOrder(int index) const
 	{
 		return (this->orders.list == NULL) ? NULL : this->orders.list->GetOrderAt(index);
+	}
+
+	/**
+	 * Get the index of an order of the order chain, or INVALID_VEH_ORDER_ID.
+	 * @param order order to get the index of.
+	 * @return the position index of the given order, or INVALID_VEH_ORDER_ID.
+	 */
+	inline VehicleOrderID GetIndexOfOrder(const Order *order) const
+	{
+		return (this->orders.list == NULL) ? INVALID_VEH_ORDER_ID : this->orders.list->GetIndexOfOrder(order);
 	}
 
 	/**
@@ -1042,6 +1055,13 @@ public:
 	}
 
 	bool IsDrawn() const;
+
+	inline void UpdateSpriteSeqBound()
+	{
+		this->sprite_seq_bounds = this->sprite_seq.GetBounds();
+	}
+
+	char *DumpVehicleFlags(char *b, const char *last) const;
 };
 
 /**
@@ -1214,7 +1234,7 @@ struct SpecializedVehicle : public Vehicle {
 
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
-		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);
+		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
 		if (this->cur_image_valid_dir != this->direction) {
 			_sprite_group_resolve_check_veh_check = true;
 			_sprite_group_resolve_check_veh_type = EXPECTED_TYPE;
@@ -1224,6 +1244,7 @@ struct SpecializedVehicle : public Vehicle {
 			_sprite_group_resolve_check_veh_check = false;
 			if (force_update || this->sprite_seq != seq) {
 				this->sprite_seq = seq;
+				this->UpdateSpriteSeqBound();
 				this->Vehicle::UpdateViewport(true);
 			}
 		} else if (force_update) {

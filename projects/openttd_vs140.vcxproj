@@ -105,7 +105,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_XAUDIO2;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -152,8 +152,12 @@
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
     </Link>
     <Manifest>
+      <AdditionalManifestFiles>os_versions.manifest</AdditionalManifestFiles>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)..\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -166,7 +170,7 @@
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_XAUDIO2;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -202,8 +206,12 @@
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
     </Link>
     <Manifest>
+      <AdditionalManifestFiles>os_versions.manifest</AdditionalManifestFiles>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)..\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -220,7 +228,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_XAUDIO2;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -264,8 +272,12 @@
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
     </Link>
     <Manifest>
+      <AdditionalManifestFiles>os_versions.manifest</AdditionalManifestFiles>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)..\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -279,7 +291,7 @@
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_XAUDIO2;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -316,8 +328,12 @@
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
     </Link>
     <Manifest>
+      <AdditionalManifestFiles>os_versions.manifest</AdditionalManifestFiles>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(OutDir)$(TargetName)$(TargetExt)" "$(SolutionDir)..\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tbtr_template_gui_main.cpp" />
@@ -350,6 +366,7 @@
     <ClCompile Include="..\src\departures.cpp" />
     <ClCompile Include="..\src\depot.cpp" />
     <ClCompile Include="..\src\disaster_vehicle.cpp" />
+    <ClCompile Include="..\src\dock.cpp" />
     <ClCompile Include="..\src\driver.cpp" />
     <ClCompile Include="..\src\economy.cpp" />
     <ClCompile Include="..\src\effectvehicle.cpp" />
@@ -486,6 +503,7 @@
     <ClInclude Include="..\src\direction_type.h" />
     <ClInclude Include="..\src\disaster_vehicle.h" />
     <ClInclude Include="..\src\music\dmusic.h" />
+    <ClInclude Include="..\src\dock_base.h" />
     <ClInclude Include="..\src\driver.h" />
     <ClInclude Include="..\src\economy_base.h" />
     <ClInclude Include="..\src\economy_func.h" />
@@ -592,6 +610,8 @@
     <ClInclude Include="..\src\news_func.h" />
     <ClInclude Include="..\src\news_gui.h" />
     <ClInclude Include="..\src\news_type.h" />
+    <ClInclude Include="..\src\music\midi.h" />
+    <ClInclude Include="..\src\music\midifile.hpp" />
     <ClInclude Include="..\src\music\null_m.h" />
     <ClInclude Include="..\src\sound\null_s.h" />
     <ClInclude Include="..\src\video\null_v.h" />
@@ -627,6 +647,7 @@
     <ClInclude Include="..\src\sdl.h" />
     <ClInclude Include="..\src\sound\sdl_s.h" />
     <ClInclude Include="..\src\video\sdl_v.h" />
+    <ClInclude Include="..\src\schdispatch.h" />
     <ClInclude Include="..\src\settings_func.h" />
     <ClInclude Include="..\src\settings_gui.h" />
     <ClInclude Include="..\src\settings_internal.h" />
@@ -658,6 +679,7 @@
     <ClInclude Include="..\src\strgen\strgen.h" />
     <ClInclude Include="..\src\string_base.h" />
     <ClInclude Include="..\src\string_func.h" />
+    <ClInclude Include="..\src\string_func_extra.h" />
     <ClInclude Include="..\src\string_type.h" />
     <ClInclude Include="..\src\stringfilter_type.h" />
     <ClInclude Include="..\src\strings_func.h" />
@@ -715,6 +737,7 @@
     <ClInclude Include="..\src\window_func.h" />
     <ClInclude Include="..\src\window_gui.h" />
     <ClInclude Include="..\src\window_type.h" />
+    <ClInclude Include="..\src\sound\xaudio2_s.h" />
     <ClInclude Include="..\src\zoom_func.h" />
     <ClInclude Include="..\src\zoom_type.h" />
     <ClInclude Include="..\src\zoning.h" />
@@ -788,6 +811,7 @@
     <ClCompile Include="..\src\rail_gui.cpp" />
     <ClCompile Include="..\src\road_gui.cpp" />
     <ClCompile Include="..\src\roadveh_gui.cpp" />
+    <ClCompile Include="..\src\schdispatch_gui.cpp" />
     <ClCompile Include="..\src\settings_gui.cpp" />
     <ClCompile Include="..\src\ship_gui.cpp" />
     <ClCompile Include="..\src\signs_gui.cpp" />
@@ -881,6 +905,7 @@
     <ClCompile Include="..\src\rail_cmd.cpp" />
     <ClCompile Include="..\src\road_cmd.cpp" />
     <ClCompile Include="..\src\roadveh_cmd.cpp" />
+    <ClCompile Include="..\src\schdispatch_cmd.cpp" />
     <ClCompile Include="..\src\ship_cmd.cpp" />
     <ClCompile Include="..\src\signs_cmd.cpp" />
     <ClCompile Include="..\src\station_cmd.cpp" />
@@ -928,6 +953,7 @@
     <ClInclude Include="..\src\saveload\saveload.h" />
     <ClInclude Include="..\src\saveload\saveload_filter.h" />
     <ClInclude Include="..\src\saveload\saveload_internal.h" />
+    <ClInclude Include="..\src\saveload\saveload_buffer.h" />
     <ClCompile Include="..\src\saveload\signs_sl.cpp" />
     <ClCompile Include="..\src\saveload\station_sl.cpp" />
     <ClCompile Include="..\src\saveload\storage_sl.cpp" />
@@ -1074,6 +1100,8 @@
     <ClInclude Include="..\src\script\api\script_cargo.hpp" />
     <ClInclude Include="..\src\script\api\script_cargolist.hpp" />
     <ClInclude Include="..\src\script\api\script_cargomonitor.hpp" />
+    <ClInclude Include="..\src\script\api\script_client.hpp" />
+    <ClInclude Include="..\src\script\api\script_clientlist.hpp" />
     <ClInclude Include="..\src\script\api\script_company.hpp" />
     <ClInclude Include="..\src\script\api\script_companymode.hpp" />
     <ClInclude Include="..\src\script\api\script_controller.hpp" />
@@ -1139,6 +1167,8 @@
     <ClCompile Include="..\src\script\api\script_cargo.cpp" />
     <ClCompile Include="..\src\script\api\script_cargolist.cpp" />
     <ClCompile Include="..\src\script\api\script_cargomonitor.cpp" />
+    <ClCompile Include="..\src\script\api\script_client.cpp" />
+    <ClCompile Include="..\src\script\api\script_clientlist.cpp" />
     <ClCompile Include="..\src\script\api\script_company.cpp" />
     <ClCompile Include="..\src\script\api\script_companymode.cpp" />
     <ClCompile Include="..\src\script\api\script_controller.cpp" />
@@ -1218,7 +1248,6 @@
     <ClInclude Include="..\src\blitter\8bpp_optimized.hpp" />
     <ClCompile Include="..\src\blitter\8bpp_simple.cpp" />
     <ClInclude Include="..\src\blitter\8bpp_simple.hpp" />
-    <ClCompile Include="..\src\blitter\base.cpp" />
     <ClInclude Include="..\src\blitter\base.hpp" />
     <ClInclude Include="..\src\blitter\factory.hpp" />
     <ClCompile Include="..\src\blitter\null.cpp" />
@@ -1341,10 +1370,12 @@
     <ClCompile Include="..\src\video\win32_v.cpp" />
     <ClCompile Include="..\src\music\dmusic.cpp" />
     <ClCompile Include="..\src\music\null_m.cpp" />
+    <ClCompile Include="..\src\music\midifile.cpp" />
     <ClCompile Include="..\src\music\win32_m.cpp" />
     <ClCompile Include="..\src\sound\null_s.cpp" />
     <ClCompile Include="..\src\sound\sdl_s.cpp" />
     <ClCompile Include="..\src\sound\win32_s.cpp" />
+    <ClCompile Include="..\src\sound\xaudio2_s.cpp" />
     <ClCompile Include="..\src\os\windows\crashlog_win.cpp" />
     <ResourceCompile Include="..\src\os\windows\ottdres.rc" />
     <ClCompile Include="..\src\os\windows\win32.cpp" />
@@ -1366,18 +1397,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />
-    <None Include="..\readme.txt" />
+    <None Include="..\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="langs_vs100.vcxproj">
+    <ProjectReference Include="langs_vs140.vcxproj">
       <Project>{0f066b23-18df-4284-8265-f4a5e7e3b966}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="strgen_vs100.vcxproj">
+    <ProjectReference Include="strgen_vs140.vcxproj">
       <Project>{a133a442-bd0a-4ade-b117-ad7545e4bdd1}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="version_vs100.vcxproj">
+    <ProjectReference Include="version_vs140.vcxproj">
       <Project>{1a2b3c5e-1c23-41a5-9c9b-acba2aa75fec}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

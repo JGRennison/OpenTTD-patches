@@ -12,10 +12,13 @@
 #include "../stdafx.h"
 #include "../vehicle_base.h"
 #include "../station_base.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
 
 #include "saveload.h"
 
 #include "../safeguards.h"
+
+extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 
 /**
  * Savegame conversion for cargopackets.
@@ -137,7 +140,42 @@ static void Load_CAPA()
 	}
 }
 
+/**
+ * Save cargo packet deferred payments.
+ */
+void Save_CPDP()
+{
+	SlSetLength(16 * _cargo_packet_deferred_payments.size());
+
+	for (auto &it : _cargo_packet_deferred_payments) {
+		SlWriteUint64(it.first);
+		SlWriteUint64(it.second);
+	}
+}
+
+/**
+ * Load cargo packet deferred payments.
+ */
+void Load_CPDP()
+{
+	uint count = SlGetFieldLength() / 16;
+	uint last_cargo_packet_id = (uint) -1;
+
+	for (uint i = 0; i < count; i++) {
+		uint64 k = SlReadUint64();
+		uint64 v = SlReadUint64();
+		_cargo_packet_deferred_payments[k] = v;
+		if (k >> 32 != last_cargo_packet_id) {
+			last_cargo_packet_id = k >> 32;
+			CargoPacket::Get(last_cargo_packet_id)->flags |= CargoPacket::CPF_HAS_DEFERRED_PAYMENT;
+		}
+	}
+}
+
+
+
 /** Chunk handlers related to cargo packets. */
 extern const ChunkHandler _cargopacket_chunk_handlers[] = {
-	{ 'CAPA', Save_CAPA, Load_CAPA, NULL, NULL, CH_ARRAY | CH_LAST},
+	{ 'CAPA', Save_CAPA, Load_CAPA, NULL, NULL, CH_ARRAY },
+	{ 'CPDP', Save_CPDP, Load_CPDP, NULL, NULL, CH_RIFF | CH_LAST },
 };

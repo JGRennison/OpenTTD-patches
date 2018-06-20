@@ -184,7 +184,8 @@ static int ParseIntList(const char *p, int *items, int maxitems)
 				/* Do not accept multiple commas between numbers */
 				if (!comma) return -1;
 				comma = false;
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case ' ':
 				p++;
 				break;
@@ -1061,6 +1062,24 @@ static bool DragSignalsDensityChanged(int32)
 	return true;
 }
 
+static bool ProgrammableSignalsShownChanged(int32)
+{
+	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
+
+	return true;
+}
+
+static bool VehListCargoFilterShownChanged(int32)
+{
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
+	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);
+	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
+	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
+
+	return true;
+}
+
 static bool TownFoundingChanged(int32 p1)
 {
 	if (_game_mode != GM_EDITOR && _settings_game.economy.found_town == TF_FORBIDDEN) {
@@ -1165,6 +1184,17 @@ static bool SimulatedWormholeSignalsChanged(int32 p1)
 	extern void AfterLoadCompanyStats();
 	AfterLoadCompanyStats();
 	MarkWholeScreenDirty();
+	return true;
+}
+
+static bool EnableSingleVehSharedOrderGuiChanged(int32)
+{
+	for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {
+		InvalidateWindowClassesData(GetWindowClassForVehicleType(type), 0);
+	}
+	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
+	InvalidateWindowClassesData(WC_VEHICLE_ORDERS, 0);
+
 	return true;
 }
 
@@ -1391,6 +1421,7 @@ static bool ImprovedBreakdownsSettingChanged(int32 p1)
 static bool DayLengthChanged(int32 p1)
 {
 	SetScaledTickVariables();
+	MarkWholeScreenDirty();
 	return true;
 }
 
@@ -1431,6 +1462,21 @@ static bool UpdateClientConfigValues(int32 p1)
 
 
 /* End - Callback Functions */
+
+/* Begin - GUI order callbacks */
+
+static int OrderTownGrowthRate(uint nth)
+{
+	if (nth == 0) {
+		return 0;
+	} else if (nth <= 2) {
+		return nth - 3;
+	} else {
+		return nth - 2;
+	}
+}
+
+/* End - GUI order callbacks */
 
 /**
  * Prepare for reading and old diff_custom by zero-ing the memory.

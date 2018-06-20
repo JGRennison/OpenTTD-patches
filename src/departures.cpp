@@ -61,7 +61,8 @@ static bool IsDeparture(const Order *order, StationID station) {
 			(StationID)order->GetDestination() == station &&
 			(order->GetLoadType() != OLFB_NO_LOAD ||
 			_settings_client.gui.departure_show_all_stops) &&
-			order->GetWaitTime() != 0);
+			(order->GetWaitTime() != 0 || order->IsWaitTimetabled()) &&
+			!(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
 }
 
 static bool IsVia(const Order *order, StationID station) {
@@ -77,7 +78,8 @@ static bool IsArrival(const Order *order, StationID station) {
 			(StationID)order->GetDestination() == station &&
 			(order->GetUnloadType() != OUFB_NO_UNLOAD ||
 			_settings_client.gui.departure_show_all_stops) &&
-			order->GetWaitTime() != 0);
+			(order->GetWaitTime() != 0 || order->IsWaitTimetabled()) &&
+			!(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
 }
 
 static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, uint *waiting_time, const DateTicksScaled date_only_scaled, const Vehicle *v, const Order *order, bool arrived_at_timing_point, schdispatch_cache_t &dept_schedule_last)
@@ -199,9 +201,11 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
  * @param show_vehicle_types the types of vehicles to include in the departure list
  * @param type the type of departures to get (departures or arrivals)
  * @param show_vehicles_via whether to include vehicles that have this station in their orders but do not stop at it
+ * @param show_pax whether to include passenger vehicles
+ * @param show_freight whether to include freight vehicles
  * @return a list of departures, which is empty if an error occurred
  */
-DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], DepartureType type, bool show_vehicles_via)
+DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], DepartureType type, bool show_vehicles_via, bool show_pax, bool show_freight)
 {
 	/* This function is the meat of the departure boards functionality. */
 	/* As an overview, it works by repeatedly considering the best possible next departure to show. */
@@ -212,6 +216,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 	/* The list of departures which will be returned as a result. */
 	SmallVector<Departure*, 32> *result = new SmallVector<Departure*, 32>();
+
+	if (!show_pax && !show_freight) return result;
 
 	/* A list of the next scheduled orders to be considered for inclusion in the departure list. */
 	SmallVector<OrderDate*, 32> next_orders;
@@ -249,25 +255,32 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 		/* Get the first order for each vehicle for the station we're interested in that doesn't have No Loading set. */
 		/* We find the least order while we're at it. */
 		for (const Vehicle **v = vehicles.Begin(); v != vehicles.End(); v++) {
-			if (_settings_client.gui.departure_only_passengers) {
+			if (show_pax != show_freight) {
 				bool carries_passengers = false;
 
 				const Vehicle *u = *v;
 				while (u != NULL) {
-					if (u->cargo_type == CT_PASSENGERS && u->cargo_cap > 0) {
+					if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
 						carries_passengers = true;
 						break;
 					}
 					u = u->Next();
 				}
 
-				if (carries_passengers == false) {
+				if (carries_passengers != show_pax) {
 					continue;
 				}
 			}
 
 			const Order *order = (*v)->GetOrder((*v)->cur_implicit_order_index % (*v)->GetNumOrders());
 			DateTicks start_date = date_fract_scaled - (*v)->current_order_time;
+			if ((*v)->cur_timetable_order_index != INVALID_VEH_ORDER_ID && (*v)->cur_timetable_order_index != (*v)->cur_real_order_index) {
+				/* vehicle is taking a conditional order branch, adjust start time to compensate */
+				const Order *real_current_order = (*v)->GetOrder((*v)->cur_real_order_index);
+				const Order *real_timetable_order = (*v)->GetOrder((*v)->cur_timetable_order_index);
+				assert(real_timetable_order->IsType(OT_CONDITIONAL));
+				start_date += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+			}
 			DepartureStatus status = D_TRAVELLING;
 			bool should_reset_lateness = false;
 			uint waiting_time = 0;
@@ -282,7 +295,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				status = D_CANCELLED;
 			}
 
-			if ((*v)->current_order.IsType(OT_LOADING)) {
+			if ((*v)->current_order.IsAnyLoadingType()) {
 				/* Account for the vehicle having reached the current order and being in the loading phase. */
 				status = D_ARRIVED;
 				start_date -= order->GetTravelTime() + (((*v)->lateness_counter < 0) ? (*v)->lateness_counter : 0);
@@ -368,7 +381,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 					}
 
 					/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
-					if (!should_reset_lateness && (*v)->lateness_counter < 0 && !(*v)->current_order.IsType(OT_LOADING)) {
+					if (!should_reset_lateness && (*v)->lateness_counter < 0 && !(*v)->current_order.IsAnyLoadingType()) {
 						od->expected_date -= (*v)->lateness_counter;
 					}
 

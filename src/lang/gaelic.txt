@@ -868,10 +868,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Tagh am 
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Toglaich prògram air thuaiream air/dheth
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Seall uinneag taghadh tracaichean ciùil
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Chaidh seata dhe cheòl às aonais òrain a thaghadh. Cha tèid òran sam bith a chluiche
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Taghadh prògram ciùil
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} “{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Clàr-amais nan traca
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Prògram - “{STRING}"
@@ -1539,8 +1536,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Dath na crutha-
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Uaine
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Dorch-uaine
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Purpaidh
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Comhair sgrolaidh chontrarra: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Giùlan nuair a thèid am mapa a sgroladh le putan deas na luchaige. Nuair a bhios seo air, gluaisidh an luchag am mapa
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Sgroladh mìn nam port-seallaidh: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Tagh mar a ghluaiseas am prìomh-shealladh gu ionad sònraichte. Ma tha seo dheth, thèid leum dhan ionad a chaidh a thaghadh sa bhad
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Seall gliocasan-sgrìn tomhais le innealan togail: {STRING}
@@ -1572,8 +1567,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+Briogad
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Briogadh
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Dheth
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Sgroladh le briogadh clì: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Cuir an comas gun tèid am mapa a sgroladh le slaodadh le putan clì na luchaige. Tha seo feumail gu h-àraidh nuair a chleachdas tu sgrìn-shuathaidh airson sgroladh
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Dùin an uinneag le briogadh deas: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Dùinidh seo uinneag le briogadh deas ’na broinn. Cuiridh e à comas an gliocas-sgrìn le briogadh deas!
 
@@ -2930,7 +2923,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Tìr a' chompan
 STR_ABOUT_OPENTTD                                               :{WHITE}Mu dheidhinn OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Còir-lethbhreac tùsail {COPYRIGHT} 1995 Chris Sawyer, a h-uile còir glèidhte
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD tionndadh {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 An sgioba OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 An sgioba OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Sàbhail an geama
@@ -3223,8 +3216,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Sluagh a
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Mòr-bhaile)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Sluagh: {ORANGE}{COMMA}{BLACK}  Taighean: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Taistealaich am mìos mu dheireadh: {ORANGE}{COMMA}{BLACK}  as motha: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Post am mìos mu dheireadh: {ORANGE}{COMMA}{BLACK}  as motha: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Carago a tha a dhìth ach am fàs am baile:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{RED}Feum air {ORANGE}{STRING}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{BLACK}Feum air {ORANGE}{STRING}{BLACK} sa gheamhradh
@@ -3355,8 +3346,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Na ghabh
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Seall liosta a' charago a thèid a ghabhail ris
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Gabhar ri: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Tha còirichean giùlain às-dùnach aig an stèisean seo sa bhaile seo.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{BLACK}Cheannaich {YELLOW}{COMPANY}{BLACK} còirichean giùlain às-dùnach sa bhaile seo.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Tha còirichean giùlain às-dùnach aig an stèisean seo sa bhaile seo.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{BLACK}Cheannaich {YELLOW}{COMPANY}{BLACK} còirichean giùlain às-dùnach sa bhaile seo.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Rangachaidhean
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Seall rangachaidhean nan stèiseanan
@@ -3537,11 +3528,9 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Feum air
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Feum air: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
-STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Feum air
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}a' feitheamh
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Feum air:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} a' feitheamh{STRING}
 
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Toradh: {YELLOW}{STRING}{STRING}

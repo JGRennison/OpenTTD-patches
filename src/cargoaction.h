@@ -13,6 +13,7 @@
 #define CARGOACTION_H
 
 #include "cargopacket.h"
+#include <vector>
 
 /**
  * Abstract action of removing cargo from a vehicle or a station.
@@ -140,7 +141,7 @@ public:
 	{
 		assert(this->max_move <= source->ActionCount(VehicleCargoList::MTA_TRANSFER));
 	}
-	bool operator()(CargoPacket *cp);
+	bool operator()(CargoPacket *cp, std::vector<CargoPacket *> &front_insert);
 };
 
 #endif /* CARGOACTION_H */

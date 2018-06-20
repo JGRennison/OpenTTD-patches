@@ -131,9 +131,9 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 
 	while (t) {
 		PaletteID pal = GetEnginePalette(t->engine_type, _current_company);
-		t->sprite_seq.Draw(offset + t->image_width / 2, ScaleGUITrad(11), pal, false);
+		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(11), pal, false);
 
-		offset += t->image_width;
+		offset += t->image_dimensions.GetDisplayImageWidth();
 		t = t->Next();
 	}
 
@@ -165,10 +165,8 @@ inline void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicl
 	tmp->weight = gcache->cached_weight;
 	tmp->max_te = gcache->cached_max_te / 1000;
 
-	tmp->spritenum = virt->spritenum;
-	virt->GetImage(DIR_W, EIT_PURCHASE, &tmp->sprite_seq);
-	Point *p = new Point();
-	tmp->image_width = virt->GetDisplayImageWidth(p);
+	virt->GetImage(DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
+	tmp->image_dimensions.SetFromTrain(virt);
 }
 
 // create a full TemplateVehicle based train according to a virtual train
@@ -227,6 +225,8 @@ TemplateVehicle* GetTemplateVehicleByGroupID(GroupID gid) {
  */
 bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle *tv, RailType type)
 {
+	if (type == INVALID_RAILTYPE) return true;
+
 	/* For standard rail engines, allow only those */
 	if (type == RAILTYPE_BEGIN || type == RAILTYPE_RAIL) {
 		while (tv) {
@@ -293,7 +293,7 @@ void NeutralizeStatus(Train *t)
 	DoCommand(0, t->index, 0, DC_EXEC, CMD_RENAME_VEHICLE, NULL);
 }
 
-bool TrainMatchesTemplate(const Train *t, TemplateVehicle *tv) {
+bool TrainMatchesTemplate(const Train *t, const TemplateVehicle *tv) {
 	while (t && tv) {
 		if (t->engine_type != tv->engine_type) {
 			return false;
@@ -308,7 +308,7 @@ bool TrainMatchesTemplate(const Train *t, TemplateVehicle *tv) {
 }
 
 
-bool TrainMatchesTemplateRefit(const Train *t, TemplateVehicle *tv)
+bool TrainMatchesTemplateRefit(const Train *t, const TemplateVehicle *tv)
 {
 	if (!tv->refit_as_template) {
 		return true;
@@ -346,7 +346,7 @@ void CopyWagonStatus(TemplateVehicle *from, Train *to)
 	to->cargo_subtype = from->cargo_subtype;
 }
 
-int NumTrainsNeedTemplateReplacement(GroupID g_id, TemplateVehicle *tv)
+int NumTrainsNeedTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
 {
 	int count = 0;
 	if (!tv) return count;

@@ -113,6 +113,7 @@ void DisasterVehicle::UpdateImage()
 	SpriteID img = this->image_override;
 	if (img == 0) img = _disaster_images[this->subtype][this->direction];
 	this->sprite_seq.Set(img);
+	this->UpdateSpriteSeqBound();
 }
 
 /**
@@ -164,7 +165,7 @@ DisasterVehicle::DisasterVehicle(int x, int y, Direction direction, DisasterSubT
 	this->direction = direction;
 	this->tile = TileVirtXY(x, y);
 	this->subtype = subtype;
-	this->UpdateDeltaXY(INVALID_DIR);
+	this->UpdateDeltaXY();
 	this->owner = OWNER_NONE;
 	this->image_override = 0;
 	this->current_order.Free();
@@ -905,7 +906,7 @@ static const Disaster _disasters[] = {
 	{Disaster_CoalMine_Init,        1950, 1985}, // coalmine
 };
 
-static void DoDisaster()
+void DoDisaster()
 {
 	byte buf[lengthof(_disasters)];
 
@@ -977,7 +978,7 @@ void ReleaseDisastersTargetingVehicle(VehicleID vehicle)
 	}
 }
 
-void DisasterVehicle::UpdateDeltaXY(Direction direction)
+void DisasterVehicle::UpdateDeltaXY()
 {
 	this->x_offs        = -1;
 	this->y_offs        = -1;

@@ -755,6 +755,7 @@ enum GameOptionsInvalidationData {
 };
 
 struct Window;
+struct WindowBase;
 
 /** Number to differentiate different windows of the same class */
 typedef int32 WindowNumber;

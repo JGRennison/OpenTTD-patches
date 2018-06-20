@@ -524,8 +524,8 @@ public:
 	NodeID AddNode(const Station *st);
 	void RemoveNode(NodeID id);
 
-	inline uint CalculateCostEstimate() const {
-		uint64_t size_squared = this->Size() * this->Size();
+	inline uint64 CalculateCostEstimate() const {
+		uint64 size_squared = this->Size() * this->Size();
 		return size_squared * FindLastBit(size_squared * size_squared); // N^2 * 4log_2(N)
 	}
 

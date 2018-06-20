@@ -325,15 +325,7 @@ bool FioCheckFileExists(const char *filename, Subdirectory subdir)
  */
 bool FileExists(const char *filename)
 {
-#if defined(WINCE)
-	/* There is always one platform that doesn't support basic commands... */
-	HANDLE hand = CreateFile(OTTD2FS(filename), 0, 0, NULL, OPEN_EXISTING, 0, NULL);
-	if (hand == INVALID_HANDLE_VALUE) return 1;
-	CloseHandle(hand);
-	return 0;
-#else
 	return access(OTTD2FS(filename), 0) == 0;
-#endif
 }
 
 /**
@@ -522,7 +514,7 @@ FILE *FioFOpenFile(const char *filename, const char *mode, Subdirectory subdir, 
 			case BASESET_DIR:
 				f = FioFOpenFile(filename, mode, OLD_GM_DIR, filesize);
 				if (f != NULL) break;
-				/* FALL THROUGH */
+				FALLTHROUGH;
 			case NEWGRF_DIR:
 				f = FioFOpenFile(filename, mode, OLD_DATA_DIR, filesize);
 				break;
@@ -540,11 +532,11 @@ FILE *FioFOpenFile(const char *filename, const char *mode, Subdirectory subdir, 
  * Create a directory with the given name
  * @param name the new name of the directory
  */
-static void FioCreateDirectory(const char *name)
+void FioCreateDirectory(const char *name)
 {
 	/* Ignore directory creation errors; they'll surface later on, and most
 	 * of the time they are 'directory already exists' errors anyhow. */
-#if defined(WIN32) || defined(WINCE)
+#if defined(WIN32)
 	CreateDirectory(OTTD2FS(name), NULL);
 #elif defined(OS2) && !defined(__INNOTEK_LIBC__)
 	mkdir(OTTD2FS(name));
@@ -582,32 +574,6 @@ bool AppendPathSeparator(char *buf, const char *last)
 	}
 
 	return true;
-}
-
-/**
- * Allocates and files a variable with the full path
- * based on the given directory.
- * @param dir the directory to base the path on
- * @return the malloced full path
- */
-char *BuildWithFullPath(const char *dir)
-{
-	char *dest = MallocT<char>(MAX_PATH);
-	char *last = dest + MAX_PATH - 1;
-	strecpy(dest, dir, last);
-
-	/* Check if absolute or relative path */
-	const char *s = strchr(dest, PATHSEPCHAR);
-
-	/* Add absolute path */
-	if (s == NULL || dest != s) {
-		if (getcwd(dest, MAX_PATH) == NULL) *dest = '\0';
-		AppendPathSeparator(dest, last);
-		strecat(dest, dir, last);
-	}
-	AppendPathSeparator(dest, last);
-
-	return dest;
 }
 
 /**
@@ -1014,14 +980,14 @@ bool ExtractTar(const char *tar_filename, Subdirectory subdir)
 	return true;
 }
 
-#if defined(WIN32) || defined(WINCE)
+#if defined(WIN32)
 /**
  * Determine the base (personal dir and game data dir) paths
  * @param exe the path from the current path to the executable
  * @note defined in the OS related files (os2.cpp, win32.cpp, unix.cpp etc)
  */
 extern void DetermineBasePaths(const char *exe);
-#else /* defined(WIN32) || defined(WINCE) */
+#else /* defined(WIN32) */
 
 /**
  * Changes the working directory to the path of the give executable.
@@ -1184,7 +1150,7 @@ extern void cocoaSetApplicationBundleDir();
 	_searchpaths[SP_APPLICATION_BUNDLE_DIR] = NULL;
 #endif
 }
-#endif /* defined(WIN32) || defined(WINCE) */
+#endif /* defined(WIN32) */
 
 const char *_personal_dir;
 
@@ -1477,7 +1443,7 @@ uint FileScanner::Scan(const char *extension, Subdirectory sd, bool tars, bool r
 	switch (sd) {
 		case BASESET_DIR:
 			num += this->Scan(extension, OLD_GM_DIR, tars, recursive);
-			/* FALL THROUGH */
+			FALLTHROUGH;
 		case NEWGRF_DIR:
 			num += this->Scan(extension, OLD_DATA_DIR, tars, recursive);
 			break;

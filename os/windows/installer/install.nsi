@@ -1,6 +1,6 @@
 # Version numbers to update
 !define APPV_MAJOR 1
-!define APPV_MINOR 8
+!define APPV_MINOR 9
 !define APPV_MAINT 0
 !define APPV_BUILD 0
 !define APPV_EXTRA "-beta1"
@@ -89,7 +89,7 @@ Page custom SelectCDEnter SelectCDExit ": TTD folder"
 !define MUI_FINISHPAGE_LINK "Visit the OpenTTD site for more information"
 !define MUI_FINISHPAGE_LINK_LOCATION "${APPURLLINK}"
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
-!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.md"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_WELCOMEFINISHPAGE_CUSTOMFUNCTION_INIT DisableBack
 
@@ -139,7 +139,7 @@ Section "!OpenTTD" Section1
 	; Copy the scripts
 	SetOutPath "$INSTDIR\scripts\"
 	File ${PATH_ROOT}bin\scripts\*.*
-	Push "$INSTDIR\scripts\readme.txt"
+	Push "$INSTDIR\scripts\README.md"
 	Call unix2dos
 
 	; Copy some documention files
@@ -158,8 +158,8 @@ Section "!OpenTTD" Section1
 	File ${PATH_ROOT}COPYING
 	Push "$INSTDIR\COPYING"
 	Call unix2dos
-	File ${PATH_ROOT}readme.txt
-	Push "$INSTDIR\readme.txt"
+	File ${PATH_ROOT}README.md
+	Push "$INSTDIR\README.md"
 	Call unix2dos
 	File ${PATH_ROOT}known-bugs.txt
 	Push "$INSTDIR\known-bugs.txt"
@@ -213,13 +213,13 @@ Section "!OpenTTD" Section1
 	CreateDirectory "$SMPROGRAMS\$SHORTCUTS"
 	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\OpenTTD.lnk" "$INSTDIR\openttd.exe"
 	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Uninstall.lnk" "$INSTDIR\uninstall.exe"
-	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Readme.lnk" "$INSTDIR\Readme.txt"
+	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Readme.lnk" "$INSTDIR\README.md"
 	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Changelog.lnk" "$INSTDIR\Changelog.txt"
 	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Known-bugs.lnk" "$INSTDIR\known-bugs.txt"
 	CreateDirectory "$SMPROGRAMS\$SHORTCUTS\Docs"
 	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Docs\Multiplayer.lnk" "$INSTDIR\docs\multiplayer.txt"
 	CreateDirectory "$SMPROGRAMS\$SHORTCUTS\Scripts"
-	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Scripts\Readme.lnk" "$INSTDIR\scripts\readme.txt"
+	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Scripts\Readme.lnk" "$INSTDIR\scripts\README.md"
 	!insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -304,6 +304,7 @@ Section /o "Copy data from Transport Tycoon Deluxe CD-ROM" Section2
 	; Let's copy the files with size approximation
 	SetOutPath "$INSTDIR\baseset"
 	CopyFiles "$CDDRIVE\gm\*.gm" "$INSTDIR\baseset\" 1028
+	CopyFiles "$CDDRIVE\gm.cat" "$INSTDIR\baseset\gm.cat" 415
 	CopyFiles "$CDDRIVE\sample.cat" "$INSTDIR\baseset\sample.cat" 1566
 	; Copy Windows files
 	CopyFiles "$CDDRIVE\trg1r.grf" "$INSTDIR\baseset\trg1r.grf" 2365
@@ -387,7 +388,7 @@ Section "Uninstall"
 
 	; Clean up OpenTTD dir
 	Delete "$INSTDIR\changelog.txt"
-	Delete "$INSTDIR\readme.txt"
+	Delete "$INSTDIR\README.md"
 	Delete "$INSTDIR\known-bugs.txt"
 	Delete "$INSTDIR\openttd.exe"
 	Delete "$INSTDIR\COPYING"
@@ -426,6 +427,8 @@ Section "Uninstall"
 	Delete "$INSTDIR\baseset\trgt.grf"
 	Delete "$INSTDIR\baseset\trgc.grf"
 	Delete "$INSTDIR\baseset\trgi.grf"
+	Delete "$INSTDIR\baseset\gm.cat"
+	Delete "$INSTDIR\baseset\gm-tto.cat"
 	Delete "$INSTDIR\baseset\*.gm"
 
 	Delete "$INSTDIR\data\sample.cat"
@@ -467,8 +470,10 @@ Section "Uninstall"
 
 	; Base sets for music
 	Delete "$INSTDIR\gm\orig_win.obm"
+	Delete "$INSTDIR\gm\orig_dos.obm"
 	Delete "$INSTDIR\gm\no_music.obm"
 	Delete "$INSTDIR\baseset\orig_win.obm"
+	Delete "$INSTDIR\baseset\orig_dos.obm"
 	Delete "$INSTDIR\baseset\no_music.obm"
 
 	; Remove remaining directories

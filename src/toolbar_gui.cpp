@@ -1495,7 +1495,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_ZOOM_IN,
 			WID_TN_ZOOM_OUT,
 			WID_TN_RAILS,
@@ -1527,7 +1527,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1561,7 +1561,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1597,7 +1597,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1656,7 +1656,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_MUSIC_SOUND,
 			WID_TN_MESSAGES,
 			WID_TN_HELP,
@@ -1674,7 +1674,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1715,7 +1715,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1767,7 +1767,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_ZOOM_IN,
 			WID_TN_ZOOM_OUT,
 			WID_TN_RAILS,
@@ -2014,7 +2014,7 @@ struct MainToolbarWindow : Window {
 		 * Since enabled state is the default, just disable when needed */
 		this->SetWidgetsDisabledState(_local_company == COMPANY_SPECTATOR, WID_TN_RAILS, WID_TN_ROADS, WID_TN_WATER, WID_TN_AIR, WID_TN_LANDSCAPE, WIDGET_LIST_END);
 		/* disable company list drop downs, if there are no companies */
-		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFTS, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFT, WIDGET_LIST_END);
 
 		this->SetWidgetDisabledState(WID_TN_GOAL, Goal::GetNumItems() == 0);
 		this->SetWidgetDisabledState(WID_TN_STORY, StoryPage::GetNumItems() == 0);

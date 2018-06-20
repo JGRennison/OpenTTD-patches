@@ -81,19 +81,20 @@ struct NullStruct {
 
 /** Type of reference (#SLE_REF, #SLE_CONDREF). */
 enum SLRefType {
-	REF_ORDER          =  0, ///< Load/save a reference to an order.
-	REF_VEHICLE        =  1, ///< Load/save a reference to a vehicle.
-	REF_STATION        =  2, ///< Load/save a reference to a station.
-	REF_TOWN           =  3, ///< Load/save a reference to a town.
-	REF_VEHICLE_OLD    =  4, ///< Load/save an old-style reference to a vehicle (for pre-4.4 savegames).
-	REF_ROADSTOPS      =  5, ///< Load/save a reference to a bus/truck stop.
-	REF_ENGINE_RENEWS  =  6, ///< Load/save a reference to an engine renewal (autoreplace).
-	REF_CARGO_PACKET   =  7, ///< Load/save a reference to a cargo packet.
-	REF_ORDERLIST      =  8, ///< Load/save a reference to an orderlist.
-	REF_STORAGE        =  9, ///< Load/save a reference to a persistent storage.
-	REF_LINK_GRAPH     = 10, ///< Load/save a reference to a link graph.
-	REF_LINK_GRAPH_JOB = 11, ///< Load/save a reference to a link graph job.
-	REF_TEMPLATE_VEHICLE = 12, ///< Load/save a reference to a template vehicle
+	REF_ORDER            =  0,	///< Load/save a reference to an order.
+	REF_VEHICLE          =  1,	///< Load/save a reference to a vehicle.
+	REF_STATION          =  2,	///< Load/save a reference to a station.
+	REF_TOWN             =  3,	///< Load/save a reference to a town.
+	REF_VEHICLE_OLD      =  4,	///< Load/save an old-style reference to a vehicle (for pre-4.4 savegames).
+	REF_ROADSTOPS        =  5,	///< Load/save a reference to a bus/truck stop.
+	REF_ENGINE_RENEWS    =  6,	///< Load/save a reference to an engine renewal (autoreplace).
+	REF_CARGO_PACKET     =  7,	///< Load/save a reference to a cargo packet.
+	REF_ORDERLIST        =  8,	///< Load/save a reference to an orderlist.
+	REF_STORAGE          =  9,	///< Load/save a reference to a persistent storage.
+	REF_LINK_GRAPH       = 10,	///< Load/save a reference to a link graph.
+	REF_LINK_GRAPH_JOB   = 11,	///< Load/save a reference to a link graph job.
+	REF_TEMPLATE_VEHICLE = 12,	///< Load/save a reference to a template vehicle
+	REF_DOCKS            = 13,	///< Load/save a reference to a dock.
 };
 
 /** Highest possible savegame version. */
@@ -693,52 +694,15 @@ size_t SlCalcObjLength(const void *object, const SaveLoad *sld);
 byte SlReadByte();
 void SlWriteByte(byte b);
 
-static inline int SlReadUint16()
-{
-	int x = SlReadByte() << 8;
-	return x | SlReadByte();
-}
+int SlReadUint16();
+uint32 SlReadUint32();
+uint64 SlReadUint64();
 
-static inline uint32 SlReadUint32()
-{
-	uint32 x = SlReadUint16() << 16;
-	return x | SlReadUint16();
-}
+void SlWriteUint16(uint16 v);
+void SlWriteUint32(uint32 v);
+void SlWriteUint64(uint64 v);
 
-static inline uint64 SlReadUint64()
-{
-	uint32 x = SlReadUint32();
-	uint32 y = SlReadUint32();
-	return (uint64)x << 32 | y;
-}
-
-static inline void SlWriteUint16(uint16 v)
-{
-	SlWriteByte(GB(v, 8, 8));
-	SlWriteByte(GB(v, 0, 8));
-}
-
-static inline void SlWriteUint32(uint32 v)
-{
-	SlWriteUint16(GB(v, 16, 16));
-	SlWriteUint16(GB(v,  0, 16));
-}
-
-static inline void SlWriteUint64(uint64 x)
-{
-	SlWriteUint32((uint32)(x >> 32));
-	SlWriteUint32((uint32)x);
-}
-
-/**
- * Read in bytes from the file/data structure but don't do
- * anything with them, discarding them in effect
- * @param length The amount of bytes that is being treated this way
- */
-static inline void SlSkipBytes(size_t length)
-{
-	for (; length != 0; length--) SlReadByte();
-}
+void SlSkipBytes(size_t length);
 
 size_t SlGetBytesRead();
 size_t SlGetBytesWritten();

@@ -22,10 +22,10 @@
 #include "string_func.h"
 #include "pathfinder/yapf/yapf_cache.h"
 
-#include "safeguards.h"
-
 #include <vector>
 #include <algorithm>
+
+#include "safeguards.h"
 
 /** @file
  *
@@ -198,7 +198,8 @@ static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
 		DestinationID condvalue = GetTraceRestrictValue(item);
 		switch (static_cast<TraceRestrictOrderCondAuxField>(GetTraceRestrictAuxField(item))) {
 			case TROCAF_STATION:
-				result = order->IsType(OT_GOTO_STATION) && order->GetDestination() == condvalue;
+				result = (order->IsType(OT_GOTO_STATION) || order->IsType(OT_LOADING_ADVANCE))
+						&& order->GetDestination() == condvalue;
 				break;
 
 			case TROCAF_WAYPOINT:
@@ -478,10 +479,26 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_WAIT_AT_PBS:
-						if (GetTraceRestrictValue(item)) {
-							out.flags &= ~TRPRF_WAIT_AT_PBS;
-						} else {
-							out.flags |= TRPRF_WAIT_AT_PBS;
+						switch (static_cast<TraceRestrictWaitAtPbsValueField>(GetTraceRestrictValue(item))) {
+							case TRWAPVF_WAIT_AT_PBS:
+								out.flags |= TRPRF_WAIT_AT_PBS;
+								break;
+
+							case TRWAPVF_CANCEL_WAIT_AT_PBS:
+								out.flags &= ~TRPRF_WAIT_AT_PBS;
+								break;
+
+							case TRWAPVF_PBS_RES_END_WAIT:
+								out.flags |= TRPRF_PBS_RES_END_WAIT;
+								break;
+
+							case TRWAPVF_CANCEL_PBS_RES_END_WAIT:
+								out.flags &= ~TRPRF_PBS_RES_END_WAIT;
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
 						}
 						break;
 
@@ -506,6 +523,22 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 							case TRSCOF_RELEASE_FRONT:
 								if (input.permitted_slot_operations & TRPISP_RELEASE_FRONT) slot->Vacate(v->index);
+								break;
+
+							case TRSCOF_PBS_RES_END_ACQ_WAIT:
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
+									if (!slot->Occupy(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
+								} else if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) {
+									if (!slot->OccupyDryRun(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
+								}
+								break;
+
+							case TRSCOF_PBS_RES_END_ACQ_TRY:
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) slot->Occupy(v->index);
+								break;
+
+							case TRSCOF_PBS_RES_END_RELEASE:
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_RELEASE) slot->Vacate(v->index);
 								break;
 
 							default:
@@ -628,7 +661,21 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					break;
 
 				case TRIT_WAIT_AT_PBS:
-					actions_used_flags |= TRPAUF_WAIT_AT_PBS;
+					switch (static_cast<TraceRestrictWaitAtPbsValueField>(GetTraceRestrictValue(item))) {
+						case TRWAPVF_WAIT_AT_PBS:
+						case TRWAPVF_CANCEL_WAIT_AT_PBS:
+							actions_used_flags |= TRPAUF_WAIT_AT_PBS;
+							break;
+
+						case TRWAPVF_PBS_RES_END_WAIT:
+						case TRWAPVF_CANCEL_PBS_RES_END_WAIT:
+							actions_used_flags |= TRPAUF_PBS_RES_END_WAIT;
+							break;
+
+						default:
+							NOT_REACHED();
+							break;
+					}
 					break;
 
 				case TRIT_SLOT:
@@ -647,6 +694,15 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 						case TRSCOF_RELEASE_FRONT:
 							actions_used_flags |= TRPAUF_SLOT_RELEASE_FRONT;
+							break;
+
+						case TRSCOF_PBS_RES_END_ACQ_WAIT:
+							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT | TRPAUF_PBS_RES_END_WAIT;
+							break;
+
+						case TRSCOF_PBS_RES_END_ACQ_TRY:
+						case TRSCOF_PBS_RES_END_RELEASE:
+							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
 							break;
 
 						default:
@@ -1473,6 +1529,18 @@ bool TraceRestrictSlot::Occupy(VehicleID id, bool force)
 }
 
 /**
+ * Dry-run adding vehicle ID to occupants if possible and not already an occupant
+ * @param id Vehicle ID
+ * @return whether vehicle IDwould be an occupant
+ */
+bool TraceRestrictSlot::OccupyDryRun(VehicleID id)
+{
+	if (this->IsOccupant(id)) return true;
+	if (this->occupants.size() >= this->max_occupancy) return false;
+	return true;
+}
+
+/**
  * Remove vehicle ID from occupants
  * @param id Vehicle ID
  */
@@ -1497,8 +1565,11 @@ void TraceRestrictSlot::DeIndex(VehicleID id)
 	auto range = slot_vehicle_index.equal_range(id);
 	for (auto it = range.first; it != range.second; ++it) {
 		if (it->second == this->index) {
+			bool is_first_in_range = (it == range.first);
+
 			auto next = slot_vehicle_index.erase(it);
-			if (it == range.first && next == range.second) {
+
+			if (is_first_in_range && next == range.second) {
 				/* Only one item, which we've just erased, clear the vehicle flag */
 				ClrBit(Train::Get(id)->flags, VRF_HAVE_SLOT);
 			}
@@ -1572,6 +1643,7 @@ void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID>
 /**
  * This is called when a slot is about to be deleted
  * Scan program pool and change any references to it to the invalid group ID, to avoid dangling references
+ * Scan order list and change any references to it to the invalid group ID, to avoid dangling slot condition references
  */
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 {
@@ -1590,8 +1662,21 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 		}
 	}
 
+	bool changed_order = false;
+	Order *o;
+	FOR_ALL_ORDERS(o) {
+		if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_SLOT_OCCUPANCY && o->GetXData() == index) {
+			o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
+			changed_order = true;
+		}
+	}
+
 	// update windows
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	if (changed_order) {
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+		InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE);
+	}
 }
 
 static bool IsUniqueSlotName(const char *name)
@@ -1658,6 +1743,7 @@ CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
 	}
 
 	return CommandCost();
@@ -1704,6 +1790,7 @@ CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint3
 		// update windows
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
 	}
 
 	return CommandCost();

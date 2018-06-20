@@ -40,6 +40,7 @@ public:
 	/* virtual */ void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom);
 	/* virtual */ void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal);
 	/* virtual */ void SetPixel(void *video, int x, int y, uint8 colour);
+	/* virtual */ void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash);
 	/* virtual */ void SetLine(void *video, int x, int y, uint8 *colours, uint width);
 	/* virtual */ void SetLine32(void *video, int x, int y, uint32 *colours, uint width);
 	/* virtual */ void DrawRect(void *video, int width, int height, uint8 colour);
@@ -71,7 +72,7 @@ public:
 		return across + (lines * this->anim_buf_pitch);
 	}
 
-	template <BlitterMode mode> void Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom);
+	template <BlitterMode mode, bool no_anim_translucent> void Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom);
 };
 
 /** Factory for the 32bpp blitter with animation. */

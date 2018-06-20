@@ -27,6 +27,7 @@
 #include "../gfx_func.h"
 #include "../error.h"
 #include "../rev.h"
+#include "../fios.h"
 #include "network.h"
 #include "network_base.h"
 #include "network_client.h"
@@ -117,6 +118,19 @@ struct PacketReader : LoadFilter {
 		this->bufe  = this->buf + CHUNK;
 	}
 };
+
+
+/**
+ * Create an emergency savegame when the network connection is lost.
+ */
+void ClientNetworkEmergencySave()
+{
+	if (!_settings_client.gui.autosave_on_network_disconnect) return;
+
+	const char *filename = "netsave.sav";
+	DEBUG(net, 0, "Client: Performing emergency save (%s)", filename);
+	SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
+}
 
 
 /**
@@ -675,6 +689,9 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_ERROR(Packet *p
 
 	ShowErrorMessage(err, INVALID_STRING_ID, WL_CRITICAL);
 
+	/* Perform an emergency save if we had already entered the game */
+	if (this->status == STATUS_ACTIVE) ClientNetworkEmergencySave();
+
 	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_SERVER_ERROR;
@@ -684,7 +701,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHECK_NEWGRFS(P
 {
 	if (this->status != STATUS_JOIN) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
-	uint grf_count = p->Recv_uint8();
+	uint grf_count = p->Recv_uint32();
+	if (grf_count > MAX_NEWGRFS) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	NetworkRecvStatus ret = NETWORK_RECV_STATUS_OKAY;
 
 	/* Check all GRFs */
@@ -971,7 +989,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHAT(Packet *p)
 			/* For speaking to company or giving money, we need the company-name */
 			case NETWORK_ACTION_GIVE_MONEY:
 				if (!Company::IsValidID(ci_to->client_playas)) return NETWORK_RECV_STATUS_OKAY;
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case NETWORK_ACTION_CHAT_COMPANY: {
 				StringID str = Company::IsValidID(ci_to->client_playas) ? STR_COMPANY_NAME : STR_NETWORK_SPECTATORS;
 				SetDParam(0, ci_to->client_playas);
@@ -1056,6 +1075,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_SHUTDOWN(Packet
 		ShowErrorMessage(STR_NETWORK_MESSAGE_SERVER_SHUTDOWN, INVALID_STRING_ID, WL_CRITICAL);
 	}
 
+	if (this->status == STATUS_ACTIVE) ClientNetworkEmergencySave();
+
 	return NETWORK_RECV_STATUS_SERVER_ERROR;
 }
 
@@ -1070,6 +1091,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_NEWGAME(Packet 
 		_network_reconnect = _network_own_client_id % 16;
 		ShowErrorMessage(STR_NETWORK_MESSAGE_SERVER_REBOOT, INVALID_STRING_ID, WL_CRITICAL);
 	}
+
+	if (this->status == STATUS_ACTIVE) ClientNetworkEmergencySave();
 
 	return NETWORK_RECV_STATUS_SERVER_ERROR;
 }
@@ -1158,6 +1181,7 @@ void ClientNetworkGameSocketHandler::CheckConnection()
 	if (lag > 20) {
 		this->NetworkGameSocketHandler::CloseConnection();
 		ShowErrorMessage(STR_NETWORK_ERROR_LOSTCONNECTION, INVALID_STRING_ID, WL_CRITICAL);
+		ClientNetworkEmergencySave();
 		return;
 	}
 

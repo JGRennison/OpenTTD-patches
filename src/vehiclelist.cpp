@@ -200,6 +200,12 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 			break;
 		}
 
+		case VL_SINGLE_VEH: {
+			v = Vehicle::GetIfValid(vli.index);
+			if (v != NULL) *list->Append() = v;
+			break;
+		}
+
 		default: return false;
 	}
 

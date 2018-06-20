@@ -529,7 +529,7 @@ const StringID _engine_sort_listing[][12] = {{
 static bool CDECL CargoFilter(const EngineID *eid, const CargoID cid)
 {
 	if (cid == CF_ANY) return true;
-	uint32 refit_mask = GetUnionOfArticulatedRefitMasks(*eid, true) & _standard_cargo_mask;
+	CargoTypes refit_mask = GetUnionOfArticulatedRefitMasks(*eid, true) & _standard_cargo_mask;
 	return (cid == CF_NONE ? refit_mask == 0 : HasBit(refit_mask, cid));
 }
 
@@ -540,7 +540,7 @@ static GUIEngineList::FilterFunction * const _filter_funcs[] = {
 static int DrawCargoCapacityInfo(int left, int right, int y, EngineID engine)
 {
 	CargoArray cap;
-	uint32 refits;
+	CargoTypes refits;
 	GetArticulatedVehicleCargoesAndRefits(engine, &cap, &refits);
 
 	for (CargoID c = 0; c < NUM_CARGO; c++) {
@@ -586,7 +586,7 @@ static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine
 
 	/* Running cost */
 	if (rvi->running_cost_class != INVALID_PRICE) {
-		SetDParam(0, e->GetRunningCost());
+		SetDParam(0, e->GetDisplayRunningCost());
 		DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 		y += FONT_HEIGHT_NORMAL;
 	}
@@ -620,7 +620,7 @@ static int DrawRailEnginePurchaseInfo(int left, int right, int y, EngineID engin
 
 	/* Running cost */
 	if (rvi->running_cost_class != INVALID_PRICE) {
-		SetDParam(0, e->GetRunningCost());
+		SetDParam(0, e->GetDisplayRunningCost());
 		DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 		y += FONT_HEIGHT_NORMAL;
 	}
@@ -674,7 +674,7 @@ static int DrawRoadVehPurchaseInfo(int left, int right, int y, EngineID engine_n
 	}
 
 	/* Running cost */
-	SetDParam(0, e->GetRunningCost());
+	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 	y += FONT_HEIGHT_NORMAL;
 
@@ -717,7 +717,7 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 	y += FONT_HEIGHT_NORMAL;
 
 	/* Running cost */
-	SetDParam(0, e->GetRunningCost());
+	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 	y += FONT_HEIGHT_NORMAL;
 
@@ -764,7 +764,7 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
 	y += FONT_HEIGHT_NORMAL;
 
 	/* Running cost */
-	SetDParam(0, e->GetRunningCost());
+	SetDParam(0, e->GetDisplayRunningCost());
 	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
 	y += FONT_HEIGHT_NORMAL;
 

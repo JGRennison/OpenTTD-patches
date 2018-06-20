@@ -96,6 +96,9 @@
 #include "linkgraph/linkgraph_gui.h"
 #include "viewport_sprite_sorter.h"
 #include "bridge_map.h"
+#include "company_base.h"
+#include "command_func.h"
+#include "network/network_func.h"
 #include "depot_base.h"
 #include "tunnelbridge_map.h"
 #include "gui.h"
@@ -146,14 +149,6 @@ struct ChildScreenSpriteToDraw {
 	int next;                       ///< next child to draw (-1 at the end)
 };
 
-/** Enumeration of multi-part foundations */
-enum FoundationPart {
-	FOUNDATION_PART_NONE     = 0xFF,  ///< Neither foundation nor groundsprite drawn yet.
-	FOUNDATION_PART_NORMAL   = 0,     ///< First part (normal foundation or no foundation)
-	FOUNDATION_PART_HALFTILE = 1,     ///< Second part (halftile foundation)
-	FOUNDATION_PART_END
-};
-
 /**
  * Mode of "sprite combining"
  * @see StartSpriteCombine
@@ -194,7 +189,7 @@ struct LineSnapPoint : Point {
 typedef SmallVector<LineSnapPoint, 4> LineSnapPoints; ///< Set of snapping points
 
 /** Coordinates of a polyline track made of 2 connected line segments. */
-struct Polyline {
+struct PolylineInfo {
 	Point start;           ///< The point where the first segment starts (as given in LineSnapPoint).
 	Direction first_dir;   ///< Direction of the first line segment.
 	uint first_len;        ///< Length of the first segment - number of track pieces.
@@ -300,7 +295,7 @@ void DeleteWindowViewport(Window *w)
 
 	container_unordered_remove(_viewport_window_cache, w->viewport);
 	delete w->viewport->overlay;
-	free(w->viewport);
+	delete w->viewport;
 	w->viewport = NULL;
 }
 
@@ -321,8 +316,9 @@ void InitializeWindowViewport(Window *w, int x, int y,
 {
 	assert(w->viewport == NULL);
 
-	ViewportData *vp = CallocT<ViewportData>(1);
+	ViewportData *vp = new ViewportData();
 
+	vp->overlay = NULL;
 	vp->left = x + w->left;
 	vp->top = y + w->top;
 	vp->width = width;
@@ -330,8 +326,12 @@ void InitializeWindowViewport(Window *w, int x, int y,
 
 	vp->zoom = static_cast<ZoomLevel>(Clamp(zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
 
+	vp->virtual_left = 0;
+	vp->virtual_top = 0;
 	vp->virtual_width = ScaleByZoom(width, zoom);
 	vp->virtual_height = ScaleByZoom(height, zoom);
+
+	vp->map_type = VPMT_BEGIN;
 
 	Point pt;
 
@@ -356,11 +356,7 @@ void InitializeWindowViewport(Window *w, int x, int y,
 	vp->dest_scrollpos_x = pt.x;
 	vp->dest_scrollpos_y = pt.y;
 
-	vp->overlay = NULL;
-
 	w->viewport = vp;
-	vp->virtual_left = 0; // pt.x;
-	vp->virtual_top = 0;  // pt.y;
 	_viewport_window_cache.push_back(vp);
 }
 
@@ -368,6 +364,8 @@ static Point _vp_move_offs;
 
 static void DoSetViewportPosition(const Window *w, int left, int top, int width, int height)
 {
+	IncrementWindowUpdateNumber();
+
 	FOR_ALL_WINDOWS_FROM_BACK_FROM(w, w) {
 		if (left + width > w->left &&
 				w->left + w->width > left &&
@@ -431,7 +429,7 @@ static void DoSetViewportPosition(const Window *w, int left, int top, int width,
 	}
 }
 
-static void SetViewportPosition(Window *w, int x, int y)
+static void SetViewportPosition(Window *w, int x, int y, bool force_update_overlay)
 {
 	ViewPort *vp = w->viewport;
 	int old_left = vp->virtual_left;
@@ -441,6 +439,8 @@ static void SetViewportPosition(Window *w, int x, int y)
 
 	vp->virtual_left = x;
 	vp->virtual_top = y;
+
+	if (force_update_overlay || IsViewportOverlayOutsideCachedRegion(w)) RebuildViewportOverlay(w, true);
 
 	/* Viewport is bound to its left top corner, so it must be rounded down (UnScaleByZoomLower)
 	 * else glitch described in FS#1412 will happen (offset by 1 pixel with zoom level > NORMAL)
@@ -480,7 +480,7 @@ static void SetViewportPosition(Window *w, int x, int y)
 		i = top + height - _screen.height;
 		if (i >= 0) height -= i;
 
-		if (height > 0) DoSetViewportPosition(w->z_front, left, top, width, height);
+		if (height > 0) DoSetViewportPosition((const Window *) w->z_front, left, top, width, height);
 	}
 }
 
@@ -1009,16 +1009,17 @@ static void AddStringToDraw(int x, int y, StringID string, uint64 params_1, uint
  * @param ti TileInfo Tile that is being drawn
  * @param z_offset Z offset relative to the groundsprite. Only used for the sprite position, not for sprite sorting.
  * @param foundation_part Foundation part the sprite belongs to.
+ * @param sub Sub-section of sprite to draw.
  */
-static void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part)
+void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, const SubSprite *sub)
 {
 	/* FIXME: This is not totally valid for some autorail highlights that extend over the edges of the tile. */
 	if (_vd.foundation[foundation_part] == -1) {
 		/* draw on real ground */
-		AddTileSpriteToDraw(image, pal, ti->x, ti->y, ti->z + z_offset);
+		AddTileSpriteToDraw(image, pal, ti->x, ti->y, ti->z + z_offset, sub);
 	} else {
 		/* draw on top of foundation */
-		AddChildSpriteToFoundation(image, pal, NULL, foundation_part, 0, -z_offset * ZOOM_LVL_BASE);
+		AddChildSpriteToFoundation(image, pal, sub, foundation_part, 0, -z_offset * ZOOM_LVL_BASE);
 	}
 }
 
@@ -1028,7 +1029,7 @@ static void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *t
  * @param ti TileInfo Tile that is being drawn
  * @param pal Palette to apply.
  */
-static void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal)
+void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal)
 {
 	if (!IsValidTile(ti->tile)) return;
 
@@ -1758,8 +1759,26 @@ static inline TileIndex GetLastValidOrderLocation(const Vehicle *veh)
 
 static inline Order *GetFinalOrder(const Vehicle *veh, Order *order)
 {
-	while (order->IsType(OT_CONDITIONAL))
+	// Use Floyd's cycle-finding algorithm to prevent endless loop
+	// due to a cycle formed by confitional orders.
+	auto cycle_check = order;
+
+	while (order->IsType(OT_CONDITIONAL)) {
 		order = veh->GetOrder(order->GetConditionSkipToOrder());
+
+		if (cycle_check->IsType(OT_CONDITIONAL)) {
+			cycle_check = veh->GetOrder(cycle_check->GetConditionSkipToOrder());
+
+			if (cycle_check->IsType(OT_CONDITIONAL)) {
+				cycle_check = veh->GetOrder(cycle_check->GetConditionSkipToOrder());
+			}
+		}
+
+		bool cycle_detected = (order->IsType(OT_CONDITIONAL) && (order == cycle_check));
+
+		if (cycle_detected) return nullptr;
+	}
+
 	return order;
 }
 
@@ -1774,6 +1793,7 @@ static bool ViewportMapPrepareVehicleRoute(const Vehicle * const veh)
 		Order *order;
 		FOR_VEHICLE_ORDERS(veh, order) {
 			Order *final_order = GetFinalOrder(veh, order);
+			if (final_order == nullptr) continue;
 			const TileIndex to_tile = final_order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
 			if (to_tile == INVALID_TILE) continue;
 
@@ -2616,7 +2636,7 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 
 /**
  * Make sure we don't draw a too big area at a time.
- * If we do, the sprite memory will overflow.
+ * If we do, the sprite sorter will run into major performance problems and the sprite memory may overflow.
  */
 static void ViewportDrawChk(const ViewPort *vp, int left, int top, int right, int bottom)
 {
@@ -2805,7 +2825,7 @@ void UpdateViewportPosition(Window *w)
 
 		w->viewport->scrollpos_x = pt.x;
 		w->viewport->scrollpos_y = pt.y;
-		SetViewportPosition(w, pt.x, pt.y);
+		SetViewportPosition(w, pt.x, pt.y, false);
 	} else {
 		/* Ensure the destination location is within the map */
 		ClampViewportToMap(vp, w->viewport->dest_scrollpos_x, w->viewport->dest_scrollpos_y);
@@ -2830,24 +2850,53 @@ void UpdateViewportPosition(Window *w)
 
 		ClampViewportToMap(vp, w->viewport->scrollpos_x, w->viewport->scrollpos_y);
 
-		if (_scrolling_viewport == w && _settings_client.gui.show_scrolling_viewport_on_map) {
-			const int gap = ScaleByZoom(1, ZOOM_LVL_MAX);
+		if (_scrolling_viewport == w) UpdateActiveScrollingViewport(w);
 
-			int lr_low = vp->virtual_left;
-			int lr_hi = w->viewport->scrollpos_x;
-			if (lr_low > lr_hi) Swap(lr_low, lr_hi);
-			int right = lr_hi + vp->virtual_width + gap;
+		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y, update_overlay);
+	}
+}
 
-			int tb_low = vp->virtual_top;
-			int tb_hi = w->viewport->scrollpos_y;
-			if (tb_low > tb_hi) Swap(tb_low, tb_hi);
-			int bottom = tb_hi + vp->virtual_height + gap;
+void UpdateActiveScrollingViewport(Window *w)
+{
+	if (w && (!_settings_client.gui.show_scrolling_viewport_on_map || w->viewport->zoom >= ZOOM_LVL_DRAW_MAP)) w = nullptr;
 
-			MarkAllViewportMapsDirty(lr_low, tb_low, right, bottom);
-		}
+	const bool bound_valid = (_scrolling_viewport_bound.left != _scrolling_viewport_bound.right);
 
-		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y);
-		if (update_overlay) RebuildViewportOverlay(w);
+	if (!w && !bound_valid) return;
+
+	const int gap = ScaleByZoom(1, ZOOM_LVL_MAX);
+
+	auto get_bounds = [&gap](const ViewportData *vp) -> Rect {
+		int lr_low = vp->virtual_left;
+		int lr_hi = vp->dest_scrollpos_x;
+		if (lr_low > lr_hi) Swap(lr_low, lr_hi);
+		int right = lr_hi + vp->virtual_width + gap;
+
+		int tb_low = vp->virtual_top;
+		int tb_hi = vp->scrollpos_y;
+		if (tb_low > tb_hi) Swap(tb_low, tb_hi);
+		int bottom = tb_hi + vp->virtual_height + gap;
+
+		return { lr_low, tb_low, right, bottom };
+	};
+
+	if (w && !bound_valid) {
+		const Rect bounds = get_bounds(w->viewport);
+		MarkAllViewportMapsDirty(bounds.left, bounds.top, bounds.right, bounds.bottom);
+		_scrolling_viewport_bound = bounds;
+	} else if (!w && bound_valid) {
+		const Rect &bounds = _scrolling_viewport_bound;
+		MarkAllViewportMapsDirty(bounds.left, bounds.top, bounds.right, bounds.bottom);
+		_scrolling_viewport_bound = { 0, 0, 0, 0 };
+	} else {
+		/* Calculate symmetric difference of two rectangles */
+		const Rect a = get_bounds(w->viewport);
+		const Rect &b = _scrolling_viewport_bound;
+		if (a.left != b.left) MarkAllViewportMapsDirty(min(a.left, b.left) - gap, min(a.top, b.top) - gap, max(a.left, b.left) + gap, max(a.bottom, b.bottom) + gap);
+		if (a.top != b.top) MarkAllViewportMapsDirty(min(a.left, b.left) - gap, min(a.top, b.top) - gap, max(a.right, b.right) + gap, max(a.top, b.top) + gap);
+		if (a.right != b.right) MarkAllViewportMapsDirty(min(a.right, b.right) - (2 * gap), min(a.top, b.top) - gap, max(a.right, b.right) + gap, max(a.bottom, b.bottom) + gap);
+		if (a.bottom != b.bottom) MarkAllViewportMapsDirty(min(a.left, b.left) - gap, min(a.bottom, b.bottom) - (2 * gap), max(a.right, b.right) + gap, max(a.bottom, b.bottom) + gap);
+		_scrolling_viewport_bound = a;
 	}
 }
 
@@ -2868,9 +2917,11 @@ static void MarkViewportDirty(const ViewPort * const vp, int left, int top, int 
 
 	right -= vp->virtual_left;
 	if (right <= 0) return;
+	right = min(right, vp->virtual_width);
 
 	bottom -= vp->virtual_top;
 	if (bottom <= 0) return;
+	bottom = min(bottom, vp->virtual_height);
 
 	left = max(0, left - vp->virtual_left);
 
@@ -3388,13 +3439,24 @@ bool HandleViewportClicked(const ViewPort *vp, int x, int y, bool double_click)
 	return result;
 }
 
-void RebuildViewportOverlay(Window *w)
+void RebuildViewportOverlay(Window *w, bool incremental)
 {
 	if (w->viewport->overlay != NULL &&
 			w->viewport->overlay->GetCompanyMask() != 0 &&
 			w->viewport->overlay->GetCargoMask() != 0) {
-		w->viewport->overlay->RebuildCache();
-		w->SetDirty();
+		w->viewport->overlay->RebuildCache(incremental);
+		if (!incremental) w->SetDirty();
+	}
+}
+
+bool IsViewportOverlayOutsideCachedRegion(Window *w)
+{
+	if (w->viewport->overlay != NULL &&
+			w->viewport->overlay->GetCompanyMask() != 0 &&
+			w->viewport->overlay->GetCargoMask() != 0) {
+		return !w->viewport->overlay->CacheStillValid();
+	} else {
+		return false;
 	}
 }
 
@@ -3427,7 +3489,7 @@ bool ScrollWindowTo(int x, int y, int z, Window *w, bool instant)
 	if (instant) {
 		w->viewport->scrollpos_x = pt.x;
 		w->viewport->scrollpos_y = pt.y;
-		RebuildViewportOverlay(w);
+		RebuildViewportOverlay(w, true);
 	}
 
 	w->viewport->dest_scrollpos_x = pt.x;
@@ -3893,7 +3955,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 			byte style_t = (byte)(TileX(end_tile) > TileX(start_tile));
 			start_tile = TILE_ADD(start_tile, ToTileIndexDiff(heightdiff_area_by_dir[style_t]));
 			end_tile   = TILE_ADD(end_tile, ToTileIndexDiff(heightdiff_area_by_dir[2 + style_t]));
-			/* FALL THROUGH */
+			FALLTHROUGH;
 		}
 
 		case HT_POINT:
@@ -4026,7 +4088,7 @@ Trackdir PointDirToTrackdir(const Point &pt, Direction dir)
 	return ret;
 }
 
-static bool FindPolyline(const Point &pt, const LineSnapPoint &start, Polyline *ret)
+static bool FindPolyline(const Point &pt, const LineSnapPoint &start, PolylineInfo *ret)
 {
 	/* relative coordinats of the mouse point (offset against the snap point) */
 	int x = pt.x - start.x;
@@ -4132,7 +4194,7 @@ static inline uint SqrDist(const Point &a, const Point &b)
 	return (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y);
 }
 
-static LineSnapPoint *FindBestPolyline(const Point &pt, LineSnapPoint *snap_points, uint num_points, Polyline *ret)
+static LineSnapPoint *FindBestPolyline(const Point &pt, LineSnapPoint *snap_points, uint num_points, PolylineInfo *ret)
 {
 	/* Find the best polyline (a pair of two lines - the white one and the blue
 	 * one) led from any of saved snap points to the mouse cursor. */
@@ -4141,7 +4203,7 @@ static LineSnapPoint *FindBestPolyline(const Point &pt, LineSnapPoint *snap_poin
 
 	for (int i = 0; i < (int)num_points; i++) {
 		/* try to fit a polyline */
-		Polyline polyline;
+		PolylineInfo polyline;
 		if (!FindPolyline(pt, snap_points[i], &polyline)) continue; // skip non-matching snap points
 		/* check whether we've found a better polyline */
 		if (best_snap_point != NULL) {
@@ -4370,7 +4432,7 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	}
 
 	/* find the best track */
-	Polyline line;
+	PolylineInfo line;
 
 	bool lock_snapping = dragging && snap_mode == RSM_SNAP_TO_RAIL;
 	if (!lock_snapping) _current_snap_lock.x = -1;
@@ -4484,7 +4546,7 @@ void VpSelectTilesWithMethod(int x, int y, ViewportPlaceMethod method)
 
 		case VPM_X_LIMITED: // Drag in X direction (limited size).
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		case VPM_FIX_X: // drag in Y direction
 			x = sx;
@@ -4493,7 +4555,7 @@ void VpSelectTilesWithMethod(int x, int y, ViewportPlaceMethod method)
 
 		case VPM_Y_LIMITED: // Drag in Y direction (limited size).
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		case VPM_FIX_Y: // drag in X direction
 			y = sy;
@@ -4555,7 +4617,7 @@ calc_heightdiff_single_direction:;
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
 			x = sx + Clamp(x - sx, -limit, limit);
 			y = sy + Clamp(y - sy, -limit, limit);
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		case VPM_X_AND_Y: // drag an X by Y area
 			if (_settings_client.gui.measure_tooltip) {
@@ -4796,6 +4858,43 @@ void InitializeSpriteSorter()
 		}
 	}
 	assert(_vp_sprite_sorter != NULL);
+}
+
+/**
+ * Scroll players main viewport.
+ * @param tile tile to center viewport on
+ * @param flags type of operation
+ * @param p1 ViewportScrollTarget of scroll target
+ * @param p2 company or client id depending on the target
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScrollViewport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (_current_company != OWNER_DEITY) return CMD_ERROR;
+	ViewportScrollTarget target = (ViewportScrollTarget)p1;
+	switch (target) {
+		case VST_EVERYONE:
+			break;
+		case VST_COMPANY:
+			if (_local_company != (CompanyID)p2) return CommandCost();
+			break;
+		case VST_CLIENT:
+#ifdef ENABLE_NETWORK
+			if (_network_own_client_id != (ClientID)p2) return CommandCost();
+			break;
+#else
+			return CommandCost();
+#endif
+		default:
+			return CMD_ERROR;
+	}
+
+	if (flags & DC_EXEC) {
+		ResetObjectToPlace();
+		ScrollMainWindowToTile(tile);
+	}
+	return CommandCost();
 }
 
 static LineSnapPoint LineSnapPointAtRailTrackEndpoint(TileIndex tile, DiagDirection exit_dir, bool bidirectional)

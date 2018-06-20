@@ -80,6 +80,9 @@ static const NWidgetPart _nested_group_widgets[] = {
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_SORT_BY_ORDER), SetMinimalSize(81, 12), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_SORT_BY_DROPDOWN), SetMinimalSize(167, 12), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GL_FILTER_BY_CARGO_SEL),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+				EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetResize(1, 0), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
@@ -140,7 +143,6 @@ private:
 		VGC_END
 	};
 
-	VehicleID vehicle_sel; ///< Selected vehicle
 	GroupID group_sel;     ///< Selected group (for drag/drop)
 	GroupID group_rename;  ///< Group being renamed, INVALID_GROUP if none
 	GroupID group_over;    ///< Group over which a vehicle is dragged, INVALID_GROUP if none
@@ -355,6 +357,8 @@ public:
 	{
 		this->CreateNestedTree();
 
+		this->CheckCargoFilterEnableState(WID_GL_FILTER_BY_CARGO_SEL, false);
+
 		this->vscroll = this->GetScrollbar(WID_GL_LIST_VEHICLE_SCROLLBAR);
 		this->group_sb = this->GetScrollbar(WID_GL_LIST_GROUP_SCROLLBAR);
 
@@ -367,7 +371,6 @@ public:
 		}
 
 		this->vli.index = ALL_GROUP;
-		this->vehicle_sel = INVALID_VEHICLE;
 		this->group_sel = INVALID_GROUP;
 		this->group_rename = INVALID_GROUP;
 		this->group_over = INVALID_GROUP;
@@ -488,12 +491,19 @@ public:
 			this->vli.index = ALL_GROUP;
 			HideDropDownMenu(this);
 		}
+
+		this->CheckCargoFilterEnableState(WID_GL_FILTER_BY_CARGO_SEL, true);
+
 		this->SetDirty();
 	}
 
 	virtual void SetStringParameters(int widget) const
 	{
 		switch (widget) {
+
+			case WID_GL_FILTER_BY_CARGO:
+				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
+				break;
 			case WID_GL_AVAILABLE_VEHICLES:
 				SetDParam(0, STR_VEHICLE_LIST_AVAILABLE_TRAINS + this->vli.vtype);
 				break;
@@ -538,7 +548,7 @@ public:
 
 		/* Disable all lists management button when the list is empty */
 		this->SetWidgetDisabledState(WID_GL_MANAGE_VEHICLES_DROPDOWN, !this->ShouldShowActionDropdownList() || _local_company != this->vli.company);
-		this->SetWidgetsDisabledState(this->vehicles.Length() == 0 || _local_company != this->vli.company,
+		this->SetWidgetsDisabledState(this->vehicles.Length() == 0 || _local_company != this->vli.company || (IsTopLevelGroupID(this->vli.index) && _settings_client.gui.disable_top_veh_list_mass_actions),
 				WID_GL_STOP_ALL,
 				WID_GL_START_ALL,
 				WIDGET_LIST_END);
@@ -568,6 +578,8 @@ public:
 
 		/* Set text of sort by dropdown */
 		this->GetWidget<NWidgetCore>(WID_GL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
+
+		this->GetWidget<NWidgetCore>(WID_GL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
 
 
 		bool is_non_collapsable_group = (this->vli.index == ALL_GROUP) || (this->vli.index == DEFAULT_GROUP)
@@ -703,6 +715,10 @@ public:
 						(this->vli.vtype == VEH_TRAIN || this->vli.vtype == VEH_ROAD) ? 0 : this->vehicle_sorter_non_ground_veh_disable_mask);
 				return;
 
+			case WID_GL_FILTER_BY_CARGO: // Select filtering criteria dropdown menu
+				ShowDropDownMenu(this, this->cargo_filter_texts, this->cargo_filter_criteria, WID_GL_FILTER_BY_CARGO, 0, 0);
+				break;
+
 			case WID_GL_ALL_VEHICLES: // All vehicles button
 				if (!IsAllGroupID(this->vli.index)) {
 					this->vli.index = ALL_GROUP;
@@ -801,7 +817,8 @@ public:
 				break;
 
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN: {
-				DropDownList *list = this->BuildActionDropdownList(true, Group::IsValidID(this->vli.index), this->vli.vtype == VEH_TRAIN);
+				DropDownList *list = this->BuildActionDropdownList(true, Group::IsValidID(this->vli.index), this->vli.vtype == VEH_TRAIN,
+						0, false, IsTopLevelGroupID(this->vli.index));
 				ShowDropDownList(this, list, -1, WID_GL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
@@ -926,14 +943,16 @@ public:
 			case WID_GL_SORT_BY_DROPDOWN:
 				this->vehicles.SetSortType(index);
 				break;
-
+			case WID_GL_FILTER_BY_CARGO: // Select a cargo filter criteria
+				this->SetCargoFilterIndex(index);
+				break;
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN:
 				assert(this->ShouldShowActionDropdownList());
 
 				switch (index) {
 					case ADI_TEMPLATE_REPLACE: // TemplateReplace Window
 						if (vli.vtype == VEH_TRAIN) {
-							ShowTemplateReplaceWindow(this->unitnumber_digits, this->resize.step_height);
+							ShowTemplateReplaceWindow(this->unitnumber_digits);
 						}
 						break;
 					case ADI_REPLACE: // Replace window
@@ -944,6 +963,9 @@ public:
 						DoCommandP(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : 0U), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
 						break;
 					}
+					case ADI_CANCEL_DEPOT:
+						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_CANCEL, this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
+						break;
 
 					case ADI_ADD_SHARED: // Add shared Vehicles
 						assert(Group::IsValidID(this->vli.index));

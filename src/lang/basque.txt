@@ -663,10 +663,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}'Pertson
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Programa zorizko moduan jarri/kendu
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Erakutsi kanten selekzio leihoa
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Kantarik gabeko musika paketea aukeratua. Ez dago kantarik entzuteko
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Musika Programen Selekzioa
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Pistaren Indizea
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programatu - '{STRING}'
@@ -1301,8 +1298,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Mapa txikiaren 
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Berdea
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Berde iluna
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Bioleta
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Leihoa mapan zehar mugitzeko sagua mugitzeko era aldrebes jarri: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Mapan zehar saguaren eskuineko botoiarekin mugitzerakoan izango duen portaera. Desgaitua badago, saguak kamera mugituko du. Gaitua dagoenean, saguak mapa mugituko du
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Mapan zehar mugitzerakoan, abiadura moteltzea: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Kontrolatu nola mugituko den ikuspegia lehio nagusitik zehar, puntu jakin batera joateko mapa txikian sakatzen denean edo objektu zehatz batera joateko agintzen denean
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Eraikitze tresna ezberdinak erabiltzerakoan neurtresna erakutsi: {STRING}
@@ -1334,8 +1329,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Komandoa+Klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Itzalita
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Saguaren ezkerreko botoiarekin mapan zehar mugitzea: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Gaitu mapatik zehar mugitzea saguaren ezkerreko botoia mapan arrastratzerakoan. Oso erabilgarria da ukipen pantailak erabiltzerakoan
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Auto-gordea: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Partida gordetze automatikoaren bitartea aukeratu
@@ -2590,7 +2583,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Konpainia jabe 
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD-ri buruz
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD bertsioa {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Gordetako jokoa
@@ -2868,8 +2861,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Munduko 
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Hiria)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Biztanleria: {ORANGE}{COMMA}{BLACK}  Etxe kopurua: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Bidaiari kopurua aurreko hilabetean: {ORANGE}{COMMA}{BLACK}  gehienez: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Posta kopurua aurreko hilabetean: {ORANGE}{COMMA}{BLACK}  gehienez: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Beharrezko zama herri hazkunderako:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} beharrezkoa
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} Neguan beharrezkoa
@@ -2999,8 +2990,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Onartu
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Onartzen diren zamen zerrenda
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Onartzen da: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Geltoki honek herriko garraio eskubide esklusiboa dauka.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} garraioaren eskubide esklusiboak erosi ditu
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Geltoki honek herriko garraio eskubide esklusiboa dauka.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} garraioaren eskubide esklusiboak erosi ditu
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Zama balorazioak
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Geltokiaren zama balorazioak erakutsi

@@ -91,7 +91,7 @@ protected:
 
 	static const uint LEGEND_BLOB_WIDTH = 8;              ///< Width of the coloured blob in front of a line text in the #WID_SM_LEGEND widget.
 	static const uint INDUSTRY_MIN_NUMBER_OF_COLUMNS = 2; ///< Minimal number of columns in the #WID_SM_LEGEND widget for the #SMT_INDUSTRY legend.
-	static const uint FORCE_REFRESH_PERIOD = 0x1F; ///< map is redrawn after that many ticks
+	static const uint FORCE_REFRESH_PERIOD = 0x5F; ///< map is redrawn after that many ticks
 	static const uint BLINK_PERIOD         = 0x0F; ///< highlight blinking interval
 
 	uint min_number_of_columns;    ///< Minimal number of columns in legends.
@@ -106,6 +106,7 @@ protected:
 	uint8 refresh;   ///< Refresh counter, zeroed every FORCE_REFRESH_PERIOD ticks.
 	LinkGraphOverlay *overlay;
 
+	static void BreakIndustryChainLink();
 	Point SmallmapRemapCoords(int x, int y) const;
 
 	/**
@@ -196,7 +197,7 @@ public:
 	friend class NWidgetSmallmapDisplay;
 
 	SmallMapWindow(WindowDesc *desc, int window_number);
-	virtual ~SmallMapWindow() { delete this->overlay; }
+	virtual ~SmallMapWindow();
 
 	static void RebuildColourIndexIfNecessary();
 

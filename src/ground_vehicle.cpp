@@ -91,8 +91,8 @@ void GroundVehicle<T, Type>::CalculatePower(uint32& total_power, uint32& max_te,
 		if (current_power > 0) max_te += u->GetWeight() * u->GetTractiveEffort();
 	}
 
-	max_te *= 10000; // Tractive effort in (tonnes * 1000 * 10 =) N.
-	max_te /= 256;   // Tractive effort is a [0-255] coefficient.
+	max_te *= 9800; // Tractive effort in (tonnes * 1000 * 9.8 =) N.
+	max_te /= 256;  // Tractive effort is a [0-255] coefficient.
 }
 
 /**

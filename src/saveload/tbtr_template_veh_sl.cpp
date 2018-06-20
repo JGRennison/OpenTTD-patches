@@ -12,14 +12,15 @@
 const SaveLoad* GTD() {
 
 	static const SaveLoad _template_veh_desc[] = {
-		SLE_REF(TemplateVehicle, next, 		REF_TEMPLATE_VEHICLE),
+		SLE_REF(TemplateVehicle, next, REF_TEMPLATE_VEHICLE),
 
 		SLE_VAR(TemplateVehicle, reuse_depot_vehicles, SLE_UINT8),
 		SLE_VAR(TemplateVehicle, keep_remaining_vehicles, SLE_UINT8),
 		SLE_VAR(TemplateVehicle, refit_as_template, SLE_UINT8),
 
-		SLE_VAR(TemplateVehicle, owner, SLE_UINT32),
-		SLE_VAR(TemplateVehicle, owner_b, SLE_UINT8),
+		SLE_CONDVAR_X(TemplateVehicle, owner, SLE_VAR_U8 | SLE_FILE_U32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
+		SLE_CONDVAR_X(TemplateVehicle, owner, SLE_UINT8, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 4)),
+		SLE_CONDNULL_X(1, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
 
 		SLE_VAR(TemplateVehicle, engine_type, SLE_UINT16),
 		SLE_VAR(TemplateVehicle, cargo_type, SLE_UINT8),
@@ -38,11 +39,10 @@ const SaveLoad* GTD() {
 		SLE_VAR(TemplateVehicle, weight, SLE_UINT32),
 		SLE_VAR(TemplateVehicle, max_te, SLE_UINT32),
 
-		SLE_VAR(TemplateVehicle, spritenum, SLE_UINT8),
-		SLE_CONDVAR_X(TemplateVehicle, sprite_seq.seq[0].sprite, SLE_UINT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 1)),
-		SLE_CONDVAR_X(TemplateVehicle, sprite_seq.count, SLE_UINT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 2)),
-		SLE_CONDARR_X(TemplateVehicle, sprite_seq.seq, SLE_UINT32, 8, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 2)),
-		SLE_VAR(TemplateVehicle, image_width, SLE_UINT32),
+		SLE_CONDNULL_X(1, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
+		SLE_CONDNULL_X(4, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 1)),
+		SLE_CONDNULL_X(36, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 2, 3)),
+		SLE_CONDNULL_X(4, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
 
 		SLE_END()
 	};
@@ -89,7 +89,7 @@ void AfterLoadTemplateVehicles()
 	FOR_ALL_TEMPLATES(tv) {
 		/* Reinstate the previous pointer */
 		if (tv->next != NULL) tv->next->previous = tv;
-		tv->first =NULL;
+		tv->first = NULL;
 	}
 	FOR_ALL_TEMPLATES(tv) {
 		/* Fill the first pointers */
@@ -134,10 +134,11 @@ void AfterLoadTemplateVehiclesUpdateImage()
 				if (t_len == tv_len) {
 					Train *v = t;
 					for (TemplateVehicle *u = tv; u != NULL; u = u->Next(), v = v->Next()) {
-						u->spritenum = v->spritenum;
-						v->GetImage(DIR_W, EIT_PURCHASE, &u->sprite_seq);
-						u->image_width = v->GetDisplayImageWidth();
+						v->GetImage(DIR_W, EIT_IN_DEPOT, &u->sprite_seq);
+						u->image_dimensions.SetFromTrain(v);
 					}
+				} else {
+					DEBUG(misc, 0, "AfterLoadTemplateVehiclesUpdateImage: vehicle count mismatch: %u, %u", t_len, tv_len);
 				}
 				delete t;
 			}

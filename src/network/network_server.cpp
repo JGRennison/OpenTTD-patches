@@ -481,7 +481,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 		if (!HasBit(c->flags, GCF_STATIC)) grf_count++;
 	}
 
-	p->Send_uint8 (grf_count);
+	p->Send_uint32 (grf_count);
 	for (c = _grfconfig; c != NULL; c = c->next) {
 		if (!HasBit(c->flags, GCF_STATIC)) this->SendGRFIdentifier(p, &c->ident);
 	}
@@ -1115,7 +1115,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	}
 
 	if ((GetCommandFlags(cp.cmd) & CMD_SPECTATOR) == 0 && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER) {
-		IConsolePrintF(CC_ERROR, "WARNING: spectator issueing command from client %d (IP: %s), kicking...", ci->client_id, this->GetClientIP());
+		IConsolePrintF(CC_ERROR, "WARNING: spectator issuing command from client %d (IP: %s), kicking...", ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
 
@@ -1366,7 +1366,8 @@ void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, co
 		}
 		default:
 			DEBUG(net, 0, "[server] received unknown chat destination type %d. Doing broadcast instead", desttype);
-			/* FALL THROUGH */
+			FALLTHROUGH;
+
 		case DESTTYPE_BROADCAST:
 		case DESTTYPE_BROADCAST_SS:
 			FOR_ALL_CLIENT_SOCKETS(cs) {
@@ -1404,7 +1405,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_CHAT(Packet *p)
 	switch (action) {
 		case NETWORK_ACTION_GIVE_MONEY:
 			if (!Company::IsValidID(ci->client_playas)) break;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 		case NETWORK_ACTION_CHAT:
 		case NETWORK_ACTION_CHAT_CLIENT:
 		case NETWORK_ACTION_CHAT_COMPANY:

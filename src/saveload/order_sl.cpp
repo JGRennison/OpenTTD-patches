@@ -192,6 +192,8 @@ static void Load_ORDR()
 			if (IsSavegameVersionBefore(190)) {
 				order->SetTravelTimetabled(order->GetTravelTime() > 0);
 				order->SetWaitTimetabled(order->GetWaitTime() > 0);
+			} else if (order->IsType(OT_CONDITIONAL) && SlXvIsFeatureMissing(XSLFI_TIMETABLE_EXTRA)) {
+				order->SetWaitTimetabled(order->GetWaitTime() > 0);
 			}
 		}
 	}
@@ -201,6 +203,8 @@ const SaveLoad *GetOrderExtraInfoDescription()
 {
 	static const SaveLoad _order_extra_info_desc[] = {
 		SLE_ARR(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO),
+		SLE_CONDVAR_X(OrderExtraInfo, xflags, SLE_UINT8, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
+		SLE_CONDVAR_X(OrderExtraInfo, xdata, SLE_UINT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_EXTRA_DATA)),
 		SLE_END()
 	};
 
@@ -302,6 +306,7 @@ const SaveLoad *GetOrderBackupDescription()
 		 SLE_CONDREF(OrderBackup, clone,                    REF_VEHICLE,               192, SL_MAX_VERSION),
 		     SLE_VAR(OrderBackup, cur_real_order_index,     SLE_UINT8),
 		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_UINT8,                 176, SL_MAX_VERSION),
+		SLE_CONDVAR_X(OrderBackup, cur_timetable_order_index, SLE_UINT8,                 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
 		 SLE_CONDVAR(OrderBackup, current_order_time,       SLE_UINT32,                176, SL_MAX_VERSION),
 		 SLE_CONDVAR(OrderBackup, lateness_counter,         SLE_INT32,                 176, SL_MAX_VERSION),
 		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_INT32,                 176, SL_MAX_VERSION),

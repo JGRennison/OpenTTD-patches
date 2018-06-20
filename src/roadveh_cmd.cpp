@@ -151,8 +151,7 @@ void DrawRoadVehEngine(int left, int right, int preferred_x, int y, EngineID eng
 	VehicleSpriteSeq seq;
 	GetRoadVehIcon(engine, image_type, &seq);
 
-	Rect rect;
-	seq.GetBounds(&rect);
+	Rect16 rect = seq.GetBounds();
 	preferred_x = Clamp(preferred_x,
 			left - UnScaleGUI(rect.left),
 			right - UnScaleGUI(rect.right));
@@ -174,8 +173,7 @@ void GetRoadVehSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs
 	VehicleSpriteSeq seq;
 	GetRoadVehIcon(engine, image_type, &seq);
 
-	Rect rect;
-	seq.GetBounds(&rect);
+	Rect16 rect = seq.GetBounds();
 
 	width  = UnScaleGUI(rect.right - rect.left + 1);
 	height = UnScaleGUI(rect.bottom - rect.top + 1);
@@ -409,7 +407,7 @@ void RoadVehicle::MarkDirty()
 	this->CargoChanged();
 }
 
-void RoadVehicle::UpdateDeltaXY(Direction direction)
+void RoadVehicle::UpdateDeltaXY()
 {
 	static const int8 _delta_xy_table[8][10] = {
 		/* y_extent, x_extent, y_offs, x_offs, y_bb_offs, x_bb_offs, y_extent_shorten, x_extent_shorten, y_bb_offs_shorten, x_bb_offs_shorten */
@@ -424,9 +422,9 @@ void RoadVehicle::UpdateDeltaXY(Direction direction)
 	};
 
 	int shorten = VEHICLE_LENGTH - this->gcache.cached_veh_length;
-	if (!IsDiagonalDirection(direction)) shorten >>= 1;
+	if (!IsDiagonalDirection(this->direction)) shorten >>= 1;
 
-	const int8 *bb = _delta_xy_table[direction];
+	const int8 *bb = _delta_xy_table[this->direction];
 	this->x_bb_offs     = bb[5] + bb[9] * shorten;
 	this->y_bb_offs     = bb[4] + bb[8] * shorten;;
 	this->x_offs        = bb[3];
@@ -437,12 +435,28 @@ void RoadVehicle::UpdateDeltaXY(Direction direction)
 }
 
 /**
+ * Calculates the maximum speed of the vehicle, taking into account speed reductions following critical breakdowns
+ * @return Maximum speed of the vehicle.
+ */
+int RoadVehicle::GetEffectiveMaxSpeed() const
+{
+	int max_speed = this->vcache.cached_max_speed;
+
+	for (uint i = 0; i < this->critical_breakdown_count; i++) {
+		max_speed = min(max_speed - (max_speed / 3) + 1, max_speed);
+	}
+
+	/* clamp speed to be no less than lower of 5mph and 1/8 of base speed */
+	return max<uint16>(max_speed, min<uint16>(10, (this->vcache.cached_max_speed + 7) >> 3));
+}
+
+/**
  * Calculates the maximum speed of the vehicle under its current conditions.
  * @return Maximum speed of the vehicle.
  */
 inline int RoadVehicle::GetCurrentMaxSpeed() const
 {
-	int max_speed = this->vcache.cached_max_speed;
+	int max_speed = this->GetEffectiveMaxSpeed();
 
 	/* Limit speed to 50% while reversing, 75% in curves. */
 	for (const RoadVehicle *u = this; u != NULL; u = u->Next()) {
@@ -1505,7 +1519,7 @@ again:
 			/* Vehicle has arrived at a bay in a road stop */
 
 			if (IsDriveThroughStopTile(v->tile)) {
-				TileIndex next_tile = TILE_ADD(v->tile, TileOffsByDir(v->direction));
+				TileIndex next_tile = TileAddByDir(v->tile, v->direction);
 
 				/* Check if next inline bay is free and has compatible road. */
 				if (RoadStop::IsDriveThroughRoadStopContinuation(v->tile, next_tile) && (GetRoadTypes(next_tile) & v->compatible_roadtypes) != 0) {

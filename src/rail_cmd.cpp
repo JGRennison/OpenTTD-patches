@@ -38,6 +38,7 @@
 #include "programmable_signals.h"
 #include "spritecache.h"
 #include "core/container_func.hpp"
+#include "news_func.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -570,7 +571,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				_rail_track_endtile = tile;
 				return_cmd_error(STR_ERROR_ALREADY_BUILT);
 			}
-			/* FALL THROUGH */
+			FALLTHROUGH;
 		}
 
 		default: {
@@ -1044,7 +1045,7 @@ static void ClearBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
 static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit)
 {
 	SetTunnelBridgeSignalSimulationEntrance(entrance);
-	SetTunnelBridgeSignalState(entrance, SIGNAL_STATE_GREEN);
+	SetTunnelBridgeEntranceSignalState(entrance, SIGNAL_STATE_GREEN);
 	SetTunnelBridgeSignalSimulationExit(exit);
 }
 
@@ -1063,6 +1064,7 @@ static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
  * - p1 = (bit 9-14)- cycle through which signal set?
  * - p1 = (bit 15-16)-cycle the signal direction this many times
  * - p1 = (bit 17)  - 1 = don't modify an existing signal but don't fail either, 0 = always set new signal type
+ * - p1 = (bit 18)  - permit creation of/conversion to bidirectionally signalled bridges/tunnels
  * @param p2 used for CmdBuildManySignals() to copy direction of first signal
  * @param text unused
  * @return the cost of this operation or an error
@@ -1098,22 +1100,47 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	CommandCost cost;
 	/* handle signals simulation on tunnel/bridge. */
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+		bool bidirectional = HasBit(p1, 18) && (sigtype == SIGTYPE_PBS);
 		TileIndex tile_exit = GetOtherTunnelBridgeEnd(tile);
 		cost = CommandCost();
 		bool flip_variant = false;
 		bool is_pbs = (sigtype == SIGTYPE_PBS) || (sigtype == SIGTYPE_PBS_ONEWAY);
 		if (!IsTunnelBridgeWithSignalSimulation(tile)) { // toggle signal zero costs.
 			if (convert_signal) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
-			if (p2 != 12) cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
+			if (p2 != 12) cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2) * (bidirectional ? 2 : 1)); // minimal 1
 		} else {
 			if (HasBit(p1, 17)) return CommandCost();
+			bool is_bidi = IsTunnelBridgeSignalSimulationBidirectional(tile);
+			bool will_be_bidi = is_bidi;
+			if (p2 == 0) {
+				if (convert_signal) {
+					will_be_bidi = bidirectional && !ctrl_pressed;
+				} else if (ctrl_pressed) {
+					will_be_bidi = false;
+				}
+			} else if (!is_pbs) {
+				will_be_bidi = false;
+			}
 			if ((p2 != 0 && (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)) ||
 					(convert_signal && (ctrl_pressed || (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)))) {
 				flip_variant = true;
-				cost = CommandCost(EXPENSES_CONSTRUCTION, (_price[PR_BUILD_SIGNALS] + _price[PR_CLEAR_SIGNALS]) *
+				cost = CommandCost(EXPENSES_CONSTRUCTION, ((_price[PR_BUILD_SIGNALS] * (will_be_bidi ? 2 : 1)) + (_price[PR_CLEAR_SIGNALS] * (is_bidi ? 2 : 1))) *
 						((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
+			} else if (is_bidi != will_be_bidi) {
+				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[will_be_bidi ? PR_BUILD_SIGNALS : PR_CLEAR_SIGNALS] * ((GetTunnelBridgeLength(tile, tile_exit) + 4) >> 2)); // minimal 1
 			}
 		}
+		auto remove_pbs_bidi = [&]() {
+			if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
+				ClrTunnelBridgeSignalSimulationExit(tile);
+				ClrTunnelBridgeSignalSimulationEntrance(tile_exit);
+			}
+		};
+		auto set_bidi = [&](TileIndex t) {
+			SetTunnelBridgeSignalSimulationEntrance(t);
+			SetTunnelBridgeEntranceSignalState(t, SIGNAL_STATE_GREEN);
+			SetTunnelBridgeSignalSimulationExit(t);
+		};
 		if (flags & DC_EXEC) {
 			Company * const c = Company::Get(GetTileOwner(tile));
 			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
@@ -1126,11 +1153,18 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					if (!ctrl_pressed) {
 						SetTunnelBridgePBS(tile, is_pbs);
 						SetTunnelBridgePBS(tile_exit, is_pbs);
+						if (bidirectional) {
+							set_bidi(tile);
+							set_bidi(tile_exit);
+						} else {
+							remove_pbs_bidi();
+						}
 					}
 				} else if (ctrl_pressed) {
 					SetTunnelBridgePBS(tile, !IsTunnelBridgePBS(tile));
 					SetTunnelBridgePBS(tile_exit, IsTunnelBridgePBS(tile));
-				} else {
+					if (!IsTunnelBridgePBS(tile)) remove_pbs_bidi();
+				} else if (!IsTunnelBridgeSignalSimulationBidirectional(tile)) {
 					if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
 						ClearBridgeTunnelSignalSimulation(tile, tile_exit);
 						SetupBridgeTunnelSignalSimulation(tile_exit, tile);
@@ -1142,7 +1176,12 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			} else {
 				/* Create one direction tunnel/bridge if required. */
 				if (p2 == 0) {
-					SetupBridgeTunnelSignalSimulation(tile, tile_exit);
+					if (bidirectional) {
+						set_bidi(tile);
+						set_bidi(tile_exit);
+					} else {
+						SetupBridgeTunnelSignalSimulation(tile, tile_exit);
+					}
 				} else if (p2 == 4 || p2 == 8) {
 					DiagDirection tbdir = GetTunnelBridgeDirection(tile);
 					/* If signal only on one side build accoringly one-way tunnel/bridge. */
@@ -1160,10 +1199,11 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					SetTunnelBridgeSemaphore(tile_exit, sigvar == SIG_SEMAPHORE);
 					SetTunnelBridgePBS(tile, is_pbs);
 					SetTunnelBridgePBS(tile_exit, is_pbs);
+					if (!IsTunnelBridgePBS(tile)) remove_pbs_bidi();
 				}
 			}
-			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile) && !HasTunnelBridgeReservation(tile)) SetTunnelBridgeSignalState(tile, SIGNAL_STATE_RED);
-			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgePBS(tile_exit) && !HasTunnelBridgeReservation(tile_exit)) SetTunnelBridgeSignalState(tile_exit, SIGNAL_STATE_RED);
+			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile) && !HasTunnelBridgeReservation(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
+			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgePBS(tile_exit) && !HasTunnelBridgeReservation(tile_exit)) SetTunnelBridgeExitSignalState(tile_exit, SIGNAL_STATE_RED);
 			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
@@ -1603,6 +1643,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 		if (!IsTunnelBridgeWithSignalSimulation(tile)) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 
 		cost *= ((GetTunnelBridgeLength(tile, end) + 4) >> 2);
+		if (IsTunnelBridgeSignalSimulationBidirectional(tile)) cost *= 2;
 
 		CommandCost ret = EnsureNoTrainOnTrack(GetOtherTunnelBridgeEnd(tile), track);
 		if (ret.Failed()) return ret;
@@ -2667,33 +2708,60 @@ static void DrawTile_Track(TileInfo *ti)
 			SpriteID ground = GetCustomRailSprite(rti, ti->tile, RTSG_GROUND);
 
 			switch (GetRailDepotDirection(ti->tile)) {
-				case DIAGDIR_NE: if (!IsInvisibilitySet(TO_BUILDINGS)) break; // else FALL THROUGH
-				case DIAGDIR_SW: DrawGroundSprite(ground + RTO_X, PAL_NONE); break;
-				case DIAGDIR_NW: if (!IsInvisibilitySet(TO_BUILDINGS)) break; // else FALL THROUGH
-				case DIAGDIR_SE: DrawGroundSprite(ground + RTO_Y, PAL_NONE); break;
-				default: break;
+				case DIAGDIR_NE:
+					if (!IsInvisibilitySet(TO_BUILDINGS)) break;
+					FALLTHROUGH;
+				case DIAGDIR_SW:
+					DrawGroundSprite(ground + RTO_X, PAL_NONE);
+					break;
+				case DIAGDIR_NW:
+					if (!IsInvisibilitySet(TO_BUILDINGS)) break;
+					FALLTHROUGH;
+				case DIAGDIR_SE:
+					DrawGroundSprite(ground + RTO_Y, PAL_NONE);
+					break;
+				default:
+					break;
 			}
 
 			if (_settings_client.gui.show_track_reservation && HasDepotReservation(ti->tile)) {
 				SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RTSG_OVERLAY);
 
 				switch (GetRailDepotDirection(ti->tile)) {
-					case DIAGDIR_NE: if (!IsInvisibilitySet(TO_BUILDINGS)) break; // else FALL THROUGH
-					case DIAGDIR_SW: DrawGroundSprite(overlay + RTO_X, PALETTE_CRASH); break;
-					case DIAGDIR_NW: if (!IsInvisibilitySet(TO_BUILDINGS)) break; // else FALL THROUGH
-					case DIAGDIR_SE: DrawGroundSprite(overlay + RTO_Y, PALETTE_CRASH); break;
-					default: break;
+					case DIAGDIR_NE:
+						if (!IsInvisibilitySet(TO_BUILDINGS)) break;
+						FALLTHROUGH;
+					case DIAGDIR_SW:
+						DrawGroundSprite(overlay + RTO_X, PALETTE_CRASH);
+						break;
+					case DIAGDIR_NW:
+						if (!IsInvisibilitySet(TO_BUILDINGS)) break;
+						FALLTHROUGH;
+					case DIAGDIR_SE:
+						DrawGroundSprite(overlay + RTO_Y, PALETTE_CRASH);
+						break;
+					default:
+						break;
 				}
 			}
 		} else {
 			/* PBS debugging, draw reserved tracks darker */
 			if (_game_mode != GM_MENU && _settings_client.gui.show_track_reservation && HasDepotReservation(ti->tile)) {
 				switch (GetRailDepotDirection(ti->tile)) {
-					case DIAGDIR_NE: if (!IsInvisibilitySet(TO_BUILDINGS)) break; // else FALL THROUGH
-					case DIAGDIR_SW: DrawGroundSprite(rti->base_sprites.single_x, PALETTE_CRASH); break;
-					case DIAGDIR_NW: if (!IsInvisibilitySet(TO_BUILDINGS)) break; // else FALL THROUGH
-					case DIAGDIR_SE: DrawGroundSprite(rti->base_sprites.single_y, PALETTE_CRASH); break;
-					default: break;
+					case DIAGDIR_NE:
+						if (!IsInvisibilitySet(TO_BUILDINGS)) break;
+						FALLTHROUGH;
+					case DIAGDIR_SW:
+						DrawGroundSprite(rti->base_sprites.single_x, PALETTE_CRASH);
+						break;
+					case DIAGDIR_NW:
+						if (!IsInvisibilitySet(TO_BUILDINGS)) break;
+						FALLTHROUGH;
+					case DIAGDIR_SE:
+						DrawGroundSprite(rti->base_sprites.single_y, PALETTE_CRASH);
+						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -3155,6 +3223,26 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 
 	Train *v = Train::From(u);
 
+	auto abort_load_through = [&](bool leave_station) {
+		if (_local_company == v->owner) {
+			SetDParam(0, v->index);
+			SetDParam(1, v->current_order.GetDestination());
+			AddNewsItem(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
+					NR_VEHICLE, v->index,
+					NR_STATION, v->current_order.GetDestination());
+		}
+		if (leave_station) {
+			v->LeaveStation();
+			/* Only advance to next order if we are loading at the current one */
+			const Order *order = v->GetOrder(v->cur_implicit_order_index);
+			if (order != NULL && order->IsType(OT_GOTO_STATION) && order->GetDestination() == v->last_station_visited) {
+				v->IncrementImplicitOrderIndex();
+			}
+		}
+	};
+
+	if (v->IsFrontEngine() && v->current_order.IsType(OT_LOADING_ADVANCE)) abort_load_through(true);
+
 	/* depot direction */
 	DiagDirection dir = GetRailDepotDirection(tile);
 
@@ -3175,6 +3263,13 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 	} else if (_fractcoords_enter[dir] == fract_coord) {
 		if (DiagDirToDir(ReverseDiagDir(dir)) == v->direction) {
 			/* enter the depot */
+
+			if (v->IsFrontEngine() && v->current_order.IsType(OT_LOADING_ADVANCE)) {
+				abort_load_through(true);
+			} else if (v->IsFrontEngine() && HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) {
+				abort_load_through(false);
+			}
+
 			v->track = TRACK_BIT_DEPOT,
 			v->vehstatus |= VS_HIDDEN; // hide it
 			v->direction = ReverseDir(v->direction);

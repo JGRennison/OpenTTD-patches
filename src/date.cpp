@@ -21,17 +21,20 @@
 #include "linkgraph/linkgraph.h"
 #include "saveload/saveload.h"
 #include "console_func.h"
+#include "debug.h"
 
 #include "safeguards.h"
 
 Year      _cur_year;   ///< Current year, starting at 0
 Month     _cur_month;  ///< Current month (0..11)
+YearMonthDay _cur_date_ymd; ///< Current date as YearMonthDay struct
 Date      _date;       ///< Current date in days (day counter)
 DateFract _date_fract; ///< Fractional part of the day.
 uint16 _tick_counter;  ///< Ever incrementing (and sometimes wrapping) tick counter for setting off various events
 uint8 _tick_skip_counter; ///< Counter for ticks, when only vehicles are moving and nothing else happens
 uint32 _scaled_tick_counter; ///< Tick counter in daylength-scaled ticks
 DateTicksScaled _scaled_date_ticks; ///< Date as ticks in daylength-scaled ticks
+uint32    _quit_after_days;  ///< Quit after this many days of run time
 
 /**
  * Set the date.
@@ -49,6 +52,7 @@ void SetDate(Date date, DateFract fract)
 	ConvertDateToYMD(date, &ymd);
 	_cur_year = ymd.year;
 	_cur_month = ymd.month;
+	_cur_date_ymd = ymd;
 	SetScaledTickVariables();
 }
 
@@ -280,6 +284,13 @@ static void OnNewDay()
 	/* Refresh after possible snowline change */
 	SetWindowClassesDirty(WC_TOWN_VIEW);
 	IConsoleCmdExec("exec scripts/on_newday.scr 0");
+
+	if (_quit_after_days > 0) {
+		if (--_quit_after_days == 0) {
+			DEBUG(misc, 0, "Quitting as day limit reached");
+			_exit_game = true;
+		}
+	}
 }
 
 /**
@@ -291,7 +302,7 @@ void IncreaseDate()
 	/* increase day, and check if a new day is there? */
 	_tick_counter++;
 
-	if (_game_mode == GM_MENU) return;
+	if (_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) return;
 
 	_date_fract++;
 	if (_date_fract < DAY_TICKS) return;
@@ -310,6 +321,7 @@ void IncreaseDate()
 	bool new_year = ymd.year != _cur_year;
 
 	/* update internal variables before calling the daily/monthly/yearly loops */
+	_cur_date_ymd = ymd;
 	_cur_month = ymd.month;
 	_cur_year  = ymd.year;
 

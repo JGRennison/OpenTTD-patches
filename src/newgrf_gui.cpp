@@ -1034,7 +1034,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					if (this->editable && this->active_sel != NULL) SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 					break;
 				}
-				/* FALL THROUGH, with double click. */
+				/* With double click, continue */
+				FALLTHROUGH;
 			}
 
 			case WID_NS_REMOVE: { // Remove GRF
@@ -1089,7 +1090,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					if (this->editable && this->avail_sel != NULL && !HasBit(this->avail_sel->flags, GCF_INVALID)) SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 					break;
 				}
-				/* FALL THROUGH, with double click. */
+				/* With double click, continue */
+				FALLTHROUGH;
 			}
 
 			case WID_NS_ADD:
@@ -1228,10 +1230,12 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				}
 
 				this->avails.ForceRebuild();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case GOID_NEWGRF_LIST_EDITED:
 				this->preset = -1;
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case GOID_NEWGRF_PRESET_LOADED: {
 				/* Update scrollbars */
 				int i = 0;

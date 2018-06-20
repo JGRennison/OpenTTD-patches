@@ -46,6 +46,7 @@ enum OrderType {
 	OT_CONDITIONAL   = 7,
 	OT_IMPLICIT     = 8,
 	OT_WAITING      = 9,
+	OT_LOADING_ADVANCE = 10,
 	OT_END
 };
 
@@ -95,6 +96,7 @@ enum OrderStopLocation {
 	OSL_PLATFORM_NEAR_END = 0, ///< Stop at the near end of the platform
 	OSL_PLATFORM_MIDDLE   = 1, ///< Stop at the middle of the platform
 	OSL_PLATFORM_FAR_END  = 2, ///< Stop at the far end of the platform
+	OSL_PLATFORM_THROUGH  = 3, ///< Load/unload through the platform
 	OSL_END
 };
 
@@ -138,10 +140,11 @@ enum OrderConditionVariable {
 	OCV_REQUIRES_SERVICE,   ///< Skip when the vehicle requires service
 	OCV_UNCONDITIONALLY,    ///< Always skip
 	OCV_REMAINING_LIFETIME, ///< Skip based on the remaining lifetime
-	OCV_CARGO_WAITING,    ///< Skip if specified cargo is waiting at next station
-	OCV_CARGO_ACCEPTANCE, ///< Skip if specified cargo is accepted at next station
-	OCV_FREE_PLATFORMS,   ///< Skip based on free platforms at next station
-	OCV_PERCENT,          ///< Skip xx percent of times
+	OCV_CARGO_WAITING,      ///< Skip if specified cargo is waiting at next station
+	OCV_CARGO_ACCEPTANCE,   ///< Skip if specified cargo is accepted at next station
+	OCV_FREE_PLATFORMS,     ///< Skip based on free platforms at next station
+	OCV_PERCENT,            ///< Skip xx percent of times
+	OCV_SLOT_OCCUPANCY,     ///< Test if train slot is fully occupied
 	OCV_END
 };
 

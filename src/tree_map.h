@@ -166,7 +166,7 @@ static inline uint GetTreeCount(TileIndex t)
 static inline void AddTreeCount(TileIndex t, int c)
 {
 	assert(IsTileType(t, MP_TREES)); // XXX incomplete
-	_m[t].m5 += c << 6;
+	_m[t].m5 += ((uint) c) << 6;
 }
 
 /**

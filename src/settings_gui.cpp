@@ -114,17 +114,22 @@ static int GetCurRes()
 static void ShowCustCurrency();
 
 template <class T>
-static DropDownList *BuiltSetDropDownList(int *selected_index)
+static DropDownList *BuildSetDropDownList(int *selected_index, bool allow_selection)
 {
 	int n = T::GetNumSets();
 	*selected_index = T::GetIndexOfUsedSet();
 
 	DropDownList *list = new DropDownList();
 	for (int i = 0; i < n; i++) {
-		*list->Append() = new DropDownListCharStringItem(T::GetSet(i)->name, i, (_game_mode == GM_MENU) ? false : (*selected_index != i));
+		*list->Append() = new DropDownListCharStringItem(T::GetSet(i)->name, i, !allow_selection && (*selected_index != i));
 	}
 
 	return list;
+}
+
+DropDownList *BuildMusicSetDropDownList(int *selected_index)
+{
+	return BuildSetDropDownList<BaseMusic>(selected_index, true);
 }
 
 /** Window for displaying the textfile of a BaseSet. */
@@ -297,15 +302,15 @@ struct GameOptionsWindow : Window {
 			}
 
 			case WID_GO_BASE_GRF_DROPDOWN:
-				list = BuiltSetDropDownList<BaseGraphics>(selected_index);
+				list = BuildSetDropDownList<BaseGraphics>(selected_index, (_game_mode == GM_MENU));
 				break;
 
 			case WID_GO_BASE_SFX_DROPDOWN:
-				list = BuiltSetDropDownList<BaseSounds>(selected_index);
+				list = BuildSetDropDownList<BaseSounds>(selected_index, (_game_mode == GM_MENU));
 				break;
 
 			case WID_GO_BASE_MUSIC_DROPDOWN:
-				list = BuiltSetDropDownList<BaseMusic>(selected_index);
+				list = BuildMusicSetDropDownList(selected_index);
 				break;
 
 			default:
@@ -546,7 +551,7 @@ struct GameOptionsWindow : Window {
 				break;
 
 			case WID_GO_BASE_MUSIC_DROPDOWN:
-				this->SetMediaSet<BaseMusic>(index);
+				ChangeMusicSet(index);
 				break;
 		}
 	}
@@ -1525,9 +1530,8 @@ static SettingsContainer &GetSettingsTree()
 				}
 
 				viewports->Add(new SettingEntry("gui.auto_scrolling"));
-				viewports->Add(new SettingEntry("gui.reverse_scroll"));
+				viewports->Add(new SettingEntry("gui.scroll_mode"));
 				viewports->Add(new SettingEntry("gui.smooth_scroll"));
-				viewports->Add(new SettingEntry("gui.left_mouse_btn_scrolling"));
 				/* While the horizontal scrollwheel scrolling is written as general code, only
 				 *  the cocoa (OSX) driver generates input for it.
 				 *  Since it's also able to completely disable the scrollwheel will we display it on all platforms anyway */
@@ -1585,20 +1589,34 @@ static SettingsContainer &GetSettingsTree()
 				wallclock->Add(new SettingEntry("gui.clock_offset"));
 			}
 
+			SettingsPage *timetable = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_TIMETABLE));
+			{
+				timetable->Add(new SettingEntry("gui.timetable_in_ticks"));
+				timetable->Add(new SettingEntry("gui.timetable_leftover_ticks"));
+				timetable->Add(new SettingEntry("gui.timetable_arrival_departure"));
+			}
+
+			SettingsPage *advsig = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS));
+			{
+				advsig->Add(new SettingEntry("gui.show_progsig_ui"));
+				advsig->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
+			}
+
 			interface->Add(new SettingEntry("gui.autosave"));
+			interface->Add(new SettingEntry("gui.autosave_on_network_disconnect"));
 			interface->Add(new SettingEntry("gui.toolbar_pos"));
 			interface->Add(new SettingEntry("gui.statusbar_pos"));
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
 			interface->Add(new SettingEntry("gui.advanced_vehicle_list"));
-			interface->Add(new SettingEntry("gui.timetable_in_ticks"));
-			interface->Add(new SettingEntry("gui.timetable_leftover_ticks"));
-			interface->Add(new SettingEntry("gui.timetable_arrival_departure"));
 			interface->Add(new SettingEntry("gui.expenses_layout"));
 			interface->Add(new SettingEntry("gui.show_train_length_in_details"));
 			interface->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_list_company_colour"));
-			interface->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
+			interface->Add(new SettingEntry("gui.show_veh_list_cargo_filter"));
+			interface->Add(new SettingEntry("gui.show_adv_load_mode_features"));
+			interface->Add(new SettingEntry("gui.disable_top_veh_list_mass_actions"));
+			interface->Add(new SettingEntry("gui.adv_sig_bridge_tun_modes"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
@@ -1771,6 +1789,7 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *towns = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_TOWNS));
 			{
 				towns->Add(new SettingEntry("economy.town_growth_rate"));
+				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
 				towns->Add(new SettingEntry("economy.found_town"));
@@ -1812,6 +1831,7 @@ static SettingsContainer &GetSettingsTree()
 
 			environment->Add(new SettingEntry("station.modified_catchment"));
 			environment->Add(new SettingEntry("station.catchment_increase"));
+			environment->Add(new SettingEntry("station.cargo_class_rating_wait_time"));
 		}
 
 		SettingsPage *ai = main->Add(new SettingsPage(STR_CONFIG_SETTING_AI));
@@ -2193,7 +2213,9 @@ struct GameSettingsWindow : Window {
 
 					DropDownList *list = new DropDownList();
 					for (int i = sdb->min; i <= (int)sdb->max; i++) {
-						*list->Append() = new DropDownListStringItem(sdb->str_val + i - sdb->min, i, false);
+						int val = sd->orderproc ? sd->orderproc(i - sdb->min) : i;
+						assert_msg(val >= sdb->min && val <= (int)sdb->max, "min: %d, max: %d, val: %d", sdb->min, sdb->max, val);
+						*list->Append() = new DropDownListStringItem(sdb->str_val + val - sdb->min, val, false);
 					}
 
 					ShowDropDownListAt(this, list, value, -1, wi_rect, COLOUR_ORANGE, true);

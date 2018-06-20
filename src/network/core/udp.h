@@ -18,6 +18,10 @@
 #include "game.h"
 #include "packet.h"
 
+#include <vector>
+#include <string>
+#include <time.h>
+
 #ifdef ENABLE_NETWORK
 
 /** Enum with all types of UDP packets. The order MUST not be changed **/
@@ -34,7 +38,10 @@ enum PacketUDPType {
 	PACKET_UDP_CLIENT_GET_NEWGRFS,   ///< Requests the name for a list of GRFs (GRF_ID and MD5)
 	PACKET_UDP_SERVER_NEWGRFS,       ///< Sends the list of NewGRF's requested.
 	PACKET_UDP_MASTER_SESSION_KEY,   ///< Sends a fresh session key to the client
-	PACKET_UDP_END,                  ///< Must ALWAYS be on the end of this list!! (period)
+	PACKET_UDP_END,                  ///< Must ALWAYS be the last non-extended item in the list!! (period)
+
+	PACKET_UDP_EX_MULTI = 128,       ///< Extended/multi packet type
+	PACKET_UDP_EX_SERVER_RESPONSE,   ///< Reply of the game server with extended game information
 };
 
 /** The types of server lists we can get */
@@ -53,6 +60,16 @@ protected:
 	NetworkAddressList bind;
 	/** The opened sockets. */
 	SocketList sockets;
+
+	uint64 fragment_token;
+
+	struct FragmentSet {
+		uint64 token;
+		NetworkAddress address;
+		time_t create_time;
+		std::vector<std::string> fragments;
+	};
+	std::vector<FragmentSet> fragments;
 
 	NetworkRecvStatus CloseConnection(bool error = true);
 
@@ -105,6 +122,8 @@ protected:
 	 * @param client_addr The origin of the packet.
 	 */
 	virtual void Receive_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr);
+
+	virtual void Receive_EX_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr);
 
 	/**
 	 * Query for detailed information about companies.
@@ -230,6 +249,8 @@ protected:
 	 * @param config the GRF to handle
 	 */
 	virtual void HandleIncomingNetworkGameInfoGRFConfig(GRFConfig *config) { NOT_REACHED(); }
+
+	virtual void Receive_EX_MULTI(Packet *p, NetworkAddress *client_addr);
 public:
 	NetworkUDPSocketHandler(NetworkAddressList *bind = NULL);
 
@@ -243,7 +264,9 @@ public:
 	void ReceivePackets();
 
 	void SendNetworkGameInfo(Packet *p, const NetworkGameInfo *info);
+	void SendNetworkGameInfoExtended(Packet *p, const NetworkGameInfo *info, uint16 version);
 	void ReceiveNetworkGameInfo(Packet *p, NetworkGameInfo *info);
+	void ReceiveNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info);
 };
 
 #endif /* ENABLE_NETWORK */

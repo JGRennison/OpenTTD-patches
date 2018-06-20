@@ -15,6 +15,8 @@
 #include "strings_func.h"
 #include "company_base.h"
 #include "vehicle_base.h"
+#include "station_base.h"
+#include "waypoint_base.h"
 #include "table/strings.h"
 
 #include "safeguards.h"
@@ -54,6 +56,9 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 {
 	char *b = this->buffer;
 	const char *last = lastof(this->buffer);
+	auto dump_flags = [&](const Vehicle *u) {
+		b = u->DumpVehicleFlags(b, last);
+	};
 	if (v) {
 		b += seprintf(b, last, "veh: %u: (", v->index);
 		if (Vehicle::GetIfValid(v->index) != v) {
@@ -62,10 +67,8 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 		}
 		SetDParam(0, v->index);
 		b = GetString(b, STR_VEHICLE_NAME, last);
-		b += seprintf(b, last, ", c:%d", (int) v->owner);
-		if (HasBit(v->subtype, GVSF_VIRTUAL)) {
-			b += seprintf(b, last, ", VIRT");
-		}
+		b += seprintf(b, last, ", c:%d, ", (int) v->owner);
+		dump_flags(v);
 		if (v->First() && v->First() != v) {
 			b += seprintf(b, last, ", front: %u: (", v->First()->index);
 			if (Vehicle::GetIfValid(v->First()->index) != v->First()) {
@@ -74,11 +77,40 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 			}
 			SetDParam(0, v->First()->index);
 			b = GetString(b, STR_VEHICLE_NAME, last);
+			b += seprintf(b, last, ", ");
+			dump_flags(v->First());
 			b += seprintf(b, last, ")");
 		}
 		b += seprintf(b, last, ")");
 	} else {
 		b += seprintf(b, last, "veh: NULL");
+	}
+	return this->buffer;
+}
+
+const char *scope_dumper::StationInfo(const BaseStation *st)
+{
+	char *b = this->buffer;
+	const char *last = lastof(this->buffer);
+
+	if (st) {
+		const bool waypoint = Waypoint::IsExpected(st);
+		b += seprintf(b, last, "%s: %u: (", waypoint ? "waypoint" : "station", st->index);
+		SetDParam(0, st->index);
+		b = GetString(b, waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME, last);
+		b += seprintf(b, last, ", c:%d, facil: ", (int) st->owner);
+		auto dump_facil = [&](char c, StationFacility flag) {
+			if (st->facilities & flag) b += seprintf(b, last, "%c", c);
+		};
+		dump_facil('R', FACIL_TRAIN);
+		dump_facil('T', FACIL_TRUCK_STOP);
+		dump_facil('B', FACIL_BUS_STOP);
+		dump_facil('A', FACIL_AIRPORT);
+		dump_facil('D', FACIL_DOCK);
+		dump_facil('W', FACIL_WAYPOINT);
+		b += seprintf(b, last, ")");
+	} else {
+		b += seprintf(b, last, "station/waypoint: NULL");
 	}
 	return this->buffer;
 }

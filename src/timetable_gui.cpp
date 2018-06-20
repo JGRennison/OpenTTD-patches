@@ -26,6 +26,7 @@
 #include "settings_type.h"
 #include "viewport_func.h"
 #include "schdispatch.h"
+#include "vehiclelist.h"
 
 #include "widgets/timetable_widget.h"
 
@@ -181,6 +182,7 @@ struct TimetableWindow : Window {
 	bool query_is_speed_query; ///< The currently open query window is a speed query and not a time query.
 	bool set_start_date_all;   ///< Set start date using minutes text entry: this is a set all vehicle (ctrl-click) action
 	bool change_timetable_all; ///< Set wait time or speed for all timetable entries (ctrl-click) action
+	int summary_warnings = 0;  ///< NUmber of summary warnings shown
 
 	TimetableWindow(WindowDesc *desc, WindowNumber window_number) :
 			Window(desc),
@@ -213,8 +215,15 @@ struct TimetableWindow : Window {
 	{
 		assert(HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED));
 
-		bool travelling = (!(v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_WAITING)) || v->current_order.GetNonStopType() == ONSF_STOP_EVERYWHERE);
+		bool travelling = (!(v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) || v->current_order.GetNonStopType() == ONSF_STOP_EVERYWHERE);
 		Ticks start_time = -v->current_order_time;
+		if (v->cur_timetable_order_index != INVALID_VEH_ORDER_ID && v->cur_timetable_order_index != v->cur_real_order_index) {
+			/* vehicle is taking a conditional order branch, adjust start time to compensate */
+			const Order *real_current_order = v->GetOrder(v->cur_real_order_index);
+			const Order *real_timetable_order = v->GetOrder(v->cur_timetable_order_index);
+			assert(real_timetable_order->IsType(OT_CONDITIONAL));
+			start_time += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+		}
 
 		FillTimetableArrivalDepartureTable(v, v->cur_real_order_index % v->GetNumOrders(), travelling, table, start_time);
 
@@ -231,16 +240,19 @@ struct TimetableWindow : Window {
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
 				this->deparr_abbr_width = max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
 				size->width = WD_FRAMERECT_LEFT + this->deparr_abbr_width + 10 + this->deparr_time_width + WD_FRAMERECT_RIGHT;
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
 				resize->height = FONT_HEIGHT_NORMAL;
 				size->height = WD_FRAMERECT_TOP + 8 * resize->height + WD_FRAMERECT_BOTTOM;
 				break;
 
-			case WID_VT_SUMMARY_PANEL:
-				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+			case WID_VT_SUMMARY_PANEL: {
+				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
+				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + this->summary_warnings * max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
 				break;
+			}
 		}
 	}
 
@@ -329,6 +341,12 @@ struct TimetableWindow : Window {
 		}
 	}
 
+	virtual EventState OnCTRLStateChange() OVERRIDE
+	{
+		this->UpdateSelectionStates();
+		this->SetDirty();
+		return ES_NOT_HANDLED;
+	}
 
 	virtual void OnPaint()
 	{
@@ -355,13 +373,14 @@ struct TimetableWindow : Window {
 			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 			this->SetWidgetDisabledState(WID_VT_CHANGE_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_CLEAR_SPEED, disable_speed);
-			this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !v->IsOrderListShared());
+			this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !(v->IsOrderListShared() || _settings_client.gui.enable_single_veh_shared_order_gui));
 
 			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders.list == NULL || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
 			this->SetWidgetDisabledState(WID_VT_RESET_LATENESS, v->orders.list == NULL);
 			this->SetWidgetDisabledState(WID_VT_AUTOFILL, v->orders.list == NULL || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 			this->SetWidgetDisabledState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
 			this->EnableWidget(WID_VT_AUTOMATE);
+			this->EnableWidget(WID_VT_ADD_VEH_GROUP);
 		} else {
 			this->DisableWidget(WID_VT_START_DATE);
 			this->DisableWidget(WID_VT_CHANGE_TIME);
@@ -373,13 +392,14 @@ struct TimetableWindow : Window {
 			this->DisableWidget(WID_VT_AUTOMATE);
 			this->DisableWidget(WID_VT_AUTO_SEPARATION);
 			this->DisableWidget(WID_VT_SHARED_ORDER_LIST);
+			this->DisableWidget(WID_VT_ADD_VEH_GROUP);
 		}
 
 		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
 		this->SetWidgetLoweredState(WID_VT_AUTOMATE, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 		this->SetWidgetLoweredState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
 		this->SetWidgetLoweredState(WID_VT_SCHEDULED_DISPATCH, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
-		
+
 		this->SetWidgetDisabledState(WID_VT_SCHEDULED_DISPATCH, v->orders.list == NULL);
 
 		this->DrawWidgets();
@@ -542,6 +562,92 @@ struct TimetableWindow : Window {
 					SetTimetableParams(0, abs(v->lateness_counter));
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE);
 				}
+				y += FONT_HEIGHT_NORMAL;
+
+				{
+					bool have_conditional = false;
+					bool have_missing_wait = false;
+					bool have_missing_travel = false;
+					bool have_bad_full_load = false;
+					bool have_non_timetabled_conditional_branch = false;
+
+					const bool assume_timetabled = HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE) || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+					for (int n = 0; n < v->GetNumOrders(); n++) {
+						const Order *order = v->GetOrder(n);
+						if (order->IsType(OT_CONDITIONAL)) {
+							have_conditional = true;
+							if (!order->IsWaitTimetabled()) have_non_timetabled_conditional_branch = true;
+						} else {
+							if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
+								have_missing_wait = true;
+							}
+							if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
+								have_missing_travel = true;
+							}
+						}
+
+						if (order->IsType(OT_GOTO_STATION) && !have_bad_full_load && (assume_timetabled || order->IsWaitTimetabled())) {
+							if (order->GetLoadType() & OLFB_FULL_LOAD) have_bad_full_load = true;
+							if (order->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+								for (CargoID c = 0; c < NUM_CARGO; c++) {
+									if (order->GetCargoLoadTypeRaw(c) & OLFB_FULL_LOAD) {
+										have_bad_full_load = true;
+										break;
+									}
+								}
+							}
+						}
+					}
+
+					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+					const int step_height = max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+					const int text_offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
+					const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
+					const bool rtl = _current_text_dir == TD_RTL;
+
+					int warning_count = 0;
+
+					auto draw_info = [&](StringID text, bool warning) {
+						int left = r.left + WD_FRAMERECT_LEFT;
+						int right = r.right - WD_FRAMERECT_RIGHT;
+						if (warning) {
+							DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + warning_offset_y);
+							if (rtl) {
+								right -= (warning_dimensions.width + 10);
+							} else {
+								left += (warning_dimensions.width + 10);
+							}
+						}
+						DrawString(left, right, y + text_offset_y, text);
+						y += step_height;
+						warning_count++;
+					};
+
+					if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+						if (have_conditional) draw_info(STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL, true);
+						if (have_missing_wait || have_missing_travel) {
+							if (assume_timetabled) {
+								draw_info(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
+							} else {
+								draw_info(STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS, true);
+							}
+						} else if (v->GetNumOrders() == 0) {
+							draw_info(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
+						} else if (!have_conditional) {
+							draw_info(v->IsOrderListShared() ? STR_TIMETABLE_AUTOSEP_OK : STR_TIMETABLE_AUTOSEP_SINGLE_VEH, false);
+						}
+					}
+					if (have_bad_full_load) draw_info(STR_TIMETABLE_WARNING_FULL_LOAD, true);
+					if (have_conditional && HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE)) draw_info(STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL, true);
+					if (total_time && have_non_timetabled_conditional_branch) draw_info(STR_TIMETABLE_NON_TIMETABLED_BRANCH, false);
+
+					if (warning_count != this->summary_warnings) {
+						TimetableWindow *mutable_this = const_cast<TimetableWindow *>(this);
+						mutable_this->summary_warnings = warning_count;
+						mutable_this->ReInit();
+					}
+				}
+
 				break;
 			}
 		}
@@ -699,6 +805,11 @@ struct TimetableWindow : Window {
 			case WID_VT_SHARED_ORDER_LIST:
 				ShowVehicleListWindow(v);
 				break;
+
+			case WID_VT_ADD_VEH_GROUP: {
+				ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+				break;
+			}
 		}
 
 		this->SetDirty();
@@ -746,6 +857,11 @@ struct TimetableWindow : Window {
 				}
 				break;
 			}
+
+			case WID_VT_ADD_VEH_GROUP: {
+				DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), NULL, str);
+				break;
+			}
 		}
 	}
 
@@ -762,6 +878,7 @@ struct TimetableWindow : Window {
 	{
 		this->GetWidget<NWidgetStacked>(WID_VT_ARRIVAL_DEPARTURE_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_VT_EXPECTED_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : 1);
+		this->GetWidget<NWidgetStacked>(WID_VT_SEL_SHARED)->SetDisplayedPlane(this->vehicle->owner == _local_company && _ctrl_pressed ? 1 : 0);
 	}
 
 	virtual void OnFocus(Window *previously_focused_window)
@@ -829,7 +946,10 @@ static const NWidgetPart _nested_timetable_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL, NC_EQUALSIZE),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VT_SHARED_ORDER_LIST), SetFill(0, 1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VT_SEL_SHARED),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VT_SHARED_ORDER_LIST), SetFill(0, 1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_ADD_VEH_GROUP), SetFill(0, 1), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
+			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY), SetFill(0, 1),
 		EndContainer(),

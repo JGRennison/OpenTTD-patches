@@ -644,10 +644,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}اختي
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}تشغيل / ايقاف العشوائي
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}اظهار اطار اختيار الموسيقى
 
-STR_ERROR_NO_SONGS                                              :{WHITE}لا تحتوى قاعده الموسيقى المُختاره على اى اغانى. لن تُعزَف اى اغانى
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}برنامج اختيار الموسيقى
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}قائمة المعزوفات
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}برنامج - '{STRING}'
@@ -1177,7 +1174,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR                         :لون الار
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :اخضر
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :اخضر غامق
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :بنفسجي
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :عكس تحريك الشاشة : {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :تحريك سلس في نوافذ المشاهدة: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :عرض المقاسات عند استخدام ادوات البناء المختلفة: {STRING}
 STR_CONFIG_SETTING_LIVERIES                                     :عرض لون و شعار الشركة: {STRING}
@@ -1196,7 +1192,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :الأوامر
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :للتحكم
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :عدم استخدام
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :تصفح بالزر الايسر: {STRING}
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :حفظ تلقائي : {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :اختر الوقت بين كل عملية حفظ اتوماتيكية
@@ -2318,7 +2313,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :ارض مملو
 STR_ABOUT_OPENTTD                                               :{WHITE}حول النسخة المفتوحة
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}الحقوق الاصلية {COPYRIGHT} كريس سوير 1995 , جميع الحقوق محفوظة
 STR_ABOUT_VERSION                                               :{BLACK}النسخة المفتوحة رقم {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}النسخة المفتوحة {COPYRIGHT}2002-2017 فريق النسخة المفتوحة
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}النسخة المفتوحة {COPYRIGHT}2002-2018 فريق النسخة المفتوحة
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}حفظ اللعبة
@@ -2592,8 +2587,6 @@ STR_TOWN_POPULATION                                             :{BLACK}سكان
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} - مدينة -
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}السكان:  {ORANGE}{COMMA}{BLACK}   المنازل:     {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}الركاب الشهر الماضي: {ORANGE}{COMMA}{BLACK}  الأقصى: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}طرود البريد الشهر الماضي: {ORANGE}{COMMA}{BLACK}  الأقصى: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK} نمو المدينة يتطلب بضائع
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} مطلوب
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK}مطلوب في الشتاء

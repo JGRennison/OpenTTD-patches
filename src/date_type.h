@@ -17,7 +17,7 @@ typedef uint16 DateFract; ///< The fraction of a date we're in, i.e. the number 
 typedef int32  Ticks;     ///< The type to store ticks in
 typedef int32 DateTicks;  ///< The type to store dates in when tick-precision is required
 typedef int64 DateTicksScaled;  ///< The type to store dates scaled by the day length factor in when tick-precision is required
-typedef int32  Minutes;   ///< The type to store minutes in
+typedef int64  Minutes;   ///< The type to store minutes in
 
 typedef int32  Year;  ///< Type for the year, note: 0 based, i.e. starts at the year 0.
 typedef uint8  Month; ///< Type for the month, note: 0 based, i.e. 0 = January, 11 = December.

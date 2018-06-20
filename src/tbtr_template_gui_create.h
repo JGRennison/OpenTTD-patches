@@ -14,6 +14,6 @@
 
 #include "tbtr_template_vehicle.h"
 
-void ShowTemplateCreateWindow(TemplateVehicle*, bool*, int);
+void ShowTemplateCreateWindow(TemplateVehicle*, bool*);
 
 #endif

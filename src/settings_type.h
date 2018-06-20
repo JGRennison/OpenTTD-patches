@@ -71,6 +71,15 @@ struct DifficultySettings {
 	byte   town_council_tolerance;           ///< minimum required town ratings to be allowed to demolish stuff
 };
 
+/** Settings relating to viewport/smallmap scrolling. */
+enum ViewportScrollMode {
+	VSM_VIEWPORT_RMB_FIXED, ///< Viewport moves with mouse movement on holding right mouse button, cursor position is fixed.
+	VSM_MAP_RMB_FIXED,      ///< Map moves with mouse movement on holding right mouse button, cursor position is fixed.
+	VSM_MAP_RMB,            ///< Map moves with mouse movement on holding right mouse button, cursor moves.
+	VSM_MAP_LMB,            ///< Map moves with mouse movement on holding left mouse button, cursor moves.
+	VSM_END,                ///< Number of scroll mode settings.
+};
+
 /** Settings related to the GUI and other stuff that is not saved in the savegame. */
 struct GUISettings {
 	bool   sg_full_load_any;                 ///< new full load calculation, any cargo must be full read from pre v93 savegames
@@ -86,7 +95,7 @@ struct GUISettings {
 	uint16 hover_delay_ms;                   ///< time required to activate a hover event, in milliseconds
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
-	bool   reverse_scroll;                   ///< right-Click-Scrolling scrolls in the opposite direction
+	uint8  scroll_mode;                      ///< viewport scroll mode
 	bool   smooth_scroll;                    ///< smooth scroll viewports
 	bool   measure_tooltip;                  ///< show a permanent tooltip when dragging tools
 	byte   liveries;                         ///< options for displaying company liveries, 0=none, 1=self, 2=all
@@ -105,6 +114,7 @@ struct GUISettings {
 	bool   threaded_saves;                   ///< should we do threaded saves?
 	bool   keep_all_autosave;                ///< name the autosave in a different way
 	bool   autosave_on_exit;                 ///< save an autosave when you quit the game, but do not ask "Do you really want to quit?"
+	bool   autosave_on_network_disconnect;   ///< save an autosave when you get disconnected from a network game with an error?
 	uint8  date_format_in_default_names;     ///< should the default savegame/screenshot name use long dates (31th Dec 2008), short dates (31-12-2008) or ISO dates (2008-12-31)
 	byte   max_num_autosaves;                ///< controls how many autosavegames are made before the game starts to overwrite (names them 0 to max_num_autosaves - 1)
 	bool   population_in_label;              ///< show the population of a town in his label?
@@ -138,7 +148,6 @@ struct GUISettings {
 	uint8  departure_conditionals;           ///< how to handle conditional orders
 	bool   departure_show_all_stops;         ///< whether to show stops regardless of loading/unloading done at them
 	bool   departure_merge_identical;        ///< whether to merge identical departures
-	bool   left_mouse_btn_scrolling;         ///< left mouse button scroll
 	bool   right_mouse_wnd_close;            ///< close window with right click
 	bool   pause_on_newgame;                 ///< whether to start new games paused or not
 	bool   enable_signal_gui;                ///< show the signal GUI when the signal button is pressed
@@ -147,7 +156,7 @@ struct GUISettings {
 	bool   timetable_leftover_ticks;         ///< whether to show leftover ticks after converting to minutes/days, in the timetable
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
 	bool   timetable_start_text_entry;       ///< whether to enter timetable start times as text (hhmm format)
-	uint8  ticks_per_minute;                 ///< how many ticks per minute
+	uint16 ticks_per_minute;                 ///< how many ticks per minute
 	uint8  date_with_time;                   ///< whether to show the month and year with the time
 	uint16 clock_offset;                     ///< clock offset in minutes
 	bool   quick_goto;                       ///< Allow quick access to 'goto button' in vehicle orders window
@@ -173,9 +182,15 @@ struct GUISettings {
 	bool   show_vehicle_group_in_details;    ///< show vehicle group in vehicle details window top widget
 	bool   show_restricted_signal_default;   ///< Show restricted electric signals using the default sprite
 	bool   show_adv_tracerestrict_features;  ///< Show advanced trace restrict features in UI
+	bool   show_progsig_ui;                  ///< Show programmable signals feature in UI
+	bool   show_veh_list_cargo_filter;       ///< Show cargo list filter in UI
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
 	bool   show_vehicle_list_company_colour; ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
+	bool   enable_single_veh_shared_order_gui;    ///< enable showing a single vehicle in the shared order GUI window
+	bool   show_adv_load_mode_features;      ///< enable advanced loading mode features in UI
+	bool   disable_top_veh_list_mass_actions;     ///< disable mass actions buttons for non-group vehicle lists
+	bool   adv_sig_bridge_tun_modes;         ///< Enable advanced modes for signals on bridges/tunnels.
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.
@@ -539,7 +554,8 @@ struct EconomySettings {
 	bool   give_money;                       ///< allow giving other companies money
 	bool   mod_road_rebuild;                 ///< roadworks remove unnecessary RoadBits
 	bool   multiple_industry_per_town;       ///< allow many industries of the same type per town
-	uint8  town_growth_rate;                 ///< town growth rate
+	int8   town_growth_rate;                 ///< town growth rate
+	uint8  town_growth_cargo_transported;    ///< percentage of town growth rate which depends on proportion of transported cargo in the last month
 	uint8  larger_towns;                     ///< the number of cities to build. These start off larger and grow twice as fast
 	uint8  initial_city_size;                ///< multiplier for the initial size of the cities compared to towns
 	TownLayoutByte town_layout;              ///< select town layout, @see TownLayout
@@ -589,6 +605,7 @@ struct StationSettings {
 	bool   never_expire_airports;            ///< never expire airports
 	byte   station_spread;                   ///< amount a station may spread
 	byte   catchment_increase;               ///< amount by which station catchment is increased
+	byte   cargo_class_rating_wait_time;     ///< station rating tolerance to time since last cargo pickup depends on cargo class
 };
 
 /** Default settings for vehicles. */

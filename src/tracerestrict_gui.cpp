@@ -225,11 +225,15 @@ static const TraceRestrictDropDownListSet _long_reserve_value = {
 static const StringID _wait_at_pbs_value_str[] = {
 	STR_TRACE_RESTRICT_WAIT_AT_PBS,
 	STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL,
+	STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT,
+	STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT,
 	INVALID_STRING_ID
 };
 static const uint _wait_at_pbs_value_val[] = {
-	0,
-	1,
+	TRWAPVF_WAIT_AT_PBS,
+	TRWAPVF_CANCEL_WAIT_AT_PBS,
+	TRWAPVF_PBS_RES_END_WAIT,
+	TRWAPVF_CANCEL_PBS_RES_END_WAIT,
 };
 
 /** value drop down list for wait at PBS types strings and values */
@@ -457,7 +461,7 @@ static int CDECL SlotNameSorter(const TraceRestrictSlot * const *a, const TraceR
 /**
  * Get a DropDownList of the group list
  */
-static DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected)
+DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected)
 {
 	GUIList<const TraceRestrictSlot*> list;
 
@@ -506,6 +510,9 @@ static const StringID _slot_op_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE,
 	STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT,
 	STR_TRACE_RESTRICT_SLOT_RELEASE_BACK,
+	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT,
+	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE,
+	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE,
 	INVALID_STRING_ID,
 };
 static const uint _slot_op_cond_ops_val[] = {
@@ -513,6 +520,9 @@ static const uint _slot_op_cond_ops_val[] = {
 	TRSCOF_ACQUIRE_TRY,
 	TRSCOF_RELEASE_FRONT,
 	TRSCOF_RELEASE_BACK,
+	TRSCOF_PBS_RES_END_ACQ_WAIT,
+	TRSCOF_PBS_RES_END_ACQ_TRY,
+	TRSCOF_PBS_RES_END_RELEASE,
 };
 /** cargo conditional operators dropdown list set */
 static const TraceRestrictDropDownListSet _slot_op_cond_ops = {
@@ -1054,7 +1064,27 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 
 			case TRIT_WAIT_AT_PBS:
-				instruction_string = GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL : STR_TRACE_RESTRICT_WAIT_AT_PBS;
+				switch (static_cast<TraceRestrictWaitAtPbsValueField>(GetTraceRestrictValue(item))) {
+					case TRWAPVF_WAIT_AT_PBS:
+						instruction_string = STR_TRACE_RESTRICT_WAIT_AT_PBS;
+						break;
+
+					case TRWAPVF_CANCEL_WAIT_AT_PBS:
+						instruction_string = STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL;
+						break;
+
+					case TRWAPVF_PBS_RES_END_WAIT:
+						instruction_string = STR_TRACE_RESTRICT_PBS_RES_END_WAIT;
+						break;
+
+					case TRWAPVF_CANCEL_PBS_RES_END_WAIT:
+						instruction_string = STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
 				break;
 
 			case TRIT_SLOT:
@@ -1073,6 +1103,18 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 					case TRSCOF_RELEASE_FRONT:
 						instruction_string = STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM;
+						break;
+
+					case TRSCOF_PBS_RES_END_ACQ_WAIT:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM;
+						break;
+
+					case TRSCOF_PBS_RES_END_ACQ_TRY:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM;
+						break;
+
+					case TRSCOF_PBS_RES_END_RELEASE:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM;
 						break;
 
 					default:
@@ -1389,8 +1431,7 @@ public:
 				switch (GetTraceRestrictTypeProperties(item).value_type) {
 					case TRVT_SLOT_INDEX_INT: {
 						int selected;
-						DropDownList *dlist = GetSlotDropDownList(this->GetOwner(),
-								*(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1), selected);
+						DropDownList *dlist = GetSlotDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
 						if (dlist != NULL) ShowDropDownList(this, dlist, selected, TR_WIDGET_LEFT_AUX_DROPDOWN);
 						break;
 					}
@@ -2273,7 +2314,7 @@ private:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
-									GetTraceRestrictValue(item) ? STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL : STR_TRACE_RESTRICT_WAIT_AT_PBS;
+									GetDropDownStringByValue(&_wait_at_pbs_value, GetTraceRestrictValue(item));
 							break;
 
 						case TRVT_GROUP_INDEX:
@@ -2597,6 +2638,8 @@ enum TraceRestrictSlotWindowWidgets {
 	WID_TRSL_SET_SLOT_MAX_OCCUPANCY,
 	WID_TRSL_SORT_BY_ORDER,
 	WID_TRSL_SORT_BY_DROPDOWN,
+	WID_TRSL_FILTER_BY_CARGO,
+	WID_TRSL_FILTER_BY_CARGO_SEL,
 	WID_TRSL_LIST_VEHICLE,
 	WID_TRSL_LIST_VEHICLE_SCROLLBAR,
 };
@@ -2637,6 +2680,9 @@ static const NWidgetPart _nested_slot_widgets[] = {
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRSL_SORT_BY_ORDER), SetMinimalSize(81, 12), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_SORT_BY_DROPDOWN), SetMinimalSize(167, 12), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_TRSL_FILTER_BY_CARGO_SEL),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_TRSL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+				EndContainer(),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetResize(1, 0), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
@@ -2662,7 +2708,6 @@ private:
 		VGC_END
 	};
 
-	VehicleID vehicle_sel; ///< Selected vehicle
 	TraceRestrictSlotID slot_sel;     ///< Selected slot (for drag/drop)
 	bool slot_set_max_occupancy;      ///< True if slot max occupancy is being changed, instead of renaming
 	TraceRestrictSlotID slot_rename;  ///< Slot being renamed or max occupancy changed, INVALID_TRACE_RESTRICT_SLOT_ID if none
@@ -2780,12 +2825,13 @@ public:
 	{
 		this->CreateNestedTree();
 
+		this->CheckCargoFilterEnableState(WID_TRSL_FILTER_BY_CARGO_SEL, false);
+
 		this->vscroll = this->GetScrollbar(WID_TRSL_LIST_VEHICLE_SCROLLBAR);
 		this->slot_sb = this->GetScrollbar(WID_TRSL_LIST_SLOTS_SCROLLBAR);
 		this->sorting = &_sorting.train;
 
 		this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
-		this->vehicle_sel = INVALID_VEHICLE;
 		this->slot_sel = INVALID_TRACE_RESTRICT_SLOT_ID;
 		this->slot_rename = INVALID_TRACE_RESTRICT_SLOT_ID;
 		this->slot_set_max_occupancy = false;
@@ -2879,7 +2925,19 @@ public:
 		if (this->vli.index != ALL_TRAINS_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(this->vli.index)) {
 			this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
 		}
+
+		if (gui_scope) this->CheckCargoFilterEnableState(WID_TRSL_FILTER_BY_CARGO_SEL, true);
+
 		this->SetDirty();
+	}
+
+	virtual void SetStringParameters(int widget) const
+	{
+		switch (widget) {
+			case WID_TRSL_FILTER_BY_CARGO:
+				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
+				break;
+		}
 	}
 
 	virtual void OnPaint()
@@ -2913,6 +2971,8 @@ public:
 
 		/* Set text of sort by dropdown */
 		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
+
+		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
 
 		this->DrawWidgets();
 	}
@@ -2970,9 +3030,14 @@ public:
 				ShowDropDownMenu(this, this->vehicle_sorter_names, this->vehicles.SortType(),  WID_TRSL_SORT_BY_DROPDOWN, 0, 0);
 				return;
 
+			case WID_TRSL_FILTER_BY_CARGO: // Cargo filter dropdown
+				ShowDropDownMenu(this, this->cargo_filter_texts, this->cargo_filter_criteria, WID_TRSL_FILTER_BY_CARGO, 0, 0);
+				break;
+
 			case WID_TRSL_ALL_VEHICLES: // All vehicles button
 				if (this->vli.index != ALL_TRAINS_TRACE_RESTRICT_SLOT_ID) {
 					this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
+					this->slot_sel = INVALID_TRACE_RESTRICT_SLOT_ID;
 					this->vehicles.ForceRebuild();
 					this->SetDirty();
 				}
@@ -3031,12 +3096,14 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_ALL_VEHICLES: // All vehicles
-				DoCommandP(0, this->slot_sel, this->vehicle_sel, CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE));
+				if (this->slot_sel != INVALID_TRACE_RESTRICT_SLOT_ID) {
+					DoCommandP(0, this->slot_sel, this->vehicle_sel, CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE));
 
-				this->vehicle_sel = INVALID_VEHICLE;
-				this->slot_over = INVALID_GROUP;
+					this->vehicle_sel = INVALID_VEHICLE;
+					this->slot_over = INVALID_GROUP;
 
-				this->SetDirty();
+					this->SetDirty();
+				}
 				break;
 
 			case WID_TRSL_LIST_SLOTS: { // Matrix slot
@@ -3106,6 +3173,10 @@ public:
 		switch (widget) {
 			case WID_TRSL_SORT_BY_DROPDOWN:
 				this->vehicles.SetSortType(index);
+				break;
+
+			case WID_TRSL_FILTER_BY_CARGO: // Select a cargo filter criteria
+				this->SetCargoFilterIndex(index);
 				break;
 
 			default: NOT_REACHED();

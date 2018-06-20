@@ -651,6 +651,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}Aucune musique disponible
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Piste
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Titre
@@ -664,21 +665,21 @@ STR_MUSIC_TOOLTIP_DRAG_SLIDERS_TO_SET_MUSIC                     :{BLACK}Faire gl
 STR_MUSIC_TOOLTIP_SELECT_ALL_TRACKS_PROGRAM                     :{BLACK}Choisir le programme «{NBSP}Tout{NBSP}»
 STR_MUSIC_TOOLTIP_SELECT_OLD_STYLE_MUSIC                        :{BLACK}Choisir le programme musical «{NBSP}Ancien style{NBSP}»
 STR_MUSIC_TOOLTIP_SELECT_NEW_STYLE_MUSIC                        :{BLACK}Choisir le programme musical «{NBSP}Nouveau style{NBSP}»
-STR_MUSIC_TOOLTIP_SELECT_EZY_STREET_STYLE                       :{BLACK}Sélectionner le programme musical «{NBSP}Ezy Street{NBSP}»
+STR_MUSIC_TOOLTIP_SELECT_EZY_STREET_STYLE                       :{BLACK}Choisir le programme musical «{NBSP}Ezy Street{NBSP}»
 STR_MUSIC_TOOLTIP_SELECT_CUSTOM_1_USER_DEFINED                  :{BLACK}Choisir le programme personnalisé «{NBSP}Personnalisé 1{NBSP}»
 STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Choisir le programme personnalisé «{NBSP}Personnalisé 2{NBSP}»
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Activer/Désactiver le mode aléatoire
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Afficher la fenêtre de sélection de pistes
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Un ensemble de musique vide a été choisi. Aucune musique ne sera jouée.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Sélection du programme musical
-STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
+STR_PLAYLIST_MUSIC_SELECTION_SETNAME                            :{WHITE}Programme musical - «{NBSP}{STRING}{NBSP}»
+STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} «{NBSP}{STRING}{NBSP}»
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Index des pistes
-STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programme - '{STRING}'
+STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programme - «{NBSP}{STRING}{NBSP}»
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Effacer
+STR_PLAYLIST_CHANGE_SET                                         :{BLACK}Changer d'ensemble
 STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Effacer le programme actuel (Personnalisé 1 ou Personnalisé 2 seulement)
+STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}Choisir un autre ensemble de musique
 STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Cliquer sur une piste pour l'ajouter au programme courant (Personnalisé 1 ou Personnalisé 2 seulement)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Cliquer sur une piste pour la retirer du programme courant (Personnalisé 1 ou Personnalisé 2 seulement)
 
@@ -1338,8 +1339,12 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Couleur du terr
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Vert
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Vert foncé
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violet
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Inverser la direction lors du défilement avec la souris{NBSP}: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Comportement lors du défilement de la carte avec le bouton droit de la souris. Quand il est désactivé, la souris déplace la caméra. Quand il est activé, la souris déplace la carte
+STR_CONFIG_SETTING_SCROLLMODE                                   :Défilement de la vue{NBSP}: {STRING}
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Comportement lors du défilement de la carte
+STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Défilement de la vue par clic droit, position de la souris verrouillée
+STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Défilement de la carte par clic droit, position de la souris verrouillée
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :Défilement de la carte par clic droit
+STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Défilement de la carte par clic gauche
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Défilement régulier de la vue{NBSP}: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Contrôle comment la vue principale défile jusqu'à une position spécifique lors d'un clic sur la mini-carte ou pour atteindre un objet précis sur la carte. Si activé, la vue défile doucement, si désactivé elle saute directement à la cible
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Montrer une infobulle de mesure lors de l'utilisation de divers outils de construction{NBSP}: {STRING}
@@ -1371,8 +1376,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Commande-clic
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl-clic
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Désactivé
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Défilement par clic gauche{NBSP}: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Active le défilement de la carte en la glissant avec le bouton gauche de la souris. C'est surtout utile pour les écrans tactiles
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Fermer une fenêtre en cliquant droit{NBSP}: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Fermer une fenêtre en cliquant droit à l’intérieur de celle-ci. Désactive l'infobulle sur clic droit{NBSP}!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Sauvegarde automatique{NBSP}: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Sélectionner l'intervalle de temps entre les sauvegardes automatiques
@@ -2688,7 +2693,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terrain apparte
 STR_ABOUT_OPENTTD                                               :{WHITE}À propos de OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyright original {COPYRIGHT} 1995 Chris Sawyer, Tous droits réservés
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 L'équipe OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 L'équipe OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Sauvegarder la partie
@@ -2981,8 +2986,7 @@ STR_TOWN_POPULATION                                             :{BLACK}Populati
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Métropole)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Population{NBSP}: {ORANGE}{COMMA}{BLACK} − Maisons{NBSP}: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Passagers le mois dernier{NBSP}: {ORANGE}{COMMA}{BLACK} − max.{NBSP}: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Courrier le mois dernier{NBSP}: {ORANGE}{COMMA}{BLACK} − max.{NBSP}: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} le mois dernier{NBSP}: {ORANGE}{COMMA}{BLACK} - max.{NBSP}: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Cargaison nécessaire à la croissance de la ville{NBSP}:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} requis
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} requis en hiver
@@ -3113,8 +3117,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Accepte
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Afficher les marchandises acceptées
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Accepte{NBSP}: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Cette station a les droits de transport exclusifs dans cette ville.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} a acheté les droits de transport exclusifs dans cette ville.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Cette station a les droits de transport exclusifs dans cette ville.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} a acheté les droits de transport exclusifs dans cette ville.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Qualité
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Afficher la qualité de service de la station
@@ -3295,11 +3299,9 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Nécessi
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Nécessite{NBSP}: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
-STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Nécessite
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{CARGO_LONG} {BLACK}en attente
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT_TEXT                      :{YELLOW}{CARGO_LONG}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Nécessite{NBSP}:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}{NBSP}: {CARGO_SHORT} en attente{STRING}
 
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produit{NBSP}: {YELLOW}{STRING}{STRING}
@@ -3368,6 +3370,10 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Retirer tous le
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Renommer un groupe
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Profit cette année{NBSP}:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Profit l'année précédente{NBSP}:
+STR_GROUP_OCCUPANCY                                             :Utilisation actuelle{NBSP}:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nouveaux véhicules ferroviaires

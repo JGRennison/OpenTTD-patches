@@ -669,10 +669,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Chọn k
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Bật/tắt chơi nhạc ngẫu nhiên
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Hiện cửa số chọn bài nhạc
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Đã chọn gói nhạc chuẩn nhưng không có bài nào. Không có bài nào để chơi
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Chọn Kiểu Chơi Nhạc
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Bảng Bài Nhạc
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Chương Trình - '{STRING}'
@@ -1337,8 +1334,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Màu sắc củ
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Lục
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Lục tối
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Tím
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Đảo ngược hướng cuộn: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Phản ứng khi cuộn bản đồ bằng nút chuột phải. Nếu tắt, thì chuột di chuyển theo vùng nhìn. Nếu bật thì chuột di chuyển theo bản đồ
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Cuộn uyển chuyển cửa sổ: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Điều khiển cách màn hình chính cuộn tới vị trí cụ thể khi nháy chuột vào bản đồ nhỏ hoặc khi gõ lệnh cuộn tới đối tượng trên bản đồ. Nếu bật, thì sẽ cuộn trượt, nếu tắt thì nhảy thẳng tới vị trí đó.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Hiện bảng chú giải đo lường khi dùng các công cụ xây dựng: {STRING}
@@ -1370,9 +1365,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+Click
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Click
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Tắt
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Cuộn chuột trái: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Cho phép cuộn bản đồ bằng cách kéo với nút trái chuột. Tùy chọn này sẽ hữu ích khi dùng màn hình cảm ứng
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Đóng cửa số khi click chuột phải: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Đóng cửa sổ bằng cách bấm chuột phải vào đó. Ngăn tooltip bằng cách bấm phải!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Tự động save: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Chọn chu kỳ giữa mỗi lần tự động save
@@ -1762,6 +1756,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Kiểm t
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Hiển thị thiết lập AI và Game script
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Thoát 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK}Gói đồ họa cơ sở đang chọn bị thiếu  {NUM} sprite. Hãy cập nhật gói cơ sở này.
 STR_INTRO_TRANSLATION                                           :{BLACK}Bản dịch này thiếu {NUM} chuỗi. Hãy giúp OpenTTD hoàn thiện hơn bằng cách đăng ký làm biên dịch viên. Xem readme.txt để biết thêm chi tiết.
 
 # Quit window
@@ -2601,29 +2596,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Cánh đồng
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Đất tuyết phủ
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Hoang mạc
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Đường ray Đường ray
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Đường ray Đường ray với đèn hiệu khóa
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Đường ray Đường ray với đèn tín hiệu báo trước
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Đường ray Đường ray với đèn tín hiệu cửa thoát
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Đường ray Đường ray với đèn tín hiệu kết hợp
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Đường ray Đường ray với đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Đường ray Đường ray với đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Đường ray Đường ray với đèn hiệu khóa và đèn tín hiệu báo trước
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Đường ray Đường ray với đèn hiệu khóa và đèn tín hiệu cửa thoát
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Đường ray Đường ray với đèn hiệu khóa và đèn tín hiệu kết hợp
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Đường ray Đường ray với đèn hiệu khóa và đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Đường ray Đường ray với đèn hiệu khóa và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Đường ray Đường ray với đèn tín hiệu báo trước và đèn tín hiệu cửa thoát
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Đường ray Đường ray với đèn tín hiệu báo trước và đèn tín hiệu kết hợp
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Đường ray Đường ray với đèn tín hiệu báo trước và đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Đường ray Đường ray với đèn tín hiệu báo trước và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Đường ray Đường ray với đèn tín hiệu cửa thoát và đèn tín hiệu kết hợp
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Đường ray Đường ray với đèn tín hiệu cửa thoát và đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Đường ray Đường ray với đèn tín hiệu cửa thoát và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Đường ray Đường ray với đèn tín hiệu kết hợp và đèn dẫn đường
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Đường ray Đường ray với đèn tín hiệu kết hợp và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Đường ray Đường ray với đèn dẫn đường và đèn dẫn đường 1-chiều
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Xưởng tàu hỏa Đường ray
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Đường ray
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Đường ray với đèn hiệu khóa
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Đường ray với đèn tín hiệu báo trước
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Đường ray với đèn tín hiệu cửa thoát
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Đường ray với đèn tín hiệu kết hợp
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Đường ray với đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Đường ray với đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Đường ray với đèn hiệu khóa và đèn tín hiệu báo trước
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Đường ray với đèn hiệu khóa và đèn tín hiệu cửa thoát
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Đường ray với đèn hiệu khóa và đèn tín hiệu kết hợp
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Đường ray với đèn hiệu khóa và đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Đường ray với đèn hiệu khóa và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Đường ray với đèn tín hiệu báo trước và đèn tín hiệu cửa thoát
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Đường ray với đèn tín hiệu báo trước và đèn tín hiệu kết hợp
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Đường ray với đèn tín hiệu báo trước và đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Đường ray với đèn tín hiệu báo trước và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Đường ray với đèn tín hiệu cửa thoát và đèn tín hiệu kết hợp
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Đường ray với đèn tín hiệu cửa thoát và đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Đường ray với đèn tín hiệu cửa thoát và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Đường ray với đèn tín hiệu kết hợp và đèn dẫn đường
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Đường ray với đèn tín hiệu kết hợp và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Đường ray với đèn dẫn đường và đèn dẫn đường 1-chiều
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Xưởng tàu hỏa
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Đường bộ
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Đường phố có đèn
@@ -2687,7 +2682,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Đất công ty
 STR_ABOUT_OPENTTD                                               :{WHITE}Về OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Nguyên tác bản quyền {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD phiên bản {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2017 Nhóm OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 Nhóm OpenTTD
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Lưu Ván Chơi
@@ -2980,8 +2975,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Dân s�
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Thành Phố)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Dân số: {ORANGE}{COMMA}{BLACK}  Toà nhà: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Du khách tháng trước: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Bưu kiện tháng trước: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Hàng hoá cần để đô thị tăng trưởng:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} được yêu cầu
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} Yêu cầu trong mùa đông
@@ -3112,8 +3105,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Chấp n
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Liệt kê hàng hoá được chấp nhận
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Chấp nhận: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Trạm này độc quyền vận tải tại thị trấn này.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} đã mua quyền vận tải độc quyền ở đô thị này.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Trạm này độc quyền vận tải tại thị trấn này.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} đã mua quyền vận tải độc quyền ở đô thị này.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Uy tín
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Hiện uy tín ga, bến, cảng
@@ -3294,8 +3287,9 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Yêu c�
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Yêu cầu: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
-STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}
-STR_INDUSTRY_VIEW_ACCEPT_CARGO_TEXT                             :{YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Cần cung cấp:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} đang chờ{STRING}
 
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Sản xuất: {YELLOW}{STRING}{STRING}
@@ -3364,7 +3358,10 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Xoá tất cả
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Đổi tên nhóm
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Lợi nhuận năm nay:
 STR_GROUP_PROFIT_LAST_YEAR                                      :Lợi nhuận năm trước:
+STR_GROUP_OCCUPANCY                                             :Hiện đang dùng:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Tàu Hỏa Mới
@@ -3532,6 +3529,9 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :đầu máy đ�
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Giá thành: {CURRENCY_LONG} Tải trọng: {WEIGHT_SHORT}{}Tốc độ: {VELOCITY}  Công suất: {POWER}{}Chi phí hoạt động: {CURRENCY_LONG}/năm{}Sức chứa: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Giá: {CURRENCY_LONG} Nặng: {WEIGHT_SHORT}{}Tốc độ: {VELOCITY}  Công suất: {POWER}  Max. T.E.: {6:FORCE}{}Giá vận hành: {4:CURRENCY_LONG}/yr{}Năng suất: {5:CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Giá thành: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Sức chứa: {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Giá: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Kiểu máy bay: {STRING}{}Sức chứa: {CARGO_LONG}, {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}GIá: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Kiểu máy bay: {STRING}{}Sức chứa: {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Giá: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Kiểu máy bay: {STRING} Tầm xa: {COMMA} ô{}Sức chứa: {CARGO_LONG}, {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Giá: {CURRENCY_LONG} Tốc độ tối đa: {VELOCITY}{}Kiểu máy bay: {STRING} Tầm xa: {COMMA} ô{}Sức chứa: {CARGO_LONG}{}Chi phí hoạt động: {CURRENCY_LONG}/năm
 
 # Autoreplace window
@@ -3562,6 +3562,7 @@ STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Bấm đ
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Chuyển qua lại cửa sổ thay thế đầu máy và toa xe
 STR_REPLACE_ENGINES                                             :Đầu máy
 STR_REPLACE_WAGONS                                              :Toa xe
+STR_REPLACE_ALL_RAILTYPE                                        :Tất cả toa xe đầu máy
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Chọn kiểu đường ray bạn muốn thay thế
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Hiện thị đầu máy nào đang được thay thế, nếu có
@@ -3654,6 +3655,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} năm ({
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} năm ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Tốc độ tối đa: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Tốc độ tối đa: {LTBLUE}{VELOCITY} {BLACK}Kiểu máy bay: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Tốc độ tối đa: {LTBLUE}{VELOCITY} {BLACK}Kiểu máy bay: {LTBLUE}{STRING} {BLACK}Tầm bay: {LTBLUE}{COMMA} ô
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Tải trọng: {LTBLUE}{WEIGHT_SHORT} {BLACK}Công suất: {LTBLUE}{POWER}{BLACK} Tốc độ tối đa: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Tải trọng: {LTBLUE}{WEIGHT_SHORT} {BLACK}Công suất: {LTBLUE}{POWER}{BLACK} Tốc độ tối đa: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 

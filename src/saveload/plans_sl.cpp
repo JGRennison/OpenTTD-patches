@@ -24,13 +24,24 @@ static const SaveLoad _plan_desc[] = {
 	SLE_END()
 };
 
+static void RealSave_PLAN(Plan *p)
+{
+	SlObject(p, _plan_desc);
+	SlWriteUint32(p->lines.size());
+	for (size_t i = 0; i < p->lines.size(); i++) {
+		PlanLine *pl = p->lines[i];
+		SlWriteUint32(pl->tiles.size());
+		SlArray(&pl->tiles[0], pl->tiles.size(), SLE_UINT32);
+	}
+}
+
 /** Save all plans. */
 static void Save_PLAN()
 {
 	Plan *p;
 	FOR_ALL_PLANS(p) {
 		SlSetArrayIndex(p->index);
-		SlObject(p, _plan_desc);
+		SlAutolength((AutolengthProc*) RealSave_PLAN, p);
 	}
 }
 
@@ -41,20 +52,17 @@ static void Load_PLAN()
 	while ((index = SlIterateArray()) != -1) {
 		Plan *p = new (index) Plan();
 		SlObject(p, _plan_desc);
-	}
-}
-
-/** Save all plan lines. */
-static void Save_PLANLINE()
-{
-	Plan *p;
-	FOR_ALL_PLANS(p) {
-		for (size_t i = 0; i < p->lines.size(); i++) {
-			SlSetArrayIndex((uint) p->index << 16 | (uint) i);
-			PlanLine *pl = p->lines[i];
-			size_t plsz = pl->tiles.size();
-			SlSetLength(plsz * sizeof(TileIndex));
-			SlArray(&pl->tiles[0], plsz, SLE_UINT32);
+		if (SlXvIsFeaturePresent(XSLFI_ENH_VIEWPORT_PLANS, 2)) {
+			const size_t line_count = SlReadUint32();
+			p->lines.resize(line_count);
+			for (size_t i = 0; i < line_count; i++) {
+				PlanLine *pl = new PlanLine();
+				p->lines[i] = pl;
+				const size_t tile_count = SlReadUint32();
+				pl->tiles.resize(tile_count);
+				SlArray(&pl->tiles[0], tile_count, SLE_UINT32);
+			}
+			p->SetVisibility(false);
 		}
 	}
 }
@@ -83,5 +91,5 @@ static void Load_PLANLINE()
 /** Chunk handlers related to plans. */
 extern const ChunkHandler _plan_chunk_handlers[] = {
 	{ 'PLAN', Save_PLAN, Load_PLAN, NULL, NULL, CH_ARRAY},
-	{ 'PLLN', Save_PLANLINE, Load_PLANLINE, NULL, NULL, CH_ARRAY | CH_LAST},
+	{ 'PLLN', NULL, Load_PLANLINE, NULL, NULL, CH_ARRAY | CH_LAST},
 };

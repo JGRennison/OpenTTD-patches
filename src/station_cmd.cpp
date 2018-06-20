@@ -38,6 +38,7 @@
 #include "elrail_func.h"
 #include "station_base.h"
 #include "roadstop_base.h"
+#include "dock_base.h"
 #include "newgrf_railtype.h"
 #include "waypoint_base.h"
 #include "waypoint_func.h"
@@ -399,7 +400,7 @@ void Station::GetTileArea(TileArea *ta, StationType type) const
 
 		case STATION_DOCK:
 		case STATION_OILRIG:
-			ta->tile = this->dock_tile;
+			*ta = this->dock_station;
 			break;
 
 		default: NOT_REACHED();
@@ -441,12 +442,12 @@ void UpdateAllStationVirtCoords()
  * @param st Station to query
  * @return the expected mask
  */
-static uint GetAcceptanceMask(const Station *st)
+static CargoTypes GetAcceptanceMask(const Station *st)
 {
-	uint mask = 0;
+	CargoTypes mask = 0;
 
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
-		if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) mask |= 1 << i;
+		if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) SetBit(mask, i);
 	}
 	return mask;
 }
@@ -525,7 +526,7 @@ CargoArray GetProductionAroundTiles(TileIndex tile, int w, int h, int rad)
  * @param rad Search radius in addition to given area
  * @param always_accepted bitmask of cargo accepted by houses and headquarters; can be NULL
  */
-CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, uint32 *always_accepted)
+CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, CargoTypes *always_accepted)
 {
 	CargoArray acceptance;
 	if (always_accepted != NULL) *always_accepted = 0;
@@ -563,7 +564,7 @@ CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, uint3
 void UpdateStationAcceptance(Station *st, bool show_msg)
 {
 	/* old accepted goods types */
-	uint old_acc = GetAcceptanceMask(st);
+	CargoTypes old_acc = GetAcceptanceMask(st);
 
 	/* And retrieve the acceptance. */
 	CargoArray acceptance;
@@ -596,7 +597,7 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 	}
 
 	/* Only show a message in case the acceptance was actually changed. */
-	uint new_acc = GetAcceptanceMask(st);
+	CargoTypes new_acc = GetAcceptanceMask(st);
 	if (old_acc == new_acc) return;
 
 	/* show a message to report that the acceptance was changed? */
@@ -693,6 +694,9 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 			(*st)->string_id = GenerateStationName(*st, area.tile, name_class);
 
 			if (Company::IsValidID(_current_company)) {
+				if (_local_company == _current_company && !HasBit((*st)->town->have_ratings, _current_company)) {
+					ZoningTownAuthorityRatingChange();
+				}
 				SetBit((*st)->town->have_ratings, _current_company);
 			}
 		}
@@ -960,6 +964,8 @@ static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags
 					}
 					num_roadbits += CountBits(GetRoadBits(cur_tile, ROADTYPE_ROAD));
 				}
+
+				if (GetDisallowedRoadDirections(cur_tile) != DRD_NONE) return_cmd_error(STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD);
 
 				/* There is a tram, check if we can build road+tram stop over it. */
 				if (HasBit(cur_rts, ROADTYPE_TRAM)) {
@@ -2599,41 +2605,43 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Station::IsValidID(station_to_join))) return CMD_ERROR;
 
-	DiagDirection direction = GetInclinedSlopeDirection(GetTileSlope(tile));
+	TileIndex slope_tile = tile;
+
+	DiagDirection direction = GetInclinedSlopeDirection(GetTileSlope(slope_tile));
 	if (direction == INVALID_DIAGDIR) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 	direction = ReverseDiagDir(direction);
 
+	TileIndex flat_tile = slope_tile + TileOffsByDiagDir(direction);
+
 	/* Docks cannot be placed on rapids */
-	if (HasTileWaterGround(tile)) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
+	if (HasTileWaterGround(slope_tile)) return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 
-	CommandCost ret = CheckIfAuthorityAllowsNewStation(tile, flags);
+	CommandCost ret = CheckIfAuthorityAllowsNewStation(slope_tile, flags);
 	if (ret.Failed()) return ret;
 
-	if (IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(slope_tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
-	ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	ret = DoCommand(slope_tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 	if (ret.Failed()) return ret;
 
-	TileIndex tile_cur = tile + TileOffsByDiagDir(direction);
-
-	if (!IsTileType(tile_cur, MP_WATER) || !IsTileFlat(tile_cur)) {
+	if (!IsTileType(flat_tile, MP_WATER) || !IsTileFlat(flat_tile)) {
 		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 	}
 
-	if (IsBridgeAbove(tile_cur)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(flat_tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
 	/* Get the water class of the water tile before it is cleared.*/
-	WaterClass wc = GetWaterClass(tile_cur);
+	WaterClass wc = GetWaterClass(flat_tile);
 
-	ret = DoCommand(tile_cur, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	ret = DoCommand(flat_tile, 0, 0, flags | DC_ALLOW_REMOVE_WATER, CMD_LANDSCAPE_CLEAR);
 	if (ret.Failed()) return ret;
 
-	tile_cur += TileOffsByDiagDir(direction);
-	if (!IsTileType(tile_cur, MP_WATER) || !IsTileFlat(tile_cur)) {
+	TileIndex adjacent_tile = flat_tile + TileOffsByDiagDir(direction);
+	if (!IsTileType(adjacent_tile, MP_WATER) || !IsTileFlat(adjacent_tile)) {
 		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 	}
 
-	TileArea dock_area = TileArea(tile + ToTileIndexDiff(_dock_tileoffs_chkaround[direction]),
+	TileArea dock_area = TileArea(slope_tile + ToTileIndexDiff(_dock_tileoffs_chkaround[direction]),
 			_dock_w_chk[direction], _dock_h_chk[direction]);
 
 	/* middle */
@@ -2644,14 +2652,20 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	/* Distant join */
 	if (st == NULL && distant_join) st = Station::GetIfValid(station_to_join);
 
+	if (!Dock::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_DOCKS);
+
 	ret = BuildStationPart(&st, flags, reuse, dock_area, STATIONNAMING_DOCK);
 	if (ret.Failed()) return ret;
 
-	if (st != NULL && st->dock_tile != INVALID_TILE) return_cmd_error(STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK);
-
 	if (flags & DC_EXEC) {
-		st->dock_tile = tile;
-		st->AddFacility(FACIL_DOCK, tile);
+		/* Create the dock and insert it into the list of docks. */
+		Dock *dock = new Dock(slope_tile, flat_tile);
+		dock->next = st->docks;
+		st->docks = dock;
+
+		st->dock_station.Add(slope_tile);
+		st->dock_station.Add(flat_tile);
+		st->AddFacility(FACIL_DOCK, slope_tile);
 
 		st->rect.BeforeAddRect(dock_area.tile, dock_area.w, dock_area.h, StationRect::ADD_TRY);
 
@@ -2663,7 +2677,7 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		Company::Get(st->owner)->infrastructure.station += 2;
 		DirtyCompanyInfrastructureWindows(st->owner);
 
-		MakeDock(tile, st->owner, st->index, direction, wc);
+		MakeDock(slope_tile, st->owner, st->index, direction, wc);
 
 		st->UpdateVirtCoord();
 		UpdateStationAcceptance(st, false);
@@ -2689,10 +2703,14 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 	CommandCost ret = CheckOwnership(st->owner);
 	if (ret.Failed()) return ret;
 
-	TileIndex docking_location = TILE_ADD(st->dock_tile, ToTileIndexDiff(GetDockOffset(st->dock_tile)));
+	Dock *removing_dock = Dock::GetByTile(tile);
+	assert(removing_dock != NULL);
 
-	TileIndex tile1 = st->dock_tile;
-	TileIndex tile2 = tile1 + TileOffsByDiagDir(GetDockDirection(tile1));
+	TileIndex tile1 = removing_dock->sloped;
+	TileIndex tile2 = removing_dock->flat;
+
+	DiagDirection direction = DiagdirBetweenTiles(removing_dock->sloped, removing_dock->flat);
+	TileIndex docking_location = removing_dock->flat + TileOffsByDiagDir(direction);
 
 	ret = EnsureNoVehicleOnGround(tile1);
 	if (ret.Succeeded()) ret = EnsureNoVehicleOnGround(tile2);
@@ -2700,6 +2718,23 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 
 	if (flags & DC_EXEC) {
 		ZoningMarkDirtyStationCoverageArea(st);
+
+		if (st->docks == removing_dock) {
+			/* The first dock in the list is removed. */
+			st->docks = removing_dock->next;
+			/* Last dock is removed. */
+			if (st->docks == NULL) {
+				st->facilities &= ~FACIL_DOCK;
+			}
+		} else {
+			/* Tell the predecessor in the list to skip this dock. */
+			Dock *pred = st->docks;
+			while (pred->next != removing_dock) pred = pred->next;
+			pred->next = removing_dock->next;
+		}
+
+		delete removing_dock;
+
 		DoClearSquare(tile1);
 		MarkTileDirtyByTile(tile1);
 		MakeWaterKeepingClass(tile2, st->owner);
@@ -2707,8 +2742,11 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 		st->rect.AfterRemoveTile(st, tile1);
 		st->rect.AfterRemoveTile(st, tile2);
 
-		st->dock_tile = INVALID_TILE;
-		st->facilities &= ~FACIL_DOCK;
+		st->dock_station.Clear();
+		for (Dock *dock = st->docks; dock != NULL; dock = dock->next) {
+			st->dock_station.Add(dock->flat);
+			st->dock_station.Add(dock->sloped);
+		}
 
 		Company::Get(st->owner)->infrastructure.station -= 2;
 		DirtyCompanyInfrastructureWindows(st->owner);
@@ -3218,7 +3256,8 @@ static void TileLoop_Station(TileIndex tile)
 
 		case STATION_DOCK:
 			if (!IsTileFlat(tile)) break; // only handle water part
-			/* FALL THROUGH */
+			FALLTHROUGH;
+
 		case STATION_OILRIG: //(station part)
 		case STATION_BUOY:
 			TileLoop_Water(tile);
@@ -3266,12 +3305,16 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			// reverse at waypoint
 			if (t->reverse_distance == 0) t->reverse_distance = t->gcache.cached_total_length;
 		}
-		if (!v->current_order.ShouldStopAtStation(v, station_id)) return VETSB_CONTINUE;
-		if (!IsRailStation(tile) || !v->IsFrontEngine()) return VETSB_CONTINUE;
+		if (HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return VETSB_CONTINUE;
+		Train *front = Train::From(v)->First();
+		if (!front->IsFrontEngine()) return VETSB_CONTINUE;
+		if (!(v == front || HasBit(Train::From(v)->Previous()->flags, VRF_BEYOND_PLATFORM_END))) return VETSB_CONTINUE;
+		if (!IsRailStation(tile)) return VETSB_CONTINUE;
+		if (!front->current_order.ShouldStopAtStation(front, station_id)) return VETSB_CONTINUE;
 
 		int station_ahead;
 		int station_length;
-		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), &station_ahead, &station_length);
+		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), &station_ahead, &station_length, x, y);
 
 		/* Stop whenever that amount of station ahead + the distance from the
 		 * begin of the platform to the stop location is longer than the length
@@ -3292,9 +3335,9 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			if (x == stop) {
 				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id << VETS_STATION_ID_OFFSET); // enter station
 			} else if (x < stop) {
-				v->vehstatus |= VS_TRAIN_SLOWING;
+				front->vehstatus |= VS_TRAIN_SLOWING;
 				uint16 spd = max(0, (stop - x) * 20 - 15);
-				if (spd < v->cur_speed) v->cur_speed = spd;
+				if (spd < front->cur_speed) front->cur_speed = spd;
 			}
 		}
 	} else if (v->type == VEH_ROAD) {
@@ -3317,7 +3360,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 void TriggerWatchedCargoCallbacks(Station *st)
 {
 	/* Collect cargoes accepted since the last big tick. */
-	uint cargoes = 0;
+	CargoTypes cargoes = 0;
 	for (CargoID cid = 0; cid < NUM_CARGO; cid++) {
 		if (HasBit(st->goods[cid].status, GoodsEntry::GES_ACCEPTED_BIGTICK)) SetBit(cargoes, cid);
 	}
@@ -3444,7 +3487,7 @@ static void UpdateStationRating(Station *st)
 
 				uint32 var18 = min(ge->time_since_pickup, 0xFF) | (min(ge->max_waiting_cargo, 0xFFFF) << 8) | (min(last_speed, 0xFF) << 24);
 				/* Convert to the 'old' vehicle types */
-				uint32 var10 = (st->last_vehicle_type == VEH_INVALID) ? 0x0 : (st->last_vehicle_type + 0x10);
+				uint32 var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
 				uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, cs);
 				if (callback != CALLBACK_FAILED) {
 					skip = true;
@@ -3459,8 +3502,19 @@ static void UpdateStationRating(Station *st)
 				int b = ge->last_speed - 85;
 				if (b >= 0) rating += b >> 2;
 
-				byte waittime = ge->time_since_pickup;
-				if (st->last_vehicle_type == VEH_SHIP) waittime >>= 2;
+				uint waittime = ge->time_since_pickup;
+				if (_settings_game.station.cargo_class_rating_wait_time) {
+					if (cs->classes & CC_PASSENGERS) {
+						waittime *= 3;
+					} else if (cs->classes & CC_REFRIGERATED) {
+						waittime *= 2;
+					} else if (cs->classes & (CC_MAIL | CC_ARMOURED | CC_EXPRESS)) {
+						waittime += (waittime >> 1);
+					} else if (cs->classes & (CC_BULK | CC_LIQUID)) {
+						waittime >>= 2;
+					}
+				}
+				if (ge->last_vehicle_type == VEH_SHIP) waittime >>= 2;
 				(waittime > 21) ||
 				(rating += 25, waittime > 12) ||
 				(rating += 25, waittime > 6) ||
@@ -4027,8 +4081,17 @@ void BuildOilRig(TileIndex tile)
 	st->owner = OWNER_NONE;
 	st->airport.type = AT_OILRIG;
 	st->airport.Add(tile);
-	st->dock_tile = tile;
-	st->facilities = FACIL_AIRPORT | FACIL_DOCK;
+	st->dock_station.tile = tile;
+	st->facilities = FACIL_AIRPORT;
+
+	if (!Dock::CanAllocateItem()) {
+		DEBUG(misc, 0, "Can't allocate dock for oilrig at 0x%X, reverting to oilrig with airport only", tile);
+	} else {
+		st->docks = new Dock(tile, tile + ToTileIndexDiff({1, 0}));
+		st->dock_station.tile = tile;
+		st->facilities |= FACIL_DOCK;
+	}
+
 	st->build_date = _date;
 
 	st->rect.BeforeAddTile(tile, StationRect::ADD_FORCE);
@@ -4046,7 +4109,11 @@ void DeleteOilRig(TileIndex tile)
 
 	MakeWaterKeepingClass(tile, OWNER_NONE);
 
-	st->dock_tile = INVALID_TILE;
+	st->dock_station.tile = INVALID_TILE;
+	if (st->docks != NULL) {
+		delete st->docks;
+		st->docks = NULL;
+	}
 	st->airport.Clear();
 	st->facilities &= ~(FACIL_AIRPORT | FACIL_DOCK);
 	st->airport.flags = 0;

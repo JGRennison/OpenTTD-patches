@@ -323,10 +323,7 @@ public:
 		for (CargoID i = 0; i < NUM_CARGO; ++i) {
 			if (acceptance[i] > 0) {
 				/* Add a comma between each item. */
-				if (found) {
-					*strp++ = ',';
-					*strp++ = ' ';
-				}
+				if (found) strp = strecpy(strp, ", ", lastof(this->landinfo_data[LAND_INFO_MULTICENTER_LINE]));
 				found = true;
 
 				/* If the accepted value is less than 8, show it in 1/8:ths */
@@ -409,6 +406,7 @@ static const char * const _credits[] = {
 	"Original graphics by Simon Foster",
 	"",
 	"The OpenTTD team (in alphabetical order):",
+	"  Grzegorz Duczy\xC5\x84ski (adf88) - General coding (since 1.7.2)",
 	"  Albert Hofkamp (Alberth) - GUI expert (since 0.7)",
 	"  Matthijs Kooijman (blathijs) - Pathfinder-guru, Debian port (since 0.3)",
 	"  Ulf Hermann (fonsinchen) - Cargo Distribution (since 1.3)",
@@ -680,7 +678,7 @@ struct TooltipsWindow : public Window
 		this->string_id = str;
 		assert_compile(sizeof(this->params[0]) == sizeof(params[0]));
 		assert(paramcount <= lengthof(this->params));
-		memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
+		if (paramcount > 0) memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
 		this->paramcount = paramcount;
 		this->close_cond = close_tooltip;
 		this->delete_next_mouse_loop = false;
@@ -1052,10 +1050,12 @@ struct QueryStringWindow : public Window
 		switch (widget) {
 			case WID_QS_DEFAULT:
 				this->editbox.text.DeleteAll();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_QS_OK:
 				this->OnOk();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_QS_CANCEL:
 				delete this;
 				break;
@@ -1205,7 +1205,8 @@ struct QueryWindow : public Window {
 					this->proc(this->parent, true);
 					this->proc = NULL;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WKC_ESC:
 				delete this;
 				return ES_HANDLED;

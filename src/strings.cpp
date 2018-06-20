@@ -54,7 +54,7 @@ const LanguageMetadata *_current_language = NULL; ///< The currently loaded lang
 TextDirection _current_text_dir; ///< Text direction of the currently selected language.
 
 #ifdef WITH_ICU_SORT
-Collator *_current_collator = NULL;               ///< Collator for the language currently in use.
+icu::Collator *_current_collator = NULL;          ///< Collator for the language currently in use.
 #endif /* WITH_ICU_SORT */
 
 static uint64 _global_string_params_data[20];     ///< Global array of string parameters. To access, use #SetDParam.
@@ -413,12 +413,12 @@ static char *FormatBytes(char *buff, int64 number, const char *last)
 	return buff;
 }
 
-static char *FormatWallClockString(char *buff, DateTicks ticks, const char *last, bool show_date, uint case_index)
+static char *FormatWallClockString(char *buff, DateTicksScaled ticks, const char *last, bool show_date, uint case_index)
 {
 	Minutes minutes = ticks / _settings_client.gui.ticks_per_minute + _settings_client.gui.clock_offset;
 	char hour[3], minute[3];
-	seprintf(hour,   lastof(hour),   "%02i", MINUTES_HOUR(minutes)  );
-	seprintf(minute, lastof(minute), "%02i", MINUTES_MINUTE(minutes));
+	seprintf(hour,   lastof(hour),   "%02i", (int) MINUTES_HOUR(minutes)  );
+	seprintf(minute, lastof(minute), "%02i", (int) MINUTES_MINUTE(minutes));
 	if (show_date) {
 		int64 args[3] = { (int64)hour, (int64)minute, (int64)ticks / (DAY_TICKS * _settings_game.economy.day_length_factor) };
 		if (_settings_client.gui.date_with_time == 1) {
@@ -483,6 +483,8 @@ static char *FormatGenericCurrency(char *buff, const CurrencySpec *spec, Money n
 
 	/* convert from negative */
 	if (number < 0) {
+		if (buff + Utf8CharLen(SCC_PUSH_COLOUR) > last) return buff;
+		buff += Utf8Encode(buff, SCC_PUSH_COLOUR);
 		if (buff + Utf8CharLen(SCC_RED) > last) return buff;
 		buff += Utf8Encode(buff, SCC_RED);
 		buff = strecpy(buff, "-", last);
@@ -519,8 +521,8 @@ static char *FormatGenericCurrency(char *buff, const CurrencySpec *spec, Money n
 	if (spec->symbol_pos != 0) buff = strecpy(buff, spec->suffix, last);
 
 	if (negative) {
-		if (buff + Utf8CharLen(SCC_PREVIOUS_COLOUR) > last) return buff;
-		buff += Utf8Encode(buff, SCC_PREVIOUS_COLOUR);
+		if (buff + Utf8CharLen(SCC_POP_COLOUR) > last) return buff;
+		buff += Utf8Encode(buff, SCC_POP_COLOUR);
 		*buff = '\0';
 	}
 
@@ -1340,7 +1342,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			}
 
 			case SCC_CARGO_LIST: { // {CARGO_LIST}
-				uint32 cmask = args->GetInt32(SCC_CARGO_LIST);
+				CargoTypes cmask = args->GetInt32(SCC_CARGO_LIST);
 				bool first = true;
 
 				const CargoSpec *cs;
@@ -2055,7 +2057,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 
 	/* Create a collator instance for our current locale. */
 	UErrorCode status = U_ZERO_ERROR;
-	_current_collator = Collator::createInstance(Locale(_current_language->isocode), status);
+	_current_collator = icu::Collator::createInstance(icu::Locale(_current_language->isocode), status);
 	/* Sort number substrings by their numerical value. */
 	if (_current_collator != NULL) _current_collator->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_ON, status);
 	/* Avoid using the collator if it is not correctly set. */
@@ -2274,10 +2276,8 @@ bool MissingGlyphSearcher::FindMissingGlyphs(const char **str)
 		FontSize size = this->DefaultSize();
 		if (str != NULL) *str = text;
 		for (WChar c = Utf8Consume(&text); c != '\0'; c = Utf8Consume(&text)) {
-			if (c == SCC_TINYFONT) {
-				size = FS_SMALL;
-			} else if (c == SCC_BIGFONT) {
-				size = FS_LARGE;
+			if (c >= SCC_FIRST_FONT && c <= SCC_LAST_FONT) {
+				size = (FontSize)(c - SCC_FIRST_FONT);
 			} else if (!IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END) && IsPrintable(c) && !IsTextDirectionChar(c) && c != '?' && GetGlyph(size, c) == question_mark[size]) {
 				/* The character is printable, but not in the normal font. This is the case we were testing for. */
 				return true;

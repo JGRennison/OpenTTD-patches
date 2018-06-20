@@ -32,6 +32,8 @@ extern OrderListPool _orderlist_pool;
 
 struct OrderExtraInfo {
 	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
+	uint32 xdata = 0;                       ///< Extra arbitrary data
+	uint8 xflags = 0;                       ///< Extra flags
 };
 
 /* If you change this, keep in mind that it is saved on 3 places:
@@ -72,7 +74,29 @@ private:
 		if (!this->extra) this->AllocExtraInfo();
 	}
 
+	inline uint8 GetXFlags() const
+	{
+		return this->extra != nullptr ? this->extra->xflags : 0;
+	}
+
+	inline uint8 &GetXFlagsRef()
+	{
+		CheckExtraInfoAlloced();
+		return this->extra->xflags;
+	}
+
 public:
+	inline uint32 GetXData() const
+	{
+		return this->extra != nullptr ? this->extra->xdata : 0;
+	}
+
+	inline uint32 &GetXDataRef()
+	{
+		CheckExtraInfoAlloced();
+		return this->extra->xdata;
+	}
+
 	Order *next;          ///< Pointer to next order. If NULL, end of list
 
 	Order() : refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
@@ -103,6 +127,12 @@ public:
 	inline bool IsType(OrderType type) const { return this->GetType() == type; }
 
 	/**
+	 * Check whether this order is either of OT_LOADING or OT_LOADING_ADVANCE.
+	 * @return true if the order matches.
+	 */
+	inline bool IsAnyLoadingType() const { return this->GetType() == OT_LOADING || this->GetType() == OT_LOADING_ADVANCE; }
+
+	/**
 	 * Get the type of order of this order.
 	 * @return the order type.
 	 */
@@ -119,6 +149,7 @@ public:
 	void MakeConditional(VehicleOrderID order);
 	void MakeImplicit(StationID destination);
 	void MakeWaiting();
+	void MakeLoadingAdvance(StationID destination);
 
 	/**
 	 * Is this a 'goto' order with a real destination?
@@ -340,7 +371,7 @@ public:
 	 * explicitly set (but travel_time is actually unused for conditionals). */
 
 	/** Does this order have an explicit wait time set? */
-	inline bool IsWaitTimetabled() const { return this->IsType(OT_CONDITIONAL) ? this->wait_time > 0 : HasBit(this->flags, 3); }
+	inline bool IsWaitTimetabled() const { return this->IsType(OT_CONDITIONAL) ? HasBit(this->GetXFlags(), 0) : HasBit(this->flags, 3); }
 	/** Does this order have an explicit travel time set? */
 	inline bool IsTravelTimetabled() const { return this->IsType(OT_CONDITIONAL) ? this->travel_time > 0 : HasBit(this->flags, 7); }
 
@@ -361,7 +392,15 @@ public:
 	inline uint16 GetMaxSpeed() const { return this->max_speed; }
 
 	/** Set if the wait time is explicitly timetabled (unless the order is conditional). */
-	inline void SetWaitTimetabled(bool timetabled) { if (!this->IsType(OT_CONDITIONAL)) SB(this->flags, 3, 1, timetabled ? 1 : 0); }
+	inline void SetWaitTimetabled(bool timetabled)
+	{
+		if (this->IsType(OT_CONDITIONAL)) {
+			SB(this->GetXFlagsRef(), 0, 1, timetabled ? 1 : 0);
+		} else {
+			SB(this->flags, 3, 1, timetabled ? 1 : 0);
+		}
+	}
+
 	/** Set if the travel time is explicitly timetabled (unless the order is conditional). */
 	inline void SetTravelTimetabled(bool timetabled) { if (!this->IsType(OT_CONDITIONAL)) SB(this->flags, 7, 1, timetabled ? 1 : 0); }
 
@@ -494,7 +533,7 @@ private:
 
 	Ticks timetable_duration;         ///< NOSAVE: Total timetabled duration of the order list.
 	Ticks total_duration;             ///< NOSAVE: Total (timetabled or not) duration of the order list.
- 
+
 	std::vector<uint32> scheduled_dispatch;    ///< Scheduled dispatch time
 	uint32 scheduled_dispatch_duration;        ///< Scheduled dispatch duration
 	Date scheduled_dispatch_start_date;        ///< Scheduled dispatch start date
@@ -530,6 +569,8 @@ public:
 	inline Order *GetFirstOrder() const { return this->first; }
 
 	Order *GetOrderAt(int index) const;
+
+	VehicleOrderID GetIndexOfOrder(const Order *order) const;
 
 	/**
 	 * Get the last order of the order chain.
@@ -636,7 +677,7 @@ public:
 	 * @return  first scheduled dispatch
 	 */
 	inline const std::vector<uint32> &GetScheduledDispatch() { return this->scheduled_dispatch; }
-	
+
 	void AddScheduledDispatch(uint32 offset);
 	void RemoveScheduledDispatch(uint32 offset);
 	void UpdateScheduledDispatch();

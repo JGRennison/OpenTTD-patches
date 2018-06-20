@@ -71,7 +71,7 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	uint16 random_bits;             ///< Random bits assigned to this station
 	byte waiting_triggers;          ///< Waiting triggers (NewGRF) for this station
 	uint8 cached_anim_triggers;     ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
-	uint32 cached_cargo_triggers;   ///< NOSAVE: Combined cargo trigger bitmask
+	CargoTypes cached_cargo_triggers; ///< NOSAVE: Combined cargo trigger bitmask
 
 	TileArea train_station;         ///< Tile area the train 'station' part covers
 	StationRect rect;               ///< NOSAVE: Station spread out rectangle maintained by StationRect::xxx() functions
@@ -154,6 +154,16 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	inline bool IsInUse() const
 	{
 		return (this->facilities & ~FACIL_WAYPOINT) != 0;
+	}
+
+	/**
+	 * Check whether the base station has given facilities.
+	 * @param facilities The facilities to check.
+	 * @return True if station has at least one of the given \a facilities.
+	 */
+	inline bool HasFacilities(StationFacility facilities) const
+	{
+		return (this->facilities & facilities) != 0;
 	}
 
 	static void PostDestructor(size_t index);

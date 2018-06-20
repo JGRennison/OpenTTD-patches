@@ -19,6 +19,8 @@
 #include "station_type.h"
 #include "vehicle_base.h"
 
+struct TileInfo;
+
 static const int TILE_HEIGHT_STEP = 50; ///< One Z unit tile height difference is displayed as 50m.
 
 void SetSelectionRed(bool);
@@ -76,7 +78,10 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 bool ScrollWindowToTile(TileIndex tile, Window *w, bool instant = false);
 bool ScrollWindowTo(int x, int y, int z, Window *w, bool instant = false);
 
-void RebuildViewportOverlay(Window *w);
+void UpdateActiveScrollingViewport(Window *w);
+
+void RebuildViewportOverlay(Window *w, bool incremental);
+bool IsViewportOverlayOutsideCachedRegion(Window *w);
 
 bool ScrollMainWindowToTile(TileIndex tile, bool instant = false);
 bool ScrollMainWindowTo(int x, int y, int z = -1, bool instant = false);
@@ -97,5 +102,8 @@ void ShowTooltipForTile(Window *w, const TileIndex tile);
 
 void ViewportMapClearTunnelCache();
 void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile);
+
+void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal);
+void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, const SubSprite *sub = NULL);
 
 #endif /* VIEWPORT_FUNC_H */

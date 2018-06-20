@@ -82,6 +82,19 @@ class NIHVehicle : public NIHelper {
 		VehicleResolverObject ro(v->engine_type, v, VehicleResolverObject::WO_CACHED);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, avail);
 	}
+
+	/* virtual */ void ExtraInfo(uint index, std::function<void(const char *)> print) const
+	{
+		char buffer[1024];
+		Vehicle *v = Vehicle::Get(index);
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Index: %u", index);
+		print(buffer);
+		char *b = buffer;
+		b += seprintf(b, lastof(buffer), "  Flags: ");
+		b = v->DumpVehicleFlags(b, lastof(buffer));
+		print(buffer);
+	}
 };
 
 static const NIFeature _nif_vehicle = {

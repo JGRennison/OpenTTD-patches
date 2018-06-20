@@ -11,6 +11,7 @@
 
 #include "../stdafx.h"
 #include "../video/video_driver.hpp"
+#include "../zoom_func.h"
 #include "32bpp_anim.hpp"
 
 #include "../table/sprites.h"
@@ -25,10 +26,11 @@ Blitter_32bppAnim::~Blitter_32bppAnim()
 	free(this->anim_alloc);
 }
 
-template <BlitterMode mode>
+template <BlitterMode mode, bool fast_path>
 inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom)
 {
 	const SpriteData *src = (const SpriteData *)bp->sprite;
+	const BlitterSpriteFlags sprite_flags = src->flags;
 
 	const Colour *src_px = (const Colour *)(src->data + src->offset[zoom][0]);
 	const uint16 *src_n  = (const uint16 *)(src->data + src->offset[zoom][1]);
@@ -42,10 +44,15 @@ inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 	uint16 *anim = this->anim_buf + this->ScreenToAnimOffset((uint32 *)bp->dst) + bp->top * this->anim_buf_pitch + bp->left;
 
 	const byte *remap = bp->remap; // store so we don't have to access it via bp everytime
+	const int width = bp->width;
+	const int pitch = bp->pitch;
+	const int anim_pitch = this->anim_buf_pitch;
+	const int skip_left = bp->skip_left;
+	const int height = bp->height;
 
-	for (int y = 0; y < bp->height; y++) {
-		Colour *dst_ln = dst + bp->pitch;
-		uint16 *anim_ln = anim + this->anim_buf_pitch;
+	for (int y = 0; y < height; y++) {
+		Colour *dst_ln = dst + pitch;
+		uint16 *anim_ln = anim + anim_pitch;
 
 		const Colour *src_px_ln = (const Colour *)((const byte *)src_px + *(const uint32 *)src_px);
 		src_px++;
@@ -53,44 +60,52 @@ inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 		const uint16 *src_n_ln = (const uint16 *)((const byte *)src_n + *(const uint32 *)src_n);
 		src_n += 2;
 
-		Colour *dst_end = dst + bp->skip_left;
+		Colour *dst_end = dst;
 
 		uint n;
 
-		while (dst < dst_end) {
-			n = *src_n++;
+		if (!fast_path) {
+			dst_end += skip_left;
 
-			if (src_px->a == 0) {
-				dst += n;
-				src_px ++;
-				src_n++;
+			while (dst < dst_end) {
+				n = *src_n++;
 
-				if (dst > dst_end) anim += dst - dst_end;
-			} else {
-				if (dst + n > dst_end) {
-					uint d = dst_end - dst;
-					src_px += d;
-					src_n += d;
+				if (src_px->a == 0) {
+					dst += n;
+					src_px ++;
+					src_n++;
 
-					dst = dst_end - bp->skip_left;
-					dst_end = dst + bp->width;
+					if (dst > dst_end) anim += dst - dst_end;
+				} else {
+					if (dst + n > dst_end) {
+						uint d = dst_end - dst;
+						src_px += d;
+						src_n += d;
 
-					n = min<uint>(n - d, (uint)bp->width);
-					goto draw;
+						dst = dst_end - skip_left;
+						dst_end = dst + width;
+
+						n = min<uint>(n - d, (uint)width);
+						goto draw;
+					}
+					dst += n;
+					src_px += n;
+					src_n += n;
 				}
-				dst += n;
-				src_px += n;
-				src_n += n;
 			}
+
+			dst -= skip_left;
+			dst_end -= skip_left;
 		}
 
-		dst -= bp->skip_left;
-		dst_end -= bp->skip_left;
-
-		dst_end += bp->width;
+		dst_end += width;
 
 		while (dst < dst_end) {
-			n = min<uint>(*src_n++, (uint)(dst_end - dst));
+			if (fast_path) {
+				n = *src_n++;
+			} else {
+				n = min<uint>(*src_n++, (uint)(dst_end - dst));
+			}
 
 			if (src_px->a == 0) {
 				anim += n;
@@ -217,7 +232,14 @@ inline void Blitter_32bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 					break;
 
 				default:
-					if (src_px->a == 255) {
+					if (fast_path || (src_px->a == 255 && (sprite_flags & SF_NO_ANIM))) {
+						do {
+							*anim++ = 0;
+							*dst++ = src_px->data;
+							src_px++;
+							src_n++;
+						} while (--n != 0);
+					} else if (src_px->a == 255) {
 						do {
 							/* Compiler assumes pointer aliasing, can't optimise this on its own */
 							uint m = GB(*src_n, 0, 8);
@@ -260,13 +282,30 @@ void Blitter_32bppAnim::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 		return;
 	}
 
+	const BlitterSpriteFlags sprite_flags = ((const SpriteData *) bp->sprite)->flags;
+
 	switch (mode) {
 		default: NOT_REACHED();
-		case BM_NORMAL:       Draw<BM_NORMAL>      (bp, zoom); return;
-		case BM_COLOUR_REMAP: Draw<BM_COLOUR_REMAP>(bp, zoom); return;
-		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT> (bp, zoom); return;
-		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP> (bp, zoom); return;
-		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP> (bp, zoom); return;
+
+		case BM_COLOUR_REMAP:
+			if (!(sprite_flags & SF_NO_REMAP)) {
+				Draw<BM_COLOUR_REMAP, false>(bp, zoom);
+				return;
+			}
+			/* FALL THROUGH */
+
+		case BM_NORMAL:
+			if ((sprite_flags & (SF_NO_ANIM | SF_TRANSLUCENT)) == SF_NO_ANIM &&
+					bp->skip_left == 0 && bp->width == UnScaleByZoom(bp->sprite_width, zoom)) {
+				Draw<BM_NORMAL, true>(bp, zoom);
+			} else {
+				Draw<BM_NORMAL, false>(bp, zoom);
+			}
+			return;
+
+		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT, false> (bp, zoom); return;
+		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP, false> (bp, zoom); return;
+		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP, false> (bp, zoom); return;
 	}
 }
 
@@ -279,9 +318,7 @@ void Blitter_32bppAnim::DrawColourMappingRect(void *dst, int width, int height, 
 	}
 
 	Colour *udst = (Colour *)dst;
-	uint16 *anim;
-
-	anim = this->anim_buf + this->ScreenToAnimOffset((uint32 *)dst);
+	uint16 *anim = this->anim_buf + this->ScreenToAnimOffset((uint32 *)dst);
 
 	if (pal == PALETTE_TO_TRANSPARENT) {
 		do {
@@ -320,6 +357,24 @@ void Blitter_32bppAnim::SetPixel(void *video, int x, int y, uint8 colour)
 	/* Set the colour in the anim-buffer too, if we are rendering to the screen */
 	if (_screen_disable_anim) return;
 	this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch] = colour | (DEFAULT_BRIGHTNESS << 8);
+}
+
+void Blitter_32bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash)
+{
+	const Colour c = LookupColourInPalette(colour);
+
+	if (_screen_disable_anim)  {
+		this->DrawLineGeneric(x, y, x2, y2, screen_width, screen_height, width, dash, [&](int x, int y) {
+			*((Colour *)video + x + y * _screen.pitch) = c;
+		});
+	} else {
+		uint16 * const offset_anim_buf = this->anim_buf + this->ScreenToAnimOffset((uint32 *)video);
+		const uint16 anim_colour = colour | (DEFAULT_BRIGHTNESS << 8);
+		this->DrawLineGeneric(x, y, x2, y2, screen_width, screen_height, width, dash, [&](int x, int y) {
+			*((Colour *)video + x + y * _screen.pitch) = c;
+			offset_anim_buf[x + y * this->anim_buf_pitch] = anim_colour;
+		});
+	}
 }
 
 void Blitter_32bppAnim::SetLine(void *video, int x, int y, uint8 *colours, uint width)
@@ -375,9 +430,7 @@ void Blitter_32bppAnim::DrawRect(void *video, int width, int height, uint8 colou
 	}
 
 	Colour colour32 = LookupColourInPalette(colour);
-	uint16 *anim_line;
-
-	anim_line = this->ScreenToAnimOffset((uint32 *)video) + this->anim_buf;
+	uint16 *anim_line = this->ScreenToAnimOffset((uint32 *)video) + this->anim_buf;
 
 	do {
 		Colour *dst = (Colour *)video;
@@ -559,8 +612,8 @@ void Blitter_32bppAnim::PostResize()
 	if (_screen.width != this->anim_buf_width || _screen.height != this->anim_buf_height) {
 		/* The size of the screen changed; we can assume we can wipe all data from our buffer */
 		free(this->anim_alloc);
-		this->anim_buf_height = _screen.height;
 		this->anim_buf_width = _screen.width;
+		this->anim_buf_height = _screen.height;
 		this->anim_buf_pitch = (_screen.width + 7) & ~7;
 		this->anim_alloc = CallocT<uint16>(this->anim_buf_pitch * this->anim_buf_height + 8);
 
