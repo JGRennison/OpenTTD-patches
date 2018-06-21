@@ -110,6 +110,13 @@ const StringID BaseVehicleListWindow::vehicle_depot_name[] = {
 	STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR
 };
 
+const StringID BaseVehicleListWindow::vehicle_depot_sell_name[] = {
+	STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT_SELL,
+	STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT_SELL,
+	STR_VEHICLE_LIST_SEND_SHIP_TO_DEPOT_SELL,
+	STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR_SELL
+};
+
 /**
  * Get the number of digits the biggest unit number of a set of vehicles has.
  * @param vehicles The list of vehicles.
@@ -323,6 +330,7 @@ DropDownList *BaseVehicleListWindow::BuildActionDropdownList(bool show_autorepla
 	}
 	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, mass_action_disable);
 	*list->Append() = new DropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, mass_action_disable);
+	if (_settings_client.gui.show_depot_sell_gui) *list->Append() = new DropDownListStringItem(this->vehicle_depot_sell_name[this->vli.vtype], ADI_DEPOT_SELL, mass_action_disable);
 	*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, mass_action_disable);
 
 	if (show_group) {
@@ -1956,6 +1964,10 @@ public:
 						DoCommandP(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : (DepotCommand)0), this->window_number, GetCmdSendToDepot(this->vli.vtype));
 						break;
 
+					case ADI_DEPOT_SELL:
+						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_SELL, this->window_number, GetCmdSendToDepot(this->vli.vtype));
+						break;
+
 					case ADI_CHANGE_ORDER:
 						SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT, this);
 						break;
@@ -3204,6 +3216,8 @@ public:
 						 * depot with index 0, which would be used as fallback for
 						 * evaluating the string in the status bar. */
 						str = STR_EMPTY;
+					} else if (v->current_order.GetDepotActionType() & ODATFB_SELL) {
+						str = STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL;
 					} else if (v->current_order.GetDepotActionType() & ODATFB_HALT) {
 						str = STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL;
 					} else {
@@ -3291,6 +3305,18 @@ public:
 						this->depot_select_ctrl_pressed = _ctrl_pressed;
 						this->depot_select_active = true;
 					}
+				} else if (_settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
+					if (_ctrl_pressed) {
+						OrderDepotActionFlags flags = v->current_order.GetDepotActionType() & (ODATFB_HALT | ODATFB_SELL);
+						DropDownList *list = new DropDownList();
+						*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, DEPOT_SERVICE | DEPOT_DONT_CANCEL, !flags);
+						*list->Append() = new DropDownListStringItem(BaseVehicleListWindow::vehicle_depot_name[v->type], DEPOT_DONT_CANCEL, flags == ODATFB_HALT);
+						*list->Append() = new DropDownListStringItem(BaseVehicleListWindow::vehicle_depot_sell_name[v->type], DEPOT_SELL | DEPOT_DONT_CANCEL, flags == (ODATFB_HALT | ODATFB_SELL));
+						*list->Append() = new DropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, DEPOT_CANCEL, false);
+						ShowDropDownList(this, list, -1, widget, 0, true);
+					} else {
+						DoCommandP(v->tile, v->index | DEPOT_CANCEL, 0, GetCmdSendToDepot(v));
+					}
 				} else {
 					this->HandleButtonClick(WID_VV_GOTO_DEPOT);
 					DoCommandP(v->tile, v->index | (_ctrl_pressed ? DEPOT_SERVICE : 0U), 0, GetCmdSendToDepot(v));
@@ -3330,6 +3356,18 @@ public:
 		}
 	}
 
+
+	virtual void OnDropdownSelect(int widget, int index) OVERRIDE
+	{
+		switch (widget) {
+			case WID_VV_GOTO_DEPOT: {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				DoCommandP(v->tile, v->index | index, 0, GetCmdSendToDepot(v));
+				break;
+			}
+		}
+	}
+
 	virtual void OnTimeout()
 	{
 		if (!this->depot_select_active) {
@@ -3358,8 +3396,13 @@ public:
 	virtual bool OnRightClick(Point pt, int widget)
 	{
 		if (widget == WID_VV_GOTO_DEPOT && _settings_client.gui.hover_delay_ms == 0) {
-			uint64 arg = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + Vehicle::Get(this->window_number)->type;
-			GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, TCC_RIGHT_CLICK);
+			const Vehicle *v = Vehicle::Get(this->window_number);
+			if (_settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
+				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU, 0, nullptr, TCC_RIGHT_CLICK);
+			} else {
+				uint64 arg = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type;
+				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, TCC_RIGHT_CLICK);
+			}
 		}
 		return false;
 	}
@@ -3367,8 +3410,13 @@ public:
 	virtual void OnHover(Point pt, int widget)
 	{
 		if (widget == WID_VV_GOTO_DEPOT) {
-			uint64 arg = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + Vehicle::Get(this->window_number)->type;
-			GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, TCC_HOVER);
+			const Vehicle *v = Vehicle::Get(this->window_number);
+			if (_settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
+				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU, 0, nullptr, TCC_HOVER);
+			} else {
+				uint64 arg = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type;
+				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, TCC_HOVER);
+			}
 		}
 	}
 

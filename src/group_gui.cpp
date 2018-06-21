@@ -963,6 +963,9 @@ public:
 						DoCommandP(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : 0U), this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
 						break;
 					}
+					case ADI_DEPOT_SELL:
+						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_SELL, this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
+						break;
 					case ADI_CANCEL_DEPOT:
 						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_CANCEL, this->vli.Pack(), GetCmdSendToDepot(this->vli.vtype));
 						break;

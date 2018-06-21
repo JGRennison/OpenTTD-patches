@@ -65,13 +65,14 @@ enum VehiclePathFinders {
 
 /** Flags to add to p1 for goto depot commands. */
 enum DepotCommand {
+	DEPOT_SELL          = (1U << 25), ///< Go to depot and sell order
 	DEPOT_CANCEL        = (1U << 26), ///< Cancel depot/service order
 	DEPOT_SPECIFIC      = (1U << 27), ///< Send vehicle to specific depot
 	DEPOT_SERVICE       = (1U << 28), ///< The vehicle will leave the depot right after arrival (service only)
 	DEPOT_MASS_SEND     = (1U << 29), ///< Tells that it's a mass send to depot command (type in VLW flag)
 	DEPOT_DONT_CANCEL   = (1U << 30), ///< Don't cancel current goto depot command if any
 	DEPOT_LOCATE_HANGAR = (1U << 31), ///< Find another airport if the target one lacks a hangar
-	DEPOT_COMMAND_MASK  = 0x3FU << 26,
+	DEPOT_COMMAND_MASK  = 0x7FU << 25,
 };
 
 static const uint MAX_LENGTH_VEHICLE_NAME_CHARS = 128; ///< The maximum length of a vehicle name in characters including '\0'

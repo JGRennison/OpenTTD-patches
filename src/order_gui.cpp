@@ -665,12 +665,15 @@ static const StringID _order_depot_action_dropdown[] = {
 	STR_ORDER_DROP_GO_ALWAYS_DEPOT,
 	STR_ORDER_DROP_SERVICE_DEPOT,
 	STR_ORDER_DROP_HALT_DEPOT,
+	STR_ORDER_DROP_SELL_DEPOT,
 	INVALID_STRING_ID
 };
 
 static int DepotActionStringIndex(const Order *order)
 {
-	if (order->GetDepotActionType() & ODATFB_HALT) {
+	if (order->GetDepotActionType() & ODATFB_SELL) {
+		return DA_SELL;
+	} else if (order->GetDepotActionType() & ODATFB_HALT) {
 		return DA_STOP;
 	} else if (order->GetDepotOrderType() & ODTFB_SERVICE) {
 		return DA_SERVICE;
@@ -791,13 +794,17 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(1, (order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) ? STR_ORDER_GO_NON_STOP_TO : STR_ORDER_GO_TO);
 			}
 
-			if (!timetable && (order->GetDepotActionType() & ODATFB_HALT)) {
-				SetDParam(5, STR_ORDER_STOP_ORDER);
-			}
+			if (!timetable && (order->GetDepotActionType() & ODATFB_SELL)) {
+				SetDParam(5, STR_ORDER_SELL_ORDER);
+			} else {
+				if (!timetable && (order->GetDepotActionType() & ODATFB_HALT)) {
+					SetDParam(5, STR_ORDER_STOP_ORDER);
+				}
 
-			if (!timetable && order->IsRefit()) {
-				SetDParam(5, (order->GetDepotActionType() & ODATFB_HALT) ? STR_ORDER_REFIT_STOP_ORDER : STR_ORDER_REFIT_ORDER);
-				SetDParam(6, CargoSpec::Get(order->GetRefitCargo())->name);
+				if (!timetable && order->IsRefit()) {
+					SetDParam(5, (order->GetDepotActionType() & ODATFB_HALT) ? STR_ORDER_REFIT_STOP_ORDER : STR_ORDER_REFIT_ORDER);
+					SetDParam(6, CargoSpec::Get(order->GetRefitCargo())->name);
+				}
 			}
 
 			if (timetable) {
@@ -1993,7 +2000,8 @@ public:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
 					this->OrderClick_Service(-1);
 				} else {
-					ShowDropDownMenu(this, _order_depot_action_dropdown, DepotActionStringIndex(this->vehicle->GetOrder(this->OrderGetSel())), WID_O_SERVICE, 0, 0, 0, DDSF_LOST_FOCUS);
+					ShowDropDownMenu(this, _order_depot_action_dropdown, DepotActionStringIndex(this->vehicle->GetOrder(this->OrderGetSel())),
+							WID_O_SERVICE, 0, _settings_client.gui.show_depot_sell_gui ? 0 : (1 << DA_SELL), 0, DDSF_LOST_FOCUS);
 				}
 				break;
 

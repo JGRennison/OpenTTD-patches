@@ -1542,7 +1542,7 @@ CommandCost CmdSendVehicleToDepot(TileIndex tile, DoCommandFlag flags, uint32 p1
 		/* Mass goto depot requested */
 		VehicleListIdentifier vli;
 		if (!vli.UnpackIfValid(p2)) return CMD_ERROR;
-		uint32 depot_flags = (p1 & (DEPOT_SERVICE | DEPOT_CANCEL));
+		uint32 depot_flags = (p1 & (DEPOT_SERVICE | DEPOT_CANCEL | DEPOT_SELL));
 		if (!(p1 & DEPOT_CANCEL)) depot_flags |= DEPOT_DONT_CANCEL;
 		return SendAllVehiclesToDepot(flags, (DepotCommand) depot_flags, vli);
 	}

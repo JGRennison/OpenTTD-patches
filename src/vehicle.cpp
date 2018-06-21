@@ -101,6 +101,7 @@ VehiclePool _vehicle_pool("Vehicle");
 INSTANTIATE_POOL_METHODS(Vehicle)
 
 static btree::btree_set<Vehicle *> _vehicles_to_pay_repair;
+static btree::btree_set<Vehicle *> _vehicles_to_sell;
 
 /**
  * Determine shared bounds of all sprites.
@@ -1098,6 +1099,7 @@ void CallVehicleTicks()
 	_vehicles_to_autoreplace.Clear();
 	_vehicles_to_templatereplace.Clear();
 	_vehicles_to_pay_repair.clear();
+	_vehicles_to_sell.clear();
 
 	if (_tick_skip_counter == 0) RunVehicleDayProc();
 
@@ -1187,6 +1189,34 @@ void CallVehicleTicks()
 		}
 	}
 	v = NULL;
+
+	/* do Template Replacement */
+	Backup<CompanyByte> sell_cur_company(_current_company, FILE_LINE);
+	for (Vehicle *v : _vehicles_to_sell) {
+		SCOPE_INFO_FMT([v], "CallVehicleTicks: sell: %s", scope_dumper().VehicleInfo(v));
+		Train *t = (v->type == VEH_TRAIN) ? Train::From(v) : nullptr;
+
+		sell_cur_company.Change(v->owner);
+
+		int x = v->x_pos;
+		int y = v->y_pos;
+		int z = v->z_pos;
+
+		CommandCost cost = DoCommand(v->tile, v->index | (1 << 20), 0, DC_EXEC, GetCmdSellVeh(v));
+
+		if (!cost.Succeeded()) continue;
+
+		if (IsLocalCompany() && cost.Succeeded()) {
+			if (cost.GetCost() != 0) {
+				ShowCostOrIncomeAnimation(x, y, z, cost.GetCost());
+			}
+		}
+
+		_vehicles_to_pay_repair.erase(v);
+		if (t) _vehicles_to_templatereplace.Erase(t);
+		_vehicles_to_autoreplace.Erase(v);
+	}
+	sell_cur_company.Restore();
 
 	/* do Template Replacement */
 	Backup<CompanyByte> tmpl_cur_company(_current_company, FILE_LINE);
@@ -1992,6 +2022,11 @@ void VehicleEnterDepot(Vehicle *v)
 				real_order != NULL && !(real_order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) &&
 				(v->type == VEH_AIRCRAFT ? v->current_order.GetDestination() != GetStationIndex(v->tile) : v->dest_tile != v->tile)) {
 			/* We are heading for another depot, keep driving. */
+			return;
+		}
+
+		if (v->current_order.GetDepotActionType() & ODATFB_SELL) {
+			_vehicles_to_sell.insert(v);
 			return;
 		}
 
@@ -3001,13 +3036,14 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 
 	if (this->current_order.IsType(OT_GOTO_DEPOT) && !(command & DEPOT_SPECIFIC)) {
 		bool halt_in_depot = (this->current_order.GetDepotActionType() & ODATFB_HALT) != 0;
-		if (!!(command & DEPOT_SERVICE) == halt_in_depot) {
-			/* We called with a different DEPOT_SERVICE setting.
+		bool sell_in_depot = (this->current_order.GetDepotActionType() & ODATFB_SELL) != 0;
+		if (!!(command & DEPOT_SERVICE) == halt_in_depot || !!(command & DEPOT_SELL) != sell_in_depot) {
+			/* We called with a different DEPOT_SERVICE or DEPOT_SELL setting.
 			 * Now we change the setting to apply the new one and let the vehicle head for the same depot.
 			 * Note: the if is (true for requesting service == true for ordered to stop in depot)          */
 			if (flags & DC_EXEC) {
 				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
-				this->current_order.SetDepotActionType(halt_in_depot ? ODATF_SERVICE_ONLY : ODATFB_HALT);
+				this->current_order.SetDepotActionType((command & DEPOT_SELL) ? ODATFB_HALT | ODATFB_SELL : ((command & DEPOT_SERVICE) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
 				if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
@@ -3046,7 +3082,11 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 
 		this->dest_tile = location;
 		this->current_order.MakeGoToDepot(destination, ODTF_MANUAL);
-		if (!(command & DEPOT_SERVICE)) this->current_order.SetDepotActionType(ODATFB_HALT);
+		if (command & DEPOT_SELL) {
+			this->current_order.SetDepotActionType(ODATFB_HALT | ODATFB_SELL);
+		} else if (!(command & DEPOT_SERVICE)) {
+			this->current_order.SetDepotActionType(ODATFB_HALT);
+		}
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 
 		/* If there is no depot in front, reverse automatically (trains only) */

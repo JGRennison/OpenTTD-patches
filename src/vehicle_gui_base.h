@@ -44,6 +44,7 @@ struct BaseVehicleListWindow : public Window {
 		ADI_REPLACE,
 		ADI_SERVICE,
 		ADI_DEPOT,
+		ADI_DEPOT_SELL,
 		ADI_CANCEL_DEPOT,
 		ADI_ADD_SHARED,
 		ADI_REMOVE_ALL,
@@ -53,6 +54,7 @@ struct BaseVehicleListWindow : public Window {
 	};
 
 	static const StringID vehicle_depot_name[];
+	static const StringID vehicle_depot_sell_name[];
 	static const StringID vehicle_sorter_names[];
 	static GUIVehicleList::SortFunction * const vehicle_sorter_funcs[];
 	const uint vehicle_sorter_non_ground_veh_disable_mask = (1 << 11); // STR_SORT_BY_LENGTH
