@@ -656,6 +656,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}사용 가능한 배경 음악 없음
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}트랙
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}제목
@@ -676,11 +677,14 @@ STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}프로�
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}배경 음악 트랙을 선택할 수 있는 창을 엽니다.
 
 # Playlist window
+STR_PLAYLIST_MUSIC_SELECTION_SETNAME                            :{WHITE}배경 음악 프로그램 - '{STRING}'
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}음악 목록
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}프로그램 - '{STRING}'
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}초기화
+STR_PLAYLIST_CHANGE_SET                                         :{BLACK}배경 음악 세트 변경
 STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}현재 배경 음악 프로그램을 초기화합니다. (사용자1, 사용자2에서만 선택 가능)
+STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}배경 음악 세트를 다른 세트로 변경합니다.
 STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}배경 음악 목록에 음악을 추가하려면 클릭하세요. (사용자1, 사용자2에서만 사용 가능)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}배경 음악 목록에서 음악을 제거하려면 클릭하세요. (사용자1, 사용자2에서만 사용 가능)
 
@@ -1176,6 +1180,8 @@ STR_CONFIG_SETTING_CATCHMENT                                    :더 현실적�
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :역과 공항의 종류에 따라 다른 크기의 역세권을 가지도록 만듭니다.
 STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :역세권 크기 늘리기: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :정한 칸 만큼 역세권을 증가시킵니다.
+STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :화물 종류에 따라 대기 시간이 역 등급에 미치는 영향 조정: {STRING}
+STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:화물이 역에서 대기하는 시간이 역 등급에 미치는 영향이 화물 종류에 따라 달라집니다. 승객, 우편, 장갑 화물, 냉장 화물, 고속 화물은 대기 시간이 역 등급에 영향을 크게 미칠 것입니다. 그에 반해, 대량 화물 및 액체 화물은 역 등급에 영향을 적게 미칩니다.
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :도시 소유의 도로, 다리 등의 제거 허용: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :도시 소유의 기반시설이나 건물을 제거할 수 있게 합니다.
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :열차의 최대 길이: {STRING}
@@ -1262,7 +1268,7 @@ STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}이미 �
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :기반시설 유지비: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :이 설정을 켜면, 기반시설 유지비가 발생합니다. 유지비는 교통망의 규모에 비례하며 대형 회사는 소형 회사보다 많은 유지비가 들어갑니다.
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :선박 충돌 방지: {STRING}
-STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화 되어야 합니다.
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화된 상태에서 최상의 결과를 보여줍니다.
 
 STR_CONFIG_SETTING_CHUNNEL                                      :해저 터널 건설 허용: {STRING}
 STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :이 설정을 켜면, 해수면 아래를 통과하는 터널을 건설할 수 있습니다. 터널의 끝이 해안가로부터 최소한 3칸 이상 떨어져있어야 합니다.
@@ -1312,11 +1318,18 @@ STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :열차의 무�
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :경로 제한 신호기를 기본 그래픽으로 보이기: {STRING}
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :경로 제한이 설정된 전자 신호기를 NewGRF의 신호기 그래픽 대신 기본 신호기 그래픽에 파란 표시를 한 그래픽으로 표시합니다. 이 옵션은 경로 제한 신호기의 구별을 쉽게 하기 위해 사용합니다.
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :고급 경로 제한 기능 표시: {STRING}
-STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :고급 경로 제한 기능을 표시합니다. 이 설정을 끄면, 일부 고급 기능이 UI에 표시되지 않습니다. 다만, 모든 플레이어가 숨겨진 고급 경로 제한 기능을 사용할 수는 있습니다.
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :고급 경로 제한 기능을 표시합니다. 이 설정을 끄면, 일부 고급 기능이 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 숨겨진 고급 경로 제한 기능을 사용할 수 없도록 하지는 않습니다.
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :신호기 프로그래밍 기능 표시: {STRING}
-STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :신호기 프로그래밍 기능을 표시합니다. 이 설정을 끄면, 프로그램 신호기를 짓거나 설정하는 버튼이 표시되지 않습니다. 다만, 모든 플레이어가 프로그램 신호기를 사용할 수는 있습니다.
+STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :신호기 프로그래밍 기능을 표시합니다. 이 설정을 끄면, 프로그램 신호기를 짓거나 설정하는 버튼이 표시되지 않습니다. 하지만 다른 플레이어까지 프로그램 신호기를 사용할 수 없도록 하지는 않습니다.
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :차량 목록에 화물 종류 필터 표시: {STRING}
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :차량 목록에 화물 종류 필터를 표시합니다. 이 설정을 켜면, 차량 목록 창에 고급 필터 드롭다운이 표시됩니다.
+STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :차량 목록에 화물 종류 필터를 표시합니다. 이 설정을 켜면, 차량 목록 창에 추가 필터 드롭다운이 표시됩니다.
+STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :고급 적재 모드 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :고급 적재 모드(통과하며 싣기)를 표시합니다. 이 설정을 끄면, 일부 고급 적재 모드가 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 고급 적재 모드를 사용할 수 없도록 하지는 않습니다.
+STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :전체 차량에 적용되는 작업 비활성화
+STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :이 설정을 켜면, 모든 차량 또는 그룹에 속하지 않은 차량에 적용되는 차량기지로 보내기/운행 취소 버튼과 출발/정지 버튼을 비활성화합니다. 모든 차량에게 적용되는 작업을 실수로 실행하여 발생할 수 있는 부작용을 방지할 수 있습니다.
+
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :지형: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :지형에 따라 화물과 도시 성장 요구 조건이 다른 게임 플레이 시나리오가 만들어집니다. NewGRF과 게임 스크립트를 통해 세밀한 조절이 가능합니다.
@@ -1369,6 +1382,12 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :소형지도 �
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :녹색
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :어두운 녹색
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :보라색
+STR_CONFIG_SETTING_SCROLLMODE                                   :지도 스크롤 방식: {STRING}
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :지도를 스크롤하는 방식을 결정합니다.
+STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :마우스 위치가 고정된 상태로 오른쪽 마우스 버튼으로 외부 화면 또는 지도 이동
+STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :마우스 위치가 고정된 상태로 오른쪽 마우스 버튼으로 지도 이동
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :오른쪽 마우스 버튼으로 지도 이동
+STR_CONFIG_SETTING_SCROLLMODE_LMB                               :왼쪽 마우스 버튼으로 지도 이동
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :게임 화면을 이동시킬 때 부드럽게 이동: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :소형 지도를 클릭하여 특정 지역으로 스크롤되거나 지도 상의 특정 장소로 이동하는 경우에 주 화면이 어떻게 스크롤 되는지를 설정합니다. 이 설정을 켜면, 화면이 목표 지점까지 부드럽게 이동하고, 설정을 끄면 목표 지점으로 곧바로 넘어가게 됩니다.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :건설도구 사용시 거리 도움말 표시: {STRING}
@@ -1435,6 +1454,9 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :창 내부를 �
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :자동 저장: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :게임을 자동으로 저장할 간격을 선택하십시오.
+
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :네트워크 연결이 끊어지면 자동 저장: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :이 설정을 켜면 서버와의 연결이 끊어졌을 때 게임을 자동으로 저장합니다.
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :저장 파일의 이름으로 {STRING} 날짜 형식을 사용합니다.
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :게임 저장 파일 이름에 사용할 날짜 형식을 선택합니다.
@@ -2619,6 +2641,10 @@ STR_TRACE_RESTRICT_LONG_RESERVE                                 :경로 장기 �
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :경로 장기 예약 취소
 STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :경로 신호기에서 대기
 STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :경로 신호기에서 대기 취소
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :경로 예약이 여기서 끝날 때까지 입구 경로 신호기에서 대기
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL                      :경로 예약이 여기서 끝날 때까지 입구 경로 신호기에서 대기 취소
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT                       :경로 예약 종료 대기
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT                :경로 예약 종료 대기 취소
 STR_TRACE_RESTRICT_PF_PENALTY                                   :우선순위 낮춤
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :조금
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :중간 정도
@@ -2637,14 +2663,20 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :획득 또는 �
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :획득 시도
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :해제 (앞)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :해제 (뒤)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :경로 예약 종료: 획득 또는 대기
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :경로 예약 종료: 획득 시도
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :경로 예약 종료: 해제
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :슬롯 획득: {STRING}{BLACK}{STRING}, 또는 경로 신호기에서 대기
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :슬롯 획득 시도: {STRING}{BLACK}{STRING}, 또는 계속하기
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :슬롯 해제: {STRING}{BLACK}{STRING} (열차의 앞)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :슬롯 해제: {STRING}{BLACK}{STRING} (열차의 뒤)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :경로 예약 종료: 슬롯 획득: {STRING}{BLACK}{STRING}, 또는 입구에서 대기
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :경로 예약 종료: 슬롯 획득: {STRING}{BLACK}{STRING}, 또는 계속하기
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :경로 예약 종료: 슬롯 해제: {STRING}{BLACK}{STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}슬롯{CONSUME_ARG}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
-STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}가치
+STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}경로 탐색 제한
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}경로 탐색 제한 - {COMMA}개의 신호기와 공유
 STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}선택한 구문을 위로 옮깁니다{}CTRL + 클릭하면 전체 블록 대신 조건문만 옮길 수 있습니다.
@@ -2684,7 +2716,7 @@ STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}다른 �
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}다른 신호기와 구문을 공유합니다.
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}다른 신호기와의 구문 공유를 해제합니다.
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}경로 탐색 제한
-STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}선택하려면 구문을 클릭하십시오.{}구문에서 지정된 장소로 가려면 구문을 Ctrl+클릭하십시오. (만약 존재한다면)
+STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}선택하려면 구문을 클릭하십시오.{}구문에서 지정된 장소가 있다면, 지정된 장소로 가려면 구문을 Ctrl+클릭하십시오.
 STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}구문을 삽입할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}구문을 수정할 수 없습니다.
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}구문을 제거할 수 없습니다.
@@ -3438,6 +3470,7 @@ STR_TOWN_POPULATION                                             :{BLACK}총 인�
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (대도시)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}인구: {ORANGE}{COMMA}{BLACK}  가구수: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} 지난 달 수송량: {ORANGE}{COMMA}{BLACK}  최대 생산량: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}도시가 성장하기 위해 필요한 화물:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED}{G 0 "이" "가"} 필요함
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :겨울에는 {ORANGE}{STRING}{BLACK}{G 0 "이" "가"} 필요함
@@ -3616,10 +3649,10 @@ STR_CARGO_RATING_OUTSTANDING                                    :매우 훌륭�
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}이 역의 위치로 시점을 변경합니다. CTRL+클릭하면 이 역 위치를 기준으로 새로운 외부 화면을 엽니다.
 STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}이 역의 이름을 변경합니다.
 
-STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}이 역을 거쳐가는 모든 열차를 표시합니다
-STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}이 역을 거쳐가는 모든 자동차/전차를 보여줍니다.
-STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}이 역을 거쳐가는 모든 항공기를 표시합니다
-STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}이 역을 거쳐가는 모든 선박을 표시합니다
+STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}이 역을 거쳐가는 모든 열차를 보여줍니다. CTRL+클릭하면 배타적으로 표시합니다.
+STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}이 역을 거쳐가는 모든 자동차/전차를 보여줍니다. CTRL+클릭하면 배타적으로 표시합니다.
+STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}이 역을 거쳐가는 모든 항공기를 보여줍니다. CTRL+클릭하면 배타적으로 표시합니다.
+STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}이 역을 거쳐가는 모든 선박을 보여줍니다. CTRL+클릭하면 배타적으로 표시합니다.
 
 STR_STATION_VIEW_RENAME_STATION_CAPTION                         :이 역의 이름을 변경합니다.
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}공항 폐쇄
@@ -3895,6 +3928,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}관리
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}이 목록에 있는 모든 열차에게 지시
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :차량 교체
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :정비하러 보내기
+STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :운행 취소 후 보내기
 
 STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT                            :차량기지로 보내기
 STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT                     :차고지로 보내기
@@ -4214,6 +4248,7 @@ STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}현재 �
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}싣는 중 / 내리는 중
+STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
 STR_VEHICLE_STATUS_LEAVING                                      :{LTBLUE}떠남
 STR_VEHICLE_STATUS_CRASHED                                      :{RED}충돌!!
 STR_VEHICLE_STATUS_BROKEN_DOWN                                  :{RED}고장
@@ -4257,6 +4292,9 @@ STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}선박 �
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}항공기 이름 지정
 
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}연령: {LTBLUE}{STRING}{BLACK}   유지비: {LTBLUE}{CURRENCY_LONG}/년
+
+STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: {STATION}의 선로 길이가 충분하지 않아 통과하며 싣기가 중단되었습니다.
+STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: {STATION}의 차량기지 때문에 통과하며 싣기가 중단되었습니다.
 
 STR_RUNNING                                                     :{LTBLUE}운행 중
 STR_NEED_REPAIR                                                 :{ORANGE}차량을 수리해야 합니다. 최고 속도가 {VELOCITY}로 감소하였습니다.
@@ -4419,6 +4457,7 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING                             :대기 화물
 STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :받는 화물
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :빈 승강장
 STR_ORDER_CONDITIONAL_PERCENT                                   :확률
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :슬롯 점유
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :서비스 {STRING}가 필요함
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :다음 역 {STRING} {STRING} 대기 중
@@ -4440,6 +4479,7 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :이(가) 없을
 
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}비교조건에 대한 입력값입니다.
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}화물에 대한 입력값입니다.
+STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}점유되었는지 확인할 슬롯입니다.
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}비교할 값을 입력하세요.
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :을(를) 받을 때
@@ -4450,6 +4490,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :보다 적을 �
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :보다 적거나 같을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :보다 많을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :보다 많거나 같을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :이(가) 모두 점유되었을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :이(가) 모두 점유되지 않았을 때
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}건너뛰기
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}현재 경로를 건너뜁니다, 그리고 다음 경로를 시작합니다. CTRL+클릭하면 선택한 경로로 건너뜁니다.
@@ -4552,12 +4594,15 @@ STR_ORDER_AUTO_REFIT_ANY                                        :이용 가능�
 STR_ORDER_STOP_LOCATION_NEAR_END                                :[가까운쪽]
 STR_ORDER_STOP_LOCATION_MIDDLE                                  :[중간]
 STR_ORDER_STOP_LOCATION_FAR_END                                 :[먼쪽]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :[통과하며 싣기]
 
 STR_ORDER_OUT_OF_RANGE                                          :{RED} (다음 목적지가 제한 항속거리보다 멀리 있습니다)
 
 STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :[조건 경로] {COMMA}번 경로로 건너뛰기
 STR_ORDER_CONDITIONAL_NUM                                       :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {COMMA} 일 때)
 STR_ORDER_CONDITIONAL_CARGO                                     :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {3:STRING}{2:STRING})
+STR_ORDER_CONDITIONAL_SLOT                                      :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRSLOT}{STRING})
+STR_ORDER_CONDITIONAL_INVALID_SLOT                              :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}{STRING})
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING}{STRING})
 
 STR_INVALID_ORDER                                               :{RED} (잘못된 행선지)
@@ -4965,6 +5010,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... 여�
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... 도로의 방향과 일치하지 않습니다.
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... 도로 통과 정류장은 곡선도로에 건설할 수 없습니다.
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... 도로 통과 정류장은 교차로에 건설할 수 없습니다.
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... 도로가 일방통행이거나 차단되었습니다.
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}역의 일부를 제거할 수 없습니다...
@@ -5225,10 +5271,12 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :트랜스포트
 STR_BASEGRAPHICS_DOS_DESCRIPTION                                :오리지널 트랜스포트 타이쿤 디럭스 도스 에디션의 그래픽입니다.
 STR_BASEGRAPHICS_DOS_DE_DESCRIPTION                             :오리지널 트랜스포트 타이쿤 디럭스 도스 에디션(독일)의 그래픽입니다.
 STR_BASEGRAPHICS_WIN_DESCRIPTION                                :오리지널 트랜스포트 타이쿤 디럭스 윈도 에디션의 그래픽입니다.
-STR_BASESOUNDS_DOS_DESCRIPTION                                  :오리지널 트랜스포트 타이쿤 도스 에디션의 효과음입니다.
+STR_BASESOUNDS_DOS_DESCRIPTION                                  :오리지널 트랜스포트 타이쿤 디럭스 도스 에디션의 효과음입니다.
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :오리지널 트랜스포트 타이쿤 디럭스 윈도 에디션의 효과음입니다.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :아무런 효과음도 없는 효과음 팩입니다.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :오리지널 트랜스포트 타이쿤 디럭스 윈도 에디션의 음악입니다.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :오리지널 트랜스포트 타이쿤 디럭스 도스 에디션의 음악입니다.
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :오리지널 트랜스포트 타이쿤(오리지널/월드 에디터) 도스 에디션의 음악입니다.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :실제 음악이 없는 음악 목록입니다.
 
 ##id 0x2000
