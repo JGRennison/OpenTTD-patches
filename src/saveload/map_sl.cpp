@@ -179,7 +179,7 @@ static void Load_WMAP()
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
 	const TileIndex size = MapSize();
 
-#if TTD_ENDIAN == TTD_LITTLE_ENDIAN && 0
+#if TTD_ENDIAN == TTD_LITTLE_ENDIAN
 	reader->CopyBytes((byte *) _m, size * 8);
 #else
 	for (TileIndex i = 0; i != size; i++) {
@@ -208,7 +208,7 @@ static void Save_WMAP()
 	const TileIndex size = MapSize();
 	SlSetLength(size * 10);
 
-#if TTD_ENDIAN == TTD_LITTLE_ENDIAN && 0
+#if TTD_ENDIAN == TTD_LITTLE_ENDIAN
 	dumper->CopyBytes((byte *) _m, size * 8);
 #else
 	for (TileIndex i = 0; i != size; i++) {
