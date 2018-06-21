@@ -2093,7 +2093,7 @@ static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner 
 		if (new_owner != INVALID_OWNER) Company::Get(new_owner)->infrastructure.water += num_pieces;
 	}
 
-	if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+	if (IsTunnelBridgeWithSignalSimulation(tile) && tile < other_end) {
 		uint num_sigs = GetTunnelBridgeSignalSimulationSignalCount(tile, other_end);
 		Company::Get(old_owner)->infrastructure.signal -= num_sigs;
 		if (new_owner != INVALID_OWNER) Company::Get(new_owner)->infrastructure.signal += num_sigs;
