@@ -1400,7 +1400,7 @@ STR_CONFIG_SETTING_LIVERIES_ALL                                 :모든 회사
 STR_CONFIG_SETTING_PREFER_TEAMCHAT                              :엔터(ENTER) 키로 같은 팀끼리 채팅: {STRING}
 STR_CONFIG_SETTING_PREFER_TEAMCHAT_HELPTEXT                     :이 설정을 켜면, 멀티 플레이시 같은 회사 간의 채팅을 <CTRL+ENTER> 키 대신 <ENTER> 키로 할 수 있게 됩니다.
 STR_CONFIG_SETTING_SCROLLWHEEL_SCROLLING                        :마우스 휠 동작: {STRING}
-STR_CONFIG_SETTING_SCROLLWHEEL_SCROLLING_HELPTEXT               :상하좌우로 회전 가능한 마우스 휠(2차원 마우스휠)로 지도를 스크롤할 수 있게 허용합니다.
+STR_CONFIG_SETTING_SCROLLWHEEL_SCROLLING_HELPTEXT               :상하좌우로 회전 가능한 마우스 휠(2차원 마우스 휠)로 지도를 스크롤할 수 있게 허용합니다.
 STR_CONFIG_SETTING_SCROLLWHEEL_ZOOM                             :화면 확대/축소
 STR_CONFIG_SETTING_SCROLLWHEEL_SCROLL                           :지도 스크롤
 STR_CONFIG_SETTING_SCROLLWHEEL_OFF                              :끄기

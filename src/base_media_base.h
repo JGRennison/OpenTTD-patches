@@ -26,6 +26,7 @@ struct ContentInfo;
 struct MD5File {
 	/** The result of a checksum check */
 	enum ChecksumResult {
+		CR_UNKNOWN,  ///< The file has not been checked yet
 		CR_MATCH,    ///< The file did exist and the md5 checksum did match
 		CR_MISMATCH, ///< The file did exist, just the md5 checksum did not match
 		CR_NO_FILE,  ///< The file did not exist
@@ -34,6 +35,7 @@ struct MD5File {
 	const char *filename;        ///< filename
 	uint8 hash[16];              ///< md5 sum of the file
 	const char *missing_warning; ///< warning when this file is missing
+	ChecksumResult check_result; ///< cached result of md5 check
 
 	ChecksumResult CheckMD5(Subdirectory subdir, size_t max_size) const;
 };
@@ -301,6 +303,9 @@ struct MusicSongInfo {
 	const char *filename;    ///< file on disk containing song (when used in MusicSet class, this pointer is owned by MD5File object for the file)
 	MusicTrackType filetype; ///< decoder required for song file
 	int cat_index;           ///< entry index in CAT file, for filetype==MTT_MPSMIDI
+	bool loop;               ///< song should play in a tight loop if possible, never ending
+	int override_start;      ///< MIDI ticks to skip over in beginning
+	int override_end;        ///< MIDI tick to end the song at (0 if no override)
 };
 
 /** All data of a music set. */

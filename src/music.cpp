@@ -125,9 +125,11 @@ bool MusicSet::FillSetDetails(IniFile *ini, const char *path, const char *full_f
 		this->num_available = 0;
 		IniGroup *names = ini->GetGroup("names");
 		IniGroup *catindex = ini->GetGroup("catindex");
-		for (uint i = 0, j = 1; i < lengthof(this->songinfo); i++) {
+		IniGroup *timingtrim = ini->GetGroup("timingtrim");
+		uint tracknr = 1;
+		for (uint i = 0; i < lengthof(this->songinfo); i++) {
 			const char *filename = this->files[i].filename;
-			if (names == NULL || StrEmpty(filename)) {
+			if (names == NULL || StrEmpty(filename) || this->files[i].check_result == MD5File::CR_NO_FILE) {
 				this->songinfo[i].songname[0] = '\0';
 				continue;
 			}
@@ -142,7 +144,8 @@ bool MusicSet::FillSetDetails(IniFile *ini, const char *path, const char *full_f
 				char *songname = GetMusicCatEntryName(filename, this->songinfo[i].cat_index);
 				if (songname == NULL) {
 					DEBUG(grf, 1, "Base music set song missing from CAT file: %s/%d", filename, this->songinfo[i].cat_index);
-					return false;
+					this->songinfo[i].songname[0] = '\0';
+					continue;
 				}
 				strecpy(this->songinfo[i].songname, songname, lastof(this->songinfo[i].songname));
 				free(songname);
@@ -150,15 +153,16 @@ bool MusicSet::FillSetDetails(IniFile *ini, const char *path, const char *full_f
 				this->songinfo[i].filetype = MTT_STANDARDMIDI;
 			}
 
+			const char *trimmed_filename = filename;
 			/* As we possibly add a path to the filename and we compare
 			 * on the filename with the path as in the .obm, we need to
 			 * keep stripping path elements until we find a match. */
-			for (const char *p = filename; p != NULL; p = strchr(p, PATHSEPCHAR)) {
+			for (; trimmed_filename != NULL; trimmed_filename = strchr(trimmed_filename, PATHSEPCHAR)) {
 				/* Remove possible double path separator characters from
 				 * the beginning, so we don't start reading e.g. root. */
-				while (*p == PATHSEPCHAR) p++;
+				while (*trimmed_filename == PATHSEPCHAR) trimmed_filename++;
 
-				item = names->GetItem(p, false);
+				item = names->GetItem(trimmed_filename, false);
 				if (item != NULL && !StrEmpty(item->value)) break;
 			}
 
@@ -172,7 +176,21 @@ bool MusicSet::FillSetDetails(IniFile *ini, const char *path, const char *full_f
 			}
 			this->num_available++;
 
-			this->songinfo[i].tracknr = j++;
+			/* Number the theme song (if any) track 0, rest are normal */
+			if (i == 0) {
+				this->songinfo[i].tracknr = 0;
+			} else {
+				this->songinfo[i].tracknr = tracknr++;
+			}
+
+			item = timingtrim->GetItem(trimmed_filename, false);
+			if (item != NULL && !StrEmpty(item->value)) {
+				const char *endpos = strchr(item->value, ':');
+				if (endpos != NULL) {
+					this->songinfo[i].override_start = atoi(item->value);
+					this->songinfo[i].override_end = atoi(endpos + 1);
+				}
+			}
 		}
 	}
 	return ret;
