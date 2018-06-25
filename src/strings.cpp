@@ -2048,6 +2048,11 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	strecpy(_config_language_file, c_file, lastof(_config_language_file));
 	SetCurrentGrfLangID(_current_language->newgrflangid);
 
+#ifdef WIN32
+	extern void Win32SetCurrentLocaleName(const char *iso_code);
+	Win32SetCurrentLocaleName(_current_language->isocode);
+#endif
+
 #ifdef WITH_ICU_SORT
 	/* Delete previous collator. */
 	if (_current_collator != NULL) {
@@ -2390,7 +2395,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	/* Update the font with cache */
 	LoadStringWidthTable(searcher->Monospace());
 
-#if !defined(WITH_ICU_LAYOUT)
+#if !defined(WITH_ICU_LAYOUT) && !defined(WITH_UNISCRIBE)
 	/*
 	 * For right-to-left languages we need the ICU library. If
 	 * we do not have support for that library we warn the user
