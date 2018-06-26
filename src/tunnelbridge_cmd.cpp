@@ -1748,16 +1748,22 @@ static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner 
 	const uint num_pieces = tile < other_end ? (GetTunnelBridgeLength(tile, other_end) + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR : 0;
 	const TransportType tt = GetTunnelBridgeTransportType(tile);
 
-	if (tt == TRANSPORT_ROAD) SubtractRoadTunnelBridgeInfrastructure(tile, other_end);
+	if (tt == TRANSPORT_ROAD && tile < other_end) {
+		/* Only execute this for one of the two ends */
+		SubtractRoadTunnelBridgeInfrastructure(tile, other_end);
 
-	for (RoadType rt = ROADTYPE_ROAD; rt < ROADTYPE_END; rt++) {
-		/* Update all roadtypes, no matter if they are present */
-		if (GetRoadOwner(tile, rt) == old_owner) {
-			SetRoadOwner(tile, rt, new_owner == INVALID_OWNER ? OWNER_NONE : new_owner);
+		for (RoadType rt = ROADTYPE_ROAD; rt < ROADTYPE_END; rt++) {
+			/* Update all roadtypes, no matter if they are present */
+			if (GetRoadOwner(tile, rt) == old_owner) {
+				SetRoadOwner(tile, rt, new_owner == INVALID_OWNER ? OWNER_NONE : new_owner);
+			}
+			if (GetRoadOwner(other_end, rt) == old_owner) {
+				SetRoadOwner(other_end, rt, new_owner == INVALID_OWNER ? OWNER_NONE : new_owner);
+			}
 		}
-	}
 
-	if (tt == TRANSPORT_ROAD) AddRoadTunnelBridgeInfrastructure(tile, other_end);
+		AddRoadTunnelBridgeInfrastructure(tile, other_end);
+	}
 
 	if (!IsTileOwner(tile, old_owner)) return;
 
