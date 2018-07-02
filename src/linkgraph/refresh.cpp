@@ -26,16 +26,16 @@
  * @param is_full_loading If the vehicle is full loading.
  * @param cargo_mask Mask of cargoes to refresh
  */
-/* static */ void LinkRefresher::Run(Vehicle *v, bool allow_merge, bool is_full_loading, uint32 cargo_mask)
+/* static */ void LinkRefresher::Run(Vehicle *v, bool allow_merge, bool is_full_loading, CargoTypes cargo_mask)
 {
 	/* If there are no orders we can't predict anything.*/
 	if (v->orders.list == NULL) return;
 
-	uint32 have_cargo_mask = v->GetLastLoadingStationValidCargoMask();
+	CargoTypes have_cargo_mask = v->GetLastLoadingStationValidCargoMask();
 
 	/* Scan orders for cargo-specific load/unload, and run LinkRefresher separately for each set of cargoes where they differ. */
 	while (cargo_mask != 0) {
-		uint32 iter_cargo_mask = cargo_mask;
+		CargoTypes iter_cargo_mask = cargo_mask;
 		for (const Order *o = v->orders.list->GetFirstOrder(); o != NULL; o = o->next) {
 			if (o->IsType(OT_GOTO_STATION) || o->IsType(OT_IMPLICIT)) {
 				if (o->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
@@ -92,7 +92,7 @@ bool LinkRefresher::Hop::operator<(const Hop &other) const
  * @param allow_merge If the refresher is allowed to merge or extend link graphs.
  * @param is_full_loading If the vehicle is full loading.
  */
-LinkRefresher::LinkRefresher(Vehicle *vehicle, HopSet *seen_hops, bool allow_merge, bool is_full_loading, uint32 cargo_mask) :
+LinkRefresher::LinkRefresher(Vehicle *vehicle, HopSet *seen_hops, bool allow_merge, bool is_full_loading, CargoTypes cargo_mask) :
 	vehicle(vehicle), seen_hops(seen_hops), cargo(CT_INVALID), allow_merge(allow_merge),
 	is_full_loading(is_full_loading), cargo_mask(cargo_mask)
 {
@@ -199,7 +199,7 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 		SetBit(flags, USE_NEXT);
 
 		if (next->IsType(OT_CONDITIONAL)) {
-			uint32 this_cargo_mask = this->cargo_mask;
+			CargoTypes this_cargo_mask = this->cargo_mask;
 			const Order *skip_to = this->vehicle->orders.list->GetNextDecisionNode(
 					this->vehicle->orders.list->GetOrderAt(next->GetConditionSkipToOrder()), num_hops, this_cargo_mask);
 			assert(this_cargo_mask == this->cargo_mask);
@@ -215,7 +215,7 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 
 		/* Reassign next with the following stop. This can be a station or a
 		 * depot.*/
-		uint32 this_cargo_mask = this->cargo_mask;
+		CargoTypes this_cargo_mask = this->cargo_mask;
 		next = this->vehicle->orders.list->GetNextDecisionNode(
 				this->vehicle->orders.list->GetNext(next), num_hops++, this_cargo_mask);
 		assert(this_cargo_mask == this->cargo_mask);
