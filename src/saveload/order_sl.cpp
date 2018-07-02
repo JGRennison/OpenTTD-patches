@@ -202,9 +202,10 @@ static void Load_ORDR()
 const SaveLoad *GetOrderExtraInfoDescription()
 {
 	static const SaveLoad _order_extra_info_desc[] = {
-		SLE_ARR(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO),
-		SLE_CONDVAR_X(OrderExtraInfo, xflags, SLE_UINT8, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
-		SLE_CONDVAR_X(OrderExtraInfo, xdata, SLE_UINT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_EXTRA_DATA)),
+		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, 32,        0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 1, 2)),
+		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 3)),
+		SLE_CONDVAR_X(OrderExtraInfo, xflags,           SLE_UINT8,            0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
+		SLE_CONDVAR_X(OrderExtraInfo, xdata,           SLE_UINT32,            0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_EXTRA_DATA)),
 		SLE_END()
 	};
 

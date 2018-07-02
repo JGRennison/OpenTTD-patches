@@ -349,7 +349,7 @@ public:
 	/** We want to 'destruct' the right class. */
 	virtual ~Vehicle();
 
-	uint32 GetLastLoadingStationValidCargoMask() const;
+	CargoTypes GetLastLoadingStationValidCargoMask() const;
 
 	void BeginLoading();
 	void CancelReservation(StationID next, Station *st);

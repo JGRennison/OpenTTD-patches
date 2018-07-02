@@ -1548,7 +1548,7 @@ public:
 					static char buff[DRAW_STRING_BUFFER] = "";
 					char *str = buff;
 					CargoArray cargo;
-					uint32 dummy = 0;
+					CargoTypes dummy = 0;
 					AddAcceptedHouseCargo(this->display_house, INVALID_TILE, cargo, &dummy);
 					for (uint i = 0; i < NUM_CARGO; i++) {
 						if (cargo[i] == 0) continue;

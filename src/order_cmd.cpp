@@ -353,13 +353,13 @@ void Order::DeAllocExtraInfo()
 void CargoStationIDStackSet::FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first, uint hops)
 {
 	this->more.clear();
-	this->first = o->GetNextStoppingStation(v, ~0, first, hops);
-	if (this->first.cargo_mask != (uint32) ~0) {
-		uint32 have_cargoes = this->first.cargo_mask;
+	this->first = o->GetNextStoppingStation(v, ALL_CARGOTYPES, first, hops);
+	if (this->first.cargo_mask != ALL_CARGOTYPES) {
+		CargoTypes have_cargoes = this->first.cargo_mask;
 		do {
 			this->more.push_back(o->GetNextStoppingStation(v, ~have_cargoes, first, hops));
 			have_cargoes |= this->more.back().cargo_mask;
-		} while (have_cargoes != (uint32) ~0);
+		} while (have_cargoes != ALL_CARGOTYPES);
 	}
 }
 
@@ -466,7 +466,7 @@ VehicleOrderID OrderList::GetIndexOfOrder(const Order *order) const
  *         \li a non-trivial conditional order
  *         \li NULL  if the vehicle won't stop anymore.
  */
-const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, uint32 &cargo_mask) const
+const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoTypes &cargo_mask) const
 {
 	assert(cargo_mask != 0);
 
@@ -512,14 +512,14 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, uint32
 /**
  * Recursively determine the next deterministic station to stop at.
  * @param v The vehicle we're looking at.
- * @param uint32 cargo_mask Bit-set of the cargo IDs of interest.
+ * @param CargoTypes cargo_mask Bit-set of the cargo IDs of interest.
  * @param first Order to start searching at or NULL to start at cur_implicit_order_index + 1.
  * @param hops Number of orders we have already looked at.
  * @return A CargoMaskedStationIDStack of the cargo mask the result is valid for, and the next stoppping station or INVALID_STATION.
  * @pre The vehicle is currently loading and v->last_station_visited is meaningful.
  * @note This function may draw a random number. Don't use it from the GUI.
  */
-CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, uint32 cargo_mask, const Order *first, uint hops) const
+CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first, uint hops) const
 {
 	assert(cargo_mask != 0);
 

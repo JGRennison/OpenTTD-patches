@@ -1068,8 +1068,6 @@ private:
 	Scrollbar *vscroll;
 	bool can_do_refit;     ///< Vehicle chain can be refitted in depot.
 	bool can_do_autorefit; ///< Vehicle chain can be auto-refitted.
-	StringID cargo_names_list[NUM_CARGO + 1];
-	uint32 cargo_bitmask;
 	int query_text_widget; ///< widget which most recently called ShowQueryString
 
 	/**
@@ -1437,18 +1435,6 @@ public:
 				size->width = WD_FRAMERECT_LEFT + GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WD_FRAMERECT_RIGHT;
 				break;
 		}
-
-
-		/* Create cargo bitmask */
-		assert_compile(NUM_CARGO <= 32);
-		for (CargoID c = 0; c < NUM_CARGO; c++) {
-			if (CargoSpec::Get(c)->IsValid()) {
-				this->cargo_names_list[c] = CargoSpec::Get(c)->name;
-				SetBit(this->cargo_bitmask, c);
-			}
-		}
-		this->cargo_bitmask = ~this->cargo_bitmask;
-		this->cargo_names_list[NUM_CARGO] = INVALID_STRING_ID;
 	}
 
 	/**
@@ -1676,7 +1662,11 @@ public:
 					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY);
 
 					if (is_cargo) {
-						this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = cargo_names_list[(order == NULL) ? 0 : order->GetConditionValue()];
+						if (order == NULL || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
+							this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = STR_NEWGRF_INVALID_CARGO;
+						} else {
+							this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = CargoSpec::Get(order->GetConditionValue())->name;
+						}
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_CARGO);
 					} else if (is_slot_occupancy) {
 						TraceRestrictSlotID slot_id = (order != nullptr && TraceRestrictSlot::IsValidID(order->GetXData()) ? order->GetXData() : INVALID_TRACE_RESTRICT_SLOT_ID);
@@ -2034,7 +2024,16 @@ public:
 
 			case WID_O_COND_CARGO: {
 				uint value = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue();
-				ShowDropDownMenu(this, cargo_names_list, value, WID_O_COND_CARGO, 0, cargo_bitmask);
+				DropDownList *list = new DropDownList();
+				for (size_t i = 0; i < _sorted_standard_cargo_specs_size; ++i) {
+					const CargoSpec *cs = _sorted_cargo_specs[i];
+					*list->Append() = new DropDownListStringItem(cs->name, cs->Index(), false);
+				}
+				if (list->Length() == 0) {
+					delete list;
+					return;
+				}
+				ShowDropDownList(this, list, value, WID_O_COND_CARGO, 0);
 				break;
 			}
 

@@ -273,11 +273,11 @@ public:
 		return ouf;
 	}
 
-	template <typename F> uint32 FilterLoadUnloadTypeCargoMask(F filter_func, uint32 cargo_mask = ~0)
+	template <typename F> CargoTypes FilterLoadUnloadTypeCargoMask(F filter_func, CargoTypes cargo_mask = ALL_CARGOTYPES)
 	{
 		if ((this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) || (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
 			CargoID cargo;
-			uint32 output_mask = cargo_mask;
+			CargoTypes output_mask = cargo_mask;
 			FOR_EACH_SET_BIT(cargo, cargo_mask) {
 				if (!filter_func(this, cargo)) ClrBit(output_mask, cargo);
 			}
@@ -463,10 +463,10 @@ void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord);
 void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord);
 
 struct CargoMaskedStationIDStack {
-	uint32 cargo_mask;
+	CargoTypes cargo_mask;
 	StationIDStack station;
 
-	CargoMaskedStationIDStack(uint32 cargo_mask, StationIDStack station)
+	CargoMaskedStationIDStack(CargoTypes cargo_mask, StationIDStack station)
 			: cargo_mask(cargo_mask), station(station) {}
 };
 
@@ -477,7 +477,7 @@ private:
 
 public:
 	CargoStationIDStackSet()
-			: first(~0, INVALID_STATION) {}
+			: first(ALL_CARGOTYPES, INVALID_STATION) {}
 
 	const StationIDStack& Get(CargoID cargo) const
 	{
@@ -491,21 +491,21 @@ public:
 	void FillNextStoppingStation(const Vehicle *v, const OrderList *o, const Order *first = NULL, uint hops = 0);
 };
 
-template <typename F> uint32 FilterCargoMask(F filter_func, uint32 cargo_mask = ~0)
+template <typename F> CargoTypes FilterCargoMask(F filter_func, CargoTypes cargo_mask = ALL_CARGOTYPES)
 {
 	CargoID cargo;
-	uint32 output_mask = cargo_mask;
+	CargoTypes output_mask = cargo_mask;
 	FOR_EACH_SET_BIT(cargo, cargo_mask) {
 		if (!filter_func(cargo)) ClrBit(output_mask, cargo);
 	}
 	return output_mask;
 }
 
-template <typename T, typename F> T CargoMaskValueFilter(uint32 &cargo_mask, F filter_func)
+template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask, F filter_func)
 {
 	CargoID first_cargo_id = FindFirstBit(cargo_mask);
 	T value = filter_func(first_cargo_id);
-	uint32 other_cargo_mask = cargo_mask;
+	CargoTypes other_cargo_mask = cargo_mask;
 	ClrBit(other_cargo_mask, first_cargo_id);
 	CargoID cargo;
 	FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
@@ -598,8 +598,8 @@ public:
 	 */
 	inline VehicleOrderID GetNumManualOrders() const { return this->num_manual_orders; }
 
-	CargoMaskedStationIDStack GetNextStoppingStation(const Vehicle *v, uint32 cargo_mask, const Order *first = NULL, uint hops = 0) const;
-	const Order *GetNextDecisionNode(const Order *next, uint hops, uint32 &cargo_mask) const;
+	CargoMaskedStationIDStack GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first = NULL, uint hops = 0) const;
+	const Order *GetNextDecisionNode(const Order *next, uint hops, CargoTypes &cargo_mask) const;
 
 	void InsertOrderAt(Order *new_order, int index);
 	void DeleteOrderAt(int index);

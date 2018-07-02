@@ -122,7 +122,7 @@ void AnimateNewHouseConstruction(TileIndex tile);
 
 uint16 GetHouseCallback(CallbackID callback, uint32 param1, uint32 param2, HouseID house_id, Town *town = NULL, TileIndex tile = INVALID_TILE,
 		bool not_yet_constructed = false, uint8 initial_random_bits = 0, CargoTypes watched_cargo_triggers = 0);
-void WatchedCargoCallback(TileIndex tile, uint32 trigger_cargoes);
+void WatchedCargoCallback(TileIndex tile, CargoTypes trigger_cargoes);
 
 bool HouseAllowsConstruction(HouseID house_id, TileIndex tile, Town *t, byte random_bits);
 bool CanDeleteHouse(TileIndex tile);

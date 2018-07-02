@@ -61,7 +61,7 @@ static inline bool IsValidTrackdirForRoadVehicle(Trackdir trackdir)
  */
 static inline bool IsValidTrackdir(Trackdir trackdir)
 {
-	return trackdir < TRACKDIR_END && ((1 << trackdir & TRACKDIR_BIT_MASK) != 0);
+	return trackdir < TRACKDIR_END && ((1 << trackdir & TRACKDIR_BIT_MASK) != TRACKDIR_BIT_NONE);
 }
 
 /**
@@ -329,6 +329,28 @@ static inline TrackBits TrackdirBitsToTrackBits(TrackdirBits bits)
 static inline TrackdirBits TrackBitsToTrackdirBits(TrackBits bits)
 {
 	return (TrackdirBits)(bits * 0x101);
+}
+
+/**
+ * Checks whether a TrackBits has a given Track.
+ * @param tracks The track bits.
+ * @param track The track to check.
+ */
+static inline bool HasTrack(TrackBits tracks, Track track)
+{
+	assert(IsValidTrack(track));
+	return HasBit(tracks, track);
+}
+
+/**
+ * Checks whether a TrackdirBits has a given Trackdir.
+ * @param trackdirs The trackdir bits.
+ * @param trackdir The trackdir to check.
+ */
+static inline bool HasTrackdir(TrackdirBits trackdirs, Trackdir trackdir)
+{
+	assert(IsValidTrackdir(trackdir));
+	return HasBit(trackdirs, trackdir);
 }
 
 /**

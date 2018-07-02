@@ -72,7 +72,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_LINKGRAPH_DAY_SCALE,    XSCF_NULL,                1,   1, "linkgraph_day_scale",       NULL, NULL, NULL        },
 	{ XSLFI_TEMPLATE_REPLACEMENT,   XSCF_NULL,                4,   4, "template_replacement",      NULL, NULL, "TRPL,TMPL" },
 	{ XSLFI_MORE_RAIL_TYPES,        XSCF_NULL,                1,   1, "more_rail_types",           NULL, NULL, NULL        },
-	{ XSLFI_CARGO_TYPE_ORDERS,      XSCF_NULL,                2,   2, "cargo_type_orders",         NULL, NULL, "ORDX,VEOX" },
+	{ XSLFI_CARGO_TYPE_ORDERS,      XSCF_NULL,                3,   3, "cargo_type_orders",         NULL, NULL, "ORDX,VEOX" },
 	{ XSLFI_EXTENDED_GAMELOG,       XSCF_NULL,                1,   1, "extended_gamelog",          NULL, NULL, NULL        },
 	{ XSLFI_STATION_CATCHMENT_INC,  XSCF_NULL,                1,   1, "station_catchment_inc",     NULL, NULL, NULL        },
 	{ XSLFI_CUSTOM_BRIDGE_HEADS,    XSCF_NULL,                1,   1, "custom_bridge_heads",       NULL, NULL, NULL        },
