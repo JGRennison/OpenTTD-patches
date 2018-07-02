@@ -1963,6 +1963,9 @@ public:
 					case ADI_DEPOT: // Send to Depots
 						DoCommandP(0, DEPOT_MASS_SEND | (index == ADI_SERVICE ? DEPOT_SERVICE : (DepotCommand)0), this->window_number, GetCmdSendToDepot(this->vli.vtype));
 						break;
+					case ADI_CANCEL_DEPOT:
+						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_CANCEL, this->window_number, GetCmdSendToDepot(this->vli.vtype));
+						break;
 
 					case ADI_DEPOT_SELL:
 						DoCommandP(0, DEPOT_MASS_SEND | DEPOT_SELL, this->window_number, GetCmdSendToDepot(this->vli.vtype));
