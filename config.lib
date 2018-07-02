@@ -88,6 +88,7 @@ set_default() {
 	with_icu_layout="1"
 	with_icu_sort="1"
 	static_icu="0"
+	with_uniscribe="1"
 	with_threads="1"
 	with_distcc="1"
 	with_ccache="1"
@@ -164,6 +165,7 @@ set_default() {
 		with_icu_layout
 		with_icu_sort
 		static_icu
+		with_uniscribe
 		with_threads
 		with_distcc
 		with_ccache
@@ -400,6 +402,10 @@ detect_params() {
 			--static-icu=*)               static_icu="$optarg";;
 			--static-libicu)              static_icu="1";;
 			--static-libicu=*)            static_icu="$optarg";;
+
+			--with-uniscribe)             with_uniscribe="2";;
+			--without-uniscribe)          with_uniscribe="0";;
+			--with-uniscribe=*)           with_uniscribe="$optarg";;
 
 			--disable-builtin-depend)     enable_builtin_depend="0";;
 			--enable-builtin-depend)      enable_builtin_depend="2";;
@@ -852,6 +858,28 @@ check_params() {
 			log 1 "configure: error: no liblzo2 detected"
 			log 1 " If you want to compile without liblzo2 use --without-liblzo2 as parameter"
 			exit
+		fi
+	fi
+
+	if [ "$with_uniscribe" != "0" ]; then
+		if [ "$os" != "MINGW" ]; then
+			if [ "$with_uniscribe" != "1" ]; then
+				log 1 "configure: error: Uniscribe is only supported on native Win32 targets"
+				exit 1
+			fi
+			with_uniscribe="0"
+
+			log 1 "checking Uniscribe text layout... not Windows, skipping"
+		else
+			log 1 "checking Uniscribe text layout... found"
+
+			# Don't use ICU unless forced.
+			if [ "$with_icu_layout" = "1" ]; then
+				with_icu_layout="0"
+			fi
+			if [ "$with_icu_sort" = "1" ]; then
+				with_icu_sort="0"
+			fi
 		fi
 	fi
 
@@ -1795,6 +1823,10 @@ make_cflags_and_ldflags() {
 		fi
 	fi
 
+	if [ "$with_uniscribe" != "0" ]; then
+		CFLAGS="$CFLAGS -DWITH_UNISCRIBE"
+		LIBS="$LIBS -lusp10"
+	fi
 
 	if [ "$with_direct_music" != "0" ]; then
 		CFLAGS="$CFLAGS -DWIN32_ENABLE_DIRECTMUSIC_SUPPORT"
@@ -2649,6 +2681,11 @@ detect_library() {
 		eval "res=\$$2"
 		if [ -z "$res" ]; then
 			log 2 "  trying /mingw/include/$4$5... no"
+			eval "$2=`ls -1 /mingw$cpu_type/include/$4*.h 2>/dev/null | egrep \"\/$5\$\"`"
+		fi
+		eval "res=\$$2"
+		if [ -z "$res" ]; then
+			log 2 "  trying /mingw$cpu_type/include/$4$5... no"
 			eval "$2=`ls -1 /opt/local/include/$4*.h 2>/dev/null | egrep \"\/$5\$\"`"
 		fi
 		eval "res=\$$2"
@@ -2697,6 +2734,11 @@ detect_library() {
 			eval "res=\$$2"
 			if [ -z "$res" ]; then
 				log 2 "  trying /mingw/lib/$3... no"
+				eval "$2=`ls /mingw$cpu_type/lib/*.a 2>/dev/null | egrep \"\/$3\$\"`"
+			fi
+			eval "res=\$$2"
+			if [ -z "$res" ]; then
+				log 2 "  trying /mingw$cpu_type/lib/$3... no"
 				log 1 "configure: error: $2 couldn't be found"
 				log 1 "configure: error: you requested a static link, but I can't find $3"
 

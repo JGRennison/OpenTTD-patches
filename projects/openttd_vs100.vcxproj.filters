@@ -1053,6 +1053,9 @@
     <ClInclude Include="..\src\string_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\os\windows\string_uniscribe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\stringfilter_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -3084,6 +3087,9 @@
     <ResourceCompile Include="..\src\os\windows\ottdres.rc">
       <Filter>Windows files</Filter>
     </ResourceCompile>
+    <ClCompile Include="..\src\os\windows\string_uniscribe.cpp">
+      <Filter>Windows files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\os\windows\win32.cpp">
       <Filter>Windows files</Filter>
     </ClCompile>

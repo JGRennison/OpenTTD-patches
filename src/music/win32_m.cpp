@@ -18,6 +18,7 @@
 #include "../debug.h"
 #include "midifile.hpp"
 #include "midi.h"
+#include "../base_media_base.h"
 
 #include "../safeguards.h"
 
@@ -183,7 +184,7 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 		/* find first block after start time and pretend playback started earlier
 		* this is to allow all blocks prior to the actual start to still affect playback,
 		* as they may contain important controller and program changes */
-		size_t preload_bytes = 0;
+		uint preload_bytes = 0;
 		for (size_t bl = 0; bl < _midi.current_file.blocks.size(); bl++) {
 			MidiFile::DataBlock &block = _midi.current_file.blocks[bl];
 			preload_bytes += block.data.Length();
@@ -193,8 +194,13 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 					_midi.current_segment.start_block = bl;
 					break;
 				} else {
+					/* Calculate offset start time for playback.
+					 * The preload_bytes are used to compensate for delay in transmission over traditional serial MIDI interfaces,
+					 * which have a bitrate of 31,250 bits/sec, and transmit 1+8+1 start/data/stop bits per byte.
+					 * The delay compensation is needed to avoid time-compression of following messages.
+					 */
 					DEBUG(driver, 2, "Win32-MIDI: timer: start from block %d (ticktime %d, realtime %.3f, bytes %d)", (int)bl, (int)block.ticktime, ((int)block.realtime) / 1000.0, (int)preload_bytes);
-					_midi.playback_start_time -= block.realtime / 1000;
+					_midi.playback_start_time -= block.realtime / 1000 - preload_bytes * 1000 / 3125;
 					break;
 				}
 			}
@@ -208,10 +214,6 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 	while (_midi.current_block < _midi.current_file.blocks.size()) {
 		MidiFile::DataBlock &block = _midi.current_file.blocks[_midi.current_block];
 
-		/* check that block is not in the future */
-		if (block.realtime / 1000 > playback_time) {
-			break;
-		}
 		/* check that block isn't at end-of-song override */
 		if (_midi.current_segment.end > 0 && block.ticktime >= _midi.current_segment.end) {
 			if (_midi.current_segment.loop) {
@@ -220,6 +222,10 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 			} else {
 				_midi.do_stop = true;
 			}
+			break;
+		}
+		/* check that block is not in the future */
+		if (block.realtime / 1000 > playback_time) {
 			break;
 		}
 
@@ -296,23 +302,27 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 	/* end? */
 	if (_midi.current_block == _midi.current_file.blocks.size()) {
 		if (_midi.current_segment.loop) {
-			_midi.current_block = 0;
-			_midi.playback_start_time = timeGetTime();
+			_midi.current_block = _midi.current_segment.start_block;
+			_midi.playback_start_time = timeGetTime() - _midi.current_file.blocks[_midi.current_block].realtime / 1000;
 		} else {
 			_midi.do_stop = true;
 		}
 	}
 }
 
-void MusicDriver_Win32::PlaySong(const char *filename)
+void MusicDriver_Win32::PlaySong(const MusicSongInfo &song)
 {
 	DEBUG(driver, 2, "Win32-MIDI: PlaySong: entry");
 	EnterCriticalSection(&_midi.lock);
 
-	_midi.next_file.LoadFile(filename);
-	_midi.next_segment.start = 0;
-	_midi.next_segment.end = 0;
-	_midi.next_segment.loop = false;
+	if (!_midi.next_file.LoadSong(song)) {
+		LeaveCriticalSection(&_midi.lock);
+		return;
+	}
+
+	_midi.next_segment.start = song.override_start;
+	_midi.next_segment.end = song.override_end;
+	_midi.next_segment.loop = song.loop;
 
 	DEBUG(driver, 2, "Win32-MIDI: PlaySong: setting flag");
 	_midi.do_stop = _midi.playing;

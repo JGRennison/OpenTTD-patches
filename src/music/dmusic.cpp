@@ -21,6 +21,7 @@
 #include "../core/mem_func.hpp"
 #include "../thread/thread.h"
 #include "../fileio_func.h"
+#include "../base_media_base.h"
 #include "dmusic.h"
 #include "midifile.hpp"
 #include "midi.h"
@@ -692,6 +693,9 @@ static void MidiThreadProc(void *)
 							current_segment.start_block = bl;
 							break;
 						} else {
+							/* Skip the transmission delay compensation performed in the Win32 MIDI driver.
+							 * The DMusic driver will most likely be used with the MS softsynth, which is not subject to transmission delays.
+							 */
 							DEBUG(driver, 2, "DMusic: timer: start from block %d (ticktime %d, realtime %.3f, bytes %d)", (int)bl, (int)block.ticktime, ((int)block.realtime) / 1000.0, (int)preload_bytes);
 							playback_start_time -= block.realtime * MIDITIME_TO_REFTIME;
 							break;
@@ -722,14 +726,6 @@ static void MidiThreadProc(void *)
 			while (current_block < current_file.blocks.size()) {
 				MidiFile::DataBlock &block = current_file.blocks[current_block];
 
-				/* check that block is not in the future */
-				REFERENCE_TIME playback_time = current_time - playback_start_time;
-				if (block.realtime * MIDITIME_TO_REFTIME > playback_time +  3 *_playback.preload_time * MS_TO_REFTIME) {
-					/* Stop the thread loop until we are at the preload time of the next block. */
-					next_timeout = Clamp(((int64)block.realtime * MIDITIME_TO_REFTIME - playback_time) / MS_TO_REFTIME - _playback.preload_time, 0, 1000);
-					DEBUG(driver, 9, "DMusic thread: Next event in %u ms (music %u, ref %lld)", next_timeout, block.realtime * MIDITIME_TO_REFTIME, playback_time);
-					break;
-				}
 				/* check that block isn't at end-of-song override */
 				if (current_segment.end > 0 && block.ticktime >= current_segment.end) {
 					if (current_segment.loop) {
@@ -740,6 +736,14 @@ static void MidiThreadProc(void *)
 						_playback.do_stop = true;
 					}
 					next_timeout = 0;
+					break;
+				}
+				/* check that block is not in the future */
+				REFERENCE_TIME playback_time = current_time - playback_start_time;
+				if (block.realtime * MIDITIME_TO_REFTIME > playback_time +  3 *_playback.preload_time * MS_TO_REFTIME) {
+					/* Stop the thread loop until we are at the preload time of the next block. */
+					next_timeout = Clamp(((int64)block.realtime * MIDITIME_TO_REFTIME - playback_time) / MS_TO_REFTIME - _playback.preload_time, 0, 1000);
+					DEBUG(driver, 9, "DMusic thread: Next event in %u ms (music %u, ref %lld)", next_timeout, block.realtime * MIDITIME_TO_REFTIME, playback_time);
 					break;
 				}
 
@@ -828,8 +832,8 @@ static void MidiThreadProc(void *)
 			/* end? */
 			if (current_block == current_file.blocks.size()) {
 				if (current_segment.loop) {
-					current_block = 0;
-					clock->GetTime(&playback_start_time);
+					current_block = current_segment.start_block;
+					playback_start_time = block_time - current_file.blocks[current_block].realtime * MIDITIME_TO_REFTIME;
 				} else {
 					_playback.do_stop = true;
 				}
@@ -1225,14 +1229,15 @@ void MusicDriver_DMusic::Stop()
 }
 
 
-void MusicDriver_DMusic::PlaySong(const char *filename)
+void MusicDriver_DMusic::PlaySong(const MusicSongInfo &song)
 {
 	ThreadMutexLocker lock(_thread_mutex);
 
-	_playback.next_file.LoadFile(filename);
-	_playback.next_segment.start = 0;
-	_playback.next_segment.end = 0;
-	_playback.next_segment.loop = false;
+	if (!_playback.next_file.LoadSong(song)) return;
+
+	_playback.next_segment.start = song.override_start;
+	_playback.next_segment.end = song.override_end;
+	_playback.next_segment.loop = song.loop;
 
 	_playback.do_start = true;
 	SetEvent(_thread_event);

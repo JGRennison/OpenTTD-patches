@@ -883,9 +883,9 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Mini visuale {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Copia nella mini visuale
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Cambia mini visuale
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Copia la posizione della visuale principale in questa mini visuale
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Copia dalla mini visuale
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Cambia visuale principale
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Copia la posizione di questa mini visuale nella visuale principale
 
 # Game options window
@@ -2314,6 +2314,7 @@ STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Nessuno
 STR_LINKGRAPH_LEGEND_NONE.ms                                    :{BLACK}Nessuno
 STR_LINKGRAPH_LEGEND_NONE.fs                                    :{BLACK}Nessuna
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Seleziona le compagnie da mostrare
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}inutilizzata
@@ -3010,6 +3011,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Inserire
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Città
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Nessuna -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Metropoli){BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Nomi delle città - fare clic su un nome per centrare la visuale principale sulla città. CTRL+clic la mostra in una mini visuale.
 STR_TOWN_POPULATION                                             :{BLACK}Popolazione mondiale: {COMMA}
 
@@ -3017,8 +3019,7 @@ STR_TOWN_POPULATION                                             :{BLACK}Popolazi
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Metropoli)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Popolazione: {ORANGE}{COMMA}{BLACK}  Case: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Passeggeri il mese scorso: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Posta il mese scorso: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} il mese scorso: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Carichi richiesti per la crescita della città:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} richiest{G 0 o o a}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} richiest{G 0 o o a} in inverno
@@ -4265,6 +4266,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... ques
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... strada rivolta nella direzione sbagliata
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... le fermate passanti non possono trovarsi in curva
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... le fermate passanti non possono avere raccordi
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... la strada è bloccata o a senso unico
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Impossibile rimuovere parte della stazione...
@@ -4516,6 +4518,8 @@ STR_BASESOUNDS_DOS_DESCRIPTION                                  :Suoni originali
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :Suoni originali di Transport Tycoon Deluxe, edizione Windows.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Un pacchetto sonoro non contenente alcun suono.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Musica originale di Transport Tycoon Deluxe, edizione Windows.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :Musica originale di Transport Tycoon Deluxe, edizione DOS.
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :Musica originale di Transport Tycoon (edizione Original/World).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un pacchetto musicale non contenente alcuna musica.
 
 ##id 0x2000

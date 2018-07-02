@@ -86,6 +86,7 @@ public:
 	virtual GlyphID MapCharToGlyph(WChar key) { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
 	virtual const void *GetFontTable(uint32 tag, size_t &length) { length = 0; return NULL; }
 	virtual const char *GetFontName() { return "sprite"; }
+	virtual bool IsBuiltInFont() { return true; }
 };
 
 /**
@@ -208,6 +209,7 @@ bool SpriteFontCache::GetDrawGlyphShadow()
 class FreeTypeFontCache : public FontCache {
 private:
 	FT_Face face;  ///< The font face associated with this font.
+	int req_size;  ///< Requested font size.
 
 	typedef SmallMap<uint32, SmallPair<size_t, const void*> > FontTable; ///< Table with font table cache
 	FontTable font_tables; ///< Cached font tables.
@@ -236,6 +238,7 @@ private:
 
 	GlyphEntry *GetGlyphPtr(GlyphID key);
 	void SetGlyphPtr(GlyphID key, const GlyphEntry *glyph, bool duplicate = false);
+	void SetFontSize(FontSize fs, FT_Face face, int pixels);
 
 public:
 	FreeTypeFontCache(FontSize fs, FT_Face face, int pixels);
@@ -250,6 +253,7 @@ public:
 	virtual GlyphID MapCharToGlyph(WChar key);
 	virtual const void *GetFontTable(uint32 tag, size_t &length);
 	virtual const char *GetFontName() { return face->family_name; }
+	virtual bool IsBuiltInFont() { return false; }
 };
 
 FT_Library _library = NULL;
@@ -265,20 +269,26 @@ static const byte SHADOW_COLOUR = 2;
  * @param face   The font that has to be loaded.
  * @param pixels The number of pixels this font should be high.
  */
-FreeTypeFontCache::FreeTypeFontCache(FontSize fs, FT_Face face, int pixels) : FontCache(fs), face(face), glyph_to_sprite(NULL)
+FreeTypeFontCache::FreeTypeFontCache(FontSize fs, FT_Face face, int pixels) : FontCache(fs), face(face), req_size(pixels), glyph_to_sprite(NULL)
 {
 	assert(face != NULL);
 
+	this->SetFontSize(fs, face, pixels);
+}
+
+void FreeTypeFontCache::SetFontSize(FontSize fs, FT_Face face, int pixels)
+{
 	if (pixels == 0) {
 		/* Try to determine a good height based on the minimal height recommended by the font. */
-		pixels = _default_font_height[this->fs];
+		int scaled_height = ScaleGUITrad(_default_font_height[this->fs]);
+		pixels = scaled_height;
 
 		TT_Header *head = (TT_Header *)FT_Get_Sfnt_Table(this->face, ft_sfnt_head);
 		if (head != NULL) {
 			/* Font height is minimum height plus the difference between the default
 			 * height for this font size and the small size. */
-			int diff = _default_font_height[this->fs] - _default_font_height[FS_SMALL];
-			pixels = Clamp(min(head->Lowest_Rec_PPEM, 20) + diff, _default_font_height[this->fs], MAX_FONT_SIZE);
+			int diff = scaled_height - ScaleGUITrad(_default_font_height[FS_SMALL]);
+			pixels = Clamp(min(head->Lowest_Rec_PPEM, 20) + diff, scaled_height, MAX_FONT_SIZE);
 		}
 	}
 
@@ -393,6 +403,7 @@ found_face:
 FreeTypeFontCache::~FreeTypeFontCache()
 {
 	FT_Done_Face(this->face);
+	this->face = NULL;
 	this->ClearFontCache();
 
 	for (FontTable::iterator iter = this->font_tables.Begin(); iter != this->font_tables.End(); iter++) {
@@ -422,6 +433,9 @@ void FreeTypeFontCache::ClearFontCache()
 	this->glyph_to_sprite = NULL;
 
 	Layouter::ResetFontCache(this->fs);
+
+	/* GUI scaling might have changed, determine font size anew if it was automatically selected. */
+	if (this->face != NULL && this->req_size == 0) this->SetFontSize(this->fs, this->face, this->req_size);
 }
 
 FreeTypeFontCache::GlyphEntry *FreeTypeFontCache::GetGlyphPtr(GlyphID key)
