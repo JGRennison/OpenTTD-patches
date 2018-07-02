@@ -52,10 +52,10 @@ extern CompanyPool _company_pool;
 /** Statically loadable part of Company pool item */
 struct CompanyProperties {
 	uint32 name_2;                   ///< Parameter of #name_1.
-	uint16 name_1;                   ///< Name of the company if the user did not change it.
+	StringID name_1;                 ///< Name of the company if the user did not change it.
 	char *name;                      ///< Name of the company if the user changed it.
 
-	uint16 president_name_1;         ///< Name of the president if the user did not change it.
+	StringID president_name_1;       ///< Name of the president if the user did not change it.
 	uint32 president_name_2;         ///< Parameter of #president_name_1
 	char *president_name;            ///< Name of the president if the user changed it.
 
@@ -66,8 +66,6 @@ struct CompanyProperties {
 	Money current_loan;              ///< Amount of money borrowed from the bank.
 
 	byte colour;                     ///< Company colour.
-
-	RailTypes avail_railtypes;       ///< Rail types available to the company.
 
 	byte block_preview;              ///< Number of quarters that the company is not allowed to get new exclusive engine previews (see CompaniesGenStatistics).
 
@@ -98,7 +96,13 @@ struct CompanyProperties {
 	CompanyEconomyEntry old_economy[MAX_HISTORY_QUARTERS]; ///< Economic data of the company of the last #MAX_HISTORY_QUARTERS quarters.
 	byte num_valid_stat_ent;                               ///< Number of valid statistical entries in #old_economy.
 
-	CompanyProperties() : name(NULL), president_name(NULL) {}
+	// TODO: Change some of these member variables to use relevant INVALID_xxx constants
+	CompanyProperties()
+		: name_2(0), name_1(0), name(NULL), president_name_1(0), president_name_2(0), president_name(NULL),
+		  face(0), money(0), money_fraction(0), current_loan(0), colour(0), block_preview(0),
+		  location_of_HQ(0), last_build_coordinate(0), share_owners(), inaugurated_year(0),
+		  months_of_bankruptcy(0), bankrupt_asked(0), bankrupt_timeout(0), bankrupt_value(0),
+		  terraform_limit(0), clear_limit(0), tree_limit(0), is_ai(false) {}
 
 	~CompanyProperties()
 	{
@@ -112,6 +116,7 @@ struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {
 	~Company();
 
 	Livery livery[LS_END];
+	RailTypes avail_railtypes;         ///< Rail types available to this company.
 	RoadTypes avail_roadtypes;         ///< Road types available to this company.
 
 	class AIInstance *ai_instance;

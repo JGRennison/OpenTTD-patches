@@ -202,6 +202,7 @@ STR_UNITS_POWER_SI                                              :{COMMA}kW
 STR_UNITS_WEIGHT_SHORT_METRIC                                   :{COMMA}t
 STR_UNITS_WEIGHT_SHORT_SI                                       :{COMMA}kg
 
+STR_UNITS_WEIGHT_LONG_IMPERIAL                                  :{COMMA}{NBSP}tan{P "" s}
 STR_UNITS_WEIGHT_LONG_METRIC                                    :{COMMA} tan
 STR_UNITS_WEIGHT_LONG_SI                                        :{COMMA} kg
 
@@ -648,10 +649,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Pilih ra
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Mainkan muzik secara rawak atau tidak
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Tunjukkan tetingkap pilihan lagu
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Set muzik yang tidak mengandungi lagu telah dipilih. Tiada lagu yang akan dimainkan
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Pilihan Rancangan Muzik
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Indeks Lagu
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Program - '{STRING}'
@@ -1073,6 +1071,7 @@ STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :Tetapan permain
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :Tetapan syarikat (disimpan di simpanan; berkesan hanya permainan baru)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Tetapan syarikat (disimpan di penyimpanan; hanya berkesan kepada syarikat semasa)
 
+STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategori:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Hadkan senarai di bawah menggunakan penapis yang telah ditetapkan
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :Asas (menunjukkan tetapan yang penting sahaja)
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Terperinci (tunjukkan kebanyakan tetapan)
@@ -1080,6 +1079,7 @@ STR_CONFIG_SETTING_RESTRICT_ALL                                 :Expert (memapar
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT             :Tetapan dengan nilai berbeza dari yang lalai
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW                 :Tetapan dengan nilai yang berbeza daripada tetapan baru permainananda
 
+STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Tiada -
 
 STR_CONFIG_SETTING_OFF                                          :Matikan
 STR_CONFIG_SETTING_ON                                           :Hidupkan
@@ -1165,6 +1165,7 @@ STR_CONFIG_SETTING_INDUSTRY_PLATFORM_HELPTEXT                   :Jumlah ruang ra
 STR_CONFIG_SETTING_MULTIPINDTOWN                                :Benarkan pelbagai industri sejenis di setiap bandar: {STRING}
 STR_CONFIG_SETTING_MULTIPINDTOWN_HELPTEXT                       :Biasanya sebuah bandar tidak mahu lebih daripada beberapa industri. Dengan tetapan ini membolehakn beberapa industri di bandar yang sama
 STR_CONFIG_SETTING_SIGNALSIDE                                   :Pamer isyarat: {STRING}
+STR_CONFIG_SETTING_SIGNALSIDE_RIGHT                             :Di sebelah kanan
 STR_CONFIG_SETTING_SHOWFINANCES                                 :Tunjukkan tetingkap kewangan setiap penghujung tahun: {STRING}
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :Arahan baru ialah 'tanpa henti' secara lazim: {STRING}
 STR_CONFIG_SETTING_STOP_LOCATION                                :Arahan keretapi baru berhenti secara lazim di pletfom {STRING}
@@ -1215,6 +1216,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Beri amaran jik
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Kenderaan tidak akan tamat tempohnya: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Gunakan pembaharuan automatik apabila kenderaan usang : {STRING}
 STR_CONFIG_SETTING_AUTORENEW_MONEY                              :Wang minimum yang diperlukan untuk pembaharuan automatik: {STRING}
+STR_CONFIG_SETTING_ERRMSG_DURATION                              :Jangkamasa mesej ralat: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Tunjukkan jumlah penduduk dalam label nama bandar: {STRING}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Ketebalan garisan di dalam graf: {STRING}
 
@@ -1248,7 +1250,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR                         :Warna tanah yan
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Hijau
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Hijau Gelap
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Ungu
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Arah skrol terbalik: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Skrol tetingkap pemandangan yang licin: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Tunjukkan bantuan ukuran ketika menggunakan alat binaan: {STRING}
 STR_CONFIG_SETTING_LIVERIES                                     :Tunjukkan seragam syarikat: {STRING}
@@ -1273,7 +1274,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+Klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Matikan
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Skrol klik-kiri: {STRING}
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Simpanan automatik:{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Pilih jarak waktu antara menyimpankan permainan automatik
@@ -1302,6 +1302,7 @@ STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Tunjukkan landa
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Alat binaan tetap aktif selepas digunakan: {STRING}
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Perbelanjaan kumpulan dalam tetingkap kewangan syarikat: {STRING}
 
+STR_CONFIG_SETTING_SOUND_CONFIRM                                :Pembinaan: {STRING}
 
 STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING                  :Nyahaktif infrastruktur bangunan apabila tiada kenderaan yang sesuai: {STRING}
 STR_CONFIG_SETTING_MAX_TRAINS                                   :Amaun maksimum kereta api setiap syarikat: {STRING}
@@ -1321,9 +1322,12 @@ STR_CONFIG_SETTING_AI_PROFILE_MEDIUM                            :Sederhana
 STR_CONFIG_SETTING_AI_PROFILE_HARD                              :Sukar
 
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :Benarkan Kepintaran Tiruan dalam permainan pemain berbilang: {STRING}
+STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :Benarkan AI komputer menyertai permainan berbilang pemain
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :#opcodes sebelum skrip adalah digantung: {STRING}
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Tempoh waktu servis dalam peratusan: {STRING}
+STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Pilih sama ada selenggara kenderaan dimulakan sejak tempoh masa dari servis terakhir atau apabila peratusan kebolehupayaan kenderaan berkurang kepada peratusan tertentu.
+STR_CONFIG_SETTING_SERVINT_DISABLED                             :Dilumpuhkan
 STR_CONFIG_SETTING_NOSERVICE                                    :Servis tidak diperlukan apabila kerosakan kenderaan ditetapkan kepada tiada: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Benarkan had kelajuan untuk gerabak: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Tiada landasan elektrik: {STRING}
@@ -1332,6 +1336,7 @@ STR_CONFIG_SETTING_NEWS_ARRIVAL_FIRST_VEHICLE_OWN               :Ketibaan kender
 STR_CONFIG_SETTING_NEWS_ARRIVAL_FIRST_VEHICLE_OTHER             :Ketibaan kenderaan di stesen pesaing: {STRING}
 STR_CONFIG_SETTING_NEWS_ACCIDENTS_DISASTERS                     :Kemalangan / bencana: {STRING}
 STR_CONFIG_SETTING_NEWS_COMPANY_INFORMATION                     :Maklumat syarikat: {STRING}
+STR_CONFIG_SETTING_NEWS_COMPANY_INFORMATION_HELPTEXT            :Paparkan surat khabar mengenai pembukaan syarikat baru, atau apabila syarikat dalam risiko untuk muflis
 STR_CONFIG_SETTING_NEWS_INDUSTRY_OPEN                           :Pembukaan industri: {STRING}
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CLOSE                          :Penutupan industri: {STRING}
 STR_CONFIG_SETTING_NEWS_ECONOMY_CHANGES                         :Perubahan ekonomi: {STRING}
@@ -1353,6 +1358,7 @@ STR_CONFIG_SETTING_STARTING_YEAR                                :Tahun permulaan
 STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :Gunakan ekonomi baik (perubahan yang lebih kecil): {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Benarkan membeli saham syarikat lain: {STRING}
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE                  :Bina semafor secara automatik sebelum: {STRING}
+STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE_HELPTEXT         :Tetapkan tahun apabila isyarat berjenis elektrik digunakan untuk landasan. Sebelum tahun ini, isyarat bukan elektrik akan digunakan (memiliki fungsi yang sama, tetapi berlainan reka bentuk)
 STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI                            :Gunakan GUI isyarat: {STRING}
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_TYPE                          :Jenis isyarat yang dibina secara lazim: {STRING}
 STR_CONFIG_SETTING_DEFAULT_SIGNAL_NORMAL                        :Isyarat sekatan
@@ -1995,6 +2001,7 @@ STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Ghaibkan
 # Linkgraph legend window
 
 # Linkgraph legend window and linkgraph legend in smallmap
+STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}tepu
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Serlahan kawasan liputan
@@ -2308,29 +2315,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Ladang
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Tanah diliputi salji
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Padang pasir
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} landasan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} landasan dengan isyarat sekatan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} landasan dengan pra-isyarat
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} landasan dengan isyarat keluar
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} landasan dengan isyarat kombo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} landasan dengan isyarat laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} landasan dengan isyarat satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} landasan dengan isyarat sekatan dan pra-isyarat
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} landasan dengan isyarat sekatan dan keluar
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} landasan dengan isyarat sekatan dan kombo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} landasan dengan isyarat sekatan dan laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} landasan dengan isyarat sekatan dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} landasan dengan isyarat pra- dan keluar
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} landasan dengan isyarat pra- dan kombo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} landasan dengan isyarat pra- dan laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} landasan dengan isyarat pra- dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} landasan dengan isyarat keluar dan kombo
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} landasan dengan isyarat keluar dan laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} landasan dengan isyarat keluar dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} landasan dengan isyarat kombo dan laluan
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} landasan dengan isyarat kombo dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} landasan dengan isyarat laluan dan satu hala
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} depoh keretapi
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Landasan keretapi
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Keretapi landasan dengan isyarat sekatan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Keretapi landasan dengan pra-isyarat
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Landasan keretapi dengan isyarat keluar
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Landasan keretapi dengan isyarat kombo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Keretapi landasan dengan isyarat laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Landasan keretapi dengan isyarat satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Keretapi landasan dengan isyarat sekatan dan pra-isyarat
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Landasan keretapi dengan isyarat sekatan dan keluar
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Landasan keretapi dengan isyarat sekatan dan kombo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Keretapi landasan dengan isyarat sekatan dan laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Landasan keretapi dengan isyarat sekatan dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Keretapi landasan dengan isyarat pra- dan keluar
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Keretapi landasan dengan isyarat pra- dan kombo
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Keretapi landasan dengan isyarat pra- dan laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Keretapi landasan dengan isyarat pra- dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Landasan keretapi dengan isyarat keluar dan kombo.
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Landasan keretapi dengan isyarat keluar dan laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Landasan keretapi dengan isyarat keluar dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Landasan keretapi dengan isyarat kombo dan signal laluan
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Landasan keretapi dengan isyarat kombo dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Keretapi landasan dengan isyarat laluan dan satu hala
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Keretapi depoh keretapi
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Jalanraya
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Jalan raya berlampu
@@ -2394,7 +2401,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Tanah dimiliki 
 STR_ABOUT_OPENTTD                                               :{WHITE}Tentang OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Hakcipta Asal {COPYRIGHT} 1995 Chris Sawyer, Hakcipta terpelihara
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versi {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2016 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 The OpenTTD team
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Simpankan Permainan
@@ -2602,7 +2609,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Cubaan untuk me
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} mengandungi peperi yang rosak. Semua peperi yang rosak akan ditunjukkan menggunakan tanda soal (?) merah.
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Mengandungi pelbagai Tindakan 8 kemasukan (peperi {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Bacaan melepasi penghujung peperi-pseudo (peperi {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Set asas grafik yang sedang digunakan, hilang sebilangan sprites.{}Sila mengemaskini set asas grafik
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Sumber GRF yang diminta tidak diperolehi (peperi {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} telah dinyahaktifkan oleh {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Tidak sah/diketahui format susun atur (peperi {3:NUM})
@@ -2675,8 +2681,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Jumlah p
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Bandaraya)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Jumlah penduduk: {ORANGE}{COMMA}{BLACK}  Rumah: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Penumpang bulan lalu: {ORANGE}{COMMA}{BLACK}  maks: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Beg surat bulan lepas: {ORANGE}{COMMA}{BLACK}  maks: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Kargi yang diperlukan untuk pembesaran bandar:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} diperlukan
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} diperlukan sewaktu musim sejuk
@@ -2770,6 +2774,7 @@ STR_SUBSIDIES_SUBSIDISED_FROM_TO                                :{ORANGE}{STRING
 STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Klik di atas servis untuk memusatkan pemandangan kepada industri/bandar. Ctrl+Klik untuk membuka tetingkap pemandangan di lokasi bandar
 
 # Story book window
+STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}Nama stesen - klik pada nama untuk memusatkan pemandangan ke stesen. Ctrl+Klik membuka tetingkap pemandangan di lokasi stesen
@@ -2794,6 +2799,7 @@ STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Menerima
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Penarafan
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Tunjukkan penarafan stesen
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE                           :{BLACK}Bekalan bulanan dan penarafan tempatan:
 
 
 
@@ -2936,6 +2942,7 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Pengelua
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% dihantar)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Pusatkan pemandangan utama ke lokasi industri. Ctrl+Klik untuk membuka tetingkap pemandangan di lokasi industri
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Tahap produksi: {YELLOW}{COMMA}%
+STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW} Industri mengumumkan penutupan serta merta!
 
 ############ range for requires starts
 STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Memerlukan: {YELLOW}{STRING}{STRING}
@@ -2943,9 +2950,9 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Memerluk
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Memerlukan: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Diperlukan:
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Kargo yang sedang menunggu untuk diproses:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Mengeluarkan: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Mengeluarkan: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3009,6 +3016,7 @@ STR_GROUP_ADD_SHARED_VEHICLE                                    :Tambah kenderaa
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Buang semua kenderaan
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Namakan semula kenderaan
+
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Keretapi Baru
@@ -3174,10 +3182,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :keretapi maglev
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kos: {CURRENCY_LONG} Berat: {WEIGHT_SHORT}{}Kelajuan: {VELOCITY}  Kuasa: {POWER}{}Kos Pengendalian: {CURRENCY_LONG}/thn{}Kapasiti: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Kos: {CURRENCY_LONG} Berat: {WEIGHT_SHORT}{}Kelajuan: {VELOCITY}  Kuasa: {POWER}  Maks. E.K.: {6:FORCE}{}Kos Pengendalian: {4:CURRENCY_LONG}/thn{}Kapasiti: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Kos: {CURRENCY_LONG} Kelajuan Maks.: {VELOCITY}{}Kapasiti: {CARGO_LONG}, {CARGO_LONG}{}Kos Pengendalian: {CURRENCY_LONG}/thn
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Kos: {CURRENCY_LONG} Kelajuan Maks.: {VELOCITY}{}Kapasiti: {CARGO_LONG}{}Kos Pengendalian: {CURRENCY_LONG}/thn
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Kos: {CURRENCY_LONG}Kelajuan Maks.: {VELOCITY} Jarak: {COMMA} petak{}Kapasiti: {CARGO_LONG}, {CARGO_LONG}{}Kos berjalan: {CURRENCY_LONG}/thn
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Kos: {CURRENCY_LONG} Kelajuan Maks.: {VELOCITY} Jarak: {COMMA} petak{}Kapasiti: {CARGO_LONG}{}Kos berjalan: {CURRENCY_LONG}/thn
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Kos: {CURRENCY_LONG} Kelajuan Maks.: {VELOCITY}{}Kapasiti: {CARGO_LONG}{}Kos Pengendalian: {CURRENCY_LONG}/thn
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Gantikan {STRING} - {STRING}
@@ -3197,7 +3202,6 @@ STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}Tiada ke
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Hentikan Penggantian Kenderaan
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Menekan untuk menghentikan ketukaran jenis engin yang telah dipilih di sebelah kiri
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Menggantikan: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Beralih antara tetingkap enjin dan penggantian wagon
 STR_REPLACE_ENGINES                                             :Enjin
 STR_REPLACE_WAGONS                                              :Gerabak
@@ -3293,7 +3297,6 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} tahun (
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} tahun ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Kelajuan Maks.: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Kelajuan Maks.: {LTBLUE}{VELOCITY} {BLACK}Jarak: {LTBLUE}{COMMA} petak
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Berat: {LTBLUE}{WEIGHT_SHORT} {BLACK}Kuasa: {LTBLUE}{POWER}{BLACK} Kelajuan Maks.: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Berat: {LTBLUE}{WEIGHT_SHORT} {BLACK}Kuasa: {LTBLUE}{POWER}{BLACK} Max. speed: {LTBLUE}{VELOCITY} {BLACK}T.E. Maks.: {LTBLUE}{FORCE}
 
@@ -3313,6 +3316,7 @@ STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Tempoh P
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Tambah 10 tempoh penyenggelaraan. Ctrl+Klik untuk tambah 5 tempoh penyenggelaraan
 STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Kurangkan 10 tempoh penyenggelaraan. Ctrl+Klik untuk kurangkan 5 tempoh penyenggelaraan
 
+STR_VEHICLE_DETAILS_PERCENT                                     :Peratusan
 
 STR_QUERY_RENAME_TRAIN_CAPTION                                  :{WHITE}Nama keretapi
 STR_QUERY_RENAME_ROAD_VEHICLE_CAPTION                           :{WHITE}Nama kenderaan jalanraya
@@ -4035,6 +4039,7 @@ STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Tidak bo
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... kenderaan sudah musnah
 
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Mulakan permainan baru selepas {DATE_SHORT} atau gunakan NewGRF yang digunakan kenderaan terdahulu
 
 # Specific vehicle errors
 STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}Keretapi tidak boleh melanggar isyarat kerana terdapat kemungkinan bahaya...
@@ -4081,6 +4086,8 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :Sebuah permaina
 # Translatable descriptions in media/baseset/*.ob* files
 STR_BASEGRAPHICS_DOS_DESCRIPTION                                :Grafik asal Transport Tycoon Deluxe DOS edition.
 STR_BASEGRAPHICS_WIN_DESCRIPTION                                :Grafik asal Transport Tycoon Deluxe edisi Windows.
+STR_BASEMUSIC_WIN_DESCRIPTION                                   :Muzik asal Transport Tycoon Deluxe edisi Windows.
+STR_BASEMUSIC_NONE_DESCRIPTION                                  :Pek muzik tanpa muzik sebenar.
 
 ##id 0x2000
 # Town building names

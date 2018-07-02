@@ -142,6 +142,18 @@ void CheckBlitter();
 
 bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int height);
 
+/**
+ * Determine where to draw a centred object inside a widget.
+ * @param min The top or left coordinate.
+ * @param max The bottom or right coordinate.
+ * @param size The height or width of the object to draw.
+ * @return Offset of where to start drawing the object.
+ */
+static inline int CenterBounds(int min, int max, int size)
+{
+	return min + (max - min - size + 1) / 2;
+}
+
 /* window.cpp */
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom);
 
@@ -161,21 +173,21 @@ void GetBroadestDigit(uint *front, uint *next, FontSize size = FS_NORMAL);
 
 int GetCharacterHeight(FontSize size);
 
-/** Height of characters in the small (#FS_SMALL) font. */
+/** Height of characters in the small (#FS_SMALL) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_SMALL  (GetCharacterHeight(FS_SMALL))
 
-/** Height of characters in the normal (#FS_NORMAL) font. */
+/** Height of characters in the normal (#FS_NORMAL) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_NORMAL (GetCharacterHeight(FS_NORMAL))
 
-/** Height of characters in the large (#FS_LARGE) font. */
+/** Height of characters in the large (#FS_LARGE) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_LARGE  (GetCharacterHeight(FS_LARGE))
 
-/** Height of characters in the large (#FS_MONO) font. */
+/** Height of characters in the large (#FS_MONO) font. @note Some characters may be oversized. */
 #define FONT_HEIGHT_MONO  (GetCharacterHeight(FS_MONO))
 
 extern DrawPixelInfo *_cur_dpi;
 
-TextColour GetContrastColour(uint8 background);
+TextColour GetContrastColour(uint8 background, uint8 threshold = 128);
 
 /**
  * All 16 colour gradients

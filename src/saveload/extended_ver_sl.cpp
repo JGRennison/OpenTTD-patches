@@ -62,6 +62,8 @@ bool SlXvFeatureTest::IsFeaturePresent(uint16 savegame_version, uint16 savegame_
 {
 	bool savegame_version_ok = savegame_version >= savegame_version_from && savegame_version <= savegame_version_to;
 
+	if (this->functor) return (*this->functor)(savegame_version, savegame_version_ok);
+
 	if (this->feature == XSLFI_NULL) return savegame_version_ok;
 
 	bool feature_ok = SlXvIsFeaturePresent(this->feature, this->min_version, this->max_version);
@@ -89,12 +91,27 @@ bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version, uint16 m
 }
 
 /**
+ * Returns true if @p feature is present and has a version inclusively bounded by @p min_version and @p max_version
+ */
+const char *SlXvGetFeatureName(SlXvFeatureIndex feature)
+{
+	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
+	for (; info->index != XSLFI_NULL; ++info) {
+		if (info->index == feature) {
+			return info->name;
+		}
+	}
+	return "(unknown feature)";
+}
+
+/**
  * Resets all extended feature versions to 0
  */
 void SlXvResetState()
 {
 	_sl_is_ext_version = false;
 	_sl_is_faked_ext = false;
+	_sl_xv_discardable_chunk_ids.clear();
 	memset(_sl_xv_feature_versions, 0, sizeof(_sl_xv_feature_versions));
 }
 

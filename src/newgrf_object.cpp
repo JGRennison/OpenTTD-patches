@@ -96,7 +96,9 @@ uint ObjectSpec::Index() const
 void ResetObjects()
 {
 	/* Clean the pool. */
-	MemSetT(_object_specs, 0, lengthof(_object_specs));
+	for (uint16 i = 0; i < NUM_OBJECTS; i++) {
+		_object_specs[i] = {};
+	}
 
 	/* And add our originals. */
 	MemCpyT(_object_specs, _original_objects, lengthof(_original_objects));
@@ -127,21 +129,6 @@ bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint index) const
 }
 
 INSTANTIATE_NEWGRF_CLASS_METHODS(ObjectClass, ObjectSpec, ObjectClassID, OBJECT_CLASS_MAX)
-
-/**
- * Constructor of an object scope resolver.
- * @param ro Surrounding resolver.
- * @param obj Object being resolved.
- * @param tile %Tile of the object.
- * @param view View of the object.
- */
-ObjectScopeResolver::ObjectScopeResolver(ResolverObject &ro, Object *obj, TileIndex tile, uint8 view)
-		: ScopeResolver(ro)
-{
-	this->obj = obj;
-	this->tile = tile;
-	this->view = view;
-}
 
 /* virtual */ uint32 ObjectScopeResolver::GetRandomBits() const
 {
@@ -232,7 +219,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 
 		case 0xFFFFFFFF: // current grf
 			grf_id = grfid;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		default: // use the grfid specified in register 100h
 			idx = _object_mngr.GetID(local_id, grf_id);

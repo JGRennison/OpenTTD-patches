@@ -346,7 +346,6 @@ STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKG
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 
-
 # Playlist window
 
 # Highscore window
@@ -818,6 +817,7 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 ############ range for requires starts
 ############ range for requires ends
 
+
 ############ range for produces starts
 ############ range for produces ends
 
@@ -832,6 +832,7 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 
 
 # Group window
+
 
 
 

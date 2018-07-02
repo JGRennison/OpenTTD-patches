@@ -33,10 +33,11 @@ enum ToolbarNormalWidgets {
 	WID_TN_TRAINS        = WID_TN_VEHICLE_START, ///< Train menu.
 	WID_TN_ROADVEHS,      ///< Road vehicle menu.
 	WID_TN_SHIPS,         ///< Ship menu.
-	WID_TN_AIRCRAFTS,     ///< Aircraft menu.
+	WID_TN_AIRCRAFT,     ///< Aircraft menu.
 	WID_TN_ZOOM_IN,       ///< Zoom in the main viewport.
 	WID_TN_ZOOM_OUT,      ///< Zoom out the main viewport.
-	WID_TN_RAILS,         ///< Rail building menu.
+	WID_TN_BUILDING_TOOLS_START, ///< Helper for the offset of the building tools
+	WID_TN_RAILS         = WID_TN_BUILDING_TOOLS_START, ///< Rail building menu.
 	WID_TN_ROADS,         ///< Road building menu.
 	WID_TN_WATER,         ///< Water building toolbar.
 	WID_TN_AIR,           ///< Airport building toolbar.

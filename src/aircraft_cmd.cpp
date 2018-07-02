@@ -42,7 +42,7 @@
 
 #include "safeguards.h"
 
-void Aircraft::UpdateDeltaXY(Direction direction)
+void Aircraft::UpdateDeltaXY()
 {
 	this->x_offs = -1;
 	this->y_offs = -1;
@@ -152,64 +152,69 @@ static StationID FindNearestHangar(const Aircraft *v)
 	return index;
 }
 
-SpriteID Aircraft::GetImage(Direction direction, EngineImageType image_type) const
+void Aircraft::GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const
 {
 	uint8 spritenum = this->spritenum;
 
 	if (is_custom_sprite(spritenum)) {
-		SpriteID sprite = GetCustomVehicleSprite(this, direction, image_type);
-		if (sprite != 0) return sprite;
+		GetCustomVehicleSprite(this, direction, image_type, result);
+		if (result->IsValid()) return;
 
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
 	assert(IsValidImageIndex<VEH_AIRCRAFT>(spritenum));
-	return direction + _aircraft_sprite[spritenum];
+	result->Set(direction + _aircraft_sprite[spritenum]);
 }
 
-SpriteID GetRotorImage(const Aircraft *v, EngineImageType image_type)
+void GetRotorImage(const Aircraft *v, EngineImageType image_type, VehicleSpriteSeq *result)
 {
 	assert(v->subtype == AIR_HELICOPTER);
 
 	const Aircraft *w = v->Next()->Next();
 	if (is_custom_sprite(v->spritenum)) {
-		SpriteID sprite = GetCustomRotorSprite(v, false, image_type);
-		if (sprite != 0) return sprite;
+		GetCustomRotorSprite(v, false, image_type, result);
+		if (result->IsValid()) return;
 	}
 
 	/* Return standard rotor sprites if there are no custom sprites for this helicopter */
-	return SPR_ROTOR_STOPPED + w->state;
+	result->Set(SPR_ROTOR_STOPPED + w->state);
 }
 
-static SpriteID GetAircraftIcon(EngineID engine, EngineImageType image_type)
+static void GetAircraftIcon(EngineID engine, EngineImageType image_type, VehicleSpriteSeq *result)
 {
 	const Engine *e = Engine::Get(engine);
 	uint8 spritenum = e->u.air.image_index;
 
 	if (is_custom_sprite(spritenum)) {
-		SpriteID sprite = GetCustomVehicleIcon(engine, DIR_W, image_type);
-		if (sprite != 0) return sprite;
+		GetCustomVehicleIcon(engine, DIR_W, image_type, result);
+		if (result->IsValid()) return;
 
 		spritenum = e->original_image_index;
 	}
 
 	assert(IsValidImageIndex<VEH_AIRCRAFT>(spritenum));
-	return DIR_W + _aircraft_sprite[spritenum];
+	result->Set(DIR_W + _aircraft_sprite[spritenum]);
 }
 
 void DrawAircraftEngine(int left, int right, int preferred_x, int y, EngineID engine, PaletteID pal, EngineImageType image_type)
 {
-	SpriteID sprite = GetAircraftIcon(engine, image_type);
-	const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
+	VehicleSpriteSeq seq;
+	GetAircraftIcon(engine, image_type, &seq);
+
+	Rect rect;
+	seq.GetBounds(&rect);
 	preferred_x = Clamp(preferred_x,
-			left - UnScaleGUI(real_sprite->x_offs),
-			right - UnScaleGUI(real_sprite->width) - UnScaleGUI(real_sprite->x_offs));
-	DrawSprite(sprite, pal, preferred_x, y);
+			left - UnScaleGUI(rect.left),
+			right - UnScaleGUI(rect.right));
+
+	seq.Draw(preferred_x, y, pal, pal == PALETTE_CRASH);
 
 	if (!(AircraftVehInfo(engine)->subtype & AIR_CTOL)) {
-		SpriteID rotor_sprite = GetCustomRotorIcon(engine, image_type);
-		if (rotor_sprite == 0) rotor_sprite = SPR_ROTOR_STOPPED;
-		DrawSprite(rotor_sprite, PAL_NONE, preferred_x, y - ScaleGUITrad(5));
+		VehicleSpriteSeq rotor_seq;
+		GetCustomRotorIcon(engine, image_type, &rotor_seq);
+		if (!rotor_seq.IsValid()) rotor_seq.Set(SPR_ROTOR_STOPPED);
+		rotor_seq.Draw(preferred_x, y - ScaleGUITrad(5), PAL_NONE, false);
 	}
 }
 
@@ -224,12 +229,16 @@ void DrawAircraftEngine(int left, int right, int preferred_x, int y, EngineID en
  */
 void GetAircraftSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type)
 {
-	const Sprite *spr = GetSprite(GetAircraftIcon(engine, image_type), ST_NORMAL);
+	VehicleSpriteSeq seq;
+	GetAircraftIcon(engine, image_type, &seq);
 
-	width  = UnScaleGUI(spr->width);
-	height = UnScaleGUI(spr->height);
-	xoffs  = UnScaleGUI(spr->x_offs);
-	yoffs  = UnScaleGUI(spr->y_offs);
+	Rect rect;
+	seq.GetBounds(&rect);
+
+	width  = UnScaleGUI(rect.right - rect.left + 1);
+	height = UnScaleGUI(rect.bottom - rect.top + 1);
+	xoffs  = UnScaleGUI(rect.left);
+	yoffs  = UnScaleGUI(rect.top);
 }
 
 /**
@@ -294,10 +303,10 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 		u->engine_type = e->index;
 
 		v->subtype = (avi->subtype & AIR_CTOL ? AIR_AIRCRAFT : AIR_HELICOPTER);
-		v->UpdateDeltaXY(INVALID_DIR);
+		v->UpdateDeltaXY();
 
 		u->subtype = AIR_SHADOW;
-		u->UpdateDeltaXY(INVALID_DIR);
+		u->UpdateDeltaXY();
 
 		v->reliability = e->reliability;
 		v->reliability_spd_dec = e->reliability_spd_dec;
@@ -317,7 +326,8 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 		v->date_of_last_service = _date;
 		v->build_year = u->build_year = _cur_year;
 
-		v->cur_image = u->cur_image = SPR_IMG_QUERY;
+		v->sprite_seq.Set(SPR_IMG_QUERY);
+		u->sprite_seq.Set(SPR_IMG_QUERY);
 
 		v->random_bits = VehicleRandomBits();
 		u->random_bits = VehicleRandomBits();
@@ -349,11 +359,11 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 			w->vehstatus = VS_HIDDEN | VS_UNCLICKABLE;
 			w->spritenum = 0xFF;
 			w->subtype = AIR_ROTOR;
-			w->cur_image = SPR_ROTOR_STOPPED;
+			w->sprite_seq.Set(SPR_ROTOR_STOPPED);
 			w->random_bits = VehicleRandomBits();
 			/* Use rotor's air.state to store the rotor animation frame */
 			w->state = HRS_ROTOR_STOPPED;
-			w->UpdateDeltaXY(INVALID_DIR);
+			w->UpdateDeltaXY();
 
 			u->SetNext(w);
 			w->UpdatePosition();
@@ -468,21 +478,21 @@ static void HelicopterTickHandler(Aircraft *v)
 	int tick = ++u->tick_counter;
 	int spd = u->cur_speed >> 4;
 
-	SpriteID img;
+	VehicleSpriteSeq seq;
 	if (spd == 0) {
 		u->state = HRS_ROTOR_STOPPED;
-		img = GetRotorImage(v, EIT_ON_MAP);
-		if (u->cur_image == img) return;
+		GetRotorImage(v, EIT_ON_MAP, &seq);
+		if (u->sprite_seq == seq) return;
 	} else if (tick >= spd) {
 		u->tick_counter = 0;
 		u->state++;
 		if (u->state > HRS_ROTOR_MOVING_3) u->state = HRS_ROTOR_MOVING_1;
-		img = GetRotorImage(v, EIT_ON_MAP);
+		GetRotorImage(v, EIT_ON_MAP, &seq);
 	} else {
 		return;
 	}
 
-	u->cur_image = img;
+	u->sprite_seq = seq;
 
 	u->UpdatePositionAndViewport();
 }
@@ -502,7 +512,9 @@ void SetAircraftPosition(Aircraft *v, int x, int y, int z)
 
 	v->UpdatePosition();
 	v->UpdateViewport(true, false);
-	if (v->subtype == AIR_HELICOPTER) v->Next()->Next()->cur_image = GetRotorImage(v, EIT_ON_MAP);
+	if (v->subtype == AIR_HELICOPTER) {
+		GetRotorImage(v, EIT_ON_MAP, &v->Next()->Next()->sprite_seq);
+	}
 
 	Aircraft *u = v->Next();
 
@@ -513,7 +525,7 @@ void SetAircraftPosition(Aircraft *v, int x, int y, int z)
 
 	safe_y = Clamp(u->y_pos, 0, MapMaxY() * TILE_SIZE);
 	u->z_pos = GetSlopePixelZ(safe_x, safe_y);
-	u->cur_image = v->cur_image;
+	u->sprite_seq.CopyWithoutPalette(v->sprite_seq); // the shadow is never coloured
 
 	u->UpdatePositionAndViewport();
 
@@ -737,7 +749,7 @@ int GetAircraftFlightLevel(T *v, bool takeoff)
 	GetAircraftFlightLevelBounds(v, &aircraft_min_altitude, &aircraft_max_altitude);
 	int aircraft_middle_altitude = (aircraft_min_altitude + aircraft_max_altitude) / 2;
 
-	/* If those assumptions would be violated, aircrafts would behave fairly strange. */
+	/* If those assumptions would be violated, aircraft would behave fairly strange. */
 	assert(aircraft_min_altitude < aircraft_middle_altitude);
 	assert(aircraft_middle_altitude < aircraft_max_altitude);
 
@@ -1237,7 +1249,9 @@ void Aircraft::MarkDirty()
 {
 	this->colourmap = PAL_NONE;
 	this->UpdateViewport(true, false);
-	if (this->subtype == AIR_HELICOPTER) this->Next()->Next()->cur_image = GetRotorImage(this, EIT_ON_MAP);
+	if (this->subtype == AIR_HELICOPTER) {
+		GetRotorImage(this, EIT_ON_MAP, &this->Next()->Next()->sprite_seq);
+	}
 }
 
 
@@ -1347,7 +1361,7 @@ static void AircraftEntersTerminal(Aircraft *v)
  */
 static void AircraftLandAirplane(Aircraft *v)
 {
-	v->UpdateDeltaXY(INVALID_DIR);
+	v->UpdateDeltaXY();
 
 	if (!PlayVehicleSound(v, VSE_TOUCHDOWN)) {
 		SndPlayVehicleFx(SND_17_SKID_PLANE, v);
@@ -1539,7 +1553,7 @@ static void AircraftEventHandler_TakeOff(Aircraft *v, const AirportFTAClass *apc
 static void AircraftEventHandler_StartTakeOff(Aircraft *v, const AirportFTAClass *apc)
 {
 	v->state = ENDTAKEOFF;
-	v->UpdateDeltaXY(INVALID_DIR);
+	v->UpdateDeltaXY();
 }
 
 static void AircraftEventHandler_EndTakeOff(Aircraft *v, const AirportFTAClass *apc)
@@ -1552,7 +1566,7 @@ static void AircraftEventHandler_EndTakeOff(Aircraft *v, const AirportFTAClass *
 static void AircraftEventHandler_HeliTakeOff(Aircraft *v, const AirportFTAClass *apc)
 {
 	v->state = FLYING;
-	v->UpdateDeltaXY(INVALID_DIR);
+	v->UpdateDeltaXY();
 
 	/* get the next position to go to, differs per airport */
 	AircraftNextAirportPos_and_Order(v);
@@ -1618,7 +1632,7 @@ static void AircraftEventHandler_Landing(Aircraft *v, const AirportFTAClass *apc
 static void AircraftEventHandler_HeliLanding(Aircraft *v, const AirportFTAClass *apc)
 {
 	v->state = HELIENDLANDING;
-	v->UpdateDeltaXY(INVALID_DIR);
+	v->UpdateDeltaXY();
 }
 
 static void AircraftEventHandler_EndLanding(Aircraft *v, const AirportFTAClass *apc)

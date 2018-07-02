@@ -48,11 +48,6 @@ EngineOverrideManager _engine_mngr;
  */
 static Year _year_engine_aging_stops;
 
-/**
- * The railtypes that have been or never will be introduced, or
- * an inverse bitmap of rail types that have to be introduced. */
-static uint16 _introduced_railtypes;
-
 /** Number of engines of each vehicle type in original engine data */
 const uint8 _engine_counts[4] = {
 	lengthof(_orig_rail_vehicle_info),
@@ -469,7 +464,26 @@ uint16 Engine::GetRange() const
 }
 
 /**
- * Initializes the EngineOverrideManager with the default engines.
+ * Get the name of the aircraft type for display purposes.
+ * @return Aircraft type string.
+ */
+StringID Engine::GetAircraftTypeText() const
+{
+	switch (this->type) {
+		case VEH_AIRCRAFT:
+			switch (this->u.air.subtype) {
+				case AIR_HELI: return STR_LIVERY_HELICOPTER;
+				case AIR_CTOL: return STR_LIVERY_SMALL_PLANE;
+				case AIR_CTOL | AIR_FAST: return STR_LIVERY_LARGE_PLANE;
+				default: NOT_REACHED();
+			}
+
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Initializes the #EngineOverrideManager with the default engines.
  */
 void EngineOverrideManager::ResetToDefaultMapping()
 {
@@ -543,29 +557,6 @@ void SetupEngines()
 		const Engine *e = new Engine(eid->type, eid->internal_id);
 		assert(e->index == index);
 	}
-
-	_introduced_railtypes = 0;
-}
-
-/**
- * Check whether the railtypes should be introduced.
- */
-static void CheckRailIntroduction()
-{
-	/* All railtypes have been introduced. */
-	if (_introduced_railtypes == UINT16_MAX || Company::GetPoolSize() == 0) return;
-
-	/* We need to find the railtypes that are known to all companies. */
-	RailTypes rts = (RailTypes)UINT16_MAX;
-
-	/* We are at, or past the introduction date of the rail. */
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
-		c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes, _date);
-		rts &= c->avail_railtypes;
-	}
-
-	_introduced_railtypes |= rts;
 }
 
 void ShowEnginePreviewWindow(EngineID engine);
@@ -711,19 +702,6 @@ void StartupEngines()
 		c->avail_roadtypes = GetCompanyRoadtypes(c->index);
 	}
 
-	/* Rail types that are invalid or never introduced are marked as
-	 * being introduced upon start. That way we can easily check whether
-	 * there is any date related introduction that is still going to
-	 * happen somewhere in the future. */
-	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		const RailtypeInfo *rti = GetRailTypeInfo(rt);
-		if (rti->label != 0 && IsInsideMM(rti->introduction_date, 0, MAX_DAY)) continue;
-
-		SetBit(_introduced_railtypes, rt);
-	}
-
-	CheckRailIntroduction();
-
 	/* Invalidate any open purchase lists */
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);
 }
@@ -774,7 +752,7 @@ static CompanyID GetPreviewCompany(Engine *e)
 	CompanyID best_company = INVALID_COMPANY;
 
 	/* For trains the cargomask has no useful meaning, since you can attach other wagons */
-	uint32 cargomask = e->type != VEH_TRAIN ? GetUnionOfArticulatedRefitMasks(e->index, true) : (uint32)-1;
+	CargoTypes cargomask = e->type != VEH_TRAIN ? GetUnionOfArticulatedRefitMasks(e->index, true) : ALL_CARGOTYPES;
 
 	int32 best_hist = -1;
 	const Company *c;
@@ -820,7 +798,10 @@ static bool IsVehicleTypeDisabled(VehicleType type, bool ai)
 /** Daily check to offer an exclusive engine preview to the companies. */
 void EnginesDailyLoop()
 {
-	CheckRailIntroduction();
+	Company *c;
+	FOR_ALL_COMPANIES(c) {
+		c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes, _date);
+	}
 
 	if (_cur_year >= _year_engine_aging_stops) return;
 
@@ -1136,7 +1117,9 @@ bool IsEngineRefittable(EngineID engine)
 
 	/* Is there any cargo except the default cargo? */
 	CargoID default_cargo = e->GetDefaultCargoType();
-	return default_cargo != CT_INVALID && ei->refit_mask != 1U << default_cargo;
+	CargoTypes default_cargo_mask = 0;
+	SetBit(default_cargo_mask, default_cargo);
+	return default_cargo != CT_INVALID && ei->refit_mask != default_cargo_mask;
 }
 
 /**

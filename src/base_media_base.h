@@ -26,6 +26,7 @@ struct ContentInfo;
 struct MD5File {
 	/** The result of a checksum check */
 	enum ChecksumResult {
+		CR_UNKNOWN,  ///< The file has not been checked yet
 		CR_MATCH,    ///< The file did exist and the md5 checksum did match
 		CR_MISMATCH, ///< The file did exist, just the md5 checksum did not match
 		CR_NO_FILE,  ///< The file did not exist
@@ -34,6 +35,7 @@ struct MD5File {
 	const char *filename;        ///< filename
 	uint8 hash[16];              ///< md5 sum of the file
 	const char *missing_warning; ///< warning when this file is missing
+	ChecksumResult check_result; ///< cached result of md5 check
 
 	ChecksumResult CheckMD5(Subdirectory subdir, size_t max_size) const;
 };
@@ -219,6 +221,11 @@ public:
 	static bool HasSet(const ContentInfo *ci, bool md5sum);
 };
 
+template <class Tbase_set> /* static */ const char *BaseMedia<Tbase_set>::ini_set;
+template <class Tbase_set> /* static */ const Tbase_set *BaseMedia<Tbase_set>::used_set;
+template <class Tbase_set> /* static */ Tbase_set *BaseMedia<Tbase_set>::available_sets;
+template <class Tbase_set> /* static */ Tbase_set *BaseMedia<Tbase_set>::duplicate_sets;
+
 /**
  * Check whether there's a base set matching some information.
  * @param ci The content info to compare it to.
@@ -280,11 +287,32 @@ static const uint NUM_SONGS_AVAILABLE = 1 + NUM_SONG_CLASSES * NUM_SONGS_CLASS;
 /** Maximum number of songs in the (custom) playlist */
 static const uint NUM_SONGS_PLAYLIST  = 32;
 
+/* Functions to read DOS music CAT files, similar to but not quite the same as sound effect CAT files */
+char *GetMusicCatEntryName(const char *filename, size_t entrynum);
+byte *GetMusicCatEntryData(const char *filename, size_t entrynum, size_t &entrylen);
+
+enum MusicTrackType {
+	MTT_STANDARDMIDI, ///< Standard MIDI file
+	MTT_MPSMIDI,      ///< MPS GM driver MIDI format (contained in a CAT file)
+};
+
+/** Metadata about a music track. */
+struct MusicSongInfo {
+	char songname[32];       ///< name of song displayed in UI
+	byte tracknr;            ///< track number of song displayed in UI
+	const char *filename;    ///< file on disk containing song (when used in MusicSet class, this pointer is owned by MD5File object for the file)
+	MusicTrackType filetype; ///< decoder required for song file
+	int cat_index;           ///< entry index in CAT file, for filetype==MTT_MPSMIDI
+	bool loop;               ///< song should play in a tight loop if possible, never ending
+	int override_start;      ///< MIDI ticks to skip over in beginning
+	int override_end;        ///< MIDI tick to end the song at (0 if no override)
+};
+
 /** All data of a music set. */
 struct MusicSet : BaseSet<MusicSet, NUM_SONGS_AVAILABLE, false> {
-	/** The name of the different songs. */
-	char song_name[NUM_SONGS_AVAILABLE][32];
-	byte track_nr[NUM_SONGS_AVAILABLE];
+	/** Data about individual songs in set. */
+	MusicSongInfo songinfo[NUM_SONGS_AVAILABLE];
+	/** Number of valid songs in set. */
 	byte num_available;
 
 	bool FillSetDetails(struct IniFile *ini, const char *path, const char *full_filename);

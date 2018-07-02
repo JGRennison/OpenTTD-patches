@@ -128,6 +128,63 @@ struct VehicleCache {
 	byte cached_vis_effect;  ///< Visual effect to show (see #VisualEffect)
 };
 
+/** Sprite sequence for a vehicle part. */
+struct VehicleSpriteSeq {
+	PalSpriteID seq[4];
+	uint count;
+
+	bool operator==(const VehicleSpriteSeq &other) const
+	{
+		return this->count == other.count && MemCmpT<PalSpriteID>(this->seq, other.seq, this->count) == 0;
+	}
+
+	bool operator!=(const VehicleSpriteSeq &other) const
+	{
+		return !this->operator==(other);
+	}
+
+	/**
+	 * Check whether the sequence contains any sprites.
+	 */
+	bool IsValid() const
+	{
+		return this->count != 0;
+	}
+
+	/**
+	 * Clear all information.
+	 */
+	void Clear()
+	{
+		this->count = 0;
+	}
+
+	/**
+	 * Assign a single sprite to the sequence.
+	 */
+	void Set(SpriteID sprite)
+	{
+		this->count = 1;
+		this->seq[0].sprite = sprite;
+		this->seq[0].pal = 0;
+	}
+
+	/**
+	 * Copy data from another sprite sequence, while dropping all recolouring information.
+	 */
+	void CopyWithoutPalette(const VehicleSpriteSeq &src)
+	{
+		this->count = src.count;
+		for (uint i = 0; i < src.count; ++i) {
+			this->seq[i].sprite = src.seq[i].sprite;
+			this->seq[i].pal = 0;
+		}
+	}
+
+	void GetBounds(Rect *bounds) const;
+	void Draw(int x, int y, PaletteID default_pal, bool force_pal) const;
+};
+
 /** A vehicle pool for a little over 1 million vehicles. */
 typedef Pool<Vehicle, VehicleID, 512, 0xFF000> VehiclePool;
 extern VehiclePool _vehicle_pool;
@@ -222,7 +279,7 @@ public:
 	 * 0xff == reserved for another custom sprite
 	 */
 	byte spritenum;
-	SpriteID cur_image;                 ///< sprite number for this vehicle
+	VehicleSpriteSeq sprite_seq;        ///< Vehicle appearance.
 	byte x_extent;                      ///< x-extent of vehicle bounding box
 	byte y_extent;                      ///< y-extent of vehicle bounding box
 	byte z_extent;                      ///< z-extent of vehicle bounding box
@@ -253,6 +310,7 @@ public:
 	uint16 refit_cap;                   ///< Capacity left over from before last refit.
 	VehicleCargoList cargo;             ///< The cargo this vehicle is carrying
 	uint16 cargo_age_counter;           ///< Ticks till cargo is aged next.
+	int8 trip_occupancy;                ///< NOSAVE: Occupancy of vehicle of the current trip (updated after leaving a station).
 
 	byte day_counter;                   ///< Increased by one for each day
 	byte tick_counter;                  ///< Increased by one for each tick
@@ -312,9 +370,8 @@ public:
 	/**
 	 * Updates the x and y offsets and the size of the sprite used
 	 * for this vehicle.
-	 * @param direction the direction the vehicle is facing
 	 */
-	virtual void UpdateDeltaXY(Direction direction) {}
+	virtual void UpdateDeltaXY() {}
 
 	/**
 	 * Determines the effective direction-specific vehicle movement speed.
@@ -384,9 +441,9 @@ public:
 	/**
 	 * Gets the sprite to show for the given direction
 	 * @param direction the direction the vehicle is facing
-	 * @return the sprite for the given vehicle in the given direction
+	 * @param [out] result Vehicle sprite sequence.
 	 */
-	virtual SpriteID GetImage(Direction direction, EngineImageType image_type) const { return 0; }
+	virtual void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const { result->Clear(); }
 
 	const GRFFile *GetGRF() const;
 	uint32 GetGRFID() const;
@@ -946,7 +1003,10 @@ struct SpecializedVehicle : public Vehicle {
 	/**
 	 * Set vehicle type correctly
 	 */
-	inline SpecializedVehicle<T, Type>() : Vehicle(Type) { }
+	inline SpecializedVehicle<T, Type>() : Vehicle(Type)
+	{
+		this->sprite_seq.count = 1;
+	}
 
 	/**
 	 * Get the first vehicle in the chain
@@ -1084,10 +1144,13 @@ struct SpecializedVehicle : public Vehicle {
 
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
-		if (update_delta) ((T *)this)->T::UpdateDeltaXY(this->direction);
-		SpriteID old_image = this->cur_image;
-		this->cur_image = ((T *)this)->T::GetImage(this->direction, EIT_ON_MAP);
-		if (force_update || this->cur_image != old_image) this->Vehicle::UpdateViewport(true);
+		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
+		VehicleSpriteSeq seq;
+		((T *)this)->T::GetImage(this->direction, EIT_ON_MAP, &seq);
+		if (force_update || this->sprite_seq != seq) {
+			this->sprite_seq = seq;
+			this->Vehicle::UpdateViewport(true);
+		}
 	}
 };
 

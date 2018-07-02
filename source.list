@@ -95,22 +95,19 @@ tilearea.cpp
 townname.cpp
 #if WIN32
 #else
-	#if WINCE
+	#if OS2
+		os/os2/os2.cpp
+		3rdparty/os2/getaddrinfo.c
+		3rdparty/os2/getaddrinfo.h
+		3rdparty/os2/getnameinfo.c
+		3rdparty/os2/getnameinfo.h
 	#else
-		#if OS2
-			os/os2/os2.cpp
-			3rdparty/os2/getaddrinfo.c
-			3rdparty/os2/getaddrinfo.h
-			3rdparty/os2/getnameinfo.c
-			3rdparty/os2/getnameinfo.h
+		#if OSX
+			os/macosx/crashlog_osx.cpp
 		#else
-			#if OSX
-				os/macosx/crashlog_osx.cpp
-			#else
-				os/unix/crashlog_unix.cpp
-			#end
-			os/unix/unix.cpp
+			os/unix/crashlog_unix.cpp
 		#end
+		os/unix/unix.cpp
 	#end
 #end
 vehicle.cpp
@@ -284,6 +281,8 @@ newgrf_townname.h
 news_func.h
 news_gui.h
 news_type.h
+music/midi.h
+music/midifile.hpp
 music/null_m.h
 sound/null_s.h
 video/null_v.h
@@ -344,7 +343,9 @@ story_type.h
 strgen/strgen.h
 string_base.h
 string_func.h
+string_func_extra.h
 string_type.h
+os/windows/string_uniscribe.h
 stringfilter_type.h
 strings_func.h
 strings_type.h
@@ -398,6 +399,7 @@ video/win32_v.h
 window_func.h
 window_gui.h
 window_type.h
+sound/xaudio2_s.h
 zoom_func.h
 zoom_type.h
 #if WIN32
@@ -423,6 +425,8 @@ core/alloc_type.hpp
 core/backup_type.hpp
 core/bitmath_func.cpp
 core/bitmath_func.hpp
+core/container_func.hpp
+core/dyn_arena_alloc.hpp
 core/endian_func.hpp
 core/endian_type.hpp
 core/enum_type.hpp
@@ -625,6 +629,7 @@ saveload/saveload.cpp
 saveload/saveload.h
 saveload/saveload_filter.h
 saveload/saveload_internal.h
+saveload/saveload_buffer.h
 saveload/signs_sl.cpp
 saveload/station_sl.cpp
 saveload/storage_sl.cpp
@@ -785,6 +790,8 @@ script/api/script_bridgelist.hpp
 script/api/script_cargo.hpp
 script/api/script_cargolist.hpp
 script/api/script_cargomonitor.hpp
+script/api/script_client.hpp
+script/api/script_clientlist.hpp
 script/api/script_company.hpp
 script/api/script_companymode.hpp
 script/api/script_controller.hpp
@@ -852,6 +859,8 @@ script/api/script_bridgelist.cpp
 script/api/script_cargo.cpp
 script/api/script_cargolist.cpp
 script/api/script_cargomonitor.cpp
+script/api/script_client.cpp
+script/api/script_clientlist.cpp
 script/api/script_company.cpp
 script/api/script_companymode.cpp
 script/api/script_controller.cpp
@@ -912,6 +921,8 @@ script/api/script_window.cpp
 blitter/32bpp_anim.cpp
 blitter/32bpp_anim.hpp
 #if SSE
+blitter/32bpp_anim_sse2.cpp
+blitter/32bpp_anim_sse2.hpp
 blitter/32bpp_anim_sse4.cpp
 blitter/32bpp_anim_sse4.hpp
 #end
@@ -1087,9 +1098,6 @@ video/null_v.cpp
 #if WIN32
 	video/win32_v.cpp
 #end
-#if WINCE
-	video/win32_v.cpp
-#end
 #end
 
 # Music
@@ -1103,22 +1111,17 @@ video/null_v.cpp
 #end
 #end
 music/null_m.cpp
+music/midifile.cpp
 #if DEDICATED
 #else
 #if WIN32
 	music/win32_m.cpp
 #else
-	#if WINCE
+	#if DOS
 	#else
-		#if PSP
+		#if MORPHOS
 		#else
-			#if DOS
-			#else
-				#if MORPHOS
-				#else
-					music/extmidi.cpp
-				#end
-			#end
+			music/extmidi.cpp
 		#end
 	#end
 #end
@@ -1142,6 +1145,7 @@ sound/null_s.cpp
 #end
 #if WIN32
 	sound/win32_s.cpp
+	sound/xaudio2_s.cpp
 #end
 #end
 
@@ -1170,10 +1174,7 @@ sound/null_s.cpp
 #if WIN32
 	os/windows/crashlog_win.cpp
 	os/windows/ottdres.rc
-	os/windows/win32.cpp
-#end
-#if WINCE
-	os/windows/ottdres.rc
+	os/windows/string_uniscribe.cpp
 	os/windows/win32.cpp
 #end
 

@@ -30,11 +30,20 @@ struct StationScopeResolver : public ScopeResolver {
 	CargoID cargo_type;                 ///< Type of cargo of the station.
 	Axis axis;                          ///< Station axis, used only for the slope check callback.
 
-	StationScopeResolver(ResolverObject &ro, const StationSpec *statspec, BaseStation *st, TileIndex tile);
+	/**
+	 * Constructor for station scopes.
+	 * @param ro Surrounding resolver.
+	 * @param statspec Station (type) specification.
+	 * @param st Instance of the station.
+	 * @param tile %Tile of the station.
+	 */
+	StationScopeResolver(ResolverObject &ro, const StationSpec *statspec, BaseStation *st, TileIndex tile)
+		: ScopeResolver(ro), tile(tile), st(st), statspec(statspec), cargo_type(CT_INVALID), axis(INVALID_AXIS)
+	{
+	}
 
 	/* virtual */ uint32 GetRandomBits() const;
 	/* virtual */ uint32 GetTriggers() const;
-	/* virtual */ void SetTriggers(int triggers) const;
 
 	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
 };
@@ -59,7 +68,7 @@ struct StationResolverObject : public ResolverObject {
 			case VSG_SCOPE_PARENT: {
 				TownScopeResolver *tsr = this->GetTown();
 				if (tsr != NULL) return tsr;
-				/* FALL-THROUGH */
+				FALLTHROUGH;
 			}
 
 			default:
@@ -144,7 +153,7 @@ struct StationSpec {
 	 */
 	uint16 cargo_threshold;
 
-	uint32 cargo_triggers; ///< Bitmask of cargo types which cause trigger re-randomizing
+	CargoTypes cargo_triggers; ///< Bitmask of cargo types which cause trigger re-randomizing
 
 	byte callback_mask; ///< Bitmask of station callbacks that have to be called
 

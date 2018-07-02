@@ -540,7 +540,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 	return cost;
 }
 
-static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, uint32 *always_accepted)
+static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, CargoTypes *always_accepted)
 {
 	if (!IsObjectType(tile, OBJECT_HQ)) return;
 
@@ -770,6 +770,8 @@ static void ChangeTileOwner_Object(TileIndex tile, Owner old_owner, Owner new_ow
 {
 	if (!IsTileOwner(tile, old_owner)) return;
 
+	bool do_clear = false;
+
 	if (IsObjectType(tile, OBJECT_OWNED_LAND) && new_owner != INVALID_OWNER) {
 		SetTileOwner(tile, new_owner);
 	} else if (IsObjectType(tile, OBJECT_STATUE)) {
@@ -780,12 +782,18 @@ static void ChangeTileOwner_Object(TileIndex tile, Owner old_owner, Owner new_ow
 			SetBit(t->statues, new_owner);
 			SetTileOwner(tile, new_owner);
 		} else {
-			ReallyClearObjectTile(Object::GetByTile(tile));
+			do_clear = true;
 		}
 
 		SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
 	} else {
+		do_clear = true;
+	}
+
+	if (do_clear) {
 		ReallyClearObjectTile(Object::GetByTile(tile));
+		/* When clearing objects, they may turn into canal, which may require transfering ownership. */
+		ChangeTileOwner(tile, old_owner, new_owner);
 	}
 }
 

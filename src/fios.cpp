@@ -77,7 +77,7 @@ void FileList::BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperati
 {
 	this->Clear();
 
-	assert(fop == SLO_LOAD || SLO_SAVE);
+	assert(fop == SLO_LOAD || fop == SLO_SAVE);
 	switch (abstract_filetype) {
 		case FT_NONE:
 			break;
@@ -153,12 +153,11 @@ const char *FiosBrowseTo(const FiosItem *item)
 {
 	switch (item->type) {
 		case FIOS_TYPE_DRIVE:
-#if defined(WINCE)
-			seprintf(_fios_path, _fios_path_last, PATHSEP "");
-#elif defined(WIN32) || defined(__OS2__)
+#if defined(WIN32) || defined(__OS2__)
 			seprintf(_fios_path, _fios_path_last, "%c:" PATHSEP, item->title[0]);
 #endif
-			/* FALL THROUGH */
+			break;
+
 		case FIOS_TYPE_INVALID:
 			break;
 

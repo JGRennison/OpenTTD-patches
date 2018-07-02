@@ -40,6 +40,7 @@ description.la_VA = Musica ex editione originale Transport Tycoon Deluxe Windows
 description.lb_LU = Original Transport Tycoon Deluxe Windows Editioun Musik.
 description.lt_LT = Originali Transport Tycoon Deluxe Windows leidimo muzika.
 description.lv_LV = Oriģinālā Transport Tycoon Deluxe Windows izdevuma mūzika.
+description.ms_MY = Muzik asal Transport Tycoon Deluxe edisi Windows.
 description.nb_NO = Original musikk fra Transport Tycoon Deluxe for Windows.
 description.nl_NL = Originele muziek van de Transport Tycoon Deluxe Windows-versie.
 description.nn_NO = Original musikk frå Transport Tycoon Deluxe for Windows.
@@ -140,6 +141,18 @@ GM_TT18.GM = Stroll On
 GM_TT19.GM = Funk Central
 GM_TT20.GM = Jammit
 GM_TT21.GM = Movin' On
+
+; MIDI timecodes where the playback should attemp to start and stop short.
+; This is to allow fixing undesired silences in original MIDI files.
+; However not all music drivers may support this.
+[timingtrim]
+; Theme has two beats silence at the beginning which prevents clean looping.
+GM_TT00.GM = 768:53760
+; Can't Get There From Here from the Windows version has a long silence at the end,
+; followed by a solo repeat. This isn't in the original DOS version music and is likely
+; unintentional from the people who converted the music from the DOS version.
+; Actual song ends after measure 152.
+GM_TT10.GM = 0:235008
 
 [origin]
 default      = You can find it on your Transport Tycoon Deluxe CD-ROM.

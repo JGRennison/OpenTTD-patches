@@ -649,10 +649,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}'اپن�
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}پروگرام ہلانے کی تدویم کیجئیے
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}گانا چننے کا اختیار دینے والی ونڈو دکھائیں
 
-STR_ERROR_NO_SONGS                                              :{WHITE}کوئی گانا دستیاب نہیں ہے
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}موسیقی کے پروگرام کا انتخاب کریں
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}گانوں کی فہرست
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}پروگرام - '{STRING}'
@@ -1049,6 +1046,7 @@ STR_CITY_APPROVAL_HOSTILE                                       :مخالفان�
 
 # Settings tree window
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(کوئی وضاحت موجود نہیں)
+STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}ترتیب قسم: {ORANGE}{STRING}
 
 
 
@@ -1200,6 +1198,7 @@ STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :مخصوص پٹ
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :تعمیراتی ٹول کو استعمال کے بعد فعال رکھیں: {STRING}
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :کمپنی کی مالیاتی ونڈو میں اخراجات کو اکٹھا دکھائیں: {STRING}
 
+STR_CONFIG_SETTING_SOUND_AMBIENT_HELPTEXT                       :وسیع آواز چلایں
 
 STR_CONFIG_SETTING_DISABLE_UNSUITABLE_BUILDING                  :موزوں گاڑیاں نہ ہونے کی صورت میں عمارت کو غیر فعال کر دیں: {STRING}
 STR_CONFIG_SETTING_MAX_TRAINS                                   :کمپنی کی زیادہ سے زیادہ ریل گاڑیاں: {STRING}
@@ -2125,6 +2124,7 @@ STR_FOUND_TOWN_SELECT_LAYOUT_RANDOM                             :{G=f}{BLACK}ک�
 
 # About OpenTTD window
 STR_ABOUT_OPENTTD                                               :{WHITE}اوپن ٹی ٹی ڈی کے متعلق
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} ٢٠٠٢ - ٢٠١٦ OpenTTD ٹیم
 
 # Save/load game/scenario
 
@@ -2183,6 +2183,7 @@ STR_SPRITE_ALIGNER_GOTO_CAPTION                                 :{WHITE} جای�
 
 # NewGRF (self) generated warnings/errors
 STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{STRING}
+STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :غیر متوقع سپرائٹ (sprite {3:NUM})
 
 # NewGRF related 'general' warnings
 
@@ -2264,6 +2265,7 @@ STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}منظو
 
 
 ############ range for rating starts
+STR_CARGO_RATING_APPALLING                                      :انتہائی خراب
 ############ range for rating ends
 
 
@@ -2276,6 +2278,7 @@ STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOIN
 
 # Finances window
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
+STR_FINANCES_SECTION_PROPERTY_MAINTENANCE                       :{GOLD}پراپرٹی کی بحالی
 STR_FINANCES_NEGATIVE_INCOME                                    :{BLACK}-{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURRENCY_LONG}
 
@@ -2310,9 +2313,11 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL                           :{WHITE}{CURRENC
 # Industry directory
 
 # Industry view
+STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}گزشتہ ماہ کی پیداوار:
 
 ############ range for requires starts
 ############ range for requires ends
+
 
 ############ range for produces starts
 ############ range for produces ends
@@ -2336,12 +2341,15 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}فہرس
 # Group window
 
 
+STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}گروپ ۔ اس گروپ ک تمام گاڑیاں دیکھنے کے لیے اسے دبایں۔ پکڑ کے اوپر نیچے بھی کر سکتے ہیں۔
+
 
 
 
 
 # Build vehicle window
 
+STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :نیا طیارہ
 
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}پہنچ: {GOLD}{COMMA} ٹائلیں
 
@@ -2395,8 +2403,6 @@ STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} 
 
 # Engine preview window
 
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}قیمت: {CURRENCY_LONG} حد رفتار: {VELOCITY} پہنچ: {COMMA} ٹائلیں{} گنجائش: {CARGO_LONG}, {CARGO_LONG}{}چلانے کا خرچہ: {CURRENCY_LONG} سالانہ
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}قیمت: {CURRENCY_LONG} حد رفتار: {VELOCITY} پہنچ: {COMMA} ٹائلیں{} گنجائش: {CARGO_LONG}{}چلانے کا خرچہ: {CURRENCY_LONG} سالانہ
 
 # Autoreplace window
 
@@ -2437,7 +2443,6 @@ STR_VEHICLE_COMMAND_STARTED                                     :{GREEN} شرو�
 
 # The next two need to stay in this order
 
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}حد رفتار: {LTBLUE}{VELOCITY} {BLACK} پہنچ: {LTBLUE}{COMMA} ٹائلیں
 
 
 
@@ -2449,6 +2454,7 @@ STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}حد ر�
 
 
 
+STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}سامان
 
 
 # Vehicle refit
@@ -2528,6 +2534,7 @@ STR_AI_DEBUG_CONTINUE_TOOLTIP                                   :{BLACK} وقف�
 # AI configuration window
 
 
+STR_AI_CONFIG_GAMESCRIPT                                        :{SILVER}کھیل کا سکرپٹ
 
 STR_AI_CONFIG_CHANGE_NONE                                       :
 
@@ -2548,6 +2555,7 @@ STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}لائس
 
 
 # Vehicle loading indicators
+STR_PERCENT_NONE                                                :{WHITE}{NUM}%
 
 # Income 'floats'
 
@@ -2591,6 +2599,7 @@ STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :{WHITE}{TOWN} �
 
 
 # Town related errors
+STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE} شہر کا نام تبدیل نہی کیا جاسکتا
 
 # Industry related errors
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :{G=m}{WHITE}... صرف ان شہروں میں بن سکتا ہے جن کی آبادی ۱۲۰۰ سے زیادہ ہے
@@ -2598,6 +2607,7 @@ STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :{G=m}{WHITE}...
 
 # Station construction related errors
 
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :ایک اور گودی کے قریب
 
 # Station destruction related errors
 
@@ -2627,6 +2637,8 @@ STR_ERROR_CAN_T_RENAME_DEPOT                                    :{WHITE} ڈیپ�
 STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE                      :{WHITE} ۔۔۔ طرزِ پیڑ کے لیئے غلط طرزِ زپین
 
 # Bridge related errors
+STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}اسی جگہ شروع اور ختم نہیں کر سکتے
+STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}شروع اور ختم سیدھ میں ہو
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... پل کے دونوں کنارے زمین پر ہونے چاہییں
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE} ۔۔۔ پل زیادھ لمبی ھے
 
@@ -2713,9 +2725,11 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :Transport Tycoo
 
 ##id 0x2000
 # Town building names
+STR_TOWN_BUILDING_NAME_CHURCH_1                                 :چرچ
 
 ##id 0x4800
 # industry names
+STR_INDUSTRY_NAME_POWER_STATION                                 :بجلی گھر
 
 ############ WARNING, using range 0x6000 for strings that are stored in the savegame
 ############ These strings may never get a new id, or savegames will break!
@@ -2734,7 +2748,9 @@ STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_PLODDYPHUT_CHOO_CHOO         :Ploddyphut Choo
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_POWERNAUT_CHOO_CHOO          :Powernaut Choo-Choo
 STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_MIGHTYMOVER_CHOO_CHOO        :MightyMover Choo-Choo
 STR_VEHICLE_NAME_TRAIN_ENGINE_MONORAIL_WIZZOWOW_Z99             :Wizzowow Z99
+STR_VEHICLE_NAME_TRAIN_WAGON_MONORAIL_COAL_CAR                  :کوئلے کا ٹرک
 STR_VEHICLE_NAME_TRAIN_ENGINE_MAGLEV_WIZZOWOW_ROCKETEER         :Wizzowow Rocketeer
+STR_VEHICLE_NAME_TRAIN_WAGON_MAGLEV_FRUIT_TRUCK                 :پھلوں کا ٹرک
 STR_VEHICLE_NAME_ROAD_VEHICLE_BALOGH_COAL_TRUCK                 :Balogh کوئلے کا ٹرک
 STR_VEHICLE_NAME_ROAD_VEHICLE_UHL_COAL_TRUCK                    :Uhl کوئلے کا ٹرک
 STR_VEHICLE_NAME_ROAD_VEHICLE_DW_COAL_TRUCK                     :DW کوئلے کا ٹرک

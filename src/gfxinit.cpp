@@ -139,7 +139,7 @@ void CheckExternalFiles()
 
 	if (used_set->GetNumInvalid() != 0) {
 		/* Not all files were loaded successfully, see which ones */
-		add_pos += seprintf(add_pos, last, "Trying to load graphics set '%s', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 4.1 of readme.txt.\n\nThe following files are corrupted or missing:\n", used_set->name);
+		add_pos += seprintf(add_pos, last, "Trying to load graphics set '%s', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 4.1 of README.md.\n\nThe following files are corrupted or missing:\n", used_set->name);
 		for (uint i = 0; i < GraphicsSet::NUM_FILES; i++) {
 			MD5File::ChecksumResult res = GraphicsSet::CheckMD5(&used_set->files[i], BASESET_DIR);
 			if (res != MD5File::CR_MATCH) add_pos += seprintf(add_pos, last, "\t%s is %s (%s)\n", used_set->files[i].filename, res == MD5File::CR_MISMATCH ? "corrupt" : "missing", used_set->files[i].missing_warning);
@@ -149,7 +149,7 @@ void CheckExternalFiles()
 
 	const SoundsSet *sounds_set = BaseSounds::GetUsedSet();
 	if (sounds_set->GetNumInvalid() != 0) {
-		add_pos += seprintf(add_pos, last, "Trying to load sound set '%s', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 4.1 of readme.txt.\n\nThe following files are corrupted or missing:\n", sounds_set->name);
+		add_pos += seprintf(add_pos, last, "Trying to load sound set '%s', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 4.1 of README.md.\n\nThe following files are corrupted or missing:\n", sounds_set->name);
 
 		assert_compile(SoundsSet::NUM_FILES == 1);
 		/* No need to loop each file, as long as there is only a single
@@ -197,31 +197,49 @@ static void LoadSpriteTables()
 	InitializeUnicodeGlyphMap();
 
 	/*
-	 * Load the base NewGRF with OTTD required graphics as first NewGRF.
+	 * Load the base and extra NewGRF with OTTD required graphics as first NewGRF.
 	 * However, we do not want it to show up in the list of used NewGRFs,
 	 * so we have to manually add it, and then remove it later.
 	 */
 	GRFConfig *top = _grfconfig;
-	GRFConfig *master = new GRFConfig(used_set->files[GFT_EXTRA].filename);
+
+	/* Default extra graphics */
+	GRFConfig *master = new GRFConfig("OPENTTD.GRF");
+	master->palette |= GRFP_GRF_DOS;
+	FillGRFDetails(master, false, BASESET_DIR);
+	ClrBit(master->flags, GCF_INIT_ONLY);
+
+	/* Baseset extra graphics */
+	GRFConfig *extra = new GRFConfig(used_set->files[GFT_EXTRA].filename);
 
 	/* We know the palette of the base set, so if the base NewGRF is not
 	 * setting one, use the palette of the base set and not the global
 	 * one which might be the wrong palette for this base NewGRF.
 	 * The value set here might be overridden via action14 later. */
 	switch (used_set->palette) {
-		case PAL_DOS:     master->palette |= GRFP_GRF_DOS;     break;
-		case PAL_WINDOWS: master->palette |= GRFP_GRF_WINDOWS; break;
+		case PAL_DOS:     extra->palette |= GRFP_GRF_DOS;     break;
+		case PAL_WINDOWS: extra->palette |= GRFP_GRF_WINDOWS; break;
 		default: break;
 	}
-	FillGRFDetails(master, false, BASESET_DIR);
+	FillGRFDetails(extra, false, BASESET_DIR);
+	ClrBit(extra->flags, GCF_INIT_ONLY);
 
-	ClrBit(master->flags, GCF_INIT_ONLY);
-	master->next = top;
+	extra->next = top;
+	master->next = extra;
 	_grfconfig = master;
 
-	LoadNewGRF(SPR_NEWGRFS_BASE, i);
+	LoadNewGRF(SPR_NEWGRFS_BASE, i, 2);
+
+	uint total_extra_graphics = SPR_NEWGRFS_BASE - SPR_OPENTTD_BASE;
+	_missing_extra_graphics = GetSpriteCountForSlot(i, SPR_OPENTTD_BASE, SPR_NEWGRFS_BASE);
+	DEBUG(sprite, 1, "%u extra sprites, %u from baseset, %u from fallback", total_extra_graphics, total_extra_graphics - _missing_extra_graphics, _missing_extra_graphics);
+
+	/* The original baseset extra graphics intentionally make use of the fallback graphics.
+	 * Let's say everything which provides less than 500 sprites misses the rest intentionally. */
+	if (500 + _missing_extra_graphics > total_extra_graphics) _missing_extra_graphics = 0;
 
 	/* Free and remove the top element. */
+	delete extra;
 	delete master;
 	_grfconfig = top;
 }
@@ -266,11 +284,16 @@ static bool SwitchNewGRFBlitter()
 #endif
 		{ "8bpp-optimized",  2,  8,  8,  8,  8 },
 		{ "32bpp-optimized", 0,  8, 32,  8, 32 },
+#ifdef WITH_SSE
+		{ "32bpp-sse2-anim", 1,  8, 32,  8, 32 },
+#endif
 		{ "32bpp-anim",      1,  8, 32,  8, 32 },
 	};
 
 	const bool animation_wanted = HasBit(_display_opt, DO_FULL_ANIMATION);
 	const char *cur_blitter = BlitterFactory::GetCurrentBlitter()->GetName();
+
+	VideoDriver::GetInstance()->AcquireBlitterLock();
 
 	for (uint i = 0; i < lengthof(replacement_blitters); i++) {
 		if (animation_wanted && (replacement_blitters[i].animation == 0)) continue;
@@ -280,7 +303,10 @@ static bool SwitchNewGRFBlitter()
 		if (!IsInsideMM(depth_wanted_by_grf, replacement_blitters[i].min_grf_depth, replacement_blitters[i].max_grf_depth + 1)) continue;
 		const char *repl_blitter = replacement_blitters[i].name;
 
-		if (strcmp(repl_blitter, cur_blitter) == 0) return false;
+		if (strcmp(repl_blitter, cur_blitter) == 0) {
+			VideoDriver::GetInstance()->ReleaseBlitterLock();
+			return false;
+		}
 		if (BlitterFactory::GetBlitterFactory(repl_blitter) == NULL) continue;
 
 		DEBUG(misc, 1, "Switching blitter from '%s' to '%s'... ", cur_blitter, repl_blitter);
@@ -294,6 +320,8 @@ static bool SwitchNewGRFBlitter()
 		/* Failed to switch blitter, let's hope we can return to the old one. */
 		if (BlitterFactory::SelectBlitter(cur_blitter) == NULL || !VideoDriver::GetInstance()->AfterBlitterChange()) usererror("Failed to reinitialize video driver. Specify a fixed blitter in the config");
 	}
+
+	VideoDriver::GetInstance()->ReleaseBlitterLock();
 
 	return true;
 }

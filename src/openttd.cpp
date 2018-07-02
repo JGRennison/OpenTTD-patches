@@ -249,7 +249,20 @@ static void WriteSavegameInfo(const char *name)
 	char buf[8192];
 	char *p = buf;
 	p += seprintf(p, lastof(buf), "Name:         %s\n", name);
-	p += seprintf(p, lastof(buf), "Savegame ver: %d\n", _sl_version);
+	const char *type = "";
+	extern bool _sl_is_faked_ext;
+	extern bool _sl_is_ext_version;
+	if (_sl_is_faked_ext) {
+		type = " (fake extended)";
+	} else if (_sl_is_ext_version) {
+		type = " (extended)";
+	}
+	p += seprintf(p, lastof(buf), "Savegame ver: %d%s\n", _sl_version, type);
+	for (size_t i = 0; i < XSLFI_SIZE; i++) {
+		if (_sl_xv_feature_versions[i] > 0) {
+			p += seprintf(p, lastof(buf), "    Feature: %s = %d\n", SlXvGetFeatureName((SlXvFeatureIndex) i), _sl_xv_feature_versions[i]);
+		}
+	}
 	p += seprintf(p, lastof(buf), "NewGRF ver:   0x%08X\n", last_ottd_rev);
 	p += seprintf(p, lastof(buf), "Modified:     %d\n", ever_modified);
 
@@ -358,11 +371,9 @@ static void LoadIntroGame(bool load_newgrfs = true)
 	_pause_mode = PM_UNPAUSED;
 	_cursor.fix_at = false;
 
-	if (load_newgrfs) CheckForMissingSprites();
 	CheckForMissingGlyphs();
 
-	/* Play main theme */
-	if (MusicDriver::GetInstance()->IsSongPlaying()) ResetMusic();
+	MusicLoop(); // ensure music is correct
 }
 
 void MakeNewgameSettingsLive()
@@ -712,11 +723,6 @@ int openttd_main(int argc, char *argv[])
 		goto exit_noshutdown;
 	}
 
-#if defined(WINCE) && defined(_DEBUG)
-	/* Switch on debug lvl 4 for WinCE if Debug release, as you can't give params, and you most likely do want this information */
-	SetDebugString("4");
-#endif
-
 	DeterminePaths(argv[0]);
 	TarScanner::DoScan(TarScanner::BASESET);
 
@@ -835,7 +841,7 @@ int openttd_main(int argc, char *argv[])
 	if (sounds_set == NULL && BaseSounds::ini_set != NULL) sounds_set = stredup(BaseSounds::ini_set);
 	if (!BaseSounds::SetSet(sounds_set)) {
 		if (StrEmpty(sounds_set) || !BaseSounds::SetSet(NULL)) {
-			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 4.1 of readme.txt.");
+			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 4.1 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND);
 			msg.SetDParamStr(0, sounds_set);
@@ -848,7 +854,7 @@ int openttd_main(int argc, char *argv[])
 	if (music_set == NULL && BaseMusic::ini_set != NULL) music_set = stredup(BaseMusic::ini_set);
 	if (!BaseMusic::SetSet(music_set)) {
 		if (StrEmpty(music_set) || !BaseMusic::SetSet(NULL)) {
-			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 4.1 of readme.txt.");
+			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 4.1 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND);
 			msg.SetDParamStr(0, music_set);
@@ -1426,11 +1432,6 @@ void StateGameLoop()
 static void DoAutosave()
 {
 	char buf[MAX_PATH];
-
-#if defined(PSP)
-	/* Autosaving in networking is too time expensive for the PSP */
-	if (_networking) return;
-#endif /* PSP */
 
 	if (_settings_client.gui.keep_all_autosave) {
 		GenerateDefaultSaveName(buf, lastof(buf));

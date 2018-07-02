@@ -654,12 +654,16 @@ static void CompanyCheckBankrupt(Company *c)
  */
 static void CompaniesGenStatistics()
 {
-	Station *st;
+	/* Check for bankruptcy each month */
+	Company *c;
+	FOR_ALL_COMPANIES(c) {
+		CompanyCheckBankrupt(c);
+	}
 
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
-	Company *c;
 
 	if (!_settings_game.economy.infrastructure_maintenance) {
+		Station *st;
 		FOR_ALL_STATIONS(st) {
 			cur_company.Change(st->owner);
 			CommandCost cost(EXPENSES_PROPERTY, _price[PR_STATION_VALUE] >> 1);
@@ -688,18 +692,14 @@ static void CompaniesGenStatistics()
 	}
 	cur_company.Restore();
 
-	/* Check for bankruptcy each month */
-	FOR_ALL_COMPANIES(c) {
-		CompanyCheckBankrupt(c);
-	}
-
 	/* Only run the economic statics and update company stats every 3rd month (1st of quarter). */
 	if (!HasBit(1 << 0 | 1 << 3 | 1 << 6 | 1 << 9, _cur_month)) return;
 
 	FOR_ALL_COMPANIES(c) {
-		memmove(&c->old_economy[1], &c->old_economy[0], sizeof(c->old_economy) - sizeof(c->old_economy[0]));
+		/* Drop the oldest history off the end */
+		std::copy_backward(c->old_economy, c->old_economy + MAX_HISTORY_QUARTERS - 1, c->old_economy + MAX_HISTORY_QUARTERS);
 		c->old_economy[0] = c->cur_economy;
-		memset(&c->cur_economy, 0, sizeof(c->cur_economy));
+		c->cur_economy = {};
 
 		if (c->num_valid_stat_ent != MAX_HISTORY_QUARTERS) c->num_valid_stat_ent++;
 
@@ -1392,14 +1392,14 @@ struct IsEmptyAction
 struct PrepareRefitAction
 {
 	CargoArray &consist_capleft; ///< Capacities left in the consist.
-	uint32 &refit_mask;          ///< Bitmask of possible refit cargoes.
+	CargoTypes &refit_mask;          ///< Bitmask of possible refit cargoes.
 
 	/**
 	 * Create a refit preparation action.
 	 * @param consist_capleft Capacities left in consist, to be updated here.
 	 * @param refit_mask Refit mask to be constructed from refit information of vehicles.
 	 */
-	PrepareRefitAction(CargoArray &consist_capleft, uint32 &refit_mask) :
+	PrepareRefitAction(CargoArray &consist_capleft, CargoTypes &refit_mask) :
 		consist_capleft(consist_capleft), refit_mask(refit_mask) {}
 
 	/**
@@ -1497,7 +1497,7 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 
 	Backup<CompanyByte> cur_company(_current_company, v->owner, FILE_LINE);
 
-	uint32 refit_mask = v->GetEngine()->info.refit_mask;
+	CargoTypes refit_mask = v->GetEngine()->info.refit_mask;
 
 	/* Remove old capacity from consist capacity and collect refit mask. */
 	IterateVehicleParts(v_start, PrepareRefitAction(consist_capleft, refit_mask));
@@ -1671,10 +1671,10 @@ static void LoadUnloadVehicle(Vehicle *front)
 	bool completely_emptied = true;
 	bool anything_unloaded  = false;
 	bool anything_loaded    = false;
-	uint32 full_load_amount = 0;
-	uint32 cargo_not_full   = 0;
-	uint32 cargo_full       = 0;
-	uint32 reservation_left = 0;
+	CargoTypes full_load_amount = 0;
+	CargoTypes cargo_not_full   = 0;
+	CargoTypes cargo_full       = 0;
+	CargoTypes reservation_left = 0;
 
 	front->cur_speed = 0;
 
@@ -1686,13 +1686,11 @@ static void LoadUnloadVehicle(Vehicle *front)
 		if (v->cargo_cap == 0) continue;
 		artic_part++;
 
-		uint load_amount = GetLoadAmount(v);
-
 		GoodsEntry *ge = &st->goods[v->cargo_type];
 
 		if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && (GetUnloadType(v) & OUFB_NO_UNLOAD) == 0) {
 			uint cargo_count = v->cargo.UnloadCount();
-			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, load_amount) : cargo_count;
+			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, GetLoadAmount(v)) : cargo_count;
 			bool remaining = false; // Are there cargo entities in this vehicle that can still be unloaded here?
 
 			assert(payment != NULL);
@@ -1771,7 +1769,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		/* update stats */
 		int t;
 		switch (front->type) {
-			case VEH_TRAIN: /* FALL THROUGH */
+			case VEH_TRAIN:
 			case VEH_SHIP:
 				t = front->vcache.cached_max_speed;
 				break;
@@ -1797,8 +1795,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 		 * has capacity for it, load it on the vehicle. */
 		uint cap_left = v->cargo_cap - v->cargo.StoredCount();
 		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0)) {
-			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, load_amount);
 			if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
+			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, GetLoadAmount(v));
 
 			uint loaded = ge->cargo.Load(cap_left, &v->cargo, st->xy, next_station.Get(v->cargo_type));
 			if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {
@@ -1894,7 +1892,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				/* if the aircraft carries passengers and is NOT full, then
 				 * continue loading, no matter how much mail is in */
 				if ((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CC_PASSENGERS) && front->cargo_cap > front->cargo.StoredCount()) ||
-						(cargo_not_full && (cargo_full & ~cargo_not_full) == 0)) { // There are still non-full cargoes
+						(cargo_not_full != 0 && (cargo_full & ~cargo_not_full) == 0)) { // There are still non-full cargoes
 					finished_loading = false;
 				}
 			} else if (cargo_not_full != 0) {
