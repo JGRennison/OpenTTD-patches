@@ -37,6 +37,40 @@ static inline bool IsTunnelTile(TileIndex t)
 	return IsTileType(t, MP_TUNNELBRIDGE) && IsTunnel(t);
 }
 
+/**
+ * Checks if this tile is a rail tunnel
+ * @param t the tile that might be a rail tunnel
+ * @return true if it is a rail tunnel
+ */
+static inline bool IsRailTunnelTile(TileIndex t)
+{
+	return IsTunnelTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_RAIL;
+}
+
+/**
+ * Get the reservation state of the rail tunnel
+ * @pre IsRailTunnelTile(t)
+ * @param t the tile
+ * @return reservation state
+ */
+static inline bool HasTunnelReservation(TileIndex t)
+{
+	assert(IsRailTunnelTile(t));
+	return HasBit(_m[t].m5, 4);
+}
+
+/**
+ * Set the reservation state of the rail tunnel
+ * @pre IsRailTunnelTile(t)
+ * @param t the tile
+ * @param b the reservation state
+ */
+static inline void SetTunnelReservation(TileIndex t, bool b)
+{
+	assert(IsRailTunnelTile(t));
+	SB(_m[t].m5, 4, 1, b ? 1 : 0);
+}
+
 TileIndex GetOtherTunnelEnd(TileIndex);
 bool IsTunnelInWay(TileIndex, int z);
 bool IsTunnelInWayDir(TileIndex tile, int z, DiagDirection dir);

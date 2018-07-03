@@ -374,22 +374,45 @@ static SigFlags ExploreSegment(Owner owner)
 			case MP_TUNNELBRIDGE: {
 				if (GetTileOwner(tile) != owner) continue;
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) continue;
-				DiagDirection dir = GetTunnelBridgeDirection(tile);
+				DiagDirection tunnel_bridge_dir = GetTunnelBridgeDirection(tile);
+				TrackBits tracks = GetTunnelBridgeTrackBits(tile);
+				TrackBits across_tracks = GetAcrossTunnelBridgeTrackBits(tile);
+
+				auto check_train_present = [tile, tracks, across_tracks](DiagDirection enterdir) -> bool {
+					if (tracks == TRACK_BIT_HORZ || tracks == TRACK_BIT_VERT) {
+						if (_enterdir_to_trackbits[enterdir] & across_tracks) {
+							return EnsureNoTrainOnTrackBits(tile, TRACK_BIT_WORMHOLE | across_tracks).Failed();
+						} else {
+							return EnsureNoTrainOnTrackBits(tile, tracks & (~across_tracks)).Failed();
+						}
+					} else {
+						return HasVehicleOnPos(tile, NULL, &TrainOnTileEnum);
+					}
+				};
+
+				TrackBits tracks_masked = (TrackBits)(tracks & _enterdir_to_trackbits[enterdir == INVALID_DIAGDIR ? tunnel_bridge_dir : enterdir]); // only incidating trackbits
+				if (tracks == TRACK_BIT_HORZ || tracks == TRACK_BIT_VERT) tracks = tracks_masked;
 
 				if (enterdir == INVALID_DIAGDIR) { // incoming from the wormhole
-					if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
-					enterdir = dir;
-					exitdir = ReverseDiagDir(dir);
-					tile += TileOffsByDiagDir(exitdir); // just skip to next tile
-				} else { // NOT incoming from the wormhole!
-					if (ReverseDiagDir(enterdir) != dir) continue;
-					if (!(flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) flags |= SF_TRAIN;
-					tile = GetOtherTunnelBridgeEnd(tile); // just skip to exit tile
-					enterdir = INVALID_DIAGDIR;
-					exitdir = INVALID_DIAGDIR;
+					if (!(flags & SF_TRAIN) && check_train_present(tunnel_bridge_dir)) flags |= SF_TRAIN;
+					enterdir = tunnel_bridge_dir;
+				} else if (enterdir != tunnel_bridge_dir) { // NOT incoming from the wormhole!
+					if (tracks_masked == TRACK_BIT_NONE) continue; // no incidating track
+					if (!(flags & SF_TRAIN) && check_train_present(enterdir)) flags |= SF_TRAIN;
 				}
+				for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) { // test all possible exit directions
+					if (dir != enterdir && (tracks & _enterdir_to_trackbits[dir])) { // any track incidating?
+						if (dir == tunnel_bridge_dir) {
+							if (!MaybeAddToTodoSet(GetOtherTunnelBridgeEnd(tile), INVALID_DIAGDIR, tile, INVALID_DIAGDIR)) return flags | SF_FULL;
+						} else {
+							TileIndex newtile = tile + TileOffsByDiagDir(dir);  // new tile to check
+							DiagDirection newdir = ReverseDiagDir(dir); // direction we are entering from
+							if (!MaybeAddToTodoSet(newtile, newdir, tile, dir)) return flags | SF_FULL;
+						}
+					}
 				}
-				break;
+				continue; // continue the while() loop
+				}
 
 			default:
 				continue; // continue the while() loop
@@ -489,16 +512,20 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 		 * train entering/leaving block, train leaving depot...
 		 */
 		switch (GetTileType(tile)) {
-			case MP_TUNNELBRIDGE:
+			case MP_TUNNELBRIDGE: {
 				/* 'optimization assert' - do not try to update signals when it is not needed */
 				assert(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL);
-				assert(dir == INVALID_DIAGDIR || dir == ReverseDiagDir(GetTunnelBridgeDirection(tile)));
-				_tbdset.Add(tile, INVALID_DIAGDIR);  // we can safely start from wormhole centre
-				_tbdset.Add(GetOtherTunnelBridgeEnd(tile), INVALID_DIAGDIR);
-				break;
-
+				if (IsTunnel(tile)) assert(dir == INVALID_DIAGDIR || dir == ReverseDiagDir(GetTunnelBridgeDirection(tile)));
+				TrackBits across = GetAcrossTunnelBridgeTrackBits(tile);
+				if (dir == INVALID_DIAGDIR || _enterdir_to_trackbits[dir] & across) {
+					_tbdset.Add(tile, INVALID_DIAGDIR);  // we can safely start from wormhole centre
+					_tbdset.Add(GetOtherTunnelBridgeEnd(tile), INVALID_DIAGDIR);
+					break;
+				}
+			}
+				/* FALL THROUGH */
 			case MP_RAILWAY:
-				if (IsRailDepot(tile)) {
+				if (IsRailDepotTile(tile)) {
 					/* 'optimization assert' do not try to update signals in other cases */
 					assert(dir == INVALID_DIAGDIR || dir == GetRailDepotDirection(tile));
 					_tbdset.Add(tile, INVALID_DIAGDIR); // start from depot inside
@@ -591,8 +618,13 @@ void AddTrackToSignalBuffer(TileIndex tile, Track track, Owner owner)
 
 	_last_owner = owner;
 
-	_globset.Add(tile, _search_dir_1[track]);
-	_globset.Add(tile, _search_dir_2[track]);
+	DiagDirection wormhole_dir = IsTileType(tile, MP_TUNNELBRIDGE) ? GetTunnelBridgeDirection(tile) : INVALID_DIAGDIR;
+
+	auto add_dir = [&](DiagDirection dir) {
+		_globset.Add(tile, dir == wormhole_dir ? INVALID_DIAGDIR : dir);
+	};
+	add_dir(_search_dir_1[track]);
+	add_dir(_search_dir_2[track]);
 
 	if (_globset.Items() >= SIG_GLOB_UPDATE) {
 		/* too many items, force update */

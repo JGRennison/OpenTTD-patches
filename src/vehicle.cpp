@@ -525,11 +525,23 @@ CommandCost EnsureNoVehicleOnGround(TileIndex tile)
 	return CommandCost();
 }
 
+struct GetVehicleTunnelBridgeProcData {
+	const Vehicle *v;
+	TileIndex t;
+	bool across_only;
+};
+
 /** Procedure called for every vehicle found in tunnel/bridge in the hash map */
 static Vehicle *GetVehicleTunnelBridgeProc(Vehicle *v, void *data)
 {
+	const GetVehicleTunnelBridgeProcData *info = (GetVehicleTunnelBridgeProcData*) data;
 	if (v->type != VEH_TRAIN && v->type != VEH_ROAD && v->type != VEH_SHIP) return NULL;
-	if (v == (const Vehicle *)data) return NULL;
+	if (v == info->v) return NULL;
+
+	if (v->type == VEH_TRAIN && info->across_only && IsBridge(info->t)) {
+		TrackBits vehicle_track = Train::From(v)->track;
+		if (!(vehicle_track & TRACK_BIT_WORMHOLE) && !(GetAcrossBridgePossibleTrackBits(info->t) & vehicle_track)) return NULL;
+	}
 
 	return v;
 }
@@ -539,16 +551,24 @@ static Vehicle *GetVehicleTunnelBridgeProc(Vehicle *v, void *data)
  * @param tile first end
  * @param endtile second end
  * @param ignore Ignore this vehicle when searching
+ * @param across_only Only find vehicles which are passing across the bridge/tunnel or on connecting bridge head track pieces
  * @return Succeeded command (if tunnel/bridge is free) or failed command (if a vehicle is using the tunnel/bridge).
  */
-CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore)
+CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore, bool across_only)
 {
 	/* Value v is not safe in MP games, however, it is used to generate a local
 	 * error message only (which may be different for different machines).
 	 * Such a message does not affect MP synchronisation.
 	 */
-	Vehicle *v = VehicleFromPos(tile, const_cast<Vehicle *>(ignore), &GetVehicleTunnelBridgeProc, true);
-	if (v == NULL) v = VehicleFromPos(endtile, const_cast<Vehicle *>(ignore), &GetVehicleTunnelBridgeProc, true);
+	GetVehicleTunnelBridgeProcData data;
+	data.v = ignore;
+	data.t = tile;
+	data.across_only = across_only;
+	Vehicle *v = VehicleFromPos(tile, &data, &GetVehicleTunnelBridgeProc, true);
+	if (v == NULL) {
+		data.t = endtile;
+		v = VehicleFromPos(endtile, &data, &GetVehicleTunnelBridgeProc, true);
+	}
 
 	if (v != NULL) return_cmd_error(STR_ERROR_TRAIN_IN_THE_WAY + v->type);
 	return CommandCost();
@@ -561,6 +581,12 @@ static Vehicle *EnsureNoTrainOnTrackProc(Vehicle *v, void *data)
 	if (v->type != VEH_TRAIN) return NULL;
 
 	Train *t = Train::From(v);
+	if (rail_bits & TRACK_BIT_WORMHOLE) {
+		if (t->track & TRACK_BIT_WORMHOLE) return v;
+		rail_bits &= ~TRACK_BIT_WORMHOLE;
+	} else if (t->track & TRACK_BIT_WORMHOLE) {
+		return NULL;
+	}
 	if ((t->track != rail_bits) && !TracksOverlap(t->track | rail_bits)) return NULL;
 
 	return v;

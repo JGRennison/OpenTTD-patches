@@ -1473,10 +1473,76 @@
        </tr>
       </table>
      </li>
+     <li style="color: blue">m2 bits 2..0: rail bridge heads track reserved for pbs
+       <table style="color: blue">
+        <tr>
+          <td><tt>0</tt>&nbsp; </td>
+          <td>not reserved</td>
+        </tr>
+        <tr>
+          <td><tt>1</tt>&nbsp; </td>
+          <td>X direction</td>
+        </tr>
+        <tr>
+          <td><tt>2</tt>&nbsp; </td>
+          <td>Y direction</td>
+        </tr>
+        <tr>
+          <td><tt>3</tt>&nbsp; </td>
+          <td>north corner (W-E)</td>
+        </tr>
+        <tr>
+          <td><tt>4</tt>&nbsp; </td>
+          <td>south corner (W-E)</td>
+        </tr>
+        <tr>
+          <td><tt>5</tt>&nbsp; </td>
+          <td>west corner (N-S)</td>
+        </tr>
+        <tr>
+          <td><tt>6</tt>&nbsp; </td>
+          <td>east corner (N-S)</td>
+        </tr>
+       </table>
+     </li>
+     <li style="color: blue">m2 bit 3: rail bridge heads opposite track is reserved, too</li>
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of tram</li>
      <li>m3 bits 3..0: <a href="#TrackType">track type</a> for railway</li>
-     <li>m5 bit 4: pbs reservation state for railway</li>
-     <li>m5 bits 7 clear: tunnel entrance/exit</li>
+     <li style="color: blue">m4 bits 5..0: rail bridge heads track layout: bit set = track present:
+      <table style="color: blue">
+       <tr>
+        <td nowrap valign=top>bit 0: </td>
+        <td align=left>in the X direction</td>
+       </tr>
+
+       <tr>
+        <td nowrap valign=top>bit 1: </td>
+        <td align=left>in the Y direction</td>
+       </tr>
+
+       <tr>
+        <td nowrap valign=top>bit 2: </td>
+        <td align=left>in the north corner (direction W-E)</td>
+       </tr>
+
+       <tr>
+        <td nowrap valign=top>bit 3: </td>
+        <td align=left>in the south corner (direction W-E)</td>
+       </tr>
+
+       <tr>
+        <td nowrap valign=top>bit 4: </td>
+        <td align=left>in the west corner (direction N-S)</td>
+       </tr>
+
+       <tr>
+        <td nowrap valign=top>bit 5: </td>
+        <td align=left>in the east corner (direction N-S)</td>
+       </tr>
+      </table>
+     </li>
+     <li>m5 bit 4: pbs reservation state for railway (tunnel only)</li>
+     <li>m5 bit 7 clear: tunnel entrance/exit</li>
      <li>m5 bit 7 set: bridge ramp
       <ul>
        <li>m6 bits 5..2: <a name="BridgeType">bridge type</a>:

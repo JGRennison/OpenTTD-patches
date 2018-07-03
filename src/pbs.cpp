@@ -81,7 +81,8 @@ void SetRailStationPlatformReservation(TileIndex start, DiagDirection dir, bool 
  */
 bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 {
-	assert((GetTileTrackStatus(tile, TRANSPORT_RAIL, 0) & TrackToTrackBits(t)) != 0);
+	assert_msg((TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t)) != 0,
+			"%X, %X, %X, %X", TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)), tile, t, TrackToTrackBits(t));
 
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
@@ -123,9 +124,14 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 			break;
 
 		case MP_TUNNELBRIDGE:
-			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && !GetTunnelBridgeReservationTrackBits(tile)) {
-				SetTunnelBridgeReservation(tile, true);
-				return true;
+			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
+				if (IsTunnel(tile) && !HasTunnelReservation(tile)) {
+					SetTunnelReservation(tile, true);
+					return true;
+				}
+				if (IsBridge(tile)) {
+					return TryReserveRailBridgeHead(tile, t);
+				}
 			}
 			break;
 
@@ -177,7 +183,13 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 			break;
 
 		case MP_TUNNELBRIDGE:
-			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) SetTunnelBridgeReservation(tile, false);
+			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
+				if (IsTunnel(tile)) {
+					SetTunnelReservation(tile, false);
+				} else {
+					UnreserveRailBridgeHeadTrack(tile, t);
+				}
+			}
 			break;
 
 		default:
@@ -270,7 +282,7 @@ static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
 	if (v->type != VEH_TRAIN || (v->vehstatus & VS_CRASHED)) return NULL;
 
 	Train *t = Train::From(v);
-	if (t->track == TRACK_BIT_WORMHOLE || HasBit((TrackBits)t->track, TrackdirToTrack(info->res.trackdir))) {
+	if (t->track & TRACK_BIT_WORMHOLE || HasBit((TrackBits)t->track, TrackdirToTrack(info->res.trackdir))) {
 		t = t->First();
 
 		/* ALWAYS return the lowest ID (anti-desync!) */
