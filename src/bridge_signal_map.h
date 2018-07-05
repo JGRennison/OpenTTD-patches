@@ -28,10 +28,17 @@ extern std::unordered_map<TileIndex, LongBridgeSignalStorage> _long_bridge_signa
 
 SignalState GetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal);
 
+enum {
+	BRIDGE_M2_SIGNAL_STATE_COUNT      = 11,
+	BRIDGE_M2_SIGNAL_STATE_FIELD_SIZE = 12,
+	BRIDGE_M2_SIGNAL_STATE_OFFSET     = 4,
+	BRIDGE_M2_SIGNAL_STATE_EXT_FLAG   = 0x8000,
+};
+
 static inline SignalState GetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 signal)
 {
-	if (signal < 15) {
-		return GB(_m[t].m2, signal, 1) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
+	if (signal < BRIDGE_M2_SIGNAL_STATE_COUNT) {
+		return GB(_m[t].m2, signal + BRIDGE_M2_SIGNAL_STATE_OFFSET, 1) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
 	} else {
 		return GetBridgeEntranceSimulatedSignalStateExtended(t, signal);
 	}
@@ -41,8 +48,8 @@ void SetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal, S
 
 static inline void SetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 signal, SignalState state)
 {
-	if (signal < 15) {
-		SB(_m[t].m2, signal, 1, (state == SIGNAL_STATE_RED) ? 1 : 0);
+	if (signal < BRIDGE_M2_SIGNAL_STATE_COUNT) {
+		SB(_m[t].m2, signal + BRIDGE_M2_SIGNAL_STATE_OFFSET, 1, (state == SIGNAL_STATE_RED) ? 1 : 0);
 	} else {
 		SetBridgeEntranceSimulatedSignalStateExtended(t, signal, state);
 	}
@@ -52,10 +59,10 @@ void SetAllBridgeEntranceSimulatedSignalsGreenExtended(TileIndex t);
 
 static inline void SetAllBridgeEntranceSimulatedSignalsGreen(TileIndex t)
 {
-	if (_m[t].m2 & 0x8000) {
+	if (_m[t].m2 & BRIDGE_M2_SIGNAL_STATE_EXT_FLAG) {
 		SetAllBridgeEntranceSimulatedSignalsGreenExtended(t);
 	} else {
-		_m[t].m2 = 0;
+		SB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_OFFSET, BRIDGE_M2_SIGNAL_STATE_FIELD_SIZE, 0);
 	}
 }
 
@@ -63,10 +70,10 @@ void ClearBridgeEntranceSimulatedSignalsExtended(TileIndex t);
 
 static inline void ClearBridgeEntranceSimulatedSignals(TileIndex t)
 {
-	if (_m[t].m2 & 0x8000) {
+	if (_m[t].m2 & BRIDGE_M2_SIGNAL_STATE_EXT_FLAG) {
 		ClearBridgeEntranceSimulatedSignalsExtended(t);
 	} else {
-		_m[t].m2 = 0;
+		SB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_OFFSET, BRIDGE_M2_SIGNAL_STATE_FIELD_SIZE, 0);
 	}
 }
 
