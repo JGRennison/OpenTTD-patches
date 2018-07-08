@@ -278,4 +278,27 @@ static inline bool IsDiagonalDirection(Direction dir)
 	return (dir & 1) != 0;
 }
 
+/**
+ * Convert a Direction to a DiagDirection, along an Axis.
+ *
+ * This function can be used to convert the 8-way Direction to
+ * the 2-way DiagDirection along an axis. If the direction cannot be
+ * mapped  INVALID_DIAGDIR is returned.
+ *
+ * @param dir The direction to convert
+ * @param axis axis to convert
+ * @return The resulting DiagDirection, may be INVALID_DIAGDIR
+ */
+static inline DiagDirection DirToDiagDirAlongAxis(Direction dir, Axis axis)
+{
+	assert(IsValidDirection(dir));
+	assert(IsValidAxis(axis));
+	if ((dir & 3) == (3 ^ (axis << 1))) return INVALID_DIAGDIR;
+	/* Mapping:
+	 * X 4, 5, 6 -> 2    0, 1, 2 -> 0
+	 * Y 2, 3, 4 -> 1    0, 6, 7 -> 3
+	 */
+	return (DiagDirection)((((dir - axis) & 4) >> 1) | axis);
+}
+
 #endif /* DIRECTION_FUNC_H */
