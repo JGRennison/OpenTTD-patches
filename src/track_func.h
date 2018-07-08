@@ -735,4 +735,29 @@ static inline DiagDirection VehicleExitDir(Direction direction, TrackBits track)
 	return diagdir;
 }
 
+/**
+ * Get the direction which corresponds to a track direction
+ *
+ * @param td track direction
+ * @return direction
+ */
+static inline Direction TrackdirToDirection(Trackdir td)
+{
+	switch (td) {
+		case TRACKDIR_X_NE: return DIR_NE;
+		case TRACKDIR_Y_SE: return DIR_SE;
+		case TRACKDIR_UPPER_E: return DIR_E;
+		case TRACKDIR_LOWER_E: return DIR_E;
+		case TRACKDIR_LEFT_S: return DIR_S;
+		case TRACKDIR_RIGHT_S: return DIR_S;
+		case TRACKDIR_X_SW: return DIR_SW;
+		case TRACKDIR_Y_NW: return DIR_NW;
+		case TRACKDIR_UPPER_W: return DIR_W;
+		case TRACKDIR_LOWER_W: return DIR_W;
+		case TRACKDIR_LEFT_N: return DIR_N;
+		case TRACKDIR_RIGHT_N: return DIR_N;
+		default: NOT_REACHED();
+	}
+}
+
 #endif /* TRACK_FUNC_H */
