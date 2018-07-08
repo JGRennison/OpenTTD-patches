@@ -127,7 +127,7 @@ struct CFollowTrackT
 		m_old_td = old_td;
 		m_err = EC_NONE;
 		assert(((TrackStatusToTrackdirBits(GetTileTrackStatus(m_old_tile, TT(), IsRoadTT() ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0)) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
-		       (IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR)); // Disable the assertion for single tram bits
+		       (IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR) || (IsRailTT() && IsRailCustomBridgeHeadTile(m_old_tile))); // Disable the assertion for single tram bits
 		m_exitdir = TrackdirToExitdir(m_old_td);
 		if (ForcedReverse()) return true;
 		if (!CanExitOldTile()) return false;
@@ -155,7 +155,7 @@ struct CFollowTrackT
 
 			return false;
 		}
-		if (!Allow90degTurns()) {
+		if (!Allow90degTurns() && m_tiles_skipped == 0) {
 			m_new_td_bits &= (TrackdirBits)~(int)TrackdirCrossesTrackdirs(m_old_td);
 			if (m_new_td_bits == TRACKDIR_BIT_NONE) {
 				m_err = EC_90DEG;
@@ -218,7 +218,7 @@ protected:
 				m_tiles_skipped = GetTunnelBridgeLength(m_new_tile, m_old_tile);
 				return;
 			}
-			if (!IsRoadCustomBridgeHeadTile(m_old_tile)) assert(ReverseDiagDir(enterdir) == m_exitdir);
+			if (!IsRoadCustomBridgeHeadTile(m_old_tile) && !IsRailCustomBridgeHeadTile(m_old_tile)) assert(ReverseDiagDir(enterdir) == m_exitdir);
 		}
 
 		/* normal or station tile, do one step */
@@ -369,13 +369,22 @@ protected:
 					}
 				}
 			} else { // IsBridge(m_new_tile)
+				DiagDirection ramp_enderdir = GetTunnelBridgeDirection(m_new_tile);
+				if (!m_is_bridge && ramp_enderdir == ReverseDiagDir(m_exitdir)) {
+					m_err = EC_NO_WAY;
+					return false;
+				}
 				if (!m_is_bridge && IsRoadTT() && IsRoadCustomBridgeHeadTile(m_new_tile)) {
 					if (!(DiagDirToRoadBits(ReverseDiagDir(m_exitdir)) & GetCustomBridgeHeadRoadBits(m_new_tile, IsTram() ? ROADTYPE_TRAM : ROADTYPE_ROAD))) {
 						m_err = EC_NO_WAY;
 						return false;
 					}
+				} else if (!m_is_bridge && IsRailTT() && IsRailCustomBridgeHeadTile(m_new_tile)) {
+					if (!(DiagdirReachesTracks(m_exitdir) & GetCustomBridgeHeadTrackBits(m_new_tile))) {
+						m_err = EC_NO_WAY;
+						return false;
+					}
 				} else if (!m_is_bridge) {
-					DiagDirection ramp_enderdir = GetTunnelBridgeDirection(m_new_tile);
 					if (ramp_enderdir != m_exitdir) {
 						m_err = EC_NO_WAY;
 						return false;

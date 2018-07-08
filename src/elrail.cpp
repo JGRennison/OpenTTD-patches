@@ -104,7 +104,7 @@ static TrackBits GetRailTrackBitsUniversal(TileIndex t, byte *override)
 			if (override != NULL && (IsTunnel(t) || GetTunnelBridgeLength(t, GetOtherBridgeEnd(t)) > 0)) {
 				*override = 1 << GetTunnelBridgeDirection(t);
 			}
-			return DiagDirToDiagTrackBits(GetTunnelBridgeDirection(t));
+			return GetTunnelBridgeTrackBits(t);
 
 		case MP_ROAD:
 			if (!IsLevelCrossing(t)) return TRACK_BIT_NONE;
@@ -200,6 +200,8 @@ static void AdjustTileh(TileIndex tile, Slope *tileh)
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
 		if (IsTunnel(tile)) {
 			*tileh = SLOPE_STEEP; // XXX - Hack to make tunnel entrances to always have a pylon
+		} else if (IsRailCustomBridgeHeadTile(tile)) {
+			/* no change */
 		} else if (*tileh != SLOPE_FLAT) {
 			*tileh = SLOPE_FLAT;
 		} else {

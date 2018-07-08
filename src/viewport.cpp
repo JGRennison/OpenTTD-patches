@@ -103,6 +103,7 @@
 #include "tunnelbridge_map.h"
 #include "gui.h"
 #include "core/container_func.hpp"
+#include "tunnelbridge_map.h"
 
 #include <map>
 #include <vector>
@@ -1085,22 +1086,37 @@ static HighLightStyle GetPartOfAutoLine(int px, int py, const Point &selstart, c
 static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle autorail_type, PaletteID pal = -1)
 {
 	SpriteID image;
-	int offset;
-
 	FoundationPart foundation_part = FOUNDATION_PART_NORMAL;
-	Slope autorail_tileh = RemoveHalftileSlope(ti->tileh);
-	if (IsHalftileSlope(ti->tileh)) {
-		static const HighLightStyle _lower_rail[CORNER_END] = { HT_DIR_VR, HT_DIR_HU, HT_DIR_VL, HT_DIR_HL }; // CORNER_W, CORNER_S, CORNER_E, CORNER_N
-		Corner halftile_corner = GetHalftileSlopeCorner(ti->tileh);
-		if (autorail_type != _lower_rail[halftile_corner]) {
-			foundation_part = FOUNDATION_PART_HALFTILE;
-			/* Here we draw the highlights of the "three-corners-raised"-slope. That looks ok to me. */
-			autorail_tileh = SlopeWithThreeCornersRaised(OppositeCorner(halftile_corner));
+	int offset;
+	bool bridge_head_mode = false;
+
+	if (IsFlatRailBridgeHeadTile(ti->tile)) {
+		extern bool IsValidFlatRailBridgeHeadTrackBits(Slope normalised_slope, DiagDirection bridge_direction, TrackBits tracks);
+
+		offset = _AutorailTilehSprite[SLOPE_FLAT][autorail_type];
+		const Slope real_tileh = GetTileSlope(ti->tile, nullptr);
+		const Slope normalised_tileh = IsSteepSlope(real_tileh) ? SlopeWithOneCornerRaised(GetHighestSlopeCorner(real_tileh)) : real_tileh;
+		if (!IsValidFlatRailBridgeHeadTrackBits(normalised_tileh, GetTunnelBridgeDirection(ti->tile), TrackToTrackBits((Track) autorail_type))) {
+			offset = -offset;
 		}
+		if (!IsRailCustomBridgeHead(ti->tile)) {
+			bridge_head_mode = true;
+		}
+	} else {
+		Slope autorail_tileh = RemoveHalftileSlope(ti->tileh);
+		if (IsHalftileSlope(ti->tileh)) {
+			static const HighLightStyle _lower_rail[CORNER_END] = { HT_DIR_VR, HT_DIR_HU, HT_DIR_VL, HT_DIR_HL }; // CORNER_W, CORNER_S, CORNER_E, CORNER_N
+			Corner halftile_corner = GetHalftileSlopeCorner(ti->tileh);
+			if (autorail_type != _lower_rail[halftile_corner]) {
+				foundation_part = FOUNDATION_PART_HALFTILE;
+				/* Here we draw the highlights of the "three-corners-raised"-slope. That looks ok to me. */
+				autorail_tileh = SlopeWithThreeCornersRaised(OppositeCorner(halftile_corner));
+			}
+		}
+		assert(autorail_type < HT_DIR_END);
+		offset = _AutorailTilehSprite[autorail_tileh][autorail_type];
 	}
 
-	assert(autorail_type < HT_DIR_END);
-	offset = _AutorailTilehSprite[autorail_tileh][autorail_type];
 	if (offset >= 0) {
 		image = SPR_AUTORAIL_BASE + offset;
 		if (pal == (PaletteID)-1) pal = _thd.make_square_red ? PALETTE_SEL_TILE_RED : PAL_NONE;
@@ -1109,7 +1125,11 @@ static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle autorail_ty
 		if (pal == (PaletteID)-1) pal = PALETTE_SEL_TILE_RED;
 	}
 
-	DrawSelectionSprite(image, pal, ti, 7, foundation_part);
+	if (bridge_head_mode) {
+		AddSortableSpriteToDraw(image, pal, ti->x, ti->y, 16, 16, 0, ti->z + 15);
+	} else {
+		DrawSelectionSprite(image, pal, ti, 7, foundation_part);
+	}
 }
 
 /**

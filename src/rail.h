@@ -441,4 +441,16 @@ extern uint8 _sorted_railtypes_size;
  */
 #define FOR_ALL_SORTED_RAILTYPES(var) for (uint8 index = 0; index < _sorted_railtypes_size && (var = _sorted_railtypes[index], true) ; index++)
 
+/** Enum holding the signal offset in the sprite sheet according to the side it is representing. */
+enum SignalOffsets {
+	SIGNAL_TO_SOUTHWEST,
+	SIGNAL_TO_NORTHEAST,
+	SIGNAL_TO_SOUTHEAST,
+	SIGNAL_TO_NORTHWEST,
+	SIGNAL_TO_EAST,
+	SIGNAL_TO_WEST,
+	SIGNAL_TO_SOUTH,
+	SIGNAL_TO_NORTH,
+};
+
 #endif /* RAIL_H */

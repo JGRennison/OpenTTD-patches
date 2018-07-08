@@ -1372,6 +1372,29 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 6)) {
+		/* m2 signal state bit allocation has shrunk */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsBridge(t) && IsTunnelBridgeSignalSimulationEntrance(t)) {
+				extern void ShiftBridgeEntranceSimulatedSignalsExtended(TileIndex t, int shift, uint64 in);
+				const uint shift = 15 - BRIDGE_M2_SIGNAL_STATE_COUNT;
+				ShiftBridgeEntranceSimulatedSignalsExtended(t, shift, GB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_COUNT, shift));
+				SB(_m[t].m2, 0, 15, GB(_m[t].m2, 0, 15) << shift);
+			}
+		}
+	}
+
+	if (!SlXvIsFeaturePresent(XSLFI_CUSTOM_BRIDGE_HEADS, 2)) {
+		/* change map bits for rail bridge heads */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) {
+				SetCustomBridgeHeadTrackBits(t, DiagDirToDiagTrackBits(GetTunnelBridgeDirection(t)));
+				SetBridgeReservationTrackBits(t, HasBit(_m[t].m5, 4) ? DiagDirToDiagTrackBits(GetTunnelBridgeDirection(t)) : TRACK_BIT_NONE);
+				ClrBit(_m[t].m5, 4);
+			}
+		}
+	}
+
 	/* Elrails got added in rev 24 */
 	if (IsSavegameVersionBefore(24)) {
 		RailType min_rail = RAILTYPE_ELECTRIC;
@@ -2109,7 +2132,7 @@ bool AfterLoadGame()
 					break;
 
 				case MP_TUNNELBRIDGE: // Clear PBS reservation on tunnels/bridges
-					if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) SetTunnelBridgeReservation(t, false);
+					if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) UnreserveAcrossRailTunnelBridge(t);
 					break;
 
 				default: break;
@@ -3373,17 +3396,6 @@ bool AfterLoadGame()
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationExit(t)) {
 				SetTunnelBridgeExitSignalState(t, HasBit(_me[t].m6, 0) ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED);
-			}
-		}
-	}
-	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 6)) {
-		/* m2 signal state bit allocation has shrunk */
-		for (TileIndex t = 0; t < map_size; t++) {
-			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsBridge(t) && IsTunnelBridgeSignalSimulationEntrance(t)) {
-				extern void ShiftBridgeEntranceSimulatedSignalsExtended(TileIndex t, int shift, uint64 in);
-				const uint shift = 15 - BRIDGE_M2_SIGNAL_STATE_COUNT;
-				ShiftBridgeEntranceSimulatedSignalsExtended(t, shift, GB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_COUNT, shift));
-				SB(_m[t].m2, 0, 15, GB(_m[t].m2, 0, 15) << shift);
 			}
 		}
 	}

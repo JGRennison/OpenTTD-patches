@@ -202,13 +202,12 @@ void AfterLoadCompanyStats()
 					/* Count each tunnel/bridge TUNNELBRIDGE_TRACKBIT_FACTOR times to simulate
 					 * the higher structural maintenance needs, and don't forget the end tiles. */
 					const uint middle_len = GetTunnelBridgeLength(tile, other_end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
-					const uint len = middle_len + (2 * TUNNELBRIDGE_TRACKBIT_FACTOR);
 
 					switch (GetTunnelBridgeTransportType(tile)) {
 						case TRANSPORT_RAIL:
 							c = Company::GetIfValid(GetTileOwner(tile));
 							if (c != NULL) {
-								c->infrastructure.rail[GetRailType(tile)] += len;
+								c->infrastructure.rail[GetRailType(tile)] += middle_len + GetTunnelBridgeHeadOnlyRailInfrastructureCount(tile) + GetTunnelBridgeHeadOnlyRailInfrastructureCount(other_end);
 								if (IsTunnelBridgeWithSignalSimulation(tile)) {
 									c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, other_end);
 								}
@@ -222,7 +221,7 @@ void AfterLoadCompanyStats()
 
 						case TRANSPORT_WATER:
 							c = Company::GetIfValid(GetTileOwner(tile));
-							if (c != NULL) c->infrastructure.water += len;
+							if (c != NULL) c->infrastructure.water += middle_len + (2 * TUNNELBRIDGE_TRACKBIT_FACTOR);
 							break;
 
 						default:

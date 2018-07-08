@@ -308,7 +308,7 @@ protected: // These functions should not be called outside acceleration code.
 	inline byte GetAirDragArea() const
 	{
 		/* Air drag is higher in tunnels due to the limited cross-section. */
-		return (this->track == TRACK_BIT_WORMHOLE && this->vehstatus & VS_HIDDEN) ? 28 : 14;
+		return (this->track & TRACK_BIT_WORMHOLE && this->vehstatus & VS_HIDDEN) ? 28 : 14;
 	}
 
 	/**

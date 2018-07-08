@@ -486,7 +486,7 @@ static inline bool HasOnewaySignalBlockingTrackdir(TileIndex tile, Trackdir td)
 		return true;
 	}
 	if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExitOnly(tile) &&
-			DiagDirToDiagTrackdir(GetTunnelBridgeDirection(tile)) == td) {
+			TrackdirEntersTunnelBridge(tile, td)) {
 		return true;
 	}
 	return false;
