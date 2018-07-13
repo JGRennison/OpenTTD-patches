@@ -2443,7 +2443,7 @@ static void CheckNextTrainTile(Train *v)
 			if (HasPbsSignalOnTrackdir(ft.m_new_tile, FindFirstTrackdir(ft.m_new_td_bits))) {
 				/* If the next tile is a PBS signal, try to make a reservation. */
 				TrackBits tracks = TrackdirBitsToTrackBits(ft.m_new_td_bits);
-				if (_settings_game.pf.forbid_90_deg) {
+				if (_settings_game.pf.forbid_90_deg && ft.m_tiles_skipped == 0) {
 					tracks &= ~TrackCrossesTracks(TrackdirToTrack(ft.m_old_td));
 				}
 				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, tracks, false, NULL, false);
@@ -2770,7 +2770,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 			if (HasOnewaySignalBlockingTrackdir(ft.m_new_tile, FindFirstTrackdir(ft.m_new_td_bits))) break;
 		}
 
-		if (_settings_game.pf.forbid_90_deg) {
+		if (_settings_game.pf.forbid_90_deg && ft.m_tiles_skipped == 0) {
 			ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(ft.m_old_td);
 			if (ft.m_new_td_bits == TRACKDIR_BIT_NONE) break;
 		}
@@ -2832,7 +2832,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 	while (tile != stopped || cur_td != stopped_td) {
 		if (!ft.Follow(tile, cur_td)) break;
 
-		if (_settings_game.pf.forbid_90_deg) {
+		if (_settings_game.pf.forbid_90_deg && ft.m_tiles_skipped == 0) {
 			ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(ft.m_old_td);
 			assert(ft.m_new_td_bits != TRACKDIR_BIT_NONE);
 		}
@@ -5011,7 +5011,10 @@ Trackdir Train::GetVehicleTrackdir() const
 	}
 
 	if (this->track == TRACK_BIT_WORMHOLE) {
-		/* train in tunnel or on bridge, so just use his direction and assume a diagonal track */
+		/* Train in tunnel or on bridge, so just use his direction and make an educated guess
+		 * given the track bits on the tunnel/bridge head tile.
+		 * If a reachable track piece is reserved, use that, otherwise use the first reachable track piece.
+		 */
 		TrackBits tracks = GetAcrossTunnelBridgeReservationTrackBits(this->tile);
 		if (!tracks) tracks = GetAcrossTunnelBridgeTrackBits(this->tile);
 		Trackdir td = TrackExitdirToTrackdir(FindFirstTrack(tracks), GetTunnelBridgeDirection(this->tile));
