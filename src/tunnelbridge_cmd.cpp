@@ -1914,7 +1914,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 			if (dir == ReverseDiagDir(vdir) && frame == (int) (_tunnel_visibility_frame[dir] - 1) && z == 0) {
 				rv->tile = tile;
 				rv->state = DiagDirToDiagTrackdir(vdir);
-				rv->frame = frame;
+				rv->frame = TILE_SIZE - (frame + 1);
 				rv->vehstatus &= ~VS_HIDDEN;
 				return VETSB_ENTERED_WORMHOLE;
 			}
