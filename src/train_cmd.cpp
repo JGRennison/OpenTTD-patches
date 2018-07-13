@@ -4092,8 +4092,15 @@ Trackdir Train::GetVehicleTrackdir() const
 	}
 
 	if (this->track == TRACK_BIT_WORMHOLE) {
-		/* train in tunnel or on bridge, so just use his direction and assume a diagonal track */
-		return DiagDirToDiagTrackdir(DirToDiagDir(this->direction));
+		/* Train in tunnel or on bridge, so just use his direction and make an educated guess
+		 * given the track bits on the tunnel/bridge head tile.
+		 * If a reachable track piece is reserved, use that, otherwise use the first reachable track piece.
+		 */
+		TrackBits tracks = GetAcrossTunnelBridgeReservationTrackBits(this->tile);
+		if (!tracks) tracks = GetAcrossTunnelBridgeTrackBits(this->tile);
+		Trackdir td = TrackExitdirToTrackdir(FindFirstTrack(tracks), GetTunnelBridgeDirection(this->tile));
+		if (GetTunnelBridgeDirection(this->tile) != DirToDiagDir(this->direction)) td = ReverseTrackdir(td);
+		return td;
 	} else if (this->track & TRACK_BIT_WORMHOLE) {
 		return TrackDirectionToTrackdir(FindFirstTrack(this->track & TRACK_BIT_MASK), this->direction);
 	}
