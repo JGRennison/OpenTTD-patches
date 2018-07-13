@@ -2314,7 +2314,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 				rv->tile = tile;
 				rv->cur_image_valid_dir = INVALID_DIR;
 				rv->state = DiagDirToDiagTrackdir(vdir);
-				rv->frame = frame;
+				rv->frame = TILE_SIZE - (frame + 1);
 				rv->vehstatus &= ~VS_HIDDEN;
 				return VETSB_ENTERED_WORMHOLE;
 			}
