@@ -244,7 +244,7 @@ struct TimetableWindow : Window {
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
-				resize->height = FONT_HEIGHT_NORMAL;
+				resize->height = max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
 				size->height = WD_FRAMERECT_TOP + 8 * resize->height + WD_FRAMERECT_BOTTOM;
 				break;
 
@@ -357,19 +357,25 @@ struct TimetableWindow : Window {
 
 		if (v->owner == _local_company) {
 			bool disable = true;
+			bool wait_lockable = false;
+			bool wait_locked = false;
 			if (selected != -1) {
 				const Order *order = v->GetOrder(((selected + 1) / 2) % v->GetNumOrders());
 				if (selected % 2 == 1) {
+					/* Travel time */
 					disable = order != NULL && (order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT));
 				} else {
+					/* Wait time */
 					disable = (order == NULL) ||
 							((!(order->IsType(OT_GOTO_STATION) || (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_HALT))) ||
 								(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) && !order->IsType(OT_CONDITIONAL));
+					wait_lockable = !disable;
+					wait_locked = wait_lockable && order->IsWaitFixed();
 				}
 			}
 			bool disable_speed = disable || selected % 2 != 1 || v->type == VEH_AIRCRAFT;
 
-			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !wait_locked));
 			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 			this->SetWidgetDisabledState(WID_VT_CHANGE_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_CLEAR_SPEED, disable_speed);
@@ -381,6 +387,8 @@ struct TimetableWindow : Window {
 			this->SetWidgetDisabledState(WID_VT_AUTO_SEPARATION, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
 			this->EnableWidget(WID_VT_AUTOMATE);
 			this->EnableWidget(WID_VT_ADD_VEH_GROUP);
+			this->SetWidgetDisabledState(WID_VT_LOCK_ORDER_TIME, !wait_lockable);
+			this->SetWidgetLoweredState(WID_VT_LOCK_ORDER_TIME, wait_locked);
 		} else {
 			this->DisableWidget(WID_VT_START_DATE);
 			this->DisableWidget(WID_VT_CHANGE_TIME);
@@ -393,6 +401,7 @@ struct TimetableWindow : Window {
 			this->DisableWidget(WID_VT_AUTO_SEPARATION);
 			this->DisableWidget(WID_VT_SHARED_ORDER_LIST);
 			this->DisableWidget(WID_VT_ADD_VEH_GROUP);
+			this->DisableWidget(WID_VT_LOCK_ORDER_TIME);
 		}
 
 		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
@@ -422,6 +431,8 @@ struct TimetableWindow : Window {
 			case WID_VT_TIMETABLE_PANEL: {
 				int y = r.top + WD_FRAMERECT_TOP;
 				int i = this->vscroll->GetPosition();
+				Dimension lock_d = GetSpriteSize(SPR_LOCK);
+				int line_height = max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
 				VehicleOrderID order_id = (i + 1) / 2;
 				bool final_order = false;
 
@@ -478,7 +489,7 @@ struct TimetableWindow : Window {
 					}
 
 					i++;
-					y += FONT_HEIGHT_NORMAL;
+					y += line_height;
 				}
 				break;
 			}
@@ -766,6 +777,23 @@ struct TimetableWindow : Window {
 				break;
 			}
 
+			case WID_VT_LOCK_ORDER_TIME: { // Toggle order wait time lock state.
+				bool locked = false;
+
+				int selected = this->sel_index;
+				VehicleOrderID order_number = (selected + 1) / 2;
+				if (order_number >= v->GetNumOrders()) order_number = 0;
+
+				const Order *order = v->GetOrder(order_number);
+				if (order != NULL) {
+					locked = order->IsWaitFixed();
+				}
+
+				uint32 p1 = v->index | (order_number << 20) | (MTF_SET_WAIT_FIXED << 28);
+				DoCommandP(0, p1, locked ? 0 : 1, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				break;
+			}
+
 			case WID_VT_RESET_LATENESS: // Reset the vehicle's late counter.
 				DoCommandP(0, v->index, 0, CMD_SET_VEHICLE_ON_TIME | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
@@ -950,7 +978,7 @@ static const NWidgetPart _nested_timetable_widgets[] = {
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VT_SHARED_ORDER_LIST), SetFill(0, 1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VT_ADD_VEH_GROUP), SetFill(0, 1), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VT_LOCK_ORDER_TIME), SetFill(0, 1), SetDataTip(SPR_LOCK, STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY), SetFill(0, 1),
 		EndContainer(),
 	EndContainer(),

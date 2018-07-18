@@ -203,6 +203,7 @@ enum ModifyTimetableFlags {
 	MTF_WAIT_TIME,    ///< Set wait time.
 	MTF_TRAVEL_TIME,  ///< Set travel time.
 	MTF_TRAVEL_SPEED, ///< Set max travel speed.
+	MTF_SET_WAIT_FIXED,///< Set wait time fixed flag state.
 	MTF_END
 };
 template <> struct EnumPropsT<ModifyTimetableFlags> : MakeEnumPropsT<ModifyTimetableFlags, byte, MTF_WAIT_TIME, MTF_END, MTF_END, 2> {};

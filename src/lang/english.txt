@@ -4689,6 +4689,8 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Expected
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Scheduled
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Switch between expected and scheduled
 
+STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Lock/unlock the amount of time for the highlighted order (Ctrl+Click set lock state for all orders).{}When locked the time will not be changed by timetable autofill or automate.
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 

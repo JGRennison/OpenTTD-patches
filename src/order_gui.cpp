@@ -732,6 +732,8 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		if (GetOrderDistance(order, next, v) > Aircraft::From(v)->acache.cached_max_range_sqr) SetDParam(10, STR_ORDER_OUT_OF_RANGE);
 	}
 
+	bool timetable_wait_time_valid = false;
+
 	switch (order->GetType()) {
 		case OT_DUMMY:
 			SetDParam(0, STR_INVALID_ORDER);
@@ -760,6 +762,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(5, order->IsWaitTimetabled() ? STR_TIMETABLE_STAY_FOR : STR_TIMETABLE_STAY_FOR_ESTIMATED);
 					SetTimetableParams(6, order->GetWaitTime());
 				}
+				timetable_wait_time_valid = true;
 			} else {
 				SetDParam(3, (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) ? STR_EMPTY : _station_load_types[order->IsRefit()][unload][load]);
 				if (order->IsRefit()) {
@@ -812,6 +815,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(5, order->IsWaitTimetabled() ? STR_TIMETABLE_STAY_FOR : STR_TIMETABLE_STAY_FOR_ESTIMATED);
 					SetTimetableParams(6, order->GetWaitTime());
 				}
+				timetable_wait_time_valid = !(order->GetDepotActionType() & ODATFB_HALT);
 			}
 			break;
 
@@ -887,7 +891,20 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		default: NOT_REACHED();
 	}
 
-	DrawString(rtl ? left : middle, rtl ? middle : right, y, STR_ORDER_TEXT, colour);
+	int edge = DrawString(rtl ? left : middle, rtl ? middle : right, y, STR_ORDER_TEXT, colour);
+
+	if (timetable && timetable_wait_time_valid && order->IsWaitFixed()) {
+		Dimension lock_d = GetSpriteSize(SPR_LOCK);
+		DrawPixelInfo tmp_dpi;
+		if (FillDrawPixelInfo(&tmp_dpi, rtl ? left : middle, y, rtl ? middle - left : right - middle, lock_d.height)) {
+			DrawPixelInfo *old_dpi = _cur_dpi;
+			_cur_dpi = &tmp_dpi;
+
+			DrawSprite(SPR_LOCK, PAL_NONE, rtl ? edge - 3 - lock_d.width - left : edge + 3 - middle, 0);
+
+			_cur_dpi = old_dpi;
+		}
+	}
 }
 
 /**

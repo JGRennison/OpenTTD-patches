@@ -34,8 +34,9 @@
  * @param val          The new data of the timetable entry.
  * @param mtf          Which part of the timetable entry to change.
  * @param timetabled   If the new value is explicitly timetabled.
+ * @param ignore_lock  If the change should be applied even if the value is locked.
  */
-static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val, ModifyTimetableFlags mtf, bool timetabled)
+static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val, ModifyTimetableFlags mtf, bool timetabled, bool ignore_lock = false)
 {
 	Order *order = v->GetOrder(order_number);
 	int total_delta = 0;
@@ -43,6 +44,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
 
 	switch (mtf) {
 		case MTF_WAIT_TIME:
+			if (!ignore_lock && order->IsWaitFixed()) return;
 			if (!order->IsType(OT_CONDITIONAL)) {
 				total_delta = val - order->GetWaitTime();
 				timetable_delta = (timetabled ? val : 0) - order->GetTimetabledWait();
@@ -63,6 +65,10 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
 
 		case MTF_TRAVEL_SPEED:
 			order->SetMaxSpeed(val);
+			break;
+
+		case MTF_SET_WAIT_FIXED:
+			order->SetWaitFixed(val != 0);
 			break;
 
 		default:
@@ -86,6 +92,10 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
 
 				case MTF_TRAVEL_SPEED:
 					v->current_order.SetMaxSpeed(val);
+					break;
+
+				case MTF_SET_WAIT_FIXED:
+					v->current_order.SetWaitFixed(val != 0);
 					break;
 
 				default:
@@ -133,6 +143,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	int wait_time   = order->GetWaitTime();
 	int travel_time = order->GetTravelTime();
 	int max_speed   = order->GetMaxSpeed();
+	bool wait_fixed = order->IsWaitFixed();
 	switch (mtf) {
 		case MTF_WAIT_TIME:
 			wait_time = GB(p2, 0, 16);
@@ -147,6 +158,10 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		case MTF_TRAVEL_SPEED:
 			max_speed = GB(p2, 0, 16);
 			if (max_speed == 0) max_speed = UINT16_MAX; // Disable speed limit.
+			break;
+
+		case MTF_SET_WAIT_FIXED:
+			wait_fixed = GB(p2, 0, 16) != 0;
 			break;
 
 		default:
@@ -171,26 +186,33 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 	if (travel_time != order->GetTravelTime() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 	if (max_speed != order->GetMaxSpeed() && (order->IsType(OT_CONDITIONAL) || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
+	if (wait_fixed != order->IsWaitFixed() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		switch (mtf) {
 			case MTF_WAIT_TIME:
 				/* Set time if changing the value or confirming an estimated time as timetabled. */
 				if (wait_time != order->GetWaitTime() || (clear_field == order->IsWaitTimetabled())) {
-					ChangeTimetable(v, order_number, wait_time, MTF_WAIT_TIME, !clear_field);
+					ChangeTimetable(v, order_number, wait_time, MTF_WAIT_TIME, !clear_field, true);
 				}
 				break;
 
 			case MTF_TRAVEL_TIME:
 				/* Set time if changing the value or confirming an estimated time as timetabled. */
 				if (travel_time != order->GetTravelTime() || (clear_field == order->IsTravelTimetabled())) {
-					ChangeTimetable(v, order_number, travel_time, MTF_TRAVEL_TIME, !clear_field);
+					ChangeTimetable(v, order_number, travel_time, MTF_TRAVEL_TIME, !clear_field, true);
 				}
 				break;
 
 			case MTF_TRAVEL_SPEED:
 				if (max_speed != order->GetMaxSpeed()) {
-					ChangeTimetable(v, order_number, max_speed, MTF_TRAVEL_SPEED, max_speed != UINT16_MAX);
+					ChangeTimetable(v, order_number, max_speed, MTF_TRAVEL_SPEED, max_speed != UINT16_MAX, true);
+				}
+				break;
+
+			case MTF_SET_WAIT_FIXED:
+				if (wait_fixed != order->IsWaitFixed()) {
+					ChangeTimetable(v, order_number, wait_fixed ? 1 : 0, MTF_SET_WAIT_FIXED, false, true);
 				}
 				break;
 

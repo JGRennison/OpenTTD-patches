@@ -423,6 +423,15 @@ public:
 	 */
 	inline void SetMaxSpeed(uint16 speed) { this->max_speed = speed; }
 
+	/** Does this order have a fixed wait time? */
+	inline bool IsWaitFixed() const { return HasBit(this->GetXFlags(), 1); }
+
+	/** Set if  the wait time is fixed */
+	inline void SetWaitFixed(bool fixed)
+	{
+		if (!this->IsType(OT_CONDITIONAL) && fixed != IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
+	}
+
 	/**
 	 * Get the occupancy value
 	 * @return occupancy
