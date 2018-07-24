@@ -46,6 +46,7 @@
 #include "viewport_func.h"
 #include "station_map.h"
 #include "industry_map.h"
+#include "object_map.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -497,6 +498,11 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 					const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
 					if ((spec->flags & OBJECT_FLAG_ALLOW_UNDER_BRIDGE) == 0) goto not_valid_below;
 					if (GetTileMaxZ(tile) + spec->height > z_start) goto not_valid_below;
+					break;
+				}
+
+				case MP_STATION: {
+					if (!_settings_game.construction.allow_stations_under_bridges) goto not_valid_below;
 					break;
 				}
 
