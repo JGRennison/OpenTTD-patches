@@ -36,6 +36,7 @@
 #include "error.h"
 #include "game/game.hpp"
 #include "video/video_driver.hpp"
+#include "framerate_type.h"
 
 #include "safeguards.h"
 
@@ -3110,6 +3111,9 @@ void InputLoop()
  */
 void UpdateWindows()
 {
+	PerformanceMeasurer framerate(PFE_DRAWING);
+	PerformanceAccumulator::Reset(PFE_DRAWWORLD);
+
 	Window *w;
 
 	_window_update_number++;

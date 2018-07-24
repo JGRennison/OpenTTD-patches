@@ -15,6 +15,7 @@
 #include "demands.h"
 #include "mcf.h"
 #include "flowmapper.h"
+#include "../framerate_type.h"
 #include "../command_func.h"
 #include <algorithm>
 
@@ -352,6 +353,7 @@ void OnTick_LinkGraph()
 	if (offset == 0) {
 		LinkGraphSchedule::instance.SpawnNext();
 	} else if (offset == interval / 2) {
+		PerformanceMeasurer framerate(PFE_GL_LINKGRAPH);
 		LinkGraphSchedule::instance.JoinNext();
 	}
 }

@@ -54,6 +54,7 @@
 #include "tracerestrict.h"
 #include "linkgraph/linkgraph.h"
 #include "linkgraph/refresh.h"
+#include "framerate_type.h"
 #include "blitter/factory.hpp"
 #include "tbtr_template_vehicle_func.h"
 #include "string_func.h"
@@ -1130,10 +1131,15 @@ void CallVehicleTicks()
 	if (_tick_skip_counter == 0) RunVehicleDayProc();
 
 	{
+		PerformanceMeasurer framerate(PFE_GL_ECONOMY);
 		Station *st = nullptr;
 		SCOPE_INFO_FMT([&st], "CallVehicleTicks: LoadUnloadStation: %s", scope_dumper().StationInfo(st));
 		FOR_ALL_STATIONS(st) LoadUnloadStation(st);
 	}
+	PerformanceAccumulator::Reset(PFE_GL_TRAINS);
+	PerformanceAccumulator::Reset(PFE_GL_ROADVEHS);
+	PerformanceAccumulator::Reset(PFE_GL_SHIPS);
+	PerformanceAccumulator::Reset(PFE_GL_AIRCRAFT);
 
 	Vehicle *v = NULL;
 	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));

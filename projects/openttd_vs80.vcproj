@@ -1187,6 +1187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\framerate_type.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\base_consist.h"
 				>
 			</File>
@@ -2263,6 +2267,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\src\framerate_gui.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\..\src\genworld_gui.cpp"
 				>
 			</File>
@@ -2524,6 +2532,10 @@
 			</File>
 			<File
 				RelativePath=".\..\src\widgets\fios_widget.h"
+				>
+			</File>
+			<File
+				RelativePath=".\..\src\widgets\framerate_widget.h"
 				>
 			</File>
 			<File

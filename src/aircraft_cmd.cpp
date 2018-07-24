@@ -38,6 +38,7 @@
 #include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "disaster_vehicle.h"
+#include "framerate_type.h"
 
 #include "table/strings.h"
 
@@ -2112,6 +2113,8 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 bool Aircraft::Tick()
 {
 	if (!this->IsNormalAircraft()) return true;
+
+	PerformanceAccumulator framerate(PFE_GL_AIRCRAFT);
 
 	this->tick_counter++;
 

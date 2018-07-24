@@ -36,6 +36,7 @@
 #include "infrastructure_func.h"
 #include "newgrf.h"
 #include "zoom_func.h"
+#include "framerate_type.h"
 #include "scope_info.h"
 #include "string_func.h"
 
@@ -1664,6 +1665,8 @@ Money RoadVehicle::GetRunningCost() const
 
 bool RoadVehicle::Tick()
 {
+	PerformanceAccumulator framerate(PFE_GL_ROADVEHS);
+
 	this->tick_counter++;
 
 	if (this->IsFrontEngine()) {

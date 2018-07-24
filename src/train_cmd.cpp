@@ -36,6 +36,7 @@
 #include "order_backup.h"
 #include "zoom_func.h"
 #include "newgrf_debug.h"
+#include "framerate_type.h"
 #include "tracerestrict.h"
 #include "tbtr_template_vehicle_func.h"
 #include "autoreplace_func.h"
@@ -4891,6 +4892,8 @@ Money Train::GetRunningCost() const
  */
 bool Train::Tick()
 {
+	PerformanceAccumulator framerate(PFE_GL_TRAINS);
+
 	this->tick_counter++;
 
 	if (this->IsFrontEngine()) {

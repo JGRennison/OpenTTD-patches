@@ -2083,7 +2083,7 @@ EOL
 		CFLAGS="$CFLAGS `$freetype_config --cflags | tr '\n\r' '  '`"
 
 		if [ "$enable_static" != "0" ]; then
-			LIBS="$LIBS `$freetype_config --libs --static | tr '\n\r' '  '`"
+			LIBS="$LIBS `$freetype_config --libs --static | tr '\n\r' '  '` -lfreetype"
 		else
 			LIBS="$LIBS `$freetype_config --libs | tr '\n\r' '  '`"
 		fi
