@@ -1742,6 +1742,7 @@ static SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("construction.enable_build_river"));
 			limitations->Add(new SettingEntry("construction.enable_remove_water"));
 			limitations->Add(new SettingEntry("construction.road_custom_bridge_heads"));
+			limitations->Add(new SettingEntry("construction.rail_custom_bridge_heads"));
 		}
 
 		SettingsPage *disasters = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCIDENTS));
