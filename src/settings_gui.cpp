@@ -1743,6 +1743,7 @@ static SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("construction.enable_remove_water"));
 			limitations->Add(new SettingEntry("construction.road_custom_bridge_heads"));
 			limitations->Add(new SettingEntry("construction.rail_custom_bridge_heads"));
+			limitations->Add(new SettingEntry("construction.allow_grf_objects_under_bridges"));
 		}
 
 		SettingsPage *disasters = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCIDENTS));

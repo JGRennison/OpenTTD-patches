@@ -376,6 +376,7 @@ struct ConstructionSettings {
 	uint8  road_custom_bridge_heads;         ///< allow construction of road custom bridge heads
 	bool   chunnel;                          ///< allow construction of tunnels under water
 	uint8  rail_custom_bridge_heads;         ///< allow construction of rail custom bridge heads
+	bool   allow_grf_objects_under_bridges;  ///< allow all NewGRF objects under bridges
 
 	uint32 terraform_per_64k_frames;         ///< how many tile heights may, over a long period, be terraformed per 65536 frames?
 	uint16 terraform_frame_burst;            ///< how many tile heights may, over a short period, be terraformed?
