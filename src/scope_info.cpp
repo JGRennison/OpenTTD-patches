@@ -40,6 +40,8 @@ int WriteScopeLog(char *buf, const char *last)
 	return b - buf;
 }
 
+#endif
+
 // helper functions
 const char *scope_dumper::CompanyInfo(int company_id)
 {
@@ -106,5 +108,3 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 	}
 	return this->buffer;
 }
-
-#endif
