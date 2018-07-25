@@ -12,12 +12,13 @@
 #ifndef SCOPE_INFO_H
 #define SCOPE_INFO_H
 
-#ifdef USE_SCOPE_INFO
 #include <functional>
 #include <vector>
 
 struct Vehicle;
 struct BaseStation;
+
+#ifdef USE_SCOPE_INFO
 
 extern std::vector<std::function<int(char *, const char *)>> _scope_stack;
 
@@ -52,6 +53,12 @@ int WriteScopeLog(char *buf, const char *last);
 		return SCOPE_INFO_PASTE(_sc_lm_, __LINE__) (buf, last); \
 	});
 
+#else /* USE_SCOPE_INFO */
+
+#define SCOPE_INFO_FMT(...) { }
+
+#endif /* USE_SCOPE_INFO */
+
 /**
  * This is a set of helper functions to print useful info from within a SCOPE_INFO_FMT statement.
  * The use of a struct is so that when used as an argument to SCOPE_INFO_FMT/seprintf/etc, the buffer lives
@@ -67,11 +74,5 @@ struct scope_dumper {
 private:
 	char buffer[256];
 };
-
-#else /* USE_SCOPE_INFO */
-
-#define SCOPE_INFO_FMT(...) { }
-
-#endif /* USE_SCOPE_INFO */
 
 #endif /* SCOPE_INFO_H */
