@@ -435,9 +435,9 @@ char *DumpTileInfo(char *b, const char *last, TileIndex tile)
 		if (tile >= MapSize()) {
 			b += seprintf(b, last, ", TILE OUTSIDE MAP");
 		} else {
-			b += seprintf(b, last, ", type: %02X (%s), height: %02X, data: %02X %04X %02X %02X %02X %02X %02X",
+			b += seprintf(b, last, ", type: %02X (%s), height: %02X, data: %02X %04X %02X %02X %02X %02X %02X %04X",
 					_m[tile].type, tile_type_names[GB(_m[tile].type, 4, 4)], _m[tile].height,
-					_m[tile].m1, _m[tile].m2, _m[tile].m3, _m[tile].m4, _m[tile].m5, _me[tile].m6, _me[tile].m7);
+					_m[tile].m1, _m[tile].m2, _m[tile].m3, _m[tile].m4, _m[tile].m5, _me[tile].m6, _me[tile].m7, _me[tile].m8);
 		}
 	}
 	return b;
