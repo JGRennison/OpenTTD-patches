@@ -402,3 +402,43 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 
 	return max_dist;
 }
+
+char *DumpTileInfo(char *b, const char *last, TileIndex tile)
+{
+	static const char *tile_type_names[16] = {
+		"MP_CLEAR",
+		"MP_RAILWAY",
+		"MP_ROAD",
+		"MP_HOUSE",
+		"MP_TREES",
+		"MP_STATION",
+		"MP_WATER",
+		"MP_VOID",
+		"MP_INDUSTRY",
+		"MP_TUNNELBRIDGE",
+		"MP_OBJECT",
+		"INVALID_B",
+		"INVALID_C",
+		"INVALID_D",
+		"INVALID_E",
+		"INVALID_F",
+	};
+
+	if (tile == INVALID_TILE) {
+		b += seprintf(b, last, "tile: %X (INVALID_TILE)", tile);
+	} else {
+		b += seprintf(b, last, "tile: %X (%u x %u)", tile, TileX(tile), TileY(tile));
+	}
+	if (!_m || !_me) {
+		b += seprintf(b, last, ", NO MAP ALLOCATED");
+	} else {
+		if (tile >= MapSize()) {
+			b += seprintf(b, last, ", TILE OUTSIDE MAP");
+		} else {
+			b += seprintf(b, last, ", type: %02X (%s), height: %02X, data: %02X %04X %02X %02X %02X %02X %02X",
+					_m[tile].type, tile_type_names[GB(_m[tile].type, 4, 4)], _m[tile].height,
+					_m[tile].m1, _m[tile].m2, _m[tile].m3, _m[tile].m4, _m[tile].m5, _me[tile].m6, _me[tile].m7);
+		}
+	}
+	return b;
+}

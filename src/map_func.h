@@ -439,4 +439,6 @@ static inline TileIndex RandomTileSeed(uint32 r)
 
 uint GetClosestWaterDistance(TileIndex tile, bool water);
 
+char *DumpTileInfo(char *b, const char *last, TileIndex tile);
+
 #endif /* MAP_FUNC_H */

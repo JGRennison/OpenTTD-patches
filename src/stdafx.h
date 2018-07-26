@@ -438,7 +438,8 @@ typedef uint64 unaligned_uint64;
 
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
-void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...) WARN_FORMAT(4, 5);
+void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);
+const char *assert_tile_info(uint32 tile);
 #define NOT_REACHED() error("NOT_REACHED triggered at line %i of %s", __LINE__, __FILE__)
 
 /* For non-debug builds with assertions enabled use the special assertion handler:
@@ -453,9 +454,13 @@ void NORETURN CDECL assert_msg_error(int line, const char *file, const char *exp
 /* Asserts are enabled if NDEBUG isn't defined, or if we are using MSVC and WITH_ASSERT is defined. */
 #if !defined(NDEBUG) || (defined(_MSC_VER) && defined(WITH_ASSERT))
 	#define OTTD_ASSERT
-	#define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, __VA_ARGS__);
+	#define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__);
+	#define assert_msg_tile(expression, tile, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__);
+	#define assert_tile(expression, tile) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s\n\t%s", __LINE__, __FILE__, #expression, assert_tile_info(tile));
 #else
 	#define assert_msg(expression, ...)
+	#define assert_msg_tile(expression, tile, ...)
+	#define assert_tile(expression, tile)
 #endif
 
 #if defined(MORPHOS) || defined(__NDS__) || defined(__DJGPP__)
