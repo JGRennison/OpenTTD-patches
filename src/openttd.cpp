@@ -124,13 +124,17 @@ void CDECL error(const char *s, ...)
 	abort();
 }
 
-void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...)
+void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...)
 {
 	va_list va;
 	char buf[2048];
 
 	char *b = buf;
 	b += seprintf(b, lastof(buf), "Assertion failed at line %i of %s: %s\n\t", line, file, expr);
+
+	if (extra != nullptr) {
+		b += seprintf(b, lastof(buf), "%s\n\t", extra);
+	}
 
 	va_start(va, str);
 	vseprintf(b, lastof(buf), str, va);
@@ -141,6 +145,12 @@ void CDECL assert_msg_error(int line, const char *file, const char *expr, const 
 	/* Set the error message for the crash log and then invoke it. */
 	CrashLog::SetErrorMessage(buf);
 	abort();
+}
+
+const char *assert_tile_info(uint32 tile) {
+	static char buffer[128];
+	DumpTileInfo(buffer, lastof(buffer), tile);
+	return buffer;
 }
 
 /**
