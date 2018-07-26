@@ -75,7 +75,7 @@
  */
 bool IsHangar(TileIndex t)
 {
-	assert(IsTileType(t, MP_STATION));
+	assert_tile(IsTileType(t, MP_STATION), t);
 
 	/* If the tile isn't an airport there's no chance it's a hangar. */
 	if (!IsAirport(t)) return false;
@@ -3010,7 +3010,7 @@ draw_default_foundation:
 		if (ti->tileh == SLOPE_FLAT) {
 			DrawWaterClassGround(ti);
 		} else {
-			assert(IsDock(ti->tile));
+			assert_tile(IsDock(ti->tile), ti->tile);
 			TileIndex water_tile = ti->tile + TileOffsByDiagDir(GetDockDirection(ti->tile));
 			WaterClass wc = GetWaterClass(water_tile);
 			if (wc == WATER_CLASS_SEA) {
@@ -4075,7 +4075,7 @@ void BuildOilRig(TileIndex tile)
 
 	st->string_id = GenerateStationName(st, tile, STATIONNAMING_OILRIG);
 
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	DeleteAnimatedTile(tile);
 	MakeOilrig(tile, st->index, GetWaterClass(tile));
 
@@ -4192,7 +4192,7 @@ static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_o
 		if (IsDriveThroughStopTile(tile)) {
 			/* Remove the drive-through road stop */
 			DoCommand(tile, 1 | 1 << 8, (GetStationType(tile) == STATION_TRUCK) ? ROADSTOP_TRUCK : ROADSTOP_BUS, DC_EXEC | DC_BANKRUPT, CMD_REMOVE_ROAD_STOP);
-			assert(IsTileType(tile, MP_ROAD));
+			assert_tile(IsTileType(tile, MP_ROAD), tile);
 			/* Change owner of tile and all roadtypes */
 			ChangeTileOwner(tile, old_owner, new_owner);
 		} else {

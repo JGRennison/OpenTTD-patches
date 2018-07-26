@@ -23,7 +23,7 @@
  */
 static inline bool IsBridge(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return HasBit(_m[t].m5, 7);
 }
 
@@ -55,7 +55,7 @@ static inline bool IsBridgeAbove(TileIndex t)
  */
 static inline BridgeType GetBridgeType(TileIndex t)
 {
-	assert(IsBridgeTile(t));
+	assert_tile(IsBridgeTile(t), t);
 	return GB(_me[t].m6, 2, 4);
 }
 
@@ -67,7 +67,7 @@ static inline BridgeType GetBridgeType(TileIndex t)
  */
 static inline Axis GetBridgeAxis(TileIndex t)
 {
-	assert(IsBridgeAbove(t));
+	assert_tile(IsBridgeAbove(t), t);
 	return (Axis)(GB(_m[t].type, 2, 2) - 1);
 }
 
@@ -220,7 +220,7 @@ static inline void MakeAqueductBridgeRamp(TileIndex t, Owner o, DiagDirection d)
  */
 static inline bool IsRoadCustomBridgeHead(TileIndex t)
 {
-	assert(IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD);
+	assert_tile(IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD, t);
 	return GB(_m[t].m2, 0, 8) != 0;
 }
 
@@ -243,7 +243,7 @@ static inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
  */
 static inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadType rt)
 {
-	assert(IsBridgeTile(t));
+	assert_tile(IsBridgeTile(t), t);
 	if (!HasTileRoadType(t, rt)) return (RoadBits) 0;
 	RoadBits bits = (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X) ^ (RoadBits) GB(_m[t].m2, rt == ROADTYPE_TRAM ? 4 : 0, 4);
 	return bits;
@@ -270,7 +270,7 @@ static inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
  */
 static inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadType rt, RoadBits bits)
 {
-	assert(IsBridgeTile(t));
+	assert_tile(IsBridgeTile(t), t);
 	if (HasTileRoadType(t, rt)) {
 		assert(bits != ROAD_NONE);
 		SB(_m[t].m2, rt == ROADTYPE_TRAM ? 4 : 0, 4, bits ^ (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X));
@@ -308,7 +308,7 @@ static inline bool IsFlatRailBridgeHeadTile(TileIndex t)
  */
 static inline TrackBits GetCustomBridgeHeadTrackBits(TileIndex t)
 {
-	assert(IsRailBridgeHeadTile(t));
+	assert_tile(IsRailBridgeHeadTile(t), t);
 	return (TrackBits)GB(_m[t].m4, 0, 6);
 }
 
@@ -320,7 +320,7 @@ static inline TrackBits GetCustomBridgeHeadTrackBits(TileIndex t)
  */
 static inline void SetCustomBridgeHeadTrackBits(TileIndex t, TrackBits b)
 {
-	assert(IsRailBridgeHeadTile(t));
+	assert_tile(IsRailBridgeHeadTile(t), t);
 	SB(_m[t].m4, 0, 6, b);
 }
 
@@ -332,7 +332,7 @@ static inline void SetCustomBridgeHeadTrackBits(TileIndex t, TrackBits b)
  */
 static inline bool IsRailCustomBridgeHead(TileIndex t)
 {
-	assert(IsRailBridgeHeadTile(t));
+	assert_tile(IsRailBridgeHeadTile(t), t);
 	return GetCustomBridgeHeadTrackBits(t) != DiagDirToDiagTrackBits((DiagDirection)GB(_m[t].m5, 0, 2));
 }
 
@@ -364,7 +364,7 @@ static inline bool IsCustomBridgeHeadTile(TileIndex t)
  */
 static inline TrackBits GetBridgeReservationTrackBits(TileIndex t)
 {
-	assert(IsRailBridgeHeadTile(t));
+	assert_tile(IsRailBridgeHeadTile(t), t);
 	byte track_b = GB(_m[t].m2, 0, 3);
 	Track track = (Track)(track_b - 1);    // map array saves Track+1
 	if (track_b == 0) return TRACK_BIT_NONE;
@@ -379,7 +379,7 @@ static inline TrackBits GetBridgeReservationTrackBits(TileIndex t)
  */
 static inline void SetBridgeReservationTrackBits(TileIndex t, TrackBits b)
 {
-	assert(IsRailBridgeHeadTile(t));
+	assert_tile(IsRailBridgeHeadTile(t), t);
 	assert(!TracksOverlap(b));
 	Track track = RemoveFirstTrack(&b);
 	SB(_m[t].m2, 0, 3, track == INVALID_TRACK ? 0 : track + 1);
@@ -396,8 +396,8 @@ static inline void SetBridgeReservationTrackBits(TileIndex t, TrackBits b)
  */
 static inline bool TryReserveRailBridgeHead(TileIndex tile, Track t)
 {
-	assert(IsRailBridgeHeadTile(tile));
-	assert(HasBit(GetCustomBridgeHeadTrackBits(tile), t));
+	assert_tile(IsRailBridgeHeadTile(tile), tile);
+	assert_tile(HasBit(GetCustomBridgeHeadTrackBits(tile), t), tile);
 	TrackBits bits = TrackToTrackBits(t);
 	TrackBits res = GetBridgeReservationTrackBits(tile);
 	if ((res & bits) != TRACK_BIT_NONE) return false;  // already reserved
@@ -416,7 +416,7 @@ static inline bool TryReserveRailBridgeHead(TileIndex tile, Track t)
  */
 static inline void UnreserveRailBridgeHeadTrack(TileIndex tile, Track t)
 {
-	assert(IsRailBridgeHeadTile(tile));
+	assert_tile(IsRailBridgeHeadTile(tile), tile);
 	assert(HasBit(GetCustomBridgeHeadTrackBits(tile), t));
 	TrackBits res = GetBridgeReservationTrackBits(tile);
 	res &= ~TrackToTrackBits(t);
@@ -431,7 +431,7 @@ static inline void UnreserveRailBridgeHeadTrack(TileIndex tile, Track t)
  */
 static inline TrackBits GetAcrossBridgePossibleTrackBits(TileIndex t)
 {
-	assert(IsRailBridgeHeadTile(t));
+	assert_tile(IsRailBridgeHeadTile(t), t);
 	return DiagdirReachesTracks(ReverseDiagDir((DiagDirection)GB(_m[t].m5, 0, 2)));
 }
 
@@ -464,7 +464,7 @@ static inline bool HasAcrossBridgeReservation(TileIndex t)
  */
 static inline void UnreserveAcrossRailBridgeHead(TileIndex tile)
 {
-	assert(IsRailBridgeHeadTile(tile));
+	assert_tile(IsRailBridgeHeadTile(tile), tile);
 	TrackBits res = GetAcrossBridgeReservationTrackBits(tile);
 	if (res != TRACK_BIT_NONE) {
 		SetBridgeReservationTrackBits(tile, GetBridgeReservationTrackBits(tile) & ~res);

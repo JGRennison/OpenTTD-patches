@@ -2609,9 +2609,9 @@ static void VehicleIncreaseStats(const Vehicle *front)
 void Vehicle::BeginLoading()
 {
 	if (this->type == VEH_TRAIN) {
-		assert(IsTileType(Train::From(this)->GetStationLoadingVehicle()->tile, MP_STATION));
+		assert_tile(IsTileType(Train::From(this)->GetStationLoadingVehicle()->tile, MP_STATION), Train::From(this)->GetStationLoadingVehicle()->tile);
 	} else {
-		assert(IsTileType(this->tile, MP_STATION) || this->type == VEH_SHIP);
+		assert_tile(IsTileType(this->tile, MP_STATION) || this->type == VEH_SHIP, this->tile);
 	}
 
 	bool no_load_prepare = false;

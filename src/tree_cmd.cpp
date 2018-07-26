@@ -92,7 +92,7 @@ static bool CanPlantTreesOnTile(TileIndex tile, bool allow_desert)
 static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint growth)
 {
 	assert(treetype != TREE_INVALID);
-	assert(CanPlantTreesOnTile(tile, true));
+	assert_tile(CanPlantTreesOnTile(tile, true), tile);
 
 	TreeGround ground;
 	uint density = 3;

@@ -62,8 +62,8 @@ void SetRailStationPlatformReservation(TileIndex start, DiagDirection dir, bool 
 	TileIndex     tile = start;
 	TileIndexDiff diff = TileOffsByDiagDir(dir);
 
-	assert(IsRailStationTile(start));
-	assert(GetRailStationAxis(start) == DiagDirToAxis(dir));
+	assert_tile(IsRailStationTile(start), start);
+	assert_tile(GetRailStationAxis(start) == DiagDirToAxis(dir), start);
 
 	do {
 		SetRailStationReservation(tile, b);
@@ -100,8 +100,8 @@ bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations)
  */
 bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 {
-	assert_msg((TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t)) != 0,
-			"%X, %X, %X, %X", TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)), tile, t, TrackToTrackBits(t));
+	assert_msg_tile((TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t)) != 0, tile,
+			"%X, %X, %X", TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)), t, TrackToTrackBits(t));
 
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
@@ -196,7 +196,7 @@ void UnreserveRailTrackdir(TileIndex tile, Trackdir td)
  */
 void UnreserveRailTrack(TileIndex tile, Track t)
 {
-	assert(TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t));
+	assert_msg_tile(TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t), tile, "track: %u", t);
 
 	if (_settings_client.gui.show_track_reservation) {
 		if (IsBridgeTile(tile)) {
@@ -403,7 +403,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res)
  */
 Train *GetTrainForReservation(TileIndex tile, Track track)
 {
-	assert(HasReservedTracks(tile, TrackToTrackBits(track)));
+	assert_msg_tile(HasReservedTracks(tile, TrackToTrackBits(track)), tile, "track: %u", track);
 	Trackdir  trackdir = TrackToTrackdir(track);
 
 	RailTypes rts = GetRailTypeInfo(GetTileRailType(tile))->compatible_railtypes;

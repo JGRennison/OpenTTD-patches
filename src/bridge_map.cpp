@@ -62,7 +62,7 @@ TileIndex GetSouthernBridgeEnd(TileIndex t)
  */
 TileIndex GetOtherBridgeEnd(TileIndex tile)
 {
-	assert(IsBridgeTile(tile));
+	assert_tile(IsBridgeTile(tile), tile);
 	return GetBridgeEnd(tile, GetTunnelBridgeDirection(tile));
 }
 

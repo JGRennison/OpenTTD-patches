@@ -99,7 +99,7 @@ void ResetIndustries()
  */
 IndustryType GetIndustryType(TileIndex tile)
 {
-	assert(IsTileType(tile, MP_INDUSTRY));
+	assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 
 	const Industry *ind = Industry::GetByTile(tile);
 	assert(ind != NULL);

@@ -26,7 +26,7 @@ static const TunnelID TUNNEL_ID_MAP_LOOKUP = 0xFFFF; ///< Sentinel ID value to s
  */
 static inline bool IsTunnel(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return !HasBit(_m[t].m5, 7);
 }
 
@@ -50,7 +50,7 @@ static inline TunnelID GetTunnelIndex(TileIndex t)
 {
 	extern TunnelID GetTunnelIndexByLookup(TileIndex t);
 
-	assert(IsTunnelTile(t));
+	assert_tile(IsTunnelTile(t), t);
 	TunnelID map_id = _m[t].m2;
 	return map_id == TUNNEL_ID_MAP_LOOKUP ? GetTunnelIndexByLookup(t) : map_id;
 }
@@ -73,7 +73,7 @@ static inline bool IsRailTunnelTile(TileIndex t)
  */
 static inline bool HasTunnelReservation(TileIndex t)
 {
-	assert(IsRailTunnelTile(t));
+	assert_tile(IsRailTunnelTile(t), t);
 	return HasBit(_m[t].m5, 4);
 }
 
@@ -85,7 +85,7 @@ static inline bool HasTunnelReservation(TileIndex t)
  */
 static inline void SetTunnelReservation(TileIndex t, bool b)
 {
-	assert(IsRailTunnelTile(t));
+	assert_tile(IsRailTunnelTile(t), t);
 	SB(_m[t].m5, 4, 1, b ? 1 : 0);
 }
 
@@ -109,7 +109,7 @@ bool IsTunnelInWay(TileIndex, int z, IsTunnelInWayFlags flags = ITIWF_NONE);
  */
 static inline void SetTunnelIndex(TileIndex t, TunnelID id)
 {
-	assert(IsTunnelTile(t));
+	assert_tile(IsTunnelTile(t), t);
 	_m[t].m2 = (id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id;
 }
 

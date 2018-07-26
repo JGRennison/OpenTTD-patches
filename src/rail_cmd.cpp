@@ -862,7 +862,7 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  */
 bool FloodHalftile(TileIndex t)
 {
-	assert(IsPlainRailTile(t));
+	assert_tile(IsPlainRailTile(t), t);
 
 	bool flooded = false;
 	if (GetRailGroundType(t) == RAIL_GROUND_WATER) return flooded;

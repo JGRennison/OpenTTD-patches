@@ -32,7 +32,7 @@
  */
 static inline DiagDirection GetTunnelBridgeDirection(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return (DiagDirection)GB(_m[t].m5, 0, 2);
 }
 
@@ -45,7 +45,7 @@ static inline DiagDirection GetTunnelBridgeDirection(TileIndex t)
  */
 static inline TransportType GetTunnelBridgeTransportType(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return (TransportType)GB(_m[t].m5, 2, 2);
 }
 
@@ -58,7 +58,7 @@ static inline TransportType GetTunnelBridgeTransportType(TileIndex t)
  */
 static inline bool HasTunnelBridgeSnowOrDesert(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return HasBit(_me[t].m7, 5);
 }
 
@@ -85,7 +85,7 @@ static inline bool IsRailTunnelBridgeTile(TileIndex t)
  */
 static inline void SetTunnelBridgeSnowOrDesert(TileIndex t, bool snow_or_desert)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	SB(_me[t].m7, 5, 1, snow_or_desert);
 }
 
@@ -97,7 +97,7 @@ static inline void SetTunnelBridgeSnowOrDesert(TileIndex t, bool snow_or_desert)
  */
 static inline TileIndex GetOtherTunnelBridgeEnd(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return IsTunnel(t) ? GetOtherTunnelEnd(t) : GetOtherBridgeEnd(t);
 }
 
@@ -208,8 +208,8 @@ static inline uint GetTunnelBridgeHeadOnlyRailInfrastructureCount(TileIndex t)
  */
 static inline bool TrackdirEntersTunnelBridge(TileIndex t, Trackdir td)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
-	assert(GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL);
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
+	assert_tile(GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL, t);
 	return TrackdirToExitdir(td) == GetTunnelBridgeDirection(t);
 }
 
@@ -222,8 +222,8 @@ static inline bool TrackdirEntersTunnelBridge(TileIndex t, Trackdir td)
  */
 static inline bool TrackdirExitsTunnelBridge(TileIndex t, Trackdir td)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
-	assert(GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL);
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
+	assert_tile(GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL, t);
 	return TrackdirToExitdir(ReverseTrackdir(td)) == GetTunnelBridgeDirection(t);
 }
 
@@ -236,8 +236,8 @@ static inline bool TrackdirExitsTunnelBridge(TileIndex t, Trackdir td)
  */
 static inline bool IsTrackAcrossTunnelBridge(TileIndex tile, Track t)
 {
-	assert(IsTileType(tile, MP_TUNNELBRIDGE));
-	assert(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL);
+	assert_tile(IsTileType(tile, MP_TUNNELBRIDGE), tile);
+	assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL, tile);
 	return DiagdirReachesTracks(ReverseDiagDir(GetTunnelBridgeDirection(tile))) & TrackToTrackBits(t);
 }
 
@@ -248,8 +248,8 @@ static inline bool IsTrackAcrossTunnelBridge(TileIndex tile, Track t)
  */
 static inline void UnreserveAcrossRailTunnelBridge(TileIndex tile)
 {
-	assert(IsTileType(tile, MP_TUNNELBRIDGE));
-	assert(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL);
+	assert_tile(IsTileType(tile, MP_TUNNELBRIDGE), tile);
+	assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL, tile);
 	if (IsTunnel(tile)) {
 		SetTunnelReservation(tile, false);
 	} else {
@@ -263,7 +263,7 @@ static inline void UnreserveAcrossRailTunnelBridge(TileIndex tile)
  */
 static inline void SetTunnelBridgeSignalSimulationEntrance(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	SetBit(_m[t].m5, 5);
 }
 
@@ -273,7 +273,7 @@ static inline void SetTunnelBridgeSignalSimulationEntrance(TileIndex t)
  */
 static inline void ClrTunnelBridgeSignalSimulationEntrance(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	ClrBit(_m[t].m5, 5);
 }
 
@@ -283,7 +283,7 @@ static inline void ClrTunnelBridgeSignalSimulationEntrance(TileIndex t)
  */
 static inline void SetTunnelBridgeSignalSimulationExit(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	SetBit(_m[t].m5, 6);
 }
 
@@ -293,7 +293,7 @@ static inline void SetTunnelBridgeSignalSimulationExit(TileIndex t)
  */
 static inline void ClrTunnelBridgeSignalSimulationExit(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	ClrBit(_m[t].m5, 6);
 }
 
@@ -317,7 +317,7 @@ static inline bool IsTunnelBridgeWithSignalSimulation(TileIndex t)
  */
 static inline bool IsTunnelBridgeSignalSimulationEntrance(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return HasBit(_m[t].m5, 5);
 }
 
@@ -329,7 +329,7 @@ static inline bool IsTunnelBridgeSignalSimulationEntrance(TileIndex t)
  */
 static inline bool IsTunnelBridgeSignalSimulationExit(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return HasBit(_m[t].m5, 6);
 }
 
@@ -341,7 +341,7 @@ static inline bool IsTunnelBridgeSignalSimulationExit(TileIndex t)
  */
 static inline bool IsTunnelBridgeSignalSimulationExitOnly(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return !HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
 }
 
@@ -353,7 +353,7 @@ static inline bool IsTunnelBridgeSignalSimulationExitOnly(TileIndex t)
  */
 static inline bool IsTunnelBridgeSignalSimulationBidirectional(TileIndex t)
 {
-	assert(IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return HasBit(_m[t].m5, 5) && HasBit(_m[t].m5, 6);
 }
 
@@ -365,7 +365,7 @@ static inline bool IsTunnelBridgeSignalSimulationBidirectional(TileIndex t)
  */
 static inline SignalState GetTunnelBridgeEntranceSignalState(TileIndex t)
 {
-	assert(IsTunnelBridgeSignalSimulationEntrance(t));
+	assert_tile(IsTunnelBridgeSignalSimulationEntrance(t), t);
 	return HasBit(_me[t].m6, 0) ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED;
 }
 
@@ -377,7 +377,7 @@ static inline SignalState GetTunnelBridgeEntranceSignalState(TileIndex t)
  */
 static inline SignalState GetTunnelBridgeExitSignalState(TileIndex t)
 {
-	assert(IsTunnelBridgeSignalSimulationExit(t));
+	assert_tile(IsTunnelBridgeSignalSimulationExit(t), t);
 	return HasBit(_me[t].m6, 7) ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED;
 }
 
@@ -389,7 +389,7 @@ static inline SignalState GetTunnelBridgeExitSignalState(TileIndex t)
  */
 static inline void SetTunnelBridgeEntranceSignalState(TileIndex t, SignalState state)
 {
-	assert(IsTunnelBridgeSignalSimulationEntrance(t));
+	assert_tile(IsTunnelBridgeSignalSimulationEntrance(t), t);
 	SB(_me[t].m6, 0, 1, (state == SIGNAL_STATE_GREEN) ? 1 : 0);
 }
 
@@ -401,31 +401,31 @@ static inline void SetTunnelBridgeEntranceSignalState(TileIndex t, SignalState s
  */
 static inline void SetTunnelBridgeExitSignalState(TileIndex t, SignalState state)
 {
-	assert(IsTunnelBridgeSignalSimulationExit(t));
+	assert_tile(IsTunnelBridgeSignalSimulationExit(t), t);
 	SB(_me[t].m6, 7, 1, (state == SIGNAL_STATE_GREEN) ? 1 : 0);
 }
 
 static inline bool IsTunnelBridgeSemaphore(TileIndex t)
 {
-	assert(IsTunnelBridgeWithSignalSimulation(t));
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	return HasBit(_me[t].m6, 1);
 }
 
 static inline void SetTunnelBridgeSemaphore(TileIndex t, bool is_semaphore)
 {
-	assert(IsTunnelBridgeWithSignalSimulation(t));
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	SB(_me[t].m6, 1, 1, is_semaphore ? 1 : 0);
 }
 
 static inline bool IsTunnelBridgePBS(TileIndex t)
 {
-	assert(IsTunnelBridgeWithSignalSimulation(t));
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	return HasBit(_me[t].m6, 6);
 }
 
 static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 {
-	assert(IsTunnelBridgeWithSignalSimulation(t));
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
 }
 

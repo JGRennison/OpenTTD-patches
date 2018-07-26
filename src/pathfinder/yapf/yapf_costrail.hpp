@@ -500,7 +500,7 @@ public:
 					end_segment_reason = segment.m_end_segment_reason;
 					/* We will need also some information about the last signal (if it was red). */
 					if (segment.m_last_signal_tile != INVALID_TILE) {
-						assert(HasSignalOnTrackdir(segment.m_last_signal_tile, segment.m_last_signal_td));
+						assert_tile(HasSignalOnTrackdir(segment.m_last_signal_tile, segment.m_last_signal_td), segment.m_last_signal_tile);
 						SignalState sig_state = GetSignalStateByTrackdir(segment.m_last_signal_tile, segment.m_last_signal_td);
 						bool is_red = (sig_state == SIGNAL_STATE_RED);
 						n.flags_u.flags_s.m_last_signal_was_red = is_red;
@@ -539,7 +539,7 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 			/* Tests for 'potential target' reasons to close the segment. */
 			if (cur.tile == prev.tile) {
 				/* Penalty for reversing in a depot. */
-				assert(IsRailDepot(cur.tile));
+				assert_tile(IsRailDepot(cur.tile), cur.tile);
 				segment_cost += Yapf().PfGetSettings().rail_depot_reverse_penalty;
 
 			} else if (IsRailDepotTile(cur.tile)) {

@@ -34,7 +34,7 @@ enum RoadTileType {
  */
 static inline RoadTileType GetRoadTileType(TileIndex t)
 {
-	assert(IsTileType(t, MP_ROAD));
+	assert_tile(IsTileType(t, MP_ROAD), t);
 	return (RoadTileType)GB(_m[t].m5, 6, 2);
 }
 
@@ -110,7 +110,7 @@ static inline bool IsRoadDepotTile(TileIndex t)
  */
 static inline RoadBits GetRoadBits(TileIndex t, RoadType rt)
 {
-	assert(IsNormalRoad(t));
+	assert_tile(IsNormalRoad(t), t);
 	switch (rt) {
 		default: NOT_REACHED();
 		case ROADTYPE_ROAD: return (RoadBits)GB(_m[t].m5, 0, 4);
@@ -150,7 +150,7 @@ static inline RoadBits GetAllRoadBits(TileIndex tile)
  */
 static inline void SetRoadBits(TileIndex t, RoadBits r, RoadType rt)
 {
-	assert(IsNormalRoad(t)); // XXX incomplete
+	assert_tile(IsNormalRoad(t), t); // XXX incomplete
 	switch (rt) {
 		default: NOT_REACHED();
 		case ROADTYPE_ROAD: SB(_m[t].m5, 0, 4, r); break;
@@ -175,7 +175,7 @@ static inline RoadTypes GetRoadTypes(TileIndex t)
  */
 static inline void SetRoadTypes(TileIndex t, RoadTypes rt)
 {
-	assert(IsTileType(t, MP_ROAD) || IsTileType(t, MP_STATION) || IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_ROAD) || IsTileType(t, MP_STATION) || IsTileType(t, MP_TUNNELBRIDGE), t);
 	SB(_me[t].m7, 6, 2, rt);
 }
 
@@ -198,7 +198,7 @@ static inline bool HasTileRoadType(TileIndex t, RoadType rt)
  */
 static inline Owner GetRoadOwner(TileIndex t, RoadType rt)
 {
-	assert(IsTileType(t, MP_ROAD) || IsTileType(t, MP_STATION) || IsTileType(t, MP_TUNNELBRIDGE));
+	assert_tile(IsTileType(t, MP_ROAD) || IsTileType(t, MP_STATION) || IsTileType(t, MP_TUNNELBRIDGE), t);
 	switch (rt) {
 		default: NOT_REACHED();
 		case ROADTYPE_ROAD: return (Owner)GB(IsNormalRoadTile(t) ? _m[t].m1 : _me[t].m7, 0, 5);
@@ -236,7 +236,7 @@ static inline void SetRoadOwner(TileIndex t, RoadType rt, Owner o)
  */
 static inline bool IsRoadOwner(TileIndex t, RoadType rt, Owner o)
 {
-	assert(HasTileRoadType(t, rt));
+	assert_tile(HasTileRoadType(t, rt), t);
 	return (GetRoadOwner(t, rt) == o);
 }
 
@@ -270,7 +270,7 @@ template <> struct EnumPropsT<DisallowedRoadDirections> : MakeEnumPropsT<Disallo
  */
 static inline DisallowedRoadDirections GetDisallowedRoadDirections(TileIndex t)
 {
-	assert(IsNormalRoad(t));
+	assert_tile(IsNormalRoad(t), t);
 	return (DisallowedRoadDirections)GB(_m[t].m5, 4, 2);
 }
 
@@ -281,7 +281,7 @@ static inline DisallowedRoadDirections GetDisallowedRoadDirections(TileIndex t)
  */
 static inline void SetDisallowedRoadDirections(TileIndex t, DisallowedRoadDirections drd)
 {
-	assert(IsNormalRoad(t));
+	assert_tile(IsNormalRoad(t), t);
 	assert(drd < DRD_END);
 	SB(_m[t].m5, 4, 2, drd);
 }
@@ -294,7 +294,7 @@ static inline void SetDisallowedRoadDirections(TileIndex t, DisallowedRoadDirect
  */
 static inline Axis GetCrossingRoadAxis(TileIndex t)
 {
-	assert(IsLevelCrossing(t));
+	assert_tile(IsLevelCrossing(t), t);
 	return (Axis)GB(_m[t].m5, 0, 1);
 }
 
@@ -306,7 +306,7 @@ static inline Axis GetCrossingRoadAxis(TileIndex t)
  */
 static inline Axis GetCrossingRailAxis(TileIndex t)
 {
-	assert(IsLevelCrossing(t));
+	assert_tile(IsLevelCrossing(t), t);
 	return OtherAxis((Axis)GetCrossingRoadAxis(t));
 }
 
@@ -349,7 +349,7 @@ static inline TrackBits GetCrossingRailBits(TileIndex tile)
  */
 static inline bool HasCrossingReservation(TileIndex t)
 {
-	assert(IsLevelCrossingTile(t));
+	assert_tile(IsLevelCrossingTile(t), t);
 	return HasBit(_m[t].m5, 4);
 }
 
@@ -362,7 +362,7 @@ static inline bool HasCrossingReservation(TileIndex t)
  */
 static inline void SetCrossingReservation(TileIndex t, bool b)
 {
-	assert(IsLevelCrossingTile(t));
+	assert_tile(IsLevelCrossingTile(t), t);
 	SB(_m[t].m5, 4, 1, b ? 1 : 0);
 }
 
@@ -385,7 +385,7 @@ static inline TrackBits GetCrossingReservationTrackBits(TileIndex t)
  */
 static inline bool IsCrossingBarred(TileIndex t)
 {
-	assert(IsLevelCrossing(t));
+	assert_tile(IsLevelCrossing(t), t);
 	return HasBit(_m[t].m5, 5);
 }
 
@@ -397,7 +397,7 @@ static inline bool IsCrossingBarred(TileIndex t)
  */
 static inline void SetCrossingBarred(TileIndex t, bool barred)
 {
-	assert(IsLevelCrossing(t));
+	assert_tile(IsLevelCrossing(t), t);
 	SB(_m[t].m5, 5, 1, barred ? 1 : 0);
 }
 
@@ -409,7 +409,7 @@ static inline void SetCrossingBarred(TileIndex t, bool barred)
  */
 static inline bool IsCrossingPossiblyOccupiedByRoadVehicle(TileIndex t)
 {
-	assert(IsLevelCrossing(t));
+	assert_tile(IsLevelCrossing(t), t);
 	return HasBit(_m[t].m5, 1);
 }
 
@@ -421,7 +421,7 @@ static inline bool IsCrossingPossiblyOccupiedByRoadVehicle(TileIndex t)
  */
 static inline void SetCrossingOccupiedByRoadVehicle(TileIndex t, bool occupied)
 {
-	assert(IsLevelCrossing(t));
+	assert_tile(IsLevelCrossing(t), t);
 	SB(_m[t].m5, 1, 1, occupied ? 1 : 0);
 }
 
@@ -509,7 +509,7 @@ static inline bool IncreaseRoadWorksCounter(TileIndex t)
  */
 static inline void StartRoadWorks(TileIndex t)
 {
-	assert(!HasRoadWorks(t));
+	assert_tile(!HasRoadWorks(t), t);
 	/* Remove any trees or lamps in case or roadwork */
 	switch (GetRoadside(t)) {
 		case ROADSIDE_BARREN:
@@ -525,7 +525,7 @@ static inline void StartRoadWorks(TileIndex t)
  */
 static inline void TerminateRoadWorks(TileIndex t)
 {
-	assert(HasRoadWorks(t));
+	assert_tile(HasRoadWorks(t), t);
 	SetRoadside(t, (Roadside)(GetRoadside(t) - ROADSIDE_GRASS_ROAD_WORKS + ROADSIDE_GRASS));
 	/* Stop the counter */
 	SB(_me[t].m7, 0, 4, 0);
@@ -539,7 +539,7 @@ static inline void TerminateRoadWorks(TileIndex t)
  */
 static inline DiagDirection GetRoadDepotDirection(TileIndex t)
 {
-	assert(IsRoadDepot(t));
+	assert_tile(IsRoadDepot(t), t);
 	return (DiagDirection)GB(_m[t].m5, 0, 2);
 }
 

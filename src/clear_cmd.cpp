@@ -169,7 +169,7 @@ static Foundation GetFoundation_Clear(TileIndex tile, Slope tileh)
 
 static void UpdateFences(TileIndex tile)
 {
-	assert(IsTileType(tile, MP_CLEAR) && IsClearGround(tile, CLEAR_FIELDS));
+	assert_tile(IsTileType(tile, MP_CLEAR) && IsClearGround(tile, CLEAR_FIELDS), tile);
 	bool dirty = false;
 
 	bool neighbour = (IsTileType(TILE_ADDXY(tile, 1, 0), MP_CLEAR) && IsClearGround(TILE_ADDXY(tile, 1, 0), CLEAR_FIELDS));

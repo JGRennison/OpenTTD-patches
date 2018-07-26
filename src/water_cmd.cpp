@@ -582,7 +582,7 @@ bool IsWateredTile(TileIndex tile, Direction from)
 
 		case MP_RAILWAY:
 			if (GetRailGroundType(tile) == RAIL_GROUND_WATER) {
-				assert(IsPlainRail(tile));
+				assert_tile(IsPlainRail(tile), tile);
 				switch (GetTileSlope(tile)) {
 					case SLOPE_W: return (from == DIR_SE) || (from == DIR_E) || (from == DIR_NE);
 					case SLOPE_S: return (from == DIR_NE) || (from == DIR_N) || (from == DIR_NW);
@@ -1056,7 +1056,7 @@ FloodingBehaviour GetFloodingBehaviour(TileIndex tile)
  */
 void DoFloodTile(TileIndex target)
 {
-	assert(!IsTileType(target, MP_WATER));
+	assert_tile(!IsTileType(target, MP_WATER), target);
 
 	bool flooded = false; // Will be set to true if something is changed.
 
@@ -1125,8 +1125,8 @@ static void DoDryUp(TileIndex tile)
 
 	switch (GetTileType(tile)) {
 		case MP_RAILWAY:
-			assert(IsPlainRail(tile));
-			assert(GetRailGroundType(tile) == RAIL_GROUND_WATER);
+			assert_tile(IsPlainRail(tile), tile);
+			assert_tile(GetRailGroundType(tile) == RAIL_GROUND_WATER, tile);
 
 			RailGroundType new_ground;
 			switch (GetTrackBits(tile)) {
@@ -1146,7 +1146,7 @@ static void DoDryUp(TileIndex tile)
 			break;
 
 		case MP_WATER:
-			assert(IsCoast(tile));
+			assert_tile(IsCoast(tile), tile);
 
 			if (DoCommand(tile, 0, 0, DC_EXEC, CMD_LANDSCAPE_CLEAR).Succeeded()) {
 				MakeClear(tile, CLEAR_GRASS, 3);

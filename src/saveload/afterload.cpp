@@ -2264,7 +2264,7 @@ bool AfterLoadGame()
 				} else {
 					/* We're at an offset, so get the ID from our "root". */
 					TileIndex northern_tile = t - TileXY(GB(offset, 0, 4), GB(offset, 4, 4));
-					assert(IsTileType(northern_tile, MP_OBJECT));
+					assert_tile(IsTileType(northern_tile, MP_OBJECT), northern_tile);
 					_m[t].m2 = _m[northern_tile].m2;
 				}
 			}

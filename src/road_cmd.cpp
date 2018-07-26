@@ -296,7 +296,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				DirtyAllCompanyInfrastructureWindows();
 			}
 		} else {
-			assert(IsDriveThroughStopTile(tile));
+			assert_tile(IsDriveThroughStopTile(tile), tile);
 			cost.AddCost(_price[PR_CLEAR_ROAD] * 2);
 			if (flags & DC_EXEC) {
 				Company *c = Company::GetIfValid(GetRoadOwner(tile, rt));
@@ -903,7 +903,7 @@ do_clear:;
 			}
 
 			case MP_STATION:
-				assert(IsDriveThroughStopTile(tile));
+				assert_tile(IsDriveThroughStopTile(tile), tile);
 				SetRoadTypes(tile, GetRoadTypes(tile) | RoadTypeToRoadTypes(rt));
 				SetRoadOwner(tile, rt, company);
 				break;

@@ -103,16 +103,16 @@ uint32 GetRelativePosition(TileIndex tile, TileIndex ind_tile)
 
 /* virtual */ uint32 IndustryTileScopeResolver::GetRandomBits() const
 {
-	assert(this->industry != NULL && IsValidTile(this->tile));
-	assert(this->industry->index == INVALID_INDUSTRY || IsTileType(this->tile, MP_INDUSTRY));
+	assert_tile(this->industry != NULL && IsValidTile(this->tile), this->tile);
+	assert_tile(this->industry->index == INVALID_INDUSTRY || IsTileType(this->tile, MP_INDUSTRY), this->tile);
 
 	return (this->industry->index != INVALID_INDUSTRY) ? GetIndustryRandomBits(this->tile) : 0;
 }
 
 /* virtual */ uint32 IndustryTileScopeResolver::GetTriggers() const
 {
-	assert(this->industry != NULL && IsValidTile(this->tile));
-	assert(this->industry->index == INVALID_INDUSTRY || IsTileType(this->tile, MP_INDUSTRY));
+	assert_tile(this->industry != NULL && IsValidTile(this->tile), this->tile);
+	assert_tile(this->industry->index == INVALID_INDUSTRY || IsTileType(this->tile, MP_INDUSTRY), this->tile);
 	if (this->industry->index == INVALID_INDUSTRY) return 0;
 	return GetIndustryTriggers(this->tile);
 }
@@ -171,8 +171,8 @@ static void IndustryDrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGro
 
 uint16 GetIndustryTileCallback(CallbackID callback, uint32 param1, uint32 param2, IndustryGfx gfx_id, Industry *industry, TileIndex tile)
 {
-	assert(industry != NULL && IsValidTile(tile));
-	assert(industry->index == INVALID_INDUSTRY || IsTileType(tile, MP_INDUSTRY));
+	assert_tile(industry != NULL && IsValidTile(tile), tile);
+	assert_tile(industry->index == INVALID_INDUSTRY || IsTileType(tile, MP_INDUSTRY), tile);
 
 	IndustryTileResolverObject object(gfx_id, tile, industry, callback, param1, param2);
 	return object.ResolveCallback();
@@ -300,7 +300,7 @@ bool StartStopIndustryTileAnimation(const Industry *ind, IndustryAnimationTrigge
  */
 static void DoTriggerIndustryTile(TileIndex tile, IndustryTileTrigger trigger, Industry *ind, uint32 &reseed_industry)
 {
-	assert(IsValidTile(tile) && IsTileType(tile, MP_INDUSTRY));
+	assert_tile(IsValidTile(tile) && IsTileType(tile, MP_INDUSTRY), tile);
 
 	IndustryGfx gfx = GetIndustryGfx(tile);
 	const IndustryTileSpec *itspec = GetIndustryTileSpec(gfx);

@@ -51,11 +51,11 @@ WaterClass GetEffectiveWaterClass(TileIndex tile)
 {
 	if (HasTileWaterClass(tile)) return GetWaterClass(tile);
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-		assert(GetTunnelBridgeTransportType(tile) == TRANSPORT_WATER);
+		assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_WATER, tile);
 		return WATER_CLASS_CANAL;
 	}
 	if (IsTileType(tile, MP_RAILWAY)) {
-		assert(GetRailGroundType(tile) == RAIL_GROUND_WATER);
+		assert_tile(GetRailGroundType(tile) == RAIL_GROUND_WATER, tile);
 		return WATER_CLASS_SEA;
 	}
 	NOT_REACHED();

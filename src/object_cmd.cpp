@@ -62,7 +62,7 @@ uint16 Object::counts[NUM_OBJECTS];
  */
 ObjectType GetObjectType(TileIndex t)
 {
-	assert(IsTileType(t, MP_OBJECT));
+	assert_tile(IsTileType(t, MP_OBJECT), t);
 	return Object::GetByTile(t)->type;
 }
 

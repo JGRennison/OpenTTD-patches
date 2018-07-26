@@ -154,14 +154,14 @@ void DecreaseBuildingCount(Town *t, HouseID house_id)
 /* virtual */ uint32 HouseScopeResolver::GetRandomBits() const
 {
 	/* Note: Towns build houses over houses. So during construction checks 'tile' may be a valid but unrelated house. */
-	assert(IsValidTile(this->tile) && (this->not_yet_constructed || IsTileType(this->tile, MP_HOUSE)));
+	assert_tile(IsValidTile(this->tile) && (this->not_yet_constructed || IsTileType(this->tile, MP_HOUSE)), this->tile);
 	return this->not_yet_constructed ? this->initial_random_bits : GetHouseRandomBits(this->tile);
 }
 
 /* virtual */ uint32 HouseScopeResolver::GetTriggers() const
 {
 	/* Note: Towns build houses over houses. So during construction checks 'tile' may be a valid but unrelated house. */
-	assert(IsValidTile(this->tile) && (this->not_yet_constructed || IsTileType(this->tile, MP_HOUSE)));
+	assert_tile(IsValidTile(this->tile) && (this->not_yet_constructed || IsTileType(this->tile, MP_HOUSE)), this->tile);
 	return this->not_yet_constructed ? 0 : GetHouseTriggers(this->tile);
 }
 
@@ -735,7 +735,7 @@ bool NewHouseTileLoop(TileIndex tile)
 static void DoTriggerHouse(TileIndex tile, HouseTrigger trigger, byte base_random, bool first)
 {
 	/* We can't trigger a non-existent building... */
-	assert(IsTileType(tile, MP_HOUSE));
+	assert_tile(IsTileType(tile, MP_HOUSE), tile);
 
 	HouseID hid = GetHouseType(tile);
 	HouseSpec *hs = HouseSpec::Get(hid);
@@ -806,7 +806,7 @@ void DoWatchedCargoCallback(TileIndex tile, TileIndex origin, CargoTypes trigger
  */
 void WatchedCargoCallback(TileIndex tile, CargoTypes trigger_cargoes)
 {
-	assert(IsTileType(tile, MP_HOUSE));
+	assert_tile(IsTileType(tile, MP_HOUSE), tile);
 	HouseID id = GetHouseType(tile);
 	const HouseSpec *hs = HouseSpec::Get(id);
 

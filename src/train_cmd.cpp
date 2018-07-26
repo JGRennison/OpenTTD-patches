@@ -1902,7 +1902,7 @@ static Vehicle *TrainApproachingCrossingEnum(Vehicle *v, void *data)
  */
 static bool TrainApproachingCrossing(TileIndex tile)
 {
-	assert(IsLevelCrossingTile(tile));
+	assert_tile(IsLevelCrossingTile(tile), tile);
 
 	DiagDirection dir = AxisToDiagDir(GetCrossingRailAxis(tile));
 	TileIndex tile_from = tile + TileOffsByDiagDir(dir);
@@ -1934,7 +1934,7 @@ static inline bool CheckLevelCrossing(TileIndex tile)
  */
 static void UpdateLevelCrossingTile(TileIndex tile, bool sound, bool is_forced, bool forced_state)
 {
-	assert(IsLevelCrossingTile(tile));
+	assert_tile(IsLevelCrossingTile(tile), tile);
 	bool new_state;
 
 	if (is_forced) {
@@ -3991,7 +3991,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						if (prev->track & TRACK_BIT_WORMHOLE) {
 							/* Vehicles entering tunnels enter the wormhole earlier than for bridges.
 							 * However, just choose the track into the wormhole. */
-							assert(IsTunnel(prev->tile));
+							assert_tile(IsTunnel(prev->tile), prev->tile);
 							chosen_track = bits;
 						} else {
 							chosen_track = prev->track;

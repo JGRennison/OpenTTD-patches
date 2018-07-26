@@ -84,15 +84,15 @@ Town::~Town()
 	for (TileIndex tile = 0; tile < MapSize(); ++tile) {
 		switch (GetTileType(tile)) {
 			case MP_HOUSE:
-				assert(GetTownIndex(tile) != this->index);
+				assert_tile(GetTownIndex(tile) != this->index, tile);
 				break;
 
 			case MP_ROAD:
-				assert(!HasTownOwnedRoad(tile) || GetTownIndex(tile) != this->index);
+				assert_tile(!HasTownOwnedRoad(tile) || GetTownIndex(tile) != this->index, tile);
 				break;
 
 			case MP_TUNNELBRIDGE:
-				assert(!IsTileOwner(tile, OWNER_TOWN) || ClosestTownFromTile(tile, UINT_MAX) != this);
+				assert_tile(!IsTileOwner(tile, OWNER_TOWN) || ClosestTownFromTile(tile, UINT_MAX) != this, tile);
 				break;
 
 			default:
@@ -532,7 +532,7 @@ uint32 GetWorldPopulation()
  */
 static void MakeSingleHouseBigger(TileIndex tile)
 {
-	assert(IsTileType(tile, MP_HOUSE));
+	assert_tile(IsTileType(tile, MP_HOUSE), tile);
 
 	/* progress in construction stages */
 	IncHouseConstructionTick(tile);
@@ -2668,7 +2668,7 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
  */
 static void DoClearTownHouseHelper(TileIndex tile, Town *t, HouseID house)
 {
-	assert(IsTileType(tile, MP_HOUSE));
+	assert_tile(IsTileType(tile, MP_HOUSE), tile);
 	DecreaseBuildingCount(t, house);
 	DoClearSquare(tile);
 	DeleteAnimatedTile(tile);
@@ -2705,7 +2705,7 @@ TileIndexDiff GetHouseNorthPart(HouseID &house)
 
 void ClearTownHouse(Town *t, TileIndex tile)
 {
-	assert(IsTileType(tile, MP_HOUSE));
+	assert_tile(IsTileType(tile, MP_HOUSE), tile);
 
 	HouseID house = GetHouseType(tile);
 

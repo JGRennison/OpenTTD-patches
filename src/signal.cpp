@@ -526,7 +526,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 			continue;
 		}
 
-		assert(HasSignalOnTrackdir(tile, trackdir));
+		assert_msg_tile(HasSignalOnTrackdir(tile, trackdir), tile, "trackdir: %u", trackdir);
 
 		track = TrackdirToTrack(trackdir);
 		SignalType sig = GetSignalType(tile, track);
@@ -628,7 +628,7 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 		switch (GetTileType(tile)) {
 			case MP_TUNNELBRIDGE: {
 				/* 'optimization assert' - do not try to update signals when it is not needed */
-				assert(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL);
+				assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL, tile);
 				if (IsTunnel(tile)) assert(dir == INVALID_DIAGDIR || dir == ReverseDiagDir(GetTunnelBridgeDirection(tile)));
 				TrackBits across = GetAcrossTunnelBridgeTrackBits(tile);
 				if (dir == INVALID_DIAGDIR || _enterdir_to_trackbits[dir] & across) {
