@@ -12,6 +12,8 @@
 #ifndef SCOPE_INFO_H
 #define SCOPE_INFO_H
 
+#include "tile_type.h"
+
 #include <functional>
 #include <vector>
 
@@ -70,6 +72,7 @@ struct scope_dumper {
 	const char *CompanyInfo(int company_id);
 	const char *VehicleInfo(const Vehicle *v);
 	const char *StationInfo(const BaseStation *st);
+	const char *TileInfo(TileIndex tile);
 
 private:
 	char buffer[256];

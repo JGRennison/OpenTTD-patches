@@ -17,6 +17,7 @@
 #include "vehicle_base.h"
 #include "station_base.h"
 #include "waypoint_base.h"
+#include "map_func.h"
 #include "table/strings.h"
 
 #include "safeguards.h"
@@ -107,4 +108,9 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 		b += seprintf(b, last, "station/waypoint: NULL");
 	}
 	return this->buffer;
+}
+
+const char *scope_dumper::TileInfo(TileIndex tile)
+{
+	return DumpTileInfo(this->buffer, lastof(this->buffer), tile);
 }
