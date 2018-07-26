@@ -276,8 +276,9 @@
  *  197   27978   1.8.x
  *  198
  *  199
+ *  200   #6805   Extend railtypes to 64, adding uint16 to map array.
  */
-extern const uint16 SAVEGAME_VERSION = 199; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 200; ///< Current savegame version of OpenTTD.
 const uint16 SAVEGAME_VERSION_EXT = 0x8000; ///< Savegame extension indicator mask
 
 SavegameType _savegame_type; ///< type of savegame we are loading

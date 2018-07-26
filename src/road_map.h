@@ -585,15 +585,12 @@ static inline void MakeRoadCrossing(TileIndex t, Owner road, Owner tram, Owner r
 	SetTileType(t, MP_ROAD);
 	SetTileOwner(t, rail);
 	_m[t].m2 = town;
-
-	SB(_m[t].m1, 7, 1, GB(rat, 4, 1));
-	SB(_m[t].m3, 0, 4, GB(rat, 0, 4));
-	SB(_m[t].m3, 4, 4, 0);
-
+	_m[t].m3 = 0;
 	_m[t].m4 = 0;
 	_m[t].m5 = ROAD_TILE_CROSSING << 6 | roaddir;
 	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = rot << 6 | road;
+	_me[t].m8 = rat;
 	SetRoadOwner(t, ROADTYPE_TRAM, tram);
 }
 

@@ -170,11 +170,22 @@ static void Load_MAP7()
 	}
 }
 
+static void Load_MAP8()
+{
+	SmallStackSafeStackAlloc<uint16, MAP_SL_BUF_SIZE> buf;
+	TileIndex size = MapSize();
+
+	for (TileIndex i = 0; i != size;) {
+		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT16);
+		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _me[i++].m8 = buf[j];
+	}
+}
+
 static void Load_WMAP()
 {
 	assert_compile(sizeof(Tile) == 8);
-	assert_compile(sizeof(TileExtended) == 2);
-	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1);
+	assert_compile(sizeof(TileExtended) == 4);
+	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1 || _sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2);
 
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
 	const TileIndex size = MapSize();
@@ -195,21 +206,44 @@ static void Load_WMAP()
 		_m[i].m5 = reader->RawReadByte();
 	}
 #endif
-	reader->CopyBytes((byte *) _me, size * 2);
+
+	if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1) {
+		for (TileIndex i = 0; i != size; i++) {
+			reader->CheckBytes(2);
+			_me[i].m6 = reader->RawReadByte();
+			_me[i].m7 = reader->RawReadByte();
+		}
+	} else if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2) {
+#if TTD_ENDIAN == TTD_LITTLE_ENDIAN
+		reader->CopyBytes((byte *) _me, size * 4);
+#else
+		for (TileIndex i = 0; i != size; i++) {
+			reader->CheckBytes(4);
+			_me[i].m6 = reader->RawReadByte();
+			_me[i].m7 = reader->RawReadByte();
+			uint16 m8 = reader->RawReadByte();
+			m8 |= ((uint16) reader->RawReadByte()) << 8;
+			_me[i].m8 = m8;
+		}
+#endif
+	} else {
+		NOT_REACHED();
+	}
 }
 
 static void Save_WMAP()
 {
 	assert_compile(sizeof(Tile) == 8);
-	assert_compile(sizeof(TileExtended) == 2);
-	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1);
+	assert_compile(sizeof(TileExtended) == 4);
+	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2);
 
 	MemoryDumper *dumper = MemoryDumper::GetCurrent();
 	const TileIndex size = MapSize();
-	SlSetLength(size * 10);
+	SlSetLength(size * 12);
 
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
 	dumper->CopyBytes((byte *) _m, size * 8);
+	dumper->CopyBytes((byte *) _me, size * 4);
 #else
 	for (TileIndex i = 0; i != size; i++) {
 		dumper->CheckBytes(8);
@@ -222,8 +256,14 @@ static void Save_WMAP()
 		dumper->RawWriteByte(_m[i].m4);
 		dumper->RawWriteByte(_m[i].m5);
 	}
+	for (TileIndex i = 0; i != size; i++) {
+		dumper->CheckBytes(4);
+		dumper->RawWriteByte(_me[i].m6);
+		dumper->RawWriteByte(_me[i].m7);
+		dumper->RawWriteByte(GB(_me[i].m8, 0, 8));
+		dumper->RawWriteByte(GB(_me[i].m8, 8, 8));
+	}
 #endif
-	dumper->CopyBytes((byte *) _me, size * 2);
 }
 
 extern const ChunkHandler _map_chunk_handlers[] = {
@@ -237,5 +277,6 @@ extern const ChunkHandler _map_chunk_handlers[] = {
 	{ 'MAP5', NULL,      Load_MAP5, NULL, NULL,       CH_RIFF },
 	{ 'MAPE', NULL,      Load_MAP6, NULL, NULL,       CH_RIFF },
 	{ 'MAP7', NULL,      Load_MAP7, NULL, NULL,       CH_RIFF },
+	{ 'MAP8', NULL,      Load_MAP8, NULL, NULL,       CH_RIFF },
 	{ 'WMAP', Save_WMAP, Load_WMAP, NULL, NULL,       CH_RIFF | CH_LAST },
 };

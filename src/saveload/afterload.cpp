@@ -1372,6 +1372,44 @@ bool AfterLoadGame()
 		}
 	}
 
+	/* Railtype moved from m3 to m8 in version 200. */
+	if (IsSavegameVersionBefore(200)) {
+		const bool has_extra_bit = SlXvIsFeaturePresent(XSLFI_MORE_RAIL_TYPES, 1, 1);
+		auto update_railtype = [&](TileIndex t) {
+			uint rt = GB(_m[t].m3, 0, 4);
+			if (has_extra_bit) rt |= (GB(_m[t].m1, 7, 1) << 4);
+			SetRailType(t, (RailType)rt);
+		};
+		for (TileIndex t = 0; t < map_size; t++) {
+			switch (GetTileType(t)) {
+				case MP_RAILWAY:
+					update_railtype(t);
+					break;
+
+				case MP_ROAD:
+					if (IsLevelCrossing(t)) {
+						update_railtype(t);
+					}
+					break;
+
+				case MP_STATION:
+					if (HasStationRail(t)) {
+						update_railtype(t);
+					}
+					break;
+
+				case MP_TUNNELBRIDGE:
+					if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) {
+						update_railtype(t);
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+	}
+
 	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 6)) {
 		/* m2 signal state bit allocation has shrunk */
 		for (TileIndex t = 0; t < map_size; t++) {
@@ -3427,20 +3465,6 @@ bool AfterLoadGame()
 	if (SlXvIsFeatureMissing(XSLFI_VEH_LIFETIME_PROFIT)) {
 		Vehicle *v;
 		FOR_ALL_VEHICLES(v) v->profit_lifetime = 0;
-	}
-
-	// Before this version we didn't store the 5th bit of the tracktype here.
-	// So set it to 0 just in case there was garbage in there.
-	if (SlXvIsFeatureMissing(XSLFI_MORE_RAIL_TYPES)) {
-		for (TileIndex t = 0; t < map_size; t++) {
-			if (GetTileType(t) == MP_RAILWAY ||
-					IsLevelCrossingTile(t) ||
-					IsRailStationTile(t) ||
-					IsRailWaypointTile(t) ||
-					IsRailTunnelBridgeTile(t)) {
-				ClrBit(_m[t].m1, 7);
-			}
-		}
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 3)) {

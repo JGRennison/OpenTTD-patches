@@ -224,10 +224,9 @@
    <td>
     <ul>
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a> of the tile</li>
-     <li style="color: blue">m1 bit 7: bit 4 of track type (more rail types patch)</li>
      <li>m2: see signals</li>
      <li>m3 bits 7..4: see signals</li>
-     <li style="color: purple">m3 bits 3..0 = bits 3..0 of <a name="TrackType">track type</a>:
+     <li>m8 bits 5..0 = <a name="TrackType">track type</a>:
       <table>
        <tr>
         <td><tt>0</tt>&nbsp; </td>
@@ -633,8 +632,9 @@
        <li>m5 bit 6 set: level crossing
         <ul>
          <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a> of the railway track</li>
-         <li style="color: blue">m1 bit 7: bit 4 of <a href="#TrackType">track type</a> for railway (more rail types patch)</li>
-         <li style="color: purple">m3 bits 3..0: bits 3..0 of <a href="#TrackType">railway track type</a></li>
+         <li>m5 bit 5: set if crossing lights are on</li>
+         <li>m5 bit 4: pbs reservation state</li>
+         <li style="color: blue">m5 bit 1: set if crossing is possibly occupied by a road vehicle</li>
          <li>m5 bit 0: direction
           <table>
            <tr>
@@ -647,10 +647,8 @@
            </tr>
           </table>
          </li>
-         <li>m5 bit 5: set if crossing lights are on</li>
          <li>m7 bits 4..0: <a href="#OwnershipInfo">owner</a> of the road type 0 (normal road)</li>
-         <li>m5 bit 4: pbs reservation state</li>
-         <li style="color: blue">m5 bit 1: set if crossing is possibly occupied by a road vehicle</li>
+         <li>m8 bits 5..0: <a href="#TrackType">railway track type</a></li>
         </ul>
        </li>
       </ul>
@@ -864,13 +862,11 @@
    <td valign=top nowrap>&nbsp;</td>
    <td>
     <ul>
-     <li style="color: blue">m1 bit 7: bit 4 of <a href="#TrackType">track type</a> for railway (more rail types patch)</li>
      <li>m1 bits 6..5: water class for buoys, water part of docks and for airport tiles</li>
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a> of the station</li>
      <li>m2: index into the array of stations</li>
      <li>m3 bits 7..4: persistent random data for railway stations/waypoints and airports)</li>
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of tram tracks (road stop)</li>
-     <li style="color: purple">m3 bits 3..0: bits 3..0 of <a href="#TrackType">track type</a> for railway stations/waypoints</li>
      <li>m4: custom station id; 0 means standard graphics</li>
      <li>m5: graphics index (range from 0..255 for each station type):
       <table>
@@ -989,6 +985,7 @@
      <li>m7 bits 4..0: <a href="#OwnershipInfo">owner</a> of road (road stops)</li>
      <li>m7 bits 7..6: present road types (road stops)</li>
      <li>m7: animation frame (railway stations/waypoints, airports)</li>
+     <li>m8 bits 5..0: <a href="#TrackType">track type</a> for railway stations/waypoints</li>
     </ul>
    </td>
   </tr>
@@ -1452,7 +1449,6 @@
    <td valign=top nowrap>&nbsp;</td>
    <td>
     <ul>
-     <li style="color: blue">m1 bit 7: bit 4 of <a href="#TrackType">track type</a> for railway (more rail types patch)</li>
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a></li>
      <li style="color: blue">m2 bits 7..0: custom road bridge heads (flat bridge heads only)<br>
       Road/tram bits below are XORed with the axial bridge direction road bits.<br>
@@ -1530,7 +1526,6 @@
      </li>
      <li style="color: blue">m2 bit 3: rail bridge heads opposite track is reserved, too</li>
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of tram</li>
-     <li style="color: purple">m3 bits 3..0: bits 3..0 of <a href="#TrackType">track type</a> for railway</li>
      <li style="color: blue">m4 bits 5..0: rail bridge heads track layout: bit set = track present:
       <table style="color: blue">
        <tr>
@@ -1733,6 +1728,7 @@
      <li>m7 bits 4..0: <a href="#OwnershipInfo">owner</a> of road</li>
      <li>m7 bit 5 set = on snow or desert</li>
      <li>m7 bits 7..6: present road types for road</li>
+     <li>m8 bits 5..0: <a href="#TrackType">track type</a> for railway</li>
     </ul>
    </td>
   </tr>
