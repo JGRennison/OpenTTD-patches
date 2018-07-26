@@ -477,6 +477,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Screenshot
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Screenshot con zoom massimo
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Screenshot con zoom predefinito
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Screenshot intera mappa
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Mostra frame rate
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Informazioni su 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Strumento allineamento sprite
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Attiva/disattiva bounding box
@@ -652,6 +653,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}Musica non disponibile
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Brano
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Titolo
@@ -671,15 +673,15 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Selezion
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Attiva/disattiva la riproduzione in ordine casuale
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Mostra la finestra di selezione dei brani musicali
 
-STR_ERROR_NO_SONGS                                              :{WHITE}È stato selezionato un pacchetto musicale senza brani. Non sarà possibile avviare la musica.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Selezione programma musicale
+STR_PLAYLIST_MUSIC_SELECTION_SETNAME                            :{WHITE}Programma musicale - '{STRING}'
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Indice brani
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programma - '{STRING}'
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Elimina
+STR_PLAYLIST_CHANGE_SET                                         :{BLACK}Cambia pacchetto
 STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Elimina il programma corrente (solo Personale1 e Personale2)
+STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}Seleziona un altro pacchetto musicale installato
 STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Fare clic su un brano per aggiungerlo al programma corrente (solo Personale1 o Personale2)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Fare clic su un brano per rimuoverlo dal programma corrente (solo Personale1 o Personale2)
 
@@ -882,9 +884,9 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Mini visuale {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Copia nella mini visuale
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Cambia mini visuale
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Copia la posizione della visuale principale in questa mini visuale
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Copia dalla mini visuale
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Cambia vis. principale
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Copia la posizione di questa mini visuale nella visuale principale
 
 # Game options window
@@ -1361,8 +1363,12 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Colore del terr
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Verde
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Verde scuro
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Viola
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Inverti direzione di scorrimento della mappa: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Comportamento dello scorrimento della mappa con il tasto destro del mouse. Se disabilitata, il mouse muove l'inquadratura. Se abilitata, il mouse muove la mappa
+STR_CONFIG_SETTING_SCROLLMODE                                   :Scorrimento delle visuali: {STRING}
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Comportamento dello scorrimento della mappa
+STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Muovi visuale col pulsante destro, puntatore bloccato
+STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Muovi mappa col pulsante destro, puntatore bloccato
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :Muovi mappa col pulsante destro
+STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Muovi mappa col pulsante sinistro
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Scorrimento morbido delle visuali: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controlla il modo in cui la visuale principale scorre verso una specifica posizione quando si fa clic sulla minimappa o si ordina di visualizzare un oggetto specifico sulla mappa. Se abilitata, la visuale scorre in modo morbido. Se disabilitata, salta direttamente al punto prescelto
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Mostra un tooltip di misura durante la costruzione: {STRING}
@@ -1394,8 +1400,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :COMANDO+clic
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :CTRL+clic
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Nessuna
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Scorrimento con clic sinistro: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Abilita lo scorrimento della mappa trascinandola con il pulsante sinistro del mouse. Questa impostazione è utile quando si utilizza un touch-screen
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Chiudi finestra con clic destro: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Consente di chiudere una finestra facendo clic col pulsante destro al suo interno. Disabilita i suggerimenti attivati al clic col pulsante destro!
 
@@ -2311,6 +2315,7 @@ STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Nessuno
 STR_LINKGRAPH_LEGEND_NONE.ms                                    :{BLACK}Nessuno
 STR_LINKGRAPH_LEGEND_NONE.fs                                    :{BLACK}Nessuna
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Seleziona le compagnie da mostrare
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}inutilizzata
@@ -2723,6 +2728,56 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyrigh
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versione {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 Il team OpenTTD
 
+# Framerate display window
+STR_FRAMERATE_CAPTION                                           :{WHITE}Frame rate
+STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE} ({DECIMAL}x)
+STR_FRAMERATE_RATE_GAMELOOP                                     :{WHITE}Velocità simulazione: {STRING}
+STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Numero di cicli di simulazione della partita in un secondo
+STR_FRAMERATE_RATE_BLITTER                                      :{WHITE}Frame rate grafica: {STRING}
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Numero di fotogrammi video renderizzati in un secondo
+STR_FRAMERATE_SPEED_FACTOR                                      :{WHITE}Fattore di velocità corrente della partita: {DECIMAL}x
+STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}Prestazioni correnti della partita, confrontate con le prestazioni attese alla velocità di giorno normale.
+STR_FRAMERATE_CURRENT                                           :{WHITE}Corrente
+STR_FRAMERATE_AVERAGE                                           :{WHITE}Media
+STR_FRAMERATE_DATA_POINTS                                       :{WHITE}Dati basati su {COMMA} misurazioni
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL}{WHITE} ms
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL}{WHITE} ms
+STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL}{WHITE} ms
+STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL}{WHITE} frame/s
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL}{WHITE} frame/s
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL}{WHITE} frame/s
+STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
+STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA} s
+############ Leave those lines in this order!!
+STR_FRAMERATE_GAMELOOP                                          :{WHITE}Totale ciclo simulazione:
+STR_FRAMERATE_GL_ECONOMY                                        :{WHITE}  Gestione carichi:
+STR_FRAMERATE_GL_TRAINS                                         :{WHITE}  Aggiornamento treni:
+STR_FRAMERATE_GL_ROADVEHS                                       :{WHITE}  Aggiornamento automezzi:
+STR_FRAMERATE_GL_SHIPS                                          :{WHITE}  Aggiornamento navi:
+STR_FRAMERATE_GL_AIRCRAFT                                       :{WHITE}  Aggiornamento aeromobili:
+STR_FRAMERATE_GL_LANDSCAPE                                      :{WHITE}  Aggiornamento mondo:
+STR_FRAMERATE_GL_LINKGRAPH                                      :{WHITE}  Ritardo grafo di distribuzione:
+STR_FRAMERATE_DRAWING                                           :{WHITE}Renderizzazione grafica:
+STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{WHITE}  Visuali mondo:
+STR_FRAMERATE_VIDEO                                             :{WHITE}Output video:
+STR_FRAMERATE_SOUND                                             :{WHITE}Missaggio suoni:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GAMELOOP                                  :Ciclo simulazione
+STR_FRAMETIME_CAPTION_GL_ECONOMY                                :Gestione carichi
+STR_FRAMETIME_CAPTION_GL_TRAINS                                 :Aggiornamento treni
+STR_FRAMETIME_CAPTION_GL_ROADVEHS                               :Aggiornamento automezzi
+STR_FRAMETIME_CAPTION_GL_SHIPS                                  :Aggiornamento navi
+STR_FRAMETIME_CAPTION_GL_AIRCRAFT                               :Aggiornamento aeromobili
+STR_FRAMETIME_CAPTION_GL_LANDSCAPE                              :Aggiornamento mondo
+STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :Ritardo grafo di distribuzione
+STR_FRAMETIME_CAPTION_DRAWING                                   :Renderizzazione grafica
+STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :Renderizzazione visuali mondo
+STR_FRAMETIME_CAPTION_VIDEO                                     :Output video
+STR_FRAMETIME_CAPTION_SOUND                                     :Missaggio suoni
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Salva partita
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Carica partita
@@ -3007,6 +3062,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Inserire
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Città
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Nessuna -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Metropoli){BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Nomi delle città - fare clic su un nome per centrare la visuale principale sulla città. CTRL+clic la mostra in una mini visuale.
 STR_TOWN_POPULATION                                             :{BLACK}Popolazione mondiale: {COMMA}
 
@@ -3014,8 +3070,7 @@ STR_TOWN_POPULATION                                             :{BLACK}Popolazi
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Metropoli)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Popolazione: {ORANGE}{COMMA}{BLACK}  Case: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Passeggeri il mese scorso: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Posta il mese scorso: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} il mese scorso: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Carichi richiesti per la crescita della città:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} richiest{G 0 o o a}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} richiest{G 0 o o a} in inverno
@@ -4262,6 +4317,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... ques
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... strada rivolta nella direzione sbagliata
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... le fermate passanti non possono trovarsi in curva
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... le fermate passanti non possono avere raccordi
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... la strada è bloccata o a senso unico
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Impossibile rimuovere parte della stazione...
@@ -4513,6 +4569,8 @@ STR_BASESOUNDS_DOS_DESCRIPTION                                  :Suoni originali
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :Suoni originali di Transport Tycoon Deluxe, edizione Windows.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Un pacchetto sonoro non contenente alcun suono.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Musica originale di Transport Tycoon Deluxe, edizione Windows.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :Musica originale di Transport Tycoon Deluxe, edizione DOS.
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :Musica originale di Transport Tycoon (edizione Original/World).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un pacchetto musicale non contenente alcuna musica.
 
 ##id 0x2000

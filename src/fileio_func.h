@@ -55,6 +55,7 @@ char *FioGetFullPath(char *buf, const char *last, Searchpath sp, Subdirectory su
 char *FioFindFullPath(char *buf, const char *last, Subdirectory subdir, const char *filename);
 char *FioAppendDirectory(char *buf, const char *last, Searchpath sp, Subdirectory subdir);
 char *FioGetDirectory(char *buf, const char *last, Subdirectory subdir);
+void FioCreateDirectory(const char *name);
 
 const char *FiosGetScreenshotDir();
 
@@ -148,5 +149,18 @@ static inline DIR *ttd_opendir(const char *path)
 {
 	return opendir(OTTD2FS(path));
 }
+
+
+/** Auto-close a file upon scope exit. */
+class FileCloser {
+	FILE *f;
+
+public:
+	FileCloser(FILE *_f) : f(_f) {}
+	~FileCloser()
+	{
+		fclose(f);
+	}
+};
 
 #endif /* FILEIO_FUNC_H */

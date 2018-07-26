@@ -23,6 +23,7 @@
 #include "../core/random_func.hpp"
 #include "../core/math_func.hpp"
 #include "../fileio_func.h"
+#include "../framerate_type.h"
 #include "sdl_v.h"
 #include <SDL.h>
 
@@ -148,6 +149,8 @@ static void CheckPaletteAnim()
 
 static void DrawSurfaceToScreen()
 {
+	PerformanceMeasurer framerate(PFE_VIDEO);
+
 	int n = _num_dirty_rects;
 	if (n == 0) return;
 
@@ -323,7 +326,7 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 		want_hwpalette = _use_hwpalette;
 	}
 
-	if (want_hwpalette) DEBUG(driver, 1, "SDL: requesting hardware palete");
+	if (want_hwpalette) DEBUG(driver, 1, "SDL: requesting hardware palette");
 
 	/* Free any previously allocated shadow surface */
 	if (_sdl_screen != NULL && _sdl_screen != _sdl_realscreen) SDL_CALL SDL_FreeSurface(_sdl_screen);

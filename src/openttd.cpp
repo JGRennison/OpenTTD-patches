@@ -63,6 +63,7 @@
 #include "subsidy_func.h"
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
+#include "framerate_type.h"
 #include "thread/thread.h"
 
 #include "linkgraph/linkgraphschedule.h"
@@ -373,8 +374,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 
 	CheckForMissingGlyphs();
 
-	/* Play main theme */
-	if (MusicDriver::GetInstance()->IsSongPlaying()) ResetMusic();
+	MusicLoop(); // ensure music is correct
 }
 
 void MakeNewgameSettingsLive()
@@ -724,11 +724,6 @@ int openttd_main(int argc, char *argv[])
 
 		goto exit_noshutdown;
 	}
-
-#if defined(WINCE) && defined(_DEBUG)
-	/* Switch on debug lvl 4 for WinCE if Debug release, as you can't give params, and you most likely do want this information */
-	SetDebugString("4");
-#endif
 
 	DeterminePaths(argv[0]);
 	TarScanner::DoScan(TarScanner::BASESET);
@@ -1375,6 +1370,14 @@ void StateGameLoop()
 {
 	/* don't execute the state loop during pause */
 	if (_pause_mode != PM_UNPAUSED) {
+		PerformanceMeasurer::Paused(PFE_GAMELOOP);
+		PerformanceMeasurer::Paused(PFE_GL_ECONOMY);
+		PerformanceMeasurer::Paused(PFE_GL_TRAINS);
+		PerformanceMeasurer::Paused(PFE_GL_ROADVEHS);
+		PerformanceMeasurer::Paused(PFE_GL_SHIPS);
+		PerformanceMeasurer::Paused(PFE_GL_AIRCRAFT);
+		PerformanceMeasurer::Paused(PFE_GL_LANDSCAPE);
+
 		UpdateLandscapingLimits();
 #ifndef DEBUG_DUMP_COMMANDS
 		Game::GameLoop();
@@ -1382,6 +1385,9 @@ void StateGameLoop()
 		CallWindowTickEvent();
 		return;
 	}
+
+	PerformanceMeasurer framerate(PFE_GAMELOOP);
+	PerformanceAccumulator::Reset(PFE_GL_LANDSCAPE);
 	if (HasModalProgress()) return;
 
 	Layouter::ReduceLineCache();
@@ -1439,11 +1445,6 @@ void StateGameLoop()
 static void DoAutosave()
 {
 	char buf[MAX_PATH];
-
-#if defined(PSP)
-	/* Autosaving in networking is too time expensive for the PSP */
-	if (_networking) return;
-#endif /* PSP */
 
 	if (_settings_client.gui.keep_all_autosave) {
 		GenerateDefaultSaveName(buf, lastof(buf));

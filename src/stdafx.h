@@ -100,12 +100,6 @@
 	#define strcasecmp stricmp
 #endif
 
-#if defined(PSP)
-	#include <psptypes.h>
-	#include <pspdebug.h>
-	#include <pspthreadman.h>
-#endif
-
 #if defined(SUNOS) || defined(HPUX)
 	#include <alloca.h>
 #endif
@@ -134,20 +128,11 @@
 	#define CLIB_USERGROUP_PROTOS_H
 #endif /* __MORPHOS__ */
 
-#if defined(PSP)
-	/* PSP can only have 10 file-descriptors open at any given time, but this
-	 *  switch only limits reads via the Fio system. So keep 2 fds free for things
-	 *  like saving a game. */
-	#define LIMITED_FDS 8
-	#define printf pspDebugScreenPrintf
-#endif /* PSP */
-
 /* Stuff for GCC */
 #if defined(__GNUC__) || defined(__clang__)
 	#define NORETURN __attribute__ ((noreturn))
 	#define CDECL
 	#define __int64 long long
-	#define GCC_PACK __attribute__((packed))
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
 	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
@@ -168,7 +153,6 @@
 #if defined(__WATCOMC__)
 	#define NORETURN
 	#define CDECL
-	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL
 	#define FALLTHROUGH
@@ -199,9 +183,7 @@
 		#define NTDDI_VERSION NTDDI_WIN2K // Windows 2000
 		#define _WIN32_WINNT 0x0500       // Windows 2000
 		#define _WIN32_WINDOWS 0x400      // Windows 95
-		#if !defined(WINCE)
-			#define WINVER 0x0400     // Windows NT 4.0 / Windows 95
-		#endif
+		#define WINVER 0x0400             // Windows NT 4.0 / Windows 95
 		#define _WIN32_IE_ 0x0401         // 4.01 (win98 and NT4SP5+)
 	#endif
 	#define NOMINMAX                // Disable min/max macros in windows.h.
@@ -235,11 +217,7 @@
 		#define inline __forceinline
 	#endif
 
-	#if !defined(WINCE)
-		#define CDECL _cdecl
-	#endif
-
-	#define GCC_PACK
+	#define CDECL _cdecl
 	#define WARN_FORMAT(string, args)
 	#define FINAL sealed
 
@@ -248,10 +226,6 @@
 		#define FALLTHROUGH [[fallthrough]]
 	#else
 		#define FALLTHROUGH
-	#endif
-
-	#if defined(WINCE)
-		int CDECL vsnprintf(char *str, size_t size, const char *format, va_list ap);
 	#endif
 
 	#if defined(WIN32) && !defined(_WIN64) && !defined(WIN64)
@@ -274,15 +248,8 @@
 		#endif
 	#endif
 
-	#if defined(WINCE)
-		#define strcasecmp _stricmp
-		#define strncasecmp _strnicmp
-		#undef DEBUG
-	#else
-		#define strcasecmp stricmp
-		#define strncasecmp strnicmp
-	#endif
-
+	#define strcasecmp stricmp
+	#define strncasecmp strnicmp
 	#define strtoull _strtoui64
 
 	/* MSVC doesn't have these :( */
@@ -300,10 +267,6 @@
 	#define SIGBUS SIGNOFP
 #endif
 
-#if defined(WINCE)
-	#define stredup _stredup
-#endif /* WINCE */
-
 /* NOTE: the string returned by these functions is only valid until the next
  * call to the same function and is not thread- or reentrancy-safe */
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
@@ -312,12 +275,9 @@
 		#include <tchar.h>
 		#include <io.h>
 
-		/* XXX - WinCE without MSVCRT doesn't support wfopen, so it seems */
-		#if !defined(WINCE)
-			namespace std { using ::_tfopen; }
-			#define fopen(file, mode) _tfopen(OTTD2FS(file), _T(mode))
-			#define unlink(file) _tunlink(OTTD2FS(file))
-		#endif /* WINCE */
+		namespace std { using ::_tfopen; }
+		#define fopen(file, mode) _tfopen(OTTD2FS(file), _T(mode))
+		#define unlink(file) _tunlink(OTTD2FS(file))
 
 		const char *FS2OTTD(const TCHAR *name);
 		const TCHAR *OTTD2FS(const char *name, bool console_cp = false);
@@ -335,6 +295,16 @@
 	#define PATHSEP "/"
 	#define PATHSEPCHAR '/'
 #endif
+
+#if defined(_MSC_VER) || defined(__WATCOMC__)
+#	define PACK_N(type_dec, n) __pragma(pack(push, n)) type_dec; __pragma(pack(pop))
+#elif defined(__MINGW32__)
+#	define PRAGMA(x) _Pragma(#x)
+#	define PACK_N(type_dec, n) PRAGMA(pack(push, n)) type_dec; PRAGMA(pack(pop))
+#else
+#	define PACK_N(type_dec, n) type_dec __attribute__((__packed__, aligned(n)))
+#endif
+#define PACK(type_dec) PACK_N(type_dec, 1)
 
 /* MSVCRT of course has to have a different syntax for long long *sigh* */
 #if defined(_MSC_VER) || defined(__MINGW32__)

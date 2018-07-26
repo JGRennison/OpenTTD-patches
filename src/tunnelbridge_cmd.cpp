@@ -232,7 +232,7 @@ CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoC
  * @param p1 packed start tile coords (~ dx)
  * @param p2 various bitstuffed elements
  * - p2 = (bit  0- 7) - bridge type (hi bh)
- * - p2 = (bit  8-11) - rail type or road types.
+ * - p2 = (bit  8-13) - rail type or road types.
  * - p2 = (bit 15-16) - transport type.
  * @param text unused
  * @return the cost of this operation or an error
@@ -259,7 +259,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 			break;
 
 		case TRANSPORT_RAIL:
-			railtype = Extract<RailType, 8, 4>(p2);
+			railtype = Extract<RailType, 8, 6>(p2);
 			if (!ValParamRailtype(railtype)) return CMD_ERROR;
 			break;
 
@@ -574,7 +574,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
  * Build Tunnel.
  * @param start_tile start tile of tunnel
  * @param flags type of operation
- * @param p1 bit 0-3 railtype or roadtypes
+ * @param p1 bit 0-5 railtype or roadtypes
  *           bit 8-9 transport type
  * @param p2 unused
  * @param text unused
@@ -591,7 +591,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	_build_tunnel_endtile = 0;
 	switch (transport_type) {
 		case TRANSPORT_RAIL:
-			railtype = Extract<RailType, 0, 4>(p1);
+			railtype = Extract<RailType, 0, 6>(p1);
 			if (!ValParamRailtype(railtype)) return CMD_ERROR;
 			break;
 
@@ -701,8 +701,22 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		/* Hide the tile from the terraforming command */
 		TileIndex old_first_tile = coa->first_tile;
 		coa->first_tile = INVALID_TILE;
+
+		/* CMD_TERRAFORM_LAND may append further items to _cleared_object_areas,
+		 * however it will never erase or re-order existing items.
+		 * _cleared_object_areas is a value-type SmallVector, therefore appending items
+		 * may result in a backing-store re-allocation, which would invalidate the coa pointer.
+		 * The index of the coa pointer into the _cleared_object_areas vector remains valid,
+		 * and can be used safely after the CMD_TERRAFORM_LAND operation.
+		 * Deliberately clear the coa pointer to avoid leaving dangling pointers which could
+		 * inadvertently be dereferenced.
+		 */
+		assert(coa >= _cleared_object_areas.Begin() && coa < _cleared_object_areas.End());
+		size_t coa_index = coa - _cleared_object_areas.Begin();
+		coa = NULL;
+
 		ret = DoCommand(end_tile, end_tileh & start_tileh, 0, flags, CMD_TERRAFORM_LAND);
-		coa->first_tile = old_first_tile;
+		_cleared_object_areas[coa_index].first_tile = old_first_tile;
 		if (ret.Failed()) return_cmd_error(STR_ERROR_UNABLE_TO_EXCAVATE_LAND);
 		cost.AddCost(ret);
 	}

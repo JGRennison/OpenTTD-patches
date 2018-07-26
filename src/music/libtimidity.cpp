@@ -14,6 +14,8 @@
 #include "../sound_type.h"
 #include "../debug.h"
 #include "libtimidity.h"
+#include "midifile.hpp"
+#include "../base_media_base.h"
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -22,9 +24,6 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <timidity.h>
-#if defined(PSP)
-#include <pspaudiolib.h>
-#endif /* PSP */
 
 #include "../safeguards.h"
 
@@ -43,16 +42,6 @@ static struct {
 	uint32 song_length;
 	uint32 song_position;
 } _midi; ///< Metadata about the midi we're playing.
-
-#if defined(PSP)
-static void AudioOutCallback(void *buf, unsigned int _reqn, void *userdata)
-{
-	memset(buf, 0, _reqn * PSP_NUM_AUDIO_CHANNELS);
-	if (_midi.status == MIDI_PLAYING) {
-		mid_song_read_wave(_midi.song, buf, _reqn * PSP_NUM_AUDIO_CHANNELS);
-	}
-}
-#endif /* PSP */
 
 /** Factory for the libtimidity driver. */
 static FMusicDriver_LibTimidity iFMusicDriver_LibTimidity;
@@ -75,17 +64,7 @@ const char *MusicDriver_LibTimidity::Start(const char * const *param)
 	_midi.options.rate = 44100;
 	_midi.options.format = MID_AUDIO_S16LSB;
 	_midi.options.channels = 2;
-#if defined(PSP)
-	_midi.options.buffer_size = PSP_NUM_AUDIO_SAMPLES;
-#else
 	_midi.options.buffer_size = _midi.options.rate;
-#endif
-
-#if defined(PSP)
-	pspAudioInit();
-	pspAudioSetChannelCallback(_midi.options.channels, &AudioOutCallback, NULL);
-	pspAudioSetVolume(_midi.options.channels, PSP_VOLUME_MAX, PSP_VOLUME_MAX);
-#endif /* PSP */
 
 	return NULL;
 }
@@ -96,11 +75,14 @@ void MusicDriver_LibTimidity::Stop()
 	mid_exit();
 }
 
-void MusicDriver_LibTimidity::PlaySong(const char *filename)
+void MusicDriver_LibTimidity::PlaySong(const MusicSongInfo &song)
 {
-	this->StopSong();
+	std::string filename = MidiFile::GetSMFFile(song);
 
-	_midi.stream = mid_istream_open_file(filename);
+	this->StopSong();
+	if (filename.empty()) return;
+
+	_midi.stream = mid_istream_open_file(filename.c_str());
 	if (_midi.stream == NULL) {
 		DEBUG(driver, 0, "Could not open music file");
 		return;

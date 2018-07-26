@@ -192,7 +192,8 @@ static const SaveLoad _town_desc[] = {
 
 	SLE_CONDLST(Town, psa_list,            REF_STORAGE,                161, SL_MAX_VERSION),
 
-	SLE_CONDVAR(Town, cargo_produced,       SLE_UINT32,                166, SL_MAX_VERSION),
+	SLE_CONDVAR(Town, cargo_produced,        SLE_FILE_U32 | SLE_VAR_U64, 166, 198),
+	SLE_CONDVAR(Town, cargo_produced,        SLE_UINT64,                 199, SL_MAX_VERSION),
 
 	/* reserve extra space in savegame here. (currently 30 bytes) */
 	SLE_CONDNULL(30, 2, SL_MAX_VERSION),
@@ -274,12 +275,13 @@ static void Save_TOWN()
 static void Load_TOWN()
 {
 	int index;
+	uint num_cargo = IsSavegameVersionBefore(199) ? 32 : NUM_CARGO;
 
 	while ((index = SlIterateArray()) != -1) {
 		Town *t = new (index) Town();
 		SlObject(t, _town_desc);
 
-		for (CargoID i = 0; i < NUM_CARGO; i++) {
+		for (CargoID i = 0; i < num_cargo; i++) {
 			SlObject(&t->supplied[i], _town_supplied_desc);
 		}
 		for (int i = TE_BEGIN; i < TE_END; i++) {
@@ -295,7 +297,7 @@ static void Load_TOWN()
 		SlObject(&t->cargo_accepted, GetTileMatrixDesc());
 		if (t->cargo_accepted.area.w != 0) {
 			uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
-			t->cargo_accepted.data = MallocT<uint32>(arr_len);
+			t->cargo_accepted.data = MallocT<CargoTypes>(arr_len);
 			SlArray(t->cargo_accepted.data, arr_len, SLE_UINT32);
 
 			/* Rebuild total cargo acceptance. */
