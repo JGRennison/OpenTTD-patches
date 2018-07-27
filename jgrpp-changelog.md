@@ -2,6 +2,26 @@
 
 * * *
 
+### v0.26.0 (2018-07-27)
+* Fix handling of load if available cargo type orders.
+* Fix double-accounting of road tunnel/bridge infrastructure counts when changing owner.
+* Fix assertion failure on selecting cancel depot/service menu item in vehicle list window.
+* Fix a required directory not being created when running 'make install'.
+* Update current vehicle order if modifying corresponding order's (per-cargo) load/unload mode.
+* Add custom bridge heads for rail bridges.
+* Add bidirectional advanced mode for signals on tunnels/bridges.
+* Add go to depot and sell vehicle orders.
+* Add order mode to lock timetable wait time against autofill/automate changes.
+* Add setting to allow placing stations under bridges.
+* Add setting to allow placing all NewGRF objects under bridges.
+* Routing restrictions:
+  * Add "wait at entrance PBS for reservation ending here" action.
+  * Add support for slot operations at PBS end signal.
+* Bump trunk base from commit 11d1690acb73e77995558dad8fbdde1034e969ed to commit bf8d7df7367055dcfad6cc1c21fd9c762ffc2fe4.
+  * This includes an increase in the number of rail track types to 64.
+  * This includes an increase in the number of cargoes to 64.
+  * This includes a fix for crashes when building tunnels.
+
 ### v0.25.2 (2018-06-13)
 * Revert upstream trunk changes to font/text rendering on Windows which were merged in v0.25.1. This is to fix various crashes and rendering errors.
 * Fix crash when attempting to request information on a large number of unknown GRFs from a multiplayer server.

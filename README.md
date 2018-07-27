@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.25.2
+## JGR's Patchpack version 0.26.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -152,8 +152,6 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Polyline rail track building tool [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=57080) (added in v0.13.0)
 
-* Increase number of available rail track types from 16 to 32 [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.13.0)
-
 * Cargo type orders, this allows order load/unload types to be set per cargo type [imported](https://www.tt-forums.net/viewtopic.php?p=1047749) (added in v0.15.0)  
   This has been modified so that cargo dest can follow orders with different load/unload types.
 
@@ -164,7 +162,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Add a setting to increase the station catchment radius (added in v0.16.0)
 
-* Custom bridge heads for road bridges (added in v0.17.0)
+* Custom bridge heads for road bridges (added in v0.17.0) and rail bridges (added in v0.26.0)
 
 * Chunnels (tunnels under bodies of water) [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=41775) (added in v0.18.0)  
   This is enabled by a setting (off by default).
@@ -194,7 +192,6 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Performance improvements  
   * Improve dedicated server performance. Up to approximately 2.5x faster. (added in v0.8.1)  
   * Improve cargodest link graph calculation performance. Up to approximately 2x faster. (~1.3x faster in v0.8.1, further improvements in v0.17.2)  
-  * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator. (added in v0.9.0)  
   * Various minor changes (see changelog).
 
 * Multiple docks per station [imported](https://github.com/KeldorKatarn/OpenTTD_PatchPack/tree/feature/multiple_docks) (added in v0.22.0)
@@ -218,7 +215,6 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Miscellaneous  
   * Various improvements to the crash logger.  
-  * Label threads with a descriptive name on supported Unixy platforms. (added in v0.8.1)  
   * Adjust cargo dest link graph job scheduling algorithm to improve responsiveness. (added in v0.16.0)  
   * Add hover tool-tips, and improve visual contrast of cargo labels, in cargo dest graph legend window. (added in v0.16.0)  
   * Add shift-clicking on vehicle depot button to select specific depot. (added in v0.16.1)  
@@ -230,12 +226,19 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Improve scrolling rendering of link graph overlay on viewport and small map. (added in v0.25.0).  
   * Add setting to automatically save when losing connection to a network game. (added in v0.25.0).  
   * Station rating: track "last visited vehicle type" separately per cargo. (added in v0.25.0).  
+  * Go to depot and sell vehicle orders. (added in v0.26.0).  
+  * Order mode to lock timetable wait time against autofill/automate changes. (added in v0.26.0).  
+  * Settings to allow placing stations and all NewGRF objects under bridges. (added in v0.26.0).  
   * Various minor fixes, see changelog.
 
 * Translations  
   * German (by Auge and Kruemelchen)  
   * Korean (by kiwitreekor and TELK)
 
+* Superseded features
+  * Label threads with a descriptive name on supported Unixy platforms (added in v0.8.1), in trunk as of r27670.  
+  * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator (added in v0.9.0), in trunk as of commit 17257b96.  
+  * Increase number of available rail track types from 16 to 32 [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.13.0), this is increased to 64 rail track types in trunk as of commit bf8d7df7, (added in v0.26.0).
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  
 * This is not guaranteed to be bug free  
