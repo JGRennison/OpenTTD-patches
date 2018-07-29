@@ -508,6 +508,8 @@ struct TimetableWindow : Window {
 				VehicleOrderID earlyID = BuildArrivalDepartureList(v, arr_dep) ? cur_order : (VehicleOrderID)INVALID_VEH_ORDER_ID;
 
 				int y = r.top + WD_FRAMERECT_TOP;
+				Dimension lock_d = GetSpriteSize(SPR_LOCK);
+				int line_height = max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
 
 				bool show_late = this->show_expected && v->lateness_counter > DATE_UNIT_SIZE;
 				Ticks offset = show_late ? 0 : -v->lateness_counter;
@@ -542,7 +544,7 @@ struct TimetableWindow : Window {
 									show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
 						}
 					}
-					y += FONT_HEIGHT_NORMAL;
+					y += line_height;
 				}
 				break;
 			}
