@@ -145,7 +145,7 @@ void ShiftBridgeEntranceSimulatedSignalsExtended(TileIndex t, int shift, uint64 
 		size_t i = orig_size;
 		auto insert_bits = [&](uint64 bits, size_t pos) {
 			if (bits) {
-				if (pos >= lbss->signal_red_bits.size()) lbss->signal_red_bits.resize(pos);
+				if (pos >= lbss->signal_red_bits.size()) lbss->signal_red_bits.resize(pos + 1);
 				lbss->signal_red_bits[pos] |= bits;
 			}
 		};
