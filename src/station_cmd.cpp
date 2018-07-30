@@ -731,9 +731,9 @@ CommandCost ClearTile_Station(TileIndex tile, DoCommandFlag flags);
  * @param check_bridge Check for the existence of a bridge.
  * @return The cost in case of success, or an error code if it failed.
  */
-CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z, bool allow_steep, bool check_bridge = true)
+CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z, bool allow_steep, bool check_bridge)
 {
-	if (check_bridge && IsBridgeAbove(tile) && !_settings_game.construction.allow_stations_under_bridges) {
+	if (check_bridge && IsBridgeAbove(tile)) {
 		return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 	}
 
@@ -776,30 +776,6 @@ CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z
 }
 
 /**
- * Tries to clear the given area.
- * @param tile_area Area to check.
- * @param flags Operation to perform.
- * @return The cost in case of success, or an error code if it failed.
- */
-CommandCost CheckFlatLand(TileArea tile_area, DoCommandFlag flags)
-{
-	CommandCost cost(EXPENSES_CONSTRUCTION);
-	int allowed_z = -1;
-
-	TILE_AREA_LOOP(tile_cur, tile_area) {
-		CommandCost ret = CheckBuildableTile(tile_cur, 0, allowed_z, true);
-		if (ret.Failed()) return ret;
-		cost.AddCost(ret);
-
-		ret = DoCommand(tile_cur, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
-		if (ret.Failed()) return ret;
-		cost.AddCost(ret);
-	}
-
-	return cost;
-}
-
-/**
  * Checks if a rail station can be built at the given area.
  * @param tile_area Area to check.
  * @param flags Operation to perform.
@@ -823,7 +799,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 	bool slope_cb = statspec != NULL && HasBit(statspec->callback_mask, CBM_STATION_SLOPE_CHECK);
 
 	TILE_AREA_LOOP(tile_cur, tile_area) {
-		CommandCost ret = CheckBuildableTile(tile_cur, invalid_dirs, allowed_z, false);
+		CommandCost ret = CheckBuildableTile(tile_cur, invalid_dirs, allowed_z, false, !_settings_game.construction.allow_stations_under_bridges);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 
@@ -905,7 +881,7 @@ static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags
 	int allowed_z = -1;
 
 	TILE_AREA_LOOP(cur_tile, tile_area) {
-		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through);
+		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, !_settings_game.construction.allow_stations_under_bridges);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 
@@ -1009,7 +985,7 @@ static CommandCost CheckFlatLandAirport(TileArea tile_area, DoCommandFlag flags,
 	int allowed_z = -1;
 
 	TILE_AREA_LOOP(tile_cur, tile_area) {
-		CommandCost ret = CheckBuildableTile(tile_cur, 0, allowed_z, true);
+		CommandCost ret = CheckBuildableTile(tile_cur, 0, allowed_z, true, true);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 

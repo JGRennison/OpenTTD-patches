@@ -502,7 +502,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 				}
 
 				case MP_STATION: {
-					if (!_settings_game.construction.allow_stations_under_bridges) goto not_valid_below;
+					if (!_settings_game.construction.allow_stations_under_bridges || IsAirport(tile)) goto not_valid_below;
 					break;
 				}
 
