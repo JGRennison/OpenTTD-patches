@@ -5063,7 +5063,7 @@ void DeleteVisibleTrain(Train *v)
 			/* Vehicle is inside a wormhole, u->track contains no useful value then. */
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
 				TileIndex end = GetOtherTunnelBridgeEnd(tile);
-				UpdateSignalsOnSegment(end, INVALID_DIAGDIR, GetTileOwner(tile));
+				AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
 				SetSignalledBridgeTunnelGreenIfClear(tile, end);
 			}
 		} else {
