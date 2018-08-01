@@ -154,7 +154,7 @@ class NIHStation : public NIHelper {
 
 	/* virtual */ uint Resolve(uint index, uint var, uint param, bool *avail) const
 	{
-		StationResolverObject ro(GetStationSpec(index), Station::GetByTile(index), index);
+		StationResolverObject ro(GetStationSpec(index), Station::GetByTile(index), index, INVALID_RAILTYPE);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, avail);
 	}
 };

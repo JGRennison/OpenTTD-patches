@@ -29,6 +29,7 @@ struct StationScopeResolver : public ScopeResolver {
 	const struct StationSpec *statspec; ///< Station (type) specification.
 	CargoID cargo_type;                 ///< Type of cargo of the station.
 	Axis axis;                          ///< Station axis, used only for the slope check callback.
+	RailType rt;                        ///< %RailType of the station (unbuilt stations only).
 
 	/**
 	 * Constructor for station scopes.
@@ -36,9 +37,10 @@ struct StationScopeResolver : public ScopeResolver {
 	 * @param statspec Station (type) specification.
 	 * @param st Instance of the station.
 	 * @param tile %Tile of the station.
+	 * @param rt %RailType of the station (unbuilt stations only).
 	 */
-	StationScopeResolver(ResolverObject &ro, const StationSpec *statspec, BaseStation *st, TileIndex tile)
-		: ScopeResolver(ro), tile(tile), st(st), statspec(statspec), cargo_type(CT_INVALID), axis(INVALID_AXIS)
+	StationScopeResolver(ResolverObject &ro, const StationSpec *statspec, BaseStation *st, TileIndex tile, RailType rt)
+		: ScopeResolver(ro), tile(tile), st(st), statspec(statspec), cargo_type(CT_INVALID), axis(INVALID_AXIS), rt(rt)
 	{
 	}
 
@@ -53,7 +55,7 @@ struct StationResolverObject : public ResolverObject {
 	StationScopeResolver station_scope; ///< The station scope resolver.
 	TownScopeResolver *town_scope;      ///< The town scope resolver (created on the first call).
 
-	StationResolverObject(const StationSpec *statspec, BaseStation *st, TileIndex tile,
+	StationResolverObject(const StationSpec *statspec, BaseStation *st, TileIndex tile, RailType rt,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
 	~StationResolverObject();
 
@@ -179,10 +181,10 @@ const StationSpec *GetStationSpec(TileIndex t);
 /* Evaluate a tile's position within a station, and return the result a bitstuffed format. */
 uint32 GetPlatformInfo(Axis axis, byte tile, int platforms, int length, int x, int y, bool centred);
 
-SpriteID GetCustomStationRelocation(const StationSpec *statspec, BaseStation *st, TileIndex tile, uint32 var10 = 0);
+SpriteID GetCustomStationRelocation(const StationSpec *statspec, BaseStation *st, TileIndex tile, RailType rt, uint32 var10 = 0);
 SpriteID GetCustomStationFoundationRelocation(const StationSpec *statspec, BaseStation *st, TileIndex tile, uint layout, uint edge_info);
-uint16 GetStationCallback(CallbackID callback, uint32 param1, uint32 param2, const StationSpec *statspec, BaseStation *st, TileIndex tile);
-CommandCost PerformStationTileSlopeCheck(TileIndex north_tile, TileIndex cur_tile, const StationSpec *statspec, Axis axis, byte plat_len, byte numtracks);
+uint16 GetStationCallback(CallbackID callback, uint32 param1, uint32 param2, const StationSpec *statspec, BaseStation *st, TileIndex tile, RailType rt);
+CommandCost PerformStationTileSlopeCheck(TileIndex north_tile, TileIndex cur_tile, RailType rt, const StationSpec *statspec, Axis axis, byte plat_len, byte numtracks);
 
 /* Allocate a StationSpec to a Station. This is called once per build operation. */
 int AllocateSpecToStation(const StationSpec *statspec, BaseStation *st, bool exec);

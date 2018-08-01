@@ -90,7 +90,7 @@ static bool IsStationAvailable(const StationSpec *statspec)
 {
 	if (statspec == NULL || !HasBit(statspec->callback_mask, CBM_STATION_AVAIL)) return true;
 
-	uint16 cb_res = GetStationCallback(CBID_STATION_AVAILABILITY, 0, 0, statspec, NULL, INVALID_TILE);
+	uint16 cb_res = GetStationCallback(CBID_STATION_AVAILABILITY, 0, 0, statspec, NULL, INVALID_TILE, _cur_railtype);
 	if (cb_res == CALLBACK_FAILED) return true;
 
 	return Convert8bitBooleanCallback(statspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res);

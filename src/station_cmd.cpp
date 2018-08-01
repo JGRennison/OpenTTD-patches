@@ -805,7 +805,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 
 		if (slope_cb) {
 			/* Do slope check if requested. */
-			ret = PerformStationTileSlopeCheck(tile_area.tile, tile_cur, statspec, axis, plat_len, numtracks);
+			ret = PerformStationTileSlopeCheck(tile_area.tile, tile_cur, rt, statspec, axis, plat_len, numtracks);
 			if (ret.Failed()) return ret;
 		}
 
@@ -1289,7 +1289,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 
 		/* Check if the station is buildable */
 		if (HasBit(statspec->callback_mask, CBM_STATION_AVAIL)) {
-			uint16 cb_res = GetStationCallback(CBID_STATION_AVAILABILITY, 0, 0, statspec, NULL, INVALID_TILE);
+			uint16 cb_res = GetStationCallback(CBID_STATION_AVAILABILITY, 0, 0, statspec, NULL, INVALID_TILE, rt);
 			if (cb_res != CALLBACK_FAILED && !Convert8bitBooleanCallback(statspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res)) return CMD_ERROR;
 		}
 	}
@@ -1360,7 +1360,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 					uint32 platinfo = GetPlatformInfo(AXIS_X, GetStationGfx(tile), plat_len, numtracks_orig, plat_len - w, numtracks_orig - numtracks, false);
 
 					/* As the station is not yet completely finished, the station does not yet exist. */
-					uint16 callback = GetStationCallback(CBID_STATION_TILE_LAYOUT, platinfo, 0, statspec, NULL, tile);
+					uint16 callback = GetStationCallback(CBID_STATION_TILE_LAYOUT, platinfo, 0, statspec, NULL, tile, rt);
 					if (callback != CALLBACK_FAILED) {
 						if (callback < 8) {
 							SetStationGfx(tile, (callback & ~1) + axis);
@@ -2844,7 +2844,7 @@ static void DrawTile_Station(TileInfo *ti)
 				tile_layout = GetStationGfx(ti->tile);
 
 				if (HasBit(statspec->callback_mask, CBM_STATION_SPRITE_LAYOUT)) {
-					uint16 callback = GetStationCallback(CBID_STATION_SPRITE_LAYOUT, 0, 0, statspec, st, ti->tile);
+					uint16 callback = GetStationCallback(CBID_STATION_SPRITE_LAYOUT, 0, 0, statspec, st, ti->tile, INVALID_RAILTYPE);
 					if (callback != CALLBACK_FAILED) tile_layout = (callback & ~1) + GetRailStationAxis(ti->tile);
 				}
 
@@ -3002,7 +3002,7 @@ draw_default_foundation:
 			uint32 var10_values = layout->PrepareLayout(total_offset, rti->fallback_railtype, 0, 0, separate_ground);
 			uint8 var10;
 			FOR_EACH_SET_BIT(var10, var10_values) {
-				uint32 var10_relocation = GetCustomStationRelocation(statspec, st, ti->tile, var10);
+				uint32 var10_relocation = GetCustomStationRelocation(statspec, st, ti->tile, INVALID_RAILTYPE, var10);
 				layout->ProcessRegisters(var10, var10_relocation, separate_ground);
 			}
 			tmp_rail_layout.seq = layout->GetLayout(&tmp_rail_layout.ground);
@@ -3010,9 +3010,9 @@ draw_default_foundation:
 			total_offset = 0;
 		} else if (statspec != NULL) {
 			/* Simple sprite layout */
-			ground_relocation = relocation = GetCustomStationRelocation(statspec, st, ti->tile, 0);
+			ground_relocation = relocation = GetCustomStationRelocation(statspec, st, ti->tile, INVALID_RAILTYPE, 0);
 			if (HasBit(statspec->flags, SSF_SEPARATE_GROUND)) {
-				ground_relocation = GetCustomStationRelocation(statspec, st, ti->tile, 1);
+				ground_relocation = GetCustomStationRelocation(statspec, st, ti->tile, INVALID_RAILTYPE, 1);
 			}
 			ground_relocation += rti->fallback_railtype;
 		}
