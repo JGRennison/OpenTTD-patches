@@ -56,7 +56,7 @@
 
 ### v0.24.1 (2018-05-11)
 * Fix crash when using through-load orders with refits.
-* Fix configure script not being able to detect clanf on Mac OSX.
+* Fix configure script not being able to detect clang on Mac OSX.
 * Zoning:
   * Fix overlays on tiles with half-tile foundations.
   * Fix changes in town rating not or only partially refreshing the screen in authority overlay mode.
