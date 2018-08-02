@@ -47,6 +47,7 @@
 #include "station_map.h"
 #include "industry_map.h"
 #include "object_map.h"
+#include "newgrf_station.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -502,7 +503,27 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 				}
 
 				case MP_STATION: {
-					if (!_settings_game.construction.allow_stations_under_bridges || IsAirport(tile)) goto not_valid_below;
+					switch (GetStationType(tile)) {
+						case STATION_AIRPORT:
+							goto not_valid_below;
+
+						case STATION_RAIL:
+						case STATION_WAYPOINT: {
+							const StationSpec *statspec = GetStationSpec(tile);
+							if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
+								uint layout = GetStationGfx (tile);
+								assert(layout < 8);
+								if (GetTileMaxZ(tile) + statspec->bridge_height[layout] > z_start + 1) goto not_valid_below;
+							} else if (!_settings_game.construction.allow_stations_under_bridges) {
+								goto not_valid_below;
+							}
+							break;
+						}
+
+						default:
+							if (!_settings_game.construction.allow_stations_under_bridges) goto not_valid_below;
+							break;
+					}
 					break;
 				}
 

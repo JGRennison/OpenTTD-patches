@@ -133,14 +133,13 @@ static CommandCost IsValidTileForWaypoint(TileIndex tile, Axis axis, StationID *
 		return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
 	}
 
-	if (IsBridgeAbove(tile) && !_settings_game.construction.allow_stations_under_bridges) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
-
 	return CommandCost();
 }
 
 extern void GetStationLayout(byte *layout, int numtracks, int plat_len, const StationSpec *statspec);
 extern CommandCost FindJoiningWaypoint(StationID existing_station, StationID station_to_join, bool adjacent, TileArea ta, Waypoint **wp);
 extern CommandCost CanExpandRailStation(const BaseStation *st, TileArea &new_ta, Axis axis);
+extern bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout);
 
 /**
  * Convert existing rail to waypoint. Eg build a waypoint station over
@@ -187,6 +186,16 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Waypoint::IsValidID(station_to_join))) return CMD_ERROR;
 
+	const StationSpec *spec = StationClass::Get(spec_class)->GetSpec(spec_index);
+	byte *layout_ptr = AllocaM(byte, count);
+	if (spec == NULL) {
+		/* The layout must be 0 for the 'normal' waypoints by design. */
+		memset(layout_ptr, 0, count);
+	} else {
+		/* But for NewGRF waypoints we like to have their style. */
+		GetStationLayout(layout_ptr, count, 1, spec);
+	}
+
 	/* Make sure the area below consists of clear tiles. (OR tiles belonging to a certain rail station) */
 	StationID est = INVALID_STATION;
 
@@ -196,6 +205,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		TileIndex tile = start_tile + i * offset;
 		CommandCost ret = IsValidTileForWaypoint(tile, axis, &est);
 		if (ret.Failed()) return ret;
+		if (!IsRailStationBridgeAboveOk(tile, spec, layout_ptr[i])) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 	}
 
 	Waypoint *wp = NULL;
@@ -245,15 +255,6 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 		wp->UpdateVirtCoord();
 
-		const StationSpec *spec = StationClass::Get(spec_class)->GetSpec(spec_index);
-		byte *layout_ptr = AllocaM(byte, count);
-		if (spec == NULL) {
-			/* The layout must be 0 for the 'normal' waypoints by design. */
-			memset(layout_ptr, 0, count);
-		} else {
-			/* But for NewGRF waypoints we like to have their style. */
-			GetStationLayout(layout_ptr, count, 1, spec);
-		}
 		byte map_spec_index = AllocateSpecToStation(spec, wp, true);
 
 		Company *c = Company::Get(wp->owner);

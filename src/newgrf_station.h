@@ -111,6 +111,11 @@ enum StationRandomTrigger {
 	SRT_PATH_RESERVATION, ///< Trigger platform when train reserves path.
 };
 
+enum StationSpecIntlFlags {
+	SSIF_COPIED_LAYOUTS,      ///< Copied StationLayout **layouts.
+	SSIF_BRIDGE_HEIGHTS_SET,  ///< byte bridge_height[8] is set.
+};
+
 /* Station layout for given dimensions - it is a two-dimensional array
  * where index is computed as (x * platforms) + platform. */
 typedef byte *StationLayout;
@@ -164,13 +169,14 @@ struct StationSpec {
 	byte pylons;  ///< Bitmask of base tiles (0 - 7) which should contain elrail pylons
 	byte wires;   ///< Bitmask of base tiles (0 - 7) which should contain elrail wires
 	byte blocked; ///< Bitmask of base tiles (0 - 7) which are blocked to trains
+	byte bridge_height[8]; ///< Minimum height for a bridge above, 0 for none
 
 	AnimationInfo animation;
 
 	byte lengths;
 	byte *platforms;
 	StationLayout **layouts;
-	bool copied_layouts;
+	byte internal_flags; ///< Bitmask of internal spec flags (StationSpecIntlFlags)
 };
 
 /** Struct containing information relating to station classes. */

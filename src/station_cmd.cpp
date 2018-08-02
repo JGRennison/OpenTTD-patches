@@ -775,6 +775,18 @@ CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z
 	return cost;
 }
 
+bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout)
+{
+	assert(layout < 8);
+	if (!IsBridgeAbove(tile)) return true;
+
+	if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
+		return (GetTileMaxZ(tile) + statspec->bridge_height[layout] <= GetBridgeHeight(GetSouthernBridgeEnd(tile)));
+	} else {
+		return _settings_game.construction.allow_stations_under_bridges;
+	}
+}
+
 /**
  * Checks if a rail station can be built at the given area.
  * @param tile_area Area to check.
@@ -799,7 +811,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 	bool slope_cb = statspec != NULL && HasBit(statspec->callback_mask, CBM_STATION_SLOPE_CHECK);
 
 	TILE_AREA_LOOP(tile_cur, tile_area) {
-		CommandCost ret = CheckBuildableTile(tile_cur, invalid_dirs, allowed_z, false, !_settings_game.construction.allow_stations_under_bridges);
+		CommandCost ret = CheckBuildableTile(tile_cur, invalid_dirs, allowed_z, false, false);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 
@@ -1255,6 +1267,26 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 	/* Make sure the area below consists of clear tiles. (OR tiles belonging to a certain rail station) */
 	StationID est = INVALID_STATION;
 	SmallVector<Train *, 4> affected_vehicles;
+
+	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
+
+	TileIndexDiff tile_delta = (axis == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
+	byte *layout_ptr = AllocaM(byte, numtracks * plat_len);
+	GetStationLayout(layout_ptr, numtracks, plat_len, statspec);
+
+	{
+		TileIndex tile_track = tile_org;
+		byte *check_layout_ptr = layout_ptr;
+		for (uint i = 0; i < numtracks; i++) {
+			TileIndex tile = tile_track;
+			for (uint j = 0; j < plat_len; j++) {
+				if (!IsRailStationBridgeAboveOk(tile, statspec, *check_layout_ptr++)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+				tile += tile_delta;
+			}
+			tile_track += tile_delta ^ TileDiffXY(1, 1); // perpendicular to tile_delta
+		}
+	}
+
 	/* Clear the land below the station. */
 	CommandCost cost = CheckFlatLandRailStation(new_location, flags, axis, &est, rt, affected_vehicles, spec_class, spec_index, plat_len, numtracks);
 	if (cost.Failed()) return cost;
@@ -1275,7 +1307,6 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 	}
 
 	/* Check if we can allocate a custom stationspec to this station */
-	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
 	int specindex = AllocateSpecToStation(statspec, st, (flags & DC_EXEC) != 0);
 	if (specindex == -1) return_cmd_error(STR_ERROR_TOO_MANY_STATION_SPECS);
 
@@ -1295,8 +1326,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 	}
 
 	if (flags & DC_EXEC) {
-		TileIndexDiff tile_delta;
-		byte *layout_ptr;
+
 		byte numtracks_orig;
 		Track track;
 
@@ -1311,11 +1341,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 			st->cached_anim_triggers |= statspec->animation.triggers;
 		}
 
-		tile_delta = (axis == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
 		track = AxisToTrack(axis);
-
-		layout_ptr = AllocaM(byte, numtracks * plat_len);
-		GetStationLayout(layout_ptr, numtracks, plat_len, statspec);
 
 		numtracks_orig = numtracks;
 

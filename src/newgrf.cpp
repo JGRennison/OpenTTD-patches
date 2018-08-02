@@ -1965,7 +1965,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 				break;
 
 			case 0x0E: // Define custom layout
-				statspec->copied_layouts = false;
+				ClrBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS);
 
 				while (buf->HasData()) {
 					byte length = buf->ReadByte();
@@ -2028,7 +2028,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 				statspec->lengths   = srcstatspec->lengths;
 				statspec->platforms = srcstatspec->platforms;
 				statspec->layouts   = srcstatspec->layouts;
-				statspec->copied_layouts = true;
+				SetBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS);
 				break;
 			}
 
@@ -2083,6 +2083,13 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 					uint num_building_sprites = buf->ReadByte();
 					/* On error, bail out immediately. Temporary GRF data was already freed */
 					if (ReadSpriteLayout(buf, num_building_sprites, false, GSF_STATIONS, true, false, dts)) return CIR_DISABLED;
+				}
+				break;
+
+			case 0x1B: // Minimum height for a bridge above
+				SetBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET);
+				for (uint i = 0; i < 8; i++) {
+					statspec->bridge_height[i] = buf->ReadByte();
 				}
 				break;
 
@@ -7927,7 +7934,7 @@ static void ResetCustomStations()
 			delete[] statspec->renderdata;
 
 			/* Release platforms and layouts */
-			if (!statspec->copied_layouts) {
+			if (!HasBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS)) {
 				for (uint l = 0; l < statspec->lengths; l++) {
 					for (uint p = 0; p < statspec->platforms[l]; p++) {
 						free(statspec->layouts[l][p]);
