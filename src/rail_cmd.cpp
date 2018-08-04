@@ -1195,9 +1195,9 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	CommandCost cost;
 	/* handle signals simulation on tunnel/bridge. */
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-		if (TracksOverlap(GetTunnelBridgeTrackBits(tile))) return_cmd_error(STR_ERROR_NO_SUITABLE_RAILROAD_TRACK);
-		bool bidirectional = HasBit(p1, 18) && (sigtype == SIGTYPE_PBS);
 		TileIndex tile_exit = GetOtherTunnelBridgeEnd(tile);
+		if (TracksOverlap(GetTunnelBridgeTrackBits(tile)) || TracksOverlap(GetTunnelBridgeTrackBits(tile_exit))) return_cmd_error(STR_ERROR_NO_SUITABLE_RAILROAD_TRACK);
+		bool bidirectional = HasBit(p1, 18) && (sigtype == SIGTYPE_PBS);
 		cost = CommandCost();
 		bool flip_variant = false;
 		bool is_pbs = (sigtype == SIGTYPE_PBS) || (sigtype == SIGTYPE_PBS_ONEWAY);
