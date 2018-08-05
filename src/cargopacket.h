@@ -309,6 +309,15 @@ protected:
 	template<class Taction>
 	void PopCargo(Taction action);
 
+	inline uint RecalculateCargoTotal() const
+	{
+		uint total = 0;
+		for (const auto &cp : this->packets) {
+			total += cp->Count();
+		}
+		return total;
+	}
+
 public:
 
 	/**
@@ -320,12 +329,14 @@ public:
 				this->action_counts[MTA_DELIVER] +
 				this->action_counts[MTA_TRANSFER] +
 				this->action_counts[MTA_LOAD] == this->count,
-				"%u + %u + %u + %u != %u",
+				"%u + %u + %u + %u != %u, (%u in %u packets)",
 				this->action_counts[MTA_KEEP],
 				this->action_counts[MTA_DELIVER],
 				this->action_counts[MTA_TRANSFER],
 				this->action_counts[MTA_LOAD],
-				this->count);
+				this->count,
+				this->RecalculateCargoTotal(),
+				(uint) this->packets.size());
 	}
 
 protected:
