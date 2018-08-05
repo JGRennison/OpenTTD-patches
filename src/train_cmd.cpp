@@ -3149,6 +3149,10 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				goto invalid_rail;
 			}
 			if (old_direction != v->direction) notify_direction_changed(old_direction, v->direction);
+			DiagDirection dir = GetTunnelBridgeDirection(gp.old_tile);
+			const byte *b = _initial_tile_subcoord[AxisToTrack(DiagDirToAxis(dir))][dir];
+			gp.x = (gp.x & ~0xF) | b[0];
+			gp.y = (gp.y & ~0xF) | b[1];
 		}
 		if (!(v->track & TRACK_BIT_WORMHOLE)) {
 			/* Not inside tunnel */
