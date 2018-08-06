@@ -1,0 +1,13 @@
+notifications:
+  push:
+    irc:
+      - openttd
+      - openttd.notice
+  pull-request:
+    irc:
+      - openttd
+      - openttd.notice
+  issue:
+    irc:
+      - openttd
+      - openttd.notice
