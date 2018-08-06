@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.26.1 (2018-08-06)
+* Fix crash when deleting train from signalled tunnel/bridge (e.g. due to company bankruptcy).
+* Fix being able to add signals to bridge with junction custom bridge head at far end.
+* Fix being able to build bridges over airports (when using the setting to allow placing stations under bridges).
+* Fix incorrect alignment of trains on bridges after entering via a custom bridge head at a 45° angle.
+* Fix line height mismatch between columns in timetable window.
+* NewGRF stations:
+  * Implement variable 0x42 and property 0x1B.
+* Bump trunk base from commit bf8d7df7367055dcfad6cc1c21fd9c762ffc2fe4 to commit 5df3a65074295f7a50f3a5a6bab355b6ab28afdc.
+  * This fixes being unable to build rail waypoints on the NW-SE axis.
+
 ### v0.26.0 (2018-07-27)
 * Fix handling of load if available cargo type orders.
 * Fix double-accounting of road tunnel/bridge infrastructure counts when changing owner.
