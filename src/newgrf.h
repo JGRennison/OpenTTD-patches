@@ -139,6 +139,8 @@ struct GRFFile : ZeroedMemoryAllocator {
 	uint32 grf_features;                     ///< Bitset of GrfSpecFeature the grf uses
 	PriceMultipliers price_base_multipliers; ///< Price base multipliers as set by the grf.
 
+	uint32 var9D_overlay;                    ///< Overlay for global variable 9D (action 0x14)
+
 	GRFFile(const struct GRFConfig *config);
 	~GRFFile();
 

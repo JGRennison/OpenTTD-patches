@@ -5861,8 +5861,8 @@ bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile)
 			*value = 0x3F; // constant fake value to avoid desync
 			return true;
 
-		case 0x1D: // TTD Platform, 00=TTDPatch, 01=OpenTTD
-			*value = 1;
+		case 0x1D: // TTD Platform, 00=TTDPatch, 01=OpenTTD, also used for feature tests (bits 31..4)
+			*value = 1 | grffile->var9D_overlay;
 			return true;
 
 		case 0x1E: // Miscellaneous GRF features
@@ -7615,6 +7615,23 @@ static bool SkipUnknownInfo(ByteReader *buf, byte type);
 static bool HandleNodes(ByteReader *buf, AllowedSubtags *tags);
 
 /**
+ * Try to skip the current branch node and all subnodes.
+ * This is suitable for use with AllowedSubtags.
+ * @param buf Buffer.
+ * @return True if we could skip the node, false if an error occurred.
+ */
+static bool SkipInfoChunk(ByteReader *buf)
+{
+	byte type = buf->ReadByte();
+	while (type != 0) {
+		buf->ReadDWord(); // chunk ID
+		if (!SkipUnknownInfo(buf, type)) return false;
+		type = buf->ReadByte();
+	}
+	return true;
+}
+
+/**
  * Callback function for 'INFO'->'PARA'->param_num->'VALU' to set the names
  * of some parameter values (type uint/enum) or the names of some bits
  * (type bitmask). In both cases the format is the same:
@@ -7709,9 +7726,146 @@ AllowedSubtags _tags_info[] = {
 	AllowedSubtags()
 };
 
+/** Action14 feature definition */
+struct GRFFeatureInfo {
+	const char *name; // NULL indicates the end of the list
+	uint16 version;
+
+	/** Create empty object used to identify the end of a list. */
+	GRFFeatureInfo() :
+		name(NULL),
+		version(0)
+	{}
+
+	GRFFeatureInfo(const char *name, uint16 version) :
+		name(name),
+		version(version)
+	{}
+};
+
+/** Action14 feature list */
+static const GRFFeatureInfo _grf_feature_list[] = {
+	GRFFeatureInfo("feature_test", 1),
+	GRFFeatureInfo(),
+};
+
+/** Action14 feature test instance */
+struct GRFFeatureTest {
+	const GRFFeatureInfo *feature;
+	uint16 min_version;
+	uint16 max_version;
+	uint8 platform_var_bit;
+
+	void Reset()
+	{
+		this->feature = NULL;
+		this->min_version = 1;
+		this->max_version = UINT16_MAX;
+		this->platform_var_bit = 0;
+	}
+
+	void ExecuteTest()
+	{
+		uint16 version = (this->feature != NULL) ? this->feature->version : 0;
+		bool has_feature = (version >= this->min_version && version <= this->max_version);
+		if (this->platform_var_bit > 0) {
+			SB(_cur.grffile->var9D_overlay, this->platform_var_bit, 1, has_feature ? 1 : 0);
+			grfmsg(2, "Action 14 feature test: feature test: setting bit %u of var 0x9D to %u, %u", platform_var_bit, has_feature ? 1 : 0, _cur.grffile->var9D_overlay);
+		} else {
+			grfmsg(2, "Action 14 feature test: feature test: doing nothing: %u", has_feature ? 1 : 0);
+		}
+	}
+};
+
+static GRFFeatureTest _current_grf_feature_test;
+
+/** Callback function for 'FTST'->'NAME' to set the name of the feature being tested. */
+static bool ChangeGRFFeatureTestName(byte langid, const char *str)
+{
+	for (const GRFFeatureInfo *info = _grf_feature_list; info->name != NULL; info++) {
+		if (strcmp(info->name, str) == 0) {
+			_current_grf_feature_test.feature = info;
+			grfmsg(2, "Action 14 feature test: found feature named: '%s' (version: %u) in 'FTST'->'NAME'", str, info->version);
+			return true;
+		}
+	}
+	grfmsg(2, "Action 14 feature test: could not find feature named: '%s' in 'FTST'->'NAME'", str);
+	_current_grf_feature_test.feature = NULL;
+	return true;
+}
+
+/** Callback function for 'FTST'->'MINV' to set the minimum version of the feature being tested. */
+static bool ChangeGRFFeatureMinVersion(size_t len, ByteReader *buf)
+{
+	if (len != 2) {
+		grfmsg(2, "Action 14 feature test: expected 2 bytes for 'FTST'->'MINV' but got " PRINTF_SIZE ", ignoring this field", len);
+		buf->Skip(len);
+	} else {
+		_current_grf_feature_test.min_version = buf->ReadWord();
+	}
+	return true;
+}
+
+/** Callback function for 'FTST'->'MAXV' to set the maximum version of the feature being tested. */
+static bool ChangeGRFFeatureMaxVersion(size_t len, ByteReader *buf)
+{
+	if (len != 2) {
+		grfmsg(2, "Action 14 feature test: expected 2 bytes for 'FTST'->'MAXV' but got " PRINTF_SIZE ", ignoring this field", len);
+		buf->Skip(len);
+	} else {
+		_current_grf_feature_test.max_version = buf->ReadWord();
+	}
+	return true;
+}
+
+/** Callback function for 'FTST'->'SETP' to set the maximum version of the feature being tested. */
+static bool ChangeGRFFeatureSetPlatformVarBit(size_t len, ByteReader *buf)
+{
+	if (len != 1) {
+		grfmsg(2, "Action 14 feature test: expected 1 byte for 'FTST'->'SETP' but got " PRINTF_SIZE ", ignoring this field", len);
+		buf->Skip(len);
+	} else {
+		uint8 bit_number = buf->ReadByte();
+		if (bit_number >= 4 && bit_number <= 31) {
+			_current_grf_feature_test.platform_var_bit = bit_number;
+		} else {
+			grfmsg(2, "Action 14 feature test: expected a bit number >= 4 and <= 32 for 'FTST'->'SETP' but got %u, ignoring this field", bit_number);
+		}
+	}
+	return true;
+}
+
+/** Action14 tags for the FTST node */
+AllowedSubtags _tags_ftst[] = {
+	AllowedSubtags('NAME', ChangeGRFFeatureTestName),
+	AllowedSubtags('MINV', ChangeGRFFeatureMinVersion),
+	AllowedSubtags('MAXV', ChangeGRFFeatureMaxVersion),
+	AllowedSubtags('SETP', ChangeGRFFeatureSetPlatformVarBit),
+	AllowedSubtags()
+};
+
+/**
+ * Callback function for 'FTST' (feature test)
+ */
+static bool HandleFeatureTestInfo(ByteReader *buf)
+{
+	_current_grf_feature_test.Reset();
+	HandleNodes(buf, _tags_ftst);
+	_current_grf_feature_test.ExecuteTest();
+	return true;
+}
+
 /** Action14 root tags */
-AllowedSubtags _tags_root[] = {
+AllowedSubtags _tags_root_static[] = {
 	AllowedSubtags('INFO', _tags_info),
+	AllowedSubtags('FTST', SkipInfoChunk),
+	AllowedSubtags()
+};
+
+/** Action14 root tags */
+AllowedSubtags _tags_root_feature_tests[] = {
+	AllowedSubtags('INFO', SkipInfoChunk),
+	AllowedSubtags('FTST', HandleFeatureTestInfo),
 	AllowedSubtags()
 };
 
@@ -7812,13 +7966,23 @@ static bool HandleNodes(ByteReader *buf, AllowedSubtags subtags[])
 }
 
 /**
- * Handle Action 0x14
+ * Handle Action 0x14 (static info)
  * @param buf Buffer.
  */
 static void StaticGRFInfo(ByteReader *buf)
 {
 	/* <14> <type> <id> <text/data...> */
-	HandleNodes(buf, _tags_root);
+	HandleNodes(buf, _tags_root_static);
+}
+
+/**
+ * Handle Action 0x14 (feature tests)
+ * @param buf Buffer.
+ */
+static void Act14FeatureTest(ByteReader *buf)
+{
+	/* <14> <type> <id> <text/data...> */
+	HandleNodes(buf, _tags_root_feature_tests);
 }
 
 /**
@@ -8805,7 +8969,7 @@ static void DecodeSpecialSprite(byte *buf, uint num, GrfLoadingStage stage)
 		/* 0x11 */ { SkipAct11,GRFUnsafe, SkipAct11,       GRFSound,       SkipAct11,         GRFSound, },
 		/* 0x12 */ { SkipAct12, SkipAct12, SkipAct12,      SkipAct12,      SkipAct12,         LoadFontGlyph, },
 		/* 0x13 */ { NULL,     NULL,      NULL,            NULL,           NULL,              TranslateGRFStrings, },
-		/* 0x14 */ { StaticGRFInfo, NULL, NULL,            NULL,           NULL,              NULL, },
+		/* 0x14 */ { StaticGRFInfo, NULL, NULL,            Act14FeatureTest, NULL,            NULL, },
 	};
 
 	GRFLocation location(_cur.grfconfig->ident.grfid, _cur.nfo_line);
