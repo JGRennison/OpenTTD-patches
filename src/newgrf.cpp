@@ -7752,6 +7752,8 @@ struct GRFFeatureInfo {
 static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("feature_test", 1),
 	GRFFeatureInfo("action0_station_prop1B", 1),
+	GRFFeatureInfo("more_bridge_types", 1),
+	GRFFeatureInfo("action0_bridge_prop14", 1),
 	GRFFeatureInfo(),
 };
 
