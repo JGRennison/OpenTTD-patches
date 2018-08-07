@@ -410,6 +410,9 @@ static SigInfo ExploreSegment(Owner owner)
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) continue;
 				DiagDirection tunnel_bridge_dir = GetTunnelBridgeDirection(tile);
+
+				if (enterdir == tunnel_bridge_dir) continue;
+
 				TrackBits tracks = GetTunnelBridgeTrackBits(tile);
 				TrackBits across_tracks = GetAcrossTunnelBridgeTrackBits(tile);
 
