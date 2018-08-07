@@ -258,7 +258,7 @@ struct TimetableWindow : Window {
 
 	int GetOrderFromTimetableWndPt(int y, const Vehicle *v)
 	{
-		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WD_FRAMERECT_TOP) / FONT_HEIGHT_NORMAL;
+		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WD_FRAMERECT_TOP) / max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
 
 		if ((uint)sel >= this->vscroll->GetCapacity()) return INVALID_ORDER;
 
