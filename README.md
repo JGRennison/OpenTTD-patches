@@ -229,7 +229,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Go to depot and sell vehicle orders. (added in v0.26.0).  
   * Order mode to lock timetable wait time against autofill/automate changes. (added in v0.26.0).  
   * Settings to allow placing stations and all NewGRF objects under bridges. (added in v0.26.0).  
-  * Various minor fixes, see changelog.
+  * Various minor fixes, see changelog.  
+  * [NewGRF specification additions](docs/newgrf-additions.html).
 
 * Translations  
   * German (by Auge and Kruemelchen)  
