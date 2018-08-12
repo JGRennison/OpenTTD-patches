@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.26.2 (2018-08-12)
+* Fix crash/incorrect behaviour when propagating signal state changes up to the rear side of bridge/tunnel tiles.
+* Fix script/AI construction of rail track and waypoints.
+* Fix line height mismatch when selecting items in the timetable window.
+* Fix the cost of constructing a depot not including the cost of its foundation.
+* NewGRF bridges:
+  * Increase the number of bridge types from 13 to 16.
+  * Allow NewGRFs to set bridge selection sprites.
+* Bump trunk base from commit 5df3a65074295f7a50f3a5a6bab355b6ab28afdc to commit 50d930298dd99d20022c0f4a3bc080487f8afc17.
+
 ### v0.26.1 (2018-08-06)
 * Fix crash when deleting train from signalled tunnel/bridge (e.g. due to company bankruptcy).
 * Fix being able to add signals to bridge with junction custom bridge head at far end.
