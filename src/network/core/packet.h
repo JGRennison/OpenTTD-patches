@@ -17,6 +17,7 @@
 #include "config.h"
 #include "core.h"
 #include "../../string_type.h"
+#include <string>
 
 #ifdef ENABLE_NETWORK
 
@@ -88,7 +89,9 @@ public:
 	uint32 Recv_uint32();
 	uint64 Recv_uint64();
 	void   Recv_string(char *buffer, size_t size, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
+	void   Recv_string(std::string &buffer, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 	void   Recv_binary(char *buffer, size_t size);
+	void   Recv_binary(std::string &buffer, size_t size);
 };
 
 #endif /* ENABLE_NETWORK */

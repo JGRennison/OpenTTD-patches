@@ -955,7 +955,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_COMMAND(Packet 
 		return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	}
 
-	this->incoming_queue.Append(&cp);
+	this->incoming_queue.Append(std::move(cp));
 
 	return NETWORK_RECV_STATUS_OKAY;
 }

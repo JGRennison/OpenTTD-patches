@@ -18,6 +18,7 @@
 #include "tcp.h"
 #include "../network_type.h"
 #include "../../core/pool_type.hpp"
+#include <memory>
 
 #ifdef ENABLE_NETWORK
 
@@ -135,13 +136,16 @@ class CommandQueue {
 	CommandPacket *last;  ///< The last packet in the queue; only valid when first != NULL.
 	uint count;           ///< The number of items in the queue.
 
+	void Append(CommandPacket *p, bool move);
+
 public:
 	/** Initialise the command queue. */
 	CommandQueue() : first(NULL), last(NULL), count(0) {}
 	/** Clear the command queue. */
 	~CommandQueue() { this->Free(); }
-	void Append(CommandPacket *p);
-	CommandPacket *Pop(bool ignore_paused = false);
+	void Append(CommandPacket &p) { this->Append(&p, false); }
+	void Append(CommandPacket &&p) { this->Append(&p, true); }
+	std::unique_ptr<CommandPacket> Pop(bool ignore_paused = false);
 	CommandPacket *Peek(bool ignore_paused = false);
 	void Free();
 	/** Get the number of items in the queue. */

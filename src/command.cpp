@@ -630,7 +630,7 @@ static int _docommand_recursive = 0;
  */
 CommandCost DoCommand(const CommandContainer *container, DoCommandFlag flags)
 {
-	return DoCommand(container->tile, container->p1, container->p2, flags, container->cmd & CMD_ID_MASK, container->text);
+	return DoCommand(container->tile, container->p1, container->p2, flags, container->cmd & CMD_ID_MASK, container->text.c_str());
 }
 
 /*!
@@ -724,7 +724,7 @@ Money GetAvailableMoneyForCommand()
  */
 bool DoCommandP(const CommandContainer *container, bool my_cmd)
 {
-	return DoCommandP(container->tile, container->p1, container->p2, container->cmd, container->callback, container->text, my_cmd);
+	return DoCommandP(container->tile, container->p1, container->p2, container->cmd, container->callback, container->text.c_str(), my_cmd);
 }
 
 /*!

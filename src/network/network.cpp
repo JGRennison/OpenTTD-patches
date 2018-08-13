@@ -906,7 +906,7 @@ void NetworkGameLoop()
 		static Date next_date = 0;
 		static uint32 next_date_fract;
 		static uint8 next_tick_skip_counter;
-		static CommandPacket *cp = NULL;
+		static std::unique_ptr<CommandPacket> cp;
 		static bool check_sync_state = false;
 		static uint32 sync_state[2];
 		if (f == NULL && next_date == 0) {
@@ -917,10 +917,9 @@ void NetworkGameLoop()
 		while (f != NULL && !feof(f)) {
 			if (_date == next_date && _date_fract == next_date_fract) {
 				if (cp != NULL) {
-					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->cmd & ~CMD_FLAGS_MASK, NULL, cp->text, cp->company);
-					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; %08x; \"%s\" (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->cmd, cp->text, GetCommandName(cp->cmd));
-					free(cp);
-					cp = NULL;
+					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->cmd & ~CMD_FLAGS_MASK, NULL, cp->text.c_str(), cp->company, cp->binary_length);
+					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; %08x; \"%s\" (%x) (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
+					cp.reset();
 				}
 				if (check_sync_state) {
 					if (sync_state[0] == _random.state[0] && sync_state[1] == _random.state[1]) {
@@ -954,24 +953,29 @@ void NetworkGameLoop()
 				) {
 				p += 5;
 				if (*p == ' ') p++;
-				cp = CallocT<CommandPacket>(1);
+				cp.reset(new CommandPacket());
 				int company;
-				int ret = sscanf(p, "date{%x; %x; %x}; %x; %x; %x; %x; %x; \"%[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, cp->text);
+				cp->text.resize(MAX_CMD_TEXT_LENGTH);
+				int ret = sscanf(p, "date{%x; %x; %x}; %x; %x; %x; %x; %x; \"%[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, const_cast<char *>(cp->text.c_str()));
 				/* There are 9 pieces of data to read, however the last is a
 				 * string that might or might not exist. Ignore it if that
 				 * string misses because in 99% of the time it's not used. */
 				assert(ret == 9 || ret == 8);
 				cp->company = (CompanyID)company;
+				cp->binary_length = 0;
 			} else if (strncmp(p, "join: ", 6) == 0) {
 				/* Manually insert a pause when joining; this way the client can join at the exact right time. */
 				int ret = sscanf(p + 6, "date{%x; %x; %x}", &next_date, &next_date_fract, &next_tick_skip_counter);
 				assert(ret == 3);
 				DEBUG(net, 0, "injecting pause for join at date{%08x; %02x; %02x}; please join when paused", next_date, next_date_fract, next_tick_skip_counter);
-				cp = CallocT<CommandPacket>(1);
+				cp.reset(new CommandPacket());
+				cp->tile = 0;
 				cp->company = COMPANY_SPECTATOR;
 				cp->cmd = CMD_PAUSE;
 				cp->p1 = PM_PAUSED_NORMAL;
 				cp->p2 = 1;
+				cp->callback = NULL;
+				cp->binary_length = 0;
 				_ddc_fastforward = false;
 			} else if (strncmp(p, "sync: ", 6) == 0) {
 				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date, &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);

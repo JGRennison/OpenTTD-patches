@@ -331,9 +331,25 @@ void Packet::Recv_string(char *buffer, size_t size, StringValidationSettings set
 }
 
 /**
+ * Reads a string till it finds a '\0' in the stream.
+ * @param buffer The buffer to put the data into.
+ * @param settings The string validation settings.
+ */
+void Packet::Recv_string(std::string &buffer, StringValidationSettings settings)
+{
+	/* Don't allow reading from a closed socket */
+	if (cs->HasClientQuit()) return;
+
+	size_t length = ttd_strnlen((const char *)(this->buffer + this->pos), this->size - this->pos - 1);
+	buffer.assign((const char *)(this->buffer + this->pos), length);
+	this->pos += length + 1;
+	str_validate(const_cast<char *>(buffer.c_str()), buffer.c_str() + buffer.size(), settings);
+}
+
+/**
  * Reads binary data.
  * @param buffer The buffer to put the data into.
- * @param size   The size of the buffer.
+ * @param size   The size of the data.
  */
 void Packet::Recv_binary(char *buffer, size_t size)
 {
@@ -341,6 +357,20 @@ void Packet::Recv_binary(char *buffer, size_t size)
 	if (cs->HasClientQuit()) return;
 
 	memcpy(buffer, &this->buffer[this->pos], size);
+	this->pos += (PacketSize) size;
+}
+
+/**
+ * Reads binary data.
+ * @param buffer The buffer to put the data into.
+ * @param size   The size of the data.
+ */
+void Packet::Recv_binary(std::string &buffer, size_t size)
+{
+	/* Don't allow reading from a closed socket */
+	if (cs->HasClientQuit()) return;
+
+	buffer.assign((const char *) &this->buffer[this->pos], size);
 	this->pos += (PacketSize) size;
 }
 

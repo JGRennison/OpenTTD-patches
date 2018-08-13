@@ -15,6 +15,7 @@
 #include "economy_type.h"
 #include "strings_type.h"
 #include "tile_type.h"
+#include <string>
 
 struct GRFFile;
 
@@ -550,7 +551,7 @@ struct CommandContainer {
 	uint32 cmd;                      ///< command being executed.
 	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
 	uint32 binary_length;            ///< in case text contains binary data, this describes its length.
-	char text[MAX_CMD_TEXT_LENGTH];  ///< possible text sent for name changes etc, in bytes including '\0'.
+	std::string text;                ///< possible text sent for name changes etc.
 };
 
 #endif /* COMMAND_TYPE_H */

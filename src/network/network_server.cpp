@@ -1144,7 +1144,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 
 	if (GetCommandFlags(cp.cmd) & CMD_CLIENT_ID) cp.p2 = this->client_id;
 
-	this->incoming_queue.Append(&cp);
+	this->incoming_queue.Append(std::move(cp));
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
@@ -1799,10 +1799,9 @@ void NetworkServerSetCompanyPassword(CompanyID company_id, const char *password,
  */
 static void NetworkHandleCommandQueue(NetworkClientSocket *cs)
 {
-	CommandPacket *cp;
+	std::unique_ptr<CommandPacket> cp;
 	while ((cp = cs->outgoing_queue.Pop()) != NULL) {
-		cs->SendCommand(cp);
-		free(cp);
+		cs->SendCommand(cp.get());
 	}
 }
 
