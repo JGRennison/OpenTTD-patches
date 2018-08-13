@@ -125,11 +125,14 @@ struct PlanLine {
 		return buffer;
 	}
 
-	void Import(const TileIndex* data, const uint data_length)
+	bool Import(const TileIndex* data, const uint data_length)
 	{
 		for (uint i = data_length; i != 0; i--, data++) {
-			this->tiles.push_back(FROM_LE32(*data));
+			TileIndex t = FROM_LE32(*data);
+			if (t >= MapSize()) return false;
+			this->tiles.push_back(t);
 		}
+		return true;
 	}
 
 	void AddLineToCalculateCentreTile(uint64 &x, uint64 &y, uint32 &count) const

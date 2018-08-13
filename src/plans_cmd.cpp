@@ -30,8 +30,10 @@
 CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	if (!Plan::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_PLANS);
+	Owner o = (Owner) p1;
+	CommandCost ret = CheckOwnership(o);
+	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
-		Owner o = (Owner) p1;
 		_new_plan = new Plan(o);
 		if (o == _local_company) {
 			_new_plan->SetVisibility(true);
@@ -53,12 +55,19 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2
  */
 CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
+	Plan *p = Plan::GetIfValid(p1);
+	if (p == NULL) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(p->owner);
+	if (ret.Failed()) return ret;
+	if (p2 > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return_cmd_error(STR_ERROR_TOO_MANY_NODES);
 	if (flags & DC_EXEC) {
-		Plan *p = Plan::Get(p1);
 		PlanLine *pl = p->NewLine();
 		if (!pl) return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_LINES);
-		if (p2 > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return_cmd_error(STR_ERROR_TOO_MANY_NODES);
-		pl->Import((const TileIndex *) text, p2);
+		if (!pl->Import((const TileIndex *) text, p2)) {
+			delete pl;
+			p->lines.pop_back();
+			return CMD_ERROR;
+		}
 		if (p->IsListable()) {
 			pl->SetVisibility(p->visible);
 			if (p->visible) pl->MarkDirty();
@@ -80,8 +89,11 @@ CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
  */
 CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
+	Plan *p = Plan::GetIfValid(p1);
+	if (p == NULL) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(p->owner);
+	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
-		Plan *p = Plan::Get(p1);
 		p->visible_by_all = p2 != 0;
 		Window *w = FindWindowById(WC_PLANS, 0);
 		if (w) w->InvalidateData(INVALID_PLAN, false);
@@ -100,8 +112,11 @@ CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 
  */
 CommandCost CmdRemovePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
+	Plan *p = Plan::GetIfValid(p1);
+	if (p == NULL) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(p->owner);
+	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
-		Plan *p = Plan::Get(p1);
 		if (p->IsListable()) {
 			p->SetVisibility(false);
 			Window *w = FindWindowById(WC_PLANS, 0);
@@ -124,8 +139,12 @@ CommandCost CmdRemovePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  */
 CommandCost CmdRemovePlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
+	Plan *p = Plan::GetIfValid(p1);
+	if (p == NULL) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(p->owner);
+	if (ret.Failed()) return ret;
+	if (p2 >= p->lines.size()) return CMD_ERROR;
 	if (flags & DC_EXEC) {
-		Plan *p = Plan::Get(p1);
 		PlanLineVector::iterator it = p->lines.begin();
 		std::advance(it, p2);
 		(*it)->SetVisibility(false);
