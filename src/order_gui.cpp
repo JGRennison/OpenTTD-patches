@@ -893,6 +893,10 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 	int edge = DrawString(rtl ? left : middle, rtl ? middle : right, y, STR_ORDER_TEXT, colour);
 
+	if (timetable && timetable_wait_time_valid && order->GetLeaveType() == OLT_LEAVE_EARLY) {
+		edge = DrawString(rtl ? left : edge + 3, rtl ? edge - 3 : right, y, STR_TIMETABLE_LEAVE_EARLY_ORDER, colour);
+	}
+
 	if (timetable && timetable_wait_time_valid && order->IsWaitFixed()) {
 		Dimension lock_d = GetSpriteSize(SPR_LOCK);
 		DrawPixelInfo tmp_dpi;

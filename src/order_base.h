@@ -432,6 +432,15 @@ public:
 		if (!this->IsType(OT_CONDITIONAL) && fixed != IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
 	}
 
+	/** Get the leave type */
+	inline OrderLeaveType GetLeaveType() const { return (OrderLeaveType)GB(this->GetXFlags(), 2, 2); }
+
+	/** Set the leave type */
+	inline void SetLeaveType(OrderLeaveType leave_type)
+	{
+		if (leave_type != this->GetLeaveType()) SB(this->GetXFlagsRef(), 2, 2, leave_type);
+	}
+
 	/**
 	 * Get the occupancy value
 	 * @return occupancy

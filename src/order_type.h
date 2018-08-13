@@ -197,6 +197,15 @@ enum OrderDepotAction {
 };
 
 /**
+ * When to leave the station/waiting point.
+ */
+enum OrderLeaveType {
+	OLT_NORMAL               = 0, ///< Leave when timetabled
+	OLT_LEAVE_EARLY          = 1, ///< Leave as soon as possible
+	OLT_END
+};
+
+/**
  * Enumeration for the data to set in #CmdChangeTimetable.
  */
 enum ModifyTimetableFlags {
@@ -204,9 +213,10 @@ enum ModifyTimetableFlags {
 	MTF_TRAVEL_TIME,  ///< Set travel time.
 	MTF_TRAVEL_SPEED, ///< Set max travel speed.
 	MTF_SET_WAIT_FIXED,///< Set wait time fixed flag state.
+	MTF_SET_LEAVE_TYPE,///< Passes an OrderLeaveType.
 	MTF_END
 };
-template <> struct EnumPropsT<ModifyTimetableFlags> : MakeEnumPropsT<ModifyTimetableFlags, byte, MTF_WAIT_TIME, MTF_END, MTF_END, 2> {};
+template <> struct EnumPropsT<ModifyTimetableFlags> : MakeEnumPropsT<ModifyTimetableFlags, byte, MTF_WAIT_TIME, MTF_END, MTF_END, 3> {};
 
 
 /** Clone actions. */

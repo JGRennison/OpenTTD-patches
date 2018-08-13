@@ -2961,7 +2961,7 @@ void Vehicle::HandleLoading(bool mode)
 			if (!mode && this->type != VEH_TRAIN) PayStationSharingFee(this, Station::Get(this->last_station_visited));
 
 			/* Not the first call for this tick, or still loading */
-			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || this->current_order_time < wait_time) {
+			if (mode || !HasBit(this->vehicle_flags, VF_LOADING_FINISHED) || (this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY)) {
 				if (!mode && this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_ADVANCE_IN_PLATFORM)) this->AdvanceLoadingInStation();
 				return;
 			}
@@ -2999,7 +2999,7 @@ void Vehicle::HandleWaiting(bool stop_waiting)
 		case OT_WAITING: {
 			uint wait_time = max(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
 			/* Vehicles holds on until waiting Timetabled time expires. */
-			if (!stop_waiting && this->current_order_time < wait_time) {
+			if (!stop_waiting && this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY) {
 				return;
 			}
 

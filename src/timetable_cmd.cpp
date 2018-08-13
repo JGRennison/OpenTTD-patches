@@ -71,6 +71,10 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
 			order->SetWaitFixed(val != 0);
 			break;
 
+		case MTF_SET_LEAVE_TYPE:
+			order->SetLeaveType((OrderLeaveType)val);
+			break;
+
 		default:
 			NOT_REACHED();
 	}
@@ -113,8 +117,8 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
  * @param p1 Various bitstuffed elements
  * - p1 = (bit  0-19) - Vehicle with the orders to change.
  * - p1 = (bit 20-27) - Order index to modify.
- * - p1 = (bit 28-29) - Timetable data to change (@see ModifyTimetableFlags)
- * - p1 = (bit    30) - 0 to set timetable wait/travel time, 1 to clear it
+ * - p1 = (bit 28-30) - Timetable data to change (@see ModifyTimetableFlags)
+ * - p1 = (bit    31) - 0 to set timetable wait/travel time, 1 to clear it
  * @param p2 The amount of time to wait.
  * - p2 = (bit  0-15) - The data to modify as specified by p1 bits 28-29.
  *                      0 to clear times, UINT16_MAX to clear speed limit.
@@ -135,15 +139,16 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	Order *order = v->GetOrder(order_number);
 	if (order == NULL || order->IsType(OT_IMPLICIT)) return CMD_ERROR;
 
-	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 2>(p1);
+	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 3>(p1);
 	if (mtf >= MTF_END) return CMD_ERROR;
 
-	bool clear_field = GB(p1, 30, 1) == 1;
+	bool clear_field = GB(p1, 31, 1) == 1;
 
 	int wait_time   = order->GetWaitTime();
 	int travel_time = order->GetTravelTime();
 	int max_speed   = order->GetMaxSpeed();
 	bool wait_fixed = order->IsWaitFixed();
+	OrderLeaveType leave_type = order->GetLeaveType();
 	switch (mtf) {
 		case MTF_WAIT_TIME:
 			wait_time = GB(p2, 0, 16);
@@ -164,11 +169,16 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			wait_fixed = GB(p2, 0, 16) != 0;
 			break;
 
+		case MTF_SET_LEAVE_TYPE:
+			leave_type = (OrderLeaveType)GB(p2, 0, 16);
+			if (leave_type >= OLT_END) return CMD_ERROR;
+			break;
+
 		default:
 			NOT_REACHED();
 	}
 
-	if (wait_time != order->GetWaitTime()) {
+	if (wait_time != order->GetWaitTime() || leave_type != order->GetLeaveType()) {
 		switch (order->GetType()) {
 			case OT_GOTO_STATION:
 				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
@@ -187,6 +197,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	if (travel_time != order->GetTravelTime() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 	if (max_speed != order->GetMaxSpeed() && (order->IsType(OT_CONDITIONAL) || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
 	if (wait_fixed != order->IsWaitFixed() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
+	if (leave_type != order->GetLeaveType() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		switch (mtf) {
@@ -216,6 +227,12 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				}
 				break;
 
+			case MTF_SET_LEAVE_TYPE:
+				if (leave_type != order->GetLeaveType()) {
+					ChangeTimetable(v, order_number, leave_type, MTF_SET_LEAVE_TYPE, true);
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -231,8 +248,8 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
  * @param p1 Various bitstuffed elements
  * - p1 = (bit  0-19) - Vehicle with the orders to change.
  * - p1 = (bit 20-27) - unused
- * - p1 = (bit 28-29) - Timetable data to change (@see ModifyTimetableFlags)
- * - p1 = (bit    30) - 0 to set timetable wait/travel time, 1 to clear it
+ * - p1 = (bit 28-30) - Timetable data to change (@see ModifyTimetableFlags)
+ * - p1 = (bit    31) - 0 to set timetable wait/travel time, 1 to clear it
  * @param p2 The amount of time to wait.
  * - p2 = (bit  0-15) - The data to modify as specified by p1 bits 28-29.
  *                      0 to clear times, UINT16_MAX to clear speed limit.
@@ -249,7 +266,7 @@ CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 2>(p1);
+	ModifyTimetableFlags mtf = Extract<ModifyTimetableFlags, 28, 3>(p1);
 	if (mtf >= MTF_END) return CMD_ERROR;
 
 	if (v->GetNumOrders() == 0) return CMD_ERROR;

@@ -38,6 +38,7 @@ enum VehicleTimetableWidgets {
 	WID_VT_CLEAR_SPEED,                 ///< Clear speed limit button.
 	WID_VT_SCHEDULED_DISPATCH,          ///< Scheduled Dispatch button.
 	WID_VT_LOCK_ORDER_TIME,             ///< Lock order time button.
+	WID_VT_EXTRA,                       ///< Extra drop down menu.
 };
 
 #endif /* WIDGETS_TIMETABLE_WIDGET_H */

@@ -4749,6 +4749,13 @@ STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Switch b
 
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Lock/unlock the amount of time for the highlighted order (Ctrl+Click set lock state for all orders).{}When locked the time will not be changed by timetable autofill or automate.
 
+STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[leave early]
+STR_TIMETABLE_LEAVE_NORMAL                                      :Leave as timetabled
+STR_TIMETABLE_LEAVE_EARLY                                       :Leave early
+
+STR_TIMETABLE_EXTRA_DROP_DOWN                                   :{BLACK}Extra
+STR_TIMETABLE_EXTRA_DROP_DOWN_TOOLTIP                           :{BLACK}Extra Options{}{}Leave as timetabled: Vehicles wait until their timetabled departure time before leaving (default).{}Leave Early: Vehicles leave as soon as loading/unloading is done, possibly before the timetabled departure time.
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 
