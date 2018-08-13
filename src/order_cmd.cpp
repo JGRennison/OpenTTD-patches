@@ -330,7 +330,7 @@ void Order::AssignOrder(const Order &other)
 	this->travel_time = other.travel_time;
 	this->max_speed   = other.max_speed;
 
-	if ((this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) && other.extra != NULL) {
+	if (other.extra != NULL && (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OLFB_CARGO_TYPE_LOAD || other.extra->xdata != 0 || other.extra->xflags != 0)) {
 		this->AllocExtraInfo();
 		*(this->extra) = *(other.extra);
 	} else {
