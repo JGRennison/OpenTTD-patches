@@ -54,6 +54,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
 			break;
 
 		case MTF_TRAVEL_TIME:
+			if (!ignore_lock && order->IsTravelFixed()) return;
 			if (!order->IsType(OT_CONDITIONAL)) {
 				total_delta = val - order->GetTravelTime();
 				timetable_delta = (timetabled ? val : 0) - order->GetTimetabledTravel();
@@ -69,6 +70,10 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
 
 		case MTF_SET_WAIT_FIXED:
 			order->SetWaitFixed(val != 0);
+			break;
+
+		case MTF_SET_TRAVEL_FIXED:
+			order->SetTravelFixed(val != 0);
 			break;
 
 		case MTF_SET_LEAVE_TYPE:
@@ -100,6 +105,10 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
 
 				case MTF_SET_WAIT_FIXED:
 					v->current_order.SetWaitFixed(val != 0);
+					break;
+
+				case MTF_SET_TRAVEL_FIXED:
+					v->current_order.SetTravelFixed(val != 0);
 					break;
 
 				default:
@@ -148,6 +157,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	int travel_time = order->GetTravelTime();
 	int max_speed   = order->GetMaxSpeed();
 	bool wait_fixed = order->IsWaitFixed();
+	bool travel_fixed = order->IsTravelFixed();
 	OrderLeaveType leave_type = order->GetLeaveType();
 	switch (mtf) {
 		case MTF_WAIT_TIME:
@@ -167,6 +177,10 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 		case MTF_SET_WAIT_FIXED:
 			wait_fixed = GB(p2, 0, 16) != 0;
+			break;
+
+		case MTF_SET_TRAVEL_FIXED:
+			travel_fixed = GB(p2, 0, 16) != 0;
 			break;
 
 		case MTF_SET_LEAVE_TYPE:
@@ -224,6 +238,12 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			case MTF_SET_WAIT_FIXED:
 				if (wait_fixed != order->IsWaitFixed()) {
 					ChangeTimetable(v, order_number, wait_fixed ? 1 : 0, MTF_SET_WAIT_FIXED, false, true);
+				}
+				break;
+
+			case MTF_SET_TRAVEL_FIXED:
+				if (travel_fixed != order->IsTravelFixed()) {
+					ChangeTimetable(v, order_number, travel_fixed ? 1 : 0, MTF_SET_TRAVEL_FIXED, false, true);
 				}
 				break;
 

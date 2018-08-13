@@ -213,6 +213,7 @@ enum ModifyTimetableFlags {
 	MTF_TRAVEL_TIME,  ///< Set travel time.
 	MTF_TRAVEL_SPEED, ///< Set max travel speed.
 	MTF_SET_WAIT_FIXED,///< Set wait time fixed flag state.
+	MTF_SET_TRAVEL_FIXED,///< Set travel time fixed flag state.
 	MTF_SET_LEAVE_TYPE,///< Passes an OrderLeaveType.
 	MTF_END
 };

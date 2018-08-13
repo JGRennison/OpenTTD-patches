@@ -426,10 +426,19 @@ public:
 	/** Does this order have a fixed wait time? */
 	inline bool IsWaitFixed() const { return HasBit(this->GetXFlags(), 1); }
 
-	/** Set if  the wait time is fixed */
+	/** Set if the wait time is fixed */
 	inline void SetWaitFixed(bool fixed)
 	{
-		if (!this->IsType(OT_CONDITIONAL) && fixed != IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
+		if (!this->IsType(OT_CONDITIONAL) && fixed != this->IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
+	}
+
+	/** Does this order have a fixed travel time? */
+	inline bool IsTravelFixed() const { return HasBit(this->GetXFlags(), 4); }
+
+	/** Set if the travel time is fixed */
+	inline void SetTravelFixed(bool fixed)
+	{
+		if (!this->IsType(OT_CONDITIONAL) && fixed != IsTravelFixed()) SB(this->GetXFlagsRef(), 4, 1, fixed ? 1 : 0);
 	}
 
 	/** Get the leave type */

@@ -364,6 +364,8 @@ struct TimetableWindow : Window {
 				if (selected % 2 == 1) {
 					/* Travel time */
 					disable = order != NULL && (order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT));
+					wait_lockable = !disable;
+					wait_locked = wait_lockable && order->IsTravelFixed();
 				} else {
 					/* Wait time */
 					disable = (order == NULL) ||
@@ -485,7 +487,20 @@ struct TimetableWindow : Window {
 						}
 						SetDParam(string == STR_TIMETABLE_TRAVEL_NOT_TIMETABLED_SPEED ? 2 : 4, order->GetMaxSpeed());
 
-						DrawString(rtl ? r.left + WD_FRAMERECT_LEFT : middle, rtl ? middle : r.right - WD_FRAMERECT_LEFT, y, string, colour);
+						int edge = DrawString(rtl ? r.left + WD_FRAMERECT_LEFT : middle, rtl ? middle : r.right - WD_FRAMERECT_LEFT, y, string, colour);
+
+						if (order->IsTravelFixed()) {
+							Dimension lock_d = GetSpriteSize(SPR_LOCK);
+							DrawPixelInfo tmp_dpi;
+							if (FillDrawPixelInfo(&tmp_dpi, rtl ? r.left + WD_FRAMERECT_LEFT : middle, y, rtl ? middle : r.right - WD_FRAMERECT_LEFT, lock_d.height)) {
+								DrawPixelInfo *old_dpi = _cur_dpi;
+								_cur_dpi = &tmp_dpi;
+
+								DrawSprite(SPR_LOCK, PAL_NONE, rtl ? edge - 3 - lock_d.width - (r.left + WD_FRAMERECT_LEFT) : edge + 3 - middle, 0);
+
+								_cur_dpi = old_dpi;
+							}
+						}
 
 						if (final_order) break;
 					}
@@ -790,10 +805,10 @@ struct TimetableWindow : Window {
 
 				const Order *order = v->GetOrder(order_number);
 				if (order != NULL) {
-					locked = order->IsWaitFixed();
+					locked = (selected % 2 == 1) ? order->IsTravelFixed() : order->IsWaitFixed();
 				}
 
-				uint32 p1 = v->index | (order_number << 20) | (MTF_SET_WAIT_FIXED << 28);
+				uint32 p1 = v->index | (order_number << 20) | (((selected % 2 == 1) ? MTF_SET_TRAVEL_FIXED : MTF_SET_WAIT_FIXED) << 28);
 				DoCommandP(0, p1, locked ? 0 : 1, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
