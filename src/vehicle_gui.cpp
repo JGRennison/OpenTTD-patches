@@ -3196,6 +3196,9 @@ public:
 			}
 		} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {
 			str = HasBit(Train::From(v)->flags, VRF_WAITING_RESTRICTION) ? STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION : STR_VEHICLE_STATUS_TRAIN_STUCK;
+		} else if (v->type == VEH_TRAIN && Train::From(v)->reverse_distance > 1) {
+			str = STR_VEHICLE_STATUS_TRAIN_REVERSING;
+			SetDParam(0, v->GetDisplaySpeed());
 		} else if (v->type == VEH_AIRCRAFT && HasBit(Aircraft::From(v)->flags, VAF_DEST_TOO_FAR) && !v->current_order.IsType(OT_LOADING)) {
 			str = STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR;
 		} else { // vehicle is in a "normal" state, show current order
@@ -3244,6 +3247,11 @@ public:
 					SetDParam(0, v->current_order.GetDestination());
 					str = STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL;
 					SetDParam(1, v->GetDisplaySpeed());
+					break;
+				}
+
+				case OT_WAITING: {
+					str = STR_VEHICLE_STATUS_TRAIN_WAITING_TIMETABLE;
 					break;
 				}
 
