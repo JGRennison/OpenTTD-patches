@@ -296,7 +296,7 @@ public:
 	/** What are we going to do when in the depot. */
 	inline OrderDepotActionFlags GetDepotActionType() const { return (OrderDepotActionFlags)GB(this->flags, 4, 3); }
 	/** What waypoint flags? */
-	inline OrderWaypointFlags GetWaypointFlags() const { return (OrderWaypointFlags)GB(this->flags, 0, 8); }
+	inline OrderWaypointFlags GetWaypointFlags() const { return (OrderWaypointFlags)GB(this->flags, 0, 3); }
 	/** What variable do we have to compare? */
 	inline OrderConditionVariable GetConditionVariable() const { return (OrderConditionVariable)GB(this->dest, 11, 5); }
 	/** What is the comparator to use? */
@@ -355,7 +355,7 @@ public:
 	/** Set what we are going to do in the depot. */
 	inline void SetDepotActionType(OrderDepotActionFlags depot_service_type) { SB(this->flags, 4, 3, depot_service_type); }
 	/** Set waypoint flags. */
-	inline void SetWaypointFlags(OrderWaypointFlags waypoint_flags) { SB(this->flags, 0, 8, waypoint_flags); }
+	inline void SetWaypointFlags(OrderWaypointFlags waypoint_flags) { SB(this->flags, 0, 3, waypoint_flags); }
 	/** Set variable we have to compare. */
 	inline void SetConditionVariable(OrderConditionVariable condition_variable) { SB(this->dest, 11, 5, condition_variable); }
 	/** Set the comparator to use. */
@@ -462,7 +462,7 @@ public:
 	 */
 	inline void SetOccupancy(uint8 occupancy) { this->occupancy = occupancy; }
 
-	bool ShouldStopAtStation(const Vehicle *v, StationID station) const;
+	bool ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoint) const;
 	bool CanLeaveWithCargo(bool has_cargo, CargoID cargo) const;
 
 	TileIndex GetLocation(const Vehicle *v, bool airport = false) const;

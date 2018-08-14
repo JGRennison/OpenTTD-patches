@@ -824,6 +824,11 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			if (order->GetWaypointFlags() & OWF_REVERSE) str += STR_ORDER_GO_TO_WAYPOINT_REVERSE - STR_ORDER_GO_TO_WAYPOINT;
 			SetDParam(0, str);
 			SetDParam(1, order->GetDestination());
+			if (timetable && order->IsWaitTimetabled()) {
+				SetDParam(5, STR_TIMETABLE_STAY_FOR);
+				SetTimetableParams(6, order->GetWaitTime());
+				timetable_wait_time_valid = true;
+			}
 			break;
 		}
 

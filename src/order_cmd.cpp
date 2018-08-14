@@ -2604,7 +2604,8 @@ bool ProcessOrders(Vehicle *v)
 	bool may_reverse = v->current_order.IsType(OT_NOTHING);
 
 	/* Check if we've reached a 'via' destination. */
-	if (((v->current_order.IsType(OT_GOTO_STATION) && (v->current_order.GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) || v->current_order.IsType(OT_GOTO_WAYPOINT)) &&
+	if (((v->current_order.IsType(OT_GOTO_STATION) && (v->current_order.GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||
+			(v->current_order.IsType(OT_GOTO_WAYPOINT) && !v->current_order.IsWaitTimetabled())) &&
 			IsTileType(v->tile, MP_STATION) &&
 			v->current_order.GetDestination() == GetStationIndex(v->tile)) {
 		v->DeleteUnreachedImplicitOrders();
@@ -2673,10 +2674,12 @@ bool ProcessOrders(Vehicle *v)
  * based on this order and the non-stop settings.
  * @param v       the vehicle that might be stopping.
  * @param station the station to stop at.
+ * @param waypoint if station is a waypoint.
  * @return true if the vehicle should stop.
  */
-bool Order::ShouldStopAtStation(const Vehicle *v, StationID station) const
+bool Order::ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoint) const
 {
+	if (waypoint) return this->IsType(OT_GOTO_WAYPOINT) && this->dest == station;
 	if (this->IsType(OT_LOADING_ADVANCE) && this->dest == station) return true;
 	bool is_dest_station = this->IsType(OT_GOTO_STATION) && this->dest == station;
 

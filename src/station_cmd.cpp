@@ -3306,14 +3306,25 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 		if (v->current_order.IsType(OT_GOTO_WAYPOINT) && v->current_order.GetDestination() == station_id && v->current_order.GetWaypointFlags() & OWF_REVERSE) {
 			Train *t = Train::From(v);
 			// reverse at waypoint
-			if (t->reverse_distance == 0) t->reverse_distance = t->gcache.cached_total_length;
+			if (t->reverse_distance == 0) {
+				t->reverse_distance = t->gcache.cached_total_length;
+				if (t->current_order.IsWaitTimetabled()) {
+					t->DeleteUnreachedImplicitOrders();
+					UpdateVehicleTimetable(t, true);
+					t->last_station_visited = station_id;
+					SetWindowDirty(WC_VEHICLE_VIEW, t->index);
+					t->current_order.MakeWaiting();
+					t->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
+					return VETSB_CONTINUE;
+				}
+			}
 		}
 		if (HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return VETSB_CONTINUE;
 		Train *front = Train::From(v)->First();
 		if (!front->IsFrontEngine()) return VETSB_CONTINUE;
 		if (!(v == front || HasBit(Train::From(v)->Previous()->flags, VRF_BEYOND_PLATFORM_END))) return VETSB_CONTINUE;
-		if (!IsRailStation(tile)) return VETSB_CONTINUE;
-		if (!front->current_order.ShouldStopAtStation(front, station_id)) return VETSB_CONTINUE;
+		if (!HasStationTileRail(tile)) return VETSB_CONTINUE;
+		if (!front->current_order.ShouldStopAtStation(front, station_id, IsRailWaypoint(tile))) return VETSB_CONTINUE;
 
 		int station_ahead;
 		int station_length;

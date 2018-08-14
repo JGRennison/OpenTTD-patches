@@ -199,6 +199,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				break;
 
 			case OT_GOTO_DEPOT:
+			case OT_GOTO_WAYPOINT:
 				break;
 
 			case OT_CONDITIONAL:

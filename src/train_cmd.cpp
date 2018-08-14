@@ -367,9 +367,13 @@ int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos)
 int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length, int x_pos, int y_pos)
 {
 	Train *front = v->First();
-	const Station *st = Station::Get(station_id);
-	*station_ahead  = st->GetPlatformLength(tile, DirToDiagDir(v->direction)) * TILE_SIZE;
-	*station_length = st->GetPlatformLength(tile) * TILE_SIZE;
+	if (IsRailWaypoint(tile)) {
+		*station_ahead = *station_length = TILE_SIZE;
+	} else {
+		const Station *st = Station::Get(station_id);
+		*station_ahead  = st->GetPlatformLength(tile, DirToDiagDir(v->direction)) * TILE_SIZE;
+		*station_length = st->GetPlatformLength(tile) * TILE_SIZE;
+	}
 
 	/* Default to the middle of the station for stations stops that are not in
 	 * the order list like intermediate stations when non-stop is disabled */
@@ -378,6 +382,8 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *st
 		osl = front->current_order.GetStopLocation();
 	} else if (front->current_order.IsType(OT_LOADING_ADVANCE) && front->current_order.GetDestination() == station_id) {
 		osl = OSL_PLATFORM_THROUGH;
+	} else if (front->current_order.IsType(OT_GOTO_WAYPOINT) && front->current_order.GetDestination() == station_id) {
+		osl = OSL_PLATFORM_FAR_END;
 	}
 	int overhang = front->gcache.cached_total_length - *station_length;
 	int adjust = 0;
@@ -559,9 +565,9 @@ int Train::GetCurrentMaxSpeed() const
 	if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC) {
 		Train *v_platform = const_cast<Train *>(this->GetStationLoadingVehicle());
 		TileIndex platform_tile = v_platform->tile;
-		if (IsRailStationTile(platform_tile)) {
+		if (HasStationTileRail(platform_tile)) {
 			StationID sid = GetStationIndex(platform_tile);
-			if (this->current_order.ShouldStopAtStation(this, sid)) {
+			if (this->current_order.ShouldStopAtStation(this, sid, IsRailWaypoint(platform_tile))) {
 				int station_ahead;
 				int station_length;
 				int stop_at = GetTrainStopLocation(sid, platform_tile, v_platform, &station_ahead, &station_length);
@@ -2404,6 +2410,9 @@ static void CheckNextTrainTile(Train *v)
 	/* Exit if we are inside a depot. */
 	if (v->track == TRACK_BIT_DEPOT) return;
 
+	/* Exit if we are on a station tile and are going to stop. */
+	if (HasStationTileRail(v->tile) && v->current_order.ShouldStopAtStation(v, GetStationIndex(v->tile), IsRailWaypoint(v->tile))) return;
+
 	switch (v->current_order.GetType()) {
 		/* Exit if we reached our destination depot. */
 		case OT_GOTO_DEPOT:
@@ -2425,8 +2434,6 @@ static void CheckNextTrainTile(Train *v)
 		default:
 			break;
 	}
-	/* Exit if we are on a station tile and are going to stop. */
-	if (IsRailStationTile(v->tile) && v->current_order.ShouldStopAtStation(v, GetStationIndex(v->tile))) return;
 
 	Trackdir td = v->GetVehicleTrackdir();
 
@@ -3351,8 +3358,21 @@ static void TrainEnterStation(Train *v, StationID station)
 {
 	v->last_station_visited = station;
 
+	BaseStation *bst = BaseStation::Get(station);
+
+	if (Waypoint::IsExpected(bst)) {
+		v->DeleteUnreachedImplicitOrders();
+		UpdateVehicleTimetable(v, true);
+		v->last_station_visited = station;
+		v->force_proceed = TFP_NONE;
+		SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+		v->current_order.MakeWaiting();
+		v->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
+		return;
+	}
+
 	/* check if a train ever visited this station before */
-	Station *st = Station::Get(station);
+	Station *st = Station::From(bst);
 	if (!(st->had_vehicle_of_type & HVOT_TRAIN)) {
 		st->had_vehicle_of_type |= HVOT_TRAIN;
 		SetDParam(0, st->index);
@@ -4774,6 +4794,11 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	if (v->current_order.IsType(OT_LOADING)) return true;
 
 	if (CheckTrainStayInDepot(v)) return true;
+
+	if (v->current_order.IsType(OT_WAITING) && v->reverse_distance == 0) {
+		v->HandleWaiting(false);
+		if (v->current_order.IsType(OT_WAITING)) return true;
+	}
 
 	if (!mode) v->ShowVisualEffect();
 

@@ -359,6 +359,7 @@ struct TimetableWindow : Window {
 			bool disable = true;
 			bool wait_lockable = false;
 			bool wait_locked = false;
+			bool clearable_when_wait_locked = false;
 			if (selected != -1) {
 				const Order *order = v->GetOrder(((selected + 1) / 2) % v->GetNumOrders());
 				if (selected % 2 == 1) {
@@ -368,9 +369,19 @@ struct TimetableWindow : Window {
 					wait_locked = wait_lockable && order->IsTravelFixed();
 				} else {
 					/* Wait time */
-					disable = (order == NULL) ||
-							((!(order->IsType(OT_GOTO_STATION) || (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_HALT))) ||
-								(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) && !order->IsType(OT_CONDITIONAL));
+					if (order != NULL) {
+						if (order->IsType(OT_GOTO_WAYPOINT)) {
+							disable = false;
+							clearable_when_wait_locked = true;
+						} else if (order->IsType(OT_CONDITIONAL)) {
+							disable = true;
+						} else {
+							disable = (!(order->IsType(OT_GOTO_STATION) || (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_HALT))) ||
+									(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
+						}
+					} else {
+						disable = true;
+					}
 					wait_lockable = !disable;
 					wait_locked = wait_lockable && order->IsWaitFixed();
 				}
@@ -378,7 +389,7 @@ struct TimetableWindow : Window {
 			bool disable_speed = disable || selected % 2 != 1 || v->type == VEH_AIRCRAFT;
 
 			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !wait_locked));
-			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !(wait_locked && clearable_when_wait_locked)));
 			this->SetWidgetDisabledState(WID_VT_CHANGE_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_CLEAR_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !(v->IsOrderListShared() || _settings_client.gui.enable_single_veh_shared_order_gui));
