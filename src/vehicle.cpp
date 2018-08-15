@@ -3593,6 +3593,14 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	dump('x', HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP));
 	dump('s', HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION));
 	dump('a', HasBit(this->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+	if (this->IsGroundVehicle()) {
+		uint16 gv_flags = this->GetGroundVehicleFlags();
+		b += seprintf(b, last, ", gvf:");
+		dump('u', HasBit(gv_flags, GVF_GOINGUP_BIT));
+		dump('d', HasBit(gv_flags, GVF_GOINGDOWN_BIT));
+		dump('s', HasBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS));
+		dump('c', HasBit(gv_flags, GVF_CHUNNEL_BIT));
+	}
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
 		b += seprintf(b, last, ", tf:");
@@ -3615,6 +3623,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 		dump('B', HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
 		dump('Y', HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
 		dump('A', HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
+		if (t->reverse_distance > 0) b += seprintf(b, last, ", rev: %u", t->reverse_distance);
 	} else if (this->type == VEH_ROAD) {
 		const RoadVehicle *r = RoadVehicle::From(this);
 		b += seprintf(b, last, ", rvs:%X, rvf:%X", r->state, r->frame);
