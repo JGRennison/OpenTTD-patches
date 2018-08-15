@@ -1979,6 +1979,7 @@ static void DoAcquireCompany(Company *c)
 
 	DeleteCompanyWindows(ci);
 	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);
 	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
 	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
