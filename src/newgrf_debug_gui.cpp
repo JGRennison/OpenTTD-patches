@@ -201,6 +201,7 @@ public:
 	}
 
 	virtual void ExtraInfo(uint index, std::function<void(const char *)> print) const {}
+	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
 
 protected:
 	/**
@@ -472,6 +473,8 @@ struct NewGRFInspectWindow : Window {
 
 			::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (offset * this->resize.step_height), buf, TC_BLACK);
 		});
+
+		if (nih->ShowExtraInfoOnly(index)) return;
 
 		const_cast<NewGRFInspectWindow*>(this)->first_variable_line_index = i;
 
