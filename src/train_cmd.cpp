@@ -1560,6 +1560,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		if (!HasBit(src->subtype, GVSF_VIRTUAL)) {
 			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile);
 			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+			InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 		}
 	} else {
 		/* We don't want to execute what we're just tried. */
@@ -1647,6 +1648,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 		if (!HasBit(v->subtype, GVSF_VIRTUAL)) {
 			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
+			InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 		}
 
 		/* Actually delete the sold 'goods' */
@@ -2268,6 +2270,7 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 			SetWindowDirty(WC_VEHICLE_DETAILS, front->index);
 			SetWindowDirty(WC_VEHICLE_VIEW, front->index);
 			SetWindowClassesDirty(WC_TRAINS_LIST);
+			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 		}
 	} else {
 		/* turn the whole train around */
@@ -2492,6 +2495,7 @@ static bool CheckTrainStayInDepot(Train *v)
 		/* force proceed was not pressed */
 		if (++v->wait_counter < 37) {
 			SetWindowClassesDirty(WC_TRAINS_LIST);
+			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 			return true;
 		}
 
@@ -2501,6 +2505,7 @@ static bool CheckTrainStayInDepot(Train *v)
 		if (seg_state == SIGSEG_FULL || HasDepotReservation(v->tile)) {
 			/* Full and no PBS signal in block or depot reserved, can't exit. */
 			SetWindowClassesDirty(WC_TRAINS_LIST);
+			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 			return true;
 		}
 	} else {
@@ -2520,6 +2525,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	if (seg_state == SIGSEG_PBS && !TryPathReserve(v) && v->force_proceed == TFP_NONE) {
 		/* No path and no force proceed. */
 		SetWindowClassesDirty(WC_TRAINS_LIST);
+		SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 		MarkTrainAsStuck(v);
 		return true;
 	}
@@ -2529,6 +2535,7 @@ static bool CheckTrainStayInDepot(Train *v)
 
 	VehicleServiceInDepot(v);
 	SetWindowClassesDirty(WC_TRAINS_LIST);
+	SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 	v->PlayLeaveStationSound();
 
 	v->track = TRACK_BIT_X;
@@ -5023,6 +5030,7 @@ void Train::OnNewDay()
 
 			SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 			SetWindowClassesDirty(WC_TRAINS_LIST);
+			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 		}
 	}
 	if (IsEngine() || IsMultiheaded()) {

@@ -1992,6 +1992,7 @@ void VehicleEnterDepot(Vehicle *v)
 		case VEH_TRAIN: {
 			Train *t = Train::From(v);
 			SetWindowClassesDirty(WC_TRAINS_LIST);
+			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 			/* Clear path reservation */
 			SetDepotReservation(t->tile, false);
 			if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(t->tile, ZOOM_LVL_DRAW_MAP);
@@ -3658,6 +3659,7 @@ void VehiclesYearlyLoop()
 	}
 	GroupStatistics::UpdateProfits();
 	SetWindowClassesDirty(WC_TRAINS_LIST);
+	SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 	SetWindowClassesDirty(WC_SHIPS_LIST);
 	SetWindowClassesDirty(WC_ROADVEH_LIST);
 	SetWindowClassesDirty(WC_AIRCRAFT_LIST);

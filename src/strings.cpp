@@ -2083,6 +2083,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 #endif /* ENABLE_NETWORK */
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
 	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);// Trace restrict slots window.
 	InvalidateWindowClassesData(WC_ROADVEH_LIST);       // Road vehicle group window.
 	InvalidateWindowClassesData(WC_SHIPS_LIST);         // Ship group window.
 	InvalidateWindowClassesData(WC_AIRCRAFT_LIST);      // Aircraft group window.

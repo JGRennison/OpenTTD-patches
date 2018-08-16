@@ -1210,6 +1210,7 @@ void ChangeWindowOwner(Owner old_owner, Owner new_owner)
 			case WC_FINANCES:
 			case WC_STATION_LIST:
 			case WC_TRAINS_LIST:
+			case WC_TRACE_RESTRICT_SLOTS:
 			case WC_ROADVEH_LIST:
 			case WC_SHIPS_LIST:
 			case WC_AIRCRAFT_LIST:
