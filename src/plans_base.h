@@ -21,6 +21,7 @@
 #include "date_func.h"
 #include "viewport_func.h"
 #include "core/endian_func.hpp"
+#include <string>
 #include <vector>
 
 typedef Pool<Plan, PlanID, 16, 64000> PlanPool;
@@ -164,6 +165,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	bool visible_by_all;
 	bool show_lines;
 	Date creation_date;
+	std::string name;
 
 	Plan(Owner owner = INVALID_OWNER)
 	{
@@ -247,10 +249,20 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		return this->visible;
 	}
 
+	bool HasName() const
+	{
+		return !this->name.empty();
+	}
+
 	bool ToggleVisibilityByAll()
 	{
 		if (_current_plan->owner == _local_company) DoCommandP(0, _current_plan->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
 		return this->visible_by_all;
+	}
+
+	const std::string &GetName() const
+	{
+		return this->name;
 	}
 
 	TileIndex CalculateCentreTile() const

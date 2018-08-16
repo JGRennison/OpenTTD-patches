@@ -15,6 +15,7 @@
 #include "plans_func.h"
 #include "window_func.h"
 #include "company_func.h"
+#include "string_func.h"
 #include "window_gui.h"
 #include "table/strings.h"
 
@@ -155,5 +156,33 @@ CommandCost CmdRemovePlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 			if (w) w->InvalidateData(p->index, false);
 		}
 	}
+	return CommandCost();
+}
+
+/**
+* Give a custom name to your plan
+* @param tile unused
+* @param flags type of operation
+* @param p1 ID of plan to name
+* @param p2 unused
+* @param text the new name
+* @return the cost of this operation or an error
+*/
+CommandCost CmdRenamePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (text == NULL) return CMD_ERROR;
+
+	Plan *p = Plan::GetIfValid(p1);
+	if (p == NULL) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(p->owner);
+	if (ret.Failed()) return ret;
+
+	if (Utf8StringLength(text) >= MAX_LENGTH_PLAN_NAME_CHARS) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		p->name = text;
+		InvalidateWindowClassesData(WC_PLANS);
+	}
+
 	return CommandCost();
 }

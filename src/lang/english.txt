@@ -4894,8 +4894,10 @@ STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}Toggle t
 STR_PLANS_DELETE                                                :{BLACK}Delete
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Delete the selected item in the list
 STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} line{P "" s} ({DATE_SHORT})
+STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{RAW_STRING}: {NUM} line{P "" s} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_LINE                                        : -- Line #{NUM}: {NUM} segment{P "" s}
 STR_PLANS_LIST_TOOLTIP                                          :{BLACK}Double click any item in the list to (un)fold the related plan.{}Ctrl+Click to scroll to.
+STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}Rename plan
 
 # Vehicle loading indicators
 STR_PERCENT_UP_SMALL                                            :{TINY_FONT}{WHITE}{NUM}%{UP_ARROW}
@@ -5346,6 +5348,7 @@ STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}Can't de
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... too many plans
 STR_ERROR_TOO_MANY_NODES                                        :{WHITE}... too many nodes in plan line
 STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}No more space for lines
+STR_ERROR_CAN_T_RENAME_PLAN                                     :{WHITE}Can't rename plan...
 
 # Translatable comment for OpenTTD's desktop shortcut
 STR_DESKTOP_SHORTCUT_COMMENT                                    :A simulation game based on Transport Tycoon Deluxe

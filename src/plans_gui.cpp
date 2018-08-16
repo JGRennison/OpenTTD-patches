@@ -20,6 +20,7 @@
 #include "window_func.h"
 #include "viewport_func.h"
 #include "gfx_func.h"
+#include "textbuf_gui.h"
 #include "tilehighlight_func.h"
 #include "strings_func.h"
 #include "core/pool_func.hpp"
@@ -56,6 +57,7 @@ static const NWidgetPart _nested_plans_widgets[] = {
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_SHOW_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_SHOW_ALL, STR_PLANS_SHOW_ALL_TOOLTIP),
 			EndContainer(),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_DELETE), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_DELETE, STR_PLANS_DELETE_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_RENAME), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUTTON_RENAME, STR_NULL),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),
 	EndContainer(),
@@ -126,6 +128,16 @@ struct PlansWindow : Window {
 				this->SetWidgetDirty(WID_PLN_LIST);
 				break;
 			}
+
+			case WID_PLN_RENAME: {
+				if (_current_plan) {
+					SetDParamStr(0, _current_plan->GetName().c_str());
+					ShowQueryString(STR_JUST_RAW_STRING, STR_PLANS_QUERY_RENAME_PLAN,
+						MAX_LENGTH_PLAN_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+				}
+				break;
+			}
+
 			case WID_PLN_SHOW_ALL: {
 				Plan *p;
 				FOR_ALL_PLANS(p) {
@@ -187,6 +199,13 @@ struct PlansWindow : Window {
 		}
 	}
 
+	virtual void OnQueryTextFinished(char *str)
+	{
+		if (_current_plan == nullptr || str == nullptr) return;
+
+		DoCommandP(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), NULL, str);
+	}
+
 	bool AllPlansHidden() const
 	{
 		Plan *p;
@@ -202,10 +221,10 @@ struct PlansWindow : Window {
 		this->SetWidgetDisabledState(WID_PLN_SHOW_ALL, this->vscroll->GetCount() == 0);
 		this->hide_all_sel->SetDisplayedPlane(this->vscroll->GetCount() != 0 && this->AllPlansHidden() ? 1 : 0);
 		if (_current_plan) {
-			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WIDGET_LIST_END);
+			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WIDGET_LIST_END);
 			this->GetWidget<NWidgetCore>(WID_PLN_VISIBILITY)->widget_data = _current_plan->visible_by_all ? STR_PLANS_VISIBILITY_PRIVATE : STR_PLANS_VISIBILITY_PUBLIC;
 		} else {
-			this->SetWidgetsDisabledState(true, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WIDGET_LIST_END);
+			this->SetWidgetsDisabledState(true, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WIDGET_LIST_END);
 		}
 		this->DrawWidgets();
 	}
@@ -235,10 +254,14 @@ struct PlansWindow : Window {
 					if (list[i].is_plan) {
 						DrawCompanyIcon(p->owner, icon_left, y + (this->resize.step_height - this->company_icon_spr_dim.height) / 2);
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, p->visible, true);
-						SetDParam(0, list[i].plan_id + 1);
+						if (p->HasName()) {
+							SetDParamStr(0, p->GetName().c_str());
+						} else {
+							SetDParam(0, list[i].plan_id + 1);
+						}
 						SetDParam(1, p->lines.size());
 						SetDParam(2, p->creation_date);
-						DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, STR_PLANS_LIST_ITEM_PLAN, p->visible_by_all ? TC_LIGHT_BLUE : TC_YELLOW);
+						DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, p->HasName() ? STR_PLANS_LIST_ITEM_NAMED_PLAN : STR_PLANS_LIST_ITEM_PLAN, p->visible_by_all ? TC_LIGHT_BLUE : TC_YELLOW);
 					} else {
 						PlanLine *pl = p->lines[list[i].line_id];
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, pl->visible, true);
