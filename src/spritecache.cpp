@@ -26,6 +26,8 @@
 
 #include "3rdparty/cpp-btree/btree_map.h"
 
+#include <vector>
+
 #include "safeguards.h"
 
 /* Default of 4MB spritecache */
@@ -45,8 +47,7 @@ struct SpriteCache {
 };
 
 
-static uint _spritecache_items = 0;
-static SpriteCache *_spritecache = NULL;
+std::vector<SpriteCache> _spritecache;
 
 
 static inline SpriteCache *GetSpriteCache(uint index)
@@ -61,17 +62,8 @@ static inline bool IsMapgenSpriteID(SpriteID sprite)
 
 static SpriteCache *AllocateSpriteCache(uint index)
 {
-	if (index >= _spritecache_items) {
-		/* Add another 1024 items to the 'pool' */
-		uint items = Align(index + 1, 1024);
-
-		DEBUG(sprite, 4, "Increasing sprite cache to %u items (" PRINTF_SIZE " bytes)", items, items * sizeof(*_spritecache));
-
-		_spritecache = ReallocT(_spritecache, items);
-
-		/* Reset the new items and update the count */
-		memset(_spritecache + _spritecache_items, 0, (items - _spritecache_items) * sizeof(*_spritecache));
-		_spritecache_items = items;
+	if (index >= _spritecache.size()) {
+		_spritecache.resize(index + 1);
 	}
 
 	return GetSpriteCache(index);
@@ -122,7 +114,7 @@ bool SkipSpriteData(byte type, uint16 num)
 /* Check if the given Sprite ID exists */
 bool SpriteExists(SpriteID id)
 {
-	if (id >= _spritecache_items) return false;
+	if (id >= _spritecache.size()) return false;
 
 	/* Special case for Sprite ID zero -- its position is also 0... */
 	if (id == 0) return true;
@@ -173,14 +165,13 @@ uint GetSpriteCountForSlot(uint file_slot, SpriteID begin, SpriteID end)
 /**
  * Get a reasonable (upper bound) estimate of the maximum
  * SpriteID used in OpenTTD; there will be no sprites with
- * a higher SpriteID, although there might be up to roughly
- * a thousand unused SpriteIDs below this number.
+ * a higher SpriteID.
  * @note It's actually the number of spritecache items.
  * @return maximum SpriteID
  */
 uint GetMaxSpriteID()
 {
-	return _spritecache_items;
+	return _spritecache.size();
 }
 
 static bool ResizeSpriteIn(SpriteLoader::Sprite *sprite, ZoomLevel src, ZoomLevel tgt)
@@ -644,7 +635,7 @@ void IncreaseSpriteLRU()
 
 		DEBUG(sprite, 3, "Fixing lru %u, inuse=" PRINTF_SIZE, _sprite_lru_counter, GetSpriteCacheUsage());
 
-		for (i = 0; i != _spritecache_items; i++) {
+		for (i = 0; i != _spritecache.size(); i++) {
 			SpriteCache *sc = GetSpriteCache(i);
 			if (sc->ptr != NULL) {
 				if (sc->lru >= 0) {
@@ -688,7 +679,7 @@ static void CompactSpriteCache()
 
 			/* Locate the sprite belonging to the next pointer. */
 			for (i = 0; GetSpriteCache(i)->ptr != next->data; i++) {
-				assert(i != _spritecache_items);
+				assert(i != _spritecache.size());
 			}
 
 			GetSpriteCache(i)->ptr = s->data; // Adjust sprite array entry
@@ -738,7 +729,7 @@ static void DeleteEntryFromSpriteCache()
 	DEBUG(sprite, 3, "DeleteEntryFromSpriteCache, inuse=" PRINTF_SIZE, GetSpriteCacheUsage());
 
 	cur_lru = 0xffff;
-	for (SpriteID i = 0; i != _spritecache_items; i++) {
+	for (SpriteID i = 0; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
 		if (sc->type != ST_RECOLOUR && sc->ptr != NULL && sc->lru < cur_lru) {
 			cur_lru = sc->lru;
@@ -1028,9 +1019,7 @@ void GfxInitSpriteMem()
 	GfxInitSpriteCache();
 
 	/* Reset the spritecache 'pool' */
-	free(_spritecache);
-	_spritecache_items = 0;
-	_spritecache = NULL;
+	_spritecache.clear();
 
 	_compact_cache_counter = 0;
 }
@@ -1042,7 +1031,7 @@ void GfxInitSpriteMem()
 void GfxClearSpriteCache()
 {
 	/* Clear sprite ptr for all cached items */
-	for (uint i = 0; i != _spritecache_items; i++) {
+	for (uint i = 0; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
 		if (sc->type != ST_RECOLOUR && sc->ptr != NULL) DeleteEntryFromSpriteCache(i);
 	}
