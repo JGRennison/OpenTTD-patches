@@ -17,6 +17,7 @@
 #include "zoom_func.h"
 #include "settings_type.h"
 #include "blitter/factory.hpp"
+#include "core/alloc_func.hpp"
 #include "core/math_func.hpp"
 #include "core/mem_func.hpp"
 
@@ -27,6 +28,7 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include <vector>
+#include <algorithm>
 
 #include "safeguards.h"
 
@@ -35,20 +37,74 @@ uint _sprite_cache_size = 4;
 
 typedef SimpleTinyEnumT<SpriteType, byte> SpriteTypeByte;
 
-struct SpriteCache {
-	void *ptr;
+static size_t _spritecache_bytes_used = 0;
+
+PACK_N(class SpriteDataBuffer {
+	void *ptr = nullptr;
+	uint32 size = 0;
+
+public:
+	void *GetPtr() { return this->ptr; }
+	uint32 GetSize() { return this->size; }
+
+	void Allocate(uint32 size)
+	{
+		_spritecache_bytes_used -= this->size;
+		free(this->ptr);
+		this->ptr = MallocT<byte>(size);
+		this->size = size;
+		_spritecache_bytes_used += this->size;
+	}
+
+	void Clear()
+	{
+		_spritecache_bytes_used -= this->size;
+		free(this->ptr);
+		this->ptr = nullptr;
+		this->size = 0;
+	}
+
+	SpriteDataBuffer() {}
+
+	SpriteDataBuffer(uint32 size) { this->Allocate(size); }
+
+	SpriteDataBuffer(SpriteDataBuffer &&other) noexcept
+	{
+		*this = std::move(other);
+	}
+
+	~SpriteDataBuffer()
+	{
+		this->Clear();
+	}
+
+	SpriteDataBuffer& operator=(SpriteDataBuffer &&other) noexcept
+	{
+		this->Clear();
+		this->ptr = other.ptr;
+		this->size = other.size;
+		other.ptr = nullptr;
+		other.size = 0;
+		return *this;
+	}
+}, 4);
+
+PACK_N(struct SpriteCache {
 	size_t file_pos;
+	SpriteDataBuffer buffer;
 	uint32 id;
+	uint32 lru;
 	uint16 file_slot;
-	int16 lru;
-	SpriteTypeByte type; ///< In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
-	bool warned;         ///< True iff the user has been warned about incorrect use of this sprite
-	byte container_ver;  ///< Container version of the GRF the sprite is from.
-};
+	SpriteType type : 7; ///< In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
+	bool warned : 1;         ///< True iff the user has been warned about incorrect use of this sprite
+	byte container_ver;      ///< Container version of the GRF the sprite is from.
 
+	void *GetPtr() { return this->buffer.GetPtr(); }
+}, 4);
+assert_compile(sizeof(SpriteCache) <= 32);
 
-std::vector<SpriteCache> _spritecache;
-
+static std::vector<SpriteCache> _spritecache;
+static SpriteDataBuffer _last_sprite_allocation;
 
 static inline SpriteCache *GetSpriteCache(uint index)
 {
@@ -69,18 +125,8 @@ static SpriteCache *AllocateSpriteCache(uint index)
 	return GetSpriteCache(index);
 }
 
+static uint32 _sprite_lru_counter;
 
-struct MemBlock {
-	size_t size;
-	byte data[];
-};
-
-static uint _sprite_lru_counter;
-static MemBlock *_spritecache_ptr;
-static uint _allocated_sprite_cache_size = 0;
-static int _compact_cache_counter;
-
-static void CompactSpriteCache();
 static void *AllocSprite(size_t mem_req);
 
 /**
@@ -571,7 +617,10 @@ bool LoadNextSprite(int load_index, byte file_slot, uint file_sprite_id, byte co
 	SpriteCache *sc = AllocateSpriteCache(load_index);
 	sc->file_slot = file_slot;
 	sc->file_pos = file_pos;
-	sc->ptr = data;
+	if (data != nullptr) {
+		assert(data == _last_sprite_allocation.GetPtr());
+		sc->buffer = std::move(_last_sprite_allocation);
+	}
 	sc->lru = 0;
 	sc->id = file_sprite_id;
 	sc->type = type;
@@ -589,114 +638,15 @@ void DupSprite(SpriteID old_spr, SpriteID new_spr)
 
 	scnew->file_slot = scold->file_slot;
 	scnew->file_pos = scold->file_pos;
-	scnew->ptr = NULL;
 	scnew->id = scold->id;
 	scnew->type = scold->type;
 	scnew->warned = false;
 	scnew->container_ver = scold->container_ver;
 }
 
-/**
- * S_FREE_MASK is used to mask-out lower bits of MemBlock::size
- * If they are non-zero, the block is free.
- * S_FREE_MASK has to ensure MemBlock is correctly aligned -
- * it means 8B (S_FREE_MASK == 7) on 64bit systems!
- */
-static const size_t S_FREE_MASK = sizeof(size_t) - 1;
-
-/* to make sure nobody adds things to MemBlock without checking S_FREE_MASK first */
-assert_compile(sizeof(MemBlock) == sizeof(size_t));
-/* make sure it's a power of two */
-assert_compile((sizeof(size_t) & (sizeof(size_t) - 1)) == 0);
-
-static inline MemBlock *NextBlock(MemBlock *block)
-{
-	return (MemBlock*)((byte*)block + (block->size & ~S_FREE_MASK));
-}
-
 static size_t GetSpriteCacheUsage()
 {
-	size_t tot_size = 0;
-	MemBlock *s;
-
-	for (s = _spritecache_ptr; s->size != 0; s = NextBlock(s)) {
-		if (!(s->size & S_FREE_MASK)) tot_size += s->size;
-	}
-
-	return tot_size;
-}
-
-
-void IncreaseSpriteLRU()
-{
-	/* Increase all LRU values */
-	if (_sprite_lru_counter > 16384) {
-		SpriteID i;
-
-		DEBUG(sprite, 3, "Fixing lru %u, inuse=" PRINTF_SIZE, _sprite_lru_counter, GetSpriteCacheUsage());
-
-		for (i = 0; i != _spritecache.size(); i++) {
-			SpriteCache *sc = GetSpriteCache(i);
-			if (sc->ptr != NULL) {
-				if (sc->lru >= 0) {
-					sc->lru = -1;
-				} else if (sc->lru != -32768) {
-					sc->lru--;
-				}
-			}
-		}
-		_sprite_lru_counter = 0;
-	}
-
-	/* Compact sprite cache every now and then. */
-	if (++_compact_cache_counter >= 740) {
-		CompactSpriteCache();
-		_compact_cache_counter = 0;
-	}
-}
-
-/**
- * Called when holes in the sprite cache should be removed.
- * That is accomplished by moving the cached data.
- */
-static void CompactSpriteCache()
-{
-	MemBlock *s;
-
-	DEBUG(sprite, 3, "Compacting sprite cache, inuse=" PRINTF_SIZE, GetSpriteCacheUsage());
-
-	for (s = _spritecache_ptr; s->size != 0;) {
-		if (s->size & S_FREE_MASK) {
-			MemBlock *next = NextBlock(s);
-			MemBlock temp;
-			SpriteID i;
-
-			/* Since free blocks are automatically coalesced, this should hold true. */
-			assert(!(next->size & S_FREE_MASK));
-
-			/* If the next block is the sentinel block, we can safely return */
-			if (next->size == 0) break;
-
-			/* Locate the sprite belonging to the next pointer. */
-			for (i = 0; GetSpriteCache(i)->ptr != next->data; i++) {
-				assert(i != _spritecache.size());
-			}
-
-			GetSpriteCache(i)->ptr = s->data; // Adjust sprite array entry
-			/* Swap this and the next block */
-			temp = *s;
-			memmove(s, next, next->size);
-			s = NextBlock(s);
-			*s = temp;
-
-			/* Coalesce free blocks */
-			while (NextBlock(s)->size & S_FREE_MASK) {
-				s->size += NextBlock(s)->size & ~S_FREE_MASK;
-			}
-		} else {
-			s = NextBlock(s);
-		}
-	}
+	return _spritecache_bytes_used;
 }
 
 /**
@@ -705,80 +655,97 @@ static void CompactSpriteCache()
  */
 static void DeleteEntryFromSpriteCache(uint item)
 {
-	/* Mark the block as free (the block must be in use) */
-	MemBlock *s = (MemBlock*)GetSpriteCache(item)->ptr - 1;
-	assert(!(s->size & S_FREE_MASK));
-	s->size |= S_FREE_MASK;
-	GetSpriteCache(item)->ptr = NULL;
+	GetSpriteCache(item)->buffer.Clear();
+}
 
-	/* And coalesce adjacent free blocks */
-	for (s = _spritecache_ptr; s->size != 0; s = NextBlock(s)) {
-		if (s->size & S_FREE_MASK) {
-			while (NextBlock(s)->size & S_FREE_MASK) {
-				s->size += NextBlock(s)->size & ~S_FREE_MASK;
+static void DeleteEntriesFromSpriteCache(size_t target)
+{
+	const size_t initial_in_use = GetSpriteCacheUsage();
+
+	struct SpriteInfo {
+		uint32 lru;
+		SpriteID id;
+		uint32 size;
+
+		bool operator<(const SpriteInfo &other)
+		{
+			return this->lru < other.lru;
+		}
+	};
+	std::vector<SpriteInfo> candidates;
+	size_t candidate_bytes = 0;
+
+	auto push = [&](SpriteInfo info) {
+		candidates.push_back(info);
+		std::push_heap(candidates.begin(), candidates.end());
+		candidate_bytes += info.size;
+	};
+
+	auto pop = [&]() {
+		candidate_bytes -= candidates.front().size;
+		std::pop_heap(candidates.begin(), candidates.end());
+		candidates.pop_back();
+	};
+
+	SpriteID i = 0;
+	for (; i != _spritecache.size() && candidate_bytes < target; i++) {
+		SpriteCache *sc = GetSpriteCache(i);
+		if (sc->type != ST_RECOLOUR && sc->GetPtr() != NULL) {
+			push({ sc->lru, i, sc->buffer.GetSize() });
+			if (candidate_bytes >= target) break;
+		}
+	}
+	for (; i != _spritecache.size(); i++) {
+		SpriteCache *sc = GetSpriteCache(i);
+		if (sc->type != ST_RECOLOUR && sc->GetPtr() != NULL && sc->lru <= candidates.front().lru) {
+			push({ sc->lru, i, sc->buffer.GetSize() });
+			while (!candidates.empty() && candidate_bytes - candidates.front().size >= target) {
+				pop();
 			}
 		}
 	}
-}
 
-static void DeleteEntryFromSpriteCache()
-{
-	uint best = UINT_MAX;
-	int cur_lru;
-
-	DEBUG(sprite, 3, "DeleteEntryFromSpriteCache, inuse=" PRINTF_SIZE, GetSpriteCacheUsage());
-
-	cur_lru = 0xffff;
-	for (SpriteID i = 0; i != _spritecache.size(); i++) {
-		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->type != ST_RECOLOUR && sc->ptr != NULL && sc->lru < cur_lru) {
-			cur_lru = sc->lru;
-			best = i;
-		}
+	for (auto &it : candidates) {
+		DeleteEntryFromSpriteCache(it.id);
 	}
 
-	/* Display an error message and die, in case we found no sprite at all.
-	 * This shouldn't really happen, unless all sprites are locked. */
-	if (best == UINT_MAX) error("Out of sprite memory");
+	DEBUG(sprite, 3, "DeleteEntriesFromSpriteCache, deleted: " PRINTF_SIZE ", freed: " PRINTF_SIZE ", in use: " PRINTF_SIZE " --> " PRINTF_SIZE ", delta: " PRINTF_SIZE ", requested: " PRINTF_SIZE,
+			candidates.size(), candidate_bytes, initial_in_use, GetSpriteCacheUsage(), initial_in_use - GetSpriteCacheUsage(), target);
+}
 
-	DeleteEntryFromSpriteCache(best);
+void IncreaseSpriteLRU()
+{
+	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+	uint target_size = (bpp > 0 ? _sprite_cache_size * bpp / 8 : 1) * 1024 * 1024;
+	if (_spritecache_bytes_used > target_size) {
+		DeleteEntriesFromSpriteCache(_spritecache_bytes_used - target_size + 512 * 1024);
+	}
+
+	/* Increase all LRU values */
+	if (_sprite_lru_counter >= 0xC0000000) {
+		SpriteID i;
+
+		DEBUG(sprite, 3, "Fixing lru %u, inuse=" PRINTF_SIZE, _sprite_lru_counter, GetSpriteCacheUsage());
+
+		for (i = 0; i != _spritecache.size(); i++) {
+			SpriteCache *sc = GetSpriteCache(i);
+			if (sc->GetPtr() != NULL) {
+				if (sc->lru > 0x80000000) {
+					sc->lru -= 0x80000000;
+				} else {
+					sc->lru = 0;
+				}
+			}
+		}
+		_sprite_lru_counter -= 0x80000000;
+	}
 }
 
 static void *AllocSprite(size_t mem_req)
 {
-	mem_req += sizeof(MemBlock);
-
-	/* Align this to correct boundary. This also makes sure at least one
-	 * bit is not used, so we can use it for other things. */
-	mem_req = Align(mem_req, S_FREE_MASK + 1);
-
-	for (;;) {
-		MemBlock *s;
-
-		for (s = _spritecache_ptr; s->size != 0; s = NextBlock(s)) {
-			if (s->size & S_FREE_MASK) {
-				size_t cur_size = s->size & ~S_FREE_MASK;
-
-				/* Is the block exactly the size we need or
-				 * big enough for an additional free block? */
-				if (cur_size == mem_req ||
-						cur_size >= mem_req + sizeof(MemBlock)) {
-					/* Set size and in use */
-					s->size = mem_req;
-
-					/* Do we need to inject a free block too? */
-					if (cur_size != mem_req) {
-						NextBlock(s)->size = (cur_size - mem_req) | S_FREE_MASK;
-					}
-
-					return s->data;
-				}
-			}
-		}
-
-		/* Reached sentinel, but no block found yet. Delete some old entry. */
-		DeleteEntryFromSpriteCache();
-	}
+	assert(_last_sprite_allocation.GetPtr() == nullptr);
+	_last_sprite_allocation.Allocate(mem_req);
+	return _last_sprite_allocation.GetPtr();
 }
 
 /**
@@ -801,7 +768,7 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
 
 	SpriteType available = sc->type;
 	if (requested == ST_FONT && available == ST_NORMAL) {
-		if (sc->ptr == NULL) sc->type = ST_FONT;
+		if (sc->GetPtr() == NULL) sc->type = ST_FONT;
 		return GetRawSprite(sprite, sc->type, allocator);
 	}
 
@@ -857,9 +824,13 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator)
 		sc->lru = ++_sprite_lru_counter;
 
 		/* Load the sprite, if it is not loaded, yet */
-		if (sc->ptr == NULL) sc->ptr = ReadSprite(sc, sprite, type, AllocSprite);
+		if (sc->GetPtr() == NULL) {
+			void *ptr = ReadSprite(sc, sprite, type, AllocSprite);
+			assert(ptr == _last_sprite_allocation.GetPtr());
+			sc->buffer = std::move(_last_sprite_allocation);
+		}
 
-		return sc->ptr;
+		return sc->GetPtr();
 	} else {
 		/* Do not use the spritecache, but a different allocator. */
 		return ReadSprite(sc, sprite, type, allocator);
@@ -963,65 +934,11 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	return 0;
 }
 
-static void GfxInitSpriteCache()
-{
-	/* initialize sprite cache heap */
-	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
-	uint target_size = (bpp > 0 ? _sprite_cache_size * bpp / 8 : 1) * 1024 * 1024;
-
-	/* Remember 'target_size' from the previous allocation attempt, so we do not try to reach the target_size multiple times in case of failure. */
-	static uint last_alloc_attempt = 0;
-
-	if (_spritecache_ptr == NULL || (_allocated_sprite_cache_size != target_size && target_size != last_alloc_attempt)) {
-		delete[] reinterpret_cast<byte *>(_spritecache_ptr);
-
-		last_alloc_attempt = target_size;
-		_allocated_sprite_cache_size = target_size;
-
-		do {
-			try {
-				/* Try to allocate 50% more to make sure we do not allocate almost all available. */
-				_spritecache_ptr = reinterpret_cast<MemBlock *>(new byte[_allocated_sprite_cache_size + _allocated_sprite_cache_size / 2]);
-			} catch (std::bad_alloc &) {
-				_spritecache_ptr = NULL;
-			}
-
-			if (_spritecache_ptr != NULL) {
-				/* Allocation succeeded, but we wanted less. */
-				delete[] reinterpret_cast<byte *>(_spritecache_ptr);
-				_spritecache_ptr = reinterpret_cast<MemBlock *>(new byte[_allocated_sprite_cache_size]);
-			} else if (_allocated_sprite_cache_size < 2 * 1024 * 1024) {
-				usererror("Cannot allocate spritecache");
-			} else {
-				/* Try again to allocate half. */
-				_allocated_sprite_cache_size >>= 1;
-			}
-		} while (_spritecache_ptr == NULL);
-
-		if (_allocated_sprite_cache_size != target_size) {
-			DEBUG(misc, 0, "Not enough memory to allocate %d MiB of spritecache. Spritecache was reduced to %d MiB.", target_size / 1024 / 1024, _allocated_sprite_cache_size / 1024 / 1024);
-
-			ErrorMessageData msg(STR_CONFIG_ERROR_OUT_OF_MEMORY, STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG);
-			msg.SetDParam(0, target_size);
-			msg.SetDParam(1, _allocated_sprite_cache_size);
-			ScheduleErrorMessage(msg);
-		}
-	}
-
-	/* A big free block */
-	_spritecache_ptr->size = (_allocated_sprite_cache_size - sizeof(MemBlock)) | S_FREE_MASK;
-	/* Sentinel block (identified by size == 0) */
-	NextBlock(_spritecache_ptr)->size = 0;
-}
-
 void GfxInitSpriteMem()
 {
-	GfxInitSpriteCache();
-
 	/* Reset the spritecache 'pool' */
 	_spritecache.clear();
-
-	_compact_cache_counter = 0;
+	assert(_spritecache_bytes_used == 0);
 }
 
 /**
@@ -1033,7 +950,7 @@ void GfxClearSpriteCache()
 	/* Clear sprite ptr for all cached items */
 	for (uint i = 0; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->type != ST_RECOLOUR && sc->ptr != NULL) DeleteEntryFromSpriteCache(i);
+		if (sc->type != ST_RECOLOUR && sc->GetPtr() != NULL) DeleteEntryFromSpriteCache(i);
 	}
 }
 
