@@ -2588,6 +2588,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_THAN             :>
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_EQUALS           :>=
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS          :can carry
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS      :can't carry
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_HAS_STATUS            :has
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_HAVE_STATUS    :doesn't have
 STR_TRACE_RESTRICT_CONDITIONAL_IF                               :If
 STR_TRACE_RESTRICT_CONDITIONAL_ELIF                             :Else if
 STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :Or if
@@ -2614,6 +2616,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :max T.E.
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER_WEIGHT_RATIO            :power / weight ratio
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO           :max T.E. / weight ratio
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :train owner
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :train status
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{RED}undefined
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
@@ -2637,6 +2640,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} train 
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} train {STRING} in slot: {STRING} {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} of slot: {TRSLOT} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} of slot: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} train {STRING} status: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
@@ -2688,6 +2692,17 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :PBS reservation
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
+STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :empty
+STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :full
+STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :broken down
+STR_TRACE_RESTRICT_TRAIN_STATUS_NEEDS_REPAIR                    :needs repair
+STR_TRACE_RESTRICT_TRAIN_STATUS_REVERSING                       :reversing
+STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_STATION_WAYPOINT     :heading to station/waypoint
+STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_DEPOT                :heading to depot
+STR_TRACE_RESTRICT_TRAIN_STATUS_LOADING                         :loading
+STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING                         :waiting
+STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :lost
+STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :requires service
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals

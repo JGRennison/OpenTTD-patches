@@ -137,6 +137,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_TRAIN_IN_SLOT       = 21,   ///< Test train slot membership
 	TRIT_COND_SLOT_OCCUPANCY      = 22,   ///< Test train slot occupancy state
 	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
+	TRIT_COND_TRAIN_STATUS        = 25,   ///< Test train status
 	/* space up to 31 */
 };
 
@@ -231,6 +232,23 @@ enum TraceRestrictWaitAtPbsValueField {
 	TRWAPVF_CANCEL_WAIT_AT_PBS         = 1,       ///< Cancel wait at PBS
 	TRWAPVF_PBS_RES_END_WAIT           = 2,       ///< PBS reservations ending at this signal wait
 	TRWAPVF_CANCEL_PBS_RES_END_WAIT    = 3,       ///< Cancel PBS reservations ending at this signal wait
+};
+
+/**
+ * TraceRestrictItem value field, for TRIT_COND_TRAIN_STATUS
+ */
+enum TraceRestrictTrainStatusValueField {
+	TRTSVF_EMPTY                       =  0,      ///< Train is empty
+	TRTSVF_FULL                        =  1,      ///< Train is full
+	TRTSVF_BROKEN_DOWN                 =  2,      ///< Train is broken down
+	TRTSVF_NEEDS_REPAIR                =  3,      ///< Train needs repair
+	TRTSVF_REVERSING                   =  4,      ///< Train is reversing
+	TRTSVF_HEADING_TO_STATION_WAYPOINT =  5,      ///< Train is en-route to a station or waypoint
+	TRTSVF_HEADING_TO_DEPOT            =  6,      ///< Train is en-route to a depot
+	TRTSVF_LOADING                     =  7,      ///< Train is loading
+	TRTSVF_WAITING                     =  8,      ///< Train is waiting
+	TRTSVF_LOST                        =  9,      ///< Train is lost
+	TRTSVF_REQUIRES_SERVICE            = 10,      ///< Train requires service
 };
 
 /**
@@ -522,6 +540,7 @@ enum TraceRestrictValueType {
 	TRVT_SLOT_INDEX               = 19,///< takes a TraceRestrictSlotID
 	TRVT_SLOT_INDEX_INT           = 20,///< takes a TraceRestrictSlotID, and an integer in the next item slot
 	TRVT_OWNER                    = 40,///< takes a CompanyID
+	TRVT_TRAIN_STATUS             = 41,///< takes a TraceRestrictTrainStatusValueField
 };
 
 /**
@@ -635,6 +654,11 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_TRAIN_OWNER:
 				out.value_type = TRVT_OWNER;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_TRAIN_STATUS:
+				out.value_type = TRVT_TRAIN_STATUS;
 				out.cond_type = TRCOT_BINARY;
 				break;
 

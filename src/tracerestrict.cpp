@@ -428,6 +428,70 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+
+					case TRIT_COND_TRAIN_STATUS: {
+						bool has_status = false;
+						switch (static_cast<TraceRestrictTrainStatusValueField>(GetTraceRestrictValue(item))) {
+							case TRTSVF_EMPTY:
+								has_status = true;
+								for (const Vehicle *v_iter = v; v_iter != NULL; v_iter = v_iter->Next()) {
+									if (v_iter->cargo.StoredCount() > 0) {
+										has_status = false;
+										break;
+									}
+								}
+								break;
+
+							case TRTSVF_FULL:
+								has_status = true;
+								for (const Vehicle *v_iter = v; v_iter != NULL; v_iter = v_iter->Next()) {
+									if (v_iter->cargo.StoredCount() < v_iter->cargo_cap) {
+										has_status = false;
+										break;
+									}
+								}
+								break;
+
+							case TRTSVF_BROKEN_DOWN:
+								has_status = v->flags & VRF_IS_BROKEN;
+								break;
+
+							case TRTSVF_NEEDS_REPAIR:
+								has_status = v->critical_breakdown_count > 0;
+								break;
+
+							case TRTSVF_REVERSING:
+								has_status = v->reverse_distance > 0 || HasBit(v->flags, VRF_REVERSING);
+								break;
+
+							case TRTSVF_HEADING_TO_STATION_WAYPOINT:
+								has_status = v->current_order.IsType(OT_GOTO_STATION) || v->current_order.IsType(OT_GOTO_WAYPOINT);
+								break;
+
+							case TRTSVF_HEADING_TO_DEPOT:
+								has_status = v->current_order.IsType(OT_GOTO_DEPOT);
+								break;
+
+							case TRTSVF_LOADING:
+								has_status = v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_LOADING_ADVANCE);
+								break;
+
+							case TRTSVF_WAITING:
+								has_status = v->current_order.IsType(OT_WAITING);
+								break;
+
+							case TRTSVF_LOST:
+								has_status = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST);
+								break;
+
+							case TRTSVF_REQUIRES_SERVICE:
+								has_status = v->NeedsServicing();
+								break;
+						}
+						result = TestBinaryConditionCommon(item, has_status);
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -640,6 +704,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_PHYS_PROP:
 				case TRIT_COND_PHYS_RATIO:
 				case TRIT_COND_TRAIN_OWNER:
+				case TRIT_COND_TRAIN_STATUS:
 					break;
 
 				default:
@@ -770,6 +835,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_POWER_WEIGHT_RATIO:
 		case TRVT_FORCE_WEIGHT_RATIO:
 		case TRVT_WAIT_AT_PBS:
+		case TRVT_TRAIN_STATUS:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);

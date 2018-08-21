@@ -264,6 +264,39 @@ static const TraceRestrictDropDownListSet _direction_value = {
 	_direction_value_str, _direction_value_val,
 };
 
+static const StringID _train_status_value_str[] = {
+	STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_FULL,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_NEEDS_REPAIR,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_REVERSING,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_STATION_WAYPOINT,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_DEPOT,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_LOADING,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_LOST,
+	STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE,
+	INVALID_STRING_ID
+};
+static const uint _train_status_value_val[] = {
+	TRTSVF_EMPTY,
+	TRTSVF_FULL,
+	TRTSVF_BROKEN_DOWN,
+	TRTSVF_NEEDS_REPAIR,
+	TRTSVF_REVERSING,
+	TRTSVF_HEADING_TO_STATION_WAYPOINT,
+	TRTSVF_HEADING_TO_DEPOT,
+	TRTSVF_LOADING,
+	TRTSVF_WAITING,
+	TRTSVF_LOST,
+	TRTSVF_REQUIRES_SERVICE,
+};
+
+/** value drop down list for train status type strings and values */
+static const TraceRestrictDropDownListSet _train_status_value = {
+	_train_status_value_str, _train_status_value_val,
+};
+
 /**
  * Get index of @p value in @p list_set
  * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
@@ -345,6 +378,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER,
+		STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE,
@@ -367,6 +401,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_PBS_ENTRY_SIGNAL,
 		TRIT_COND_TRAIN_GROUP,
 		TRIT_COND_TRAIN_OWNER,
+		TRIT_COND_TRAIN_STATUS,
 		TRIT_COND_PHYS_PROP | (TRPPCAF_WEIGHT << 16),
 		TRIT_COND_PHYS_PROP | (TRPPCAF_POWER << 16),
 		TRIT_COND_PHYS_PROP | (TRPPCAF_MAX_TE << 16),
@@ -386,7 +421,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x38000 : 0x30;
+			*hide_mask = is_conditional ? 0x70000 : 0x30;
 		}
 	}
 	return is_conditional ? &set_cond : &set_action;
@@ -505,6 +540,20 @@ static const TraceRestrictDropDownListSet _cargo_cond_ops = {
 	_cargo_cond_ops_str, _cargo_cond_ops_val,
 };
 
+static const StringID _train_status_cond_ops_str[] = {
+	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_HAS_STATUS,
+	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_HAVE_STATUS,
+	INVALID_STRING_ID,
+};
+static const uint _train_status_cond_ops_val[] = {
+	TRCO_IS,
+	TRCO_ISNOT,
+};
+/** cargo conditional operators dropdown list set */
+static const TraceRestrictDropDownListSet _train_status_cond_ops = {
+	_train_status_cond_ops_str, _train_status_cond_ops_val,
+};
+
 static const StringID _slot_op_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT,
 	STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE,
@@ -587,6 +636,7 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 	};
 
 	if (properties.value_type == TRVT_CARGO_ID) return &_cargo_cond_ops;
+	if (properties.value_type == TRVT_TRAIN_STATUS) return &_train_status_cond_ops;
 
 	switch (properties.cond_type) {
 		case TRCOT_NONE:
@@ -1008,6 +1058,14 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					break;
 				}
 
+				case TRVT_TRAIN_STATUS:
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS;
+					assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					SetDParam(1, GetDropDownStringByValue(&_train_status_cond_ops, GetTraceRestrictCondOp(item)));
+					SetDParam(2, GetDropDownStringByValue(&_train_status_value, GetTraceRestrictValue(item)));
+					break;
+
 				default:
 					NOT_REACHED();
 					break;
@@ -1419,6 +1477,10 @@ public:
 						if (dlist != NULL) ShowDropDownList(this, dlist, selected, TR_WIDGET_VALUE_DROPDOWN);
 						break;
 					}
+
+					case TRVT_TRAIN_STATUS:
+						this->ShowDropDownListWithValue(&_train_status_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
 
 					default:
 						break;
@@ -2394,6 +2456,13 @@ private:
 							}
 							break;
 						}
+
+						case TRVT_TRAIN_STATUS:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetDropDownStringByValue(&_train_status_value, GetTraceRestrictValue(item));
+							break;
 
 						default:
 							break;
