@@ -2556,7 +2556,7 @@ static bool CheckTrainStayInDepot(Train *v)
 static int GetAndClearLastBridgeEntranceSetSignalIndex(TileIndex bridge_entrance)
 {
 	uint16 m = _m[bridge_entrance].m2;
-	if (m & 0x8000) {
+	if (m & BRIDGE_M2_SIGNAL_STATE_EXT_FLAG) {
 		auto it = _long_bridge_signal_sim_map.find(bridge_entrance);
 		if (it != _long_bridge_signal_sim_map.end()) {
 			LongBridgeSignalStorage &lbss = it->second;
@@ -2567,13 +2567,14 @@ static int GetAndClearLastBridgeEntranceSetSignalIndex(TileIndex bridge_entrance
 				if (slot_bits) {
 					uint8 i = FindLastBit(slot_bits);
 					ClrBit(slot_bits, i);
-					return 1 + 15 + (64 * slot) + i;
+					return 1 + BRIDGE_M2_SIGNAL_STATE_COUNT + (64 * slot) + i;
 				}
 			}
 		}
 	}
-	if (m & 0x7FFF) {
-		uint8 i = FindLastBit(m & 0x7FFF);
+	uint16 m_masked = GB(m & (~BRIDGE_M2_SIGNAL_STATE_EXT_FLAG), BRIDGE_M2_SIGNAL_STATE_OFFSET, BRIDGE_M2_SIGNAL_STATE_FIELD_SIZE);
+	if (m_masked) {
+		uint8 i = FindLastBit(m_masked);
 		ClrBit(_m[bridge_entrance].m2, i);
 		return 1 + i;
 	}
