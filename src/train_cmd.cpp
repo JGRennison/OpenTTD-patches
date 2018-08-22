@@ -2575,7 +2575,7 @@ static int GetAndClearLastBridgeEntranceSetSignalIndex(TileIndex bridge_entrance
 	uint16 m_masked = GB(m & (~BRIDGE_M2_SIGNAL_STATE_EXT_FLAG), BRIDGE_M2_SIGNAL_STATE_OFFSET, BRIDGE_M2_SIGNAL_STATE_FIELD_SIZE);
 	if (m_masked) {
 		uint8 i = FindLastBit(m_masked);
-		ClrBit(_m[bridge_entrance].m2, i);
+		ClrBit(_m[bridge_entrance].m2, BRIDGE_M2_SIGNAL_STATE_OFFSET + i);
 		return 1 + i;
 	}
 
