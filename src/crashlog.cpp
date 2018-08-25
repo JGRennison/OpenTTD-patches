@@ -398,6 +398,12 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	}
 #endif
 
+	if (IsNonMainThread()) {
+		buffer += seprintf(buffer, last, "Non-main thread (");
+		buffer += GetThreadName(buffer, last);
+		buffer += seprintf(buffer, last, ")\n\n");
+	}
+
 	buffer = this->LogOpenTTDVersion(buffer, last);
 	buffer = this->LogStacktrace(buffer, last);
 	buffer = this->LogRegisters(buffer, last);
