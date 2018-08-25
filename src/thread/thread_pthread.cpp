@@ -11,6 +11,7 @@
 
 #include "../stdafx.h"
 #include "thread.h"
+#include "../string_func.h"
 #include <pthread.h>
 #include <errno.h>
 
@@ -200,4 +201,18 @@ void SetSelfAsMainThread()
 bool IsMainThread()
 {
 	return main_thread == pthread_self();
+}
+
+int GetThreadName(char *str, const char *last)
+{
+#if defined(__GLIBC__)
+#if __GLIBC_PREREQ(2, 12)
+	char buffer[16];
+	int result = pthread_getname_np(pthread_self(), buffer, sizeof(buffer));
+	if (result == 0) {
+		return seprintf(str, last, "%s", buffer);
+	}
+#endif
+#endif
+	return 0;
 }

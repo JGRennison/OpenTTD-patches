@@ -199,3 +199,5 @@ private:
 void SetSelfAsMainThread() { }
 
 bool IsMainThread() { return false; }
+
+int GetThreadName(char *str, const char *last) { return 0; }

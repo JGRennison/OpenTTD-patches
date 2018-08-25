@@ -13,12 +13,18 @@
 #include "thread.h"
 #include "../debug.h"
 #include "../core/alloc_func.hpp"
+#include "../scope.h"
+#include "../string_func.h"
 #include <stdlib.h>
 #include <windows.h>
 #include <process.h>
 #include "../os/windows/win32.h"
+#include <map>
+#include <string>
 
 #include "../safeguards.h"
+
+static void Win32SetThreadName(uint id, const char *name);
 
 /**
  * Win32 thread version for ThreadObject.
@@ -46,6 +52,7 @@ public:
 	{
 		this->thread = (HANDLE)_beginthreadex(NULL, 0, &stThreadProc, this, CREATE_SUSPENDED, &this->id);
 		if (this->thread == NULL) return;
+		Win32SetThreadName(this->id, name);
 		ResumeThread(this->thread);
 	}
 
@@ -176,4 +183,27 @@ void SetSelfAsMainThread()
 bool IsMainThread()
 {
 	return main_thread_id == GetCurrentThreadId();
+}
+
+static std::map<uint, std::string> _thread_name_map;
+static ThreadMutex_Win32 _thread_name_map_mutex;
+
+static void Win32SetThreadName(uint id, const char *name)
+{
+	_thread_name_map_mutex.BeginCritical();
+	_thread_name_map[id] = name;
+	_thread_name_map_mutex.EndCritical();
+}
+
+int GetThreadName(char *str, const char *last)
+{
+	_thread_name_map_mutex.BeginCritical();
+	auto guard = scope_guard([&]() {
+		_thread_name_map_mutex.EndCritical();
+	});
+	auto iter = _thread_name_map.find(GetCurrentThreadId());
+	if (iter != _thread_name_map.end()) {
+		return seprintf(str, last, "%s", iter->second.c_str());
+	}
+	return 0;
 }

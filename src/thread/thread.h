@@ -133,4 +133,12 @@ void SetSelfAsMainThread();
  */
 bool IsMainThread();
 
+/**
+ * Get the name of the current thread, if any.
+ * @param str The start of the buffer.
+ * @param last The last char of the buffer.
+ * @return Number of chars written to str.
+ */
+int GetThreadName(char *str, const char *last);
+
 #endif /* THREAD_H */
