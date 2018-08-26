@@ -78,6 +78,7 @@
 /* static */ const char *CrashLog::message = NULL;
 /* static */ char *CrashLog::gamelog_buffer = NULL;
 /* static */ const char *CrashLog::gamelog_last = NULL;
+/* static */ const CrashLog *CrashLog::main_thread_pending_crashlog = NULL;
 
 char *CrashLog::LogCompiler(char *buffer, const char *last) const
 {
@@ -398,6 +399,12 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	}
 #endif
 
+	if (IsNonMainThread()) {
+		buffer += seprintf(buffer, last, "Non-main thread (");
+		buffer += GetThreadName(buffer, last);
+		buffer += seprintf(buffer, last, ")\n\n");
+	}
+
 	buffer = this->LogOpenTTDVersion(buffer, last);
 	buffer = this->LogStacktrace(buffer, last);
 	buffer = this->LogRegisters(buffer, last);
@@ -528,8 +535,33 @@ bool CrashLog::MakeCrashLog() const
 		printf("Crash dump written to %s. Please add this file to any bug reports.\n\n", filename);
 	}
 
+	if (IsNonMainThread()) {
+		printf("Asking main thread to write crash savegame and screenshot...\n\n");
+		CrashLog::main_thread_pending_crashlog = this;
+		_exit_game = true;
+		CSleep(60000);
+		if (!CrashLog::main_thread_pending_crashlog) return ret;
+		printf("Main thread did not write crash savegame and screenshot within 60s, trying it from this thread...\n\n");
+	}
+	CrashLog::main_thread_pending_crashlog = nullptr;
+	bret = CrashLog::MakeCrashSavegameAndScreenshot();
+	if (!bret) ret = false;
+
+	return ret;
+}
+
+/**
+ * Makes a crash dump and crash savegame. It uses DEBUG to write
+ * information like paths to the console.
+ * @return true when everything is made successfully.
+ */
+bool CrashLog::MakeCrashSavegameAndScreenshot() const
+{
+	char filename[MAX_PATH];
+	bool ret = true;
+
 	printf("Writing crash savegame...\n");
-	bret = this->WriteSavegame(filename, lastof(filename));
+	bool bret = this->WriteSavegame(filename, lastof(filename));
 	if (bret) {
 		printf("Crash savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", filename);
 	} else {
@@ -547,6 +579,18 @@ bool CrashLog::MakeCrashLog() const
 	}
 
 	return ret;
+}
+
+/* static */ void CrashLog::MainThreadExitCheckPendingCrashlog()
+{
+	const CrashLog *cl = CrashLog::main_thread_pending_crashlog;
+	if (cl) {
+		CrashLog::main_thread_pending_crashlog = nullptr;
+		cl->MakeCrashSavegameAndScreenshot();
+
+		CrashLog::AfterCrashLogCleanup();
+		abort();
+	}
 }
 
 /**

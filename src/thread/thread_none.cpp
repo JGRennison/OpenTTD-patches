@@ -37,3 +37,6 @@ public:
 void SetSelfAsMainThread() { }
 
 bool IsMainThread() { return true; }
+bool IsNonMainThread() { return false; }
+
+int GetThreadName(char *str, const char *last) { return 0; }
