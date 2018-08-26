@@ -127,6 +127,7 @@ public:
 	bool WriteScreenshot(char *filename, const char *filename_last) const;
 
 	bool MakeCrashLog() const;
+	bool MakeCrashSavegameAndScreenshot() const;
 
 	/**
 	 * Initialiser for crash logs; do the appropriate things so crashes are
@@ -141,6 +142,10 @@ public:
 	inline const char *GetMessage() const { return this->message; }
 
 	static const char *GetAbortCrashlogReason();
+
+	static const CrashLog *main_thread_pending_crashlog;
+
+	static void MainThreadExitCheckPendingCrashlog();
 };
 
 #endif /* CRASHLOG_H */

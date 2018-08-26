@@ -890,6 +890,8 @@ int openttd_main(int argc, char *argv[])
 
 	VideoDriver::GetInstance()->MainLoop();
 
+	CrashLog::MainThreadExitCheckPendingCrashlog();
+
 	WaitTillSaved();
 
 	/* only save config if we have to */
