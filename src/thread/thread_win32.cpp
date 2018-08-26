@@ -185,6 +185,11 @@ bool IsMainThread()
 	return main_thread_id == GetCurrentThreadId();
 }
 
+bool IsNonMainThread()
+{
+	return main_thread_id != GetCurrentThreadId();
+}
+
 static std::map<uint, std::string> _thread_name_map;
 static ThreadMutex_Win32 _thread_name_map_mutex;
 

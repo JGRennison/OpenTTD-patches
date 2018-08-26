@@ -203,6 +203,11 @@ bool IsMainThread()
 	return main_thread == pthread_self();
 }
 
+bool IsNonMainThread()
+{
+	return main_thread != pthread_self();
+}
+
 int GetThreadName(char *str, const char *last)
 {
 #if defined(__GLIBC__)

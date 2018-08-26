@@ -134,6 +134,11 @@ void SetSelfAsMainThread();
 bool IsMainThread();
 
 /**
+ * @return true if the current thread definitely a "non-main" thread. If in doubt returns false.
+ */
+bool IsNonMainThread();
+
+/**
  * Get the name of the current thread, if any.
  * @param str The start of the buffer.
  * @param last The last char of the buffer.
