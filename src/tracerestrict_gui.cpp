@@ -1414,6 +1414,7 @@ public:
 					default:
 						break;
 				}
+				break;
 			}
 
 			case TR_WIDGET_VALUE_DEST: {
