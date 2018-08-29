@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.27.0 (2018-08-29)
+* Fix crash when selling a train that's in a routing restriction slot.
+* Fix crash and/or reservation errors at the far end when a train exited a signalled bridge/tunnel.
+* Fix routing restriction slot window not being refreshed.
+* Fix order extra data/flags not always being copied and/or applied to vehicle.
+* Fix various issues involving viewport plans in multiplayer due to lack of validation.
+* Fix visual glitches rendering multi-part order lines.
+* Add a "leave early" order timetable flag.
+* Add order mode to lock timetable travel time against autofill/automate changes.
+* Add support for timetabled wait times at waypoints.
+* Add support for assigning names to viewport plans.
+* Show reversing and timetabled wait states in vehicle status bar.
+* Show information relevant to sort key in vehicle list windows when sorting.
+* Performance improvements.
+* Bump trunk base from commit 50d930298dd99d20022c0f4a3bc080487f8afc17 to commit 703e7f8fc78a7032b7a5315092604fb62f471cb8.
+
 ### v0.26.2 (2018-08-12)
 * Fix crash/incorrect behaviour when propagating signal state changes up to the rear side of bridge/tunnel tiles.
 * Fix script/AI construction of rail track and waypoints.

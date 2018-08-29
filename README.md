@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.26.2
+## JGR's Patchpack version 0.27.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -227,8 +227,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add setting to automatically save when losing connection to a network game. (added in v0.25.0).  
   * Station rating: track "last visited vehicle type" separately per cargo. (added in v0.25.0).  
   * Go to depot and sell vehicle orders. (added in v0.26.0).  
-  * Order mode to lock timetable wait time against autofill/automate changes. (added in v0.26.0).  
+  * Order mode to lock timetable wait and travel times against autofill/automate changes. (added in v0.26.0 and v0.27.0 respectively).  
   * Settings to allow placing stations and all NewGRF objects under bridges. (added in v0.26.0).  
+  * Leave early order timetable flag. (added in v0.27.0).  
+  * Timetabled wait times at waypoints. (added in v0.27.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html).
 
