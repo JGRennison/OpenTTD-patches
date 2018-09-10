@@ -111,6 +111,10 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
 					v->current_order.SetTravelFixed(val != 0);
 					break;
 
+				case MTF_SET_LEAVE_TYPE:
+					v->current_order.SetLeaveType((OrderLeaveType)val);
+					break;
+
 				default:
 					NOT_REACHED();
 			}
