@@ -1278,6 +1278,9 @@ STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :When enabled, t
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Trains from different companies may not crash into each other: {STRING2}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :This setting is primarily to prevent untrusted players deliberately causing crashes involving other companies' trains in multi-player rail infrastructure sharing games.
 
+STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS                    :All train vehicles may be direction flipped in depot: {STRING2}
+STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :Enable flipping the direction of all train vehicles in depots, even if it is not enabled by the NewGRF.
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Airports never expire: {STRING2}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Enabling this setting makes each airport type stay available forever after its introduction
 

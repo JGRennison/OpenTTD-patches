@@ -541,6 +541,7 @@ struct VehicleSettings {
 	uint8  repair_cost;                      ///< cost of repairing vehicle
 	bool   ship_collision_avoidance;         ///< ships try to avoid colliding with each other
 	bool   no_train_crash_other_company;     ///< trains cannot crash with trains from other companies
+	bool   flip_direction_all_trains;        ///< enable flipping direction in depot for all train engine types
 };
 
 /** Settings related to the economy. */
