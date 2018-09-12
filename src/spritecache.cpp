@@ -667,7 +667,7 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 		SpriteID id;
 		uint32 size;
 
-		bool operator<(const SpriteInfo &other)
+		bool operator<(const SpriteInfo &other) const
 		{
 			return this->lru < other.lru;
 		}
