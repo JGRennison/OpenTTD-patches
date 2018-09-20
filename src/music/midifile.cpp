@@ -1010,21 +1010,30 @@ bool MidiFile::WriteSMF(const char *filename)
 std::string MidiFile::GetSMFFile(const MusicSongInfo &song)
 {
 	if (song.filetype == MTT_STANDARDMIDI) {
-		return std::string(song.filename);
+		char filename[MAX_PATH];
+		if (FioFindFullPath(filename, lastof(filename), Subdirectory::BASESET_DIR, song.filename)) {
+			return std::string(filename);
+		} else if (FioFindFullPath(filename, lastof(filename), Subdirectory::OLD_GM_DIR, song.filename)) {
+			return std::string(filename);
+		} else {
+			return std::string();
+		}
 	}
 
 	if (song.filetype != MTT_MPSMIDI) return std::string();
 
-	const char *lastpathsep = strrchr(song.filename, PATHSEPCHAR);
-	if (lastpathsep == NULL) {
-		lastpathsep = song.filename;
-	}
-
 	char basename[MAX_PATH];
 	{
+		const char *fnstart = strrchr(song.filename, PATHSEPCHAR);
+		if (fnstart == NULL) {
+			fnstart = song.filename;
+		} else {
+			fnstart++;
+		}
+
 		/* Remove all '.' characters from filename */
 		char *wp = basename;
-		for (const char *rp = lastpathsep + 1; *rp != '\0'; rp++) {
+		for (const char *rp = fnstart; *rp != '\0'; rp++) {
 			if (*rp != '.') *wp++ = *rp;
 		}
 		*wp++ = '\0';
