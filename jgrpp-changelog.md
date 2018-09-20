@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.27.1 (2018-09-20)
+* Fix crash when changing timetable leave early flag of current order.
+* Add setting to enable flipping direction of all train types in depot.
+* Fix build/compilation issue on MacOS.
+* Bump trunk base from commit 703e7f8fc78a7032b7a5315092604fb62f471cb8 to commit 59a1614ba0724bf5240b91d8cd2b90ff7eeb286c.
+
 ### v0.27.0 (2018-08-29)
 * Fix crash when selling a train that's in a routing restriction slot.
 * Fix crash and/or reservation errors at the far end when a train exited a signalled bridge/tunnel.

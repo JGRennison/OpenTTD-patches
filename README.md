@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.27.0
+## JGR's Patchpack version 0.27.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -231,6 +231,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Settings to allow placing stations and all NewGRF objects under bridges. (added in v0.26.0).  
   * Leave early order timetable flag. (added in v0.27.0).  
   * Timetabled wait times at waypoints. (added in v0.27.0).  
+  * Add setting to enable flipping direction of all train types in depot. (added in v0.27.1).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html).
 
