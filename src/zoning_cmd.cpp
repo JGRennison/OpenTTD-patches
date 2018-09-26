@@ -459,7 +459,7 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 			for (int y = rect.top; y <= rect.bottom; y++) {
 				auto iter = cache.lower_bound(TileXY(rect.left, y) << 3);
 				auto end_iter = iter;
-				uint end = TileXY(rect.right, y) << 3;
+				uint end = (TileXY(rect.right, y) + 1) << 3;
 				while (end_iter != cache.end() && *end_iter < end) ++end_iter;
 				cache.erase(iter, end_iter);
 			}
