@@ -318,6 +318,24 @@ SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
 }
 
 /**
+ * Detect whether a tile is a restricted signal tile
+ *
+ * @param TileIndex tile
+ * @param Owner owner
+ * @return red if a restricted signal, nothing otherwise
+ */
+inline SpriteID TileZoneCheckRoadGridEvaluation(TileIndex tile, uint grid_size)
+{
+	const bool x_grid = (TileX(tile) % grid_size == 0);
+	const bool y_grid = (TileY(tile) % grid_size == 0);
+	if (x_grid || y_grid) {
+		return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+	} else {
+		return ZONING_INVALID_SPRITE_ID;
+	}
+}
+
+/**
  * General evaluation function; calls all the other functions depending on
  * evaluation mode.
  *
@@ -339,6 +357,8 @@ SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, ZoningEvaluatio
 		case ZEM_BUL_UNSER:     return TileZoneCheckUnservedBuildingsEvaluation(tile, owner);
 		case ZEM_IND_UNSER:     return TileZoneCheckUnservedIndustriesEvaluation(tile, owner);
 		case ZEM_TRACERESTRICT: return TileZoneCheckTraceRestrictEvaluation(tile, owner);
+		case ZEM_2x2_GRID:      return TileZoneCheckRoadGridEvaluation(tile, 3);
+		case ZEM_3x3_GRID:      return TileZoneCheckRoadGridEvaluation(tile, 4);
 		default:                return ZONING_INVALID_SPRITE_ID;
 	}
 }

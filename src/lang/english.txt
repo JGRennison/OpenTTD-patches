@@ -5948,6 +5948,8 @@ STR_ZONING_STA_CATCH_OPEN                                       :Station catchme
 STR_ZONING_BUL_UNSER                                            :Unserved buildings
 STR_ZONING_IND_UNSER                                            :Unserved industries
 STR_ZONING_TRACERESTRICT                                        :Restricted signals
+STR_ZONING_2x2_GRID                                             :2x2 town road grid
+STR_ZONING_3x3_GRID                                             :3x3 town road grid
 
 STR_TMPL_RPL_TITLE                                              :{WHITE}Template Replacement
 STR_TMPL_TEMPLATE_REPLACEMENT                                   :Template Replacement

@@ -42,6 +42,8 @@ static const StringID _zone_type_strings[] = {
 	STR_ZONING_BUL_UNSER,
 	STR_ZONING_IND_UNSER,
 	STR_ZONING_TRACERESTRICT,
+	STR_ZONING_2x2_GRID,
+	STR_ZONING_3x3_GRID,
 	INVALID_STRING_ID
 };
 
@@ -54,6 +56,8 @@ static const ZoningEvaluationMode _zone_type_modes[] = {
 	ZEM_BUL_UNSER,
 	ZEM_IND_UNSER,
 	ZEM_TRACERESTRICT,
+	ZEM_2x2_GRID,
+	ZEM_3x3_GRID,
 };
 
 static ZoningEvaluationMode DropDownIndexToZoningEvaluationMode(int index)

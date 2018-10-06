@@ -27,6 +27,8 @@ enum ZoningEvaluationMode {
 	ZEM_BUL_UNSER,     ///< Check for unserved buildings
 	ZEM_IND_UNSER,     ///< Check for unserved industries
 	ZEM_TRACERESTRICT, ///< Check for restricted signals
+	ZEM_2x2_GRID,      ///< Show 2x2 town road grid
+	ZEM_3x3_GRID,      ///< Show 3x3 town road grid
 };
 
 /**
