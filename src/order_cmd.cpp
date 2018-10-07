@@ -2679,7 +2679,7 @@ bool ProcessOrders(Vehicle *v)
  */
 bool Order::ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoint) const
 {
-	if (waypoint) return this->IsType(OT_GOTO_WAYPOINT) && this->dest == station;
+	if (waypoint) return this->IsType(OT_GOTO_WAYPOINT) && this->dest == station && this->IsWaitTimetabled();
 	if (this->IsType(OT_LOADING_ADVANCE) && this->dest == station) return true;
 	bool is_dest_station = this->IsType(OT_GOTO_STATION) && this->dest == station;
 
