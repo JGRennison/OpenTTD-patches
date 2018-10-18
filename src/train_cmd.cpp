@@ -5365,6 +5365,10 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 	/* first some tests on necessity and sanity */
 	if (tv == NULL) return buy;
+	if (tv->IsReplaceOldOnly() && !vehicle->NeedsAutorenewing(Company::Get(vehicle->owner), false)) {
+		if (!stayInDepot) incoming->vehstatus &= ~VS_STOPPED;
+		return buy;
+	}
 	bool need_replacement = !TrainMatchesTemplate(incoming, tv);
 	bool need_refit = !TrainMatchesTemplateRefit(incoming, tv);
 	bool use_refit = tv->refit_as_template;

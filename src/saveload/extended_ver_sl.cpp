@@ -71,7 +71,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_REVERSE_AT_WAYPOINT,    XSCF_NULL,                1,   1, "reverse_at_waypoint",       NULL, NULL, NULL        },
 	{ XSLFI_VEH_LIFETIME_PROFIT,    XSCF_NULL,                1,   1, "veh_lifetime_profit",       NULL, NULL, NULL        },
 	{ XSLFI_LINKGRAPH_DAY_SCALE,    XSCF_NULL,                1,   1, "linkgraph_day_scale",       NULL, NULL, NULL        },
-	{ XSLFI_TEMPLATE_REPLACEMENT,   XSCF_NULL,                4,   4, "template_replacement",      NULL, NULL, "TRPL,TMPL" },
+	{ XSLFI_TEMPLATE_REPLACEMENT,   XSCF_NULL,                5,   5, "template_replacement",      NULL, NULL, "TRPL,TMPL" },
 	{ XSLFI_MORE_RAIL_TYPES,        XSCF_NULL,                0,   1, "more_rail_types",           NULL, NULL, NULL        },
 	{ XSLFI_CARGO_TYPE_ORDERS,      XSCF_NULL,                3,   3, "cargo_type_orders",         NULL, NULL, "ORDX,VEOX" },
 	{ XSLFI_EXTENDED_GAMELOG,       XSCF_NULL,                1,   1, "extended_gamelog",          NULL, NULL, NULL        },
