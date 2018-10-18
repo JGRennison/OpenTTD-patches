@@ -5023,10 +5023,13 @@ STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}Keep rem
 STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}After finishing template replacement keep all remaining vehicles from the old train in a neutral and idle state for later use
 STR_TMPL_SET_REFIT                                              :{BLACK}Use Refit
 STR_TMPL_SET_REFIT_TIP                                          :{BLACK}If set, the train will use exactly the cargo refit specified by the template. If not every wagon that is to be newly bought or retrieved from the depot, will *attempt* to be refitted as the old one was. Standard refit if this is impossible.
+STR_TMPL_SET_OLD_ONLY                                           :{BLACK}Old Only
+STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}If set, only vehicles which are old and due for automatic replacement will be replaced
 
 STR_TMPL_CONFIG_USEDEPOT                                        :use depot
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :keep rem
 STR_TMPL_CONFIG_REFIT                                           :refit
+STR_TMPL_CONFIG_OLD_ONLY                                        :old only
 
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# trains to replace:
 

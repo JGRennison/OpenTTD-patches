@@ -90,6 +90,7 @@ public:
 	bool reuse_depot_vehicles;
 	bool keep_remaining_vehicles;
 	bool refit_as_template;
+	bool replace_old_only;
 
 	// Things derived from a virtual train
 	TemplateVehicle *other_multiheaded_part; ///< Multiheaded Engine support
@@ -128,6 +129,7 @@ public:
 		this->reuse_depot_vehicles = true;
 		this->keep_remaining_vehicles = true;
 		this->refit_as_template = true;
+		this->replace_old_only = false;
 		this->sprite_seq.count = 1;
 	}
 
@@ -147,9 +149,11 @@ public:
 	bool IsSetReuseDepotVehicles() const { return this->reuse_depot_vehicles; }
 	bool IsSetKeepRemainingVehicles() const { return this->keep_remaining_vehicles; }
 	bool IsSetRefitAsTemplate() const { return this->refit_as_template; }
+	bool IsReplaceOldOnly() const { return this->replace_old_only; }
 	void ToggleReuseDepotVehicles() { this->reuse_depot_vehicles = !this->reuse_depot_vehicles; }
 	void ToggleKeepRemainingVehicles() { this->keep_remaining_vehicles = !this->keep_remaining_vehicles; }
 	void ToggleRefitAsTemplate() { this->refit_as_template = !this->refit_as_template; }
+	void ToggleReplaceOldOnly() { this->replace_old_only = !this->replace_old_only; }
 
 	bool IsPrimaryVehicle() const { return this->IsFrontEngine(); }
 	inline bool IsFrontEngine() const { return HasBit(this->subtype, GVSF_FRONT); }

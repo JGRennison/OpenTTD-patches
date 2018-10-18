@@ -17,6 +17,7 @@ const SaveLoad* GTD() {
 		SLE_VAR(TemplateVehicle, reuse_depot_vehicles, SLE_UINT8),
 		SLE_VAR(TemplateVehicle, keep_remaining_vehicles, SLE_UINT8),
 		SLE_VAR(TemplateVehicle, refit_as_template, SLE_UINT8),
+		SLE_CONDVAR_X(TemplateVehicle, replace_old_only, SLE_UINT8, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 5)),
 
 		SLE_CONDVAR_X(TemplateVehicle, owner, SLE_VAR_U8 | SLE_FILE_U32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
 		SLE_CONDVAR_X(TemplateVehicle, owner, SLE_UINT8, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 4)),
