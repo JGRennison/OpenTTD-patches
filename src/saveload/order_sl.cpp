@@ -112,8 +112,10 @@ const SaveLoad *GetOrderDescription()
 		 SLE_CONDVAR(Order, refit_cargo,    SLE_UINT8,   36, SL_MAX_VERSION),
 		SLE_CONDNULL(1,                                  36, 181), // refit_subtype
 		SLE_CONDVAR_X(Order, occupancy,     SLE_UINT8,    0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_OCCUPANCY)),
-		 SLE_CONDVAR(Order, wait_time,      SLE_UINT16,  67, SL_MAX_VERSION),
-		 SLE_CONDVAR(Order, travel_time,    SLE_UINT16,  67, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Order, wait_time,     SLE_FILE_U16 | SLE_VAR_U32,  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
+		SLE_CONDVAR_X(Order, wait_time,     SLE_UINT32,                  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
+		SLE_CONDVAR_X(Order, travel_time,   SLE_FILE_U16 | SLE_VAR_U32,  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
+		SLE_CONDVAR_X(Order, travel_time,   SLE_UINT32,                  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
 		 SLE_CONDVAR(Order, max_speed,      SLE_UINT16, 172, SL_MAX_VERSION),
 		SLE_CONDVAR_X(Order, jump_counter,  SLE_INT8,     0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_COND_ORDERS)),
 

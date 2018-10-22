@@ -917,13 +917,14 @@ struct TimetableWindow : Window {
 				uint32 p1 = PackTimetableArgs(v, this->sel_index, this->query_is_speed_query);
 
 				uint64 val = StrEmpty(str) ? 0 : strtoul(str, NULL, 10);
+				uint32 p2;
 				if (this->query_is_speed_query) {
 					val = ConvertDisplaySpeedToKmhishSpeed(val);
+					p2 = minu(val, UINT16_MAX);
 				} else {
 					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
+					p2 = val;
 				}
-
-				uint32 p2 = minu(val, UINT16_MAX);
 
 				DoCommandP(0, p1, p2, (this->change_timetable_all ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;

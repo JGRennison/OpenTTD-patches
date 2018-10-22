@@ -62,9 +62,9 @@ private:
 
 	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
 
-	uint16 wait_time;    ///< How long in ticks to wait at the destination.
-	uint16 travel_time;  ///< How long in ticks the journey to this destination should take.
-	uint16 max_speed;    ///< How fast the vehicle may go on the way to the destination.
+	TimetableTicks wait_time;    ///< How long in ticks to wait at the destination.
+	TimetableTicks travel_time;  ///< How long in ticks the journey to this destination should take.
+	uint16 max_speed;            ///< How fast the vehicle may go on the way to the destination.
 
 	void AllocExtraInfo();
 	void DeAllocExtraInfo();
@@ -376,13 +376,13 @@ public:
 	inline bool IsTravelTimetabled() const { return this->IsType(OT_CONDITIONAL) ? this->travel_time > 0 : HasBit(this->flags, 7); }
 
 	/** Get the time in ticks a vehicle should wait at the destination or 0 if it's not timetabled. */
-	inline uint16 GetTimetabledWait() const { return this->IsWaitTimetabled() ? this->wait_time : 0; }
+	inline TimetableTicks GetTimetabledWait() const { return this->IsWaitTimetabled() ? this->wait_time : 0; }
 	/** Get the time in ticks a vehicle should take to reach the destination or 0 if it's not timetabled. */
-	inline uint16 GetTimetabledTravel() const { return this->IsTravelTimetabled() ? this->travel_time : 0; }
+	inline TimetableTicks GetTimetabledTravel() const { return this->IsTravelTimetabled() ? this->travel_time : 0; }
 	/** Get the time in ticks a vehicle will probably wait at the destination (timetabled or not). */
-	inline uint16 GetWaitTime() const { return this->wait_time; }
+	inline TimetableTicks GetWaitTime() const { return this->wait_time; }
 	/** Get the time in ticks a vehicle will probably take to reach the destination (timetabled or not). */
-	inline uint16 GetTravelTime() const { return this->travel_time; }
+	inline TimetableTicks GetTravelTime() const { return this->travel_time; }
 
 	/**
 	 * Get the maxmimum speed in km-ish/h a vehicle is allowed to reach on the way to the
@@ -408,13 +408,13 @@ public:
 	 * Set the time in ticks to wait at the destination.
 	 * @param time Time to set as wait time.
 	 */
-	inline void SetWaitTime(uint16 time) { this->wait_time = time;  }
+	inline void SetWaitTime(TimetableTicks time) { this->wait_time = time;  }
 
 	/**
 	 * Set the time in ticks to take for travelling to the destination.
 	 * @param time Time to set as travel time.
 	 */
-	inline void SetTravelTime(uint16 time) { this->travel_time = time; }
+	inline void SetTravelTime(TimetableTicks time) { this->travel_time = time; }
 
 	/**
 	 * Set the maxmimum speed in km-ish/h a vehicle is allowed to reach on the way to the

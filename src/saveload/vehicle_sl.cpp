@@ -665,8 +665,10 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL(1,                                                           36, 181), // refit_subtype
 
 		/* Timetable in current order */
-		 SLE_CONDVAR(Vehicle, current_order.wait_time,     SLE_UINT16,            67, SL_MAX_VERSION),
-		 SLE_CONDVAR(Vehicle, current_order.travel_time,   SLE_UINT16,            67, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, current_order.wait_time,    SLE_FILE_U16 | SLE_VAR_U32,  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
+		SLE_CONDVAR_X(Vehicle, current_order.wait_time,    SLE_UINT32,                  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
+		SLE_CONDVAR_X(Vehicle, current_order.travel_time,  SLE_FILE_U16 | SLE_VAR_U32,  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
+		SLE_CONDVAR_X(Vehicle, current_order.travel_time,  SLE_UINT32,                  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
 		 SLE_CONDVAR(Vehicle, current_order.max_speed,     SLE_UINT16,           174, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, timetable_start,       SLE_INT32,                  129, SL_MAX_VERSION),
 		SLE_CONDVAR_X(Vehicle, timetable_start_subticks,   SLE_UINT16,             0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 2)),

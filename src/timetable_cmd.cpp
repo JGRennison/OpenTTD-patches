@@ -36,7 +36,7 @@
  * @param timetabled   If the new value is explicitly timetabled.
  * @param ignore_lock  If the change should be applied even if the value is locked.
  */
-static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val, ModifyTimetableFlags mtf, bool timetabled, bool ignore_lock = false)
+static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val, ModifyTimetableFlags mtf, bool timetabled, bool ignore_lock = false)
 {
 	Order *order = v->GetOrder(order_number);
 	int total_delta = 0;
@@ -133,7 +133,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint16 val,
  * - p1 = (bit 28-30) - Timetable data to change (@see ModifyTimetableFlags)
  * - p1 = (bit    31) - 0 to set timetable wait/travel time, 1 to clear it
  * @param p2 The amount of time to wait.
- * - p2 = (bit  0-15) - The data to modify as specified by p1 bits 28-29.
+ * - p2 =             - The data to modify as specified by p1 bits 28-30.
  *                      0 to clear times, UINT16_MAX to clear speed limit.
  * @param text unused
  * @return the cost of this operation or an error
@@ -157,20 +157,20 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 	bool clear_field = GB(p1, 31, 1) == 1;
 
-	int wait_time   = order->GetWaitTime();
-	int travel_time = order->GetTravelTime();
+	TimetableTicks wait_time   = order->GetWaitTime();
+	TimetableTicks travel_time = order->GetTravelTime();
 	int max_speed   = order->GetMaxSpeed();
 	bool wait_fixed = order->IsWaitFixed();
 	bool travel_fixed = order->IsTravelFixed();
 	OrderLeaveType leave_type = order->GetLeaveType();
 	switch (mtf) {
 		case MTF_WAIT_TIME:
-			wait_time = GB(p2, 0, 16);
+			wait_time = p2;
 			if (clear_field) assert(wait_time == 0);
 			break;
 
 		case MTF_TRAVEL_TIME:
-			travel_time = GB(p2, 0, 16);
+			travel_time = p2;
 			if (clear_field) assert(travel_time == 0);
 			break;
 
@@ -180,15 +180,15 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			break;
 
 		case MTF_SET_WAIT_FIXED:
-			wait_fixed = GB(p2, 0, 16) != 0;
+			wait_fixed = p2 != 0;
 			break;
 
 		case MTF_SET_TRAVEL_FIXED:
-			travel_fixed = GB(p2, 0, 16) != 0;
+			travel_fixed = p2 != 0;
 			break;
 
 		case MTF_SET_LEAVE_TYPE:
-			leave_type = (OrderLeaveType)GB(p2, 0, 16);
+			leave_type = (OrderLeaveType)p2;
 			if (leave_type >= OLT_END) return CMD_ERROR;
 			break;
 

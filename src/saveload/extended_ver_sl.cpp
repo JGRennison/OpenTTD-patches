@@ -81,7 +81,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_SCHEDULED_DISPATCH,     XSCF_NULL,                1,   1, "scheduled_dispatch",        NULL, NULL, NULL        },
 	{ XSLFI_MORE_TOWN_GROWTH_RATES, XSCF_NULL,                1,   1, "more_town_growth_rates",    NULL, NULL, NULL        },
 	{ XSLFI_MULTIPLE_DOCKS,         XSCF_NULL,                1,   1, "multiple_docks",            NULL, NULL, "DOCK"      },
-	{ XSLFI_TIMETABLE_EXTRA,        XSCF_NULL,                5,   5, "timetable_extra",           NULL, NULL, "ORDX"      },
+	{ XSLFI_TIMETABLE_EXTRA,        XSCF_NULL,                6,   6, "timetable_extra",           NULL, NULL, "ORDX"      },
 	{ XSLFI_TRAIN_FLAGS_EXTRA,      XSCF_NULL,                1,   1, "train_flags_extra",         NULL, NULL, NULL        },
 	{ XSLFI_TRAIN_THROUGH_LOAD,     XSCF_NULL,                2,   2, "train_through_load",        NULL, NULL, NULL        },
 	{ XSLFI_ORDER_EXTRA_DATA,       XSCF_NULL,                1,   1, "order_extra_data",          NULL, NULL, NULL        },
