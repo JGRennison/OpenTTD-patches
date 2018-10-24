@@ -352,8 +352,10 @@ struct SchdispatchWindow : Window {
 					y += FONT_HEIGHT_NORMAL;
 
 					const int required_vehicle = CalculateMaxRequiredVehicle(v->orders.list->GetTimetableTotalDuration(), v->orders.list->GetScheduledDispatchDuration(), v->orders.list->GetScheduledDispatch());
-					SetDParam(0, required_vehicle);
-					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L1);
+					if (required_vehicle > 0) {
+						SetDParam(0, required_vehicle);
+						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L1);
+					}
 					y += FONT_HEIGHT_NORMAL;
 
 					SetTimetableParams(0, v->orders.list->GetScheduledDispatchDuration());
