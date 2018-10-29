@@ -105,6 +105,7 @@
 #include "gui.h"
 #include "core/container_func.hpp"
 #include "tunnelbridge_map.h"
+#include "core/sort_func.hpp"
 
 #include <map>
 #include <vector>
@@ -1525,11 +1526,22 @@ static bool ViewportSortParentSpritesChecker()
 	return true;
 }
 
+static int CDECL CompareParentSprites(ParentSpriteToDraw * const *psd, ParentSpriteToDraw * const *psd2)
+{
+	const ParentSpriteToDraw *ps = *psd;
+	const ParentSpriteToDraw *ps2 = *psd2;
+	return ps->xmin - ps2->xmin;
+}
+
 /** Sort parent sprites pointer array */
 static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 {
 	ParentSpriteToDraw **psdvend = psdv->End();
 	ParentSpriteToDraw **psd = psdv->Begin();
+
+	/* pre-sort by xmin in ascending order */
+	QSortT(psd, psdvend - psd, CompareParentSprites);
+
 	while (psd != psdvend) {
 		ParentSpriteToDraw *ps = *psd;
 
@@ -1566,9 +1578,11 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 				 * I.e. every single order of X, Y, Z says ps2 is behind ps or they overlap.
 				 * That is: If one partial order says ps behind ps2, do not change the order.
 				 */
-				if (ps->xmax < ps2->xmin ||
-						ps->ymax < ps2->ymin ||
-						ps->zmax < ps2->zmin) {
+				if (ps->xmax < ps2->xmin) {
+					/* all following sprites have xmin >= ps2->xmin */
+					break;
+				}
+				if (ps->ymax < ps2->ymin || ps->zmax < ps2->zmin) {
 					continue;
 				}
 			}
