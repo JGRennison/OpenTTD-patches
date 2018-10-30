@@ -2632,6 +2632,7 @@ void Vehicle::BeginLoading()
 		this->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 	} else if (this->current_order.IsType(OT_LOADING_ADVANCE)) {
 		this->current_order.MakeLoading(true);
+		this->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		no_load_prepare = true;
 	} else {
 		/* We weren't scheduled to stop here. Insert an implicit order
@@ -2912,6 +2913,7 @@ void Vehicle::AdvanceLoadingInStation()
 
 	HideFillingPercent(&this->fill_percent_te_id);
 	this->current_order.MakeLoadingAdvance(this->last_station_visited);
+	this->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 	this->MarkDirty();
 }
 
