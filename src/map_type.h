@@ -73,7 +73,7 @@ static const uint MAX_MAP_TILES     = 1 << MAX_MAP_TILES_BITS;///< Maximal numbe
  * Approximation of the length of a straight track, relative to a diagonal
  * track (ie the size of a tile side).
  *
- * #defined instead of const so it can
+ * \#defined instead of const so it can
  * stay integer. (no runtime float operations) Is this needed?
  * Watch out! There are _no_ brackets around here, to prevent intermediate
  * rounding! Be careful when using this!

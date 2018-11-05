@@ -273,10 +273,7 @@ static const NWidgetPart _nested_company_finances_widgets[] = {
 	EndContainer(),
 };
 
-/**
- * Window class displaying the company finances.
- * @todo #money_width should be calculated dynamically.
- */
+/** Window class displaying the company finances. */
 struct CompanyFinancesWindow : Window {
 	Money max_money;        ///< The approximate maximum amount of money a company has had over the lifetime of this window
 	bool small;             ///< Window is toggled to 'small'.
@@ -1513,9 +1510,6 @@ static WindowDesc _select_company_manager_face_desc(
  * Open the simple/advanced company manager face selection window
  *
  * @param parent the parent company window
- * @param adv    simple or advanced face selection window
- * @param top    previous top position of the window
- * @param left   previous left position of the window
  */
 static void DoSelectCompanyManagerFace(Window *parent)
 {

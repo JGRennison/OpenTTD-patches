@@ -163,7 +163,7 @@ static void ChangeTimetableStartIntl(uint32 p1, DateTicksScaled date)
 
 /**
  * Callback for when a time has been chosen to start the time table
- * @param window the window related to the setting of the date
+ * @param w the window related to the setting of the date
  * @param date the actually chosen date
  */
 static void ChangeTimetableStartCallback(const Window *w, DateTicksScaled date)

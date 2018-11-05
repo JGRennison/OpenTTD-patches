@@ -278,8 +278,9 @@
  *  199
  *  200   #6805   Extend railtypes to 64, adding uint16 to map array.
  *  201   #6885   Extend NewGRF persistant storages.
+ *  202   #6867   Increase industry cargo slots to 16 in, 16 out
  */
-extern const uint16 SAVEGAME_VERSION = 201; ///< Current savegame version of OpenTTD.
+extern const uint16 SAVEGAME_VERSION = 202; ///< Current savegame version of OpenTTD.
 const uint16 SAVEGAME_VERSION_EXT = 0x8000; ///< Savegame extension indicator mask
 
 SavegameType _savegame_type; ///< type of savegame we are loading
@@ -3087,7 +3088,7 @@ SaveOrLoadResult LoadWithFilter(LoadFilter *reader)
  * Main Save or Load function where the high-level saveload functions are
  * handled. It opens the savegame, selects format and checks versions
  * @param filename The name of the savegame being created/loaded
- * @param mode Save or load mode. Load can also be a TTD(Patch) game. Use #SL_LOAD, #SL_OLD_LOAD, #SL_LOAD_CHECK, or #SL_SAVE.
+ * @param fop Save or load mode. Load can also be a TTD(Patch) game.
  * @param sb The sub directory to save the savegame in
  * @param threaded True when threaded saving is allowed
  * @return Return the result of the action. #SL_OK, #SL_ERROR, or #SL_REINIT ("unload" the game)

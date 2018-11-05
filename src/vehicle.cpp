@@ -106,7 +106,7 @@ static btree::btree_set<Vehicle *> _vehicles_to_sell;
 
 /**
  * Determine shared bounds of all sprites.
- * @param [out] bounds Shared bounds.
+ * @param[out] bounds Shared bounds.
  */
 Rect16 VehicleSpriteSeq::GetBounds() const
 {
@@ -3779,7 +3779,7 @@ const uint16 &Vehicle::GetGroundVehicleFlags() const
 
 /**
  * Calculates the set of vehicles that will be affected by a given selection.
- * @param set [inout] Set of affected vehicles.
+ * @param[in,out] set Set of affected vehicles.
  * @param v First vehicle of the selection.
  * @param num_vehicles Number of vehicles in the selection (not counting articulated parts).
  * @pre \a set must be empty.

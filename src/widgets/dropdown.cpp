@@ -112,7 +112,6 @@ struct DropdownWindow : Window {
 	 * @param size          Size of the dropdown menu window.
 	 * @param wi_colour     Colour of the parent widget.
 	 * @param scroll        Dropdown menu has a scrollbar.
-	 * @param widget        Widgets of the dropdown menu window.
 	 */
 	DropdownWindow(Window *parent, const DropDownList *list, int selected, int button, bool instant_close, const Point &position, const Dimension &size, Colours wi_colour, bool scroll, DropDownSyncFocus sync_parent_focus)
 			: Window(&_dropdown_desc)
@@ -187,7 +186,7 @@ struct DropdownWindow : Window {
 
 	/**
 	 * Find the dropdown item under the cursor.
-	 * @param value [out] Selected item, if function returns \c true.
+	 * @param[out] value Selected item, if function returns \c true.
 	 * @return Cursor points to a dropdown item.
 	 */
 	bool GetDropDownItem(int &value)

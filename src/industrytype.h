@@ -80,6 +80,7 @@ enum IndustryBehaviour {
 	INDUSTRYBEH_PRODCALLBACK_RANDOM   = 1 << 15, ///< Production callback needs random bits in var 10
 	INDUSTRYBEH_NOBUILT_MAPCREATION   = 1 << 16, ///< Do not force one instance of this type to appear on map generation
 	INDUSTRYBEH_CANCLOSE_LASTINSTANCE = 1 << 17, ///< Allow closing down the last instance of this type
+	INDUSTRYBEH_CARGOTYPES_UNLIMITED  = 1 << 18, ///< Allow produced/accepted cargoes callbacks to supply more than 2 and 3 types
 };
 DECLARE_ENUM_AS_BIT_SET(IndustryBehaviour)
 
@@ -87,6 +88,7 @@ DECLARE_ENUM_AS_BIT_SET(IndustryBehaviour)
 enum IndustryTileSpecialFlags {
 	INDTILE_SPECIAL_NONE                  = 0,
 	INDTILE_SPECIAL_NEXTFRAME_RANDOMBITS  = 1 << 0, ///< Callback 0x26 needs random bits
+	INDTILE_SPECIAL_ACCEPTS_ALL_CARGO     = 1 << 1, ///< Tile always accepts all cargoes the associated industry accepts
 };
 DECLARE_ENUM_AS_BIT_SET(IndustryTileSpecialFlags)
 
@@ -99,41 +101,41 @@ struct IndustryTileTable {
  * Defines the data structure for constructing industry.
  */
 struct IndustrySpec {
-	const IndustryTileTable * const *table;///< List of the tiles composing the industry
-	byte num_table;                       ///< Number of elements in the table
-	uint8 cost_multiplier;                ///< Base construction cost multiplier.
-	uint32 removal_cost_multiplier;       ///< Base removal cost multiplier.
-	uint32 prospecting_chance;            ///< Chance prospecting succeeds
-	IndustryType conflicting[3];          ///< Industries this industry cannot be close to
-	byte check_proc;                      ///< Index to a procedure to check for conflicting circumstances
-	CargoID produced_cargo[2];
-	byte production_rate[2];
+	const IndustryTileTable * const *table;     ///< List of the tiles composing the industry
+	byte num_table;                             ///< Number of elements in the table
+	uint8 cost_multiplier;                      ///< Base construction cost multiplier.
+	uint32 removal_cost_multiplier;             ///< Base removal cost multiplier.
+	uint32 prospecting_chance;                  ///< Chance prospecting succeeds
+	IndustryType conflicting[3];                ///< Industries this industry cannot be close to
+	byte check_proc;                            ///< Index to a procedure to check for conflicting circumstances
+	CargoID produced_cargo[INDUSTRY_NUM_OUTPUTS];
+	byte production_rate[INDUSTRY_NUM_OUTPUTS];
 	/**
 	 * minimum amount of cargo transported to the stations.
 	 * If the waiting cargo is less than this number, no cargo is moved to it.
 	 */
 	byte minimal_cargo;
-	CargoID accepts_cargo[3];             ///< 3 accepted cargoes.
-	uint16 input_cargo_multiplier[3][2];  ///< Input cargo multipliers (multiply amount of incoming cargo for the produced cargoes)
-	IndustryLifeType life_type;           ///< This is also known as Industry production flag, in newgrf specs
-	byte climate_availability;            ///< Bitmask, giving landscape enums as bit position
-	IndustryBehaviour behaviour;          ///< How this industry will behave, and how others entities can use it
-	byte map_colour;                      ///< colour used for the small map
-	StringID name;                        ///< Displayed name of the industry
-	StringID new_industry_text;           ///< Message appearing when the industry is built
-	StringID closure_text;                ///< Message appearing when the industry closes
-	StringID production_up_text;          ///< Message appearing when the industry's production is increasing
-	StringID production_down_text;        ///< Message appearing when the industry's production is decreasing
-	StringID station_name;                ///< Default name for nearby station
-	byte appear_ingame[NUM_LANDSCAPE];    ///< Probability of appearance in game
-	byte appear_creation[NUM_LANDSCAPE];  ///< Probability of appearance during map creation
-	uint8 number_of_sounds;               ///< Number of sounds available in the sounds array
-	const uint8 *random_sounds;           ///< array of random sounds.
+	CargoID accepts_cargo[INDUSTRY_NUM_INPUTS]; ///< 16 accepted cargoes.
+	uint16 input_cargo_multiplier[INDUSTRY_NUM_INPUTS][INDUSTRY_NUM_OUTPUTS]; ///< Input cargo multipliers (multiply amount of incoming cargo for the produced cargoes)
+	IndustryLifeType life_type;                 ///< This is also known as Industry production flag, in newgrf specs
+	byte climate_availability;                  ///< Bitmask, giving landscape enums as bit position
+	IndustryBehaviour behaviour;                ///< How this industry will behave, and how others entities can use it
+	byte map_colour;                            ///< colour used for the small map
+	StringID name;                              ///< Displayed name of the industry
+	StringID new_industry_text;                 ///< Message appearing when the industry is built
+	StringID closure_text;                      ///< Message appearing when the industry closes
+	StringID production_up_text;                ///< Message appearing when the industry's production is increasing
+	StringID production_down_text;              ///< Message appearing when the industry's production is decreasing
+	StringID station_name;                      ///< Default name for nearby station
+	byte appear_ingame[NUM_LANDSCAPE];          ///< Probability of appearance in game
+	byte appear_creation[NUM_LANDSCAPE];        ///< Probability of appearance during map creation
+	uint8 number_of_sounds;                     ///< Number of sounds available in the sounds array
+	const uint8 *random_sounds;                 ///< array of random sounds.
 	/* Newgrf data */
-	uint16 callback_mask;                 ///< Bitmask of industry callbacks that have to be called
-	uint8 cleanup_flag;                   ///< flags indicating which data should be freed upon cleaning up
-	bool enabled;                         ///< entity still available (by default true).newgrf can disable it, though
-	GRFFileProps grf_prop;                ///< properties related to the grf file
+	uint16 callback_mask;                       ///< Bitmask of industry callbacks that have to be called
+	uint8 cleanup_flag;                         ///< flags indicating which data should be freed upon cleaning up
+	bool enabled;                               ///< entity still available (by default true).newgrf can disable it, though
+	GRFFileProps grf_prop;                      ///< properties related to the grf file
 
 	bool IsRawIndustry() const;
 	bool IsProcessingIndustry() const;
@@ -144,10 +146,11 @@ struct IndustrySpec {
 
 /**
  * Defines the data structure of each individual tile of an industry.
+ * @note A tile can at most accept 3 types of cargo, even if an industry as a whole can accept more types.
  */
 struct IndustryTileSpec {
-	CargoID accepts_cargo[3];             ///< Cargo accepted by this tile
-	uint8 acceptance[3];                  ///< Level of acceptance per cargo type
+	CargoID accepts_cargo[INDUSTRY_NUM_INPUTS]; ///< Cargo accepted by this tile
+	int8 acceptance[INDUSTRY_NUM_INPUTS]; ///< Level of acceptance per cargo type (signed, may be negative!)
 	Slope slopes_refused;                 ///< slope pattern on which this tile cannot be built
 	byte anim_production;                 ///< Animation frame to start when goods are produced
 	byte anim_next;                       ///< Next frame in an animation

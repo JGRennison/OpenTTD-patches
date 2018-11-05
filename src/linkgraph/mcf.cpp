@@ -210,7 +210,7 @@ public:
  * Determines if an extension to the given Path with the given parameters is
  * better than this path.
  * @param base Other path.
- * @param cap Capacity of the new edge to be added to base.
+ * @param free_cap Capacity of the new edge to be added to base.
  * @param dist Distance of the new edge.
  * @return True if base + the new edge would be better than the path associated
  * with this annotation.
@@ -244,7 +244,7 @@ bool DistanceAnnotation::IsBetter(const DistanceAnnotation *base, uint cap,
  * Determines if an extension to the given Path with the given parameters is
  * better than this path.
  * @param base Other path.
- * @param cap Capacity of the new edge to be added to base.
+ * @param free_cap Capacity of the new edge to be added to base.
  * @param dist Distance of the new edge.
  * @return True if base + the new edge would be better than the path associated
  * with this annotation.

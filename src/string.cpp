@@ -176,7 +176,7 @@ void str_fix_scc_encoded(char *str, const char *last)
 		if ((len == 0 && str + 4 > last) || str + len > last) break;
 
 		WChar c;
-		len = Utf8Decode(&c, str);
+		Utf8Decode(&c, str);
 		if (c == '\0') break;
 
 		if (c == 0xE028 || c == 0xE02A) {
@@ -406,9 +406,8 @@ bool IsValidChar(WChar key, CharSetFilter afilter)
 		case CS_NUMERAL_SPACE: return (key >= '0' && key <= '9') || key == ' ';
 		case CS_ALPHA:         return IsPrintable(key) && !(key >= '0' && key <= '9');
 		case CS_HEXADECIMAL:   return (key >= '0' && key <= '9') || (key >= 'a' && key <= 'f') || (key >= 'A' && key <= 'F');
+		default: NOT_REACHED();
 	}
-
-	return false;
 }
 
 #ifdef WIN32

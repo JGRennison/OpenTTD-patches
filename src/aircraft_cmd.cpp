@@ -252,7 +252,7 @@ void GetAircraftSpriteSize(EngineID engine, uint &width, uint &height, int &xoff
  * @param flags    type of operation.
  * @param e        the engine to build.
  * @param data     unused.
- * @param ret[out] the vehicle that has been built.
+ * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
 CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)
@@ -649,6 +649,13 @@ static int UpdateAircraftSpeed(Aircraft *v, uint speed_limit = SPEED_LIMIT_NONE,
 	 * and take-off speeds being too low. */
 	speed_limit *= _settings_game.vehicle.plane_speed;
 
+	/* adjust speed for broken vehicles */
+	if (v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) {
+		const uint broken_speed = v->breakdown_severity << 3;
+		if (broken_speed < speed_limit) hard_limit = false;
+		speed_limit = min(speed_limit, broken_speed);
+	}
+
 	if (v->vcache.cached_max_speed < speed_limit) {
 		if (v->cur_speed < speed_limit) hard_limit = false;
 		speed_limit = v->vcache.cached_max_speed;
@@ -667,9 +674,6 @@ static int UpdateAircraftSpeed(Aircraft *v, uint speed_limit = SPEED_LIMIT_NONE,
 	}
 
 	spd = min(v->cur_speed + (spd >> 8) + (v->subspeed < t), speed_limit);
-
-	/* adjust speed for broken vehicles */
-	if (v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) spd = min(v->breakdown_severity << 3, spd);
 
 	/* updates statusbar only if speed have changed to save CPU time */
 	if (spd != v->cur_speed) {
@@ -708,9 +712,9 @@ int GetTileHeightBelowAircraft(const Vehicle *v)
  * When the maximum is reached the vehicle should consider descending.
  * When the minimum is reached the vehicle should consider ascending.
  *
- * @param v               The vehicle to get the flight levels for.
- * @param [out] min_level The minimum bounds for flight level.
- * @param [out] max_level The maximum bounds for flight level.
+ * @param v              The vehicle to get the flight levels for.
+ * @param[out] min_level The minimum bounds for flight level.
+ * @param[out] max_level The maximum bounds for flight level.
  */
 void GetAircraftFlightLevelBounds(const Vehicle *v, int *min_level, int *max_level)
 {
@@ -742,7 +746,7 @@ void GetAircraftFlightLevelBounds(const Vehicle *v, int *min_level, int *max_lev
 
 /**
  * Gets the maximum 'flight level' for the holding pattern of the aircraft,
- * in pixels 'z_pos' 0, depending on terrain below..
+ * in pixels 'z_pos' 0, depending on terrain below.
  *
  * @param v The aircraft that may or may not need to decrease its altitude.
  * @return Maximal aircraft holding altitude, while in normal flight, in pixels.
@@ -1964,7 +1968,7 @@ static bool FreeTerminal(Aircraft *v, byte i, byte last_terminal)
 
 /**
  * Get the number of terminals at the airport.
- * @param afc Airport description.
+ * @param apc Airport description.
  * @return Number of terminals.
  */
 static uint GetNumTerminals(const AirportFTAClass *apc)
