@@ -147,6 +147,7 @@ enum OrderConditionVariable {
 	OCV_FREE_PLATFORMS,     ///< Skip based on free platforms at next station
 	OCV_PERCENT,            ///< Skip xx percent of times
 	OCV_SLOT_OCCUPANCY,     ///< Test if train slot is fully occupied
+	OCV_TRAIN_IN_SLOT,      ///< Test if train is in slot
 	OCV_END
 };
 

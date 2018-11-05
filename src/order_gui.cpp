@@ -606,6 +606,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_CARGO_ACCEPTANCE,
 	OCV_FREE_PLATFORMS,
 	OCV_SLOT_OCCUPANCY,
+	OCV_TRAIN_IN_SLOT,
 	OCV_PERCENT,
 	OCV_UNCONDITIONALLY,
 };
@@ -655,6 +656,18 @@ static const StringID _order_conditional_condition_is_fully_occupied[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED,
 	STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED,
+	INVALID_STRING_ID,
+};
+
+static const StringID _order_conditional_condition_is_in_slot[] = {
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT,
+	STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT,
 	INVALID_STRING_ID,
 };
 
@@ -854,6 +867,15 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 				}
 				SetDParam(3, order->GetConditionComparator() == OCC_IS_TRUE ? STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED : STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED);
+			} else if (ocv == OCV_TRAIN_IN_SLOT) {
+				if (TraceRestrictSlot::IsValidID(order->GetXData())) {
+					SetDParam(0, STR_ORDER_CONDITIONAL_IN_SLOT);
+					SetDParam(3, order->GetXData());
+				} else {
+					SetDParam(0, STR_ORDER_CONDITIONAL_IN_INVALID_SLOT);
+					SetDParam(3, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
+				}
+				SetDParam(2, order->GetConditionComparator() == OCC_IS_TRUE ? STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT : STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT);
 			} else {
 				OrderConditionComparator occ = order->GetConditionComparator();
 				bool is_cargo = ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING;
@@ -1146,6 +1168,9 @@ private:
 
 			case OCV_SLOT_OCCUPANCY:
 				return _order_conditional_condition_is_fully_occupied;
+
+			case OCV_TRAIN_IN_SLOT:
+				return _order_conditional_condition_is_in_slot;
 
 			default:
 				return _order_conditional_condition;
@@ -1685,7 +1710,7 @@ public:
 
 					OrderConditionVariable ocv = (order == nullptr) ? OCV_LOAD_PERCENTAGE : order->GetConditionVariable();
 					bool is_cargo = (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING);
-					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY);
+					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY || ocv == OCV_TRAIN_IN_SLOT);
 
 					if (is_cargo) {
 						if (order == NULL || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
@@ -2083,7 +2108,8 @@ public:
 					(cond_var == OCV_REQUIRES_SERVICE ||
 					 cond_var == OCV_CARGO_ACCEPTANCE ||
 					 cond_var == OCV_CARGO_WAITING ||
-					 cond_var == OCV_SLOT_OCCUPANCY) ? 0x3F : 0xC0, 0, DDSF_LOST_FOCUS);
+					 cond_var == OCV_SLOT_OCCUPANCY ||
+					 cond_var == OCV_TRAIN_IN_SLOT) ? 0x3F : 0xC0, 0, DDSF_LOST_FOCUS);
 				break;
 			}
 

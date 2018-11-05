@@ -4567,6 +4567,7 @@ STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Accepted cargo
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Free platforms
 STR_ORDER_CONDITIONAL_PERCENT                                   :Percent of times
 STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slot occupancy
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Train in slot
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Requires service {STRING}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :Next station {STRING} {STRING} waiting
@@ -4601,6 +4602,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :has more than
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :has more than or exactly
 STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :is fully occupied
 STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :is not fully occupied
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :train is in
+STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :train is not in
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Skip
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Skip the current order, and start the next. Ctrl+Click skips to the selected order
@@ -4713,6 +4716,8 @@ STR_ORDER_CONDITIONAL_NUM                                       :Jump to order {
 STR_ORDER_CONDITIONAL_CARGO                                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_SLOT                                      :Jump to order {COMMA} when {TRSLOT} {STRING}
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Jump to order {COMMA} when {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
+STR_ORDER_CONDITIONAL_IN_SLOT                                   :Jump to order {COMMA} when {STRING} slot: {TRSLOT}
+STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Jump to order {COMMA} when {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Jump to order {COMMA} when {STRING} {STRING}
 
 STR_INVALID_ORDER                                               :{RED} (Invalid Order)
