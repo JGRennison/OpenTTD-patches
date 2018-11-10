@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Additions to NewGRF Specifications</title>
+	<style type="text/css">
+		span.abuse { font-family: "Courier New", Courier, mono; background-color: rgb(255, 58, 31); }
+		span.option{ font-family: "Courier New", Courier, mono; background-color: rgb(255,255, 30); }
+		span.free  { font-family: "Courier New", Courier, mono; background-color: rgb(30, 178, 54); }
+		span.used  { font-family: "Courier New", Courier, mono; }
+		span.used_p{ font-family: "Courier New", Courier, mono; background-color: cyan; }
+		td.bits    { white-space: nowrap; text-align: center; font-family: "Courier New", Courier, mono; }
+		td.caption { white-space: nowrap; text-align: left; }
+		td li      { white-space: nowrap; text-align: left; }
+		th         { white-space: nowrap; text-align: center; }
+	</style>
+</head>
+<body>
+	<h2>Additions to NewGRF Specifications in thi branch</h2>
+	<p>This document describes non-standard additions to the <a href="https://newgrf-specs.tt-wiki.net/wiki/Main_Page">Official OpenTTD NewGRF Specifications</a> which are present in this branch.
+	<p>This additions MAY also be present in other branches/repositories/etc. They MAY be removed or moved in future, if necessary.</p>
+	<p>NewGRFs which use any of these features SHOULD use the <a href="#feature-test">feature testing</a> mechanism described below to check whether individual added features are supported.</p>
+
+	<h3 id="feature-test">Action 14 - Feature Tests</h3>
+	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> for background information.</p>
+	<h4>Feature Test: C "FTST"</h4>
+	<p>Each FTST chunk (type C) describes an individual feature test.<br />
+	Sub-chunks within each FTST chunk may appear in any order, however each sub-chunk SHOULD only appear ONCE within an individual FTST chunk.</p>
+	<p>Feature tests can be safely used on implementations which do not implement the described feature test mechanism because unknown Action 14 blocks are ignored,
+		and the observable result (in global variable 0x9D) is equivalent to the case where all feature tests have failed, indicating that the feature is not present.</p>
+	<h4>Feature Name: C "FTST" -> T "NAME"</h4>
+	<p>Within an FTST chunk, the NAME text (type T) field contains the name of the feature to test for. The value of the language ID byte is ignored.<br />
+	If the named feature is not present, or if this field is omitted, the version is 0.<br />
+	If the named feature is present, the version number will be at least 1.</p>
+	<p>The feature testing mechanism itself has the feature name: <font face="monospace">feature_test</font>, this document describes version 1.</p>
+	<h4>Feature Minimum Version: C "FTST" -> B "MINV"</h4>
+	<p>Within an FTST chunk, the MINV binary (type B) field contains the minimum (inclusive) (&ge;) version to accept. This is a Word (2 bytes).<br />
+	The default value is 1.</p>
+	<h4>Feature Maximum Version: C "FTST" -> B "MAXV"</h4>
+	<p>Within an FTST chunk, the MINV binary (type B) field contains the maximum (inclusive) (&le;) version to accept. This is a Word (2 bytes).<br />
+	The default value is 0xFFFF (no maximum).</p>
+	<h4>Feature Set Global Variable 0x9D Bit: C "FTST" -> B "SETP"</h4>
+	<p>Within an FTST chunk, the SETP binary (type B) field contains the bit number to set/clear in
+		<a href="https://newgrf-specs.tt-wiki.net/wiki/GlobalVariables">global variable</a> 0x9D (TTD Platform) to store the result of the test. This is 1 byte.<br />
+	If the test is successful, the bit is set (to 1), otherwise the bit is cleared (to 0).<br />
+	The bit number MUST be in the range: 4 &le; bit number &le; 31. These bits can be assumed to be 0 on implementations which do not support this feature test mechanism.<br />
+	Global variable 0x9D can then be tested by using a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/Action7">Action 7 or 9</a>, or a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2</a>.<br />
+	If this field is omitted, no bit is set or cleared, and the test is not observable.
+	</p>
+	<br />
+	<h4>Example:</h4>
+	<pre>
+// Set bit 4 of global variable 0x9D if sample_feature_1 is present with a version of at least 4
+// Set bit 5 of global variable 0x9D if sample_feature_2 is present with a version of at least 5 and at most 6
+-1 * -1 14
+	"C" "FTST"
+		"T" "NAME" 00 "sample_feature_1" 00
+		"B" "MINV" \w2 \w4
+		"B" "SETP" \w1 04
+		00
+	"C" "FTST"
+		"T" "NAME" 00 "sample_feature_2" 00
+		"B" "MINV" \w2 \w5
+		"B" "MAXV" \w2 \w6
+		"B" "SETP" \w1 05
+		00
+	00
+....
+// Skip 1 sprite if bit 4 of global variable 0x9D is not set (indicating that sample_feature_1 with a version of at least 4 is NOT present)
+-1 * -1  07 9D 01 \70 04 01
+	</pre>
+</body>
+</html>
