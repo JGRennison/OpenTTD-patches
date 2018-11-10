@@ -13,6 +13,8 @@
 		td.caption { white-space: nowrap; text-align: left; }
 		td li      { white-space: nowrap; text-align: left; }
 		th         { white-space: nowrap; text-align: center; }
+		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
+		table      { border-collapse: collapse; empty-cells: show; }
 	</style>
 </head>
 <body>
@@ -48,7 +50,7 @@
 	If this field is omitted, no bit is set or cleared, and the test is not observable.
 	</p>
 	<br />
-	<h4>Example:</h4>
+	<h4>Example NFO:</h4>
 	<pre>
 // Set bit 4 of global variable 0x9D if sample_feature_1 is present with a version of at least 4
 // Set bit 5 of global variable 0x9D if sample_feature_2 is present with a version of at least 5 and at most 6
@@ -68,6 +70,74 @@
 ....
 // Skip 1 sprite if bit 4 of global variable 0x9D is not set (indicating that sample_feature_1 with a version of at least 4 is NOT present)
 -1 * -1  07 9D 01 \70 04 01
+	</pre>
+	<br />
+	<h3 id="feature-test">Action 14 - Property Mapping for Action 0</h3>
+	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> and <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0">Action 0 Specification</a> for background information.</p>
+	<p>The property mapping mechanism has the feature name: <font face="monospace">property_mapping</font>, this document describes version 1.</p>
+	<p>Users of this mechanism SHOULD at minimum use test for the presence of the feature above or test variable 8D, below.</p>
+	<h4>Property Mapping: C "A0PM"</h4>
+	<p>Each A0PM chunk (type C) describes an individual property mapping.<br />
+	Sub-chunks within each A0PM chunk may appear in any order, however except where otherwise noted each sub-chunk SHOULD only appear ONCE within an individual A0PM chunk.</p>
+	<p>Property mapping can be safely used on implementations which do not implement the property mapping mechanism if Action 0 sprites which use mapped property IDs are skipped if one or more of:
+		<ul>
+			<li>The global variable 0x8D is checked to determine whether the property mapping operation was successful.</li>
+			<li>The feature name <font face="monospace">property_mapping</font> is checked for.</li>
+		</ul>
+		Unknown Action 14 blocks are ignored, and do not need to be skipped.</p>
+	<h4>Property Name: C "A0PM" -> T "NAME"</h4>
+	<p>Within an A0PM chunk, the NAME text (type T) field contains the name of the property to map. The value of the language ID byte is ignored.</p>
+	<h4>Action 0 Feature ID: C "A0PM" -> B "FEAT"</h4>
+	<p>Within an A0PM chunk, the FEAT binary (type B) field contains the <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0#Feature">Action 0 feature ID</a>. This is 1 byte.</p>
+	<h4>Property ID: C "A0PM" -> B "PROP"</h4>
+	<p>Within an A0PM chunk, the PROP binary (type B) field contains the property ID to allocate to the named property, this value can used in Action 0 sprites. This is 1 byte.<br />
+	It is possible to override existing properties, however this use is not recommended.</p>
+	<h4>Success Indicator Global Variable 0x8D Bit: C "A0PM" -> B "SETT"</h4>
+	<p>Within an A0PM chunk, the SETT binary (type B) field contains the bit number to set/clear in
+		<a href="https://newgrf-specs.tt-wiki.net/wiki/GlobalVariables">global variable</a> 0x8D (TTD version) to store whether the mapping operation was successful. This is 1 byte.<br />
+	If the operation is successful, the bit is set (to 1), otherwise the bit is cleared (to 0).<br />
+	The bit number MUST be in the range: 4 &le; bit number &le; 31. These bits can be assumed to be 0 on implementations which do not support this property mapping mechanism.<br />
+	Global variable 0x8D can then be tested by using a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/Action7">Action 7 or 9</a>, or a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2</a>.<br />
+	If this field is omitted, no bit is set or cleared.
+	</p>
+	<h4>Fallback Mode: C "A0PM" -> B "FLBK"</h4>
+	<p>Within an A0PM chunk, the FLBK binary (type B) field contains the fallback mode. This is 1 byte.<br />
+	The fallback mode may take the following values:
+	<table>
+		<tr><th>Value</th><th>Behaviour</th></tr>
+		<tr><td>0</td><td>Attempts to map an unknown property name are ignored. Use of the mapped property in an Action 0 is ignored. This is the default.</td></tr>
+		<tr><td>1</td><td>Attempts to map an unknown property name are ignored. Use of the mapped property in an Action 0 is an error.</td></tr>
+		<tr><td>2</td><td>Attempting to map an unknown property name is an error.</td></tr>
+	</table>
+	Attempts to set a fallback mode other than those listed above are silently ignored. More fallback modes MAY be added in future versions of this mechanism.<br />
+	This chunk MAY be specified more than once, in which case the last specified valid value is used.<br />
+	Note that even when using fallback mode 0, above, if the property mapping feature is not present, then use of the mapped property ID in an Action 0 is an error.
+	</p>
+	<h4>Format of remapped properties</h4>
+	All properties which are mapped by the mechanism have the format:
+	<table>
+	<tr><th>Size</th><th>Name</th><th>Meaning</th></tr>
+	<tr><td>B*</td><td>num</td><td>Size of the data in bytes</td></tr>
+	<tr><td>V</td><td>data</td><td>Property data</td></tr>
+	</table>
+	Note that num is an extended byte, see <a href="https://newgrf-specs.tt-wiki.net/wiki/GRFActionsDetailed">GRFActionsDetailed</a>.<br />
+	If the size of the data does provided is not valid for the given property, the attempt to set the property MAY be ignored or partially applied.
+	<h4>Example NFO:</h4>
+	<pre>
+// Map station property "sample_station_property" to property id 0xF8, and set bit 4 of global variable 0x8D if successful
+-1 * -1 14
+	"C" "A0PM"
+		"T" "NAME" 00 "sample_station_property" 00
+		"B" "FEAT" \w1 04
+		"B" "PROP" \w1 F8
+		"B" "SETT" \w1 4
+		00
+	00
+....
+// Skip 1 sprite if bit 4 of global variable 0x8D is not set (indicating that station property sample_station_property is NOT present)
+-1 * -1  07 8D 01 \70 04 01
+// Set sample_station_property for station ID 10 to 2 byte value: AB CD
+-1 * -1  00 04 01 01 10 F8 02 AB CD
 	</pre>
 </body>
 </html>
