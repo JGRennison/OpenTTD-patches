@@ -7797,7 +7797,7 @@ static bool ChangeGRFFeatureMaxVersion(size_t len, ByteReader *buf)
 	return true;
 }
 
-/** Callback function for 'FTST'->'SETP' to set the maximum version of the feature being tested. */
+/** Callback function for 'FTST'->'SETP' to set the bit number of global variable 9D (platform version) to set/unset the result of the feature test. */
 static bool ChangeGRFFeatureSetPlatformVarBit(size_t len, ByteReader *buf)
 {
 	if (len != 1) {
