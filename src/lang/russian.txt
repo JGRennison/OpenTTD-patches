@@ -1071,6 +1071,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Южноафр�
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Своя...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Грузинский лари (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Иранский риал (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Российский новый рубль (RUR)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Движение автомобилей
@@ -4434,7 +4435,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Слиш
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Слишком большая ж/д станция
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Слишком много автобусных остановок
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Слишком много грузовых терминалов
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Слишком близко к другой станции
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Слишком близко к другой пристани
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Слишком близко к другому аэропорту
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Невозможно переименовать станцию...

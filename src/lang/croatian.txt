@@ -911,6 +911,7 @@ STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLAC
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Direktor)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}Tvrtka {STRING} sponzorira izgradnju novoga grada {TOWN}!
+STR_NEWS_NEW_TOWN_UNSPONSORED                                   :{BLACK}{BIG_FONT}Sagrađen je novi grad {TOWN}!
 
 STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}Započela je izgradnja nove {STRING.gen} u blizini grada {TOWN}a!
 STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}Nova {STRING} trenutno se sadi blizu grada {TOWN}a!
@@ -1023,6 +1024,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Južnoafrički 
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Proizvoljno...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijski Lari (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranski Rial (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nove ruske rublje (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Cestovna vozila
@@ -3064,6 +3066,8 @@ STR_NEWGRF_ERROR_READ_BOUNDS                                    :Pročitaj nakon
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Zatraženi GRF resursi nisu dostupni (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} je isključen od strane {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Pogrešan/nepoznat format raspored sprite-a (sprite {3:NUM})
+STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Previše elemenata na listi postavki varijabli (sprite {3:NUM}, postavka {4:HEX})
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Pogrešna callback funkcija za industrijsku proizvodnju (sprite {3:NUM}, "{1:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Oprez!
@@ -4375,7 +4379,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Previše
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Previše dijelova željezničke postaje
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Previše autobusnih postaja
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Previše kamionskih postaja
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Preblizu drugoj postaji/terminalu
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Preblizu drugom pristaništu
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Preblizu drugoj zračnoj luci
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nije moguće preimenovati postaju...

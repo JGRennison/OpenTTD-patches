@@ -3072,13 +3072,16 @@ STR_ABOUT_VERSION                                               :{BLACK}OpenTTD 
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 Zespół OpenTTD
 
 # Framerate display window
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Liczba renderowanych klatek wideo na sekundę.
 STR_FRAMERATE_CURRENT                                           :{WHITE}Obecny
 ############ Leave those lines in this order!!
+STR_FRAMERATE_GL_LINKGRAPH                                      :{WHITE}  Opóźnienie wykresu połączeń:
 STR_FRAMERATE_VIDEO                                             :{WHITE}Wyjście video:
 STR_FRAMERATE_SOUND                                             :{WHITE}Miksowanie dźwięku:
 ############ End of leave-in-this-order
 ############ Leave those lines in this order!!
 STR_FRAMETIME_CAPTION_VIDEO                                     :Wyjście wideo
+STR_FRAMETIME_CAPTION_SOUND                                     :Miksowanie dźwięku
 ############ End of leave-in-this-order
 
 
@@ -4618,7 +4621,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Za duzo 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Za dużo części stacji kolejowej
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Zbyt wiele przystanków autobusowych
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Zbyt wiele stacji załadunku ciężarówek
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Zbyt blisko innej stacji/strefy załadunku
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Zbyt blisko innego portu
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Zbyt blisko innego lotniska
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nie można zmienić nazwy stacji...

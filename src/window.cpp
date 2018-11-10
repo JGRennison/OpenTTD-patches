@@ -49,7 +49,7 @@ enum ViewportAutoscrolling {
 };
 
 static Point _drag_delta; ///< delta between mouse cursor and upper left corner of dragged window
-static Window *_mouseover_last_w = NULL; ///< Window of the last #MOUSEOVER event.
+static Window *_mouseover_last_w = NULL; ///< Window of the last OnMouseOver event.
 static Window *_last_scroll_window = NULL; ///< Window of the last scroll event.
 
 /** List of windows opened at the screen sorted from the front. */
@@ -938,6 +938,8 @@ static void DrawOverlappedWindow(Window *w, int left, int top, int right, int bo
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 {
 	Window *w;
+
+	DrawPixelInfo *old_dpi = _cur_dpi;
 	DrawPixelInfo bk;
 	_cur_dpi = &bk;
 
@@ -951,6 +953,7 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 			DrawOverlappedWindow(w, max(left, w->left), max(top, w->top), min(right, w->left + w->width), min(bottom, w->top + w->height));
 		}
 	}
+	_cur_dpi = old_dpi;
 }
 
 /**
@@ -1115,7 +1118,7 @@ Window *FindWindowById(WindowClass cls, WindowNumber number)
 
 /**
  * Find any window by its class. Useful when searching for a window that uses
- * the window number as a #WindowType, like #WC_SEND_NETWORK_MSG.
+ * the window number as a #WindowClass, like #WC_SEND_NETWORK_MSG.
  * @param cls Window class
  * @return Pointer to the found window, or \c NULL if not available
  */
@@ -1430,7 +1433,6 @@ static void BringWindowToFront(Window *w)
 
 /**
  * Initializes the data (except the position and initial size) of a new Window.
- * @param desc          Window description.
  * @param window_number Number being assigned to the new window
  * @return Window pointer of the newly created window
  * @pre If nested widgets are used (\a widget is \c NULL), #nested_root and #nested_array_size must be initialized.
@@ -2000,7 +2002,7 @@ static void HandleMouseOver()
 {
 	Window *w = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
 
-	/* We changed window, put a MOUSEOVER event to the last window */
+	/* We changed window, put an OnMouseOver event to the last window */
 	if (_mouseover_last_w != NULL && _mouseover_last_w != w) {
 		/* Reset mouse-over coordinates of previous window */
 		Point pt = { -1, -1 };
@@ -2749,18 +2751,17 @@ static void HandleAutoscroll()
 	y -= vp->top;
 
 	/* here allows scrolling in both x and y axis */
-#define scrollspeed 3
+	static const int SCROLLSPEED = 3;
 	if (x - 15 < 0) {
-		w->viewport->dest_scrollpos_x += ScaleByZoom((x - 15) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_x += ScaleByZoom((x - 15) * SCROLLSPEED, vp->zoom);
 	} else if (15 - (vp->width - x) > 0) {
-		w->viewport->dest_scrollpos_x += ScaleByZoom((15 - (vp->width - x)) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_x += ScaleByZoom((15 - (vp->width - x)) * SCROLLSPEED, vp->zoom);
 	}
 	if (y - 15 < 0) {
-		w->viewport->dest_scrollpos_y += ScaleByZoom((y - 15) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_y += ScaleByZoom((y - 15) * SCROLLSPEED, vp->zoom);
 	} else if (15 - (vp->height - y) > 0) {
-		w->viewport->dest_scrollpos_y += ScaleByZoom((15 - (vp->height - y)) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_y += ScaleByZoom((15 - (vp->height - y)) * SCROLLSPEED, vp->zoom);
 	}
-#undef scrollspeed
 }
 
 enum MouseClick {
