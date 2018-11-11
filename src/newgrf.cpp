@@ -996,7 +996,7 @@ enum ChangeInfoResult {
 	CIR_INVALID_ID, ///< Attempt to modify an invalid ID
 };
 
-typedef ChangeInfoResult (*VCI_Handler)(uint engine, int numinfo, int prop, ByteReader *buf);
+typedef ChangeInfoResult (*VCI_Handler)(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf);
 
 static ChangeInfoResult HandleAction0PropertyDefault(ByteReader *buf, int prop)
 {
@@ -1008,11 +1008,23 @@ static ChangeInfoResult HandleAction0PropertyDefault(ByteReader *buf, int prop)
 		case A0RPI_UNKNOWN_ERROR:
 			return CIR_DISABLED;
 
-		case A0RPI_SKIPPED_IGNORE:
-			return CIR_SUCCESS;
-
 		default:
 			return CIR_UNKNOWN;
+	}
+}
+
+static bool MappedPropertyLengthMismatch(ByteReader *buf, uint expected_size, const GRFFilePropertyRemapEntry *mapping_entry)
+{
+	uint length = buf->ReadExtendedByte();
+	if (length != expected_size) {
+		if (mapping_entry != NULL) {
+			grfmsg(2, "Ignoring use of mapped property: %s, feature: %X, mapped to: %X, with incorrect data size: %u instead of %u",
+					mapping_entry->name, mapping_entry->feature, mapping_entry->property_id, length, expected_size);
+		}
+		buf->Skip(length);
+		return true;
+	} else {
+		return false;
 	}
 }
 
@@ -1023,7 +1035,7 @@ static ChangeInfoResult HandleAction0PropertyDefault(ByteReader *buf, int prop)
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, ByteReader *buf)
+static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	switch (prop) {
 		case 0x00: // Introduction date
@@ -1066,7 +1078,7 @@ static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, ByteRe
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -1344,7 +1356,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 			}
 
 			default:
-				ret = CommonVehicleChangeInfo(ei, prop, buf);
+				ret = CommonVehicleChangeInfo(ei, prop, mapping_entry, buf);
 				break;
 		}
 	}
@@ -1360,7 +1372,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -1532,7 +1544,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop
 			}
 
 			default:
-				ret = CommonVehicleChangeInfo(ei, prop, buf);
+				ret = CommonVehicleChangeInfo(ei, prop, mapping_entry, buf);
 				break;
 		}
 	}
@@ -1548,7 +1560,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -1704,7 +1716,7 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop
 			}
 
 			default:
-				ret = CommonVehicleChangeInfo(ei, prop, buf);
+				ret = CommonVehicleChangeInfo(ei, prop, mapping_entry, buf);
 				break;
 		}
 	}
@@ -1720,7 +1732,7 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -1858,7 +1870,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 				break;
 
 			default:
-				ret = CommonVehicleChangeInfo(ei, prop, buf);
+				ret = CommonVehicleChangeInfo(ei, prop, mapping_entry, buf);
 				break;
 		}
 	}
@@ -1874,7 +1886,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -2104,8 +2116,10 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 				}
 				break;
 
-			case 0x1B: // Minimum height for a bridge above
 			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
+				if (MappedPropertyLengthMismatch(buf, 8, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x1B: // Minimum height for a bridge above
 				SetBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET);
 				for (uint i = 0; i < 8; i++) {
 					statspec->bridge_height[i] = buf->ReadByte();
@@ -2129,7 +2143,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult CanalChangeInfo(uint id, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult CanalChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -2167,7 +2181,7 @@ static ChangeInfoResult CanalChangeInfo(uint id, int numinfo, int prop, ByteRead
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -2262,8 +2276,10 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, ByteR
 				bridge->price = buf->ReadWord();
 				break;
 
-			case 0x14: // purchase sprite
 			case A0RPI_BRIDGE_MENU_ICON:
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x14: // purchase sprite
 				bridge->sprite = buf->ReadWord();
 				bridge->pal    = buf->ReadWord();
 				break;
@@ -2346,7 +2362,7 @@ static ChangeInfoResult IgnoreTownHouseProperty(int prop, ByteReader *buf)
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -2619,7 +2635,7 @@ static ChangeInfoResult LoadTranslationTable(uint gvid, int numinfo, ByteReader 
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	/* Properties which are handled as a whole */
 	switch (prop) {
@@ -2834,7 +2850,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, By
 	return ret;
 }
 
-static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	/* Properties which are handled as a whole */
 	switch (prop) {
@@ -2905,7 +2921,7 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, B
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -3044,7 +3060,7 @@ static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, ByteRea
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult SoundEffectChangeInfo(uint sid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult SoundEffectChangeInfo(uint sid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -3139,7 +3155,7 @@ static ChangeInfoResult IgnoreIndustryTileProperty(int prop, ByteReader *buf)
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -3403,7 +3419,7 @@ static void CleanIndustryTileTable(IndustrySpec *ind)
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -3826,7 +3842,7 @@ static void DuplicateTileTable(AirportSpec *as)
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -4044,7 +4060,7 @@ static ChangeInfoResult IgnoreObjectProperty(uint prop, ByteReader *buf)
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -4175,7 +4191,7 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, ByteRea
  * @param buf The property value.
  * @return ChangeInfoResult.
  */
-static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -4305,7 +4321,7 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, ByteR
 	return ret;
 }
 
-static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -4385,7 +4401,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, Byte
 	return ret;
 }
 
-static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int prop, ByteReader *buf)
+static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
 {
 	ChangeInfoResult ret = CIR_SUCCESS;
 
@@ -4504,7 +4520,15 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uin
 	}
 }
 
-static int ReadAction0PropertyID(ByteReader *buf, uint8 feature)
+struct GRFFilePropertyDescriptor {
+	int prop;
+	const GRFFilePropertyRemapEntry *entry;
+
+	GRFFilePropertyDescriptor(int prop, const GRFFilePropertyRemapEntry *entry)
+			: prop(prop), entry(entry) {}
+};
+
+static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader *buf, uint8 feature)
 {
 	uint8 raw_prop = buf->ReadByte();
 	const GRFFilePropertyRemapSet &remap = _cur.grffile->action0_property_remaps[feature];
@@ -4521,22 +4545,10 @@ static int ReadAction0PropertyID(ByteReader *buf, uint8 feature)
 			error->param_value[2] = raw_prop;
 		} else if (prop == A0RPI_UNKNOWN_IGNORE) {
 			grfmsg(2, "Ignoring unimplemented mapped property: %s, feature: %X, mapped to: %X", def.name, def.feature, raw_prop);
-		} else {
-			if (HasBit(def.flags, GFPRE_CHECK_SIZE)) {
-				uint length = buf->ReadExtendedByte();
-				if (length != def.expected_size) {
-					grfmsg(2, "Ignoring use of mapped property: %s, feature: %X, mapped to: %X, with incorrect data size: %u instead of %u",
-							def.name, def.feature, raw_prop, length, def.expected_size);
-					buf->Skip(length);
-					prop = A0RPI_SKIPPED_IGNORE;
-				}
-			} else {
-				prop |= A0RPI_CHECK_PROPERTY_LENGTH;
-			}
 		}
-		return prop;
+		return GRFFilePropertyDescriptor(prop, &def);
 	} else {
-		return raw_prop;
+		return GRFFilePropertyDescriptor(raw_prop, NULL);
 	}
 }
 
@@ -4574,7 +4586,7 @@ static void FeatureChangeInfo(ByteReader *buf)
 		/* GSF_RAILTYPES */     RailTypeChangeInfo,
 		/* GSF_AIRPORTTILES */  AirportTilesChangeInfo,
 	};
-	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps));
+	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps), "Action 0 featur elist length mismatch");
 
 	uint8 feature  = buf->ReadByte();
 	uint8 numprops = buf->ReadByte();
@@ -4593,10 +4605,10 @@ static void FeatureChangeInfo(ByteReader *buf)
 	SetBit(_cur.grffile->grf_features, feature);
 
 	while (numprops-- && buf->HasData()) {
-		int prop = ReadAction0PropertyID(buf, feature);
+		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
 
-		ChangeInfoResult cir = handler[feature](engine, numinfo, prop, buf);
-		if (HandleChangeInfoResult("FeatureChangeInfo", cir, feature, prop)) return;
+		ChangeInfoResult cir = handler[feature](engine, numinfo, desc.prop, desc.entry, buf);
+		if (HandleChangeInfoResult("FeatureChangeInfo", cir, feature, desc.prop)) return;
 	}
 }
 
@@ -4609,14 +4621,14 @@ static void SafeChangeInfo(ByteReader *buf)
 	buf->ReadExtendedByte(); // id
 
 	if (feature == GSF_BRIDGES && numprops == 1) {
-		int prop = ReadAction0PropertyID(buf, feature);
+		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
 		/* Bridge property 0x0D is redefinition of sprite layout tables, which
 		 * is considered safe. */
-		if (prop == 0x0D) return;
+		if (desc.prop == 0x0D) return;
 	} else if (feature == GSF_GLOBALVAR && numprops == 1) {
-		int prop = ReadAction0PropertyID(buf, feature);
+		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
 		/* Engine ID Mappings are safe, if the source is static */
-		if (prop == 0x11) {
+		if (desc.prop == 0x11) {
 			bool is_safe = true;
 			for (uint i = 0; i < numinfo; i++) {
 				uint32 s = buf->ReadDWord();
@@ -4649,25 +4661,25 @@ static void ReserveChangeInfo(ByteReader *buf)
 	uint8 index    = buf->ReadExtendedByte();
 
 	while (numprops-- && buf->HasData()) {
-		int prop = ReadAction0PropertyID(buf, feature);
+		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
 		ChangeInfoResult cir = CIR_SUCCESS;
 
 		switch (feature) {
 			default: NOT_REACHED();
 			case GSF_CARGOES:
-				cir = CargoChangeInfo(index, numinfo, prop, buf);
+				cir = CargoChangeInfo(index, numinfo, desc.prop, desc.entry, buf);
 				break;
 
 			case GSF_GLOBALVAR:
-				cir = GlobalVarReserveInfo(index, numinfo, prop, buf);
+				cir = GlobalVarReserveInfo(index, numinfo, desc.prop, desc.entry, buf);
 				break;
 
 			case GSF_RAILTYPES:
-				cir = RailTypeReserveInfo(index, numinfo, prop, buf);
+				cir = RailTypeReserveInfo(index, numinfo, desc.prop, desc.entry, buf);
 				break;
 		}
 
-		if (HandleChangeInfoResult("ReserveChangeInfo", cir, feature, prop)) return;
+		if (HandleChangeInfoResult("ReserveChangeInfo", cir, feature, desc.prop)) return;
 	}
 }
 
@@ -8064,8 +8076,8 @@ static bool HandleFeatureTestInfo(ByteReader *buf)
 
 /** Action14 Action0 remappable property list */
 static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
-	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_MIN_BRIDGE_HEIGHT, "station_min_bridge_height", 8),
-	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_MENU_ICON, "bridge_menu_icon", 4),
+	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_MIN_BRIDGE_HEIGHT, "station_min_bridge_height"),
+	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_MENU_ICON, "bridge_menu_icon"),
 	GRFPropertyMapDefinition(),
 };
 
@@ -8108,11 +8120,7 @@ struct GRFPropertyMapAction {
 				entry.name = info->name;
 				entry.id = info->id;
 				entry.feature = this->feature;
-				entry.flags = 0;
-				if (info->expected_size >= 0) {
-					SetBit(entry.flags, GFPRE_CHECK_SIZE);
-					entry.expected_size = info->expected_size;
-				}
+				entry.property_id = this->prop_id;
 				success = true;
 				break;
 			}
@@ -8136,7 +8144,7 @@ struct GRFPropertyMapAction {
 				entry.name = str_store;
 				entry.id = (this->fallback_mode == A0REM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
 				entry.feature = this->feature;
-				entry.flags = 0;
+				entry.property_id = this->prop_id;
 			}
 		}
 	}

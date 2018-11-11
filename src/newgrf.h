@@ -107,7 +107,6 @@ enum Action0RemapPropertyIds {
 	A0RPI_CHECK_PROPERTY_LENGTH = 0x10000,
 	A0RPI_UNKNOWN_IGNORE = 0x200,
 	A0RPI_UNKNOWN_ERROR,
-	A0RPI_SKIPPED_IGNORE,
 
 	A0RPI_STATION_MIN_BRIDGE_HEIGHT,
 	A0RPI_BRIDGE_MENU_ICON,
@@ -124,34 +123,26 @@ struct GRFPropertyMapDefinition {
 	const char *name; // NULL indicates the end of the list
 	int id;
 	uint8 feature;
-	int expected_size;
 
 	/** Create empty object used to identify the end of a list. */
 	GRFPropertyMapDefinition() :
 		name(NULL),
 		id(0),
-		feature(0),
-		expected_size(0)
+		feature(0)
 	{}
 
-	GRFPropertyMapDefinition(uint8 feature, int id, const char *name, int expected_size = -1) :
+	GRFPropertyMapDefinition(uint8 feature, int id, const char *name) :
 		name(name),
 		id(id),
-		feature(feature),
-		expected_size(expected_size)
+		feature(feature)
 	{}
-};
-
-enum GFPRE_Flags {
-	GFPRE_CHECK_SIZE,
 };
 
 struct GRFFilePropertyRemapEntry {
 	const char *name = nullptr;
 	int id = 0;
 	uint8 feature = 0;
-	uint8 flags = 0;
-	uint16 expected_size = 0;
+	uint8 property_id = 0;
 };
 
 struct GRFFilePropertyRemapSet {
