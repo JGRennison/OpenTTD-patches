@@ -19,6 +19,8 @@
 #include "core/bitmath_func.hpp"
 #include "core/alloc_type.hpp"
 #include "core/smallvec_type.hpp"
+#include "3rdparty/cpp-btree/btree_map.h"
+#include <bitset>
 
 /**
  * List of different canal 'features'.
@@ -101,6 +103,65 @@ struct GRFLabel {
 	struct GRFLabel *next;
 };
 
+enum Action0RemapPropertyIds {
+	A0RPI_CHECK_PROPERTY_LENGTH = 0x10000,
+	A0RPI_UNKNOWN_IGNORE = 0x200,
+	A0RPI_UNKNOWN_ERROR,
+	A0RPI_SKIPPED_IGNORE,
+};
+
+enum Action0RemapFallbackMode {
+	A0REM_IGNORE,
+	A0REM_ERROR_ON_USE,
+	A0REM_ERROR_ON_DEFINITION,
+	A0REM_END,
+};
+
+struct GRFPropertyMapDefinition {
+	const char *name; // NULL indicates the end of the list
+	int id;
+	uint8 feature;
+	int expected_size;
+
+	/** Create empty object used to identify the end of a list. */
+	GRFPropertyMapDefinition() :
+		name(NULL),
+		id(0),
+		feature(0),
+		expected_size(0)
+	{}
+
+	GRFPropertyMapDefinition(uint8 feature, int id, const char *name, int expected_size = -1) :
+		name(name),
+		id(id),
+		feature(feature),
+		expected_size(expected_size)
+	{}
+};
+
+enum GFPRE_Flags {
+	GFPRE_CHECK_SIZE,
+};
+
+struct GRFFilePropertyRemapEntry {
+	const char *name = nullptr;
+	int id = 0;
+	uint8 feature = 0;
+	uint8 flags = 0;
+	uint16 expected_size = 0;
+};
+
+struct GRFFilePropertyRemapSet {
+	std::bitset<256> remapped_ids;
+	btree::btree_map<uint8, GRFFilePropertyRemapEntry> mapping;
+
+	GRFFilePropertyRemapEntry &Entry(uint8 property)
+	{
+		this->remapped_ids.set(property);
+		return this->mapping[property];
+	}
+};
+
 /** Dynamic data of a loaded NewGRF */
 struct GRFFile : ZeroedMemoryAllocator {
 	char *filename;
@@ -117,6 +178,9 @@ struct GRFFile : ZeroedMemoryAllocator {
 	struct ObjectSpec **objectspec;
 	struct AirportSpec **airportspec;
 	struct AirportTileSpec **airtspec;
+
+	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];
+	AutoFreeSmallVector<const char *, 8> action0_unknown_property_names;
 
 	uint32 param[0x80];
 	uint param_end;  ///< one more than the highest set parameter
@@ -139,6 +203,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	uint32 grf_features;                     ///< Bitset of GrfSpecFeature the grf uses
 	PriceMultipliers price_base_multipliers; ///< Price base multipliers as set by the grf.
 
+	uint32 var8D_overlay;                    ///< Overlay for global variable 8D (action 0x14)
 	uint32 var9D_overlay;                    ///< Overlay for global variable 9D (action 0x14)
 
 	GRFFile(const struct GRFConfig *config);

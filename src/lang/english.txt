@@ -3457,7 +3457,7 @@ STR_NEWGRF_ERROR_MSG_INFO                                       :{SILVER}{RAW_ST
 STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}Warning: {SILVER}{RAW_STRING}
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}Error: {SILVER}{RAW_STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}Fatal: {SILVER}{RAW_STRING}
-STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}A fatal NewGRF error has occurred: {}{STRING5}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}A fatal NewGRF error has occurred: {}{STRING7}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:RAW_STRING} will not work with the TTDPatch version reported by OpenTTD
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:RAW_STRING} is for the {RAW_STRING} version of TTD
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:RAW_STRING} is designed to be used with {RAW_STRING}
@@ -3470,6 +3470,7 @@ STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :Too many NewGRF
 STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :Loading {1:RAW_STRING} as static NewGRF with {RAW_STRING} could cause desyncs
 STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :Unexpected sprite (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :Unknown Action 0 property {4:HEX} (sprite {3:NUM})
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :Unimplemented remapped Action 0 property feature: {4:HEX}, name: {2:RAW_STRING}, mapped to: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_INVALID_ID                                     :Attempt to use invalid ID (sprite {3:NUM})
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{RAW_STRING} contains a corrupt sprite. All corrupt sprites will be shown as a red question mark (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contains multiple Action 8 entries (sprite {3:NUM})

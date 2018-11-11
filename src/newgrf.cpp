@@ -998,6 +998,24 @@ enum ChangeInfoResult {
 
 typedef ChangeInfoResult (*VCI_Handler)(uint engine, int numinfo, int prop, ByteReader *buf);
 
+static ChangeInfoResult HandleAction0PropertyDefault(ByteReader *buf, int prop)
+{
+	switch (prop) {
+		case A0RPI_UNKNOWN_IGNORE:
+			buf->Skip(buf->ReadExtendedByte());
+			return CIR_SUCCESS;
+
+		case A0RPI_UNKNOWN_ERROR:
+			return CIR_DISABLED;
+
+		case A0RPI_SKIPPED_IGNORE:
+			return CIR_SUCCESS;
+
+		default:
+			return CIR_UNKNOWN;
+	}
+}
+
 /**
  * Define properties common to all vehicles
  * @param ei Engine info.
@@ -1034,7 +1052,7 @@ static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, ByteRe
 			break;
 
 		default:
-			return CIR_UNKNOWN;
+			return HandleAction0PropertyDefault(buf, prop);
 	}
 
 	return CIR_SUCCESS;
@@ -2094,7 +2112,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -2132,7 +2150,7 @@ static ChangeInfoResult CanalChangeInfo(uint id, int numinfo, int prop, ByteRead
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -2249,7 +2267,7 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, ByteR
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -2312,7 +2330,7 @@ static ChangeInfoResult IgnoreTownHouseProperty(int prop, ByteReader *buf)
 		}
 
 		default:
-			ret = CIR_UNKNOWN;
+			ret = HandleAction0PropertyDefault(buf, prop);
 			break;
 	}
 	return ret;
@@ -2544,7 +2562,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, Byt
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -2806,7 +2824,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, By
 			}
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -2868,7 +2886,7 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, B
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -3007,7 +3025,7 @@ static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, ByteRea
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -3065,7 +3083,7 @@ static ChangeInfoResult SoundEffectChangeInfo(uint sid, int numinfo, int prop, B
 			}
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -3105,7 +3123,7 @@ static ChangeInfoResult IgnoreIndustryTileProperty(int prop, ByteReader *buf)
 			break;
 
 		default:
-			ret = CIR_UNKNOWN;
+			ret = HandleAction0PropertyDefault(buf, prop);
 			break;
 	}
 	return ret;
@@ -3243,7 +3261,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 			}
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -3336,7 +3354,7 @@ static ChangeInfoResult IgnoreIndustryProperty(int prop, ByteReader *buf)
 		}
 
 		default:
-			ret = CIR_UNKNOWN;
+			ret = HandleAction0PropertyDefault(buf, prop);
 			break;
 	}
 	return ret;
@@ -3761,7 +3779,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 			}
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -3964,7 +3982,7 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, B
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -4009,7 +4027,7 @@ static ChangeInfoResult IgnoreObjectProperty(uint prop, ByteReader *buf)
 			break;
 
 		default:
-			ret = CIR_UNKNOWN;
+			ret = HandleAction0PropertyDefault(buf, prop);
 			break;
 	}
 
@@ -4139,7 +4157,7 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, ByteRea
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -4277,7 +4295,7 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, ByteR
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -4357,7 +4375,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, Byte
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -4447,7 +4465,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 				break;
 
 			default:
-				ret = CIR_UNKNOWN;
+				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
 		}
 	}
@@ -4455,7 +4473,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 	return ret;
 }
 
-static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uint8 feature, uint8 property)
+static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uint8 feature, int property)
 {
 	switch (cir) {
 		default: NOT_REACHED();
@@ -4481,6 +4499,42 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uin
 			if (cir != CIR_INVALID_ID) error->param_value[1] = property;
 			return true;
 		}
+	}
+}
+
+static int ReadAction0PropertyID(ByteReader *buf, uint8 feature)
+{
+	uint8 raw_prop = buf->ReadByte();
+	const GRFFilePropertyRemapSet &remap = _cur.grffile->action0_property_remaps[feature];
+	if (remap.remapped_ids[raw_prop]) {
+		auto iter = remap.mapping.find(raw_prop);
+		assert(iter != remap.mapping.end());
+		const GRFFilePropertyRemapEntry &def = iter->second;
+		int prop = def.id;
+		if (prop == A0RPI_UNKNOWN_ERROR) {
+			grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %X, mapped to: %X", def.name, def.feature, raw_prop);
+			GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
+			error->data = stredup(def.name);
+			error->param_value[1] = def.feature;
+			error->param_value[2] = raw_prop;
+		} else if (prop == A0RPI_UNKNOWN_IGNORE) {
+			grfmsg(2, "Ignoring unimplemented mapped property: %s, feature: %X, mapped to: %X", def.name, def.feature, raw_prop);
+		} else {
+			if (HasBit(def.flags, GFPRE_CHECK_SIZE)) {
+				uint length = buf->ReadExtendedByte();
+				if (length != def.expected_size) {
+					grfmsg(2, "Ignoring use of mapped property: %s, feature: %X, mapped to: %X, with incorrect data size: %u instead of %u",
+							def.name, def.feature, raw_prop, length, def.expected_size);
+					buf->Skip(length);
+					prop = A0RPI_SKIPPED_IGNORE;
+				}
+			} else {
+				prop |= A0RPI_CHECK_PROPERTY_LENGTH;
+			}
+		}
+		return prop;
+	} else {
+		return raw_prop;
 	}
 }
 
@@ -4518,6 +4572,7 @@ static void FeatureChangeInfo(ByteReader *buf)
 		/* GSF_RAILTYPES */     RailTypeChangeInfo,
 		/* GSF_AIRPORTTILES */  AirportTilesChangeInfo,
 	};
+	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps));
 
 	uint8 feature  = buf->ReadByte();
 	uint8 numprops = buf->ReadByte();
@@ -4536,7 +4591,7 @@ static void FeatureChangeInfo(ByteReader *buf)
 	SetBit(_cur.grffile->grf_features, feature);
 
 	while (numprops-- && buf->HasData()) {
-		uint8 prop = buf->ReadByte();
+		int prop = ReadAction0PropertyID(buf, feature);
 
 		ChangeInfoResult cir = handler[feature](engine, numinfo, prop, buf);
 		if (HandleChangeInfoResult("FeatureChangeInfo", cir, feature, prop)) return;
@@ -4552,12 +4607,12 @@ static void SafeChangeInfo(ByteReader *buf)
 	buf->ReadExtendedByte(); // id
 
 	if (feature == GSF_BRIDGES && numprops == 1) {
-		uint8 prop = buf->ReadByte();
+		int prop = ReadAction0PropertyID(buf, feature);
 		/* Bridge property 0x0D is redefinition of sprite layout tables, which
 		 * is considered safe. */
 		if (prop == 0x0D) return;
 	} else if (feature == GSF_GLOBALVAR && numprops == 1) {
-		uint8 prop = buf->ReadByte();
+		int prop = ReadAction0PropertyID(buf, feature);
 		/* Engine ID Mappings are safe, if the source is static */
 		if (prop == 0x11) {
 			bool is_safe = true;
@@ -4592,7 +4647,7 @@ static void ReserveChangeInfo(ByteReader *buf)
 	uint8 index    = buf->ReadExtendedByte();
 
 	while (numprops-- && buf->HasData()) {
-		uint8 prop = buf->ReadByte();
+		int prop = ReadAction0PropertyID(buf, feature);
 		ChangeInfoResult cir = CIR_SUCCESS;
 
 		switch (feature) {
@@ -5963,7 +6018,7 @@ bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile)
 		}
 
 		case 0x0D: // TTD Version, 00=DOS, 01=Windows
-			*value = _cur.grfconfig->palette & GRFP_USE_MASK;
+			*value = (_cur.grfconfig->palette & GRFP_USE_MASK) | grffile->var8D_overlay;
 			return true;
 
 		case 0x0E: // Y-offset for train sprites
@@ -7891,6 +7946,7 @@ struct GRFFeatureInfo {
 /** Action14 feature list */
 static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("feature_test", 1),
+	GRFFeatureInfo("property_mapping", 1),
 	GRFFeatureInfo("action0_station_prop1B", 1),
 	GRFFeatureInfo("varaction2_station_var42", 1),
 	GRFFeatureInfo("more_bridge_types", 1),
@@ -7967,7 +8023,7 @@ static bool ChangeGRFFeatureMaxVersion(size_t len, ByteReader *buf)
 	return true;
 }
 
-/** Callback function for 'FTST'->'SETP' to set the maximum version of the feature being tested. */
+/** Callback function for 'FTST'->'SETP' to set the bit number of global variable 9D (platform version) to set/unset with the result of the feature test. */
 static bool ChangeGRFFeatureSetPlatformVarBit(size_t len, ByteReader *buf)
 {
 	if (len != 1) {
@@ -8004,10 +8060,177 @@ static bool HandleFeatureTestInfo(ByteReader *buf)
 	return true;
 }
 
+/** Action14 Action0 remappable property list */
+static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
+	GRFPropertyMapDefinition(),
+};
+
+/** Action14 Action0 property map action instance */
+struct GRFPropertyMapAction {
+	int feature;
+	int prop_id;
+	std::string name;
+	Action0RemapFallbackMode fallback_mode;
+	uint8 ttd_ver_var_bit;
+
+	void Reset()
+	{
+		this->feature = -1;
+		this->prop_id = -1;
+		this->name.clear();
+		this->fallback_mode = A0REM_IGNORE;
+		this->ttd_ver_var_bit = 0;
+	}
+
+	void Execute()
+	{
+		if (this->feature < 0) {
+			grfmsg(2, "Action 14 property remapping: no feature defined, doing nothing");
+			return;
+		}
+		if (this->prop_id < 0) {
+			grfmsg(2, "Action 14 property remapping: no property ID defined, doing nothing");
+			return;
+		}
+		if (this->name.empty()) {
+			grfmsg(2, "Action 14 property remapping: no name defined, doing nothing");
+			return;
+		}
+		bool success = false;
+		const char *str = this->name.c_str();
+		for (const GRFPropertyMapDefinition *info = _grf_action0_remappable_properties; info->name != NULL; info++) {
+			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
+				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
+				entry.name = info->name;
+				entry.id = info->id;
+				entry.feature = this->feature;
+				entry.flags = 0;
+				if (info->expected_size >= 0) {
+					SetBit(entry.flags, GFPRE_CHECK_SIZE);
+					entry.expected_size = info->expected_size;
+				}
+				success = true;
+				break;
+			}
+		}
+		if (this->ttd_ver_var_bit > 0) {
+			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+		}
+		if (!success) {
+			if (this->fallback_mode == A0REM_ERROR_ON_DEFINITION) {
+				grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %X, mapped to: %X", str, this->feature, this->prop_id);
+				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
+				error->data = stredup(str);
+				error->param_value[1] = this->feature;
+				error->param_value[2] = this->prop_id;
+			} else {
+				const char *str_store = stredup(str);
+				grfmsg(2, "Unimplemented mapped property: %s, feature: %X, mapped to: %X, %s on use",
+						str, this->feature, this->prop_id, (this->fallback_mode == A0REM_IGNORE) ? "ignoring" : "error");
+				*(_cur.grffile->action0_unknown_property_names.Append()) = str_store;
+				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
+				entry.name = str_store;
+				entry.id = (this->fallback_mode == A0REM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
+				entry.feature = this->feature;
+				entry.flags = 0;
+			}
+		}
+	}
+};
+
+static GRFPropertyMapAction _current_grf_property_map_action;
+
+/** Callback function for 'A0PM'->'NAME' to set the name of the property to be mapped. */
+static bool ChangePropertyRemapName(byte langid, const char *str)
+{
+	_current_grf_property_map_action.name = str;
+	return true;
+}
+
+/** Callback function for 'A0PM'->'FEAT' to set which feature this property mapping applies to. */
+static bool ChangePropertyRemapFeature(size_t len, ByteReader *buf)
+{
+	if (len != 1) {
+		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'FEAT' but got " PRINTF_SIZE ", ignoring this field", len);
+		buf->Skip(len);
+	} else {
+		uint8 feature = buf->ReadByte();
+		if (feature >= GSF_END) {
+			grfmsg(2, "Action 14 property mapping: invalid feature ID: %u, in 'A0PM'->'FEAT', ignoring this field", feature);
+		} else {
+			_current_grf_property_map_action.feature = feature;
+		}
+	}
+	return true;
+}
+
+/** Callback function for 'A0PM'->'PROP' to set the property ID to which this property is being mapped. */
+static bool ChangePropertyRemapPropertyId(size_t len, ByteReader *buf)
+{
+	if (len != 1) {
+		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'PROP' but got " PRINTF_SIZE ", ignoring this field", len);
+		buf->Skip(len);
+	} else {
+		_current_grf_property_map_action.prop_id = buf->ReadByte();
+	}
+	return true;
+}
+
+/** Callback function for 'A0PM'->'FLBK' to set the maximum version of the feature being tested. */
+static bool ChangePropertyRemapSetFallbackMode(size_t len, ByteReader *buf)
+{
+	if (len != 1) {
+		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'FLBK' but got " PRINTF_SIZE ", ignoring this field", len);
+		buf->Skip(len);
+	} else {
+		Action0RemapFallbackMode mode = (Action0RemapFallbackMode) buf->ReadByte();
+		if (mode < A0REM_END) _current_grf_property_map_action.fallback_mode = mode;
+	}
+	return true;
+}
+/** Callback function for 'A0PM'->'SETT' to set the bit number of global variable 8D (TTD version) to set/unset with whether the remapping was successful. */
+static bool ChangePropertyRemapSetTTDVerVarBit(size_t len, ByteReader *buf)
+{
+	if (len != 1) {
+		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'SETT' but got " PRINTF_SIZE ", ignoring this field", len);
+		buf->Skip(len);
+	} else {
+		uint8 bit_number = buf->ReadByte();
+		if (bit_number >= 4 && bit_number <= 31) {
+			_current_grf_property_map_action.ttd_ver_var_bit = bit_number;
+		} else {
+			grfmsg(2, "Action 14 property mapping: expected a bit number >= 4 and <= 32 for 'A0PM'->'SETT' but got %u, ignoring this field", bit_number);
+		}
+	}
+	return true;
+}
+
+/** Action14 tags for the A0PM node */
+AllowedSubtags _tags_a0pm[] = {
+	AllowedSubtags('NAME', ChangePropertyRemapName),
+	AllowedSubtags('FEAT', ChangePropertyRemapFeature),
+	AllowedSubtags('PROP', ChangePropertyRemapPropertyId),
+	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
+	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags()
+};
+
+/**
+ * Callback function for 'A0PM' (action 0 property mapping)
+ */
+static bool HandleAction0PropertyMap(ByteReader *buf)
+{
+	_current_grf_property_map_action.Reset();
+	HandleNodes(buf, _tags_a0pm);
+	_current_grf_property_map_action.Execute();
+	return true;
+}
+
 /** Action14 root tags */
 AllowedSubtags _tags_root_static[] = {
 	AllowedSubtags('INFO', _tags_info),
 	AllowedSubtags('FTST', SkipInfoChunk),
+	AllowedSubtags('A0PM', SkipInfoChunk),
 	AllowedSubtags()
 };
 
@@ -8015,6 +8238,7 @@ AllowedSubtags _tags_root_static[] = {
 AllowedSubtags _tags_root_feature_tests[] = {
 	AllowedSubtags('INFO', SkipInfoChunk),
 	AllowedSubtags('FTST', HandleFeatureTestInfo),
+	AllowedSubtags('A0PM', HandleAction0PropertyMap),
 	AllowedSubtags()
 };
 

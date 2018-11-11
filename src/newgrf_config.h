@@ -109,7 +109,7 @@ struct GRFError : ZeroedMemoryAllocator {
 	char *data;            ///< Additional data for message and custom_message
 	StringID message;      ///< Default message
 	StringID severity;     ///< Info / Warning / Error / Fatal
-	uint32 param_value[2]; ///< Values of GRF parameters to show for message and custom_message
+	uint64 param_value[4]; ///< Values of GRF parameters to show for message and custom_message
 };
 
 /** The possible types of a newgrf parameter. */
