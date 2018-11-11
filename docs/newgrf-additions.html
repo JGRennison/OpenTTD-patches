@@ -114,14 +114,15 @@
 	Note that even when using fallback mode 0, above, if the property mapping feature is not present, then use of the mapped property ID in an Action 0 is an error.
 	</p>
 	<h4>Format of remapped properties</h4>
-	All properties which are mapped by the mechanism have the format:
+	All properties which are mapped by this mechanism have the format:
 	<table>
 	<tr><th>Size</th><th>Name</th><th>Meaning</th></tr>
 	<tr><td>B*</td><td>num</td><td>Size of the data in bytes</td></tr>
 	<tr><td>V</td><td>data</td><td>Property data</td></tr>
 	</table>
 	Note that num is an extended byte, see <a href="https://newgrf-specs.tt-wiki.net/wiki/GRFActionsDetailed">GRFActionsDetailed</a>.<br />
-	If the size of the data does provided is not valid for the given property, the attempt to set the property MAY be ignored or partially applied.
+	If the size of the data does provided is not valid for the given property, the attempt to set the property MAY be ignored or partially applied.<br />
+	Note that each use of the mapped property ID is followed by Num-info iterations of the size and data pair above. See: <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0">Action 0 Specification</a>.
 	<h4>Example NFO:</h4>
 	<pre>
 // Map station property "sample_station_property" to property id 0xF8, and set bit 4 of global variable 0x8D if successful
