@@ -2105,6 +2105,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 				break;
 
 			case 0x1B: // Minimum height for a bridge above
+			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
 				SetBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET);
 				for (uint i = 0; i < 8; i++) {
 					statspec->bridge_height[i] = buf->ReadByte();
@@ -2262,6 +2263,7 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, ByteR
 				break;
 
 			case 0x14: // purchase sprite
+			case A0RPI_BRIDGE_MENU_ICON:
 				bridge->sprite = buf->ReadWord();
 				bridge->pal    = buf->ReadWord();
 				break;
@@ -8062,6 +8064,8 @@ static bool HandleFeatureTestInfo(ByteReader *buf)
 
 /** Action14 Action0 remappable property list */
 static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
+	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_MIN_BRIDGE_HEIGHT, "station_min_bridge_height", 8),
+	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_MENU_ICON, "bridge_menu_icon", 4),
 	GRFPropertyMapDefinition(),
 };
 
