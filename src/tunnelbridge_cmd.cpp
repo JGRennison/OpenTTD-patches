@@ -65,6 +65,8 @@ extern void DrawTrackBits(TileInfo *ti, TrackBits track);
 extern void DrawRoadBits(TileInfo *ti);
 extern const RoadBits _invalid_tileh_slopes_road[2][15];
 
+extern bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height);
+
 /**
  * Mark bridge tiles dirty.
  * Note: The bridge does not need to exist, everything is passed via parameters.
@@ -497,16 +499,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 
 						case STATION_RAIL:
 						case STATION_WAYPOINT: {
-							const StationSpec *statspec = GetStationSpec(tile);
-							if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
-								uint layout = GetStationGfx (tile);
-								assert(layout < 8);
-								if (GetTileMaxZ(tile) + statspec->bridge_height[layout] > z_start + 1) goto not_valid_below;
-							} else if (!statspec) {
-								// default stations/waypoints
-								const int height = GetStationGfx(tile) < 4 ? 2 : 5;
-								if (GetTileMaxZ(tile) + height > z_start + 1) goto not_valid_below;
-							} else if (!_settings_game.construction.allow_stations_under_bridges) {
+							if (!IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), GetStationGfx(tile), tile_start, tile_end, z_start + 1)) {
 								goto not_valid_below;
 							}
 							break;

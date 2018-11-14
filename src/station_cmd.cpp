@@ -775,20 +775,28 @@ CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z
 	return cost;
 }
 
-bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout)
+bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height)
 {
 	assert(layout < 8);
-	if (!IsBridgeAbove(tile)) return true;
 
 	if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
-		return (GetTileMaxZ(tile) + statspec->bridge_height[layout] <= GetBridgeHeight(GetSouthernBridgeEnd(tile)));
+		return (GetTileMaxZ(tile) + statspec->bridge_height[layout] <= bridge_height);
 	} else if (!statspec) {
 		// default stations/waypoints
 		const int height = layout < 4 ? 2 : 5;
-		return (GetTileMaxZ(tile) + height <= GetBridgeHeight(GetSouthernBridgeEnd(tile)));
+		return (GetTileMaxZ(tile) + height <= bridge_height);
 	} else {
 		return _settings_game.construction.allow_stations_under_bridges;
 	}
+}
+
+bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout)
+{
+	if (!IsBridgeAbove(tile)) return true;
+
+	TileIndex southern_bridge_end = GetSouthernBridgeEnd(tile);
+	TileIndex northern_bridge_end = GetNorthernBridgeEnd(tile);
+	return IsRailStationBridgeAboveOk(tile, statspec, layout, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end));
 }
 
 /**
