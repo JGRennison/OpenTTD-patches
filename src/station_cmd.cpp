@@ -782,6 +782,10 @@ bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byt
 
 	if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
 		return (GetTileMaxZ(tile) + statspec->bridge_height[layout] <= GetBridgeHeight(GetSouthernBridgeEnd(tile)));
+	} else if (!statspec) {
+		// default stations/waypoints
+		const int height = layout < 4 ? 2 : 5;
+		return (GetTileMaxZ(tile) + height <= GetBridgeHeight(GetSouthernBridgeEnd(tile)));
 	} else {
 		return _settings_game.construction.allow_stations_under_bridges;
 	}

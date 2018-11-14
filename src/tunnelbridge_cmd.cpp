@@ -502,6 +502,10 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 								uint layout = GetStationGfx (tile);
 								assert(layout < 8);
 								if (GetTileMaxZ(tile) + statspec->bridge_height[layout] > z_start + 1) goto not_valid_below;
+							} else if (!statspec) {
+								// default stations/waypoints
+								const int height = GetStationGfx(tile) < 4 ? 2 : 5;
+								if (GetTileMaxZ(tile) + height > z_start + 1) goto not_valid_below;
 							} else if (!_settings_game.construction.allow_stations_under_bridges) {
 								goto not_valid_below;
 							}
