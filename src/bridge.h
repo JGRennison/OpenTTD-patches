@@ -38,6 +38,27 @@ static const uint MAX_BRIDGES = 16; ///< Number of available bridge specs.
 typedef uint BridgeType; ///< Bridge spec number.
 
 /**
+ * Actions that can be performed when the vehicle enters the depot.
+ */
+enum BridgePiecePillarFlags {
+	BPPF_CORNER_W        = 1 << 0,
+	BPPF_CORNER_S        = 1 << 1,
+	BPPF_CORNER_E        = 1 << 2,
+	BPPF_CORNER_N        = 1 << 3,
+	BPPF_ALL_CORNERS     = 0xF,
+	BPPF_EDGE_NE         = 1 << 4,
+	BPPF_EDGE_SE         = 1 << 5,
+	BPPF_EDGE_SW         = 1 << 6,
+	BPPF_EDGE_NW         = 1 << 7,
+};
+DECLARE_ENUM_AS_BIT_SET(BridgePiecePillarFlags)
+
+enum BridgeSpecCtrlFlags {
+	BSCF_CUSTOM_PILLAR_FLAGS,
+	BSCF_INVALID_PILLAR_FLAGS,
+};
+
+/**
  * Struct containing information about a single bridge type
  */
 struct BridgeSpec {
@@ -52,6 +73,8 @@ struct BridgeSpec {
 	StringID transport_name[2];  ///< description of the bridge, when built for road or rail
 	PalSpriteID **sprite_table;  ///< table of sprites for drawing the bridge
 	byte flags;                  ///< bit 0 set: disable drawing of far pillars.
+	byte ctrl_flags;             ///< control flags
+	byte pillar_flags[12];       ///< bridge pillar flags: 6 x pairs of x and y flags
 };
 
 extern BridgeSpec _bridge[MAX_BRIDGES];
@@ -74,6 +97,7 @@ void DrawBridgeMiddle(const TileInfo *ti);
 
 CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoCommandFlag flags = DC_NONE);
 int CalcBridgeLenCostFactor(int x);
+BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, BridgeType bridge_type, TransportType bridge_transport_type);
 
 void ResetBridges();
 

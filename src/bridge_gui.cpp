@@ -390,15 +390,19 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 		return;
 	}
 
-	/* only query bridge building possibility once, result is the same for all bridges!
+	/* only query bridge building possibility once, result is the same for all bridges,
+	 * unless the result is bridge too low for station or pillars obstruct station, in which case it is bridge-type dependent.
 	 * returns CMD_ERROR on failure, and price on success */
 	StringID errmsg = INVALID_STRING_ID;
 	CommandCost ret = DoCommand(end, start, type, CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)) | DC_QUERY_COST, CMD_BUILD_BRIDGE);
 
+	const bool query_per_bridge_type = ret.Failed() && (ret.GetErrorMessage() == STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION || ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION);
+
 	GUIBridgeList *bl = NULL;
 	if (ret.Failed()) {
 		errmsg = ret.GetErrorMessage();
-	} else {
+	}
+	if (ret.Succeeded() || query_per_bridge_type) {
 		/* check which bridges can be built */
 		const uint tot_bridgedata_len = CalcBridgeLenCostFactor(bridge_len + 2);
 
@@ -418,6 +422,8 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 		/* loop for all bridgetypes */
 		for (BridgeType brd_type = 0; brd_type != MAX_BRIDGES; brd_type++) {
 			if (CheckBridgeAvailability(brd_type, bridge_len).Succeeded()) {
+				/* Re-check bridge building possibility is initial bridge builindg query indicated a bridge type dependent failure */
+				if (query_per_bridge_type && DoCommand(end, start, type | brd_type, CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)) | DC_QUERY_COST, CMD_BUILD_BRIDGE).Failed()) continue;
 				/* bridge is accepted, add to list */
 				BuildBridgeData *item = bl->Append();
 				item->index = brd_type;

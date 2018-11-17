@@ -139,7 +139,7 @@ static CommandCost IsValidTileForWaypoint(TileIndex tile, Axis axis, StationID *
 extern void GetStationLayout(byte *layout, int numtracks, int plat_len, const StationSpec *statspec);
 extern CommandCost FindJoiningWaypoint(StationID existing_station, StationID station_to_join, bool adjacent, TileArea ta, Waypoint **wp);
 extern CommandCost CanExpandRailStation(const BaseStation *st, TileArea &new_ta, Axis axis);
-extern bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout);
+extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout);
 
 /**
  * Convert existing rail to waypoint. Eg build a waypoint station over
@@ -205,7 +205,10 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		TileIndex tile = start_tile + i * offset;
 		CommandCost ret = IsValidTileForWaypoint(tile, axis, &est);
 		if (ret.Failed()) return ret;
-		if (!IsRailStationBridgeAboveOk(tile, spec, layout_ptr[i])) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+		ret = IsRailStationBridgeAboveOk(tile, spec, layout_ptr[i]);
+		if (ret.Failed()) {
+			return CommandCost::DualErrorMessage(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST, ret.GetErrorMessage());
+		}
 	}
 
 	Waypoint *wp = NULL;

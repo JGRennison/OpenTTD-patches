@@ -114,6 +114,7 @@ enum StationRandomTrigger {
 enum StationSpecIntlFlags {
 	SSIF_COPIED_LAYOUTS,      ///< Copied StationLayout **layouts.
 	SSIF_BRIDGE_HEIGHTS_SET,  ///< byte bridge_height[8] is set.
+	SSIF_BRIDGE_DISALLOWED_PILLARS_SET, ///< byte bridge_disallowed_pillars[8] is set.
 };
 
 /* Station layout for given dimensions - it is a two-dimensional array
@@ -170,6 +171,7 @@ struct StationSpec {
 	byte wires;   ///< Bitmask of base tiles (0 - 7) which should contain elrail wires
 	byte blocked; ///< Bitmask of base tiles (0 - 7) which are blocked to trains
 	byte bridge_height[8]; ///< Minimum height for a bridge above, 0 for none
+	byte bridge_disallowed_pillars[8]; ///< Disallowed pillar flags for a bridge above
 
 	AnimationInfo animation;
 

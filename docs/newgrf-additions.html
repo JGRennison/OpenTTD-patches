@@ -144,9 +144,35 @@
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations">Action 0 - Stations</a></h3>
 	<h4><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Minimum_bridge_height_.281B.29">Minimum bridge height (1B, or mappable property: station_min_bridge_height)</a></h4>
 	<p>This is indicated by the feature name: <font face="monospace">action0_station_prop1B</font>, version 1</p>
+	<h4>Disallowed bridge pillars (mappable property: station_disallowed_bridge_pillars)</h4>
+	<p>This property describes which bridge pillars are not allowed on the station tile.<br />
+	It consists of 8 pillar flags, for each of the 8 station layouts.<br />
+	Each set of flags is 1 byte, the total property length is 8 bytes.<br />
+	Each set of flags has the format described in the bridge_pillar_flags property section, below.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_station_disallowed_bridge_pillars</font>, version 1</p>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Bridges">Action 0 - Bridges</a></h3>
 	<h4>Menu icons (14, or mappable property: bridge_menu_icon)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">action0_bridge_prop14</font>, version 1</p>
+	<h4>Bridge pillars (mappable property: bridge_pillar_flags)</h4>
+	<p>This property describes the pillars present for each bridge sprite table.<br />
+	It consists of 6 pairs of pillar flags, for bridge sprite tables 0 - 5.<br />
+	Each pair consists of: X direction flags, Y direction flags<br />
+	Each set of flags is 1 byte, the total property length is 12 bytes.<br />
+	Each set of flags has the format:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>Pillar is present in west corner</td></tr>
+	<tr><td>1</td><td>2</td><td>Pillar is present in south corner</td></tr>
+	<tr><td>2</td><td>4</td><td>Pillar is present in east corner</td></tr>
+	<tr><td>3</td><td>8</td><td>Pillar is present in north corner</td></tr>
+	<tr><td>4</td><td>10</td><td>Pillar is present along entire north-east edge</td></tr>
+	<tr><td>5</td><td>20</td><td>Pillar is present along entire south-east edge</td></tr>
+	<tr><td>6</td><td>40</td><td>Pillar is present along entire south-west edge</td></tr>
+	<tr><td>7</td><td>80</td><td>Pillar is present along entire north-west edge</td></tr>
+	</table>
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_bridge_pillar_flags</font>, version 1</p>
 	<h4>More bridges (16 instead of 13)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">more_bridge_types</font>, version 1</p>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>

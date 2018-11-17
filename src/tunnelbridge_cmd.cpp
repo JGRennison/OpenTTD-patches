@@ -65,7 +65,8 @@ extern void DrawTrackBits(TileInfo *ti, TrackBits track);
 extern void DrawRoadBits(TileInfo *ti);
 extern const RoadBits _invalid_tileh_slopes_road[2][15];
 
-extern bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height);
+extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
+		BridgeType bridge_type, TransportType bridge_transport_type);
 
 /**
  * Mark bridge tiles dirty.
@@ -499,7 +500,9 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 
 						case STATION_RAIL:
 						case STATION_WAYPOINT: {
-							if (!IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), GetStationGfx(tile), tile_start, tile_end, z_start + 1)) {
+							CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), GetStationGfx(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+							if (ret.Failed()) {
+								if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 								goto not_valid_below;
 							}
 							break;
@@ -1798,6 +1801,34 @@ static BridgePieces CalcBridgePiece(uint north, uint south)
 		return south & 1 ? BRIDGE_PIECE_INNER_NORTH : BRIDGE_PIECE_INNER_SOUTH;
 	} else {
 		return north & 1 ? BRIDGE_PIECE_MIDDLE_EVEN : BRIDGE_PIECE_MIDDLE_ODD;
+	}
+}
+
+BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, BridgeType bridge_type, TransportType bridge_transport_type)
+{
+	if (bridge_transport_type == TRANSPORT_WATER) return BPPF_ALL_CORNERS;
+
+	BridgePieces piece = CalcBridgePiece(
+		GetTunnelBridgeLength(tile, northern_bridge_end) + 1,
+		GetTunnelBridgeLength(tile, southern_bridge_end) + 1
+	);
+	assert(piece < BRIDGE_PIECE_HEAD);
+
+	const BridgeSpec *spec = GetBridgeSpec(bridge_type);
+	const Axis axis = TileX(northern_bridge_end) == TileX(southern_bridge_end) ? AXIS_Y : AXIS_X;
+	if (!HasBit(spec->ctrl_flags, BSCF_INVALID_PILLAR_FLAGS)) {
+		return (BridgePiecePillarFlags) spec->pillar_flags[piece * 2 + (axis == AXIS_Y ? 1 : 0)];
+	} else {
+		uint base_offset;
+		if (bridge_transport_type == TRANSPORT_RAIL) {
+			base_offset = GetRailTypeInfo(GetRailType(southern_bridge_end))->bridge_offset;
+		} else {
+			base_offset = 8;
+		}
+
+		const PalSpriteID *psid = base_offset + GetBridgeSpriteTable(bridge_type, piece);
+		if (axis == AXIS_Y) psid += 4;
+		return (BridgePiecePillarFlags) (psid[2].sprite != 0 ? BPPF_ALL_CORNERS : 0);
 	}
 }
 

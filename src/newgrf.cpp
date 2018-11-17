@@ -2126,6 +2126,14 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				}
 				break;
 
+			case A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS:
+				if (MappedPropertyLengthMismatch(buf, 8, mapping_entry)) break;
+				SetBit(statspec->internal_flags, SSIF_BRIDGE_DISALLOWED_PILLARS_SET);
+				for (uint i = 0; i < 8; i++) {
+					statspec->bridge_disallowed_pillars[i] = buf->ReadByte();
+				}
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -2248,6 +2256,7 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 						MapSpriteMappingRecolour(&bridge->sprite_table[tableid][sprite]);
 					}
 				}
+				if (!HasBit(bridge->ctrl_flags, BSCF_CUSTOM_PILLAR_FLAGS)) SetBit(bridge->ctrl_flags, BSCF_INVALID_PILLAR_FLAGS);
 				break;
 			}
 
@@ -2282,6 +2291,15 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 			case 0x14: // purchase sprite
 				bridge->sprite = buf->ReadWord();
 				bridge->pal    = buf->ReadWord();
+				break;
+
+			case A0RPI_BRIDGE_PILLAR_FLAGS:
+				if (MappedPropertyLengthMismatch(buf, 12, mapping_entry)) break;
+				for (uint i = 0; i < 12; i++) {
+					bridge->pillar_flags[i] = buf->ReadByte();
+				}
+				ClrBit(bridge->ctrl_flags, BSCF_INVALID_PILLAR_FLAGS);
+				SetBit(bridge->ctrl_flags, BSCF_CUSTOM_PILLAR_FLAGS);
 				break;
 
 			default:
@@ -7962,9 +7980,11 @@ static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("feature_test", 1),
 	GRFFeatureInfo("property_mapping", 1),
 	GRFFeatureInfo("action0_station_prop1B", 1),
+	GRFFeatureInfo("action0_station_disallowed_bridge_pillars", 1),
 	GRFFeatureInfo("varaction2_station_var42", 1),
 	GRFFeatureInfo("more_bridge_types", 1),
 	GRFFeatureInfo("action0_bridge_prop14", 1),
+	GRFFeatureInfo("action0_bridge_pillar_flags", 1),
 	GRFFeatureInfo(),
 };
 
@@ -8077,7 +8097,9 @@ static bool HandleFeatureTestInfo(ByteReader *buf)
 /** Action14 Action0 remappable property list */
 static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_MIN_BRIDGE_HEIGHT, "station_min_bridge_height"),
+	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS, "station_disallowed_bridge_pillars"),
 	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_MENU_ICON, "bridge_menu_icon"),
+	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_PILLAR_FLAGS, "bridge_pillar_flags"),
 	GRFPropertyMapDefinition(),
 };
 

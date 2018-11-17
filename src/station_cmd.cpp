@@ -775,28 +775,56 @@ CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z
 	return cost;
 }
 
-bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height)
+CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
+		BridgeType bridge_type, TransportType bridge_transport_type)
 {
 	assert(layout < 8);
 
 	if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
-		return (GetTileMaxZ(tile) + statspec->bridge_height[layout] <= bridge_height);
+		if (statspec->bridge_height[layout] == 0) return CommandCost(INVALID_STRING_ID);
+		if (GetTileMaxZ(tile) + statspec->bridge_height[layout] > bridge_height) {
+			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
+		}
 	} else if (!statspec) {
 		// default stations/waypoints
 		const int height = layout < 4 ? 2 : 5;
-		return (GetTileMaxZ(tile) + height <= bridge_height);
+		if (GetTileMaxZ(tile) + height > bridge_height) return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
 	} else {
-		return _settings_game.construction.allow_stations_under_bridges;
+		if (!_settings_game.construction.allow_stations_under_bridges) return CommandCost(INVALID_STRING_ID);
+	}
+
+	BridgePiecePillarFlags disallowed_pillar_flags;
+	if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_DISALLOWED_PILLARS_SET)) {
+		// pillar flags set by NewGRF
+		disallowed_pillar_flags = (BridgePiecePillarFlags) statspec->bridge_height[layout];
+	} else if (!statspec) {
+		// default stations/waypoints
+		static const uint8 st_flags[8] = { 0x50, 0xA0, 0x50, 0xA0, 0x50 | 0x26, 0xA0 | 0x1C, 0x50 | 0x89, 0xA0 | 0x43 };
+		disallowed_pillar_flags = (BridgePiecePillarFlags) st_flags[layout];
+	} else if (HasBit(statspec->blocked, layout)) {
+		// non-track station tiles
+		disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
+	} else {
+		// tracked station tiles
+		const Axis axis = HasBit(layout, 0) ? AXIS_Y : AXIS_X;
+		disallowed_pillar_flags = (BridgePiecePillarFlags) (axis == AXIS_X ? 0x50 : 0xA0);
+	}
+
+	if ((GetBridgeTilePillarFlags(tile, northern_bridge_end, southern_bridge_end, bridge_type, bridge_transport_type) & disallowed_pillar_flags) == 0) {
+		return CommandCost();
+	} else {
+		return CommandCost(STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION);
 	}
 }
 
-bool IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout)
+CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout)
 {
-	if (!IsBridgeAbove(tile)) return true;
+	if (!IsBridgeAbove(tile)) return CommandCost();
 
 	TileIndex southern_bridge_end = GetSouthernBridgeEnd(tile);
 	TileIndex northern_bridge_end = GetNorthernBridgeEnd(tile);
-	return IsRailStationBridgeAboveOk(tile, statspec, layout, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end));
+	return IsRailStationBridgeAboveOk(tile, statspec, layout, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
+			GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
 }
 
 /**
@@ -1292,7 +1320,10 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 		for (uint i = 0; i < numtracks; i++) {
 			TileIndex tile = tile_track;
 			for (uint j = 0; j < plat_len; j++) {
-				if (!IsRailStationBridgeAboveOk(tile, statspec, *check_layout_ptr++)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+				CommandCost ret = IsRailStationBridgeAboveOk(tile, statspec, *check_layout_ptr++);
+				if (ret.Failed()) {
+					return CommandCost::DualErrorMessage(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST, ret.GetErrorMessage());
+				}
 				tile += tile_delta;
 			}
 			tile_track += tile_delta ^ TileDiffXY(1, 1); // perpendicular to tile_delta
