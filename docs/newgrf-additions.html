@@ -141,8 +141,13 @@
 -1 * -1  00 04 01 01 10 F8 02 AB CD
 	</pre>
 	<br />
+
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations">Action 0 - Stations</a></h3>
 	<h4><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Minimum_bridge_height_.281B.29">Minimum bridge height (1B, or mappable property: station_min_bridge_height)</a></h4>
+	<p>This property allows building bridges over stations.<br />
+	The bridge height property defines minimum clearances required for a bridge for each of the 8 station layouts (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).<br />
+	Each height value is 1 byte, the total property length is 8 bytes.
+	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_station_prop1B</font>, version 1</p>
 	<h4>Disallowed bridge pillars (mappable property: station_disallowed_bridge_pillars)</h4>
 	<p>This property describes which bridge pillars are not allowed on the station tile.<br />
@@ -151,8 +156,33 @@
 	Each set of flags has the format described in the bridge_pillar_flags property section, below.
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_station_disallowed_bridge_pillars</font>, version 1</p>
+
+	<br />
+	The 8 station layouts are described below.
+	<table>
+		<tr><th>Station layout</th><th>Axis</th><th>Default Appearance</th></tr>
+		<tr><td>0</td><td>X</td><td>plain platform</td></tr>
+		<tr><td>1</td><td>Y</td><td>plain platform</td></tr>
+		<tr><td>2</td><td>X</td><td>platform with building</td></tr>
+		<tr><td>3</td><td>Y</td><td>platform with building</td></tr>
+		<tr><td>4</td><td>X</td><td>platform with roof, left side</td></tr>
+		<tr><td>5</td><td>Y</td><td>platform with roof, left side</td></tr>
+		<tr><td>6</td><td>X</td><td>platform with roof, right side</td></tr>
+		<tr><td>7</td><td>Y</td><td>platform with roof, right side</td></tr>
+	</table>
+	<br />
+
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Bridges">Action 0 - Bridges</a></h3>
 	<h4>Menu icons (14, or mappable property: bridge_menu_icon)</h4>
+	<p>This property sets the GUI menu icon for bridge type, this is displayed when constructing a bridge<br />
+	This has the format:
+	<table>
+		<tr><th>Size</th><th>Field</th><th>Description</th></tr>
+		<tr><td>W</td><td>Sprite</td><td>Sprite ID</td></tr>
+		<tr><td>W</td><td>Recolour</td><td>Recolour sprite/value</td></tr>
+	</table>
+	The total property length is 4 bytes.
+	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_bridge_prop14</font>, version 1</p>
 	<h4>Bridge pillars (mappable property: bridge_pillar_flags)</h4>
 	<p>This property describes the pillars present for each bridge sprite table.<br />
