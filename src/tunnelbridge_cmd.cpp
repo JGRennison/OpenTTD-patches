@@ -411,6 +411,31 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 		is_new_owner = (owner == OWNER_NONE);
 		if (is_new_owner) owner = company;
 
+		TileIndexDiff delta = (direction == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
+		for (TileIndex tile = tile_start + delta; tile != tile_end; tile += delta) {
+			if (IsTileType(tile, MP_STATION)) {
+				switch (GetStationType(tile)) {
+					case STATION_RAIL:
+					case STATION_WAYPOINT: {
+						CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), GetStationGfx(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+						if (ret.Failed()) {
+							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+							ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+							if (ret.Failed()) return ret;
+						}
+						break;
+					}
+
+					default:
+						if (!_settings_game.construction.allow_stations_under_bridges) {
+							CommandCost ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+							if (ret.Failed()) return ret;
+						}
+						break;
+				}
+			}
+		}
+
 		is_upgrade = true;
 	} else {
 		/* Build a new bridge. */
