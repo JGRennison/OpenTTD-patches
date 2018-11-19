@@ -785,7 +785,7 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
 		/* Only show the error when it's for us. */
 		StringID error_part1 = GB(cmd, 16, 16);
 		if (estimate_only || (IsLocalCompany() && error_part1 != 0 && my_cmd)) {
-			ShowErrorMessage(error_part1, res.GetErrorMessage(), WL_INFO, x, y, res.GetTextRefStackGRF(), res.GetTextRefStackSize(), res.GetTextRefStack());
+			ShowErrorMessage(error_part1, res.GetErrorMessage(), WL_INFO, x, y, res.GetTextRefStackGRF(), res.GetTextRefStackSize(), res.GetTextRefStack(), res.GetExtraErrorMessage());
 		}
 	} else if (estimate_only) {
 		ShowEstimatedCostOrIncome(res.GetCost(), x, y);
