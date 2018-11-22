@@ -2,6 +2,25 @@
 
 * * *
 
+### v0.28.0 (2018-11-22)
+* Fix trains unnecessarily slowing down when passing waypoints.
+* Template-based train replacement: Add option to replace only old vehicles.
+* Timetabling:
+  * Extend timetable wait/travel times from 16 to 32 bits wide.
+  * Fix timetabling of through-load orders.
+* Scheduled dispatch: Don't show invalid required vehicle estimate.
+* Routing restrictions:
+  * Add train is in slot conditional order.
+  * Prevent adding train slot state conditional orders to non-train vehicles.
+* Zoning:
+  * Add modes to show 2x2 and 3x3 town road grids.
+  * Fix refreshing of SW edge of station coverage area.
+* Stations under bridges:
+  * Add NewGRF properties for permitted bridge pillars above station tiles, and bridge pillars present below bridges.
+  * Set minimum bridge height clearances and permitted bridge pillars for the default stations.
+  * Set present pillars for the default bridges.
+* Bump trunk base from commit 59a1614ba0724bf5240b91d8cd2b90ff7eeb286c to commit 16a36dffa0ccd7753de0100ee320a4982bb1945c.
+
 ### v0.27.1 (2018-09-20)
 * Fix crash when changing timetable leave early flag of current order.
 * Add setting to enable flipping direction of all train types in depot.
