@@ -4604,7 +4604,7 @@ static void FeatureChangeInfo(ByteReader *buf)
 		/* GSF_RAILTYPES */     RailTypeChangeInfo,
 		/* GSF_AIRPORTTILES */  AirportTilesChangeInfo,
 	};
-	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps), "Action 0 featur elist length mismatch");
+	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps), "Action 0 feature list length mismatch");
 
 	uint8 feature  = buf->ReadByte();
 	uint8 numprops = buf->ReadByte();
