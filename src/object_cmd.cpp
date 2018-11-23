@@ -362,6 +362,60 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	return cost;
 }
 
+/**
+ * Buy a big piece of landscape
+ * @param tile end tile of area dragging
+ * @param flags of operation to conduct
+ * @param p1 start tile of area dragging
+ * @param p2 various bitstuffed data.
+ *  bit      0: Whether to use the Orthogonal (0) or Diagonal (1) iterator.
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (p1 >= MapSize()) return CMD_ERROR;
+
+	Money money = GetAvailableMoneyForCommand();
+	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost last_error = CMD_ERROR;
+	bool had_success = false;
+
+	const Company *c = Company::GetIfValid(_current_company);
+	int limit = (c == NULL ? INT32_MAX : GB(c->purchase_land_limit, 16, 16));
+
+	TileIterator *iter = HasBit(p2, 0) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1);
+	for (; *iter != INVALID_TILE; ++(*iter)) {
+		TileIndex t = *iter;
+		CommandCost ret = DoCommand(t, OBJECT_OWNED_LAND, 0, flags & ~DC_EXEC, CMD_BUILD_OBJECT);
+		if (ret.Failed()) {
+			last_error = ret;
+
+			/* We may not clear more tiles. */
+			if (c != NULL && GB(c->purchase_land_limit, 16, 16) < 1) break;
+			continue;
+		}
+
+		had_success = true;
+		if (flags & DC_EXEC) {
+			money -= ret.GetCost();
+			if (ret.GetCost() > 0 && money < 0) {
+				_additional_cash_required = ret.GetCost();
+				delete iter;
+				return cost;
+			}
+			DoCommand(t, OBJECT_OWNED_LAND, 0, flags, CMD_BUILD_OBJECT);
+		} else {
+			/* When we're at the clearing limit we better bail (unneed) testing as well. */
+			if (ret.GetCost() != 0 && --limit <= 0) break;
+		}
+		cost.AddCost(ret);
+	}
+
+	delete iter;
+	return had_success ? cost : last_error;
+}
+
 
 static Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
 

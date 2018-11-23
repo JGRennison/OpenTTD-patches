@@ -225,6 +225,7 @@ enum Commands {
 	CMD_REMOVE_SIGNALS,               ///< remove a signal
 	CMD_TERRAFORM_LAND,               ///< terraform a tile
 	CMD_BUILD_OBJECT,                 ///< build an object
+	CMD_PURCHASE_LAND_AREA,           ///< purchase an area of landscape
 	CMD_BUILD_HOUSE,                  ///< build a house
 	CMD_BUILD_TUNNEL,                 ///< build a tunnel
 

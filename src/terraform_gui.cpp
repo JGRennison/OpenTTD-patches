@@ -134,6 +134,9 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 		case DDSP_CREATE_DESERT:
 			GenerateDesertArea(end_tile, start_tile);
 			break;
+		case DDSP_BUY_LAND:
+			DoCommandP(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_PURCHASE_LAND_AREA | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_SPLAT_RAIL);
+			break;
 		default:
 			return false;
 	}
@@ -204,7 +207,7 @@ struct TerraformToolbarWindow : Window {
 				break;
 
 			case WID_TT_BUY_LAND: // Buy land button
-				HandlePlacePushButton(this, WID_TT_BUY_LAND, SPR_CURSOR_BUY_LAND, HT_RECT);
+				HandlePlacePushButton(this, WID_TT_BUY_LAND, SPR_CURSOR_BUY_LAND, HT_RECT | HT_DIAGONAL);
 				this->last_user_action = widget;
 				break;
 
@@ -250,7 +253,7 @@ struct TerraformToolbarWindow : Window {
 				break;
 
 			case WID_TT_BUY_LAND: // Buy land button
-				DoCommandP(tile, OBJECT_OWNED_LAND, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_SPLAT_RAIL);
+				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_BUY_LAND);
 				break;
 
 			case WID_TT_MEASUREMENT_TOOL:
@@ -286,6 +289,7 @@ struct TerraformToolbarWindow : Window {
 				case DDSP_RAISE_AND_LEVEL_AREA:
 				case DDSP_LOWER_AND_LEVEL_AREA:
 				case DDSP_LEVEL_AREA:
+				case DDSP_BUY_LAND:
 					GUIPlaceProcDragXY(select_proc, start_tile, end_tile);
 					break;
 				case DDSP_MEASURE:
@@ -724,6 +728,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				case DDSP_LOWER_AND_LEVEL_AREA:
 				case DDSP_LEVEL_AREA:
 				case DDSP_DEMOLISH_AREA:
+				case DDSP_BUY_LAND:
 					GUIPlaceProcDragXY(select_proc, start_tile, end_tile);
 					break;
 			}

@@ -121,6 +121,7 @@ enum ViewportDragDropSelectionProcess {
 	DDSP_BUILD_BRIDGE,         ///< Bridge placement
 	DDSP_MEASURE,              ///< Measurement tool
 	DDSP_DRAW_PLANLINE,        ///< Draw a line for a plan
+	DDSP_BUY_LAND,             ///< Purchase land
 
 	/* Rail specific actions */
 	DDSP_PLACE_RAIL,           ///< Rail placement
