@@ -305,6 +305,7 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	}
 
 	int hq_score = 0;
+	Company *c = nullptr;
 	switch (type) {
 		case OBJECT_TRANSMITTER:
 		case OBJECT_LIGHTHOUSE:
@@ -316,6 +317,10 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					IsTileOwner(tile, _current_company) &&
 					IsObjectType(tile, OBJECT_OWNED_LAND)) {
 				return_cmd_error(STR_ERROR_YOU_ALREADY_OWN_IT);
+			}
+			c = Company::GetIfValid(_current_company);
+			if (c != NULL && (int)GB(c->purchase_land_limit, 16, 16) < 1) {
+				return_cmd_error(STR_ERROR_PURCHASE_LAND_LIMIT_REACHED);
 			}
 			break;
 
@@ -349,6 +354,8 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		/* Make sure the HQ starts at the right size. */
 		if (type == OBJECT_HQ) UpdateCompanyHQ(tile, hq_score);
+
+		if (type == OBJECT_OWNED_LAND && c != NULL) c->purchase_land_limit -= 1 << 16;
 	}
 
 	cost.AddCost(ObjectSpec::Get(type)->GetBuildCost() * size_x * size_y);

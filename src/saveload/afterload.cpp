@@ -3555,6 +3555,12 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_BUY_LAND_RATE_LIMIT)) {
+		/* Introduced land purchasing limit. */
+		Company *c;
+		FOR_ALL_COMPANIES(c) c->purchase_land_limit = _settings_game.construction.purchase_land_frame_burst << 16;
+	}
+
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
 	AfterLoadLabelMaps();
