@@ -13,7 +13,7 @@
 #define SOUND_TYPE_H
 
 struct SoundEntry {
-	uint8 file_slot;
+	uint file_slot;
 	size_t file_offset;
 	size_t file_size;
 	uint16 rate;

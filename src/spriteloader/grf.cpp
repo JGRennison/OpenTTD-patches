@@ -42,7 +42,7 @@ DECLARE_ENUM_AS_BIT_SET(SpriteColourComponent)
  * @param line the line where the error occurs.
  * @return always false (to tell loading the sprite failed)
  */
-static bool WarnCorruptSprite(uint8 file_slot, size_t file_pos, int line)
+static bool WarnCorruptSprite(uint file_slot, size_t file_pos, int line)
 {
 	static byte warning_level = 0;
 	if (warning_level == 0) {
@@ -67,7 +67,7 @@ static bool WarnCorruptSprite(uint8 file_slot, size_t file_pos, int line)
  * @param container_format Container format of the GRF this sprite is in.
  * @return True if the sprite was successfully loaded.
  */
-bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_pos, SpriteType sprite_type, int64 num, byte type, ZoomLevel zoom_lvl, byte colour_fmt, byte container_format)
+bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, uint file_slot, size_t file_pos, SpriteType sprite_type, int64 num, byte type, ZoomLevel zoom_lvl, byte colour_fmt, byte container_format)
 {
 	AutoFreePtr<byte> dest_orig(MallocT<byte>(num));
 	byte *dest = dest_orig;
@@ -215,7 +215,7 @@ bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t fi
 	return true;
 }
 
-uint8 LoadSpriteV1(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_pos, SpriteType sprite_type, bool load_32bpp)
+uint8 LoadSpriteV1(SpriteLoader::Sprite *sprite, uint file_slot, size_t file_pos, SpriteType sprite_type, bool load_32bpp)
 {
 	/* Check the requested colour depth. */
 	if (load_32bpp) return 0;
@@ -251,7 +251,7 @@ uint8 LoadSpriteV1(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_po
 	return 0;
 }
 
-uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_pos, SpriteType sprite_type, bool load_32bpp)
+uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, uint file_slot, size_t file_pos, SpriteType sprite_type, bool load_32bpp)
 {
 	static const ZoomLevel zoom_lvl_map[6] = {ZOOM_LVL_OUT_4X, ZOOM_LVL_NORMAL, ZOOM_LVL_OUT_2X, ZOOM_LVL_OUT_8X, ZOOM_LVL_OUT_16X, ZOOM_LVL_OUT_32X};
 
@@ -325,7 +325,7 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_po
 	return loaded_sprites;
 }
 
-uint8 SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, uint8 file_slot, size_t file_pos, SpriteType sprite_type, bool load_32bpp)
+uint8 SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, uint file_slot, size_t file_pos, SpriteType sprite_type, bool load_32bpp)
 {
 	if (this->container_ver >= 2) {
 		return LoadSpriteV2(sprite, file_slot, file_pos, sprite_type, load_32bpp);

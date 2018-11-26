@@ -440,7 +440,7 @@ static void *ReadRecolourSprite(uint16 file_slot, uint num)
  */
 static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_type, AllocatorProc *allocator)
 {
-	uint8 file_slot = sc->file_slot;
+	uint file_slot = sc->file_slot;
 	size_t file_pos = sc->file_pos;
 
 	assert(sprite_type != ST_RECOLOUR);
@@ -852,7 +852,7 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 
 	const byte * const remap = (palette_id == PAL_NONE ? NULL : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1);
 
-	uint8 file_slot = sc->file_slot;
+	uint file_slot = sc->file_slot;
 	size_t file_pos = sc->file_pos;
 
 	SpriteLoader::Sprite sprites[ZOOM_LVL_COUNT];
