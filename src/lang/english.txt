@@ -1893,6 +1893,16 @@ STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Allow all NewGR
 STR_CONFIG_SETTING_ALLOW_STATIONS_UNDER_BRIDGES                 :Allow stations under bridges: {STRING2}
 STR_CONFIG_SETTING_ALLOW_STATIONS_UNDER_BRIDGES_HELPTEXT        :Allow stations to be built under bridges (excluding airports, and rail stations/waypoints where the required bridge clearance is set by the GRF).{}This may result in graphical issues.
 
+STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Permit purchasing land: {STRING2}
+STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Set whether companies are permitted to purchase tiles of land, and in what quantity
+
+STR_PURCHASE_LAND_PERMITTED_NO                                  :No
+STR_PURCHASE_LAND_PERMITTED_SINGLE                              :Yes, 1 tile at a time
+STR_PURCHASE_LAND_PERMITTED_AREA                                :Yes, large areas at a time
+
+STR_PURCHASE_LAND_NOT_PERMITTED                                 :Purchasing of land is not permitted
+STR_PURCHASE_LAND_NOT_PERMITTED_BULK                            :Purchasing of large areas of land is not permitted
+
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Change setting value
 
 STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Close adjacent level crossings: {STRING2}

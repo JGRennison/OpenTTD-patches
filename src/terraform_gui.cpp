@@ -179,6 +179,7 @@ struct TerraformToolbarWindow : Window {
 		/* Don't show the place object button when there are no objects to place. */
 		NWidgetStacked *show_object = this->GetWidget<NWidgetStacked>(WID_TT_SHOW_PLACE_OBJECT);
 		show_object->SetDisplayedPlane(ObjectClass::GetUIClassCount() != 0 ? 0 : SZSP_NONE);
+		SetWidgetDisabledState(WID_TT_BUY_LAND, _settings_game.construction.purchase_land_permitted == 0);
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)
@@ -253,7 +254,19 @@ struct TerraformToolbarWindow : Window {
 				break;
 
 			case WID_TT_BUY_LAND: // Buy land button
-				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_BUY_LAND);
+				switch (_settings_game.construction.purchase_land_permitted) {
+					case 0:
+					case 1:
+						DoCommandP(tile, OBJECT_OWNED_LAND, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_SPLAT_RAIL);
+						break;
+
+					case 2:
+						VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_BUY_LAND);
+						break;
+
+					default:
+						NOT_REACHED();
+				}
 				break;
 
 			case WID_TT_MEASUREMENT_TOOL:
