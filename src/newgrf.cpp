@@ -8045,14 +8045,20 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 
 /** Action14 Action0 property map action instance */
 struct GRFPropertyMapAction {
+	const char *tag_name = NULL;
+	const char *descriptor = NULL;
+
 	int feature;
 	int prop_id;
 	std::string name;
 	GRFPropertyMapFallbackMode fallback_mode;
 	uint8 ttd_ver_var_bit;
 
-	void Reset()
+	void Reset(const char *tag, const char *desc)
 	{
+		this->tag_name = tag;
+		this->descriptor = desc;
+
 		this->feature = -1;
 		this->prop_id = -1;
 		this->name.clear();
@@ -8060,18 +8066,18 @@ struct GRFPropertyMapAction {
 		this->ttd_ver_var_bit = 0;
 	}
 
-	void Execute()
+	void ExecutePropertyRemapping()
 	{
 		if (this->feature < 0) {
-			grfmsg(2, "Action 14 property remapping: no feature defined, doing nothing");
+			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->prop_id < 0) {
-			grfmsg(2, "Action 14 property remapping: no property ID defined, doing nothing");
+			grfmsg(2, "Action 14 %s remapping: no property ID defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->name.empty()) {
-			grfmsg(2, "Action 14 property remapping: no name defined, doing nothing");
+			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
 			return;
 		}
 		bool success = false;
@@ -8092,15 +8098,15 @@ struct GRFPropertyMapAction {
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
-				grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %X, mapped to: %X", str, this->feature, this->prop_id);
+				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %X, mapped to: %X", this->descriptor, str, this->feature, this->prop_id);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 				error->data = stredup(str);
 				error->param_value[1] = this->feature;
 				error->param_value[2] = this->prop_id;
 			} else {
 				const char *str_store = stredup(str);
-				grfmsg(2, "Unimplemented mapped property: %s, feature: %X, mapped to: %X, %s on use",
-						str, this->feature, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
+				grfmsg(2, "Unimplemented mapped %s: %s, feature: %X, mapped to: %X, %s on use",
+						this->descriptor, str, this->feature, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
 				*(_cur.grffile->action0_unknown_property_names.Append()) = str_store;
 				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 				entry.name = str_store;
@@ -8114,66 +8120,76 @@ struct GRFPropertyMapAction {
 
 static GRFPropertyMapAction _current_grf_property_map_action;
 
-/** Callback function for 'A0PM'->'NAME' to set the name of the property to be mapped. */
+/** Callback function for ->'NAME' to set the name of the item to be mapped. */
 static bool ChangePropertyRemapName(byte langid, const char *str)
 {
 	_current_grf_property_map_action.name = str;
 	return true;
 }
 
-/** Callback function for 'A0PM'->'FEAT' to set which feature this property mapping applies to. */
+/** Callback function for ->'FEAT' to set which feature this mapping applies to. */
 static bool ChangePropertyRemapFeature(size_t len, ByteReader *buf)
 {
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'FEAT' but got " PRINTF_SIZE ", ignoring this field", len);
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FEAT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
 		uint8 feature = buf->ReadByte();
 		if (feature >= GSF_END) {
-			grfmsg(2, "Action 14 property mapping: invalid feature ID: %u, in 'A0PM'->'FEAT', ignoring this field", feature);
+			grfmsg(2, "Action 14 %s mapping: invalid feature ID: %u, in '%s'->'FEAT', ignoring this field", action.descriptor, feature, action.tag_name);
 		} else {
-			_current_grf_property_map_action.feature = feature;
+			action.feature = feature;
 		}
 	}
 	return true;
 }
 
-/** Callback function for 'A0PM'->'PROP' to set the property ID to which this property is being mapped. */
-static bool ChangePropertyRemapPropertyId(size_t len, ByteReader *buf)
+/** Callback function for to set the property ID to which this item is being mapped. */
+static bool ChangePropertyRemapPropertyIdGeneric(size_t len, ByteReader *buf, const char *tag)
 {
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'PROP' but got " PRINTF_SIZE ", ignoring this field", len);
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'%s' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, tag, len);
 		buf->Skip(len);
 	} else {
-		_current_grf_property_map_action.prop_id = buf->ReadByte();
+		action.prop_id = buf->ReadByte();
 	}
 	return true;
 }
 
-/** Callback function for 'A0PM'->'FLBK' to set the maximum version of the feature being tested. */
+/** Callback function for ->'PROP' to set the property ID to which this item is being mapped. */
+static bool ChangePropertyRemapPropertyId(size_t len, ByteReader *buf)
+{
+	return ChangePropertyRemapPropertyIdGeneric(len, buf, "PROP");
+}
+
+/** Callback function for ->'FLBK' to set the fallback mode. */
 static bool ChangePropertyRemapSetFallbackMode(size_t len, ByteReader *buf)
 {
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'FLBK' but got " PRINTF_SIZE ", ignoring this field", len);
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FLBK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
 		GRFPropertyMapFallbackMode mode = (GRFPropertyMapFallbackMode) buf->ReadByte();
-		if (mode < GPMFM_END) _current_grf_property_map_action.fallback_mode = mode;
+		if (mode < GPMFM_END) action.fallback_mode = mode;
 	}
 	return true;
 }
-/** Callback function for 'A0PM'->'SETT' to set the bit number of global variable 8D (TTD version) to set/unset with whether the remapping was successful. */
+/** Callback function for ->'SETT' to set the bit number of global variable 8D (TTD version) to set/unset with whether the remapping was successful. */
 static bool ChangePropertyRemapSetTTDVerVarBit(size_t len, ByteReader *buf)
 {
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'SETT' but got " PRINTF_SIZE ", ignoring this field", len);
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'SETT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
 		uint8 bit_number = buf->ReadByte();
 		if (bit_number >= 4 && bit_number <= 31) {
-			_current_grf_property_map_action.ttd_ver_var_bit = bit_number;
+			action.ttd_ver_var_bit = bit_number;
 		} else {
-			grfmsg(2, "Action 14 property mapping: expected a bit number >= 4 and <= 32 for 'A0PM'->'SETT' but got %u, ignoring this field", bit_number);
+			grfmsg(2, "Action 14 %s mapping: expected a bit number >= 4 and <= 32 for '%s'->'SETT' but got %u, ignoring this field", action.descriptor, action.tag_name, bit_number);
 		}
 	}
 	return true;
@@ -8194,9 +8210,9 @@ AllowedSubtags _tags_a0pm[] = {
  */
 static bool HandleAction0PropertyMap(ByteReader *buf)
 {
-	_current_grf_property_map_action.Reset();
+	_current_grf_property_map_action.Reset("A0PM", "property");
 	HandleNodes(buf, _tags_a0pm);
-	_current_grf_property_map_action.Execute();
+	_current_grf_property_map_action.ExecutePropertyRemapping();
 	return true;
 }
 
