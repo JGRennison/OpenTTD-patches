@@ -108,11 +108,11 @@ enum Action0RemapPropertyIds {
 	A0RPI_UNKNOWN_ERROR,
 };
 
-enum Action0RemapFallbackMode {
-	A0REM_IGNORE,
-	A0REM_ERROR_ON_USE,
-	A0REM_ERROR_ON_DEFINITION,
-	A0REM_END,
+enum GRFPropertyMapFallbackMode {
+	GPMFM_IGNORE,
+	GPMFM_ERROR_ON_USE,
+	GPMFM_ERROR_ON_DEFINITION,
+	GPMFM_END,
 };
 
 struct GRFPropertyMapDefinition {

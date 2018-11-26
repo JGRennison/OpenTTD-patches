@@ -8048,7 +8048,7 @@ struct GRFPropertyMapAction {
 	int feature;
 	int prop_id;
 	std::string name;
-	Action0RemapFallbackMode fallback_mode;
+	GRFPropertyMapFallbackMode fallback_mode;
 	uint8 ttd_ver_var_bit;
 
 	void Reset()
@@ -8056,7 +8056,7 @@ struct GRFPropertyMapAction {
 		this->feature = -1;
 		this->prop_id = -1;
 		this->name.clear();
-		this->fallback_mode = A0REM_IGNORE;
+		this->fallback_mode = GPMFM_IGNORE;
 		this->ttd_ver_var_bit = 0;
 	}
 
@@ -8091,7 +8091,7 @@ struct GRFPropertyMapAction {
 			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
 		}
 		if (!success) {
-			if (this->fallback_mode == A0REM_ERROR_ON_DEFINITION) {
+			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
 				grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %X, mapped to: %X", str, this->feature, this->prop_id);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 				error->data = stredup(str);
@@ -8100,11 +8100,11 @@ struct GRFPropertyMapAction {
 			} else {
 				const char *str_store = stredup(str);
 				grfmsg(2, "Unimplemented mapped property: %s, feature: %X, mapped to: %X, %s on use",
-						str, this->feature, this->prop_id, (this->fallback_mode == A0REM_IGNORE) ? "ignoring" : "error");
+						str, this->feature, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
 				*(_cur.grffile->action0_unknown_property_names.Append()) = str_store;
 				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 				entry.name = str_store;
-				entry.id = (this->fallback_mode == A0REM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
+				entry.id = (this->fallback_mode == GPMFM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
 				entry.feature = this->feature;
 				entry.property_id = this->prop_id;
 			}
@@ -8157,8 +8157,8 @@ static bool ChangePropertyRemapSetFallbackMode(size_t len, ByteReader *buf)
 		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'FLBK' but got " PRINTF_SIZE ", ignoring this field", len);
 		buf->Skip(len);
 	} else {
-		Action0RemapFallbackMode mode = (Action0RemapFallbackMode) buf->ReadByte();
-		if (mode < A0REM_END) _current_grf_property_map_action.fallback_mode = mode;
+		GRFPropertyMapFallbackMode mode = (GRFPropertyMapFallbackMode) buf->ReadByte();
+		if (mode < GPMFM_END) _current_grf_property_map_action.fallback_mode = mode;
 	}
 	return true;
 }
