@@ -152,6 +152,55 @@ struct GRFFilePropertyRemapSet {
 	}
 };
 
+/** The type of action 5 type. */
+enum Action5BlockType {
+	A5BLOCK_FIXED,                ///< Only allow replacing a whole block of sprites. (TTDP compatible)
+	A5BLOCK_ALLOW_OFFSET,         ///< Allow replacing any subset by specifiing an offset.
+	A5BLOCK_INVALID,              ///< unknown/not-implemented type
+};
+/** Information about a single action 5 type. */
+struct Action5Type {
+	Action5BlockType block_type;  ///< How is this Action5 type processed?
+	SpriteID sprite_base;         ///< Load the sprites starting from this sprite.
+	uint16 min_sprites;           ///< If the Action5 contains less sprites, the whole block will be ignored.
+	uint16 max_sprites;           ///< If the Action5 contains more sprites, only the first max_sprites sprites will be used.
+	const char *name;             ///< Name for error messages.
+};
+
+struct Action5TypeRemapDefinition {
+	const char *name; // NULL indicates the end of the list
+	const Action5Type info;
+
+	/** Create empty object used to identify the end of a list. */
+	Action5TypeRemapDefinition() :
+		name(NULL),
+		info({ A5BLOCK_INVALID, 0, 0, 0, NULL })
+	{}
+
+	Action5TypeRemapDefinition(const char *type_name, Action5BlockType block_type, SpriteID sprite_base, uint16 min_sprites, uint16 max_sprites, const char *info_name) :
+		name(type_name),
+		info({ block_type, sprite_base, min_sprites, max_sprites, info_name })
+	{}
+};
+
+struct Action5TypeRemapEntry {
+	const Action5Type *info = nullptr;
+	const char *name = nullptr;
+	uint8 type_id = 0;
+	GRFPropertyMapFallbackMode fallback_mode = GPMFM_IGNORE;
+};
+
+struct Action5TypeRemapSet {
+	std::bitset<256> remapped_ids;
+	std::map<uint8, Action5TypeRemapEntry> mapping;
+
+	Action5TypeRemapEntry &Entry(uint8 property)
+	{
+		this->remapped_ids.set(property);
+		return this->mapping[property];
+	}
+};
+
 /** Dynamic data of a loaded NewGRF */
 struct GRFFile : ZeroedMemoryAllocator {
 	char *filename;
@@ -170,7 +219,8 @@ struct GRFFile : ZeroedMemoryAllocator {
 	struct AirportTileSpec **airtspec;
 
 	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];
-	AutoFreeSmallVector<const char *, 8> action0_unknown_property_names;
+	Action5TypeRemapSet action5_type_remaps;
+	AutoFreeSmallVector<const char *, 8> remap_unknown_property_names;
 
 	uint32 param[0x80];
 	uint param_end;  ///< one more than the highest set parameter

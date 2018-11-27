@@ -18,7 +18,7 @@
 	</style>
 </head>
 <body>
-	<h2>Additions to NewGRF Specifications in thi branch</h2>
+	<h2>Additions to NewGRF Specifications in this branch</h2>
 	<p>This document describes non-standard additions to the <a href="https://newgrf-specs.tt-wiki.net/wiki/Main_Page">Official OpenTTD NewGRF Specifications</a> which are present in this branch.
 	<p>This additions MAY also be present in other branches/repositories/etc. They MAY be removed or moved in future, if necessary.</p>
 	<p>NewGRFs which use any of these features SHOULD use the <a href="#feature-test">feature testing</a> mechanism described below to check whether individual added features are supported.</p>
@@ -72,7 +72,7 @@
 -1 * -1  07 9D 01 \70 04 01
 	</pre>
 	<br />
-	<h3 id="feature-test">Action 14 - Property Mapping for Action 0</h3>
+	<h3 id="property-mapping">Action 14 - Property Mapping for Action 0</h3>
 	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> and <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0">Action 0 Specification</a> for background information.</p>
 	<p>The property mapping mechanism has the feature name: <font face="monospace">property_mapping</font>, this document describes version 1.</p>
 	<p>Users of this mechanism SHOULD at minimum test for the presence of the feature above or test variable 8D, below.</p>
@@ -92,7 +92,7 @@
 	<h4>Property ID: C "A0PM" -> B "PROP"</h4>
 	<p>Within an A0PM chunk, the PROP binary (type B) field contains the property ID to allocate to the named property, this value can used in Action 0 sprites. This is 1 byte.<br />
 	It is possible to override existing properties, however this use is not recommended.</p>
-	<h4>Success Indicator Global Variable 0x8D Bit: C "A0PM" -> B "SETT"</h4>
+	<h4 id="SETT">Success Indicator Global Variable 0x8D Bit: C "A0PM" -> B "SETT"</h4>
 	<p>Within an A0PM chunk, the SETT binary (type B) field contains the bit number to set/clear in
 		<a href="https://newgrf-specs.tt-wiki.net/wiki/GlobalVariables">global variable</a> 0x8D (TTD version) to store whether the mapping operation was successful. This is 1 byte.<br />
 	If the operation is successful, the bit is set (to 1), otherwise the bit is cleared (to 0).<br />
@@ -100,7 +100,7 @@
 	Global variable 0x8D can then be tested by using a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/Action7">Action 7 or 9</a>, or a standard <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2</a>.<br />
 	If this field is omitted, no bit is set or cleared.
 	</p>
-	<h4>Fallback Mode: C "A0PM" -> B "FLBK"</h4>
+	<h4 id="FLBK">Fallback Mode: C "A0PM" -> B "FLBK"</h4>
 	<p>Within an A0PM chunk, the FLBK binary (type B) field contains the fallback mode. This is 1 byte.<br />
 	The fallback mode may take the following values:
 	<table>
@@ -139,6 +139,47 @@
 -1 * -1  07 8D 01 \70 04 01
 // Set sample_station_property for station ID 10 to 2 byte value: AB CD
 -1 * -1  00 04 01 01 10 F8 02 AB CD
+	</pre>
+	<br />
+	<h3 id="feature-test">Action 14 - Type ID Mapping for Action 5</h3>
+	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> and <a href="https://newgrf-specs.tt-wiki.net/wiki/Action5">Action 5 Specification</a> for background information.</p>
+	<p>The action 5 type ID mapping mechanism has the feature name: <font face="monospace">action5_type_id_mapping</font>, this document describes version 1.</p>
+	<p>Users of this mechanism SHOULD at minimum test for the presence of the feature above or test variable 8D, below.</p>
+	<h4>Action 5 type ID Mapping: C "A5TM"</h4>
+	<p>Each A5TM chunk (type C) describes an individual action 5 type ID mapping.<br />
+	Sub-chunks within each A5TM chunk may appear in any order, however except where otherwise noted each sub-chunk SHOULD only appear ONCE within an individual A5TM chunk.</p>
+	<p>Action 5 type ID mapping can be safely used on implementations which do not implement the type ID mapping mechanism if Action 5 sprites which use mapped type IDs are skipped if one or more of:
+		<ul>
+			<li>The global variable 0x8D is checked to determine whether the type ID mapping operation was successful.</li>
+			<li>The feature name <font face="monospace">action5_type_id_mapping</font> is checked for.</li>
+		</ul>
+		Unknown Action 14 blocks are ignored, and do not need to be skipped.</p>
+	<h4>Property Name: C "A5TM" -> T "NAME"</h4>
+	<p>Within an A5TM chunk, the NAME text (type T) field contains the name of the type to map. The value of the language ID byte is ignored.</p>
+	<h4>Property ID: C "A5TM" -> B "TYPE"</h4>
+	<p>Within an A5TM chunk, the TYPE binary (type B) field contains the type ID to allocate to the named type, this value can used in Action 5 sprites. This is 1 byte. The value MUST be &lt; 128 (i.e bit 7 must be clear).<br />
+	It is possible to override existing type IDs, however this use is not recommended.</p>
+	<h4>Success Indicator Global Variable 0x8D Bit: C "A5TM" -> B "SETT"</h4>
+	<p>This behaves identically to the <a href="#SETT">C "A0PM" -> B "SETT"</a> case, above</p>
+	<h4>Fallback Mode: C "A5TM" -> B "FLBK"</h4>
+	<p>This behaves identically to the <a href="#FLBK">C "A0PM" -> B "FLBK"</a> case, above</p>
+	<h4>Example NFO:</h4>
+	<pre>
+// Map action5 type "sample_action5_type" to type id 0x70, and set bit 5 of global variable 0x8D if successful
+-1 * -1 14
+	"C" "A5TM"
+		"T" "NAME" 00 "sample_action5_type" 00
+		"B" "TYPE" \w1 70
+		"B" "SETT" \w1 5
+		00
+	00
+....
+// Skip 3 sprites if bit 5 of global variable 0x8D is not set (indicating that station property sample_action5_type is NOT present)
+-1 * -1  07 8D 01 \70 05 03
+// Set 2 sprites at offset 7 into sample_action5_type
+-1 * -1  05 F0 02 07
+-1  sprites/sample.png 546 8 09 23 33 -26 0
+-1  sprites/sample.png 594 8 09 23 33 -5 0
 	</pre>
 </body>
 </html>
