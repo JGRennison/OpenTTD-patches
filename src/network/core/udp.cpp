@@ -266,7 +266,7 @@ void NetworkUDPSocketHandler::SendNetworkGameInfo(Packet *p, const NetworkGameIn
  * @param p    the packet to write the data to
  * @param info the NetworkGameInfo struct to serialize
  */
-void NetworkUDPSocketHandler::SendNetworkGameInfoExtended(Packet *p, const NetworkGameInfo *info, uint16 version)
+void NetworkUDPSocketHandler::SendNetworkGameInfoExtended(Packet *p, const NetworkGameInfo *info, uint16 flags, uint16 version)
 {
 	p->Send_uint8(0); // version num
 

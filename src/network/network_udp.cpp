@@ -225,10 +225,11 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 
 void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet *p, NetworkAddress *client_addr, NetworkGameInfo *ngi)
 {
+	uint16 flags = p->Recv_uint16();
 	uint16 version = p->Recv_uint16();
 
 	Packet packet(PACKET_UDP_EX_SERVER_RESPONSE);
-	this->SendNetworkGameInfoExtended(&packet, ngi, version);
+	this->SendNetworkGameInfoExtended(&packet, ngi, flags, version);
 
 	/* Let the client know that we are here */
 	this->SendPacket(&packet, client_addr);

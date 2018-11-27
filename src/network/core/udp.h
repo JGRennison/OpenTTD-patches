@@ -264,7 +264,7 @@ public:
 	void ReceivePackets();
 
 	void SendNetworkGameInfo(Packet *p, const NetworkGameInfo *info);
-	void SendNetworkGameInfoExtended(Packet *p, const NetworkGameInfo *info, uint16 version);
+	void SendNetworkGameInfoExtended(Packet *p, const NetworkGameInfo *info, uint16 flags, uint16 version);
 	void ReceiveNetworkGameInfo(Packet *p, NetworkGameInfo *info);
 	void ReceiveNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info);
 };
