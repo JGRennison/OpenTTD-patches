@@ -7992,6 +7992,7 @@ static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("more_bridge_types", 1),
 	GRFFeatureInfo("action0_bridge_prop14", 1),
 	GRFFeatureInfo("action0_bridge_pillar_flags", 1),
+	GRFFeatureInfo("action5_programmable_signals", 1),
 	GRFFeatureInfo(),
 };
 
@@ -8112,6 +8113,7 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 
 /** Action14 Action5 remappable type list */
 static const Action5TypeRemapDefinition _grf_action5_remappable_types[] = {
+	Action5TypeRemapDefinition("programmable_signals", A5BLOCK_ALLOW_OFFSET, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable signal graphics"),
 	Action5TypeRemapDefinition(),
 };
 
