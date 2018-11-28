@@ -3482,6 +3482,7 @@ STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :Loading {1:RAW_
 STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :Unexpected sprite (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :Unknown Action 0 property {4:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :Unimplemented remapped Action 0 property feature: {4:HEX}, name: {2:RAW_STRING}, mapped to: {5:HEX} (sprite {3:NUM})
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :Unimplemented remapped Action 5 type: name: {2:RAW_STRING}, mapped to: {4:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_INVALID_ID                                     :Attempt to use invalid ID (sprite {3:NUM})
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{RAW_STRING} contains a corrupt sprite. All corrupt sprites will be shown as a red question mark (?)
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contains multiple Action 8 entries (sprite {3:NUM})

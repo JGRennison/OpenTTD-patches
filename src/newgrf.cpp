@@ -5855,22 +5855,6 @@ static uint16 SanitizeSpriteOffset(uint16& num, uint16 offset, int max_sprites, 
 	return 0;
 }
 
-
-/** The type of action 5 type. */
-enum Action5BlockType {
-	A5BLOCK_FIXED,                ///< Only allow replacing a whole block of sprites. (TTDP compatible)
-	A5BLOCK_ALLOW_OFFSET,         ///< Allow replacing any subset by specifiing an offset.
-	A5BLOCK_INVALID,              ///< unknown/not-implemented type
-};
-/** Information about a single action 5 type. */
-struct Action5Type {
-	Action5BlockType block_type;  ///< How is this Action5 type processed?
-	SpriteID sprite_base;         ///< Load the sprites starting from this sprite.
-	uint16 min_sprites;           ///< If the Action5 contains less sprites, the whole block will be ignored.
-	uint16 max_sprites;           ///< If the Action5 contains more sprites, only the first max_sprites sprites will be used.
-	const char *name;             ///< Name for error messages.
-};
-
 /** The information about action 5 types. */
 static const Action5Type _action5_types[] = {
 	/* Note: min_sprites should not be changed. Therefore these constants are directly here and not in sprites.h */
@@ -5916,32 +5900,54 @@ static void GraphicsNew(ByteReader *buf)
 	uint16 offset = HasBit(type, 7) ? buf->ReadExtendedByte() : 0;
 	ClrBit(type, 7); // Clear the high bit as that only indicates whether there is an offset.
 
-	if ((type == 0x0D) && (num == 10) && HasBit(_cur.grfconfig->flags, GCF_SYSTEM)) {
-		/* Special not-TTDP-compatible case used in openttd.grf
-		 * Missing shore sprites and initialisation of SPR_SHORE_BASE */
-		grfmsg(2, "GraphicsNew: Loading 10 missing shore sprites from extra grf.");
-		LoadNextSprite(SPR_SHORE_BASE +  0, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_S
-		LoadNextSprite(SPR_SHORE_BASE +  5, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_W
-		LoadNextSprite(SPR_SHORE_BASE +  7, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_WSE
-		LoadNextSprite(SPR_SHORE_BASE + 10, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_N
-		LoadNextSprite(SPR_SHORE_BASE + 11, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_NWS
-		LoadNextSprite(SPR_SHORE_BASE + 13, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_ENW
-		LoadNextSprite(SPR_SHORE_BASE + 14, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_SEN
-		LoadNextSprite(SPR_SHORE_BASE + 15, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_E
-		LoadNextSprite(SPR_SHORE_BASE + 16, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_EW
-		LoadNextSprite(SPR_SHORE_BASE + 17, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_NS
-		if (_loaded_newgrf_features.shore == SHORE_REPLACE_NONE) _loaded_newgrf_features.shore = SHORE_REPLACE_ONLY_NEW;
-		return;
-	}
+	const Action5Type *action5_type;
+	const Action5TypeRemapSet &remap = _cur.grffile->action5_type_remaps;
+	if (remap.remapped_ids[type]) {
+		auto iter = remap.mapping.find(type);
+		assert(iter != remap.mapping.end());
+		const Action5TypeRemapEntry &def = iter->second;
+		if (def.info == nullptr) {
+			if (def.fallback_mode == GPMFM_ERROR_ON_USE) {
+				grfmsg(0, "Error: Unimplemented action 5 type: %s, mapped to: %X", def.name, type);
+				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE);
+				error->data = stredup(def.name);
+				error->param_value[1] = type;
+			} else if (def.fallback_mode == GPMFM_IGNORE) {
+				grfmsg(2, "Ignoring unimplemented action 5 type: %s, mapped to: %X", def.name, type);
+			}
+			_cur.skip_sprites = num;
+			return;
+		} else {
+			action5_type = def.info;
+		}
+	} else {
+		if ((type == 0x0D) && (num == 10) && HasBit(_cur.grfconfig->flags, GCF_SYSTEM)) {
+			/* Special not-TTDP-compatible case used in openttd.grf
+			 * Missing shore sprites and initialisation of SPR_SHORE_BASE */
+			grfmsg(2, "GraphicsNew: Loading 10 missing shore sprites from extra grf.");
+			LoadNextSprite(SPR_SHORE_BASE +  0, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_S
+			LoadNextSprite(SPR_SHORE_BASE +  5, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_W
+			LoadNextSprite(SPR_SHORE_BASE +  7, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_WSE
+			LoadNextSprite(SPR_SHORE_BASE + 10, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_N
+			LoadNextSprite(SPR_SHORE_BASE + 11, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_NWS
+			LoadNextSprite(SPR_SHORE_BASE + 13, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_ENW
+			LoadNextSprite(SPR_SHORE_BASE + 14, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_SEN
+			LoadNextSprite(SPR_SHORE_BASE + 15, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_STEEP_E
+			LoadNextSprite(SPR_SHORE_BASE + 16, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_EW
+			LoadNextSprite(SPR_SHORE_BASE + 17, _cur.file_index, _cur.nfo_line++, _cur.grf_container_ver); // SLOPE_NS
+			if (_loaded_newgrf_features.shore == SHORE_REPLACE_NONE) _loaded_newgrf_features.shore = SHORE_REPLACE_ONLY_NEW;
+			return;
+		}
 
-	/* Supported type? */
-	if ((type >= lengthof(_action5_types)) || (_action5_types[type].block_type == A5BLOCK_INVALID)) {
-		grfmsg(2, "GraphicsNew: Custom graphics (type 0x%02X) sprite block of length %u (unimplemented, ignoring)", type, num);
-		_cur.skip_sprites = num;
-		return;
-	}
+		/* Supported type? */
+		if ((type >= lengthof(_action5_types)) || (_action5_types[type].block_type == A5BLOCK_INVALID)) {
+			grfmsg(2, "GraphicsNew: Custom graphics (type 0x%02X) sprite block of length %u (unimplemented, ignoring)", type, num);
+			_cur.skip_sprites = num;
+			return;
+		}
 
-	const Action5Type *action5_type = &_action5_types[type];
+		action5_type = &_action5_types[type];
+	}
 
 	/* Contrary to TTDP we allow always to specify too few sprites as we allow always an offset,
 	 * except for the long version of the shore type:
@@ -7979,6 +7985,7 @@ struct GRFFeatureInfo {
 static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("feature_test", 1),
 	GRFFeatureInfo("property_mapping", 1),
+	GRFFeatureInfo("action5_type_id_mapping", 1),
 	GRFFeatureInfo("action0_station_prop1B", 1),
 	GRFFeatureInfo("action0_station_disallowed_bridge_pillars", 1),
 	GRFFeatureInfo("varaction2_station_var42", 1),
@@ -8103,35 +8110,46 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(),
 };
 
+/** Action14 Action5 remappable type list */
+static const Action5TypeRemapDefinition _grf_action5_remappable_types[] = {
+	Action5TypeRemapDefinition(),
+};
+
 /** Action14 Action0 property map action instance */
 struct GRFPropertyMapAction {
+	const char *tag_name = NULL;
+	const char *descriptor = NULL;
+
 	int feature;
 	int prop_id;
 	std::string name;
-	Action0RemapFallbackMode fallback_mode;
+	GRFPropertyMapFallbackMode fallback_mode;
 	uint8 ttd_ver_var_bit;
 
-	void Reset()
+	void Reset(const char *tag, const char *desc)
 	{
+		this->tag_name = tag;
+		this->descriptor = desc;
+
 		this->feature = -1;
 		this->prop_id = -1;
 		this->name.clear();
-		this->fallback_mode = A0REM_IGNORE;
+		this->fallback_mode = GPMFM_IGNORE;
 		this->ttd_ver_var_bit = 0;
 	}
 
-	void Execute()
+	void ExecutePropertyRemapping()
 	{
 		if (this->feature < 0) {
-			grfmsg(2, "Action 14 property remapping: no feature defined, doing nothing");
+			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->prop_id < 0) {
-			grfmsg(2, "Action 14 property remapping: no property ID defined, doing nothing");
+			grfmsg(2, "Action 14 %s remapping: no property ID defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->name.empty()) {
-			grfmsg(2, "Action 14 property remapping: no name defined, doing nothing");
+			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
 			return;
 		}
 		bool success = false;
@@ -8151,22 +8169,67 @@ struct GRFPropertyMapAction {
 			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
 		}
 		if (!success) {
-			if (this->fallback_mode == A0REM_ERROR_ON_DEFINITION) {
-				grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %X, mapped to: %X", str, this->feature, this->prop_id);
+			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
+				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %X, mapped to: %X", this->descriptor, str, this->feature, this->prop_id);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 				error->data = stredup(str);
 				error->param_value[1] = this->feature;
 				error->param_value[2] = this->prop_id;
 			} else {
 				const char *str_store = stredup(str);
-				grfmsg(2, "Unimplemented mapped property: %s, feature: %X, mapped to: %X, %s on use",
-						str, this->feature, this->prop_id, (this->fallback_mode == A0REM_IGNORE) ? "ignoring" : "error");
-				*(_cur.grffile->action0_unknown_property_names.Append()) = str_store;
+				grfmsg(2, "Unimplemented mapped %s: %s, feature: %X, mapped to: %X, %s on use",
+						this->descriptor, str, this->feature, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
+				*(_cur.grffile->remap_unknown_property_names.Append()) = str_store;
 				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 				entry.name = str_store;
-				entry.id = (this->fallback_mode == A0REM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
+				entry.id = (this->fallback_mode == GPMFM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
 				entry.feature = this->feature;
 				entry.property_id = this->prop_id;
+			}
+		}
+	}
+
+	void ExecuteAction5TypeRemapping()
+	{
+		if (this->prop_id < 0) {
+			grfmsg(2, "Action 14 %s remapping: no type ID defined, doing nothing", this->descriptor);
+			return;
+		}
+		if (this->name.empty()) {
+			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			return;
+		}
+		bool success = false;
+		const char *str = this->name.c_str();
+		for (const Action5TypeRemapDefinition *info = _grf_action5_remappable_types; info->name != NULL; info++) {
+			if (strcmp(info->name, str) == 0) {
+				Action5TypeRemapEntry &entry = _cur.grffile->action5_type_remaps.Entry(this->prop_id);
+				entry.name = info->name;
+				entry.info = &(info->info);
+				entry.type_id = this->prop_id;
+				success = true;
+				break;
+			}
+		}
+		if (this->ttd_ver_var_bit > 0) {
+			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+		}
+		if (!success) {
+			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
+				grfmsg(0, "Error: Unimplemented mapped %s: %s, mapped to: %X", this->descriptor, str, this->prop_id);
+				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE);
+				error->data = stredup(str);
+				error->param_value[1] = this->prop_id;
+			} else {
+				const char *str_store = stredup(str);
+				grfmsg(2, "Unimplemented mapped %s: %s, mapped to: %X, %s on use",
+						this->descriptor, str, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
+				*(_cur.grffile->remap_unknown_property_names.Append()) = str_store;
+				Action5TypeRemapEntry &entry = _cur.grffile->action5_type_remaps.Entry(this->prop_id);
+				entry.name = str_store;
+				entry.info = nullptr;
+				entry.type_id = this->prop_id;
+				entry.fallback_mode = this->fallback_mode;
 			}
 		}
 	}
@@ -8174,66 +8237,88 @@ struct GRFPropertyMapAction {
 
 static GRFPropertyMapAction _current_grf_property_map_action;
 
-/** Callback function for 'A0PM'->'NAME' to set the name of the property to be mapped. */
+/** Callback function for ->'NAME' to set the name of the item to be mapped. */
 static bool ChangePropertyRemapName(byte langid, const char *str)
 {
 	_current_grf_property_map_action.name = str;
 	return true;
 }
 
-/** Callback function for 'A0PM'->'FEAT' to set which feature this property mapping applies to. */
+/** Callback function for ->'FEAT' to set which feature this mapping applies to. */
 static bool ChangePropertyRemapFeature(size_t len, ByteReader *buf)
 {
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'FEAT' but got " PRINTF_SIZE ", ignoring this field", len);
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FEAT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
 		uint8 feature = buf->ReadByte();
 		if (feature >= GSF_END) {
-			grfmsg(2, "Action 14 property mapping: invalid feature ID: %u, in 'A0PM'->'FEAT', ignoring this field", feature);
+			grfmsg(2, "Action 14 %s mapping: invalid feature ID: %u, in '%s'->'FEAT', ignoring this field", action.descriptor, feature, action.tag_name);
 		} else {
-			_current_grf_property_map_action.feature = feature;
+			action.feature = feature;
 		}
 	}
 	return true;
 }
 
-/** Callback function for 'A0PM'->'PROP' to set the property ID to which this property is being mapped. */
+/** Callback function for ->'PROP' to set the property ID to which this item is being mapped. */
 static bool ChangePropertyRemapPropertyId(size_t len, ByteReader *buf)
 {
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'PROP' but got " PRINTF_SIZE ", ignoring this field", len);
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'PROP' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
-		_current_grf_property_map_action.prop_id = buf->ReadByte();
+		action.prop_id = buf->ReadByte();
 	}
 	return true;
 }
 
-/** Callback function for 'A0PM'->'FLBK' to set the maximum version of the feature being tested. */
-static bool ChangePropertyRemapSetFallbackMode(size_t len, ByteReader *buf)
+/** Callback function for ->'TYPE' to set the property ID to which this item is being mapped. */
+static bool ChangePropertyRemapTypeId(size_t len, ByteReader *buf)
 {
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'FLBK' but got " PRINTF_SIZE ", ignoring this field", len);
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'TYPE' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
-		Action0RemapFallbackMode mode = (Action0RemapFallbackMode) buf->ReadByte();
-		if (mode < A0REM_END) _current_grf_property_map_action.fallback_mode = mode;
+		uint8 prop = buf->ReadByte();
+		if (prop < 128) {
+			action.prop_id = prop;
+		} else {
+			grfmsg(2, "Action 14 %s mapping: expected a type < 128 for '%s'->'TYPE' but got %u, ignoring this field", action.descriptor, action.tag_name, prop);
+		}
 	}
 	return true;
 }
-/** Callback function for 'A0PM'->'SETT' to set the bit number of global variable 8D (TTD version) to set/unset with whether the remapping was successful. */
+
+/** Callback function for ->'FLBK' to set the fallback mode. */
+static bool ChangePropertyRemapSetFallbackMode(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 1) {
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FLBK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		GRFPropertyMapFallbackMode mode = (GRFPropertyMapFallbackMode) buf->ReadByte();
+		if (mode < GPMFM_END) action.fallback_mode = mode;
+	}
+	return true;
+}
+/** Callback function for ->'SETT' to set the bit number of global variable 8D (TTD version) to set/unset with whether the remapping was successful. */
 static bool ChangePropertyRemapSetTTDVerVarBit(size_t len, ByteReader *buf)
 {
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 property mapping: expected 1 byte for 'A0PM'->'SETT' but got " PRINTF_SIZE ", ignoring this field", len);
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'SETT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
 		uint8 bit_number = buf->ReadByte();
 		if (bit_number >= 4 && bit_number <= 31) {
-			_current_grf_property_map_action.ttd_ver_var_bit = bit_number;
+			action.ttd_ver_var_bit = bit_number;
 		} else {
-			grfmsg(2, "Action 14 property mapping: expected a bit number >= 4 and <= 32 for 'A0PM'->'SETT' but got %u, ignoring this field", bit_number);
+			grfmsg(2, "Action 14 %s mapping: expected a bit number >= 4 and <= 32 for '%s'->'SETT' but got %u, ignoring this field", action.descriptor, action.tag_name, bit_number);
 		}
 	}
 	return true;
@@ -8254,9 +8339,29 @@ AllowedSubtags _tags_a0pm[] = {
  */
 static bool HandleAction0PropertyMap(ByteReader *buf)
 {
-	_current_grf_property_map_action.Reset();
+	_current_grf_property_map_action.Reset("A0PM", "property");
 	HandleNodes(buf, _tags_a0pm);
-	_current_grf_property_map_action.Execute();
+	_current_grf_property_map_action.ExecutePropertyRemapping();
+	return true;
+}
+
+/** Action14 tags for the A5TM node */
+AllowedSubtags _tags_a5tm[] = {
+	AllowedSubtags('NAME', ChangePropertyRemapName),
+	AllowedSubtags('TYPE', ChangePropertyRemapTypeId),
+	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
+	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags()
+};
+
+/**
+ * Callback function for 'A5TM' (action 5 type mapping)
+ */
+static bool HandleAction5TypeMap(ByteReader *buf)
+{
+	_current_grf_property_map_action.Reset("A5TM", "Action 5 type");
+	HandleNodes(buf, _tags_a5tm);
+	_current_grf_property_map_action.ExecuteAction5TypeRemapping();
 	return true;
 }
 
@@ -8265,6 +8370,7 @@ AllowedSubtags _tags_root_static[] = {
 	AllowedSubtags('INFO', _tags_info),
 	AllowedSubtags('FTST', SkipInfoChunk),
 	AllowedSubtags('A0PM', SkipInfoChunk),
+	AllowedSubtags('A5TM', SkipInfoChunk),
 	AllowedSubtags()
 };
 
@@ -8273,6 +8379,7 @@ AllowedSubtags _tags_root_feature_tests[] = {
 	AllowedSubtags('INFO', SkipInfoChunk),
 	AllowedSubtags('FTST', HandleFeatureTestInfo),
 	AllowedSubtags('A0PM', HandleAction0PropertyMap),
+	AllowedSubtags('A5TM', HandleAction5TypeMap),
 	AllowedSubtags()
 };
 
