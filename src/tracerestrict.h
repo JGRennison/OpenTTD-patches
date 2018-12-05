@@ -87,10 +87,10 @@ typedef uint32 TraceRestrictItem;
  * OFFSET values describe the field bit offset
  */
 enum TraceRestrictItemFlagAllocation {
-	TRIFA_TYPE_COUNT              = 5,
+	TRIFA_TYPE_COUNT              = 6,
 	TRIFA_TYPE_OFFSET             = 0,
 
-	/* 3 bits reserved for future use */
+	/* 2 bits reserved for future use */
 
 	TRIFA_COND_FLAGS_COUNT        = 3,
 	TRIFA_COND_FLAGS_OFFSET       = 8,
@@ -138,7 +138,11 @@ enum TraceRestrictItemType {
 	TRIT_COND_SLOT_OCCUPANCY      = 22,   ///< Test train slot occupancy state
 	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
 	TRIT_COND_TRAIN_STATUS        = 25,   ///< Test train status
-	/* space up to 31 */
+
+	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
+	//TRIT_REVERSE                = 48,   ///< Reverse: reserved for future use
+
+	/* space up to 63 */
 };
 
 /**
@@ -216,7 +220,7 @@ enum TraceRestrictPhysPropRatioCondAuxField {
 };
 
 /**
- * TraceRestrictItem auxiliary type field, for order type conditionals
+ * TraceRestrictItem auxiliary type field, for TRIT_PF_PENALTY
  */
 enum TraceRestrictPathfinderPenaltyAuxField {
 	TRPPAF_VALUE                  = 0,       ///< value field is a the pathfinder penalty to use
@@ -487,7 +491,7 @@ static inline void SetTraceRestrictValue(TraceRestrictItem &item, uint16 value)
 /** Is TraceRestrictItemType a conditional type? */
 static inline bool IsTraceRestrictTypeConditional(TraceRestrictItemType type)
 {
-	return type >= TRIT_COND_BEGIN;
+	return type >= TRIT_COND_BEGIN && type < TRIT_COND_END;
 }
 
 /** Is TraceRestrictItem type field a conditional type? */
