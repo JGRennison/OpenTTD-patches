@@ -214,7 +214,7 @@ enum TraceRestrictPhysPropRatioCondAuxField {
 };
 
 /**
- * TraceRestrictItem auxiliary type field, for order type conditionals
+ * TraceRestrictItem auxiliary type field, for TRIT_PF_PENALTY
  */
 enum TraceRestrictPathfinderPenaltyAuxField {
 	TRPPAF_VALUE                  = 0,       ///< value field is a the pathfinder penalty to use
