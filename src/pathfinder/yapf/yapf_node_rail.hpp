@@ -137,6 +137,8 @@ struct CYapfRailNodeT
 			bool          m_targed_seen : 1;
 			bool          m_choice_seen : 1;
 			bool          m_last_signal_was_red : 1;
+			bool          m_reverse_pending : 1;
+			bool          m_teleport : 1;
 		} flags_s;
 	} flags_u;
 	SignalType        m_last_red_signal_type;
@@ -174,6 +176,7 @@ struct CYapfRailNodeT
 			m_last_signal_type        = parent->m_last_signal_type;
 		}
 		flags_u.flags_s.m_choice_seen |= is_choice;
+		flags_u.flags_s.m_teleport = false;
 	}
 
 	inline TileIndex GetLastTile() const

@@ -4007,11 +4007,16 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							const Trackdir dir = FindFirstTrackdir(trackdirbits);
 							if (HasSignalOnTrack(gp.new_tile, TrackdirToTrack(dir))) {
 								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.new_tile, TrackdirToTrack(dir));
-								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT)) {
+								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_REVERSE)) {
 									TraceRestrictProgramResult out;
 									TraceRestrictProgramInput input(gp.new_tile, dir, NULL, NULL);
 									input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT;
 									prog->Execute(v, input, out);
+									if (out.flags & TRPRF_REVERSE && GetSignalType(gp.new_tile, TrackdirToTrack(dir)) == SIGTYPE_PBS &&
+											!HasSignalOnTrackdir(gp.new_tile, dir)) {
+										v->reverse_distance = v->gcache.cached_total_length + (IsDiagonalTrack(TrackdirToTrack(dir)) ? 16 : 8);
+										SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+									}
 								}
 							}
 						}

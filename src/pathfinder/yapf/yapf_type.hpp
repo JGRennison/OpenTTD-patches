@@ -31,6 +31,7 @@ enum EndSegmentReason {
 	ESR_FIRST_TWO_WAY_RED, ///< first signal was 2-way and it was red
 	ESR_LOOK_AHEAD_END,    ///< we have just passed the last look-ahead signal
 	ESR_TARGET_REACHED,    ///< we have just reached the destination
+	ESR_REVERSE,           ///< we should reverse after this point
 
 	/* Special values */
 	ESR_NONE = 0xFF,          ///< no reason to end the segment here
@@ -53,6 +54,7 @@ enum EndSegmentReasonBits {
 	ESRB_FIRST_TWO_WAY_RED = 1 << ESR_FIRST_TWO_WAY_RED,
 	ESRB_LOOK_AHEAD_END    = 1 << ESR_LOOK_AHEAD_END,
 	ESRB_TARGET_REACHED    = 1 << ESR_TARGET_REACHED,
+	ESRB_REVERSE           = 1 << ESR_REVERSE,
 
 	/* Additional (composite) values. */
 
@@ -60,10 +62,13 @@ enum EndSegmentReasonBits {
 	ESRB_POSSIBLE_TARGET = ESRB_DEPOT | ESRB_WAYPOINT | ESRB_STATION | ESRB_SAFE_TILE,
 
 	/* What reasons can be stored back into cached segment. */
-	ESRB_CACHED_MASK = ESRB_DEAD_END | ESRB_RAIL_TYPE | ESRB_INFINITE_LOOP | ESRB_SEGMENT_TOO_LONG | ESRB_CHOICE_FOLLOWS | ESRB_DEPOT | ESRB_WAYPOINT | ESRB_STATION | ESRB_SAFE_TILE,
+	ESRB_CACHED_MASK = ESRB_DEAD_END | ESRB_RAIL_TYPE | ESRB_INFINITE_LOOP | ESRB_SEGMENT_TOO_LONG | ESRB_CHOICE_FOLLOWS | ESRB_DEPOT | ESRB_WAYPOINT | ESRB_STATION | ESRB_SAFE_TILE | ESRB_REVERSE,
 
 	/* Reasons to abort pathfinding in this direction. */
 	ESRB_ABORT_PF_MASK = ESRB_DEAD_END | ESRB_PATH_TOO_LONG | ESRB_INFINITE_LOOP | ESRB_FIRST_TWO_WAY_RED,
+
+	/* Reasons to abort pathfinding in this direction, when reversing is pending. */
+	ESRB_ABORT_PF_MASK_PENDING_REVERSE = ESRB_ABORT_PF_MASK & ~ESRB_DEAD_END,
 };
 
 DECLARE_ENUM_AS_BIT_SET(EndSegmentReasonBits)

@@ -51,6 +51,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,                1,   1, "tracerestrict_owner",       NULL, NULL, NULL        },
 	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                2,   2, "tracerestrict_order_cond",  NULL, NULL, NULL        },
 	{ XSLFI_TRACE_RESTRICT_STATUSCND,XSCF_NULL,               1,   1, "tracerestrict_status_cond", NULL, NULL, NULL        },
+	{ XSLFI_TRACE_RESTRICT_REVERSE, XSCF_NULL,                1,   1, "tracerestrict_reverse",     NULL, NULL, NULL        },
 	{ XSLFI_PROG_SIGS,              XSCF_NULL,                1,   1, "programmable_signals",      NULL, NULL, "SPRG"      },
 	{ XSLFI_ADJACENT_CROSSINGS,     XSCF_NULL,                1,   1, "adjacent_crossings",        NULL, NULL, NULL        },
 	{ XSLFI_SAFER_CROSSINGS,        XSCF_NULL,                1,   1, "safer_crossings",           NULL, NULL, NULL        },

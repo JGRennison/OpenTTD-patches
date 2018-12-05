@@ -2689,6 +2689,7 @@ STR_TRACE_RESTRICT_DIRECTION_NW                                 :north-west
 STR_TRACE_RESTRICT_COMPANY                                      :Company
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :Undefined company
 STR_TRACE_RESTRICT_SLOT_OP                                      :Slot operation
+STR_TRACE_RESTRICT_REVERSE                                      :Reverse
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Acquire or wait
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Release (front)
@@ -2717,6 +2718,8 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_LOADING                         :loading
 STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING                         :waiting
 STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :lost
 STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :requires service
+STR_TRACE_RESTRICT_REVERSE_SIG                                  :Reverse behind signal
+STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Cancel reverse behind signal
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals

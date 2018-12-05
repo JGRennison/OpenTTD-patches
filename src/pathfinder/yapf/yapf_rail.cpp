@@ -293,6 +293,21 @@ public:
 	inline void PfFollowNode(Node &old_node)
 	{
 		TrackFollower F(Yapf().GetVehicle());
+		if (old_node.flags_u.flags_s.m_reverse_pending && old_node.m_segment->m_end_segment_reason & (ESRB_SAFE_TILE | ESRB_DEPOT | ESRB_DEAD_END)) {
+			Node *rev_node = &old_node;
+			while (rev_node && !(rev_node->m_segment->m_end_segment_reason & ESRB_REVERSE)) {
+				rev_node = rev_node->m_parent;
+			}
+			if (rev_node) {
+				if (F.Follow(rev_node->GetLastTile(), ReverseTrackdir(rev_node->GetLastTrackdir()))) {
+					Yapf().AddMultipleNodes(&old_node, F, [&](Node &n) {
+						n.flags_u.flags_s.m_reverse_pending = false;
+						n.flags_u.flags_s.m_teleport = true;
+					});
+				}
+				return;
+			}
+		}
 		if (F.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir())) {
 			Yapf().AddMultipleNodes(&old_node, F);
 		}
@@ -471,6 +486,21 @@ public:
 	inline void PfFollowNode(Node &old_node)
 	{
 		TrackFollower F(Yapf().GetVehicle());
+		if (old_node.flags_u.flags_s.m_reverse_pending && old_node.m_segment->m_end_segment_reason & (ESRB_SAFE_TILE | ESRB_DEPOT | ESRB_DEAD_END)) {
+			Node *rev_node = &old_node;
+			while (rev_node && !(rev_node->m_segment->m_end_segment_reason & ESRB_REVERSE)) {
+				rev_node = rev_node->m_parent;
+			}
+			if (rev_node) {
+				if (F.Follow(rev_node->GetLastTile(), ReverseTrackdir(rev_node->GetLastTrackdir()))) {
+					Yapf().AddMultipleNodes(&old_node, F, [&](Node &n) {
+						n.flags_u.flags_s.m_reverse_pending = false;
+						n.flags_u.flags_s.m_teleport = true;
+					});
+				}
+				return;
+			}
+		}
 		if (F.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir())) {
 			Yapf().AddMultipleNodes(&old_node, F);
 		}

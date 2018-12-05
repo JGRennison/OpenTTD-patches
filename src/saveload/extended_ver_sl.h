@@ -25,6 +25,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TRACE_RESTRICT_OWNER,                   ///< Trace restrict: train owner test
 	XSLFI_TRACE_RESTRICT_ORDRCND,                 ///< Trace restrict: slot conditional order
 	XSLFI_TRACE_RESTRICT_STATUSCND,               ///< Trace restrict: train status condition
+	XSLFI_TRACE_RESTRICT_REVERSE,                 ///< Trace restrict: reverse
 	XSLFI_PROG_SIGS,                              ///< programmable signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings

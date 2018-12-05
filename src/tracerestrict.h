@@ -140,7 +140,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_TRAIN_STATUS        = 25,   ///< Test train status
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
-	//TRIT_REVERSE                = 48,   ///< Reverse: reserved for future use
+	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
 
 	/* space up to 63 */
 };
@@ -239,6 +239,14 @@ enum TraceRestrictWaitAtPbsValueField {
 };
 
 /**
+ * TraceRestrictItem value field, for TRIT_REVERSE
+ */
+enum TraceRestrictReverseValueField {
+	TRRVF_REVERSE                      = 0,       ///< Reverse
+	TRRVF_CANCEL_REVERSE               = 1,       ///< Cancel reverse
+};
+
+/**
  * TraceRestrictItem value field, for TRIT_COND_TRAIN_STATUS
  */
 enum TraceRestrictTrainStatusValueField {
@@ -298,6 +306,7 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_LONG_RESERVE            = 1 << 2,  ///< Long reserve is set
 	TRPRF_WAIT_AT_PBS             = 1 << 3,  ///< Wait at PBS signal is set
 	TRPRF_PBS_RES_END_WAIT        = 1 << 4,  ///< PBS reservations ending at this signal wait is set
+	TRPRF_REVERSE                 = 1 << 5,  ///< Reverse behind signal
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -314,6 +323,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_SLOT_RELEASE_FRONT     = 1 << 6,  ///< Slot release (front) action is present
 	TRPAUF_PBS_RES_END_WAIT       = 1 << 7,  ///< PBS reservations ending at this signal wait action is present
 	TRPAUF_PBS_RES_END_SLOT       = 1 << 8,  ///< PBS reservations ending at this signal slot action is present
+	TRPAUF_REVERSE                = 1 << 9,  ///< Reverse behind signal
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -545,6 +555,7 @@ enum TraceRestrictValueType {
 	TRVT_SLOT_INDEX_INT           = 20,///< takes a TraceRestrictSlotID, and an integer in the next item slot
 	TRVT_OWNER                    = 40,///< takes a CompanyID
 	TRVT_TRAIN_STATUS             = 41,///< takes a TraceRestrictTrainStatusValueField
+	TRVT_REVERSE                  = 42,///< takes a TraceRestrictReverseValueField
 };
 
 /**
@@ -684,6 +695,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_WAIT_AT_PBS;
 		} else if (GetTraceRestrictType(item) == TRIT_SLOT) {
 			out.value_type = TRVT_SLOT_INDEX;
+		} else if (GetTraceRestrictType(item) == TRIT_REVERSE) {
+			out.value_type = TRVT_REVERSE;
 		} else {
 			out.value_type = TRVT_NONE;
 		}

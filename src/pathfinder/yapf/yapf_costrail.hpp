@@ -273,6 +273,9 @@ private:
 			*is_res_through = false;
 			flags_to_check |= TRPAUF_RESERVE_THROUGH;
 		}
+		if (GetSignalType(tile, TrackdirToTrack(trackdir)) == SIGTYPE_PBS && !HasSignalOnTrackdir(tile, trackdir)) {
+			flags_to_check |= TRPAUF_REVERSE;
+		}
 		if (prog && prog->actions_used_flags & flags_to_check) {
 			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
 			if (out.flags & TRPRF_RESERVE_THROUGH && is_res_through != NULL) {
@@ -281,6 +284,10 @@ private:
 			if (out.flags & TRPRF_DENY) {
 				n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
 				return true;
+			}
+			if (out.flags & TRPRF_REVERSE && flags_to_check & TRPAUF_REVERSE && !n.flags_u.flags_s.m_reverse_pending) {
+				n.flags_u.flags_s.m_reverse_pending = true;
+				n.m_segment->m_end_segment_reason |= ESRB_REVERSE;
 			}
 			cost += out.penalty;
 		}
@@ -477,6 +484,17 @@ public:
 			/* We will jump to the middle of the cost calculator assuming that segment cache is not used. */
 			assert(!is_cached_segment);
 			/* Skip the first transition cost calculation. */
+			goto no_entry_cost;
+		} else if (n.flags_u.flags_s.m_teleport) {
+			int x1 = 2 * TileX(prev.tile);
+			int y1 = 2 * TileY(prev.tile);
+			int x2 = 2 * TileX(cur.tile);
+			int y2 = 2 * TileY(cur.tile);
+			int dx = abs(x1 - x2);
+			int dy = abs(y1 - y2);
+			int dmin = min(dx, dy);
+			int dxy = abs(dx - dy);
+			segment_entry_cost += dmin * YAPF_TILE_CORNER_LENGTH + (dxy - 1) * (YAPF_TILE_LENGTH / 2);
 			goto no_entry_cost;
 		}
 
@@ -723,8 +741,10 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 
 		/* Do we have an excuse why not to continue pathfinding in this direction? */
 		if (!target_seen && (end_segment_reason & ESRB_ABORT_PF_MASK) != ESRB_NONE) {
-			/* Reason to not continue. Stop this PF branch. */
-			return false;
+			if (likely(!n.flags_u.flags_s.m_reverse_pending || (end_segment_reason & ESRB_ABORT_PF_MASK_PENDING_REVERSE) != ESRB_NONE)) {
+				/* Reason to not continue. Stop this PF branch. */
+				return false;
+			}
 		}
 
 		/* Special costs for the case we have reached our target. */

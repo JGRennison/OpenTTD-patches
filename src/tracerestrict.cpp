@@ -612,6 +612,22 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_REVERSE:
+						switch (static_cast<TraceRestrictReverseValueField>(GetTraceRestrictValue(item))) {
+							case TRRVF_REVERSE:
+								out.flags |= TRPRF_REVERSE;
+								break;
+
+							case TRRVF_CANCEL_REVERSE:
+								out.flags &= ~TRPRF_REVERSE;
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -776,6 +792,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					}
 					break;
 
+				case TRIT_REVERSE:
+					actions_used_flags |= TRPAUF_REVERSE;
+					break;
+
 				default:
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
@@ -836,6 +856,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_FORCE_WEIGHT_RATIO:
 		case TRVT_WAIT_AT_PBS:
 		case TRVT_TRAIN_STATUS:
+		case TRVT_REVERSE:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);
