@@ -2051,6 +2051,11 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	Win32SetCurrentLocaleName(_current_language->isocode);
 #endif
 
+#ifdef WITH_COCOA
+	extern void MacOSSetCurrentLocaleName(const char *iso_code);
+	MacOSSetCurrentLocaleName(_current_language->isocode);
+#endif
+
 #ifdef WITH_ICU_SORT
 	/* Delete previous collator. */
 	if (_current_collator != NULL) {
@@ -2394,7 +2399,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	/* Update the font with cache */
 	LoadStringWidthTable(searcher->Monospace());
 
-#if !defined(WITH_ICU_LAYOUT) && !defined(WITH_UNISCRIBE)
+#if !defined(WITH_ICU_LAYOUT) && !defined(WITH_UNISCRIBE) && !defined(WITH_COCOA)
 	/*
 	 * For right-to-left languages we need the ICU library. If
 	 * we do not have support for that library we warn the user

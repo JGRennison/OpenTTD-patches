@@ -33,6 +33,10 @@
 #include "os/windows/string_uniscribe.h"
 #endif
 
+#if defined(WITH_COCOA)
+#include "os/macosx/string_osx.h"
+#endif
+
 #ifdef WITH_ICU_SORT
 /* Required by strnatcmp. */
 #include <unicode/ustring.h>
@@ -679,6 +683,11 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 	if (res != 0) return res - 2; // Convert to normal C return values.
 #endif
 
+#if defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN)
+	int res = MacOSStringCompare(s1, s2);
+	if (res != 0) return res - 2; // Convert to normal C return values.
+#endif
+
 	/* Do a manual natural sort comparison if ICU is missing or if we cannot create a collator. */
 	return _strnatcmpIntl(s1, s2);
 }
@@ -951,9 +960,19 @@ public:
 	}
 };
 
+#if defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN)
+/* static */ StringIterator *StringIterator::Create()
+{
+	StringIterator *i = OSXStringIterator::Create();
+	if (i != NULL) return i;
+
+	return new DefaultStringIterator();
+}
+#else
 /* static */ StringIterator *StringIterator::Create()
 {
 	return new DefaultStringIterator();
 }
+#endif /* defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN) */
 
 #endif
