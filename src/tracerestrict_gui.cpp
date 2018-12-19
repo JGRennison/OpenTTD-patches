@@ -160,6 +160,7 @@ static const uint32 _program_insert_or_if_hide_mask   = 4;     ///< disable bitm
 static const uint32 _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
 static const uint32 _program_wait_pbs_hide_mask = 0x100;       ///< disable bitmask for wait at PBS
 static const uint32 _program_slot_hide_mask = 0x200;           ///< disable bitmask for slot
+static const uint32 _program_reverse_hide_mask = 0x400;        ///< disable bitmask for reverse
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
 	TRIT_COND_UNDEFINED | (TRCF_ELSE << 16),           // elif block
@@ -440,7 +441,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x70000 : 0x30;
+			*hide_mask = is_conditional ? 0x70000 : 0x70;
 		}
 	}
 	return is_conditional ? &set_cond : &set_action;
@@ -1346,7 +1347,7 @@ public:
 						if (ElseIfInsertionDryRun(false)) disabled &= ~_program_insert_or_if_hide_mask;
 					}
 				}
-				if (!_settings_client.gui.show_adv_tracerestrict_features) hidden |= _program_slot_hide_mask | _program_wait_pbs_hide_mask;
+				if (!_settings_client.gui.show_adv_tracerestrict_features) hidden |= _program_slot_hide_mask | _program_wait_pbs_hide_mask | _program_reverse_hide_mask;
 
 				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, hidden, 0);
 				break;
