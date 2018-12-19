@@ -982,6 +982,7 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
 	Track track = Extract<Track, 6, 3>(p2);
 	bool remove = HasBit(p2, 9);
 	bool fail_if_obstacle = HasBit(p2, 10);
+	bool no_custom_bridge_heads = HasBit(p2, 11);
 
 	_rail_track_endtile = INVALID_TILE;
 
@@ -997,7 +998,7 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
 	CommandCost last_error = CMD_ERROR;
 	for (;;) {
 		TileIndex last_endtile = _rail_track_endtile;
-		CommandCost ret = DoCommand(tile, remove ? 0 : railtype, TrackdirToTrack(trackdir), flags, remove ? CMD_REMOVE_SINGLE_RAIL : CMD_BUILD_SINGLE_RAIL);
+		CommandCost ret = DoCommand(tile, remove ? 0 : railtype, TrackdirToTrack(trackdir) | (no_custom_bridge_heads ? 1 << 4 : 0), flags, remove ? CMD_REMOVE_SINGLE_RAIL : CMD_BUILD_SINGLE_RAIL);
 
 		if (ret.Failed()) {
 			last_error = ret;
