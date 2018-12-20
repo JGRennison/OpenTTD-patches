@@ -120,5 +120,6 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 
 const char *scope_dumper::TileInfo(TileIndex tile)
 {
-	return DumpTileInfo(this->buffer, lastof(this->buffer), tile);
+	DumpTileInfo(this->buffer, lastof(this->buffer), tile);
+	return this->buffer;
 }
