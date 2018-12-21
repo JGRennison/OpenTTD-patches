@@ -3631,7 +3631,9 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 		const RoadVehicle *r = RoadVehicle::From(this);
 		b += seprintf(b, last, ", rvs:%X, rvf:%X", r->state, r->frame);
 	}
-	b += seprintf(b, last, ", t:%X", this->tile);
+	b += seprintf(b, last, ", [");
+	b = DumpTileInfo(b, last, this->tile);
+	b += seprintf(b, last, "]");
 	if (this->cargo_payment) b += seprintf(b, last, ", CP");
 	return b;
 }
