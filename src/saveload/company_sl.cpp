@@ -116,8 +116,12 @@ void AfterLoadCompanyStats()
 					uint pieces = 1;
 					if (IsPlainRail(tile)) {
 						TrackBits bits = GetTrackBits(tile);
-						pieces = CountBits(bits);
-						if (TracksOverlap(bits)) pieces *= pieces;
+						if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) {
+							c->infrastructure.rail[GetSecondaryRailType(tile)]++;
+						} else {
+							pieces = CountBits(bits);
+							if (TracksOverlap(bits)) pieces *= pieces;
+						}
 					}
 					c->infrastructure.rail[GetRailType(tile)] += pieces;
 
@@ -205,13 +209,7 @@ void AfterLoadCompanyStats()
 
 					switch (GetTunnelBridgeTransportType(tile)) {
 						case TRANSPORT_RAIL:
-							c = Company::GetIfValid(GetTileOwner(tile));
-							if (c != NULL) {
-								c->infrastructure.rail[GetRailType(tile)] += middle_len + GetTunnelBridgeHeadOnlyRailInfrastructureCount(tile) + GetTunnelBridgeHeadOnlyRailInfrastructureCount(other_end);
-								if (IsTunnelBridgeWithSignalSimulation(tile)) {
-									c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, other_end);
-								}
-							}
+							AddRailTunnelBridgeInfrastructure(tile, other_end);
 							break;
 
 						case TRANSPORT_ROAD: {

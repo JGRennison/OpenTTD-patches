@@ -247,7 +247,7 @@ protected: // These functions should not be called outside acceleration code.
 	inline uint16 GetPower() const
 	{
 		/* Power is not added for articulated parts */
-		if (!this->IsArticulatedPart() && (this->IsVirtual() || HasPowerOnRail(this->railtype, GetRailType(this->tile)))) {
+		if (!this->IsArticulatedPart() && (this->IsVirtual() || HasPowerOnRail(this->railtype, GetRailTypeByTrackBit(this->tile, this->track)))) {
 			uint16 power = GetVehicleProperty(this, PROP_TRAIN_POWER, RailVehInfo(this->engine_type)->power);
 			/* Halve power for multiheaded parts */
 			if (this->IsMultiheaded()) power /= 2;
@@ -264,7 +264,7 @@ protected: // These functions should not be called outside acceleration code.
 	inline uint16 GetPoweredPartPower(const Train *head) const
 	{
 		/* For powered wagons the engine defines the type of engine (i.e. railtype) */
-		if (HasBit(this->flags, VRF_POWEREDWAGON) && (head->IsVirtual() || HasPowerOnRail(head->railtype, GetRailType(this->tile)))) {
+		if (HasBit(this->flags, VRF_POWEREDWAGON) && (head->IsVirtual() || HasPowerOnRail(head->railtype, GetRailTypeByTrackBit(this->tile, this->track)))) {
 			return RailVehInfo(this->gcache.first_engine)->pow_wag_power;
 		}
 
@@ -374,7 +374,7 @@ protected: // These functions should not be called outside acceleration code.
 	 */
 	inline uint16 GetMaxTrackSpeed() const
 	{
-		return GetRailTypeInfo(GetRailType(this->tile))->max_speed;
+		return GetRailTypeInfo(GetRailTypeByTrackBit(this->tile, this->track))->max_speed;
 	}
 
 	/**

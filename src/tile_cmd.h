@@ -63,7 +63,9 @@ struct TileDesc {
 	const char *grf;            ///< newGRF used for the tile contents
 	uint64 dparam[2];           ///< Parameters of the \a str string
 	StringID railtype;          ///< Type of rail on the tile.
+	StringID railtype2;         ///< Type of second rail on the tile.
 	uint16 rail_speed;          ///< Speed limit of rail (bridges and track)
+	uint16 rail_speed2;         ///< Speed limit of second rail (bridges and track)
 	uint16 road_speed;          ///< Speed limit of road (bridges)
 };
 

@@ -54,6 +54,8 @@ enum TrackBits {
 	TRACK_BIT_3WAY_SW = TRACK_BIT_X     | TRACK_BIT_LOWER | TRACK_BIT_LEFT, ///< "Arrow" to the south-west
 	TRACK_BIT_3WAY_NW = TRACK_BIT_Y     | TRACK_BIT_UPPER | TRACK_BIT_LEFT, ///< "Arrow" to the north-west
 	TRACK_BIT_ALL     = TRACK_BIT_CROSS | TRACK_BIT_HORZ  | TRACK_BIT_VERT, ///< All possible tracks
+	TRACK_BIT_RT_1    = TRACK_BIT_UPPER | TRACK_BIT_LEFT,                   ///< Track bits using the primary rail type, if the total track bits are TRACK_BIT_HORZ or TRACK_BIT_VERT
+	TRACK_BIT_RT_2    = TRACK_BIT_LOWER | TRACK_BIT_RIGHT,                  ///< Track bits using the secondary rail type, if the total track bits are TRACK_BIT_HORZ or TRACK_BIT_VERT
 	TRACK_BIT_MASK    = 0x3FU,                                              ///< Bitmask for the first 6 bits
 	TRACK_BIT_WORMHOLE = 0x40U,                                             ///< Bitflag for a wormhole (used for tunnels)
 	TRACK_BIT_DEPOT   = 0x80U,                                              ///< Bitflag for a depot

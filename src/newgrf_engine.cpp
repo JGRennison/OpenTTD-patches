@@ -609,7 +609,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 		case 0x4A: {
 			if (v->type != VEH_TRAIN) return 0;
 			if (Train::From(v)->IsVirtual()) return 0x1FF;
-			RailType rt = GetTileRailType(v->tile);
+			RailType rt = GetTileRailTypeByTrackBit(v->tile, Train::From(v)->track);
 			return (HasPowerOnRail(Train::From(v)->railtype, rt) ? 0x100 : 0) | GetReverseRailTypeTranslation(rt, object->ro.grffile);
 		}
 
@@ -707,7 +707,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 				if (u->IsVirtual()) {
 					has_power = true;
 				} else {
-					RailType railtype = GetRailType(v->tile);
+					RailType railtype = GetRailTypeByTrackBit(v->tile, t->track);
 					has_power = HasPowerOnRail(u->railtype, railtype);
 				}
 

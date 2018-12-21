@@ -29,9 +29,9 @@ static inline bool HasRailCatenary(RailType rt)
  * Test if we should draw rail catenary
  * @param rt Rail type to test
  */
-static inline bool HasRailCatenaryDrawn(RailType rt)
+static inline bool HasRailCatenaryDrawn(RailType rt, RailType secondary = INVALID_RAILTYPE)
 {
-	return HasRailCatenary(rt) && !IsInvisibilitySet(TO_CATENARY) && !_settings_game.vehicle.disable_elrails;
+	return !IsInvisibilitySet(TO_CATENARY) && !_settings_game.vehicle.disable_elrails && (HasRailCatenary(rt) || (secondary != INVALID_RAILTYPE && HasRailCatenary(secondary)));
 }
 
 void DrawRailCatenary(const TileInfo *ti);

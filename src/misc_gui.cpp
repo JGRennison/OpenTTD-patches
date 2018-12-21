@@ -173,7 +173,9 @@ public:
 		td.airport_name = STR_NULL;
 		td.airport_tile_name = STR_NULL;
 		td.railtype = STR_NULL;
+		td.railtype2 = STR_NULL;
 		td.rail_speed = 0;
+		td.rail_speed2 = 0;
 		td.road_speed = 0;
 
 		td.grf = NULL;
@@ -291,6 +293,20 @@ public:
 		/* Rail speed limit */
 		if (td.rail_speed != 0) {
 			SetDParam(0, td.rail_speed);
+			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT, lastof(this->landinfo_data[line_nr]));
+			line_nr++;
+		}
+
+		/* 2nd Rail type name */
+		if (td.railtype2 != STR_NULL) {
+			SetDParam(0, td.railtype2);
+			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_RAIL_TYPE, lastof(this->landinfo_data[line_nr]));
+			line_nr++;
+		}
+
+		/* 2nd Rail speed limit */
+		if (td.rail_speed2 != 0) {
+			SetDParam(0, td.rail_speed2);
 			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT, lastof(this->landinfo_data[line_nr]));
 			line_nr++;
 		}

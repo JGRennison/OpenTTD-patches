@@ -53,7 +53,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 static bool TrainApproachingLineEnd(Train *v, bool signal, bool reverse);
 static bool TrainCheckIfLineEnds(Train *v, bool reverse = true);
 static bool TrainCanLeaveTile(const Train *v);
-static inline bool CheckCompatibleRail(const Train *v, TileIndex tile);
+static inline bool CheckCompatibleRail(const Train *v, TileIndex tile, DiagDirection enterdir);
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // Also used in vehicle_sl.cpp.
 static TileIndex TrainApproachingCrossingTile(const Train *v);
 static void CheckIfTrainNeedsService(Train *v);
@@ -469,7 +469,7 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *st
 				bits &= ~TrackCrossesTracks(FindFirstTrack(front->track));
 			}
 
-			if (bits == TRACK_BIT_NONE || !CheckCompatibleRail(front, tile) || IsRailDepotTile(tile) ||
+			if (bits == TRACK_BIT_NONE || !CheckCompatibleRail(front, tile, dir) || IsRailDepotTile(tile) ||
 					(KillFirstBit(trackdirbits) == TRACKDIR_BIT_NONE && HasOnewaySignalBlockingTrackdir(tile, FindFirstTrackdir(trackdirbits)))) {
 				/* next tile is an effective dead end */
 				int current_platform_remaining = *station_ahead - TILE_SIZE + GetTileMarginInFrontOfTrain(v);
@@ -3405,10 +3405,10 @@ static void TrainEnterStation(Train *v, StationID station)
 }
 
 /* Check if the vehicle is compatible with the specified tile */
-static inline bool CheckCompatibleRail(const Train *v, TileIndex tile)
+static inline bool CheckCompatibleRail(const Train *v, TileIndex tile, DiagDirection enterdir)
 {
 	return IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, tile) &&
-			(!v->IsFrontEngine() || HasBit(v->compatible_railtypes, GetRailType(tile)));
+			(!v->IsFrontEngine() || HasBit(v->compatible_railtypes, GetRailTypeByEntryDir(tile, enterdir)));
 }
 
 /** Data structure for storing engine speed changes of an acceleration type. */
@@ -3937,7 +3937,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 				/* Check if the new tile constrains tracks that are compatible
 				 * with the current train, if not, bail out. */
-				if (!CheckCompatibleRail(v, gp.new_tile)) goto invalid_rail;
+				if (!CheckCompatibleRail(v, gp.new_tile, enterdir)) goto invalid_rail;
 
 				TrackBits chosen_track;
 				if (prev == NULL) {
@@ -4109,7 +4109,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 					v->tile = gp.new_tile;
 
-					if (GetTileRailType(gp.new_tile) != GetTileRailType(gp.old_tile)) {
+					if (GetTileRailTypeByTrackBit(gp.new_tile, chosen_track) != GetTileRailTypeByTrackBit(gp.old_tile, v->track)) {
 						v->First()->ConsistChanged(CCF_TRACK);
 					}
 
@@ -4682,7 +4682,7 @@ static TileIndex TrainApproachingCrossingTile(const Train *v)
 
 	/* not a crossing || wrong axis || unusable rail (wrong type or owner) */
 	if (!IsLevelCrossingTile(tile) || DiagDirToAxis(dir) == GetCrossingRoadAxis(tile) ||
-			!CheckCompatibleRail(v, tile)) {
+			!CheckCompatibleRail(v, tile, dir)) {
 		return INVALID_TILE;
 	}
 
@@ -4730,7 +4730,7 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 	}
 
 	/* no suitable trackbits at all || unusable rail (wrong type or owner) */
-	if (bits == TRACK_BIT_NONE || !CheckCompatibleRail(v, tile)) {
+	if (bits == TRACK_BIT_NONE || !CheckCompatibleRail(v, tile, dir)) {
 		return TrainApproachingLineEnd(v, false, reverse);
 	}
 

@@ -571,10 +571,11 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 		Company *c = Company::GetIfValid(company);
 		switch (transport_type) {
 			case TRANSPORT_RAIL:
+				if (is_upgrade) SubtractRailTunnelBridgeInfrastructure(tile_start, tile_end);
 				/* Add to company infrastructure count if required. */
 				MakeRailBridgeRamp(tile_start, owner, bridge_type, dir,                 railtype, is_upgrade);
 				MakeRailBridgeRamp(tile_end,   owner, bridge_type, ReverseDiagDir(dir), railtype, is_upgrade);
-				if (is_new_owner && c != NULL) c->infrastructure.rail[railtype] += (bridge_len * TUNNELBRIDGE_TRACKBIT_FACTOR) + GetTunnelBridgeHeadOnlyRailInfrastructureCount(tile_start) + GetTunnelBridgeHeadOnlyRailInfrastructureCount(tile_end);
+				AddRailTunnelBridgeInfrastructure(tile_start, tile_end);
 				break;
 
 			case TRANSPORT_ROAD: {
@@ -1145,7 +1146,9 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 	if (rail) {
 		tile_tracks = GetCustomBridgeHeadTrackBits(tile);
 		endtile_tracks = GetCustomBridgeHeadTrackBits(endtile);
-		cost.AddCost(RailClearCost(GetRailType(tile)) * (CountBits(tile_tracks) + CountBits(endtile_tracks) - 2));
+		cost.AddCost(RailClearCost(GetRailType(tile)) * (CountBits(GetPrimaryTunnelBridgeTrackBits(tile)) + CountBits(GetPrimaryTunnelBridgeTrackBits(endtile)) - 2));
+		if (GetSecondaryTunnelBridgeTrackBits(tile)) cost.AddCost(RailClearCost(GetSecondaryRailType(tile)));
+		if (GetSecondaryTunnelBridgeTrackBits(endtile)) cost.AddCost(RailClearCost(GetSecondaryRailType(endtile)));
 	}
 
 	Money base_cost = (GetTunnelBridgeTransportType(tile) != TRANSPORT_WATER) ? _price[PR_CLEAR_BRIDGE] : _price[PR_CLEAR_AQUEDUCT];
@@ -1178,12 +1181,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 
 		/* Update company infrastructure counts. */
 		if (rail) {
-			if (Company::IsValidID(owner)) {
-				Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= (middle_len * TUNNELBRIDGE_TRACKBIT_FACTOR) + GetTunnelBridgeHeadOnlyRailInfrastructureCount(tile) + GetTunnelBridgeHeadOnlyRailInfrastructureCount(endtile);
-				if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
-					Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, endtile);
-				}
-			}
+			SubtractRailTunnelBridgeInfrastructure(tile, endtile);
 		} else if (GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD) {
 			SubtractRoadTunnelBridgeInfrastructure(tile, endtile);
 		} else { // Aqueduct
@@ -1638,7 +1636,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti)
 		}
 		if (transport_type == TRANSPORT_RAIL && IsRailCustomBridgeHead(ti->tile)) {
 			DrawTrackBits(ti, GetCustomBridgeHeadTrackBits(ti->tile));
-			if (HasRailCatenaryDrawn(GetRailType(ti->tile))) {
+			if (HasRailCatenaryDrawn(GetRailType(ti->tile), GetTileSecondaryRailTypeIfValid(ti->tile))) {
 				DrawRailCatenary(ti);
 			}
 
@@ -2103,9 +2101,16 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	}
 
 	if (tt == TRANSPORT_RAIL) {
-		const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(tile));
+		RailType rt = GetRailType(tile);
+		const RailtypeInfo *rti = GetRailTypeInfo(rt);
 		td->rail_speed = rti->max_speed;
 		td->railtype = rti->strings.name;
+		RailType secondary_rt = GetTileSecondaryRailTypeIfValid(tile);
+		if (secondary_rt != rt && secondary_rt != INVALID_RAILTYPE) {
+			const RailtypeInfo *secondary_rti = GetRailTypeInfo(secondary_rt);
+			td->rail_speed2 = secondary_rti->max_speed;
+			td->railtype2 = secondary_rti->strings.name;
+		}
 
 		if (!IsTunnel(tile)) {
 			uint16 spd = GetBridgeSpec(GetBridgeType(tile))->speed;
@@ -2238,6 +2243,56 @@ void SubtractRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
 	UpdateRoadTunnelBridgeInfrastructure(begin, end, false);
 }
 
+static void UpdateRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end, bool add) {
+	const uint middle_len = 2 * GetTunnelBridgeLength(begin, end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+
+	if (c != NULL) {
+		uint primary_count = middle_len + GetTunnelBridgeHeadOnlyPrimaryRailInfrastructureCount(begin) + GetTunnelBridgeHeadOnlyPrimaryRailInfrastructureCount(end);
+		if (add) {
+			c->infrastructure.rail[GetRailType(begin)] += primary_count;
+		} else {
+			c->infrastructure.rail[GetRailType(begin)] -= primary_count;
+		}
+
+		auto add_secondary_railtype = [&](TileIndex t) {
+			uint secondary_count = GetTunnelBridgeHeadOnlySecondaryRailInfrastructureCount(t);
+			if (secondary_count) {
+				if (add) {
+					c->infrastructure.rail[GetSecondaryRailType(t)] += secondary_count;
+				} else {
+					c->infrastructure.rail[GetSecondaryRailType(t)] -= secondary_count;
+				}
+			}
+		};
+		add_secondary_railtype(begin);
+		add_secondary_railtype(end);
+
+		if (IsTunnelBridgeWithSignalSimulation(begin)) {
+			if (add) {
+				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(begin, end);
+			} else {
+				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(begin, end);
+			}
+		}
+	}
+}
+
+void AddRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end) {
+	UpdateRailTunnelBridgeInfrastructure(c, begin, end, true);
+}
+
+void SubtractRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end) {
+	UpdateRailTunnelBridgeInfrastructure(c, begin, end, false);
+}
+
+void AddRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
+	UpdateRailTunnelBridgeInfrastructure(Company::GetIfValid(GetTileOwner(begin)), begin, end, true);
+}
+
+void SubtractRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
+	UpdateRailTunnelBridgeInfrastructure(Company::GetIfValid(GetTileOwner(begin)), begin, end, false);
+}
+
 static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner new_owner)
 {
 	const TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
@@ -2266,24 +2321,17 @@ static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner 
 	 * No need to dirty windows here, we'll redraw the whole screen anyway. */
 
 	Company *old = Company::Get(old_owner);
-	if (tt == TRANSPORT_RAIL) {
-		/* Set number of middle pieces to zero if it's the southern tile as we
-		 * don't want to update the infrastructure counts twice. */
-		const uint num_pieces = GetTunnelBridgeHeadOnlyRailInfrastructureCount(tile) + (tile < other_end ? GetTunnelBridgeLength(tile, other_end) * TUNNELBRIDGE_TRACKBIT_FACTOR : 0);
-		old->infrastructure.rail[GetRailType(tile)] -= num_pieces;
-		if (new_owner != INVALID_OWNER) Company::Get(new_owner)->infrastructure.rail[GetRailType(tile)] += num_pieces;
-	} else if (tt == TRANSPORT_WATER) {
+	if (tt == TRANSPORT_RAIL && tile < other_end) {
+		/* Only execute this for one of the two ends */
+		SubtractRailTunnelBridgeInfrastructure(old, tile, other_end);
+		if (new_owner != INVALID_OWNER) AddRailTunnelBridgeInfrastructure(Company::Get(new_owner), tile, other_end);
+	}
+	if (tt == TRANSPORT_WATER) {
 		/* Set number of pieces to zero if it's the southern tile as we
 		 * don't want to update the infrastructure counts twice. */
 		const uint num_pieces = tile < other_end ? (GetTunnelBridgeLength(tile, other_end) + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR : 0;
 		old->infrastructure.water -= num_pieces;
 		if (new_owner != INVALID_OWNER) Company::Get(new_owner)->infrastructure.water += num_pieces;
-	}
-
-	if (IsTunnelBridgeWithSignalSimulation(tile) && tile < other_end) {
-		uint num_sigs = GetTunnelBridgeSignalSimulationSignalCount(tile, other_end);
-		Company::Get(old_owner)->infrastructure.signal -= num_sigs;
-		if (new_owner != INVALID_OWNER) Company::Get(new_owner)->infrastructure.signal += num_sigs;
 	}
 
 	if (new_owner != INVALID_OWNER) {

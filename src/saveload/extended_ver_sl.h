@@ -64,6 +64,7 @@ enum SlXvFeatureIndex {
 	XSLFI_ST_LAST_VEH_TYPE,                       ///< Per-cargo station last vehicle type
 	XSLFI_SELL_AT_DEPOT_ORDER,                    ///< Sell vehicle on arrival at depot orders
 	XSLFI_BUY_LAND_RATE_LIMIT,                    ///< Buy land rate limit
+	XSLFI_DUAL_RAIL_TYPES,                        ///< Two rail-types per tile
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

@@ -788,7 +788,7 @@ static bool CanEnterTile(TileIndex tile, DiagDirection dir, AyStarUserData *user
 
 	/* check correct rail type (mono, maglev, etc) */
 	if (user->type == TRANSPORT_RAIL) {
-		RailType rail_type = GetTileRailType(tile);
+		RailType rail_type = GetTileRailTypeByEntryDir(tile, dir);
 		if (!HasBit(user->railtypes, rail_type)) return false;
 	}
 

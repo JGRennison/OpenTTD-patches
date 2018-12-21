@@ -117,6 +117,46 @@ static inline TrackBits GetTunnelBridgeTrackBits(TileIndex t)
 }
 
 /**
+ * Get the primary railtype track bits for a rail tunnel/bridge
+ * @pre IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @param t the tile
+ * @return reserved track bits
+ */
+static inline TrackBits GetPrimaryTunnelBridgeTrackBits(TileIndex t)
+{
+	if (IsTunnel(t)) {
+		return DiagDirToDiagTrackBits(GetTunnelBridgeDirection(t));
+	} else {
+		TrackBits bits = GetCustomBridgeHeadTrackBits(t);
+		if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) {
+			return bits & GetAcrossBridgePossibleTrackBits(t);
+		} else {
+			return bits;
+		}
+	}
+}
+
+/**
+ * Get the secondary railtype track bits for a rail tunnel/bridge
+ * @pre IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @param t the tile
+ * @return reserved track bits
+ */
+static inline TrackBits GetSecondaryTunnelBridgeTrackBits(TileIndex t)
+{
+	if (IsTunnel(t)) {
+		return TRACK_BIT_NONE;
+	} else {
+		TrackBits bits = GetCustomBridgeHeadTrackBits(t);
+		if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) {
+			return bits & (~GetAcrossBridgePossibleTrackBits(t));
+		} else {
+			return TRACK_BIT_NONE;
+		}
+	}
+}
+
+/**
  * Get the track bits for a rail tunnel/bridge onto/across the tunnel/bridge
  * @pre IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
  * @param t the tile
@@ -189,14 +229,25 @@ static inline uint GetTunnelBridgeHeadOnlyRailInfrastructureCountFromTrackBits(T
 }
 
 /**
- * Get the rail infrastructure count of a rail tunnel/bridge head tile (excluding the tunnel/bridge middle)
+ * Get the primary railtype rail infrastructure count of a rail tunnel/bridge head tile (excluding the tunnel/bridge middle)
  * @pre IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
  * @param t the tile
  * @return rail infrastructure count
  */
-static inline uint GetTunnelBridgeHeadOnlyRailInfrastructureCount(TileIndex t)
+static inline uint GetTunnelBridgeHeadOnlyPrimaryRailInfrastructureCount(TileIndex t)
 {
-	return IsBridge(t) ? GetTunnelBridgeHeadOnlyRailInfrastructureCountFromTrackBits(GetTunnelBridgeTrackBits(t)) : TUNNELBRIDGE_TRACKBIT_FACTOR;
+	return IsBridge(t) ? GetTunnelBridgeHeadOnlyRailInfrastructureCountFromTrackBits(GetPrimaryTunnelBridgeTrackBits(t)) : TUNNELBRIDGE_TRACKBIT_FACTOR;
+}
+
+/**
+ * Get the secondary railtype rail infrastructure count of a rail tunnel/bridge head tile (excluding the tunnel/bridge middle)
+ * @pre IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @param t the tile
+ * @return rail infrastructure count
+ */
+static inline uint GetTunnelBridgeHeadOnlySecondaryRailInfrastructureCount(TileIndex t)
+{
+	return IsBridge(t) ? GetTunnelBridgeHeadOnlyRailInfrastructureCountFromTrackBits(GetSecondaryTunnelBridgeTrackBits(t)) : 0;
 }
 
 /**
@@ -429,6 +480,10 @@ static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
 }
 
+void AddRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);
+void SubtractRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);
+void AddRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);
+void SubtractRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);
 void AddRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);
 void SubtractRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);
 

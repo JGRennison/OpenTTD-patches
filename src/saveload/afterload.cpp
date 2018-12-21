@@ -1410,6 +1410,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_DUAL_RAIL_TYPES)) {
+		/* Introduced dual rail types. */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsPlainRailTile(t) || (IsRailTunnelBridgeTile(t) && IsBridge(t))) {
+				SetSecondaryRailType(t, GetRailType(t));
+			}
+		}
+	}
+
 	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 6)) {
 		/* m2 signal state bit allocation has shrunk */
 		for (TileIndex t = 0; t < map_size; t++) {
@@ -3308,7 +3317,7 @@ bool AfterLoadGame()
 			t->grow_counter = TownTicksToGameTicks(t->grow_counter) + t->index % TOWN_GROWTH_TICKS;
 		}
 	}
-	
+
 	if (IsSavegameVersionBefore(202)) {
 		/* Make sure added industry cargo slots are cleared */
 		Industry *i;

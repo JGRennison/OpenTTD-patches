@@ -296,7 +296,7 @@ public:
 static inline const RailtypeInfo *GetRailTypeInfo(RailType railtype)
 {
 	extern RailtypeInfo _railtypes[RAILTYPE_END];
-	assert(railtype < RAILTYPE_END);
+	assert_msg(railtype < RAILTYPE_END, "%u", railtype);
 	return &_railtypes[railtype];
 }
 

@@ -129,6 +129,35 @@ static inline void SetRailType(TileIndex t, RailType r)
 	SB(_me[t].m8, 0, 6, r);
 }
 
+/**
+ * Gets the second rail type of the given tile
+ * @param t the tile to get the rail type from
+ * @return the rail type of the tile
+ */
+static inline RailType GetSecondaryRailType(TileIndex t)
+{
+	return (RailType)GB(_me[t].m8, 6, 6);
+}
+
+/**
+ * Sets the second rail type of the given tile
+ * @param t the tile to set the rail type of
+ * @param r the new rail type for the tile
+ */
+static inline void SetSecondaryRailType(TileIndex t, RailType r)
+{
+	SB(_me[t].m8, 6, 6, r);
+}
+
+/**
+ * Gets the second rail type of the given tile
+ * @param t the tile to get the rail type from
+ * @return the rail type of the tile
+ */
+static inline RailType GetPlainRailParallelTrackRailTypeByTrackBit(TileIndex t, TrackBits b)
+{
+	return b & TRACK_BIT_RT_1 ? GetRailType(t) : GetSecondaryRailType(t);
+}
 
 /**
  * Gets the track bits of the given tile
@@ -513,6 +542,18 @@ static inline void SetRestrictedSignal(TileIndex tile, bool is_restricted)
 
 
 RailType GetTileRailType(TileIndex tile);
+RailType GenericGetRailTypeByTrack(TileIndex t, Track track, bool return_invalid);
+RailType GenericGetRailTypeByTrackBit(TileIndex t, TrackBits track, bool return_invalid);
+RailType GenericGetRailTypeByEntryDir(TileIndex t, DiagDirection enterdir, bool return_invalid);
+RailType GetTileSecondaryRailTypeIfValid(TileIndex t);
+
+static inline RailType GetTileRailTypeByTrack(TileIndex t, Track track) { return GenericGetRailTypeByTrack(t, track, true); }
+static inline RailType GetTileRailTypeByTrackBit(TileIndex t, TrackBits track) { return GenericGetRailTypeByTrackBit(t, track, true); }
+static inline RailType GetTileRailTypeByEntryDir(TileIndex t, DiagDirection enterdir) { return GenericGetRailTypeByEntryDir(t, enterdir, true); }
+
+static inline RailType GetRailTypeByTrack(TileIndex t, Track track) { return GenericGetRailTypeByTrack(t, track, false); }
+static inline RailType GetRailTypeByTrackBit(TileIndex t, TrackBits track) { return GenericGetRailTypeByTrackBit(t, track, false); }
+static inline RailType GetRailTypeByEntryDir(TileIndex t, DiagDirection enterdir) { return GenericGetRailTypeByEntryDir(t, enterdir, false); }
 
 /** The ground 'under' the rail */
 enum RailGroundType {
