@@ -223,7 +223,6 @@ static inline bool HasAcrossTunnelBridgeReservation(TileIndex t)
  */
 static inline uint GetTunnelBridgeHeadOnlyRailInfrastructureCountFromTrackBits(TrackBits bits)
 {
-	if (!bits) return 0;
 	uint pieces = CountBits(bits);
 	if (TracksOverlap(bits)) pieces *= pieces;
 	return (TUNNELBRIDGE_TRACKBIT_FACTOR / 2) * (1 + pieces);
@@ -248,7 +247,7 @@ static inline uint GetTunnelBridgeHeadOnlyPrimaryRailInfrastructureCount(TileInd
  */
 static inline uint GetTunnelBridgeHeadOnlySecondaryRailInfrastructureCount(TileIndex t)
 {
-	return IsBridge(t) ? GetTunnelBridgeHeadOnlyRailInfrastructureCountFromTrackBits(GetSecondaryTunnelBridgeTrackBits(t)) : 0;
+	return IsBridge(t) && GetSecondaryTunnelBridgeTrackBits(t) ? (TUNNELBRIDGE_TRACKBIT_FACTOR / 2) : 0;
 }
 
 /**
