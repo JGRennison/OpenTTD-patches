@@ -223,6 +223,7 @@ static inline bool HasAcrossTunnelBridgeReservation(TileIndex t)
  */
 static inline uint GetTunnelBridgeHeadOnlyRailInfrastructureCountFromTrackBits(TrackBits bits)
 {
+	if (!bits) return 0;
 	uint pieces = CountBits(bits);
 	if (TracksOverlap(bits)) pieces *= pieces;
 	return (TUNNELBRIDGE_TRACKBIT_FACTOR / 2) * (1 + pieces);
