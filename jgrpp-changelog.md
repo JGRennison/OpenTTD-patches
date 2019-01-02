@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.29.0 (2019-01-02)
+* Fix crash or other failures when using more than approximately 230 NewGRFs.
+* Allow up to two rail types per tile.
+* Land area purchasing:
+  * Allow purchasing a region of tiles at once, by dragging.
+  * Add company rate limit for land purchasing.
+  * Add setting to control if and how land purchasing is permitted.
+* Routing restrictions: Add advanced feature reverse behind signal.
+* Prevent AIs from creating or adding to rail custom bridge heads.
+* NewGRF interface: Add Action 5 support for programmable signals graphics.
+* Bump trunk base from commit 16a36dffa0ccd7753de0100ee320a4982bb1945c to commit 391bc45c41287bf3016e33266b24f30cdbfb5f07.
+
 ### v0.28.0 (2018-11-22)
 * Fix trains unnecessarily slowing down when passing waypoints.
 * Template-based train replacement: Add option to replace only old vehicles.

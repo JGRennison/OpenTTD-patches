@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.28.0
+## JGR's Patchpack version 0.29.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -202,8 +202,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Freight train through load (added in v0.24.0)  
   This is an alternative loading mode for freight trains for the case where the train is longer then the platform.
-  
+
 * Up to 256 NewGRFs in multiplayer (added in v0.25.0)
+
+* Multiple rail types per tile (added in v0.29.0)
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
@@ -232,6 +234,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Leave early order timetable flag. (added in v0.27.0).  
   * Timetabled wait times at waypoints. (added in v0.27.0).  
   * Add setting to enable flipping direction of all train types in depot. (added in v0.27.1).  
+  * Allow purchasing a region of tiles at once, by dragging, and add a company rate limit for land purchasing (added in v0.29.0).  
+  * Add setting to control if and how land purchasing is permitted. (added in v0.29.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html).
 
