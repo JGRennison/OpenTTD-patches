@@ -2562,6 +2562,12 @@ static const SubSprite _halftile_sub_sprite[4] = {
 	{ -31 + 33, -INF  , INF    , INF     }, // CORNER_E, clip 33 pixels from left
 	{ -INF    , -INF  , INF    , 30 - 23 }  // CORNER_N, clip 23 pixels from bottom
 };
+static const SubSprite _dual_track_halftile_sub_sprite[4] = {
+	{ -INF    , -INF  , 32 - 33, INF     }, // CORNER_W, clip 33 pixels from right
+	{ -INF    , 0 + 15, INF    , INF     }, // CORNER_S, clip 15 pixels from top
+	{ -31 + 33, -INF  , INF    , INF     }, // CORNER_E, clip 33 pixels from left
+	{ -INF    , -INF  , INF    , 30 - 15 }  // CORNER_N, clip 15 pixels from bottom
+};
 
 static inline void DrawTrackSprite(SpriteID sprite, PaletteID pal, const TileInfo *ti, Slope s)
 {
@@ -2578,8 +2584,6 @@ static RailGroundType GetRailOrBridgeGroundType(TileInfo *ti) {
 
 static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailtypeInfo *rti, RailGroundType rgt,  bool is_bridge, Corner halftile_corner, Corner draw_half_tile)
 {
-	const SubSprite *sub = NULL;
-	if (draw_half_tile != CORNER_INVALID) sub = &(_halftile_sub_sprite[draw_half_tile]);
 	if (halftile_corner != CORNER_INVALID) track &= ~CornerToTrackBits(halftile_corner);
 
 	if (halftile_corner != CORNER_INVALID || draw_half_tile == CORNER_INVALID) {
@@ -2603,6 +2607,8 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailtypeIn
 
 			image += SlopeToSpriteOffset(ti->tileh);
 
+			const SubSprite *sub = NULL;
+			if (draw_half_tile != CORNER_INVALID) sub = &(_halftile_sub_sprite[draw_half_tile]);
 			DrawGroundSprite(image, PAL_NONE, sub);
 		}
 	}
@@ -2738,9 +2744,16 @@ void DrawTrackBits(TileInfo *ti, TrackBits track, RailType rt, RailGroundType rg
 	const SubSprite *sub = NULL;
 	bool junction = false;
 
-	if (halftile_corner != CORNER_INVALID) track &= ~CornerToTrackBits(halftile_corner);
-
-	if (draw_half_tile != CORNER_INVALID) sub = &(_halftile_sub_sprite[draw_half_tile]);
+	if (halftile_corner != CORNER_INVALID) {
+		track &= ~CornerToTrackBits(halftile_corner);
+		if (draw_half_tile != CORNER_INVALID) {
+			sub = &(_halftile_sub_sprite[draw_half_tile]);
+		}
+	} else {
+		if (draw_half_tile != CORNER_INVALID) {
+			sub = &(_dual_track_halftile_sub_sprite[draw_half_tile]);
+		}
+	}
 
 	/* Select the sprite to use. */
 	if (track == 0 && draw_half_tile != CORNER_INVALID) {
