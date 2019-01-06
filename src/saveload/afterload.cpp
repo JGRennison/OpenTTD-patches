@@ -3570,6 +3570,16 @@ bool AfterLoadGame()
 		FOR_ALL_COMPANIES(c) c->purchase_land_limit = _settings_game.construction.purchase_land_frame_burst << 16;
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 1)) {
+		Order *order;
+		FOR_ALL_ORDERS(order) {
+			// Insertion of OCV_MAX_RELIABILITY between OCV_REMAINING_LIFETIME and OCV_CARGO_WAITING
+			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() > OCV_REMAINING_LIFETIME) {
+				order->SetConditionVariable(static_cast<OrderConditionVariable>((uint)order->GetConditionVariable() + 1));
+			}
+		}
+	}
+
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
 	AfterLoadLabelMaps();

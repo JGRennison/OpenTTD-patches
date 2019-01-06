@@ -49,7 +49,7 @@ static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               10,  10, "tracerestrict",             NULL, NULL, "TRRM,TRRP,TRRS" },
 	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,                1,   1, "tracerestrict_owner",       NULL, NULL, NULL        },
-	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                2,   2, "tracerestrict_order_cond",  NULL, NULL, NULL        },
+	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                3,   3, "tracerestrict_order_cond",  NULL, NULL, NULL        },
 	{ XSLFI_TRACE_RESTRICT_STATUSCND,XSCF_NULL,               1,   1, "tracerestrict_status_cond", NULL, NULL, NULL        },
 	{ XSLFI_TRACE_RESTRICT_REVERSE, XSCF_NULL,                1,   1, "tracerestrict_reverse",     NULL, NULL, NULL        },
 	{ XSLFI_PROG_SIGS,              XSCF_NULL,                1,   1, "programmable_signals",      NULL, NULL, "SPRG"      },
@@ -67,7 +67,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_INFRA_SHARING,          XSCF_NULL,                2,   2, "infra_sharing",             NULL, NULL, "CPDP"      },
 	{ XSLFI_VARIABLE_DAY_LENGTH,    XSCF_NULL,                2,   2, "variable_day_length",       NULL, NULL, NULL        },
 	{ XSLFI_ORDER_OCCUPANCY,        XSCF_NULL,                2,   2, "order_occupancy",           NULL, NULL, NULL        },
-	{ XSLFI_MORE_COND_ORDERS,       XSCF_NULL,                1,   1, "more_cond_orders",          NULL, NULL, NULL        },
+	{ XSLFI_MORE_COND_ORDERS,       XSCF_NULL,                2,   2, "more_cond_orders",          NULL, NULL, NULL        },
 	{ XSLFI_EXTRA_LARGE_MAP,        XSCF_NULL,                0,   1, "extra_large_map",           NULL, NULL, NULL        },
 	{ XSLFI_REVERSE_AT_WAYPOINT,    XSCF_NULL,                1,   1, "reverse_at_waypoint",       NULL, NULL, NULL        },
 	{ XSLFI_VEH_LIFETIME_PROFIT,    XSCF_NULL,                1,   1, "veh_lifetime_profit",       NULL, NULL, NULL        },

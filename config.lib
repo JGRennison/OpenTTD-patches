@@ -1343,8 +1343,6 @@ make_compiler_cflags() {
 		if [ $cc_version -ge 110 ]; then
 			# remark #2259: non-pointer conversion from ... to ... may lose significant bits
 			flags="$flags -wd2259"
-			# Use c++0x mode so static_assert() is available
-			cxxflags="$cxxflags -std=c++11"
 		fi
 
 		if [ $cc_version -lt 140 ]; then
@@ -1362,7 +1360,8 @@ make_compiler_cflags() {
 		fi
 	elif echo "$version_line" | grep -q "clang"; then
 		# Enable some things only for certain clang versions
-		cc_version="`$1 -v 2>&1 | head -n 1 | sed s@[^0-9]@@g | cut -c 1-2`"
+		# Need to try really hard to get the version line, because OSX clang likes to hide its true version
+		cc_version="`$1 -v 2>&1 | grep -i version | head -n 1 | sed s@[^0-9]@@g | cut -c 1-2`"
 
 		# aliasing rules are not held in openttd code
 		flags="$flags -fno-strict-aliasing"
@@ -1412,7 +1411,7 @@ make_compiler_cflags() {
 
 		if [ "$cc_version" -ge "33" ]; then
 			# clang completed C++11 support in version 3.3
-			flags="$flags -std=c++11 -DCUSTOM_ALLOCATOR"
+			flags="$flags -DCUSTOM_ALLOCATOR"
 		else
 			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | head -n 1`, minumum: 3.3"
 			exit 1
@@ -1476,12 +1475,6 @@ make_compiler_cflags() {
 			flags="$flags -Wnon-virtual-dtor"
 		fi
 
-		if [ $cc_version -ge 403 ] && [ $cc_version -lt 600 ]; then
-			# Use gnu++0x mode so static_assert() is available.
-			# Don't use c++0x, it breaks mingw (with gcc 4.4.0).
-			cxxflags="$cxxflags -std=gnu++11"
-		fi
-
 		if [ $cc_version -eq 405 ]; then
 			# Prevent optimisation supposing enums are in a range specified by the standard
 			# For details, see http://gcc.gnu.org/PR43680
@@ -1511,7 +1504,7 @@ make_compiler_cflags() {
 		if [ $cc_version -ge 600 ]; then
 			# -flifetime-dse=2 (default since GCC 6) doesn't play
 			# well with our custom pool item allocator
-			cxxflags="$cxxflags -flifetime-dse=1 -std=gnu++14"
+			cxxflags="$cxxflags -flifetime-dse=1"
 		fi
 
 		if [ "$enable_lto" != "0" ]; then
@@ -1602,6 +1595,8 @@ make_cflags_and_ldflags() {
 
 	CFLAGS="$CFLAGS -D$os"
 	CFLAGS_BUILD="$CFLAGS_BUILD -D$os"
+	CXXFLAGS="$CXXFLAGS -std=c++11"
+	CXXFLAGS_BUILD="$CXXFLAGS_BUILD -std=c++11"
 
 	if [ "$enable_static" != "0" ]; then
 		STATIC_FLAGS="--static"
@@ -3247,10 +3242,16 @@ detect_iconv() {
 	# Try to find iconv.h, seems to only thing to detect iconv with
 
 	if [ "$with_iconv" = "1" ] || [ "$with_iconv" = "" ] || [ "$with_iconv" = "2" ]; then
-		iconv=`ls -1 /usr/include 2>/dev/null | grep "iconv.h"`
-		if [ -z "$iconv" ]; then
-			iconv=`ls -1 /usr/local/include 2>/dev/null | grep "iconv.h"`
-		fi
+		# Iterate over search paths
+		iconv=""
+		search_paths=`LC_ALL=C $cxx_host $OSX_SYSROOT $CFLAGS -E - -v </dev/null 2>&1 | \
+		              $awk '/#include <...> search starts here:/{flag=1;next}/End of search list./{flag=0}flag'`
+		for path in $search_paths; do
+			iconv=`ls -1 $path 2>/dev/null | grep "iconv.h"`
+			if [ -n "$iconv" ]; then
+				break
+			fi
+		done
 	else
 		# Make sure it exists
 		iconv=`ls $with_iconv/include/iconv.h 2>/dev/null`

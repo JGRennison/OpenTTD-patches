@@ -4580,6 +4580,7 @@ STR_ORDER_CONDITIONAL_AGE                                       :Age (years)
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Requires service
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Always
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Remaining lifetime (years)
+STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Maximum reliability
 STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Waiting cargo
 STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Accepted cargo
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Free platforms
