@@ -22,6 +22,8 @@
     <ProjectName>openttd</ProjectName>
     <ProjectGuid>{668328A0-B40E-4CDB-BD72-D0064424414A}</ProjectGuid>
     <RootNamespace>openttd</RootNamespace>
+    <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
+    <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -105,7 +107,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_XAUDIO2;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;WITH_PNG;WITH_FREETYPE;WITH_UNISCRIBE;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -136,7 +138,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;imm32.lib;libpng.lib;zlibstat.lib;lzo2.lib;liblzma.lib;libfreetype2.lib;icuuc.lib;icuin.lib;icudt.lib;icule.lib;iculx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -170,7 +172,7 @@
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_XAUDIO2;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;WITH_PNG;WITH_FREETYPE;WITH_UNISCRIBE;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -192,7 +194,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;imm32.lib;libpng.lib;zlibstat.lib;lzo2.lib;liblzma.lib;libfreetype2.lib;icuuc.lib;icuin.lib;icudt.lib;icule.lib;iculx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -228,7 +230,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_XAUDIO2;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;WITH_PNG;WITH_FREETYPE;WITH_UNISCRIBE;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;WITH_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -259,7 +261,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;imm32.lib;libpng.lib;zlibstat.lib;lzo2.lib;liblzma.lib;libfreetype2.lib;icuuc.lib;icuin.lib;icudt.lib;icule.lib;iculx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -291,7 +293,7 @@
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <AdditionalIncludeDirectories>..\objs\langs;..\objs\settings;..\src\3rdparty\squirrel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;LZMA_API_STATIC;WITH_PNG;WITH_FREETYPE;WITH_ICU_SORT;WITH_ICU_LAYOUT;U_STATIC_IMPLEMENTATION;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32_ENABLE_DIRECTMUSIC_SUPPORT;WITH_XAUDIO2;WITH_SSE;WITH_ZLIB;WITH_LZO;WITH_LZMA;WITH_PNG;WITH_FREETYPE;WITH_UNISCRIBE;ENABLE_NETWORK;WITH_PERSONAL_DIR;PERSONAL_DIR="OpenTTD";_SQ64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -317,7 +319,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;imm32.lib;libpng.lib;zlibstat.lib;lzo2.lib;liblzma.lib;libfreetype2.lib;icuuc.lib;icuin.lib;icudt.lib;icule.lib;iculx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -502,6 +504,7 @@
     <ClInclude Include="..\src\fios.h" />
     <ClInclude Include="..\src\fontcache.h" />
     <ClInclude Include="..\src\fontdetection.h" />
+    <ClInclude Include="..\src\framerate_type.h" />
     <ClInclude Include="..\src\base_consist.h" />
     <ClInclude Include="..\src\gamelog.h" />
     <ClInclude Include="..\src\gamelog_internal.h" />
@@ -590,6 +593,8 @@
     <ClInclude Include="..\src\news_func.h" />
     <ClInclude Include="..\src\news_gui.h" />
     <ClInclude Include="..\src\news_type.h" />
+    <ClInclude Include="..\src\music\midi.h" />
+    <ClInclude Include="..\src\music\midifile.hpp" />
     <ClInclude Include="..\src\music\null_m.h" />
     <ClInclude Include="..\src\sound\null_s.h" />
     <ClInclude Include="..\src\video\null_v.h" />
@@ -616,6 +621,7 @@
     <ClInclude Include="..\src\roadstop_base.h" />
     <ClInclude Include="..\src\roadveh.h" />
     <ClInclude Include="..\src\safeguards.h" />
+    <ClInclude Include="..\src\scope.h" />
     <ClInclude Include="..\src\screenshot.h" />
     <ClInclude Include="..\src\sdl.h" />
     <ClInclude Include="..\src\sound\sdl_s.h" />
@@ -650,6 +656,7 @@
     <ClInclude Include="..\src\string_base.h" />
     <ClInclude Include="..\src\string_func.h" />
     <ClInclude Include="..\src\string_type.h" />
+    <ClInclude Include="..\src\os\windows\string_uniscribe.h" />
     <ClInclude Include="..\src\stringfilter_type.h" />
     <ClInclude Include="..\src\strings_func.h" />
     <ClInclude Include="..\src\strings_type.h" />
@@ -703,6 +710,7 @@
     <ClInclude Include="..\src\window_func.h" />
     <ClInclude Include="..\src\window_gui.h" />
     <ClInclude Include="..\src\window_type.h" />
+    <ClInclude Include="..\src\sound\xaudio2_s.h" />
     <ClInclude Include="..\src\zoom_func.h" />
     <ClInclude Include="..\src\zoom_type.h" />
     <ClCompile Include="..\src\core\alloc_func.cpp" />
@@ -711,6 +719,8 @@
     <ClInclude Include="..\src\core\backup_type.hpp" />
     <ClCompile Include="..\src\core\bitmath_func.cpp" />
     <ClInclude Include="..\src\core\bitmath_func.hpp" />
+    <ClInclude Include="..\src\core\container_func.hpp" />
+    <ClInclude Include="..\src\core\dyn_arena_alloc.hpp" />
     <ClInclude Include="..\src\core\endian_func.hpp" />
     <ClInclude Include="..\src\core\endian_type.hpp" />
     <ClInclude Include="..\src\core\enum_type.hpp" />
@@ -748,6 +758,7 @@
     <ClCompile Include="..\src\engine_gui.cpp" />
     <ClCompile Include="..\src\error_gui.cpp" />
     <ClCompile Include="..\src\fios_gui.cpp" />
+    <ClCompile Include="..\src\framerate_gui.cpp" />
     <ClCompile Include="..\src\genworld_gui.cpp" />
     <ClCompile Include="..\src\goal_gui.cpp" />
     <ClCompile Include="..\src\graph_gui.cpp" />
@@ -809,6 +820,7 @@
     <ClInclude Include="..\src\widgets\engine_widget.h" />
     <ClInclude Include="..\src\widgets\error_widget.h" />
     <ClInclude Include="..\src\widgets\fios_widget.h" />
+    <ClInclude Include="..\src\widgets\framerate_widget.h" />
     <ClInclude Include="..\src\widgets\genworld_widget.h" />
     <ClInclude Include="..\src\widgets\goal_widget.h" />
     <ClInclude Include="..\src\widgets\graph_widget.h" />
@@ -1167,6 +1179,8 @@
     <ClCompile Include="..\src\script\api\script_window.cpp" />
     <ClCompile Include="..\src\blitter\32bpp_anim.cpp" />
     <ClInclude Include="..\src\blitter\32bpp_anim.hpp" />
+    <ClCompile Include="..\src\blitter\32bpp_anim_sse2.cpp" />
+    <ClInclude Include="..\src\blitter\32bpp_anim_sse2.hpp" />
     <ClCompile Include="..\src\blitter\32bpp_anim_sse4.cpp" />
     <ClInclude Include="..\src\blitter\32bpp_anim_sse4.hpp" />
     <ClCompile Include="..\src\blitter\32bpp_base.cpp" />
@@ -1311,12 +1325,15 @@
     <ClCompile Include="..\src\video\win32_v.cpp" />
     <ClCompile Include="..\src\music\dmusic.cpp" />
     <ClCompile Include="..\src\music\null_m.cpp" />
+    <ClCompile Include="..\src\music\midifile.cpp" />
     <ClCompile Include="..\src\music\win32_m.cpp" />
     <ClCompile Include="..\src\sound\null_s.cpp" />
     <ClCompile Include="..\src\sound\sdl_s.cpp" />
     <ClCompile Include="..\src\sound\win32_s.cpp" />
+    <ClCompile Include="..\src\sound\xaudio2_s.cpp" />
     <ClCompile Include="..\src\os\windows\crashlog_win.cpp" />
     <ResourceCompile Include="..\src\os\windows\ottdres.rc" />
+    <ClCompile Include="..\src\os\windows\string_uniscribe.cpp" />
     <ClCompile Include="..\src\os\windows\win32.cpp" />
     <ClInclude Include="..\src\thread\thread.h" />
     <ClCompile Include="..\src\thread\thread_win32.cpp" />

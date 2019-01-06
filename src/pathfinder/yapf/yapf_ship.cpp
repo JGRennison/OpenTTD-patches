@@ -65,11 +65,11 @@ public:
 
 			/* use vehicle's current direction if that's possible, otherwise use first usable one. */
 			Trackdir veh_dir = v->GetVehicleTrackdir();
-			return ((trackdirs & TrackdirToTrackdirBits(veh_dir)) != 0) ? veh_dir : (Trackdir)FindFirstBit2x64(trackdirs);
+			return (HasTrackdir(trackdirs, veh_dir)) ? veh_dir : (Trackdir)FindFirstBit2x64(trackdirs);
 		}
 
 		/* move back to the old tile/trackdir (where ship is coming from) */
-		TileIndex src_tile = TILE_ADD(tile, TileOffsByDiagDir(ReverseDiagDir(enterdir)));
+		TileIndex src_tile = TileAddByDiagDir(tile, ReverseDiagDir(enterdir));
 		Trackdir trackdir = v->GetVehicleTrackdir();
 		assert(IsValidTrackdir(trackdir));
 

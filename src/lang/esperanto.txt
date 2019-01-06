@@ -663,10 +663,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Elektu l
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Miksu/ne miksu
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Montru muziker-elektan fenestron
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Senkanta muzikaro estas elektita. Neniu kanto ludos.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Elekto de Muzikprogramo
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Numera Indekso
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programo - '{STRING}'
@@ -1199,7 +1196,6 @@ STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR                       :Ligu landaspekt
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Verda
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Malhele verda
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Viola
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Inversigu skroldirekton: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Glata rulumado de vidujo: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Montru mezuran konsilbalonon ĉe uzo de konstruiloj: {STRING}
 STR_CONFIG_SETTING_LIVERIES                                     :Montru veturiltipe specifajn liverojn: {STRING}
@@ -1223,7 +1219,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Komando+Klako
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+Klako
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Ne
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Maldekstr-klak-rulumado: {STRING}
 
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Uzu la {STRING} datformon por nomoj de konservludoj.
@@ -2267,6 +2262,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Origina 
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD-versio {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 La teamo de OpenTTD
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Konservu Ludon
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Ŝarĝu Ludon
@@ -2514,8 +2516,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Monda en
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Urbo)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Enloĝantoj: {ORANGE}{COMMA}{BLACK}  Domoj: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Pasaĝeroj lastmonate: {ORANGE}{COMMA}{BLACK}  maksimume: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Poŝto lastmonate: {ORANGE}{COMMA}{BLACK}  maksimume: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Kargo bezonata por kreskigi urbon:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} bezonatas
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} bezonatas en vintro
@@ -3579,7 +3579,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Tro da s
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Tro da partoj de stacidomo
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Tro da bushaltejoj
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Tro da ŝarĝaŭtaj stacioj
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Tro proksime al alia stacioj/ŝarĝejoj
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Tro proksime al alia haveno
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Tro proksime al alia flughaveno
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Ne povas alinomi stacion...

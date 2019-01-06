@@ -669,10 +669,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}プレ�
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}プレイリストのシャッフルの有効/無効を切り替えます
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}曲選択のウィンドウを表示します
 
-STR_ERROR_NO_SONGS                                              :{WHITE}選択した音楽セットに曲がありません
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}プレイリストの選択
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}楽曲索引
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}プレイリスト - '{STRING}'
@@ -1337,8 +1334,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :ミニマップ
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :緑
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :濃緑
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :青紫
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :スクロール方面を反転: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :マウス右ボタンで地図をスクロールする時の挙動を設定します。無効にした場合はマウスはカメラを動かします(マウスの移動方向に移動します)。有効にした場合は地図を動かします(マウスの移動方向と逆に移動します)
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :画面のスムーズスクロール: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :ミニマップでの移動や「現在位置に移動」などのコマンドを使用した際にメイン画面がどのように移動するかを設定します。有効にした場合はスムーズにスクロールして移動します。無効の場合は目的地に直接ジャンプします
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :測定ツールチップ表示: {STRING}
@@ -1370,8 +1365,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :コマンド+�
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+クリック (Win)
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :切
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :左ドラッグスクロール: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :有効にすると左ドラッグでマップのスクロールができるようになります。特にタッチスクリーンを利用しているときに便利です
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :オートセーブ: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :オートセーブの間隔を設定します
@@ -2690,6 +2683,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}オリ�
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD バージョン {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 The OpenTTD team
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ゲームを保存
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}ゲームを開く
@@ -2981,8 +2981,6 @@ STR_TOWN_POPULATION                                             :{BLACK}地域�
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN}(市)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}人口: {ORANGE}{COMMA}人{BLACK}　建物: {ORANGE}{COMMA}戸
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}旅客数(先月): {ORANGE}{COMMA}人{BLACK}　最大: {ORANGE}{COMMA}人
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}郵便袋(先月): {ORANGE}{COMMA}袋{BLACK}　最大: {ORANGE}{COMMA}袋
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}街の成長に必要な物資:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}が{RED}必要です
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}が{BLACK}冬に必要です
@@ -4208,7 +4206,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}停留�
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}駅の部分が多すぎます
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}バス停が多すぎます
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}荷役所が多すぎます
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}他の停留施設に近すぎます
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}他の埠頭に近すぎます
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}他の空港に近すぎます
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}駅名を変更できません

@@ -71,6 +71,15 @@ struct DifficultySettings {
 	byte   town_council_tolerance;           ///< minimum required town ratings to be allowed to demolish stuff
 };
 
+/** Settings relating to viewport/smallmap scrolling. */
+enum ViewportScrollMode {
+	VSM_VIEWPORT_RMB_FIXED, ///< Viewport moves with mouse movement on holding right mouse button, cursor position is fixed.
+	VSM_MAP_RMB_FIXED,      ///< Map moves with mouse movement on holding right mouse button, cursor position is fixed.
+	VSM_MAP_RMB,            ///< Map moves with mouse movement on holding right mouse button, cursor moves.
+	VSM_MAP_LMB,            ///< Map moves with mouse movement on holding left mouse button, cursor moves.
+	VSM_END,                ///< Number of scroll mode settings.
+};
+
 /** Settings related to the GUI and other stuff that is not saved in the savegame. */
 struct GUISettings {
 	bool   sg_full_load_any;                 ///< new full load calculation, any cargo must be full read from pre v93 savegames
@@ -86,11 +95,11 @@ struct GUISettings {
 	uint16 hover_delay_ms;                   ///< time required to activate a hover event, in milliseconds
 	bool   link_terraform_toolbar;           ///< display terraform toolbar when displaying rail, road, water and airport toolbars
 	uint8  smallmap_land_colour;             ///< colour used for land and heightmap at the smallmap
-	bool   reverse_scroll;                   ///< right-Click-Scrolling scrolls in the opposite direction
+	uint8  scroll_mode;                      ///< viewport scroll mode
 	bool   smooth_scroll;                    ///< smooth scroll viewports
 	bool   measure_tooltip;                  ///< show a permanent tooltip when dragging tools
 	byte   liveries;                         ///< options for displaying company liveries, 0=none, 1=self, 2=all
-	bool   prefer_teamchat;                  ///< choose the chat message target with <ENTER>, true=all clients, false=your team
+	bool   prefer_teamchat;                  ///< choose the chat message target with \<ENTER\>, true=all clients, false=your team
 	uint8  advanced_vehicle_list;            ///< use the "advanced" vehicle list
 	uint8  loading_indicators;               ///< show loading indicators
 	uint8  default_rail_type;                ///< the default rail type for the rail GUI
@@ -105,6 +114,7 @@ struct GUISettings {
 	bool   threaded_saves;                   ///< should we do threaded saves?
 	bool   keep_all_autosave;                ///< name the autosave in a different way
 	bool   autosave_on_exit;                 ///< save an autosave when you quit the game, but do not ask "Do you really want to quit?"
+	bool   autosave_on_network_disconnect;   ///< save an autosave when you get disconnected from a network game with an error?
 	uint8  date_format_in_default_names;     ///< should the default savegame/screenshot name use long dates (31th Dec 2008), short dates (31-12-2008) or ISO dates (2008-12-31)
 	byte   max_num_autosaves;                ///< controls how many autosavegames are made before the game starts to overwrite (names them 0 to max_num_autosaves - 1)
 	bool   population_in_label;              ///< show the population of a town in his label?
@@ -112,7 +122,6 @@ struct GUISettings {
 	uint8  scrollwheel_scrolling;            ///< scrolling using the scroll wheel?
 	uint8  scrollwheel_multiplier;           ///< how much 'wheel' per incoming event from the OS?
 	bool   timetable_arrival_departure;      ///< show arrivals and departures in vehicle timetables
-	bool   left_mouse_btn_scrolling;         ///< left mouse button scroll
 	bool   right_mouse_wnd_close;            ///< close window with right click
 	bool   pause_on_newgame;                 ///< whether to start new games paused or not
 	bool   enable_signal_gui;                ///< show the signal GUI when the signal button is pressed

@@ -669,10 +669,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Wielt de
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Schalt den "shuffle" un/aus
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Weis d'Fënster fir Musik ze wielen
 
-STR_ERROR_NO_SONGS                                              :{WHITE}E Music Set ouni Lidder gouf gewielt. Et wäerten keng Lidder gespillt ginn
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Musiksprogramm Auswiel
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Lidder Index
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programm - '{STRING}'
@@ -1337,8 +1334,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Faarf vum Terra
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Gréng
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Donkelgréng
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Mof
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Deen anere Wee scrollen: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Verhalen beim Scrollen vun der Kaart mat der rietser Maustast. Wann ausgeschalt, beweegt d'Maus d'Kamera. Wann ugeschalt, beweegt d'Maus d'Kaart
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Feine Scrolling: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Kontrolléiert wéi d'Haptusiicht op eng bestëmmten Positioun scrollt, wann een op déi kléng Kaart klickt oder en Befehl fir ob en spezifescht Objet ze scrollen gëtt. Wann ugeschalt, gëtt bis dohin gescrollt, wann ausgeschalt, spréngt d'Vue op den Zielobjet
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Weis en Mooss-Tooltip wann verschidde Bau-Tools benotzt ginn: {STRING}
@@ -1370,8 +1365,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :COMM+Klick
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :CTRL+Klick
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Aus
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Lénksklickscroll: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Schalt d'Scrollen vun der Kaart un, wann se mat der lénker Maustast gezunn gëtt
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Fënster mat rietsem Mausklick zouman: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Mécht eng Fenster mat engem Rietsklick zou, wann een an d'Fënster klickt. Schalt Tooltips aus déi per Rietsklick gemet ginn!
 
@@ -2693,6 +2686,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD Versioun {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 D'OpenTTD team
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spill späicheren
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Spill lueden
@@ -2984,8 +2984,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Weltbev�
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Stad)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Awunner: {ORANGE}{COMMA}{BLACK}  Haiser: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Passagéier leschte Mount: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Post leschte Mount: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Gidder gebraucht fir Stadwuesstem:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} gebraucht
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} gebraucht am Wanter
@@ -4224,7 +4222,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Ze vill 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Ze vill Garesdeeler
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Ze vill Busarrêten
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Ze vill Camionsgaren
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Ze noo un enger aanerer Gare/Luedstatioun
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Ze noo un engem aanerem Hafen
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Ze noo un engem aaneren Fluchhafen
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Kann d'Statioun net ëmbenennen...

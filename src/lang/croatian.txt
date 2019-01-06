@@ -571,6 +571,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Slika zaslona
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Zumirano do kraja na slici zaslona
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Standardno zumiranje slike zaslona
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Slika zaslona cijele karte
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Prikaži broj sličica u sekundi
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :O 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Poravnanje spritea
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Odaberi granične okvire
@@ -746,6 +747,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}Nema dostupne muzike
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Traka
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Naslov
@@ -765,15 +767,15 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Odaberi 
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Uključi/isključi miješanje programa
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Pokaži prozor za izbor glazbenih traka
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Odabran je set glazbe bez pjesama. Ne će se puštati nikakve pjesme
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Izbor glazbenog programa
+STR_PLAYLIST_MUSIC_SELECTION_SETNAME                            :{WHITE}Program muzike - '{STRING}'
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Popis traka
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Program- '{STRING}'
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Obriši
+STR_PLAYLIST_CHANGE_SET                                         :{BLACK}Promijeni set
 STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Obriši aktivni program (samo Proizvoljno 1 ili Proizvoljno 2)
+STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}Promijeni odabir muzike na neki drugi instalirani set
 STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Klikni na glazbenu traku za dodavanje u aktivni program (samo Proizvoljno 1 ili Proizvoljno 2)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Klikni na glazbenu traku kako bi ju uklonio iz trenutnog programa (samo Proizvoljno 1 ili Proizvoljno 2)
 
@@ -909,6 +911,7 @@ STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLAC
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Direktor)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}Tvrtka {STRING} sponzorira izgradnju novoga grada {TOWN}!
+STR_NEWS_NEW_TOWN_UNSPONSORED                                   :{BLACK}{BIG_FONT}Sagrađen je novi grad {TOWN}!
 
 STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}Započela je izgradnja nove {STRING.gen} u blizini grada {TOWN}a!
 STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}Nova {STRING} trenutno se sadi blizu grada {TOWN}a!
@@ -976,10 +979,10 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Mini pogled {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Kopiraj u mini pogled
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Promijeni pogled
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopiraj lokaciju globalnog pogleda u ovaj mini pogled
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Zalijepi iz mini pogleda
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Zalijepi lokaciju ovog mini pogleda u globalni pogled
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Promijeni glavni pogled
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Kopiraj lokaciju ovog mini pogleda u glavni pogled
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Postavke igre
@@ -1021,6 +1024,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Južnoafrički 
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Proizvoljno...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijski Lari (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranski Rial (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nove ruske rublje (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Cestovna vozila
@@ -1433,8 +1437,12 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Boja terena na 
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :{G=female}Zelena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :{G=female}Tamno zelena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :{G=female}Ljubičasta
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Promijeni smjer klizanja: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Ponašanje kod pomicanja karte desnim gumbom miša. Kada je isključeno, miš pomiče kameru. Kada je uključeno, miš pomiče kartu
+STR_CONFIG_SETTING_SCROLLMODE                                   :Ponašanje klizanja kroz mini pogled: {STRING}
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Ponašanje kod klizanja kroz mapu
+STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Pomiči mini pogled sa desnom tipkom miša, pozicija miša zaključana
+STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Pomiči mapu sa desnom tipkom miša, pozicija miša zaključana
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :Pomiči mapu sa desnom tipkom miša
+STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Pomiči mapu sa lijevom tipkom miša
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Glatko klizanje kroz mini pogled: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Odredi kako se glavni prikaz pomiče na određeno mjesto kada se klikne na malu kartu ili kada se izda naredba za pomicanje na određeni objekt na karti. Ako je uključeno, prikaz se pomiče glatko, ako je isključeno, prikaz izravno skače na ciljnu lokaciju
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Pokaži mjerni naputak prilikom korištenja raznih alata za izgradnju: {STRING}
@@ -1466,8 +1474,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Control+klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Isključeno
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Skrolanje lijevim klikom: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Uključi pomicanje karte povlačenjem pomoću lijevog gumba miša. Ovo je posebno korisno kada se koristi zaslon osjetljiv na dodir
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zatvori prozor nakon desnog klika: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Zatvara prozor nakon desnog klika unutar prozora. S desnim klikom zatvaraju se i upute alata!
 
@@ -2381,6 +2387,7 @@ STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}Kazalo p
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}Sve
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Ništa
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Odaberi tvrtke koje će se prikazati
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}nekorišten
@@ -2789,6 +2796,56 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Izvorno 
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verzija {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD tim
 
+# Framerate display window
+STR_FRAMERATE_CAPTION                                           :{WHITE}Broj sličica
+STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE} ({DECIMAL}x)
+STR_FRAMERATE_RATE_GAMELOOP                                     :{BLACK}Stopa simulacije: {STRING}
+STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Broj otkucaja igre simuliranih u sekundi.
+STR_FRAMERATE_RATE_BLITTER                                      :{BLACK}Broj sličica u sekundi: {STRING}
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Broj sličica videa prikayanih u sekundi.
+STR_FRAMERATE_SPEED_FACTOR                                      :{BLACK}Trenutni faktor brzine igre: {DECIMAL}x
+STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}Koliko brzo se igra izvodi trenutno u usporedbi sa očekivanom brzinom u uobičajenoj simulaciji.
+STR_FRAMERATE_CURRENT                                           :{WHITE}Trenutno
+STR_FRAMERATE_AVERAGE                                           :{WHITE}Prosječno
+STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Podaci bazirani na {COMMA} mjerama
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} ms
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} ms
+STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL} ms
+STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL} sličica/s
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL} sličica/s
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} sličica/s
+STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
+STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA} s
+############ Leave those lines in this order!!
+STR_FRAMERATE_GAMELOOP                                          :{BLACK}Zbroj petlji igre:
+STR_FRAMERATE_GL_ECONOMY                                        :{BLACK}  Korištenje tereta:
+STR_FRAMERATE_GL_TRAINS                                         :{BLACK} Otkucaji vlakova:
+STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK} Otkucaji cestovnih vozila:
+STR_FRAMERATE_GL_SHIPS                                          :{BLACK} Otkucaji brodova:
+STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK}  Otkucaji aviona:
+STR_FRAMERATE_GL_LANDSCAPE                                      :{BLACK}  Otkucaji svijeta:
+STR_FRAMERATE_GL_LINKGRAPH                                      :{BLACK} Odmak linka grafikona:
+STR_FRAMERATE_DRAWING                                           :{BLACK}Prikaz grafike:
+STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{BLACK} Prikazi svijeta:
+STR_FRAMERATE_VIDEO                                             :{BLACK}Video izlaz:
+STR_FRAMERATE_SOUND                                             :{BLACK}Miksanje zvukova:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GAMELOOP                                  :Petlja igre
+STR_FRAMETIME_CAPTION_GL_ECONOMY                                :Korištenje tereta
+STR_FRAMETIME_CAPTION_GL_TRAINS                                 :Otkucaji vlakova
+STR_FRAMETIME_CAPTION_GL_ROADVEHS                               :Otkucaji cestovnih vozila
+STR_FRAMETIME_CAPTION_GL_SHIPS                                  :Otkucaji brodova
+STR_FRAMETIME_CAPTION_GL_AIRCRAFT                               :Otkucaji aviona
+STR_FRAMETIME_CAPTION_GL_LANDSCAPE                              :Otkucaji svijeta
+STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :Odmak linka grafikona
+STR_FRAMETIME_CAPTION_DRAWING                                   :Prikaz grafike
+STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :Prikazi svijeta
+STR_FRAMETIME_CAPTION_VIDEO                                     :Video izlaz
+STR_FRAMETIME_CAPTION_SOUND                                     :Miksanje zvukova
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spremi igru
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Učitaj igru
@@ -2811,6 +2868,7 @@ STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Detalji 
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Nema dostupnih informacija.
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
+STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtriraj niz:
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Upiši ime za spremanje igre
 
@@ -3009,6 +3067,8 @@ STR_NEWGRF_ERROR_READ_BOUNDS                                    :Pročitaj nakon
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Zatraženi GRF resursi nisu dostupni (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} je isključen od strane {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Pogrešan/nepoznat format raspored sprite-a (sprite {3:NUM})
+STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Previše elemenata na listi postavki varijabli (sprite {3:NUM}, postavka {4:HEX})
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Pogrešna callback funkcija za industrijsku proizvodnju (sprite {3:NUM}, "{1:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Oprez!
@@ -3073,6 +3133,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Unesi im
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Gradovi
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Ništa -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Grad){BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Imena gradova - klikni na ime kako bi centrirao pogled na grad. Ctrl+klik otvara novi prozor sa lokacijom grada
 STR_TOWN_POPULATION                                             :{BLACK}Svjetsko stanovništvo: {COMMA}
 
@@ -3080,8 +3141,7 @@ STR_TOWN_POPULATION                                             :{BLACK}Svjetsko
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Metropola)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Stanovništvo: {ORANGE}{COMMA}{BLACK}  Kuće: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Putnika prošli mjesec: {ORANGE}{COMMA}{BLACK}  najviše: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Pošte prošli mjesec: {ORANGE}{COMMA}{BLACK}  najviše: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} prošli mjesec: {ORANGE}{COMMA}{BLACK}  maks: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Potrebno tereta za rast grada:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} potrebno
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} potrebno zimi
@@ -4320,7 +4380,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Previše
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Previše dijelova željezničke postaje
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Previše autobusnih postaja
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Previše kamionskih postaja
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Preblizu drugoj postaji/terminalu
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Preblizu drugom pristaništu
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Preblizu drugoj zračnoj luci
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nije moguće preimenovati postaju...
@@ -4328,6 +4387,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... ovo 
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... cesta je orijentirana u krivom smjeru
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... prolazne postaje ne mogu imati zavoje
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... prolazne postaje ne mogu imati raskrižja
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... cesta je jednosmjerna ili je blokirana
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Nije moguće ukloniti dio postaje...
@@ -4579,6 +4639,8 @@ STR_BASESOUNDS_DOS_DESCRIPTION                                  :Originalni zvuk
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :Originalni zvukovi za Transport Tycoon Deluxe Windows izdanje.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Zvučni paket bez ikakvih zvukova.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Originalna glazba za Transport Tycoon Deluxe Windows izdanje.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :Originalna glazba za Transport Tycoon Deluxe DOS izdanje.
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :Originalna glazba za Transport Tycoon (original/editor svijeta) DOS izdanje.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Glazbeni paket bez ikakve glazbe.
 
 ##id 0x2000

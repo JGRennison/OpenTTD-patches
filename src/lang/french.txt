@@ -476,6 +476,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Copie d'écran
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Copie d'écran au zoom maximum
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Copie d'écran au zoom par défaut
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Copie d'écran de la carte entière
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Afficher la fréquence d'images
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :À propos d'OpenTTD
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Alignement de sprite
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Afficher/Cacher les boites de dimensions maximum
@@ -651,6 +652,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}Aucune musique disponible
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Piste
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Titre
@@ -664,21 +666,21 @@ STR_MUSIC_TOOLTIP_DRAG_SLIDERS_TO_SET_MUSIC                     :{BLACK}Faire gl
 STR_MUSIC_TOOLTIP_SELECT_ALL_TRACKS_PROGRAM                     :{BLACK}Choisir le programme «{NBSP}Tout{NBSP}»
 STR_MUSIC_TOOLTIP_SELECT_OLD_STYLE_MUSIC                        :{BLACK}Choisir le programme musical «{NBSP}Ancien style{NBSP}»
 STR_MUSIC_TOOLTIP_SELECT_NEW_STYLE_MUSIC                        :{BLACK}Choisir le programme musical «{NBSP}Nouveau style{NBSP}»
-STR_MUSIC_TOOLTIP_SELECT_EZY_STREET_STYLE                       :{BLACK}Sélectionner le programme musical «{NBSP}Ezy Street{NBSP}»
+STR_MUSIC_TOOLTIP_SELECT_EZY_STREET_STYLE                       :{BLACK}Choisir le programme musical «{NBSP}Ezy Street{NBSP}»
 STR_MUSIC_TOOLTIP_SELECT_CUSTOM_1_USER_DEFINED                  :{BLACK}Choisir le programme personnalisé «{NBSP}Personnalisé 1{NBSP}»
 STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Choisir le programme personnalisé «{NBSP}Personnalisé 2{NBSP}»
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Activer/Désactiver le mode aléatoire
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Afficher la fenêtre de sélection de pistes
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Un ensemble de musique vide a été choisi. Aucune musique ne sera jouée.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Sélection du programme musical
-STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
+STR_PLAYLIST_MUSIC_SELECTION_SETNAME                            :{WHITE}Programme musical - «{NBSP}{STRING}{NBSP}»
+STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} «{NBSP}{STRING}{NBSP}»
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Index des pistes
-STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programme - '{STRING}'
+STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programme - «{NBSP}{STRING}{NBSP}»
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Effacer
+STR_PLAYLIST_CHANGE_SET                                         :{BLACK}Changer d'ensemble
 STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Effacer le programme actuel (Personnalisé 1 ou Personnalisé 2 seulement)
+STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}Choisir un autre ensemble de musique
 STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Cliquer sur une piste pour l'ajouter au programme courant (Personnalisé 1 ou Personnalisé 2 seulement)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Cliquer sur une piste pour la retirer du programme courant (Personnalisé 1 ou Personnalisé 2 seulement)
 
@@ -881,10 +883,10 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Vue {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Copier vers la vue
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Copier l'emplacement de la vue principale vers cette vue-ci
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Coller depuis la vue
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Coller l'emplacement de cette vue-ci vers la vue principale
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Modifier cette vue
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Copier l'emplacement de la vue principale vers cette vue
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Modifier la vue principale
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Copier l'emplacement de cette vue vers la vue principale
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Options
@@ -926,6 +928,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand sud-africa
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Personnalisée...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Géorgien (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iranien (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nouveau rouble russe (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Véhicules routiers
@@ -1338,8 +1341,12 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Couleur du terr
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Vert
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Vert foncé
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violet
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Inverser la direction lors du défilement avec la souris{NBSP}: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Comportement lors du défilement de la carte avec le bouton droit de la souris. Quand il est désactivé, la souris déplace la caméra. Quand il est activé, la souris déplace la carte
+STR_CONFIG_SETTING_SCROLLMODE                                   :Défilement de la vue{NBSP}: {STRING}
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Comportement lors du défilement de la carte
+STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Défilement de la vue par clic droit, position de la souris verrouillée
+STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Défilement de la carte par clic droit, position de la souris verrouillée
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :Défilement de la carte par clic droit
+STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Défilement de la carte par clic gauche
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Défilement régulier de la vue{NBSP}: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Contrôle comment la vue principale défile jusqu'à une position spécifique lors d'un clic sur la mini-carte ou pour atteindre un objet précis sur la carte. Si activé, la vue défile doucement, si désactivé elle saute directement à la cible
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Montrer une infobulle de mesure lors de l'utilisation de divers outils de construction{NBSP}: {STRING}
@@ -1371,8 +1378,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Commande-clic
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl-clic
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Désactivé
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Défilement par clic gauche{NBSP}: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Active le défilement de la carte en la glissant avec le bouton gauche de la souris. C'est surtout utile pour les écrans tactiles
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Fermer une fenêtre en cliquant droit{NBSP}: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Fermer une fenêtre en cliquant droit à l’intérieur de celle-ci. Désactive l'infobulle sur clic droit{NBSP}!
 
@@ -2286,6 +2291,7 @@ STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}Légende
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}Toute
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Aucune
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Choisir les compagnies à afficher
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}inutilisé
@@ -2694,6 +2700,56 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyrigh
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 L'équipe OpenTTD
 
+# Framerate display window
+STR_FRAMERATE_CAPTION                                           :{WHITE}Fréquence d'images
+STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE} ({DECIMAL}x)
+STR_FRAMERATE_RATE_GAMELOOP                                     :{WHITE}Fréquence de simulation{NBSP}: {STRING}
+STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Nombre de ticks simulés par seconde.
+STR_FRAMERATE_RATE_BLITTER                                      :{WHITE}Fréquence des graphismes{NBSP}: {STRING}
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Nombre d'images rendues par seconde.
+STR_FRAMERATE_SPEED_FACTOR                                      :{WHITE}Facteur de vitesse actuel{NBSP}: {DECIMAL}x
+STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}À quelle vitesse le jeu tourne actuellement, comparé à la vitesse attendue pour la simulation normale.
+STR_FRAMERATE_CURRENT                                           :{WHITE}Actuel
+STR_FRAMERATE_AVERAGE                                           :{WHITE}Moyen
+STR_FRAMERATE_DATA_POINTS                                       :{WHITE}Données basées sur {COMMA} mesures
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL}{WHITE} ms
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL}{WHITE} ms
+STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL}{WHITE} ms
+STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL}{WHITE} images/s
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL}{WHITE} images/s
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL}{WHITE} images/s
+STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
+STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA} s
+############ Leave those lines in this order!!
+STR_FRAMERATE_GAMELOOP                                          :{WHITE}Total de la boucle de jeu{NBSP}:
+STR_FRAMERATE_GL_ECONOMY                                        :{WHITE}  Traitement des marchandises{NBSP}:
+STR_FRAMERATE_GL_TRAINS                                         :{WHITE}  Ticks des trains{NBSP}:
+STR_FRAMERATE_GL_ROADVEHS                                       :{WHITE}  Ticks des véhicules routiers{NBSP}:
+STR_FRAMERATE_GL_SHIPS                                          :{WHITE}  Ticks des navires{NBSP}:
+STR_FRAMERATE_GL_AIRCRAFT                                       :{WHITE}  Ticks des aéroplanes{NBSP}:
+STR_FRAMERATE_GL_LANDSCAPE                                      :{WHITE}  Ticks du monde{NBSP}:
+STR_FRAMERATE_GL_LINKGRAPH                                      :{WHITE}  Délai du flux des marchandises{NBSP}:
+STR_FRAMERATE_DRAWING                                           :{WHITE}Rendu des graphismes{NBSP}:
+STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{WHITE}  Vues{NBSP}:
+STR_FRAMERATE_VIDEO                                             :{WHITE}Sortie vidéo{NBSP}:
+STR_FRAMERATE_SOUND                                             :{WHITE}Mixage sonore{NBSP}:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GAMELOOP                                  :Boucle de jeu
+STR_FRAMETIME_CAPTION_GL_ECONOMY                                :Traitement des marchandises
+STR_FRAMETIME_CAPTION_GL_TRAINS                                 :Ticks des trains
+STR_FRAMETIME_CAPTION_GL_ROADVEHS                               :Ticks des véhicules routiers
+STR_FRAMETIME_CAPTION_GL_SHIPS                                  :Ticks des navires
+STR_FRAMETIME_CAPTION_GL_AIRCRAFT                               :Ticks des aéroplanes
+STR_FRAMETIME_CAPTION_GL_LANDSCAPE                              :Ticks du monde
+STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :Délai du flux des marchandises
+STR_FRAMETIME_CAPTION_DRAWING                                   :Rendu des graphismes
+STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :Rendu des vues
+STR_FRAMETIME_CAPTION_VIDEO                                     :Sortie vidéo
+STR_FRAMETIME_CAPTION_SOUND                                     :Mixage sonore
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Sauvegarder la partie
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Charger une partie
@@ -2978,6 +3034,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Entrer u
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Villes
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}− Aucune −
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Métropole){BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Noms des villes - Cliquer sur un nom pour centrer la vue principale sur la ville. Ctrl-clic pour ouvrir une nouvelle vue sur la ville.
 STR_TOWN_POPULATION                                             :{BLACK}Population mondiale{NBSP}: {COMMA}
 
@@ -2985,8 +3042,7 @@ STR_TOWN_POPULATION                                             :{BLACK}Populati
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Métropole)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Population{NBSP}: {ORANGE}{COMMA}{BLACK} − Maisons{NBSP}: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Passagers le mois dernier{NBSP}: {ORANGE}{COMMA}{BLACK} − max.{NBSP}: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Courrier le mois dernier{NBSP}: {ORANGE}{COMMA}{BLACK} − max.{NBSP}: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} le mois dernier{NBSP}: {ORANGE}{COMMA}{BLACK} - max.{NBSP}: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Cargaison nécessaire à la croissance de la ville{NBSP}:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} requis
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} requis en hiver
@@ -4225,7 +4281,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Trop de 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Trop de parties de gare
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Trop d'arrêts d'autobus
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Trop d'aires de chargement
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Trop près d'une autre gare
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Trop près d'un autre port
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Trop près d'un autre aéroport
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Impossible de renommer la gare...
@@ -4233,6 +4288,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... cett
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... mauvaise orientation de la route
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... les arrêts ne peuvent pas avoir de virages
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... les arrêts ne peuvent pas avoir de jonctions
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... la route est à sens unique ou bloquée
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Impossible de supprimer une partie de la gare...
@@ -4484,6 +4540,8 @@ STR_BASESOUNDS_DOS_DESCRIPTION                                  :Sons originaux 
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :Sons originaux de Transport Tycoon Deluxe (version Windows).
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Un pack de sons sans sons.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Musiques originales de Transport Tycoon Deluxe (version Windows).
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :Musiques originales de Transport Tycoon Deluxe (version DOS).
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :Musiques originales de Transport Tycoon (version Originale/World Editor).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un pack de musiques sans musiques.
 
 ##id 0x2000

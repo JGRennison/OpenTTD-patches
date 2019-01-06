@@ -47,6 +47,7 @@
 #include "goal_base.h"
 #include "story_base.h"
 #include "toolbar_gui.h"
+#include "framerate_type.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -1045,7 +1046,7 @@ static CallBackFunction PlaceLandBlockInfo()
 
 static CallBackFunction ToolbarHelpClick(Window *w)
 {
-	PopupMainToolbMenu(w, WID_TN_HELP, STR_ABOUT_MENU_LAND_BLOCK_INFO, _settings_client.gui.newgrf_developer_tools ? 12 : 9);
+	PopupMainToolbMenu(w, WID_TN_HELP, STR_ABOUT_MENU_LAND_BLOCK_INFO, _settings_client.gui.newgrf_developer_tools ? 13 : 10);
 	return CBF_NONE;
 }
 
@@ -1147,10 +1148,11 @@ static CallBackFunction MenuClickHelp(int index)
 		case  5: MenuClickLargeWorldScreenshot(SC_ZOOMEDIN);    break;
 		case  6: MenuClickLargeWorldScreenshot(SC_DEFAULTZOOM); break;
 		case  7: MenuClickLargeWorldScreenshot(SC_WORLD);       break;
-		case  8: ShowAboutWindow();                break;
-		case  9: ShowSpriteAlignerWindow();        break;
-		case 10: ToggleBoundingBoxes();            break;
-		case 11: ToggleDirtyBlocks();              break;
+		case  8: ShowFramerateWindow();            break;
+		case  9: ShowAboutWindow();                break;
+		case 10: ShowSpriteAlignerWindow();        break;
+		case 11: ToggleBoundingBoxes();            break;
+		case 12: ToggleDirtyBlocks();              break;
 	}
 	return CBF_NONE;
 }
@@ -1482,7 +1484,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_ZOOM_IN,
 			WID_TN_ZOOM_OUT,
 			WID_TN_RAILS,
@@ -1514,7 +1516,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1548,7 +1550,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1584,7 +1586,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1643,7 +1645,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_MUSIC_SOUND,
 			WID_TN_MESSAGES,
 			WID_TN_HELP,
@@ -1661,7 +1663,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1702,7 +1704,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
 			WID_TN_WATER,
@@ -1754,7 +1756,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_TRAINS,
 			WID_TN_ROADVEHS,
 			WID_TN_SHIPS,
-			WID_TN_AIRCRAFTS,
+			WID_TN_AIRCRAFT,
 			WID_TN_ZOOM_IN,
 			WID_TN_ZOOM_OUT,
 			WID_TN_RAILS,
@@ -2000,7 +2002,7 @@ struct MainToolbarWindow : Window {
 		 * Since enabled state is the default, just disable when needed */
 		this->SetWidgetsDisabledState(_local_company == COMPANY_SPECTATOR, WID_TN_RAILS, WID_TN_ROADS, WID_TN_WATER, WID_TN_AIR, WID_TN_LANDSCAPE, WIDGET_LIST_END);
 		/* disable company list drop downs, if there are no companies */
-		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFTS, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFT, WIDGET_LIST_END);
 
 		this->SetWidgetDisabledState(WID_TN_GOAL, Goal::GetNumItems() == 0);
 		this->SetWidgetDisabledState(WID_TN_STORY, StoryPage::GetNumItems() == 0);

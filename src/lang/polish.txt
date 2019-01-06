@@ -1029,6 +1029,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}Brak dostępnej muzyki
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Ścieżka
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Tytuł
@@ -1048,14 +1049,12 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Wybierz 
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Losowe odtwarzanie wł./wył.
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Pokaż okno wyboru ścieżek
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Został wybrany zestaw muzyki bez utworów. Żaden utwór nie będzie odtwarzany
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Wybór Programu
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Wykaz ścieżek
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programuj - '{STRING}'
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Wyczyść
+STR_PLAYLIST_CHANGE_SET                                         :{BLACK}Zmień zestaw
 STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Wyczyść obecny program (tylko Wlasny1 lub Wlasny2)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Klik na ścieżce aby dodać do obecnego programu (Wlasny1 i Wlasny2)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Kliknij na ścieżce muzycznej aby usunąć ją z wybranego programu (Wlasny1 lub Wlasny2)
@@ -1717,8 +1716,9 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Kolor terenu na
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :zielony
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :ciemnozielony
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :fioletowy
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Przewijaj obraz myszką w przeciwnym kierunku: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Zachowanie podczas przewijania mapy za pomocą prawego przycisku myszy. W przypadku wyłączenia mysz porusza kamerą. Po włączeniu mysz przesuwa mapę
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Zachowanie podczas przeciągania mapy
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :Przeciągnij mapę prawym przyciskiem myszy
+STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Przeciągnij mapę lewym przyciskiem myszy
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Wygładź przesuwanie widoku: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Zdecyduj, jak główny widok przesuwa się do konkretnej lokacji, gdy klikasz na mini-mapie lub gdy używasz komendy do przesunięcia do danego obiektu na mapie. Kiedy włączone, widok przesuwa się płynnie, kiedy wyłączone, następuje skok bezpośrednio do wybranego miejsca
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Pokaż dymek z pomiarem podczas używania różnych narzędzi: {STRING}
@@ -1750,8 +1750,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Wyłączona
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Przewijanie lewym przyciskiem myszy: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Włącz przewijanie mapy przeciąganiem lewym przyciskiem myszki. Jest to przydatne podczas używania ekranu dotykowego do przewijania
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zamknij okno prawym przyciskiem: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Zamyka okno poprzez kliknięcie prawym przyciskiem. Wyłącza pomoc kontekstową!
 
@@ -3073,6 +3071,20 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Prawa Au
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD wersja {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 Zespół OpenTTD
 
+# Framerate display window
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Liczba renderowanych klatek wideo na sekundę.
+STR_FRAMERATE_CURRENT                                           :{WHITE}Obecny
+############ Leave those lines in this order!!
+STR_FRAMERATE_GL_LINKGRAPH                                      :{WHITE}  Opóźnienie wykresu połączeń:
+STR_FRAMERATE_VIDEO                                             :{WHITE}Wyjście video:
+STR_FRAMERATE_SOUND                                             :{WHITE}Miksowanie dźwięku:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_VIDEO                                     :Wyjście wideo
+STR_FRAMETIME_CAPTION_SOUND                                     :Miksowanie dźwięku
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Zapisz grę
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Wczytaj grę
@@ -3364,8 +3376,7 @@ STR_TOWN_POPULATION                                             :{BLACK}Populacj
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Miasto)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Populacja: {ORANGE}{COMMA}{BLACK}  Domów: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Pasażerów w zeszłym miesiącu: {ORANGE}{COMMA}{BLACK}  maks: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Poczta w zeszłym miesiącu: {ORANGE}{COMMA}{BLACK}  maks: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} w ostatnim miesiącu: {ORANGE}{COMMA}{BLACK}  najwięcej: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Towar potrzebny do rozwoju miasta:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{RED}Wymagana {ORANGE}{STRING}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} wymagane zimą
@@ -4610,7 +4621,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Za duzo 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Za dużo części stacji kolejowej
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Zbyt wiele przystanków autobusowych
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Zbyt wiele stacji załadunku ciężarówek
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Zbyt blisko innej stacji/strefy załadunku
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Zbyt blisko innego portu
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Zbyt blisko innego lotniska
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nie można zmienić nazwy stacji...
@@ -4618,6 +4628,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... ta d
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... droga jest zorientowana w złym kierunku
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... przystanki przelotowe nie mogą mieć zakrętów
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... przystanki przelotowe nie mogą mieć skrzyżowań
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... droga jest jednokierunkowa lub zablokowana
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Nie można usunąć części stacji...
@@ -4869,6 +4880,8 @@ STR_BASESOUNDS_DOS_DESCRIPTION                                  :Oryginalna edyc
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :Oryginalna edycja dźwięków dla Transport Tycoon Deluxe Windows.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Zestaw dźwięków nie zawierający żadnych dźwięków.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Oryginalna edycja utworów muzycznych w Transport Tycoon Deluxe Windows.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :Oryginalna edycja utworów muzycznych dla Transport Tycoon Deluxe DOS.
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :Oryginalna edycja utworów muzycznych dla Transport Tycoon DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Zestaw utworów muzycznych nie zawierający żadnej muzyki.
 
 ##id 0x2000

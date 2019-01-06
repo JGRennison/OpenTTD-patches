@@ -159,40 +159,27 @@ static inline const PalSpriteID *GetBridgeSpriteTable(int index, BridgePieces ta
 
 
 /**
- * Determines the foundation for the north bridge head, and tests if the resulting slope is valid.
+ * Determines the foundation for the bridge head, and tests if the resulting slope is valid.
  *
+ * @param bridge_piece Direction of the bridge head.
  * @param axis Axis of the bridge
  * @param tileh Slope of the tile under the north bridge head; returns slope on top of foundation
  * @param z TileZ corresponding to tileh, gets modified as well
  * @return Error or cost for bridge foundation
  */
-static CommandCost CheckBridgeSlopeNorth(Axis axis, Slope *tileh, int *z)
+static CommandCost CheckBridgeSlope(BridgePieces bridge_piece, Axis axis, Slope *tileh, int *z)
 {
+	assert(bridge_piece == BRIDGE_PIECE_NORTH || bridge_piece == BRIDGE_PIECE_SOUTH);
+
 	Foundation f = GetBridgeFoundation(*tileh, axis);
 	*z += ApplyFoundationToSlope(f, tileh);
 
-	Slope valid_inclined = (axis == AXIS_X ? SLOPE_NE : SLOPE_NW);
-	if ((*tileh != SLOPE_FLAT) && (*tileh != valid_inclined)) return CMD_ERROR;
-
-	if (f == FOUNDATION_NONE) return CommandCost();
-
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
-}
-
-/**
- * Determines the foundation for the south bridge head, and tests if the resulting slope is valid.
- *
- * @param axis Axis of the bridge
- * @param tileh Slope of the tile under the south bridge head; returns slope on top of foundation
- * @param z TileZ corresponding to tileh, gets modified as well
- * @return Error or cost for bridge foundation
- */
-static CommandCost CheckBridgeSlopeSouth(Axis axis, Slope *tileh, int *z)
-{
-	Foundation f = GetBridgeFoundation(*tileh, axis);
-	*z += ApplyFoundationToSlope(f, tileh);
-
-	Slope valid_inclined = (axis == AXIS_X ? SLOPE_SW : SLOPE_SE);
+	Slope valid_inclined;
+	if (bridge_piece == BRIDGE_PIECE_NORTH) {
+		valid_inclined = (axis == AXIS_X ? SLOPE_NE : SLOPE_NW);
+	} else {
+		valid_inclined = (axis == AXIS_X ? SLOPE_SW : SLOPE_SE);
+	}
 	if ((*tileh != SLOPE_FLAT) && (*tileh != valid_inclined)) return CMD_ERROR;
 
 	if (f == FOUNDATION_NONE) return CommandCost();
@@ -204,6 +191,7 @@ static CommandCost CheckBridgeSlopeSouth(Axis axis, Slope *tileh, int *z)
  * Is a bridge of the specified type and length available?
  * @param bridge_type Wanted type of bridge.
  * @param bridge_len  Wanted length of the bridge.
+ * @param flags       Type of operation.
  * @return A succeeded (the requested bridge is available) or failed (it cannot be built) command.
  */
 CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoCommandFlag flags)
@@ -232,7 +220,7 @@ CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoC
  * @param p1 packed start tile coords (~ dx)
  * @param p2 various bitstuffed elements
  * - p2 = (bit  0- 7) - bridge type (hi bh)
- * - p2 = (bit  8-11) - rail type or road types.
+ * - p2 = (bit  8-13) - rail type or road types.
  * - p2 = (bit 15-16) - transport type.
  * @param text unused
  * @return the cost of this operation or an error
@@ -259,7 +247,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 			break;
 
 		case TRANSPORT_RAIL:
-			railtype = Extract<RailType, 8, 4>(p2);
+			railtype = Extract<RailType, 8, 6>(p2);
 			if (!ValParamRailtype(railtype)) return CMD_ERROR;
 			break;
 
@@ -315,8 +303,8 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 	Slope tileh_end = GetTileSlope(tile_end, &z_end);
 	bool pbs_reservation = false;
 
-	CommandCost terraform_cost_north = CheckBridgeSlopeNorth(direction, &tileh_start, &z_start);
-	CommandCost terraform_cost_south = CheckBridgeSlopeSouth(direction, &tileh_end,   &z_end);
+	CommandCost terraform_cost_north = CheckBridgeSlope(BRIDGE_PIECE_NORTH, direction, &tileh_start, &z_start);
+	CommandCost terraform_cost_south = CheckBridgeSlope(BRIDGE_PIECE_SOUTH, direction, &tileh_end,   &z_end);
 
 	/* Aqueducts can't be built of flat land. */
 	if (transport_type == TRANSPORT_WATER && (tileh_start == SLOPE_FLAT || tileh_end == SLOPE_FLAT)) return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
@@ -574,7 +562,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
  * Build Tunnel.
  * @param start_tile start tile of tunnel
  * @param flags type of operation
- * @param p1 bit 0-3 railtype or roadtypes
+ * @param p1 bit 0-5 railtype or roadtypes
  *           bit 8-9 transport type
  * @param p2 unused
  * @param text unused
@@ -591,7 +579,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 	_build_tunnel_endtile = 0;
 	switch (transport_type) {
 		case TRANSPORT_RAIL:
-			railtype = Extract<RailType, 0, 4>(p1);
+			railtype = Extract<RailType, 0, 6>(p1);
 			if (!ValParamRailtype(railtype)) return CMD_ERROR;
 			break;
 
@@ -701,8 +689,23 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		/* Hide the tile from the terraforming command */
 		TileIndex old_first_tile = coa->first_tile;
 		coa->first_tile = INVALID_TILE;
+
+		/* CMD_TERRAFORM_LAND may append further items to _cleared_object_areas,
+		 * however it will never erase or re-order existing items.
+		 * _cleared_object_areas is a value-type SmallVector, therefore appending items
+		 * may result in a backing-store re-allocation, which would invalidate the coa pointer.
+		 * The index of the coa pointer into the _cleared_object_areas vector remains valid,
+		 * and can be used safely after the CMD_TERRAFORM_LAND operation.
+		 * Deliberately clear the coa pointer to avoid leaving dangling pointers which could
+		 * inadvertently be dereferenced.
+		 */
+		assert(coa >= _cleared_object_areas.Begin() && coa < _cleared_object_areas.End());
+		size_t coa_index = coa - _cleared_object_areas.Begin();
+		assert(coa_index < UINT_MAX); // more than 2**32 cleared areas would be a bug in itself
+		coa = NULL;
+
 		ret = DoCommand(end_tile, end_tileh & start_tileh, 0, flags, CMD_TERRAFORM_LAND);
-		coa->first_tile = old_first_tile;
+		_cleared_object_areas[(uint)coa_index].first_tile = old_first_tile;
 		if (ret.Failed()) return_cmd_error(STR_ERROR_UNABLE_TO_EXCAVATE_LAND);
 		cost.AddCost(ret);
 	}
@@ -1885,11 +1888,11 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlag flag
 
 		/* Check if new slope is valid for bridges in general (so we can safely call GetBridgeFoundation()) */
 		if ((direction == DIAGDIR_NW) || (direction == DIAGDIR_NE)) {
-			CheckBridgeSlopeSouth(axis, &tileh_old, &z_old);
-			res = CheckBridgeSlopeSouth(axis, &tileh_new, &z_new);
+			CheckBridgeSlope(BRIDGE_PIECE_SOUTH, axis, &tileh_old, &z_old);
+			res = CheckBridgeSlope(BRIDGE_PIECE_SOUTH, axis, &tileh_new, &z_new);
 		} else {
-			CheckBridgeSlopeNorth(axis, &tileh_old, &z_old);
-			res = CheckBridgeSlopeNorth(axis, &tileh_new, &z_new);
+			CheckBridgeSlope(BRIDGE_PIECE_NORTH, axis, &tileh_old, &z_old);
+			res = CheckBridgeSlope(BRIDGE_PIECE_NORTH, axis, &tileh_new, &z_new);
 		}
 
 		/* Surface slope is valid and remains unchanged? */

@@ -36,6 +36,7 @@
 #include "error.h"
 #include "game/game.hpp"
 #include "video/video_driver.hpp"
+#include "framerate_type.h"
 
 #include "safeguards.h"
 
@@ -48,7 +49,7 @@ enum ViewportAutoscrolling {
 };
 
 static Point _drag_delta; ///< delta between mouse cursor and upper left corner of dragged window
-static Window *_mouseover_last_w = NULL; ///< Window of the last #MOUSEOVER event.
+static Window *_mouseover_last_w = NULL; ///< Window of the last OnMouseOver event.
 static Window *_last_scroll_window = NULL; ///< Window of the last scroll event.
 
 /** List of windows opened at the screen sorted from the front. */
@@ -937,6 +938,8 @@ static void DrawOverlappedWindow(Window *w, int left, int top, int right, int bo
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 {
 	Window *w;
+
+	DrawPixelInfo *old_dpi = _cur_dpi;
 	DrawPixelInfo bk;
 	_cur_dpi = &bk;
 
@@ -950,6 +953,7 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 			DrawOverlappedWindow(w, max(left, w->left), max(top, w->top), min(right, w->left + w->width), min(bottom, w->top + w->height));
 		}
 	}
+	_cur_dpi = old_dpi;
 }
 
 /**
@@ -1114,7 +1118,7 @@ Window *FindWindowById(WindowClass cls, WindowNumber number)
 
 /**
  * Find any window by its class. Useful when searching for a window that uses
- * the window number as a #WindowType, like #WC_SEND_NETWORK_MSG.
+ * the window number as a #WindowClass, like #WC_SEND_NETWORK_MSG.
  * @param cls Window class
  * @return Pointer to the found window, or \c NULL if not available
  */
@@ -1429,7 +1433,6 @@ static void BringWindowToFront(Window *w)
 
 /**
  * Initializes the data (except the position and initial size) of a new Window.
- * @param desc          Window description.
  * @param window_number Number being assigned to the new window
  * @return Window pointer of the newly created window
  * @pre If nested widgets are used (\a widget is \c NULL), #nested_root and #nested_array_size must be initialized.
@@ -1738,7 +1741,7 @@ static Point LocalGetWindowPlacement(const WindowDesc *desc, int16 sm_width, int
 	int16 default_width  = max(desc->GetDefaultWidth(),  sm_width);
 	int16 default_height = max(desc->GetDefaultHeight(), sm_height);
 
-	if (desc->parent_cls != 0 /* WC_MAIN_WINDOW */ && (w = FindWindowById(desc->parent_cls, window_number)) != NULL) {
+	if (desc->parent_cls != WC_NONE && (w = FindWindowById(desc->parent_cls, window_number)) != NULL) {
 		bool rtl = _current_text_dir == TD_RTL;
 		if (desc->parent_cls == WC_BUILD_TOOLBAR || desc->parent_cls == WC_SCEN_LAND_GEN) {
 			pt.x = w->left + (rtl ? w->width - default_width : 0);
@@ -1999,7 +2002,7 @@ static void HandleMouseOver()
 {
 	Window *w = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
 
-	/* We changed window, put a MOUSEOVER event to the last window */
+	/* We changed window, put an OnMouseOver event to the last window */
 	if (_mouseover_last_w != NULL && _mouseover_last_w != w) {
 		/* Reset mouse-over coordinates of previous window */
 		Point pt = { -1, -1 };
@@ -2442,7 +2445,7 @@ static EventState HandleViewportScroll()
 	 * outside of the window and should not left-mouse scroll anymore. */
 	if (_last_scroll_window == NULL) _last_scroll_window = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
 
-	if (_last_scroll_window == NULL || !(_right_button_down || scrollwheel_scrolling || (_settings_client.gui.left_mouse_btn_scrolling && _left_button_down))) {
+	if (_last_scroll_window == NULL || !((_settings_client.gui.scroll_mode != VSM_MAP_LMB && _right_button_down) || scrollwheel_scrolling || (_settings_client.gui.scroll_mode == VSM_MAP_LMB && _left_button_down))) {
 		_cursor.fix_at = false;
 		_scrolling_viewport = false;
 		_last_scroll_window = NULL;
@@ -2457,20 +2460,20 @@ static EventState HandleViewportScroll()
 	}
 
 	Point delta;
-	if (_settings_client.gui.reverse_scroll || (_settings_client.gui.left_mouse_btn_scrolling && _left_button_down)) {
-		delta.x = -_cursor.delta.x;
-		delta.y = -_cursor.delta.y;
-	} else {
-		delta.x = _cursor.delta.x;
-		delta.y = _cursor.delta.y;
-	}
-
 	if (scrollwheel_scrolling) {
 		/* We are using scrollwheels for scrolling */
 		delta.x = _cursor.h_wheel;
 		delta.y = _cursor.v_wheel;
 		_cursor.v_wheel = 0;
 		_cursor.h_wheel = 0;
+	} else {
+		if (_settings_client.gui.scroll_mode != VSM_VIEWPORT_RMB_FIXED) {
+			delta.x = -_cursor.delta.x;
+			delta.y = -_cursor.delta.y;
+		} else {
+			delta.x = _cursor.delta.x;
+			delta.y = _cursor.delta.y;
+		}
 	}
 
 	/* Create a scroll-event and send it to the window */
@@ -2748,18 +2751,17 @@ static void HandleAutoscroll()
 	y -= vp->top;
 
 	/* here allows scrolling in both x and y axis */
-#define scrollspeed 3
+	static const int SCROLLSPEED = 3;
 	if (x - 15 < 0) {
-		w->viewport->dest_scrollpos_x += ScaleByZoom((x - 15) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_x += ScaleByZoom((x - 15) * SCROLLSPEED, vp->zoom);
 	} else if (15 - (vp->width - x) > 0) {
-		w->viewport->dest_scrollpos_x += ScaleByZoom((15 - (vp->width - x)) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_x += ScaleByZoom((15 - (vp->width - x)) * SCROLLSPEED, vp->zoom);
 	}
 	if (y - 15 < 0) {
-		w->viewport->dest_scrollpos_y += ScaleByZoom((y - 15) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_y += ScaleByZoom((y - 15) * SCROLLSPEED, vp->zoom);
 	} else if (15 - (vp->height - y) > 0) {
-		w->viewport->dest_scrollpos_y += ScaleByZoom((15 - (vp->height - y)) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_y += ScaleByZoom((15 - (vp->height - y)) * SCROLLSPEED, vp->zoom);
 	}
-#undef scrollspeed
 }
 
 enum MouseClick {
@@ -2858,21 +2860,26 @@ static void MouseLoop(MouseClick click, int mousewheel)
 	if (vp != NULL && (_game_mode == GM_MENU || HasModalProgress())) return;
 
 	if (mousewheel != 0) {
-		/* Send mousewheel event to window */
-		w->OnMouseWheel(mousewheel);
+		/* Send mousewheel event to window, unless we're scrolling a viewport or the map */
+		if (!scrollwheel_scrolling || (vp == NULL && w->window_class != WC_SMALLMAP)) w->OnMouseWheel(mousewheel);
 
 		/* Dispatch a MouseWheelEvent for widgets if it is not a viewport */
 		if (vp == NULL) DispatchMouseWheelEvent(w, w->nested_root->GetWidgetFromPos(x - w->left, y - w->top), mousewheel);
 	}
 
 	if (vp != NULL) {
-		if (scrollwheel_scrolling) click = MC_RIGHT; // we are using the scrollwheel in a viewport, so we emulate right mouse button
+		if (scrollwheel_scrolling && !(w->flags & WF_DISABLE_VP_SCROLL)) {
+			_scrolling_viewport = true;
+			_cursor.fix_at = true;
+			return;
+		}
+
 		switch (click) {
 			case MC_DOUBLE_LEFT:
 			case MC_LEFT:
 				if (HandleViewportClicked(vp, x, y)) return;
 				if (!(w->flags & WF_DISABLE_VP_SCROLL) &&
-						_settings_client.gui.left_mouse_btn_scrolling) {
+						_settings_client.gui.scroll_mode == VSM_MAP_LMB) {
 					_scrolling_viewport = true;
 					_cursor.fix_at = false;
 					return;
@@ -2880,13 +2887,11 @@ static void MouseLoop(MouseClick click, int mousewheel)
 				break;
 
 			case MC_RIGHT:
-				if (!(w->flags & WF_DISABLE_VP_SCROLL)) {
+				if (!(w->flags & WF_DISABLE_VP_SCROLL) &&
+						_settings_client.gui.scroll_mode != VSM_MAP_LMB) {
 					_scrolling_viewport = true;
-					_cursor.fix_at = true;
-
-					/* clear 2D scrolling caches before we start a 2D scroll */
-					_cursor.h_wheel = 0;
-					_cursor.v_wheel = 0;
+					_cursor.fix_at = (_settings_client.gui.scroll_mode == VSM_VIEWPORT_RMB_FIXED ||
+							_settings_client.gui.scroll_mode == VSM_MAP_RMB_FIXED);
 					return;
 				}
 				break;
@@ -2901,7 +2906,7 @@ static void MouseLoop(MouseClick click, int mousewheel)
 			case MC_LEFT:
 			case MC_DOUBLE_LEFT:
 				DispatchLeftClickEvent(w, x - w->left, y - w->top, click == MC_DOUBLE_LEFT ? 2 : 1);
-				break;
+				return;
 
 			default:
 				if (!scrollwheel_scrolling || w == NULL || w->window_class != WC_SMALLMAP) break;
@@ -2909,11 +2914,19 @@ static void MouseLoop(MouseClick click, int mousewheel)
 				 * Simulate a right button click so we can get started. */
 				FALLTHROUGH;
 
-			case MC_RIGHT: DispatchRightClickEvent(w, x - w->left, y - w->top); break;
+			case MC_RIGHT:
+				DispatchRightClickEvent(w, x - w->left, y - w->top);
+				return;
 
-			case MC_HOVER: DispatchHoverEvent(w, x - w->left, y - w->top); break;
+			case MC_HOVER:
+				DispatchHoverEvent(w, x - w->left, y - w->top);
+				break;
 		}
 	}
+
+	/* We're not doing anything with 2D scrolling, so reset the value.  */
+	_cursor.h_wheel = 0;
+	_cursor.v_wheel = 0;
 }
 
 /**
@@ -3066,6 +3079,9 @@ void InputLoop()
  */
 void UpdateWindows()
 {
+	PerformanceMeasurer framerate(PFE_DRAWING);
+	PerformanceAccumulator::Reset(PFE_DRAWWORLD);
+
 	Window *w;
 
 	static int highlight_timer = 1;

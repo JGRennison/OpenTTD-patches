@@ -12,8 +12,10 @@
 #include "stdafx.h"
 #include <math.h>
 #include "core/math_func.hpp"
+#include "framerate_type.h"
 
 #include "safeguards.h"
+#include "mixer.h"
 
 struct MixerChannel {
 	bool active;
@@ -37,6 +39,7 @@ struct MixerChannel {
 static MixerChannel _channels[8];
 static uint32 _play_rate = 11025;
 static uint32 _max_size = UINT_MAX;
+static MxStreamCallback _music_stream = NULL;
 
 /**
  * The theoretical maximum volume for a single sound sample. Multiple sound
@@ -138,10 +141,20 @@ static void MxCloseChannel(MixerChannel *mc)
 
 void MxMixSamples(void *buffer, uint samples)
 {
+	PerformanceMeasurer framerate(PFE_SOUND);
+	static uint last_samples = 0;
+	if (samples != last_samples) {
+		framerate.SetExpectedRate((double)_play_rate / samples);
+		last_samples = samples;
+	}
+
 	MixerChannel *mc;
 
 	/* Clear the buffer */
 	memset(buffer, 0, sizeof(int16) * 2 * samples);
+
+	/* Fetch music if a sampled stream is available */
+	if (_music_stream) _music_stream((int16*)buffer, samples);
 
 	/* Mix each channel */
 	for (mc = _channels; mc != endof(_channels); mc++) {
@@ -209,10 +222,22 @@ void MxActivateChannel(MixerChannel *mc)
 	mc->active = true;
 }
 
+/**
+ * Set source of PCM music
+ * @param music_callback Function that will be called to fill sample buffers with music data.
+ * @return Sample rate of mixer, which the buffers supplied to the callback must be rendered at.
+ */
+uint32 MxSetMusicSource(MxStreamCallback music_callback)
+{
+	_music_stream = music_callback;
+	return _play_rate;
+}
+
 
 bool MxInitialize(uint rate)
 {
 	_play_rate = rate;
 	_max_size  = UINT_MAX / _play_rate;
+	_music_stream = NULL; /* rate may have changed, any music source is now invalid */
 	return true;
 }

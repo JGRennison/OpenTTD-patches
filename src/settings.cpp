@@ -1459,7 +1459,7 @@ static int DecodeHexNibble(char c)
  * Parse a sequence of characters (supposedly hex digits) into a sequence of bytes.
  * After the hex number should be a \c '|' character.
  * @param pos First character to convert.
- * @param dest [out] Output byte array to write the bytes.
+ * @param[out] dest Output byte array to write the bytes.
  * @param dest_size Number of bytes in \a dest.
  * @return Whether reading was successful.
  */
@@ -1668,9 +1668,9 @@ static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescP
 {
 	if (basic_settings) {
 		proc(ini, (const SettingDesc*)_misc_settings,    "misc",  NULL);
-#if defined(WIN32) && !defined(DEDICATED)
+#if defined(_WIN32) && !defined(DEDICATED)
 		proc(ini, (const SettingDesc*)_win32_settings,   "win32", NULL);
-#endif /* WIN32 */
+#endif /* _WIN32 */
 	}
 
 	if (other_settings) {
@@ -1748,7 +1748,7 @@ void SaveToConfig()
 
 /**
  * Get the list of known NewGrf presets.
- * @param list[inout] Pointer to list for storing the preset names.
+ * @param[in,out] list Pointer to list for storing the preset names.
  */
 void GetGRFPresetList(GRFPresetList *list)
 {

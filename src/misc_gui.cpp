@@ -132,6 +132,7 @@ public:
 		DEBUG(misc, LANDINFOD_LEVEL, "m5     = %#x", _m[tile].m5);
 		DEBUG(misc, LANDINFOD_LEVEL, "m6     = %#x", _me[tile].m6);
 		DEBUG(misc, LANDINFOD_LEVEL, "m7     = %#x", _me[tile].m7);
+		DEBUG(misc, LANDINFOD_LEVEL, "m8     = %#x", _me[tile].m8);
 #undef LANDINFOD_LEVEL
 	}
 
@@ -193,11 +194,8 @@ public:
 		StringID str = STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A;
 		Company *c = Company::GetIfValid(_local_company);
 		if (c != NULL) {
-			Money old_money = c->money;
-			c->money = INT64_MAX;
 			assert(_current_company == _local_company);
-			CommandCost costclear = DoCommand(tile, 0, 0, DC_NONE, CMD_LANDSCAPE_CLEAR);
-			c->money = old_money;
+			CommandCost costclear = DoCommand(tile, 0, 0, DC_QUERY_COST, CMD_LANDSCAPE_CLEAR);
 			if (costclear.Succeeded()) {
 				Money cost = costclear.GetCost();
 				if (cost < 0) {
@@ -313,10 +311,7 @@ public:
 		for (CargoID i = 0; i < NUM_CARGO; ++i) {
 			if (acceptance[i] > 0) {
 				/* Add a comma between each item. */
-				if (found) {
-					*strp++ = ',';
-					*strp++ = ' ';
-				}
+				if (found) strp = strecpy(strp, ", ", lastof(this->landinfo_data[LAND_INFO_MULTICENTER_LINE]));
 				found = true;
 
 				/* If the accepted value is less than 8, show it in 1/8:ths */
@@ -404,6 +399,7 @@ static const char * const _credits[] = {
 	"  Christoph Elsenhans (frosch) - General coding (since 0.6)",
 	"  Lo\xC3\xAF""c Guilloux (glx) - General / Windows Expert (since 0.4.5)",
 	"  Michael Lutz (michi_cc) - Path based signals (since 0.7)",
+	"  Niels Martin Hansen (nielsm) - Music system, general coding (since 1.9)",
 	"  Owen Rudge (orudge) - Forum host, OS/2 port (since 0.1)",
 	"  Peter Nelson (peter1138) - Spiritual descendant from NewGRF gods (since 0.4.5)",
 	"  Ingo von Borstel (planetmaker) - General, Support (since 1.1)",
@@ -659,7 +655,7 @@ struct TooltipsWindow : public Window
 		this->string_id = str;
 		assert_compile(sizeof(this->params[0]) == sizeof(params[0]));
 		assert(paramcount <= lengthof(this->params));
-		memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
+		if (paramcount > 0) memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
 		this->paramcount = paramcount;
 		this->close_cond = close_tooltip;
 
@@ -737,7 +733,7 @@ struct TooltipsWindow : public Window
  * @param str String to be displayed
  * @param paramcount number of params to deal with
  * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
- * @param use_left_mouse_button close the tooltip when the left (true) or right (false) mouse button is released
+ * @param close_tooltip when the left (true) or right (false) mouse button is released
  */
 void GuiShowTooltips(Window *parent, StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_tooltip)
 {
@@ -1073,7 +1069,7 @@ void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *paren
  */
 struct QueryWindow : public Window {
 	QueryCallbackProc *proc; ///< callback function executed on closing of popup. Window* points to parent, bool is true if 'yes' clicked, false otherwise
-	uint64 params[10];       ///< local copy of _decode_parameters
+	uint64 params[10];       ///< local copy of #_global_string_params
 	StringID message;        ///< message shown for query window
 	StringID caption;        ///< title of window
 

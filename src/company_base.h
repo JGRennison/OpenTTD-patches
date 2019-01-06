@@ -67,8 +67,6 @@ struct CompanyProperties {
 
 	byte colour;                     ///< Company colour.
 
-	RailTypes avail_railtypes;       ///< Rail types available to the company.
-
 	byte block_preview;              ///< Number of quarters that the company is not allowed to get new exclusive engine previews (see CompaniesGenStatistics).
 
 	TileIndex location_of_HQ;        ///< Northern tile of HQ; #INVALID_TILE when there is none.
@@ -93,12 +91,18 @@ struct CompanyProperties {
 	 */
 	bool is_ai;
 
-	Money yearly_expenses[3][EXPENSES_END];                ///< Expenses of the company for the last three years, in every #Expenses category.
+	Money yearly_expenses[3][EXPENSES_END];                ///< Expenses of the company for the last three years, in every #ExpensesType category.
 	CompanyEconomyEntry cur_economy;                       ///< Economic data of the company of this quarter.
 	CompanyEconomyEntry old_economy[MAX_HISTORY_QUARTERS]; ///< Economic data of the company of the last #MAX_HISTORY_QUARTERS quarters.
 	byte num_valid_stat_ent;                               ///< Number of valid statistical entries in #old_economy.
 
-	CompanyProperties() : name(NULL), president_name(NULL) {}
+	// TODO: Change some of these member variables to use relevant INVALID_xxx constants
+	CompanyProperties()
+		: name_2(0), name_1(0), name(NULL), president_name_1(0), president_name_2(0), president_name(NULL),
+		  face(0), money(0), money_fraction(0), current_loan(0), colour(0), block_preview(0),
+		  location_of_HQ(0), last_build_coordinate(0), share_owners(), inaugurated_year(0),
+		  months_of_bankruptcy(0), bankrupt_asked(0), bankrupt_timeout(0), bankrupt_value(0),
+		  terraform_limit(0), clear_limit(0), tree_limit(0), is_ai(false) {}
 
 	~CompanyProperties()
 	{
@@ -112,6 +116,7 @@ struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {
 	~Company();
 
 	Livery livery[LS_END];
+	RailTypes avail_railtypes;         ///< Rail types available to this company.
 	RoadTypes avail_roadtypes;         ///< Road types available to this company.
 
 	class AIInstance *ai_instance;

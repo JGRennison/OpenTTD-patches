@@ -670,10 +670,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Programm
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Zufällige Wiedergabe ein/aus
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Zeige Musiktitelauswahl
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Ein Musikset ohne Musikdateien wurde ausgewählt. Es kann folglich nichts abgespielt werden.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Musik-Programmauswahl
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Track Inhalt
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programm - '{STRING}'
@@ -1338,8 +1335,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Farbe von Landf
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Grün
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Dunkelgrün
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Lila
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Scrollrichtung invertieren: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Legt das Verhalten beim Scrollen der Karte mit der rechten Maustaste fest. Ist diese Option aktiviert, bewegt sich der sichtbare Kartenausschnitt in Mausrichtung. Ist sie deaktiviert, bewegt sich die Karte entgegen der Mausrichtung
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Weicher Bildlauf beim Springen zu einer Position: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Lege fest, auf welche Weise die Hauptansicht an eine bestimmte Position wechselt (z.B. wenn ein Punkt auf der Weltkarte angeklickt wird oder der Standort eines Bahnhofs angezeigt werden soll). Ist diese Option eingeschaltet, schwenkt die Ansicht über die Karte, bis sie am gewünschten Punkt angekommen ist. Ist sie ausgeschaltet, springt die Ansicht sofort an die gewünschte Position
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Beim Bauen Tooltip mit Abmessungen anzeigen: {STRING}
@@ -1371,8 +1366,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Kommando+Klick
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Strg+Klick
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Aus
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Scrollen mit linker Maustaste: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Scrolle die Karte, indem mit der linken Maustaste gezogen wird. Dies ist besonders sinnvoll, wenn ein Touchscreen zum Scrollen genutzt wird
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Fenster mit Rechtsklick schließen: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Schließt ein Fenster mittels Rechts-Klick. Schaltet Tooltip mit Rechts-Klick ab!
 
@@ -2694,6 +2687,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Transpor
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD-Version {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD-Team
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spiel speichern
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Spiel laden
@@ -2985,8 +2985,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Weltbev�
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Großstadt)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Einwohner: {ORANGE}{COMMA}{BLACK}  Häuser: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Passagiere im letzten Monat: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Postsäcke im letzten Monat: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Für Stadtwachstum benötigte Fracht:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} benötigt
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} im Winter benötigt
@@ -4225,7 +4223,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Zu viele
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Zu viele Bahnsteigteile
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Zu viele Bushaltestellen
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Zu viele Lkw-Ladeplätze
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Stationen liegen zu dicht beisammen
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Zu dicht an einem anderen Hafen
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Zu dicht an einem anderen Flughafen
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Station kann nicht umbenannt werden...

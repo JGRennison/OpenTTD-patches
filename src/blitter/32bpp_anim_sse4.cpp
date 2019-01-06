@@ -7,7 +7,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file 32bpp_sse4_anim.cpp Implementation of the SSE4 32 bpp blitter with animation support. */
+/** @file 32bpp_anim_sse4.cpp Implementation of the SSE4 32 bpp blitter with animation support. */
 
 #ifdef WITH_SSE
 
@@ -35,8 +35,7 @@ inline void Blitter_32bppSSE4_Anim::Draw(const Blitter::BlitterParams *bp, ZoomL
 {
 	const byte * const remap = bp->remap;
 	Colour *dst_line = (Colour *) bp->dst + bp->top * bp->pitch + bp->left;
-	assert(_screen.pitch == this->anim_buf_pitch); // precondition for translating 'bp->dst' into an 'anim_buf' offset below.
-	uint16 *anim_line = this->anim_buf + ((uint32 *)bp->dst - (uint32 *)_screen.dst_ptr) + bp->top * this->anim_buf_pitch + bp->left;
+	uint16 *anim_line = this->anim_buf + this->ScreenToAnimOffset((uint32 *)bp->dst) + bp->top * this->anim_buf_pitch + bp->left;
 	int effective_width = bp->width;
 
 	/* Find where to start reading in the source sprite. */

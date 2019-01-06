@@ -26,18 +26,28 @@ static const SaveLoad _industry_desc[] = {
 	    SLE_VAR(Industry, location.h,                 SLE_FILE_U8 | SLE_VAR_U16),
 	    SLE_REF(Industry, town,                       REF_TOWN),
 	SLE_CONDNULL( 2, 0, 60),       ///< used to be industry's produced_cargo
-	SLE_CONDARR(Industry, produced_cargo,             SLE_UINT8,  2,              78, SL_MAX_VERSION),
-	SLE_CONDARR(Industry, incoming_cargo_waiting,     SLE_UINT16, 3,              70, SL_MAX_VERSION),
-	    SLE_ARR(Industry, produced_cargo_waiting,     SLE_UINT16, 2),
-	    SLE_ARR(Industry, production_rate,            SLE_UINT8,  2),
+	SLE_CONDARR(Industry, produced_cargo,             SLE_UINT8,   2,              78, 201),
+	SLE_CONDARR(Industry, produced_cargo,             SLE_UINT8,  16,             202, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, incoming_cargo_waiting,     SLE_UINT16,  3,              70, 201),
+	SLE_CONDARR(Industry, incoming_cargo_waiting,     SLE_UINT16, 16,             202, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, produced_cargo_waiting,     SLE_UINT16,  2,               0, 201),
+	SLE_CONDARR(Industry, produced_cargo_waiting,     SLE_UINT16, 16,             202, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, production_rate,            SLE_UINT8,   2,               0, 201),
+	SLE_CONDARR(Industry, production_rate,            SLE_UINT8,  16,             202, SL_MAX_VERSION),
 	SLE_CONDNULL( 3, 0, 60),       ///< used to be industry's accepts_cargo
-	SLE_CONDARR(Industry, accepts_cargo,              SLE_UINT8,  3,              78, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, accepts_cargo,              SLE_UINT8,   3,              78, 201),
+	SLE_CONDARR(Industry, accepts_cargo,              SLE_UINT8,  16,             202, SL_MAX_VERSION),
 	    SLE_VAR(Industry, prod_level,                 SLE_UINT8),
-	    SLE_ARR(Industry, this_month_production,      SLE_UINT16, 2),
-	    SLE_ARR(Industry, this_month_transported,     SLE_UINT16, 2),
-	    SLE_ARR(Industry, last_month_pct_transported, SLE_UINT8,  2),
-	    SLE_ARR(Industry, last_month_production,      SLE_UINT16, 2),
-	    SLE_ARR(Industry, last_month_transported,     SLE_UINT16, 2),
+	SLE_CONDARR(Industry, this_month_production,      SLE_UINT16,  2,               0, 201),
+	SLE_CONDARR(Industry, this_month_production,      SLE_UINT16, 16,             202, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, this_month_transported,     SLE_UINT16,  2,               0, 201),
+	SLE_CONDARR(Industry, this_month_transported,     SLE_UINT16, 16,             202, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, last_month_pct_transported, SLE_UINT8,   2,               0, 201),
+	SLE_CONDARR(Industry, last_month_pct_transported, SLE_UINT8,  16,             202, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, last_month_production,      SLE_UINT16,  2,               0, 201),
+	SLE_CONDARR(Industry, last_month_production,      SLE_UINT16, 16,             202, SL_MAX_VERSION),
+	SLE_CONDARR(Industry, last_month_transported,     SLE_UINT16,  2,               0, 201),
+	SLE_CONDARR(Industry, last_month_transported,     SLE_UINT16, 16,             202, SL_MAX_VERSION),
 
 	    SLE_VAR(Industry, counter,                    SLE_UINT16),
 
@@ -51,7 +61,8 @@ static const SaveLoad _industry_desc[] = {
 	SLE_CONDVAR(Industry, founder,                    SLE_UINT8,                 70, SL_MAX_VERSION),
 	SLE_CONDVAR(Industry, construction_date,          SLE_INT32,                 70, SL_MAX_VERSION),
 	SLE_CONDVAR(Industry, construction_type,          SLE_UINT8,                 70, SL_MAX_VERSION),
-	SLE_CONDVAR(Industry, last_cargo_accepted_at,     SLE_INT32,                 70, SL_MAX_VERSION),
+	SLE_CONDVAR(Industry, last_cargo_accepted_at[0],  SLE_INT32,                 70, 201),
+	SLE_CONDARR(Industry, last_cargo_accepted_at,     SLE_INT32, 16,            202, SL_MAX_VERSION),
 	SLE_CONDVAR(Industry, selected_layout,            SLE_UINT8,                 73, SL_MAX_VERSION),
 
 	SLEG_CONDARR(_old_ind_persistent_storage.storage, SLE_UINT32, 16,            76, 160),
@@ -101,7 +112,7 @@ static void Load_INDY()
 			/* Store the old persistent storage. The GRFID will be added later. */
 			assert(PersistentStorage::CanAllocateItem());
 			i->psa = new PersistentStorage(0, 0, 0);
-			memcpy(i->psa->storage, _old_ind_persistent_storage.storage, sizeof(i->psa->storage));
+			memcpy(i->psa->storage, _old_ind_persistent_storage.storage, sizeof(_old_ind_persistent_storage.storage));
 		}
 		Industry::IncIndustryTypeCount(i->type);
 	}

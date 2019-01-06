@@ -55,6 +55,7 @@ char *FioGetFullPath(char *buf, const char *last, Searchpath sp, Subdirectory su
 char *FioFindFullPath(char *buf, const char *last, Subdirectory subdir, const char *filename);
 char *FioAppendDirectory(char *buf, const char *last, Searchpath sp, Subdirectory subdir);
 char *FioGetDirectory(char *buf, const char *last, Subdirectory subdir);
+void FioCreateDirectory(const char *name);
 
 const char *FiosGetScreenshotDir();
 
@@ -117,7 +118,7 @@ public:
 DECLARE_ENUM_AS_BIT_SET(TarScanner::Mode)
 
 /* Implementation of opendir/readdir/closedir for Windows */
-#if defined(WIN32)
+#if defined(_WIN32)
 struct DIR;
 
 struct dirent { // XXX - only d_name implemented
@@ -135,7 +136,7 @@ int closedir(DIR *d);
 /* Use system-supplied opendir/readdir/closedir functions */
 # include <sys/types.h>
 # include <dirent.h>
-#endif /* defined(WIN32) */
+#endif /* defined(_WIN32) */
 
 /**
  * A wrapper around opendir() which will convert the string from
@@ -148,5 +149,18 @@ static inline DIR *ttd_opendir(const char *path)
 {
 	return opendir(OTTD2FS(path));
 }
+
+
+/** Auto-close a file upon scope exit. */
+class FileCloser {
+	FILE *f;
+
+public:
+	FileCloser(FILE *_f) : f(_f) {}
+	~FileCloser()
+	{
+		fclose(f);
+	}
+};
 
 #endif /* FILEIO_FUNC_H */

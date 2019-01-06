@@ -123,6 +123,7 @@ enum OrderConditionVariable {
 	OCV_REQUIRES_SERVICE,   ///< Skip when the vehicle requires service
 	OCV_UNCONDITIONALLY,    ///< Always skip
 	OCV_REMAINING_LIFETIME, ///< Skip based on the remaining lifetime
+	OCV_MAX_RELIABILITY,    ///< Skip based on the maximum reliability
 	OCV_END
 };
 

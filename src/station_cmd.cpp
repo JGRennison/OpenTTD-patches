@@ -89,25 +89,25 @@ bool IsHangar(TileIndex t)
 }
 
 /**
- * Look for a station around the given tile area.
+ * Look for a station owned by the given company around the given tile area.
  * @param ta the area to search over
- * @param closest_station the closest station found so far
+ * @param closest_station the closest owned station found so far
+ * @param company the company whose stations to look for
  * @param st to 'return' the found station
  * @return Succeeded command (if zero or one station found) or failed command (for two or more stations found).
  */
 template <class T>
-CommandCost GetStationAround(TileArea ta, StationID closest_station, T **st)
+CommandCost GetStationAround(TileArea ta, StationID closest_station, CompanyID company, T **st)
 {
 	ta.tile -= TileDiffXY(1, 1);
 	ta.w    += 2;
 	ta.h    += 2;
 
-	/* check around to see if there's any stations there */
+	/* check around to see if there are any stations there owned by the company */
 	TILE_AREA_LOOP(tile_cur, ta) {
 		if (IsTileType(tile_cur, MP_STATION)) {
 			StationID t = GetStationIndex(tile_cur);
-			if (!T::IsValidID(t)) continue;
-
+			if (!T::IsValidID(t) || Station::Get(t)->owner != company) continue;
 			if (closest_station == INVALID_STATION) {
 				closest_station = t;
 			} else if (closest_station != t) {
@@ -440,12 +440,12 @@ void UpdateAllStationVirtCoords()
  * @param st Station to query
  * @return the expected mask
  */
-static uint GetAcceptanceMask(const Station *st)
+static CargoTypes GetAcceptanceMask(const Station *st)
 {
-	uint mask = 0;
+	CargoTypes mask = 0;
 
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
-		if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) mask |= 1 << i;
+		if (HasBit(st->goods[i].status, GoodsEntry::GES_ACCEPTANCE)) SetBit(mask, i);
 	}
 	return mask;
 }
@@ -524,7 +524,7 @@ CargoArray GetProductionAroundTiles(TileIndex tile, int w, int h, int rad)
  * @param rad Search radius in addition to given area
  * @param always_accepted bitmask of cargo accepted by houses and headquarters; can be NULL
  */
-CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, uint32 *always_accepted)
+CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, CargoTypes *always_accepted)
 {
 	CargoArray acceptance;
 	if (always_accepted != NULL) *always_accepted = 0;
@@ -562,7 +562,7 @@ CargoArray GetAcceptanceAroundTiles(TileIndex tile, int w, int h, int rad, uint3
 void UpdateStationAcceptance(Station *st, bool show_msg)
 {
 	/* old accepted goods types */
-	uint old_acc = GetAcceptanceMask(st);
+	CargoTypes old_acc = GetAcceptanceMask(st);
 
 	/* And retrieve the acceptance. */
 	CargoArray acceptance;
@@ -595,7 +595,7 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 	}
 
 	/* Only show a message in case the acceptance was actually changed. */
-	uint new_acc = GetAcceptanceMask(st);
+	CargoTypes new_acc = GetAcceptanceMask(st);
 	if (old_acc == new_acc) return;
 
 	/* show a message to report that the acceptance was changed? */
@@ -662,7 +662,7 @@ static void UpdateStationSignCoord(BaseStation *st)
 
 /**
  * Common part of building various station parts and possibly attaching them to an existing one.
- * @param [in,out] st Station to attach to
+ * @param[in,out] st Station to attach to
  * @param flags Command flags
  * @param reuse Whether to try to reuse a deleted station (gray sign) if possible
  * @param area Area occupied by the new part
@@ -676,7 +676,7 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 
 	if (*st != NULL) {
 		if ((*st)->owner != _current_company) {
-			return_cmd_error(STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION);
+			return_cmd_error(CMD_ERROR);
 		}
 
 		CommandCost ret = (*st)->rect.BeforeAddRect(area.tile, area.w, area.h, StationRect::ADD_TEST);
@@ -960,6 +960,8 @@ static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags
 					num_roadbits += CountBits(GetRoadBits(cur_tile, ROADTYPE_ROAD));
 				}
 
+				if (GetDisallowedRoadDirections(cur_tile) != DRD_NONE) return_cmd_error(STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD);
+
 				/* There is a tram, check if we can build road+tram stop over it. */
 				if (HasBit(cur_rts, ROADTYPE_TRAM)) {
 					Owner tram_owner = GetRoadOwner(cur_tile, ROADTYPE_TRAM);
@@ -1103,8 +1105,8 @@ CommandCost FindJoiningBaseStation(StationID existing_station, StationID station
 	}
 
 	if (check_surrounding) {
-		/* Make sure there are no similar stations around us. */
-		CommandCost ret = GetStationAround(ta, existing_station, st);
+		/* Make sure there is no more than one other station around us that is owned by us. */
+		CommandCost ret = GetStationAround(ta, existing_station, _current_company, st);
 		if (ret.Failed()) return ret;
 	}
 
@@ -1171,8 +1173,8 @@ static void RestoreTrainReservation(Train *v)
  * @param tile_org northern most position of station dragging/placement
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
- * - p1 = (bit  0- 3) - railtype
- * - p1 = (bit  4)    - orientation (Axis)
+ * - p1 = (bit  0- 5) - railtype
+ * - p1 = (bit  6)    - orientation (Axis)
  * - p1 = (bit  8-15) - number of tracks
  * - p1 = (bit 16-23) - platform length
  * - p1 = (bit 24)    - allow stations directly adjacent to other stations.
@@ -1186,8 +1188,8 @@ static void RestoreTrainReservation(Train *v)
 CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	/* Unpack parameters */
-	RailType rt    = Extract<RailType, 0, 4>(p1);
-	Axis axis      = Extract<Axis, 4, 1>(p1);
+	RailType rt    = Extract<RailType, 0, 6>(p1);
+	Axis axis      = Extract<Axis, 6, 1>(p1);
 	byte numtracks = GB(p1,  8, 8);
 	byte plat_len  = GB(p1, 16, 8);
 	bool adjacent  = HasBit(p1, 24);
@@ -2622,9 +2624,9 @@ const DrawTileSprites *GetStationTileLayout(StationType st, byte gfx)
  * Check whether a sprite is a track sprite, which can be replaced by a non-track ground sprite and a rail overlay.
  * If the ground sprite is suitable, \a ground is replaced with the new non-track ground sprite, and \a overlay_offset
  * is set to the overlay to draw.
- * @param          ti             Positional info for the tile to decide snowyness etc. May be NULL.
- * @param [in,out] ground         Groundsprite to draw.
- * @param [out]    overlay_offset Overlay to draw.
+ * @param         ti             Positional info for the tile to decide snowyness etc. May be NULL.
+ * @param[in,out] ground         Groundsprite to draw.
+ * @param[out]    overlay_offset Overlay to draw.
  * @return true if overlay can be drawn.
  */
 bool SplitGroundSpriteForOverlay(const TileInfo *ti, SpriteID *ground, RailTrackOffset *overlay_offset)
@@ -3186,7 +3188,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 void TriggerWatchedCargoCallbacks(Station *st)
 {
 	/* Collect cargoes accepted since the last big tick. */
-	uint cargoes = 0;
+	CargoTypes cargoes = 0;
 	for (CargoID cid = 0; cid < NUM_CARGO; cid++) {
 		if (HasBit(st->goods[cid].status, GoodsEntry::GES_ACCEPTED_BIGTICK)) SetBit(cargoes, cid);
 	}

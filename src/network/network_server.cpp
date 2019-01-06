@@ -1115,7 +1115,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	}
 
 	if ((GetCommandFlags(cp.cmd) & CMD_SPECTATOR) == 0 && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER) {
-		IConsolePrintF(CC_ERROR, "WARNING: spectator issueing command from client %d (IP: %s), kicking...", ci->client_id, this->GetClientIP());
+		IConsolePrintF(CC_ERROR, "WARNING: spectator issuing command from client %d (IP: %s), kicking...", ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
 
@@ -2137,7 +2137,7 @@ bool NetworkCompanyHasClients(CompanyID company)
 
 
 /**
- * Get the name of the client, if the user did not send it yet, Client #<no> is used.
+ * Get the name of the client, if the user did not send it yet, Client ID is used.
  * @param client_name The variable to write the name to.
  * @param last        The pointer to the last element of the destination buffer
  */

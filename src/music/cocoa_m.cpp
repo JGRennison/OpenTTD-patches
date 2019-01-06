@@ -18,15 +18,13 @@
 #include "../stdafx.h"
 #include "../os/macosx/macos.h"
 #include "cocoa_m.h"
+#include "midifile.hpp"
 #include "../debug.h"
+#include "../base_media_base.h"
 
-#define Rect        OTTDRect
-#define Point       OTTDPoint
 #include <CoreServices/CoreServices.h>
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AudioToolbox.h>
-#undef Rect
-#undef Point
 
 #include "../safeguards.h"
 
@@ -141,11 +139,13 @@ void MusicDriver_Cocoa::Stop()
 /**
  * Starts playing a new song.
  *
- * @param filename Path to a MIDI file.
+ * @param song Description of music to load and play
  */
-void MusicDriver_Cocoa::PlaySong(const char *filename)
+void MusicDriver_Cocoa::PlaySong(const MusicSongInfo &song)
 {
-	DEBUG(driver, 2, "cocoa_m: trying to play '%s'", filename);
+	std::string filename = MidiFile::GetSMFFile(song);
+
+	DEBUG(driver, 2, "cocoa_m: trying to play '%s'", filename.c_str());
 
 	this->StopSong();
 	if (_sequence != NULL) {
@@ -153,12 +153,14 @@ void MusicDriver_Cocoa::PlaySong(const char *filename)
 		_sequence = NULL;
 	}
 
+	if (filename.empty()) return;
+
 	if (NewMusicSequence(&_sequence) != noErr) {
 		DEBUG(driver, 0, "cocoa_m: Failed to create music sequence");
 		return;
 	}
 
-	const char *os_file = OTTD2FS(filename);
+	const char *os_file = OTTD2FS(filename.c_str());
 	CFURLRef url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8*)os_file, strlen(os_file), false);
 
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
@@ -218,7 +220,7 @@ void MusicDriver_Cocoa::PlaySong(const char *filename)
 	if (MusicPlayerStart(_player) != noErr) return;
 	_playing = true;
 
-	DEBUG(driver, 3, "cocoa_m: playing '%s'", filename);
+	DEBUG(driver, 3, "cocoa_m: playing '%s'", filename.c_str());
 }
 
 

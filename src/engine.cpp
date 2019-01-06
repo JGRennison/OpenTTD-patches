@@ -431,9 +431,9 @@ uint Engine::GetDisplayMaxTractiveEffort() const
 	/* Only trains and road vehicles have 'tractive effort'. */
 	switch (this->type) {
 		case VEH_TRAIN:
-			return (10 * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_TRAIN_TRACTIVE_EFFORT, this->u.rail.tractive_effort)) / 256;
+			return (GROUND_ACCELERATION * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_TRAIN_TRACTIVE_EFFORT, this->u.rail.tractive_effort)) / 256 / 1000;
 		case VEH_ROAD:
-			return (10 * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_ROADVEH_TRACTIVE_EFFORT, this->u.road.tractive_effort)) / 256;
+			return (GROUND_ACCELERATION * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_ROADVEH_TRACTIVE_EFFORT, this->u.road.tractive_effort)) / 256 / 1000;
 
 		default: NOT_REACHED();
 	}
@@ -573,7 +573,7 @@ static bool IsWagon(EngineID index)
 }
 
 /**
- * Update #reliability of engine \a e, (if needed) update the engine GUIs.
+ * Update #Engine::reliability and (if needed) update the engine GUIs.
  * @param e %Engine to update.
  */
 static void CalcEngineReliability(Engine *e)
@@ -752,7 +752,7 @@ static CompanyID GetPreviewCompany(Engine *e)
 	CompanyID best_company = INVALID_COMPANY;
 
 	/* For trains the cargomask has no useful meaning, since you can attach other wagons */
-	uint32 cargomask = e->type != VEH_TRAIN ? GetUnionOfArticulatedRefitMasks(e->index, true) : (uint32)-1;
+	CargoTypes cargomask = e->type != VEH_TRAIN ? GetUnionOfArticulatedRefitMasks(e->index, true) : ALL_CARGOTYPES;
 
 	int32 best_hist = -1;
 	const Company *c;
@@ -1117,7 +1117,9 @@ bool IsEngineRefittable(EngineID engine)
 
 	/* Is there any cargo except the default cargo? */
 	CargoID default_cargo = e->GetDefaultCargoType();
-	return default_cargo != CT_INVALID && ei->refit_mask != 1U << default_cargo;
+	CargoTypes default_cargo_mask = 0;
+	SetBit(default_cargo_mask, default_cargo);
+	return default_cargo != CT_INVALID && ei->refit_mask != default_cargo_mask;
 }
 
 /**

@@ -87,6 +87,7 @@
 #include "company_base.h"
 #include "command_func.h"
 #include "network/network_func.h"
+#include "framerate_type.h"
 
 #include <map>
 
@@ -1654,6 +1655,8 @@ static inline void ViewportDraw(const ViewPort *vp, int left, int top, int right
  */
 void Window::DrawViewport() const
 {
+	PerformanceAccumulator framerate(PFE_DRAWWORLD);
+
 	DrawPixelInfo *dpi = _cur_dpi;
 
 	dpi->left += this->left;
@@ -2428,7 +2431,6 @@ void UpdateTileSelection()
 					break;
 				default:
 					NOT_REACHED();
-					break;
 			}
 			_thd.new_pos.x = x1 & ~TILE_UNIT_MASK;
 			_thd.new_pos.y = y1 & ~TILE_UNIT_MASK;
@@ -2636,8 +2638,8 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 			byte style_t = (byte)(TileX(end_tile) > TileX(start_tile));
 			start_tile = TILE_ADD(start_tile, ToTileIndexDiff(heightdiff_area_by_dir[style_t]));
 			end_tile   = TILE_ADD(end_tile, ToTileIndexDiff(heightdiff_area_by_dir[2 + style_t]));
+			FALLTHROUGH;
 		}
-		FALLTHROUGH;
 
 		case HT_POINT:
 			h0 = TileHeight(start_tile);

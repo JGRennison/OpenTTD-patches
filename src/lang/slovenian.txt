@@ -822,10 +822,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Izberi g
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Preklapljaj mešan program vključeno/izključeno
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Prikaži okno z izborom glasbe
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Izbran je bil komplet glasbe brez skladb. Nobena skladba ne bo predvajana
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Izbor glasbenega programa
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Kazalo skladb
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Program - '{STRING}'
@@ -1490,8 +1487,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Barva ozemlja n
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Zelena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Temno zelena
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Vijolična
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Obrni smer premika okna: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Sistem delovanja avtomatskega pomika z miško na robu. Onemogočeno - miška premika pogled, omogočeno - miška premika zemljevid.
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Gladek premik pogleda: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Način pomika pogleda na določen objekt majhnega zemljevida (centriranje pogleda). Omogočeno - pogled drsi, onemogočeno - pogled preskoči.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Prikaz merilnega nasveta med uporabo gradbenih orodij: {STRING}
@@ -1523,8 +1518,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Ukaz-klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Kontrola-klik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Izklop
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Premik slike z levim klikom: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Omogoči pomik pogleda z levim klikom miške in vlečenjem. Primerno za dotične zaslone.
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Zapri okno z desnim klikom: {STRING}
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Samodejno shrani: {STRING}
@@ -2843,6 +2836,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Prvotne 
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD različica {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 ekipa OpenTTD
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Shrani igro
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Naloži igro
@@ -3134,8 +3134,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Svetovno
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Mesto)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Prebivalstvo: {ORANGE}{COMMA}{BLACK}  Število stavb: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Potnikov prejšnji mesec: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Pošte prejšnji mesec: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Količina potrebnega tovora za rast mesta:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} potrebno
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} je potreben pozimi
@@ -4360,7 +4358,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Preveč 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Preveč delov železniške postaje
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Preveč avtobusnih postaj
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Preveč tovornih postaj
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Preblizu druge postaje
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Preblizu drugemu pristanišču
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Preblizu sosednjemu letališču
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Ni mogoče preimenovati postaje

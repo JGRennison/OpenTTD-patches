@@ -641,10 +641,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Избе
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Вклучи/исклучи мешање за програм
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Прикажи диалог за избор на песна
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Музички сет без песни е избран. Не песни ќе се одигра
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Избор на музички програм
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Индекс на песната
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Програм - '{STRING}'
@@ -1203,6 +1200,13 @@ STR_ABOUT_OPENTTD                                               :{WHITE}За Ope
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Оригинален copyright {COPYRIGHT} 1995 Chris Sawyer, Сите права се задржани
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD верзија {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 OpenTTD тимот
+
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
 
 # Save/load game/scenario
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Оптоварување

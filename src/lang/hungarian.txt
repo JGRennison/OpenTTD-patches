@@ -732,10 +732,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}A 'Sajá
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Véletlen sorrendű lejátszás be/ki
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}A számkiválasztó ablak megjelenítése
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Egy zeneszámokat nem tartalmazó zenei alapcsomag lett kiválasztva. A játékban nem lesz zene
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Zenei műsor kiválasztása
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Számlista
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}"{STRING}" Műsora
@@ -1401,8 +1398,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Talaj színe a 
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Zöld
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Sötétzöld
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Sötétkék
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Inverz görgetési irány: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :A térkép jobb gombbal történő görgetésének viselkedése. Kikapcsolva az egér mozgatja a kamerát. Bekapcsolva az egér a térképet mozgatja
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Finomított nézőpont-görgetés: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Beállítható, hogy a fő nézet hogyan mozogjon egy adott pozícióra a térképre kattintáskor ha egy adott objektumra történik mozgás. Bekapcsolva a nézet egyenletesen mozog, kikapcsolva közvetlenül a kijelölt helyre ugrik
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Területinformációk mutatása építési eszközök használatakor: {STRING}
@@ -1434,8 +1429,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Parancs+Kattint
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+kattintás
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Kikapcsolva
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Bal gombos térképmozgatás: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Bal egérgombbal történő térképmozgatás engedélyezése. Különösen hasznos érintőképernyős mozgatás használata esetén
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Ablakok bezárása jobb gombbal: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :A jobb gombbal való kattintás az ablak területén bezárja az ablakot. Ez a beállítás kikapcsolja a segédletek jobb gombbal való megjelenítését!
 
@@ -2757,6 +2750,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Eredeti 
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD {REV} verzió
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 Az OpenTTD csapat
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Játék mentése
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Játék betöltése
@@ -3048,8 +3048,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Világn�
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Város)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Lakosság: {ORANGE}{COMMA}{BLACK} Házak: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Utasok az előző hónapban: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Levélcsomagok az előző hónapban: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}A város növekedéséhez szükséges rakomány:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} szükséges
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} szükséges télen
@@ -4288,7 +4286,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Túl sok
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Túl sok vasútállomás-rész
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Túl sok buszmegálló
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Túl sok a teherautó-rakodóhely
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Túl közel van egy másik állomáshoz/rakodóhelyhez
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Túl közel van egy másik kikötőhöz
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Túl közel van egy másik repülőtérhez
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nem nevezheted át az állomást...

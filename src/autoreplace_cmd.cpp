@@ -32,13 +32,12 @@ extern void ChangeVehicleViewWindow(VehicleID from_index, VehicleID to_index);
  * Figure out if two engines got at least one type of cargo in common (refitting if needed)
  * @param engine_a one of the EngineIDs
  * @param engine_b the other EngineID
- * @param type the type of the engines
  * @return true if they can both carry the same type of cargo (or at least one of them got no capacity at all)
  */
 static bool EnginesHaveCargoInCommon(EngineID engine_a, EngineID engine_b)
 {
-	uint32 available_cargoes_a = GetUnionOfArticulatedRefitMasks(engine_a, true);
-	uint32 available_cargoes_b = GetUnionOfArticulatedRefitMasks(engine_b, true);
+	CargoTypes available_cargoes_a = GetUnionOfArticulatedRefitMasks(engine_a, true);
+	CargoTypes available_cargoes_b = GetUnionOfArticulatedRefitMasks(engine_b, true);
 	return (available_cargoes_a == 0 || available_cargoes_b == 0 || (available_cargoes_a & available_cargoes_b) != 0);
 }
 
@@ -173,9 +172,8 @@ static void TransferCargo(Vehicle *old_veh, Vehicle *new_head, bool part_of_chai
  */
 static bool VerifyAutoreplaceRefitForOrders(const Vehicle *v, EngineID engine_type)
 {
-
-	uint32 union_refit_mask_a = GetUnionOfArticulatedRefitMasks(v->engine_type, false);
-	uint32 union_refit_mask_b = GetUnionOfArticulatedRefitMasks(engine_type, false);
+	CargoTypes union_refit_mask_a = GetUnionOfArticulatedRefitMasks(v->engine_type, false);
+	CargoTypes union_refit_mask_b = GetUnionOfArticulatedRefitMasks(engine_type, false);
 
 	const Order *o;
 	const Vehicle *u = (v->type == VEH_TRAIN) ? v->First() : v;
@@ -201,7 +199,7 @@ static bool VerifyAutoreplaceRefitForOrders(const Vehicle *v, EngineID engine_ty
  */
 static CargoID GetNewCargoTypeForReplace(Vehicle *v, EngineID engine_type, bool part_of_chain)
 {
-	uint32 available_cargo_types, union_mask;
+	CargoTypes available_cargo_types, union_mask;
 	GetArticulatedRefitMasks(engine_type, true, &union_mask, &available_cargo_types);
 
 	if (union_mask == 0) return CT_NO_REFIT; // Don't try to refit an engine with no cargo capacity
@@ -238,7 +236,7 @@ static CargoID GetNewCargoTypeForReplace(Vehicle *v, EngineID engine_type, bool 
  * @param v The vehicle to find a replacement for
  * @param c The vehicle's owner (it's faster to forward the pointer than refinding it)
  * @param always_replace Always replace, even if not old.
- * @param [out] e the EngineID of the replacement. INVALID_ENGINE if no replacement is found
+ * @param[out] e the EngineID of the replacement. INVALID_ENGINE if no replacement is found
  * @return Error if the engine to build is not available
  */
 static CommandCost GetNewEngineType(const Vehicle *v, const Company *c, bool always_replace, EngineID &e)

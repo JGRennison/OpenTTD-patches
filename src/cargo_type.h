@@ -22,7 +22,7 @@
 typedef byte CargoID;
 
 /** Available types of cargo */
-enum CargoTypes {
+enum CargoType {
 	/* Temperate */
 	CT_PASSENGERS   =  0,
 	CT_COAL         =  1,
@@ -63,12 +63,21 @@ enum CargoTypes {
 	CT_PLASTIC      = 10,
 	CT_FIZZY_DRINKS = 11,
 
-	NUM_CARGO       = 32,   ///< Maximal number of cargo types in a game.
+	NUM_CARGO       = 64,   ///< Maximal number of cargo types in a game.
 
 	CT_AUTO_REFIT   = 0xFD, ///< Automatically choose cargo type when doing auto refitting.
 	CT_NO_REFIT     = 0xFE, ///< Do not refit cargo of a vehicle (used in vehicle orders and auto-replace/auto-new).
 	CT_INVALID      = 0xFF, ///< Invalid cargo type.
 };
+
+/** Test whether cargo type is not CT_INVALID */
+inline bool IsCargoTypeValid(CargoType t) { return t != CT_INVALID; }
+/** Test whether cargo type is not CT_INVALID */
+inline bool IsCargoIDValid(CargoID t) { return t != CT_INVALID; }
+
+typedef uint64 CargoTypes;
+
+static const CargoTypes ALL_CARGOTYPES = (CargoTypes)UINT64_MAX;
 
 /** Class for storing amounts of cargo */
 struct CargoArray {

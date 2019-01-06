@@ -269,8 +269,8 @@ public:
 				}
 				/* When double-clicking, continue */
 				if (click_count == 1 || y < 0) break;
+				FALLTHROUGH;
 			}
-			FALLTHROUGH;
 
 			case WID_TA_EXECUTE:
 				DoCommandP(this->town->xy, this->window_number, this->sel_index, CMD_DO_TOWN_ACTION | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
@@ -337,13 +337,15 @@ public:
 		SetDParam(1, this->town->cache.num_houses);
 		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y, STR_TOWN_VIEW_POPULATION_HOUSES);
 
-		SetDParam(0, this->town->supplied[CT_PASSENGERS].old_act);
-		SetDParam(1, this->town->supplied[CT_PASSENGERS].old_max);
-		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX);
+		SetDParam(0, 1 << CT_PASSENGERS);
+		SetDParam(1, this->town->supplied[CT_PASSENGERS].old_act);
+		SetDParam(2, this->town->supplied[CT_PASSENGERS].old_max);
+		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX);
 
-		SetDParam(0, this->town->supplied[CT_MAIL].old_act);
-		SetDParam(1, this->town->supplied[CT_MAIL].old_max);
-		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX);
+		SetDParam(0, 1 << CT_MAIL);
+		SetDParam(1, this->town->supplied[CT_MAIL].old_act);
+		SetDParam(2, this->town->supplied[CT_MAIL].old_max);
+		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX);
 
 		bool first = true;
 		for (int i = TE_BEGIN; i < TE_END; i++) {
@@ -392,7 +394,7 @@ public:
 		}
 
 		if (HasBit(this->town->flags, TOWN_IS_GROWING)) {
-			SetDParam(0, ((this->town->growth_rate & (~TOWN_GROW_RATE_CUSTOM)) * TOWN_GROWTH_TICKS + DAY_TICKS) / DAY_TICKS);
+			SetDParam(0, RoundDivSU(this->town->growth_rate + 1, DAY_TICKS));
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, this->town->fund_buildings_months == 0 ? STR_TOWN_VIEW_TOWN_GROWS_EVERY : STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED);
 		} else {
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, STR_TOWN_VIEW_TOWN_GROW_STOPPED);
@@ -745,6 +747,16 @@ public:
 		}
 	}
 
+	/**
+	 * Get the string to draw the town name.
+	 * @param t Town to draw.
+	 * @return The string to use.
+	 */
+	static StringID GetTownString(const Town *t)
+	{
+		return t->larger_town ? STR_TOWN_DIRECTORY_CITY : STR_TOWN_DIRECTORY_TOWN;
+	}
+
 	virtual void DrawWidget(const Rect &r, int widget) const
 	{
 		switch (widget) {
@@ -783,7 +795,7 @@ public:
 
 					SetDParam(0, t->index);
 					SetDParam(1, t->cache.population);
-					DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, STR_TOWN_DIRECTORY_TOWN);
+					DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, GetTownString(t));
 
 					y += this->resize.step_height;
 					if (++n == this->vscroll->GetCapacity()) break; // max number of towns in 1 window
@@ -822,7 +834,7 @@ public:
 
 					SetDParam(0, t->index);
 					SetDParamMaxDigits(1, 8);
-					d = maxdim(d, GetStringBoundingBox(STR_TOWN_DIRECTORY_TOWN));
+					d = maxdim(d, GetStringBoundingBox(GetTownString(t)));
 				}
 				Dimension icon_size = GetSpriteSize(SPR_TOWN_RATING_GOOD);
 				d.width += icon_size.width + 2;

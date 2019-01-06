@@ -32,6 +32,7 @@
 #include "../../widgets/engine_widget.h"
 #include "../../widgets/error_widget.h"
 #include "../../widgets/fios_widget.h"
+#include "../../widgets/framerate_widget.h"
 #include "../../widgets/genworld_widget.h"
 #include "../../widgets/goal_widget.h"
 #include "../../widgets/graph_widget.h"
@@ -764,6 +765,18 @@ public:
 		 */
 		WC_SAVE_PRESET                               = ::WC_SAVE_PRESET,
 
+		/**
+		 * Framerate display; %Window numbers:
+		 *   - 0 = #FramerateDisplayWidgets
+		 */
+		WC_FRAMERATE_DISPLAY                         = ::WC_FRAMERATE_DISPLAY,
+
+		/**
+		 * Frame time graph; %Window numbers:
+		 *   - 0 = #FrametimeGraphWindowWidgets
+		 */
+		WC_FRAMETIME_GRAPH                           = ::WC_FRAMETIME_GRAPH,
+
 		WC_INVALID                                   = ::WC_INVALID,                                   ///< Invalid window.
 	};
 
@@ -988,7 +1001,7 @@ public:
 	};
 
 	/* automatically generated from ../../widgets/cheat_widget.h */
-	/** Widgets of the #CheatWindow class.. */
+	/** Widgets of the #CheatWindow class. */
 	enum CheatWidgets {
 		WID_C_PANEL                                  = ::WID_C_PANEL,                                  ///< Panel where all cheats are shown in.
 	};
@@ -1259,6 +1272,7 @@ public:
 		WID_SL_CAPTION                               = ::WID_SL_CAPTION,                               ///< Caption of the window.
 		WID_SL_SORT_BYNAME                           = ::WID_SL_SORT_BYNAME,                           ///< Sort by name button.
 		WID_SL_SORT_BYDATE                           = ::WID_SL_SORT_BYDATE,                           ///< Sort by date button.
+		WID_SL_FILTER                                = ::WID_SL_FILTER,                                ///< Filter list of files
 		WID_SL_BACKGROUND                            = ::WID_SL_BACKGROUND,                            ///< Background of window.
 		WID_SL_FILE_BACKGROUND                       = ::WID_SL_FILE_BACKGROUND,                       ///< Background of file selection.
 		WID_SL_HOME_BUTTON                           = ::WID_SL_HOME_BUTTON,                           ///< Home button.
@@ -1273,6 +1287,25 @@ public:
 		WID_SL_NEWGRF_INFO                           = ::WID_SL_NEWGRF_INFO,                           ///< Button to open NewGgrf configuration.
 		WID_SL_LOAD_BUTTON                           = ::WID_SL_LOAD_BUTTON,                           ///< Button to load game/scenario.
 		WID_SL_MISSING_NEWGRFS                       = ::WID_SL_MISSING_NEWGRFS,                       ///< Button to find missing NewGRFs online.
+	};
+
+	/* automatically generated from ../../widgets/framerate_widget.h */
+	/** Widgets of the #FramerateWindow class. */
+	enum FramerateWindowWidgets {
+		WID_FRW_CAPTION                              = ::WID_FRW_CAPTION,
+		WID_FRW_RATE_GAMELOOP                        = ::WID_FRW_RATE_GAMELOOP,
+		WID_FRW_RATE_DRAWING                         = ::WID_FRW_RATE_DRAWING,
+		WID_FRW_RATE_FACTOR                          = ::WID_FRW_RATE_FACTOR,
+		WID_FRW_INFO_DATA_POINTS                     = ::WID_FRW_INFO_DATA_POINTS,
+		WID_FRW_TIMES_NAMES                          = ::WID_FRW_TIMES_NAMES,
+		WID_FRW_TIMES_CURRENT                        = ::WID_FRW_TIMES_CURRENT,
+		WID_FRW_TIMES_AVERAGE                        = ::WID_FRW_TIMES_AVERAGE,
+	};
+
+	/** Widgets of the #FrametimeGraphWindow class. */
+	enum FrametimeGraphWindowWidgets {
+		WID_FGW_CAPTION                              = ::WID_FGW_CAPTION,
+		WID_FGW_GRAPH                                = ::WID_FGW_GRAPH,
 	};
 
 	/* automatically generated from ../../widgets/genworld_widget.h */
@@ -1439,6 +1472,7 @@ public:
 		WID_GL_DELETE_GROUP                          = ::WID_GL_DELETE_GROUP,                          ///< Delete group button.
 		WID_GL_RENAME_GROUP                          = ::WID_GL_RENAME_GROUP,                          ///< Rename group button.
 		WID_GL_REPLACE_PROTECTION                    = ::WID_GL_REPLACE_PROTECTION,                    ///< Replace protection button.
+		WID_GL_INFO                                  = ::WID_GL_INFO,                                  ///< Group info.
 	};
 
 	/* automatically generated from ../../widgets/highscore_widget.h */
@@ -1581,9 +1615,11 @@ public:
 	/* automatically generated from ../../widgets/music_widget.h */
 	/** Widgets of the #MusicTrackSelectionWindow class. */
 	enum MusicTrackSelectionWidgets {
+		WID_MTS_CAPTION                              = ::WID_MTS_CAPTION,                              ///< Window caption.
 		WID_MTS_LIST_LEFT                            = ::WID_MTS_LIST_LEFT,                            ///< Left button.
 		WID_MTS_PLAYLIST                             = ::WID_MTS_PLAYLIST,                             ///< Playlist.
 		WID_MTS_LIST_RIGHT                           = ::WID_MTS_LIST_RIGHT,                           ///< Right button.
+		WID_MTS_MUSICSET                             = ::WID_MTS_MUSICSET,                             ///< Music set selection.
 		WID_MTS_ALL                                  = ::WID_MTS_ALL,                                  ///< All button.
 		WID_MTS_OLD                                  = ::WID_MTS_OLD,                                  ///< Old button.
 		WID_MTS_NEW                                  = ::WID_MTS_NEW,                                  ///< New button.
@@ -2381,7 +2417,7 @@ public:
 		WID_TN_TRAINS                                = ::WID_TN_TRAINS,                                ///< Train menu.
 		WID_TN_ROADVEHS                              = ::WID_TN_ROADVEHS,                              ///< Road vehicle menu.
 		WID_TN_SHIPS                                 = ::WID_TN_SHIPS,                                 ///< Ship menu.
-		WID_TN_AIRCRAFTS                             = ::WID_TN_AIRCRAFTS,                             ///< Aircraft menu.
+		WID_TN_AIRCRAFT                              = ::WID_TN_AIRCRAFT,                              ///< Aircraft menu.
 		WID_TN_ZOOM_IN                               = ::WID_TN_ZOOM_IN,                               ///< Zoom in the main viewport.
 		WID_TN_ZOOM_OUT                              = ::WID_TN_ZOOM_OUT,                              ///< Zoom out the main viewport.
 		WID_TN_BUILDING_TOOLS_START                  = ::WID_TN_BUILDING_TOOLS_START,                  ///< Helper for the offset of the building tools

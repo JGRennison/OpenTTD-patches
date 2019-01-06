@@ -37,12 +37,13 @@
 #include "core/backup_type.hpp"
 #include "zoom_func.h"
 #include "disaster_vehicle.h"
+#include "framerate_type.h"
 
 #include "table/strings.h"
 
 #include "safeguards.h"
 
-void Aircraft::UpdateDeltaXY(Direction direction)
+void Aircraft::UpdateDeltaXY()
 {
 	this->x_offs = -1;
 	this->y_offs = -1;
@@ -247,7 +248,7 @@ void GetAircraftSpriteSize(EngineID engine, uint &width, uint &height, int &xoff
  * @param flags    type of operation.
  * @param e        the engine to build.
  * @param data     unused.
- * @param ret[out] the vehicle that has been built.
+ * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
 CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)
@@ -303,10 +304,10 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 		u->engine_type = e->index;
 
 		v->subtype = (avi->subtype & AIR_CTOL ? AIR_AIRCRAFT : AIR_HELICOPTER);
-		v->UpdateDeltaXY(INVALID_DIR);
+		v->UpdateDeltaXY();
 
 		u->subtype = AIR_SHADOW;
-		u->UpdateDeltaXY(INVALID_DIR);
+		u->UpdateDeltaXY();
 
 		v->reliability = e->reliability;
 		v->reliability_spd_dec = e->reliability_spd_dec;
@@ -363,7 +364,7 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 			w->random_bits = VehicleRandomBits();
 			/* Use rotor's air.state to store the rotor animation frame */
 			w->state = HRS_ROTOR_STOPPED;
-			w->UpdateDeltaXY(INVALID_DIR);
+			w->UpdateDeltaXY();
 
 			u->SetNext(w);
 			w->UpdatePosition();
@@ -634,6 +635,12 @@ static int UpdateAircraftSpeed(Aircraft *v, uint speed_limit = SPEED_LIMIT_NONE,
 	 * and take-off speeds being too low. */
 	speed_limit *= _settings_game.vehicle.plane_speed;
 
+	/* adjust speed for broken vehicles */
+	if (v->vehstatus & VS_AIRCRAFT_BROKEN) {
+		if (SPEED_LIMIT_BROKEN < speed_limit) hard_limit = false;
+		speed_limit = min(speed_limit, SPEED_LIMIT_BROKEN);
+	}
+
 	if (v->vcache.cached_max_speed < speed_limit) {
 		if (v->cur_speed < speed_limit) hard_limit = false;
 		speed_limit = v->vcache.cached_max_speed;
@@ -652,9 +659,6 @@ static int UpdateAircraftSpeed(Aircraft *v, uint speed_limit = SPEED_LIMIT_NONE,
 	}
 
 	spd = min(v->cur_speed + (spd >> 8) + (v->subspeed < t), speed_limit);
-
-	/* adjust speed for broken vehicles */
-	if (v->vehstatus & VS_AIRCRAFT_BROKEN) spd = min(spd, SPEED_LIMIT_BROKEN);
 
 	/* updates statusbar only if speed have changed to save CPU time */
 	if (spd != v->cur_speed) {
@@ -693,9 +697,9 @@ int GetTileHeightBelowAircraft(const Vehicle *v)
  * When the maximum is reached the vehicle should consider descending.
  * When the minimum is reached the vehicle should consider ascending.
  *
- * @param v               The vehicle to get the flight levels for.
- * @param [out] min_level The minimum bounds for flight level.
- * @param [out] max_level The maximum bounds for flight level.
+ * @param v              The vehicle to get the flight levels for.
+ * @param[out] min_level The minimum bounds for flight level.
+ * @param[out] max_level The maximum bounds for flight level.
  */
 void GetAircraftFlightLevelBounds(const Vehicle *v, int *min_level, int *max_level)
 {
@@ -727,7 +731,7 @@ void GetAircraftFlightLevelBounds(const Vehicle *v, int *min_level, int *max_lev
 
 /**
  * Gets the maximum 'flight level' for the holding pattern of the aircraft,
- * in pixels 'z_pos' 0, depending on terrain below..
+ * in pixels 'z_pos' 0, depending on terrain below.
  *
  * @param v The aircraft that may or may not need to decrease its altitude.
  * @return Maximal aircraft holding altitude, while in normal flight, in pixels.
@@ -749,7 +753,7 @@ int GetAircraftFlightLevel(T *v, bool takeoff)
 	GetAircraftFlightLevelBounds(v, &aircraft_min_altitude, &aircraft_max_altitude);
 	int aircraft_middle_altitude = (aircraft_min_altitude + aircraft_max_altitude) / 2;
 
-	/* If those assumptions would be violated, aircrafts would behave fairly strange. */
+	/* If those assumptions would be violated, aircraft would behave fairly strange. */
 	assert(aircraft_min_altitude < aircraft_middle_altitude);
 	assert(aircraft_middle_altitude < aircraft_max_altitude);
 
@@ -914,6 +918,8 @@ static bool AircraftController(Aircraft *v)
 
 	/* Helicopter landing. */
 	if (amd.flag & AMED_HELI_LOWER) {
+		SetBit(v->flags, VAF_HELI_DIRECT_DESCENT);
+
 		if (st == NULL) {
 			/* FIXME - AircraftController -> if station no longer exists, do not land
 			 * helicopter will circle until sign disappears, then go to next order
@@ -934,7 +940,10 @@ static bool AircraftController(Aircraft *v)
 			Vehicle *u = v->Next()->Next();
 
 			/*  Increase speed of rotors. When speed is 80, we've landed. */
-			if (u->cur_speed >= 80) return true;
+			if (u->cur_speed >= 80) {
+				ClrBit(v->flags, VAF_HELI_DIRECT_DESCENT);
+				return true;
+			}
 			u->cur_speed += 4;
 		} else {
 			count = UpdateAircraftSpeed(v);
@@ -1361,7 +1370,7 @@ static void AircraftEntersTerminal(Aircraft *v)
  */
 static void AircraftLandAirplane(Aircraft *v)
 {
-	v->UpdateDeltaXY(INVALID_DIR);
+	v->UpdateDeltaXY();
 
 	if (!PlayVehicleSound(v, VSE_TOUCHDOWN)) {
 		SndPlayVehicleFx(SND_17_SKID_PLANE, v);
@@ -1553,7 +1562,7 @@ static void AircraftEventHandler_TakeOff(Aircraft *v, const AirportFTAClass *apc
 static void AircraftEventHandler_StartTakeOff(Aircraft *v, const AirportFTAClass *apc)
 {
 	v->state = ENDTAKEOFF;
-	v->UpdateDeltaXY(INVALID_DIR);
+	v->UpdateDeltaXY();
 }
 
 static void AircraftEventHandler_EndTakeOff(Aircraft *v, const AirportFTAClass *apc)
@@ -1566,7 +1575,7 @@ static void AircraftEventHandler_EndTakeOff(Aircraft *v, const AirportFTAClass *
 static void AircraftEventHandler_HeliTakeOff(Aircraft *v, const AirportFTAClass *apc)
 {
 	v->state = FLYING;
-	v->UpdateDeltaXY(INVALID_DIR);
+	v->UpdateDeltaXY();
 
 	/* get the next position to go to, differs per airport */
 	AircraftNextAirportPos_and_Order(v);
@@ -1599,6 +1608,7 @@ static void AircraftEventHandler_Flying(Aircraft *v, const AirportFTAClass *apc)
 				uint16 tsubspeed = v->subspeed;
 				if (!AirportHasBlock(v, current, apc)) {
 					v->state = landingtype; // LANDING / HELILANDING
+					if (v->state == HELILANDING) SetBit(v->flags, VAF_HELI_DIRECT_DESCENT);
 					/* it's a bit dirty, but I need to set position to next position, otherwise
 					 * if there are multiple runways, plane won't know which one it took (because
 					 * they all have heading LANDING). And also occupy that block! */
@@ -1632,7 +1642,7 @@ static void AircraftEventHandler_Landing(Aircraft *v, const AirportFTAClass *apc
 static void AircraftEventHandler_HeliLanding(Aircraft *v, const AirportFTAClass *apc)
 {
 	v->state = HELIENDLANDING;
-	v->UpdateDeltaXY(INVALID_DIR);
+	v->UpdateDeltaXY();
 }
 
 static void AircraftEventHandler_EndLanding(Aircraft *v, const AirportFTAClass *apc)
@@ -1888,7 +1898,7 @@ static bool FreeTerminal(Aircraft *v, byte i, byte last_terminal)
 
 /**
  * Get the number of terminals at the airport.
- * @param afc Airport description.
+ * @param apc Airport description.
  * @return Number of terminals.
  */
 static uint GetNumTerminals(const AirportFTAClass *apc)
@@ -2037,6 +2047,8 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 bool Aircraft::Tick()
 {
 	if (!this->IsNormalAircraft()) return true;
+
+	PerformanceAccumulator framerate(PFE_GL_AIRCRAFT);
 
 	this->tick_counter++;
 

@@ -10,6 +10,7 @@
 /** @file music_gui.cpp GUI for the music playback. */
 
 #include "stdafx.h"
+#include <vector>
 #include "openttd.h"
 #include "base_media_base.h"
 #include "music/music_driver.hpp"
@@ -18,11 +19,15 @@
 #include "window_func.h"
 #include "sound_func.h"
 #include "gfx_func.h"
+#include "zoom_func.h"
 #include "core/random_func.hpp"
 #include "error.h"
 #include "core/geometry_func.hpp"
 #include "string_func.h"
 #include "settings_type.h"
+#include "settings_gui.h"
+#include "widgets/dropdown_func.h"
+#include "widgets/dropdown_type.h"
 
 #include "widgets/music_widget.h"
 
@@ -31,270 +36,418 @@
 
 #include "safeguards.h"
 
-/**
- * Get the name of the song.
- * @param index of the song.
- * @return the name of the song.
- */
-static const char *GetSongName(int index)
-{
-	return BaseMusic::GetUsedSet()->song_name[index];
-}
 
-/**
- * Get the track number of the song.
- * @param index of the song.
- * @return the track number of the song.
- */
-static int GetTrackNumber(int index)
-{
-	return BaseMusic::GetUsedSet()->track_nr[index];
-}
+struct MusicSystem {
+	struct PlaylistEntry : MusicSongInfo {
+		const MusicSet *set;  ///< music set the song comes from
+		uint set_index;        ///< index of song in set
 
-/** The currently played song */
-static byte _music_wnd_cursong = 1;
-/** Whether a song is currently played */
-static bool _song_is_active = false;
+		PlaylistEntry(const MusicSet *set, uint set_index) : MusicSongInfo(set->songinfo[set_index]), set(set), set_index(set_index) { }
+		bool IsValid() const { return !StrEmpty(this->songname); }
+	};
+	typedef std::vector<PlaylistEntry> Playlist;
 
-/** Indices of the songs in the current playlist */
-static byte _cur_playlist[NUM_SONGS_PLAYLIST + 1];
+	enum PlaylistChoices {
+		PLCH_ALLMUSIC,
+		PLCH_OLDSTYLE,
+		PLCH_NEWSTYLE,
+		PLCH_EZYSTREET,
+		PLCH_CUSTOM1,
+		PLCH_CUSTOM2,
+		PLCH_THEMEONLY,
+		PLCH_MAX,
+	};
 
-/** Indices of all songs */
-static byte _playlist_all[NUM_SONGS_AVAILABLE + 1];
-/** Indices of all old style songs */
-static byte _playlist_old_style[NUM_SONGS_CLASS + 1];
-/** Indices of all new style songs */
-static byte _playlist_new_style[NUM_SONGS_CLASS + 1];
-/** Indices of all ezy street songs */
-static byte _playlist_ezy_street[NUM_SONGS_CLASS + 1];
+	Playlist active_playlist;    ///< current play order of songs, including any shuffle
+	Playlist displayed_playlist; ///< current playlist as displayed in GUI, never in shuffled order
+	Playlist music_set;          ///< all songs in current music set, in set order
 
-assert_compile(lengthof(_settings_client.music.custom_1) == NUM_SONGS_PLAYLIST + 1);
-assert_compile(lengthof(_settings_client.music.custom_2) == NUM_SONGS_PLAYLIST + 1);
+	PlaylistChoices selected_playlist;
 
-/** The different playlists that can be played. */
-static byte * const _playlists[] = {
-	_playlist_all,
-	_playlist_old_style,
-	_playlist_new_style,
-	_playlist_ezy_street,
-	_settings_client.music.custom_1,
-	_settings_client.music.custom_2,
+	void BuildPlaylists();
+
+	void ChangePlaylist(PlaylistChoices pl);
+	void ChangeMusicSet(const char *set_name);
+	void Shuffle();
+	void Unshuffle();
+
+	void Play();
+	void Stop();
+	void Next();
+	void Prev();
+	void CheckStatus();
+
+	bool IsPlaying() const;
+	bool IsShuffle() const;
+	PlaylistEntry GetCurrentSong() const;
+
+	bool IsCustomPlaylist() const;
+	void PlaylistAdd(size_t song_index);
+	void PlaylistRemove(size_t song_index);
+	void PlaylistClear();
+
+private:
+	void ChangePlaylistPosition(int ofs);
+	int playlist_position;
+
+	void SaveCustomPlaylist(PlaylistChoices pl);
+
+	Playlist standard_playlists[PLCH_MAX];
 };
 
-/**
- * Validate a playlist.
- * @param playlist The playlist to validate.
- * @param last The last location in the list.
- */
-void ValidatePlaylist(byte *playlist, byte *last)
-{
-	while (*playlist != 0 && playlist <= last) {
-		/* Song indices are saved off-by-one so 0 is "nothing". */
-		if (*playlist <= NUM_SONGS_AVAILABLE && !StrEmpty(GetSongName(*playlist - 1))) {
-			playlist++;
-			continue;
-		}
-		for (byte *p = playlist; *p != 0 && p <= last; p++) {
-			p[0] = p[1];
-		}
-	}
+MusicSystem _music;
 
-	/* Make sure the list is null terminated. */
-	*last = 0;
-}
 
-/** Initialize the playlists */
-void InitializeMusic()
+/** Rebuild all playlists for the current music set */
+void MusicSystem::BuildPlaylists()
 {
-	uint j = 0;
+	const MusicSet *set = BaseMusic::GetUsedSet();
+
+	/* Clear current playlists */
+	for (size_t i = 0; i < lengthof(this->standard_playlists); ++i) this->standard_playlists[i].clear();
+	this->music_set.clear();
+
+	/* Build standard playlists, and a list of available music */
 	for (uint i = 0; i < NUM_SONGS_AVAILABLE; i++) {
-		if (StrEmpty(GetSongName(i))) continue;
-		_playlist_all[j++] = i + 1;
-	}
-	/* Terminate the list */
-	_playlist_all[j] = 0;
+		PlaylistEntry entry(set, i);
+		if (!entry.IsValid()) continue;
 
-	/* Now make the 'styled' playlists */
-	for (uint k = 0; k < NUM_SONG_CLASSES; k++) {
-		j = 0;
-		for (uint i = 0; i < NUM_SONGS_CLASS; i++) {
-			int id = k * NUM_SONGS_CLASS + i + 1;
-			if (StrEmpty(GetSongName(id))) continue;
-			_playlists[k + 1][j++] = id + 1;
-		}
-		/* Terminate the list */
-		_playlists[k + 1][j] = 0;
-	}
+		this->music_set.push_back(entry);
 
-	ValidatePlaylist(_settings_client.music.custom_1, lastof(_settings_client.music.custom_1));
-	ValidatePlaylist(_settings_client.music.custom_2, lastof(_settings_client.music.custom_2));
+		/* Add theme song to theme-only playlist */
+		if (i == 0) this->standard_playlists[PLCH_THEMEONLY].push_back(entry);
 
-	if (BaseMusic::GetUsedSet()->num_available < _music_wnd_cursong) {
-		/* If there are less songs than the currently played song,
-		 * just pause and reset to no song. */
-		_music_wnd_cursong = 0;
-		_song_is_active = false;
-	}
-}
-
-static void SkipToPrevSong()
-{
-	byte *b = _cur_playlist;
-	byte *p = b;
-	byte t;
-
-	if (b[0] == 0) return; // empty playlist
-
-	do p++; while (p[0] != 0); // find the end
-
-	t = *--p; // and copy the bytes
-	while (p != b) {
-		p--;
-		p[1] = p[0];
-	}
-	*b = t;
-
-	_song_is_active = false;
-}
-
-static void SkipToNextSong()
-{
-	byte *b = _cur_playlist;
-	byte t;
-
-	t = b[0];
-	if (t != 0) {
-		while (b[1] != 0) {
-			b[0] = b[1];
-			b++;
-		}
-		b[0] = t;
-	}
-
-	_song_is_active = false;
-}
-
-static void MusicVolumeChanged(byte new_vol)
-{
-	MusicDriver::GetInstance()->SetVolume(new_vol);
-}
-
-static void DoPlaySong()
-{
-	char filename[MAX_PATH];
-	if (FioFindFullPath(filename, lastof(filename), BASESET_DIR, BaseMusic::GetUsedSet()->files[_music_wnd_cursong - 1].filename) == NULL) {
-		FioFindFullPath(filename, lastof(filename), OLD_GM_DIR, BaseMusic::GetUsedSet()->files[_music_wnd_cursong - 1].filename);
-	}
-	MusicDriver::GetInstance()->PlaySong(filename);
-	SetWindowDirty(WC_MUSIC_WINDOW, 0);
-}
-
-static void DoStopMusic()
-{
-	MusicDriver::GetInstance()->StopSong();
-	SetWindowDirty(WC_MUSIC_WINDOW, 0);
-}
-
-static void SelectSongToPlay()
-{
-	uint i = 0;
-	uint j = 0;
-
-	memset(_cur_playlist, 0, sizeof(_cur_playlist));
-	do {
-		/* File is the index into the file table of the music set. The play list uses 0 as 'no entry',
-		 * so we need to subtract 1. In case of 'no entry' (file = -1), just skip adding it outright. */
-		int file = _playlists[_settings_client.music.playlist][i] - 1;
-		if (file >= 0) {
-			const char *filename = BaseMusic::GetUsedSet()->files[file].filename;
-			/* We are now checking for the existence of that file prior
-			 * to add it to the list of available songs */
-			if (!StrEmpty(filename) && FioCheckFileExists(filename, BASESET_DIR)) {
-				_cur_playlist[j] = _playlists[_settings_client.music.playlist][i];
-				j++;
-			}
-		}
-	} while (_playlists[_settings_client.music.playlist][++i] != 0 && j < lengthof(_cur_playlist) - 1);
-
-	/* Do not shuffle when on the intro-start window, as the song to play has to be the original TTD Theme*/
-	if (_settings_client.music.shuffle && _game_mode != GM_MENU) {
-		i = 500;
-		do {
-			uint32 r = InteractiveRandom();
-			byte *a = &_cur_playlist[GB(r, 0, 5)];
-			byte *b = &_cur_playlist[GB(r, 8, 5)];
-
-			if (*a != 0 && *b != 0) {
-				byte t = *a;
-				*a = *b;
-				*b = t;
-			}
-		} while (--i);
-	}
-}
-
-static void StopMusic()
-{
-	_music_wnd_cursong = 0;
-	DoStopMusic();
-	_song_is_active = false;
-	SetWindowWidgetDirty(WC_MUSIC_WINDOW, 0, 9);
-}
-
-static void PlayPlaylistSong()
-{
-	if (_cur_playlist[0] == 0) {
-		SelectSongToPlay();
-		/* if there is not songs in the playlist, it may indicate
-		 * no file on the gm folder, or even no gm folder.
-		 * Stop the playback, then */
-		if (_cur_playlist[0] == 0) {
-			_song_is_active = false;
-			_music_wnd_cursong = 0;
-			_settings_client.music.playing = false;
-			return;
+		/* Don't add the theme song to standard playlists */
+		if (i > 0) {
+			this->standard_playlists[PLCH_ALLMUSIC].push_back(entry);
+			uint theme = (i - 1) / NUM_SONGS_CLASS;
+			this->standard_playlists[PLCH_OLDSTYLE + theme].push_back(entry);
 		}
 	}
-	_music_wnd_cursong = _cur_playlist[0];
-	DoPlaySong();
-	_song_is_active = true;
 
-	SetWindowWidgetDirty(WC_MUSIC_WINDOW, 0, 9);
-}
-
-void ResetMusic()
-{
-	_music_wnd_cursong = 1;
-	DoPlaySong();
-}
-
-void MusicLoop()
-{
-	if (!_settings_client.music.playing && _song_is_active) {
-		StopMusic();
-	} else if (_settings_client.music.playing && !_song_is_active) {
-		PlayPlaylistSong();
-	}
-
-	if (!_song_is_active) return;
-
-	if (!MusicDriver::GetInstance()->IsSongPlaying()) {
-		if (_game_mode != GM_MENU) {
-			StopMusic();
-			SkipToNextSong();
-			PlayPlaylistSong();
-		} else {
-			ResetMusic();
+	/* Load custom playlists
+	 * Song index offsets are 1-based, zero indicates invalid/end-of-list value */
+	for (uint i = 0; i < NUM_SONGS_PLAYLIST; i++) {
+		if (_settings_client.music.custom_1[i] > 0) {
+			PlaylistEntry entry(set, _settings_client.music.custom_1[i] - 1);
+			if (entry.IsValid()) this->standard_playlists[PLCH_CUSTOM1].push_back(entry);
+		}
+		if (_settings_client.music.custom_2[i] > 0) {
+			PlaylistEntry entry(set, _settings_client.music.custom_2[i] - 1);
+			if (entry.IsValid()) this->standard_playlists[PLCH_CUSTOM2].push_back(entry);
 		}
 	}
 }
 
-static void SelectPlaylist(byte list)
+/**
+ * Switch to another playlist, or reload the current one.
+ * @param pl Playlist to select
+ */
+void MusicSystem::ChangePlaylist(PlaylistChoices pl)
 {
-	_settings_client.music.playlist = list;
+	assert(pl < PLCH_MAX && pl >= PLCH_ALLMUSIC);
+
+	this->displayed_playlist = this->standard_playlists[pl];
+	this->active_playlist = this->displayed_playlist;
+	this->selected_playlist = pl;
+	this->playlist_position = 0;
+
+	if (this->selected_playlist != PLCH_THEMEONLY) _settings_client.music.playlist = this->selected_playlist;
+
+	if (_settings_client.music.shuffle) {
+		this->Shuffle();
+		/* Shuffle() will also Play() if necessary, only start once */
+	} else if (_settings_client.music.playing) {
+		this->Play();
+	}
+
 	InvalidateWindowData(WC_MUSIC_TRACK_SELECTION, 0);
 	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
 }
+
+/**
+ * Change to named music set, and reset playback.
+ * @param set_name Name of music set to select
+ */
+void MusicSystem::ChangeMusicSet(const char *set_name)
+{
+	BaseMusic::SetSet(set_name);
+
+	free(BaseMusic::ini_set);
+	BaseMusic::ini_set = stredup(set_name);
+
+	this->BuildPlaylists();
+	this->ChangePlaylist(this->selected_playlist);
+
+	InvalidateWindowData(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_OPTIONS, 0, true);
+}
+
+/** Enable shuffle mode and restart playback */
+void MusicSystem::Shuffle()
+{
+	_settings_client.music.shuffle = true;
+
+	this->active_playlist = this->displayed_playlist;
+	for (size_t i = 0; i < this->active_playlist.size(); i++) {
+		size_t shuffle_index = InteractiveRandom() % (this->active_playlist.size() - i);
+		std::swap(this->active_playlist[i], this->active_playlist[i + shuffle_index]);
+	}
+
+	if (_settings_client.music.playing) this->Play();
+
+	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
+}
+
+/** Disable shuffle and restart playback */
+void MusicSystem::Unshuffle()
+{
+	_settings_client.music.shuffle = false;
+	this->active_playlist = this->displayed_playlist;
+
+	if (_settings_client.music.playing) this->Play();
+
+	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
+}
+
+/** Start/restart playback at current song */
+void MusicSystem::Play()
+{
+	/* Always set the playing flag, even if there is no music */
+	_settings_client.music.playing = true;
+	MusicDriver::GetInstance()->StopSong();
+	/* Make sure playlist_position is a valid index, if playlist has changed etc. */
+	this->ChangePlaylistPosition(0);
+
+	/* If there is no music, don't try to play it */
+	if (this->active_playlist.empty()) return;
+
+	MusicSongInfo song = this->active_playlist[this->playlist_position];
+	if (_game_mode == GM_MENU && this->selected_playlist == PLCH_THEMEONLY) song.loop = true;
+	MusicDriver::GetInstance()->PlaySong(song);
+
+	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
+}
+
+/** Stop playback and set flag that we don't intend to play music */
+void MusicSystem::Stop()
+{
+	MusicDriver::GetInstance()->StopSong();
+	_settings_client.music.playing = false;
+
+	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
+}
+
+/** Skip to next track */
+void MusicSystem::Next()
+{
+	this->ChangePlaylistPosition(+1);
+	if (_settings_client.music.playing) this->Play();
+
+	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
+}
+
+/** Skip to previous track */
+void MusicSystem::Prev()
+{
+	this->ChangePlaylistPosition(-1);
+	if (_settings_client.music.playing) this->Play();
+
+	InvalidateWindowData(WC_MUSIC_WINDOW, 0);
+}
+
+/** Check that music is playing if it should, and that appropriate playlist is active for game/main menu */
+void MusicSystem::CheckStatus()
+{
+	if ((_game_mode == GM_MENU) != (this->selected_playlist == PLCH_THEMEONLY)) {
+		/* Make sure the theme-only playlist is active when on the title screen, and not during gameplay */
+		this->ChangePlaylist((_game_mode == GM_MENU) ? PLCH_THEMEONLY : (PlaylistChoices)_settings_client.music.playlist);
+	}
+	if (this->active_playlist.empty()) return;
+	/* If we were supposed to be playing, but music has stopped, move to next song */
+	if (this->IsPlaying() && !MusicDriver::GetInstance()->IsSongPlaying()) this->Next();
+}
+
+/** Is the player getting music right now? */
+bool MusicSystem::IsPlaying() const
+{
+	return _settings_client.music.playing && !this->active_playlist.empty();
+}
+
+/** Is shuffle mode enabled? */
+bool MusicSystem::IsShuffle() const
+{
+	return _settings_client.music.shuffle;
+}
+
+/** Return the current song, or a dummy if none */
+MusicSystem::PlaylistEntry MusicSystem::GetCurrentSong() const
+{
+	if (!this->IsPlaying()) return PlaylistEntry(BaseMusic::GetUsedSet(), 0);
+	return this->active_playlist[this->playlist_position];
+}
+
+/** Is one of the custom playlists selected? */
+bool MusicSystem::IsCustomPlaylist() const
+{
+	return (this->selected_playlist == PLCH_CUSTOM1) || (this->selected_playlist == PLCH_CUSTOM2);
+}
+
+/**
+ * Append a song to a custom playlist.
+ * Always adds to the currently active playlist.
+ * @param song_index Index of song in the current music set to add
+ */
+void MusicSystem::PlaylistAdd(size_t song_index)
+{
+	if (!this->IsCustomPlaylist()) return;
+
+	/* Pick out song from the music set */
+	if (song_index >= this->music_set.size()) return;
+	PlaylistEntry entry = this->music_set[song_index];
+
+	/* Check for maximum length */
+	if (this->standard_playlists[this->selected_playlist].size() >= NUM_SONGS_PLAYLIST) return;
+
+	/* Add it to the appropriate playlist, and the display */
+	this->standard_playlists[this->selected_playlist].push_back(entry);
+	this->displayed_playlist.push_back(entry);
+
+	/* Add it to the active playlist, if playback is shuffled select a random position to add at */
+	if (this->active_playlist.empty()) {
+		this->active_playlist.push_back(entry);
+		if (this->IsPlaying()) this->Play();
+	} else if (this->IsShuffle()) {
+		/* Generate a random position between 0 and n (inclusive, new length) to insert at */
+		size_t maxpos = this->displayed_playlist.size();
+		size_t newpos = InteractiveRandom() % maxpos;
+		this->active_playlist.insert(this->active_playlist.begin() + newpos, entry);
+		/* Make sure to shift up the current playback position if the song was inserted before it */
+		if ((int)newpos <= this->playlist_position) this->playlist_position++;
+	} else {
+		this->active_playlist.push_back(entry);
+	}
+
+	this->SaveCustomPlaylist(this->selected_playlist);
+
+	InvalidateWindowData(WC_MUSIC_TRACK_SELECTION, 0);
+}
+
+/**
+ * Remove a song from a custom playlist.
+ * @param song_index Index in the custom playlist to remove.
+ */
+void MusicSystem::PlaylistRemove(size_t song_index)
+{
+	if (!this->IsCustomPlaylist()) return;
+
+	Playlist &pl = this->standard_playlists[this->selected_playlist];
+	if (song_index >= pl.size()) return;
+
+	/* Remove from "simple" playlists */
+	PlaylistEntry song = pl[song_index];
+	pl.erase(pl.begin() + song_index);
+	this->displayed_playlist.erase(this->displayed_playlist.begin() + song_index);
+
+	/* Find in actual active playlist (may be shuffled) and remove,
+	 * if it's the current song restart playback */
+	for (size_t i = 0; i < this->active_playlist.size(); i++) {
+		Playlist::iterator s2 = this->active_playlist.begin() + i;
+		if (s2->filename == song.filename && s2->cat_index == song.cat_index) {
+			this->active_playlist.erase(s2);
+			if ((int)i == this->playlist_position && this->IsPlaying()) this->Play();
+			break;
+		}
+	}
+
+	this->SaveCustomPlaylist(this->selected_playlist);
+
+	InvalidateWindowData(WC_MUSIC_TRACK_SELECTION, 0);
+}
+
+/**
+ * Remove all songs from the current custom playlist.
+ * Effectively stops playback too.
+ */
+void MusicSystem::PlaylistClear()
+{
+	if (!this->IsCustomPlaylist()) return;
+
+	this->standard_playlists[this->selected_playlist].clear();
+	this->ChangePlaylist(this->selected_playlist);
+
+	this->SaveCustomPlaylist(this->selected_playlist);
+}
+
+/**
+ * Change playlist position pointer by the given offset, making sure to keep it within valid range.
+ * If the playlist is empty, position is always set to 0.
+ * @param ofs Amount to move playlist position by.
+ */
+void MusicSystem::ChangePlaylistPosition(int ofs)
+{
+	if (this->active_playlist.empty()) {
+		this->playlist_position = 0;
+	} else {
+		this->playlist_position += ofs;
+		while (this->playlist_position >= (int)this->active_playlist.size()) this->playlist_position -= (int)this->active_playlist.size();
+		while (this->playlist_position < 0) this->playlist_position += (int)this->active_playlist.size();
+	}
+}
+
+/**
+ * Save a custom playlist to settings after modification.
+ * @param pl Playlist to store back
+ */
+void MusicSystem::SaveCustomPlaylist(PlaylistChoices pl)
+{
+	byte *settings_pl;
+	if (pl == PLCH_CUSTOM1) {
+		settings_pl = _settings_client.music.custom_1;
+	} else if (pl == PLCH_CUSTOM2) {
+		settings_pl = _settings_client.music.custom_2;
+	} else {
+		return;
+	}
+
+	size_t num = 0;
+	MemSetT(settings_pl, 0, NUM_SONGS_PLAYLIST);
+
+	for (Playlist::const_iterator song = this->standard_playlists[pl].begin(); song != this->standard_playlists[pl].end(); ++song) {
+		/* Music set indices in the settings playlist are 1-based, 0 means unused slot */
+		settings_pl[num++] = (byte)song->set_index + 1;
+	}
+}
+
+
+/**
+ * Check music playback status and start/stop/song-finished.
+ * Called from main loop.
+ */
+void MusicLoop()
+{
+	_music.CheckStatus();
+}
+
+/**
+ * Change the configured music set and reset playback
+ * @param index Index of music set to switch to
+ */
+void ChangeMusicSet(int index)
+{
+	if (BaseMusic::GetIndexOfUsedSet() == index) return;
+	const char *name = BaseMusic::GetSet(index)->name;
+	_music.ChangeMusicSet(name);
+}
+
+/**
+ * Prepare the music system for use.
+ * Called from \c InitializeGame
+ */
+void InitializeMusic()
+{
+	_music.BuildPlaylists();
+}
+
 
 struct MusicTrackSelectionWindow : public Window {
 	MusicTrackSelectionWindow(WindowDesc *desc, WindowNumber number) : Window(desc)
@@ -311,6 +464,9 @@ struct MusicTrackSelectionWindow : public Window {
 		switch (widget) {
 			case WID_MTS_PLAYLIST:
 				SetDParam(0, STR_MUSIC_PLAYLIST_ALL + _settings_client.music.playlist);
+				break;
+			case WID_MTS_CAPTION:
+				SetDParamStr(0, BaseMusic::GetUsedSet()->name);
 				break;
 		}
 	}
@@ -349,13 +505,10 @@ struct MusicTrackSelectionWindow : public Window {
 			case WID_MTS_LIST_LEFT: case WID_MTS_LIST_RIGHT: {
 				Dimension d = {0, 0};
 
-				for (uint i = 0; i < NUM_SONGS_AVAILABLE; i++) {
-					const char *song_name = GetSongName(i);
-					if (StrEmpty(song_name)) continue;
-
-					SetDParam(0, GetTrackNumber(i));
+				for (MusicSystem::Playlist::const_iterator song = _music.music_set.begin(); song != _music.music_set.end(); ++song) {
+					SetDParam(0, song->tracknr);
 					SetDParam(1, 2);
-					SetDParamStr(2, GetSongName(i));
+					SetDParamStr(2, song->songname);
 					Dimension d2 = GetStringBoundingBox(STR_PLAYLIST_TRACK_NAME);
 					d.width = max(d.width, d2.width);
 					d.height += d2.height;
@@ -375,13 +528,10 @@ struct MusicTrackSelectionWindow : public Window {
 				GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK);
 
 				int y = r.top + WD_FRAMERECT_TOP;
-				for (uint i = 0; i < NUM_SONGS_AVAILABLE; i++) {
-					const char *song_name = GetSongName(i);
-					if (StrEmpty(song_name)) continue;
-
-					SetDParam(0, GetTrackNumber(i));
+				for (MusicSystem::Playlist::const_iterator song = _music.music_set.begin(); song != _music.music_set.end(); ++song) {
+					SetDParam(0, song->tracknr);
 					SetDParam(1, 2);
-					SetDParamStr(2, song_name);
+					SetDParamStr(2, song->songname);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_PLAYLIST_TRACK_NAME);
 					y += FONT_HEIGHT_SMALL;
 				}
@@ -392,11 +542,10 @@ struct MusicTrackSelectionWindow : public Window {
 				GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK);
 
 				int y = r.top + WD_FRAMERECT_TOP;
-				for (const byte *p = _playlists[_settings_client.music.playlist]; *p != 0; p++) {
-					uint i = *p - 1;
-					SetDParam(0, GetTrackNumber(i));
+				for (MusicSystem::Playlist::const_iterator song = _music.active_playlist.begin(); song != _music.active_playlist.end(); ++song) {
+					SetDParam(0, song->tracknr);
 					SetDParam(1, 2);
-					SetDParamStr(2, GetSongName(i));
+					SetDParamStr(2, song->songname);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_PLAYLIST_TRACK_NAME);
 					y += FONT_HEIGHT_SMALL;
 				}
@@ -410,58 +559,42 @@ struct MusicTrackSelectionWindow : public Window {
 		switch (widget) {
 			case WID_MTS_LIST_LEFT: { // add to playlist
 				int y = this->GetRowFromWidget(pt.y, widget, 0, FONT_HEIGHT_SMALL);
-
-				if (_settings_client.music.playlist < 4) return;
-				if (!IsInsideMM(y, 0, BaseMusic::GetUsedSet()->num_available)) return;
-
-				byte *p = _playlists[_settings_client.music.playlist];
-				for (uint i = 0; i != NUM_SONGS_PLAYLIST - 1; i++) {
-					if (p[i] == 0) {
-						/* Find the actual song number */
-						for (uint j = 0; j < NUM_SONGS_AVAILABLE; j++) {
-							if (GetTrackNumber(j) == y + 1) {
-								p[i] = j + 1;
-								break;
-							}
-						}
-						p[i + 1] = 0;
-						this->SetDirty();
-						SelectSongToPlay();
-						break;
-					}
-				}
+				_music.PlaylistAdd(y);
 				break;
 			}
 
 			case WID_MTS_LIST_RIGHT: { // remove from playlist
 				int y = this->GetRowFromWidget(pt.y, widget, 0, FONT_HEIGHT_SMALL);
+				_music.PlaylistRemove(y);
+				break;
+			}
 
-				if (_settings_client.music.playlist < 4) return;
-				if (!IsInsideMM(y, 0, NUM_SONGS_PLAYLIST)) return;
-
-				byte *p = _playlists[_settings_client.music.playlist];
-				for (uint i = y; i != NUM_SONGS_PLAYLIST - 1; i++) {
-					p[i] = p[i + 1];
-				}
-
-				this->SetDirty();
-				SelectSongToPlay();
+			case WID_MTS_MUSICSET: {
+				int selected = 0;
+				DropDownList *dropdown = BuildMusicSetDropDownList(&selected);
+				ShowDropDownList(this, dropdown, selected, widget, 0, true, false);
 				break;
 			}
 
 			case WID_MTS_CLEAR: // clear
-				for (uint i = 0; _playlists[_settings_client.music.playlist][i] != 0; i++) _playlists[_settings_client.music.playlist][i] = 0;
-				this->SetDirty();
-				StopMusic();
-				SelectSongToPlay();
+				_music.PlaylistClear();
 				break;
 
 			case WID_MTS_ALL: case WID_MTS_OLD: case WID_MTS_NEW:
 			case WID_MTS_EZY: case WID_MTS_CUSTOM1: case WID_MTS_CUSTOM2: // set playlist
-				SelectPlaylist(widget - WID_MTS_ALL);
-				StopMusic();
-				SelectSongToPlay();
+				_music.ChangePlaylist((MusicSystem::PlaylistChoices)(widget - WID_MTS_ALL));
 				break;
+		}
+	}
+
+	virtual void OnDropdownSelect(int widget, int index)
+	{
+		switch (widget) {
+			case WID_MTS_MUSICSET:
+				ChangeMusicSet(index);
+				break;
+			default:
+				NOT_REACHED();
 		}
 	}
 };
@@ -469,7 +602,8 @@ struct MusicTrackSelectionWindow : public Window {
 static const NWidgetPart _nested_music_track_selection_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_PLAYLIST_MUSIC_PROGRAM_SELECTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_MTS_CAPTION), SetDataTip(STR_PLAYLIST_MUSIC_SELECTION_SETNAME, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_MTS_MUSICSET), SetDataTip(STR_PLAYLIST_CHANGE_SET, STR_PLAYLIST_TOOLTIP_CHANGE_SET),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
@@ -522,6 +656,20 @@ struct MusicWindow : public Window {
 		this->InitNested(number);
 		this->LowerWidget(_settings_client.music.playlist + WID_M_ALL);
 		this->SetWidgetLoweredState(WID_M_SHUFFLE, _settings_client.music.shuffle);
+
+		UpdateDisabledButtons();
+	}
+
+	void UpdateDisabledButtons()
+	{
+		/* Disable music control widgets if there is no music
+		 * -- except Programme button! So you can still select a music set. */
+		this->SetWidgetsDisabledState(
+			BaseMusic::GetUsedSet()->num_available == 0,
+			WID_M_PREV, WID_M_NEXT, WID_M_STOP, WID_M_PLAY, WID_M_SHUFFLE,
+			WID_M_ALL, WID_M_OLD, WID_M_NEW, WID_M_EZY, WID_M_CUSTOM1, WID_M_CUSTOM2,
+			WIDGET_LIST_END
+			);
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
@@ -548,8 +696,8 @@ struct MusicWindow : public Window {
 
 			case WID_M_TRACK_NAME: {
 				Dimension d = GetStringBoundingBox(STR_MUSIC_TITLE_NONE);
-				for (uint i = 0; i < NUM_SONGS_AVAILABLE; i++) {
-					SetDParamStr(0, GetSongName(i));
+				for (MusicSystem::Playlist::const_iterator song = _music.music_set.begin(); song != _music.music_set.end(); ++song) {
+					SetDParamStr(0, song->songname);
 					d = maxdim(d, GetStringBoundingBox(STR_MUSIC_TITLE_NAME));
 				}
 				d.width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
@@ -571,9 +719,12 @@ struct MusicWindow : public Window {
 		switch (widget) {
 			case WID_M_TRACK_NR: {
 				GfxFillRect(r.left + 1, r.top + 1, r.right, r.bottom, PC_BLACK);
+				if (BaseMusic::GetUsedSet()->num_available == 0) {
+					break;
+				}
 				StringID str = STR_MUSIC_TRACK_NONE;
-				if (_song_is_active != 0 && _music_wnd_cursong != 0) {
-					SetDParam(0, GetTrackNumber(_music_wnd_cursong - 1));
+				if (_music.IsPlaying()) {
+					SetDParam(0, _music.GetCurrentSong().tracknr);
 					SetDParam(1, 2);
 					str = STR_MUSIC_TRACK_DIGIT;
 				}
@@ -584,24 +735,24 @@ struct MusicWindow : public Window {
 			case WID_M_TRACK_NAME: {
 				GfxFillRect(r.left, r.top + 1, r.right - 1, r.bottom, PC_BLACK);
 				StringID str = STR_MUSIC_TITLE_NONE;
-				if (_song_is_active != 0 && _music_wnd_cursong != 0) {
+				if (BaseMusic::GetUsedSet()->num_available == 0) {
+					str = STR_MUSIC_TITLE_NOMUSIC;
+				} else if (_music.IsPlaying()) {
 					str = STR_MUSIC_TITLE_NAME;
-					SetDParamStr(0, GetSongName(_music_wnd_cursong - 1));
+					SetDParamStr(0, _music.GetCurrentSong().songname);
 				}
 				DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, str, TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 			}
 
 			case WID_M_MUSIC_VOL: case WID_M_EFFECT_VOL: {
-				DrawFrameRect(r.left, r.top + 2, r.right, r.bottom - 2, COLOUR_GREY, FR_LOWERED);
+				int sw = ScaleGUITrad(slider_width);
+				int hsw = sw / 2;
+				DrawFrameRect(r.left + hsw, r.top + 2, r.right - hsw, r.bottom - 2, COLOUR_GREY, FR_LOWERED);
 				byte volume = (widget == WID_M_MUSIC_VOL) ? _settings_client.music.music_vol : _settings_client.music.effect_vol;
-				int x = (volume * (r.right - r.left) / 127);
-				if (_current_text_dir == TD_RTL) {
-					x = r.right - x;
-				} else {
-					x += r.left;
-				}
-				DrawFrameRect(x, r.top, x + slider_width, r.bottom, COLOUR_GREY, FR_NONE);
+				if (_current_text_dir == TD_RTL) volume = 127 - volume;
+				int x = r.left + (volume * (r.right - r.left - sw) / 127);
+				DrawFrameRect(x, r.top, x + sw, r.bottom, COLOUR_GREY, FR_NONE);
 				break;
 			}
 		}
@@ -618,6 +769,9 @@ struct MusicWindow : public Window {
 		for (int i = 0; i < 6; i++) {
 			this->SetWidgetLoweredState(WID_M_ALL + i, i == _settings_client.music.playlist);
 		}
+
+		UpdateDisabledButtons();
+
 		this->SetDirty();
 	}
 
@@ -625,23 +779,19 @@ struct MusicWindow : public Window {
 	{
 		switch (widget) {
 			case WID_M_PREV: // skip to prev
-				if (!_song_is_active) return;
-				SkipToPrevSong();
-				this->SetDirty();
+				_music.Prev();
 				break;
 
 			case WID_M_NEXT: // skip to next
-				if (!_song_is_active) return;
-				SkipToNextSong();
-				this->SetDirty();
+				_music.Next();
 				break;
 
 			case WID_M_STOP: // stop playing
-				_settings_client.music.playing = false;
+				_music.Stop();
 				break;
 
 			case WID_M_PLAY: // start playing
-				_settings_client.music.playing = true;
+				_music.Play();
 				break;
 
 			case WID_M_MUSIC_VOL: case WID_M_EFFECT_VOL: { // volume sliders
@@ -651,9 +801,12 @@ struct MusicWindow : public Window {
 
 				byte new_vol = x * 127 / this->GetWidget<NWidgetBase>(widget)->current_x;
 				if (_current_text_dir == TD_RTL) new_vol = 127 - new_vol;
+				/* Clamp to make sure min and max are properly settable */
+				if (new_vol > 124) new_vol = 127;
+				if (new_vol < 3) new_vol = 0;
 				if (new_vol != *vol) {
 					*vol = new_vol;
-					if (widget == WID_M_MUSIC_VOL) MusicVolumeChanged(new_vol);
+					if (widget == WID_M_MUSIC_VOL) MusicDriver::GetInstance()->SetVolume(new_vol);
 					this->SetDirty();
 				}
 
@@ -662,12 +815,13 @@ struct MusicWindow : public Window {
 			}
 
 			case WID_M_SHUFFLE: // toggle shuffle
-				_settings_client.music.shuffle ^= 1;
-				this->SetWidgetLoweredState(WID_M_SHUFFLE, _settings_client.music.shuffle);
+				if (_music.IsShuffle()) {
+					_music.Unshuffle();
+				} else {
+					_music.Shuffle();
+				}
+				this->SetWidgetLoweredState(WID_M_SHUFFLE, _music.IsShuffle());
 				this->SetWidgetDirty(WID_M_SHUFFLE);
-				StopMusic();
-				SelectSongToPlay();
-				this->SetDirty();
 				break;
 
 			case WID_M_PROGRAMME: // show track selection
@@ -676,10 +830,7 @@ struct MusicWindow : public Window {
 
 			case WID_M_ALL: case WID_M_OLD: case WID_M_NEW:
 			case WID_M_EZY: case WID_M_CUSTOM1: case WID_M_CUSTOM2: // playlist
-				SelectPlaylist(widget - WID_M_ALL);
-				StopMusic();
-				SelectSongToPlay();
-				this->SetDirty();
+				_music.ChangePlaylist((MusicSystem::PlaylistChoices)(widget - WID_M_ALL));
 				break;
 		}
 	}
@@ -776,6 +927,5 @@ static WindowDesc _music_window_desc(
 
 void ShowMusicWindow()
 {
-	if (BaseMusic::GetUsedSet()->num_available == 0) ShowErrorMessage(STR_ERROR_NO_SONGS, INVALID_STRING_ID, WL_WARNING);
 	AllocateWindowDescFront<MusicWindow>(&_music_window_desc, 0);
 }

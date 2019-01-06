@@ -33,8 +33,9 @@ assert_compile(sizeof(Tile) == 8);
  * Look at docs/landscape.html for the exact meaning of the members.
  */
 struct TileExtended {
-	byte m6; ///< General purpose
-	byte m7; ///< Primarily used for newgrf support
+	byte m6;   ///< General purpose
+	byte m7;   ///< Primarily used for newgrf support
+	uint16 m8; ///< General purpose
 };
 
 /**
@@ -70,7 +71,7 @@ static const uint MAX_MAP_SIZE      = 1 << MAX_MAP_SIZE_BITS; ///< Maximal map s
  * Approximation of the length of a straight track, relative to a diagonal
  * track (ie the size of a tile side).
  *
- * #defined instead of const so it can
+ * \#defined instead of const so it can
  * stay integer. (no runtime float operations) Is this needed?
  * Watch out! There are _no_ brackets around here, to prevent intermediate
  * rounding! Be careful when using this!

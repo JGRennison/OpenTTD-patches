@@ -895,7 +895,7 @@ static void GetTileDesc_Water(TileIndex tile, TileDesc *td)
 				case WATER_CLASS_SEA:   td->str = STR_LAI_WATER_DESCRIPTION_WATER; break;
 				case WATER_CLASS_CANAL: td->str = STR_LAI_WATER_DESCRIPTION_CANAL; break;
 				case WATER_CLASS_RIVER: td->str = STR_LAI_WATER_DESCRIPTION_RIVER; break;
-				default: NOT_REACHED(); break;
+				default: NOT_REACHED();
 			}
 			break;
 		case WATER_TILE_COAST: td->str = STR_LAI_WATER_DESCRIPTION_COAST_OR_RIVERBANK; break;
@@ -904,7 +904,7 @@ static void GetTileDesc_Water(TileIndex tile, TileDesc *td)
 			td->str = STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT;
 			td->build_date = Depot::GetByTile(tile)->build_date;
 			break;
-		default: NOT_REACHED(); break;
+		default: NOT_REACHED();
 	}
 
 	td->owner[0] = GetTileOwner(tile);
@@ -1218,7 +1218,7 @@ void ConvertGroundTilesIntoWaterTiles()
 				default:
 					uint dir;
 					FOR_EACH_SET_BIT(dir, _flood_from_dirs[slope & ~SLOPE_STEEP]) {
-						TileIndex dest = TILE_ADD(tile, TileOffsByDir((Direction)dir));
+						TileIndex dest = TileAddByDir(tile, (Direction)dir);
 						Slope slope_dest = GetTileSlope(dest) & ~SLOPE_STEEP;
 						if (slope_dest == SLOPE_FLAT || IsSlopeWithOneCornerRaised(slope_dest)) {
 							MakeShore(tile);

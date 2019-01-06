@@ -206,7 +206,7 @@ CommandCost CmdSellVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
  * @param engine_type Which engine to refit
  * @param new_cid Cargo type we are refitting to.
  * @param new_subtype New cargo subtype.
- * @param [out] auto_refit_allowed The refit is allowed as an auto-refit.
+ * @param[out] auto_refit_allowed The refit is allowed as an auto-refit.
  * @return Price for refitting
  */
 static int GetRefitCostFactor(const Vehicle *v, EngineID engine_type, CargoID new_cid, byte new_subtype, bool *auto_refit_allowed)
@@ -238,7 +238,7 @@ static int GetRefitCostFactor(const Vehicle *v, EngineID engine_type, CargoID ne
  * @param engine_type Which engine to refit
  * @param new_cid Cargo type we are refitting to.
  * @param new_subtype New cargo subtype.
- * @param [out] auto_refit_allowed The refit is allowed as an auto-refit.
+ * @param[out] auto_refit_allowed The refit is allowed as an auto-refit.
  * @return Price for refitting
  */
 static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID new_cid, byte new_subtype, bool *auto_refit_allowed)
@@ -464,7 +464,7 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	byte new_subtype = GB(p2, 8, 8);
 	if (new_cid >= NUM_CARGO) return CMD_ERROR;
 
-	/* For ships and aircrafts there is always only one. */
+	/* For ships and aircraft there is always only one. */
 	bool only_this = HasBit(p2, 7) || front->type == VEH_SHIP || front->type == VEH_AIRCRAFT;
 	uint8 num_vehicles = GB(p2, 16, 8);
 
@@ -542,7 +542,8 @@ CommandCost CmdStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		case VEH_AIRCRAFT: {
 			Aircraft *a = Aircraft::From(v);
 			/* cannot stop airplane when in flight, or when taking off / landing */
-			if (!(v->vehstatus & VS_CRASHED) && a->state >= STARTTAKEOFF && a->state < TERM7) return_cmd_error(STR_ERROR_AIRCRAFT_IS_IN_FLIGHT);
+			if (a->state >= STARTTAKEOFF && a->state < TERM7) return_cmd_error(STR_ERROR_AIRCRAFT_IS_IN_FLIGHT);
+			if (HasBit(a->flags, VAF_HELI_DIRECT_DESCENT)) return_cmd_error(STR_ERROR_AIRCRAFT_IS_IN_FLIGHT);
 			break;
 		}
 

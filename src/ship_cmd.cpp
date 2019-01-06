@@ -34,6 +34,7 @@
 #include "company_base.h"
 #include "tunnelbridge_map.h"
 #include "zoom_func.h"
+#include "framerate_type.h"
 
 #include "table/strings.h"
 
@@ -296,7 +297,7 @@ TileIndex Ship::GetOrderStationLocation(StationID station)
 	}
 }
 
-void Ship::UpdateDeltaXY(Direction direction)
+void Ship::UpdateDeltaXY()
 {
 	static const int8 _delta_xy_table[8][4] = {
 		/* y_extent, x_extent, y_offs, x_offs */
@@ -310,7 +311,7 @@ void Ship::UpdateDeltaXY(Direction direction)
 		{32,  6, -16,  -3}, // NW
 	};
 
-	const int8 *bb = _delta_xy_table[direction];
+	const int8 *bb = _delta_xy_table[this->direction];
 	this->x_offs        = bb[3];
 	this->y_offs        = bb[2];
 	this->x_extent      = bb[1];
@@ -537,6 +538,10 @@ static void ShipController(Ship *v)
 				if (v->current_order.IsType(OT_LEAVESTATION)) {
 					v->current_order.Free();
 					SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+					/* Test if continuing forward would lead to a dead-end, moving into the dock. */
+					DiagDirection exitdir = VehicleExitDir(v->direction, v->state);
+					TileIndex tile = TileAddByDiagDir(v->tile, exitdir);
+					if (TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_WATER, 0, exitdir)) == TRACK_BIT_NONE) goto reverse_direction;
 				} else if (v->dest_tile != 0) {
 					/* We have a target, let's see if we reached it... */
 					if (v->current_order.IsType(OT_GOTO_WAYPOINT) &&
@@ -634,6 +639,8 @@ reverse_direction:
 
 bool Ship::Tick()
 {
+	PerformanceAccumulator framerate(PFE_GL_SHIPS);
+
 	if (!(this->vehstatus & VS_STOPPED)) this->running_ticks++;
 
 	ShipController(this);
@@ -647,7 +654,7 @@ bool Ship::Tick()
  * @param flags    type of operation.
  * @param e        the engine to build.
  * @param data     unused.
- * @param ret[out] the vehicle that has been built.
+ * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
 CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)
@@ -670,7 +677,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, u
 		v->y_pos = y;
 		v->z_pos = GetSlopePixelZ(x, y);
 
-		v->UpdateDeltaXY(v->direction);
+		v->UpdateDeltaXY();
 		v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
 
 		v->spritenum = svi->image_index;

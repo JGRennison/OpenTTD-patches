@@ -194,7 +194,7 @@ static GrfProcessingState _cur;
 
 /**
  * Helper to check whether an image index is valid for a particular NewGRF vehicle.
- * @param <T> The type of vehicle.
+ * @tparam T The type of vehicle.
  * @param image_index The image index to check.
  * @return True iff the image index is valid, or 0xFD (use new graphics).
  */
@@ -313,8 +313,8 @@ struct GRFTempEngineData {
 	Refittability refittability;     ///< Did the newgrf set any refittability property? If not, default refittability will be applied.
 	bool prop27_set;         ///< Did the NewGRF set property 27 (misc flags)?
 	uint8 rv_max_speed;      ///< Temporary storage of RV prop 15, maximum speed in mph/0.8
-	uint32 ctt_include_mask; ///< Cargo types always included in the refit mask.
-	uint32 ctt_exclude_mask; ///< Cargo types always excluded from the refit mask.
+	CargoTypes ctt_include_mask; ///< Cargo types always included in the refit mask.
+	CargoTypes ctt_exclude_mask; ///< Cargo types always excluded from the refit mask.
 
 	/**
 	 * Update the summary refittability on setting a refittability property.
@@ -734,9 +734,9 @@ static void MapSpriteMappingRecolour(PalSpriteID *grf_sprite)
  * @param invert_action1_flag Set to true, if palette bit 15 means 'not from action 1'.
  * @param use_cur_spritesets  Whether to use currently referenceable action 1 sets.
  * @param feature             GrfSpecFeature to use spritesets from.
- * @param [out] grf_sprite    Read sprite and palette.
- * @param [out] max_sprite_offset  Optionally returns the number of sprites in the spriteset of the sprite. (0 if no spritset)
- * @param [out] max_palette_offset Optionally returns the number of sprites in the spriteset of the palette. (0 if no spritset)
+ * @param[out] grf_sprite     Read sprite and palette.
+ * @param[out] max_sprite_offset  Optionally returns the number of sprites in the spriteset of the sprite. (0 if no spritset)
+ * @param[out] max_palette_offset Optionally returns the number of sprites in the spriteset of the palette. (0 if no spritset)
  * @return Read TileLayoutFlags.
  */
 static TileLayoutFlags ReadSpriteLayoutSprite(ByteReader *buf, bool read_flags, bool invert_action1_flag, bool use_cur_spritesets, int feature, PalSpriteID *grf_sprite, uint16 *max_sprite_offset = NULL, uint16 *max_palette_offset = NULL)
@@ -943,11 +943,11 @@ static bool ReadSpriteLayout(ByteReader *buf, uint num_building_sprites, bool us
 }
 
 /**
- * Translate the refit mask.
+ * Translate the refit mask. refit_mask is uint32 as it has not been mapped to CargoTypes.
  */
-static uint32 TranslateRefitMask(uint32 refit_mask)
+static CargoTypes TranslateRefitMask(uint32 refit_mask)
 {
-	uint32 result = 0;
+	CargoTypes result = 0;
 	uint8 bit;
 	FOR_EACH_SET_BIT(bit, refit_mask) {
 		CargoID cargo = GetCargoTranslation(bit, _cur.grffile, true);
@@ -1310,7 +1310,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 				uint8 count = buf->ReadByte();
 				_gted[e->index].UpdateRefittability(prop == 0x2C && count != 0);
 				if (prop == 0x2C) _gted[e->index].defaultcargo_grf = _cur.grffile;
-				uint32 &ctt = prop == 0x2C ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
+				CargoTypes &ctt = prop == 0x2C ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
 				ctt = 0;
 				while (count--) {
 					CargoID ctype = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
@@ -1498,7 +1498,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop
 				uint8 count = buf->ReadByte();
 				_gted[e->index].UpdateRefittability(prop == 0x24 && count != 0);
 				if (prop == 0x24) _gted[e->index].defaultcargo_grf = _cur.grffile;
-				uint32 &ctt = prop == 0x24 ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
+				CargoTypes &ctt = prop == 0x24 ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
 				ctt = 0;
 				while (count--) {
 					CargoID ctype = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
@@ -1670,7 +1670,7 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop
 				uint8 count = buf->ReadByte();
 				_gted[e->index].UpdateRefittability(prop == 0x1E && count != 0);
 				if (prop == 0x1E) _gted[e->index].defaultcargo_grf = _cur.grffile;
-				uint32 &ctt = prop == 0x1E ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
+				CargoTypes &ctt = prop == 0x1E ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
 				ctt = 0;
 				while (count--) {
 					CargoID ctype = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
@@ -1820,7 +1820,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 				uint8 count = buf->ReadByte();
 				_gted[e->index].UpdateRefittability(prop == 0x1D && count != 0);
 				if (prop == 0x1D) _gted[e->index].defaultcargo_grf = _cur.grffile;
-				uint32 &ctt = prop == 0x1D ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
+				CargoTypes &ctt = prop == 0x1D ? _gted[e->index].ctt_include_mask : _gted[e->index].ctt_exclude_mask;
 				ctt = 0;
 				while (count--) {
 					CargoID ctype = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
@@ -1845,7 +1845,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 
 /**
  * Define properties for stations
- * @param stdid StationID of the first station tile.
+ * @param stid StationID of the first station tile.
  * @param numinfo Number of subsequent station tiles to change the property for.
  * @param prop The property to change.
  * @param buf The property value.
@@ -2036,9 +2036,10 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 				break;
 
 			case 0x12: // Cargo types for random triggers
-				statspec->cargo_triggers = buf->ReadDWord();
 				if (_cur.grffile->grf_version >= 7) {
-					statspec->cargo_triggers = TranslateRefitMask(statspec->cargo_triggers);
+					statspec->cargo_triggers = TranslateRefitMask(buf->ReadDWord());
+				} else {
+					statspec->cargo_triggers = (CargoTypes)buf->ReadDWord();
 				}
 				break;
 
@@ -2552,7 +2553,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, Byt
  * @param gvid ID of the global variable. This is basically only checked for zerones.
  * @param numinfo Number of subsequent IDs to change the property for.
  * @param buf The property value.
- * @param [in,out] translation_table Storage location for the translation table.
+ * @param[in,out] translation_table Storage location for the translation table.
  * @param name Name of the table for debug output.
  * @return ChangeInfoResult.
  */
@@ -3082,6 +3083,10 @@ static ChangeInfoResult IgnoreIndustryTileProperty(int prop, ByteReader *buf)
 			buf->ReadWord();
 			break;
 
+		case 0x13:
+			buf->Skip(buf->ReadByte() * 2);
+			break;
+
 		default:
 			ret = CIR_UNKNOWN;
 			break;
@@ -3171,7 +3176,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 			case 0x0C: {
 				uint16 acctp = buf->ReadWord();
 				tsp->accepts_cargo[prop - 0x0A] = GetCargoTranslation(GB(acctp, 0, 8), _cur.grffile);
-				tsp->acceptance[prop - 0x0A] = GB(acctp, 8, 8);
+				tsp->acceptance[prop - 0x0A] = Clamp(GB(acctp, 8, 8), 0, 16);
 				break;
 			}
 
@@ -3199,6 +3204,26 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 			case 0x12: // Special flags
 				tsp->special_flags = (IndustryTileSpecialFlags)buf->ReadByte();
 				break;
+
+			case 0x13: { // variable length cargo acceptance
+				byte num_cargoes = buf->ReadByte();
+				if (num_cargoes > lengthof(tsp->acceptance)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(tsp->acceptance); i++) {
+					if (i < num_cargoes) {
+						tsp->accepts_cargo[i] = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
+						/* Tile acceptance can be negative to counteract the INDTILE_SPECIAL_ACCEPTS_ALL_CARGO flag */
+						tsp->acceptance[i] = (int8)buf->ReadByte();
+					} else {
+						tsp->accepts_cargo[i] = CT_INVALID;
+						tsp->acceptance[i] = 0;
+					}
+				}
+				break;
+			}
 
 			default:
 				ret = CIR_UNKNOWN;
@@ -3279,11 +3304,17 @@ static ChangeInfoResult IgnoreIndustryProperty(int prop, ByteReader *buf)
 			for (byte j = 0; j < 3; j++) buf->ReadByte();
 			break;
 
-		case 0x15: {
-			byte number_of_sounds = buf->ReadByte();
-			for (uint8 j = 0; j < number_of_sounds; j++) {
-				buf->ReadByte();
-			}
+		case 0x15:
+		case 0x25:
+		case 0x26:
+		case 0x27:
+			buf->Skip(buf->ReadByte());
+			break;
+
+		case 0x28: {
+			int num_inputs = buf->ReadByte();
+			int num_outputs = buf->ReadByte();
+			buf->Skip(num_inputs * num_outputs * 2);
 			break;
 		}
 
@@ -3471,8 +3502,6 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 								} else {
 									/* Declared as been valid, can be used */
 									itt[k].gfx = tempid;
-									size = k + 1;
-									copy_from = itt;
 								}
 							} else if (itt[k].gfx == 0xFF) {
 								itt[k].ti.x = (int8)GB(itt[k].ti.x, 0, 8);
@@ -3643,6 +3672,77 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 				break;
 			}
 
+			case 0x25: { // variable length produced cargoes
+				byte num_cargoes = buf->ReadByte();
+				if (num_cargoes > lengthof(indsp->produced_cargo)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(indsp->produced_cargo); i++) {
+					if (i < num_cargoes) {
+						CargoID cargo = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
+						indsp->produced_cargo[i] = cargo;
+					} else {
+						indsp->produced_cargo[i] = CT_INVALID;
+					}
+				}
+				break;
+			}
+
+			case 0x26: { // variable length accepted cargoes
+				byte num_cargoes = buf->ReadByte();
+				if (num_cargoes > lengthof(indsp->accepts_cargo)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(indsp->accepts_cargo); i++) {
+					if (i < num_cargoes) {
+						CargoID cargo = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
+						indsp->accepts_cargo[i] = cargo;
+					} else {
+						indsp->accepts_cargo[i] = CT_INVALID;
+					}
+				}
+				break;
+			}
+
+			case 0x27: { // variable length production rates
+				byte num_cargoes = buf->ReadByte();
+				if (num_cargoes > lengthof(indsp->production_rate)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(indsp->production_rate); i++) {
+					if (i < num_cargoes) {
+						indsp->production_rate[i] = buf->ReadByte();
+					} else {
+						indsp->production_rate[i] = 0;
+					}
+				}
+				break;
+			}
+
+			case 0x28: { // variable size input/output production multiplier table
+				byte num_inputs = buf->ReadByte();
+				byte num_outputs = buf->ReadByte();
+				if (num_inputs > lengthof(indsp->accepts_cargo) || num_outputs > lengthof(indsp->produced_cargo)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(indsp->accepts_cargo); i++) {
+					for (uint j = 0; j < lengthof(indsp->produced_cargo); j++) {
+						uint16 mult = 0;
+						if (i < num_inputs && j < num_outputs) mult = buf->ReadWord();
+						indsp->input_cargo_multiplier[i][j] = mult;
+					}
+				}
+				break;
+			}
+
 			default:
 				ret = CIR_UNKNOWN;
 				break;
@@ -3786,8 +3886,6 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, B
 								} else {
 									/* Declared as been valid, can be used */
 									att[k].gfx = tempid;
-									size = k + 1;
-									copy_from = att;
 								}
 							} else if (att[k].gfx == 0xFF) {
 								att[k].ti.x = (int8)GB(att[k].ti.x, 0, 8);
@@ -4740,7 +4838,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				}
 			}
 
-			group->num_ranges = optimised.size();
+			group->num_ranges = (uint)optimised.size(); // cast is safe, there should never be 2**31 elements here
 			if (group->num_ranges > 0) {
 				group->ranges = MallocT<DeterministicSpriteGroupRange>(group->num_ranges);
 				MemCpyT(group->ranges, &optimised.front(), group->num_ranges);
@@ -4842,7 +4940,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				}
 
 				case GSF_INDUSTRIES: {
-					if (type > 1) {
+					if (type > 2) {
 						grfmsg(1, "NewSpriteGroup: Unsupported industry production version %d, skipping", type);
 						break;
 					}
@@ -4852,21 +4950,63 @@ static void NewSpriteGroup(ByteReader *buf)
 					act_group = group;
 					group->version = type;
 					if (type == 0) {
+						group->num_input = 3;
 						for (uint i = 0; i < 3; i++) {
 							group->subtract_input[i] = (int16)buf->ReadWord(); // signed
 						}
+						group->num_output = 2;
 						for (uint i = 0; i < 2; i++) {
 							group->add_output[i] = buf->ReadWord(); // unsigned
 						}
 						group->again = buf->ReadByte();
-					} else {
+					} else if (type == 1) {
+						group->num_input = 3;
 						for (uint i = 0; i < 3; i++) {
 							group->subtract_input[i] = buf->ReadByte();
 						}
+						group->num_output = 2;
 						for (uint i = 0; i < 2; i++) {
 							group->add_output[i] = buf->ReadByte();
 						}
 						group->again = buf->ReadByte();
+					} else if (type == 2) {
+						group->num_input = buf->ReadByte();
+						if (group->num_input > lengthof(group->subtract_input)) {
+							GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
+							error->data = stredup("too many inputs (max 16)");
+							return;
+						}
+						for (uint i = 0; i < group->num_input; i++) {
+							byte rawcargo = buf->ReadByte();
+							CargoID cargo = GetCargoTranslation(rawcargo, _cur.grffile);
+							if (std::find(group->cargo_input, group->cargo_input + i, cargo) != group->cargo_input + i) {
+								GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
+								error->data = stredup("duplicate input cargo");
+								return;
+							}
+							group->cargo_input[i] = cargo;
+							group->subtract_input[i] = buf->ReadByte();
+						}
+						group->num_output = buf->ReadByte();
+						if (group->num_output > lengthof(group->add_output)) {
+							GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
+							error->data = stredup("too many outputs (max 16)");
+							return;
+						}
+						for (uint i = 0; i < group->num_output; i++) {
+							byte rawcargo = buf->ReadByte();
+							CargoID cargo = GetCargoTranslation(rawcargo, _cur.grffile);
+							if (std::find(group->cargo_output, group->cargo_output + i, cargo) != group->cargo_output + i) {
+								GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
+								error->data = stredup("duplicate output cargo");
+								return;
+							}
+							group->cargo_output[i] = cargo;
+							group->add_output[i] = buf->ReadByte();
+						}
+						group->again = buf->ReadByte();
+					} else {
+						NOT_REACHED();
 					}
 					break;
 				}
@@ -5906,7 +6046,8 @@ static uint32 GetParamVal(byte param, uint32 *cond_val)
 				/* Supported in Action 0x07 and 0x09, not 0x0D */
 				return 0;
 			} else {
-				uint32 param_val = _ttdpatch_flags[*cond_val / 0x20];
+				uint32 index = *cond_val / 0x20;
+				uint32 param_val = index < lengthof(_ttdpatch_flags) ? _ttdpatch_flags[index] : 0;
 				*cond_val %= 0x20;
 				return param_val;
 			}
@@ -7896,6 +8037,8 @@ static void InitializeGRFSpecial()
 	                   |       ((_settings_game.vehicle.dynamic_engines ? 1 : 0) << 0x18)  // dynamic engines
 	                   |                                                      (1 << 0x1E)  // variablerunningcosts
 	                   |                                                      (1 << 0x1F); // any switch is on
+
+	_ttdpatch_flags[4] =                                                      (1 << 0x00); // larger persistent storage
 }
 
 /** Reset and clear all NewGRF stations */
@@ -8305,9 +8448,9 @@ static void CalculateRefitMasks()
 
 		/* Did the newgrf specify any refitting? If not, use defaults. */
 		if (_gted[engine].refittability != GRFTempEngineData::UNSET) {
-			uint32 mask = 0;
-			uint32 not_mask = 0;
-			uint32 xor_mask = ei->refit_mask;
+			CargoTypes mask = 0;
+			CargoTypes not_mask = 0;
+			CargoTypes xor_mask = ei->refit_mask;
 
 			/* If the original masks set by the grf are zero, the vehicle shall only carry the default cargo.
 			 * Note: After applying the translations, the vehicle may end up carrying no defined cargo. It becomes unavailable in that case. */
@@ -8328,7 +8471,7 @@ static void CalculateRefitMasks()
 			ei->refit_mask |= _gted[engine].ctt_include_mask;
 			ei->refit_mask &= ~_gted[engine].ctt_exclude_mask;
 		} else {
-			uint32 xor_mask = 0;
+			CargoTypes xor_mask = 0;
 
 			/* Don't apply default refit mask to wagons nor engines with no capacity */
 			if (e->type != VEH_TRAIN || (e->u.rail.capacity != 0 && e->u.rail.railveh_type != RAILVEH_WAGON)) {

@@ -26,15 +26,22 @@
 #define TTD_BIG_ENDIAN 1
 
 /* Windows has always LITTLE_ENDIAN */
-#if defined(WIN32) || defined(__OS2__) || defined(WIN64)
-	#define TTD_ENDIAN TTD_LITTLE_ENDIAN
+#if defined(_WIN32) || defined(__OS2__)
+#	define TTD_ENDIAN TTD_LITTLE_ENDIAN
+#elif defined(OSX)
+#	include <sys/types.h>
+#	if __DARWIN_BYTE_ORDER == __DARWIN_LITTLE_ENDIAN
+#		define TTD_ENDIAN TTD_LITTLE_ENDIAN
+#	else
+#		define TTD_ENDIAN TTD_BIG_ENDIAN
+#	endif
 #elif !defined(TESTING)
-	/* Else include endian[target/host].h, which has the endian-type, autodetected by the Makefile */
-	#if defined(STRGEN) || defined(SETTINGSGEN)
-		#include "endian_host.h"
-	#else
-		#include "endian_target.h"
-	#endif
-#endif /* WIN32 || __OS2__ || WIN64 */
+#	include <sys/param.h>
+#	if __BYTE_ORDER == __LITTLE_ENDIAN
+#		define TTD_ENDIAN TTD_LITTLE_ENDIAN
+#	else
+#		define TTD_ENDIAN TTD_BIG_ENDIAN
+#	endif
+#endif /* _WIN32 || __OS2__ */
 
 #endif /* ENDIAN_TYPE_HPP */

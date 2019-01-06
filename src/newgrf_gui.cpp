@@ -1033,8 +1033,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					break;
 				}
 				/* With double click, continue */
+				FALLTHROUGH;
 			}
-			FALLTHROUGH;
 
 			case WID_NS_REMOVE: { // Remove GRF
 				if (this->active_sel == NULL || !this->editable) break;
@@ -1089,8 +1089,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					break;
 				}
 				/* With double click, continue */
+				FALLTHROUGH;
 			}
-			FALLTHROUGH;
 
 			case WID_NS_ADD:
 				if (this->avail_sel == NULL || !this->editable || HasBit(this->avail_sel->flags, GCF_INVALID)) break;
@@ -1584,8 +1584,8 @@ NewGRFWindow::GUIGRFConfigList::FilterFunction * const NewGRFWindow::filter_func
 /**
  * Custom nested widget container for the NewGRF gui.
  * Depending on the space in the gui, it uses either
- * - two column mode, put the #acs and the #avs underneath each other and the #info next to it, or
- * - three column mode, put the #avs, #acs, and #info each in its own column.
+ * - two column mode, put the #acs and the #avs underneath each other and the #inf next to it, or
+ * - three column mode, put the #avs, #acs, and #inf each in its own column.
  */
 class NWidgetNewGRFDisplay : public NWidgetContainer {
 public:

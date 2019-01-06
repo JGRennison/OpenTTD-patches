@@ -476,6 +476,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :스크린샷 �
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :스크린샷 찍기 (지금 보고 있는 영역)
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :스크린샷 찍기 (창을 제외한 게임 화면만)
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :스크린샷 찍기 (지도 전체)
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :프레임레이트 보기
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD'에 대해서
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :스프라이트 정렬도구
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :박스 경계선 보기 전환
@@ -651,6 +652,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}사용 가능한 음악 없음
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}트랙
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}제목
@@ -670,15 +672,15 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}'사용�
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}프로그램을 무작위 재생합니다.
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}배경 음악 트랙을 선택할 수 있는 창을 엽니다.
 
-STR_ERROR_NO_SONGS                                              :{WHITE}선택된 배경 음악 목록에 노래가 없습니다. 배경 음악이 재생 되지 않을 것입니다.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}배경 음악 프로그램 선택
+STR_PLAYLIST_MUSIC_SELECTION_SETNAME                            :{WHITE}음악 프로그램 - '{STRING}'
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}음악 목록
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}프로그램 - '{STRING}'
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}초기화
+STR_PLAYLIST_CHANGE_SET                                         :{BLACK}세트 변경
 STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}현재 배경 음악 프로그램을 초기화합니다. (사용자1, 사용자2에서만 선택 가능)
+STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}배경 음악 세트를 이미 설치된 다른 세트로 변경합니다.
 STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}배경 음악 목록에 음악을 추가하려면 클릭하세요. (사용자1, 사용자2에서만 사용 가능)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}배경 음악 목록에서 음악을 제거하려면 클릭하세요. (사용자1, 사용자2에서만 사용 가능)
 
@@ -814,6 +816,7 @@ STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLAC
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(사장)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING}은(는) 새로운 도시 {TOWN}을(를) 건설했습니다!
+STR_NEWS_NEW_TOWN_UNSPONSORED                                   :{BLACK}{BIG_FONT}{TOWN} - 새 도시가 생겼습니다!
 
 STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}{1:TOWN} 근처에 새로운 {0:STRING}{G 0 "이" "가"} 건설되고 있습니다!
 STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}새 {STRING}{G 0 "이" "가"} {TOWN} 근처에서 자라나고 있습니다!
@@ -881,7 +884,7 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}외부 화면 {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}외부 화면에 복사
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}외부 화면으로 복사
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}현재 장소를 외부 화면에 복사합니다.
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}이 장소로 이동
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}외부 화면에 저장된 장소로 이동합니다.
@@ -926,6 +929,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :남아프리카
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :사용자 설정...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :그루지야 라리 (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :이란 리알 (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :신 러시아 루블 (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}차량 통행 방식
@@ -1003,7 +1007,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM}개�
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}기본 배경 음악 세트에 대한 추가 정보를 봅니다.
 
 STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}지원되는 해상도 목록을 불러오는데 실패하였습니다.
-STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}풀스크린 모드 실패
+STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}전체화면 모드 실패
 
 # Custom currency window
 
@@ -1265,7 +1269,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :이 설정을 �
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :검사하지 않음
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :정지한 차량을 제외하고 검사
 STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :모든 차량을 검사
-STR_CONFIG_SETTING_WARN_INCOME_LESS                             :차량의 수입이 적자일때 경고하기: {STRING}
+STR_CONFIG_SETTING_WARN_INCOME_LESS                             :차량의 수입이 적자일 때 경고하기: {STRING}
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :이 설정을 켜면, 지난 해에 수익이 없는 차량이 있으면 뉴스 메시지로 알려줍니다.
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :옛날 차량을 사라지지 않고 계속 만들 수 있게 함: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :이 설정을 켜면, 오래된 차량 모델을 포함하여 모든 차량 모델을 도입 이후에 계속 사용할 수 있게 됩니다.
@@ -1338,8 +1342,12 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :소형지도 �
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :녹색
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :어두운 녹색
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :보라색
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :스크롤 방향 뒤집기: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :마우스 오른쪽 클릭으로 지도를 스크롤하는 방법을 선택합니다. 이 설정을을 끄면, 마우스 방향과 화면의 스크롤 방향이 같아집니다. 설정을 켜면, 마우스 방향과 화면의 스크롤 방향이 반대가 됩니다.
+STR_CONFIG_SETTING_SCROLLMODE                                   :외부 화면 스크롤 행동: {STRING}
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :지도를 스크롤 할 때의 행동을 선택합니다.
+STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :마우스 오른쪽 클릭으로 외부 화면 이동 (마우스 위치는 고정)
+STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :마우스 오른쪽 클릭으로 지도 이동 (마우스 위치는 고정)
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :마우스 오른쪽 클릭으로 지도 이동
+STR_CONFIG_SETTING_SCROLLMODE_LMB                               :마우스 왼쪽 클릭으로 지도 이동
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :게임 화면을 이동시킬 때 부드럽게 이동: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :소형 지도를 클릭하여 특정 지역으로 스크롤되거나 지도 상의 특정 장소로 이동하는 경우에 주 화면이 어떻게 스크롤 되는지를 설정합니다. 이 설정을 켜면, 화면이 목표 지점까지 부드럽게 이동하고, 설정을 끄면 목표 지점으로 곧바로 넘어가게 됩니다.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :건설도구 사용시 거리 도움말 표시: {STRING}
@@ -1352,7 +1360,7 @@ STR_CONFIG_SETTING_LIVERIES_ALL                                 :모든 회사
 STR_CONFIG_SETTING_PREFER_TEAMCHAT                              :엔터(ENTER) 키로 같은 팀끼리 채팅: {STRING}
 STR_CONFIG_SETTING_PREFER_TEAMCHAT_HELPTEXT                     :이 설정을 켜면, 멀티 플레이시 같은 회사 간의 채팅을 <CTRL+ENTER> 키 대신 <ENTER> 키로 할 수 있게 됩니다.
 STR_CONFIG_SETTING_SCROLLWHEEL_SCROLLING                        :마우스 휠 동작: {STRING}
-STR_CONFIG_SETTING_SCROLLWHEEL_SCROLLING_HELPTEXT               :상하좌우로 회전 가능한 마우스 휠(2차원 마우스휠)로 지도를 스크롤할 수 있게 허용합니다.
+STR_CONFIG_SETTING_SCROLLWHEEL_SCROLLING_HELPTEXT               :상하좌우로 회전 가능한 마우스 휠(2차원 마우스 휠)로 지도를 스크롤할 수 있게 허용합니다.
 STR_CONFIG_SETTING_SCROLLWHEEL_ZOOM                             :화면 확대/축소
 STR_CONFIG_SETTING_SCROLLWHEEL_SCROLL                           :지도 스크롤
 STR_CONFIG_SETTING_SCROLLWHEEL_OFF                              :끄기
@@ -1371,8 +1379,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :커맨드 + 클
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :CTRL + 클릭
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :끄기
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :마우스 왼쪽 버튼으로 스크롤: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :왼쪽 마우스 버튼을 드래그하여 지도를 스크롤 할 수 있도록 합니다. 터치 스크린 환경에서 이 설정을 켜면 매우 유용합니다.
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :오른쪽 클릭으로 창 닫기: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :창 내부를 오른쪽 클릭하여 창을 닫습니다. 오른쪽 클릭으로 도움말 표시 설정을 해제해야 합니다!
 
@@ -2286,6 +2292,7 @@ STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}화물 �
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}모두
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}없음
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}표시할 회사를 선택하십시오
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}이용 없음
@@ -2694,6 +2701,56 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD 버전 {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD 개발팀
 
+# Framerate display window
+STR_FRAMERATE_CAPTION                                           :{WHITE}프레임레이트
+STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE} ({DECIMAL}x)
+STR_FRAMERATE_RATE_GAMELOOP                                     :{BLACK}시뮬레이션 비율: {STRING}
+STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}1초에 시뮬레이션하는 게임 틱 수입니다.
+STR_FRAMERATE_RATE_BLITTER                                      :{BLACK}그래픽 프레임레이트: {STRING}
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}1초에 표현하는 비디오 프레임 수입니다.
+STR_FRAMERATE_SPEED_FACTOR                                      :{BLACK}현재 게임 속력 계수: {DECIMAL}x
+STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}현재 게임이 일반적인 시뮬레이션 비율 속도에 비해 얼마나 빠르게 구동되고 있는지를 보여줍니다.
+STR_FRAMERATE_CURRENT                                           :{WHITE}현재
+STR_FRAMERATE_AVERAGE                                           :{WHITE}평균
+STR_FRAMERATE_DATA_POINTS                                       :{BLACK}{COMMA}개의 값을 기반으로 측정한 데이터
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL}{BLACK} ms
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} ms
+STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL} ms
+STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL} 프레임/초
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL} 프레임/초
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} 프레임/초
+STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
+STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA}초
+############ Leave those lines in this order!!
+STR_FRAMERATE_GAMELOOP                                          :{BLACK}총 게임 루프:
+STR_FRAMERATE_GL_ECONOMY                                        :{BLACK}  화물 처리:
+STR_FRAMERATE_GL_TRAINS                                         :{BLACK}  열차 틱:
+STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK}  자동차 틱:
+STR_FRAMERATE_GL_SHIPS                                          :{BLACK}  선박 틱:
+STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK}  항공기 틱:
+STR_FRAMERATE_GL_LANDSCAPE                                      :{BLACK}  세계 틱:
+STR_FRAMERATE_GL_LINKGRAPH                                      :{BLACK}  연결 그래프 지연:
+STR_FRAMERATE_DRAWING                                           :{BLACK}그래픽 렌더링:
+STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{BLACK}  세계 화면:
+STR_FRAMERATE_VIDEO                                             :{BLACK}비디오 출력:
+STR_FRAMERATE_SOUND                                             :{BLACK}사운드 합성:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GAMELOOP                                  :게임 루프
+STR_FRAMETIME_CAPTION_GL_ECONOMY                                :화물 처리
+STR_FRAMETIME_CAPTION_GL_TRAINS                                 :열차 틱
+STR_FRAMETIME_CAPTION_GL_ROADVEHS                               :자동차 틱
+STR_FRAMETIME_CAPTION_GL_SHIPS                                  :선박 틱
+STR_FRAMETIME_CAPTION_GL_AIRCRAFT                               :항공기 틱
+STR_FRAMETIME_CAPTION_GL_LANDSCAPE                              :세계 틱
+STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :연결 그래프 지연
+STR_FRAMETIME_CAPTION_DRAWING                                   :그래픽 렌더링
+STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :세계 화면 렌더링
+STR_FRAMETIME_CAPTION_VIDEO                                     :비디오 출력
+STR_FRAMETIME_CAPTION_SOUND                                     :사운드 합성
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}게임 저장
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}게임 불러오기
@@ -2716,6 +2773,7 @@ STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}게임 �
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}사용 가능한 정보 없음.
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
+STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}검색할 문자열:
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}게임을 저장할 파일명을 입력하세요
 
@@ -2914,6 +2972,8 @@ STR_NEWGRF_ERROR_READ_BOUNDS                                    :유사 스프�
 STR_NEWGRF_ERROR_GRM_FAILED                                     :요청한 GRF 자원을 사용할 수 없음 (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING}(은)는 {STRING} 때문에 사용할 수 없습니다
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :유효하지 않은/알 수 없는 스프라이트 구조 유형 (스프라이트 {3:NUM})
+STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :속성값 목록에 너무 많은 요소가 있음 (스프라이트 {3:NUM}, 속성 {4:HEX})
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :유효하지 않은 산업 생산 콜백 (스프라이트 {3:NUM}, "{1:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}경고!
@@ -2978,6 +3038,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}팻말 �
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}도시 목록
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}(없음)
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (대도시){BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}도시 이름 - 이 도시로 시점을 변경하려면 클릭하세요. CTRL+클릭하면 이 도시 위치를 기준으로 새로운 외부 화면을 엽니다.
 STR_TOWN_POPULATION                                             :{BLACK}총 인구 수: {COMMA}
 
@@ -2985,8 +3046,7 @@ STR_TOWN_POPULATION                                             :{BLACK}총 인�
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (대도시)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}인구: {ORANGE}{COMMA}{BLACK}  가구수: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}지난 달 승객 수: {ORANGE}{COMMA}{BLACK}  최대: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}지난달 우편수: {ORANGE}{COMMA}{BLACK}  최고: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} 지난 달: {ORANGE}{COMMA}{BLACK}  최대: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}도시가 성장하기 위해 필요한 화물:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED}{G 0 "이" "가"} 필요함
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :겨울에는 {ORANGE}{STRING}{BLACK}{G 0 "이" "가"} 필요함
@@ -4225,7 +4285,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}역이 �
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}철도역 조각이 너무 많습니다
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}버스 정류장이 너무 많습니다
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}트럭 적하장이 너무 많습니다
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}다른 역과 너무 가깝습니다!
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}다른 항구와 너무 가깝습니다!
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}다른 공항과 너무 가깝습니다!
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}역 이름을 바꿀 수 없습니다...
@@ -4233,6 +4292,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... 여�
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... 도로의 방향과 일치하지 않습니다.
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... 도로 통과 정류장은 곡선도로에 건설할 수 없습니다.
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... 도로 통과 정류장은 교차로에 건설할 수 없습니다.
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... 도로가 일방통행이거나 막혔습니다
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}역의 일부를 제거할 수 없습니다...
@@ -4480,10 +4540,12 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :트랜스포트
 STR_BASEGRAPHICS_DOS_DESCRIPTION                                :오리지널 트랜스포트 타이쿤 디럭스 도스 에디션의 그래픽입니다.
 STR_BASEGRAPHICS_DOS_DE_DESCRIPTION                             :오리지널 트랜스포트 타이쿤 디럭스 도스 에디션(독일)의 그래픽입니다.
 STR_BASEGRAPHICS_WIN_DESCRIPTION                                :오리지널 트랜스포트 타이쿤 디럭스 윈도 에디션의 그래픽입니다.
-STR_BASESOUNDS_DOS_DESCRIPTION                                  :오리지널 트랜스포트 타이쿤 도스 에디션의 효과음입니다.
+STR_BASESOUNDS_DOS_DESCRIPTION                                  :오리지널 트랜스포트 타이쿤 디럭스 도스 에디션의 효과음입니다.
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :오리지널 트랜스포트 타이쿤 디럭스 윈도 에디션의 효과음입니다.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :아무런 효과음도 없는 효과음 팩입니다.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :오리지널 트랜스포트 타이쿤 디럭스 윈도 에디션의 음악입니다.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :오리지널 트랜스포트 타이쿤 디럭스 DOS 에디션의 음악입니다.
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :오리지널 트랜스포트 타이쿤 (오리지널/월드 에디터) DOS 에디션의 음악입니다.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :실제 음악이 없는 음악 목록입니다.
 
 ##id 0x2000

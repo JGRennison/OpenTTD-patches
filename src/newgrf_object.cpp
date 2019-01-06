@@ -96,7 +96,9 @@ uint ObjectSpec::Index() const
 void ResetObjects()
 {
 	/* Clean the pool. */
-	MemSetT(_object_specs, 0, lengthof(_object_specs));
+	for (uint16 i = 0; i < NUM_OBJECTS; i++) {
+		_object_specs[i] = {};
+	}
 
 	/* And add our originals. */
 	MemCpyT(_object_specs, _original_objects, lengthof(_original_objects));
@@ -348,8 +350,8 @@ unhandled:
  * @param tile %Tile of the object.
  * @param view View of the object.
  * @param callback Callback ID.
- * @param callback_param1 First parameter (var 10) of the callback.
- * @param callback_param2 Second parameter (var 18) of the callback.
+ * @param param1 First parameter (var 10) of the callback.
+ * @param param2 Second parameter (var 18) of the callback.
  */
 ObjectResolverObject::ObjectResolverObject(const ObjectSpec *spec, Object *obj, TileIndex tile, uint8 view,
 		CallbackID callback, uint32 param1, uint32 param2)

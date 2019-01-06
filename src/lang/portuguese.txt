@@ -670,10 +670,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Seleccio
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Ligar/Desligar programa aleatório
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Mostrar janela de selecção de faixas de música
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Um conjunto de música vazio foi seleccionado. Nenhuma música vai ser tocada.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Programação Musical
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} '{STRING}'
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Índice de faixas
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programa - '{STRING}'
@@ -1338,8 +1335,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Cor do terreno 
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Verde
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Verde Escuro
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violeta
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Ao deslizar com o rato, mover a vista na direcção oposta: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Comportamento ao navegar pelo mapa com o botão direito do rato. Quando desactivado, o rato move a câmara. Quando activo, o rato move o mapa
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Suavizar deslocamento da navegação no mapa: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controla como a vista principal navega para uma posição específica ao clicar no mapa pequeno ou ao dar um comando para navegar para um objecto específico no mapa. Se activo, a vista principal navega suavemente, se inactivo a vista salta directamente para o destino.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Mostrar medidas nas várias ferramentas de construção: {STRING}
@@ -1371,8 +1366,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :<Command> + Cli
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :<CTRL> + clique
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Desligado
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Deslocar com botão esquerdo: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Activar deslocamento do mapa através de arrastamento com o botão esquerdo do rato. Esta opção é particularmente útil quando é usado um ecran de toque para deslocamento
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Fechar janelas ao fazer clique direito: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Fecha uma janela ao fazer clique direito dentro dela. Desactiva os textos de ajuda ao fazer clique direito!
 
@@ -1840,8 +1833,8 @@ STR_LIVERY_TRUCK                                                :Veículo de Mer
 STR_LIVERY_PASSENGER_SHIP                                       :Barco de Passageiros
 STR_LIVERY_FREIGHT_SHIP                                         :Barco Cargueiro
 STR_LIVERY_HELICOPTER                                           :Helicóptero
-STR_LIVERY_SMALL_PLANE                                          :Aeronave de Pequenas Dimensões
-STR_LIVERY_LARGE_PLANE                                          :Aeronave de Grandes Dimensões
+STR_LIVERY_SMALL_PLANE                                          :Avião de Pequenas Dimensões
+STR_LIVERY_LARGE_PLANE                                          :Avião de Grandes Dimensões
 STR_LIVERY_PASSENGER_TRAM                                       :Eléctrico de Passageiros
 STR_LIVERY_FREIGHT_TRAM                                         :Eléctrico de Mercadorias
 
@@ -2694,6 +2687,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Direitos
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versão {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 A equipa do OpenTTD
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Guardar Jogo
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Abrir Jogo
@@ -2985,8 +2985,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Populaç
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Metrópole)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}População: {ORANGE}{COMMA}{BLACK}  Casas: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Passageiros no último mês: {ORANGE}{COMMA}{BLACK}  máx: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Correio no último mês: {ORANGE}{COMMA}{BLACK}  máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Mercadoria necessária para o seu desenvolvimento:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{RED}É necessário {ORANGE}{STRING}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{BLACK}No inverno, é necessário {ORANGE}{STRING}
@@ -4225,7 +4223,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Demasiad
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Demasiadas partes na estação ferroviária
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Demasiadas paragens de autocarro
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Demasiadas estações de carga
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Muito junto de uma estação/local de carga
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Muito perto de outra doca
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Demasiado perto de outro aeroporto
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Não pode alterar o nome da estação...

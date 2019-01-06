@@ -669,10 +669,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Selectea
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Comutator pentru amestecarea melodiilor (pornit/oprit)
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Afişeaza fereastra pentru selecţia melodiilor
 
-STR_ERROR_NO_SONGS                                              :{WHITE}A fost selectat un set de muzică fără melodii. Nici o melodie nu va fi cântată
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Programare piese muzicale
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Lista melodiilor
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Program - '{STRING}'
@@ -1322,8 +1319,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Culoarea terenu
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Verde
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Verde închis
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Mov
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Inversează direcţia de scroll: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Modul de funcționare in momentul folosirii butonului drept al mouse-ului pentru deplasare pe hartă. Când opțiunea este dezactivată, mouse-ul schimbă poziția camerei. La activare, mouse-ul desplasează harta.
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Derulare uşoară ecran: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controlează modul de deplasare a imaginii din ecranul principal când se face click pe harta mică sau când se execută o comandă de deplasare către un obiect anume de pe hartă. Dacă este activată, imaginea se deplasează în mod fluid, altfel imaginea sare direct la zona dorită
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Arată o indicaţie de distanţă la folosirea uneltelor de construcţie: {STRING}
@@ -1355,8 +1350,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Comandă+Click
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Control+Click
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Oprit
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Derulare ecran cu click-stânga: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Activează derularea hărții prin tragerea acesteia cu butonul stâng al mouse-ului. Această opțiune este în special utilă când se folosește un ecran tactil pentru deplasare
 
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Foloseşte formatul datei {STRING} pentru numele salvărilor
@@ -2654,6 +2647,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyrigh
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versiunea {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 Echipa OpenTTD
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Salvează joc
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Încarcă joc
@@ -2939,8 +2939,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Populaţ
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Metropolă)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Populaţia: {ORANGE}{COMMA}{BLACK}  Locuinţe: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Călători luna trecută: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Colete poştale luna trecută: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Transporturi necesare dezvoltării oraşului:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} necesare
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} necesare iarna
@@ -4159,7 +4157,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Prea mul
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Staţia are prea multe componente
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Prea multe staţii de autobuz
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Prea multe staţii de camion
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Prea aproape de altă staţie
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Prea aproape de alt port
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Prea aproape de un alt aeroport
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nu se poate redenumi staţia...

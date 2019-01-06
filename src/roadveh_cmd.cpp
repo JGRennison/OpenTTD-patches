@@ -35,6 +35,7 @@
 #include "core/backup_type.hpp"
 #include "newgrf.h"
 #include "zoom_func.h"
+#include "framerate_type.h"
 
 #include "table/strings.h"
 
@@ -254,7 +255,7 @@ void RoadVehUpdateCache(RoadVehicle *v, bool same_length)
  * @param flags    type of operation.
  * @param e        the engine to build.
  * @param data     unused.
- * @param ret[out] the vehicle that has been built.
+ * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
 CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)
@@ -403,7 +404,7 @@ void RoadVehicle::MarkDirty()
 	this->CargoChanged();
 }
 
-void RoadVehicle::UpdateDeltaXY(Direction direction)
+void RoadVehicle::UpdateDeltaXY()
 {
 	static const int8 _delta_xy_table[8][10] = {
 		/* y_extent, x_extent, y_offs, x_offs, y_bb_offs, x_bb_offs, y_extent_shorten, x_extent_shorten, y_bb_offs_shorten, x_bb_offs_shorten */
@@ -418,9 +419,9 @@ void RoadVehicle::UpdateDeltaXY(Direction direction)
 	};
 
 	int shorten = VEHICLE_LENGTH - this->gcache.cached_veh_length;
-	if (!IsDiagonalDirection(direction)) shorten >>= 1;
+	if (!IsDiagonalDirection(this->direction)) shorten >>= 1;
 
-	const int8 *bb = _delta_xy_table[direction];
+	const int8 *bb = _delta_xy_table[this->direction];
 	this->x_bb_offs     = bb[5] + bb[9] * shorten;
 	this->y_bb_offs     = bb[4] + bb[8] * shorten;;
 	this->x_offs        = bb[3];
@@ -1449,7 +1450,7 @@ again:
 			/* Vehicle has arrived at a bay in a road stop */
 
 			if (IsDriveThroughStopTile(v->tile)) {
-				TileIndex next_tile = TILE_ADD(v->tile, TileOffsByDir(v->direction));
+				TileIndex next_tile = TileAddByDir(v->tile, v->direction);
 
 				/* Check if next inline bay is free and has compatible road. */
 				if (RoadStop::IsDriveThroughRoadStopContinuation(v->tile, next_tile) && (GetRoadTypes(next_tile) & v->compatible_roadtypes) != 0) {
@@ -1587,6 +1588,8 @@ Money RoadVehicle::GetRunningCost() const
 
 bool RoadVehicle::Tick()
 {
+	PerformanceAccumulator framerate(PFE_GL_ROADVEHS);
+
 	this->tick_counter++;
 
 	if (this->IsFrontEngine()) {

@@ -658,10 +658,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}انتخ
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}پخش به صورت لیست برهم ریخته
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}نمایش پنجره لیست آهنگهای انتخابی
 
-STR_ERROR_NO_SONGS                                              :{WHITE}در مجموعه موسیقی آهنگی انتخاب نشده است. هیچ آهنگی پخش نخواهد شد
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}انتخاب برنامه پخش موسیقی
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}شماره ی آهنگ
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}برنامه - '{STRING}'
@@ -1227,7 +1224,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR                         :رنگ استف
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :سبز
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :سبز تیره
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :بنفش
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :برعکس کردن جهت حرکت کردن صفحه: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :تصویر صاف در نمای اضافه: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :نمایش متن کمکی وقتی از چندین ابزار استفاده می شود: {STRING}
 STR_CONFIG_SETTING_LIVERIES                                     :نمایش طراحی مخصوص وسیله نقلیه : {STRING}
@@ -1247,7 +1243,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :دستور+کل
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :کنترل+کلیک
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :خاموش
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :حرکت در نقشه با کلیک چپ:: {STRING}
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :ذخیره خودکار: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :انتخاب فاصله زمانی بین ذخیره کردن های خودکار
@@ -2391,6 +2386,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD ویرایش {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 The OpenTTD team
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ذخیره ی بازی
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}ادامه ی بازی
@@ -2663,8 +2665,6 @@ STR_TOWN_POPULATION                                             :{BLACK}جمعی
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (شهر)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}جمعیت: {ORANGE}{COMMA}{BLACK}  خانه ها: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}مسافران در ماه گذشته: {ORANGE}{COMMA}{BLACK}  حداکثر: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}نامه ها در ماه گذشته: {ORANGE}{COMMA}{BLACK}  حداکثر: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}نوع بار برای رشد شهر:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} ضروری
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} در زمستان ضروری است
@@ -3412,7 +3412,6 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}نمی �
 
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}ایستگاه زیادی پراکنده شده است
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}تعداد محوطه های بارگیری/ایستگاه بسیار زیاد شده
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}به محوطه ی بارگیری/ایستگاه دیگری بسیار نزدیک است
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}به بندر دیگری بسییار نزدیک است
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}به فرودگاه دیگری بسیار نزدیک شده
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}نام این ایستگاه را نمی شود تغییر داد
