@@ -2619,11 +2619,11 @@ STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :진입 방향
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :경로 신호기
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :통과한 경로 신호기
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :열차 그룹
-STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :열차가 슬롯에
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :사용 슬롯
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :사용 슬롯이 남음
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :사용
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :사용이 남음
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :열차 슬롯
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :슬롯 사용량
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :남은 슬롯 수용량
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :사용량
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :남은 수용량
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :무게
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :힘
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :최고 견인력
@@ -2643,18 +2643,18 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO       :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING} {STRING} {STRING} {STATION} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING} {STRING} {STRING} {WAYPOINT} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRING} {STRING} {DEPOT} (이)라면
-STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{0:STRING} 열차가 {2:STRING}을(를) {1:STRING}
-STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} 열차가 타일에 진입한 방향 {STRING} {STRING} (이)라면
-STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} 열차의 진입 방향 {STRING} 신호기의 {STRING} 방향이라면
+STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} 열차가 {2:STRING}{G 2 "을" "를"} {1:STRING}
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} 열차가 타일에 진입한 방향 {STRING} {STRING}{G 2 "이" ""}라면
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} 열차의 진입 방향 {STRING} 신호기의 {STRING}{G 2 "이" ""}라면
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} {NUM} x {NUM} 에 위치한다면
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} 열차의 소속 그룹 {STRING} {GROUP} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} 열차의 소속 그룹 {STRING} {BLACK}{STRING} (이)라면 {STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} 열차 {STRING} {TRSLOT} 슬롯에 있으면
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} 열차 {STRING} {STRING} 슬롯에 있고 {BLACK}{STRING} (이)라면
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} 슬롯 {STRING}: {TRSLOT} {STRING} {COMMA} (이)라면
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} 슬롯 {STRING}: {STRING} {BLACK}{STRING} {STRING} {COMMA} (이)라면
-STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{0:STRING} 열차가 {2:STRING}{1:STRING}
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} 슬롯 {2:TRSLOT}의 {1:STRING} {3:STRING} {COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {2:STRING}의 {1:STRING} {BLACK}{3:STRING}{STRING} {COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} 열차가 {2:STRING}{1:STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING}(이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING}(이)라면
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :경로 탐색에서 우선순위를 {COMMA} 만큼 뒤로
@@ -2680,12 +2680,12 @@ STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :조금
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :중간 정도
 STR_TRACE_RESTRICT_PF_VALUE_LARGE                               :많이
 STR_TRACE_RESTRICT_PF_VALUE_CUSTOM                              :사용자 설정
-STR_TRACE_RESTRICT_DIRECTION_FRONT                              :앞쪽
-STR_TRACE_RESTRICT_DIRECTION_BACK                               :뒤쪽
-STR_TRACE_RESTRICT_DIRECTION_NE                                 :북동
-STR_TRACE_RESTRICT_DIRECTION_SE                                 :남동
-STR_TRACE_RESTRICT_DIRECTION_SW                                 :남서
-STR_TRACE_RESTRICT_DIRECTION_NW                                 :북서
+STR_TRACE_RESTRICT_DIRECTION_FRONT                              :{G=m}앞쪽
+STR_TRACE_RESTRICT_DIRECTION_BACK                               :{G=m}뒤쪽
+STR_TRACE_RESTRICT_DIRECTION_NE                                 :{G=m}북동
+STR_TRACE_RESTRICT_DIRECTION_SE                                 :{G=m}남동
+STR_TRACE_RESTRICT_DIRECTION_SW                                 :{G=f}남서
+STR_TRACE_RESTRICT_DIRECTION_NW                                 :{G=f}북서
 STR_TRACE_RESTRICT_COMPANY                                      :회사
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :정의되지 않은 회사
 STR_TRACE_RESTRICT_SLOT_OP                                      :슬롯 연산
@@ -2707,17 +2707,17 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :경로 예약 �
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}슬롯{CONSUME_ARG}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
-STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :빈 상태
-STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :가득 찬 상태
-STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :고장난 상태
-STR_TRACE_RESTRICT_TRAIN_STATUS_NEEDS_REPAIR                    :수리 요구 상태
-STR_TRACE_RESTRICT_TRAIN_STATUS_REVERSING                       :회차 중
-STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_STATION_WAYPOINT     :역 또는 경유지로 향하는 중
-STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_DEPOT                :기지로 향하는 중
-STR_TRACE_RESTRICT_TRAIN_STATUS_LOADING                         :싣는 중
-STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING                         :기다리는 중
-STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :경로를 찾을 수 없는 상태
-STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :정비 요구 상태
+STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :{G=f}빈 상태
+STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :{G=f}가득 찬 상태
+STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :{G=f}고장난 상태
+STR_TRACE_RESTRICT_TRAIN_STATUS_NEEDS_REPAIR                    :{G=f}수리 요구 상태
+STR_TRACE_RESTRICT_TRAIN_STATUS_REVERSING                       :{G=m}회차 중
+STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_STATION_WAYPOINT     :{G=m}역 또는 경유지로 향하는 중
+STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_DEPOT                :{G=m}기지로 향하는 중
+STR_TRACE_RESTRICT_TRAIN_STATUS_LOADING                         :{G=m}싣는 중
+STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING                         :{G=m}기다리는 중
+STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :{G=f}경로를 찾을 수 없는 상태
+STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :{G=f}정비 요구 상태
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :신호기 뒤에서 회차
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :신호기 뒤에서 회차 취소
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
@@ -3485,7 +3485,7 @@ STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :{2:STRING}{G 2 
 STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :예기치 않은 스프라이트 (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :알려지지 않은 액션 0 속성 {4:HEX} (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :구현되지 않은 재배치된 액션 0 속성 특성: {4:HEX}, 이름: {2:STRING}, 재배치: {5:HEX} (스프라이트 {3:NUM})
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :구현되지 않은 재배치된 액션 5 종류: 이름: {2:RAW_STRING}, 재배치: {4:HEX} (스프라이트 {3:NUM})
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :구현되지 않은 재배치된 액션 5 종류: 이름: {2:STRING}, 재배치: {4:HEX} (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_INVALID_ID                                     :유효하지 않은 ID 사용 시도 (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} 에 손상된 객체가 있습니다. 모든 손상된 객체는 붉은 물음표로 보일 것입니다.
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :여러 개의 Action 8 엔트리 포함 (스프라이트 {3:NUM})
@@ -4024,12 +4024,12 @@ STR_VEHICLE_LIST_CARGO                                          :{STRING}, 화�
 STR_VEHICLE_LIST_RELIABILITY                                    :{STRING}, 신뢰도: {COMMA}%
 STR_VEHICLE_LIST_RELIABILITY_RED                                :{STRING}, 신뢰도: {RED}{COMMA}%
 STR_VEHICLE_LIST_MAX_SPEED                                      :{STRING}, 최고 속력: {VELOCITY}
-STR_VEHICLE_LIST_ENGINE_BUILT                                   :{STRING}, 모델: {ENGINE}, 생사: {NUM}
+STR_VEHICLE_LIST_ENGINE_BUILT                                   :{STRING}, 모델: {ENGINE}, 생산: {NUM}
 STR_VEHICLE_LIST_VALUE                                          :{STRING}, 가격: {CURRENCY_LONG}
 STR_VEHICLE_LIST_LENGTH                                         :{STRING}, 길이: {DECIMAL} 칸
 STR_VEHICLE_LIST_TIME_TO_LIVE                                   :{STRING}, 남은 수명: {COMMA}년
-STR_VEHICLE_LIST_TIME_TO_LIVE_RED                               :{STRING}, 남은 수명: {RED}{COMMA} {BLACK}년
-STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE                           :{STRING}, 남은 수명: {RED}{COMMA} {BLACK}년 초과
+STR_VEHICLE_LIST_TIME_TO_LIVE_RED                               :{STRING}, 남은 수명: {RED}{COMMA}{BLACK}년
+STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE                           :{STRING}, 남은 수명: {RED}{COMMA}{BLACK}년 초과
 STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING}, 시간표 지연: {RED}{STRING} 지연
 STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING}, 시간표 지연: {STRING} 일찍 운행 중
 STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING}, 시간표 지연: 정시 운행 중
