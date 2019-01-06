@@ -118,7 +118,7 @@ bool HandlePlacePushButton(Window *w, int widget, CursorID cursor, HighLightStyl
 }
 
 
-void CcPlaySound10(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
+void CcPlaySound_EXPLOSION(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_12_EXPLOSION, tile);
 }
@@ -439,7 +439,7 @@ struct MainWindow : Window
 
 	virtual void OnMouseWheel(int wheel)
 	{
-		if (_settings_client.gui.scrollwheel_scrolling == 0) {
+		if (_settings_client.gui.scrollwheel_scrolling != 2) {
 			ZoomInOrOutToCursorWindow(wheel < 0, this);
 		}
 	}

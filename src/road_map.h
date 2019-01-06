@@ -449,6 +449,7 @@ enum Roadside {
 	ROADSIDE_GRASS            = 1, ///< Road on grass
 	ROADSIDE_PAVED            = 2, ///< Road with paved sidewalks
 	ROADSIDE_STREET_LIGHTS    = 3, ///< Road with street lights on paved sidewalks
+	// 4 is unused for historical reasons
 	ROADSIDE_TREES            = 5, ///< Road with trees on paved sidewalks
 	ROADSIDE_GRASS_ROAD_WORKS = 6, ///< Road on grass with road works
 	ROADSIDE_PAVED_ROAD_WORKS = 7, ///< Road with sidewalks and road works
@@ -579,11 +580,12 @@ static inline void MakeRoadCrossing(TileIndex t, Owner road, Owner tram, Owner r
 	SetTileType(t, MP_ROAD);
 	SetTileOwner(t, rail);
 	_m[t].m2 = town;
-	_m[t].m3 = rat;
+	_m[t].m3 = 0;
 	_m[t].m4 = 0;
 	_m[t].m5 = ROAD_TILE_CROSSING << 6 | roaddir;
 	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = rot << 6 | road;
+	_me[t].m8 = rat;
 	SetRoadOwner(t, ROADTYPE_TRAM, tram);
 }
 

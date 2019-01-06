@@ -71,22 +71,15 @@ struct ScreenshotFormat {
 /*************************************************
  **** SCREENSHOT CODE FOR WINDOWS BITMAP (.BMP)
  *************************************************/
-#if defined(_MSC_VER) || defined(__WATCOMC__)
-#pragma pack(push, 1)
-#endif
 
 /** BMP File Header (stored in little endian) */
-struct BitmapFileHeader {
+PACK(struct BitmapFileHeader {
 	uint16 type;
 	uint32 size;
 	uint32 reserved;
 	uint32 off_bits;
-} GCC_PACK;
+});
 assert_compile(sizeof(BitmapFileHeader) == 14);
-
-#if defined(_MSC_VER) || defined(__WATCOMC__)
-#pragma pack(pop)
-#endif
 
 /** BMP Info Header (stored in little endian) */
 struct BitmapInfoHeader {
@@ -715,7 +708,7 @@ static bool MakeSmallScreenshot(bool crashlog)
 /**
  * Configure a ViewPort for rendering (a part of) the map into a screenshot.
  * @param t Screenshot type
- * @param [out] vp Result viewport
+ * @param[out] vp Result viewport
  */
 void SetupScreenshotViewport(ScreenshotType t, ViewPort *vp)
 {
@@ -771,7 +764,7 @@ static bool MakeLargeWorldScreenshot(ScreenshotType t)
 /**
  * Callback for generating a heightmap. Supports 8bpp grayscale only.
  * @param userdata Pointer to user data.
- * @param buf      Destination buffer.
+ * @param buffer   Destination buffer.
  * @param y        Line number of the first line to write.
  * @param pitch    Number of pixels to write (1 byte for 8bpp, 4 bytes for 32bpp). @see Colour
  * @param n        Number of lines to write.

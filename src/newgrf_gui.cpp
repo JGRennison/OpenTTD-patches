@@ -39,10 +39,6 @@
 #include <map>
 #include "safeguards.h"
 
-/* Maximum number of NewGRFs that may be loaded. Six reserved slots are:
- * 0 - config, 1 - sound, 2 - base, 3 - logos, 4 - climate, 5 - extra */
-static const int MAX_NEWGRFS = MAX_FILE_SLOTS - 6;
-
 /**
  * Show the first NewGRF error we can find.
  */
@@ -1036,7 +1032,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					if (this->editable && this->active_sel != NULL) SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 					break;
 				}
-				/* FALL THROUGH, with double click. */
+				/* With double click, continue */
+				FALLTHROUGH;
 			}
 
 			case WID_NS_REMOVE: { // Remove GRF
@@ -1091,7 +1088,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					if (this->editable && this->avail_sel != NULL && !HasBit(this->avail_sel->flags, GCF_INVALID)) SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 					break;
 				}
-				/* FALL THROUGH, with double click. */
+				/* With double click, continue */
+				FALLTHROUGH;
 			}
 
 			case WID_NS_ADD:
@@ -1229,10 +1227,12 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				}
 
 				this->avails.ForceRebuild();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case GOID_NEWGRF_LIST_EDITED:
 				this->preset = -1;
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case GOID_NEWGRF_PRESET_LOADED: {
 				/* Update scrollbars */
 				int i = 0;
@@ -1279,7 +1279,6 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			/* All widgets are now enabled, so disable widgets we can't use */
 			if (this->active_sel == this->actives)    this->DisableWidget(WID_NS_MOVE_UP);
 			if (this->active_sel->next == NULL)       this->DisableWidget(WID_NS_MOVE_DOWN);
-			if (this->active_sel->IsOpenTTDBaseGRF()) this->DisableWidget(WID_NS_REMOVE);
 		}
 
 		this->SetWidgetDisabledState(WID_NS_PRESET_DELETE, this->preset == -1);
@@ -1510,7 +1509,7 @@ private:
 	{
 		if (this->avail_sel == NULL || !this->editable || HasBit(this->avail_sel->flags, GCF_INVALID)) return false;
 
-		int count = 0;
+		uint count = 0;
 		GRFConfig **entry = NULL;
 		GRFConfig **list;
 		/* Find last entry in the list, checking for duplicate grfid on the way */
@@ -1520,10 +1519,10 @@ private:
 				ShowErrorMessage(STR_NEWGRF_DUPLICATE_GRFID, INVALID_STRING_ID, WL_INFO);
 				return false;
 			}
-			count++;
+			if (!HasBit((*list)->flags, GCF_STATIC)) count++;
 		}
 		if (entry == NULL) entry = list;
-		if (count >= MAX_NEWGRFS) {
+		if (count >= NETWORK_MAX_GRF_COUNT) {
 			ShowErrorMessage(STR_NEWGRF_TOO_MANY_NEWGRFS, INVALID_STRING_ID, WL_INFO);
 			return false;
 		}
@@ -1585,8 +1584,8 @@ NewGRFWindow::GUIGRFConfigList::FilterFunction * const NewGRFWindow::filter_func
 /**
  * Custom nested widget container for the NewGRF gui.
  * Depending on the space in the gui, it uses either
- * - two column mode, put the #acs and the #avs underneath each other and the #info next to it, or
- * - three column mode, put the #avs, #acs, and #info each in its own column.
+ * - two column mode, put the #acs and the #avs underneath each other and the #inf next to it, or
+ * - three column mode, put the #avs, #acs, and #inf each in its own column.
  */
 class NWidgetNewGRFDisplay : public NWidgetContainer {
 public:

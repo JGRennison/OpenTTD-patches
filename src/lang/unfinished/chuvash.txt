@@ -403,7 +403,6 @@ STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKG
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Кӗвӗ
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Ят
 
-
 # Playlist window
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Тасат
@@ -971,6 +970,13 @@ STR_LAI_OBJECT_DESCRIPTION_LIGHTHOUSE                           :Маяк
 # About OpenTTD window
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD верси {REV}
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 
 
@@ -1112,6 +1118,7 @@ STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ҫу�
 ############ range for requires starts
 ############ range for requires ends
 
+
 ############ range for produces starts
 ############ range for produces ends
 
@@ -1126,6 +1133,7 @@ STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ҫу�
 
 
 # Group window
+
 
 
 

@@ -28,6 +28,7 @@
 #include "../../crashlog.h"
 #include <errno.h>
 #include <sys/stat.h>
+#include "../../language.h"
 
 /* Due to TCHAR, strncat and strncpy have to remain (for a while). */
 #include "../../safeguards.h"
@@ -67,11 +68,7 @@ bool LoadLibraryList(Function proc[], const char *dll)
 
 			while (*dll++ != '\0') { /* Nothing */ }
 			if (*dll == '\0') break;
-#if defined(WINCE)
-			p = GetProcAddress(lib, MB_TO_WIDE(dll));
-#else
 			p = GetProcAddress(lib, dll);
-#endif
 			if (p == NULL) return false;
 			*proc++ = (Function)p;
 		}
@@ -208,29 +205,20 @@ bool FiosIsRoot(const char *file)
 	return file[3] == '\0'; // C:\...
 }
 
-void FiosGetDrives()
+void FiosGetDrives(FileList &file_list)
 {
-#if defined(WINCE)
-	/* WinCE only knows one drive: / */
-	FiosItem *fios = _fios_items.Append();
-	fios->type = FIOS_TYPE_DRIVE;
-	fios->mtime = 0;
-	seprintf(fios->name, lastof(fios->name), PATHSEP "");
-	strecpy(fios->title, fios->name, lastof(fios->title));
-#else
 	TCHAR drives[256];
 	const TCHAR *s;
 
 	GetLogicalDriveStrings(lengthof(drives), drives);
 	for (s = drives; *s != '\0';) {
-		FiosItem *fios = _fios_items.Append();
+		FiosItem *fios = file_list.Append();
 		fios->type = FIOS_TYPE_DRIVE;
 		fios->mtime = 0;
 		seprintf(fios->name, lastof(fios->name),  "%c:", s[0] & 0xFF);
 		strecpy(fios->title, fios->name, lastof(fios->title));
 		while (*s++ != '\0') { /* Nothing */ }
 	}
-#endif
 }
 
 bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb)
@@ -306,16 +294,13 @@ static int ParseCommandLine(char *line, char **argv, int max_argc)
 
 void CreateConsole()
 {
-#if defined(WINCE)
-	/* WinCE doesn't support console stuff */
-#else
 	HANDLE hand;
 	CONSOLE_SCREEN_BUFFER_INFO coninfo;
 
 	if (_has_console) return;
 	_has_console = true;
 
-	AllocConsole();
+	if (!AllocConsole()) return;
 
 	hand = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(hand, &coninfo);
@@ -358,7 +343,6 @@ void CreateConsole()
 	setvbuf(stdin, NULL, _IONBF, 0);
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
-#endif
 }
 
 /** Temporary pointer to get the help message to the window */
@@ -426,18 +410,14 @@ void ShowInfo(const char *str)
 	}
 }
 
-#if defined(WINCE)
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
-#else
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#endif
 {
 	int argc;
 	char *argv[64]; // max 64 command line arguments
 
 	CrashLog::InitialiseCrashLog();
 
-#if defined(UNICODE) && !defined(WINCE)
+#if defined(UNICODE)
 	/* Check if a win9x user started the win32 version */
 	if (HasBit(GetVersion(), 31)) usererror("This version of OpenTTD doesn't run on windows 95/98/ME.\nPlease download the win9x binary and try again.");
 #endif
@@ -451,9 +431,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	CreateConsole();
 #endif
 
-#if !defined(WINCE)
 	_set_error_mode(_OUT_TO_MSGBOX); // force assertion output to messagebox
-#endif
 
 	/* setup random seed to something quite random */
 	SetRandomSeed(GetTickCount());
@@ -468,35 +446,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return 0;
 }
 
-#if defined(WINCE)
-void GetCurrentDirectoryW(int length, wchar_t *path)
-{
-	/* Get the name of this module */
-	GetModuleFileName(NULL, path, length);
-
-	/* Remove the executable name, this we call CurrentDir */
-	wchar_t *pDest = wcsrchr(path, '\\');
-	if (pDest != NULL) {
-		int result = pDest - path + 1;
-		path[result] = '\0';
-	}
-}
-#endif
-
 char *getcwd(char *buf, size_t size)
 {
-#if defined(WINCE)
-	TCHAR path[MAX_PATH];
-	GetModuleFileName(NULL, path, MAX_PATH);
-	convert_from_fs(path, buf, size);
-	/* GetModuleFileName returns dir with file, so remove everything behind latest '\\' */
-	char *p = strrchr(buf, '\\');
-	if (p != NULL) *p = '\0';
-#else
 	TCHAR path[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH - 1, path);
 	convert_from_fs(path, buf, size);
-#endif
 	return buf;
 }
 
@@ -671,11 +625,11 @@ char *convert_from_fs(const TCHAR *name, char *utf8_buf, size_t buflen)
  * Convert from OpenTTD's encoding to that of the environment in
  * UNICODE. OpenTTD encoding is UTF8, local is wide
  * @param name pointer to a valid string that will be converted
- * @param utf16_buf pointer to a valid wide-char buffer that will receive the
+ * @param system_buf pointer to a valid wide-char buffer that will receive the
  * converted string
  * @param buflen length in wide characters of the receiving buffer
  * @param console_cp convert to the console encoding instead of the normal system encoding.
- * @return pointer to utf16_buf. If conversion fails the string is of zero-length
+ * @return pointer to system_buf. If conversion fails the string is of zero-length
  */
 TCHAR *convert_to_fs(const char *name, TCHAR *system_buf, size_t buflen, bool console_cp)
 {
@@ -785,3 +739,99 @@ uint GetCPUCoreCount()
 	GetSystemInfo(&info);
 	return info.dwNumberOfProcessors;
 }
+
+
+static WCHAR _cur_iso_locale[16] = L"";
+
+void Win32SetCurrentLocaleName(const char *iso_code)
+{
+	/* Convert the iso code into the format that windows expects. */
+	char iso[16];
+	if (strcmp(iso_code, "zh_TW") == 0) {
+		strecpy(iso, "zh-Hant", lastof(iso));
+	} else if (strcmp(iso_code, "zh_CN") == 0) {
+		strecpy(iso, "zh-Hans", lastof(iso));
+	} else {
+		/* Windows expects a '-' between language and country code, but we use a '_'. */
+		strecpy(iso, iso_code, lastof(iso));
+		for (char *c = iso; *c != '\0'; c++) {
+			if (*c == '_') *c = '-';
+		}
+	}
+
+	MultiByteToWideChar(CP_UTF8, 0, iso, -1, _cur_iso_locale, lengthof(_cur_iso_locale));
+}
+
+int OTTDStringCompare(const char *s1, const char *s2)
+{
+	typedef int (WINAPI *PFNCOMPARESTRINGEX)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPVOID, LPVOID, LPARAM);
+	static PFNCOMPARESTRINGEX _CompareStringEx = NULL;
+	static bool first_time = true;
+
+#ifndef SORT_DIGITSASNUMBERS
+#	define SORT_DIGITSASNUMBERS 0x00000008  // use digits as numbers sort method
+#endif
+#ifndef LINGUISTIC_IGNORECASE
+#	define LINGUISTIC_IGNORECASE 0x00000010 // linguistically appropriate 'ignore case'
+#endif
+
+	if (first_time) {
+		_CompareStringEx = (PFNCOMPARESTRINGEX)GetProcAddress(GetModuleHandle(_T("Kernel32")), "CompareStringEx");
+		first_time = false;
+	}
+
+	if (_CompareStringEx != NULL) {
+		/* CompareStringEx takes UTF-16 strings, even in ANSI-builds. */
+		int len_s1 = MultiByteToWideChar(CP_UTF8, 0, s1, -1, NULL, 0);
+		int len_s2 = MultiByteToWideChar(CP_UTF8, 0, s2, -1, NULL, 0);
+
+		if (len_s1 != 0 && len_s2 != 0) {
+			LPWSTR str_s1 = AllocaM(WCHAR, len_s1);
+			LPWSTR str_s2 = AllocaM(WCHAR, len_s2);
+
+			MultiByteToWideChar(CP_UTF8, 0, s1, -1, str_s1, len_s1);
+			MultiByteToWideChar(CP_UTF8, 0, s2, -1, str_s2, len_s2);
+
+			int result = _CompareStringEx(_cur_iso_locale, LINGUISTIC_IGNORECASE | SORT_DIGITSASNUMBERS, str_s1, -1, str_s2, -1, NULL, NULL, 0);
+			if (result != 0) return result;
+		}
+	}
+
+	TCHAR s1_buf[512], s2_buf[512];
+	convert_to_fs(s1, s1_buf, lengthof(s1_buf));
+	convert_to_fs(s2, s2_buf, lengthof(s2_buf));
+
+	return CompareString(MAKELCID(_current_language->winlangid, SORT_DEFAULT), NORM_IGNORECASE, s1_buf, -1, s2_buf, -1);
+}
+
+#ifdef _MSC_VER
+/* Based on code from MSDN: https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx */
+const DWORD MS_VC_EXCEPTION = 0x406D1388;
+
+PACK_N(struct THREADNAME_INFO {
+	DWORD dwType;     ///< Must be 0x1000.
+	LPCSTR szName;    ///< Pointer to name (in user addr space).
+	DWORD dwThreadID; ///< Thread ID (-1=caller thread).
+	DWORD dwFlags;    ///< Reserved for future use, must be zero.
+}, 8);
+
+/**
+ * Signal thread name to any attached debuggers.
+ */
+void SetWin32ThreadName(DWORD dwThreadID, const char* threadName)
+{
+	THREADNAME_INFO info;
+	info.dwType = 0x1000;
+	info.szName = threadName;
+	info.dwThreadID = dwThreadID;
+	info.dwFlags = 0;
+
+#pragma warning(push)
+#pragma warning(disable: 6320 6322)
+	__try {
+		RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+	} __except (EXCEPTION_EXECUTE_HANDLER) {
+	}
+#pragma warning(pop)
+}
+#endif

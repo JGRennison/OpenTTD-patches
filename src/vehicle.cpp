@@ -52,12 +52,36 @@
 #include "gamelog.h"
 #include "linkgraph/linkgraph.h"
 #include "linkgraph/refresh.h"
+#include "framerate_type.h"
 
 #include "table/strings.h"
 
 #include "safeguards.h"
 
-#define GEN_HASH(x, y) ((GB((y), 6 + ZOOM_LVL_SHIFT, 6) << 6) + GB((x), 7 + ZOOM_LVL_SHIFT, 6))
+/* Number of bits in the hash to use from each vehicle coord */
+static const uint GEN_HASHX_BITS = 6;
+static const uint GEN_HASHY_BITS = 6;
+
+/* Size of each hash bucket */
+static const uint GEN_HASHX_BUCKET_BITS = 7;
+static const uint GEN_HASHY_BUCKET_BITS = 6;
+
+/* Compute hash for vehicle coord */
+#define GEN_HASHX(x)    GB((x), GEN_HASHX_BUCKET_BITS + ZOOM_LVL_SHIFT, GEN_HASHX_BITS)
+#define GEN_HASHY(y)   (GB((y), GEN_HASHY_BUCKET_BITS + ZOOM_LVL_SHIFT, GEN_HASHY_BITS) << GEN_HASHX_BITS)
+#define GEN_HASH(x, y) (GEN_HASHY(y) + GEN_HASHX(x))
+
+/* Maximum size until hash repeats */
+static const int GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_LVL_SHIFT);
+static const int GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_LVL_SHIFT);
+
+/* Increments to reach next bucket in hash table */
+static const int GEN_HASHX_INC = 1;
+static const int GEN_HASHY_INC = 1 << GEN_HASHX_BITS;
+
+/* Mask to wrap-around buckets */
+static const uint GEN_HASHX_MASK =  (1 << GEN_HASHX_BITS) - 1;
+static const uint GEN_HASHY_MASK = ((1 << GEN_HASHY_BITS) - 1) << GEN_HASHX_BITS;
 
 VehicleID _new_vehicle_id;
 uint16 _returned_refit_capacity;      ///< Stores the capacity after a refit operation.
@@ -67,6 +91,47 @@ uint16 _returned_mail_refit_capacity; ///< Stores the mail capacity after a refi
 /** The pool with all our precious vehicles. */
 VehiclePool _vehicle_pool("Vehicle");
 INSTANTIATE_POOL_METHODS(Vehicle)
+
+
+/**
+ * Determine shared bounds of all sprites.
+ * @param[out] bounds Shared bounds.
+ */
+void VehicleSpriteSeq::GetBounds(Rect *bounds) const
+{
+	bounds->left = bounds->top = bounds->right = bounds->bottom = 0;
+	for (uint i = 0; i < this->count; ++i) {
+		const Sprite *spr = GetSprite(this->seq[i].sprite, ST_NORMAL);
+		if (i == 0) {
+			bounds->left = spr->x_offs;
+			bounds->top  = spr->y_offs;
+			bounds->right  = spr->width  + spr->x_offs - 1;
+			bounds->bottom = spr->height + spr->y_offs - 1;
+		} else {
+			if (spr->x_offs < bounds->left) bounds->left = spr->x_offs;
+			if (spr->y_offs < bounds->top)  bounds->top  = spr->y_offs;
+			int right  = spr->width  + spr->x_offs - 1;
+			int bottom = spr->height + spr->y_offs - 1;
+			if (right  > bounds->right)  bounds->right  = right;
+			if (bottom > bounds->bottom) bounds->bottom = bottom;
+		}
+	}
+}
+
+/**
+ * Draw the sprite sequence.
+ * @param x X position
+ * @param y Y position
+ * @param default_pal Vehicle palette
+ * @param force_pal Whether to ignore individual palettes, and draw everything with \a default_pal.
+ */
+void VehicleSpriteSeq::Draw(int x, int y, PaletteID default_pal, bool force_pal) const
+{
+	for (uint i = 0; i < this->count; ++i) {
+		PaletteID pal = force_pal || !this->seq[i].pal ? default_pal : this->seq[i].pal;
+		DrawSprite(this->seq[i].sprite, pal, x, y);
+	}
+}
 
 /**
  * Function to tell if a vehicle needs to be autorenewed
@@ -155,7 +220,7 @@ bool Vehicle::NeedsServicing() const
 		if (replace_when_old && !v->NeedsAutorenewing(c, false)) continue;
 
 		/* Check refittability */
-		uint32 available_cargo_types, union_mask;
+		CargoTypes available_cargo_types, union_mask;
 		GetArticulatedRefitMasks(new_engine, true, &union_mask, &available_cargo_types);
 		/* Is there anything to refit? */
 		if (union_mask != 0) {
@@ -216,7 +281,7 @@ uint Vehicle::Crash(bool flooded)
 	SetWindowDirty(WC_VEHICLE_DEPOT, this->tile);
 
 	delete this->cargo_payment;
-	this->cargo_payment = NULL;
+	assert(this->cargo_payment == NULL); // cleared by ~CargoPayment
 
 	return RandomRange(pass + 1); // Randomise deceased passengers.
 }
@@ -577,7 +642,7 @@ static void UpdateVehicleTileHash(Vehicle *v, bool remove)
 	v->hash_tile_current = new_hash;
 }
 
-static Vehicle *_vehicle_viewport_hash[0x1000];
+static Vehicle *_vehicle_viewport_hash[1 << (GEN_HASHX_BITS + GEN_HASHY_BITS)];
 
 static void UpdateVehicleViewportHash(Vehicle *v, int x, int y)
 {
@@ -746,6 +811,7 @@ void Vehicle::PreDestructor()
 		HideFillingPercent(&this->fill_percent_te_id);
 		this->CancelReservation(INVALID_STATION, st);
 		delete this->cargo_payment;
+		assert(this->cargo_payment == NULL); // cleared by ~CargoPayment
 	}
 
 	if (this->IsEngineCountable()) {
@@ -880,8 +946,15 @@ void CallVehicleTicks()
 
 	RunVehicleDayProc();
 
-	Station *st;
-	FOR_ALL_STATIONS(st) LoadUnloadStation(st);
+	{
+		PerformanceMeasurer framerate(PFE_GL_ECONOMY);
+		Station *st;
+		FOR_ALL_STATIONS(st) LoadUnloadStation(st);
+	}
+	PerformanceAccumulator::Reset(PFE_GL_TRAINS);
+	PerformanceAccumulator::Reset(PFE_GL_ROADVEHS);
+	PerformanceAccumulator::Reset(PFE_GL_SHIPS);
+	PerformanceAccumulator::Reset(PFE_GL_AIRCRAFT);
 
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
@@ -1007,7 +1080,6 @@ void CallVehicleTicks()
  */
 static void DoDrawVehicle(const Vehicle *v)
 {
-	SpriteID image = v->cur_image;
 	PaletteID pal = PAL_NONE;
 
 	if (v->vehstatus & VS_DEFPAL) pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
@@ -1022,8 +1094,14 @@ static void DoDrawVehicle(const Vehicle *v)
 		if (to != TO_INVALID && (IsTransparencySet(to) || IsInvisibilitySet(to))) return;
 	}
 
-	AddSortableSpriteToDraw(image, pal, v->x_pos + v->x_offs, v->y_pos + v->y_offs,
-		v->x_extent, v->y_extent, v->z_extent, v->z_pos, shadowed, v->x_bb_offs, v->y_bb_offs);
+	StartSpriteCombine();
+	for (uint i = 0; i < v->sprite_seq.count; ++i) {
+		PaletteID pal2 = v->sprite_seq.seq[i].pal;
+		if (!pal2 || (v->vehstatus & VS_CRASHED)) pal2 = pal;
+		AddSortableSpriteToDraw(v->sprite_seq.seq[i].sprite, pal2, v->x_pos + v->x_offs, v->y_pos + v->y_offs,
+			v->x_extent, v->y_extent, v->z_extent, v->z_pos, shadowed, v->x_bb_offs, v->y_bb_offs);
+	}
+	EndSpriteCombine();
 }
 
 /**
@@ -1041,26 +1119,26 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 	/* The hash area to scan */
 	int xl, xu, yl, yu;
 
-	if (dpi->width + (70 * ZOOM_LVL_BASE) < (1 << (7 + 6 + ZOOM_LVL_SHIFT))) {
-		xl = GB(l - (70 * ZOOM_LVL_BASE), 7 + ZOOM_LVL_SHIFT, 6);
-		xu = GB(r,                        7 + ZOOM_LVL_SHIFT, 6);
+	if (dpi->width + (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE) < GEN_HASHX_SIZE) {
+		xl = GEN_HASHX(l - MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE);
+		xu = GEN_HASHX(r);
 	} else {
 		/* scan whole hash row */
 		xl = 0;
-		xu = 0x3F;
+		xu = GEN_HASHX_MASK;
 	}
 
-	if (dpi->height + (70 * ZOOM_LVL_BASE) < (1 << (6 + 6 + ZOOM_LVL_SHIFT))) {
-		yl = GB(t - (70 * ZOOM_LVL_BASE), 6 + ZOOM_LVL_SHIFT, 6) << 6;
-		yu = GB(b,                        6 + ZOOM_LVL_SHIFT, 6) << 6;
+	if (dpi->height + (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE) < GEN_HASHY_SIZE) {
+		yl = GEN_HASHY(t - MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE);
+		yu = GEN_HASHY(b);
 	} else {
 		/* scan whole column */
 		yl = 0;
-		yu = 0x3F << 6;
+		yu = GEN_HASHY_MASK;
 	}
 
-	for (int y = yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
-		for (int x = xl;; x = (x + 1) & 0x3F) {
+	for (int y = yl;; y = (y + GEN_HASHY_INC) & GEN_HASHY_MASK) {
+		for (int x = xl;; x = (x + GEN_HASHX_INC) & GEN_HASHX_MASK) {
 			const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
 
 			while (v != NULL) {
@@ -1222,7 +1300,7 @@ bool Vehicle::HandleBreakdown()
 			SetWindowDirty(WC_VEHICLE_VIEW, this->index);
 			SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 
-			/* FALL THROUGH */
+			FALLTHROUGH;
 		case 1:
 			/* Aircraft breakdowns end only when arriving at the airport */
 			if (this->type == VEH_AIRCRAFT) return false;
@@ -1486,20 +1564,19 @@ void Vehicle::UpdatePosition()
  */
 void Vehicle::UpdateViewport(bool dirty)
 {
-	int img = this->cur_image;
+	Rect new_coord;
+	this->sprite_seq.GetBounds(&new_coord);
+
 	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
-	const Sprite *spr = GetSprite(img, ST_NORMAL);
+	new_coord.left   += pt.x;
+	new_coord.top    += pt.y;
+	new_coord.right  += pt.x + 2 * ZOOM_LVL_BASE;
+	new_coord.bottom += pt.y + 2 * ZOOM_LVL_BASE;
 
-	pt.x += spr->x_offs;
-	pt.y += spr->y_offs;
-
-	UpdateVehicleViewportHash(this, pt.x, pt.y);
+	UpdateVehicleViewportHash(this, new_coord.left, new_coord.top);
 
 	Rect old_coord = this->coord;
-	this->coord.left   = pt.x;
-	this->coord.top    = pt.y;
-	this->coord.right  = pt.x + spr->width + 2 * ZOOM_LVL_BASE;
-	this->coord.bottom = pt.y + spr->height + 2 * ZOOM_LVL_BASE;
+	this->coord = new_coord;
 
 	if (dirty) {
 		if (old_coord.left == INVALID_COORD) {
@@ -2085,6 +2162,7 @@ void Vehicle::LeaveStation()
 	assert(this->current_order.IsType(OT_LOADING));
 
 	delete this->cargo_payment;
+	assert(this->cargo_payment == NULL); // cleared by ~CargoPayment
 
 	/* Only update the timetable if the vehicle was supposed to stop here. */
 	if (this->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) UpdateVehicleTimetable(this, false);
@@ -2113,6 +2191,7 @@ void Vehicle::LeaveStation()
 	st->loading_vehicles.remove(this);
 
 	HideFillingPercent(&this->fill_percent_te_id);
+	trip_occupancy = CalcPercentVehicleFilled(this, NULL);
 
 	if (this->type == VEH_TRAIN && !(this->vehstatus & VS_CRASHED)) {
 		/* Trigger station animation (trains only) */
@@ -2629,7 +2708,7 @@ void Vehicle::RemoveFromShared()
 	if (this->orders.list->GetNumVehicles() == 1) {
 		/* When there is only one vehicle, remove the shared order list window. */
 		DeleteWindowById(GetWindowClassForVehicleType(this->type), vli.Pack());
-		InvalidateVehicleOrder(this->FirstShared(), 0);
+		InvalidateVehicleOrder(this->FirstShared(), VIWD_MODIFY_ORDERS);
 	} else if (were_first) {
 		/* If we were the first one, update to the new first one.
 		 * Note: FirstShared() is already the new first */
@@ -2780,7 +2859,7 @@ const uint16 &Vehicle::GetGroundVehicleFlags() const
 
 /**
  * Calculates the set of vehicles that will be affected by a given selection.
- * @param set [inout] Set of affected vehicles.
+ * @param[in,out] set Set of affected vehicles.
  * @param v First vehicle of the selection.
  * @param num_vehicles Number of vehicles in the selection (not counting articulated parts).
  * @pre \a set must be empty.

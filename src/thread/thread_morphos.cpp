@@ -50,14 +50,10 @@ struct OTTDThreadStartupMessage {
  *  Default OpenTTD STDIO/ERR debug output is not very useful for this, so we
  *  utilize serial/ramdebug instead.
  */
-#ifndef NO_DEBUG_MESSAGES
 void KPutStr(CONST_STRPTR format)
 {
 	RawDoFmt(format, NULL, (void (*)())RAWFMTFUNC_SERIAL, NULL);
 }
-#else
-#define KPutStr(x)
-#endif
 
 
 /**
@@ -193,7 +189,7 @@ private:
 	}
 };
 
-/* static */ bool ThreadObject::New(OTTDThreadFunc proc, void *param, ThreadObject **thread)
+/* static */ bool ThreadObject::New(OTTDThreadFunc proc, void *param, ThreadObject **thread, const char *name)
 {
 	ThreadObject *to = new ThreadObject_MorphOS(proc, param, thread == NULL);
 	if (thread != NULL) *thread = to;

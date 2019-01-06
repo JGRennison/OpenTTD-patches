@@ -57,16 +57,12 @@ static void OS2_SwitchToConsoleMode()
 }
 #endif
 
-#if defined(UNIX) || defined(PSP)
+#if defined(UNIX)
 #	include <sys/time.h> /* gettimeofday */
 #	include <sys/types.h>
 #	include <unistd.h>
 #	include <signal.h>
 #	define STDIN 0  /* file descriptor for standard input */
-#	if defined(PSP)
-#		include <sys/fd_set.h>
-#		include <sys/select.h>
-#	endif /* PSP */
 
 /* Signal handlers */
 static void DedicatedSignalHandler(int sig)
@@ -77,13 +73,12 @@ static void DedicatedSignalHandler(int sig)
 }
 #endif
 
-#if defined(WIN32)
+#if defined(_WIN32)
 # include <windows.h> /* GetTickCount */
-# if !defined(WINCE)
-#  include <conio.h>
-# endif
+# include <conio.h>
 # include <time.h>
 # include <tchar.h>
+# include "../os/windows/win32.h"
 static HANDLE _hInputReady, _hWaitForInputHandling;
 static HANDLE _hThread; // Thread to close
 static char _win_console_thread_buffer[200];
@@ -91,10 +86,8 @@ static char _win_console_thread_buffer[200];
 /* Windows Console thread. Just loop and signal when input has been received */
 static void WINAPI CheckForConsoleInput()
 {
-#if defined(WINCE)
-	/* WinCE doesn't support console stuff */
-	return;
-#else
+	SetWin32ThreadName(-1, "ottd:win-console");
+
 	DWORD nb;
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
 	for (;;) {
@@ -107,7 +100,6 @@ static void WINAPI CheckForConsoleInput()
 		SetEvent(_hInputReady);
 		WaitForSingleObject(_hWaitForInputHandling, INFINITE);
 	}
-#endif
 }
 
 static void CreateWindowsConsoleThread()
@@ -142,7 +134,7 @@ static void *_dedicated_video_mem;
 /* Whether a fork has been done. */
 bool _dedicated_forks;
 
-extern bool SafeLoad(const char *filename, int mode, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL);
+extern bool SafeLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL);
 
 static FVideoDriver_Dedicated iFVideoDriver_Dedicated;
 
@@ -158,9 +150,7 @@ const char *VideoDriver_Dedicated::Start(const char * const *parm)
 	ScreenSizeChanged();
 	BlitterFactory::GetCurrentBlitter()->PostResize();
 
-#if defined(WINCE)
-	/* WinCE doesn't support console stuff */
-#elif defined(WIN32)
+#if defined(_WIN32)
 	/* For win32 we need to allocate a console (debug mode does the same) */
 	CreateConsole();
 	CreateWindowsConsoleThread();
@@ -183,7 +173,7 @@ const char *VideoDriver_Dedicated::Start(const char * const *parm)
 
 void VideoDriver_Dedicated::Stop()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	CloseWindowsConsoleThread();
 #endif
 	free(_dedicated_video_mem);
@@ -193,7 +183,7 @@ void VideoDriver_Dedicated::MakeDirty(int left, int top, int width, int height) 
 bool VideoDriver_Dedicated::ChangeResolution(int w, int h) { return false; }
 bool VideoDriver_Dedicated::ToggleFullscreen(bool fs) { return false; }
 
-#if defined(UNIX) || defined(__OS2__) || defined(PSP)
+#if defined(UNIX) || defined(__OS2__)
 static bool InputWaiting()
 {
 	struct timeval tv;
@@ -239,7 +229,7 @@ static void DedicatedHandleKeyInput()
 
 	if (_exit_game) return;
 
-#if defined(UNIX) || defined(__OS2__) || defined(PSP)
+#if defined(UNIX) || defined(__OS2__)
 	if (fgets(input_line, lengthof(input_line), stdin) == NULL) return;
 #else
 	/* Handle console input, and signal console thread, it can accept input again */
@@ -266,7 +256,7 @@ void VideoDriver_Dedicated::MainLoop()
 	uint32 next_tick = cur_ticks + MILLISECONDS_PER_TICK;
 
 	/* Signal handlers */
-#if defined(UNIX) || defined(PSP)
+#if defined(UNIX)
 	signal(SIGTERM, DedicatedSignalHandler);
 	signal(SIGINT, DedicatedSignalHandler);
 	signal(SIGQUIT, DedicatedSignalHandler);
@@ -286,7 +276,7 @@ void VideoDriver_Dedicated::MainLoop()
 		_switch_mode = SM_NONE;
 		/* First we need to test if the savegame can be loaded, else we will end up playing the
 		 *  intro game... */
-		if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.mode, GM_NORMAL, BASE_DIR)) {
+		if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, GM_NORMAL, BASE_DIR)) {
 			/* Loading failed, pop out.. */
 			DEBUG(net, 0, "Loading requested map failed, aborting");
 			_networking = false;

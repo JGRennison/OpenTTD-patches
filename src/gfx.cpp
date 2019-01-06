@@ -703,8 +703,8 @@ Dimension GetStringBoundingBox(const char *str, FontSize start_fontsize)
 }
 
 /**
- * Get bounding box of a string. Uses parameters set by #DParam if needed.
- * Has the same restrictions as #GetStringBoundingBox(const char *str).
+ * Get bounding box of a string. Uses parameters set by #SetDParam if needed.
+ * Has the same restrictions as #GetStringBoundingBox(const char *str, FontSize start_fontsize).
  * @param strid String to examine.
  * @return Width and height of the bounding box for the string in pixels.
  */
@@ -761,7 +761,7 @@ void DrawCharCentered(WChar c, int x, int y, TextColour colour)
 /**
  * Get the size of a sprite.
  * @param sprid Sprite to examine.
- * @param [out] offset Optionally returns the sprite position offset.
+ * @param[out] offset Optionally returns the sprite position offset.
  * @return Sprite size in pixels.
  * @note The size assumes (0, 0) as top-left coordinate and ignores any part of the sprite drawn at the left or above that position.
  */
@@ -1111,16 +1111,17 @@ void DoPaletteAnimations()
 /**
  * Determine a contrasty text colour for a coloured background.
  * @param background Background colour.
+ * @param threshold Background colour brightness threshold below which the background is considered dark and TC_WHITE is returned, range: 0 - 255, default 128.
  * @return TC_BLACK or TC_WHITE depending on what gives a better contrast.
  */
-TextColour GetContrastColour(uint8 background)
+TextColour GetContrastColour(uint8 background, uint8 threshold)
 {
 	Colour c = _cur_palette.palette[background];
 	/* Compute brightness according to http://www.w3.org/TR/AERT#color-contrast.
 	 * The following formula computes 1000 * brightness^2, with brightness being in range 0 to 255. */
 	uint sq1000_brightness = c.r * c.r * 299 + c.g * c.g * 587 + c.b * c.b * 114;
-	/* Compare with threshold brightness 128 (50%) */
-	return sq1000_brightness < 128 * 128 * 1000 ? TC_WHITE : TC_BLACK;
+	/* Compare with threshold brightness which defaults to 128 (50%) */
+	return sq1000_brightness < ((uint) threshold) * ((uint) threshold) * 1000 ? TC_WHITE : TC_BLACK;
 }
 
 /**
@@ -1169,8 +1170,8 @@ byte GetDigitWidth(FontSize size)
 
 /**
  * Determine the broadest digits for guessing the maximum width of a n-digit number.
- * @param [out] front Broadest digit, which is not 0. (Use this digit as first digit for numbers with more than one digit.)
- * @param [out] next Broadest digit, including 0. (Use this digit for all digits, except the first one; or for numbers with only one digit.)
+ * @param[out] front Broadest digit, which is not 0. (Use this digit as first digit for numbers with more than one digit.)
+ * @param[out] next Broadest digit, including 0. (Use this digit for all digits, except the first one; or for numbers with only one digit.)
  * @param size  Font of the digit
  */
 void GetBroadestDigit(uint *front, uint *next, FontSize size)
@@ -1214,19 +1215,10 @@ void UndrawMouseCursor()
 
 void DrawMouseCursor()
 {
-#if defined(WINCE)
-	/* Don't ever draw the mouse for WinCE, as we work with a stylus */
-	return;
-#endif
-
 	/* Don't draw the mouse cursor if the screen is not ready */
 	if (_screen.dst_ptr == NULL) return;
 
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-	int x;
-	int y;
-	int w;
-	int h;
 
 	/* Redraw mouse cursor but only when it's inside the window */
 	if (!_cursor.in_window) return;
@@ -1237,36 +1229,44 @@ void DrawMouseCursor()
 		UndrawMouseCursor();
 	}
 
-	w = _cursor.size.x;
-	x = _cursor.pos.x + _cursor.offs.x + _cursor.short_vehicle_offset;
-	if (x < 0) {
-		w += x;
-		x = 0;
+	/* Determine visible area */
+	int left = _cursor.pos.x + _cursor.total_offs.x;
+	int width = _cursor.total_size.x;
+	if (left < 0) {
+		width += left;
+		left = 0;
 	}
-	if (w > _screen.width - x) w = _screen.width - x;
-	if (w <= 0) return;
-	_cursor.draw_pos.x = x;
-	_cursor.draw_size.x = w;
-
-	h = _cursor.size.y;
-	y = _cursor.pos.y + _cursor.offs.y;
-	if (y < 0) {
-		h += y;
-		y = 0;
+	if (left + width > _screen.width) {
+		width = _screen.width - left;
 	}
-	if (h > _screen.height - y) h = _screen.height - y;
-	if (h <= 0) return;
-	_cursor.draw_pos.y = y;
-	_cursor.draw_size.y = h;
+	if (width <= 0) return;
 
-	uint8 *buffer = _cursor_backup.Allocate(blitter->BufferSize(w, h));
+	int top = _cursor.pos.y + _cursor.total_offs.y;
+	int height = _cursor.total_size.y;
+	if (top < 0) {
+		height += top;
+		top = 0;
+	}
+	if (top + height > _screen.height) {
+		height = _screen.height - top;
+	}
+	if (height <= 0) return;
+
+	_cursor.draw_pos.x = left;
+	_cursor.draw_pos.y = top;
+	_cursor.draw_size.x = width;
+	_cursor.draw_size.y = height;
+
+	uint8 *buffer = _cursor_backup.Allocate(blitter->BufferSize(_cursor.draw_size.x, _cursor.draw_size.y));
 
 	/* Make backup of stuff below cursor */
 	blitter->CopyToBuffer(blitter->MoveTo(_screen.dst_ptr, _cursor.draw_pos.x, _cursor.draw_pos.y), buffer, _cursor.draw_size.x, _cursor.draw_size.y);
 
 	/* Draw cursor on screen */
 	_cur_dpi = &_screen;
-	DrawSprite(_cursor.sprite, _cursor.pal, _cursor.pos.x + _cursor.short_vehicle_offset, _cursor.pos.y);
+	for (uint i = 0; i < _cursor.sprite_count; ++i) {
+		DrawSprite(_cursor.sprite_seq[i].sprite, _cursor.sprite_seq[i].pal, _cursor.pos.x + _cursor.sprite_pos[i].x, _cursor.pos.y + _cursor.sprite_pos[i].y);
+	}
 
 	VideoDriver::GetInstance()->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
 
@@ -1525,15 +1525,33 @@ bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int heigh
  */
 void UpdateCursorSize()
 {
-	CursorVars *cv = &_cursor;
-	const Sprite *p = GetSprite(GB(cv->sprite, 0, SPRITE_WIDTH), ST_NORMAL);
+	/* Ignore setting any cursor before the sprites are loaded. */
+	if (GetMaxSpriteID() == 0) return;
 
-	cv->size.y = UnScaleGUI(p->height);
-	cv->size.x = UnScaleGUI(p->width);
-	cv->offs.x = UnScaleGUI(p->x_offs);
-	cv->offs.y = UnScaleGUI(p->y_offs);
+	assert_compile(lengthof(_cursor.sprite_seq) == lengthof(_cursor.sprite_pos));
+	assert(_cursor.sprite_count <= lengthof(_cursor.sprite_seq));
+	for (uint i = 0; i < _cursor.sprite_count; ++i) {
+		const Sprite *p = GetSprite(GB(_cursor.sprite_seq[i].sprite, 0, SPRITE_WIDTH), ST_NORMAL);
+		Point offs, size;
+		offs.x = UnScaleGUI(p->x_offs) + _cursor.sprite_pos[i].x;
+		offs.y = UnScaleGUI(p->y_offs) + _cursor.sprite_pos[i].y;
+		size.x = UnScaleGUI(p->width);
+		size.y = UnScaleGUI(p->height);
 
-	cv->dirty = true;
+		if (i == 0) {
+			_cursor.total_offs = offs;
+			_cursor.total_size = size;
+		} else {
+			int right  = max(_cursor.total_offs.x + _cursor.total_size.x, offs.x + size.x);
+			int bottom = max(_cursor.total_offs.y + _cursor.total_size.y, offs.y + size.y);
+			if (offs.x < _cursor.total_offs.x) _cursor.total_offs.x = offs.x;
+			if (offs.y < _cursor.total_offs.y) _cursor.total_offs.y = offs.y;
+			_cursor.total_size.x = right  - _cursor.total_offs.x;
+			_cursor.total_size.y = bottom - _cursor.total_offs.y;
+		}
+	}
+
+	_cursor.dirty = true;
 }
 
 /**
@@ -1543,14 +1561,15 @@ void UpdateCursorSize()
  */
 static void SetCursorSprite(CursorID cursor, PaletteID pal)
 {
-	CursorVars *cv = &_cursor;
-	if (cv->sprite == cursor) return;
+	if (_cursor.sprite_count == 1 && _cursor.sprite_seq[0].sprite == cursor && _cursor.sprite_seq[0].pal == pal) return;
 
-	cv->sprite = cursor;
-	cv->pal    = pal;
+	_cursor.sprite_count = 1;
+	_cursor.sprite_seq[0].sprite = cursor;
+	_cursor.sprite_seq[0].pal = pal;
+	_cursor.sprite_pos[0].x = 0;
+	_cursor.sprite_pos[0].y = 0;
+
 	UpdateCursorSize();
-
-	cv->short_vehicle_offset = 0;
 }
 
 static void SwitchAnimatedCursor()
@@ -1559,7 +1578,7 @@ static void SwitchAnimatedCursor()
 
 	if (cur == NULL || cur->sprite == AnimCursor::LAST) cur = _cursor.animate_list;
 
-	SetCursorSprite(cur->sprite, _cursor.pal);
+	SetCursorSprite(cur->sprite, _cursor.sprite_seq[0].pal);
 
 	_cursor.animate_timeout = cur->display_time;
 	_cursor.animate_cur     = cur + 1;
@@ -1569,6 +1588,19 @@ void CursorTick()
 {
 	if (_cursor.animate_timeout != 0 && --_cursor.animate_timeout == 0) {
 		SwitchAnimatedCursor();
+	}
+}
+
+/**
+ * Set or unset the ZZZ cursor.
+ * @param busy Whether to show the ZZZ cursor.
+ */
+void SetMouseCursorBusy(bool busy)
+{
+	if (busy) {
+		if (_cursor.sprite_seq[0].sprite == SPR_CURSOR_MOUSE) SetMouseCursor(SPR_CURSOR_ZZZ, PAL_NONE);
+	} else {
+		if (_cursor.sprite_seq[0].sprite == SPR_CURSOR_ZZZ) SetMouseCursor(SPR_CURSOR_MOUSE, PAL_NONE);
 	}
 }
 
@@ -1595,7 +1627,7 @@ void SetAnimatedMouseCursor(const AnimCursor *table)
 {
 	_cursor.animate_list = table;
 	_cursor.animate_cur = NULL;
-	_cursor.pal = PAL_NONE;
+	_cursor.sprite_seq[0].pal = PAL_NONE;
 	SwitchAnimatedCursor();
 }
 
@@ -1603,8 +1635,8 @@ void SetAnimatedMouseCursor(const AnimCursor *table)
  * Update cursor position on mouse movement.
  * @param x New X position.
  * @param y New Y position.
- * @param queued True, if the OS queues mouse warps after pending mouse movement events.
- *               False, if the warp applies instantaneous.
+ * @param queued_warp True, if the OS queues mouse warps after pending mouse movement events.
+ *                    False, if the warp applies instantaneous.
  * @return true, if the OS cursor position should be warped back to this->pos.
  */
 bool CursorVars::UpdateCursorPosition(int x, int y, bool queued_warp)

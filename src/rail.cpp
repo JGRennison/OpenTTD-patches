@@ -56,7 +56,7 @@ extern const Trackdir _next_trackdir[TRACKDIR_END] = {
 };
 
 /* Maps a trackdir to all trackdirs that make 90 deg turns with it. */
-extern const TrackdirBits _track_crosses_trackdirs[TRACKDIR_END] = {
+extern const TrackdirBits _track_crosses_trackdirs[TRACK_END] = {
 	TRACKDIR_BIT_Y_SE     | TRACKDIR_BIT_Y_NW,                                                   // TRACK_X
 	TRACKDIR_BIT_X_NE     | TRACKDIR_BIT_X_SW,                                                   // TRACK_Y
 	TRACKDIR_BIT_RIGHT_N  | TRACKDIR_BIT_RIGHT_S  | TRACKDIR_BIT_LEFT_N  | TRACKDIR_BIT_LEFT_S,  // TRACK_UPPER
@@ -251,7 +251,7 @@ RailTypes AddDateIntroducedRailTypes(RailTypes current, Date date)
 
 /**
  * Get the rail types the given company can build.
- * @param c the company to get the rail types for.
+ * @param company the company to get the rail types for.
  * @return the rail types.
  */
 RailTypes GetCompanyRailtypes(CompanyID company)

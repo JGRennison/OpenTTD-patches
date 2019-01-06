@@ -152,6 +152,7 @@ static const StringID _order_goto_dropdown_aircraft[] = {
 static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_LOAD_PERCENTAGE,
 	OCV_RELIABILITY,
+	OCV_MAX_RELIABILITY,
 	OCV_MAX_SPEED,
 	OCV_AGE,
 	OCV_REMAINING_LIFETIME,
@@ -577,8 +578,6 @@ private:
 	Scrollbar *vscroll;
 	bool can_do_refit;     ///< Vehicle chain can be refitted in depot.
 	bool can_do_autorefit; ///< Vehicle chain can be auto-refitted.
-	StringID cargo_names_list[NUM_CARGO + 1];
-	uint32 cargo_bitmask;
 
 	/**
 	 * Return the memorised selected order.
@@ -911,18 +910,6 @@ public:
 				break;
 			}
 		}
-
-
-		/* Create cargo bitmask */
-		assert_compile(NUM_CARGO <= 32);
-		for (CargoID c = 0; c < NUM_CARGO; c++) {
-			if (CargoSpec::Get(c)->IsValid()) {
-				this->cargo_names_list[c] = CargoSpec::Get(c)->name;
-				SetBit(this->cargo_bitmask, c);
-			}
-		}
-		this->cargo_bitmask = ~this->cargo_bitmask;
-		this->cargo_names_list[NUM_CARGO] = INVALID_STRING_ID;
 	}
 
 	/**
@@ -939,7 +926,7 @@ public:
 			case VIWD_AUTOREPLACE:
 				/* Autoreplace replaced the vehicle */
 				this->vehicle = Vehicle::Get(this->window_number);
-				/* FALL THROUGH */
+				FALLTHROUGH;
 
 			case VIWD_CONSIST_CHANGED:
 				/* Vehicle composition was changed. */
@@ -1137,7 +1124,11 @@ public:
 					bool is_cargo = (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING);
 
 					if (is_cargo) {
-						this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = cargo_names_list[(order == NULL) ? 0 : order->GetConditionValue()];
+						if (order == NULL || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
+							this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = STR_NEWGRF_INVALID_CARGO;
+						} else {
+							this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = CargoSpec::Get(order->GetConditionValue())->name;
+						}
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_CARGO);
 					} else {
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER);
@@ -1396,7 +1387,16 @@ public:
 
 			case WID_O_COND_CARGO: {
 				uint value = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue();
-				ShowDropDownMenu(this, cargo_names_list, value, WID_O_COND_CARGO, 0, cargo_bitmask);
+				DropDownList *list = new DropDownList();
+				for (size_t i = 0; i < _sorted_standard_cargo_specs_size; ++i) {
+					const CargoSpec *cs = _sorted_cargo_specs[i];
+					*list->Append() = new DropDownListStringItem(cs->name, cs->Index(), false);
+				}
+				if (list->Length() == 0) {
+					delete list;
+					return;
+				}
+				ShowDropDownList(this, list, value, WID_O_COND_CARGO, 0);
 				break;
 			}
 

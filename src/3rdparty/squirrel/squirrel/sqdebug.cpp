@@ -105,7 +105,7 @@ void SQVM::Raise_IdxError(const SQObject &o)
 void SQVM::Raise_CompareError(const SQObject &o1, const SQObject &o2)
 {
 	SQObjectPtr oval1 = PrintObjVal(o1), oval2 = PrintObjVal(o2);
-	Raise_Error("comparsion between '%.50s' and '%.50s'", _stringval(oval1), _stringval(oval2));
+	Raise_Error("comparison between '%.50s' and '%.50s'", _stringval(oval1), _stringval(oval2));
 }
 
 
@@ -115,7 +115,7 @@ void SQVM::Raise_ParamTypeError(SQInteger nparam,SQInteger typemask,SQInteger ty
 	SQInteger found = 0;
 	for(SQInteger i=0; i<16; i++)
 	{
-		SQInteger mask = 0x00000001 << i;
+		SQInteger mask = 0x00000001LL << i;
 		if(typemask & (mask)) {
 			if(found>0) StringCat(exptypes,SQString::Create(_ss(this), "|", -1), exptypes);
 			found ++;

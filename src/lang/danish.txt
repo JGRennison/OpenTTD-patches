@@ -650,6 +650,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}Ingen musik tilgængelig
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Nummer
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Titel
@@ -669,15 +670,13 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}Select '
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Tilfældig afspilning til/fra
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Vis vinduet med musiknummervalg
 
-STR_ERROR_NO_SONGS                                              :{WHITE}Det valgte musik sæt er uden sange. Der kan ikke afspilles musik.
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}Musikprogram Valg
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Nummerliste
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Program - '{STRING}'
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Ryd
 STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Ryd det valgte program (Gælder kun Custom1/Custom2)
+STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}Ændre musik listen til et anden installeret sæt
 STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Klik på et musiknummer for at tilføje det til programlisten (kun for Custom1/Custom2)
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Klik på et musiknummer for at fjerne det fra programlisten (kun for Custom1/Custom2)
 
@@ -1337,8 +1336,10 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Land farve brug
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Grøn
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Mørkegrøn
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violet
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :Flyt i modsat retning ved scroll med musen: {STRING}
-STR_CONFIG_SETTING_REVERSE_SCROLLING_HELPTEXT                   :Adfærd når kortet rulles med højre museknap. Hvis deaktiveret, bevæger musen kameraet. Når funktionen er aktiveret, flytter musen kortet
+STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Bevæg syns vinduet med højre mussetast, musse position låst
+STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Bevæg kortet med højre mussetast, musse position låst
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :Bevæg kortet med højre musseknap
+STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Bevæg kortet med venstre musseknap
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Jævn scrolling af udsnit: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Kontroller hvordan de vigtigste visning ruller til en bestemt position, når du klikker på det lille kort eller når de udsteder en kommando til at rulle til en bestemt genstand på kortet. Hvis aktiveret, ruller udsigtspunktet jævnt, hvis deaktiveret springer den direkte til det valgte punkt
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Vis måleværktøjstip ved brug af div. bygge-værktøjer: {STRING}
@@ -1370,8 +1371,8 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Kommandoklik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Kontrolklik
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Fra
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :Venstreklik-scrolling: {STRING}
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING_HELPTEXT            :Aktiver rulle kortet ved at trække den med venstre museknap. Dette er især nyttigt, når du bruger en touch-screen til at rulle
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Luk vindue ved højre-klik: {STRING}
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Lukker vinduet ved at højreklikke inde i det. Deaktiverer værktøjstip ved at højreklikke!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Auto gem: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vælg interval mellem automatisk gemte spil
@@ -1761,6 +1762,7 @@ STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Tjek for
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Vis computerspiller/spilscript indstillinger
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Afslut 'OpenTTD'
 
+STR_INTRO_BASESET                                               :{BLACK} Det aktuelt valgte base grafiksæt mangler {NUM} sprite {P "" s}. Se venligst efter opdateringer til basesættet.
 STR_INTRO_TRANSLATION                                           :{BLACK}Denne oversættelse mangler {NUM} streng{P "" e}. Hjælp venligst med at gøre OpenTTD bedre ved at tilmelde dig som oversætter. Se readme.txt for detaljer.
 
 # Quit window
@@ -2589,6 +2591,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Lufthavn
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Accepteret last: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Tog type: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Togspors hastighedsgrænse: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Vej hastighedsbegrænsning: {LTBLUE}{VELOCITY}
 
@@ -2601,29 +2604,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Marker
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Snedækket land
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Ørken
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} spor
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} spor med bloksignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} spor med with pre-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} spor med udgangssignaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} spor med kombinerede signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} spor med rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} spor med en-vejs-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} spor med blok- og pre-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} spor med blok- og udgangs-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} spor med blok og kombinerede signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} spor med blok- og rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} spor med blok og en-vejs rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} spor med pre- og udgangs-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} spor med pre- og kombinerede signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} spor med pre- og rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} spor med pre- og en-vejs rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} spor med udgangs- og kombinerede signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} spor med udgangs- og rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} spor med udgangs- og en-vejs rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} spor med kombinerede og rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} spor med kombinerede og en-vejs rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} spor med rute- og en-vejs rute-signaler
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} togdepot
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Jernbane spor
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Jernbane spor med bloksignaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Jernbane spor med with pre-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Jernbane spor med udgangs-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Jernbane spor med kombinerede signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Jernbane spor med rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Jernbane spor med en-vejs-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Jernbane spor med blok- og pre-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Jernbane spor med blok- og udgangs-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Jernbane spor med blok- og kombinerede signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Jernbane spor med blok- og rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Jernbane spor med blok og en-vejs rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Jernbane spor med pre- og udgangs-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Jernbane spor med pre- og kombinerede signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Jernbane spor med pre- og rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Jernbane spor med pre- og en-vejs rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Jernbane spor med udgangs- og kombinerede signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Jernbane spor med udgangs- og rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Jernbane spor med udgangs- og en-vejs rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Jernbane spor med kombinerede og rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Jernbane spor med kombinationede- og en-vejs rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Jernbane spor med rute- og en-vejs rute-signaler
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Jernbane togdepot
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Vej
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Vej med gadelygter
@@ -2687,7 +2690,14 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Land ejet af se
 STR_ABOUT_OPENTTD                                               :{WHITE}Om OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, Alle rettigheder reserveret
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD teamet
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD teamet
+
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Gem spil
@@ -2874,7 +2884,7 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Gå til 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Tidligere grafikelement
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fortsæt til den forrige normal sprite, springe over nogen pseudo / recolour / FONT sprites og indpakning rundt fra den første sprite til det sidste
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Repræsentation af den markerede sprite. Justeringen ignoreres når denne sprite tegnes.
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flyt spriten rundt for at ændre X- og Y-forskydningen
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flyt spriten rundt for at ændre X- og Y-forskydningen. Ctrl+Klik for at flytte spriten otte enheder af gangen
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Nulstil relativ
 STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Nulstil den nuværende relative forskydning
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X-forskydning: {NUM}, Y-forskydning: {NUM} (Absolut)
@@ -2906,8 +2916,6 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Forsøg på at 
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} indeholder en ødelagt sprite. Alle ødelagte sprites vil blive vist som et rødt spørgsmålstegn (?).
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Indeholder adskillige handling 8 indgange (grafikelement {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Læs forbi slutningen af pseudo-grafikelement (grafikelement {3:NUM})
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}Det brugte basis grafiksæt mangler en række elementer.{}Opdater venligst grafiksættet.
-STR_NEWGRF_ERROR_MISSING_SPRITES_UNSTABLE                       :{WHITE}Den grafikpakke som bruges er ufuldstændig.{}Opdater venligst grafikpakken.{}eftersom du spiller et{YELLOW} development snapshot of OpenTTD{WHITE},får du måske også brug for er{YELLOW}development snapshot of the base graphics{WHITE}
 STR_NEWGRF_ERROR_GRM_FAILED                                     :De ønskede GRF ressourcer er ikke tilgængelige (grafikelement {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} blev deaktiveret af {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ugyldigt / ukendt grafikelement layoutformat (grafikelement {3:NUM})
@@ -2982,8 +2990,6 @@ STR_TOWN_POPULATION                                             :{BLACK}Verdens 
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (by)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Indbyggere: {ORANGE}{COMMA}{BLACK}  Huse: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}Passagerer sidste måned: {ORANGE}{COMMA}{BLACK}  maks.: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}Post sidste måned: {ORANGE}{COMMA}{BLACK}  maks.: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Nødvendig godsmængde for at byen kan vokse:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} krævet
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} kræves om vinteren
@@ -3114,8 +3120,8 @@ STR_STATION_VIEW_ACCEPTS_BUTTON                                 :{BLACK}Accepter
 STR_STATION_VIEW_ACCEPTS_TOOLTIP                                :{BLACK}Vis liste over accepteret last
 STR_STATION_VIEW_ACCEPTS_CARGO                                  :{BLACK}Accepterer: {WHITE}{CARGO_LIST}
 
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK} Denne station har eksklusive transport rettigheder i denne by.
-STR_STATIOV_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW} {COMPANY} {BLACK} købte eksklusive transport rettigheder i denne by.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK} Denne station har eksklusive transport rettigheder i denne by.
+STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW} {COMPANY} {BLACK} købte eksklusive transport rettigheder i denne by.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Bedømmelse
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Vis stationens bedømmelse
@@ -3294,9 +3300,11 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Kræver:
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Kræver: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Kræver:
+STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
+STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} venter{STRING}
+
 ############ range for produces starts
-STR_INDUSTRY_VIEW_WAITING_FOR_PROCESSING                        :{BLACK}Fragt der venter på forarbejdning:
-STR_INDUSTRY_VIEW_WAITING_STOCKPILE_CARGO                       :{YELLOW}{CARGO_LONG}{STRING}{BLACK}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Producerer: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Producerer: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
 ############ range for produces ends
@@ -3363,6 +3371,11 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Fjern alle kør
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Omdøb en gruppe
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Afkast i år:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Afkast sidste år:
+STR_GROUP_OCCUPANCY                                             :Nuværende brug:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nye jernbanekøretøjer
 STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nyt elektrisk lokomotiv
@@ -3394,6 +3407,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Alle lasttyper
 STR_PURCHASE_INFO_ALL_BUT                                       :Alle undtagen {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks. trækkraft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rækkevidde: {GOLD}{COMMA} felter
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Fly type: {GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Togvalgsliste - klik på et køretøj for mere information
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Liste over køretøjstyper - klik på køretøj for information
@@ -3527,10 +3541,11 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :magnetskinnelok
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Pris: {CURRENCY_LONG} Vægt: {WEIGHT_SHORT}{}Hastighed: {VELOCITY}  Styrke: {POWER}{}Driftsomkostninger: {CURRENCY_LONG}/år{}Kapacitet: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Pris: {CURRENCY_LONG} Vægt: {WEIGHT_SHORT}{}Hastighed: {VELOCITY}  Hestekræfter: {POWER}  Maks. Trækkraft: {6:FORCE}{}Driftsomkostning: {4:CURRENCY_LONG}/år{}Kapacitet: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_CAPACITY_RUNCOST     :{BLACK}Pris: {CURRENCY_LONG} Maks. hast.: {VELOCITY}{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Driftsomkostninger: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAPACITY_RUNCOST              :{BLACK}Pris: {CURRENCY_LONG} Maks. hast.: {VELOCITY}{}Kapacitet: {CARGO_LONG}{}Driftsomkostninger: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}Pris: {CURRENCY_LONG} Max. hastighed: {VELOCITY} Rækkevidde: {COMMA} felter{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Faste udgifter: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}Pris: {CURRENCY_LONG} Max. hastighed: {VELOCITY} Rækkevidde: {COMMA} felter{}Capacity: {CARGO_LONG}{}Running Cost: {CURRENCY_LONG}/yr
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Pris: {CURRENCY_LONG} Maks. hast.: {VELOCITY}{}Kapacitet: {CARGO_LONG}{}Driftsomkostninger: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Pris: {CURRENCY_LONG} Max. Hastighed: {VELOCITY}{}Aircraft type: {STRING}{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Omkostninger: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Pris: {CURRENCY_LONG} Max. Hastighed: {VELOCITY}{}Fly type: {STRING}{}Kapacitet: {CARGO_LONG}{}Omkostninger: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Pris: {CURRENCY_LONG} Max. Hastighed: {VELOCITY}{}Fly type: {STRING} Rækkevidde: {COMMA} felter{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Omkostninger: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Pris: {CURRENCY_LONG} Max. Hastighed{VELOCITY}{}Fly type: {STRING} Rækkevidde: {COMMA} felter{}Kapacitet: {CARGO_LONG}{}Omkostninger: {CURRENCY_LONG}/år
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Udskift {STRING} - {STRING}
@@ -3557,10 +3572,10 @@ STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} når d
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}Stop udskiftning
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}Tryk for at stoppe udskiftningen at den køretøjstype, som du har valgt til venstre
 
-STR_REPLACE_ENGINE_WAGON_SELECT                                 :{BLACK}Udskifter: {ORANGE}{STRING}
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}Skift imellem lokomotiv- og vognudskiftningsvindue
 STR_REPLACE_ENGINES                                             :Lokomotiver
 STR_REPLACE_WAGONS                                              :Vogne
+STR_REPLACE_ALL_RAILTYPE                                        :Alle jernbanevogne
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Vælg den skinne type, du ønsker at udskifte lokomotiver til
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Viser hvilket køretøj det valgte køretøj til venstre bliver udskiftet med, hvis det udskiftes
@@ -3653,7 +3668,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} år ({C
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} år ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Maks. hast.: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}Max. hastighed: {LTBLUE}{VELOCITY} {BLACK}Rækkevidde: {LTBLUE}{COMMA} felter
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Max. hastighed: {LTBLUE}{VELOCITY} {BLACK}Fly type: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Max. hastighed: {LTBLUE}{VELOCITY} {BLACK}Fly type: {LTBLUE}{STRING} {BLACK}Rækkevidde: {LTBLUE}{COMMA} felter
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Vægt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Effekt: {LTBLUE}{POWER}{BLACK} Maks. hast.: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Vægt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Effekt: {LTBLUE}{POWER}{BLACK} Maks. hast.: {LTBLUE}{VELOCITY} {BLACK}Maks. trækkraft: {LTBLUE}{FORCE}
 
@@ -4212,7 +4228,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}For mang
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Banegården er i for mange dele
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}For mange busterminaler
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}For mange fragtcentraler
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}For tæt på en anden station/fragtcentral
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}For tæt på en anden havn
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}For tæt på en anden lufthavn
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Kan ikke omdøbe stationen...
@@ -4220,6 +4235,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... denn
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... vejen peger i den forkerte retning
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... drive-through stops kan ikke have hjørner
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... drive-through stops kan ikke have kryds
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}vejen er ensrettet eller blokeret
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Kan ikke fjerne en del af en station...

@@ -95,7 +95,7 @@ const ScoreInfo _score_info[] = {
 	{       0,   0}  // SCORE_TOTAL
 };
 
-int _score_part[MAX_COMPANIES][SCORE_END];
+int64 _score_part[MAX_COMPANIES][SCORE_END];
 Economy _economy;
 Prices _price;
 Money _additional_cash_required;
@@ -183,7 +183,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 		_score_part[owner][SCORE_VEHICLES] = num;
 		/* Don't allow negative min_profit to show */
 		if (min_profit > 0) {
-			_score_part[owner][SCORE_MIN_PROFIT] = ClampToI32(min_profit);
+			_score_part[owner][SCORE_MIN_PROFIT] = min_profit;
 		}
 	}
 
@@ -213,10 +213,10 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 			} while (++cee, --numec);
 
 			if (min_income > 0) {
-				_score_part[owner][SCORE_MIN_INCOME] = ClampToI32(min_income);
+				_score_part[owner][SCORE_MIN_INCOME] = min_income;
 			}
 
-			_score_part[owner][SCORE_MAX_INCOME] = ClampToI32(max_income);
+			_score_part[owner][SCORE_MAX_INCOME] = max_income;
 		}
 	}
 
@@ -230,7 +230,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 				total_delivered += cee->delivered_cargo.GetSum<OverflowSafeInt64>();
 			} while (++cee, --numec);
 
-			_score_part[owner][SCORE_DELIVERED] = ClampToI32(total_delivered);
+			_score_part[owner][SCORE_DELIVERED] = total_delivered;
 		}
 	}
 
@@ -242,13 +242,13 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 	/* Generate score for company's money */
 	{
 		if (c->money > 0) {
-			_score_part[owner][SCORE_MONEY] = ClampToI32(c->money);
+			_score_part[owner][SCORE_MONEY] = c->money;
 		}
 	}
 
 	/* Generate score for loan */
 	{
-		_score_part[owner][SCORE_LOAN] = ClampToI32(_score_info[SCORE_LOAN].needed - c->current_loan);
+		_score_part[owner][SCORE_LOAN] = _score_info[SCORE_LOAN].needed - c->current_loan;
 	}
 
 	/* Now we calculate the score for each item.. */
@@ -654,12 +654,16 @@ static void CompanyCheckBankrupt(Company *c)
  */
 static void CompaniesGenStatistics()
 {
-	Station *st;
+	/* Check for bankruptcy each month */
+	Company *c;
+	FOR_ALL_COMPANIES(c) {
+		CompanyCheckBankrupt(c);
+	}
 
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
-	Company *c;
 
 	if (!_settings_game.economy.infrastructure_maintenance) {
+		Station *st;
 		FOR_ALL_STATIONS(st) {
 			cur_company.Change(st->owner);
 			CommandCost cost(EXPENSES_PROPERTY, _price[PR_STATION_VALUE] >> 1);
@@ -688,18 +692,14 @@ static void CompaniesGenStatistics()
 	}
 	cur_company.Restore();
 
-	/* Check for bankruptcy each month */
-	FOR_ALL_COMPANIES(c) {
-		CompanyCheckBankrupt(c);
-	}
-
 	/* Only run the economic statics and update company stats every 3rd month (1st of quarter). */
 	if (!HasBit(1 << 0 | 1 << 3 | 1 << 6 | 1 << 9, _cur_month)) return;
 
 	FOR_ALL_COMPANIES(c) {
-		memmove(&c->old_economy[1], &c->old_economy[0], sizeof(c->old_economy) - sizeof(c->old_economy[0]));
+		/* Drop the oldest history off the end */
+		std::copy_backward(c->old_economy, c->old_economy + MAX_HISTORY_QUARTERS - 1, c->old_economy + MAX_HISTORY_QUARTERS);
 		c->old_economy[0] = c->cur_economy;
-		memset(&c->cur_economy, 0, sizeof(c->cur_economy));
+		c->cur_economy = {};
 
 		if (c->num_valid_stat_ent != MAX_HISTORY_QUARTERS) c->num_valid_stat_ent++;
 
@@ -1062,6 +1062,7 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 
 		uint amount = min(num_pieces, 0xFFFFU - ind->incoming_cargo_waiting[cargo_index]);
 		ind->incoming_cargo_waiting[cargo_index] += amount;
+		ind->last_cargo_accepted_at[cargo_index] = _date;
 		num_pieces -= amount;
 		accepted += amount;
 	}
@@ -1138,7 +1139,6 @@ static void TriggerIndustryProduction(Industry *i)
 	uint16 callback = indspec->callback_mask;
 
 	i->was_cargo_delivered = true;
-	i->last_cargo_accepted_at = _date;
 
 	if (HasBit(callback, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(callback, CBM_IND_PRODUCTION_256_TICKS)) {
 		if (HasBit(callback, CBM_IND_PRODUCTION_CARGO_ARRIVAL)) {
@@ -1147,14 +1147,15 @@ static void TriggerIndustryProduction(Industry *i)
 			SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 		}
 	} else {
-		for (uint cargo_index = 0; cargo_index < lengthof(i->incoming_cargo_waiting); cargo_index++) {
-			uint cargo_waiting = i->incoming_cargo_waiting[cargo_index];
+		for (uint ci_in = 0; ci_in < lengthof(i->incoming_cargo_waiting); ci_in++) {
+			uint cargo_waiting = i->incoming_cargo_waiting[ci_in];
 			if (cargo_waiting == 0) continue;
 
-			i->produced_cargo_waiting[0] = min(i->produced_cargo_waiting[0] + (cargo_waiting * indspec->input_cargo_multiplier[cargo_index][0] / 256), 0xFFFF);
-			i->produced_cargo_waiting[1] = min(i->produced_cargo_waiting[1] + (cargo_waiting * indspec->input_cargo_multiplier[cargo_index][1] / 256), 0xFFFF);
+			for (uint ci_out = 0; ci_out < lengthof(i->produced_cargo_waiting); ci_out++) {
+				i->produced_cargo_waiting[ci_out] = min(i->produced_cargo_waiting[ci_out] + (cargo_waiting * indspec->input_cargo_multiplier[ci_in][ci_out] / 256), 0xFFFF);
+			}
 
-			i->incoming_cargo_waiting[cargo_index] = 0;
+			i->incoming_cargo_waiting[ci_in] = 0;
 		}
 	}
 
@@ -1242,7 +1243,6 @@ Money CargoPayment::PayTransfer(const CargoPacket *cp, uint count)
 
 /**
  * Prepare the vehicle to be unloaded.
- * @param curr_station the station where the consist is at the moment
  * @param front_v the vehicle to be unloaded
  */
 void PrepareUnload(Vehicle *front_v)
@@ -1317,7 +1317,8 @@ static uint GetLoadAmount(Vehicle *v)
 	/* Scale load amount the same as capacity */
 	if (HasBit(e->info.misc_flags, EF_NO_DEFAULT_CARGO_MULTIPLIER) && !air_mail) load_amount = CeilDiv(load_amount * CargoSpec::Get(v->cargo_type)->multiplier, 0x100);
 
-	return load_amount;
+	/* Zero load amount breaks a lot of things. */
+	return max(1u, load_amount);
 }
 
 /**
@@ -1366,14 +1367,14 @@ struct IsEmptyAction
 struct PrepareRefitAction
 {
 	CargoArray &consist_capleft; ///< Capacities left in the consist.
-	uint32 &refit_mask;          ///< Bitmask of possible refit cargoes.
+	CargoTypes &refit_mask;          ///< Bitmask of possible refit cargoes.
 
 	/**
 	 * Create a refit preparation action.
 	 * @param consist_capleft Capacities left in consist, to be updated here.
 	 * @param refit_mask Refit mask to be constructed from refit information of vehicles.
 	 */
-	PrepareRefitAction(CargoArray &consist_capleft, uint32 &refit_mask) :
+	PrepareRefitAction(CargoArray &consist_capleft, CargoTypes &refit_mask) :
 		consist_capleft(consist_capleft), refit_mask(refit_mask) {}
 
 	/**
@@ -1469,7 +1470,7 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 
 	Backup<CompanyByte> cur_company(_current_company, v->owner, FILE_LINE);
 
-	uint32 refit_mask = v->GetEngine()->info.refit_mask;
+	CargoTypes refit_mask = v->GetEngine()->info.refit_mask;
 
 	/* Remove old capacity from consist capacity and collect refit mask. */
 	IterateVehicleParts(v_start, PrepareRefitAction(consist_capleft, refit_mask));
@@ -1627,10 +1628,10 @@ static void LoadUnloadVehicle(Vehicle *front)
 	bool completely_emptied = true;
 	bool anything_unloaded  = false;
 	bool anything_loaded    = false;
-	uint32 full_load_amount = 0;
-	uint32 cargo_not_full   = 0;
-	uint32 cargo_full       = 0;
-	uint32 reservation_left = 0;
+	CargoTypes full_load_amount = 0;
+	CargoTypes cargo_not_full   = 0;
+	CargoTypes cargo_full       = 0;
+	CargoTypes reservation_left = 0;
 
 	front->cur_speed = 0;
 
@@ -1642,15 +1643,14 @@ static void LoadUnloadVehicle(Vehicle *front)
 		if (v->cargo_cap == 0) continue;
 		artic_part++;
 
-		uint load_amount = GetLoadAmount(v);
-
 		GoodsEntry *ge = &st->goods[v->cargo_type];
 
 		if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING) && (front->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
 			uint cargo_count = v->cargo.UnloadCount();
-			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, load_amount) : cargo_count;
+			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, GetLoadAmount(v)) : cargo_count;
 			bool remaining = false; // Are there cargo entities in this vehicle that can still be unloaded here?
 
+			assert(payment != NULL);
 			payment->SetCargo(v->cargo_type);
 
 			if (!HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE) && v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER) > 0) {
@@ -1726,7 +1726,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		/* update stats */
 		int t;
 		switch (front->type) {
-			case VEH_TRAIN: /* FALL THROUGH */
+			case VEH_TRAIN:
 			case VEH_SHIP:
 				t = front->vcache.cached_max_speed;
 				break;
@@ -1752,8 +1752,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 		 * has capacity for it, load it on the vehicle. */
 		uint cap_left = v->cargo_cap - v->cargo.StoredCount();
 		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0)) {
-			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, load_amount);
 			if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
+			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, GetLoadAmount(v));
 
 			uint loaded = ge->cargo.Load(cap_left, &v->cargo, st->xy, next_station);
 			if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {
@@ -1839,7 +1839,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				/* if the aircraft carries passengers and is NOT full, then
 				 * continue loading, no matter how much mail is in */
 				if ((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CC_PASSENGERS) && front->cargo_cap > front->cargo.StoredCount()) ||
-						(cargo_not_full && (cargo_full & ~cargo_not_full) == 0)) { // There are still non-full cargoes
+						(cargo_not_full != 0 && (cargo_full & ~cargo_not_full) == 0)) { // There are still non-full cargoes
 					finished_loading = false;
 				}
 			} else if (cargo_not_full != 0) {

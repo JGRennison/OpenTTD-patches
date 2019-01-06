@@ -100,10 +100,10 @@ static void QZ_WarpCursor(int x, int y)
 	NSPoint p = NSMakePoint(x, y);
 	CGPoint cgp = _cocoa_subdriver->PrivateLocalToCG(&p);
 
-	/* this is the magic call that fixes cursor "freezing" after warp */
-	CGSetLocalEventsSuppressionInterval(0.0);
 	/* Do the actual warp */
 	CGWarpMouseCursorPosition(cgp);
+	/* this is the magic call that fixes cursor "freezing" after warp */
+	CGAssociateMouseAndMouseCursorPosition(true);
 }
 
 
@@ -587,12 +587,12 @@ static bool QZ_PollEvent()
 
 			while (_current_magnification >= 1.0f) {
 				_current_magnification -= 1.0f;
-				_cursor.wheel++;
+				_cursor.wheel--;
 				HandleMouseEvents();
 			}
 			while (_current_magnification <= -1.0f) {
 				_current_magnification += 1.0f;
-				_cursor.wheel--;
+				_cursor.wheel++;
 				HandleMouseEvents();
 			}
 			break;
@@ -610,7 +610,7 @@ static bool QZ_PollEvent()
 			 * the mouse position programmatically, which would trigger OS X to show
 			 * the default arrow cursor if the events are propagated. */
 			if (_cursor.fix_at) break;
-			/* FALL THROUGH */
+			FALLTHROUGH;
 
 		default:
 			[ NSApp sendEvent:event ];

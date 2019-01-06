@@ -25,6 +25,18 @@
 #include <errno.h> // required by vsnprintf implementation for MSVC
 #endif
 
+#ifdef _WIN32
+#include "os/windows/win32.h"
+#endif
+
+#ifdef WITH_UNISCRIBE
+#include "os/windows/string_uniscribe.h"
+#endif
+
+#if defined(WITH_COCOA)
+#include "os/macosx/string_osx.h"
+#endif
+
 #ifdef WITH_ICU_SORT
 /* Required by strnatcmp. */
 #include <unicode/ustring.h>
@@ -168,7 +180,7 @@ void str_fix_scc_encoded(char *str, const char *last)
 		if ((len == 0 && str + 4 > last) || str + len > last) break;
 
 		WChar c;
-		len = Utf8Decode(&c, str);
+		Utf8Decode(&c, str);
 		if (c == '\0') break;
 
 		if (c == 0xE028 || c == 0xE02A) {
@@ -180,14 +192,7 @@ void str_fix_scc_encoded(char *str, const char *last)
 }
 
 
-/**
- * Scans the string for valid characters and if it finds invalid ones,
- * replaces them with a question mark '?' (if not ignored)
- * @param str the string to validate
- * @param last the last valid character of str
- * @param settings the settings for the string validation.
- */
-void str_validate(char *str, const char *last, StringValidationSettings settings)
+char *str_validate_intl(char *str, const char *last, StringValidationSettings settings)
 {
 	/* Assume the ABSOLUTE WORST to be in str as it comes from the outside. */
 
@@ -228,7 +233,7 @@ void str_validate(char *str, const char *last, StringValidationSettings settings
 		}
 	}
 
-	*dst = '\0';
+	return dst;
 }
 
 /**
@@ -349,12 +354,11 @@ bool IsValidChar(WChar key, CharSetFilter afilter)
 		case CS_NUMERAL_SPACE: return (key >= '0' && key <= '9') || key == ' ';
 		case CS_ALPHA:         return IsPrintable(key) && !(key >= '0' && key <= '9');
 		case CS_HEXADECIMAL:   return (key >= '0' && key <= '9') || (key >= 'a' && key <= 'f') || (key >= 'A' && key <= 'F');
+		default: NOT_REACHED();
 	}
-
-	return false;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 #if defined(_MSC_VER) && _MSC_VER < 1900
 /**
  * Almost POSIX compliant implementation of \c vsnprintf for VC compiler.
@@ -390,7 +394,7 @@ int CDECL vsnprintf(char *str, size_t size, const char *format, va_list ap)
 }
 #endif /* _MSC_VER */
 
-#endif /* WIN32 */
+#endif /* _WIN32 */
 
 /**
  * Safer implementation of snprintf; same as snprintf except:
@@ -578,20 +582,37 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 		s1 = SkipGarbage(s1);
 		s2 = SkipGarbage(s2);
 	}
+
 #ifdef WITH_ICU_SORT
 	if (_current_collator != NULL) {
 		UErrorCode status = U_ZERO_ERROR;
 		int result = _current_collator->compareUTF8(s1, s2, status);
 		if (U_SUCCESS(status)) return result;
 	}
-
 #endif /* WITH_ICU_SORT */
+
+#if defined(_WIN32) && !defined(STRGEN) && !defined(SETTINGSGEN)
+	int res = OTTDStringCompare(s1, s2);
+	if (res != 0) return res - 2; // Convert to normal C return values.
+#endif
+
+#if defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN)
+	int res = MacOSStringCompare(s1, s2);
+	if (res != 0) return res - 2; // Convert to normal C return values.
+#endif
 
 	/* Do a normal comparison if ICU is missing or if we cannot create a collator. */
 	return strcasecmp(s1, s2);
 }
 
-#ifdef WITH_ICU_SORT
+#ifdef WITH_UNISCRIBE
+
+/* static */ StringIterator *StringIterator::Create()
+{
+	return new UniscribeStringIterator();
+}
+
+#elif defined(WITH_ICU_SORT)
 
 #include <unicode/utext.h>
 #include <unicode/brkiter.h>
@@ -852,9 +873,19 @@ public:
 	}
 };
 
+#if defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN)
+/* static */ StringIterator *StringIterator::Create()
+{
+	StringIterator *i = OSXStringIterator::Create();
+	if (i != NULL) return i;
+
+	return new DefaultStringIterator();
+}
+#else
 /* static */ StringIterator *StringIterator::Create()
 {
 	return new DefaultStringIterator();
 }
+#endif /* defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN) */
 
 #endif

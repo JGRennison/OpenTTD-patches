@@ -224,7 +224,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 			/* Pay for *every* tile of the bridge or tunnel */
 			uint len = GetTunnelBridgeLength(other_end, tile) + 2;
-			cost.AddCost(len * _price[PR_CLEAR_ROAD]);
+			cost.AddCost(len * 2 * _price[PR_CLEAR_ROAD]);
 			if (flags & DC_EXEC) {
 				Company *c = Company::GetIfValid(GetRoadOwner(tile, rt));
 				if (c != NULL) {
@@ -1017,15 +1017,17 @@ CommandCost CmdBuildRoadDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 
 	if (!IsValidRoadType(rt) || !ValParamRoadType(rt)) return CMD_ERROR;
 
+	CommandCost cost(EXPENSES_CONSTRUCTION);
+
 	Slope tileh = GetTileSlope(tile);
-	if (tileh != SLOPE_FLAT && (
-				!_settings_game.construction.build_on_slopes ||
-				!CanBuildDepotByTileh(dir, tileh)
-			)) {
-		return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
+	if (tileh != SLOPE_FLAT) {
+		if (!_settings_game.construction.build_on_slopes || !CanBuildDepotByTileh(dir, tileh)) {
+			return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
+		}
+		cost.AddCost(_price[PR_BUILD_FOUNDATION]);
 	}
 
-	CommandCost cost = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	cost.AddCost(DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR));
 	if (cost.Failed()) return cost;
 
 	if (IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
@@ -1191,7 +1193,7 @@ static bool DrawRoadAsSnowDesert(TileIndex tile, Roadside roadside)
  * @param ti   information about the tile (slopes, height etc)
  * @param tram the roadbits for the tram
  */
-void DrawTramCatenary(const TileInfo *ti, RoadBits tram)
+void DrawRoadCatenary(const TileInfo *ti, RoadBits tram)
 {
 	/* Do not draw catenary if it is invisible */
 	if (IsInvisibilitySet(TO_CATENARY)) return;
@@ -1298,7 +1300,7 @@ static void DrawRoadBits(TileInfo *ti)
 		return;
 	}
 
-	if (tram != ROAD_NONE) DrawTramCatenary(ti, tram);
+	if (tram != ROAD_NONE) DrawRoadCatenary(ti, tram);
 
 	/* Return if full detail is disabled, or we are zoomed fully out. */
 	if (!HasBit(_display_opt, DO_FULL_DETAIL) || _cur_dpi->zoom > ZOOM_LVL_DETAIL) return;
@@ -1388,9 +1390,9 @@ static void DrawTile_Road(TileInfo *ti)
 
 			if (HasTileRoadType(ti->tile, ROADTYPE_TRAM)) {
 				DrawGroundSprite(SPR_TRAMWAY_OVERLAY + (GetCrossingRoadAxis(ti->tile) ^ 1), pal);
-				DrawTramCatenary(ti, GetCrossingRoadBits(ti->tile));
+				DrawRoadCatenary(ti, GetCrossingRoadBits(ti->tile));
 			}
-			if (HasCatenaryDrawn(GetRailType(ti->tile))) DrawCatenary(ti);
+			if (HasRailCatenaryDrawn(GetRailType(ti->tile))) DrawRailCatenary(ti);
 			break;
 		}
 
@@ -1684,6 +1686,7 @@ static void GetTileDesc_Road(TileIndex tile, TileDesc *td)
 			if (HasBit(rts, ROADTYPE_TRAM)) tram_owner = GetRoadOwner(tile, ROADTYPE_TRAM);
 
 			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(tile));
+			td->railtype = rti->strings.name;
 			td->rail_speed = rti->max_speed;
 
 			break;

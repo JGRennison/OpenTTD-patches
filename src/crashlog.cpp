@@ -27,6 +27,7 @@
 #include "network/network.h"
 #include "language.h"
 #include "fontcache.h"
+#include "news_gui.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -35,6 +36,38 @@
 #include "company_func.h"
 
 #include <time.h>
+
+#ifdef WITH_ALLEGRO
+#	include <allegro.h>
+#endif /* WITH_ALLEGRO */
+#ifdef WITH_FONTCONFIG
+#	include <fontconfig/fontconfig.h>
+#endif /* WITH_FONTCONFIG */
+#ifdef WITH_PNG
+	/* pngconf.h, included by png.h doesn't like something in the
+	 * freetype headers. As such it's not alphabetically sorted. */
+#	include <png.h>
+#endif /* WITH_PNG */
+#ifdef WITH_FREETYPE
+#	include <ft2build.h>
+#	include FT_FREETYPE_H
+#endif /* WITH_FREETYPE */
+#if defined(WITH_ICU_LAYOUT) || defined(WITH_ICU_SORT)
+#	include <unicode/uversion.h>
+#endif /* WITH_ICU_SORT || WITH_ICU_LAYOUT */
+#ifdef WITH_LZMA
+#	include <lzma.h>
+#endif
+#ifdef WITH_LZO
+#include <lzo/lzo1x.h>
+#endif
+#ifdef WITH_SDL
+#	include "sdl.h"
+#	include <SDL.h>
+#endif /* WITH_SDL */
+#ifdef WITH_ZLIB
+# include <zlib.h>
+#endif
 
 #include "safeguards.h"
 
@@ -180,39 +213,6 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 	return buffer;
 }
 
-/* Include these here so it's close to where it's actually used. */
-#ifdef WITH_ALLEGRO
-#	include <allegro.h>
-#endif /* WITH_ALLEGRO */
-#ifdef WITH_FONTCONFIG
-#	include <fontconfig/fontconfig.h>
-#endif /* WITH_FONTCONFIG */
-#ifdef WITH_PNG
-	/* pngconf.h, included by png.h doesn't like something in the
-	 * freetype headers. As such it's not alphabetically sorted. */
-#	include <png.h>
-#endif /* WITH_PNG */
-#ifdef WITH_FREETYPE
-#	include <ft2build.h>
-#	include FT_FREETYPE_H
-#endif /* WITH_FREETYPE */
-#if defined(WITH_ICU_LAYOUT) || defined(WITH_ICU_SORT)
-#	include <unicode/uversion.h>
-#endif /* WITH_ICU_SORT || WITH_ICU_LAYOUT */
-#ifdef WITH_LZMA
-#	include <lzma.h>
-#endif
-#ifdef WITH_LZO
-#include <lzo/lzo1x.h>
-#endif
-#ifdef WITH_SDL
-#	include "sdl.h"
-#	include <SDL.h>
-#endif /* WITH_SDL */
-#ifdef WITH_ZLIB
-# include <zlib.h>
-#endif
-
 /**
  * Writes information (versions) of the used libraries.
  * @param buffer The begin where to write at.
@@ -310,6 +310,27 @@ char *CrashLog::LogGamelog(char *buffer, const char *last) const
 }
 
 /**
+ * Writes any recent news messages to the buffer.
+ * @param buffer The begin where to write at.
+ * @param last   The last position in the buffer to write to.
+ * @return the position of the \c '\0' character after the buffer.
+ */
+char *CrashLog::LogRecentNews(char *buffer, const char *last) const
+{
+	buffer += seprintf(buffer, last, "Recent news messages:\n");
+
+	for (NewsItem *news = _oldest_news; news != NULL; news = news->next) {
+		YearMonthDay ymd;
+		ConvertDateToYMD(news->date, &ymd);
+		buffer += seprintf(buffer, last, "(%i-%02i-%02i) StringID: %u, Type: %u, Ref1: %u, %u, Ref2: %u, %u\n",
+		                   ymd.year, ymd.month + 1, ymd.day, news->string_id, news->type,
+		                   news->reftype1, news->ref1, news->reftype2, news->ref2);
+	}
+	buffer += seprintf(buffer, last, "\n");
+	return buffer;
+}
+
+/**
  * Fill the crash log buffer with all data of a crash log.
  * @param buffer The begin where to write at.
  * @param last   The last position in the buffer to write to.
@@ -335,6 +356,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	buffer = this->LogLibraries(buffer, last);
 	buffer = this->LogModules(buffer, last);
 	buffer = this->LogGamelog(buffer, last);
+	buffer = this->LogRecentNews(buffer, last);
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Crash Report ***\n");
 	return buffer;
@@ -389,7 +411,7 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last) const
 		seprintf(filename, filename_last, "%scrash.sav", _personal_dir);
 
 		/* Don't do a threaded saveload. */
-		return SaveOrLoad(filename, SL_SAVE, NO_DIRECTORY, false) == SL_OK;
+		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, false) == SL_OK;
 	} catch (...) {
 		return false;
 	}

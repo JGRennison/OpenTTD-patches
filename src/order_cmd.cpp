@@ -799,7 +799,8 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case OSL_PLATFORM_NEAR_END:
 				case OSL_PLATFORM_MIDDLE:
 					if (v->type != VEH_TRAIN) return CMD_ERROR;
-					/* FALL THROUGH */
+					FALLTHROUGH;
+
 				case OSL_PLATFORM_FAR_END:
 					break;
 
@@ -919,7 +920,8 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case OCV_LOAD_PERCENTAGE:
 				case OCV_RELIABILITY:
 					if (new_order.GetConditionValue() > 100) return CMD_ERROR;
-					/* FALL THROUGH */
+					FALLTHROUGH;
+
 				default:
 					if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) return CMD_ERROR;
 					break;
@@ -1539,7 +1541,8 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					case OCV_LOAD_PERCENTAGE:
 					case OCV_RELIABILITY:
 						if (order->GetConditionValue() > 100) order->SetConditionValue(100);
-						/* FALL THROUGH */
+						FALLTHROUGH;
+
 					default:
 						if (old_var_was_cargo) order->SetConditionValue(0);
 						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
@@ -2019,7 +2022,6 @@ void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indic
  * Clamp the service interval to the correct min/max. The actual min/max values
  * depend on whether it's in percent or days.
  * @param interval proposed service interval
- * @param company_id the owner of the vehicle
  * @return Clamped service interval
  */
 uint16 GetServiceIntervalClamped(uint interval, bool ispercent)
@@ -2135,6 +2137,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v)
 	switch (order->GetConditionVariable()) {
 		case OCV_LOAD_PERCENTAGE:    skip_order = OrderConditionCompare(occ, CalcPercentVehicleFilled(v, NULL), value); break;
 		case OCV_RELIABILITY:        skip_order = OrderConditionCompare(occ, ToPercent16(v->reliability),       value); break;
+		case OCV_MAX_RELIABILITY:    skip_order = OrderConditionCompare(occ, ToPercent16(v->GetEngine()->reliability),   value); break;
 		case OCV_MAX_SPEED:          skip_order = OrderConditionCompare(occ, v->GetDisplayMaxSpeed() * 10 / 16, value); break;
 		case OCV_AGE:                skip_order = OrderConditionCompare(occ, v->age / DAYS_IN_LEAP_YEAR,        value); break;
 		case OCV_REQUIRES_SERVICE:   skip_order = OrderConditionCompare(occ, v->NeedsServicing(),               value); break;

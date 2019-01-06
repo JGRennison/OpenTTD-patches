@@ -154,7 +154,7 @@ static void ConvertTownOwner()
 				if (GB(_m[tile].m5, 4, 2) == ROAD_TILE_CROSSING && HasBit(_m[tile].m3, 7)) {
 					_m[tile].m3 = OWNER_TOWN;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
 
 			case MP_TUNNELBRIDGE:
 				if (_m[tile].m1 & 0x80) SetTileOwner(tile, OWNER_TOWN);
@@ -248,7 +248,7 @@ static void InitializeWindowsAndCaches()
 		/* For each company, verify (while loading a scenario) that the inauguration date is the current year and set it
 		 * accordingly if it is not the case.  No need to set it on companies that are not been used already,
 		 * thus the MIN_YEAR (which is really nothing more than Zero, initialized value) test */
-		if (_file_to_saveload.filetype == FT_SCENARIO && c->inaugurated_year != MIN_YEAR) {
+		if (_file_to_saveload.abstract_ftype == FT_SCENARIO && c->inaugurated_year != MIN_YEAR) {
 			c->inaugurated_year = _cur_year;
 		}
 	}
@@ -718,12 +718,14 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(95))   _settings_game.vehicle.dynamic_engines = 0;
 	if (IsSavegameVersionBefore(96))   _settings_game.economy.station_noise_level = false;
 	if (IsSavegameVersionBefore(133)) {
-		_settings_game.vehicle.roadveh_acceleration_model = 0;
 		_settings_game.vehicle.train_slope_steepness = 3;
 	}
 	if (IsSavegameVersionBefore(134))  _settings_game.economy.feeder_payment_share = 75;
 	if (IsSavegameVersionBefore(138))  _settings_game.vehicle.plane_crashes = 2;
-	if (IsSavegameVersionBefore(139))  _settings_game.vehicle.roadveh_slope_steepness = 7;
+	if (IsSavegameVersionBefore(139)) {
+		_settings_game.vehicle.roadveh_acceleration_model = 0;
+		_settings_game.vehicle.roadveh_slope_steepness = 7;
+	}
 	if (IsSavegameVersionBefore(143))  _settings_game.economy.allow_town_level_crossings = true;
 	if (IsSavegameVersionBefore(159)) {
 		_settings_game.vehicle.max_train_length = 50;
@@ -1208,6 +1210,38 @@ bool AfterLoadGame()
 				Train::From(v)->track = TRACK_BIT_WORMHOLE;
 			} else {
 				RoadVehicle::From(v)->state = RVSB_WORMHOLE;
+			}
+		}
+	}
+
+	/* Railtype moved from m3 to m8 in version 200. */
+	if (IsSavegameVersionBefore(200)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			switch (GetTileType(t)) {
+				case MP_RAILWAY:
+					SetRailType(t, (RailType)GB(_m[t].m3, 0, 4));
+					break;
+
+				case MP_ROAD:
+					if (IsLevelCrossing(t)) {
+						SetRailType(t, (RailType)GB(_m[t].m3, 0, 4));
+					}
+					break;
+
+				case MP_STATION:
+					if (HasStationRail(t)) {
+						SetRailType(t, (RailType)GB(_m[t].m3, 0, 4));
+					}
+					break;
+
+				case MP_TUNNELBRIDGE:
+					if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) {
+						SetRailType(t, (RailType)GB(_m[t].m3, 0, 4));
+					}
+					break;
+
+				default:
+					break;
 			}
 		}
 	}
@@ -2155,22 +2189,21 @@ bool AfterLoadGame()
 		/* Animated tiles would sometimes not be actually animated or
 		 * in case of old savegames duplicate. */
 
-		extern TileIndex *_animated_tile_list;
-		extern uint _animated_tile_count;
+		extern SmallVector<TileIndex, 256> _animated_tiles;
 
-		for (uint i = 0; i < _animated_tile_count; /* Nothing */) {
+		for (TileIndex *tile = _animated_tiles.Begin(); tile < _animated_tiles.End(); /* Nothing */) {
 			/* Remove if tile is not animated */
-			bool remove = _tile_type_procs[GetTileType(_animated_tile_list[i])]->animate_tile_proc == NULL;
+			bool remove = _tile_type_procs[GetTileType(*tile)]->animate_tile_proc == NULL;
 
 			/* and remove if duplicate */
-			for (uint j = 0; !remove && j < i; j++) {
-				remove = _animated_tile_list[i] == _animated_tile_list[j];
+			for (TileIndex *j = _animated_tiles.Begin(); !remove && j < tile; j++) {
+				remove = *tile == *j;
 			}
 
 			if (remove) {
-				DeleteAnimatedTile(_animated_tile_list[i]);
+				DeleteAnimatedTile(*tile);
 			} else {
-				i++;
+				tile++;
 			}
 		}
 	}
@@ -2968,6 +3001,59 @@ bool AfterLoadGame()
 #endif
 	}
 
+	if (IsSavegameVersionBefore(198)) {
+		/* Convert towns growth_rate and grow_counter to ticks */
+		Town *t;
+		FOR_ALL_TOWNS(t) {
+			/* 0x8000 = TOWN_GROWTH_RATE_CUSTOM previously */
+			if (t->growth_rate & 0x8000) SetBit(t->flags, TOWN_CUSTOM_GROWTH);
+			if (t->growth_rate != TOWN_GROWTH_RATE_NONE) {
+				t->growth_rate = TownTicksToGameTicks(t->growth_rate & ~0x8000);
+			}
+			/* Add t->index % TOWN_GROWTH_TICKS to spread growth across ticks. */
+			t->grow_counter = TownTicksToGameTicks(t->grow_counter) + t->index % TOWN_GROWTH_TICKS;
+		}
+	}
+
+	if (IsSavegameVersionBefore(202)) {
+		/* Make sure added industry cargo slots are cleared */
+		Industry *i;
+		FOR_ALL_INDUSTRIES(i) {
+			for (size_t ci = 2; ci < lengthof(i->produced_cargo); ci++) {
+				i->produced_cargo[ci] = CT_INVALID;
+				i->produced_cargo_waiting[ci] = 0;
+				i->production_rate[ci] = 0;
+				i->last_month_production[ci] = 0;
+				i->last_month_transported[ci] = 0;
+				i->last_month_pct_transported[ci] = 0;
+				i->this_month_production[ci] = 0;
+				i->this_month_transported[ci] = 0;
+			}
+			for (size_t ci = 3; ci < lengthof(i->accepts_cargo); ci++) {
+				i->accepts_cargo[ci] = CT_INVALID;
+				i->incoming_cargo_waiting[ci] = 0;
+			}
+			/* Make sure last_cargo_accepted_at is copied to elements for every valid input cargo.
+			 * The loading routine should put the original singular value into the first array element. */
+			for (size_t ci = 0; ci < lengthof(i->accepts_cargo); ci++) {
+				if (i->accepts_cargo[ci] != CT_INVALID) {
+					i->last_cargo_accepted_at[ci] = i->last_cargo_accepted_at[0];
+				} else {
+					i->last_cargo_accepted_at[ci] = 0;
+				}
+			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 1)) {
+		Order *order;
+		FOR_ALL_ORDERS(order) {
+			// Insertion of OCV_MAX_RELIABILITY between OCV_REMAINING_LIFETIME and OCV_CARGO_WAITING
+			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() > OCV_REMAINING_LIFETIME) {
+				order->SetConditionVariable(static_cast<OrderConditionVariable>((uint)order->GetConditionVariable() + 1));
+			}
+		}
+	}
 
 	/* Station acceptance is some kind of cache */
 	if (IsSavegameVersionBefore(127)) {

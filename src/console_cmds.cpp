@@ -45,6 +45,38 @@
 /* scriptfile handling */
 static bool _script_running; ///< Script is running (used to abort execution when #ConReturn is encountered).
 
+/** File list storage for the console, for caching the last 'ls' command. */
+class ConsoleFileList : public FileList {
+public:
+	ConsoleFileList() : FileList()
+	{
+		this->file_list_valid = false;
+	}
+
+	/** Declare the file storage cache as being invalid, also clears all stored files. */
+	void InvalidateFileList()
+	{
+		this->Clear();
+		this->file_list_valid = false;
+	}
+
+	/**
+	 * (Re-)validate the file storage cache. Only makes a change if the storage was invalid, or if \a force_reload.
+	 * @param force_reload Always reload the file storage cache.
+	 */
+	void ValidateFileList(bool force_reload = false)
+	{
+		if (force_reload || !this->file_list_valid) {
+			this->BuildFileList(FT_SAVEGAME, SLO_LOAD);
+			this->file_list_valid = true;
+		}
+	}
+
+	bool file_list_valid; ///< If set, the file list is valid.
+};
+
+static ConsoleFileList _console_file_list; ///< File storage cache for the console.
+
 /* console command defines */
 #define DEF_CONSOLE_CMD(function) static bool function(byte argc, char *argv[])
 #define DEF_CONSOLE_HOOK(function) static ConsoleHookResult function(bool echo)
@@ -224,8 +256,8 @@ DEF_CONSOLE_CMD(ConResetTile)
 
 /**
  * Scroll to a tile on the map.
- * @param arg1 tile tile number or tile x coordinate.
- * @param arg2 optionally tile y coordinate.
+ * param x tile number or tile x coordinate.
+ * param y optional y coordinate.
  * @note When only one argument is given it is intepreted as the tile number.
  *       When two arguments are given, they are interpreted as the tile's x
  *       and y coordinates.
@@ -272,7 +304,7 @@ DEF_CONSOLE_CMD(ConScrollToTile)
 
 /**
  * Save the map to a file.
- * @param filename the filename to save the map to.
+ * param filename the filename to save the map to.
  * @return True when help was displayed or the file attempted to be saved.
  */
 DEF_CONSOLE_CMD(ConSave)
@@ -286,7 +318,7 @@ DEF_CONSOLE_CMD(ConSave)
 		char *filename = str_fmt("%s.sav", argv[1]);
 		IConsolePrint(CC_DEFAULT, "Saving map...");
 
-		if (SaveOrLoad(filename, SL_SAVE, SAVE_DIR) != SL_OK) {
+		if (SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, SAVE_DIR) != SL_OK) {
 			IConsolePrint(CC_ERROR, "Saving map failed");
 		} else {
 			IConsolePrintF(CC_DEFAULT, "Map successfully saved to %s", filename);
@@ -315,42 +347,6 @@ DEF_CONSOLE_CMD(ConSaveConfig)
 	return true;
 }
 
-/**
- * Get savegame file informations.
- * @param file The savegame filename to return information about. Can be the actual name
- *             or a numbered entry into the filename list.
- * @return FiosItem The information on the file.
- */
-static const FiosItem *GetFiosItem(const char *file)
-{
-	_saveload_mode = SLD_LOAD_GAME;
-	BuildFileList();
-
-	for (const FiosItem *item = _fios_items.Begin(); item != _fios_items.End(); item++) {
-		if (strcmp(file, item->name) == 0) return item;
-		if (strcmp(file, item->title) == 0) return item;
-	}
-
-	/* If no name matches, try to parse it as number */
-	char *endptr;
-	int i = strtol(file, &endptr, 10);
-	if (file == endptr || *endptr != '\0') i = -1;
-
-	if (IsInsideMM(i, 0, _fios_items.Length())) return _fios_items.Get(i);
-
-	/* As a last effort assume it is an OpenTTD savegame and
-	 * that the ".sav" part was not given. */
-	char long_file[MAX_PATH];
-	seprintf(long_file, lastof(long_file), "%s.sav", file);
-	for (const FiosItem *item = _fios_items.Begin(); item != _fios_items.End(); item++) {
-		if (strcmp(long_file, item->name) == 0) return item;
-		if (strcmp(long_file, item->title) == 0) return item;
-	}
-
-	return NULL;
-}
-
-
 DEF_CONSOLE_CMD(ConLoad)
 {
 	if (argc == 0) {
@@ -361,24 +357,21 @@ DEF_CONSOLE_CMD(ConLoad)
 	if (argc != 2) return false;
 
 	const char *file = argv[1];
-	const FiosItem *item = GetFiosItem(file);
+	_console_file_list.ValidateFileList();
+	const FiosItem *item = _console_file_list.FindItem(file);
 	if (item != NULL) {
-		switch (item->type) {
-			case FIOS_TYPE_FILE: case FIOS_TYPE_OLDFILE: {
-				_switch_mode = SM_LOAD_GAME;
-				SetFiosType(item->type);
-
-				strecpy(_file_to_saveload.name, FiosBrowseTo(item), lastof(_file_to_saveload.name));
-				strecpy(_file_to_saveload.title, item->title, lastof(_file_to_saveload.title));
-				break;
-			}
-			default: IConsolePrintF(CC_ERROR, "%s: Not a savegame.", file);
+		if (GetAbstractFileType(item->type) == FT_SAVEGAME) {
+			_switch_mode = SM_LOAD_GAME;
+			_file_to_saveload.SetMode(item->type);
+			_file_to_saveload.SetName(FiosBrowseTo(item));
+			_file_to_saveload.SetTitle(item->title);
+		} else {
+			IConsolePrintF(CC_ERROR, "%s: Not a savegame.", file);
 		}
 	} else {
 		IConsolePrintF(CC_ERROR, "%s: No such file or directory.", file);
 	}
 
-	FiosFreeSavegameList();
 	return true;
 }
 
@@ -393,7 +386,8 @@ DEF_CONSOLE_CMD(ConRemove)
 	if (argc != 2) return false;
 
 	const char *file = argv[1];
-	const FiosItem *item = GetFiosItem(file);
+	_console_file_list.ValidateFileList();
+	const FiosItem *item = _console_file_list.FindItem(file);
 	if (item != NULL) {
 		if (!FiosDelete(item->name)) {
 			IConsolePrintF(CC_ERROR, "%s: Failed to delete file", file);
@@ -402,7 +396,7 @@ DEF_CONSOLE_CMD(ConRemove)
 		IConsolePrintF(CC_ERROR, "%s: No such file or directory.", file);
 	}
 
-	FiosFreeSavegameList();
+	_console_file_list.InvalidateFileList();
 	return true;
 }
 
@@ -415,13 +409,11 @@ DEF_CONSOLE_CMD(ConListFiles)
 		return true;
 	}
 
-	BuildFileList();
-
-	for (uint i = 0; i < _fios_items.Length(); i++) {
-		IConsolePrintF(CC_DEFAULT, "%d) %s", i, _fios_items[i].title);
+	_console_file_list.ValidateFileList(true);
+	for (uint i = 0; i < _console_file_list.Length(); i++) {
+		IConsolePrintF(CC_DEFAULT, "%d) %s", i, _console_file_list[i].title);
 	}
 
-	FiosFreeSavegameList();
 	return true;
 }
 
@@ -436,7 +428,8 @@ DEF_CONSOLE_CMD(ConChangeDirectory)
 	if (argc != 2) return false;
 
 	const char *file = argv[1];
-	const FiosItem *item = GetFiosItem(file);
+	_console_file_list.ValidateFileList(true);
+	const FiosItem *item = _console_file_list.FindItem(file);
 	if (item != NULL) {
 		switch (item->type) {
 			case FIOS_TYPE_DIR: case FIOS_TYPE_DRIVE: case FIOS_TYPE_PARENT:
@@ -448,7 +441,7 @@ DEF_CONSOLE_CMD(ConChangeDirectory)
 		IConsolePrintF(CC_ERROR, "%s: No such file or directory.", file);
 	}
 
-	FiosFreeSavegameList();
+	_console_file_list.InvalidateFileList();
 	return true;
 }
 
@@ -462,8 +455,8 @@ DEF_CONSOLE_CMD(ConPrintWorkingDirectory)
 	}
 
 	/* XXX - Workaround for broken file handling */
-	FiosGetSavegameList(SLD_LOAD_GAME);
-	FiosFreeSavegameList();
+	_console_file_list.ValidateFileList(true);
+	_console_file_list.InvalidateFileList();
 
 	FiosGetDescText(&path, NULL);
 	IConsolePrint(CC_DEFAULT, path);
@@ -560,29 +553,36 @@ DEF_CONSOLE_CMD(ConBan)
 
 DEF_CONSOLE_CMD(ConUnBan)
 {
-
 	if (argc == 0) {
-		IConsoleHelp("Unban a client from a network game. Usage: 'unban <ip | client-id>'");
+		IConsoleHelp("Unban a client from a network game. Usage: 'unban <ip | banlist-index>'");
 		IConsoleHelp("For a list of banned IP's, see the command 'banlist'");
 		return true;
 	}
 
 	if (argc != 2) return false;
 
-	uint index = (strchr(argv[1], '.') == NULL) ? atoi(argv[1]) : 0;
-	index--;
-	uint i = 0;
-
-	for (char **iter = _network_ban_list.Begin(); iter != _network_ban_list.End(); iter++, i++) {
-		if (strcmp(_network_ban_list[i], argv[1]) == 0 || index == i) {
-			free(_network_ban_list[i]);
-			_network_ban_list.Erase(iter);
-			IConsolePrint(CC_DEFAULT, "IP unbanned.");
-			return true;
-		}
+	/* Try by IP. */
+	uint index;
+	for (index = 0; index < _network_ban_list.Length(); index++) {
+		if (strcmp(_network_ban_list[index], argv[1]) == 0) break;
 	}
 
-	IConsolePrint(CC_DEFAULT, "IP not in ban-list.");
+	/* Try by index. */
+	if (index >= _network_ban_list.Length()) {
+		index = atoi(argv[1]) - 1U; // let it wrap
+	}
+
+	if (index < _network_ban_list.Length()) {
+		char msg[64];
+		seprintf(msg, lastof(msg), "Unbanned %s", _network_ban_list[index]);
+		IConsolePrint(CC_DEFAULT, msg);
+		free(_network_ban_list[index]);
+		_network_ban_list.Erase(_network_ban_list.Get(index));
+	} else {
+		IConsolePrint(CC_DEFAULT, "Invalid list index or IP not in ban-list.");
+		IConsolePrint(CC_DEFAULT, "For a list of banned IP's, see the command 'banlist'");
+	}
+
 	return true;
 }
 
@@ -1895,6 +1895,37 @@ static void IConsoleDebugLibRegister()
 }
 #endif
 
+DEF_CONSOLE_CMD(ConFramerate)
+{
+	extern void ConPrintFramerate(); // framerate_gui.cpp
+
+	if (argc == 0) {
+		IConsoleHelp("Show frame rate and game speed information");
+		return true;
+	}
+
+	ConPrintFramerate();
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConFramerateWindow)
+{
+	extern void ShowFramerateWindow();
+
+	if (argc == 0) {
+		IConsoleHelp("Open the frame rate window");
+		return true;
+	}
+
+	if (_network_dedicated) {
+		IConsoleError("Can not open frame rate window on a dedicated server");
+		return false;
+	}
+
+	ShowFramerateWindow();
+	return true;
+}
+
 /*******************************
  * console command registration
  *******************************/
@@ -2025,6 +2056,8 @@ void IConsoleStdLibRegister()
 #ifdef _DEBUG
 	IConsoleDebugLibRegister();
 #endif
+	IConsoleCmdRegister("fps",     ConFramerate);
+	IConsoleCmdRegister("fps_wnd", ConFramerateWindow);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);

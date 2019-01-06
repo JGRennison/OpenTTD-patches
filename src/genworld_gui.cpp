@@ -26,6 +26,7 @@
 #include "town.h"
 #include "core/geometry_func.hpp"
 #include "core/random_func.hpp"
+#include "saveload/saveload.h"
 #include "progress.h"
 #include "error.h"
 
@@ -287,7 +288,7 @@ static DropDownList *BuildMapsizeDropDown()
 
 	for (uint i = MIN_MAP_SIZE_BITS; i <= MAX_MAP_SIZE_BITS; i++) {
 		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
-		item->SetParam(0, 1 << i);
+		item->SetParam(0, 1LL << i);
 		*list->Append() = item;
 	}
 
@@ -335,8 +336,8 @@ struct GenerateLandscapeWindow : public Window {
 	{
 		switch (widget) {
 			case WID_GL_START_DATE_TEXT:      SetDParam(0, ConvertYMDToDate(_settings_newgame.game_creation.starting_year, 0, 1)); break;
-			case WID_GL_MAPSIZE_X_PULLDOWN:   SetDParam(0, 1 << _settings_newgame.game_creation.map_x); break;
-			case WID_GL_MAPSIZE_Y_PULLDOWN:   SetDParam(0, 1 << _settings_newgame.game_creation.map_y); break;
+			case WID_GL_MAPSIZE_X_PULLDOWN:   SetDParam(0, 1LL << _settings_newgame.game_creation.map_x); break;
+			case WID_GL_MAPSIZE_Y_PULLDOWN:   SetDParam(0, 1LL << _settings_newgame.game_creation.map_y); break;
 			case WID_GL_MAX_HEIGHTLEVEL_TEXT: SetDParam(0, _settings_newgame.construction.max_heightlevel); break;
 			case WID_GL_SNOW_LEVEL_TEXT:      SetDParam(0, _settings_newgame.game_creation.snow_line_height); break;
 
@@ -832,7 +833,7 @@ static void _ShowGenerateLandscape(GenerateLandscapeWindowMode mode)
 
 	if (mode == GLWM_HEIGHTMAP) {
 		/* If the function returns negative, it means there was a problem loading the heightmap */
-		if (!GetHeightmapDimensions(_file_to_saveload.name, &x, &y)) return;
+		if (!GetHeightmapDimensions(_file_to_saveload.detail_ftype, _file_to_saveload.name, &x, &y)) return;
 	}
 
 	WindowDesc *desc = (mode == GLWM_HEIGHTMAP) ? &_heightmap_load_desc : &_generate_landscape_desc;
@@ -869,7 +870,7 @@ void StartScenarioEditor()
  * Start a normal game without the GUI.
  * @param seed The seed of the new game.
  */
-void StartNewGameWithoutGUI(uint seed)
+void StartNewGameWithoutGUI(uint32 seed)
 {
 	/* GenerateWorld takes care of the possible GENERATE_NEW_SEED value in 'seed' */
 	_settings_newgame.game_creation.generation_seed = seed;
@@ -895,11 +896,11 @@ struct CreateScenarioWindow : public Window
 				break;
 
 			case WID_CS_MAPSIZE_X_PULLDOWN:
-				SetDParam(0, 1 << _settings_newgame.game_creation.map_x);
+				SetDParam(0, 1LL << _settings_newgame.game_creation.map_x);
 				break;
 
 			case WID_CS_MAPSIZE_Y_PULLDOWN:
-				SetDParam(0, 1 << _settings_newgame.game_creation.map_y);
+				SetDParam(0, 1LL << _settings_newgame.game_creation.map_y);
 				break;
 
 			case WID_CS_FLAT_LAND_HEIGHT_TEXT:
@@ -1190,7 +1191,7 @@ struct GenerateProgressWindow : public Window {
 	{
 		switch (widget) {
 			case WID_GP_ABORT:
-				if (_cursor.sprite == SPR_CURSOR_ZZZ) SetMouseCursor(SPR_CURSOR_MOUSE, PAL_NONE);
+				SetMouseCursorBusy(false);
 				ShowQuery(
 					STR_GENERATION_ABORT_CAPTION,
 					STR_GENERATION_ABORT_MESSAGE,

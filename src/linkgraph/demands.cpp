@@ -2,11 +2,11 @@
 
 #include "../stdafx.h"
 #include "demands.h"
-#include <list>
+#include <queue>
 
 #include "../safeguards.h"
 
-typedef std::list<NodeID> NodeList;
+typedef std::queue<NodeID> NodeList;
 
 /**
  * Scale various things according to symmetric/asymmetric distribution.
@@ -115,7 +115,6 @@ public:
 	 * Check if there is any acceptance left for this node. In asymmetric distribution
 	 * nodes always accept as long as their demand > 0.
 	 * @param to The node to be checked.
-	 * @param to_anno Unused.
 	 */
 	inline bool HasDemandLeft(const Node &to) { return to.Demand() > 0; }
 };
@@ -172,11 +171,11 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
 	for (NodeID node = 0; node < job.Size(); node++) {
 		scaler.AddNode(job[node]);
 		if (job[node].Supply() > 0) {
-			supplies.push_back(node);
+			supplies.push(node);
 			num_supplies++;
 		}
 		if (job[node].Demand() > 0) {
-			demands.push_back(node);
+			demands.push(node);
 			num_demands++;
 		}
 	}
@@ -191,17 +190,17 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
 
 	while (!supplies.empty() && !demands.empty()) {
 		NodeID from_id = supplies.front();
-		supplies.pop_front();
+		supplies.pop();
 
 		for (uint i = 0; i < num_demands; ++i) {
 			assert(!demands.empty());
 			NodeID to_id = demands.front();
-			demands.pop_front();
+			demands.pop();
 			if (from_id == to_id) {
 				/* Only one node with supply and demand left */
 				if (demands.empty() && supplies.empty()) return;
 
-				demands.push_back(to_id);
+				demands.push(to_id);
 				continue;
 			}
 
@@ -236,7 +235,7 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
 			scaler.SetDemands(job, from_id, to_id, demand_forw);
 
 			if (scaler.HasDemandLeft(job[to_id])) {
-				demands.push_back(to_id);
+				demands.push(to_id);
 			} else {
 				num_demands--;
 			}
@@ -245,7 +244,7 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
 		}
 
 		if (job[from_id].UndeliveredSupply() != 0) {
-			supplies.push_back(from_id);
+			supplies.push(from_id);
 		} else {
 			num_supplies--;
 		}

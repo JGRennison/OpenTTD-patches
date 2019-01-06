@@ -21,7 +21,7 @@
 #ifdef ENABLE_NETWORK
 
 /* Windows stuff */
-#if defined(WIN32) || defined(WIN64)
+#if defined(_WIN32)
 #include <errno.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -125,7 +125,7 @@ static inline void OTTDfreeaddrinfo(struct addrinfo *ai)
 }
 #define freeaddrinfo OTTDfreeaddrinfo
 #endif /* __MINGW32__ && __CYGWIN__ */
-#endif /* WIN32 */
+#endif /* _WIN32 */
 
 /* UNIX stuff */
 #if defined(UNIX) && !defined(__OS2__)
@@ -193,29 +193,6 @@ static inline void OTTDfreeaddrinfo(struct addrinfo *ai)
 #ifdef __HAIKU__
 	#define IPV6_V6ONLY 27
 #endif
-
-#if defined(PSP)
-#	include <sys/socket.h>
-#	include <netinet/in.h>
-#	include <arpa/inet.h>
-#	include <pspnet.h>
-#	include <pspnet_inet.h>
-#	include <pspnet_apctl.h>
-#	include <pspnet_resolver.h>
-#	include <errno.h>
-#	include <unistd.h>
-#	include <sys/select.h>
-#	include <sys/time.h>
-#	include <sys/fd_set.h>
-
-#	define TCP_NODELAY 1
-#	define SO_NONBLOCK 0x1009
-#	define SOCKET int
-#	define INVALID_SOCKET -1
-#	define INADDR_NONE 0xffffffff
-#	define closesocket close
-#	define GET_LAST_ERROR() sceNetInetGetErrno()
-#endif /* PSP */
 
 /* OS/2 stuff */
 #if defined(__OS2__)
@@ -313,12 +290,12 @@ typedef unsigned long in_addr_t;
  */
 static inline bool SetNonBlocking(SOCKET d)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	u_long nonblocking = 1;
 #else
 	int nonblocking = 1;
 #endif
-#if (defined(__BEOS__) && defined(BEOS_NET_SERVER)) || defined(PSP)
+#if (defined(__BEOS__) && defined(BEOS_NET_SERVER))
 	return setsockopt(d, SOL_SOCKET, SO_NONBLOCK, &nonblocking, sizeof(nonblocking)) == 0;
 #else
 	return ioctlsocket(d, FIONBIO, &nonblocking) == 0;

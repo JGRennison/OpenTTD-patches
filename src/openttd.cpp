@@ -63,6 +63,7 @@
 #include "subsidy_func.h"
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
+#include "framerate_type.h"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -123,6 +124,25 @@ void CDECL error(const char *s, ...)
 	abort();
 }
 
+void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...)
+{
+	va_list va;
+	char buf[2048];
+
+	char *b = buf;
+	b += seprintf(b, lastof(buf), "Assertion failed at line %i of %s: %s\n\t", line, file, expr);
+
+	va_start(va, str);
+	vseprintf(b, lastof(buf), str, va);
+	va_end(va);
+
+	ShowOSErrorBox(buf, true);
+
+	/* Set the error message for the crash log and then invoke it. */
+	CrashLog::SetErrorMessage(buf);
+	abort();
+}
+
 /**
  * Shows some information on the console/a popup box depending on the OS.
  * @param str the text to show.
@@ -167,7 +187,7 @@ static void ShowHelp()
 		"  -P password         = Password to join company\n"
 		"  -D [ip][:port]      = Start dedicated server\n"
 		"  -l ip[:port]        = Redirect DEBUG()\n"
-#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(WIN32)
+#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(_WIN32)
 		"  -f                  = Fork into the background (dedicated only)\n"
 #endif
 #endif /* ENABLE_NETWORK */
@@ -211,7 +231,7 @@ static void ShowHelp()
 
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
-#if !defined(WIN32) && !defined(WIN64)
+#if !defined(_WIN32)
 	printf("%s\n", buf);
 #else
 	ShowInfo(buf);
@@ -230,7 +250,20 @@ static void WriteSavegameInfo(const char *name)
 	char buf[8192];
 	char *p = buf;
 	p += seprintf(p, lastof(buf), "Name:         %s\n", name);
-	p += seprintf(p, lastof(buf), "Savegame ver: %d\n", _sl_version);
+	const char *type = "";
+	extern bool _sl_is_faked_ext;
+	extern bool _sl_is_ext_version;
+	if (_sl_is_faked_ext) {
+		type = " (fake extended)";
+	} else if (_sl_is_ext_version) {
+		type = " (extended)";
+	}
+	p += seprintf(p, lastof(buf), "Savegame ver: %d%s\n", _sl_version, type);
+	for (size_t i = 0; i < XSLFI_SIZE; i++) {
+		if (_sl_xv_feature_versions[i] > 0) {
+			p += seprintf(p, lastof(buf), "    Feature: %s = %d\n", SlXvGetFeatureName((SlXvFeatureIndex) i), _sl_xv_feature_versions[i]);
+		}
+	}
 	p += seprintf(p, lastof(buf), "NewGRF ver:   0x%08X\n", last_ottd_rev);
 	p += seprintf(p, lastof(buf), "Modified:     %d\n", ever_modified);
 
@@ -249,7 +282,7 @@ static void WriteSavegameInfo(const char *name)
 
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
-#if !defined(WIN32) && !defined(WIN64)
+#if !defined(_WIN32)
 	printf("%s\n", buf);
 #else
 	ShowInfo(buf);
@@ -328,7 +361,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 	SetupColoursAndInitialWindow();
 
 	/* Load the default opening screen savegame */
-	if (SaveOrLoad("opntitle.dat", SL_LOAD, BASESET_DIR) != SL_OK) {
+	if (SaveOrLoad("opntitle.dat", SLO_LOAD, DFT_GAME_FILE, BASESET_DIR) != SL_OK) {
 		GenerateWorld(GWM_EMPTY, 64, 64); // if failed loading, make empty world.
 		WaitTillGeneratedWorld();
 		SetLocalCompany(COMPANY_SPECTATOR);
@@ -339,11 +372,9 @@ static void LoadIntroGame(bool load_newgrfs = true)
 	_pause_mode = PM_UNPAUSED;
 	_cursor.fix_at = false;
 
-	if (load_newgrfs) CheckForMissingSprites();
 	CheckForMissingGlyphs();
 
-	/* Play main theme */
-	if (MusicDriver::GetInstance()->IsSongPlaying()) ResetMusic();
+	MusicLoop(); // ensure music is correct
 }
 
 void MakeNewgameSettingsLive()
@@ -366,6 +397,9 @@ void MakeNewgameSettingsLive()
 		_settings_game.ai_config[c] = NULL;
 		if (_settings_newgame.ai_config[c] != NULL) {
 			_settings_game.ai_config[c] = new AIConfig(_settings_newgame.ai_config[c]);
+			if (!AIConfig::GetConfig(c, AIConfig::SSS_FORCE_GAME)->HasScript()) {
+				AIConfig::GetConfig(c, AIConfig::SSS_FORCE_GAME)->Change(NULL);
+			}
 		}
 	}
 	_settings_game.game_config = NULL;
@@ -386,7 +420,7 @@ void OpenBrowser(const char *url)
 /** Callback structure of statements to be executed after the NewGRF scan. */
 struct AfterNewGRFScan : NewGRFScanCallback {
 	Year startyear;                    ///< The start year.
-	uint generation_seed;              ///< Seed for the new game.
+	uint32 generation_seed;            ///< Seed for the new game.
 	char *dedicated_host;              ///< Hostname for the dedicated server.
 	uint16 dedicated_port;             ///< Port for the dedicated server.
 	char *network_conn;                ///< Information about the server to connect to, or NULL.
@@ -406,6 +440,9 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 			join_server_password(NULL), join_company_password(NULL),
 			save_config_ptr(save_config_ptr), save_config(true)
 	{
+		/* Visual C++ 2015 fails compiling this line (AfterNewGRFScan::generation_seed undefined symbol)
+		 * if it's placed outside a member function, directly in the struct body. */
+		assert_compile(sizeof(generation_seed) == sizeof(_settings_game.game_creation.generation_seed));
 	}
 
 	virtual void OnNewGRFsScanned()
@@ -509,7 +546,7 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_VALUE('l'),
 	 GETOPT_SHORT_VALUE('p'),
 	 GETOPT_SHORT_VALUE('P'),
-#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(WIN32)
+#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(_WIN32)
 	 GETOPT_SHORT_NOVAL('f'),
 #endif
 #endif /* ENABLE_NETWORK */
@@ -609,7 +646,7 @@ int openttd_main(int argc, char *argv[])
 		case 'r': ParseResolution(&resolution, mgo.opt); break;
 		case 't': scanner->startyear = atoi(mgo.opt); break;
 		case 'd': {
-#if defined(WIN32)
+#if defined(_WIN32)
 				CreateConsole();
 #endif
 				if (mgo.opt != NULL) SetDebugString(mgo.opt);
@@ -618,15 +655,16 @@ int openttd_main(int argc, char *argv[])
 		case 'e': _switch_mode = (_switch_mode == SM_LOAD_GAME || _switch_mode == SM_LOAD_SCENARIO ? SM_LOAD_SCENARIO : SM_EDITOR); break;
 		case 'g':
 			if (mgo.opt != NULL) {
-				strecpy(_file_to_saveload.name, mgo.opt, lastof(_file_to_saveload.name));
-				_switch_mode = (_switch_mode == SM_EDITOR || _switch_mode == SM_LOAD_SCENARIO ? SM_LOAD_SCENARIO : SM_LOAD_GAME);
-				_file_to_saveload.mode = SL_LOAD;
+				_file_to_saveload.SetName(mgo.opt);
+				bool is_scenario = _switch_mode == SM_EDITOR || _switch_mode == SM_LOAD_SCENARIO;
+				_switch_mode = is_scenario ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
+				_file_to_saveload.SetMode(SLO_LOAD, is_scenario ? FT_SCENARIO : FT_SAVEGAME, DFT_GAME_FILE);
 
 				/* if the file doesn't exist or it is not a valid savegame, let the saveload code show an error */
 				const char *t = strrchr(_file_to_saveload.name, '.');
 				if (t != NULL) {
-					FiosType ft = FiosGetSavegameListCallback(SLD_LOAD_GAME, _file_to_saveload.name, t, NULL, NULL);
-					if (ft != FIOS_TYPE_INVALID) SetFiosType(ft);
+					FiosType ft = FiosGetSavegameListCallback(SLO_LOAD, _file_to_saveload.name, t, NULL, NULL);
+					if (ft != FIOS_TYPE_INVALID) _file_to_saveload.SetMode(ft);
 				}
 
 				break;
@@ -647,10 +685,10 @@ int openttd_main(int argc, char *argv[])
 
 			char title[80];
 			title[0] = '\0';
-			FiosGetSavegameListCallback(SLD_LOAD_GAME, mgo.opt, strrchr(mgo.opt, '.'), title, lastof(title));
+			FiosGetSavegameListCallback(SLO_LOAD, mgo.opt, strrchr(mgo.opt, '.'), title, lastof(title));
 
 			_load_check_data.Clear();
-			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SL_LOAD_CHECK, SAVE_DIR, false);
+			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SLO_CHECK, DFT_GAME_FILE, SAVE_DIR, false);
 			if (res != SL_OK || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");
 				if (_load_check_data.HasErrors()) {
@@ -666,7 +704,7 @@ int openttd_main(int argc, char *argv[])
 
 			goto exit_noshutdown;
 		}
-		case 'G': scanner->generation_seed = atoi(mgo.opt); break;
+		case 'G': scanner->generation_seed = strtoul(mgo.opt, NULL, 10); break;
 		case 'c': free(_config_file); _config_file = stredup(mgo.opt); break;
 		case 'x': scanner->save_config = false; break;
 		case 'h':
@@ -691,11 +729,6 @@ int openttd_main(int argc, char *argv[])
 
 		goto exit_noshutdown;
 	}
-
-#if defined(WINCE) && defined(_DEBUG)
-	/* Switch on debug lvl 4 for WinCE if Debug release, as you can't give params, and you most likely do want this information */
-	SetDebugString("4");
-#endif
 
 	DeterminePaths(argv[0]);
 	TarScanner::DoScan(TarScanner::BASESET);
@@ -815,7 +848,7 @@ int openttd_main(int argc, char *argv[])
 	if (sounds_set == NULL && BaseSounds::ini_set != NULL) sounds_set = stredup(BaseSounds::ini_set);
 	if (!BaseSounds::SetSet(sounds_set)) {
 		if (StrEmpty(sounds_set) || !BaseSounds::SetSet(NULL)) {
-			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 4.1 of readme.txt.");
+			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 4.1 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND);
 			msg.SetDParamStr(0, sounds_set);
@@ -828,7 +861,7 @@ int openttd_main(int argc, char *argv[])
 	if (music_set == NULL && BaseMusic::ini_set != NULL) music_set = stredup(BaseMusic::ini_set);
 	if (!BaseMusic::SetSet(music_set)) {
 		if (StrEmpty(music_set) || !BaseMusic::SetSet(NULL)) {
-			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 4.1 of readme.txt.");
+			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 4.1 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND);
 			msg.SetDParamStr(0, music_set);
@@ -991,20 +1024,21 @@ static void MakeNewEditorWorld()
  * Load the specified savegame but on error do different things.
  * If loading fails due to corrupt savegame, bad version, etc. go back to
  * a previous correct state. In the menu for example load the intro game again.
- * @param mode mode of loading, either SL_LOAD or SL_OLD_LOAD
- * @param newgm switch to this mode of loading fails due to some unknown error
  * @param filename file to be loaded
+ * @param fop mode of loading, always SLO_LOAD
+ * @param newgm switch to this mode of loading fails due to some unknown error
  * @param subdir default directory to look for filename, set to 0 if not needed
  * @param lf Load filter to use, if NULL: use filename + subdir.
  */
-bool SafeLoad(const char *filename, int mode, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL)
+bool SafeLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL)
 {
-	assert(mode == SL_LOAD || (lf == NULL && mode == SL_OLD_LOAD));
+	assert(fop == SLO_LOAD);
+	assert(dft == DFT_GAME_FILE || (lf == NULL && dft == DFT_OLD_GAME_FILE));
 	GameMode ogm = _game_mode;
 
 	_game_mode = newgm;
 
-	switch (lf == NULL ? SaveOrLoad(filename, mode, subdir) : LoadWithFilter(lf)) {
+	switch (lf == NULL ? SaveOrLoad(filename, fop, dft, subdir) : LoadWithFilter(lf)) {
 		case SL_OK: return true;
 
 		case SL_REINIT:
@@ -1093,11 +1127,11 @@ void SwitchToMode(SwitchMode new_mode)
 			ResetGRFConfig(true);
 			ResetWindowSystem();
 
-			if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.mode, GM_NORMAL, NO_DIRECTORY)) {
+			if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, GM_NORMAL, NO_DIRECTORY)) {
 				SetDParamStr(0, GetSaveLoadErrorString());
 				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);
 			} else {
-				if (_saveload_mode == SLD_LOAD_SCENARIO) {
+				if (_file_to_saveload.abstract_ftype == FT_SCENARIO) {
 					/* Reset engine pool to simplify changing engine NewGRFs in scenario editor. */
 					EngineOverrideManager::ResetToCurrentNewGRFConfig();
 				}
@@ -1134,7 +1168,7 @@ void SwitchToMode(SwitchMode new_mode)
 			break;
 
 		case SM_LOAD_SCENARIO: { // Load scenario from scenario editor
-			if (SafeLoad(_file_to_saveload.name, _file_to_saveload.mode, GM_EDITOR, NO_DIRECTORY)) {
+			if (SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, GM_EDITOR, NO_DIRECTORY)) {
 				SetLocalCompany(OWNER_NONE);
 				_settings_newgame.game_creation.starting_year = _cur_year;
 				/* Cancel the saveload pausing */
@@ -1156,7 +1190,7 @@ void SwitchToMode(SwitchMode new_mode)
 
 		case SM_SAVE_GAME: // Save game.
 			/* Make network saved games on pause compatible to singleplayer */
-			if (SaveOrLoad(_file_to_saveload.name, SL_SAVE, NO_DIRECTORY) != SL_OK) {
+			if (SaveOrLoad(_file_to_saveload.name, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY) != SL_OK) {
 				SetDParamStr(0, GetSaveLoadErrorString());
 				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);
 			} else {
@@ -1341,6 +1375,14 @@ void StateGameLoop()
 {
 	/* don't execute the state loop during pause */
 	if (_pause_mode != PM_UNPAUSED) {
+		PerformanceMeasurer::Paused(PFE_GAMELOOP);
+		PerformanceMeasurer::Paused(PFE_GL_ECONOMY);
+		PerformanceMeasurer::Paused(PFE_GL_TRAINS);
+		PerformanceMeasurer::Paused(PFE_GL_ROADVEHS);
+		PerformanceMeasurer::Paused(PFE_GL_SHIPS);
+		PerformanceMeasurer::Paused(PFE_GL_AIRCRAFT);
+		PerformanceMeasurer::Paused(PFE_GL_LANDSCAPE);
+
 		UpdateLandscapingLimits();
 #ifndef DEBUG_DUMP_COMMANDS
 		Game::GameLoop();
@@ -1348,6 +1390,9 @@ void StateGameLoop()
 		CallWindowTickEvent();
 		return;
 	}
+
+	PerformanceMeasurer framerate(PFE_GAMELOOP);
+	PerformanceAccumulator::Reset(PFE_GL_LANDSCAPE);
 	if (HasModalProgress()) return;
 
 	Layouter::ReduceLineCache();
@@ -1367,7 +1412,7 @@ void StateGameLoop()
 			/* Save the desync savegame if needed. */
 			char name[MAX_PATH];
 			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, _date);
-			SaveOrLoad(name, SL_SAVE, AUTOSAVE_DIR, false);
+			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
 		}
 
 		CheckCaches();
@@ -1406,11 +1451,6 @@ static void DoAutosave()
 {
 	char buf[MAX_PATH];
 
-#if defined(PSP)
-	/* Autosaving in networking is too time expensive for the PSP */
-	if (_networking) return;
-#endif /* PSP */
-
 	if (_settings_client.gui.keep_all_autosave) {
 		GenerateDefaultSaveName(buf, lastof(buf));
 		strecat(buf, ".sav", lastof(buf));
@@ -1424,7 +1464,7 @@ static void DoAutosave()
 	}
 
 	DEBUG(sl, 2, "Autosaving to '%s'", buf);
-	if (SaveOrLoad(buf, SL_SAVE, AUTOSAVE_DIR) != SL_OK) {
+	if (SaveOrLoad(buf, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR) != SL_OK) {
 		ShowErrorMessage(STR_ERROR_AUTOSAVE_FAILED, INVALID_STRING_ID, WL_ERROR);
 	}
 }

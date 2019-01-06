@@ -7,7 +7,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file 32bpp_sse4_anim.hpp A SSE4 32 bpp blitter with animation support. */
+/** @file 32bpp_anim_sse4.hpp A SSE4 32 bpp blitter with animation support. */
 
 #ifndef BLITTER_32BPP_SSE4_ANIM_HPP
 #define BLITTER_32BPP_SSE4_ANIM_HPP
@@ -23,13 +23,14 @@
 #endif
 
 #include "32bpp_anim.hpp"
+#include "32bpp_anim_sse2.hpp"
 #include "32bpp_sse4.hpp"
 
 #undef MARGIN_NORMAL_THRESHOLD
 #define MARGIN_NORMAL_THRESHOLD 4
 
 /** The SSE4 32 bpp blitter with palette animation. */
-class Blitter_32bppSSE4_Anim FINAL : public Blitter_32bppAnim, public Blitter_32bppSSE_Base {
+class Blitter_32bppSSE4_Anim FINAL : public Blitter_32bppSSE2_Anim, public Blitter_32bppSSE_Base {
 private:
 
 public:

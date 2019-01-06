@@ -132,6 +132,7 @@ public:
 		DEBUG(misc, LANDINFOD_LEVEL, "m5     = %#x", _m[tile].m5);
 		DEBUG(misc, LANDINFOD_LEVEL, "m6     = %#x", _me[tile].m6);
 		DEBUG(misc, LANDINFOD_LEVEL, "m7     = %#x", _me[tile].m7);
+		DEBUG(misc, LANDINFOD_LEVEL, "m8     = %#x", _me[tile].m8);
 #undef LANDINFOD_LEVEL
 	}
 
@@ -162,6 +163,7 @@ public:
 		td.airport_class = STR_NULL;
 		td.airport_name = STR_NULL;
 		td.airport_tile_name = STR_NULL;
+		td.railtype = STR_NULL;
 		td.rail_speed = 0;
 		td.road_speed = 0;
 
@@ -192,11 +194,8 @@ public:
 		StringID str = STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A;
 		Company *c = Company::GetIfValid(_local_company);
 		if (c != NULL) {
-			Money old_money = c->money;
-			c->money = INT64_MAX;
 			assert(_current_company == _local_company);
-			CommandCost costclear = DoCommand(tile, 0, 0, DC_NONE, CMD_LANDSCAPE_CLEAR);
-			c->money = old_money;
+			CommandCost costclear = DoCommand(tile, 0, 0, DC_QUERY_COST, CMD_LANDSCAPE_CLEAR);
 			if (costclear.Succeeded()) {
 				Money cost = costclear.GetCost();
 				if (cost < 0) {
@@ -272,6 +271,13 @@ public:
 			line_nr++;
 		}
 
+		/* Rail type name */
+		if (td.railtype != STR_NULL) {
+			SetDParam(0, td.railtype);
+			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_RAIL_TYPE, lastof(this->landinfo_data[line_nr]));
+			line_nr++;
+		}
+
 		/* Rail speed limit */
 		if (td.rail_speed != 0) {
 			SetDParam(0, td.rail_speed);
@@ -305,10 +311,7 @@ public:
 		for (CargoID i = 0; i < NUM_CARGO; ++i) {
 			if (acceptance[i] > 0) {
 				/* Add a comma between each item. */
-				if (found) {
-					*strp++ = ',';
-					*strp++ = ' ';
-				}
+				if (found) strp = strecpy(strp, ", ", lastof(this->landinfo_data[LAND_INFO_MULTICENTER_LINE]));
 				found = true;
 
 				/* If the accepted value is less than 8, show it in 1/8:ths */
@@ -389,12 +392,14 @@ static const char * const _credits[] = {
 	"Original graphics by Simon Foster",
 	"",
 	"The OpenTTD team (in alphabetical order):",
+	"  Grzegorz Duczy\xC5\x84ski (adf88) - General coding (since 1.7.2)",
 	"  Albert Hofkamp (Alberth) - GUI expert (since 0.7)",
 	"  Matthijs Kooijman (blathijs) - Pathfinder-guru, Debian port (since 0.3)",
 	"  Ulf Hermann (fonsinchen) - Cargo Distribution (since 1.3)",
 	"  Christoph Elsenhans (frosch) - General coding (since 0.6)",
 	"  Lo\xC3\xAF""c Guilloux (glx) - General / Windows Expert (since 0.4.5)",
 	"  Michael Lutz (michi_cc) - Path based signals (since 0.7)",
+	"  Niels Martin Hansen (nielsm) - Music system, general coding (since 1.9)",
 	"  Owen Rudge (orudge) - Forum host, OS/2 port (since 0.1)",
 	"  Peter Nelson (peter1138) - Spiritual descendant from NewGRF gods (since 0.4.5)",
 	"  Ingo von Borstel (planetmaker) - General, Support (since 1.1)",
@@ -603,7 +608,7 @@ TextEffectID ShowFillingPercent(int x, int y, int z, uint8 percent, StringID str
 /**
  * Update vehicle loading indicators.
  * @param te_id   TextEffectID to be updated.
- * @param string  String wich is printed.
+ * @param string  String which is printed.
  */
 void UpdateFillingPercent(TextEffectID te_id, uint8 percent, StringID string)
 {
@@ -650,7 +655,7 @@ struct TooltipsWindow : public Window
 		this->string_id = str;
 		assert_compile(sizeof(this->params[0]) == sizeof(params[0]));
 		assert(paramcount <= lengthof(this->params));
-		memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
+		if (paramcount > 0) memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
 		this->paramcount = paramcount;
 		this->close_cond = close_tooltip;
 
@@ -672,8 +677,8 @@ struct TooltipsWindow : public Window
 		/* Correctly position the tooltip position, watch out for window and cursor size
 		 * Clamp value to below main toolbar and above statusbar. If tooltip would
 		 * go below window, flip it so it is shown above the cursor */
-		pt.y = Clamp(_cursor.pos.y + _cursor.size.y + _cursor.offs.y + 5, scr_top, scr_bot);
-		if (pt.y + sm_height > scr_bot) pt.y = min(_cursor.pos.y + _cursor.offs.y - 5, scr_bot) - sm_height;
+		pt.y = Clamp(_cursor.pos.y + _cursor.total_size.y + _cursor.total_offs.y + 5, scr_top, scr_bot);
+		if (pt.y + sm_height > scr_bot) pt.y = min(_cursor.pos.y + _cursor.total_offs.y - 5, scr_bot) - sm_height;
 		pt.x = sm_width >= _screen.width ? 0 : Clamp(_cursor.pos.x - (sm_width >> 1), 0, _screen.width - sm_width);
 
 		return pt;
@@ -728,7 +733,7 @@ struct TooltipsWindow : public Window
  * @param str String to be displayed
  * @param paramcount number of params to deal with
  * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
- * @param use_left_mouse_button close the tooltip when the left (true) or right (false) mouse button is released
+ * @param close_tooltip when the left (true) or right (false) mouse button is released
  */
 void GuiShowTooltips(Window *parent, StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_tooltip)
 {
@@ -999,10 +1004,12 @@ struct QueryStringWindow : public Window
 		switch (widget) {
 			case WID_QS_DEFAULT:
 				this->editbox.text.DeleteAll();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_QS_OK:
 				this->OnOk();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_QS_CANCEL:
 				delete this;
 				break;
@@ -1062,7 +1069,7 @@ void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *paren
  */
 struct QueryWindow : public Window {
 	QueryCallbackProc *proc; ///< callback function executed on closing of popup. Window* points to parent, bool is true if 'yes' clicked, false otherwise
-	uint64 params[10];       ///< local copy of _decode_parameters
+	uint64 params[10];       ///< local copy of #_global_string_params
 	StringID message;        ///< message shown for query window
 	StringID caption;        ///< title of window
 
@@ -1152,7 +1159,8 @@ struct QueryWindow : public Window {
 					this->proc(this->parent, true);
 					this->proc = NULL;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WKC_ESC:
 				delete this;
 				return ES_HANDLED;

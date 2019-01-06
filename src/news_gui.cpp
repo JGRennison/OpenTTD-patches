@@ -42,10 +42,10 @@
 
 const NewsItem *_statusbar_news_item = NULL;
 
-static uint MIN_NEWS_AMOUNT = 30;           ///< preferred minimum amount of news messages
-static uint _total_news = 0;                ///< current number of news items
-static NewsItem *_oldest_news = NULL;       ///< head of news items queue
-static NewsItem *_latest_news = NULL;       ///< tail of news items queue
+static uint MIN_NEWS_AMOUNT = 30;      ///< preferred minimum amount of news messages
+static uint _total_news = 0;           ///< current number of news items
+NewsItem *_oldest_news = NULL;         ///< head of news items queue
+static NewsItem *_latest_news = NULL;  ///< tail of news items queue
 
 /**
  * Forced news item.
@@ -313,6 +313,15 @@ struct NewsWindow : Window {
 	{
 		StringID str = STR_NULL;
 		switch (widget) {
+			case WID_N_CAPTION: {
+				/* Caption is not a real caption (so that the window cannot be moved)
+				 * thus it doesn't get the default sizing of a caption. */
+				Dimension d2 = GetStringBoundingBox(STR_NEWS_MESSAGE_CAPTION);
+				d2.height += WD_CAPTIONTEXT_TOP + WD_CAPTIONTEXT_BOTTOM;
+				*size = maxdim(*size, d2);
+				return;
+			}
+
 			case WID_N_MGR_FACE:
 				*size = maxdim(*size, GetSpriteSize(SPR_GRADIENT));
 				break;
@@ -485,7 +494,7 @@ struct NewsWindow : Window {
 
 private:
 	/**
-	 * Moves the window so #newtop is new 'top' coordinate. Makes screen dirty where needed.
+	 * Moves the window to a new #top coordinate. Makes screen dirty where needed.
 	 * @param newtop new top coordinate
 	 */
 	void SetWindowTop(int newtop)
@@ -953,7 +962,6 @@ void ShowLastNewsMessage()
  * @param y position of the string
  * @param colour the colour the string will be shown in
  * @param *ni NewsItem being printed
- * @param maxw maximum width of string in pixels
  */
 static void DrawNewsString(uint left, uint right, int y, TextColour colour, const NewsItem *ni)
 {

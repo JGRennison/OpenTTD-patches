@@ -60,10 +60,11 @@
              00
 
 // GRF ID, must start with FF so it gets ignored
-   -1 * 0	 08 08 FF "OTT"
+//@@WARNING DISABLE 101
+   -1 * 0	 08 08 FF FF FF FE
 
 // Name of the GRF
-             "OpenTTD's base graphics " 00
+             "OpenTTD's default and fallback extra graphics" 00
 
 // Description of the GRF.
              "License: GNU General Public License version 2" 0D
@@ -86,7 +87,6 @@
 #include "canals.nfo"
 #include "oneway.nfo"
 #include "tramtracks.nfo"
-#include "shore.nfo"
 #include "sloped_tracks.nfo"
 #include "airports.nfo"
 #include "roadstops.nfo"
@@ -97,11 +97,5 @@
 #include "airport_preview.nfo"
 #include "chars.nfo"
 #include "mono.nfo"
-#include "fix_graphics.nfo"
-#include "rivers/rapids.nfo"
-#include "rivers/temperate.nfo"
-#include "rivers/arctic.nfo"
-#include "rivers/tropic.nfo"
-#include "rivers/toyland.nfo"
 #include "tunnel_portals.nfo"
 #include "palette.nfo"

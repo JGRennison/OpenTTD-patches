@@ -23,6 +23,7 @@
 #include "../core/random_func.hpp"
 #include "../core/math_func.hpp"
 #include "../fileio_func.h"
+#include "../framerate_type.h"
 #include "sdl_v.h"
 #include <SDL.h>
 
@@ -148,6 +149,8 @@ static void CheckPaletteAnim()
 
 static void DrawSurfaceToScreen()
 {
+	PerformanceMeasurer framerate(PFE_VIDEO);
+
 	int n = _num_dirty_rects;
 	if (n == 0) return;
 
@@ -261,7 +264,7 @@ static void GetAvailableVideoMode(uint *w, uint *h)
 	*h = _resolutions[best].height;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 /* Let's redefine the LoadBMP macro with because we are dynamically
  * loading SDL and need to 'SDL_CALL' all functions */
 #undef SDL_LoadBMP
@@ -323,7 +326,7 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 		want_hwpalette = _use_hwpalette;
 	}
 
-	if (want_hwpalette) DEBUG(driver, 1, "SDL: requesting hardware palete");
+	if (want_hwpalette) DEBUG(driver, 1, "SDL: requesting hardware palette");
 
 	/* Free any previously allocated shadow surface */
 	if (_sdl_screen != NULL && _sdl_screen != _sdl_realscreen) SDL_CALL SDL_FreeSurface(_sdl_screen);
@@ -404,19 +407,6 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 	blitter->PostResize();
 
 	InitPalette();
-	switch (blitter->UsePaletteAnimation()) {
-		case Blitter::PALETTE_ANIMATION_NONE:
-		case Blitter::PALETTE_ANIMATION_VIDEO_BACKEND:
-			UpdatePalette();
-			break;
-
-		case Blitter::PALETTE_ANIMATION_BLITTER:
-			if (VideoDriver::GetInstance() != NULL) blitter->PaletteAnimate(_local_palette);
-			break;
-
-		default:
-			NOT_REACHED();
-	}
 
 	seprintf(caption, lastof(caption), "OpenTTD %s", _openttd_revision);
 	SDL_CALL SDL_WM_SetCaption(caption, caption);
@@ -510,7 +500,7 @@ static uint ConvertSdlKeyIntoMy(SDL_keysym *sym, WChar *character)
 	}
 
 	/* check scancode for BACKQUOTE key, because we want the key left of "1", not anything else (on non-US keyboards) */
-#if defined(WIN32) || defined(__OS2__)
+#if defined(_WIN32) || defined(__OS2__)
 	if (sym->scancode == 41) key = WKC_BACKQUOTE;
 #elif defined(__APPLE__)
 	if (sym->scancode == 10) key = WKC_BACKQUOTE;
@@ -687,7 +677,7 @@ void VideoDriver_SDL::MainLoop()
 			_draw_mutex->BeginCritical();
 			_draw_continue = true;
 
-			_draw_threaded = ThreadObject::New(&DrawSurfaceToScreenThread, NULL, &_draw_thread);
+			_draw_threaded = ThreadObject::New(&DrawSurfaceToScreenThread, NULL, &_draw_thread, "ottd:draw-sdl");
 
 			/* Free the mutex if we won't be able to use it. */
 			if (!_draw_threaded) {
@@ -831,10 +821,17 @@ bool VideoDriver_SDL::ToggleFullscreen(bool fullscreen)
 
 bool VideoDriver_SDL::AfterBlitterChange()
 {
+	return CreateMainSurface(_screen.width, _screen.height);
+}
+
+void VideoDriver_SDL::AcquireBlitterLock()
+{
 	if (_draw_mutex != NULL) _draw_mutex->BeginCritical(true);
-	bool ret = CreateMainSurface(_screen.width, _screen.height);
+}
+
+void VideoDriver_SDL::ReleaseBlitterLock()
+{
 	if (_draw_mutex != NULL) _draw_mutex->EndCritical(true);
-	return ret;
 }
 
 #endif /* WITH_SDL */

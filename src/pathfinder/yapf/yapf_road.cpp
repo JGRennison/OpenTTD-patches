@@ -27,6 +27,10 @@ public:
 	typedef typename Node::Key Key;    ///< key to hash tables
 
 protected:
+	int m_max_cost;
+
+	CYapfCostRoadT() : m_max_cost(0) {};
+
 	/** to access inherited path finder */
 	Tpf& Yapf()
 	{
@@ -97,6 +101,11 @@ protected:
 	}
 
 public:
+	inline void SetMaxCost(int max_cost)
+	{
+		m_max_cost = max_cost;
+	}
+
 	/**
 	 * Called by YAPF to calculate the cost from the origin to the given node.
 	 *  Calculates only the cost of given node, adds it to the parent node cost
@@ -109,6 +118,8 @@ public:
 		/* start at n.m_key.m_tile / n.m_key.m_td and walk to the end of segment */
 		TileIndex tile = n.m_key.m_tile;
 		Trackdir trackdir = n.m_key.m_td;
+		int parent_cost = (n.m_parent != NULL) ? n.m_parent->m_cost : 0;
+
 		for (;;) {
 			/* base tile cost depending on distance between edges */
 			segment_cost += Yapf().OneTileCost(tile, trackdir);
@@ -116,6 +127,12 @@ public:
 			const RoadVehicle *v = Yapf().GetVehicle();
 			/* we have reached the vehicle's destination - segment should end here to avoid target skipping */
 			if (Yapf().PfDetectDestinationTile(tile, trackdir)) break;
+
+			/* Finish if we already exceeded the maximum path cost (i.e. when
+			 * searching for the nearest depot). */
+			if (m_max_cost > 0 && (parent_cost + segment_cost) > m_max_cost) {
+				return false;
+			}
 
 			/* stop if we have just entered the depot */
 			if (IsRoadDepotTile(tile) && trackdir == DiagDirToDiagTrackdir(ReverseDiagDir(GetRoadDepotDirection(tile)))) {
@@ -160,7 +177,6 @@ public:
 		n.m_segment_last_td = trackdir;
 
 		/* save also tile cost */
-		int parent_cost = (n.m_parent != NULL) ? n.m_parent->m_cost : 0;
 		n.m_cost = parent_cost + segment_cost;
 		return true;
 	}
@@ -185,8 +201,7 @@ public:
 	/** Called by YAPF to detect if node ends in the desired destination */
 	inline bool PfDetectDestination(Node &n)
 	{
-		bool bDest = IsRoadDepotTile(n.m_segment_last_tile);
-		return bDest;
+		return IsRoadDepotTile(n.m_segment_last_tile);
 	}
 
 	inline bool PfDetectDestinationTile(TileIndex tile, Trackdir trackdir)
@@ -261,7 +276,7 @@ public:
 				(m_non_artic || IsDriveThroughStopTile(tile));
 		}
 
-		return tile == m_destTile && ((m_destTrackdirs & TrackdirToTrackdirBits(trackdir)) != TRACKDIR_BIT_NONE);
+		return tile == m_destTile && HasTrackdir(m_destTrackdirs, trackdir);
 	}
 
 	/**
@@ -421,7 +436,7 @@ public:
 		/* set origin (tile, trackdir) */
 		TileIndex src_tile = v->tile;
 		Trackdir src_td = v->GetVehicleTrackdir();
-		if ((TrackStatusToTrackdirBits(GetTileTrackStatus(src_tile, TRANSPORT_ROAD, v->compatible_roadtypes)) & TrackdirToTrackdirBits(src_td)) == 0) {
+		if (!HasTrackdir(TrackStatusToTrackdirBits(GetTileTrackStatus(src_tile, TRANSPORT_ROAD, v->compatible_roadtypes)), src_td)) {
 			/* sometimes the roadveh is not on the road (it resides on non-existing track)
 			 * how should we handle that situation? */
 			return false;
@@ -430,29 +445,31 @@ public:
 		return true;
 	}
 
-	static bool stFindNearestDepot(const RoadVehicle *v, TileIndex tile, Trackdir td, int max_distance, TileIndex *depot_tile)
+	static FindDepotData stFindNearestDepot(const RoadVehicle *v, TileIndex tile, Trackdir td, int max_distance)
 	{
 		Tpf pf;
-		return pf.FindNearestDepot(v, tile, td, max_distance, depot_tile);
+		return pf.FindNearestDepot(v, tile, td, max_distance);
 	}
 
-	inline bool FindNearestDepot(const RoadVehicle *v, TileIndex tile, Trackdir td, int max_distance, TileIndex *depot_tile)
+	/**
+	 * Find the best depot for a road vehicle.
+	 * @param v Vehicle
+	 * @param tile Tile of the vehicle.
+	 * @param td Trackdir of the vehicle.
+	 * @param max_distance max length (penalty) for paths.
+	 */
+	inline FindDepotData FindNearestDepot(const RoadVehicle *v, TileIndex tile, Trackdir td, int max_distance)
 	{
-		/* set origin and destination nodes */
+		/* Set origin. */
 		Yapf().SetOrigin(tile, TrackdirToTrackdirBits(td));
+		Yapf().SetMaxCost(max_distance);
 
-		/* find the best path */
-		bool bFound = Yapf().FindPath(v);
-		if (!bFound) return false;
+		/* Find the best path and return if no depot is found. */
+		if (!Yapf().FindPath(v)) return FindDepotData();
 
-		/* some path found
-		 * get found depot tile */
+		/* Return the cost of the best path and its depot. */
 		Node *n = Yapf().GetBestNode();
-
-		if (max_distance > 0 && n->m_cost > max_distance * YAPF_TILE_LENGTH) return false;
-
-		*depot_tile = n->m_segment_last_tile;
-		return true;
+		return FindDepotData(n->m_segment_last_tile, n->m_cost);
 	}
 };
 
@@ -499,12 +516,12 @@ FindDepotData YapfRoadVehicleFindNearestDepot(const RoadVehicle *v, int max_dist
 {
 	TileIndex tile = v->tile;
 	Trackdir trackdir = v->GetVehicleTrackdir();
-	if ((TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_ROAD, v->compatible_roadtypes)) & TrackdirToTrackdirBits(trackdir)) == 0) {
+	if (!HasTrackdir(TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_ROAD, v->compatible_roadtypes)), trackdir)) {
 		return FindDepotData();
 	}
 
 	/* default is YAPF type 2 */
-	typedef bool (*PfnFindNearestDepot)(const RoadVehicle*, TileIndex, Trackdir, int, TileIndex*);
+	typedef FindDepotData (*PfnFindNearestDepot)(const RoadVehicle*, TileIndex, Trackdir, int);
 	PfnFindNearestDepot pfnFindNearestDepot = &CYapfRoadAnyDepot2::stFindNearestDepot;
 
 	/* check if non-default YAPF type should be used */
@@ -512,8 +529,5 @@ FindDepotData YapfRoadVehicleFindNearestDepot(const RoadVehicle *v, int max_dist
 		pfnFindNearestDepot = &CYapfRoadAnyDepot1::stFindNearestDepot; // Trackdir, allow 90-deg
 	}
 
-	FindDepotData fdd;
-	bool ret = pfnFindNearestDepot(v, tile, trackdir, max_distance, &fdd.tile);
-	fdd.best_length = ret ? max_distance / 2 : UINT_MAX; // some fake distance or NOT_FOUND
-	return fdd;
+	return pfnFindNearestDepot(v, tile, trackdir, max_distance);
 }

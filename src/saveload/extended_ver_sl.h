@@ -40,11 +40,14 @@ enum SlXvFeatureTestOperator {
  * Structure to describe an extended feature version test, and how it combines with a traditional savegame version test
  */
 struct SlXvFeatureTest {
+	using TestFunctorPtr = bool (*)(uint16, bool);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
+
 	private:
 	uint16 min_version;
 	uint16 max_version;
 	SlXvFeatureIndex feature;
 	SlXvFeatureTestOperator op;
+	TestFunctorPtr functor = nullptr;
 
 	public:
 	SlXvFeatureTest()
@@ -52,6 +55,9 @@ struct SlXvFeatureTest {
 
 	SlXvFeatureTest(SlXvFeatureTestOperator op_, SlXvFeatureIndex feature_, uint16 min_version_ = 1, uint16 max_version_ = 0xFFFF)
 			: min_version(min_version_), max_version(max_version_), feature(feature_), op(op_) { }
+
+	SlXvFeatureTest(TestFunctorPtr functor_)
+			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR), functor(functor_) { }
 
 	bool IsFeaturePresent(uint16 savegame_version, uint16 savegame_version_from, uint16 savegame_version_to) const;
 };
@@ -65,6 +71,8 @@ inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature)
 {
 	return !SlXvIsFeaturePresent(feature);
 }
+
+const char *SlXvGetFeatureName(SlXvFeatureIndex feature);
 
 /**
  * sub chunk flags, this is saved as-is

@@ -220,7 +220,7 @@ bool HandleBootstrap()
 	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 0) goto failure;
 
 	/* If there is no network or no freetype, then there is nothing we can do. Go straight to failure. */
-#if defined(ENABLE_NETWORK) && defined(WITH_FREETYPE) && (defined(WITH_FONTCONFIG) || defined(WIN32) || defined(__APPLE__))
+#if defined(ENABLE_NETWORK) && defined(WITH_FREETYPE) && (defined(WITH_FONTCONFIG) || defined(_WIN32) || defined(__APPLE__))
 	if (!_network_available) goto failure;
 
 	/* First tell the game we're bootstrapping. */
@@ -264,6 +264,6 @@ bool HandleBootstrap()
 
 	/* Failure to get enough working to get a graphics set. */
 failure:
-	usererror("Failed to find a graphics set. Please acquire a graphics set for OpenTTD. See section 4.1 of readme.txt.");
+	usererror("Failed to find a graphics set. Please acquire a graphics set for OpenTTD. See section 4.1 of README.md.");
 	return false;
 }

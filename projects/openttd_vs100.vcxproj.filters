@@ -942,6 +942,9 @@
     <ClInclude Include="..\src\safeguards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\screenshot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1225,6 +1228,12 @@
       <Filter>Core Source Code</Filter>
     </ClCompile>
     <ClInclude Include="..\src\core\bitmath_func.hpp">
+      <Filter>Core Source Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\container_func.hpp">
+      <Filter>Core Source Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\dyn_arena_alloc.hpp">
       <Filter>Core Source Code</Filter>
     </ClInclude>
     <ClInclude Include="..\src\core\endian_func.hpp">
@@ -1809,6 +1818,9 @@
     <ClInclude Include="..\src\saveload\saveload_internal.h">
       <Filter>Save/Load handlers</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\saveload\saveload_buffer.h">
+      <Filter>Save/Load handlers</Filter>
+    </ClInclude>
     <ClCompile Include="..\src\saveload\signs_sl.cpp">
       <Filter>Save/Load handlers</Filter>
     </ClCompile>
@@ -2229,6 +2241,12 @@
     <ClInclude Include="..\src\script\api\script_cargomonitor.hpp">
       <Filter>Script API</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\script\api\script_client.hpp">
+      <Filter>Script API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\script\api\script_clientlist.hpp">
+      <Filter>Script API</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\script\api\script_company.hpp">
       <Filter>Script API</Filter>
     </ClInclude>
@@ -2422,6 +2440,12 @@
       <Filter>Script API Implementation</Filter>
     </ClCompile>
     <ClCompile Include="..\src\script\api\script_cargomonitor.cpp">
+      <Filter>Script API Implementation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\api\script_client.cpp">
+      <Filter>Script API Implementation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\api\script_clientlist.cpp">
       <Filter>Script API Implementation</Filter>
     </ClCompile>
     <ClCompile Include="..\src\script\api\script_company.cpp">
@@ -3051,6 +3075,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />
-    <None Include="..\readme.txt" />
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>

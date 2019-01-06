@@ -65,6 +65,12 @@ public:
 	inline int GetUnitsPerEM() const { return this->units_per_em; }
 
 	/**
+	 * Get the nominal font size of the font.
+	 * @return The nominal font size.
+	 */
+	virtual int GetFontSize() const { return this->height; }
+
+	/**
 	 * Get the SpriteID mapped to the given key
 	 * @param key The key to get the sprite for.
 	 * @return The sprite.
@@ -143,6 +149,11 @@ public:
 	{
 		return this->parent != NULL;
 	}
+
+	/**
+	 * Is this a built-in sprite font?
+	 */
+	virtual bool IsBuiltInFont() = 0;
 };
 
 /** Get the SpriteID mapped to the given font size and key */

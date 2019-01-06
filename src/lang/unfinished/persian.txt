@@ -658,10 +658,7 @@ STR_MUSIC_TOOLTIP_SELECT_CUSTOM_2_USER_DEFINED                  :{BLACK}انتخ
 STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}پخش به صورت لیست برهم ریخته
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}نمایش پنجره لیست آهنگهای انتخابی
 
-STR_ERROR_NO_SONGS                                              :{WHITE}در مجموعه موسیقی آهنگی انتخاب نشده است. هیچ آهنگی پخش نخواهد شد
-
 # Playlist window
-STR_PLAYLIST_MUSIC_PROGRAM_SELECTION                            :{WHITE}انتخاب برنامه پخش موسیقی
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}شماره ی آهنگ
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}برنامه - '{STRING}'
@@ -970,6 +967,7 @@ STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}وضوح
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :دو برابر
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}بسته گرافیک پایه
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}بسته گرافیک پایه را انتخاب کنید
@@ -1226,7 +1224,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR                         :رنگ استف
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :سبز
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :سبز تیره
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :بنفش
-STR_CONFIG_SETTING_REVERSE_SCROLLING                            :برعکس کردن جهت حرکت کردن صفحه: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :تصویر صاف در نمای اضافه: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :نمایش متن کمکی وقتی از چندین ابزار استفاده می شود: {STRING}
 STR_CONFIG_SETTING_LIVERIES                                     :نمایش طراحی مخصوص وسیله نقلیه : {STRING}
@@ -1246,7 +1243,6 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :دستور+کل
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :کنترل+کلیک
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :خاموش
 
-STR_CONFIG_SETTING_LEFT_MOUSE_BTN_SCROLLING                     :حرکت در نقشه با کلیک چپ:: {STRING}
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :ذخیره خودکار: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :انتخاب فاصله زمانی بین ذخیره کردن های خودکار
@@ -2302,29 +2298,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :زمین ها
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :زمین پوشیده از برف
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :صحرا
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{STRING} ریل
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :{STRING} ریل با نشانگر توقف
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :{STRING} ریل با پیش نشانگر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :{STRING} ریل با نشانگر خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :{STRING} ریل با نشانگر چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :{STRING} ریل با نشانگر مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :{STRING} ریل با نشانگر مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :{STRING} ریل با نشانگرهای توقف و پیش نشانگر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :{STRING} ریل با نشانگرهای توقف و خروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :{STRING} ریل با نشانگرهای توقف و چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :{STRING} ریل با نشانگرهای توقف و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :{STRING} ریل با نشانگرهای توقف و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :{STRING} ریل با پیش نشانگر و نشانگرخروج
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :{STRING} ریل با پیش نشانگر و نشانگرچندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :{STRING} ریل با پیش نشانگر و نشانگز مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :{STRING} ریل با پیش نشانگر و نشانگر مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :{STRING} ریل با نشانگرهای خروج و چندگانه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :{STRING} ریل با نشانگرهای خروج و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :{STRING} ریل با نشانگرهای خروج و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :{STRING} ریل با نشانگرهای چندگانه و مسیر
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :{STRING} ریل با نشانگرهای چندگانه و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :{STRING} ریل با نشانگرهای مسیر و مسیر یکطرفه
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{STRING} گاراژ قطار
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :راه‌آهن ریل
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :راه‌آهن ریل با نشانگر توقف
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :راه‌آهن ریل با پیش نشانگر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :راه‌آهن ریل با نشانگر خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :راه‌آهن ریل با نشانگر چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :راه‌آهن ریل با نشانگر مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :راه‌آهن ریل با نشانگر مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :راه‌آهن ریل با نشانگرهای توقف و پیش نشانگر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :راه‌آهن ریل با نشانگرهای توقف و خروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :راه‌آهن ریل با نشانگرهای توقف و چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :راه‌آهن ریل با نشانگرهای توقف و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :راه‌آهن ریل با نشانگرهای توقف و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :راه‌آهن ریل با پیش نشانگر و نشانگرخروج
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :راه‌آهن ریل با پیش نشانگر و نشانگرچندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :راه‌آهن ریل با پیش نشانگر و نشانگز مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :راه‌آهن ریل با پیش نشانگر و نشانگر مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :راه‌آهن ریل با نشانگرهای خروج و چندگانه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :راه‌آهن ریل با نشانگرهای خروج و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :راه‌آهن ریل با نشانگرهای خروج و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :راه‌آهن ریل با نشانگرهای چندگانه و مسیر
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :راه‌آهن ریل با نشانگرهای چندگانه و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :راه‌آهن ریل با نشانگرهای مسیر و مسیر یکطرفه
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :راه‌آهن گاراژ قطار
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :جاده
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :جاده با چراغ راهنمایی رانندگی
@@ -2388,7 +2384,14 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :زمین خری
 STR_ABOUT_OPENTTD                                               :{WHITE}OpenTTD در باره ی
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original copyright {COPYRIGHT} 1995 Chris Sawyer, All rights reserved
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD ویرایش {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2015 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 The OpenTTD team
+
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ذخیره ی بازی
@@ -2592,7 +2595,6 @@ STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE                          :فایل GRF ب
 STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :تعداد NewGRF بیشتر از حد می باشد
 STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :در حال بارگزاری {1:STRING} به عنوان NewGRF ایستا با {STRING} مشکل همخوانی دارد
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} دارای یک تصویر خراب می باشد. تصویرهای خراب با علامت سوال قرمز (؟) نشان داده شدند.
-STR_NEWGRF_ERROR_MISSING_SPRITES                                :{WHITE}بسته گرافیک استفاده شده تعدادی از تصاوبر را ندارد.{}لطفا بسته گرافیکی را به روز کنید
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} غیر فعال گردیده توسط {STRING}
 
 # NewGRF related 'general' warnings
@@ -2663,8 +2665,6 @@ STR_TOWN_POPULATION                                             :{BLACK}جمعی
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (شهر)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}جمعیت: {ORANGE}{COMMA}{BLACK}  خانه ها: {ORANGE}{COMMA}
-STR_TOWN_VIEW_PASSENGERS_LAST_MONTH_MAX                         :{BLACK}مسافران در ماه گذشته: {ORANGE}{COMMA}{BLACK}  حداکثر: {ORANGE}{COMMA}
-STR_TOWN_VIEW_MAIL_LAST_MONTH_MAX                               :{BLACK}نامه ها در ماه گذشته: {ORANGE}{COMMA}{BLACK}  حداکثر: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}نوع بار برای رشد شهر:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} ضروری
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} در زمستان ضروری است
@@ -2908,6 +2908,7 @@ STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}مواد
 STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}مواد اولیه: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
 ############ range for requires ends
 
+
 ############ range for produces starts
 STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}محصولات: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}محصولات: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
@@ -2944,6 +2945,7 @@ STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR                        :فرستادن 
 
 
 # Group window
+
 
 
 
@@ -3053,8 +3055,6 @@ STR_ENGINE_PREVIEW_SHIP                                         :کشتی
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :لوکوموتیو مونوریل
 STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :لوکوموتیو ریل مغناطیسی
 
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_CAPACITY_RUNCOST:{BLACK}قیمت: {CURRENCY_LONG} بیشینه سرعت: {VELOCITY} برد: {COMMA} قطعه{}ظرفیت: {CARGO_LONG}, {CARGO_LONG}{}هزینه نگهداری: {CURRENCY_LONG}/درسال
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_RANGE_CAPACITY_RUNCOST        :{BLACK}قیمت: {CURRENCY_LONG} بیشینه سرعت: {VELOCITY} برد: {COMMA} قطعه{}ظرفیت: {CARGO_LONG}{}هزینه نگهداری: {CURRENCY_LONG}/درسال
 
 # Autoreplace window
 STR_REPLACE_VEHICLE_TRAIN                                       :قطار
@@ -3071,6 +3071,7 @@ STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK} ستو�
 STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}برای توقف جایگزین کردن برای نوع انتخاب شده در سمت چپ کلیک کنید
 
 
+STR_REPLACE_ELRAIL_VEHICLES                                     :وسایل نقلیه ریلی برقی
 
 
 # Vehicle view
@@ -3126,7 +3127,6 @@ STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}نامگ
 STR_VEHICLE_INFO_AGE                                            :{COMMA}سال ({COMMA})
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} سال ({COMMA})
 
-STR_VEHICLE_INFO_MAX_SPEED_RANGE                                :{BLACK}بیشینه سرعت: {LTBLUE}{VELOCITY} {BLACK}برد: {LTBLUE}{COMMA} قطعه
 
 
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}ظرفیت: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}
@@ -3412,7 +3412,6 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}نمی �
 
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}ایستگاه زیادی پراکنده شده است
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}تعداد محوطه های بارگیری/ایستگاه بسیار زیاد شده
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}به محوطه ی بارگیری/ایستگاه دیگری بسیار نزدیک است
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}به بندر دیگری بسییار نزدیک است
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}به فرودگاه دیگری بسیار نزدیک شده
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}نام این ایستگاه را نمی شود تغییر داد

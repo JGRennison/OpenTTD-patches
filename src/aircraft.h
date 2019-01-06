@@ -45,6 +45,8 @@ enum AirVehicleFlags {
 	 * landscape at a fixed altitude. This only has effect when there are more than 15 height levels. */
 	VAF_IN_MAX_HEIGHT_CORRECTION = 1, ///< The vehicle is currently lowering its altitude because it hit the upper bound.
 	VAF_IN_MIN_HEIGHT_CORRECTION = 2, ///< The vehicle is currently raising its altitude because it hit the lower bound.
+
+	VAF_HELI_DIRECT_DESCENT      = 3, ///< The helicopter is descending directly at its destination (helipad or in front of hangar)
 };
 
 static const int ROTOR_Z_OFFSET         = 5;    ///< Z Offset between helicopter- and rotorsprite.
@@ -90,10 +92,10 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 	virtual ~Aircraft() { this->PreDestructor(); }
 
 	void MarkDirty();
-	void UpdateDeltaXY(Direction direction);
+	void UpdateDeltaXY();
 	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_AIRCRAFT_INC : EXPENSES_AIRCRAFT_RUN; }
 	bool IsPrimaryVehicle() const                  { return this->IsNormalAircraft(); }
-	SpriteID GetImage(Direction direction, EngineImageType image_type) const;
+	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
 	int GetDisplaySpeed() const    { return this->cur_speed; }
 	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed; }
 	int GetSpeedOldUnits() const   { return this->vcache.cached_max_speed * 10 / 128; }
@@ -137,11 +139,11 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 };
 
 /**
- * Macro for iterating over all aircrafts.
+ * Macro for iterating over all aircraft.
  */
 #define FOR_ALL_AIRCRAFT(var) FOR_ALL_VEHICLES_OF_TYPE(Aircraft, var)
 
-SpriteID GetRotorImage(const Aircraft *v, EngineImageType image_type);
+void GetRotorImage(const Aircraft *v, EngineImageType image_type, VehicleSpriteSeq *result);
 
 Station *GetTargetAirportIfValid(const Aircraft *v);
 

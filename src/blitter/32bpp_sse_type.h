@@ -7,10 +7,10 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file 32bpp_sse_type.hpp Types related to SSE 32 bpp blitter. */
+/** @file 32bpp_sse_type.h Types related to SSE 32 bpp blitter. */
 
-#ifndef BLITTER_32BPP_SSE_TYPE_HPP
-#define BLITTER_32BPP_SSE_TYPE_HPP
+#ifndef BLITTER_32BPP_SSE_TYPE_H
+#define BLITTER_32BPP_SSE_TYPE_H
 
 #ifdef WITH_SSE
 
@@ -26,6 +26,8 @@
 #define META_LENGTH 2 ///< Number of uint32 inserted before each line of pixels in a sprite.
 #define MARGIN_NORMAL_THRESHOLD (zoom == ZOOM_LVL_OUT_32X ? 8 : 4) ///< Minimum width to use margins with BM_NORMAL.
 #define MARGIN_REMAP_THRESHOLD 4 ///< Minimum width to use margins with BM_COLOUR_REMAP.
+
+#undef ALIGN
 
 #ifdef _MSC_VER
 	#define ALIGN(n) __declspec(align(n))
@@ -53,4 +55,4 @@ typedef union ALIGN(16) um128i {
 #define TRANSPARENT_NOM_BASE        _mm_setr_epi16(256, 256, 256, 256, 256, 256, 256, 256)
 
 #endif /* WITH_SSE */
-#endif /* BLITTER_32BPP_SSE_TYPE_HPP */
+#endif /* BLITTER_32BPP_SSE_TYPE_H */

@@ -120,6 +120,19 @@ struct PacketReader : LoadFilter {
 
 
 /**
+ * Create an emergency savegame when the network connection is lost.
+ */
+void ClientNetworkEmergencySave()
+{
+	if (!_settings_client.gui.autosave_on_network_disconnect) return;
+
+	const char *filename = "netsave.sav";
+	DEBUG(net, 0, "Client: Performing emergency save (%s)", filename);
+	SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
+}
+
+
+/**
  * Create a new socket for the client side of the game connection.
  * @param s The socket to connect with.
  */
@@ -520,7 +533,7 @@ bool ClientNetworkGameSocketHandler::IsConnected()
  *   DEF_CLIENT_RECEIVE_COMMAND has parameter: Packet *p
  ************/
 
-extern bool SafeLoad(const char *filename, int mode, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL);
+extern bool SafeLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir, struct LoadFilter *lf = NULL);
 
 NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FULL(Packet *p)
 {
@@ -669,6 +682,9 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_ERROR(Packet *p
 	if (error < (ptrdiff_t)lengthof(network_error_strings)) err = network_error_strings[error];
 
 	ShowErrorMessage(err, INVALID_STRING_ID, WL_CRITICAL);
+
+	/* Perform an emergency save if we had already entered the game */
+	if (this->status == STATUS_ACTIVE) ClientNetworkEmergencySave();
 
 	DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
@@ -836,7 +852,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 
 	/* The map is done downloading, load it */
 	ClearErrorMessages();
-	bool load_success = SafeLoad(NULL, SL_LOAD, GM_NORMAL, NO_DIRECTORY, lf);
+	bool load_success = SafeLoad(NULL, SLO_LOAD, DFT_GAME_FILE, GM_NORMAL, NO_DIRECTORY, lf);
 
 	/* Long savegame loads shouldn't affect the lag calculation! */
 	this->last_packet = _realtime_tick;
@@ -965,7 +981,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHAT(Packet *p)
 			/* For speaking to company or giving money, we need the company-name */
 			case NETWORK_ACTION_GIVE_MONEY:
 				if (!Company::IsValidID(ci_to->client_playas)) return NETWORK_RECV_STATUS_OKAY;
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case NETWORK_ACTION_CHAT_COMPANY: {
 				StringID str = Company::IsValidID(ci_to->client_playas) ? STR_COMPANY_NAME : STR_NETWORK_SPECTATORS;
 				SetDParam(0, ci_to->client_playas);
@@ -1050,6 +1067,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_SHUTDOWN(Packet
 		ShowErrorMessage(STR_NETWORK_MESSAGE_SERVER_SHUTDOWN, INVALID_STRING_ID, WL_CRITICAL);
 	}
 
+	if (this->status == STATUS_ACTIVE) ClientNetworkEmergencySave();
+
 	return NETWORK_RECV_STATUS_SERVER_ERROR;
 }
 
@@ -1064,6 +1083,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_NEWGAME(Packet 
 		_network_reconnect = _network_own_client_id % 16;
 		ShowErrorMessage(STR_NETWORK_MESSAGE_SERVER_REBOOT, INVALID_STRING_ID, WL_CRITICAL);
 	}
+
+	if (this->status == STATUS_ACTIVE) ClientNetworkEmergencySave();
 
 	return NETWORK_RECV_STATUS_SERVER_ERROR;
 }
@@ -1152,6 +1173,7 @@ void ClientNetworkGameSocketHandler::CheckConnection()
 	if (lag > 20) {
 		this->NetworkGameSocketHandler::CloseConnection();
 		ShowErrorMessage(STR_NETWORK_ERROR_LOSTCONNECTION, INVALID_STRING_ID, WL_CRITICAL);
+		ClientNetworkEmergencySave();
 		return;
 	}
 

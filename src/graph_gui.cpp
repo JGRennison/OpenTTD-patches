@@ -33,8 +33,8 @@
 #include "safeguards.h"
 
 /* Bitmasks of company and cargo indices that shouldn't be drawn. */
-static uint _legend_excluded_companies;
-static uint _legend_excluded_cargo;
+static CompanyMask _legend_excluded_companies;
+static CargoTypes _legend_excluded_cargo;
 
 /* Apparently these don't play well with enums. */
 static const OverflowSafeInt64 INVALID_DATAPOINT(INT64_MAX); // Value used for a datapoint that shouldn't be drawn.
@@ -166,14 +166,14 @@ struct ValuesInterval {
 
 struct BaseGraphWindow : Window {
 protected:
-	static const int GRAPH_MAX_DATASETS     =  32;
+	static const int GRAPH_MAX_DATASETS     =  64;
 	static const int GRAPH_AXIS_LINE_COLOUR = PC_BLACK;
 	static const int GRAPH_NUM_MONTHS       =  24; ///< Number of months displayed in the graph.
 
 	static const int MIN_GRAPH_NUM_LINES_Y  =   9; ///< Minimal number of horizontal lines to draw.
 	static const int MIN_GRID_PIXEL_SIZE    =  20; ///< Minimum distance between graph lines.
 
-	uint excluded_data; ///< bitmask of the datasets that shouldn't be displayed.
+	uint64 excluded_data; ///< bitmask of the datasets that shouldn't be displayed.
 	byte num_dataset;
 	byte num_on_x_axis;
 	byte num_vert_lines;
@@ -561,7 +561,7 @@ public:
 	 */
 	void UpdateStatistics(bool initialize)
 	{
-		uint excluded_companies = _legend_excluded_companies;
+		CompanyMask excluded_companies = _legend_excluded_companies;
 
 		/* Exclude the companies which aren't valid */
 		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
@@ -1402,9 +1402,9 @@ struct PerformanceRatingDetailWindow : Window {
 		int colour_notdone = _colour_gradient[COLOUR_RED][4];
 
 		/* Draw all the score parts */
-		int val    = _score_part[company][score_type];
-		int needed = _score_info[score_type].needed;
-		int score  = _score_info[score_type].score;
+		int64 val    = _score_part[company][score_type];
+		int64 needed = _score_info[score_type].needed;
+		int   score  = _score_info[score_type].score;
 
 		/* SCORE_TOTAL has his own rules ;) */
 		if (score_type == SCORE_TOTAL) {
@@ -1422,7 +1422,7 @@ struct PerformanceRatingDetailWindow : Window {
 		DrawString(this->score_info_left, this->score_info_right, text_top, STR_BLACK_COMMA, TC_FROMSTRING, SA_RIGHT);
 
 		/* Calculate the %-bar */
-		uint x = Clamp(val, 0, needed) * this->bar_width / needed;
+		uint x = Clamp<int64>(val, 0, needed) * this->bar_width / needed;
 		bool rtl = _current_text_dir == TD_RTL;
 		if (rtl) {
 			x = this->bar_right - x;
@@ -1435,7 +1435,7 @@ struct PerformanceRatingDetailWindow : Window {
 		if (x != this->bar_right) GfxFillRect(x, bar_top, this->bar_right, bar_top + this->bar_height, rtl ? colour_done : colour_notdone);
 
 		/* Draw it */
-		SetDParam(0, Clamp(val, 0, needed) * 100 / needed);
+		SetDParam(0, Clamp<int64>(val, 0, needed) * 100 / needed);
 		DrawString(this->bar_left, this->bar_right, text_top, STR_PERFORMANCE_DETAIL_PERCENT, TC_FROMSTRING, SA_HOR_CENTER);
 
 		/* SCORE_LOAN is inversed */

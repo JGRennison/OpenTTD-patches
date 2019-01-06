@@ -112,7 +112,7 @@ void DisasterVehicle::UpdateImage()
 {
 	SpriteID img = this->image_override;
 	if (img == 0) img = _disaster_images[this->subtype][this->direction];
-	this->cur_image = img;
+	this->sprite_seq.Set(img);
 }
 
 /**
@@ -164,7 +164,7 @@ DisasterVehicle::DisasterVehicle(int x, int y, Direction direction, DisasterSubT
 	this->direction = direction;
 	this->tile = TileVirtXY(x, y);
 	this->subtype = subtype;
-	this->UpdateDeltaXY(INVALID_DIR);
+	this->UpdateDeltaXY();
 	this->owner = OWNER_NONE;
 	this->image_override = 0;
 	this->current_order.Free();
@@ -499,7 +499,8 @@ static bool DisasterTick_Helicopter_Rotors(DisasterVehicle *v)
 	v->tick_counter++;
 	if (HasBit(v->tick_counter, 0)) return true;
 
-	if (++v->cur_image > SPR_ROTOR_MOVING_3) v->cur_image = SPR_ROTOR_MOVING_1;
+	SpriteID &cur_image = v->sprite_seq.seq[0].sprite;
+	if (++cur_image > SPR_ROTOR_MOVING_3) cur_image = SPR_ROTOR_MOVING_1;
 
 	v->UpdatePositionAndViewport();
 
@@ -972,7 +973,7 @@ void ReleaseDisastersTargetingVehicle(VehicleID vehicle)
 	}
 }
 
-void DisasterVehicle::UpdateDeltaXY(Direction direction)
+void DisasterVehicle::UpdateDeltaXY()
 {
 	this->x_offs        = -1;
 	this->y_offs        = -1;

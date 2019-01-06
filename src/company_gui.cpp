@@ -268,10 +268,7 @@ static const NWidgetPart _nested_company_finances_widgets[] = {
 	EndContainer(),
 };
 
-/**
- * Window class displaying the company finances.
- * @todo #money_width should be calculated dynamically.
- */
+/** Window class displaying the company finances. */
 struct CompanyFinancesWindow : Window {
 	static Money max_money; ///< The maximum amount of money a company has had this 'run'
 	bool small;             ///< Window is toggled to 'small'.
@@ -318,7 +315,8 @@ struct CompanyFinancesWindow : Window {
 			case WID_CF_EXPS_PRICE2:
 			case WID_CF_EXPS_PRICE3:
 				size->height = _expenses_list_types[type].GetHeight();
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_CF_BALANCE_VALUE:
 			case WID_CF_LOAN_VALUE:
 			case WID_CF_TOTAL_VALUE:
@@ -636,7 +634,8 @@ public:
 					size->width = 0;
 					break;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
+
 			case WID_SCL_PRI_COL_DROPDOWN: {
 				int padding = this->square.width + NWidgetScrollbar::GetVerticalDimension().width + 10;
 				for (const StringID *id = _colour_dropdown; id != endof(_colour_dropdown); id++) {
@@ -892,7 +891,7 @@ void DrawCompanyManagerFace(CompanyManagerFace cmf, int colour, int x, int y)
 	for (CompanyManagerFaceVariable cmfv = CMFV_CHEEKS; cmfv < CMFV_END; cmfv++) {
 		switch (cmfv) {
 			case CMFV_MOUSTACHE:   if (!has_moustache)   continue; break;
-			case CMFV_LIPS:        // FALL THROUGH
+			case CMFV_LIPS:
 			case CMFV_NOSE:        if (has_moustache)    continue; break;
 			case CMFV_TIE_EARRING: if (!has_tie_earring) continue; break;
 			case CMFV_GLASSES:     if (!has_glasses)     continue; break;
@@ -1365,7 +1364,7 @@ public:
 			/* OK button */
 			case WID_SCMF_ACCEPT:
 				DoCommandP(0, 0, this->face, CMD_SET_COMPANY_MANAGER_FACE);
-				/* FALL THROUGH */
+				FALLTHROUGH;
 
 			/* Cancel button */
 			case WID_SCMF_CANCEL:
@@ -1507,9 +1506,6 @@ static WindowDesc _select_company_manager_face_desc(
  * Open the simple/advanced company manager face selection window
  *
  * @param parent the parent company window
- * @param adv    simple or advanced face selection window
- * @param top    previous top position of the window
- * @param left   previous left position of the window
  */
 static void DoSelectCompanyManagerFace(Window *parent)
 {
@@ -2381,7 +2377,7 @@ struct CompanyWindow : Window
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile)
 	{
-		if (DoCommandP(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS))) {
+		if (DoCommandP(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS)) && !_shift_pressed) {
 			ResetObjectToPlace();
 			this->RaiseButtons();
 		}

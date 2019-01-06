@@ -17,11 +17,6 @@
 #include "ini_type.h"
 #include "string_func.h"
 
-template <class Tbase_set> /* static */ const char *BaseMedia<Tbase_set>::ini_set;
-template <class Tbase_set> /* static */ const Tbase_set *BaseMedia<Tbase_set>::used_set;
-template <class Tbase_set> /* static */ Tbase_set *BaseMedia<Tbase_set>::available_sets;
-template <class Tbase_set> /* static */ Tbase_set *BaseMedia<Tbase_set>::duplicate_sets;
-
 /**
  * Try to read a single piece of metadata and return false if it doesn't exist.
  * @param name the name of the item to fetch.
@@ -45,8 +40,6 @@ template <class Tbase_set> /* static */ Tbase_set *BaseMedia<Tbase_set>::duplica
 template <class T, size_t Tnum_files, bool Tsearch_in_tars>
 bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const char *path, const char *full_filename, bool allow_empty_filename)
 {
-	memset(this, 0, sizeof(*this));
-
 	IniGroup *metadata = ini->GetGroup("metadata");
 	IniItem *item;
 
@@ -134,7 +127,11 @@ bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(IniFile *ini, const
 			file->missing_warning = stredup(item->value);
 		}
 
-		switch (T::CheckMD5(file, BASESET_DIR)) {
+		file->check_result = T::CheckMD5(file, BASESET_DIR);
+		switch (file->check_result) {
+			case MD5File::CR_UNKNOWN:
+				break;
+
 			case MD5File::CR_MATCH:
 				this->valid_files++;
 				this->found_files++;

@@ -73,7 +73,8 @@ struct CFollowTrackT
 
 	inline void Init(Owner o, RailTypes railtype_override, CPerformanceTimer *pPerf)
 	{
-		assert((!IsRoadTT() || m_veh != NULL) && (!IsRailTT() || railtype_override != INVALID_RAILTYPES));
+		assert(!IsRoadTT() || m_veh != NULL);
+		assert(!IsRailTT() || railtype_override != INVALID_RAILTYPES);
 		m_veh_owner = o;
 		m_pPerf = pPerf;
 		/* don't worry, all is inlined so compiler should remove unnecessary initializations */
@@ -123,8 +124,12 @@ struct CFollowTrackT
 		m_old_tile = old_tile;
 		m_old_td = old_td;
 		m_err = EC_NONE;
-		assert(((TrackStatusToTrackdirBits(GetTileTrackStatus(m_old_tile, TT(), IsRoadTT() ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0)) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
-		       (IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR)); // Disable the assertion for single tram bits
+		assert(
+			((TrackStatusToTrackdirBits(
+				GetTileTrackStatus(m_old_tile, TT(), (IsRoadTT() && m_veh != NULL) ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0)
+			) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
+			(IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR) // Disable the assertion for single tram bits
+		);
 		m_exitdir = TrackdirToExitdir(m_old_td);
 		if (ForcedReverse()) return true;
 		if (!CanExitOldTile()) return false;
@@ -219,16 +224,13 @@ protected:
 		}
 
 		/* normal or station tile, do one step */
-		TileIndexDiff diff = TileOffsByDiagDir(m_exitdir);
-		m_new_tile = TILE_ADD(m_old_tile, diff);
+		m_new_tile = TileAddByDiagDir(m_old_tile, m_exitdir);
 
 		/* special handling for stations */
 		if (IsRailTT() && HasStationTileRail(m_new_tile)) {
 			m_is_station = true;
 		} else if (IsRoadTT() && IsRoadStopTile(m_new_tile)) {
 			m_is_station = true;
-		} else {
-			m_is_station = false;
 		}
 	}
 
@@ -241,7 +243,7 @@ protected:
 		} else {
 			m_new_td_bits = TrackStatusToTrackdirBits(GetTileTrackStatus(m_new_tile, TT(), IsRoadTT() ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0));
 
-			if (IsTram() && m_new_td_bits == 0) {
+			if (IsTram() && m_new_td_bits == TRACKDIR_BIT_NONE) {
 				/* GetTileTrackStatus() returns 0 for single tram bits.
 				 * As we cannot change it there (easily) without breaking something, change it here */
 				switch (GetSingleTramBit(m_new_tile)) {
@@ -408,8 +410,9 @@ protected:
 			}
 		}
 
-		/* single tram bits cause reversing */
-		if (IsTram() && GetSingleTramBit(m_old_tile) == ReverseDiagDir(m_exitdir)) {
+		/* Single tram bits and standard road stops cause reversing. */
+		if (IsRoadTT() && ((IsTram() && GetSingleTramBit(m_old_tile) == ReverseDiagDir(m_exitdir)) ||
+				(IsStandardRoadStopTile(m_old_tile) && GetRoadStopDir(m_old_tile) == ReverseDiagDir(m_exitdir)))) {
 			/* reverse */
 			m_new_tile = m_old_tile;
 			m_new_td_bits = TrackdirToTrackdirBits(ReverseTrackdir(m_old_td));

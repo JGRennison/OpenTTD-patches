@@ -162,7 +162,7 @@ static bool IsValidCompanyManagerFace(CompanyManagerFace cmf)
 	for (CompanyManagerFaceVariable cmfv = CMFV_CHEEKS; cmfv < CMFV_END; cmfv++) {
 		switch (cmfv) {
 			case CMFV_MOUSTACHE:   if (!has_moustache)   continue; break;
-			case CMFV_LIPS:        // FALL THROUGH
+			case CMFV_LIPS:
 			case CMFV_NOSE:        if (has_moustache)    continue; break;
 			case CMFV_TIE_EARRING: if (!has_tie_earring) continue; break;
 			case CMFV_GLASSES:     if (!has_glasses)     continue; break;
@@ -188,7 +188,7 @@ void InvalidateCompanyWindows(const Company *company)
 
 /**
  * Verify whether the company can pay the bill.
- * @param cost [inout] Money to pay, is changed to an error if the company does not have enough money.
+ * @param[in,out] cost Money to pay, is changed to an error if the company does not have enough money.
  * @return Function returns \c true if the company has enough money, else it returns \c false.
  */
 bool CheckCompanyHasMoney(CommandCost &cost)

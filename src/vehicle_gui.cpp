@@ -416,7 +416,7 @@ struct RefitWindow : public Window {
 		do {
 			if (v->type == VEH_TRAIN && !vehicles_to_refit.Contains(v->index)) continue;
 			const Engine *e = v->GetEngine();
-			uint32 cmask = e->info.refit_mask;
+			CargoTypes cmask = e->info.refit_mask;
 			byte callback_mask = e->info.callback_mask;
 
 			/* Skip this engine if it does not carry anything */
@@ -681,7 +681,7 @@ struct RefitWindow : public Window {
 
 	/**
 	 * Gets the #StringID to use for displaying capacity.
-	 * @param Cargo and cargo subtype to check for capacity.
+	 * @param option Cargo and cargo subtype to check for capacity.
 	 * @return INVALID_STRING_ID if there is no capacity. StringID to use in any other case.
 	 * @post String parameters have been set.
 	 */
@@ -817,7 +817,7 @@ struct RefitWindow : public Window {
 				Vehicle *v = Vehicle::Get(this->window_number);
 				this->selected_vehicle = v->index;
 				this->num_vehicles = UINT8_MAX;
-				/* FALL THROUGH */
+				FALLTHROUGH;
 			}
 
 			case 2: { // The vehicle selection has changed; rebuild the entire list.
@@ -843,7 +843,7 @@ struct RefitWindow : public Window {
 					this->information_width = max_width;
 					this->ReInit();
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
 			}
 
 			case 1: // A new cargo has been selected.
@@ -905,7 +905,7 @@ struct RefitWindow : public Window {
 					if (_ctrl_pressed) this->num_vehicles = UINT8_MAX;
 					break;
 				}
-				/* FALL THROUGH */
+				FALLTHROUGH;
 			}
 
 			default:
@@ -940,7 +940,7 @@ struct RefitWindow : public Window {
 				this->InvalidateData(1);
 
 				if (click_count == 1) break;
-				/* FALL THROUGH */
+				FALLTHROUGH;
 			}
 
 			case WID_VR_REFIT: // refit button
@@ -1043,9 +1043,9 @@ void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *pare
 uint ShowRefitOptionsList(int left, int right, int y, EngineID engine)
 {
 	/* List of cargo types of this engine */
-	uint32 cmask = GetUnionOfArticulatedRefitMasks(engine, false);
+	CargoTypes cmask = GetUnionOfArticulatedRefitMasks(engine, false);
 	/* List of cargo types available in this climate */
-	uint32 lmask = _cargo_mask;
+	CargoTypes lmask = _cargo_mask;
 
 	/* Draw nothing if the engine is not refittable */
 	if (HasAtMostOneBit(cmask)) return y;
@@ -1638,7 +1638,7 @@ public:
 				break;
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
-				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier(this->window_number).type == VL_STANDARD, false);
+				DropDownList *list = this->BuildActionDropdownList(VehicleListIdentifier::UnPack(this->window_number).type == VL_STANDARD, false);
 				ShowDropDownList(this, list, 0, WID_VL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}
@@ -1830,7 +1830,7 @@ static const NWidgetPart _nested_train_vehicle_details_widgets[] = {
 		NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_VD_DECREASE_SERVICING_INTERVAL), SetFill(0, 1),
 				SetDataTip(AWV_DECREASE, STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP),
 		NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_VD_INCREASE_SERVICING_INTERVAL), SetFill(0, 1),
-				SetDataTip(AWV_INCREASE, STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP),
+				SetDataTip(AWV_INCREASE, STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_VD_SERVICE_INTERVAL_DROPDOWN), SetFill(0, 1),
 				SetDataTip(STR_EMPTY, STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP),
 		NWidget(WWT_PANEL, COLOUR_GREY, WID_VD_SERVICING_INTERVAL), SetFill(1, 1), SetResize(1, 0), EndContainer(),
@@ -2069,9 +2069,14 @@ struct VehicleDetailsWindow : Window {
 					}
 				} else {
 					SetDParam(0, v->GetDisplayMaxSpeed());
-					if (v->type == VEH_AIRCRAFT && Aircraft::From(v)->GetRange() > 0) {
-						SetDParam(1, Aircraft::From(v)->GetRange());
-						string = STR_VEHICLE_INFO_MAX_SPEED_RANGE;
+					if (v->type == VEH_AIRCRAFT) {
+						SetDParam(1, v->GetEngine()->GetAircraftTypeText());
+						if (Aircraft::From(v)->GetRange() > 0) {
+							SetDParam(2, Aircraft::From(v)->GetRange());
+							string = STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE;
+						} else {
+							string = STR_VEHICLE_INFO_MAX_SPEED_TYPE;
+						}
 					} else {
 						string = STR_VEHICLE_INFO_MAX_SPEED;
 					}
@@ -2100,9 +2105,7 @@ struct VehicleDetailsWindow : Window {
 			case WID_VD_MIDDLE_DETAILS: {
 				/* For other vehicles, at the place of the matrix. */
 				bool rtl = _current_text_dir == TD_RTL;
-				uint sprite_width = UnScaleGUI(
-						max<uint>(GetSprite(v->GetImage(rtl ? DIR_E : DIR_W, EIT_IN_DETAILS), ST_NORMAL)->width, 70U)) +
-						WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+				uint sprite_width = GetSingleVehicleWidth(v, EIT_IN_DETAILS) + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 
 				uint text_left  = r.left  + (rtl ? 0 : sprite_width);
 				uint text_right = r.right - (rtl ? sprite_width : 0);
@@ -2278,22 +2281,22 @@ static const NWidgetPart _nested_vehicle_view_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CENTER_MAIN_VIEW), SetMinimalSize(18, 18), SetFill(1, 1), SetDataTip(SPR_CENTRE_VIEW_VEHICLE, 0x0 /* filled later */),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CENTER_MAIN_VIEW), SetMinimalSize(18, 18), SetDataTip(SPR_CENTRE_VIEW_VEHICLE, 0x0 /* filled later */),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VV_SELECT_DEPOT_CLONE),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_GOTO_DEPOT), SetMinimalSize(18, 18), SetFill(1, 1), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CLONE), SetMinimalSize(18, 18), SetFill(1, 1), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_GOTO_DEPOT), SetMinimalSize(18, 18), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_CLONE), SetMinimalSize(18, 18), SetDataTip(0x0 /* filled later */, 0x0 /* filled later */),
 			EndContainer(),
 			/* For trains only, 'ignore signal' button. */
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_FORCE_PROCEED), SetMinimalSize(18, 18), SetFill(1, 1),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_FORCE_PROCEED), SetMinimalSize(18, 18),
 											SetDataTip(SPR_IGNORE_SIGNALS, STR_VEHICLE_VIEW_TRAIN_IGNORE_SIGNAL_TOOLTIP),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VV_SELECT_REFIT_TURN),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_REFIT), SetMinimalSize(18, 18), SetFill(1, 1), SetDataTip(SPR_REFIT_VEHICLE, 0x0 /* filled later */),
-				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_TURN_AROUND), SetMinimalSize(18, 18), SetFill(1, 1),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_REFIT), SetMinimalSize(18, 18), SetDataTip(SPR_REFIT_VEHICLE, 0x0 /* filled later */),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_TURN_AROUND), SetMinimalSize(18, 18),
 												SetDataTip(SPR_FORCE_VEHICLE_TURN, STR_VEHICLE_VIEW_ROAD_VEHICLE_REVERSE_TOOLTIP),
 			EndContainer(),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_SHOW_ORDERS), SetFill(1, 1), SetMinimalSize(18, 18), SetDataTip(SPR_SHOW_ORDERS, 0x0 /* filled later */),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_SHOW_DETAILS), SetFill(1, 1), SetMinimalSize(18, 18), SetDataTip(SPR_SHOW_VEHICLE_DETAILS, 0x0 /* filled later */),
-			NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), SetMinimalSize(18, 0), SetResize(0, 1), EndContainer(),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_SHOW_ORDERS), SetMinimalSize(18, 18), SetDataTip(SPR_SHOW_ORDERS, 0x0 /* filled later */),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_VV_SHOW_DETAILS), SetMinimalSize(18, 18), SetDataTip(SPR_SHOW_VEHICLE_DETAILS, 0x0 /* filled later */),
+			NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(18, 0), SetResize(0, 1), EndContainer(),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
@@ -2367,13 +2370,13 @@ static const uint32 _vehicle_command_translation_table[][4] = {
 		CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_TRAIN),
 		CMD_TURN_ROADVEH            | CMD_MSG(STR_ERROR_CAN_T_MAKE_ROAD_VEHICLE_TURN),
 		0xffffffff, // invalid for ships
-		0xffffffff  // invalid for aircrafts
+		0xffffffff  // invalid for aircraft
 	},
 };
 
 /**
- * This is the Callback method after the cloning attempt of a vehicle
- * @param result the result of the cloning command
+ * This is the Callback method after attempting to start/stop a vehicle
+ * @param result the result of the start/stop command
  * @param tile unused
  * @param p1 vehicle ID
  * @param p2 unused
@@ -2453,6 +2456,7 @@ private:
 public:
 	VehicleViewWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
+		this->flags |= WF_DISABLE_VP_SCROLL;
 		this->CreateNestedTree();
 
 		/* Sprites for the 'send to depot' button indexed by vehicle type. */
@@ -2634,8 +2638,7 @@ public:
 						str = STR_VEHICLE_STATUS_LEAVING;
 						break;
 					}
-					/* FALL THROUGH, if aircraft. Does this even happen? */
-
+					FALLTHROUGH;
 				default:
 					if (v->GetNumManualOrders() == 0) {
 						str = STR_VEHICLE_STATUS_NO_ORDERS_VEL;
@@ -2829,35 +2832,84 @@ void CcBuildPrimaryVehicle(const CommandCost &result, TileIndex tile, uint32 p1,
 }
 
 /**
+ * Get the width of a vehicle (part) in pixels.
+ * @param v Vehicle to get the width for.
+ * @return Width of the vehicle.
+ */
+int GetSingleVehicleWidth(const Vehicle *v, EngineImageType image_type)
+{
+	switch (v->type) {
+		case VEH_TRAIN:
+			return Train::From(v)->GetDisplayImageWidth();
+
+		case VEH_ROAD:
+			return RoadVehicle::From(v)->GetDisplayImageWidth();
+
+		default:
+			bool rtl = _current_text_dir == TD_RTL;
+			VehicleSpriteSeq seq;
+			v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
+			Rect rec;
+			seq.GetBounds(&rec);
+			return UnScaleGUI(rec.right - rec.left + 1);
+	}
+}
+
+/**
  * Get the width of a vehicle (including all parts of the consist) in pixels.
  * @param v Vehicle to get the width for.
  * @return Width of the vehicle.
  */
-int GetVehicleWidth(Vehicle *v, EngineImageType image_type)
+int GetVehicleWidth(const Vehicle *v, EngineImageType image_type)
 {
-	int vehicle_width = 0;
+	if (v->type == VEH_TRAIN || v->type == VEH_ROAD) {
+		int vehicle_width = 0;
+		for (const Vehicle *u = v; u != NULL; u = u->Next()) {
+			vehicle_width += GetSingleVehicleWidth(u, image_type);
+		}
+		return vehicle_width;
+	} else {
+		return GetSingleVehicleWidth(v, image_type);
+	}
+}
 
-	switch (v->type) {
-		case VEH_TRAIN:
-			for (const Train *u = Train::From(v); u != NULL; u = u->Next()) {
-				vehicle_width += u->GetDisplayImageWidth();
-			}
-			break;
+/**
+ * Set the mouse cursor to look like a vehicle.
+ * @param v Vehicle
+ * @param image_type Type of vehicle image to use.
+ */
+void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
+{
+	bool rtl = _current_text_dir == TD_RTL;
 
-		case VEH_ROAD:
-			for (const RoadVehicle *u = RoadVehicle::From(v); u != NULL; u = u->Next()) {
-				vehicle_width += u->GetDisplayImageWidth();
-			}
-			break;
+	_cursor.sprite_count = 0;
+	int total_width = 0;
+	for (; v != NULL; v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : NULL) {
+		if (total_width >= 2 * (int)VEHICLEINFO_FULL_VEHICLE_WIDTH) break;
 
-		default:
-			bool rtl = _current_text_dir == TD_RTL;
-			SpriteID sprite = v->GetImage(rtl ? DIR_E : DIR_W, image_type);
-			const Sprite *real_sprite = GetSprite(sprite, ST_NORMAL);
-			vehicle_width = UnScaleGUI(real_sprite->width);
+		PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
+		VehicleSpriteSeq seq;
+		v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
 
-			break;
+		if (_cursor.sprite_count + seq.count > lengthof(_cursor.sprite_seq)) break;
+
+		for (uint i = 0; i < seq.count; ++i) {
+			PaletteID pal2 = (v->vehstatus & VS_CRASHED) || !seq.seq[i].pal ? pal : seq.seq[i].pal;
+			_cursor.sprite_seq[_cursor.sprite_count].sprite = seq.seq[i].sprite;
+			_cursor.sprite_seq[_cursor.sprite_count].pal = pal2;
+			_cursor.sprite_pos[_cursor.sprite_count].x = rtl ? -total_width : total_width;
+			_cursor.sprite_pos[_cursor.sprite_count].y = 0;
+			_cursor.sprite_count++;
+		}
+
+		total_width += GetSingleVehicleWidth(v, image_type);
 	}
 
-	return vehicle_width;
+	int offs = ((int)VEHICLEINFO_FULL_VEHICLE_WIDTH - total_width) / 2;
+	if (rtl) offs = -offs;
+	for (uint i = 0; i < _cursor.sprite_count; ++i) {
+		_cursor.sprite_pos[i].x += offs;
+	}
+
+	UpdateCursorSize();
 }

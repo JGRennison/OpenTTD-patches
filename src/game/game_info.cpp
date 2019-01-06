@@ -25,12 +25,13 @@
 static bool CheckAPIVersion(const char *api_version)
 {
 	return strcmp(api_version, "1.2") == 0 || strcmp(api_version, "1.3") == 0 || strcmp(api_version, "1.4") == 0 ||
-			strcmp(api_version, "1.5") == 0 || strcmp(api_version, "1.6") == 0;
+			strcmp(api_version, "1.5") == 0 || strcmp(api_version, "1.6") == 0 || strcmp(api_version, "1.7") == 0 ||
+			strcmp(api_version, "1.8") == 0 || strcmp(api_version, "1.9") == 0;
 }
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #undef GetClassName
-#endif /* WIN32 */
+#endif /* _WIN32 */
 template <> const char *GetClassName<GameInfo, ST_GS>() { return "GSInfo"; }
 
 /* static */ void GameInfo::RegisterAPI(Squirrel *engine)
