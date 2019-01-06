@@ -74,12 +74,7 @@ static void ShowIndustryCargoesWindow(IndustryType id);
 
 /**
  * Gets the string to display after the cargo name (using callback 37)
- * @param cargo the cargo for which the suffix is requested
- * - 00 - first accepted cargo type
- * - 01 - second accepted cargo type
- * - 02 - third accepted cargo type
- * - 03 - first produced cargo type
- * - 04 - second produced cargo type
+ * @param cargo the cargo for which the suffix is requested, meaning depends on presence of flag 18 in prop 1A
  * @param cst the cargo suffix type (for which window is it requested). @see CargoSuffixType
  * @param ind the industry (NULL if in fund window)
  * @param ind_type the industry type
@@ -134,9 +129,14 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
 	}
 }
 
+enum CargoSuffixInOut {
+	CARGOSUFFIX_OUT = 0,
+	CARGOSUFFIX_IN  = 1,
+};
+
 /**
  * Gets all strings to display after the cargoes of industries (using callback 37)
- * @param cb_offset The offset for the cargo used in cb37, 0 for accepted cargoes, 3 for produced cargoes
+ * @param use_input get suffixes for output cargoes or input cargoes?
  * @param cst the cargo suffix type (for which window is it requested). @see CargoSuffixType
  * @param ind the industry (NULL if in fund window)
  * @param ind_type the industry type
@@ -145,14 +145,40 @@ static void GetCargoSuffix(uint cargo, CargoSuffixType cst, const Industry *ind,
  * @param suffixes is filled with the suffixes
  */
 template <typename TC, typename TS>
-static inline void GetAllCargoSuffixes(uint cb_offset, CargoSuffixType cst, const Industry *ind, IndustryType ind_type, const IndustrySpec *indspec, const TC &cargoes, TS &suffixes)
+static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixType cst, const Industry *ind, IndustryType ind_type, const IndustrySpec *indspec, const TC &cargoes, TS &suffixes)
 {
 	assert_compile(lengthof(cargoes) <= lengthof(suffixes));
-	for (uint j = 0; j < lengthof(cargoes); j++) {
-		if (cargoes[j] != CT_INVALID) {
-			GetCargoSuffix(cb_offset + j, cst, ind, ind_type, indspec, suffixes[j]);
-		} else {
+
+	if (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) {
+		/* Reworked behaviour with new many-in-many-out scheme */
+		for (uint j = 0; j < lengthof(suffixes); j++) {
+			if (cargoes[j] != CT_INVALID) {
+				byte local_id = indspec->grf_prop.grffile->cargo_map[cargoes[j]]; // should we check the value for valid?
+				uint cargotype = local_id << 16 | use_input;
+				GetCargoSuffix(cargotype, cst, ind, ind_type, indspec, suffixes[j]);
+			} else {
+				suffixes[j].text[0] = '\0';
+				suffixes[j].display = CSD_CARGO;
+			}
+		}
+	} else {
+		/* Compatible behaviour with old 3-in-2-out scheme */
+		for (uint j = 0; j < lengthof(suffixes); j++) {
 			suffixes[j].text[0] = '\0';
+			suffixes[j].display = CSD_CARGO;
+		}
+		switch (use_input) {
+			case CARGOSUFFIX_OUT:
+				if (cargoes[0] != CT_INVALID) GetCargoSuffix(3, cst, ind, ind_type, indspec, suffixes[0]);
+				if (cargoes[1] != CT_INVALID) GetCargoSuffix(4, cst, ind, ind_type, indspec, suffixes[1]);
+				break;
+			case CARGOSUFFIX_IN:
+				if (cargoes[0] != CT_INVALID) GetCargoSuffix(0, cst, ind, ind_type, indspec, suffixes[0]);
+				if (cargoes[1] != CT_INVALID) GetCargoSuffix(1, cst, ind, ind_type, indspec, suffixes[1]);
+				if (cargoes[2] != CT_INVALID) GetCargoSuffix(2, cst, ind, ind_type, indspec, suffixes[2]);
+				break;
+			default:
+				NOT_REACHED();
 		}
 	}
 }
@@ -358,8 +384,8 @@ public:
 
 					const IndustrySpec *indsp = GetIndustrySpec(this->index[i]);
 
-					CargoSuffix cargo_suffix[3];
-					GetAllCargoSuffixes(0, CST_FUND, NULL, this->index[i], indsp, indsp->accepts_cargo, cargo_suffix);
+					CargoSuffix cargo_suffix[lengthof(indsp->accepts_cargo)];
+					GetAllCargoSuffixes(CARGOSUFFIX_IN, CST_FUND, NULL, this->index[i], indsp, indsp->accepts_cargo, cargo_suffix);
 					StringID str = STR_INDUSTRY_VIEW_REQUIRES_CARGO;
 					byte p = 0;
 					SetDParam(0, STR_JUST_NOTHING);
@@ -373,7 +399,7 @@ public:
 					d = maxdim(d, GetStringBoundingBox(str));
 
 					/* Draw the produced cargoes, if any. Otherwise, will print "Nothing". */
-					GetAllCargoSuffixes(3, CST_FUND, NULL, this->index[i], indsp, indsp->produced_cargo, cargo_suffix);
+					GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_FUND, NULL, this->index[i], indsp, indsp->produced_cargo, cargo_suffix);
 					str = STR_INDUSTRY_VIEW_PRODUCES_CARGO;
 					p = 0;
 					SetDParam(0, STR_JUST_NOTHING);
@@ -477,8 +503,8 @@ public:
 				}
 
 				/* Draw the accepted cargoes, if any. Otherwise, will print "Nothing". */
-				CargoSuffix cargo_suffix[3];
-				GetAllCargoSuffixes(0, CST_FUND, NULL, this->selected_type, indsp, indsp->accepts_cargo, cargo_suffix);
+				CargoSuffix cargo_suffix[lengthof(indsp->accepts_cargo)];
+				GetAllCargoSuffixes(CARGOSUFFIX_IN, CST_FUND, NULL, this->selected_type, indsp, indsp->accepts_cargo, cargo_suffix);
 				StringID str = STR_INDUSTRY_VIEW_REQUIRES_CARGO;
 				byte p = 0;
 				SetDParam(0, STR_JUST_NOTHING);
@@ -493,7 +519,7 @@ public:
 				y += FONT_HEIGHT_NORMAL;
 
 				/* Draw the produced cargoes, if any. Otherwise, will print "Nothing". */
-				GetAllCargoSuffixes(3, CST_FUND, NULL, this->selected_type, indsp, indsp->produced_cargo, cargo_suffix);
+				GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_FUND, NULL, this->selected_type, indsp, indsp->produced_cargo, cargo_suffix);
 				str = STR_INDUSTRY_VIEW_PRODUCES_CARGO;
 				p = 0;
 				SetDParam(0, STR_JUST_NOTHING);
@@ -508,7 +534,6 @@ public:
 				y += FONT_HEIGHT_NORMAL;
 
 				/* Get the additional purchase info text, if it has not already been queried. */
-				str = STR_NULL;
 				if (HasBit(indsp->callback_mask, CBM_IND_FUND_MORE_TEXT)) {
 					uint16 callback_res = GetIndustryCallback(CBID_INDUSTRY_FUND_MORE_TEXT, 0, 0, NULL, this->selected_type, INVALID_TILE);
 					if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
@@ -684,8 +709,15 @@ static void UpdateIndustryProduction(Industry *i);
 static inline bool IsProductionAlterable(const Industry *i)
 {
 	const IndustrySpec *is = GetIndustrySpec(i->type);
+	bool has_prod = false;
+	for (size_t j = 0; j < lengthof(is->production_rate); j++) {
+		if (is->production_rate[j] != 0) {
+			has_prod = true;
+			break;
+		}
+	}
 	return ((_game_mode == GM_EDITOR || _cheats.setup_prod.value) &&
-			(is->production_rate[0] != 0 || is->production_rate[1] != 0 || is->IsRawIndustry()) &&
+			(has_prod || is->IsRawIndustry()) &&
 			!_networking);
 }
 
@@ -764,8 +796,8 @@ public:
 			y += 2 * FONT_HEIGHT_NORMAL;
 		}
 
-		CargoSuffix cargo_suffix[3];
-		GetAllCargoSuffixes(0, CST_VIEW, i, i->type, ind, i->accepts_cargo, cargo_suffix);
+		CargoSuffix cargo_suffix[lengthof(i->accepts_cargo)];
+		GetAllCargoSuffixes(CARGOSUFFIX_IN, CST_VIEW, i, i->type, ind, i->accepts_cargo, cargo_suffix);
 		bool stockpiling = HasBit(ind->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(ind->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
 
 		uint left_side = left + WD_FRAMERECT_LEFT * 4; // Indent accepted cargoes.
@@ -804,7 +836,7 @@ public:
 			y += FONT_HEIGHT_NORMAL;
 		}
 
-		GetAllCargoSuffixes(3, CST_VIEW, i, i->type, ind, i->produced_cargo, cargo_suffix);
+		GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_VIEW, i, i->type, ind, i->produced_cargo, cargo_suffix);
 		first = true;
 		for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
 			if (i->produced_cargo[j] == CT_INVALID) continue;
@@ -1256,7 +1288,7 @@ protected:
 		SetDParam(p++, i->index);
 
 		static CargoSuffix cargo_suffix[lengthof(i->produced_cargo)];
-		GetAllCargoSuffixes(3, CST_DIR, i, i->type, indsp, i->produced_cargo, cargo_suffix);
+		GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_DIR, i, i->type, indsp, i->produced_cargo, cargo_suffix);
 
 		/* Industry productions */
 		for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
@@ -1515,7 +1547,7 @@ enum CargoesFieldType {
 	CFT_HEADER,      ///< Header text.
 };
 
-static const uint MAX_CARGOES = 3; ///< Maximum number of cargoes carried in a #CFT_CARGO field in #CargoesField.
+static const uint MAX_CARGOES = 16; ///< Maximum number of cargoes carried in a #CFT_CARGO field in #CargoesField.
 
 /** Data about a single field in the #IndustryCargoesWindow panel. */
 struct CargoesField {
@@ -1523,7 +1555,6 @@ struct CargoesField {
 	static const int HOR_CARGO_BORDER_SPACE;
 	static const int CARGO_STUB_WIDTH;
 	static const int HOR_CARGO_WIDTH, HOR_CARGO_SPACE;
-	static const int CARGO_FIELD_WIDTH;
 	static const int VERT_CARGO_SPACE, VERT_CARGO_EDGE;
 	static const int BLOB_DISTANCE, BLOB_WIDTH, BLOB_HEIGHT;
 
@@ -1531,7 +1562,9 @@ struct CargoesField {
 	static const int CARGO_LINE_COLOUR;
 
 	static int small_height, normal_height;
+	static int cargo_field_width;
 	static int industry_width;
+	static uint max_cargoes;
 
 	CargoesFieldType type; ///< Type of field.
 	union {
@@ -1580,7 +1613,7 @@ struct CargoesField {
 	/**
 	 * Connect a cargo from an industry to the #CFT_CARGO column.
 	 * @param cargo Cargo to connect.
-	 * @param produced Cargo is produced (if \c false, cargo is assumed to be accepted).
+	 * @param producer Cargo is produced (if \c false, cargo is assumed to be accepted).
 	 * @return Horizontal connection index, or \c -1 if not accepted at all.
 	 */
 	int ConnectCargo(CargoID cargo, bool producer)
@@ -1684,20 +1717,19 @@ struct CargoesField {
 	int GetCargoBase(int xpos) const
 	{
 		assert(this->type == CFT_CARGO);
+		int n = this->u.cargo.num_cargoes;
 
-		switch (this->u.cargo.num_cargoes) {
-			case 0: return xpos + CARGO_FIELD_WIDTH / 2;
-			case 1: return xpos + CARGO_FIELD_WIDTH / 2 - HOR_CARGO_WIDTH / 2;
-			case 2: return xpos + CARGO_FIELD_WIDTH / 2 - HOR_CARGO_WIDTH - HOR_CARGO_SPACE / 2;
-			case 3: return xpos + CARGO_FIELD_WIDTH / 2 - HOR_CARGO_WIDTH - HOR_CARGO_SPACE - HOR_CARGO_WIDTH / 2;
-			default: NOT_REACHED();
+		if (n % 2 == 0) {
+			return xpos + cargo_field_width / 2 - (HOR_CARGO_WIDTH + HOR_CARGO_SPACE / 2) * (n / 2);
+		} else {
+			return xpos + cargo_field_width / 2 - HOR_CARGO_WIDTH / 2 - (HOR_CARGO_WIDTH + HOR_CARGO_SPACE) * (n / 2);
 		}
 	}
 
 	/**
 	 * Draw the field.
 	 * @param xpos Position of the left edge.
-	 * @param vpos Position of the top edge.
+	 * @param ypos Position of the top edge.
 	 */
 	void Draw(int xpos, int ypos) const
 	{
@@ -1749,7 +1781,7 @@ struct CargoesField {
 					other_left  = this->u.industry.other_accepted;
 				}
 				ypos1 += VERT_CARGO_EDGE;
-				for (uint i = 0; i < MAX_CARGOES; i++) {
+				for (uint i = 0; i < CargoesField::max_cargoes; i++) {
 					if (other_right[i] != INVALID_CARGO) {
 						const CargoSpec *csp = CargoSpec::Get(other_right[i]);
 						int xp = xpos + industry_width + CARGO_STUB_WIDTH;
@@ -1814,7 +1846,7 @@ struct CargoesField {
 							DrawHorConnection(lf + dx - 1, lf + HOR_CARGO_SPACE - 1, ypos, csp);
 							dx = 1;
 						}
-						DrawHorConnection(cargo_base + col * HOR_CARGO_SPACE + (col + 1) * HOR_CARGO_WIDTH - 1 + dx, xpos + CARGO_FIELD_WIDTH - 1, ypos, csp);
+						DrawHorConnection(cargo_base + col * HOR_CARGO_SPACE + (col + 1) * HOR_CARGO_WIDTH - 1 + dx, xpos + CargoesField::cargo_field_width - 1, ypos, csp);
 					}
 					ypos += FONT_HEIGHT_NORMAL + VERT_CARGO_SPACE;
 				}
@@ -1936,9 +1968,11 @@ private:
 assert_compile(MAX_CARGOES >= cpp_lengthof(IndustrySpec, produced_cargo));
 assert_compile(MAX_CARGOES >= cpp_lengthof(IndustrySpec, accepts_cargo));
 
-int CargoesField::small_height;   ///< Height of the header row.
-int CargoesField::normal_height;  ///< Height of the non-header rows.
-int CargoesField::industry_width; ///< Width of an industry field.
+int CargoesField::small_height;      ///< Height of the header row.
+int CargoesField::normal_height;     ///< Height of the non-header rows.
+int CargoesField::industry_width;    ///< Width of an industry field.
+int CargoesField::cargo_field_width; ///< Width of a cargo field.
+uint CargoesField::max_cargoes;      ///< Largest number of cargoes actually on any industry.
 const int CargoesField::VERT_INTER_INDUSTRY_SPACE = 6; ///< Amount of space between two industries in a column.
 
 const int CargoesField::HOR_CARGO_BORDER_SPACE = 15; ///< Amount of space between the left/right edge of a #CFT_CARGO field, and the left/right most vertical cargo.
@@ -1951,9 +1985,6 @@ const int CargoesField::VERT_CARGO_SPACE       =  4; ///< Amount of vertical spa
 const int CargoesField::BLOB_DISTANCE =  5; ///< Distance of the industry legend colour from the edge of the industry box.
 const int CargoesField::BLOB_WIDTH    = 12; ///< Width of the industry legend colour, including border.
 const int CargoesField::BLOB_HEIGHT   =  9; ///< Height of the industry legend colour, including border
-
-/** Width of a #CFT_CARGO field. */
-const int CargoesField::CARGO_FIELD_WIDTH = HOR_CARGO_BORDER_SPACE * 2 + HOR_CARGO_WIDTH * MAX_CARGOES + HOR_CARGO_SPACE * (MAX_CARGOES - 1);
 
 const int CargoesField::INDUSTRY_LINE_COLOUR = PC_YELLOW; ///< Line colour of the industry type box.
 const int CargoesField::CARGO_LINE_COLOUR    = PC_YELLOW; ///< Line colour around the cargo.
@@ -1979,13 +2010,14 @@ struct CargoesRow {
 			int other_count = 0;
 
 			const IndustrySpec *indsp = GetIndustrySpec(ind_fld->u.industry.ind_type);
-			for (uint i = 0; i < lengthof(indsp->produced_cargo); i++) {
+			assert(CargoesField::max_cargoes <= lengthof(indsp->produced_cargo));
+			for (uint i = 0; i < CargoesField::max_cargoes; i++) {
 				int col = cargo_fld->ConnectCargo(indsp->produced_cargo[i], true);
 				if (col < 0) others[other_count++] = indsp->produced_cargo[i];
 			}
 
 			/* Allocate other cargoes in the empty holes of the horizontal cargo connections. */
-			for (uint i = 0; i < MAX_CARGOES && other_count > 0; i++) {
+			for (uint i = 0; i < CargoesField::max_cargoes && other_count > 0; i++) {
 				if (cargo_fld->u.cargo.supp_cargoes[i] == INVALID_CARGO) ind_fld->u.industry.other_produced[i] = others[--other_count];
 			}
 		} else {
@@ -2036,13 +2068,14 @@ struct CargoesRow {
 			int other_count = 0;
 
 			const IndustrySpec *indsp = GetIndustrySpec(ind_fld->u.industry.ind_type);
-			for (uint i = 0; i < lengthof(indsp->accepts_cargo); i++) {
+			assert(CargoesField::max_cargoes <= lengthof(indsp->accepts_cargo));
+			for (uint i = 0; i < CargoesField::max_cargoes; i++) {
 				int col = cargo_fld->ConnectCargo(indsp->accepts_cargo[i], false);
 				if (col < 0) others[other_count++] = indsp->accepts_cargo[i];
 			}
 
 			/* Allocate other cargoes in the empty holes of the horizontal cargo connections. */
-			for (uint i = 0; i < MAX_CARGOES && other_count > 0; i++) {
+			for (uint i = 0; i < CargoesField::max_cargoes && other_count > 0; i++) {
 				if (cargo_fld->u.cargo.cust_cargoes[i] == INVALID_CARGO) ind_fld->u.industry.other_accepted[i] = others[--other_count];
 			}
 		} else {
@@ -2125,10 +2158,13 @@ struct IndustryCargoesWindow : public Window {
 		/* Decide about the size of the box holding the text of an industry type. */
 		this->ind_textsize.width = 0;
 		this->ind_textsize.height = 0;
+		CargoesField::max_cargoes = 0;
 		for (IndustryType it = 0; it < NUM_INDUSTRYTYPES; it++) {
 			const IndustrySpec *indsp = GetIndustrySpec(it);
 			if (!indsp->enabled) continue;
 			this->ind_textsize = maxdim(this->ind_textsize, GetStringBoundingBox(indsp->name));
+			CargoesField::max_cargoes = max<uint>(CargoesField::max_cargoes, std::count_if(indsp->accepts_cargo, endof(indsp->accepts_cargo), IsCargoIDValid));
+			CargoesField::max_cargoes = max<uint>(CargoesField::max_cargoes, std::count_if(indsp->produced_cargo, endof(indsp->produced_cargo), IsCargoIDValid));
 		}
 		d.width = max(d.width, this->ind_textsize.width);
 		d.height = this->ind_textsize.height;
@@ -2147,18 +2183,21 @@ struct IndustryCargoesWindow : public Window {
 
 		d.width  += 2 * HOR_TEXT_PADDING;
 		/* Ensure the height is enough for the industry type text, for the horizontal connections, and for the cargo labels. */
-		uint min_ind_height = CargoesField::VERT_CARGO_EDGE * 2 + MAX_CARGOES * FONT_HEIGHT_NORMAL + (MAX_CARGOES - 1) *  CargoesField::VERT_CARGO_SPACE;
+		uint min_ind_height = CargoesField::VERT_CARGO_EDGE * 2 + CargoesField::max_cargoes * FONT_HEIGHT_NORMAL + (CargoesField::max_cargoes - 1) *  CargoesField::VERT_CARGO_SPACE;
 		d.height = max(d.height + 2 * VERT_TEXT_PADDING, min_ind_height);
 
 		CargoesField::industry_width = d.width;
 		CargoesField::normal_height = d.height + CargoesField::VERT_INTER_INDUSTRY_SPACE;
+
+		/* Width of a #CFT_CARGO field. */
+		CargoesField::cargo_field_width = CargoesField::HOR_CARGO_BORDER_SPACE * 2 + CargoesField::HOR_CARGO_WIDTH * CargoesField::max_cargoes + CargoesField::HOR_CARGO_SPACE * (CargoesField::max_cargoes - 1);
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
 		switch (widget) {
 			case WID_IC_PANEL:
-				size->width = WD_FRAMETEXT_LEFT + CargoesField::industry_width * 3 + CargoesField::CARGO_FIELD_WIDTH * 2 + WD_FRAMETEXT_RIGHT;
+				size->width = WD_FRAMETEXT_LEFT + CargoesField::industry_width * 3 + CargoesField::cargo_field_width * 2 + WD_FRAMETEXT_RIGHT;
 				break;
 
 			case WID_IC_IND_DROPDOWN:
@@ -2519,7 +2558,7 @@ struct IndustryCargoesWindow : public Window {
 		_cur_dpi = &tmp_dpi;
 
 		int left_pos = WD_FRAMERECT_LEFT;
-		if (this->ind_cargo >= NUM_INDUSTRYTYPES) left_pos += (CargoesField::industry_width + CargoesField::CARGO_FIELD_WIDTH) / 2;
+		if (this->ind_cargo >= NUM_INDUSTRYTYPES) left_pos += (CargoesField::industry_width + CargoesField::cargo_field_width) / 2;
 		int last_column = (this->ind_cargo < NUM_INDUSTRYTYPES) ? 4 : 2;
 
 		const NWidgetBase *nwp = this->GetWidget<NWidgetBase>(WID_IC_PANEL);
@@ -2538,7 +2577,7 @@ struct IndustryCargoesWindow : public Window {
 				}
 				while (col >= 0 && col <= last_column) {
 					this->fields[i].columns[col].Draw(xpos, vpos);
-					xpos += (col & 1) ? CargoesField::CARGO_FIELD_WIDTH : CargoesField::industry_width;
+					xpos += (col & 1) ? CargoesField::cargo_field_width : CargoesField::industry_width;
 					col += dir;
 				}
 			}
@@ -2570,11 +2609,11 @@ struct IndustryCargoesWindow : public Window {
 		vpos = pt.y - vpos - row * CargoesField::normal_height; // Position in the row + 1 field
 		row++; // rebase row to match index of this->fields.
 
-		int xpos = 2 * WD_FRAMERECT_LEFT + ((this->ind_cargo < NUM_INDUSTRYTYPES) ? 0 :  (CargoesField::industry_width + CargoesField::CARGO_FIELD_WIDTH) / 2);
+		int xpos = 2 * WD_FRAMERECT_LEFT + ((this->ind_cargo < NUM_INDUSTRYTYPES) ? 0 :  (CargoesField::industry_width + CargoesField::cargo_field_width) / 2);
 		if (pt.x < xpos) return false;
 		int column;
 		for (column = 0; column <= 5; column++) {
-			int width = (column & 1) ? CargoesField::CARGO_FIELD_WIDTH : CargoesField::industry_width;
+			int width = (column & 1) ? CargoesField::cargo_field_width : CargoesField::industry_width;
 			if (pt.x < xpos + width) break;
 			xpos += width;
 		}
@@ -2587,7 +2626,7 @@ struct IndustryCargoesWindow : public Window {
 		xy->y = vpos;
 		if (_current_text_dir == TD_RTL) {
 			fieldxy->x = num_columns - column;
-			xy->x = ((column & 1) ? CargoesField::CARGO_FIELD_WIDTH : CargoesField::industry_width) - xpos;
+			xy->x = ((column & 1) ? CargoesField::cargo_field_width : CargoesField::industry_width) - xpos;
 		} else {
 			fieldxy->x = column;
 			xy->x = xpos;

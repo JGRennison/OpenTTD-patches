@@ -2683,6 +2683,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}オリ�
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD バージョン {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 The OpenTTD team
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}ゲームを保存
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}ゲームを開く
@@ -4199,7 +4206,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}停留�
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}駅の部分が多すぎます
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}バス停が多すぎます
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}荷役所が多すぎます
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}他の停留施設に近すぎます
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}他の埠頭に近すぎます
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}他の空港に近すぎます
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}駅名を変更できません

@@ -34,6 +34,7 @@
 #include "company_base.h"
 #include "tunnelbridge_map.h"
 #include "zoom_func.h"
+#include "framerate_type.h"
 
 #include "table/strings.h"
 
@@ -638,6 +639,8 @@ reverse_direction:
 
 bool Ship::Tick()
 {
+	PerformanceAccumulator framerate(PFE_GL_SHIPS);
+
 	if (!(this->vehstatus & VS_STOPPED)) this->running_ticks++;
 
 	ShipController(this);
@@ -651,7 +654,7 @@ bool Ship::Tick()
  * @param flags    type of operation.
  * @param e        the engine to build.
  * @param data     unused.
- * @param ret[out] the vehicle that has been built.
+ * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
 CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)

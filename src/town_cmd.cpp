@@ -719,7 +719,7 @@ void UpdateTownCargoTotal(Town *t)
 static void UpdateTownCargoes(Town *t, TileIndex start, bool update_total = true)
 {
 	CargoArray accepted, produced;
-	CargoTypes dummy;
+	CargoTypes dummy = 0;
 
 	/* Gather acceptance for all houses in an area around the start tile.
 	 * The area is composed of the square the tile is in, extended one square in all
@@ -1798,15 +1798,21 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		if (_game_mode != GM_EDITOR) {
 			/* 't' can't be NULL since 'random' is false outside scenedit */
 			assert(!random);
-			char company_name[MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH];
-			SetDParam(0, _current_company);
-			GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
 
-			char *cn = stredup(company_name);
-			SetDParamStr(0, cn);
-			SetDParam(1, t->index);
+			if (_current_company == OWNER_DEITY) {
+				SetDParam(0, t->index);
+				AddTileNewsItem(STR_NEWS_NEW_TOWN_UNSPONSORED, NT_INDUSTRY_OPEN, tile);
+			} else {
+				char company_name[MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH];
+				SetDParam(0, _current_company);
+				GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
 
-			AddTileNewsItem(STR_NEWS_NEW_TOWN, NT_INDUSTRY_OPEN, tile, cn);
+				char *cn = stredup(company_name);
+				SetDParamStr(0, cn);
+				SetDParam(1, t->index);
+
+				AddTileNewsItem(STR_NEWS_NEW_TOWN, NT_INDUSTRY_OPEN, tile, cn);
+			}
 			AI::BroadcastNewEvent(new ScriptEventTownFounded(t->index));
 			Game::NewEvent(new ScriptEventTownFounded(t->index));
 		}
@@ -3139,7 +3145,7 @@ static void UpdateTownRating(Town *t)
 /**
  * Updates town grow counter after growth rate change.
  * Preserves relative house builting progress whenever it can.
- * @param town The town to calculate grow counter for
+ * @param t The town to calculate grow counter for
  * @param prev_growth_rate Town growth rate before it changed (one that was used with grow counter to be updated)
  */
 static void UpdateTownGrowCounter(Town *t, uint16 prev_growth_rate)
@@ -3154,7 +3160,7 @@ static void UpdateTownGrowCounter(Town *t, uint16 prev_growth_rate)
 
 /**
  * Calculates amount of active stations in the range of town (HZB_TOWN_EDGE).
- * @param town The town to calculate stations for
+ * @param t The town to calculate stations for
  * @returns Amount of active stations
  */
 static int CountActiveStations(Town *t)
@@ -3174,7 +3180,7 @@ static int CountActiveStations(Town *t)
 /**
  * Calculates town growth rate in normal conditions (custom growth rate not set).
  * If town growth speed is set to None(0) returns the same rate as if it was Normal(2).
- * @param town The town to calculate growth rate for
+ * @param t The town to calculate growth rate for
  * @returns Calculated growth rate
  */
 static uint GetNormalGrowthRate(Town *t)
@@ -3197,7 +3203,7 @@ static uint GetNormalGrowthRate(Town *t)
 
 /**
  * Updates town growth rate.
- * @param town The town to update growth rate for
+ * @param t The town to update growth rate for
  */
 static void UpdateTownGrowthRate(Town *t)
 {
@@ -3210,7 +3216,7 @@ static void UpdateTownGrowthRate(Town *t)
 
 /**
  * Updates town growth state (whether it is growing or not).
- * @param town The town to update growth for
+ * @param t The town to update growth for
  */
 static void UpdateTownGrowth(Town *t)
 {

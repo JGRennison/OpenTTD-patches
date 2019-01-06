@@ -869,7 +869,7 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Leihoa {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Leihora kopiatu
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK} Leiho nagusian ikusten dena leiho honetara kopiatu
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Leihotik kpiatutakoa itsatsi
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Aldatu ikuspen nagusia
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Leiho honetan ikusten dena leiho nagusian itsasi
 
 # Game options window
@@ -2587,6 +2587,15 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD bertsioa {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 The OpenTTD team
 
+# Framerate display window
+############ Leave those lines in this order!!
+STR_FRAMERATE_GL_TRAINS                                         :{WHITE}  Trenen tick-ak:
+STR_FRAMERATE_GL_SHIPS                                          :{WHITE}  Itsasontzien tick-ak:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Gordetako jokoa
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Jokoa kargatu
@@ -3002,6 +3011,7 @@ STR_STATION_VIEW_CARGO_SUPPLY_RATING                            :{WHITE}{STRING}
 STR_STATION_VIEW_GROUP                                          :{BLACK}Taldekatu
 STR_STATION_VIEW_WAITING_STATION                                :Geltokia: Itxaroten
 STR_STATION_VIEW_WAITING_AMOUNT                                 :Kopurua: Itxoiten
+STR_STATION_VIEW_PLANNED_STATION                                :Geltokia: Antolatua
 STR_STATION_VIEW_FROM                                           :{YELLOW}{CARGO_SHORT} {STATION}-tik
 STR_STATION_VIEW_VIA                                            :{YELLOW}{CARGO_SHORT}{STATION}-tik
 STR_STATION_VIEW_TO                                             :{YELLOW}{CARGO_SHORT}{STATION}-ra
@@ -4066,7 +4076,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Geltoki 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Tren geltoki zati gehiegi
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Autobus geltoki gehiegi
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Kamioi geltoki gehiegi
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Geltoki batetik hurbilegi
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Kai batetik hurbilegi
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Aireportu batetik hurbilegi
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Ezinda geltokia berrizendatu...

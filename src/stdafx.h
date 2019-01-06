@@ -133,7 +133,6 @@
 	#define NORETURN __attribute__ ((noreturn))
 	#define CDECL
 	#define __int64 long long
-	#define GCC_PACK __attribute__((packed))
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
 	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
@@ -154,7 +153,6 @@
 #if defined(__WATCOMC__)
 	#define NORETURN
 	#define CDECL
-	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL
 	#define FALLTHROUGH
@@ -165,7 +163,7 @@
 	#include <malloc.h> // alloca()
 #endif
 
-#if defined(WIN32)
+#if defined(_WIN32)
 	#define WIN32_LEAN_AND_MEAN     // Exclude rarely-used stuff from Windows headers
 #endif
 
@@ -220,7 +218,6 @@
 	#endif
 
 	#define CDECL _cdecl
-	#define GCC_PACK
 	#define WARN_FORMAT(string, args)
 	#define FINAL sealed
 
@@ -231,25 +228,32 @@
 		#define FALLTHROUGH
 	#endif
 
-	#if defined(WIN32) && !defined(_WIN64) && !defined(WIN64)
+#	if defined(_WIN32) && !defined(_WIN64)
 		#if !defined(_W64)
 			#define _W64
 		#endif
 
 		typedef _W64 int INT_PTR, *PINT_PTR;
 		typedef _W64 unsigned int UINT_PTR, *PUINT_PTR;
-	#endif /* WIN32 && !_WIN64 && !WIN64 */
+#	endif /* _WIN32 && !_WIN64 */
 
-	#if defined(_WIN64) || defined(WIN64)
+#	if defined(_WIN64)
 		#define fseek _fseeki64
-	#endif /* _WIN64 || WIN64 */
+#	endif /* _WIN64 */
 
-	/* This is needed to zlib uses the stdcall calling convention on visual studio */
-	#if defined(WITH_ZLIB) || defined(WITH_PNG)
-		#if !defined(ZLIB_WINAPI)
-			#define ZLIB_WINAPI
-		#endif
-	#endif
+	/* zlib from vcpkg use cdecl calling convention without enforcing it in the headers */
+#	if defined(WITH_ZLIB)
+#		if !defined(ZEXPORT)
+#			define ZEXPORT CDECL
+#		endif
+#	endif
+
+	/* freetype from vcpkg use cdecl calling convention without enforcing it in the headers */
+#	if defined(WITH_FREETYPE)
+#		if !defined(FT_EXPORT)
+#			define FT_EXPORT( x )  extern "C"  x CDECL
+#		endif
+#	endif
 
 	#define strcasecmp stricmp
 	#define strncasecmp strnicmp
@@ -273,7 +277,7 @@
 /* NOTE: the string returned by these functions is only valid until the next
  * call to the same function and is not thread- or reentrancy-safe */
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
-	#if defined(WIN32) || defined(WIN64)
+#	if defined(_WIN32)
 		char *getcwd(char *buf, size_t size);
 		#include <tchar.h>
 		#include <io.h>
@@ -284,20 +288,30 @@
 
 		const char *FS2OTTD(const TCHAR *name);
 		const TCHAR *OTTD2FS(const char *name, bool console_cp = false);
-	#else
+#	else
 		#define fopen(file, mode) fopen(OTTD2FS(file), mode)
 		const char *FS2OTTD(const char *name);
 		const char *OTTD2FS(const char *name);
-	#endif /* WIN32 */
+#	endif /* _WIN32 */
 #endif /* STRGEN || SETTINGSGEN */
 
-#if defined(WIN32) || defined(WIN64) || defined(__OS2__) && !defined(__INNOTEK_LIBC__)
+#if defined(_WIN32) || defined(__OS2__) && !defined(__INNOTEK_LIBC__)
 	#define PATHSEP "\\"
 	#define PATHSEPCHAR '\\'
 #else
 	#define PATHSEP "/"
 	#define PATHSEPCHAR '/'
 #endif
+
+#if defined(_MSC_VER) || defined(__WATCOMC__)
+#	define PACK_N(type_dec, n) __pragma(pack(push, n)) type_dec; __pragma(pack(pop))
+#elif defined(__MINGW32__)
+#	define PRAGMA(x) _Pragma(#x)
+#	define PACK_N(type_dec, n) PRAGMA(pack(push, n)) type_dec; PRAGMA(pack(pop))
+#else
+#	define PACK_N(type_dec, n) type_dec __attribute__((__packed__, aligned(n)))
+#endif
+#define PACK(type_dec) PACK_N(type_dec, 1)
 
 /* MSVCRT of course has to have a different syntax for long long *sigh* */
 #if defined(_MSC_VER) || defined(__MINGW32__)

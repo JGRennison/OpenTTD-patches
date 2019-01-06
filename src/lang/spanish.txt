@@ -476,6 +476,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Captura de pant
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Captura con zoom de cerca
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Captura con zoom por defecto
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Captura de mapa completo
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Mostrar fotogramas por segundo - FPS
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Acerca de 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Alineador de sprites
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Activar cajas delimitadoras
@@ -574,7 +575,7 @@ STR_GRAPH_OPERATING_PROFIT_CAPTION                              :{WHITE}Gráfico
 STR_GRAPH_INCOME_CAPTION                                        :{WHITE}Gráfico de Ingresos
 STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}Unidades de carga entregadas
 STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}Calificaciones de actuación de empresas (tasa máxima=1000)
-STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Valores de las empresas
+STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Valor de la empresa
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Tasas de pago por carga
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}Días en tránsito
@@ -651,6 +652,7 @@ STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}No hay música disponible
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Pista
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Título
@@ -671,13 +673,16 @@ STR_MUSIC_TOOLTIP_TOGGLE_PROGRAM_SHUFFLE                        :{BLACK}Encender
 STR_MUSIC_TOOLTIP_SHOW_MUSIC_TRACK_SELECTION                    :{BLACK}Mostrar ventana de selección de pistas musicales
 
 # Playlist window
+STR_PLAYLIST_MUSIC_SELECTION_SETNAME                            :{WHITE}Programación Musical - '{STRING}'
 STR_PLAYLIST_TRACK_NAME                                         :{TINY_FONT}{LTBLUE}{ZEROFILL_NUM} "{STRING}"
 STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLACK}Índice de pistas
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Programa - '{STRING}'
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Borrar
-STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Borrar programa actual (solo Personal 1 y Personal 2)
-STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Pulse en la pista de música para añadirla al programa actual (solo Personal 1 y 2)
-STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Pulsa sobre la canción para quitarla del programa actual (Solo Personalizado1 y Personalizado2)
+STR_PLAYLIST_CHANGE_SET                                         :{BLACK}Cambiar set
+STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Borrar programa actual (solo Personalizado1 y 2)
+STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}Cambia la selección musical a otro set instalado
+STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Pulse en la pista de música para añadirla al programa actual (solo Personalizado1 y 2)
+STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Pulsa sobre la canción para quitarla del programa actual (solo Personalizado1 y 2)
 
 # Highscore window
 STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED                         :{BIG_FONT}{BLACK}Top de empresas que han alcanzado {NUM}
@@ -811,6 +816,7 @@ STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLAC
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Presidente)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}¡{STRING} patrocina la construcción del nuevo municipio {TOWN}!
+STR_NEWS_NEW_TOWN_UNSPONSORED                                   :{BLACK}{BIG_FONT}¡Un nuevo municipio, llamado: {TOWN}, ha sido construido!
 
 STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}¡Nuev{G o a} {STRING} en construcción cerca de {TOWN}!
 STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}¡Nuev{G o a} {STRING} está siendo plantad{G o a} cerca de {TOWN}!
@@ -878,10 +884,10 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Vista {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Copiar punto de vista
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Cambiar punto de vista
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Copia la localización de la vista principal a este punto de vista
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Pegar punto de vista
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Pega la localización de este punto de vista a la principal
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Cambiar vista principal
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Copia la localización de este punto de vista en la vista principal
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Opciones del juego
@@ -923,6 +929,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand sudafrican
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Personalizada...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Georgiano (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iraní (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nuevo Rublo Ruso (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Vehículos de carretera
@@ -1490,11 +1497,11 @@ STR_CONFIG_SETTING_NEWS_INDUSTRY_CLOSE_HELPTEXT                 :Mostrar noticia
 STR_CONFIG_SETTING_NEWS_ECONOMY_CHANGES                         :Cambios en la economía: {STRING}
 STR_CONFIG_SETTING_NEWS_ECONOMY_CHANGES_HELPTEXT                :Mostrar noticias sobre cambios globales a la economía
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_COMPANY                :Cambios de producción en industrias atendidas por la empresa: {STRING}
-STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_COMPANY_HELPTEXT       :Mostrar una noticia cuando el nivel de producción de una industria que está servida por tu compañía cambia
+STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_COMPANY_HELPTEXT       :Mostrar una noticia cuando el nivel de producción de una industria, servida por tu compañía, cambia
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_OTHER                  :Cambios de producción en las industrias servidas por los competidores: {STRING}
-STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_OTHER_HELPTEXT         :Mostrar una noticia cuando el nivel de producción de una industria que está servida por compañías competidoras cambia
+STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_OTHER_HELPTEXT         :Mostrar una noticia cuando el nivel de producción de una industria, servida por tus competidores, cambia
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_UNSERVED               :Cambios de producción de otras industrias: {STRING}
-STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_UNSERVED_HELPTEXT      :Mostrar una noticia cuando el nivel de producción de una industria que no está servida por tu compañía o competidores cambia
+STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_UNSERVED_HELPTEXT      :Mostrar una noticia cuando el nivel de producción de una industria, no servida por tu compañía o competidores, cambia
 STR_CONFIG_SETTING_NEWS_ADVICE                                  :Aviso / información de los vehículos de la empresa: {STRING}
 STR_CONFIG_SETTING_NEWS_ADVICE_HELPTEXT                         :Mostrar mensajes sobre vehículos que requieren atención
 STR_CONFIG_SETTING_NEWS_NEW_VEHICLES                            :Nuevos vehículos: {STRING}
@@ -1600,10 +1607,10 @@ STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Ninguna
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Multiplicador inicial del tamaño de ciudad: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Tamaño medio de las ciudades en relación a los pueblos normales al comienzo de la partida
 
-STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Actualizar el grafo de distribución cada {STRING}{NBSP}día{P 0:2 "" s}
-STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Periodo de tiempo entre cálculos del grafo de distribución consecutivos. Esta opción se refiere a los cálculos para cada uno de los componentes del grafo, por lo cual fijar un valor no quiere decir que el grafo completo se actualizará tras ese número de días. Cuanto menor sea, mayor tiempo de CPU será necesario para calcular el grafo de distribución. Cuanto mayor sea, más tardará el grafo de distribución en adaptarse a nuevas rutas
-STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Usar {STRING}{NBSP}día{P 0:2 "" s} para el cálculo del grafo de distribución
-STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :Tiempo a emplear en el cálculo de cada uno de los componentes del grafo de distribución. Cuanto menor sea este valor, más probable es que se produzca ralentización en el juego. Cuanto mayor sea, más tiempo tardará la distribución en actualizarse cuando se producen cambios en las rutas
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Actualizar el gráfico de distribución cada {STRING}{NBSP}día{P 0:2 "" s}
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Periodo de tiempo entre cálculos del gráfico de distribución consecutivos. Esta opción se refiere a los cálculos para cada uno de los componentes del gráfico, por lo cual fijar un valor no quiere decir que el gráfico completo se actualizará tras ese número de días. Cuanto menor sea, mayor tiempo de CPU será necesario para calcular el gráfico de distribución. Cuanto mayor sea, más tardará el gráfico de distribución en adaptarse a nuevas rutas.
+STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Usar {STRING}{NBSP}día{P 0:2 "" s} para el cálculo del gráfico de distribución
+STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :Tiempo a emplear en el cálculo de cada uno de los componentes del gráfico de distribución. Cuanto menor sea este valor, más probable es que se produzca ralentización en el juego. Cuanto mayor sea, más tiempo tardará la distribución en actualizarse cuando se producen cambios en las rutas.
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimétrico
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simétrico
@@ -1616,7 +1623,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :La clase de car
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Modo de distribución para otras clases de carga: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asimétrico" significa que se pueden mover cantidades arbitrarias de carga en ambas direcciones. "Manual" significa que no habrá distribución automática para estos tipos de carga.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Precisión de la distribución: {STRING}
-STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Este valor determina el tiempo de CPU empleado en calcular el grafo de distribución. Si es demasiado elevado puede producir ralentización en el juego. Si es demasiado bajo la distribución puede ser poco precisa, causando que ocasionalmente se produzcan errores en los lugares a los que va la carga
+STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Este valor determina el tiempo de CPU empleado en calcular el gráfico de distribución. Si es demasiado elevado puede producir ralentización en el juego. Si es demasiado bajo la distribución puede ser poco precisa, causando que ocasionalmente se produzcan errores en los lugares a los que va la carga.
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Efecto de la distancia en la demanda: {STRING}
 STR_CONFIG_SETTING_DEMAND_DISTANCE_HELPTEXT                     :Si se fija a un valor superior a 0, la distancia entre la estación origen A de cierta carga y un posible destino B afectará a la cantidad de carga que se enviará de A a B. Cuanto más lejos esté B de A, menos carga se enviará. Cuanto mayor sea el valor de esta opción, menos carga se enviará a estaciones distantes en favor de estaciones cercanas
 STR_CONFIG_SETTING_DEMAND_SIZE                                  :Cantidad de carga a devolver en modo simétrico: {STRING}
@@ -1861,7 +1868,7 @@ STR_FACE_FACECODE                                               :{BLACK}Cara del
 STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Ver y/o asignar número de cara de presidente
 STR_FACE_FACECODE_CAPTION                                       :{WHITE}Ver y/o asignar número de cara de presidente
 STR_FACE_FACECODE_SET                                           :{WHITE}Nuevo código de cara ha sido asignado
-STR_FACE_FACECODE_ERR                                           :{WHITE}No se puede asignar número de cara de presidente - ¡debe ser un número entre 0 y 4,294,967,295!
+STR_FACE_FACECODE_ERR                                           :{WHITE}No se puede asignar número de cara de presidente - ¡Ha de ser un número entre 0 y 4,294,967,295!
 STR_FACE_SAVE                                                   :{BLACK}Guardar
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Guardar cara favorita
 STR_FACE_SAVE_DONE                                              :{WHITE}Esta cara ha sido guardada como tu favorita en el fichero de configuración
@@ -2279,6 +2286,7 @@ STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}Leyenda 
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}Todas
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Ninguna
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Seleccione las compañías a mostrar
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}sin uso
@@ -2687,6 +2695,34 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyrigh
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versión {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 El equipo OpenTTD
 
+# Framerate display window
+STR_FRAMERATE_CAPTION                                           :{WHITE}Fotogramas por segundo - FPS
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Número de fotogramas renderizados por segundo.
+STR_FRAMERATE_CURRENT                                           :{WHITE}Actual
+STR_FRAMERATE_AVERAGE                                           :{WHITE}Medio
+STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Datos basados en {COMMA} medidas
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} ms
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} ms
+STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL} ms
+STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL} frames/s
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL} frames/s
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} frames/s
+STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
+STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA} s
+############ Leave those lines in this order!!
+STR_FRAMERATE_GL_TRAINS                                         :{BLACK}  Ticks de trenes:
+STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK}  Ticks de vehículos de carretera:
+STR_FRAMERATE_GL_SHIPS                                          :{BLACK}  Ticks de barcos:
+STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK}  Ticks de aeronaves:
+STR_FRAMERATE_DRAWING                                           :{BLACK}Renderizado gráfico:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_DRAWING                                   :Renderizado gráfico
+STR_FRAMETIME_CAPTION_VIDEO                                     :Salida de vídeo
+STR_FRAMETIME_CAPTION_SOUND                                     :Mezcla de sonido
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Guardar Juego
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Cargar Juego
@@ -2709,6 +2745,7 @@ STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Detalles
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}No hay información disponible
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
+STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Patrón de filtrado:
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Introduce un nombre para el juego guardado
 
@@ -2775,7 +2812,7 @@ STR_GENERATION_ABORT_MESSAGE                                    :{YELLOW}¿Desea
 STR_GENERATION_PROGRESS                                         :{WHITE}{NUM}% completado
 STR_GENERATION_PROGRESS_NUM                                     :{BLACK}{NUM} / {NUM}
 STR_GENERATION_WORLD_GENERATION                                 :{BLACK}Generación de mundo
-STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Generación de Ríos
+STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Generación de ríos
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Generación de árboles
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Generación de inamovibles
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generación de áreas ásperas o rocosas
@@ -2907,6 +2944,7 @@ STR_NEWGRF_ERROR_READ_BOUNDS                                    :Lectura más al
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Recursos GRF solicitados no disponibles (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} fue desactivado por {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Formato de colocación de sprites inválido o desconocido (sprite {3:NUM})
+STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Demasiados elementos en la lista de valores de propiedad (sprite {3:NUM}, propiedad {4:HEX})
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}¡Precaución!
@@ -2971,6 +3009,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Introduc
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Municipios
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Ninguna -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Ciudad){BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Nombres de los municipios - click sobre un nombre para centrar la vista principal en él. Ctrl+Click abre una ventana de visualización en dicha posición
 STR_TOWN_POPULATION                                             :{BLACK}Población mundial: {COMMA}
 
@@ -2978,6 +3017,7 @@ STR_TOWN_POPULATION                                             :{BLACK}Poblaci�
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Ciudad)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Habitantes: {ORANGE}{COMMA}{BLACK}  Casas: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} último mes: {ORANGE}{COMMA}{BLACK} máx: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Carga necesaria para crecimiento del municipio:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} requeridos
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} requerido en invierno
@@ -2985,7 +3025,7 @@ STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (todavía requerido)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{GREEN} (entregado)
 STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}El municipio crece cada {ORANGE}{COMMA}{BLACK}{NBSP}día{P "" s}
-STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}El municipio crece cada {ORANGE}{COMMA}{BLACK}{NBSP}días{P "" s} (edificios fundados)
+STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}El municipio crece cada {ORANGE}{COMMA}{BLACK}{NBSP}día{P "" s} (edificios fundados)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}El municipio {RED}no{BLACK} está creciendo
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}Nivel de ruido en municipio: {ORANGE}{COMMA}{BLACK}  Máx.: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrar vista sobre el municipio. Ctrl+Click abre un punto de vista en dicha posición
@@ -3984,7 +4024,7 @@ STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}La vent
 
 # AI configuration window
 STR_AI_CONFIG_CAPTION                                           :{WHITE}Configuración de Scripts de Juego / IA
-STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Script de Juego que será cargada en la próxima partida
+STR_AI_CONFIG_GAMELIST_TOOLTIP                                  :{BLACK}Script de Juego que será cargado en la próxima partida
 STR_AI_CONFIG_AILIST_TOOLTIP                                    :{BLACK}IAs que serán cargadas en la próxima partida
 STR_AI_CONFIG_HUMAN_PLAYER                                      :Jugador Humano
 STR_AI_CONFIG_RANDOM_AI                                         :IA aleatoria
@@ -4169,7 +4209,7 @@ STR_ERROR_PROTECTED                                             :{WHITE}Esta emp
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}No se puede construir ningún municipio
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}No se puede renombrar el municipio...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}No se puede construir un municipio aquí...
-STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}No se puede expandir municipio...
+STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}No se puede expandir este municipio...
 STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... demasiado cercano al borde del mapa
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... demasiado cercano a otro municipio
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... demasiados municipios
@@ -4216,7 +4256,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Demasiad
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Demasiadas partes de estación de tren
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Demasiadas paradas de autobús
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Demasiadas paradas de camión
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Demasiado cerca de otra estación/zona de carga
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Demasiado cerca de otro muelle
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Demasiado cerca de otro aeropuerto
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}No se puede renombrar estación...
@@ -4224,6 +4263,7 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... esta
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... carretera en la dirección incorrecta
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... las estaciones de autobús de paso no pueden tener esquinas
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... las estaciones de autobús de paso no pueden tener intersecciones
+STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... carretera de un solo sentido o bloqueada
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}No se puede retirar parte de la estación...
@@ -4468,13 +4508,15 @@ STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}No se pu
 STR_DESKTOP_SHORTCUT_COMMENT                                    :Un juego de simulación basado en Transport Tycoon Deluxe
 
 # Translatable descriptions in media/baseset/*.ob* files
-STR_BASEGRAPHICS_DOS_DESCRIPTION                                :Gráficos originales de Transport Tycoon Deluxe versión DOS.
-STR_BASEGRAPHICS_DOS_DE_DESCRIPTION                             :Gráficos originales de Transport Tycoon Deluxe versión DOS (Alemán).
-STR_BASEGRAPHICS_WIN_DESCRIPTION                                :Gráficos originales de Transport Tycoon Deluxe versión Windows.
-STR_BASESOUNDS_DOS_DESCRIPTION                                  :Sonidos originales de Transport Tycoon Deluxe versión DOS.
-STR_BASESOUNDS_WIN_DESCRIPTION                                  :Sonidos originales de Transport Tycoon Deluxe versión Windows.
+STR_BASEGRAPHICS_DOS_DESCRIPTION                                :Gráficos originales de Transport Tycoon Deluxe, versión DOS.
+STR_BASEGRAPHICS_DOS_DE_DESCRIPTION                             :Gráficos originales de Transport Tycoon Deluxe, versión DOS (Alemán).
+STR_BASEGRAPHICS_WIN_DESCRIPTION                                :Gráficos originales de Transport Tycoon Deluxe, versión Windows.
+STR_BASESOUNDS_DOS_DESCRIPTION                                  :Sonidos originales de Transport Tycoon Deluxe, versión DOS.
+STR_BASESOUNDS_WIN_DESCRIPTION                                  :Sonidos originales de Transport Tycoon Deluxe, versión Windows.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Un conjunto de sonidos vacío.
-STR_BASEMUSIC_WIN_DESCRIPTION                                   :Música original de Transport Tycoon Deluxe versión Windows.
+STR_BASEMUSIC_WIN_DESCRIPTION                                   :Música original de Transport Tycoon Deluxe, versión Windows.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :Música original de Transport Tycoon Deluxe, versión DOS.
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :Música original de Transport Tycoon (Original/Editor de Mundos), versión DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un conjunto de música vacío.
 
 ##id 0x2000

@@ -118,7 +118,7 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
 
 /**
  * Store a value into the persistent storage area (PSA). Default implementation does nothing (for newgrf classes without storage).
- * @param pos Position to store into.
+ * @param reg Position to store into.
  * @param value Value to store.
  */
 /* virtual */ void ScopeResolver::StorePSA(uint reg, int32 value) {}
@@ -143,21 +143,6 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
 {
 	return &this->default_scope;
 }
-
-/**
- * Rotate val rot times to the right
- * @param val the value to rotate
- * @param rot the amount of times to rotate
- * @return the rotated value
- */
-static uint32 RotateRight(uint32 val, uint32 rot)
-{
-	/* Do not rotate more than necessary */
-	rot %= 32;
-
-	return (val >> rot) | (val << (32 - rot));
-}
-
 
 /* Evaluate an adjustment for a variable of the given size.
  * U is the unsigned type and S is the signed type to use. */
@@ -191,7 +176,7 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust *adjust, ScopeResolver
 		case DSGA_OP_STO:  _temp_store.StoreValue((U)value, (S)last_value); return last_value;
 		case DSGA_OP_RST:  return value;
 		case DSGA_OP_STOP: scope->StorePSA((U)value, (S)last_value); return last_value;
-		case DSGA_OP_ROR:  return RotateRight(last_value, value);
+		case DSGA_OP_ROR:  return ROR<uint32>((U)last_value, (U)value & 0x1F); // mask 'value' to 5 bits, which should behave the same on all architectures.
 		case DSGA_OP_SCMP: return ((S)last_value == (S)value) ? 1 : ((S)last_value < (S)value ? 0 : 2);
 		case DSGA_OP_UCMP: return ((U)last_value == (U)value) ? 1 : ((U)last_value < (U)value ? 0 : 2);
 		case DSGA_OP_SHL:  return (uint32)(U)last_value << ((U)value & 0x1F); // Same behaviour as in ParamSet, mask 'value' to 5 bits, which should behave the same on all architectures.
@@ -308,7 +293,7 @@ const SpriteGroup *RealSpriteGroup::Resolve(ResolverObject &object) const
  * Process registers and the construction stage into the sprite layout.
  * The passed construction stage might get reset to zero, if it gets incorporated into the layout
  * during the preprocessing.
- * @param [in, out] stage Construction stage (0-3), or NULL if not applicable.
+ * @param[in,out] stage Construction stage (0-3), or NULL if not applicable.
  * @return sprite layout to draw.
  */
 const DrawTileSprites *TileLayoutSpriteGroup::ProcessRegisters(uint8 *stage) const

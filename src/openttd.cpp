@@ -63,6 +63,7 @@
 #include "subsidy_func.h"
 #include "gfx_layout.h"
 #include "viewport_sprite_sorter.h"
+#include "framerate_type.h"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -186,7 +187,7 @@ static void ShowHelp()
 		"  -P password         = Password to join company\n"
 		"  -D [ip][:port]      = Start dedicated server\n"
 		"  -l ip[:port]        = Redirect DEBUG()\n"
-#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(WIN32)
+#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(_WIN32)
 		"  -f                  = Fork into the background (dedicated only)\n"
 #endif
 #endif /* ENABLE_NETWORK */
@@ -230,7 +231,7 @@ static void ShowHelp()
 
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
-#if !defined(WIN32) && !defined(WIN64)
+#if !defined(_WIN32)
 	printf("%s\n", buf);
 #else
 	ShowInfo(buf);
@@ -281,7 +282,7 @@ static void WriteSavegameInfo(const char *name)
 
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
-#if !defined(WIN32) && !defined(WIN64)
+#if !defined(_WIN32)
 	printf("%s\n", buf);
 #else
 	ShowInfo(buf);
@@ -396,6 +397,9 @@ void MakeNewgameSettingsLive()
 		_settings_game.ai_config[c] = NULL;
 		if (_settings_newgame.ai_config[c] != NULL) {
 			_settings_game.ai_config[c] = new AIConfig(_settings_newgame.ai_config[c]);
+			if (!AIConfig::GetConfig(c, AIConfig::SSS_FORCE_GAME)->HasScript()) {
+				AIConfig::GetConfig(c, AIConfig::SSS_FORCE_GAME)->Change(NULL);
+			}
 		}
 	}
 	_settings_game.game_config = NULL;
@@ -416,7 +420,7 @@ void OpenBrowser(const char *url)
 /** Callback structure of statements to be executed after the NewGRF scan. */
 struct AfterNewGRFScan : NewGRFScanCallback {
 	Year startyear;                    ///< The start year.
-	uint generation_seed;              ///< Seed for the new game.
+	uint32 generation_seed;            ///< Seed for the new game.
 	char *dedicated_host;              ///< Hostname for the dedicated server.
 	uint16 dedicated_port;             ///< Port for the dedicated server.
 	char *network_conn;                ///< Information about the server to connect to, or NULL.
@@ -436,6 +440,9 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 			join_server_password(NULL), join_company_password(NULL),
 			save_config_ptr(save_config_ptr), save_config(true)
 	{
+		/* Visual C++ 2015 fails compiling this line (AfterNewGRFScan::generation_seed undefined symbol)
+		 * if it's placed outside a member function, directly in the struct body. */
+		assert_compile(sizeof(generation_seed) == sizeof(_settings_game.game_creation.generation_seed));
 	}
 
 	virtual void OnNewGRFsScanned()
@@ -539,7 +546,7 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_VALUE('l'),
 	 GETOPT_SHORT_VALUE('p'),
 	 GETOPT_SHORT_VALUE('P'),
-#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(WIN32)
+#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(_WIN32)
 	 GETOPT_SHORT_NOVAL('f'),
 #endif
 #endif /* ENABLE_NETWORK */
@@ -639,7 +646,7 @@ int openttd_main(int argc, char *argv[])
 		case 'r': ParseResolution(&resolution, mgo.opt); break;
 		case 't': scanner->startyear = atoi(mgo.opt); break;
 		case 'd': {
-#if defined(WIN32)
+#if defined(_WIN32)
 				CreateConsole();
 #endif
 				if (mgo.opt != NULL) SetDebugString(mgo.opt);
@@ -697,7 +704,7 @@ int openttd_main(int argc, char *argv[])
 
 			goto exit_noshutdown;
 		}
-		case 'G': scanner->generation_seed = atoi(mgo.opt); break;
+		case 'G': scanner->generation_seed = strtoul(mgo.opt, NULL, 10); break;
 		case 'c': free(_config_file); _config_file = stredup(mgo.opt); break;
 		case 'x': scanner->save_config = false; break;
 		case 'h':
@@ -1017,9 +1024,9 @@ static void MakeNewEditorWorld()
  * Load the specified savegame but on error do different things.
  * If loading fails due to corrupt savegame, bad version, etc. go back to
  * a previous correct state. In the menu for example load the intro game again.
- * @param mode mode of loading, either SL_LOAD or SL_OLD_LOAD
- * @param newgm switch to this mode of loading fails due to some unknown error
  * @param filename file to be loaded
+ * @param fop mode of loading, always SLO_LOAD
+ * @param newgm switch to this mode of loading fails due to some unknown error
  * @param subdir default directory to look for filename, set to 0 if not needed
  * @param lf Load filter to use, if NULL: use filename + subdir.
  */
@@ -1368,6 +1375,14 @@ void StateGameLoop()
 {
 	/* don't execute the state loop during pause */
 	if (_pause_mode != PM_UNPAUSED) {
+		PerformanceMeasurer::Paused(PFE_GAMELOOP);
+		PerformanceMeasurer::Paused(PFE_GL_ECONOMY);
+		PerformanceMeasurer::Paused(PFE_GL_TRAINS);
+		PerformanceMeasurer::Paused(PFE_GL_ROADVEHS);
+		PerformanceMeasurer::Paused(PFE_GL_SHIPS);
+		PerformanceMeasurer::Paused(PFE_GL_AIRCRAFT);
+		PerformanceMeasurer::Paused(PFE_GL_LANDSCAPE);
+
 		UpdateLandscapingLimits();
 #ifndef DEBUG_DUMP_COMMANDS
 		Game::GameLoop();
@@ -1375,6 +1390,9 @@ void StateGameLoop()
 		CallWindowTickEvent();
 		return;
 	}
+
+	PerformanceMeasurer framerate(PFE_GAMELOOP);
+	PerformanceAccumulator::Reset(PFE_GL_LANDSCAPE);
 	if (HasModalProgress()) return;
 
 	Layouter::ReduceLineCache();

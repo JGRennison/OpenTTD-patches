@@ -70,9 +70,14 @@ enum CargoType {
 	CT_INVALID      = 0xFF, ///< Invalid cargo type.
 };
 
+/** Test whether cargo type is not CT_INVALID */
+inline bool IsCargoTypeValid(CargoType t) { return t != CT_INVALID; }
+/** Test whether cargo type is not CT_INVALID */
+inline bool IsCargoIDValid(CargoID t) { return t != CT_INVALID; }
+
 typedef uint64 CargoTypes;
 
-static const CargoTypes ALL_CARGOTYPES = (CargoTypes)UINT32_MAX;
+static const CargoTypes ALL_CARGOTYPES = (CargoTypes)UINT64_MAX;
 
 /** Class for storing amounts of cargo */
 struct CargoArray {

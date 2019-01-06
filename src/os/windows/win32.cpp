@@ -300,7 +300,7 @@ void CreateConsole()
 	if (_has_console) return;
 	_has_console = true;
 
-	AllocConsole();
+	if (!AllocConsole()) return;
 
 	hand = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(hand, &coninfo);
@@ -625,11 +625,11 @@ char *convert_from_fs(const TCHAR *name, char *utf8_buf, size_t buflen)
  * Convert from OpenTTD's encoding to that of the environment in
  * UNICODE. OpenTTD encoding is UTF8, local is wide
  * @param name pointer to a valid string that will be converted
- * @param utf16_buf pointer to a valid wide-char buffer that will receive the
+ * @param system_buf pointer to a valid wide-char buffer that will receive the
  * converted string
  * @param buflen length in wide characters of the receiving buffer
  * @param console_cp convert to the console encoding instead of the normal system encoding.
- * @return pointer to utf16_buf. If conversion fails the string is of zero-length
+ * @return pointer to system_buf. If conversion fails the string is of zero-length
  */
 TCHAR *convert_to_fs(const char *name, TCHAR *system_buf, size_t buflen, bool console_cp)
 {
@@ -805,16 +805,15 @@ int OTTDStringCompare(const char *s1, const char *s2)
 }
 
 #ifdef _MSC_VER
-/* Code from MSDN: https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx */
+/* Based on code from MSDN: https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx */
 const DWORD MS_VC_EXCEPTION = 0x406D1388;
-#pragma pack(push,8)
-typedef struct {
+
+PACK_N(struct THREADNAME_INFO {
 	DWORD dwType;     ///< Must be 0x1000.
 	LPCSTR szName;    ///< Pointer to name (in user addr space).
 	DWORD dwThreadID; ///< Thread ID (-1=caller thread).
 	DWORD dwFlags;    ///< Reserved for future use, must be zero.
-} THREADNAME_INFO;
-#pragma pack(pop)
+}, 8);
 
 /**
  * Signal thread name to any attached debuggers.

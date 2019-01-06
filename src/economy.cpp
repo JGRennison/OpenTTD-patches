@@ -95,7 +95,7 @@ const ScoreInfo _score_info[] = {
 	{       0,   0}  // SCORE_TOTAL
 };
 
-int _score_part[MAX_COMPANIES][SCORE_END];
+int64 _score_part[MAX_COMPANIES][SCORE_END];
 Economy _economy;
 Prices _price;
 Money _additional_cash_required;
@@ -183,7 +183,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 		_score_part[owner][SCORE_VEHICLES] = num;
 		/* Don't allow negative min_profit to show */
 		if (min_profit > 0) {
-			_score_part[owner][SCORE_MIN_PROFIT] = ClampToI32(min_profit);
+			_score_part[owner][SCORE_MIN_PROFIT] = min_profit;
 		}
 	}
 
@@ -213,10 +213,10 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 			} while (++cee, --numec);
 
 			if (min_income > 0) {
-				_score_part[owner][SCORE_MIN_INCOME] = ClampToI32(min_income);
+				_score_part[owner][SCORE_MIN_INCOME] = min_income;
 			}
 
-			_score_part[owner][SCORE_MAX_INCOME] = ClampToI32(max_income);
+			_score_part[owner][SCORE_MAX_INCOME] = max_income;
 		}
 	}
 
@@ -230,7 +230,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 				total_delivered += cee->delivered_cargo.GetSum<OverflowSafeInt64>();
 			} while (++cee, --numec);
 
-			_score_part[owner][SCORE_DELIVERED] = ClampToI32(total_delivered);
+			_score_part[owner][SCORE_DELIVERED] = total_delivered;
 		}
 	}
 
@@ -242,13 +242,13 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 	/* Generate score for company's money */
 	{
 		if (c->money > 0) {
-			_score_part[owner][SCORE_MONEY] = ClampToI32(c->money);
+			_score_part[owner][SCORE_MONEY] = c->money;
 		}
 	}
 
 	/* Generate score for loan */
 	{
-		_score_part[owner][SCORE_LOAN] = ClampToI32(_score_info[SCORE_LOAN].needed - c->current_loan);
+		_score_part[owner][SCORE_LOAN] = _score_info[SCORE_LOAN].needed - c->current_loan;
 	}
 
 	/* Now we calculate the score for each item.. */
@@ -1062,6 +1062,7 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 
 		uint amount = min(num_pieces, 0xFFFFU - ind->incoming_cargo_waiting[cargo_index]);
 		ind->incoming_cargo_waiting[cargo_index] += amount;
+		ind->last_cargo_accepted_at[cargo_index] = _date;
 		num_pieces -= amount;
 		accepted += amount;
 	}
@@ -1138,7 +1139,6 @@ static void TriggerIndustryProduction(Industry *i)
 	uint16 callback = indspec->callback_mask;
 
 	i->was_cargo_delivered = true;
-	i->last_cargo_accepted_at = _date;
 
 	if (HasBit(callback, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(callback, CBM_IND_PRODUCTION_256_TICKS)) {
 		if (HasBit(callback, CBM_IND_PRODUCTION_CARGO_ARRIVAL)) {
@@ -1147,14 +1147,15 @@ static void TriggerIndustryProduction(Industry *i)
 			SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 		}
 	} else {
-		for (uint cargo_index = 0; cargo_index < lengthof(i->incoming_cargo_waiting); cargo_index++) {
-			uint cargo_waiting = i->incoming_cargo_waiting[cargo_index];
+		for (uint ci_in = 0; ci_in < lengthof(i->incoming_cargo_waiting); ci_in++) {
+			uint cargo_waiting = i->incoming_cargo_waiting[ci_in];
 			if (cargo_waiting == 0) continue;
 
-			i->produced_cargo_waiting[0] = min(i->produced_cargo_waiting[0] + (cargo_waiting * indspec->input_cargo_multiplier[cargo_index][0] / 256), 0xFFFF);
-			i->produced_cargo_waiting[1] = min(i->produced_cargo_waiting[1] + (cargo_waiting * indspec->input_cargo_multiplier[cargo_index][1] / 256), 0xFFFF);
+			for (uint ci_out = 0; ci_out < lengthof(i->produced_cargo_waiting); ci_out++) {
+				i->produced_cargo_waiting[ci_out] = min(i->produced_cargo_waiting[ci_out] + (cargo_waiting * indspec->input_cargo_multiplier[ci_in][ci_out] / 256), 0xFFFF);
+			}
 
-			i->incoming_cargo_waiting[cargo_index] = 0;
+			i->incoming_cargo_waiting[ci_in] = 0;
 		}
 	}
 
@@ -1242,7 +1243,6 @@ Money CargoPayment::PayTransfer(const CargoPacket *cp, uint count)
 
 /**
  * Prepare the vehicle to be unloaded.
- * @param curr_station the station where the consist is at the moment
  * @param front_v the vehicle to be unloaded
  */
 void PrepareUnload(Vehicle *front_v)

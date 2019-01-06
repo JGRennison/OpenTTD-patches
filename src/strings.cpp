@@ -56,7 +56,7 @@ icu::Collator *_current_collator = NULL;          ///< Collator for the language
 #endif /* WITH_ICU_SORT */
 
 static uint64 _global_string_params_data[20];     ///< Global array of string parameters. To access, use #SetDParam.
-static WChar _global_string_params_type[20];      ///< Type of parameters stored in #_decode_parameters
+static WChar _global_string_params_type[20];      ///< Type of parameters stored in #_global_string_params
 StringParameters _global_string_params(_global_string_params_data, 20, _global_string_params_type);
 
 /** Reset the type array. */
@@ -760,11 +760,10 @@ uint ConvertDisplaySpeedToKmhishSpeed(uint speed)
 }
 /**
  * Parse most format codes within a string and write the result to a buffer.
- * @param buff  The buffer to write the final string to.
- * @param str   The original string with format codes.
- * @param args  Pointer to extra arguments used by various string codes.
- * @param case_index
- * @param last  Pointer to just past the end of the buff array.
+ * @param buff    The buffer to write the final string to.
+ * @param str_arg The original string with format codes.
+ * @param args    Pointer to extra arguments used by various string codes.
+ * @param last    Pointer to just past the end of the buff array.
  * @param dry_run True when the argt array is not yet initialized.
  */
 static char *FormatString(char *buff, const char *str_arg, StringParameters *args, const char *last, uint case_index, bool game_script, bool dry_run)
@@ -819,7 +818,6 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				sub_args.ClearTypeInformation();
 				memset(sub_args_need_free, 0, sizeof(sub_args_need_free));
 
-				const char *s = str;
 				char *p;
 				uint32 stringid = strtoul(str, &p, 16);
 				if (*p != ':' && *p != '\0') {
@@ -838,7 +836,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				int i = 0;
 				while (*p != '\0' && i < 20) {
 					uint64 param;
-					s = ++p;
+					const char *s = ++p;
 
 					/* Find the next value */
 					bool instring = false;
@@ -1788,9 +1786,14 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	strecpy(_config_language_file, c_file, lastof(_config_language_file));
 	SetCurrentGrfLangID(_current_language->newgrflangid);
 
-#ifdef WIN32
+#ifdef _WIN32
 	extern void Win32SetCurrentLocaleName(const char *iso_code);
 	Win32SetCurrentLocaleName(_current_language->isocode);
+#endif
+
+#ifdef WITH_COCOA
+	extern void MacOSSetCurrentLocaleName(const char *iso_code);
+	MacOSSetCurrentLocaleName(_current_language->isocode);
 #endif
 
 #ifdef WITH_ICU_SORT
@@ -1834,7 +1837,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 
 /* Win32 implementation in win32.cpp.
  * OS X implementation in os/macosx/macos.mm. */
-#if !(defined(WIN32) || defined(__APPLE__))
+#if !(defined(_WIN32) || defined(__APPLE__))
 /**
  * Determine the current charset based on the environment
  * First check some default values, after this one we passed ourselves
@@ -1862,7 +1865,7 @@ const char *GetCurrentLocale(const char *param)
 }
 #else
 const char *GetCurrentLocale(const char *param);
-#endif /* !(defined(WIN32) || defined(__APPLE__)) */
+#endif /* !(defined(_WIN32) || defined(__APPLE__)) */
 
 int CDECL StringIDSorter(const StringID *a, const StringID *b)
 {
@@ -2003,7 +2006,7 @@ const char *GetCurrentLanguageIsoCode()
 
 /**
  * Check whether there are glyphs missing in the current language.
- * @param Pointer to an address for storing the text pointer.
+ * @param[out] str Pointer to an address for storing the text pointer.
  * @return If glyphs are missing, return \c true, else return \c false.
  * @post If \c true is returned and str is not NULL, *str points to a string that is found to contain at least one missing glyph.
  */
@@ -2135,7 +2138,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	/* Update the font with cache */
 	LoadStringWidthTable(searcher->Monospace());
 
-#if !defined(WITH_ICU_LAYOUT) && !defined(WITH_UNISCRIBE)
+#if !defined(WITH_ICU_LAYOUT) && !defined(WITH_UNISCRIBE) && !defined(WITH_COCOA)
 	/*
 	 * For right-to-left languages we need the ICU library. If
 	 * we do not have support for that library we warn the user

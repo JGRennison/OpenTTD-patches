@@ -1833,8 +1833,8 @@ STR_LIVERY_TRUCK                                                :Veículo de Mer
 STR_LIVERY_PASSENGER_SHIP                                       :Barco de Passageiros
 STR_LIVERY_FREIGHT_SHIP                                         :Barco Cargueiro
 STR_LIVERY_HELICOPTER                                           :Helicóptero
-STR_LIVERY_SMALL_PLANE                                          :Aeronave de Pequenas Dimensões
-STR_LIVERY_LARGE_PLANE                                          :Aeronave de Grandes Dimensões
+STR_LIVERY_SMALL_PLANE                                          :Avião de Pequenas Dimensões
+STR_LIVERY_LARGE_PLANE                                          :Avião de Grandes Dimensões
 STR_LIVERY_PASSENGER_TRAM                                       :Eléctrico de Passageiros
 STR_LIVERY_FREIGHT_TRAM                                         :Eléctrico de Mercadorias
 
@@ -2686,6 +2686,13 @@ STR_ABOUT_OPENTTD                                               :{WHITE}Sobre o 
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Direitos de autor originais {COPYRIGHT} 1995 Chris Sawyer, Todos os direitos reservados
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD versão {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 A equipa do OpenTTD
+
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Guardar Jogo
@@ -4216,7 +4223,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Demasiad
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Demasiadas partes na estação ferroviária
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Demasiadas paragens de autocarro
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Demasiadas estações de carga
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Muito junto de uma estação/local de carga
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Muito perto de outra doca
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Demasiado perto de outro aeroporto
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Não pode alterar o nome da estação...

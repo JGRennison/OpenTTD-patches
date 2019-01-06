@@ -52,6 +52,7 @@
 #include "gamelog.h"
 #include "linkgraph/linkgraph.h"
 #include "linkgraph/refresh.h"
+#include "framerate_type.h"
 
 #include "table/strings.h"
 
@@ -94,7 +95,7 @@ INSTANTIATE_POOL_METHODS(Vehicle)
 
 /**
  * Determine shared bounds of all sprites.
- * @param [out] bounds Shared bounds.
+ * @param[out] bounds Shared bounds.
  */
 void VehicleSpriteSeq::GetBounds(Rect *bounds) const
 {
@@ -945,8 +946,15 @@ void CallVehicleTicks()
 
 	RunVehicleDayProc();
 
-	Station *st;
-	FOR_ALL_STATIONS(st) LoadUnloadStation(st);
+	{
+		PerformanceMeasurer framerate(PFE_GL_ECONOMY);
+		Station *st;
+		FOR_ALL_STATIONS(st) LoadUnloadStation(st);
+	}
+	PerformanceAccumulator::Reset(PFE_GL_TRAINS);
+	PerformanceAccumulator::Reset(PFE_GL_ROADVEHS);
+	PerformanceAccumulator::Reset(PFE_GL_SHIPS);
+	PerformanceAccumulator::Reset(PFE_GL_AIRCRAFT);
 
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
@@ -2851,7 +2859,7 @@ const uint16 &Vehicle::GetGroundVehicleFlags() const
 
 /**
  * Calculates the set of vehicles that will be affected by a given selection.
- * @param set [inout] Set of affected vehicles.
+ * @param[in,out] set Set of affected vehicles.
  * @param v First vehicle of the selection.
  * @param num_vehicles Number of vehicles in the selection (not counting articulated parts).
  * @pre \a set must be empty.

@@ -571,6 +571,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Slika zaslona
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Zumirano do kraja na slici zaslona
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Standardno zumiranje slike zaslona
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Slika zaslona cijele karte
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Prikaži broj sličica u sekundi
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :O 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Poravnanje spritea
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Odaberi granične okvire
@@ -910,6 +911,7 @@ STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLAC
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Direktor)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}Tvrtka {STRING} sponzorira izgradnju novoga grada {TOWN}!
+STR_NEWS_NEW_TOWN_UNSPONSORED                                   :{BLACK}{BIG_FONT}Sagrađen je novi grad {TOWN}!
 
 STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}Započela je izgradnja nove {STRING.gen} u blizini grada {TOWN}a!
 STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}Nova {STRING} trenutno se sadi blizu grada {TOWN}a!
@@ -1022,6 +1024,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Južnoafrički 
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Proizvoljno...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Gruzijski Lari (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranski Rial (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nove ruske rublje (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Cestovna vozila
@@ -2793,6 +2796,56 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Izvorno 
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verzija {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD tim
 
+# Framerate display window
+STR_FRAMERATE_CAPTION                                           :{WHITE}Broj sličica
+STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE} ({DECIMAL}x)
+STR_FRAMERATE_RATE_GAMELOOP                                     :{BLACK}Stopa simulacije: {STRING}
+STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Broj otkucaja igre simuliranih u sekundi.
+STR_FRAMERATE_RATE_BLITTER                                      :{BLACK}Broj sličica u sekundi: {STRING}
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Broj sličica videa prikayanih u sekundi.
+STR_FRAMERATE_SPEED_FACTOR                                      :{BLACK}Trenutni faktor brzine igre: {DECIMAL}x
+STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}Koliko brzo se igra izvodi trenutno u usporedbi sa očekivanom brzinom u uobičajenoj simulaciji.
+STR_FRAMERATE_CURRENT                                           :{WHITE}Trenutno
+STR_FRAMERATE_AVERAGE                                           :{WHITE}Prosječno
+STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Podaci bazirani na {COMMA} mjerama
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} ms
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} ms
+STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL} ms
+STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL} sličica/s
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL} sličica/s
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} sličica/s
+STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
+STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA} s
+############ Leave those lines in this order!!
+STR_FRAMERATE_GAMELOOP                                          :{BLACK}Zbroj petlji igre:
+STR_FRAMERATE_GL_ECONOMY                                        :{BLACK}  Korištenje tereta:
+STR_FRAMERATE_GL_TRAINS                                         :{BLACK} Otkucaji vlakova:
+STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK} Otkucaji cestovnih vozila:
+STR_FRAMERATE_GL_SHIPS                                          :{BLACK} Otkucaji brodova:
+STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK}  Otkucaji aviona:
+STR_FRAMERATE_GL_LANDSCAPE                                      :{BLACK}  Otkucaji svijeta:
+STR_FRAMERATE_GL_LINKGRAPH                                      :{BLACK} Odmak linka grafikona:
+STR_FRAMERATE_DRAWING                                           :{BLACK}Prikaz grafike:
+STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{BLACK} Prikazi svijeta:
+STR_FRAMERATE_VIDEO                                             :{BLACK}Video izlaz:
+STR_FRAMERATE_SOUND                                             :{BLACK}Miksanje zvukova:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GAMELOOP                                  :Petlja igre
+STR_FRAMETIME_CAPTION_GL_ECONOMY                                :Korištenje tereta
+STR_FRAMETIME_CAPTION_GL_TRAINS                                 :Otkucaji vlakova
+STR_FRAMETIME_CAPTION_GL_ROADVEHS                               :Otkucaji cestovnih vozila
+STR_FRAMETIME_CAPTION_GL_SHIPS                                  :Otkucaji brodova
+STR_FRAMETIME_CAPTION_GL_AIRCRAFT                               :Otkucaji aviona
+STR_FRAMETIME_CAPTION_GL_LANDSCAPE                              :Otkucaji svijeta
+STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :Odmak linka grafikona
+STR_FRAMETIME_CAPTION_DRAWING                                   :Prikaz grafike
+STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :Prikazi svijeta
+STR_FRAMETIME_CAPTION_VIDEO                                     :Video izlaz
+STR_FRAMETIME_CAPTION_SOUND                                     :Miksanje zvukova
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spremi igru
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Učitaj igru
@@ -2815,6 +2868,7 @@ STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Detalji 
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Nema dostupnih informacija.
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
+STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtriraj niz:
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Upiši ime za spremanje igre
 
@@ -3013,6 +3067,8 @@ STR_NEWGRF_ERROR_READ_BOUNDS                                    :Pročitaj nakon
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Zatraženi GRF resursi nisu dostupni (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} je isključen od strane {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Pogrešan/nepoznat format raspored sprite-a (sprite {3:NUM})
+STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Previše elemenata na listi postavki varijabli (sprite {3:NUM}, postavka {4:HEX})
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Pogrešna callback funkcija za industrijsku proizvodnju (sprite {3:NUM}, "{1:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Oprez!
@@ -4324,7 +4380,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Previše
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Previše dijelova željezničke postaje
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Previše autobusnih postaja
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Previše kamionskih postaja
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Preblizu drugoj postaji/terminalu
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Preblizu drugom pristaništu
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Preblizu drugoj zračnoj luci
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nije moguće preimenovati postaju...

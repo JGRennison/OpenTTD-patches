@@ -25,6 +25,10 @@
 #include "os/windows/string_uniscribe.h"
 #endif /* WITH_UNISCRIBE */
 
+#ifdef WITH_COCOA
+#include "os/macosx/string_osx.h"
+#endif
+
 #include "safeguards.h"
 
 
@@ -121,14 +125,14 @@ le_bool Font::getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPoint &poin
  * Wrapper for doing layouts with ICU.
  */
 class ICUParagraphLayout : public AutoDeleteSmallVector<ParagraphLayouter::Line *, 4>, public ParagraphLayouter {
-	ParagraphLayout *p; ///< The actual ICU paragraph layout.
+	icu::ParagraphLayout *p; ///< The actual ICU paragraph layout.
 public:
 	/** Visual run contains data about the bit of text with the same font. */
 	class ICUVisualRun : public ParagraphLayouter::VisualRun {
-		const ParagraphLayout::VisualRun *vr; ///< The actual ICU vr.
+		const icu::ParagraphLayout::VisualRun *vr; ///< The actual ICU vr.
 
 	public:
-		ICUVisualRun(const ParagraphLayout::VisualRun *vr) : vr(vr) { }
+		ICUVisualRun(const icu::ParagraphLayout::VisualRun *vr) : vr(vr) { }
 
 		const Font *GetFont() const          { return (const Font*)vr->getFont(); }
 		int GetGlyphCount() const            { return vr->getGlyphCount(); }
@@ -140,10 +144,10 @@ public:
 
 	/** A single line worth of VisualRuns. */
 	class ICULine : public AutoDeleteSmallVector<ICUVisualRun *, 4>, public ParagraphLayouter::Line {
-		ParagraphLayout::Line *l; ///< The actual ICU line.
+		icu::ParagraphLayout::Line *l; ///< The actual ICU line.
 
 	public:
-		ICULine(ParagraphLayout::Line *l) : l(l)
+		ICULine(icu::ParagraphLayout::Line *l) : l(l)
 		{
 			for (int i = 0; i < l->countRuns(); i++) {
 				*this->Append() = new ICUVisualRun(l->getVisualRun(i));
@@ -163,13 +167,13 @@ public:
 		}
 	};
 
-	ICUParagraphLayout(ParagraphLayout *p) : p(p) { }
+	ICUParagraphLayout(icu::ParagraphLayout *p) : p(p) { }
 	~ICUParagraphLayout() { delete p; }
 	void Reflow() { p->reflow(); }
 
 	ParagraphLayouter::Line *NextLine(int max_width)
 	{
-		ParagraphLayout::Line *l = p->nextLine(max_width);
+		icu::ParagraphLayout::Line *l = p->nextLine(max_width);
 		return l == NULL ? NULL : new ICULine(l);
 	}
 };
@@ -196,7 +200,7 @@ public:
 		}
 
 		/* Fill ICU's FontRuns with the right data. */
-		FontRuns runs(fontMapping.Length());
+		icu::FontRuns runs(fontMapping.Length());
 		for (FontMap::iterator iter = fontMapping.Begin(); iter != fontMapping.End(); iter++) {
 			runs.add(iter->second, iter->first);
 		}
@@ -204,7 +208,7 @@ public:
 		LEErrorCode status = LE_NO_ERROR;
 		/* ParagraphLayout does not copy "buff", so it must stay valid.
 		 * "runs" is copied according to the ICU source, but the documentation does not specify anything, so this might break somewhen. */
-		ParagraphLayout *p = new ParagraphLayout(buff, length, &runs, NULL, NULL, NULL, _current_text_dir == TD_RTL ? UBIDI_DEFAULT_RTL : UBIDI_DEFAULT_LTR, false, status);
+		icu::ParagraphLayout *p = new icu::ParagraphLayout(buff, length, &runs, NULL, NULL, NULL, _current_text_dir == TD_RTL ? UBIDI_DEFAULT_RTL : UBIDI_DEFAULT_LTR, false, status);
 		if (status != LE_NO_ERROR) {
 			delete p;
 			return NULL;
@@ -498,11 +502,6 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 		return l;
 	}
 
-	const WChar *begin = this->buffer;
-	const WChar *last_space = NULL;
-	const WChar *last_char = begin;
-	int width = 0;
-
 	int offset = this->buffer - this->buffer_begin;
 	FontMap::iterator iter = this->runs.Begin();
 	while (iter->first <= offset) {
@@ -513,6 +512,10 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 	const FontCache *fc = iter->second->fc;
 	const WChar *next_run = this->buffer_begin + iter->first;
 
+	const WChar *begin = this->buffer;
+	const WChar *last_space = NULL;
+	const WChar *last_char;
+	int width = 0;
 	for (;;) {
 		WChar c = *this->buffer;
 		last_char = this->buffer;
@@ -671,7 +674,9 @@ Layouter::Layouter(const char *str, int maxw, TextColour colour, FontSize fontsi
 		} else {
 			/* Line is new, layout it */
 			FontState old_state = state;
+#if defined(WITH_ICU_LAYOUT) || defined(WITH_UNISCRIBE) || defined(WITH_COCOA)
 			const char *old_str = str;
+#endif
 
 #ifdef WITH_ICU_LAYOUT
 			GetLayouter<ICUParagraphLayoutFactory>(line, str, state);
@@ -690,6 +695,16 @@ Layouter::Layouter(const char *str, int maxw, TextColour colour, FontSize fontsi
 #ifdef WITH_UNISCRIBE
 			if (line.layout == NULL) {
 				GetLayouter<UniscribeParagraphLayoutFactory>(line, str, state);
+				if (line.layout == NULL) {
+					state = old_state;
+					str = old_str;
+				}
+			}
+#endif
+
+#ifdef WITH_COCOA
+			if (line.layout == NULL) {
+				GetLayouter<CoreTextParagraphLayoutFactory>(line, str, state);
 				if (line.layout == NULL) {
 					state = old_state;
 					str = old_str;
@@ -839,6 +854,9 @@ void Layouter::ResetFontCache(FontSize size)
 
 #if defined(WITH_UNISCRIBE)
 	UniscribeResetScriptCache(size);
+#endif
+#if defined(WITH_COCOA)
+	MacOSResetScriptCache(size);
 #endif
 }
 

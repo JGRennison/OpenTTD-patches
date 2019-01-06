@@ -476,6 +476,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :스크린샷 �
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :스크린샷 찍기 (지금 보고 있는 영역)
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :스크린샷 찍기 (창을 제외한 게임 화면만)
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :스크린샷 찍기 (지도 전체)
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :프레임레이트 보기
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD'에 대해서
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :스프라이트 정렬도구
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :박스 경계선 보기 전환
@@ -815,6 +816,7 @@ STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLAC
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(사장)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}{STRING}은(는) 새로운 도시 {TOWN}을(를) 건설했습니다!
+STR_NEWS_NEW_TOWN_UNSPONSORED                                   :{BLACK}{BIG_FONT}{TOWN} - 새 도시가 생겼습니다!
 
 STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}{1:TOWN} 근처에 새로운 {0:STRING}{G 0 "이" "가"} 건설되고 있습니다!
 STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}새 {STRING}{G 0 "이" "가"} {TOWN} 근처에서 자라나고 있습니다!
@@ -882,7 +884,7 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}외부 화면 {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}외부 화면에 복사
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}외부 화면으로 복사
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}현재 장소를 외부 화면에 복사합니다.
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}이 장소로 이동
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}외부 화면에 저장된 장소로 이동합니다.
@@ -927,6 +929,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :남아프리카
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :사용자 설정...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :그루지야 라리 (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :이란 리알 (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :신 러시아 루블 (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}차량 통행 방식
@@ -1004,7 +1007,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM}개�
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}기본 배경 음악 세트에 대한 추가 정보를 봅니다.
 
 STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}지원되는 해상도 목록을 불러오는데 실패하였습니다.
-STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}풀스크린 모드 실패
+STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}전체화면 모드 실패
 
 # Custom currency window
 
@@ -1266,7 +1269,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :이 설정을 �
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :검사하지 않음
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :정지한 차량을 제외하고 검사
 STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :모든 차량을 검사
-STR_CONFIG_SETTING_WARN_INCOME_LESS                             :차량의 수입이 적자일때 경고하기: {STRING}
+STR_CONFIG_SETTING_WARN_INCOME_LESS                             :차량의 수입이 적자일 때 경고하기: {STRING}
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :이 설정을 켜면, 지난 해에 수익이 없는 차량이 있으면 뉴스 메시지로 알려줍니다.
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :옛날 차량을 사라지지 않고 계속 만들 수 있게 함: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :이 설정을 켜면, 오래된 차량 모델을 포함하여 모든 차량 모델을 도입 이후에 계속 사용할 수 있게 됩니다.
@@ -2289,6 +2292,7 @@ STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}화물 �
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}모두
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}없음
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}표시할 회사를 선택하십시오
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}이용 없음
@@ -2697,6 +2701,56 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Original
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD 버전 {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD 개발팀
 
+# Framerate display window
+STR_FRAMERATE_CAPTION                                           :{WHITE}프레임레이트
+STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE} ({DECIMAL}x)
+STR_FRAMERATE_RATE_GAMELOOP                                     :{BLACK}시뮬레이션 비율: {STRING}
+STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}1초에 시뮬레이션하는 게임 틱 수입니다.
+STR_FRAMERATE_RATE_BLITTER                                      :{BLACK}그래픽 프레임레이트: {STRING}
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}1초에 표현하는 비디오 프레임 수입니다.
+STR_FRAMERATE_SPEED_FACTOR                                      :{BLACK}현재 게임 속력 계수: {DECIMAL}x
+STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}현재 게임이 일반적인 시뮬레이션 비율 속도에 비해 얼마나 빠르게 구동되고 있는지를 보여줍니다.
+STR_FRAMERATE_CURRENT                                           :{WHITE}현재
+STR_FRAMERATE_AVERAGE                                           :{WHITE}평균
+STR_FRAMERATE_DATA_POINTS                                       :{BLACK}{COMMA}개의 값을 기반으로 측정한 데이터
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL}{BLACK} ms
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} ms
+STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL} ms
+STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL} 프레임/초
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL} 프레임/초
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} 프레임/초
+STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
+STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA}초
+############ Leave those lines in this order!!
+STR_FRAMERATE_GAMELOOP                                          :{BLACK}총 게임 루프:
+STR_FRAMERATE_GL_ECONOMY                                        :{BLACK}  화물 처리:
+STR_FRAMERATE_GL_TRAINS                                         :{BLACK}  열차 틱:
+STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK}  자동차 틱:
+STR_FRAMERATE_GL_SHIPS                                          :{BLACK}  선박 틱:
+STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK}  항공기 틱:
+STR_FRAMERATE_GL_LANDSCAPE                                      :{BLACK}  세계 틱:
+STR_FRAMERATE_GL_LINKGRAPH                                      :{BLACK}  연결 그래프 지연:
+STR_FRAMERATE_DRAWING                                           :{BLACK}그래픽 렌더링:
+STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{BLACK}  세계 화면:
+STR_FRAMERATE_VIDEO                                             :{BLACK}비디오 출력:
+STR_FRAMERATE_SOUND                                             :{BLACK}사운드 합성:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GAMELOOP                                  :게임 루프
+STR_FRAMETIME_CAPTION_GL_ECONOMY                                :화물 처리
+STR_FRAMETIME_CAPTION_GL_TRAINS                                 :열차 틱
+STR_FRAMETIME_CAPTION_GL_ROADVEHS                               :자동차 틱
+STR_FRAMETIME_CAPTION_GL_SHIPS                                  :선박 틱
+STR_FRAMETIME_CAPTION_GL_AIRCRAFT                               :항공기 틱
+STR_FRAMETIME_CAPTION_GL_LANDSCAPE                              :세계 틱
+STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :연결 그래프 지연
+STR_FRAMETIME_CAPTION_DRAWING                                   :그래픽 렌더링
+STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :세계 화면 렌더링
+STR_FRAMETIME_CAPTION_VIDEO                                     :비디오 출력
+STR_FRAMETIME_CAPTION_SOUND                                     :사운드 합성
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}게임 저장
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}게임 불러오기
@@ -2719,6 +2773,7 @@ STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}게임 �
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}사용 가능한 정보 없음.
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
+STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}검색할 문자열:
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}게임을 저장할 파일명을 입력하세요
 
@@ -2917,6 +2972,8 @@ STR_NEWGRF_ERROR_READ_BOUNDS                                    :유사 스프�
 STR_NEWGRF_ERROR_GRM_FAILED                                     :요청한 GRF 자원을 사용할 수 없음 (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING}(은)는 {STRING} 때문에 사용할 수 없습니다
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :유효하지 않은/알 수 없는 스프라이트 구조 유형 (스프라이트 {3:NUM})
+STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :속성값 목록에 너무 많은 요소가 있음 (스프라이트 {3:NUM}, 속성 {4:HEX})
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :유효하지 않은 산업 생산 콜백 (스프라이트 {3:NUM}, "{1:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}경고!
@@ -2981,6 +3038,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}팻말 �
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}도시 목록
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}(없음)
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (대도시){BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}도시 이름 - 이 도시로 시점을 변경하려면 클릭하세요. CTRL+클릭하면 이 도시 위치를 기준으로 새로운 외부 화면을 엽니다.
 STR_TOWN_POPULATION                                             :{BLACK}총 인구 수: {COMMA}
 
@@ -4227,7 +4285,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}역이 �
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}철도역 조각이 너무 많습니다
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}버스 정류장이 너무 많습니다
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}트럭 적하장이 너무 많습니다
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}다른 역과 너무 가깝습니다!
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}다른 항구와 너무 가깝습니다!
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}다른 공항과 너무 가깝습니다!
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}역 이름을 바꿀 수 없습니다...

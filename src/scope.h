@@ -12,6 +12,8 @@
 #ifndef SCOPE_H
 #define SCOPE_H
 
+#include <utility>
+
 template <typename T>
 class scope_exit_obj {
 	T f;

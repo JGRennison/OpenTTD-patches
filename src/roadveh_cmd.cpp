@@ -35,6 +35,7 @@
 #include "core/backup_type.hpp"
 #include "newgrf.h"
 #include "zoom_func.h"
+#include "framerate_type.h"
 
 #include "table/strings.h"
 
@@ -254,7 +255,7 @@ void RoadVehUpdateCache(RoadVehicle *v, bool same_length)
  * @param flags    type of operation.
  * @param e        the engine to build.
  * @param data     unused.
- * @param ret[out] the vehicle that has been built.
+ * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
 CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)
@@ -1587,6 +1588,8 @@ Money RoadVehicle::GetRunningCost() const
 
 bool RoadVehicle::Tick()
 {
+	PerformanceAccumulator framerate(PFE_GL_ROADVEHS);
+
 	this->tick_counter++;
 
 	if (this->IsFrontEngine()) {

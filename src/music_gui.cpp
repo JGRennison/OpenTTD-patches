@@ -173,6 +173,9 @@ void MusicSystem::ChangeMusicSet(const char *set_name)
 {
 	BaseMusic::SetSet(set_name);
 
+	free(BaseMusic::ini_set);
+	BaseMusic::ini_set = stredup(set_name);
+
 	this->BuildPlaylists();
 	this->ChangePlaylist(this->selected_playlist);
 
@@ -592,7 +595,6 @@ struct MusicTrackSelectionWindow : public Window {
 				break;
 			default:
 				NOT_REACHED();
-				break;
 		}
 	}
 };

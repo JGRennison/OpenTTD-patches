@@ -2836,6 +2836,13 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Prvotne 
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD različica {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 ekipa OpenTTD
 
+# Framerate display window
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Shrani igro
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Naloži igro
@@ -4351,7 +4358,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Preveč 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Preveč delov železniške postaje
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Preveč avtobusnih postaj
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Preveč tovornih postaj
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Preblizu druge postaje
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Preblizu drugemu pristanišču
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Preblizu sosednjemu letališču
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Ni mogoče preimenovati postaje

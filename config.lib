@@ -83,6 +83,7 @@ set_default() {
 	with_midi=""
 	with_midi_arg=""
 	with_libtimidity="1"
+	with_fluidsynth="1"
 	with_freetype="1"
 	with_fontconfig="1"
 	with_icu_layout="1"
@@ -160,6 +161,7 @@ set_default() {
 		with_midi
 		with_midi_arg
 		with_libtimidity
+		with_fluidsynth
 		with_freetype
 		with_fontconfig
 		with_icu_layout
@@ -371,6 +373,9 @@ detect_params() {
 			--with-libtimidity)           with_libtimidity="2";;
 			--without-libtimidity)        with_libtimidity="0";;
 			--with-libtimidity=*)         with_libtimidity="$optarg";;
+
+			--with-fluidsynth)            with_fluidsynth="2";;
+			--without-fluidsynth)         with_fluidsynth="0";;
 
 			--with-freetype)              with_freetype="2";;
 			--without-freetype)           with_freetype="0";;
@@ -890,6 +895,7 @@ check_params() {
 	detect_icu_layout
 	detect_icu_sort
 	detect_libtimidity
+	detect_fluidsynth
 
 	if [ "$with_direct_music" != "0" ]; then
 		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ]; then
@@ -1229,14 +1235,14 @@ make_compiler_cflags() {
 	# $5 - name of the features variable
 
 	# Get the compiler to tell us who it is
-	compiler="`$1 --version | head -n1 | cut -d' ' -f1`"
+	version_line="`$1 --version | head -n1`"
 
 	eval eval "flags=\\\$$2"
 	eval eval "cxxflags=\\\$$3"
 	eval eval "ldflags=\\\$$4"
 	eval eval "features=\\\$$5"
 
-	if [ "$compiler" = "icc" ]; then
+	if [ `echo "$version_line" | cut -d' ' -f1` = "icc" ]; then
 		# Enable some things only for certain ICC versions
 		cc_version=`$1 -dumpversion | cut -c 1-4 | sed s@\\\.@@g`
 
@@ -1311,8 +1317,6 @@ make_compiler_cflags() {
 		if [ $cc_version -ge 110 ]; then
 			# remark #2259: non-pointer conversion from ... to ... may lose significant bits
 			flags="$flags -wd2259"
-			# Use c++0x mode so static_assert() is available
-			cxxflags="$cxxflags -std=c++11"
 		fi
 
 		if [ $cc_version -lt 140 ]; then
@@ -1328,9 +1332,10 @@ make_compiler_cflags() {
 				features="$features lto"
 			fi
 		fi
-	elif [ "$compiler" = "clang" ]; then
+	elif echo "$version_line" | grep -q "clang"; then
 		# Enable some things only for certain clang versions
-		cc_version="`$1 -v 2>&1 | head -n 1 | sed s@[^0-9]@@g | cut -c 1-2`"
+		# Need to try really hard to get the version line, because OSX clang likes to hide its true version
+		cc_version="`$1 -v 2>&1 | grep -i version | head -n 1 | sed s@[^0-9]@@g | cut -c 1-2`"
 
 		# aliasing rules are not held in openttd code
 		flags="$flags -fno-strict-aliasing"
@@ -1378,10 +1383,7 @@ make_compiler_cflags() {
 			flags="$flags -Wno-unused-variable"
 		fi
 
-		if [ "$cc_version" -ge "33" ]; then
-			# clang completed C++11 support in version 3.3
-			flags="$flags -std=c++11"
-		else
+		if [ "$cc_version" -lt "33" ]; then
 			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | head -n 1`, minumum: 3.3"
 			exit 1
 		fi
@@ -1444,12 +1446,6 @@ make_compiler_cflags() {
 			flags="$flags -Wnon-virtual-dtor"
 		fi
 
-		if [ $cc_version -ge 403 ] && [ $cc_version -lt 600 ]; then
-			# Use gnu++0x mode so static_assert() is available.
-			# Don't use c++0x, it breaks mingw (with gcc 4.4.0).
-			cxxflags="$cxxflags -std=gnu++11"
-		fi
-
 		if [ $cc_version -eq 405 ]; then
 			# Prevent optimisation supposing enums are in a range specified by the standard
 			# For details, see http://gcc.gnu.org/PR43680
@@ -1474,7 +1470,7 @@ make_compiler_cflags() {
 		if [ $cc_version -ge 600 ]; then
 			# -flifetime-dse=2 (default since GCC 6) doesn't play
 			# well with our custom pool item allocator
-			cxxflags="$cxxflags -flifetime-dse=1 -std=gnu++14"
+			cxxflags="$cxxflags -flifetime-dse=1"
 		fi
 
 		if [ "$enable_lto" != "0" ]; then
@@ -1537,6 +1533,8 @@ make_cflags_and_ldflags() {
 
 	CFLAGS="$CFLAGS -D$os"
 	CFLAGS_BUILD="$CFLAGS_BUILD -D$os"
+	CXXFLAGS="$CXXFLAGS -std=c++11"
+	CXXFLAGS_BUILD="$CXXFLAGS_BUILD -std=c++11"
 
 	if [ "$enable_debug" = "0" ]; then
 		# No debug, add default stuff
@@ -1795,7 +1793,7 @@ make_cflags_and_ldflags() {
 		CFLAGS="$CFLAGS `$freetype_config --cflags | tr '\n\r' '  '`"
 
 		if [ "$enable_static" != "0" ]; then
-			LIBS="$LIBS `$freetype_config --libs --static | tr '\n\r' '  '`"
+			LIBS="$LIBS `$freetype_config --libs --static | tr '\n\r' '  '` -lfreetype"
 		else
 			LIBS="$LIBS `$freetype_config --libs | tr '\n\r' '  '`"
 		fi
@@ -1851,6 +1849,11 @@ make_cflags_and_ldflags() {
 		else
 			LIBS="$LIBS `$libtimidity_config --libs | tr '\n\r' '  '`"
 		fi
+	fi
+
+	if [ -n "$fluidsynth" ]; then
+		LIBS="$LIBS -lfluidsynth"
+		CFLAGS="$CFLAGS -DFLUIDSYNTH"
 	fi
 
 	if [ "$with_iconv" != "0" ]; then
@@ -2209,9 +2212,7 @@ check_direct_music() {
 	echo "
 		#include <windows.h>
 		#include <dmksctrl.h>
-		#include <dmusici.h>
 		#include <dmusicc.h>
-		#include <dmusicf.h>
 		int main(int argc, char *argv[]) { }" > direct_music.test.c
 	$cxx_host $CFLAGS direct_music.test.c -o direct_music.test 2> /dev/null
 	res=$?
@@ -2791,6 +2792,10 @@ detect_libtimidity() {
 	detect_pkg_config "$with_libtimidity" "libtimidity" "libtimidity_config" "0.1" "1"
 }
 
+detect_fluidsynth() {
+	detect_library "$with_fluidsynth" "fluidsynth" "" "" "fluidsynth.h"
+}
+
 detect_pkg_config() {
 	# $1 - config-param ($with_lzma value)
 	# $2 - package name ('liblzma')
@@ -2891,10 +2896,22 @@ detect_fontconfig() {
 }
 
 detect_icu_layout() {
+	if [ "$with_cocoa" != "0" ] && [ "$with_icu_layout" = "1" ]; then
+		log 1 "checking icu-lx... OSX, skipping"
+		icu_layout_config=""
+		return 0
+	fi
+
 	detect_pkg_config "$with_icu_layout" "icu-lx" "icu_layout_config" "4.8" "1"
 }
 
 detect_icu_sort() {
+	if [ "$with_cocoa" != "0" ] && [ "$with_icu_sort" = "1" ]; then
+		log 1 "checking icu-i18n... OSX, skipping"
+		icu_sort_config=""
+		return 0
+	fi
+
 	detect_pkg_config "$with_icu_sort" "icu-i18n" "icu_sort_config" "4.8" "1"
 }
 
@@ -2916,10 +2933,16 @@ detect_iconv() {
 	# Try to find iconv.h, seems to only thing to detect iconv with
 
 	if [ "$with_iconv" = "1" ] || [ "$with_iconv" = "" ] || [ "$with_iconv" = "2" ]; then
-		iconv=`ls -1 /usr/include 2>/dev/null | grep "iconv.h"`
-		if [ -z "$iconv" ]; then
-			iconv=`ls -1 /usr/local/include 2>/dev/null | grep "iconv.h"`
-		fi
+		# Iterate over search paths
+		iconv=""
+		search_paths=`LC_ALL=C $cxx_host $OSX_SYSROOT $CFLAGS -E - -v </dev/null 2>&1 | \
+		              $awk '/#include <...> search starts here:/{flag=1;next}/End of search list./{flag=0}flag'`
+		for path in $search_paths; do
+			iconv=`ls -1 $path 2>/dev/null | grep "iconv.h"`
+			if [ -n "$iconv" ]; then
+				break
+			fi
+		done
 	else
 		# Make sure it exists
 		iconv=`ls $with_iconv/include/iconv.h 2>/dev/null`
@@ -3575,6 +3598,7 @@ showhelp() {
 	echo "                                 midi-player"
 	echo "  --with-libtimidity[=\"pkg-config libtimidity\"]"
 	echo "                                 enables libtimidity support"
+	echo "  --with-fluidsynth              enables fluidsynth support"
 	echo "  --with-allegro[=\"pkg-config allegro\"]"
 	echo "                                 enables Allegro video driver support"
 	echo "  --with-cocoa                   enables COCOA video driver (OSX ONLY)"

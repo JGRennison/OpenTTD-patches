@@ -193,6 +193,7 @@ fileio_type.h
 fios.h
 fontcache.h
 fontdetection.h
+framerate_type.h
 base_consist.h
 gamelog.h
 gamelog_internal.h
@@ -408,11 +409,13 @@ music/bemidi.h
 music/cocoa_m.h
 music/extmidi.h
 music/libtimidity.h
+music/fluidsynth.h
 music/os2_m.h
 music/qtmidi.h
 os/macosx/macos.h
 os/macosx/osx_stdafx.h
 os/macosx/splash.h
+os/macosx/string_osx.h
 sound/cocoa_s.h
 video/cocoa/cocoa_keys.h
 video/cocoa/cocoa_v.h
@@ -466,6 +469,7 @@ dock_gui.cpp
 engine_gui.cpp
 error_gui.cpp
 fios_gui.cpp
+framerate_gui.cpp
 genworld_gui.cpp
 goal_gui.cpp
 graph_gui.cpp
@@ -529,6 +533,7 @@ widgets/dropdown_widget.h
 widgets/engine_widget.h
 widgets/error_widget.h
 widgets/fios_widget.h
+widgets/framerate_widget.h
 widgets/genworld_widget.h
 widgets/goal_widget.h
 widgets/graph_widget.h
@@ -1131,6 +1136,9 @@ music/midifile.cpp
 #if LIBTIMIDITY
 	music/libtimidity.cpp
 #end
+#if FLUIDSYNTH
+	music/fluidsynth.cpp
+#end
 #end
 
 # Sound
@@ -1167,6 +1175,7 @@ sound/null_s.cpp
 		music/cocoa_m.cpp
 		sound/cocoa_s.cpp
 		os/macosx/splash.cpp
+		os/macosx/string_osx.cpp
 	#end
 #end
 

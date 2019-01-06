@@ -601,6 +601,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Снимок э
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Снимок экрана в макс. приближении
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Снимок экрана в обычном масштабе
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Снимок всей карты
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Показать кол-во кадров/с
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Об игре
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Выравнивание спрайтов
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Переключить ограничивающие рамки
@@ -959,6 +960,7 @@ STR_NEWS_MERGER_TAKEOVER_TITLE                                  :{BIG_FONT}{BLAC
 STR_PRESIDENT_NAME_MANAGER                                      :{BLACK}{PRESIDENT_NAME}{}(Директор)
 
 STR_NEWS_NEW_TOWN                                               :{BLACK}{BIG_FONT}Компания «{STRING}» профинансировала основание города {TOWN}!
+STR_NEWS_NEW_TOWN_UNSPONSORED                                   :{BLACK}{BIG_FONT}Основан новый город - {TOWN}!
 
 STR_NEWS_INDUSTRY_CONSTRUCTION                                  :{BIG_FONT}{BLACK}Новое предприятие! {STRING} стро{G 0 и и и я}тся возле г.{NBSP}{TOWN}!
 STR_NEWS_INDUSTRY_PLANTED                                       :{BIG_FONT}{BLACK}Новое предприятие! {STRING} заложен{G 0 "" а о ы} возле г.{NBSP}{TOWN}!
@@ -1026,9 +1028,9 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Окно просмотра {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Скопировать в окно
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Скопировать текущую позицию в окно просмотра
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Вставить из окна
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Из основного окна
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Показать то, что отображается в основном окне
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}В основное окно
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Показать в основном окне
 
 # Game options window
@@ -1071,15 +1073,16 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Южноафр�
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Своя...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Грузинский лари (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Иранский риал (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Российский новый рубль (RUR)
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Направление движения
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}По какой стороне дороги ездит автотранспорт
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :левостороннее
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :правостороннее
+STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Движение автомобилей
+STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Сторона дороги, по которой ездит автотранспорт
+STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Левостороннее
+STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Правостороннее
 
 STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Названия городов
-STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}На каком языке будут названы населённые пункты
+STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Язык, который будет использоваться для выбора названий населённых пунктов
 
 ############ start of townname region
 STR_GAME_OPTIONS_TOWN_NAME_ORIGINAL_ENGLISH                     :Английские
@@ -1174,7 +1177,7 @@ STR_CURRENCY_DECREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP           :{BLACK}Пере
 STR_CURRENCY_INCREASE_CUSTOM_CURRENCY_TO_EURO_TOOLTIP           :{BLACK}Перейти на евро позже
 
 STR_CURRENCY_PREVIEW                                            :{LTBLUE}Образец: {ORANGE}{CURRENCY_LONG}
-STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10000 англ. фунтов (£) в вашей валюте
+STR_CURRENCY_CUSTOM_CURRENCY_PREVIEW_TOOLTIP                    :{BLACK}10{NBSP}000 фунтов стерлингов (£) в вашей валюте
 STR_CURRENCY_CHANGE_PARAMETER                                   :{BLACK}Изменить параметр валюты
 
 STR_DIFFICULTY_LEVEL_SETTING_MAXIMUM_NO_COMPETITORS             :{LTBLUE}Максимальное количество конкурентов: {ORANGE}{COMMA}
@@ -1258,7 +1261,7 @@ STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Тип:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Отображать в списке только настройки, соответствующие выбранной категории
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :Основные настройки (только самые важные)
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Расширенные настройки (практически все)
-STR_CONFIG_SETTING_RESTRICT_ALL                                 :Специальные настройки (все, включая самые непонятные)
+STR_CONFIG_SETTING_RESTRICT_ALL                                 :Все настройки (включая самые непонятные)
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_DEFAULT             :Настройки со значениями, отличающимися от значений по умолчанию
 STR_CONFIG_SETTING_RESTRICT_CHANGED_AGAINST_NEW                 :Настройки со значениями, отличающимися от настроек новой игры
 
@@ -1781,7 +1784,7 @@ STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Чем выше
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Зависимость спроса от расстояния: {STRING}
 STR_CONFIG_SETTING_DEMAND_DISTANCE_HELPTEXT                     :Если это значение больше 0, то количество груза, отправляемого с одной станции на другую, будет зависеть от расстояния между станциями. Чем выше это значение, тем больше груза будет отправляться к ближним станциям и меньше{NBSP}- к дальним.
 STR_CONFIG_SETTING_DEMAND_SIZE                                  :Количество возвращаемого груза при симметричном распределении: {STRING}
-STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :Установка этого значения ниже 100% заставит распределение быть менее «симметричным»: количество возвращаемого груза сможет быть меньше, чем количество отправленного. Установка в 0% сделает распределение полностью несимметричным.
+STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :Установка этого значения ниже 100% заставит распределение быть менее «симметричным»: количество возвращаемого груза сможет быть меньше, чем количество отправленного. Установка в 0% сделает распределение полностью асимметричным.
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :Предел загрузки коротких маршрутов перед использованием вместительных: {STRING}
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :При наличии нескольких маршрутов между станциями алгоритм распределения грузов будет использовать кратчайший маршрут до его загрузки, потом следующий по длине и т.{NBSP}д. При избытке груза маршруты будут перегружаться начиная с самых производительных. Загрузка рассчитывается исходя из оценки пропускной способности (которая может быть неточной) и интенсивности использования. Эта настройка определяет, насколько загружать маршрут перед тем, как начать использовать следующий. Установите значение ниже 100% для того, чтобы избежать задержки груза, если пропускная способность маршрута будет переоценена алгоритмом.
 
@@ -2456,6 +2459,7 @@ STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}Схем
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}Все
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}Нет
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}Выберите компании для отображения
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
 STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}неиспольз.
@@ -2876,6 +2880,28 @@ STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Ориг
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD версия {REV}
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 Команда разработчиков OpenTTD
 
+# Framerate display window
+STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE} ({DECIMAL}x)
+STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Кол-во игровых циклов, рассчитываемых в секунду.
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Кол-во отображаемых кадров в секунду.
+STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Данные по {COMMA} измерени{P ю ям ям}
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} мс
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} мс
+STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL} мс
+STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL} кадр{P "" а ов}/с
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL} кадр{P "" а ов}/с
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} кадр{P "" а ов}/с
+STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} мс
+STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA} с
+############ Leave those lines in this order!!
+STR_FRAMERATE_GL_LINKGRAPH                                      :{BLACK} Задержка графа распределения:
+############ End of leave-in-this-order
+############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :Задержка графа распределения
+STR_FRAMETIME_CAPTION_DRAWING                                   :Отрисовка графики
+############ End of leave-in-this-order
+
+
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Сохранить игру
 STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Загрузить игру
@@ -3160,7 +3186,8 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Введ
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Города
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Нет -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Список городов - щелчок по названию показывает город в основном окне. Ctrl+щелчок показывает в дополнительном окне.
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Мегаполис){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Список городов. Щелчок по названию показывает город в основном окне. Ctrl+щелчок показывает в дополнительном окне.
 STR_TOWN_POPULATION                                             :{BLACK}Население: {COMMA}
 
 # Town view window
@@ -4416,7 +4443,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Слиш
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Слишком большая ж/д станция
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Слишком много автобусных остановок
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Слишком много грузовых терминалов
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Слишком близко к другой станции
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Слишком близко к другой пристани
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Слишком близко к другому аэропорту
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Невозможно переименовать станцию...
