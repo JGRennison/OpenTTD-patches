@@ -76,7 +76,7 @@ void IncreaseDate();
 void DoPaletteAnimations();
 void MusicLoop();
 void ResetMusic();
-void CallWindowTickEvent();
+void CallWindowGameTickEvent();
 bool HandleBootstrap();
 
 extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY);
@@ -961,6 +961,14 @@ static void MakeNewGameDone()
 	Company *c = Company::Get(COMPANY_FIRST);
 	c->settings = _settings_client.company;
 
+	/* Overwrite color from settings if needed
+	 * COLOUR_END corresponds to Random colour */
+	if (_settings_client.gui.starting_colour != COLOUR_END) {
+		c->colour = _settings_client.gui.starting_colour;
+		ResetCompanyLivery(c);
+		_company_colours[c->index] = (Colours)c->colour;
+	}
+
 	IConsoleCmdExec("exec scripts/game_start.scr 0");
 
 	SetLocalCompany(COMPANY_FIRST);
@@ -1374,7 +1382,6 @@ void StateGameLoop()
 #ifndef DEBUG_DUMP_COMMANDS
 		Game::GameLoop();
 #endif
-		CallWindowTickEvent();
 		return;
 	}
 
@@ -1392,7 +1399,7 @@ void StateGameLoop()
 		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 		UpdateLandscapingLimits();
 
-		CallWindowTickEvent();
+		CallWindowGameTickEvent();
 		NewsLoop();
 	} else {
 		if (_debug_desync_level > 2 && _date_fract == 0 && (_date & 0x1F) == 0) {
@@ -1422,7 +1429,7 @@ void StateGameLoop()
 #endif
 		UpdateLandscapingLimits();
 
-		CallWindowTickEvent();
+		CallWindowGameTickEvent();
 		NewsLoop();
 		cur_company.Restore();
 	}
@@ -1485,10 +1492,6 @@ void GameLoop()
 	IncreaseSpriteLRU();
 	InteractiveRandom();
 
-	extern int _caret_timer;
-	_caret_timer += 3;
-	CursorTick();
-
 #ifdef ENABLE_NETWORK
 	/* Check for UDP stuff */
 	if (_network_available) NetworkBackgroundLoop();
@@ -1505,20 +1508,11 @@ void GameLoop()
 		/* Singleplayer */
 		StateGameLoop();
 	}
-
-	/* Check chat messages roughly once a second. */
-	static uint check_message = 0;
-	if (++check_message > 1000 / MILLISECONDS_PER_TICK) {
-		check_message = 0;
-		NetworkChatMessageLoop();
-	}
 #else
 	StateGameLoop();
 #endif /* ENABLE_NETWORK */
 
 	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) DoPaletteAnimations();
-
-	if (!_pause_mode || _game_mode == GM_EDITOR || _settings_game.construction.command_pause_level > CMDPL_NO_CONSTRUCTION) MoveAllTextEffects();
 
 	InputLoop();
 
