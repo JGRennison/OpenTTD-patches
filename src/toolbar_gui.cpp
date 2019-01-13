@@ -48,6 +48,7 @@
 #include "story_base.h"
 #include "toolbar_gui.h"
 #include "framerate_type.h"
+#include "guitimer_func.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -1978,6 +1979,8 @@ enum MainToolbarHotkeys {
 
 /** Main toolbar. */
 struct MainToolbarWindow : Window {
+	GUITimer timer;
+
 	MainToolbarWindow(WindowDesc *desc) : Window(desc)
 	{
 		this->InitNested(0);
@@ -1988,6 +1991,8 @@ struct MainToolbarWindow : Window {
 		this->SetWidgetDisabledState(WID_TN_FAST_FORWARD, _networking); // if networking, disable fast-forward button
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
+
+		this->timer.SetInterval(MILLISECONDS_PER_TICK);
 	}
 
 	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
@@ -2092,8 +2097,11 @@ struct MainToolbarWindow : Window {
 		_last_started_action = CBF_NONE;
 	}
 
-	virtual void OnTick()
+	virtual void OnRealtimeTick(uint delta_ms)
 	{
+		if (!this->timer.Elapsed(delta_ms)) return;
+		this->timer.SetInterval(MILLISECONDS_PER_TICK);
+
 		if (this->IsWidgetLowered(WID_TN_PAUSE) != !!_pause_mode) {
 			this->ToggleWidgetLoweredState(WID_TN_PAUSE);
 			this->SetWidgetDirty(WID_TN_PAUSE);
@@ -2310,6 +2318,8 @@ enum MainToolbarEditorHotkeys {
 };
 
 struct ScenarioEditorToolbarWindow : Window {
+	GUITimer timer;
+
 	ScenarioEditorToolbarWindow(WindowDesc *desc) : Window(desc)
 	{
 		this->InitNested(0);
@@ -2318,6 +2328,8 @@ struct ScenarioEditorToolbarWindow : Window {
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 		PositionMainToolbar(this);
 		DoZoomInOutWindow(ZOOM_NONE, this);
+
+		this->timer.SetInterval(MILLISECONDS_PER_TICK);
 	}
 
 	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
@@ -2445,8 +2457,11 @@ struct ScenarioEditorToolbarWindow : Window {
 		this->SetWidgetDirty(WID_TE_DATE_FORWARD);
 	}
 
-	virtual void OnTick()
+	virtual void OnRealtimeTick(uint delta_ms)
 	{
+		if (!this->timer.Elapsed(delta_ms)) return;
+		this->timer.SetInterval(MILLISECONDS_PER_TICK);
+
 		if (this->IsWidgetLowered(WID_TE_PAUSE) != !!_pause_mode) {
 			this->ToggleWidgetLoweredState(WID_TE_PAUSE);
 			this->SetDirty();

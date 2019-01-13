@@ -1242,6 +1242,8 @@ make_compiler_cflags() {
 	eval eval "ldflags=\\\$$4"
 	eval eval "features=\\\$$5"
 
+	cppstd="-std=c++11"
+
 	if [ `echo "$version_line" | cut -d' ' -f1` = "icc" ]; then
 		# Enable some things only for certain ICC versions
 		cc_version=`$1 -dumpversion | cut -c 1-4 | sed s@\\\.@@g`
@@ -1335,7 +1337,7 @@ make_compiler_cflags() {
 	elif echo "$version_line" | grep -q "clang"; then
 		# Enable some things only for certain clang versions
 		# Need to try really hard to get the version line, because OSX clang likes to hide its true version
-		cc_version="`$1 -v 2>&1 | grep -i version | head -n 1 | sed s@[^0-9]@@g | cut -c 1-2`"
+		cc_version="`$1 -v 2>&1 | grep -i version | head -n 1 | sed s@[^0-9.]@@g | $awk -F . '{printf "%d%02d\n", $1, $2}'`"
 
 		# aliasing rules are not held in openttd code
 		flags="$flags -fno-strict-aliasing"
@@ -1357,14 +1359,14 @@ make_compiler_cflags() {
 		# it happens when using the FOR_ALL_WINDOWS_FROM_BACK_FROM macro
 		flags="$flags -Wno-self-assign"
 
-		if [ "$cc_version" -lt "30" ]; then
+		if [ "$cc_version" -lt "300" ]; then
 			# warning: equality comparison with extraneous parentheses
 			flags="$flags -Wno-parentheses"
 			# warning: operands of ? are integers of different signs: 'unsigned int' and 'int'
 			flags="$flags -Wno-sign-compare"
 		fi
 
-		if [ "$cc_version" -ge "30" ]; then
+		if [ "$cc_version" -ge "300" ]; then
 			# warning: equality comparison with extraneous parentheses
 			# this warning could be useful, but it warns about code in squirrel
 			flags="$flags -Wno-parentheses-equality"
@@ -1383,8 +1385,8 @@ make_compiler_cflags() {
 			flags="$flags -Wno-unused-variable"
 		fi
 
-		if [ "$cc_version" -lt "33" ]; then
-			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | head -n 1`, minumum: 3.3"
+		if [ "$cc_version" -lt "303" ]; then
+			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | grep -i version | head -n 1`, minumum: 3.3"
 			exit 1
 		fi
 
@@ -1407,6 +1409,7 @@ make_compiler_cflags() {
 		flags="$flags -Wwrite-strings -Wpointer-arith"
 		flags="$flags -W -Wno-unused-parameter -Wredundant-decls"
 		flags="$flags -Wformat=2 -Wformat-security"
+		cppstd="-std=gnu++11"
 
 		if [ $enable_assert -eq 0 ]; then
 			# Do not warn about unused variables when building without asserts
@@ -1497,7 +1500,7 @@ make_compiler_cflags() {
 	fi
 
 	eval "$2=\"$flags\""
-	eval "$3=\"$cxxflags\""
+	eval "$3=\"$cxxflags $cppstd\""
 	eval "$4=\"$ldflags\""
 	eval "$5=\"$features\""
 }
@@ -1533,8 +1536,6 @@ make_cflags_and_ldflags() {
 
 	CFLAGS="$CFLAGS -D$os"
 	CFLAGS_BUILD="$CFLAGS_BUILD -D$os"
-	CXXFLAGS="$CXXFLAGS -std=c++11"
-	CXXFLAGS_BUILD="$CXXFLAGS_BUILD -std=c++11"
 
 	if [ "$enable_debug" = "0" ]; then
 		# No debug, add default stuff
