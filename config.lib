@@ -1335,7 +1335,7 @@ make_compiler_cflags() {
 	elif echo "$version_line" | grep -q "clang"; then
 		# Enable some things only for certain clang versions
 		# Need to try really hard to get the version line, because OSX clang likes to hide its true version
-		cc_version="`$1 -v 2>&1 | grep -i version | head -n 1 | sed s@[^0-9]@@g | cut -c 1-2`"
+		cc_version="`$1 -v 2>&1 | grep -i version | head -n 1 | sed s@[^0-9.]@@g | $awk -F . '{printf "%d%02d\n", $1, $2}'`"
 
 		# aliasing rules are not held in openttd code
 		flags="$flags -fno-strict-aliasing"
@@ -1357,14 +1357,14 @@ make_compiler_cflags() {
 		# it happens when using the FOR_ALL_WINDOWS_FROM_BACK_FROM macro
 		flags="$flags -Wno-self-assign"
 
-		if [ "$cc_version" -lt "30" ]; then
+		if [ "$cc_version" -lt "300" ]; then
 			# warning: equality comparison with extraneous parentheses
 			flags="$flags -Wno-parentheses"
 			# warning: operands of ? are integers of different signs: 'unsigned int' and 'int'
 			flags="$flags -Wno-sign-compare"
 		fi
 
-		if [ "$cc_version" -ge "30" ]; then
+		if [ "$cc_version" -ge "300" ]; then
 			# warning: equality comparison with extraneous parentheses
 			# this warning could be useful, but it warns about code in squirrel
 			flags="$flags -Wno-parentheses-equality"
@@ -1383,8 +1383,8 @@ make_compiler_cflags() {
 			flags="$flags -Wno-unused-variable"
 		fi
 
-		if [ "$cc_version" -lt "33" ]; then
-			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | head -n 1`, minumum: 3.3"
+		if [ "$cc_version" -lt "303" ]; then
+			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | grep -i version | head -n 1`, minumum: 3.3"
 			exit 1
 		fi
 
