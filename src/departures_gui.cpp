@@ -172,6 +172,8 @@ public:
 
 			this->LowerWidget(WID_DB_SHOW_VIA);
 		}
+
+		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 	}
 
 	virtual ~DeparturesWindow()
@@ -313,7 +315,7 @@ public:
 		}
 	}
 
-	virtual void OnTick()
+	virtual void OnGameTick() override
 	{
 		if (_pause_mode == PM_UNPAUSED) {
 			this->tick_count += 1;

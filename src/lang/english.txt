@@ -189,6 +189,7 @@ STR_COLOUR_ORANGE                                               :Orange
 STR_COLOUR_BROWN                                                :Brown
 STR_COLOUR_GREY                                                 :Grey
 STR_COLOUR_WHITE                                                :White
+STR_COLOUR_RANDOM                                               :Random
 
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mph
@@ -937,6 +938,7 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Custom...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgian Lari (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranian Rial (IRR)
 STR_GAME_OPTIONS_CURRENCY_RUB                                   :New Russian Ruble (RUB)
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mexican Peso (MXN)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Road vehicles
@@ -1281,6 +1283,9 @@ STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :This setting is
 
 STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS                    :All train vehicles may be direction flipped in depot: {STRING2}
 STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :Enable flipping the direction of all train vehicles in depots, even if it is not enabled by the NewGRF.
+
+STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :Starting company colour: {STRING2}
+STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :Choose starting colour for the company
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Airports never expire: {STRING2}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Enabling this setting makes each airport type stay available forever after its introduction
@@ -2589,9 +2594,9 @@ STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}Programm
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Path Signal (electric){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. Standard path signals can be passed from the back side
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}One-way Path Signal (electric){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. One-way path signals can't be passed from the back side
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Signal Convert{}When selected, clicking an existing signal will convert it to the selected signal type and variant. Ctrl+Click will toggle the existing variant. Shift+Click shows estimated conversion cost
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Dragging signal density
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Decrease dragging signal density
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Increase dragging signal density
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Dragging signal distance
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Decrease dragging signal distance
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Increase dragging signal distance
 
 # Tracerestrict GUI
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_EQUALS                :is

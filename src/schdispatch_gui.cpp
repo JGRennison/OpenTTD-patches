@@ -286,7 +286,7 @@ struct SchdispatchWindow : Window {
 		DrawString(text_left, text_right, y + 2, STR_JUST_DATE_WALLCLOCK_TINY, colour);
 	}
 
-	virtual void OnTick() override
+	virtual void OnGameTick() override
 	{
 		const Vehicle *v = this->vehicle;
 		if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != NULL) {

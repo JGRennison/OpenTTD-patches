@@ -185,6 +185,7 @@ struct GUISettings {
 	bool   show_progsig_ui;                  ///< Show programmable signals feature in UI
 	bool   show_veh_list_cargo_filter;       ///< Show cargo list filter in UI
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
+	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
 	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
 	bool   show_vehicle_list_company_colour; ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
 	bool   enable_single_veh_shared_order_gui;    ///< enable showing a single vehicle in the shared order GUI window

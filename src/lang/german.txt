@@ -1271,6 +1271,7 @@ STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Wenn aktiviert,
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Züge verschiedener Firmen stoßen nicht mehr zusammen: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Diese Einstellung ist in erster Linie dafür da um zu verhindern, dass Spielern denen man nicht vertraut bewusst Zusammenstöße mit Zügen anderer Firmen in Multiplayer-Spielen mit Infrastructure Sharing provozieren.
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Flughäfen veralten nie: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Wird diese Option aktiviert, können Flughäfen, die einmal eingeführt wurden, das ganze Spiel über gebaut werden und veralten nie
 

@@ -3302,9 +3302,8 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void OnTick()
+	virtual void OnGameTick() override
 	{
-		if (_pause_mode != PM_UNPAUSED) return;
 		if (this->slots.NeedResort() || this->vehicles.NeedResort()) {
 			this->SetDirty();
 		}

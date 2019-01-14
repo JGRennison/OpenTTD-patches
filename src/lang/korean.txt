@@ -1282,6 +1282,7 @@ STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :이 옵션은 �
 STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS                    :모든 열차가 차량기지에서 뒤집어질 수 있게 함: {STRING}
 STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :NewGRF에서 차량기지에서 열차의 방향을 뒤집을 수 없도록 설정되어 있어도 무시하고 열차를 차량기지에서 뒤집을 수 있게 합니다.
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :옛날 공항을 사라지지 않고 계속 만들 수 있게 함: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :이 설정을 켜면, 소형 공항을 포함한 모든 공항 종류를 도입 이후에 계속 사용할 수 있게 됩니다.
 

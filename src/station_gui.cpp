@@ -623,9 +623,8 @@ public:
 		}
 	}
 
-	virtual void OnTick()
+	virtual void OnGameTick()
 	{
-		if (_pause_mode != PM_UNPAUSED) return;
 		if (this->stations.NeedResort()) {
 			DEBUG(misc, 3, "Periodic rebuild station list company %d", this->window_number);
 			this->SetDirty();
@@ -2323,7 +2322,7 @@ struct SelectStationWindow : Window {
 		DeleteWindowById(WC_SELECT_STATION, 0);
 	}
 
-	virtual void OnTick()
+	virtual void OnRealtimeTick(uint delta_ms)
 	{
 		if (_thd.dirty & 2) {
 			_thd.dirty &= ~2;

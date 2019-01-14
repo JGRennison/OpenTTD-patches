@@ -37,6 +37,8 @@
 #include "game/game.hpp"
 #include "video/video_driver.hpp"
 #include "framerate_type.h"
+#include "network/network_func.h"
+#include "guitimer_func.h"
 
 #include "safeguards.h"
 
@@ -1926,6 +1928,8 @@ void ResetWindowSystem()
 
 static void DecreaseWindowCounters()
 {
+	if (_scroller_click_timeout != 0) _scroller_click_timeout--;
+
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_FRONT(w) {
 		if (_scroller_click_timeout == 0) {
@@ -3080,7 +3084,6 @@ void InputLoop()
 	assert(HasModalProgress() || IsLocalCompany());
 
 	CheckSoftLimit();
-	HandleKeyScrolling();
 
 	/* Do the actual free of the deleted windows. */
 	for (WindowBase *v = _z_front_window; v != NULL; /* nothing */) {
@@ -3093,9 +3096,6 @@ void InputLoop()
 		free(w);
 	}
 
-	if (_scroller_click_timeout != 0) _scroller_click_timeout--;
-	DecreaseWindowCounters();
-
 	if (_input_events_this_tick != 0) {
 		/* The input loop is called only once per GameLoop() - so we can clear the counter here */
 		_input_events_this_tick = 0;
@@ -3105,7 +3105,17 @@ void InputLoop()
 
 	/* HandleMouseEvents was already called for this tick */
 	HandleMouseEvents();
-	HandleAutoscroll();
+}
+
+/**
+ * Dispatch OnRealtimeTick event over all windows
+ */
+void CallWindowRealtimeTickEvent(uint delta_ms)
+{
+	Window *w;
+	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+		w->OnRealtimeTick(delta_ms);
+	}
 }
 
 /**
@@ -3113,18 +3123,49 @@ void InputLoop()
  */
 void UpdateWindows()
 {
+	static uint32 last_realtime_tick = _realtime_tick;
+	uint delta_ms = _realtime_tick - last_realtime_tick;
+	last_realtime_tick = _realtime_tick;
+
+	if (delta_ms == 0) return;
+
 	PerformanceMeasurer framerate(PFE_DRAWING);
 	PerformanceAccumulator::Reset(PFE_DRAWWORLD);
+
+	CallWindowRealtimeTickEvent(delta_ms);
+
+#ifdef ENABLE_NETWORKING
+	static GUITimer network_message_timer = GUITimer(1);
+	if (network_message_timer.Elapsed(delta_ms)) {
+		network_message_timer.SetInterval(1000);
+		NetworkChatMessageLoop();
+	}
+#endif
 
 	Window *w;
 
 	_window_update_number++;
 
-	static int highlight_timer = 1;
-	if (--highlight_timer == 0) {
-		highlight_timer = 15;
+	static GUITimer window_timer = GUITimer(1);
+	if (window_timer.Elapsed(delta_ms)) {
+		if (_network_dedicated) window_timer.SetInterval(MILLISECONDS_PER_TICK);
+
+		extern int _caret_timer;
+		_caret_timer += 3;
+		CursorTick();
+
+		HandleKeyScrolling();
+		HandleAutoscroll();
+		DecreaseWindowCounters();
+	}
+
+	static GUITimer highlight_timer = GUITimer(1);
+	if (highlight_timer.Elapsed(delta_ms)) {
+		highlight_timer.SetInterval(450);
 		_window_highlight_colour = !_window_highlight_colour;
 	}
+
+	if (!_pause_mode || _game_mode == GM_EDITOR || _settings_game.construction.command_pause_level > CMDPL_NO_CONSTRUCTION) MoveAllTextEffects(delta_ms);
 
 	FOR_ALL_WINDOWS_FROM_FRONT(w) {
 		w->ProcessScheduledInvalidations();
@@ -3135,21 +3176,23 @@ void UpdateWindows()
 	 * But still empty the invalidation queues above. */
 	if (_network_dedicated) return;
 
-	static int we4_timer = 0;
-	int t = we4_timer + 1;
+	static GUITimer hundredth_timer = GUITimer(1);
+	if (hundredth_timer.Elapsed(delta_ms)) {
+		hundredth_timer.SetInterval(3000); // Historical reason: 100 * MILLISECONDS_PER_TICK
 
-	if (t >= 100) {
 		FOR_ALL_WINDOWS_FROM_FRONT(w) {
 			w->OnHundredthTick();
 		}
-		t = 0;
 	}
-	we4_timer = t;
 
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
-		if ((w->flags & WF_WHITE_BORDER) && --w->white_border_timer == 0) {
-			CLRBITS(w->flags, WF_WHITE_BORDER);
-			w->SetDirty();
+	if (window_timer.HasElapsed()) {
+		window_timer.SetInterval(MILLISECONDS_PER_TICK);
+
+		FOR_ALL_WINDOWS_FROM_FRONT(w) {
+			if ((w->flags & WF_WHITE_BORDER) && --w->white_border_timer == 0) {
+				CLRBITS(w->flags, WF_WHITE_BORDER);
+				w->SetDirty();
+			}
 		}
 	}
 
@@ -3301,13 +3344,13 @@ void InvalidateWindowClassesData(WindowClass cls, int data, bool gui_scope)
 }
 
 /**
- * Dispatch WE_TICK event over all windows
+ * Dispatch OnGameTick event over all windows
  */
-void CallWindowTickEvent()
+void CallWindowGameTickEvent()
 {
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_FRONT(w) {
-		w->OnTick();
+		w->OnGameTick();
 	}
 }
 
