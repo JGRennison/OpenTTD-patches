@@ -245,6 +245,10 @@ uint8 LoadSpriteV1(SpriteLoader::Sprite *sprite, uint file_slot, size_t file_pos
 	/* 0x02 indicates it is a compressed sprite, so we can't rely on 'num' to be valid.
 	 * In case it is uncompressed, the size is 'num' - 8 (header-size). */
 	num = (type & 0x02) ? sprite[zoom_lvl].width * sprite[zoom_lvl].height : num - 8;
+	if (num < 0) {
+		WarnCorruptSprite(file_slot, file_pos, __LINE__);
+		return 0;
+	}
 
 	if (DecodeSingleSprite(&sprite[zoom_lvl], file_slot, file_pos, sprite_type, num, type, zoom_lvl, SCC_PAL, 1)) return 1 << zoom_lvl;
 
