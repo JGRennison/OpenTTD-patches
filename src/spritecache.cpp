@@ -20,6 +20,7 @@
 #include "core/alloc_func.hpp"
 #include "core/math_func.hpp"
 #include "core/mem_func.hpp"
+#include "scope_info.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -443,6 +444,8 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	uint file_slot = sc->file_slot;
 	size_t file_pos = sc->file_pos;
 
+	SCOPE_INFO_FMT([&], "ReadSprite: pos: " PRINTF_SIZE ", id: %u, slot: %u (%s), type: %u", file_pos, id, file_slot, FioGetFilename(file_slot), sprite_type);
+
 	assert(sprite_type != ST_RECOLOUR);
 	assert(IsMapgenSpriteID(id) == (sprite_type == ST_MAPGEN));
 	assert(sc->type == sprite_type);
@@ -568,6 +571,8 @@ void ReadGRFSpriteOffsets(byte container_version)
 bool LoadNextSprite(int load_index, uint file_slot, uint file_sprite_id, byte container_version)
 {
 	size_t file_pos = FioGetPos();
+
+	SCOPE_INFO_FMT([&], "LoadNextSprite: pos: " PRINTF_SIZE ", slot: %u (%s), load_index: %d, file_sprite_id: %u, container_ver: %u", file_pos, file_slot, FioGetFilename(file_slot), load_index, file_sprite_id, container_version);
 
 	/* Read sprite header. */
 	uint32 num = container_version >= 2 ? FioReadDword() : FioReadWord();
