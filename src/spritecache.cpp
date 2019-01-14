@@ -565,7 +565,7 @@ void ReadGRFSpriteOffsets(byte container_version)
  * @param container_version Container version of the GRF.
  * @return True if a valid sprite was loaded, false on any error.
  */
-bool LoadNextSprite(int load_index, byte file_slot, uint file_sprite_id, byte container_version)
+bool LoadNextSprite(int load_index, uint file_slot, uint file_sprite_id, byte container_version)
 {
 	size_t file_pos = FioGetPos();
 
