@@ -30,7 +30,10 @@
  */
 static inline uint TileHeight(TileIndex tile)
 {
+	/* this method is inlined in many places and is performance-critical, drop assertion in non-debug builds */
+#ifdef _DEBUG
 	assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
+#endif
 	return _m[tile].height;
 }
 
@@ -88,7 +91,10 @@ static inline uint TilePixelHeightOutsideMap(int x, int y)
  */
 static inline TileType GetTileType(TileIndex tile)
 {
+	/* this method is inlined in many places and is performance-critical, drop assertion in non-debug builds */
+#ifdef _DEBUG
 	assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
+#endif
 	return (TileType)GB(_m[tile].type, 4, 4);
 }
 
