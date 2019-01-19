@@ -1145,7 +1145,14 @@ void CallVehicleTicks()
 	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));
 	FOR_ALL_VEHICLES(v) {
 		/* Vehicle could be deleted in this tick */
-		if (!v->Tick()) {
+		auto tick = [](Vehicle *v) -> bool {
+			/* De-virtualise most common cases */
+			if (v->type == VEH_TRAIN) return Train::From(v)->Train::Tick();
+			if (v->type == VEH_ROAD) return RoadVehicle::From(v)->RoadVehicle::Tick();
+			if (v->type == VEH_AIRCRAFT) return Aircraft::From(v)->Aircraft::Tick();
+			return v->Tick();
+		};
+		if (!tick(v)) {
 			assert(Vehicle::Get(vehicle_index) == NULL);
 			continue;
 		}
