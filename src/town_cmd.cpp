@@ -397,7 +397,7 @@ static Foundation GetFoundation_Town(TileIndex tile, Slope tileh)
  * The newhouses animation supersedes regular ones
  * @param tile TileIndex of the house to animate
  */
-static void AnimateTile_Town(TileIndex tile)
+void AnimateTile_Town(TileIndex tile)
 {
 	if (GetHouseType(tile) >= NEW_HOUSE_OFFSET) {
 		AnimateNewHouseTile(tile);

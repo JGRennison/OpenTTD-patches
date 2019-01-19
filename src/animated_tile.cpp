@@ -51,12 +51,37 @@ void AddAnimatedTile(TileIndex tile)
  */
 void AnimateAnimatedTiles()
 {
+	extern void AnimateTile_Town(TileIndex tile);
+	extern void AnimateTile_Station(TileIndex tile);
+	extern void AnimateTile_Industry(TileIndex tile);
+	extern void AnimateTile_Object(TileIndex tile);
+
 	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
 
 	const TileIndex *ti = _animated_tiles.Begin();
 	while (ti < _animated_tiles.End()) {
 		const TileIndex curr = *ti;
-		AnimateTile(curr);
+		switch (GetTileType(curr)) {
+			case MP_HOUSE:
+				AnimateTile_Town(curr);
+				break;
+
+			case MP_STATION:
+				AnimateTile_Station(curr);
+				break;
+
+			case MP_INDUSTRY:
+				AnimateTile_Industry(curr);
+				break;
+
+			case MP_OBJECT:
+				AnimateTile_Object(curr);
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+
 		/* During the AnimateTile call, DeleteAnimatedTile could have been called,
 		 * deleting an element we've already processed and pushing the rest one
 		 * slot to the left. We can detect this by checking whether the index

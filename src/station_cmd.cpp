@@ -3316,7 +3316,7 @@ static void TileLoop_Station(TileIndex tile)
 }
 
 
-static void AnimateTile_Station(TileIndex tile)
+void AnimateTile_Station(TileIndex tile)
 {
 	if (HasStationRail(tile)) {
 		AnimateStationTile(tile);

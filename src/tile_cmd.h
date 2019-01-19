@@ -182,13 +182,6 @@ static inline void AddProducedCargo(TileIndex tile, CargoArray &produced)
 	proc(tile, produced);
 }
 
-static inline void AnimateTile(TileIndex tile)
-{
-	AnimateTileProc *proc = _tile_type_procs[GetTileType(tile)]->animate_tile_proc;
-	assert(proc != NULL);
-	proc(tile);
-}
-
 static inline bool ClickTile(TileIndex tile)
 {
 	ClickTileProc *proc = _tile_type_procs[GetTileType(tile)]->click_tile_proc;
