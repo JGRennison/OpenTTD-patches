@@ -216,6 +216,7 @@ public:
 							this->show_types[w - WID_DB_SHOW_TRAINS] = false;
 							this->RaiseWidget(w);
 						}
+						this->SetWidgetDirty(w);
 					}
 				} else {
 					this->show_types[widget - WID_DB_SHOW_TRAINS] = !this->show_types[widget - WID_DB_SHOW_TRAINS];
@@ -225,11 +226,12 @@ public:
 					else {
 						this->RaiseWidget(widget);
 					}
+					this->SetWidgetDirty(widget);
 				}
 				/* We need to recompute the departures list. */
 				this->calc_tick_countdown = 0;
 				/* We need to redraw the button that was pressed. */
-				this->SetWidgetDirty(widget);
+				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
 			}
 
@@ -261,6 +263,7 @@ public:
 				this->calc_tick_countdown = 0;
 				/* We need to redraw the button that was pressed. */
 				this->SetWidgetDirty(widget);
+				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
 
 			case WID_DB_LIST: {  // Matrix to show departures
@@ -307,10 +310,12 @@ public:
 
 			case WID_DB_SHOW_PAX:
 				this->ToggleCargoFilter(widget, this->show_pax);
+				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
 
 			case WID_DB_SHOW_FREIGHT:
 				this->ToggleCargoFilter(widget, this->show_freight);
+				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
 		}
 	}
