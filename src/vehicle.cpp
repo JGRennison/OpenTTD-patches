@@ -1214,14 +1214,16 @@ void CallVehicleTicks()
 				}
 
 				v->motion_counter += front->cur_speed;
-				/* Play a running sound if the motion counter passes 256 (Do we not skip sounds?) */
-				if (GB(v->motion_counter, 0, 8) < front->cur_speed) PlayVehicleSound(v, VSE_RUNNING);
+				if (_settings_client.sound.vehicle) {
+					/* Play a running sound if the motion counter passes 256 (Do we not skip sounds?) */
+					if (GB(v->motion_counter, 0, 8) < front->cur_speed) PlayVehicleSound(v, VSE_RUNNING);
 
-				/* Play an alternating running sound every 16 ticks */
-				if (GB(v->tick_counter, 0, 4) == 0) {
-					/* Play running sound when speed > 0 and not braking */
-					bool running = (front->cur_speed > 0) && !(front->vehstatus & (VS_STOPPED | VS_TRAIN_SLOWING));
-					PlayVehicleSound(v, running ? VSE_RUNNING_16 : VSE_STOPPED_16);
+					/* Play an alternating running sound every 16 ticks */
+					if (GB(v->tick_counter, 0, 4) == 0) {
+						/* Play running sound when speed > 0 and not braking */
+						bool running = (front->cur_speed > 0) && !(front->vehstatus & (VS_STOPPED | VS_TRAIN_SLOWING));
+						PlayVehicleSound(v, running ? VSE_RUNNING_16 : VSE_STOPPED_16);
+					}
 				}
 
 				break;
