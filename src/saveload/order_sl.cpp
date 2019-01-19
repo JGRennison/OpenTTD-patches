@@ -287,12 +287,13 @@ static void Load_ORDL()
 
 }
 
-static void Ptrs_ORDL()
+void Ptrs_ORDL()
 {
 	OrderList *list;
 
 	FOR_ALL_ORDER_LISTS(list) {
 		SlObject(list, GetOrderListDescription());
+		list->ReindexOrderList();
 	}
 }
 

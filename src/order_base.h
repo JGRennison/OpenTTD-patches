@@ -549,11 +549,13 @@ struct OrderList : OrderListPool::PoolItem<&_orderlist_pool> {
 private:
 	friend void AfterLoadVehicles(bool part_of_load); ///< For instantiating the shared vehicle chain
 	friend const struct SaveLoad *GetOrderListDescription(); ///< Saving and loading of order lists.
+	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.
 
 	StationID GetBestLoadableNext(const Vehicle *v, const Order *o1, const Order *o2) const;
+	void ReindexOrderList();
 
 	Order *first;                     ///< First order of the order list.
-	VehicleOrderID num_orders;        ///< NOSAVE: How many orders there are in the list.
+	std::vector<Order *> order_index; ///< NOSAVE: Vector index of order list.
 	VehicleOrderID num_manual_orders; ///< NOSAVE: How many manually added orders are there in the list.
 	uint num_vehicles;                ///< NOSAVE: Number of vehicles that share this order list.
 	Vehicle *first_shared;            ///< NOSAVE: pointer to the first vehicle in the shared order chain.
@@ -572,7 +574,7 @@ private:
 public:
 	/** Default constructor producing an invalid order list. */
 	OrderList(VehicleOrderID num_orders = INVALID_VEH_ORDER_ID)
-		: first(NULL), num_orders(num_orders), num_manual_orders(0), num_vehicles(0), first_shared(NULL),
+		: first(NULL), num_manual_orders(0), num_vehicles(0), first_shared(NULL),
 		  timetable_duration(0), total_duration(0), scheduled_dispatch_duration(0),
 		  scheduled_dispatch_start_date(-1), scheduled_dispatch_start_full_date_fract(0),
 		  scheduled_dispatch_last_dispatch(0), scheduled_dispatch_max_delay(0) { }
@@ -603,7 +605,7 @@ public:
 	 * Get the last order of the order chain.
 	 * @return the last order of the chain.
 	 */
-	inline Order *GetLastOrder() const { return this->GetOrderAt(this->num_orders - 1); }
+	inline Order *GetLastOrder() const { return this->GetOrderAt(this->GetNumOrders() - 1); }
 
 	/**
 	 * Get the order after the given one or the first one, if the given one is the
@@ -617,7 +619,7 @@ public:
 	 * Get number of orders in the order list.
 	 * @return number of orders in the chain.
 	 */
-	inline VehicleOrderID GetNumOrders() const { return this->num_orders; }
+	inline VehicleOrderID GetNumOrders() const { return this->order_index.size(); }
 
 	/**
 	 * Get number of manually added orders in the order list.

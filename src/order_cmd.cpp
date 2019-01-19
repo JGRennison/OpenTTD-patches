@@ -364,6 +364,14 @@ void CargoStationIDStackSet::FillNextStoppingStation(const Vehicle *v, const Ord
 	}
 }
 
+void OrderList::ReindexOrderList()
+{
+	this->order_index.clear();
+	for (Order *o = this->first; o != NULL; o = o->next) {
+		this->order_index.push_back(o);
+	}
+}
+
 /**
  * Recomputes everything.
  * @param chain first order in the chain
@@ -374,19 +382,19 @@ void OrderList::Initialize(Order *chain, Vehicle *v)
 	this->first = chain;
 	this->first_shared = v;
 
-	this->num_orders = 0;
 	this->num_manual_orders = 0;
 	this->num_vehicles = 1;
 	this->timetable_duration = 0;
 	this->total_duration = 0;
+	this->order_index.clear();
 
 	for (Order *o = this->first; o != NULL; o = o->next) {
-		++this->num_orders;
 		if (!o->IsType(OT_IMPLICIT)) ++this->num_manual_orders;
 		if (!o->IsType(OT_CONDITIONAL)) {
 			this->timetable_duration += o->GetTimetabledWait() + o->GetTimetabledTravel();
 			this->total_duration += o->GetWaitTime() + o->GetTravelTime();
 		}
+		this->order_index.push_back(o);
 	}
 
 	for (Vehicle *u = this->first_shared->PreviousShared(); u != NULL; u = u->PreviousShared()) {
@@ -412,9 +420,9 @@ void OrderList::FreeChain(bool keep_orderlist)
 
 	if (keep_orderlist) {
 		this->first = NULL;
-		this->num_orders = 0;
 		this->num_manual_orders = 0;
 		this->timetable_duration = 0;
+		this->order_index.clear();
 	} else {
 		delete this;
 	}
@@ -427,14 +435,8 @@ void OrderList::FreeChain(bool keep_orderlist)
  */
 Order *OrderList::GetOrderAt(int index) const
 {
-	if (index < 0) return NULL;
-
-	Order *order = this->first;
-
-	while (order != NULL && index-- > 0) {
-		order = order->next;
-	}
-	return order;
+	if (index < 0 || (uint) index >= this->order_index.size()) return NULL;
+	return this->order_index[index];
 }
 
 /**
@@ -444,14 +446,9 @@ Order *OrderList::GetOrderAt(int index) const
  */
 VehicleOrderID OrderList::GetIndexOfOrder(const Order *order) const
 {
-	VehicleOrderID index = 0;
-	const Order *o = this->first;
-	while (o != nullptr) {
-		if (o == order) return index;
-		index++;
-		o = o->next;
+	for (VehicleOrderID index = 0; index < this->order_index.size(); index++) {
+		if (this->order_index[index] == order) return index;
 	}
-
 	return INVALID_VEH_ORDER_ID;
 }
 
@@ -596,7 +593,7 @@ void OrderList::InsertOrderAt(Order *new_order, int index)
 			/* Insert as first or only order */
 			new_order->next = this->first;
 			this->first = new_order;
-		} else if (index >= this->num_orders) {
+		} else if (index >= this->GetNumOrders()) {
 			/* index is after the last order, add it to the end */
 			this->GetLastOrder()->next = new_order;
 		} else {
@@ -606,12 +603,12 @@ void OrderList::InsertOrderAt(Order *new_order, int index)
 			order->next = new_order;
 		}
 	}
-	++this->num_orders;
 	if (!new_order->IsType(OT_IMPLICIT)) ++this->num_manual_orders;
 	if (!new_order->IsType(OT_CONDITIONAL)) {
 		this->timetable_duration += new_order->GetTimetabledWait() + new_order->GetTimetabledTravel();
 		this->total_duration += new_order->GetWaitTime() + new_order->GetTravelTime();
 	}
+	this->ReindexOrderList();
 
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
 	 * the list of stations. So, we need to invalidate that window if needed. */
@@ -629,7 +626,7 @@ void OrderList::InsertOrderAt(Order *new_order, int index)
  */
 void OrderList::DeleteOrderAt(int index)
 {
-	if (index >= this->num_orders) return;
+	if (index >= this->GetNumOrders()) return;
 
 	Order *to_remove;
 
@@ -641,13 +638,13 @@ void OrderList::DeleteOrderAt(int index)
 		to_remove = prev->next;
 		prev->next = to_remove->next;
 	}
-	--this->num_orders;
 	if (!to_remove->IsType(OT_IMPLICIT)) --this->num_manual_orders;
 	if (!to_remove->IsType(OT_CONDITIONAL)) {
 		this->timetable_duration -= (to_remove->GetTimetabledWait() + to_remove->GetTimetabledTravel());
 		this->total_duration -= (to_remove->GetWaitTime() + to_remove->GetTravelTime());
 	}
 	delete to_remove;
+	this->ReindexOrderList();
 }
 
 /**
@@ -657,7 +654,7 @@ void OrderList::DeleteOrderAt(int index)
  */
 void OrderList::MoveOrder(int from, int to)
 {
-	if (from >= this->num_orders || to >= this->num_orders || from == to) return;
+	if (from >= this->GetNumOrders() || to >= this->GetNumOrders() || from == to) return;
 
 	Order *moving_one;
 
@@ -680,6 +677,7 @@ void OrderList::MoveOrder(int from, int to)
 		moving_one->next = one_before->next;
 		one_before->next = moving_one;
 	}
+	this->ReindexOrderList();
 }
 
 /**
@@ -724,7 +722,8 @@ int OrderList::GetPositionInSharedOrderList(const Vehicle *v) const
  */
 bool OrderList::IsCompleteTimetable() const
 {
-	for (Order *o = this->first; o != NULL; o = o->next) {
+	for (VehicleOrderID index = 0; index < this->order_index.size(); index++) {
+		const Order *o = this->order_index[index];
 		/* Implicit orders are, by definition, not timetabled. */
 		if (o->IsType(OT_IMPLICIT)) continue;
 		if (!o->IsCompletelyTimetabled()) return false;
@@ -746,6 +745,8 @@ void OrderList::DebugCheckSanity() const
 	DEBUG(misc, 6, "Checking OrderList %hu for sanity...", this->index);
 
 	for (const Order *o = this->first; o != NULL; o = o->next) {
+		assert(this->order_index.size() > check_num_orders);
+		assert(o == this->order_index[check_num_orders]);
 		++check_num_orders;
 		if (!o->IsType(OT_IMPLICIT)) ++check_num_manual_orders;
 		if (!o->IsType(OT_CONDITIONAL)) {
@@ -753,7 +754,7 @@ void OrderList::DebugCheckSanity() const
 			check_total_duration += o->GetWaitTime() + o->GetTravelTime();
 		}
 	}
-	assert_msg(this->num_orders == check_num_orders, "%u, %u", this->num_orders, check_num_orders);
+	assert_msg(this->GetNumOrders() == check_num_orders, "%u, %u", (uint) this->GetNumOrders(), check_num_orders);
 	assert_msg(this->num_manual_orders == check_num_manual_orders, "%u, %u", this->num_manual_orders, check_num_manual_orders);
 	assert_msg(this->timetable_duration == check_timetable_duration, "%u, %u", this->timetable_duration, check_timetable_duration);
 	assert_msg(this->total_duration == check_total_duration, "%u, %u", this->total_duration, check_total_duration);
@@ -764,7 +765,7 @@ void OrderList::DebugCheckSanity() const
 	}
 	assert_msg(this->num_vehicles == check_num_vehicles, "%u, %u", this->num_vehicles, check_num_vehicles);
 	DEBUG(misc, 6, "... detected %u orders (%u manual), %u vehicles, %i timetabled, %i total",
-			(uint)this->num_orders, (uint)this->num_manual_orders,
+			(uint)this->GetNumOrders(), (uint)this->num_manual_orders,
 			this->num_vehicles, this->timetable_duration, this->total_duration);
 }
 
