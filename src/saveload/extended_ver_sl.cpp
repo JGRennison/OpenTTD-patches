@@ -60,6 +60,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TOWN_CARGO_ADJ,         XSCF_IGNORABLE_UNKNOWN,   2,   2, "town_cargo_adj",            NULL, NULL, NULL        },
 	{ XSLFI_SIG_TUNNEL_BRIDGE,      XSCF_NULL,                7,   7, "signal_tunnel_bridge",      NULL, NULL, "XBSS"      },
 	{ XSLFI_IMPROVED_BREAKDOWNS,    XSCF_NULL,                6,   6, "improved_breakdowns",       NULL, NULL, NULL        },
+	{ XSLFI_CONSIST_BREAKDOWN_FLAG, XSCF_NULL,                1,   1, "consist_breakdown_flag",    NULL, NULL, NULL        },
 	{ XSLFI_TT_WAIT_IN_DEPOT,       XSCF_NULL,                1,   1, "tt_wait_in_depot",          NULL, NULL, NULL        },
 	{ XSLFI_AUTO_TIMETABLE,         XSCF_NULL,                4,   4, "auto_timetables",           NULL, NULL, NULL        },
 	{ XSLFI_VEHICLE_REPAIR_COST,    XSCF_NULL,                2,   2, "vehicle_repair_cost",       NULL, NULL, NULL        },

@@ -44,6 +44,7 @@ enum VehicleRailFlags {
 	VRF_BEYOND_PLATFORM_END           = 16,
 	VRF_NOT_YET_IN_PLATFORM           = 17,
 	VRF_ADVANCE_IN_PLATFORM           = 18,
+	VRF_CONSIST_BREAKDOWN             = 19,///< one or more vehicles in this consist have a breakdown of some sort (breakdown_ctr != 0)
 
 	VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED), ///< Bitmask of all flags that indicate a broken train (braking is not included)
 };

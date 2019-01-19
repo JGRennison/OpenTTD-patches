@@ -4770,7 +4770,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	}
 
 	/* train is broken down? */
-	if (HandlePossibleBreakdowns(v)) return true;
+	if (HasBit(v->flags, VRF_CONSIST_BREAKDOWN) && HandlePossibleBreakdowns(v)) return true;
 
 	if (HasBit(v->flags, VRF_REVERSING) && v->cur_speed == 0) {
 		ReverseTrainDirection(v);
@@ -5548,6 +5548,7 @@ void TrainRoadVehicleCrashBreakdown(Vehicle *v)
 {
 	Train *t = Train::From(v)->First();
 	t->breakdown_ctr = 2;
+	SetBit(t->flags, VRF_CONSIST_BREAKDOWN);
 	t->breakdown_delay = 255;
 	t->breakdown_type = BREAKDOWN_RV_CRASH;
 	t->breakdown_severity = 0;

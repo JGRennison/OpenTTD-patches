@@ -34,6 +34,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TOWN_CARGO_ADJ,                         ///< Town cargo adjustment patch
 	XSLFI_SIG_TUNNEL_BRIDGE,                      ///< Signals on tunnels and bridges
 	XSLFI_IMPROVED_BREAKDOWNS,                    ///< Improved breakdowns patch
+	XSLFI_CONSIST_BREAKDOWN_FLAG,                 ///< Consist breakdown flag
 	XSLFI_TT_WAIT_IN_DEPOT,                       ///< Timetabling waiting time in depot patch
 	XSLFI_AUTO_TIMETABLE,                         ///< Auto timetables and separation patch
 	XSLFI_VEHICLE_REPAIR_COST,                    ///< Vehicle repair costs patch

@@ -183,6 +183,7 @@ void VehicleServiceInDepot(Vehicle *v)
 		if (!(Train::From(v)->IsEngine()) && !(Train::From(v)->IsRearDualheaded())) return;
 		ClrBit(Train::From(v)->flags, VRF_NEED_REPAIR);
 		ClrBit(Train::From(v)->flags, VRF_HAS_HIT_RV);
+		ClrBit(Train::From(v)->flags, VRF_CONSIST_BREAKDOWN);
 		Train::From(v)->critical_breakdown_count = 0;
 		const RailVehicleInfo *rvi = &e->u.rail;
 		v->vcache.cached_max_speed = rvi->max_speed;
@@ -1715,6 +1716,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	if ((uint32) (0xffff - v->reliability) * _settings_game.difficulty.vehicle_breakdowns * chance > GB(r1, 0, 24) * 10) {
 		uint32 r2 = Random();
 		v->breakdown_ctr = GB(r1, 24, 6) + 0xF;
+		if (v->type == VEH_TRAIN) SetBit(Train::From(v)->First()->flags, VRF_CONSIST_BREAKDOWN);
 		v->breakdown_delay = GB(r2, 0, 7) + 0x80;
 		v->breakdown_chance = 0;
 		DetermineBreakdownType(v, r2);

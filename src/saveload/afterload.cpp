@@ -3137,6 +3137,14 @@ bool AfterLoadGame()
 			}
 		}
 	}
+	if (SlXvIsFeatureMissing(XSLFI_CONSIST_BREAKDOWN_FLAG)) {
+		Train *v;
+		FOR_ALL_TRAINS(v) {
+			if (v->breakdown_ctr != 0 && (v->IsEngine() || v->IsMultiheaded())) {
+				SetBit(v->First()->flags, VRF_CONSIST_BREAKDOWN);
+			}
+		}
+	}
 
 	/* The road owner of standard road stops was not properly accounted for. */
 	if (IsSavegameVersionBefore(172)) {
