@@ -3588,6 +3588,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_CONSIST_SPEED_RD_FLAG)) {
+		Train *t;
+		FOR_ALL_TRAINS(t) {
+			if ((t->track & TRACK_BIT_WORMHOLE && !(t->vehstatus & VS_HIDDEN)) || t->track == TRACK_BIT_DEPOT) {
+				SetBit(t->First()->flags, VRF_CONSIST_SPEED_REDUCTION);
+			}
+		}
+	}
+
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
 	AfterLoadLabelMaps();

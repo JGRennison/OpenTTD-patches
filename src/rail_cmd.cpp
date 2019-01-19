@@ -3582,10 +3582,13 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 		if (DiagDirToDir(ReverseDiagDir(dir)) == v->direction) {
 			/* enter the depot */
 
-			if (v->IsFrontEngine() && v->current_order.IsType(OT_LOADING_ADVANCE)) {
-				abort_load_through(true);
-			} else if (v->IsFrontEngine() && HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) {
-				abort_load_through(false);
+			if (v->IsFrontEngine()) {
+				if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
+					abort_load_through(true);
+				} else if (HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) {
+					abort_load_through(false);
+				}
+				SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
 			}
 
 			v->track = TRACK_BIT_DEPOT,

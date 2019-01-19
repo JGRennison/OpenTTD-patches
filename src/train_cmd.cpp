@@ -591,15 +591,22 @@ int Train::GetCurrentMaxSpeed() const
 		}
 	}
 
-	for (const Train *u = this; u != NULL; u = u->Next()) {
-		if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC && u->track == TRACK_BIT_DEPOT) {
-			max_speed = min(max_speed, 61);
-			break;
-		}
+	if (HasBit(this->flags, VRF_CONSIST_SPEED_REDUCTION)) {
+		ClrBit(const_cast<Train *>(this)->flags, VRF_CONSIST_SPEED_REDUCTION);
+		for (const Train *u = this; u != NULL; u = u->Next()) {
+			if (u->track == TRACK_BIT_DEPOT) {
+				SetBit(const_cast<Train *>(this)->flags, VRF_CONSIST_SPEED_REDUCTION);
+				if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC) {
+					max_speed = min(max_speed, 61);
+				}
+				continue;
+			}
 
-		/* Vehicle is on the middle part of a bridge. */
-		if (u->track & TRACK_BIT_WORMHOLE && !(u->vehstatus & VS_HIDDEN)) {
-			max_speed = min(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed);
+			/* Vehicle is on the middle part of a bridge. */
+			if (u->track & TRACK_BIT_WORMHOLE && !(u->vehstatus & VS_HIDDEN)) {
+				SetBit(const_cast<Train *>(this)->flags, VRF_CONSIST_SPEED_REDUCTION);
+				max_speed = min(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed);
+			}
 		}
 	}
 
@@ -945,6 +952,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->y_pos = y;
 		v->z_pos = GetSlopePixelZ(x, y);
 		v->track = TRACK_BIT_DEPOT;
+		SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
 		v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
 		v->spritenum = rvi->image_index;
 		v->cargo_type = e->GetDefaultCargoType();
@@ -5167,6 +5175,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e)
 
 	v->owner = _current_company;
 	v->track = TRACK_BIT_DEPOT;
+	SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
 	v->vehstatus = VS_HIDDEN | VS_DEFPAL;
 
 	v->SetWagon();
@@ -5238,6 +5247,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID 
 	v->tile = 0; // INVALID_TILE;
 	v->owner = _current_company;
 	v->track = TRACK_BIT_DEPOT;
+	SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
 	v->vehstatus = VS_HIDDEN | VS_STOPPED | VS_DEFPAL;
 	v->spritenum = rvi->image_index;
 	v->cargo_type = e->GetDefaultCargoType();

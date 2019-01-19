@@ -2470,6 +2470,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					if (frame != TILE_SIZE) return VETSB_CONTINUE;
 					Train *t = Train::From(v);
 					t->track = TRACK_BIT_WORMHOLE;
+					SetBit(t->First()->flags, VRF_CONSIST_SPEED_REDUCTION);
 					ClrBit(t->gv_flags, GVF_GOINGUP_BIT);
 					ClrBit(t->gv_flags, GVF_GOINGDOWN_BIT);
 					break;
@@ -2557,6 +2558,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					t->direction = bridge_dir;
 					t->track = TRACK_BIT_WORMHOLE;
 				}
+				SetBit(t->First()->flags, VRF_CONSIST_SPEED_REDUCTION);
 				ClrBit(t->gv_flags, GVF_GOINGUP_BIT);
 				ClrBit(t->gv_flags, GVF_GOINGDOWN_BIT);
 				return VETSB_ENTERED_WORMHOLE;

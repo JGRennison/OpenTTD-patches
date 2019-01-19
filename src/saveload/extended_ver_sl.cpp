@@ -92,6 +92,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_SELL_AT_DEPOT_ORDER,    XSCF_NULL,                1,   1, "sell_at_depot_order",       NULL, NULL, NULL        },
 	{ XSLFI_BUY_LAND_RATE_LIMIT,    XSCF_NULL,                1,   1, "buy_land_rate_limit",       NULL, NULL, NULL        },
 	{ XSLFI_DUAL_RAIL_TYPES,        XSCF_NULL,                1,   1, "dual_rail_types",           NULL, NULL, NULL        },
+	{ XSLFI_CONSIST_SPEED_RD_FLAG,  XSCF_NULL,                1,   1, "consist_speed_rd_flag",     NULL, NULL, NULL        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, NULL, NULL, NULL, NULL },// This is the end marker
 };
 
