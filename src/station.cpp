@@ -51,6 +51,7 @@ BaseStation::~BaseStation()
 	DeleteWindowById(WC_DEPARTURES_BOARD, this->index);
 
 	this->sign.MarkDirty();
+	ViewportClearStationSignCache();
 }
 
 Station::Station(TileIndex tile) :

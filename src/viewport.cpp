@@ -264,6 +264,18 @@ std::vector<DrawnPathRouteTileLine> _vp_route_paths_last_mark_dirty;
 
 static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines);
 
+struct ViewportStationSignCacheEntry {
+	int32 top;             ///< The top of the sign
+	int32 left;            ///< The left bound of the sign
+	int32 right;           ///< The right bound of the sign
+	StationID id;          ///< Station ID
+};
+
+static byte _viewport_station_sign_cache_display_mode = 0;
+static const byte VIEWPORT_STATION_SIGN_CACHE_DISPLAY_MODE_MASK = ((1 << DO_SHOW_STATION_NAMES) | (1 << DO_SHOW_WAYPOINT_NAMES) | (1 << DO_SHOW_COMPETITOR_SIGNS));
+static OwnerByte _viewport_station_sign_cache_local_company { INVALID_OWNER };
+static std::vector<ViewportStationSignCacheEntry> _viewport_station_sign_cache;
+
 TileHighlightData _thd;
 static TileInfo *_cur_ti;
 bool _draw_bounding_boxes = false;
@@ -1391,6 +1403,26 @@ struct ViewportAddStringApproxBoundsChecker {
 	}
 };
 
+struct ViewportStationSignCacheApproxBoundsChecker {
+	int top;
+	int bottom;
+	int left;
+	int right;
+
+	ViewportStationSignCacheApproxBoundsChecker(const DrawPixelInfo *dpi)
+	{
+		this->top    = dpi->top - ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM, dpi->zoom);
+		this->bottom = dpi->top + dpi->height;
+		this->left   = dpi->left;
+		this->right  = dpi->left + dpi->width;
+	}
+
+	bool IsStationSignCacheEntryMaybeOnScreen(const ViewportStationSignCacheEntry *sign) const
+	{
+		return !(this->bottom < sign->top || this->top > sign->top || this->right < sign->left || this->left > sign->right);
+	}
+};
+
 static void ViewportAddTownNames(DrawPixelInfo *dpi)
 {
 	if (!HasBit(_display_opt, DO_SHOW_TOWN_NAMES) || _game_mode == GM_MENU) return;
@@ -1406,12 +1438,18 @@ static void ViewportAddTownNames(DrawPixelInfo *dpi)
 	}
 }
 
-
-static void ViewportAddStationNames(DrawPixelInfo *dpi)
+void ViewportClearStationSignCache()
 {
-	if (!(HasBit(_display_opt, DO_SHOW_STATION_NAMES) || HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)) || _game_mode == GM_MENU) return;
+	_viewport_station_sign_cache.clear();
+	_viewport_station_sign_cache_display_mode = 0;
+	_viewport_station_sign_cache_local_company = INVALID_OWNER;
+}
 
-	ViewportAddStringApproxBoundsChecker checker(dpi);
+void ViewportFillStationSignCache()
+{
+	_viewport_station_sign_cache.clear();
+	_viewport_station_sign_cache_display_mode = _display_opt & VIEWPORT_STATION_SIGN_CACHE_DISPLAY_MODE_MASK;
+	_viewport_station_sign_cache_local_company = _local_company;
 
 	const BaseStation *st;
 	FOR_ALL_BASE_STATIONS(st) {
@@ -1424,7 +1462,27 @@ static void ViewportAddStationNames(DrawPixelInfo *dpi)
 		/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != st->owner && st->owner != OWNER_NONE) continue;
 
-		if (!checker.IsSignMaybeOnScreen(&st->sign)) continue;
+		int sign_half_width = max(ScaleByZoom(st->sign.width_normal, ZOOM_LVL_OUT_8X), ScaleByZoom(st->sign.width_small, ZOOM_LVL_DRAW_SPR)) / 2;
+		_viewport_station_sign_cache.push_back({ st->sign.top, st->sign.center - sign_half_width, st->sign.center + sign_half_width, st->index });
+	}
+}
+
+static void ViewportAddStationNames(DrawPixelInfo *dpi)
+{
+	if (!(HasBit(_display_opt, DO_SHOW_STATION_NAMES) || HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)) || _game_mode == GM_MENU) return;
+
+	if (_viewport_station_sign_cache_display_mode != (_display_opt & VIEWPORT_STATION_SIGN_CACHE_DISPLAY_MODE_MASK) || _viewport_station_sign_cache_local_company != _local_company) {
+		ViewportFillStationSignCache();
+	}
+
+	ViewportStationSignCacheApproxBoundsChecker checker(dpi);
+
+	for (const ViewportStationSignCacheEntry &entry : _viewport_station_sign_cache) {
+
+		if (!checker.IsStationSignCacheEntryMaybeOnScreen(&entry)) continue;
+
+		const BaseStation *st = BaseStation::Get(entry.id);
+		bool is_station = Station::IsExpected(st);
 
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
 				is_station ? STR_VIEWPORT_STATION : STR_VIEWPORT_WAYPOINT,

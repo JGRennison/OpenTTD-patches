@@ -425,6 +425,7 @@ void Station::UpdateVirtCoord()
 	this->sign.UpdatePosition(pt.x, pt.y, STR_VIEWPORT_STATION);
 
 	SetWindowDirty(WC_STATION_VIEW, this->index);
+	ViewportClearStationSignCache();
 }
 
 /** Update the virtual coords needed to draw the station sign for all stations. */

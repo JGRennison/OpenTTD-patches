@@ -44,6 +44,7 @@ void Waypoint::UpdateVirtCoord()
 	this->sign.UpdatePosition(pt.x, pt.y - 32 * ZOOM_LVL_BASE, STR_VIEWPORT_WAYPOINT);
 	/* Recenter viewport */
 	InvalidateWindowData(WC_WAYPOINT_VIEW, this->index);
+	ViewportClearStationSignCache();
 }
 
 /**

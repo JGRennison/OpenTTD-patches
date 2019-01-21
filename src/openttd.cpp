@@ -373,6 +373,7 @@ static void ShutdownGame()
 	UninitFreeType();
 
 	ViewportMapClearTunnelCache();
+	ViewportClearStationSignCache();
 	ClearCommandLog();
 }
 
