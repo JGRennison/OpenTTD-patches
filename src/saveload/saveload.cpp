@@ -1809,6 +1809,7 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_LST:
+		case SL_PTRDEQ:
 		case SL_VEC:
 		case SL_DEQUE:
 		case SL_STDSTR:
