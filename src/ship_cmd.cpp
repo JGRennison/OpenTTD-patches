@@ -193,7 +193,7 @@ static void CheckIfShipNeedsService(Vehicle *v)
 	}
 
 	v->current_order.MakeGoToDepot(depot->index, ODTFB_SERVICE);
-	v->dest_tile = depot->xy;
+	v->SetDestTile(depot->xy);
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 }
 
@@ -319,6 +319,14 @@ void Ship::UpdateDeltaXY()
 	this->z_extent      = 6;
 }
 
+/**
+ * Test-procedure for HasVehicleOnPos to check for a ship.
+ */
+static Vehicle *EnsureNoVisibleShipProc(Vehicle *v, void *data)
+{
+	return v->type == VEH_SHIP && (v->vehstatus & VS_HIDDEN) == 0 ? v : NULL;
+}
+
 static bool CheckShipLeaveDepot(Ship *v)
 {
 	if (!v->IsChainInDepot()) return false;
@@ -329,6 +337,13 @@ static bool CheckShipLeaveDepot(Ship *v)
 		VehicleEnterDepot(v);
 		return true;
 	}
+
+	/* Don't leave depot if no destination set */
+	if (v->dest_tile == 0) return true;
+
+	/* Don't leave depot if another vehicle is already entering/leaving */
+	/* This helps avoid CPU load if many ships are set to start at the same time */
+	if (HasVehicleOnPos(v->tile, NULL, &EnsureNoVisibleShipProc)) return true;
 
 	TileIndex tile = v->tile;
 	Axis axis = GetShipDepotAxis(tile);
@@ -443,11 +458,41 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 
 	bool path_found = true;
 	Track track;
-	switch (_settings_game.pf.pathfinder_for_ships) {
-		case VPF_OPF: track = OPFShipChooseTrack(v, tile, enterdir, tracks, path_found); break;
-		case VPF_NPF: track = NPFShipChooseTrack(v, tile, enterdir, tracks, path_found); break;
-		case VPF_YAPF: track = YapfShipChooseTrack(v, tile, enterdir, tracks, path_found); break;
-		default: NOT_REACHED();
+
+	if (v->dest_tile == 0 || DistanceManhattan(tile, v->dest_tile) > SHIP_MAX_ORDER_DISTANCE + 5) {
+		/* No destination or destination too far, don't invoke pathfinder. */
+		track = TrackBitsToTrack(v->state);
+		if (track != TRACK_X && track != TRACK_Y) track = TrackToOppositeTrack(track);
+		if (!HasBit(tracks, track)) {
+			/* Can't continue in same direction so pick first available track. */
+			if (_settings_game.pf.forbid_90_deg) {
+				tracks &= ~TrackCrossesTracks(TrackdirToTrack(v->GetVehicleTrackdir()));
+				if (tracks == TRACK_BIT_NONE) return INVALID_TRACK;
+			}
+			track = FindFirstTrack(tracks);
+		}
+		path_found = false;
+	} else {
+		/* Attempt to follow cached path. */
+		if (!v->path.empty()) {
+			track = TrackdirToTrack(v->path.front());
+
+			if (HasBit(tracks, track)) {
+				v->path.pop_front();
+				/* HandlePathfindResult() is not called here because this is not a new pathfinder result. */
+				return track;
+			}
+
+			/* Cached path is invalid so continue with pathfinder. */
+			v->path.clear();
+		}
+
+		switch (_settings_game.pf.pathfinder_for_ships) {
+			case VPF_OPF: track = OPFShipChooseTrack(v, tile, enterdir, tracks, path_found); break;
+			case VPF_NPF: track = NPFShipChooseTrack(v, tile, enterdir, tracks, path_found); break;
+			case VPF_YAPF: track = YapfShipChooseTrack(v, tile, enterdir, tracks, path_found, v->path); break;
+			default: NOT_REACHED();
+		}
 	}
 
 	v->HandlePathfindingResult(path_found);
@@ -634,6 +679,7 @@ getout:
 reverse_direction:
 	dir = ReverseDir(v->direction);
 	v->direction = dir;
+	v->path.clear();
 	goto getout;
 }
 
@@ -646,6 +692,13 @@ bool Ship::Tick()
 	ShipController(this);
 
 	return true;
+}
+
+void Ship::SetDestTile(TileIndex tile)
+{
+	if (tile == this->dest_tile) return;
+	this->path.clear();
+	this->dest_tile = tile;
 }
 
 /**

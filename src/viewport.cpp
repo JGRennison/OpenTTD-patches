@@ -58,7 +58,7 @@
  *
  *
  * Rows are horizontal sections of the viewport, also half a tile wide.
- * This time the nothern most tile on the map defines 0 and
+ * This time the northern most tile on the map defines 0 and
  * everything south of that has a positive number.
  */
 
@@ -1813,8 +1813,8 @@ void UpdateViewportPosition(Window *w)
 			if (_settings_client.gui.smooth_scroll) {
 				int max_scroll = ScaleByMapSize1D(512 * ZOOM_LVL_BASE);
 				/* Not at our desired position yet... */
-				w->viewport->scrollpos_x += Clamp(delta_x / 4, -max_scroll, max_scroll);
-				w->viewport->scrollpos_y += Clamp(delta_y / 4, -max_scroll, max_scroll);
+				w->viewport->scrollpos_x += Clamp(DivAwayFromZero(delta_x, 4), -max_scroll, max_scroll);
+				w->viewport->scrollpos_y += Clamp(DivAwayFromZero(delta_y, 4), -max_scroll, max_scroll);
 			} else {
 				w->viewport->scrollpos_x = w->viewport->dest_scrollpos_x;
 				w->viewport->scrollpos_y = w->viewport->dest_scrollpos_y;

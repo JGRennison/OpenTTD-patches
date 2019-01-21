@@ -655,7 +655,7 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 
 	/* Clicked on a widget that is not disabled.
 	 * So unless the clicked widget is the caption bar, change focus to this widget.
-	 * Exception: In the OSK we always want the editbox to stay focussed. */
+	 * Exception: In the OSK we always want the editbox to stay focused. */
 	if (widget_type != WWT_CAPTION && w->window_class != WC_OSK) {
 		/* focused_widget_changed is 'now' only true if the window this widget
 		 * is in gained focus. In that case it must remain true, also if the
@@ -3516,8 +3516,9 @@ void ChangeVehicleViewports(VehicleID from_index, VehicleID to_index)
  */
 void RelocateAllWindows(int neww, int newh)
 {
-	Window *w;
+	DeleteWindowById(WC_DROPDOWN_MENU, 0);
 
+	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		int left, top;
 		/* XXX - this probably needs something more sane. For example specifying
