@@ -850,7 +850,7 @@ bool Vehicle::IsEngineCountable() const
 
 /**
  * Check whether Vehicle::engine_type has any meaning.
- * @return true if the vehicle has a useable engine type.
+ * @return true if the vehicle has a usable engine type.
  */
 bool Vehicle::HasEngineType() const
 {
@@ -3127,7 +3127,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 			SetBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 		}
 
-		this->dest_tile = location;
+		this->SetDestTile(location);
 		this->current_order.MakeGoToDepot(destination, ODTF_MANUAL);
 		if (command & DEPOT_SELL) {
 			this->current_order.SetDepotActionType(ODATFB_HALT | ODATFB_SELL);

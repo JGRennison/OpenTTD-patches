@@ -821,6 +821,8 @@ public:
 	 */
 	virtual bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse) { return false; }
 
+	virtual void SetDestTile(TileIndex tile) { this->dest_tile = tile; }
+
 	CommandCost SendToDepot(DoCommandFlag flags, DepotCommand command, TileIndex specific_depot = 0);
 
 	void UpdateVisualEffect(bool allow_power_change = true);

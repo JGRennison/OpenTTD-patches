@@ -1391,6 +1391,15 @@ static bool MaxVehiclesChanged(int32 p1)
 	return true;
 }
 
+static bool InvalidateShipPathCache(int32 p1)
+{
+	Ship *s;
+	FOR_ALL_SHIPS(s) {
+		s->path.clear();
+	}
+	return true;
+}
+
 static bool ImprovedBreakdownsSettingChanged(int32 p1)
 {
 	if (!_settings_game.vehicle.improved_breakdowns) return true;

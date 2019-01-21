@@ -38,6 +38,7 @@
 #include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "disaster_vehicle.h"
+#include "newgrf_airporttiles.h"
 #include "framerate_type.h"
 
 #include "table/strings.h"
@@ -1439,7 +1440,13 @@ static void AircraftEntersTerminal(Aircraft *v)
  */
 static void AircraftLandAirplane(Aircraft *v)
 {
+	Station *st = Station::Get(v->targetairport);
+
+	TileIndex vt = TileVirtXY(v->x_pos, v->y_pos);
+
 	v->UpdateDeltaXY();
+
+	AirportTileAnimationTrigger(st, vt, AAT_STATION_AIRPLANE_LAND);
 
 	if (!PlayVehicleSound(v, VSE_TOUCHDOWN)) {
 		SndPlayVehicleFx(SND_17_SKID_PLANE, v);

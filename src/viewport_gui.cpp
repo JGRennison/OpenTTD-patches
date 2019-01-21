@@ -229,21 +229,24 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 			break;
 		}
 		case MP_INDUSTRY: {
+			static char buffer[1024];
 			const Industry *ind = Industry::GetByTile(tile);
 			const IndustrySpec *indsp = GetIndustrySpec(ind->type);
 
-			StringID str = STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP;
-			uint prm_count = 0;
-			SetDParam(prm_count++, indsp->name);
+			buffer[0] = 0;
+			char *buf_pos = buffer;
+
 			for (byte i = 0; i < lengthof(ind->produced_cargo); i++) {
 				if (ind->produced_cargo[i] != CT_INVALID) {
-					SetDParam(prm_count++, ind->produced_cargo[i]);
-					SetDParam(prm_count++, ind->last_month_production[i]);
-					SetDParam(prm_count++, ToPercent8(ind->last_month_pct_transported[i]));
-					str++;
+					SetDParam(0, ind->produced_cargo[i]);
+					SetDParam(1, ind->last_month_production[i]);
+					SetDParam(2, ToPercent8(ind->last_month_pct_transported[i]));
+					buf_pos = GetString(buf_pos, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION, lastof(buffer));
 				}
 			}
-			GuiShowTooltips(w, str, 0, NULL, TCC_HOVER_VIEWPORT);
+			SetDParam(0, indsp->name);
+			SetDParamStr(1, buffer);
+			GuiShowTooltips(w, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP, 0, NULL, TCC_HOVER_VIEWPORT);
 			break;
 		}
 		default:

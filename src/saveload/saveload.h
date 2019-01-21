@@ -206,15 +206,17 @@ enum SaveLoadTypes {
 	SL_ARR         =  2, ///< Save/load an array.
 	SL_STR         =  3, ///< Save/load a string.
 	SL_LST         =  4, ///< Save/load a list.
-	SL_DEQ         =  5, ///< Save/load a deque.
+	SL_DEQUE       =  5, ///< Save/load a primitive type deque.
 	SL_VEC         =  6, ///< Save/load a vector.
 	SL_STDSTR      =  7, ///< Save/load a std::string.
+
 	/* non-normal save-load types */
 	SL_WRITEBYTE   =  8,
 	SL_VEH_INCLUDE =  9,
 	SL_ST_INCLUDE  = 10,
-	/* primitive type vector */
-	SL_VARVEC      = 14,
+
+	SL_PTRDEQ      = 13, ///< Save/load a pointer type deque.
+	SL_VARVEC      = 14, ///< Save/load a primitive type vector.
 	SL_END         = 15
 };
 
@@ -337,8 +339,8 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param to       Last savegame version that has the list.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDDEQ_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_DEQ, base, variable, type, 0, from, to, extver)
-#define SLE_CONDDEQ(base, variable, type, from, to) SLE_CONDDEQ_X(base, variable, type, from, to, SlXvFeatureTest())
+#define SLE_CONDPTRDEQ_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_PTRDEQ, base, variable, type, 0, from, to, extver)
+#define SLE_CONDPTRDEQ(base, variable, type, from, to) SLE_CONDPTRDEQ_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a vector in some savegame versions.
@@ -363,6 +365,18 @@ typedef SaveLoad SaveLoadGlobVarList;
  */
 #define SLE_CONDVARVEC_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_VARVEC, base, variable, type, 0, from, to, extver)
 #define SLE_CONDVARVEC(base, variable, type, from, to) SLE_CONDVARVEC_X(base, variable, type, from, to, SlXvFeatureTest())
+
+/**
+ * Storage of a deque in some savegame versions.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ * @param from     First savegame version that has the list.
+ * @param to       Last savegame version that has the list.
+ * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
+ */
+#define SLE_CONDDEQUE_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_DEQUE, base, variable, type, 0, from, to, extver)
+#define SLE_CONDDEQUE(base, variable, type, from, to) SLE_CONDDEQUE_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a variable in every version of a savegame.
@@ -420,7 +434,7 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLE_DEQ(base, variable, type) SLE_CONDDEQ(base, variable, type, 0, SL_MAX_VERSION)
+#define SLE_PTRDEQ(base, variable, type) SLE_CONDPTRDEQ(base, variable, type, 0, SL_MAX_VERSION)
 
 /**
  * Storage of a vector in every savegame version.
@@ -533,8 +547,8 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param to       Last savegame version that has the list.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDDEQ_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_DEQ, variable, type, 0, from, to, extver)
-#define SLEG_CONDDEQ(variable, type, from, to) SLEG_CONDDEQ_X(variable, type, from, to, SlXvFeatureTest())
+#define SLEG_CONDPTRDEQ_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_PTRDEQ, variable, type, 0, from, to, extver)
+#define SLEG_CONDPTRDEQ(variable, type, from, to) SLEG_CONDPTRDEQ_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a global vector in some savegame versions.
@@ -587,7 +601,7 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLEG_DEQ(variable, type) SLEG_CONDDEQ(variable, type, 0, SL_MAX_VERSION)
+#define SLEG_PTRDEQ(variable, type) SLEG_CONDPTRDEQ(variable, type, 0, SL_MAX_VERSION)
 
 /**
  * Storage of a global vector in every savegame version.

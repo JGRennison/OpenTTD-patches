@@ -630,7 +630,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		     SLE_VAR(Vehicle, cargo_cap,             SLE_UINT16),
 		 SLE_CONDVAR(Vehicle, refit_cap,             SLE_UINT16,                 182, SL_MAX_VERSION),
 		SLEG_CONDVAR(         _cargo_count,          SLE_UINT16,                   0,  67),
-		 SLE_CONDDEQ(Vehicle, cargo.packets,         REF_CARGO_PACKET,            68, SL_MAX_VERSION),
+		 SLE_CONDPTRDEQ(Vehicle, cargo.packets,      REF_CARGO_PACKET,            68, SL_MAX_VERSION),
 		 SLE_CONDARR(Vehicle, cargo.action_counts,   SLE_UINT, VehicleCargoList::NUM_MOVE_TO_ACTION, 181, SL_MAX_VERSION),
 		 SLE_CONDVAR(Vehicle, cargo_age_counter,     SLE_UINT16,                 162, SL_MAX_VERSION),
 
@@ -792,7 +792,8 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 	static const SaveLoad _ship_desc[] = {
 		SLE_WRITEBYTE(Vehicle, type, VEH_SHIP),
 		SLE_VEH_INCLUDE(),
-		     SLE_VAR(Ship, state, SLE_UINT8),
+		      SLE_VAR(Ship, state,     SLE_UINT8),
+		SLE_CONDDEQUE(Ship, path,      SLE_UINT8,  203, SL_MAX_VERSION),
 
 		SLE_CONDNULL(16, 2, 143), // old reserved space
 

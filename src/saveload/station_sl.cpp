@@ -301,7 +301,7 @@ const SaveLoad *GetGoodsDesc()
 		SLEG_CONDVAR(            _cargo_feeder_share,  SLE_FILE_U32 | SLE_VAR_I64, 14, 64),
 		SLEG_CONDVAR(            _cargo_feeder_share,  SLE_INT64,                  65, 67),
 		 SLE_CONDVAR(GoodsEntry, amount_fract,         SLE_UINT8,                 150, SL_MAX_VERSION),
-		SLEG_CONDDEQ(            _packets,             REF_CARGO_PACKET,           68, 182),
+		SLEG_CONDPTRDEQ(         _packets,             REF_CARGO_PACKET,           68, 182),
 		SLEG_CONDVAR(            _num_dests,           SLE_UINT32,                183, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, cargo.reserved_count, SLE_UINT,                  181, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, link_graph,           SLE_UINT16,                183, SL_MAX_VERSION),
@@ -319,7 +319,7 @@ typedef std::pair<const StationID, CargoPacketList> StationCargoPair;
 
 static const SaveLoad _cargo_list_desc[] = {
 	SLE_VAR(StationCargoPair, first,  SLE_UINT16),
-	SLE_DEQ(StationCargoPair, second, REF_CARGO_PACKET),
+	SLE_PTRDEQ(StationCargoPair, second, REF_CARGO_PACKET),
 	SLE_END()
 };
 

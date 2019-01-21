@@ -17,6 +17,7 @@
 #include <windows.h>
 #include <fcntl.h>
 #include <regstr.h>
+#define NO_SHOBJIDL_SORTDIRECTION // Avoid multiple definition of SORT_ASCENDING
 #include <shlobj.h> /* SHGetFolderPath */
 #include <shellapi.h>
 #include "win32.h"
@@ -30,10 +31,7 @@
 #include <sys/stat.h>
 #include "../../language.h"
 
-/* Due to TCHAR, strncat and strncpy have to remain (for a while). */
 #include "../../safeguards.h"
-#undef strncat
-#undef strncpy
 
 bool _in_event_loop_post_crash;
 

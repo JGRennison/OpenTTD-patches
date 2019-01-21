@@ -1529,7 +1529,7 @@ STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Cuando se activ
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :Porcentaje del beneficio total a pagar en transferencias: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :Porcentaje de los beneficios dados a los transportes intermedios en sistemas de transferencias, dando un mayor control sobre el beneficio de cada vehículo
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :Al arrastrar, colocar señales cada: {STRING}
-STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :Fija la distancia de separación entre señales al construir señales hasta el próximo obstáculo al arrastrar el ratón
+STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :Fija la distancia a la que se construirán las señales hasta el próximo obstáculo (señal, cruce), si estas son arrastradas
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_VALUE                   :{COMMA} casilla{P 0 "" s}
 STR_CONFIG_SETTING_DRAG_SIGNALS_FIXED_DISTANCE                  :Al arrastrar, mantener distancia fija entre señales: {STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_FIXED_DISTANCE_HELPTEXT         :Fija el comportamiento de la construcción de señales cuando se usa Ctrl+Arrastrar. Si se deshabilita, se colocan señales cerca de túneles y puentes para evitar largos trozos de vía sin señales. Si se activa, se colocan señales cada N casillas, haciendo que el alineamiento de vías paralelas sea más sencillo
@@ -2371,9 +2371,9 @@ STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Señal c
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Señal de ruta (eléctrica){}Una señal de ruta permite a más de un tren entrar a un bloque de señales a la vez, si el tren puede reservar una ruta hasta un lugar seguro. Pueden ser traspasadas desde atrás
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Señal de ruta de un sentido (eléctrica){}Una señal de ruta permite a más de un tren entrar a un bloque de señales a la vez, si el tren puede reservar una ruta hasta un lugar seguro. No pueden ser traspasadas desde atrás
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Convertir señal{}Cuando es seleccionado, pulsar sobre una señal existente la convierte en el tipo y variante indicados. Pulsar Ctrl+Click permite cambiar de variante. Shift+Click muestra una estimación del precio de conversión
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Densidad de arrastre de señales
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Reducir arrastre de intensidad de señales
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Incrementar arrastre de intensidad de señales
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Distancia del arrastre de señales
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Reducir distancia del arrastre de señales
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Incrementar distancia del arrastre de señales
 
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Seleccione Puente de Ferrocarril
@@ -2715,8 +2715,11 @@ STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK}  Ticks 
 STR_FRAMERATE_GL_SHIPS                                          :{BLACK}  Ticks de barcos:
 STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK}  Ticks de aeronaves:
 STR_FRAMERATE_DRAWING                                           :{BLACK}Renderizado gráfico:
+STR_FRAMERATE_VIDEO                                             :{BLACK}Salida de vídeo:
+STR_FRAMERATE_SOUND                                             :{BLACK}Mezcla de sonido:
 ############ End of leave-in-this-order
 ############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GL_TRAINS                                 :Ticks de trenes
 STR_FRAMETIME_CAPTION_DRAWING                                   :Renderizado gráfico
 STR_FRAMETIME_CAPTION_VIDEO                                     :Salida de vídeo
 STR_FRAMETIME_CAPTION_SOUND                                     :Mezcla de sonido
@@ -3324,20 +3327,10 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centrar 
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Nivel de producción: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}La industria ha anunciado su cierre inminente!
 
-############ range for requires starts
-STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Requiere: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Necesita: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Requiere: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
-############ range for requires ends
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Necesita:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} esperando{STRING}
-
-############ range for produces starts
-STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produce: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produce: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-############ range for produces ends
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Cambiar producción (múltiplo de 8, máximo 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Cambiar nivel de producción (porcentaje, hasta un máximo de 800%)
