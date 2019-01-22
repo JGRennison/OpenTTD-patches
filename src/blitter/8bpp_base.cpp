@@ -12,6 +12,7 @@
 #include "../stdafx.h"
 #include "../gfx_func.h"
 #include "8bpp_base.hpp"
+#include "common.hpp"
 
 #include "../safeguards.h"
 

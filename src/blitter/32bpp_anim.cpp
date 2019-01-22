@@ -13,6 +13,7 @@
 #include "../video/video_driver.hpp"
 #include "../zoom_func.h"
 #include "32bpp_anim.hpp"
+#include "common.hpp"
 
 #include "../table/sprites.h"
 

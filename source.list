@@ -1004,6 +1004,7 @@ blitter/8bpp_simple.cpp
 blitter/8bpp_simple.hpp
 #end
 blitter/base.hpp
+blitter/common.hpp
 blitter/factory.hpp
 blitter/null.cpp
 blitter/null.hpp

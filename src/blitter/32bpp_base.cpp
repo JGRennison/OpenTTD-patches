@@ -11,6 +11,7 @@
 
 #include "../stdafx.h"
 #include "32bpp_base.hpp"
+#include "common.hpp"
 
 #include "../safeguards.h"
 
