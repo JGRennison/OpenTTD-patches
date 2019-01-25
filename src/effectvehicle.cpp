@@ -19,6 +19,8 @@
 #include "effectvehicle_func.h"
 #include "effectvehicle_base.h"
 
+#include <algorithm>
+
 #include "safeguards.h"
 
 
@@ -632,6 +634,8 @@ EffectVehicle *CreateEffectVehicle(int x, int y, int z, EffectVehicleType type)
 
 	v->UpdatePositionAndViewport();
 
+	v->AddEffectVehicleToTickCache();
+
 	return v;
 }
 
@@ -685,4 +689,24 @@ void EffectVehicle::UpdateDeltaXY()
 TransparencyOption EffectVehicle::GetTransparencyOption() const
 {
 	return _effect_transparency_options[this->subtype];
+}
+
+extern std::vector<Vehicle *> _tick_other_veh_cache;
+extern bool _tick_caches_valid;
+
+void EffectVehicle::AddEffectVehicleToTickCache()
+{
+	if (!_tick_caches_valid) return;
+	_tick_other_veh_cache.erase(std::remove(_tick_other_veh_cache.begin(), _tick_other_veh_cache.end(), nullptr), _tick_other_veh_cache.end());
+	_tick_other_veh_cache.insert(std::upper_bound(_tick_other_veh_cache.begin(), _tick_other_veh_cache.end(), this, [&](const Vehicle *a, const Vehicle *b) {
+			return a->index < b->index;
+		}), this);
+}
+
+void EffectVehicle::RemoveEffectVehicleFromTickCache()
+{
+	if (!_tick_caches_valid) return;
+	for (auto &v : _tick_other_veh_cache) {
+		if (v == this) v = nullptr;
+	}
 }

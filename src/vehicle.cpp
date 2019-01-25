@@ -1019,6 +1019,8 @@ Vehicle::~Vehicle()
 		return;
 	}
 
+	if (this->type != VEH_EFFECT) InvalidateVehicleTickCaches();
+
 	if (this->breakdowns_since_last_service) _vehicles_to_pay_repair.erase(this);
 
 	if (this->type < VEH_BEGIN || this->type >= VEH_COMPANY_END) {
@@ -1122,6 +1124,91 @@ static void ShowAutoReplaceAdviceMessage(const CommandCost &res, const Vehicle *
 	AddVehicleAdviceNewsItem(message, v->index);
 }
 
+bool _tick_caches_valid = false;
+std::vector<Train *> _tick_train_too_heavy_cache;
+std::vector<Train *> _tick_train_front_cache;
+std::vector<RoadVehicle *> _tick_road_veh_front_cache;
+std::vector<Aircraft *> _tick_aircraft_front_cache;
+std::vector<Ship *> _tick_ship_cache;
+std::vector<Vehicle *> _tick_other_veh_cache;
+
+void ClearVehicleTickCaches()
+{
+	_tick_train_too_heavy_cache.clear();
+	_tick_train_front_cache.clear();
+	_tick_road_veh_front_cache.clear();
+	_tick_aircraft_front_cache.clear();
+	_tick_ship_cache.clear();
+	_tick_other_veh_cache.clear();
+}
+
+void RebuildVehicleTickCaches()
+{
+	Vehicle *v = NULL;
+	SCOPE_INFO_FMT([&v], "RebuildVehicleTickCaches: %s", scope_dumper().VehicleInfo(v));
+
+	ClearVehicleTickCaches();
+
+	FOR_ALL_VEHICLES(v) {
+		switch (v->type) {
+			default:
+				_tick_other_veh_cache.push_back(v);
+				break;
+
+			case VEH_TRAIN:
+				if (HasBit(Train::From(v)->flags, VRF_TOO_HEAVY)) _tick_train_too_heavy_cache.push_back(Train::From(v));
+				if (v->Previous() == nullptr) _tick_train_front_cache.push_back(Train::From(v));
+				break;
+
+			case VEH_ROAD:
+				if (v->Previous() == nullptr) _tick_road_veh_front_cache.push_back(RoadVehicle::From(v));
+				break;
+
+			case VEH_AIRCRAFT:
+				if (v->Previous() == nullptr) _tick_aircraft_front_cache.push_back(Aircraft::From(v));
+				break;
+
+			case VEH_SHIP:
+				_tick_ship_cache.push_back(Ship::From(v));
+				break;
+		}
+	}
+	_tick_caches_valid = true;
+}
+
+void VehicleTickCargoAging(Vehicle *v)
+{
+	if (v->vcache.cached_cargo_age_period != 0) {
+		v->cargo_age_counter = min(v->cargo_age_counter, v->vcache.cached_cargo_age_period);
+		if (--v->cargo_age_counter == 0) {
+			v->cargo.AgeCargo();
+			v->cargo_age_counter = v->vcache.cached_cargo_age_period;
+		}
+	}
+}
+
+void VehicleTickMotion(Vehicle *v, Vehicle *front)
+{
+	/* Do not play any sound when crashed */
+	if (front->vehstatus & VS_CRASHED) return;
+
+	/* Do not play any sound when in depot or tunnel */
+	if (v->vehstatus & VS_HIDDEN) return;
+
+	v->motion_counter += front->cur_speed;
+	if (_settings_client.sound.vehicle) {
+		/* Play a running sound if the motion counter passes 256 (Do we not skip sounds?) */
+		if (GB(v->motion_counter, 0, 8) < front->cur_speed) PlayVehicleSound(v, VSE_RUNNING);
+
+		/* Play an alternating running sound every 16 ticks */
+		if (GB(v->tick_counter, 0, 4) == 0) {
+			/* Play running sound when speed > 0 and not braking */
+			bool running = (front->cur_speed > 0) && !(front->vehstatus & (VS_STOPPED | VS_TRAIN_SLOWING));
+			PlayVehicleSound(v, running ? VSE_RUNNING_16 : VSE_STOPPED_16);
+		}
+	}
+}
+
 void CallVehicleTicks()
 {
 	_vehicles_to_autoreplace.Clear();
@@ -1137,97 +1224,71 @@ void CallVehicleTicks()
 		SCOPE_INFO_FMT([&st], "CallVehicleTicks: LoadUnloadStation: %s", scope_dumper().StationInfo(st));
 		FOR_ALL_STATIONS(st) LoadUnloadStation(st);
 	}
-	PerformanceAccumulator::Reset(PFE_GL_TRAINS);
-	PerformanceAccumulator::Reset(PFE_GL_ROADVEHS);
-	PerformanceAccumulator::Reset(PFE_GL_SHIPS);
-	PerformanceAccumulator::Reset(PFE_GL_AIRCRAFT);
+
+	if (!_tick_caches_valid) RebuildVehicleTickCaches();
 
 	Vehicle *v = NULL;
 	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));
-	FOR_ALL_VEHICLES(v) {
-		/* Vehicle could be deleted in this tick */
-		auto tick = [](Vehicle *v) -> bool {
-			/* De-virtualise most common cases */
-			if (v->type == VEH_TRAIN) return Train::From(v)->Train::Tick();
-			if (v->type == VEH_ROAD) return RoadVehicle::From(v)->RoadVehicle::Tick();
-			if (v->type == VEH_AIRCRAFT) return Aircraft::From(v)->Aircraft::Tick();
-			return v->Tick();
-		};
-		if (!tick(v)) {
-			assert(Vehicle::Get(vehicle_index) == NULL);
-			continue;
-		}
-
-		assert(Vehicle::Get(vehicle_index) == v);
-
-		switch (v->type) {
-			default: break;
-
-			case VEH_TRAIN:
-				if (HasBit(Train::From(v)->flags, VRF_TOO_HEAVY)) {
-					if (v->owner == _local_company) {
-						SetDParam(0, v->index);
-						SetDParam(1, STR_ERROR_TRAIN_TOO_HEAVY);
-						AddVehicleNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, v->index);
-					}
-					ClrBit(Train::From(v)->flags, VRF_TOO_HEAVY);
+	{
+		PerformanceMeasurer framerate(PFE_GL_TRAINS);
+		for (Train *t :  _tick_train_too_heavy_cache) {
+			if (HasBit(t->flags, VRF_TOO_HEAVY)) {
+				if (t->owner == _local_company) {
+					SetDParam(0, t->index);
+					SetDParam(1, STR_ERROR_TRAIN_TOO_HEAVY);
+					AddVehicleNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, t->index);
 				}
-				/* FALL THROUGH */
-			case VEH_ROAD:
-			case VEH_AIRCRAFT:
-			case VEH_SHIP: {
-				Vehicle *front = v->First();
-
-				if (v->vcache.cached_cargo_age_period != 0) {
-					v->cargo_age_counter = min(v->cargo_age_counter, v->vcache.cached_cargo_age_period);
-					if (--v->cargo_age_counter == 0) {
-						v->cargo.AgeCargo();
-						v->cargo_age_counter = v->vcache.cached_cargo_age_period;
-					}
-				}
-
-				/* Do not play any sound when crashed */
-				if (front->vehstatus & VS_CRASHED) continue;
-
-				/* Do not play any sound when in depot or tunnel */
-				if (v->vehstatus & VS_HIDDEN) continue;
-
-				/* Do not play any sound when stopped */
-				if ((front->vehstatus & VS_STOPPED) && (front->type != VEH_TRAIN || front->cur_speed == 0)) continue;
-
-				/* Check vehicle type specifics */
-				switch (v->type) {
-					case VEH_TRAIN:
-						if (Train::From(v)->IsWagon()) continue;
-						break;
-
-					case VEH_ROAD:
-						if (!RoadVehicle::From(v)->IsFrontEngine()) continue;
-						break;
-
-					case VEH_AIRCRAFT:
-						if (!Aircraft::From(v)->IsNormalAircraft()) continue;
-						break;
-
-					default:
-						break;
-				}
-
-				v->motion_counter += front->cur_speed;
-				if (_settings_client.sound.vehicle) {
-					/* Play a running sound if the motion counter passes 256 (Do we not skip sounds?) */
-					if (GB(v->motion_counter, 0, 8) < front->cur_speed) PlayVehicleSound(v, VSE_RUNNING);
-
-					/* Play an alternating running sound every 16 ticks */
-					if (GB(v->tick_counter, 0, 4) == 0) {
-						/* Play running sound when speed > 0 and not braking */
-						bool running = (front->cur_speed > 0) && !(front->vehstatus & (VS_STOPPED | VS_TRAIN_SLOWING));
-						PlayVehicleSound(v, running ? VSE_RUNNING_16 : VSE_STOPPED_16);
-					}
-				}
-
-				break;
+				ClrBit(t->flags, VRF_TOO_HEAVY);
 			}
+		}
+		_tick_train_too_heavy_cache.clear();
+		for (Train *front : _tick_train_front_cache) {
+			v = front;
+			if (!front->Train::Tick()) continue;
+			for (Train *u = front; u != nullptr; u = u->Next()) {
+				u->tick_counter++;
+				VehicleTickCargoAging(u);
+				if (!u->IsWagon() && !((front->vehstatus & VS_STOPPED) && front->cur_speed == 0)) VehicleTickMotion(u, front);
+			}
+		}
+	}
+	{
+		PerformanceMeasurer framerate(PFE_GL_ROADVEHS);
+		for (RoadVehicle *front : _tick_road_veh_front_cache) {
+			v = front;
+			if (!front->RoadVehicle::Tick()) continue;
+			for (RoadVehicle *u = front; u != nullptr; u = u->Next()) {
+				u->tick_counter++;
+				VehicleTickCargoAging(u);
+			}
+			if (!(front->vehstatus & VS_STOPPED)) VehicleTickMotion(front, front);
+		}
+	}
+	{
+		PerformanceMeasurer framerate(PFE_GL_AIRCRAFT);
+		for (Aircraft *front : _tick_aircraft_front_cache) {
+			v = front;
+			if (!front->Aircraft::Tick()) continue;
+			for (Aircraft *u = front; u != nullptr; u = u->Next()) {
+				VehicleTickCargoAging(u);
+			}
+			if (!(front->vehstatus & VS_STOPPED)) VehicleTickMotion(front, front);
+		}
+	}
+	{
+		PerformanceMeasurer framerate(PFE_GL_SHIPS);
+		for (Ship *s : _tick_ship_cache) {
+			v = s;
+			if (!s->Ship::Tick()) continue;
+			VehicleTickCargoAging(s);
+			if (!(s->vehstatus & VS_STOPPED)) VehicleTickMotion(s, s);
+		}
+	}
+	{
+		for (Vehicle *u : _tick_other_veh_cache) {
+			if (!u) continue;
+			v = u;
+			u->Tick();
 		}
 	}
 	v = NULL;

@@ -1280,4 +1280,12 @@ struct FreeUnitIDGenerator {
 /** Sentinel for an invalid coordinate. */
 static const int32 INVALID_COORD = 0x7fffffff;
 
+inline void InvalidateVehicleTickCaches()
+{
+	extern bool _tick_caches_valid;
+	_tick_caches_valid = false;
+}
+
+void ClearVehicleTickCaches();
+
 #endif /* VEHICLE_BASE_H */

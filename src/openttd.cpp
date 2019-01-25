@@ -374,6 +374,8 @@ static void ShutdownGame()
 
 	ViewportMapClearTunnelCache();
 	ViewportClearStationSignCache();
+	InvalidateVehicleTickCaches();
+	ClearVehicleTickCaches();
 	ClearCommandLog();
 }
 

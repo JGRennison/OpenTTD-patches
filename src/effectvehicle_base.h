@@ -30,11 +30,13 @@ struct EffectVehicle FINAL : public SpecializedVehicle<EffectVehicle, VEH_EFFECT
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	EffectVehicle() : SpecializedVehicleBase() {}
 	/** We want to 'destruct' the right class. */
-	virtual ~EffectVehicle() {}
+	virtual ~EffectVehicle() { this->RemoveEffectVehicleFromTickCache(); }
 
 	void UpdateDeltaXY();
 	bool Tick();
 	TransparencyOption GetTransparencyOption() const;
+	void AddEffectVehicleToTickCache();
+	void RemoveEffectVehicleFromTickCache();
 };
 
 /**

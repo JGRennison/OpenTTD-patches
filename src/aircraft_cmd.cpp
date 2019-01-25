@@ -380,6 +380,8 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *
 			u->SetNext(w);
 			w->UpdatePosition();
 		}
+
+		InvalidateVehicleTickCaches();
 	}
 
 	return CommandCost();
@@ -2130,8 +2132,6 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 bool Aircraft::Tick()
 {
 	if (!this->IsNormalAircraft()) return true;
-
-	PerformanceAccumulator framerate(PFE_GL_AIRCRAFT);
 
 	this->tick_counter++;
 

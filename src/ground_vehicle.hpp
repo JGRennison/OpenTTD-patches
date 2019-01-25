@@ -367,6 +367,24 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	inline bool IsRearDualheaded() const { return this->IsMultiheaded() && !this->IsEngine(); }
 
 	/**
+	 * Check if the vehicle is a front engine.
+	 * @return Returns true if the vehicle is a front engine.
+	 */
+	inline bool IsFrontEngine() const
+	{
+		return HasBit(this->subtype, GVSF_FRONT);
+	}
+
+	/**
+	 * Check if the vehicle is an articulated part of an engine.
+	 * @return Returns true if the vehicle is an articulated part.
+	 */
+	inline bool IsArticulatedPart() const
+	{
+		return HasBit(this->subtype, GVSF_ARTICULATED_PART);
+	}
+
+	/**
 	 * Update the GUI variant of the current speed of the vehicle.
 	 * Also mark the widget dirty when that is needed, i.e. when
 	 * the speed of this vehicle has changed.

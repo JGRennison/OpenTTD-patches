@@ -839,8 +839,6 @@ reverse_direction:
 
 bool Ship::Tick()
 {
-	PerformanceAccumulator framerate(PFE_GL_SHIPS);
-
 	if (!(this->vehstatus & VS_STOPPED)) this->running_ticks++;
 
 	ShipController(this);
@@ -924,6 +922,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, u
 		v->InvalidateNewGRFCacheOfChain();
 
 		v->UpdatePosition();
+		InvalidateVehicleTickCaches();
 	}
 
 	return CommandCost();

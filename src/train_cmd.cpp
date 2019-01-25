@@ -172,6 +172,8 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	assert(this->IsFrontEngine() || this->IsFreeWagon());
 
+	InvalidateVehicleTickCaches();
+
 	const RailVehicleInfo *rvi_v = RailVehInfo(this->engine_type);
 	EngineID first_engine = this->IsFrontEngine() ? this->engine_type : INVALID_ENGINE;
 	this->gcache.cached_total_length = 0;
@@ -4941,10 +4943,6 @@ Money Train::GetRunningCost() const
  */
 bool Train::Tick()
 {
-	PerformanceAccumulator framerate(PFE_GL_TRAINS);
-
-	this->tick_counter++;
-
 	if (this->IsFrontEngine()) {
 		if (!(this->vehstatus & VS_STOPPED) || this->cur_speed > 0) this->running_ticks++;
 

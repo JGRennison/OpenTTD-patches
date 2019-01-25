@@ -252,6 +252,8 @@ int GroundVehicle<T, Type>::GetAcceleration()
 					!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
 					this->cur_speed < 3 && accel < 5) {
 				SetBit(Train::From(this)->flags, VRF_TOO_HEAVY);
+				extern std::vector<Train *> _tick_train_too_heavy_cache;
+				_tick_train_too_heavy_cache.push_back(Train::From(this));
 			}
 		}
 

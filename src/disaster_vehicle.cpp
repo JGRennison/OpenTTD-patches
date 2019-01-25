@@ -568,6 +568,7 @@ static bool DisasterTick_Big_Ufo(DisasterVehicle *v)
 		DisasterVehicle *u = new DisasterVehicle(-6 * (int)TILE_SIZE, v->y_pos, DIR_SW, ST_BIG_UFO_DESTROYER, v->index);
 		DisasterVehicle *w = new DisasterVehicle(-6 * (int)TILE_SIZE, v->y_pos, DIR_SW, ST_BIG_UFO_DESTROYER_SHADOW);
 		u->SetNext(w);
+		InvalidateVehicleTickCaches();
 	} else if (v->current_order.GetDestination() == 0) {
 		int x = TileX(v->dest_tile) * TILE_SIZE;
 		int y = TileY(v->dest_tile) * TILE_SIZE;
@@ -727,6 +728,8 @@ static void Disaster_Zeppeliner_Init()
 	/* Allocate shadow */
 	DisasterVehicle *u = new DisasterVehicle(x, 0, DIR_SE, ST_ZEPPELINER_SHADOW);
 	v->SetNext(u);
+
+	InvalidateVehicleTickCaches();
 }
 
 
@@ -745,6 +748,8 @@ static void Disaster_Small_Ufo_Init()
 	/* Allocate shadow */
 	DisasterVehicle *u = new DisasterVehicle(x, 0, DIR_SE, ST_SMALL_UFO_SHADOW);
 	v->SetNext(u);
+
+	InvalidateVehicleTickCaches();
 }
 
 
@@ -771,6 +776,8 @@ static void Disaster_Airplane_Init()
 	DisasterVehicle *v = new DisasterVehicle(x, y, DIR_NE, ST_AIRPLANE);
 	DisasterVehicle *u = new DisasterVehicle(x, y, DIR_NE, ST_AIRPLANE_SHADOW);
 	v->SetNext(u);
+
+	InvalidateVehicleTickCaches();
 }
 
 
@@ -799,6 +806,8 @@ static void Disaster_Helicopter_Init()
 
 	DisasterVehicle *w = new DisasterVehicle(x, y, DIR_SW, ST_HELICOPTER_ROTORS);
 	u->SetNext(w);
+
+	InvalidateVehicleTickCaches();
 }
 
 
@@ -817,6 +826,8 @@ static void Disaster_Big_Ufo_Init()
 	/* Allocate shadow */
 	DisasterVehicle *u = new DisasterVehicle(x, y, DIR_NW, ST_BIG_UFO_SHADOW);
 	v->SetNext(u);
+
+	InvalidateVehicleTickCaches();
 }
 
 
@@ -840,6 +851,8 @@ static void Disaster_Submarine_Init(DisasterSubType subtype)
 	if (!IsWaterTile(TileVirtXY(x, y))) return;
 
 	new DisasterVehicle(x, y, dir, subtype);
+
+	InvalidateVehicleTickCaches();
 }
 
 /* Curious submarine #1, just floats around */
