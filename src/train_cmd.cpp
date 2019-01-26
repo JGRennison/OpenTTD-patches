@@ -214,6 +214,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		}
 	}
 
+	Vehicle *last_vis_effect = this;
 	for (Train *u = this; u != NULL; u = u->Next()) {
 		const Engine *e_u = u->GetEngine();
 		const RailVehicleInfo *rvi_u = &e_u->u.rail;
@@ -228,6 +229,8 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 		/* Update powered-wagon-status and visual effect */
 		u->UpdateVisualEffect(true);
+		ClrBit(u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT);
+		if (!(HasBit(u->vcache.cached_vis_effect, VE_ADVANCED_EFFECT) && GB(u->vcache.cached_vis_effect, 0, VE_ADVANCED_EFFECT) == VESM_NONE)) last_vis_effect = u;
 
 		if (rvi_v->pow_wag_power != 0 && rvi_u->railveh_type == RAILVEH_WAGON &&
 				UsesWagonOverride(u) && !HasBit(u->vcache.cached_vis_effect, VE_DISABLE_WAGON_POWER)) {
@@ -298,6 +301,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		this->InvalidateNewGRFCache();
 		u->InvalidateNewGRFCache();
 	}
+	SetBit(last_vis_effect->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT);
 
 	/* store consist weight/max speed in cache */
 	this->vcache.cached_max_speed = max_speed;

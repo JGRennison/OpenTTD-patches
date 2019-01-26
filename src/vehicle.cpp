@@ -413,6 +413,7 @@ Vehicle::Vehicle(VehicleType type)
 	this->last_station_visited = INVALID_STATION;
 	this->last_loading_station = INVALID_STATION;
 	this->cur_image_valid_dir  = INVALID_DIR;
+	this->vcache.cached_veh_flags = 0;
 }
 
 /**
@@ -3486,6 +3487,8 @@ void Vehicle::ShowVisualEffect() const
 
 			CreateEffectVehicleRel(v, x, y, 10, evt);
 		}
+
+		if (HasBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) break;
 	} while ((v = v->Next()) != NULL);
 
 	if (sound) PlayVehicleSound(this, VSE_VISUAL_EFFECT);
@@ -3668,6 +3671,8 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	dump('x', HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP));
 	dump('s', HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION));
 	dump('a', HasBit(this->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+	b += seprintf(b, last, ", vcf:");
+	dump('l', HasBit(this->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
 	if (this->IsGroundVehicle()) {
 		uint16 gv_flags = this->GetGroundVehicleFlags();
 		b += seprintf(b, last, ", gvf:");
