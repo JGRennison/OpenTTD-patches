@@ -7,7 +7,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file base.hpp Common functionality for all blitter implemenytations. */
+/** @file common.hpp Common functionality for all blitter implementations. */
 
 #ifndef BLITTER_COMMON_HPP
 #define BLITTER_COMMON_HPP

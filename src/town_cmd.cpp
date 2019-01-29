@@ -784,7 +784,7 @@ void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &accepta
 {
 	const HouseSpec *hs = HouseSpec::Get(house_id);
 	Town *t = (tile == INVALID_TILE) ? NULL : Town::GetByTile(tile);
-	CargoID accepts[3];
+	CargoID accepts[lengthof(hs->accepts_cargo)];
 
 	/* Set the initial accepted cargo types */
 	for (uint8 i = 0; i < lengthof(accepts); i++) {

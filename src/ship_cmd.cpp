@@ -129,6 +129,8 @@ void Ship::GetImage(Direction direction, EngineImageType image_type, VehicleSpri
 {
 	uint8 spritenum = this->spritenum;
 
+	if (image_type == EIT_ON_MAP) direction = this->rotation;
+
 	if (is_custom_sprite(spritenum)) {
 		GetCustomVehicleSprite(this, direction, image_type, result);
 		if (result->IsValid()) return;
@@ -312,7 +314,7 @@ void Ship::UpdateDeltaXY()
 		{32,  6, -16,  -3}, // NW
 	};
 
-	const int8 *bb = _delta_xy_table[this->direction];
+	const int8 *bb = _delta_xy_table[this->rotation];
 	this->x_offs        = bb[3];
 	this->y_offs        = bb[2];
 	this->x_extent      = bb[1];
@@ -378,10 +380,10 @@ static bool CheckShipLeaveDepot(Ship *v)
 
 	if (north_tracks) {
 		/* Leave towards north */
-		v->direction = DiagDirToDir(north_dir);
+		v->rotation = v->direction = DiagDirToDir(north_dir);
 	} else if (south_tracks) {
 		/* Leave towards south */
-		v->direction = DiagDirToDir(south_dir);
+		v->rotation = v->direction = DiagDirToDir(south_dir);
 	} else {
 		/* Both ways blocked */
 		return false;
@@ -482,7 +484,7 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 	if (v->dest_tile == 0 || DistanceManhattan(tile, v->dest_tile) > SHIP_MAX_ORDER_DISTANCE + 5) {
 		/* No destination or destination too far, don't invoke pathfinder. */
 		track = TrackBitsToTrack(v->state);
-		if (track != TRACK_X && track != TRACK_Y) track = TrackToOppositeTrack(track);
+		if (!IsDiagonalTrack(track)) track = TrackToOppositeTrack(track);
 		if (!HasBit(tracks, track)) {
 			/* Can't continue in same direction so pick first available track. */
 			if (_settings_game.pf.forbid_90_deg) {
@@ -694,7 +696,6 @@ static void ShipController(Ship *v)
 {
 	uint32 r;
 	const byte *b;
-	Direction dir;
 	Track track;
 	TrackBits tracks;
 
@@ -713,6 +714,16 @@ static void ShipController(Ship *v)
 	if (CheckShipLeaveDepot(v)) return;
 
 	v->ShowVisualEffect();
+
+	/* Rotating on spot */
+	if (v->direction != v->rotation) {
+		if ((v->tick_counter & 7) == 0) {
+			DirDiff diff = DirDifference(v->direction, v->rotation);
+			v->rotation = ChangeDir(v->rotation, diff > DIRDIFF_REVERSE ? DIRDIFF_45LEFT : DIRDIFF_45RIGHT);
+			v->UpdateViewport(true, true);
+		}
+		return;
+	}
 
 	if (!ShipAccelerate(v)) return;
 
@@ -804,7 +815,22 @@ static void ShipController(Ship *v)
 				if (old_wc != new_wc) v->UpdateCache();
 			}
 
-			v->direction = (Direction)b[2];
+			Direction new_direction = (Direction)b[2];
+			DirDiff diff = DirDifference(new_direction, v->direction);
+			switch (diff) {
+				case DIRDIFF_SAME:
+				case DIRDIFF_45RIGHT:
+				case DIRDIFF_45LEFT:
+					/* Continue at speed */
+					v->rotation = v->direction = new_direction;
+					break;
+
+				default:
+					/* Stop for rotation */
+					v->cur_speed = 0;
+					v->direction = new_direction;
+					break;
+			}
 		}
 	} else {
 		/* On a bridge */
@@ -831,8 +857,8 @@ getout:
 	return;
 
 reverse_direction:
-	dir = ReverseDir(v->direction);
-	v->direction = dir;
+	v->direction = ReverseDir(v->direction);
+	v->cur_speed = 0;
 	v->path.clear();
 	goto getout;
 }

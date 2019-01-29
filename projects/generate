@@ -22,6 +22,16 @@ then
 	exit 1
 fi
 
+# openttd_vs142.sln             is for MSVC 2019
+# openttd_vs142.vcxproj         is for MSVC 2019
+# openttd_vs142.vcxproj.filters is for MSVC 2019
+# langs_vs142.vcxproj           is for MSVC 2019
+# strgen_vs142.vcxproj          is for MSVC 2019
+# strgen_vs142.vcxproj.filters  is for MSVC 2019
+# generate_vs142.vcxproj        is for MSVC 2019
+# version_vs142.vcxproj         is for MSVC 2019
+# basesets_vs142.vcxproj        is for MSVC 2019
+
 # openttd_vs141.sln             is for MSVC 2017
 # openttd_vs141.vcxproj         is for MSVC 2017
 # openttd_vs141.vcxproj.filters is for MSVC 2017
@@ -30,6 +40,7 @@ fi
 # strgen_vs141.vcxproj.filters  is for MSVC 2017
 # generate_vs141.vcxproj        is for MSVC 2017
 # version_vs141.vcxproj         is for MSVC 2017
+# basesets_vs141.vcxproj        is for MSVC 2017
 
 # openttd_vs140.sln             is for MSVC 2015
 # openttd_vs140.vcxproj         is for MSVC 2015
@@ -39,6 +50,7 @@ fi
 # strgen_vs140.vcxproj.filters  is for MSVC 2015
 # generate_vs140.vcxproj        is for MSVC 2015
 # version_vs140.vcxproj         is for MSVC 2015
+# basesets_vs140.vcxproj        is for MSVC 2015
 
 
 
@@ -124,17 +136,7 @@ load_main_data() {
 				gsub("	", "", $0);
 				gsub("^#", "", $0);
 				gsub("^ ", "", $0);
-
-				if (first_time != 0) {
-					print "#1		</Filter>";
-				} else {
-					first_time = 1;
-				}
-
 				filter = $0;
-				print "#1		<Filter";
-				print "#1			Name=\\""filter"\\"";
-				print "#1			>";
 				print "#3    <Filter Include=\\""filter"\\">";
 				printf "#3      <UniqueIdentifier>{c76ff9f1-1e62-46d8-8d55-%012d}</UniqueIdentifier>\n", i;
 				print "#3    </Filter>";
@@ -148,10 +150,6 @@ load_main_data() {
 			if (deep == skip) {
 				gsub("	", "", $0);
 				gsub("/", "\\\\", $0);
-				print "#1			<File";
-				print "#1				RelativePath=\\".\\\\'$file_prefix'"$0"\\"";
-				print "#1				>";
-				print "#1			</File>";
 				split($0, file, ".");
 				cltype = "ClInclude"
 				if (file[2] == "cpp") cltype = "ClCompile";
@@ -162,7 +160,6 @@ load_main_data() {
 				print "#4    </"cltype">";
 			}
 		}
-		END { print "#1		</Filter>"; }
 	'`"
 
 	eval "$2=\"\$RES\""
@@ -180,21 +177,6 @@ load_lang_data() {
 			continue
 		fi
 		RES="$RES
-#1			<File
-#1				RelativePath=\"..\\src\\lang\\"$i".txt\"
-#1				>
-#1				<FileConfiguration
-#1					Name=\"Debug|Win32\"
-#1					>
-#1					<Tool
-#1						Name=\"VCCustomBuildTool\"
-#1						Description=\"Generating "$i" language file\"
-#1						CommandLine=\"..\\objs\\strgen\\strgen.exe -s ..\\src\\lang -d ..\\bin\\lang &quot;\$(InputPath)&quot;&#x0D;&#x0A;exit 0&#x0D;&#x0A;\"
-#1						AdditionalDependencies=\"..\\src\\lang\\english.txt;..\\objs\\strgen\\strgen.exe\"
-#1						Outputs=\"..\\bin\\lang\\"$i".lng\"
-#1					/>
-#1				</FileConfiguration>
-#1			</File>
 #2    <CustomBuild Include=\"..\\src\\lang\\"$i".txt\">
 #2      <Message Condition=\"'\$(Configuration)|\$(Platform)'=='Debug|Win32'\">Generating "$i" language file</Message>
 #2      <Command Condition=\"'\$(Configuration)|\$(Platform)'=='Debug|Win32'\">..\\objs\\strgen\\strgen.exe -s ..\\src\\lang -d ..\\bin\\lang \"%(FullPath)\"</Command>
@@ -217,10 +199,6 @@ load_settings_data() {
 	do
 		i=`basename $i`
 		RES="$RES
-#1		<File
-#1			RelativePath=\"..\\src\\table\\"$i"\"
-#1			>
-#1		</File>
 #2    <None Include=\"..\\src\\table\\"$i"\" />
 #4    <None Include=\"..\\src\\table\\"$i"\">
 #4      <Filter>INI</Filter>
@@ -229,6 +207,44 @@ load_settings_data() {
 	done
 
 	eval "$2=\"\$RES\$RES2\""
+}
+
+load_baseset_data() {
+	FIRST=""
+	RES=""
+	RES2="
+#4    <Langs>"
+	# Windows Folder sort and Linux Folder sort are slightly different.
+	# By removing the extension and sorting it on Linux, they are the same.
+	for i in `ls $2 | sed s~.txt$~~g | sort`
+	do
+		if [ "$FIRST" != "" ]; then
+			RES2="$RES2;"
+		else
+			FIRST=1
+		fi
+		i=`basename $i`
+		RES2="$RES2..\\src\\lang\\$i.txt"
+	done
+	RES2="$RES2</Langs>"
+	# Windows Folder sort and Linux Folder sort are slightly different.
+	# By fiddling with the extension and sorting it on Linux, they are the same.
+	for i in `ls $1 | sed s~\\\.~000~g | sort | sed s~000~.~g`
+	do
+		i=`basename $i`
+		RES="$RES
+#2    <CustomBuild Include=\"..\\media\\baseset\\"$i"\">
+#2      <Message Condition=\"'\$(Configuration)|\$(Platform)'=='Debug|Win32'\">Generating "$i" baseset metadata file</Message>
+#2      <Command Condition=\"'\$(Configuration)|\$(Platform)'=='Debug|Win32'\">cscript //nologo ..\\media\\baseset\\translations.vbs \"%(FullPath)\" \"\$(OutputPath)$i\" ..\\src\\lang ..\\bin\\baseset\\orig_extra.grf</Command>
+#2      <AdditionalInputs Condition=\"'\$(Configuration)|\$(Platform)'=='Debug|Win32'\">\$(Langs);..\\bin\\baseset\\orig_extra.grf;%(AdditionalInputs)</AdditionalInputs>
+#2      <Outputs Condition=\"'\$(Configuration)|\$(Platform)'=='Debug|Win32'\">..\\bin\\baseset\\"$i";%(Outputs)</Outputs>
+#2    </CustomBuild>
+#3    <CustomBuild Include=\"..\\media\\baseset\\"$i"\">
+#3      <Filter>Baseset Metadata</Filter>
+#3    </CustomBuild>"
+	done
+
+	eval "$3=\"\$RES\$RES2\""
 }
 
 generate() {
@@ -287,28 +303,42 @@ load_main_data "$ROOT_DIR/source.list" openttd
 openttdfiles=`echo "$openttd" | grep "^#4" | sed "s~#4~~g"`
 openttdfilters=`echo "$openttd" | grep "^#3" | sed "s~#3~~g"`
 openttdvcxproj=`echo "$openttd" | grep "^#2" | sed "s~#2~~g"`
-openttd=`echo "$openttd" | grep "^#1" | sed "s~#1~~g"`
 
 load_lang_data "$ROOT_DIR/src/lang/*.txt" lang
 langfiles=`echo "$lang" | grep "^#3" | sed "s~#3~~g"`
 langvcxproj=`echo "$lang" | grep "^#2" | sed "s~#2~~g"`
-lang=`echo "$lang" | grep "^#1" | sed "s~#1~~g"`
 
 load_settings_data "$ROOT_DIR/src/table/*.ini" settings
 settingsfiles=`echo "$settings" | grep "^#4" | sed "s~#4~~g"`
 settingscommand=`echo "$settings" | grep "^#3" | sed "s~#3~~g"`
 settingsvcxproj=`echo "$settings" | grep "^#2" | sed "s~#2~~g"`
-settings=`echo "$settings" | grep "^#1" | sed "s~#1~~g"`
+
+load_baseset_data "$ROOT_DIR/media/baseset/*.ob?" "$ROOT_DIR/src/lang/*.txt" baseset
+basesetfiles=`echo "$baseset" | grep "^#3" | sed "s-#3--g"`
+basesetvcxproj=`echo "$baseset" | grep "^#2" | sed "s~#2~~g"`
+basesetlangs=`echo "$baseset" | grep "^#4" | sed "s~#4~~g"`
 
 generate "$openttdvcxproj" "openttd_vs140.vcxproj"
 generate "$openttdfiles" "openttd_vs140.vcxproj.filters" "$openttdfilters"
 generate "$openttdvcxproj" "openttd_vs141.vcxproj"
 generate "$openttdfiles" "openttd_vs141.vcxproj.filters" "$openttdfilters"
+generate "$openttdvcxproj" "openttd_vs142.vcxproj"
+generate "$openttdfiles" "openttd_vs142.vcxproj.filters" "$openttdfilters"
 generate "$langvcxproj" "langs_vs140.vcxproj"
 generate "$langfiles" "langs_vs140.vcxproj.filters"
 generate "$langvcxproj" "langs_vs141.vcxproj"
 generate "$langfiles" "langs_vs141.vcxproj.filters"
+generate "$langvcxproj" "langs_vs142.vcxproj"
+generate "$langfiles" "langs_vs142.vcxproj.filters"
 generate "$settingsvcxproj" "settings_vs140.vcxproj" "$settingscommand"
 generate "$settingsfiles" "settings_vs140.vcxproj.filters"
 generate "$settingsvcxproj" "settings_vs141.vcxproj" "$settingscommand"
 generate "$settingsfiles" "settings_vs141.vcxproj.filters"
+generate "$settingsvcxproj" "settings_vs142.vcxproj" "$settingscommand"
+generate "$settingsfiles" "settings_vs142.vcxproj.filters"
+generate "$basesetvcxproj" "basesets_vs140.vcxproj" "$basesetlangs"
+generate "$basesetfiles" "basesets_vs140.vcxproj.filters"
+generate "$basesetvcxproj" "basesets_vs141.vcxproj" "$basesetlangs"
+generate "$basesetfiles" "basesets_vs141.vcxproj.filters"
+generate "$basesetvcxproj" "basesets_vs142.vcxproj" "$basesetlangs"
+generate "$basesetfiles" "basesets_vs142.vcxproj.filters"

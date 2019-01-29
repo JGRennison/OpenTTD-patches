@@ -239,13 +239,16 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 	const int top = dpi->top - padding;
 	const int bottom = dpi->top + dpi->height + padding;
 
-	// Cut-down Cohen–Sutherland algorithm
+	/*
+	 * This method is an implementation of the Cohen-Sutherland line-clipping algorithm.
+	 * See: https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm
+	 */
 
-	const unsigned char INSIDE = 0; // 0000
-	const unsigned char LEFT   = 1; // 0001
-	const unsigned char RIGHT  = 2; // 0010
-	const unsigned char BOTTOM = 4; // 0100
-	const unsigned char TOP    = 8; // 1000
+	const uint8 INSIDE = 0; // 0000
+	const uint8 LEFT   = 1; // 0001
+	const uint8 RIGHT  = 2; // 0010
+	const uint8 BOTTOM = 4; // 0100
+	const uint8 TOP    = 8; // 1000
 
 	int x0 = pta.x;
 	int y0 = pta.y;
@@ -253,7 +256,7 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 	int y1 = ptb.y;
 
 	auto out_code = [&](int x, int y) -> unsigned char {
-		unsigned char out = INSIDE;
+		uint8 out = INSIDE;
 		if (x < left) {
 			out |= LEFT;
 		} else if (x > right) {
@@ -267,8 +270,8 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 		return out;
 	};
 
-	unsigned char c0 = out_code(x0, y0);
-	unsigned char c1 = out_code(x1, y1);
+	uint8 c0 = out_code(x0, y0);
+	uint8 c1 = out_code(x1, y1);
 
 	while (true) {
 		if (c0 == 0 || c1 == 0) return true;

@@ -15,7 +15,7 @@
 #include "gfx_type.h"
 #include "viewport_type.h"
 #include "window_type.h"
-#include "tile_type.h"
+#include "tile_map.h"
 #include "station_type.h"
 #include "vehicle_base.h"
 
@@ -90,9 +90,19 @@ void UpdateAllVirtCoords();
 
 extern Point _tile_fract_coords;
 
-void MarkTileDirtyByTile(const TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END, int bridge_level_offset = 0);
+void MarkTileDirtyByTile(const TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below, int bridge_level_offset, int tile_height_override);
 
-void MarkTileDirtyByTileOutsideMap(int x, int y);
+/**
+ * Mark a tile given by its index dirty for repaint.
+ * @param tile The tile to mark dirty.
+ * @param mark_dirty_if_zoomlevel_is_below To tell if an update is relevant or not (for example, animations in map mode are not).
+ * @param bridge_level_offset Height of bridge on tile to also mark dirty. (Height level relative to north corner.)
+ * @ingroup dirty
+ */
+static inline void MarkTileDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END, int bridge_level_offset = 0)
+{
+	MarkTileDirtyByTile(tile, mark_dirty_if_zoomlevel_is_below, bridge_level_offset, TileHeight(tile));
+}
 
 ViewportMapType ChangeRenderMode(const ViewPort *vp, bool down);
 
