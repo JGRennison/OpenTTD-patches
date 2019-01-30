@@ -75,7 +75,7 @@ struct scope_dumper {
 	const char *TileInfo(TileIndex tile);
 
 private:
-	char buffer[256];
+	char buffer[512];
 };
 
 #endif /* SCOPE_INFO_H */
