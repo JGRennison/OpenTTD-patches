@@ -591,7 +591,7 @@ struct TimetableWindow : Window {
 					/* We are running towards the first station so we can start the
 					 * timetable at the given time. */
 					SetDParam(0, STR_JUST_DATE_WALLCLOCK_TINY);
-					SetDParam(1, (v->timetable_start * _settings_game.economy.day_length_factor) + v->timetable_start_subticks);
+					SetDParam(1, (((DateTicksScaled) v->timetable_start) * _settings_game.economy.day_length_factor) + v->timetable_start_subticks);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_TIMETABLE_STATUS_START_AT);
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"
@@ -937,12 +937,12 @@ struct TimetableWindow : Window {
 				if (val >= 0 && end && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
-					val = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
-					val -= _settings_client.gui.clock_offset;
+					DateTicksScaled time = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
+					time -= _settings_client.gui.clock_offset;
 
-					if (val < (CURRENT_MINUTE - 60)) val += 60 * 24;
-					val *= _settings_client.gui.ticks_per_minute;
-					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), val);
+					if (time < (CURRENT_MINUTE - 60)) time += 60 * 24;
+					time *= _settings_client.gui.ticks_per_minute;
+					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), time);
 				}
 				break;
 			}
