@@ -3703,6 +3703,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 		dump('B', HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
 		dump('Y', HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
 		dump('A', HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
+		b += seprintf(b, last, ", trk: 0x%02X", (uint) t->track);
 		if (t->reverse_distance > 0) b += seprintf(b, last, ", rev: %u", t->reverse_distance);
 	} else if (this->type == VEH_ROAD) {
 		const RoadVehicle *r = RoadVehicle::From(this);
