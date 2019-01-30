@@ -270,7 +270,7 @@ struct SchdispatchWindow : Window {
 	 * @param right Right side of the box to draw in.
 	 * @param y     Top of the box to draw in.
 	 */
-	void DrawScheduledTime(const int time, int left, int right, int y, TextColour colour) const
+	void DrawScheduledTime(const DateTicksScaled time, int left, int right, int y, TextColour colour) const
 	{
 		bool rtl = _current_text_dir == TD_RTL;
 		uint diff_x, diff_y;
@@ -483,10 +483,10 @@ struct SchdispatchWindow : Window {
 				if (val >= 0 && end && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
-					val = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
-					val -= _settings_client.gui.clock_offset;
-					val *= _settings_client.gui.ticks_per_minute;
-					ScheduleAddIntl(v->index, val);
+					DateTicksScaled slot = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
+					slot -= _settings_client.gui.clock_offset;
+					slot *= _settings_client.gui.ticks_per_minute;
+					ScheduleAddIntl(v->index, slot);
 				}
 				break;
 			}
@@ -498,10 +498,10 @@ struct SchdispatchWindow : Window {
 				if (val >= 0 && end && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
-					val = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
-					val -= _settings_client.gui.clock_offset;
-					val *= _settings_client.gui.ticks_per_minute;
-					SetScheduleStartDateIntl(v->index, val);
+					DateTicksScaled start = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
+					start -= _settings_client.gui.clock_offset;
+					start *= _settings_client.gui.ticks_per_minute;
+					SetScheduleStartDateIntl(v->index, start);
 				}
 				break;
 			}
