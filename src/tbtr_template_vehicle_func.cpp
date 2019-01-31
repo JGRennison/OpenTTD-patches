@@ -366,7 +366,7 @@ void CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flag
 		// refit t as tv
 		uint32 cb = GetCmdRefitVeh(t);
 
-		DoCommand(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | 1 << 16 | (1 << 5), flags, cb);
+		DoCommand(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, cb);
 
 		// next
 		t = t->GetNextUnit();

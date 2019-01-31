@@ -752,7 +752,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 
 
 	static const SaveLoad _train_desc[] = {
-		SLE_WRITEBYTE(Vehicle, type, VEH_TRAIN),
+		SLE_WRITEBYTE(Vehicle, type),
 		SLE_VEH_INCLUDE(),
 		     SLE_VAR(Train, crash_anim_pos,      SLE_UINT16),
 		     SLE_VAR(Train, force_proceed,       SLE_UINT8),
@@ -777,7 +777,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 	};
 
 	static const SaveLoad _roadveh_desc[] = {
-		SLE_WRITEBYTE(Vehicle, type, VEH_ROAD),
+		SLE_WRITEBYTE(Vehicle, type),
 		SLE_VEH_INCLUDE(),
 		     SLE_VAR(RoadVehicle, state,                SLE_UINT8),
 		     SLE_VAR(RoadVehicle, frame,                SLE_UINT8),
@@ -798,7 +798,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 	};
 
 	static const SaveLoad _ship_desc[] = {
-		SLE_WRITEBYTE(Vehicle, type, VEH_SHIP),
+		SLE_WRITEBYTE(Vehicle, type),
 		SLE_VEH_INCLUDE(),
 		      SLE_VAR(Ship, state,                     SLE_UINT8),
 		SLE_CONDDEQUE(Ship, path,                      SLE_UINT8,                  203, SL_MAX_VERSION),
@@ -810,7 +810,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 	};
 
 	static const SaveLoad _aircraft_desc[] = {
-		SLE_WRITEBYTE(Vehicle, type, VEH_AIRCRAFT),
+		SLE_WRITEBYTE(Vehicle, type),
 		SLE_VEH_INCLUDE(),
 		     SLE_VAR(Aircraft, crashed_counter,       SLE_UINT16),
 		     SLE_VAR(Aircraft, pos,                   SLE_UINT8),
@@ -834,7 +834,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 	};
 
 	static const SaveLoad _special_desc[] = {
-		SLE_WRITEBYTE(Vehicle, type, VEH_EFFECT),
+		SLE_WRITEBYTE(Vehicle, type),
 
 		     SLE_VAR(Vehicle, subtype,               SLE_UINT8),
 
@@ -866,7 +866,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 	};
 
 	static const SaveLoad _disaster_desc[] = {
-		SLE_WRITEBYTE(Vehicle, type, VEH_DISASTER),
+		SLE_WRITEBYTE(Vehicle, type),
 
 		     SLE_REF(Vehicle, next,                  REF_VEHICLE_OLD),
 
