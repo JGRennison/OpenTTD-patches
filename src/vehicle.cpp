@@ -3712,6 +3712,8 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	b += seprintf(b, last, ", [");
 	b = DumpTileInfo(b, last, this->tile);
 	b += seprintf(b, last, "]");
+	TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
+	if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
 	if (this->cargo_payment) b += seprintf(b, last, ", CP");
 	return b;
 }
