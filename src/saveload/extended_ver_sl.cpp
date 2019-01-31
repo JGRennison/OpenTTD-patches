@@ -26,6 +26,15 @@
  *         N bytes                      extra data
  *     uint32*                          chunk ID list count [only present iff feature flags & XSCF_CHUNK_ID_LIST_PRESENT]
  *         N x uint32                   chunk ID list
+ *
+ * Extended features as recorded in the SLXI chunk, above, MAY add, remove, change, or otherwise modify fields in chunks
+ * not owned by the feature and therefore not listed in the sub chunk/feature information in the SLXI chunk.
+ * In this case the XSCF_IGNORABLE_UNKNOWN flag SHOULD NOT be set, as it is not possible to correctly load the modified chunk without
+ * knowledge of the feature.
+ * In the case where the modifications to other chunks vary with respect to lower feature versions, the XSCF_IGNORABLE_VERSION flag
+ * also SHOULD NOT be set.
+ * Use of the XSCF_IGNORABLE_UNKNOWN and XSCF_IGNORABLE_VERSION flags MUST ONLY be used in the cases where the feature and any
+ * associated chunks can be cleanly dropped, and the savegame can be correctly loaded by a client with no knowledge of the feature.
  */
 
 #include "../stdafx.h"
@@ -41,10 +50,10 @@
 
 uint16 _sl_xv_feature_versions[XSLFI_SIZE];                 ///< array of all known feature types and their current versions
 bool _sl_is_ext_version;                                    ///< is this an extended savegame version, with more info in the SLXI chunk?
-bool _sl_is_faked_ext;                                      ///< is this a faked extended savegame version, with no SLXI chunk?
+bool _sl_is_faked_ext;                                      ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
 std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks IDs which we can discard if no chunk loader exists
 
-static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version os SLXI chunk
+static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version of SLXI chunk
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               10,  10, "tracerestrict",             NULL, NULL, "TRRM,TRRP,TRRS" },
@@ -280,7 +289,7 @@ void SlXvCheckSpecialSavegameVersions()
  */
 bool SlXvIsChunkDiscardable(uint32 id)
 {
-	for(size_t i = 0; i < _sl_xv_discardable_chunk_ids.size(); i++) {
+	for (size_t i = 0; i < _sl_xv_discardable_chunk_ids.size(); i++) {
 		if (_sl_xv_discardable_chunk_ids[i] == id) {
 			return true;
 		}
