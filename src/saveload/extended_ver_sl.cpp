@@ -140,7 +140,7 @@ void SlXvCheckSpecialSavegameVersions()
  */
 bool SlXvIsChunkDiscardable(uint32 id)
 {
-	for(size_t i = 0; i < _sl_xv_discardable_chunk_ids.size(); i++) {
+	for (size_t i = 0; i < _sl_xv_discardable_chunk_ids.size(); i++) {
 		if (_sl_xv_discardable_chunk_ids[i] == id) {
 			return true;
 		}
