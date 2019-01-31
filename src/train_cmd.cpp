@@ -3850,6 +3850,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 	bool update_signal_tunbridge_exit = false;
 	Direction old_direction = INVALID_DIR;
 	TrackBits old_trackbits = INVALID_TRACK_BIT;
+	uint16 old_gv_flags = 0;
 
 	auto notify_direction_changed = [&](Direction old_direction, Direction new_direction) {
 		if (prev == NULL && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
@@ -3873,6 +3874,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 	for (prev = v->Previous(); v != nomove; prev = v, v = v->Next()) {
 		old_direction = v->direction;
 		old_trackbits = v->track;
+		old_gv_flags = v->gv_flags;
 		DiagDirection enterdir = DIAGDIR_BEGIN;
 		bool update_signals_crossing = false; // will we update signals or crossing state?
 
@@ -4383,6 +4385,7 @@ reverse_train_direction:
 		/* Entering/exiting wormhole failed/aborted, back out changes to vehicle direction and track */
 		v->track = old_trackbits;
 		v->direction = old_direction;
+		v->gv_flags = old_gv_flags;
 	}
 	if (reverse) {
 		v->wait_counter = 0;
