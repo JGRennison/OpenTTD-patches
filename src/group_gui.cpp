@@ -25,6 +25,7 @@
 #include "vehicle_gui_base.h"
 #include "core/geometry_func.hpp"
 #include "company_base.h"
+#include "company_gui.h"
 #include "tbtr_template_gui_main.h"
 
 #include "widgets/group_widget.h"
@@ -65,6 +66,8 @@ static const NWidgetPart _nested_group_widgets[] = {
 						SetDataTip(SPR_GROUP_DELETE_TRAIN, STR_GROUP_DELETE_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_RENAME_GROUP), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_RENAME_TRAIN, STR_GROUP_RENAME_TOOLTIP),
+				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_LIVERY_GROUP), SetFill(0, 1),
+						SetDataTip(SPR_GROUP_LIVERY_TRAIN, STR_GROUP_LIVERY_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_COLLAPSE_EXPAND_GROUP), SetFill(0, 1),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_COLLAPSE_ALL_GROUPS), SetFill(0, 1),
 						SetDataTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
@@ -395,6 +398,7 @@ public:
 		this->GetWidget<NWidgetCore>(WID_GL_CREATE_GROUP)->widget_data += this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_RENAME_GROUP)->widget_data += this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_DELETE_GROUP)->widget_data += this->vli.vtype;
+		this->GetWidget<NWidgetCore>(WID_GL_LIVERY_GROUP)->widget_data += this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_REPLACE_PROTECTION)->widget_data += this->vli.vtype;
 
 		this->FinishInitNested(window_number);
@@ -557,6 +561,7 @@ public:
 		this->SetWidgetsDisabledState(IsDefaultGroupID(this->vli.index) || IsAllGroupID(this->vli.index) || _local_company != this->vli.company,
 				WID_GL_DELETE_GROUP,
 				WID_GL_RENAME_GROUP,
+				WID_GL_LIVERY_GROUP,
 				WID_GL_REPLACE_PROTECTION,
 				WIDGET_LIST_END);
 
@@ -811,6 +816,10 @@ public:
 				this->SetDirty();
 				break;
 			}
+
+			case WID_GL_LIVERY_GROUP: // Set group livery
+				ShowCompanyLiveryWindow(this->owner, this->vli.index);
+				break;
 
 			case WID_GL_AVAILABLE_VEHICLES:
 				ShowBuildVehicleWindow(INVALID_TILE, this->vli.vtype);
