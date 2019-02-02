@@ -553,6 +553,7 @@ private:
 
 	StationID GetBestLoadableNext(const Vehicle *v, const Order *o1, const Order *o2) const;
 	void ReindexOrderList();
+	Order *GetOrderAtFromList(int index) const;
 
 	Order *first;                     ///< First order of the order list.
 	std::vector<Order *> order_index; ///< NOSAVE: Vector index of order list.

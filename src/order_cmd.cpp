@@ -439,6 +439,18 @@ Order *OrderList::GetOrderAt(int index) const
 	return this->order_index[index];
 }
 
+Order *OrderList::GetOrderAtFromList(int index) const
+{
+	if (index < 0) return NULL;
+
+	Order *order = this->first;
+
+	while (order != NULL && index-- > 0) {
+		order = order->next;
+	}
+	return order;
+}
+
 /**
  * Get the index of an order of the order chain, or INVALID_VEH_ORDER_ID.
  * @param order order to get the index of.
@@ -663,7 +675,7 @@ void OrderList::MoveOrder(int from, int to)
 		moving_one = this->first;
 		this->first = moving_one->next;
 	} else {
-		Order *one_before = GetOrderAt(from - 1);
+		Order *one_before = GetOrderAtFromList(from - 1);
 		moving_one = one_before->next;
 		one_before->next = moving_one->next;
 	}
@@ -673,7 +685,7 @@ void OrderList::MoveOrder(int from, int to)
 		moving_one->next = this->first;
 		this->first = moving_one;
 	} else {
-		Order *one_before = GetOrderAt(to - 1);
+		Order *one_before = GetOrderAtFromList(to - 1);
 		moving_one->next = one_before->next;
 		one_before->next = moving_one;
 	}
