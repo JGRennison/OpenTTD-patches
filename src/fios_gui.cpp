@@ -478,11 +478,14 @@ public:
 							y, r.bottom - WD_FRAMERECT_BOTTOM, _load_check_data.error, TC_RED);
 				} else {
 					/* Warning if save unique id differ when saving */
-					if (this->fop == SLO_SAVE &&
-							_load_check_data.settings.game_creation.generation_unique_id != 0 && /* Don't warn if the save has no id (old save) */
-							_load_check_data.settings.game_creation.generation_unique_id != _settings_game.game_creation.generation_unique_id) {
-						y = DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT,
-							y, r.bottom - WD_FRAMERECT_BOTTOM, STR_SAVELOAD_DIFFERENT_ID);
+					if (this->fop == SLO_SAVE) {
+						if (_load_check_data.settings.game_creation.generation_unique_id == 0) {
+							DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y_max, STR_SAVELOAD_UNKNOWN_ID);
+							y_max -= FONT_HEIGHT_NORMAL;
+						} else if (_load_check_data.settings.game_creation.generation_unique_id != _settings_game.game_creation.generation_unique_id) {
+							DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y_max, STR_SAVELOAD_DIFFERENT_ID);
+							y_max -= FONT_HEIGHT_NORMAL;
+						}
 					}
 
 					/* Mapsize */
@@ -754,19 +757,20 @@ public:
 		} else if (this->IsWidgetLowered(WID_SL_SAVE_GAME)) { // Save button clicked
 			if (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO) {
 				FiosMakeSavegameName(_file_to_saveload.name, this->filename_editbox.text.buf, lastof(_file_to_saveload.name));
-				if (_load_check_data.settings.game_creation.generation_unique_id != 0 && /* Don't warn if the save has no id (old save) */
-						_load_check_data.settings.game_creation.generation_unique_id != _settings_game.game_creation.generation_unique_id) {
+				const bool known_id = _load_check_data.settings.game_creation.generation_unique_id != 0;
+				const bool different_id = known_id && _load_check_data.settings.game_creation.generation_unique_id != _settings_game.game_creation.generation_unique_id;
+				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && different_id) {
 					/* The save has a different id to the current game */
 					/* Show a caption box asking whether the user is sure to overwrite the save */
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID, STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID, this, SaveLoadWindow::SaveGameConfirmationCallback);
-				} else if (FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
+				} else if (_settings_client.gui.savegame_overwrite_confirm >= (known_id ? 3 : 2) && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE, STR_SAVELOAD_OVERWRITE_WARNING, this, SaveLoadWindow::SaveGameConfirmationCallback);
 				} else {
 					_switch_mode = SM_SAVE_GAME;
 				}
 			} else {
 				FiosMakeHeightmapName(_file_to_saveload.name, this->filename_editbox.text.buf, lastof(_file_to_saveload.name));
-				if (FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
+				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE, STR_SAVELOAD_OVERWRITE_WARNING, this, SaveLoadWindow::SaveHeightmapConfirmationCallback);
 				} else {
 					_switch_mode = SM_SAVE_HEIGHTMAP;
