@@ -39,6 +39,19 @@ typedef unsigned long in_addr_t;
 	typedef int socklen_t;
 #	define IPPROTO_IPV6 41
 #endif /* !(__MINGW32__ && __CYGWIN__) */
+
+#if defined(__MINGW32__)
+#ifndef AI_ADDRCONFIG
+#define AI_ADDRCONFIG 0x400
+#endif
+#ifndef IPPROTO_IPV6
+#define IPPROTO_IPV6 41
+#endif
+#ifndef IPV6_V6ONLY
+#define IPV6_V6ONLY 27
+#endif
+#endif /* __MINGW32__ */
+
 #endif /* _WIN32 */
 
 /* UNIX stuff */
