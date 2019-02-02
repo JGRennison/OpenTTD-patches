@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.29.0
+## JGR's Patchpack version 0.29.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -236,6 +236,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add setting to enable flipping direction of all train types in depot. (added in v0.27.1).  
   * Allow purchasing a region of tiles at once, by dragging, and add a company rate limit for land purchasing (added in v0.29.0).  
   * Add setting to control if and how land purchasing is permitted. (added in v0.29.0).  
+  * Add GUI setting for when to ask for confirmation before overwriting an existing savegame file, add unique ID to savegames. (added in v0.29.1).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html).
 

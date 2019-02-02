@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.29.1 (2019-02-02)
+* Fix train disconnecting when reversing at the end of a sloped bridge ramp due to heading the wrong way onto a signalled bridge.
+* Fix display of two rail types per tile (horizontal overlay tracks).
+* Fix crash or other failures when using more than approximately 230 NewGRFs.
+* Fix input and display of hhmm times in timetable and scheduled dispatch GUI, when using large day length or ticks/minute values.
+* Add GUI setting for when to ask for confirmation before overwriting an existing savegame file, add unique ID to savegames.
+* Performance improvements.
+* Bump trunk base from commit 391bc45c41287bf3016e33266b24f30cdbfb5f07 to commit fa53abe864a6939dc4dac8a6c61443e486e0eb04.
+
 ### v0.29.0 (2019-01-02)
 * Fix crash or other failures when using more than approximately 230 NewGRFs.
 * Allow up to two rail types per tile.
