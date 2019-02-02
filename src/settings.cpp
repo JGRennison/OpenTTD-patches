@@ -1228,6 +1228,7 @@ static bool MaxNoAIsChange(int32 i)
 		ShowErrorMessage(STR_WARNING_NO_SUITABLE_AI, INVALID_STRING_ID, WL_CRITICAL);
 	}
 
+	InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
 	return true;
 }
 
