@@ -118,7 +118,7 @@ END
 #endif    // !_MAC
 
 #ifdef __MINGW32__
-1 24 "..\\..\\..\\projects\\dpi_aware.manifest"
+1 24 "../../../projects/dpi_aware.manifest"
 #endif
 
 #endif    // Neutral (Default) resources
