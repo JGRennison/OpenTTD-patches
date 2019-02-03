@@ -3282,8 +3282,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 static bool CheckReverseTrain(const Train *v)
 {
 	if (_settings_game.difficulty.line_reverse_mode != 0 ||
-			v->track == TRACK_BIT_DEPOT || v->track & TRACK_BIT_WORMHOLE ||
-			!(v->direction & 1)) {
+			v->track == TRACK_BIT_DEPOT || v->track & TRACK_BIT_WORMHOLE) {
 		return false;
 	}
 
