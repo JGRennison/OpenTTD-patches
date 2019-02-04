@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.29.2 (2019-02-04)
+* Fix order list corruption when drag-moving order.
+* Fix trains not reversing in station when the front is on a diagonal rail piece or in a bridge/tunnel.
+* Fix loading of bridges from Spring 2013 Patchpack savegames (v2.1.147 and later).
+* Bump trunk base from commit fa53abe864a6939dc4dac8a6c61443e486e0eb04 to commit 33e3f4916173b4129cbbe60f94dae659a70edb83.
+
 ### v0.29.1 (2019-02-02)
 * Fix train disconnecting when reversing at the end of a sloped bridge ramp due to heading the wrong way onto a signalled bridge.
 * Fix display of two rail types per tile (horizontal overlay tracks).
