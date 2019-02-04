@@ -378,7 +378,7 @@ struct AISettingsWindow : public Window {
 		for (; this->vscroll->IsVisible(i) && it != visible_settings.end(); i++, it++) {
 			const ScriptConfigItem &config_item = **it;
 			int current_value = config->GetSetting((config_item).name);
-			bool editable = _game_mode == GM_MENU || ((this->slot != OWNER_DEITY) && !Company::IsValidID(this->slot)) || (config_item.flags & SCRIPTCONFIG_INGAME) != 0;
+			bool editable = this->IsEditableItem(config_item);
 
 			StringID str;
 			TextColour colour;
@@ -441,7 +441,7 @@ struct AISettingsWindow : public Window {
 				VisibleSettingsList::const_iterator it = this->visible_settings.begin();
 				for (int i = 0; i < num; i++) it++;
 				const ScriptConfigItem config_item = **it;
-				if (_game_mode == GM_NORMAL && ((this->slot == OWNER_DEITY) || Company::IsValidID(this->slot)) && (config_item.flags & SCRIPTCONFIG_INGAME) == 0) return;
+				if (!this->IsEditableItem(config_item)) return;
 
 				if (this->clicked_row != num) {
 					DeleteChildWindows(WC_QUERY_STRING);
@@ -586,6 +586,12 @@ struct AISettingsWindow : public Window {
 	{
 		this->RebuildVisibleSettings();
 	}
+
+private:
+	bool IsEditableItem(const ScriptConfigItem config_item) const
+	{
+		return _game_mode == GM_MENU || ((this->slot != OWNER_DEITY) && !Company::IsValidID(this->slot)) || (config_item.flags & SCRIPTCONFIG_INGAME) != 0;
+	}
 };
 
 /** Widgets for the AI settings window. */
@@ -654,7 +660,7 @@ struct ScriptTextfileWindow : public TextfileWindow {
  */
 void ShowScriptTextfileWindow(TextfileType file_type, CompanyID slot)
 {
-	DeleteWindowByClass(WC_TEXTFILE);
+	DeleteWindowById(WC_TEXTFILE, file_type);
 	new ScriptTextfileWindow(file_type, slot);
 }
 
@@ -869,7 +875,6 @@ struct AIConfigWindow : public Window {
 					new_value = min(MAX_COMPANIES - 1, GetGameSettings().difficulty.max_no_competitors + 1);
 				}
 				IConsoleSetSetting("difficulty.max_no_competitors", new_value);
-				this->InvalidateData();
 				break;
 			}
 

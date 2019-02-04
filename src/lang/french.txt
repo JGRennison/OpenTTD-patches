@@ -191,6 +191,7 @@ STR_COLOUR_BROWN                                                :Marron
 STR_COLOUR_GREY                                                 :Gris
 STR_COLOUR_WHITE                                                :Blanc
 STR_COLOUR_RANDOM                                               :Aléatoire
+STR_COLOUR_DEFAULT                                              :Défaut
 
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mph
@@ -931,6 +932,7 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Personnalisée.
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Géorgien (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iranien (IRR)
 STR_GAME_OPTIONS_CURRENCY_RUB                                   :Nouveau rouble russe (RUB)
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso méxicain (MXN)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Véhicules routiers
@@ -1820,7 +1822,7 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Modifier
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Permettre la modification des valeurs de production{NBSP}: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Nouvelle couleur
+STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Couleur
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Montrer les livrées générales
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Montrer les livrées de trains
@@ -2381,9 +2383,9 @@ STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Signal c
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Signal de chemin (électrique){}Un signal de chemin autorise plus d'un train à entrer dans un bloc de signaux en même temps, si le train peut réserver un chemin jusqu'à un point d'attente sûr. Les signaux de chemin peuvent être passés par l'arrière.
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Signal de chemin à sens unique (électrique){}Un signal de chemin autorise plus d'un train à entrer dans un bloc de signaux en même temps, si le train peut réserver un chemin jusqu'à un point d'attente sûr. Les signaux de chemin à sens unique ne peuvent pas être passés par l'arrière.
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Conversion de signal.{}Si sélectionné, cliquer sur un signal existant le convertit vers le type et la variante choisis.{}Ctrl-clic pour alterner entre les variantes existantes.{}Shift pour afficher seulement le coût estimé.
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Densité de signaux
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Réduire l'intervalle entre les signaux (augmenter la densité)
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Augmenter l'intervalle entre les signaux (réduire la densité)
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Intervalle entre les signaux
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Réduire l'intervalle entre les signaux
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Augmenter l'intervalle entre les signaux
 
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Choisir un pont ferroviaire
@@ -2703,7 +2705,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terrain apparte
 STR_ABOUT_OPENTTD                                               :{WHITE}À propos de OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyright original {COPYRIGHT} 1995 Chris Sawyer, Tous droits réservés
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 L'équipe OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2019 L'équipe OpenTTD
 
 # Framerate display window
 STR_FRAMERATE_CAPTION                                           :{WHITE}Fréquence d'images
@@ -2895,7 +2897,12 @@ STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Version{
 STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Version compatible min.{NBSP}: {SILVER}{NUM}
 STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}MD5sum{NBSP}: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PALETTE                                     :{BLACK}Palette{NBSP}: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT                             :Défaut (D)
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT_32BPP                       :Défaut (D) / 32 bpp
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY                              :Ancienne (W)
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY_32BPP                        :Ancienne (W) / 32 bpp
 STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Paramètres{NBSP}: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PARAMETER_NONE                              :Aucuns
 
 STR_NEWGRF_SETTINGS_NO_INFO                                     :{BLACK}Pas d'informations disponibles
 STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}Module correspondant non trouvé
@@ -3355,20 +3362,13 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centrer 
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Niveau de production{NBSP}: {YELLOW}{COMMA}{NBSP}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}L'industrie a annoncé sa fermeture imminente{NBSP}!
 
-############ range for requires starts
-STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Nécessite{NBSP}: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Nécessite{NBSP}: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Nécessite{NBSP}: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
-############ range for requires ends
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Nécessite{NBSP}: {YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produit{NBSP}: {YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Nécessite{NBSP}:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}{NBSP}: {CARGO_SHORT} en attente{STRING}
-
-############ range for produces starts
-STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Produit{NBSP}: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Produit{NBSP}: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-############ range for produces ends
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Changer la production (multiple de 8, max. 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Changer le niveau de production (pourcentage, max. 800{NBSP}%)
@@ -3422,6 +3422,7 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Groupes 
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Créer un groupe de véhicules
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Supprimer le groupe sélectionné
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Renommer le groupe sélectionné
+STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Changer la couleur du groupe sélectionné
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Cliquer pour protéger ce groupe contre l'auto-remplacement global
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Supprimer un groupe
@@ -3465,6 +3466,7 @@ STR_PURCHASE_INFO_AIRCRAFT_CAPACITY                             :{BLACK}Capacit�
 STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Wagons motorisés{NBSP}: {GOLD}+{POWER}{BLACK} − Poids{NBSP}: {GOLD}+{WEIGHT_SHORT}
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Réaménageable pour{NBSP}: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Tous les types de cargaison
+STR_PURCHASE_INFO_NONE                                          :Aucune cargaison
 STR_PURCHASE_INFO_ALL_BUT                                       :Tous sauf {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Effort de traction max.{NBSP}: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rayon d'action{NBSP}: {GOLD}{COMMA}{NBSP}cases
