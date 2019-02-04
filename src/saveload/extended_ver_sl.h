@@ -16,6 +16,8 @@
 
 #include <vector>
 
+enum SaveLoadVersion : uint16;
+
 /**
  * List of extended features, each feature has its own (16 bit) version
  */
@@ -58,7 +60,7 @@ struct SlXvFeatureTest {
 	SlXvFeatureTest(TestFunctorPtr functor_)
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR), functor(functor_) { }
 
-	bool IsFeaturePresent(uint16 savegame_version, uint16 savegame_version_from, uint16 savegame_version_to) const;
+	bool IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
 };
 
 bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);

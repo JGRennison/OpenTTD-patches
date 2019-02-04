@@ -65,9 +65,9 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
  * and return the combination of the two tests using the operator defined in the constructor.
  * Otherwise just returns the result of the savegame version test
  */
-bool SlXvFeatureTest::IsFeaturePresent(uint16 savegame_version, uint16 savegame_version_from, uint16 savegame_version_to) const
+bool SlXvFeatureTest::IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
 {
-	bool savegame_version_ok = savegame_version >= savegame_version_from && savegame_version <= savegame_version_to;
+	bool savegame_version_ok = savegame_version >= savegame_version_from && savegame_version < savegame_version_to;
 
 	if (this->functor) return (*this->functor)(savegame_version, savegame_version_ok);
 

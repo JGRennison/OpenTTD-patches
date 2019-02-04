@@ -191,6 +191,7 @@ STR_COLOUR_BROWN                                                :Marron
 STR_COLOUR_GREY                                                 :Gris
 STR_COLOUR_WHITE                                                :Blanc
 STR_COLOUR_RANDOM                                               :Aléatoire
+STR_COLOUR_DEFAULT                                              :Défaut
 
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mph
@@ -1821,7 +1822,7 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Modifier
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Permettre la modification des valeurs de production{NBSP}: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Nouvelle couleur
+STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Couleur
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Montrer les livrées générales
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Montrer les livrées de trains
@@ -2704,7 +2705,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Terrain apparte
 STR_ABOUT_OPENTTD                                               :{WHITE}À propos de OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Copyright original {COPYRIGHT} 1995 Chris Sawyer, Tous droits réservés
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD version {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 L'équipe OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2019 L'équipe OpenTTD
 
 # Framerate display window
 STR_FRAMERATE_CAPTION                                           :{WHITE}Fréquence d'images
@@ -2896,7 +2897,12 @@ STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Version{
 STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Version compatible min.{NBSP}: {SILVER}{NUM}
 STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}MD5sum{NBSP}: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PALETTE                                     :{BLACK}Palette{NBSP}: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT                             :Défaut (D)
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT_32BPP                       :Défaut (D) / 32 bpp
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY                              :Ancienne (W)
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY_32BPP                        :Ancienne (W) / 32 bpp
 STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Paramètres{NBSP}: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PARAMETER_NONE                              :Aucuns
 
 STR_NEWGRF_SETTINGS_NO_INFO                                     :{BLACK}Pas d'informations disponibles
 STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}Module correspondant non trouvé
@@ -3416,6 +3422,7 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Groupes 
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Créer un groupe de véhicules
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Supprimer le groupe sélectionné
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Renommer le groupe sélectionné
+STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Changer la couleur du groupe sélectionné
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Cliquer pour protéger ce groupe contre l'auto-remplacement global
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Supprimer un groupe
@@ -3459,6 +3466,7 @@ STR_PURCHASE_INFO_AIRCRAFT_CAPACITY                             :{BLACK}Capacit�
 STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Wagons motorisés{NBSP}: {GOLD}+{POWER}{BLACK} − Poids{NBSP}: {GOLD}+{WEIGHT_SHORT}
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Réaménageable pour{NBSP}: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Tous les types de cargaison
+STR_PURCHASE_INFO_NONE                                          :Aucune cargaison
 STR_PURCHASE_INFO_ALL_BUT                                       :Tous sauf {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Effort de traction max.{NBSP}: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rayon d'action{NBSP}: {GOLD}{COMMA}{NBSP}cases

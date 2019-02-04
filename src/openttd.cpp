@@ -117,7 +117,9 @@ void CDECL error(const char *s, ...)
 	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 
-	ShowOSErrorBox(buf, true);
+	if (VideoDriver::GetInstance() == NULL || VideoDriver::GetInstance()->HasGUI()) {
+		ShowOSErrorBox(buf, true);
+	}
 
 	/* Set the error message for the crash log and then invoke it. */
 	CrashLog::SetErrorMessage(buf);
@@ -240,7 +242,7 @@ static void ShowHelp()
 
 static void WriteSavegameInfo(const char *name)
 {
-	extern uint16 _sl_version;
+	extern SaveLoadVersion _sl_version;
 	uint32 last_ottd_rev = 0;
 	byte ever_modified = 0;
 	bool removed_newgrfs = false;

@@ -113,15 +113,15 @@ static void ShowNewGRFInfo(const GRFConfig *c, uint x, uint y, uint right, uint 
 			SetDParam(0, STR_JUST_RAW_STRING);
 			SetDParamStr(1, buff);
 		} else {
-			SetDParam(0, STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE);
+			SetDParam(0, STR_NEWGRF_SETTINGS_PARAMETER_NONE);
 		}
 		y = DrawStringMultiLine(x, right, y, bottom, STR_NEWGRF_SETTINGS_PARAMETER);
 
 		/* Draw the palette of the NewGRF */
 		if (c->palette & GRFP_BLT_32BPP) {
-			SetDParamStr(0, (c->palette & GRFP_USE_WINDOWS) ? "Legacy (W) / 32 bpp" : "Default (D) / 32 bpp");
+			SetDParam(0, (c->palette & GRFP_USE_WINDOWS) ? STR_NEWGRF_SETTINGS_PALETTE_LEGACY_32BPP : STR_NEWGRF_SETTINGS_PALETTE_DEFAULT_32BPP);
 		} else {
-			SetDParamStr(0, (c->palette & GRFP_USE_WINDOWS) ? "Legacy (W)" : "Default (D)");
+			SetDParam(0, (c->palette & GRFP_USE_WINDOWS) ? STR_NEWGRF_SETTINGS_PALETTE_LEGACY : STR_NEWGRF_SETTINGS_PALETTE_DEFAULT);
 		}
 		y = DrawStringMultiLine(x, right, y, bottom, STR_NEWGRF_SETTINGS_PALETTE);
 	}
@@ -561,7 +561,7 @@ struct NewGRFTextfileWindow : public TextfileWindow {
 
 void ShowNewGRFTextfileWindow(TextfileType file_type, const GRFConfig *c)
 {
-	DeleteWindowByClass(WC_TEXTFILE);
+	DeleteWindowById(WC_TEXTFILE, file_type);
 	new NewGRFTextfileWindow(file_type, c);
 }
 
@@ -725,7 +725,11 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			GRFConfig *d = new GRFConfig(*a);
 			d->next = (*c)->next;
 			d->CopyParams(**c);
-			if (this->active_sel == *c) this->active_sel = NULL;
+			if (this->active_sel == *c) {
+				DeleteWindowByClass(WC_GRF_PARAMETERS);
+				DeleteWindowByClass(WC_TEXTFILE);
+				this->active_sel = NULL;
+			}
 			delete *c;
 			*c = d;
 			iter->second = d;
@@ -1022,7 +1026,10 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				GRFConfig *c;
 				for (c = this->actives; c != NULL && i > 0; c = c->next, i--) {}
 
-				if (this->active_sel != c) DeleteWindowByClass(WC_GRF_PARAMETERS);
+				if (this->active_sel != c) {
+					DeleteWindowByClass(WC_GRF_PARAMETERS);
+					DeleteWindowByClass(WC_TEXTFILE);
+				}
 				this->active_sel = c;
 				this->avail_sel = NULL;
 				this->avail_pos = -1;
@@ -1039,6 +1046,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_REMOVE: { // Remove GRF
 				if (this->active_sel == NULL || !this->editable) break;
 				DeleteWindowByClass(WC_GRF_PARAMETERS);
+				DeleteWindowByClass(WC_TEXTFILE);
 
 				/* Choose the next GRF file to be the selected file. */
 				GRFConfig *newsel = this->active_sel->next;
@@ -1080,6 +1088,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				this->active_sel = NULL;
 				DeleteWindowByClass(WC_GRF_PARAMETERS);
 				if (i < this->avails.Length()) {
+					if (this->avail_sel != this->avails[i]) DeleteWindowByClass(WC_TEXTFILE);
 					this->avail_sel = this->avails[i];
 					this->avail_pos = i;
 				}
@@ -1152,11 +1161,11 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 	virtual void OnNewGRFsScanned()
 	{
+		if (this->active_sel == NULL) DeleteWindowByClass(WC_TEXTFILE);
 		this->avail_sel = NULL;
 		this->avail_pos = -1;
 		this->avails.ForceRebuild();
 		this->DeleteChildWindows(WC_QUERY_STRING); // Remove the parameter query window
-		this->DeleteChildWindows(WC_TEXTFILE);     // Remove the view textfile window
 	}
 
 	virtual void OnDropdownSelect(int widget, int index)
@@ -1173,6 +1182,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 		ResetObjectToPlace();
 		DeleteWindowByClass(WC_GRF_PARAMETERS);
+		DeleteWindowByClass(WC_TEXTFILE);
 		this->active_sel = NULL;
 		this->InvalidateData(GOID_NEWGRF_PRESET_LOADED);
 	}
@@ -1221,7 +1231,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					*l = new GRFConfig(*f);
 					(*l)->next = c->next;
 
-					if (active_sel == c) active_sel = *l;
+					if (this->active_sel == c) this->active_sel = *l;
 
 					delete c;
 				}
@@ -1347,6 +1357,9 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 		if (this->avails.Length() == 0) this->avail_pos = -1;
 		if (this->avail_pos >= 0) {
+			this->active_sel = NULL;
+			DeleteWindowByClass(WC_GRF_PARAMETERS);
+			if (this->avail_sel != this->avails[this->avail_pos]) DeleteWindowByClass(WC_TEXTFILE);
 			this->avail_sel = this->avails[this->avail_pos];
 			this->vscroll2->ScrollTowards(this->avail_pos);
 			this->InvalidateData(0);
@@ -1508,6 +1521,8 @@ private:
 	bool AddGRFToActive(int ins_pos = -1)
 	{
 		if (this->avail_sel == NULL || !this->editable || HasBit(this->avail_sel->flags, GCF_INVALID)) return false;
+
+		DeleteWindowByClass(WC_TEXTFILE);
 
 		uint count = 0;
 		GRFConfig **entry = NULL;
@@ -1968,6 +1983,7 @@ static void NewGRFConfirmationCallback(Window *w, bool confirmed)
 {
 	if (confirmed) {
 		DeleteWindowByClass(WC_GRF_PARAMETERS);
+		DeleteWindowByClass(WC_TEXTFILE);
 		NewGRFWindow *nw = dynamic_cast<NewGRFWindow*>(w);
 
 		GamelogStartAction(GLAT_GRF);

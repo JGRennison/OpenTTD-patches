@@ -316,6 +316,7 @@ STR_COLOUR_BROWN                                                :Коричне�
 STR_COLOUR_GREY                                                 :Серый
 STR_COLOUR_WHITE                                                :Белый
 STR_COLOUR_RANDOM                                               :Случайный
+STR_COLOUR_DEFAULT                                              :По умолчанию
 
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}мил{P я и ь}/ч
@@ -602,7 +603,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Снимок э
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Снимок экрана в макс. приближении
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Снимок экрана в обычном масштабе
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Снимок всей карты
-STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Показать кол-во кадров/с
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Информация о скорости игры
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Об игре
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Выравнивание спрайтов
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Переключить ограничивающие рамки
@@ -1972,7 +1973,7 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Изме
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Разрешить изменение производительности: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Новая цветовая схема
+STR_LIVERY_CAPTION                                              :{WHITE}Цвета компании «{COMPANY}»
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Настройка основной цветовой схемы
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Настройка цветовой схемы поездов
@@ -2557,9 +2558,9 @@ STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Комб
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Маршрутный светофор{}Позволяет нескольким поездам находиться в одном сигнальном блоке, если каждый из них может зарезервировать безопасный путь. Допускает следование поездов в обе стороны.
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Односторонний маршрутн. светофор{}Позволяет нескольким поездам находиться в одном сигнальном блоке, если каждый из них может зарезервировать безопасный путь. Не допускает следования поездов в обратную сторону.
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Изменение типа сигнала{}Когда кнопка нажата, щёлкните для преобразования существующего сигнала в сигнал выбранного типа и варианта, или щёлкните с нажатым Ctrl для перебора существующих вариантов. Shift+щелчок - оценка стоимости преобразования.
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Плотность расстановки сигналов при протягивании.
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Уменьшить плотность сигналов при протягивании
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Увеличить плотность сигналов при протягивании
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Расстояние между сигналами при протягивании.
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Уменьшить расстояние между сигналами при протягивании
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Увеличить расстояние между сигналами при протягивании
 
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Выберите железнодорожный мост
@@ -2883,12 +2884,19 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Земля в �
 STR_ABOUT_OPENTTD                                               :{WHITE}Об OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Оригинальные авторские права {COPYRIGHT} 1995 Chris Sawyer. Все права защищены.
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD версия {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 Команда разработчиков OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2019 Команда разработчиков OpenTTD
 
 # Framerate display window
+STR_FRAMERATE_CAPTION                                           :{WHITE}Скорость игры
 STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE} ({DECIMAL}x)
+STR_FRAMERATE_RATE_GAMELOOP                                     :{BLACK}Скорость расчёта игры: {STRING}
 STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Кол-во игровых циклов, рассчитываемых в секунду.
+STR_FRAMERATE_RATE_BLITTER                                      :{BLACK}Вывод на экран: {STRING}
 STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Кол-во отображаемых кадров в секунду.
+STR_FRAMERATE_SPEED_FACTOR                                      :{BLACK}Текущая скорость игры: {DECIMAL}x
+STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}Фактическая скорость игры
+STR_FRAMERATE_CURRENT                                           :{WHITE}Сейчас
+STR_FRAMERATE_AVERAGE                                           :{WHITE}В среднем
 STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Данные по {COMMA} измерени{P ю ям ям}
 STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} мс
 STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} мс
@@ -2899,11 +2907,32 @@ STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} 
 STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} мс
 STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA} с
 ############ Leave those lines in this order!!
+STR_FRAMERATE_GAMELOOP                                          :{BLACK}Расчёт игрового цикла:
+STR_FRAMERATE_GL_ECONOMY                                        :{BLACK} Расчёт объёмов груза:
+STR_FRAMERATE_GL_TRAINS                                         :{BLACK} Движение поездов:
+STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK} Движение автомобилей:
+STR_FRAMERATE_GL_SHIPS                                          :{BLACK} Движение кораблей:
+STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK} Движение воздушных судов:
+STR_FRAMERATE_GL_LANDSCAPE                                      :{BLACK} Изменения на карте:
 STR_FRAMERATE_GL_LINKGRAPH                                      :{BLACK} Задержка графа распределения:
+STR_FRAMERATE_DRAWING                                           :{BLACK}Отрисовка изображения:
+STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{BLACK} Дополнительные окна:
+STR_FRAMERATE_VIDEO                                             :{BLACK}Вывод на экран:
+STR_FRAMERATE_SOUND                                             :{BLACK}Обработка звука:
 ############ End of leave-in-this-order
 ############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GAMELOOP                                  :Расчёт игрового цикла
+STR_FRAMETIME_CAPTION_GL_ECONOMY                                :Расчёт объёмов груза
+STR_FRAMETIME_CAPTION_GL_TRAINS                                 :Движение поездов
+STR_FRAMETIME_CAPTION_GL_ROADVEHS                               :Движение автомобилей
+STR_FRAMETIME_CAPTION_GL_SHIPS                                  :Движение кораблей
+STR_FRAMETIME_CAPTION_GL_AIRCRAFT                               :Движение воздушных судов
+STR_FRAMETIME_CAPTION_GL_LANDSCAPE                              :Расчёт изменений на карте
 STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :Задержка графа распределения
-STR_FRAMETIME_CAPTION_DRAWING                                   :Отрисовка графики
+STR_FRAMETIME_CAPTION_DRAWING                                   :Отрисовка изображения
+STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :Отрисовка изображения в доп. окнах
+STR_FRAMETIME_CAPTION_VIDEO                                     :Вывод на экран
+STR_FRAMETIME_CAPTION_SOUND                                     :Обработка звука
 ############ End of leave-in-this-order
 
 
@@ -2930,6 +2959,8 @@ STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Нет �
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Фильтр:
+STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Перезапись файла
+STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Перезаписать файл?
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Введите название сохраняемой игры
 
@@ -3047,7 +3078,12 @@ STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Верс
 STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Совместимо с версией не ниже: {SILVER}{NUM}
 STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}MD5: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PALETTE                                     :{BLACK}Палитра: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT                             :Стандартная (D)
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT_32BPP                       :Стандартная (D) / 32 bpp
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY                              :Устаревшая (W)
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY_32BPP                        :Устаревшая (W) / 32 bpp
 STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Параметры: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PARAMETER_NONE                              :Нет
 
 STR_NEWGRF_SETTINGS_NO_INFO                                     :{BLACK}Нет доступной информации
 STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}Файл не найден
@@ -3129,6 +3165,7 @@ STR_NEWGRF_ERROR_GRM_FAILED                                     :Запроше�
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} был отключён из-за {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Недопустимый/неизвестный формат расположения спрайтов (спрайт {3:NUM})
 STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Слишком много элементов в списке значений (спрайт {3:NUM}, свойство {4:HEX})
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Неверная обработка продукции предприятия (спрайт {3:NUM}, "{1:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Осторожно!
@@ -3566,6 +3603,7 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Щёлк
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Создать группу
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Удалить выбранную группу
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Переименовать выбранную группу
+STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Изменить цвет выбранной группы
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Защита транспорта в группе от глобальной автозамены
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Удаление группы
@@ -3609,6 +3647,7 @@ STR_PURCHASE_INFO_AIRCRAFT_CAPACITY                             :{BLACK}Ёмко
 STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Ведущие вагоны: {GOLD}+{POWER}{BLACK} Вес: {GOLD}+{WEIGHT_SHORT}
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Может перевозить: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Все типы грузов
+STR_PURCHASE_INFO_NONE                                          :Нет
 STR_PURCHASE_INFO_ALL_BUT                                       :Всё, кроме {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Макс. тяговое усилие: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Дальность: {GOLD}{COMMA} клет{P ка ки ок}

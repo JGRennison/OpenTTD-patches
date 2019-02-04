@@ -1205,8 +1205,8 @@
     <ClInclude Include="..\src\blitter\8bpp_optimized.hpp" />
     <ClCompile Include="..\src\blitter\8bpp_simple.cpp" />
     <ClInclude Include="..\src\blitter\8bpp_simple.hpp" />
-    <ClCompile Include="..\src\blitter\base.cpp" />
     <ClInclude Include="..\src\blitter\base.hpp" />
+    <ClInclude Include="..\src\blitter\common.hpp" />
     <ClInclude Include="..\src\blitter\factory.hpp" />
     <ClCompile Include="..\src\blitter\null.cpp" />
     <ClInclude Include="..\src\blitter\null.hpp" />
@@ -1363,6 +1363,10 @@
     </ProjectReference>
     <ProjectReference Include="version_vs141.vcxproj">
       <Project>{1a2b3c5e-1c23-41a5-9c9b-acba2aa75fec}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="basesets_vs141.vcxproj">
+      <Project>{e12e77ca-c0f1-4ada-943f-4929274249d3}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

@@ -26,8 +26,11 @@ typedef std::deque<TrackdirByte> ShipPathCache;
  * All ships have this type.
  */
 struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
-	TrackBitsByte state; ///< The "track" the ship is following.
-	ShipPathCache path;  ///< Cached path.
+	TrackBitsByte state;    ///< The "track" the ship is following.
+	ShipPathCache path;     ///< Cached path.
+	DirectionByte rotation; ///< Visible direction.
+	int16 rotation_x_pos;   ///< NOSAVE: X Position before rotation.
+	int16 rotation_y_pos;   ///< NOSAVE: Y Position before rotation.
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	Ship() : SpecializedVehicleBase() {}

@@ -286,6 +286,7 @@ STR_COLOUR_BROWN                                                :Smeđa
 STR_COLOUR_GREY                                                 :Siva
 STR_COLOUR_WHITE                                                :Bijela
 STR_COLOUR_RANDOM                                               :Nasumično
+STR_COLOUR_DEFAULT                                              :Osnovna postavka
 
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mph
@@ -1916,7 +1917,7 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Promijen
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Omogući izmjeni produkcijskih vrijednosti: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Nova boja
+STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} -Boja
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Pokaži generalne sheme boja
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Pokaži sheme boja za vlak
@@ -2799,7 +2800,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Zemlja u posjed
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD-u
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Izvorno autorsko pravo {COPYRIGHT} 1995 Chris Sawyer, sva prava pridržana
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verzija {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD tim
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2019 OpenTTD tim
 
 # Framerate display window
 STR_FRAMERATE_CAPTION                                           :{WHITE}Broj sličica
@@ -2874,6 +2875,8 @@ STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Nema dos
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtriraj niz:
+STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Presnimi datoteku
+STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Jeste li sigurano da želite presnimiti postojeću datoteku?
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Upiši ime za spremanje igre
 
@@ -2991,7 +2994,12 @@ STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Verzija:
 STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Min. kompatibilna verzija: {SILVER}{NUM}
 STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}MD5 suma: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PALETTE                                     :{BLACK}Paleta: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT                             :Osnovna postavka (D)
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT_32BPP                       :Osnovna postavka (D) / 32 bpp
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY                              :Legacy (W)
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY_32BPP                        :Legacy (W) / 32 bpp
 STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Parametri: {SILVER}{STRING}
+STR_NEWGRF_SETTINGS_PARAMETER_NONE                              :Ništa
 
 STR_NEWGRF_SETTINGS_NO_INFO                                     :{BLACK}Nema dostupnih informacija
 STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}Nije pronađena odgovarajuća datoteka
@@ -3451,6 +3459,9 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centrira
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Razina proizvodnje: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Industrija je najavila uskoro zatvaranje!
 
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Treba: {YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Proizvodi: {YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Treba:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
@@ -3508,6 +3519,7 @@ STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grupe - 
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klikni za kreiranje grupe
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Obriši odabranu grupu
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Preimenuj odabranu grupu
+STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Promijeni livreju odabrane grupe
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Klikni kako bi zaštitio ovu grupu od globalne automatske zamjene
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Izbriši grupu
@@ -3551,6 +3563,7 @@ STR_PURCHASE_INFO_AIRCRAFT_CAPACITY                             :{BLACK}Nosivost
 STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK} Pokretni vagoni:.{GOLD}+{POWER}{BLACK} Težina: {GOLD}+{WEIGHT_SHORT}
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Prenamjenjivo u: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Sve vrste tereta
+STR_PURCHASE_INFO_NONE                                          :Ništa
 STR_PURCHASE_INFO_ALL_BUT                                       :Sve osim {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK} Najveća vučna sila: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Domet: {GOLD}{COMMA} polja
