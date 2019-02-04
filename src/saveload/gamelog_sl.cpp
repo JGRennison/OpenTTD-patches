@@ -28,11 +28,11 @@ static const SaveLoad _glog_mode_desc[] = {
 	SLE_END()
 };
 
-static char old_revision_text[NETWORK_REVISION_LENGTH];
+static char old_revision_text[GAMELOG_REVISION_LENGTH];
 
 static const SaveLoad _glog_revision_desc[] = {
-	SLEG_CONDARR_X(old_revision_text,        SLE_UINT8, NETWORK_REVISION_LENGTH, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_EXTENDED_GAMELOG, 0, 0)),
-	SLE_CONDSTR_X(LoggedChange, revision.text, SLE_STR,                       0, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_EXTENDED_GAMELOG)),
+	SLEG_CONDARR_X(old_revision_text,        SLE_UINT8, GAMELOG_REVISION_LENGTH, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_EXTENDED_GAMELOG, 0, 0)),
+	SLE_CONDSTR_X(LoggedChange, revision.text, SLE_STR,                       0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_EXTENDED_GAMELOG)),
 	SLE_VAR(LoggedChange, revision.newgrf,   SLE_UINT32),
 	SLE_VAR(LoggedChange, revision.slver,    SLE_UINT16),
 	SLE_VAR(LoggedChange, revision.modified, SLE_UINT8),

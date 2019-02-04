@@ -83,7 +83,7 @@ const SaveLoad *GetLinkGraphJobDesc()
 
 		const SaveLoad job_desc[] = {
 			SLE_VAR(LinkGraphJob, join_date_ticks,  SLE_INT32),
-			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks,  SLE_INT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE)),
+			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks,  SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE)),
 			SLE_VAR(LinkGraphJob, link_graph.index, SLE_UINT16),
 			SLE_END()
 		};
@@ -117,7 +117,7 @@ const SaveLoad *GetLinkGraphScheduleDesc()
  * SaveLoad desc for a link graph node.
  */
 static const SaveLoad _node_desc[] = {
-	SLE_CONDVAR(Node, xy,          SLE_UINT32, 191, SL_MAX_VERSION),
+	SLE_CONDVAR(Node, xy,          SLE_UINT32, SLV_191, SL_MAX_VERSION),
 	    SLE_VAR(Node, supply,      SLE_UINT32),
 	    SLE_VAR(Node, demand,      SLE_UINT32),
 	    SLE_VAR(Node, station,     SLE_UINT16),
@@ -129,11 +129,11 @@ static const SaveLoad _node_desc[] = {
  * SaveLoad desc for a link graph edge.
  */
 static const SaveLoad _edge_desc[] = {
-	SLE_CONDNULL(4, 0, 190), // distance
+	SLE_CONDNULL(4, SL_MIN_VERSION, SLV_191), // distance
 	     SLE_VAR(Edge, capacity,                 SLE_UINT32),
 	     SLE_VAR(Edge, usage,                    SLE_UINT32),
 	     SLE_VAR(Edge, last_unrestricted_update, SLE_INT32),
-	 SLE_CONDVAR(Edge, last_restricted_update,   SLE_INT32, 187, SL_MAX_VERSION),
+	 SLE_CONDVAR(Edge, last_restricted_update,   SLE_INT32, SLV_187, SL_MAX_VERSION),
 	     SLE_VAR(Edge, next_edge,                SLE_UINT16),
 	     SLE_END()
 };
@@ -148,7 +148,7 @@ void SaveLoad_LinkGraph(LinkGraph &lg)
 	for (NodeID from = 0; from < size; ++from) {
 		Node *node = &lg.nodes[from];
 		SlObject(node, _node_desc);
-		if (IsSavegameVersionBefore(191)) {
+		if (IsSavegameVersionBefore(SLV_191)) {
 			/* We used to save the full matrix ... */
 			for (NodeID to = 0; to < size; ++to) {
 				SlObject(&lg.edges[from][to], _edge_desc);
@@ -240,7 +240,7 @@ static void Load_LGRS()
  */
 void AfterLoadLinkGraphs()
 {
-	if (IsSavegameVersionBefore(191)) {
+	if (IsSavegameVersionBefore(SLV_191)) {
 		LinkGraph *lg;
 		FOR_ALL_LINK_GRAPHS(lg) {
 			for (NodeID node_id = 0; node_id < lg->Size(); ++node_id) {

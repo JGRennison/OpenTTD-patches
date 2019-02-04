@@ -28,7 +28,7 @@ void Order::ConvertFromOldSavegame()
 	this->flags = 0;
 
 	/* First handle non-stop - use value from savegame if possible, else use value from config file */
-	if (_settings_client.gui.sg_new_nonstop || (IsSavegameVersionBefore(22) && _savegame_type != SGT_TTO && _savegame_type != SGT_TTD && _settings_client.gui.new_nonstop)) {
+	if (_settings_client.gui.sg_new_nonstop || (IsSavegameVersionBefore(SLV_22) && _savegame_type != SGT_TTO && _savegame_type != SGT_TTD && _settings_client.gui.new_nonstop)) {
 		/* OFB_NON_STOP */
 		this->SetNonStopType((old_flags & 8) ? ONSF_NO_STOP_AT_ANY_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 	} else {
@@ -49,7 +49,7 @@ void Order::ConvertFromOldSavegame()
 			this->SetLoadType(OLF_LOAD_IF_POSSIBLE);
 		} else {
 			/* old OTTD versions stored full_load_any in config file - assume it was enabled when loading */
-			this->SetLoadType(_settings_client.gui.sg_full_load_any || IsSavegameVersionBefore(22) ? OLF_FULL_LOAD_ANY : OLFB_FULL_LOAD);
+			this->SetLoadType(_settings_client.gui.sg_full_load_any || IsSavegameVersionBefore(SLV_22) ? OLF_FULL_LOAD_ANY : OLFB_FULL_LOAD);
 		}
 
 		if (this->IsType(OT_GOTO_STATION)) this->SetStopLocation(OSL_PLATFORM_FAR_END);
@@ -106,22 +106,22 @@ const SaveLoad *GetOrderDescription()
 	static const SaveLoad _order_desc[] = {
 		     SLE_VAR(Order, type,           SLE_UINT8),
 		     SLE_VAR(Order, flags,          SLE_UINT8),
-		SLE_CONDNULL_X(1, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
+		SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 		     SLE_VAR(Order, dest,           SLE_UINT16),
 		     SLE_REF(Order, next,           REF_ORDER),
-		 SLE_CONDVAR(Order, refit_cargo,    SLE_UINT8,   36, SL_MAX_VERSION),
-		SLE_CONDNULL(1,                                  36, 181), // refit_subtype
-		SLE_CONDVAR_X(Order, occupancy,     SLE_UINT8,    0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_OCCUPANCY)),
-		SLE_CONDVAR_X(Order, wait_time,     SLE_FILE_U16 | SLE_VAR_U32,  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
-		SLE_CONDVAR_X(Order, wait_time,     SLE_UINT32,                  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
-		SLE_CONDVAR_X(Order, travel_time,   SLE_FILE_U16 | SLE_VAR_U32,  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
-		SLE_CONDVAR_X(Order, travel_time,   SLE_UINT32,                  67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
-		 SLE_CONDVAR(Order, max_speed,      SLE_UINT16, 172, SL_MAX_VERSION),
-		SLE_CONDVAR_X(Order, jump_counter,  SLE_INT8,     0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_COND_ORDERS)),
+		 SLE_CONDVAR(Order, refit_cargo,    SLE_UINT8,   SLV_36, SL_MAX_VERSION),
+		SLE_CONDNULL(1,                                  SLV_36, SLV_182), // refit_subtype
+		SLE_CONDVAR_X(Order, occupancy,     SLE_UINT8,           SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_OCCUPANCY)),
+		SLE_CONDVAR_X(Order, wait_time,     SLE_FILE_U16 | SLE_VAR_U32,  SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
+		SLE_CONDVAR_X(Order, wait_time,     SLE_UINT32,                  SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
+		SLE_CONDVAR_X(Order, travel_time,   SLE_FILE_U16 | SLE_VAR_U32,  SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
+		SLE_CONDVAR_X(Order, travel_time,   SLE_UINT32,                  SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
+		 SLE_CONDVAR(Order, max_speed,      SLE_UINT16, SLV_172, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Order, jump_counter,  SLE_INT8,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_COND_ORDERS)),
 
 		/* Leftover from the minor savegame version stuff
 		 * We will never use those free bytes, but we have to keep this line to allow loading of old savegames */
-		SLE_CONDNULL(10,                                  5,  35),
+		SLE_CONDNULL(10,                                  SLV_5,  SLV_36),
 		     SLE_END()
 	};
 
@@ -140,12 +140,12 @@ static void Save_ORDR()
 
 static void Load_ORDR()
 {
-	if (IsSavegameVersionBefore(5, 2)) {
+	if (IsSavegameVersionBefore(SLV_5, 2)) {
 		/* Version older than 5.2 did not have a ->next pointer. Convert them
 		 * (in the old days, the orderlist was 5000 items big) */
 		size_t len = SlGetFieldLength();
 
-		if (IsSavegameVersionBefore(5)) {
+		if (IsSavegameVersionBefore(SLV_5)) {
 			/* Pre-version 5 had another layout for orders
 			 * (uint16 instead of uint32) */
 			len /= sizeof(uint16);
@@ -159,7 +159,7 @@ static void Load_ORDR()
 			}
 
 			free(orders);
-		} else if (IsSavegameVersionBefore(5, 2)) {
+		} else if (IsSavegameVersionBefore(SLV_5, 2)) {
 			len /= sizeof(uint32);
 			uint32 *orders = MallocT<uint32>(len + 1);
 
@@ -191,7 +191,7 @@ static void Load_ORDR()
 		while ((index = SlIterateArray()) != -1) {
 			Order *order = new (index) Order();
 			SlObject(order, GetOrderDescription());
-			if (IsSavegameVersionBefore(190)) {
+			if (IsSavegameVersionBefore(SLV_190)) {
 				order->SetTravelTimetabled(order->GetTravelTime() > 0);
 				order->SetWaitTimetabled(order->GetWaitTime() > 0);
 			} else if (order->IsType(OT_CONDITIONAL) && SlXvIsFeatureMissing(XSLFI_TIMETABLE_EXTRA)) {
@@ -204,10 +204,10 @@ static void Load_ORDR()
 const SaveLoad *GetOrderExtraInfoDescription()
 {
 	static const SaveLoad _order_extra_info_desc[] = {
-		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, 32,        0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 1, 2)),
-		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 3)),
-		SLE_CONDVAR_X(OrderExtraInfo, xflags,           SLE_UINT8,            0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
-		SLE_CONDVAR_X(OrderExtraInfo, xdata,           SLE_UINT32,            0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_EXTRA_DATA)),
+		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, 32,        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 1, 2)),
+		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 3)),
+		SLE_CONDVAR_X(OrderExtraInfo, xflags,           SLE_UINT8,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
+		SLE_CONDVAR_X(OrderExtraInfo, xdata,           SLE_UINT32,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_EXTRA_DATA)),
 		SLE_END()
 	};
 
@@ -240,7 +240,7 @@ void Load_ORDX()
 static void Ptrs_ORDR()
 {
 	/* Orders from old savegames have pointers corrected in Load_ORDR */
-	if (IsSavegameVersionBefore(5, 2)) return;
+	if (IsSavegameVersionBefore(SLV_5, 2)) return;
 
 	Order *o;
 
@@ -253,12 +253,12 @@ const SaveLoad *GetOrderListDescription()
 {
 	static const SaveLoad _orderlist_desc[] = {
 		      SLE_REF(OrderList, first,                                    REF_ORDER),
-		SLE_CONDVARVEC_X(OrderList, scheduled_dispatch,                    SLE_UINT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_duration,              SLE_UINT32, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_date,            SLE_INT32,  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_full_date_fract, SLE_UINT16, 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_last_dispatch,         SLE_INT32,  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_max_delay,             SLE_INT32,  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVARVEC_X(OrderList, scheduled_dispatch,                    SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_duration,              SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_date,            SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_full_date_fract, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_last_dispatch,         SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLE_CONDVAR_X(OrderList, scheduled_dispatch_max_delay,             SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
 		SLE_END()
 	};
 
@@ -303,20 +303,20 @@ const SaveLoad *GetOrderBackupDescription()
 		     SLE_VAR(OrderBackup, user,                     SLE_UINT32),
 		     SLE_VAR(OrderBackup, tile,                     SLE_UINT32),
 		     SLE_VAR(OrderBackup, group,                    SLE_UINT16),
-		 SLE_CONDVAR(OrderBackup, service_interval,         SLE_FILE_U32 | SLE_VAR_U16,  0, 191),
-		 SLE_CONDVAR(OrderBackup, service_interval,         SLE_UINT16,                192, SL_MAX_VERSION),
+		 SLE_CONDVAR(OrderBackup, service_interval,         SLE_FILE_U32 | SLE_VAR_U16,  SL_MIN_VERSION, SLV_192),
+		 SLE_CONDVAR(OrderBackup, service_interval,         SLE_UINT16,                SLV_192, SL_MAX_VERSION),
 		     SLE_STR(OrderBackup, name,                     SLE_STR, 0),
-		SLE_CONDNULL(2,                                                                  0, 191), // clone (2 bytes of pointer, i.e. garbage)
-		 SLE_CONDREF(OrderBackup, clone,                    REF_VEHICLE,               192, SL_MAX_VERSION),
+		SLE_CONDNULL(2,                                                                  SL_MIN_VERSION, SLV_192), // clone (2 bytes of pointer, i.e. garbage)
+		 SLE_CONDREF(OrderBackup, clone,                    REF_VEHICLE,               SLV_192, SL_MAX_VERSION),
 		     SLE_VAR(OrderBackup, cur_real_order_index,     SLE_UINT8),
-		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_UINT8,                 176, SL_MAX_VERSION),
-		SLE_CONDVAR_X(OrderBackup, cur_timetable_order_index, SLE_UINT8,                 0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
-		 SLE_CONDVAR(OrderBackup, current_order_time,       SLE_UINT32,                176, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, lateness_counter,         SLE_INT32,                 176, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_INT32,                 176, SL_MAX_VERSION),
-		SLE_CONDVAR_X(OrderBackup,timetable_start_subticks, SLE_UINT16,                  0, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 2)),
-		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U8 | SLE_VAR_U16, 176, 179),
-		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_UINT16,                180, SL_MAX_VERSION),
+		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_UINT8,                 SLV_176, SL_MAX_VERSION),
+		SLE_CONDVAR_X(OrderBackup, cur_timetable_order_index, SLE_UINT8,        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
+		 SLE_CONDVAR(OrderBackup, current_order_time,       SLE_UINT32,                SLV_176, SL_MAX_VERSION),
+		 SLE_CONDVAR(OrderBackup, lateness_counter,         SLE_INT32,                 SLV_176, SL_MAX_VERSION),
+		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_INT32,                 SLV_176, SL_MAX_VERSION),
+		SLE_CONDVAR_X(OrderBackup,timetable_start_subticks, SLE_UINT16,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 2)),
+		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U8 | SLE_VAR_U16, SLV_176, SLV_180),
+		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_UINT16,                SLV_180, SL_MAX_VERSION),
 		     SLE_REF(OrderBackup, orders,                   REF_ORDER),
 		     SLE_END()
 	};

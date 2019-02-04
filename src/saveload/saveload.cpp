@@ -21,7 +21,6 @@
  * <li>repeat this until everything is done, and flush any remaining output to file
  * </ol>
  */
-#include <deque>
 
 #include "../stdafx.h"
 #include "../debug.h"
@@ -57,245 +56,23 @@
 #include "saveload_buffer.h"
 #include "extended_ver_sl.h"
 
-#include "../safeguards.h"
-
 #include <deque>
 #include <vector>
 
-/*
- * Previous savegame versions, the trunk revision where they were
- * introduced and the released version that had that particular
- * savegame version.
- * Up to savegame version 18 there is a minor version as well.
- *
- *    1.0         0.1.x, 0.2.x
- *    2.0         0.3.0
- *    2.1         0.3.1, 0.3.2
- *    3.x         lost
- *    4.0     1
- *    4.1   122   0.3.3, 0.3.4
- *    4.2  1222   0.3.5
- *    4.3  1417
- *    4.4  1426
- *    5.0  1429
- *    5.1  1440
- *    5.2  1525   0.3.6
- *    6.0  1721
- *    6.1  1768
- *    7.0  1770
- *    8.0  1786
- *    9.0  1909
- *   10.0  2030
- *   11.0  2033
- *   11.1  2041
- *   12.1  2046
- *   13.1  2080   0.4.0, 0.4.0.1
- *   14.0  2441
- *   15.0  2499
- *   16.0  2817
- *   16.1  3155
- *   17.0  3212
- *   17.1  3218
- *   18    3227
- *   19    3396
- *   20    3403
- *   21    3472   0.4.x
- *   22    3726
- *   23    3915
- *   24    4150
- *   25    4259
- *   26    4466
- *   27    4757
- *   28    4987
- *   29    5070
- *   30    5946
- *   31    5999
- *   32    6001
- *   33    6440
- *   34    6455
- *   35    6602
- *   36    6624
- *   37    7182
- *   38    7195
- *   39    7269
- *   40    7326
- *   41    7348   0.5.x
- *   42    7573
- *   43    7642
- *   44    8144
- *   45    8501
- *   46    8705
- *   47    8735
- *   48    8935
- *   49    8969
- *   50    8973
- *   51    8978
- *   52    9066
- *   53    9316
- *   54    9613
- *   55    9638
- *   56    9667
- *   57    9691
- *   58    9762
- *   59    9779
- *   60    9874
- *   61    9892
- *   62    9905
- *   63    9956
- *   64   10006
- *   65   10210
- *   66   10211
- *   67   10236
- *   68   10266
- *   69   10319
- *   70   10541
- *   71   10567
- *   72   10601
- *   73   10903
- *   74   11030
- *   75   11107
- *   76   11139
- *   77   11172
- *   78   11176
- *   79   11188
- *   80   11228
- *   81   11244
- *   82   11410
- *   83   11589
- *   84   11822
- *   85   11874
- *   86   12042
- *   87   12129
- *   88   12134
- *   89   12160
- *   90   12293
- *   91   12347
- *   92   12381   0.6.x
- *   93   12648
- *   94   12816
- *   95   12924
- *   96   13226
- *   97   13256
- *   98   13375
- *   99   13838
- *  100   13952
- *  101   14233
- *  102   14332
- *  103   14598
- *  104   14735
- *  105   14803
- *  106   14919
- *  107   15027
- *  108   15045
- *  109   15075
- *  110   15148
- *  111   15190
- *  112   15290
- *  113   15340
- *  114   15601
- *  115   15695
- *  116   15893   0.7.x
- *  117   16037
- *  118   16129
- *  119   16242
- *  120   16439
- *  121   16694
- *  122   16855
- *  123   16909
- *  124   16993
- *  125   17113
- *  126   17433
- *  127   17439
- *  128   18281
- *  129   18292
- *  130   18404
- *  131   18481
- *  132   18522
- *  133   18674
- *  134   18703
- *  135   18719
- *  136   18764
- *  137   18912
- *  138   18942   1.0.x
- *  139   19346
- *  140   19382
- *  141   19799
- *  142   20003
- *  143   20048
- *  144   20334
- *  145   20376
- *  146   20446
- *  147   20621
- *  148   20659
- *  149   20832
- *  150   20857
- *  151   20918
- *  152   21171
- *  153   21263
- *  154   21426
- *  155   21453
- *  156   21728
- *  157   21862
- *  158   21933
- *  159   21962
- *  160   21974   1.1.x
- *  161   22567
- *  162   22713
- *  163   22767
- *  164   23290
- *  165   23304
- *  166   23415
- *  167   23504
- *  168   23637
- *  169   23816
- *  170   23826
- *  171   23835
- *  172   23947
- *  173   23967   1.2.0-RC1
- *  174   23973   1.2.x
- *  175   24136
- *  176   24446
- *  177   24619
- *  178   24789
- *  179   24810
- *  180   24998   1.3.x
- *  181   25012
- *  182   25296
- *  183   25363
- *  184   25508
- *  185   25620
- *  186   25833
- *  187   25899
- *  188   26169   1.4.x
- *  189   26450
- *  190   26547
- *  191   26646
- *  192   26700
- *  193   26802
- *  194   26881   1.5.x, 1.6.0
- *  195   27572   1.6.x
- *  196   27778   1.7.x
- *  197   27978   1.8.x
- *  198
- *  199
- *  200   #6805   Extend railtypes to 64, adding uint16 to map array.
- *  201   #6885   Extend NewGRF persistant storages.
- *  202   #6867   Increase industry cargo slots to 16 in, 16 out
- *  203   #7072   Add path cache for ships
- *  204   #7065   Add extra rotation stages for ships.
- *  205   #7108   Livery storage change and group liveries.
- */
-extern const uint16 SAVEGAME_VERSION = 205; ///< Current savegame version of OpenTTD.
-const uint16 SAVEGAME_VERSION_EXT = 0x8000; ///< Savegame extension indicator mask
+#include "../safeguards.h"
+
+extern const SaveLoadVersion SAVEGAME_VERSION = (SaveLoadVersion)(SL_MAX_VERSION - 1); ///< Current savegame version of OpenTTD.
+
+const SaveLoadVersion SAVEGAME_VERSION_EXT = (SaveLoadVersion)(0x8000); ///< Savegame extension indicator mask
 
 SavegameType _savegame_type; ///< type of savegame we are loading
 FileToSaveLoad _file_to_saveload; ///< File to save or load in the openttd loop.
 
-uint32 _ttdp_version;     ///< version of TTDP savegame (if applicable)
-uint16 _sl_version;       ///< the major savegame version identifier
-byte   _sl_minor_version; ///< the minor savegame version, DO NOT USE!
-char _savegame_format[8]; ///< how to compress savegames
-bool _do_autosave;        ///< are we doing an autosave at the moment?
+uint32 _ttdp_version;        ///< version of TTDP savegame (if applicable)
+SaveLoadVersion _sl_version; ///< the major savegame version identifier
+byte   _sl_minor_version;    ///< the minor savegame version, DO NOT USE!
+char _savegame_format[8];    ///< how to compress savegames
+bool _do_autosave;           ///< are we doing an autosave at the moment?
 
 extern bool _sl_is_ext_version;
 
@@ -912,7 +689,7 @@ static inline byte SlCalcConvFileLen(VarType conv)
 /** Return the size in bytes of a reference (pointer) */
 static inline size_t SlCalcRefLen()
 {
-	return IsSavegameVersionBefore(69) ? 2 : 4;
+	return IsSavegameVersionBefore(SLV_69) ? 2 : 4;
 }
 
 void SlSetArrayIndex(uint index)
@@ -1272,7 +1049,7 @@ static void SlString(void *ptr, size_t length, VarType conv)
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
-				if (IsSavegameVersionBefore(169)) {
+				if (IsSavegameVersionBefore(SLV_169)) {
 					str_fix_scc_encoded((char *)ptr, (char *)ptr + len);
 				}
 			}
@@ -1435,7 +1212,7 @@ static void *IntToReference(size_t index, SLRefType rt)
 
 	/* After version 4.3 REF_VEHICLE_OLD is saved as REF_VEHICLE,
 	 * and should be loaded like that */
-	if (rt == REF_VEHICLE_OLD && !IsSavegameVersionBefore(4, 4)) {
+	if (rt == REF_VEHICLE_OLD && !IsSavegameVersionBefore(SLV_4, 4)) {
 		rt = REF_VEHICLE;
 	}
 
@@ -1454,7 +1231,7 @@ static void *IntToReference(size_t index, SLRefType rt)
 		case REF_ORDER:
 			if (Order::IsValidID(index)) return Order::Get(index);
 			/* in old versions, invalid order was used to mark end of order list */
-			if (IsSavegameVersionBefore(5, 2)) return NULL;
+			if (IsSavegameVersionBefore(SLV_5, 2)) return NULL;
 			SlErrorCorrupt("Referencing invalid Order");
 
 		case REF_VEHICLE_OLD:
@@ -1515,7 +1292,7 @@ static inline size_t SlCalcListLen(const void *list)
 {
 	const PtrList *l = (const PtrList *) list;
 
-	int type_size = IsSavegameVersionBefore(69) ? 2 : 4;
+	int type_size = IsSavegameVersionBefore(SLV_69) ? 2 : 4;
 	/* Each entry is saved as type_size bytes, plus type_size bytes are used for the length
 	 * of the list */
 	return l->size() * type_size + type_size;
@@ -1562,11 +1339,11 @@ static void SlList(void *list, SLRefType conv)
 		}
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
-			size_t length = IsSavegameVersionBefore(69) ? SlReadUint16() : SlReadUint32();
+			size_t length = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32();
 
 			/* Load each reference and push to the end of the list */
 			for (size_t i = 0; i < length; i++) {
-				size_t data = IsSavegameVersionBefore(69) ? SlReadUint16() : SlReadUint32();
+				size_t data = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32();
 				l->push_back((void *)data);
 			}
 			break;
@@ -1928,7 +1705,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 							break;
 						case SLA_LOAD_CHECK:
 						case SLA_LOAD:
-							*(size_t *)ptr = IsSavegameVersionBefore(69) ? SlReadUint16() : SlReadUint32();
+							*(size_t *)ptr = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32();
 							break;
 						case SLA_PTRS:
 							*(void **)ptr = IntToReference(*(size_t *)ptr, (SLRefType)conv);
@@ -2427,7 +2204,7 @@ struct LZOLoadFilter : LoadFilter {
 		/* Check if size is bad */
 		((uint32*)out)[0] = size = tmp[1];
 
-		if (_sl_version != 0) {
+		if (_sl_version != SL_MIN_VERSION) {
 			tmp[0] = TO_BE32(tmp[0]);
 			size = TO_BE32(size);
 		}
@@ -3077,7 +2854,7 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 		if (fmt == endof(_saveload_formats)) {
 			DEBUG(sl, 0, "Unknown savegame type, trying to load it as the buggy format");
 			_sl.lf->Reset();
-			_sl_version = 0;
+			_sl_version = SL_MIN_VERSION;
 			_sl_minor_version = 0;
 			SlXvResetState();
 
@@ -3096,14 +2873,14 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 
 		if (fmt->tag == hdr[0]) {
 			/* check version number */
-			_sl_version = TO_BE32(hdr[1]) >> 16;
+			_sl_version = (SaveLoadVersion)(TO_BE32(hdr[1]) >> 16);
 			/* Minor is not used anymore from version 18.0, but it is still needed
 			 * in versions before that (4 cases) which can't be removed easy.
 			 * Therefore it is loaded, but never saved (or, it saves a 0 in any scenario). */
 			_sl_minor_version = (TO_BE32(hdr[1]) >> 8) & 0xFF;
 
 			if (_sl_version & SAVEGAME_VERSION_EXT) {
-				_sl_version &= ~SAVEGAME_VERSION_EXT;
+				_sl_version = (SaveLoadVersion)(_sl_version & ~SAVEGAME_VERSION_EXT);
 				_sl_is_ext_version = true;
 			} else {
 				SlXvCheckSpecialSavegameVersions();
@@ -3138,7 +2915,7 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 
 		GamelogReset();
 
-		if (IsSavegameVersionBefore(4)) {
+		if (IsSavegameVersionBefore(SLV_4)) {
 			/*
 			 * NewGRFs were introduced between 0.3,4 and 0.3.5, which both
 			 * shared savegame version 4. Anything before that 'obviously'
@@ -3245,7 +3022,7 @@ SaveOrLoadResult SaveOrLoad(const char *filename, SaveLoadOperation fop, Detaile
 			ClearGRFConfigList(&_grfconfig);
 			GamelogReset();
 			if (!LoadOldSaveGame(filename)) return SL_REINIT;
-			_sl_version = 0;
+			_sl_version = SL_MIN_VERSION;
 			_sl_minor_version = 0;
 			SlXvResetState();
 			GamelogStartAction(GLAT_LOAD);

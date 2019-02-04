@@ -12,7 +12,6 @@
 #ifndef GAMELOG_INTERNAL_H
 #define GAMELOG_INTERNAL_H
 
-#include "network/core/config.h"
 #include "gamelog.h"
 
 /** Type of logged change */
@@ -32,6 +31,8 @@ enum GamelogChangeType {
 	GLCT_NONE = 0xFF, ///< In savegames, end of list
 };
 
+
+static const uint GAMELOG_REVISION_LENGTH = 15;
 
 /** Contains information about one logged change */
 struct LoggedChange {

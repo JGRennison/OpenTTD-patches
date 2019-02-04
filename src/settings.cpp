@@ -1504,7 +1504,7 @@ static void PrepareOldDiffCustom()
  */
 static void HandleOldDiffCustom(bool savegame)
 {
-	uint options_to_load = GAME_DIFFICULTY_NUM - ((savegame && IsSavegameVersionBefore(4)) ? 1 : 0);
+	uint options_to_load = GAME_DIFFICULTY_NUM - ((savegame && IsSavegameVersionBefore(SLV_4)) ? 1 : 0);
 
 	if (!savegame) {
 		/* If we did read to old_diff_custom, then at least one value must be non 0. */
@@ -2352,7 +2352,7 @@ static void LoadSettingsXref(const SettingDesc *osd, void *object) {
  */
 static void LoadSettings(const SettingDesc *osd, void *object)
 {
-	extern uint16 _sl_version;
+	extern SaveLoadVersion _sl_version;
 
 	for (; osd->save.cmd != SL_END; osd++) {
 		if (osd->patx_name != NULL) continue;
