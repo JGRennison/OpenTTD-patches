@@ -3579,6 +3579,11 @@ public:
 		}
 	}
 
+	virtual void OnRealtimeTick(uint delta_ms)
+	{
+		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+	}
+
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data Information about the changed data.
