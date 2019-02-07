@@ -45,6 +45,7 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	void PlayLeaveStationSound() const;
 	bool IsPrimaryVehicle() const { return true; }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
+	Direction GetMapImageDirection() const { return this->rotation; }
 	int GetDisplaySpeed() const { return this->cur_speed / 2; }
 	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed / 2; }
 	int GetCurrentMaxSpeed() const { return min(this->vcache.cached_max_speed, this->current_order.GetMaxSpeed() * 2); }

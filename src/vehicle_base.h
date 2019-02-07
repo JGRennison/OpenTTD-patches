@@ -464,6 +464,8 @@ public:
 	 */
 	virtual void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const { result->Clear(); }
 
+	Direction GetMapImageDirection() const { return this->direction; }
+
 	const GRFFile *GetGRF() const;
 	uint32 GetGRFID() const;
 
@@ -1245,12 +1247,13 @@ struct SpecializedVehicle : public Vehicle {
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
-		if (this->cur_image_valid_dir != this->direction) {
+		const Direction current_direction = ((T *)this)->GetMapImageDirection();
+		if (this->cur_image_valid_dir != current_direction) {
 			_sprite_group_resolve_check_veh_check = true;
 			_sprite_group_resolve_check_veh_type = EXPECTED_TYPE;
 			VehicleSpriteSeq seq;
-			((T *)this)->T::GetImage(this->direction, EIT_ON_MAP, &seq);
-			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? this->direction : INVALID_DIR;
+			((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
+			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? current_direction : INVALID_DIR;
 			_sprite_group_resolve_check_veh_check = false;
 			if (force_update || this->sprite_seq != seq) {
 				this->sprite_seq = seq;
