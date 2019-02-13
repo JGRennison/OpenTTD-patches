@@ -395,17 +395,20 @@ void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced)
 }
 
 /**
- * As SlErrorCorruptFmt, except that it takes a format string and additional parameters
+ * Issue an SlErrorCorrupt with a format string.
+ * @param format format string
+ * @param ... arguments to format string
+ * @note This function does never return as it throws an exception to
+ *       break out of all the saveload code.
  */
-void NORETURN CDECL SlErrorCorruptFmt(const char *msg, ...)
+void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...)
 {
 	va_list va;
-	va_start(va, msg);
-	char *str = str_vfmt(msg, va);
+	va_start(va, format);
+	char *str = str_vfmt(format, va);
 	va_end(va);
 	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, str, true);
 }
-
 
 typedef void (*AsyncSaveFinishProc)();                ///< Callback for when the savegame loading is finished.
 static AsyncSaveFinishProc _async_save_finish = NULL; ///< Callback to call when the savegame loading is finished.

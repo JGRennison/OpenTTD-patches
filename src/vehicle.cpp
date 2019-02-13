@@ -1222,8 +1222,11 @@ void CheckVehicleBreakdown(Vehicle *v)
 	int rel, rel_old;
 
 	/* decrease reliability */
-	v->reliability = rel = max((rel_old = v->reliability) - v->reliability_spd_dec, 0);
-	if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
+	if (!_settings_game.order.no_servicing_if_no_breakdowns ||
+			_settings_game.difficulty.vehicle_breakdowns != 0) {
+		v->reliability = rel = max((rel_old = v->reliability) - v->reliability_spd_dec, 0);
+		if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
+	}
 
 	if (v->breakdown_ctr != 0 || (v->vehstatus & VS_STOPPED) ||
 			_settings_game.difficulty.vehicle_breakdowns < 1 ||
@@ -1489,6 +1492,8 @@ void VehicleEnterDepot(Vehicle *v)
 	/* After a vehicle trigger, the graphics and properties of the vehicle could change. */
 	TriggerVehicle(v, VEHICLE_TRIGGER_DEPOT);
 	v->MarkDirty();
+
+	InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 
 	if (v->current_order.IsType(OT_GOTO_DEPOT)) {
 		SetWindowDirty(WC_VEHICLE_VIEW, v->index);
@@ -1757,7 +1762,10 @@ bool CanBuildVehicleInfrastructure(VehicleType type)
 
 	UnitID max;
 	switch (type) {
-		case VEH_TRAIN:    max = _settings_game.vehicle.max_trains; break;
+		case VEH_TRAIN:
+			if (!HasAnyRailtypesAvail(_local_company)) return false;
+			max = _settings_game.vehicle.max_trains;
+			break;
 		case VEH_ROAD:     max = _settings_game.vehicle.max_roadveh; break;
 		case VEH_SHIP:     max = _settings_game.vehicle.max_ships; break;
 		case VEH_AIRCRAFT: max = _settings_game.vehicle.max_aircraft; break;
@@ -2353,8 +2361,10 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command)
 		if (!(command & DEPOT_SERVICE)) this->current_order.SetDepotActionType(ODATFB_HALT);
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 
-		/* If there is no depot in front, reverse automatically (trains only) */
-		if (this->type == VEH_TRAIN && reverse) DoCommand(this->tile, this->index, 0, DC_EXEC, CMD_REVERSE_TRAIN_DIRECTION);
+		/* If there is no depot in front and the train is not already reversing, reverse automatically (trains only) */
+		if (this->type == VEH_TRAIN && (reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
+			DoCommand(this->tile, this->index, 0, DC_EXEC, CMD_REVERSE_TRAIN_DIRECTION);
+		}
 
 		if (this->type == VEH_AIRCRAFT) {
 			Aircraft *a = Aircraft::From(this);
