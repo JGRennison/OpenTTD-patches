@@ -612,7 +612,7 @@ static bool MaybeStartNewCompany()
 	if (n < (uint)_settings_game.difficulty.max_no_competitors) {
 		/* Send a command to all clients to start up a new AI.
 		 * Works fine for Multiplayer and Singleplayer */
-		return DoCommandP(0, 1 | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
+		return DoCommandP(0, CCA_NEW_AI | INVALID_COMPANY << 16, 0, CMD_COMPANY_CTRL);
 	}
 
 	return false;
@@ -724,6 +724,10 @@ void OnTick_Companies()
 		/* Allow multiple AIs to possibly start in the same tick. */
 		do {
 			if (!MaybeStartNewCompany()) break;
+
+			/* In networking mode, we can only send a command to start but it
+			 * didn't execute yet, so we cannot loop. */
+			if (_networking) break;
 		} while (AI::GetStartNextTime() == 0);
 	}
 
@@ -810,12 +814,11 @@ void CompanyAdminRemove(CompanyID company_id, CompanyRemoveReason reason)
  * @param tile unused
  * @param flags operation to perform
  * @param p1 various functionality
- * - bits 0..15:
- *        = 0 - create a new company
- *        = 1 - create a new AI company
- *        = 2 - delete a company
+ * - bits 0..15: CompanyCtrlAction
  * - bits 16..24: CompanyID
- * @param p2 ClientID
+ * @param p2 various depending on CompanyCtrlAction
+ * - bits 0..31: ClientID (with CCA_NEW)
+ * - bits 0..1: CompanyRemoveReason (with CCA_DELETE)
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -823,18 +826,17 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 {
 	InvalidateWindowData(WC_COMPANY_LEAGUE, 0, 0);
 	CompanyID company_id = (CompanyID)GB(p1, 16, 8);
-#ifdef ENABLE_NETWORK
-	ClientID client_id = (ClientID)p2;
-#endif /* ENABLE_NETWORK */
 
-	switch (GB(p1, 0, 16)) {
-		case 0: { // Create a new company
+	switch ((CompanyCtrlAction)GB(p1, 0, 16)) {
+		case CCA_NEW: { // Create a new company
 			/* This command is only executed in a multiplayer game */
 			if (!_networking) return CMD_ERROR;
 
 #ifdef ENABLE_NETWORK
 			/* Has the network client a correct ClientIndex? */
 			if (!(flags & DC_EXEC)) return CommandCost();
+
+			ClientID client_id = (ClientID)p2;
 			NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
 #ifndef DEBUG_DUMP_COMMANDS
 			/* When replaying the client ID is not a valid client; there
@@ -878,7 +880,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 		}
 
-		case 1: { // Make a new AI company
+		case CCA_NEW_AI: { // Make a new AI company
 			if (!(flags & DC_EXEC)) return CommandCost();
 
 			if (company_id != INVALID_COMPANY && (company_id >= MAX_COMPANIES || Company::IsValidID(company_id))) return CMD_ERROR;
@@ -889,7 +891,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 		}
 
-		case 2: { // Delete a company
+		case CCA_DELETE: { // Delete a company
 			CompanyRemoveReason reason = (CompanyRemoveReason)GB(p2, 0, 2);
 			if (reason >= CRR_END) return CMD_ERROR;
 
