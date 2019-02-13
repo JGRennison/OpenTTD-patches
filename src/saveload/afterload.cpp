@@ -58,6 +58,7 @@
 #include "../order_backup.h"
 #include "../error.h"
 #include "../disaster_vehicle.h"
+#include "../ship.h"
 #include "../tracerestrict.h"
 #include "../tunnel_map.h"
 #include "../bridge_signal_map.h"
@@ -210,10 +211,8 @@ static void UpdateCurrencies()
  */
 static void UpdateVoidTiles()
 {
-	uint i;
-
-	for (i = 0; i < MapMaxY(); ++i) MakeVoid(i * MapSizeX() + MapMaxX());
-	for (i = 0; i < MapSizeX(); ++i) MakeVoid(MapSizeX() * MapMaxY() + i);
+	for (uint x = 0; x < MapSizeX(); x++) MakeVoid(TileXY(x, MapMaxY()));
+	for (uint y = 0; y < MapSizeY(); y++) MakeVoid(TileXY(MapMaxX(), y));
 }
 
 static inline RailType UpdateRailType(RailType rt, RailType min)
@@ -3490,6 +3489,42 @@ bool AfterLoadGame()
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD) {
 				SB(_m[t].m2, 0, 8, 0);
+			}
+		}
+	}
+
+	if (IsSavegameVersionBefore(SLV_SHIPS_STOP_IN_LOCKS)) {
+		/* Move ships from lock slope to upper or lower position. */
+		Ship *s;
+		FOR_ALL_SHIPS(s) {
+			/* Suitable tile? */
+			if (!IsTileType(s->tile, MP_WATER) || !IsLock(s->tile) || GetLockPart(s->tile) != LOCK_PART_MIDDLE) continue;
+
+			/* We don't need to adjust position when at the tile centre */
+			int x = s->x_pos & 0xF;
+			int y = s->y_pos & 0xF;
+			if (x == 8 && y == 8) continue;
+
+			/* Test if ship is on the second half of the tile */
+			bool second_half;
+			DiagDirection shipdiagdir = DirToDiagDir(s->direction);
+			switch (shipdiagdir) {
+				default: NOT_REACHED();
+				case DIAGDIR_NE: second_half = x < 8; break;
+				case DIAGDIR_NW: second_half = y < 8; break;
+				case DIAGDIR_SW: second_half = x > 8; break;
+				case DIAGDIR_SE: second_half = y > 8; break;
+			}
+
+			DiagDirection slopediagdir = GetInclinedSlopeDirection(GetTileSlope(s->tile));
+
+			/* Heading up slope == passed half way */
+			if ((shipdiagdir == slopediagdir) == second_half) {
+				/* On top half of lock */
+				s->z_pos = GetTileMaxZ(s->tile) * (int)TILE_HEIGHT;
+			} else {
+				/* On lower half of lock */
+				s->z_pos = GetTileZ(s->tile) * (int)TILE_HEIGHT;
 			}
 		}
 	}

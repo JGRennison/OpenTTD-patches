@@ -292,6 +292,8 @@ enum SaveLoadVersion : uint16 {
 	SLV_SHIP_ROTATION,                      ///< 204  PR#7065 Add extra rotation stages for ships.
 
 	SLV_GROUP_LIVERIES,                     ///< 205  PR#7108 Livery storage change and group liveries.
+	SLV_SHIPS_STOP_IN_LOCKS,                ///< 206  PR#7150 Ship/lock movement changes.
+	SLV_FIX_CARGO_MONITOR,                  ///< 207  PR#7175 Cargo monitor data packing fix to support 64 cargotypes.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 };
@@ -1003,7 +1005,7 @@ bool SlObjectMember(void *object, const SaveLoad *sld);
 void NORETURN SlError(StringID string, const char *extra_msg = NULL, bool already_malloced = false);
 void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced = false);
 void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);
-void NORETURN CDECL SlErrorCorruptFmt(const char *msg, ...) WARN_FORMAT(1, 2);
+void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...) WARN_FORMAT(1, 2);
 
 bool SaveloadCrashWithMissingNewGRFs();
 
