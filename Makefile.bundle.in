@@ -32,12 +32,14 @@ AI_DIR      = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/ai
 GAME_DIR    = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/game
 BASESET_DIR = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/baseset
 LANG_DIR    = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/lang
+DATA_DIR    = $(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources/data
 TTD_DIR     = $(BUNDLE_DIR)/$(OSXAPP)/Contents/MacOS
 else
 AI_DIR      = $(BUNDLE_DIR)/ai
 GAME_DIR    = $(BUNDLE_DIR)/game
 BASESET_DIR = $(BUNDLE_DIR)/baseset
 LANG_DIR    = $(BUNDLE_DIR)/lang
+DATA_DIR    = $(BUNDLE_DIR)/data
 TTD_DIR     = $(BUNDLE_DIR)
 endif
 
@@ -48,12 +50,12 @@ bundle: all
 	$(Q)mkdir -p "$(BUNDLE_DIR)/docs"
 	$(Q)mkdir -p "$(BUNDLE_DIR)/media"
 	$(Q)mkdir -p "$(BUNDLE_DIR)/scripts"
-	$(Q)mkdir -p "$(BUNDLE_DIR)/data"
 	$(Q)mkdir -p "$(TTD_DIR)"
 	$(Q)mkdir -p "$(AI_DIR)"
 	$(Q)mkdir -p "$(GAME_DIR)"
 	$(Q)mkdir -p "$(BASESET_DIR)"
 	$(Q)mkdir -p "$(LANG_DIR)"
+	$(Q)mkdir -p "$(DATA_DIR)"
 ifdef OSXAPP
 	$(Q)mkdir -p "$(BUNDLE_DIR)/$(OSXAPP)/Contents/Resources"
 	$(Q)echo "APPL????" >                                          "$(BUNDLE_DIR)/$(OSXAPP)/Contents/PkgInfo"
@@ -73,6 +75,7 @@ endif
 	$(Q)cp "$(BIN_DIR)/baseset/opntitle.dat"  "$(BASESET_DIR)/"
 	$(Q)cp "$(BIN_DIR)/baseset/"*.obm         "$(BASESET_DIR)/"
 	$(Q)cp "$(BIN_DIR)/lang/"*.lng            "$(LANG_DIR)/"
+	$(Q)cp "$(BIN_DIR)/data/"*.grf            "$(DATA_DIR)/"
 	$(Q)cp "$(ROOT_DIR)/README.md"           "$(BUNDLE_DIR)/"
 	$(Q)cp "$(ROOT_DIR)/COPYING"              "$(BUNDLE_DIR)/"
 	$(Q)cp "$(ROOT_DIR)/known-bugs.txt"       "$(BUNDLE_DIR)/"
@@ -88,7 +91,6 @@ endif
 	$(Q)cp "$(ROOT_DIR)/media/openttd.32.xpm" "$(BUNDLE_DIR)/media/"
 	$(Q)cp "$(ROOT_DIR)/media/openttd."*.png  "$(BUNDLE_DIR)/media/"
 	$(Q)cp "$(BIN_DIR)/scripts/"*             "$(BUNDLE_DIR)/scripts/"
-	$(Q)cp "$(BIN_DIR)/data/"*.grf            "$(BUNDLE_DIR)/data/"
 ifdef MENU_DIR
 	$(Q)cp "$(ROOT_DIR)/media/openttd.desktop" "$(BUNDLE_DIR)/media/"
 	$(Q)$(AWK) -f "$(ROOT_DIR)/media/openttd.desktop.translation.awk" "$(SRC_DIR)/lang/"*.txt | LC_ALL=C $(SORT) |  $(AWK) -f "$(ROOT_DIR)/media/openttd.desktop.filter.awk" >> "$(BUNDLE_DIR)/media/openttd.desktop"
