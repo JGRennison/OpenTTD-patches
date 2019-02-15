@@ -1131,6 +1131,7 @@ std::vector<Train *> _tick_train_front_cache;
 std::vector<RoadVehicle *> _tick_road_veh_front_cache;
 std::vector<Aircraft *> _tick_aircraft_front_cache;
 std::vector<Ship *> _tick_ship_cache;
+std::vector<EffectVehicle *> _tick_effect_veh_cache;
 std::vector<Vehicle *> _tick_other_veh_cache;
 
 void ClearVehicleTickCaches()
@@ -1140,6 +1141,7 @@ void ClearVehicleTickCaches()
 	_tick_road_veh_front_cache.clear();
 	_tick_aircraft_front_cache.clear();
 	_tick_ship_cache.clear();
+	_tick_effect_veh_cache.clear();
 	_tick_other_veh_cache.clear();
 }
 
@@ -1171,6 +1173,10 @@ void RebuildVehicleTickCaches()
 
 			case VEH_SHIP:
 				_tick_ship_cache.push_back(Ship::From(v));
+				break;
+
+			case VEH_EFFECT:
+				_tick_effect_veh_cache.push_back(EffectVehicle::From(v));
 				break;
 		}
 	}
@@ -1231,6 +1237,13 @@ void CallVehicleTicks()
 	Vehicle *v = NULL;
 	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));
 	{
+		for (EffectVehicle *u : _tick_effect_veh_cache) {
+			if (!u) continue;
+			v = u;
+			u->Tick();
+		}
+	}
+	{
 		PerformanceMeasurer framerate(PFE_GL_TRAINS);
 		for (Train *t :  _tick_train_too_heavy_cache) {
 			if (HasBit(t->flags, VRF_TOO_HEAVY)) {
@@ -1287,7 +1300,6 @@ void CallVehicleTicks()
 	}
 	{
 		for (Vehicle *u : _tick_other_veh_cache) {
-			if (!u) continue;
 			v = u;
 			u->Tick();
 		}
