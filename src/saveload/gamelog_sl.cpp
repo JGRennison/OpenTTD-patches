@@ -136,7 +136,7 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 
 			SlObject(lc, _glog_desc[ct]);
 			if (ct == GLCT_REVISION && SlXvIsFeatureMissing(XSLFI_EXTENDED_GAMELOG)) {
-				lc->revision.text = stredup(old_revision_text);
+				lc->revision.text = stredup(old_revision_text, lastof(old_revision_text));
 			}
 		}
 	}
