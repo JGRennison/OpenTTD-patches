@@ -172,8 +172,6 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	assert(this->IsFrontEngine() || this->IsFreeWagon());
 
-	InvalidateVehicleTickCaches();
-
 	const RailVehicleInfo *rvi_v = RailVehInfo(this->engine_type);
 	EngineID first_engine = this->IsFrontEngine() ? this->engine_type : INVALID_ENGINE;
 	this->gcache.cached_total_length = 0;
@@ -1010,6 +1008,8 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		}
 
 		CheckConsistencyOfArticulatedVehicle(v);
+
+		InvalidateVehicleTickCaches();
 	}
 
 	return CommandCost();
@@ -1581,6 +1581,8 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		RestoreTrainBackup(original_src);
 		RestoreTrainBackup(original_dst);
 	}
+
+	InvalidateVehicleTickCaches();
 
 	return CommandCost();
 }
@@ -5214,6 +5216,8 @@ Train* CmdBuildVirtualRailWagon(const Engine *e)
 
 	CheckConsistencyOfArticulatedVehicle(v);
 
+	InvalidateVehicleTickCaches();
+
 	return v;
 }
 
@@ -5294,6 +5298,8 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID 
 	v->ConsistChanged(CCF_ARRANGE);
 
 	CheckConsistencyOfArticulatedVehicle(v);
+
+	InvalidateVehicleTickCaches();
 
 	return v;
 }
