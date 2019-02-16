@@ -1240,7 +1240,7 @@ void CallVehicleTicks()
 		for (EffectVehicle *u : _tick_effect_veh_cache) {
 			if (!u) continue;
 			v = u;
-			u->Tick();
+			u->EffectVehicle::Tick();
 		}
 	}
 	{
