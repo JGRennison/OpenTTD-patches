@@ -135,6 +135,7 @@ enum GroundVehicleSubtypeFlags {
  */
 enum VehicleCacheFlags {
 	VCF_LAST_VISUAL_EFFECT      = 0, ///< Last vehicle in the consist with a visual effect.
+	VCF_GV_ZERO_SLOPE_RESIST    = 1, ///< GrounVehicle: Consist has zero slope resistance (valid only for the first engine), may be false negative.
 };
 
 /** Cached often queried values common to all vehicles. */

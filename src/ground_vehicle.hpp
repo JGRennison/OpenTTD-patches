@@ -118,8 +118,10 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	 * Calculates the total slope resistance for this vehicle.
 	 * @return Slope resistance.
 	 */
-	inline int64 GetSlopeResistance() const
+	inline int64 GetSlopeResistance()
 	{
+		if (likely(HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST))) return 0;
+
 		int64 incl = 0;
 
 		for (const T *u = T::From(this); u != NULL; u = u->Next()) {
@@ -129,6 +131,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 				incl -= u->gcache.cached_slope_resistance;
 			}
 		}
+		if (incl == 0) SetBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 
 		return incl;
 	}
@@ -154,6 +157,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 
 			if (middle_z != this->z_pos) {
 				SetBit(this->gv_flags, (middle_z > this->z_pos) ? GVF_GOINGUP_BIT : GVF_GOINGDOWN_BIT);
+				ClrBit(this->First()->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 			}
 		}
 	}

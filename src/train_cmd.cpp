@@ -2175,6 +2175,8 @@ void ReverseTrainDirection(Train *v)
 
 	AdvanceWagonsAfterSwap(v);
 
+	ClrBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
+
 	if (IsRailDepotTile(v->tile)) {
 		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 	}

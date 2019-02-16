@@ -112,6 +112,7 @@ void GroundVehicle<T, Type>::CargoChanged()
 		u->gcache.cached_slope_resistance = current_weight * u->GetSlopeSteepness() * 100;
 		u->cur_image_valid_dir = INVALID_DIR;
 	}
+	ClrBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 
 	/* Store consist weight in cache. */
 	this->gcache.cached_weight = max<uint32>(1, weight);
@@ -332,12 +333,14 @@ void GroundVehicle<T, Type>::UpdateZPositionInWormhole()
 		if (delta != 2) {
 			slope = slope_north;
 			SetBit(this->gv_flags, going_north ? GVF_GOINGUP_BIT : GVF_GOINGDOWN_BIT);
+			ClrBit(this->First()->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 		}
 	} else if ((delta = south_coord - pos_coord) <= 3) {
 		this->z_pos = TILE_HEIGHT * (delta == 3 ? -2 : -1);
 		if (delta != 2) {
 			slope = SLOPE_ELEVATED ^ slope_north;
 			SetBit(this->gv_flags, going_north ? GVF_GOINGDOWN_BIT : GVF_GOINGUP_BIT);
+			ClrBit(this->First()->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 		}
 	}
 

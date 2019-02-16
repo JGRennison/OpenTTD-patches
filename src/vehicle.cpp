@@ -3706,6 +3706,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	dump('a', HasBit(this->vehicle_flags, VF_AUTOMATE_TIMETABLE));
 	b += seprintf(b, last, ", vcf:");
 	dump('l', HasBit(this->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
+	dump('z', HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
 	if (this->IsGroundVehicle()) {
 		uint16 gv_flags = this->GetGroundVehicleFlags();
 		b += seprintf(b, last, ", gvf:");
