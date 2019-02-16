@@ -155,7 +155,7 @@ public:
 
 	virtual void OnMouseOver(Point pt, int widget)
 	{
-		if (pt.x != -1) {
+		if (pt.x != -1 && _mouse_hovering) {
 			/* Show tooltip with last month production or town name */
 			const Point p = GetTileBelowCursor();
 			const TileIndex tile = TileVirtXY(p.x, p.y);
