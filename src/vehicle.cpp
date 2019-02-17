@@ -2223,6 +2223,9 @@ void Vehicle::UpdatePosition()
  */
 void Vehicle::UpdateViewport(bool dirty)
 {
+	/* Skip updating sprites on dedicated servers without screen */
+	if (_network_dedicated) return;
+
 	Rect new_coord = ConvertRect<Rect16, Rect>(this->sprite_seq_bounds);
 
 	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
