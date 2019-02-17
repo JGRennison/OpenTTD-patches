@@ -1715,6 +1715,7 @@ static SettingsContainer &GetSettingsTree()
 
 			vehicles->Add(new SettingEntry("order.no_servicing_if_no_breakdowns"));
 			vehicles->Add(new SettingEntry("order.serviceathelipad"));
+			vehicles->Add(new SettingEntry("order.nonstop_only"));
 			vehicles->Add(new SettingEntry("vehicle.adjacent_crossings"));
 			vehicles->Add(new SettingEntry("vehicle.safer_crossings"));
 			vehicles->Add(new SettingEntry("vehicle.flip_direction_all_trains"));

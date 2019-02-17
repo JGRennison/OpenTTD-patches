@@ -957,7 +957,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 	if (IsDepotTypeTile(tile, (TransportType)(uint)v->type) && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
 		order.MakeGoToDepot(v->type == VEH_AIRCRAFT ? GetStationIndex(tile) : GetDepotIndex(tile),
 				ODTFB_PART_OF_ORDERS,
-				(_settings_client.gui.new_nonstop && v->IsGroundVehicle()) ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
+				((_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && v->IsGroundVehicle()) ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
 
 		if (_ctrl_pressed) order.SetDepotOrderType((OrderDepotTypeFlags)(order.GetDepotOrderType() ^ ODTFB_SERVICE));
 
@@ -969,7 +969,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 			v->type == VEH_TRAIN &&
 			IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, tile)) {
 		order.MakeGoToWaypoint(GetStationIndex(tile));
-		if (_settings_client.gui.new_nonstop != _ctrl_pressed) order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
+		if (_settings_client.gui.new_nonstop != _ctrl_pressed || _settings_game.order.nonstop_only) order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		return order;
 	}
 
@@ -993,7 +993,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 			if (st->facilities & facil) {
 				order.MakeGoToStation(st_index);
 				if (_ctrl_pressed) order.SetLoadType(OLF_FULL_LOAD_ANY);
-				if (_settings_client.gui.new_nonstop && v->IsGroundVehicle()) order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
+				if ((_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && v->IsGroundVehicle()) order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 				order.SetStopLocation(v->type == VEH_TRAIN ? (OrderStopLocation)(_settings_client.gui.stop_location) : OSL_PLATFORM_FAR_END);
 				return order;
 			}
@@ -1248,7 +1248,7 @@ private:
 		order.next = NULL;
 		order.index = 0;
 		order.MakeGoToDepot(0, ODTFB_PART_OF_ORDERS,
-				_settings_client.gui.new_nonstop && this->vehicle->IsGroundVehicle() ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
+				(_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && this->vehicle->IsGroundVehicle() ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
 		order.SetDepotActionType(ODATFB_NEAREST_DEPOT);
 
 		DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
@@ -1993,7 +1993,7 @@ public:
 					this->OrderClick_Nonstop(-1);
 				} else {
 					const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
-					ShowDropDownMenu(this, _order_non_stop_drowdown, o->GetNonStopType(), WID_O_NON_STOP, 0,
+					ShowDropDownMenu(this, _order_non_stop_drowdown, o->GetNonStopType(), WID_O_NON_STOP, _settings_game.order.nonstop_only ? 5 : 0,
 							o->IsType(OT_GOTO_STATION) ? 0 : (o->IsType(OT_GOTO_WAYPOINT) ? 3 : 12), 0, DDSF_LOST_FOCUS);
 				}
 				break;

@@ -504,7 +504,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 			return false;
 	}
 
-	order.SetNonStopType((OrderNonStopFlags)GB(order_flags, 0, 2));
+	order.SetNonStopType((OrderNonStopFlags)(GB(order_flags, 0, 2) | ((_settings_game.order.nonstop_only && ::Vehicle::Get(vehicle_id)->IsGroundVehicle()) ? OF_NON_STOP_INTERMEDIATE : 0)));
 
 	int order_pos = ScriptOrderPositionToRealOrderPosition(vehicle_id, order_position);
 	return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), order.Pack(), CMD_INSERT_ORDER);
@@ -573,6 +573,7 @@ static void _DoCommandReturnSetOrderFlags(class ScriptInstance *instance)
 	VehicleID vehicle_id = (VehicleID)ScriptObject::GetCallbackVariable(0);
 	OrderPosition order_position = (OrderPosition)ScriptObject::GetCallbackVariable(1);
 	ScriptOrderFlags order_flags = (ScriptOrderFlags)ScriptObject::GetCallbackVariable(2);
+	if (_settings_game.order.nonstop_only && ::Vehicle::Get(vehicle_id)->IsGroundVehicle()) order_flags |= OF_NON_STOP_INTERMEDIATE;
 
 	order_position = ScriptOrder::ResolveOrderPosition(vehicle_id, order_position);
 

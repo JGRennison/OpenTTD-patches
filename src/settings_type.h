@@ -513,6 +513,7 @@ struct OrderSettings {
 	bool   selectgoods;                      ///< only send the goods to station if a train has been there
 	bool   no_servicing_if_no_breakdowns;    ///< don't send vehicles to depot when breakdowns are disabled
 	bool   serviceathelipad;                 ///< service helicopters at helipads automatically (no need to send to depot)
+	bool   nonstop_only;                     ///< allow non-stop orders only
 
 	uint8  old_occupancy_smoothness;         ///< moved to company settings: percentage smoothness of occupancy measurement changes
 	bool   old_timetable_separation;         ///< moved to company settings: whether to perform automatic separation based on timetable

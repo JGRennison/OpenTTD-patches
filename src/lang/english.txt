@@ -1389,6 +1389,8 @@ STR_CONFIG_SETTING_STATION_SPREAD                               :Maximum station
 STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :Maximum area the parts of a single station may be spread out on. Note that high values will slow the game
 STR_CONFIG_SETTING_SERVICEATHELIPAD                             :Service helicopters at helipads automatically: {STRING2}
 STR_CONFIG_SETTING_SERVICEATHELIPAD_HELPTEXT                    :Service helicopters after every landing, even if there is no depot at the airport
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :Only allow non-stop orders: {STRING2}
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :Only allow creating non-stop orders for trains and road vehicles
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR                       :Link landscape toolbar to rail/road/water/airport toolbars: {STRING2}
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR_HELPTEXT              :When opening a construction toolbar for a transport type, also open the toolbar for terraforming
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR                         :Land colour used at the smallmap: {STRING2}
