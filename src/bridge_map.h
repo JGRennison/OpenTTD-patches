@@ -180,6 +180,7 @@ static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetyp
 	auto m4_backup = _m[t].m4;
 	auto m5_backup = _m[t].m5;
 	auto m6_backup = _me[t].m6;
+	auto m8_backup = _me[t].m8;
 
 	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_RAIL, r);
 
@@ -190,6 +191,7 @@ static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetyp
 		SB(_m[t].m5, 4, 3, GB(m5_backup, 4, 3));
 		SB(_me[t].m6, 0, 2, GB(m6_backup, 0, 2));
 		SB(_me[t].m6, 6, 1, GB(m6_backup, 6, 1));
+		SB(_me[t].m8, 6, 6, GB(m8_backup, 6, 6));
 	} else {
 		/* Set bridge head tracks to axial track only. */
 		SB(_m[t].m4, 0, 6, DiagDirToDiagTrackBits(d));
