@@ -3694,20 +3694,6 @@ void ReloadNewGRFData()
 	GroupStatistics::UpdateAfterLoad();
 	/* update station graphics */
 	AfterLoadStations();
-	/* Update company statistics. */
-	AfterLoadCompanyStats();
-	/* Check and update house and town values */
-	UpdateHousesAndTowns();
-	/* Delete news referring to no longer existing entities */
-	DeleteInvalidEngineNews();
-	/* Update livery selection windows */
-	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) InvalidateWindowData(WC_COMPANY_COLOUR, i);
-	/* Update company infrastructure counts. */
-	InvalidateWindowClassesData(WC_COMPANY_INFRASTRUCTURE);
-	/* redraw the whole screen */
-	MarkWholeScreenDirty();
-	CheckTrainsLengths();
-	AfterLoadTemplateVehiclesUpdateImage();
 
 	RailType rail_type_translate_map[RAILTYPE_END];
 	for (RailType old_type = RAILTYPE_BEGIN; old_type != RAILTYPE_END; old_type++) {
@@ -3728,4 +3714,19 @@ void ReloadNewGRFData()
 			if (secondary != INVALID_RAILTYPE) SetSecondaryRailType(t, rail_type_translate_map[secondary]);
 		}
 	}
+
+	/* Update company statistics. */
+	AfterLoadCompanyStats();
+	/* Check and update house and town values */
+	UpdateHousesAndTowns();
+	/* Delete news referring to no longer existing entities */
+	DeleteInvalidEngineNews();
+	/* Update livery selection windows */
+	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) InvalidateWindowData(WC_COMPANY_COLOUR, i);
+	/* Update company infrastructure counts. */
+	InvalidateWindowClassesData(WC_COMPANY_INFRASTRUCTURE);
+	/* redraw the whole screen */
+	MarkWholeScreenDirty();
+	CheckTrainsLengths();
+	AfterLoadTemplateVehiclesUpdateImage();
 }
