@@ -3724,6 +3724,8 @@ void ReloadNewGRFData()
 				IsRailWaypointTile(t) ||
 				IsRailTunnelBridgeTile(t)) {
 			SetRailType(t, rail_type_translate_map[GetRailType(t)]);
+			RailType secondary = GetTileSecondaryRailTypeIfValid(t);
+			if (secondary != INVALID_RAILTYPE) SetSecondaryRailType(t, rail_type_translate_map[secondary]);
 		}
 	}
 }
