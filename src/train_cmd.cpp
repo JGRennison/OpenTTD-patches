@@ -3229,7 +3229,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 	}
 
 	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExitOnly(v->tile) &&
-			(GetAcrossTunnelBridgeTrackBits(v->tile) & v->track)) {
+			TrackdirEntersTunnelBridge(v->tile, v->GetVehicleTrackdir())) {
 		// prevent any attempt to reserve the wrong way onto a tunnel/bridge exit
 		return false;
 	}
@@ -4098,7 +4098,8 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							v->vehstatus |= VS_TRAIN_SLOWING;
 							return false;
 						}
-						if (IsTunnelBridgeSignalSimulationExitOnly(gp.new_tile)) {
+						if (IsTunnelBridgeSignalSimulationExitOnly(gp.new_tile) &&
+								TrackdirEntersTunnelBridge(gp.new_tile, TrackDirectionToTrackdir(FindFirstTrack(chosen_track), chosen_dir))) {
 							v->cur_speed = 0;
 							goto invalid_rail;
 						}
