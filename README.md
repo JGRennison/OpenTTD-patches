@@ -239,6 +239,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add GUI setting for when to ask for confirmation before overwriting an existing savegame file, add unique ID to savegames. (added in v0.29.1).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html).
+  * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
 
 * Translations  
   * German (by Auge and Kruemelchen)  
