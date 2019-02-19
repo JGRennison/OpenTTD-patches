@@ -2129,9 +2129,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server j
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Spoločnosť je chránená. Zadaj heslo
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Zoznam klientov
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Pozorovať
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nová spoločnosť
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Zoznam klientov
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Pozorovať
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nová spoločnosť
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Vyhodit
@@ -2143,8 +2143,6 @@ STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Súkromná spr�
 STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Pozorovatelia
-
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Pozorovateľ
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Neukladať zadané heslo

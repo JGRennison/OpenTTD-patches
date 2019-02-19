@@ -3540,7 +3540,7 @@ int TicksToLeaveDepot(const Train *v)
  */
 static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int x, int y)
 {
-	/* this routine applies only to trains in depot tiles */
+	/* This routine applies only to trains in depot tiles. */
 	if (u->type != VEH_TRAIN || !IsRailDepotTile(tile)) return VETSB_CONTINUE;
 
 	Train *v = Train::From(u);
@@ -3565,7 +3565,7 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 
 	if (v->IsFrontEngine() && v->current_order.IsType(OT_LOADING_ADVANCE)) abort_load_through(true);
 
-	/* depot direction */
+	/* Depot direction. */
 	DiagDirection dir = GetRailDepotDirection(tile);
 
 	/* Calculate the point where the following wagon should be activated. */

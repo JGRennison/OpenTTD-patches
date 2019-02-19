@@ -1050,6 +1050,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Південн�
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Власна...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Грузинські ларі (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Іранський ріал (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Російський новий рубель (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Сторона руху транспорту
@@ -2189,9 +2190,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Серв
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Компанія захищена паролем. Введіть пароль
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Список клієнтів
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Спостерігати
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Нова компанія
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Список клієнтів
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Спостерігати
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Нова компанія
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Відключити гравця
@@ -2203,8 +2204,6 @@ STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Приватн�
 STR_NETWORK_SERVER                                              :Сервер
 STR_NETWORK_CLIENT                                              :Клієнт
 STR_NETWORK_SPECTATORS                                          :Спостерігачі
-
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Глядач
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Не запам'ятовувати введений пароль
@@ -2812,6 +2811,10 @@ STR_ABOUT_VERSION                                               :{BLACK}OpenTTD 
 STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2019 команда OpenTTD
 
 # Framerate display window
+STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Дані отримано з {COMMA} вимірюван {P "ня" "нь" "нь" }
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} ms
+STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} ms
+STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL} кадр{P "" "и" "ів"}/сек
 ############ Leave those lines in this order!!
 ############ End of leave-in-this-order
 ############ Leave those lines in this order!!
@@ -4582,6 +4585,7 @@ STR_BASESOUNDS_DOS_DESCRIPTION                                  :Оригіна�
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :Оригінальний набір звуків з Transport Tycoon Deluxe Windows edition.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Порожній набір звуків.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Оригінальна музика з Transport Tycoon Deluxe Windows edition.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :Оригінальна музика Transport Tycoon Deluxe(DOS)
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Порожній набір музики.
 
 ##id 0x2000

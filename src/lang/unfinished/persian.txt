@@ -1789,8 +1789,6 @@ STR_NETWORK_SERVER                                              :سرویس ده
 STR_NETWORK_CLIENT                                              :سرویس گیرنده
 STR_NETWORK_SPECTATORS                                          :تماشاگران
 
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}تماشگر
-
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}رمز وارد شده را به خاطر نسپار
 STR_COMPANY_PASSWORD_OK                                         :{BLACK}دادن رمز جدید به شرکت

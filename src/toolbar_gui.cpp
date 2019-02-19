@@ -225,39 +225,42 @@ static const int CTMN_SPECTATOR   = -4; ///< Show a company window as spectator
  * @param w The toolbar window.
  * @param widget The button widget id.
  * @param grey A bitbask of which items to mark as disabled.
- * @param include_spectator If true, a spectator option is included in the list.
  */
-static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0, bool include_spectator = false)
+static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0)
 {
 	DropDownList *list = new DropDownList();
 
+	switch (widget) {
+		case WID_TN_COMPANIES:
 #ifdef ENABLE_NETWORK
-	if (_networking) {
-		if (widget == WID_TN_COMPANIES) {
+			if (!_networking) break;
+
 			/* Add the client list button for the companies menu */
 			*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST, false);
-		}
 
-		if (include_spectator) {
-			if (widget == WID_TN_COMPANIES) {
-				if (_local_company == COMPANY_SPECTATOR) {
-					*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached());
-				} else {
-					*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, NetworkMaxSpectatorsReached());
-				}
+			if (_local_company == COMPANY_SPECTATOR) {
+				*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached());
 			} else {
-				*list->Append() = new DropDownListStringItem(STR_NETWORK_TOOLBAR_LIST_SPECTATOR, CTMN_SPECTATOR, false);
+				*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, NetworkMaxSpectatorsReached());
 			}
-		}
-	}
 #endif /* ENABLE_NETWORK */
+			break;
+
+		case WID_TN_STORY:
+			*list->Append() = new DropDownListStringItem(STR_STORY_BOOK_SPECTATOR, CTMN_SPECTATOR, false);
+			break;
+
+		case WID_TN_GOAL:
+			*list->Append() = new DropDownListStringItem(STR_GOALS_SPECTATOR, CTMN_SPECTATOR, false);
+			break;
+	}
 
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		if (!Company::IsValidID(c)) continue;
 		*list->Append() = new DropDownListCompanyItem(c, false, HasBit(grey, c));
 	}
 
-	PopupMainToolbMenu(w, widget, list, _local_company == COMPANY_SPECTATOR ? CTMN_CLIENT_LIST : (int)_local_company);
+	PopupMainToolbMenu(w, widget, list, _local_company == COMPANY_SPECTATOR ? (widget == WID_TN_COMPANIES ? CTMN_CLIENT_LIST : CTMN_SPECTATOR) : (int)_local_company);
 }
 
 
@@ -610,7 +613,7 @@ static CallBackFunction MenuClickFinances(int index)
 
 static CallBackFunction ToolbarCompaniesClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_COMPANIES, 0, true);
+	PopupMainCompanyToolbMenu(w, WID_TN_COMPANIES, 0);
 	return CBF_NONE;
 }
 
@@ -656,7 +659,7 @@ static CallBackFunction MenuClickCompany(int index)
 
 static CallBackFunction ToolbarStoryClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_STORY, 0, true);
+	PopupMainCompanyToolbMenu(w, WID_TN_STORY, 0);
 	return CBF_NONE;
 }
 
@@ -676,7 +679,7 @@ static CallBackFunction MenuClickStory(int index)
 
 static CallBackFunction ToolbarGoalClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_GOAL, 0, true);
+	PopupMainCompanyToolbMenu(w, WID_TN_GOAL, 0);
 	return CBF_NONE;
 }
 
@@ -1032,7 +1035,7 @@ static CallBackFunction MenuClickMusicWindow(int index)
 
 static CallBackFunction ToolbarNewspaperClick(Window *w)
 {
-	PopupMainToolbMenu(w, WID_TN_MESSAGES, STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT, 2);
+	PopupMainToolbMenu(w, WID_TN_MESSAGES, STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT, 3);
 	return CBF_NONE;
 }
 
@@ -1047,6 +1050,7 @@ static CallBackFunction MenuClickNewspaper(int index)
 	switch (index) {
 		case 0: ShowLastNewsMessage(); break;
 		case 1: ShowMessageHistory();  break;
+		case 2: DeleteAllMessages();   break;
 	}
 	return CBF_NONE;
 }

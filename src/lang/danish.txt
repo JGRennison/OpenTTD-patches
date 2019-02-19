@@ -467,6 +467,7 @@ STR_TOOLBAR_SOUND_MUSIC                                         :Lyd/Musik
 ############ range for message menu starts
 STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :Seneste besked/nyhedsrapport
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Tidligere beskeder
+STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Slet alle beskeder
 ############ range ends here
 
 ############ range for about menu starts
@@ -2082,11 +2083,12 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Afbryd f
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Serveren er beskyttet. Indtast kodeord
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Selskabet er beskyttet. Indtast kodeord
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Klientliste
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Klient liste
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Tilslut som tilskuer
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nyt firma
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klient liste
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Tilslut som tilskuer
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nyt firma
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Smid ud
@@ -2098,8 +2100,6 @@ STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privat besked
 STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Tilskuere
-
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Tilskuer
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Gem ikke den indtastede adgangskode
@@ -2779,6 +2779,7 @@ STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filter-udtryk:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Overskriv fil
+STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Er du sikker på du vil overskrive den eksisterende fil?
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Skriv et navn til det gemte spil
 
@@ -3109,6 +3110,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Bestik 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Mål
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globale Mål
+STR_GOALS_SPECTATOR                                             :Globale Mål
 STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Globale mål:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Ingen -
@@ -3157,6 +3159,7 @@ STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Klik på
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY} Historiebog
 STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Global Historiebog
+STR_STORY_BOOK_SPECTATOR                                        :Global Historiebog
 STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 STR_STORY_BOOK_GENERIC_PAGE_ITEM                                :Side {NUM}
 STR_STORY_BOOK_SEL_PAGE_TOOLTIP                                 :{BLACK}Gå til en bestemt side ved at vælge den i denne rulleliste.

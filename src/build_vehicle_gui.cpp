@@ -1488,7 +1488,7 @@ struct BuildVehicleWindow : Window {
 		this->GenerateBuildList();
 		this->vscroll->SetCount(this->eng_list.Length());
 
-		this->SetWidgetDisabledState(WID_BV_SHOW_HIDE, this->sel_engine == INVALID_ENGINE);
+		this->SetWidgetsDisabledState(this->sel_engine == INVALID_ENGINE, WID_BV_SHOW_HIDE, WID_BV_BUILD, WID_BV_RENAME, WIDGET_LIST_END);
 
 		// disable build and refit if all or none cargo type selected
 		if (this->cargo_filter[this->cargo_filter_criteria] == CF_ANY || this->cargo_filter[this->cargo_filter_criteria] == CF_NONE) {

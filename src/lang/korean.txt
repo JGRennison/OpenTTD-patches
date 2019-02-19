@@ -2290,9 +2290,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}서버 �
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}회사 암호가 걸려있습니다. 암호를 입력하세요.
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}접속자 목록
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}관전
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}새 회사
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :접속자 목록
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :관전
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :새 회사
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :추방
@@ -2304,8 +2304,6 @@ STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :귓속말하기
 STR_NETWORK_SERVER                                              :서버
 STR_NETWORK_CLIENT                                              :접속자
 STR_NETWORK_SPECTATORS                                          :관전자
-
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}관전자
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}입력한 비밀번호는 저장하지 않기

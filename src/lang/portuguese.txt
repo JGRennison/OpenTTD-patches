@@ -467,6 +467,7 @@ STR_TOOLBAR_SOUND_MUSIC                                         :Som/música
 ############ range for message menu starts
 STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :Última mensagem/notícia
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Histórico de mensagens
+STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Apagar todas as mensagens
 ############ range ends here
 
 ############ range for about menu starts
@@ -2082,11 +2083,12 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Desligar
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servidor protegido. Introduza palavra-chave
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Empresa protegida. Introduza palavra-chave
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Lista de clientes
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Lista de clientes
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Assistir
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nova empresa
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Lista de clientes
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Assistir
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nova empresa
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Expulsar
@@ -2098,8 +2100,6 @@ STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Mensagem privad
 STR_NETWORK_SERVER                                              :Servidor
 STR_NETWORK_CLIENT                                              :Cliente
 STR_NETWORK_SPECTATORS                                          :Espectadores
-
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Espectador
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Não gravar a palavra-chave introduzida
@@ -3110,6 +3110,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Suborna
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Objectivos
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Objetivos globais
+STR_GOALS_SPECTATOR                                             :Objectivos Globais
 STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Objetivos globais:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nenhum -
@@ -3158,6 +3159,7 @@ STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Clique n
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY} Livro de História
 STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Livro de História Global
+STR_STORY_BOOK_SPECTATOR                                        :Livro de Histórico Global
 STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 STR_STORY_BOOK_GENERIC_PAGE_ITEM                                :Página nº {NUM}
 STR_STORY_BOOK_SEL_PAGE_TOOLTIP                                 :{BLACK}Saltar para uma pagina especifica escolhendo-a nesta lista.
