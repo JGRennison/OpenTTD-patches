@@ -585,6 +585,8 @@ struct AISettingsWindow : public Window {
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
 	{
 		this->RebuildVisibleSettings();
+		HideDropDownMenu(this);
+		DeleteChildWindows(WC_QUERY_STRING);
 	}
 
 private:

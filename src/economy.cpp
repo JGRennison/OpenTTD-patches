@@ -1609,6 +1609,17 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 	cur_company.Restore();
 }
 
+/**
+ * Test whether a vehicle can load cargo at a station even if exclusive transport rights are present.
+ * @param st Station with cargo waiting to be loaded.
+ * @param v Vehicle loading the cargo.
+ * @return true when a vehicle can load the cargo.
+ */
+static bool MayLoadUnderExclusiveRights(const Station *st, const Vehicle *v)
+{
+	return st->owner != OWNER_NONE || st->town->exclusive_counter == 0 || st->town->exclusivity == v->owner;
+}
+
 struct ReserveCargoAction {
 	Station *st;
 	const CargoStationIDStackSet &next_station;
@@ -1628,7 +1639,7 @@ struct ReserveCargoAction {
 			if (flags & OLFB_NO_LOAD) return true;
 			if (!(flags & OLFB_FULL_LOAD) && !through_load) return true;
 		}
-		if (v->cargo_cap > v->cargo.RemainingCount()) {
+		if (v->cargo_cap > v->cargo.RemainingCount() && MayLoadUnderExclusiveRights(st, v)) {
 			st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
 					&v->cargo, st->xy, next_station.Get(v->cargo_type));
 		}
@@ -1944,7 +1955,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		/* If there's goods waiting at the station, and the vehicle
 		 * has capacity for it, load it on the vehicle. */
 		uint cap_left = v->cargo_cap - v->cargo.StoredCount();
-		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0)) {
+		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0) && MayLoadUnderExclusiveRights(st, v)) {
 			if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
 			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, GetLoadAmount(v));
 
