@@ -11,7 +11,7 @@ This document does not describe the player-visible changes/additions described i
 * Support using libbfd for symbol lookup and line numbers (gcc/clang).
 * Support using gdb if available to add further detail to the crashlog (Unix).
 * Demangle C++ symbols (Unix).
-* Handle segfaults which occur within the crashlog handler (Unix).
+* Attempt to handle segfaults which occur within the crashlog handler (Unix).
 
 #### Assertions
 
@@ -85,7 +85,7 @@ Replace read/write accessors and buffering.
 
 ### Command line
 
-Add switch: -J, quite after N days.
+Add switch: -J, quit after N days.
 Add savegame feature versions to output of -q.
 
 ### Configure/build
@@ -100,3 +100,4 @@ Add various debug console commands.
 Increase the number of file slots.
 Cache font heights.
 Change inheritance model of class Window to keep UndefinedBehaviorSanitizer happy.
+Various other misc changes to reduce UndefinedBehaviorSanitizer spam.
