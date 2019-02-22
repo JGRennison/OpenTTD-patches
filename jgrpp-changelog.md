@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.29.3 (2019-02-22)
+* Fix crash which could occur when disaster vehicles which emit effects were present.
+* Fix case where trains were unable to exit signalled bridge/tunnels.
+* Fix ships being drawn facing the wrong direction in some circumstances.
+* Fix flickering of viewport hover tooltips in fast-forward mode.
+* Fix second rail track type not being preserved when upgrading bridges or changing the NewGRF railtype configuration.
+* Fix cases where the game blocked instead of pausing when cargo dest link graph jobs lagged.
+* Fix ship collision avoidance near docks when dock not directly under station sign.
+* Add game setting to allow only non-stop orders for ground vehicles.
+* Fix compilation in MSVC.
+* Adjust bundle install paths on OSX.
+* Bump trunk base from commit 33e3f4916173b4129cbbe60f94dae659a70edb83 to commit 690d1dd6a4490821759a6025114e0dc3eb656293.
+
 ### v0.29.2 (2019-02-04)
 * Fix order list corruption when drag-moving order.
 * Fix trains not reversing in station when the front is on a diagonal rail piece or in a bridge/tunnel.
