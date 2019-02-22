@@ -280,11 +280,12 @@ void LinkGraphJobGroup::JoinThread() {
 	const uint thread_budget = 200000;
 
 	std::sort(jobs.begin(), jobs.end(), [](const JobInfo &a, const JobInfo &b) {
-		return a.cost_estimate < b.cost_estimate;
+		return std::make_pair(a.job->JoinDateTicks(), a.cost_estimate) < std::make_pair(b.job->JoinDateTicks(), b.cost_estimate);
 	});
 
 	std::vector<LinkGraphJob *> bucket;
 	uint bucket_cost = 0;
+	DateTicks bucket_join_date = 0;
 	auto flush_bucket = [&]() {
 		if (!bucket_cost) return;
 		DEBUG(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: " PRINTF_SIZE ", cost: %u", bucket.size(), bucket_cost);
@@ -295,7 +296,8 @@ void LinkGraphJobGroup::JoinThread() {
 	};
 
 	for (JobInfo &it : jobs) {
-		if (bucket_cost && (bucket_cost + it.cost_estimate > thread_budget)) flush_bucket();
+		if (bucket_cost && (bucket_join_date != it.job->JoinDateTicks() || (bucket_cost + it.cost_estimate > thread_budget))) flush_bucket();
+		bucket_join_date = it.job->JoinDateTicks();
 		bucket.push_back(it.job);
 		bucket_cost += it.cost_estimate;
 	}
