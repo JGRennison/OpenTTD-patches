@@ -515,6 +515,7 @@ public:
 	}
 
 	bool IsDockingTile(TileIndex tile) const;
+	bool IsWithinRangeOfDockingTile(TileIndex tile, uint max_distance) const;
 
 	/* virtual */ uint32 GetNewGRFVariable(const ResolverObject &object, byte variable, byte parameter, bool *available) const;
 

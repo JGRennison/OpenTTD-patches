@@ -318,6 +318,15 @@ bool Station::IsDockingTile(TileIndex tile) const
 	return false;
 }
 
+bool Station::IsWithinRangeOfDockingTile(TileIndex tile, uint max_distance) const
+{
+	if (DistanceManhattan(this->xy, tile) > _settings_game.station.station_spread + max_distance) return false;
+	for (const Dock *d = this->docks; d != NULL; d = d->next) {
+		if (DistanceManhattan(d->GetDockingTile(), tile) <= max_distance) return true;
+	}
+	return false;
+}
+
 /** Rect and pointer to IndustryVector */
 struct RectAndIndustryVector {
 	Rect rect;                       ///< The rectangle to search the industries in.

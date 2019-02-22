@@ -647,7 +647,13 @@ static bool HandleSpeedOnAqueduct(Ship *v, TileIndex tile, TileIndex ramp)
  */
 static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks, Track *track_old, DiagDirection diagdir)
 {
-	if (DistanceManhattan(v->dest_tile, tile) <= 3 && !v->current_order.IsType(OT_GOTO_WAYPOINT)) return; // No checking close to docks and depots.
+	// No checking close to docks and depots.
+	if (v->current_order.IsType(OT_GOTO_STATION)) {
+		Station *st = Station::Get(v->current_order.GetDestination());
+		if (st->IsWithinRangeOfDockingTile(tile, 3)) return;
+	} else if (!v->current_order.IsType(OT_GOTO_WAYPOINT)) {
+		if (DistanceManhattan(v->dest_tile, tile) <= 3) return;
+	}
 
 	Track track = *track_old;
 	TrackBits track_bits = TrackToTrackBits(track);
