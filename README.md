@@ -237,6 +237,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Allow purchasing a region of tiles at once, by dragging, and add a company rate limit for land purchasing (added in v0.29.0).  
   * Add setting to control if and how land purchasing is permitted. (added in v0.29.0).  
   * Add GUI setting for when to ask for confirmation before overwriting an existing savegame file, add unique ID to savegames. (added in v0.29.1).  
+  * Add game setting to allow only non-stop orders for trains and road vehicles. (added in v0.29.3).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
