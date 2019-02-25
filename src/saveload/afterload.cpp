@@ -3665,6 +3665,11 @@ bool AfterLoadGame()
 		default: break;
 	}
 
+	if (!_networking || _network_server) {
+		extern void AfterLoad_LinkGraphPauseControl();
+		AfterLoad_LinkGraphPauseControl();
+	}
+
 	return true;
 }
 

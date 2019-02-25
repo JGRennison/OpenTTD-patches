@@ -337,6 +337,17 @@ void StateGameLoop_LinkGraphPauseControl()
 }
 
 /**
+ * Pause the game on load if we would do a join with the next link graph job, but it is still running, and it would not
+ * be caught by a call to StateGameLoop_LinkGraphPauseControl().
+ */
+void AfterLoad_LinkGraphPauseControl()
+{
+	if (LinkGraphSchedule::instance.IsJoinWithUnfinishedJobDue()) {
+		_pause_mode |= PM_PAUSED_LINK_GRAPH;
+	}
+}
+
+/**
  * Spawn or join a link graph job or compress a link graph if any link graph is
  * due to do so.
  */
