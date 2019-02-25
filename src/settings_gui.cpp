@@ -1620,6 +1620,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.disable_top_veh_list_mass_actions"));
 			interface->Add(new SettingEntry("gui.adv_sig_bridge_tun_modes"));
 			interface->Add(new SettingEntry("gui.show_depot_sell_gui"));
+			interface->Add(new SettingEntry("gui.open_vehicle_gui_clone_share"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
