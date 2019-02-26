@@ -1871,6 +1871,35 @@ static bool CheckAircraftOrderDistance(const Aircraft *v_new, const Vehicle *v_o
 	return true;
 }
 
+static void CheckAdvanceVehicleOrdersAfterClone(Vehicle *v, DoCommandFlag flags)
+{
+	const Company *owner = Company::GetIfValid(v->owner);
+	if (!owner || !owner->settings.advance_order_on_clone || !v->IsInDepot() || !IsDepotTile(v->tile)) return;
+
+	std::vector<VehicleOrderID> target_orders;
+
+	const int order_count = v->GetNumOrders();
+	if (v->type == VEH_AIRCRAFT) {
+		for (VehicleOrderID idx = 0; idx < order_count; idx++) {
+			const Order *o = v->GetOrder(idx);
+			if (o->IsType(OT_GOTO_STATION) && o->GetDestination() == GetStationIndex(v->tile)) {
+				target_orders.push_back(idx);
+			}
+		}
+	} else if (GetDepotVehicleType(v->tile) == v->type) {
+		for (VehicleOrderID idx = 0; idx < order_count; idx++) {
+			const Order *o = v->GetOrder(idx);
+			if (o->IsType(OT_GOTO_DEPOT) && o->GetDestination() == GetDepotIndex(v->tile)) {
+				target_orders.push_back(idx + 1 < order_count ? idx + 1 : 0);
+			}
+		}
+	}
+	if (target_orders.empty()) return;
+
+	VehicleOrderID skip_to = target_orders[v->unitnumber % target_orders.size()];
+	DoCommand(v->tile, v->index, skip_to, flags, CMD_SKIP_TO_ORDER);
+}
+
 /**
  * Clone/share/copy an order-list of another vehicle.
  * @param tile unused
@@ -1976,6 +2005,8 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 				CheckMarkDirtyFocusedRoutePaths(dst);
+
+				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
 			break;
 		}
@@ -2078,6 +2109,8 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
 				CheckMarkDirtyFocusedRoutePaths(dst);
+
+				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
 			break;
 		}

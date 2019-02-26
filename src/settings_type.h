@@ -643,6 +643,7 @@ struct CompanySettings {
 	uint8  auto_timetable_separation_rate;   ///< percentage of auto timetable separation change to apply
 	bool infra_others_buy_in_depot[4];       ///< other companies can buy/autorenew in this companies depots (where infra sharing enabled)
 	uint16 timetable_autofill_rounding;      ///< round up timetable times to be a multiple of this number of ticks
+	bool advance_order_on_clone;             ///< when cloning a vehicle or copying/sharing an order list, advance the current order to a suitable point
 };
 
 /** All settings together for the game. */
