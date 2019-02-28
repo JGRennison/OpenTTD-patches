@@ -955,6 +955,10 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 
 	/* check depot first */
 	if (IsDepotTypeTile(tile, (TransportType)(uint)v->type) && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
+		if (v->type == VEH_ROAD && ((GetRoadTypes(tile) & RoadVehicle::From(v)->compatible_roadtypes) == 0)) {
+			order.Free();
+			return order;
+		}
 		order.MakeGoToDepot(v->type == VEH_AIRCRAFT ? GetStationIndex(tile) : GetDepotIndex(tile),
 				ODTFB_PART_OF_ORDERS,
 				((_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && v->IsGroundVehicle()) ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);

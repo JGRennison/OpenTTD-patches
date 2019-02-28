@@ -795,6 +795,17 @@ static inline bool OrderGoesToStation(const Vehicle *v, const Order *o)
 }
 
 /**
+ * Checks whether the order goes to a road depot
+ * @param v the vehicle to check for
+ * @param o the order to check
+ * @return true if the destination is a road depot
+ */
+static inline bool OrderGoesToRoadDepot(const Vehicle *v, const Order *o)
+{
+	return (v->type == VEH_ROAD) && o->IsType(OT_GOTO_DEPOT) && !(o->GetDepotActionType() & ODATFB_NEAREST_DEPOT);
+}
+
+/**
  * Delete all news items regarding defective orders about a vehicle
  * This could kill still valid warnings (for example about void order when just
  * another order gets added), but assume the company will notice the problems,
@@ -962,6 +973,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 						case VEH_ROAD:
 							if (!IsRoadDepotTile(dp->xy)) return CMD_ERROR;
+							if ((GetRoadTypes(dp->xy) & RoadVehicle::From(v)->compatible_roadtypes) == 0) return CMD_ERROR;
 							break;
 
 						case VEH_SHIP:
@@ -1943,14 +1955,20 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 			const Order *order;
 
 			FOR_VEHICLE_ORDERS(src, order) {
-				if (!OrderGoesToStation(dst, order)) continue;
-
-				/* Allow copying unreachable destinations if they were already unreachable for the source.
-				 * This is basically to allow cloning / autorenewing / autoreplacing vehicles, while the stations
-				 * are temporarily invalid due to reconstruction. */
-				const Station *st = Station::Get(order->GetDestination());
-				if (CanVehicleUseStation(src, st) && !CanVehicleUseStation(dst, st)) {
-					return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+				if (OrderGoesToStation(dst, order)) {
+					/* Allow copying unreachable destinations if they were already unreachable for the source.
+					 * This is basically to allow cloning / autorenewing / autoreplacing vehicles, while the stations
+					 * are temporarily invalid due to reconstruction. */
+					const Station *st = Station::Get(order->GetDestination());
+					if (CanVehicleUseStation(src, st) && !CanVehicleUseStation(dst, st)) {
+						return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+					}
+				}
+				if (OrderGoesToRoadDepot(dst, order)) {
+					const Depot *dp = Depot::GetIfValid(order->GetDestination());
+					if (!dp || (GetRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
+						return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+					}
 				}
 			}
 
@@ -2027,6 +2045,12 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				if (OrderGoesToStation(dst, order) &&
 						!CanVehicleUseStation(dst, Station::Get(order->GetDestination()))) {
 					return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+				}
+				if (OrderGoesToRoadDepot(dst, order)) {
+					const Depot *dp = Depot::GetIfValid(order->GetDestination());
+					if (!dp || (GetRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
+						return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
+					}
 				}
 			}
 

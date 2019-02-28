@@ -42,6 +42,7 @@
 #include "tbtr_template_gui_main.h"
 #include "zoom_func.h"
 #include "tracerestrict.h"
+#include "depot_base.h"
 
 #include <vector>
 
@@ -2120,6 +2121,7 @@ public:
 		if (IsDepotTile(tile) && GetDepotVehicleType(tile) == this->vli.vtype) {
 			if (this->vli.type != VL_DEPOT_LIST) return;
 			if (!IsInfraTileUsageAllowed(this->vli.vtype, this->vli.company, tile)) return;
+			if (this->vli.vtype == VEH_ROAD && GetRoadTypes(Depot::Get(this->vli.index)->xy) != GetRoadTypes(tile)) return;
 
 			DestinationID dest = (this->vli.vtype == VEH_AIRCRAFT) ? GetStationIndex(tile) : GetDepotIndex(tile);
 			DoCommandP(0, this->vli.index | (this->vli.vtype << 16) | (OT_GOTO_DEPOT << 20), dest, CMD_MASS_CHANGE_ORDER);
@@ -3508,6 +3510,7 @@ public:
 	{
 		const Vehicle *v = Vehicle::Get(this->window_number);
 		if (IsDepotTile(tile) && GetDepotVehicleType(tile) == v->type && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
+			if (v->type == VEH_ROAD && (GetRoadTypes(tile) & RoadVehicle::From(v)->compatible_roadtypes) == 0) return;
 			DoCommandP(v->tile, v->index | (this->depot_select_ctrl_pressed ? DEPOT_SERVICE : 0U) | DEPOT_SPECIFIC, tile, GetCmdSendToDepot(v));
 			ResetObjectToPlace();
 			this->RaiseButtons();
