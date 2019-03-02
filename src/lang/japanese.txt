@@ -1665,6 +1665,10 @@ STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}イン�
 STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}一般
 STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}画面表示
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}建設
+STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}発車標
+STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}時刻
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}ダイヤ
+STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}信号
 STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}ニュース/アドバイス
 STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}会社
 STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}会計
@@ -1800,6 +1804,7 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}現在�
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}生産量変更: {ORANGE}{STRING}
 
 # Livery window
+STR_LIVERY_CAPTION                                              :{WHITE}コーポレートカラー
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}通常のコーポレートカラー(車両塗装色)を表示します
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}列車の塗装色を表示します
@@ -2075,6 +2080,8 @@ STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :個人的なメ
 STR_NETWORK_SERVER                                              :サーバー
 STR_NETWORK_CLIENT                                              :クライアント
 STR_NETWORK_SPECTATORS                                          :観覧者
+
+STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}観覧者
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}入力したパスワードを保存しない
@@ -3162,6 +3169,65 @@ STR_STATION_VIEW_RENAME_STATION_CAPTION                         :停留施設の
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}空港を閉鎖
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}航空機がこの空港に着陸できないようにします
 
+# Departures window
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} 発車標
+STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} 発車標
+STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}旅客
+STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}貨物
+STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}発車
+STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}到着
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}経由
+STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}旅客を運搬できる車両を表示
+STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}貨物を運搬できる車両を表示
+STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}発車時刻表を表示
+STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}到着時刻表を表示
+STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}通過車両を表示
+STR_DEPARTURES_EMPTY                                            :{ORANGE}現在、ダイヤを設定している車両はありません。
+STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}発車標が設定されていません。
+STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} 経由 {STATION}{STRING}経由
+STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} 経由
+STR_DEPARTURES_VIA                                              :{ORANGE} {STATION}{STRING} 経由
+STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
+STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
+STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
+STR_DEPARTURES_CALLING_AT                                       :{TINY_FONT}{ORANGE}停車場:
+STR_DEPARTURES_CALLING_AT_LARGE                                 :{ORANGE}停車場:
+STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
+STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STATION}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} 終点、{STATION}でございます
+STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{RAW_STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{RAW_STRING}.
+
+STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
+STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
+STR_DEPARTURES_TYPE_BUS                                         :{ORANGE}{BUS}
+STR_DEPARTURES_TYPE_BUS_SILVER                                  :{SILVER}{BUS}
+STR_DEPARTURES_TYPE_LORRY                                       :{ORANGE}{LORRY}
+STR_DEPARTURES_TYPE_LORRY_SILVER                                :{SILVER}{LORRY}
+STR_DEPARTURES_TYPE_PLANE                                       :{ORANGE}{PLANE}
+STR_DEPARTURES_TYPE_PLANE_SILVER                                :{SILVER}{PLANE}
+STR_DEPARTURES_TYPE_SHIP                                        :{ORANGE}{SHIP}
+STR_DEPARTURES_TYPE_SHIP_SILVER                                 :{SILVER}{SHIP}
+
+STR_DEPARTURES_STATION_NONE                                     :
+STR_DEPARTURES_STATION_PORT                                     :{ORANGE} {SHIP}
+STR_DEPARTURES_STATION_AIRPORT                                  :{ORANGE} {PLANE}
+STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP} {PLANE}
+
+############ possible statuses start
+STR_DEPARTURES_ON_TIME                                          :{GREEN}定時
+STR_DEPARTURES_ARRIVED                                          :{GREEN}到着しました
+STR_DEPARTURES_DELAYED                                          :{YELLOW}遅れています
+STR_DEPARTURES_EXPECTED                                         :{YELLOW} {DATE_WALLCLOCK_TINY}見込み
+STR_DEPARTURES_CANCELLED                                        :{RED}運休
+
+############ config settings
+STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}発車標
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}メイン画面をこの中継駅の場所に移動します。Ctrl+クリックではこの通過点の場所を新たなビューポートに表示します
