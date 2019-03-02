@@ -2130,7 +2130,7 @@ public:
 		}
 
 		/* check rail waypoint or buoy (no ownership) */
-		if ((IsRailWaypointTile(tile) && this->vli.vtype == VEH_TRAIN && !IsInfraTileUsageAllowed(VEH_TRAIN, this->vli.company, tile))
+		if ((IsRailWaypointTile(tile) && this->vli.vtype == VEH_TRAIN && IsInfraTileUsageAllowed(VEH_TRAIN, this->vli.company, tile))
 				|| (IsBuoyTile(tile) && this->vli.vtype == VEH_SHIP)) {
 			if (this->vli.type != VL_STATION_LIST) return;
 			if (!(Station::Get(this->vli.index)->facilities & FACIL_WAYPOINT)) return;
