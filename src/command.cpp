@@ -641,6 +641,26 @@ CommandCost DoCommand(const CommandContainer *container, DoCommandFlag flags)
 	return DoCommand(container->tile, container->p1, container->p2, flags, container->cmd & CMD_ID_MASK, container->text.c_str(), container->binary_length);
 }
 
+struct cmd_text_info_dumper {
+	const char *CommandTextInfo(const char *text, uint32 binary_length)
+	{
+		char *b = this->buffer;
+		const char *last = lastof(this->buffer);
+		if (text) {
+			b += seprintf(b, last, ", text");
+		}
+		if (binary_length) {
+			b += seprintf(b, last, ", bin length: %u", binary_length);
+		} else if (text) {
+			b += seprintf(b, last, ", str length: %u", (uint) strlen(text));
+		}
+		return this->buffer;
+	}
+
+private:
+	char buffer[64];
+};
+
 /*!
  * This function executes a given command with the parameters from the #CommandProc parameter list.
  * Depending on the flags parameter it execute or test a command.
@@ -657,8 +677,8 @@ CommandCost DoCommand(const CommandContainer *container, DoCommandFlag flags)
  */
 CommandCost DoCommand(TileIndex tile, uint32 p1, uint32 p2, DoCommandFlag flags, uint32 cmd, const char *text, uint32 binary_length)
 {
-	SCOPE_INFO_FMT([=], "DoCommand: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, flags: 0x%X, company: %s, cmd: 0x%X (%s)",
-			tile, TileX(tile), TileY(tile), p1, p2, flags, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd));
+	SCOPE_INFO_FMT([=], "DoCommand: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, flags: 0x%X, company: %s, cmd: 0x%X (%s)%s",
+			tile, TileX(tile), TileY(tile), p1, p2, flags, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), cmd_text_info_dumper().CommandTextInfo(text, binary_length));
 
 	CommandCost res;
 
@@ -754,8 +774,8 @@ bool DoCommandP(const CommandContainer *container, bool my_cmd)
  */
 bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, uint32 binary_length)
 {
-	SCOPE_INFO_FMT([=], "DoCommandP: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, company: %s, cmd: 0x%X (%s), my_cmd: %d",
-			tile, TileX(tile), TileY(tile), p1, p2, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd);
+	SCOPE_INFO_FMT([=], "DoCommandP: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, company: %s, cmd: 0x%X (%s), my_cmd: %d%s",
+			tile, TileX(tile), TileY(tile), p1, p2, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd, cmd_text_info_dumper().CommandTextInfo(text, binary_length));
 
 	/* Cost estimation is generally only done when the
 	 * local user presses shift while doing somthing.
