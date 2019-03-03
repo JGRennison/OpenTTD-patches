@@ -86,7 +86,7 @@ static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID 
  * @param text used for combined build and refit command
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
 {
 	/* Elementary check for valid location. */
 	if (!IsDepotTile(tile)) return CMD_ERROR;
@@ -155,7 +155,7 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		}
 	}
 
-	if (value.Succeeded() && text && text[0] == 'R') {
+	if (value.Succeeded() && binary_length == 2 && text && text[0] == 'R') {
 		CargoID cargo = text[1];
 		if (cargo >= NUM_CARGO) return CMD_ERROR;
 		CargoID default_cargo = e->GetDefaultCargoType();

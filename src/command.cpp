@@ -86,7 +86,7 @@ CommandProc CmdPlantTree;
 
 CommandProc CmdMoveRailVehicle;
 
-CommandProc CmdBuildVehicle;
+CommandProcEx CmdBuildVehicle;
 CommandProc CmdSellVehicle;
 CommandProc CmdRefitVehicle;
 CommandProc CmdSendVehicleToDepot;
@@ -252,7 +252,7 @@ CommandProc CmdScheduledDispatchSetDelay;
 CommandProc CmdScheduledDispatchResetLastDispatch;
 
 CommandProc CmdAddPlan;
-CommandProc CmdAddPlanLine;
+CommandProcEx CmdAddPlanLine;
 CommandProc CmdRemovePlan;
 CommandProc CmdRemovePlanLine;
 CommandProc CmdChangePlanVisibility;

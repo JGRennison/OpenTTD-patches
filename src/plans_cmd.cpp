@@ -51,16 +51,18 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2
  * @param flags type of operation
  * @param p1 plan id
  * @param p2 number of nodes
- * @param text list of tile indexes that compose the line, encoded in base64
+ * @param text list of tile indexes that compose the line
+ * @param binary_length binary length of text
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == NULL) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (p2 > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return_cmd_error(STR_ERROR_TOO_MANY_NODES);
+	if (!text || binary_length != p2 * 4) return CMD_ERROR;
 	if (flags & DC_EXEC) {
 		PlanLine *pl = p->NewLine();
 		if (!pl) return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_LINES);
