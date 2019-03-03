@@ -492,6 +492,7 @@ enum CommandFlags {
 	CMD_DEITY     = 0x100, ///< the command may be executed by COMPANY_DEITY
 	CMD_STR_CTRL  = 0x200, ///< the command's string may contain control strings
 	CMD_NO_EST    = 0x400, ///< the command is never estimated.
+	CMD_PROCEX    = 0x800, ///< the command proc function has extended parameters
 };
 DECLARE_ENUM_AS_BIT_SET(CommandFlags)
 
@@ -537,6 +538,7 @@ enum CommandPauseLevel {
  * @return The CommandCost of the command, which can be succeeded or failed.
  */
 typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
+typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length);
 
 /**
  * Define a command with the flags which belongs to it.
@@ -545,10 +547,26 @@ typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  * the #CMD_AUTO, #CMD_OFFLINE and #CMD_SERVER values.
  */
 struct Command {
-	CommandProc *proc;  ///< The procedure to actually executing
+	union {
+		CommandProc *proc;      ///< The procedure to actually execute
+		CommandProcEx *procex;  ///< The procedure to actually execute, extended parameters
+	};
 	const char *name;   ///< A human readable name for the procedure
 	CommandFlags flags; ///< The (command) flags to that apply to this command
 	CommandType type;   ///< The type of command.
+
+	Command(CommandProc *proc, const char *name, CommandFlags flags, CommandType type)
+			: proc(proc), name(name), flags(flags & ~CMD_PROCEX), type(type) {}
+	Command(CommandProcEx *procex, const char *name, CommandFlags flags, CommandType type)
+			: procex(procex), name(name), flags(flags | CMD_PROCEX), type(type) {}
+
+	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length) const {
+		if (this->flags & CMD_PROCEX) {
+			return this->procex(tile, flags, p1, p2, text, binary_length);
+		} else {
+			return this->proc(tile, flags, p1, p2, text);
+		}
+	}
 };
 
 /**
