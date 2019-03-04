@@ -3632,6 +3632,14 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (!SlXvIsFeaturePresent(XSLFI_CHUNNEL, 2)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_TREES)) {
+				SetWaterClass(t, GetTreeDensity(t) == TREE_GROUND_SHORE ? WATER_CLASS_SEA : WATER_CLASS_INVALID);
+			}
+		}
+	}
+
 	if (SlXvIsFeatureMissing(XSLFI_SAVEGAME_UNIQUE_ID)) {
 		/* Generate a random id for savegames that didn't have one */
 		/* We keep id 0 for old savegames that don't have an id */
