@@ -1798,8 +1798,6 @@ STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Probability of 
 STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :The probability of town roads being randomly re-constructing (0 = off, 1000 = max)
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimum distance between towns: {STRING2}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Set the minimum distance in tiles between towns for map generation and random founding
-STR_CONFIG_SETTING_TOWN_ROAD_OVER_RAIL                          :Towns can build bridges over rails: {STRING2}
-STR_CONFIG_SETTING_TOWN_ROAD_OVER_RAIL_HELPTEXT                 :Allow towns to build road bridges over railway tracks
 
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Update distribution graph every {STRING2}{NBSP}day{P 0:2 "" s}
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Time between subsequent recalculations of the link graph. Each recalculation calculates the plans for one component of the graph. That means that a value X for this setting does not mean the whole graph will be updated every X days. Only some component will. The shorter you set it the more CPU time will be necessary to calculate it. The longer you set it the longer it will take until the cargo distribution starts on new routes.

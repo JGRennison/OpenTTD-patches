@@ -1837,7 +1837,6 @@ static SettingsContainer &GetSettingsTree()
 				towns->Add(new SettingEntry("economy.found_town"));
 				towns->Add(new SettingEntry("economy.town_cargo_scale_factor"));
 				towns->Add(new SettingEntry("economy.random_road_reconstruction"));
-				towns->Add(new SettingEntry("economy.town_bridge_over_rail"));
 			}
 
 			SettingsPage *industries = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES));
