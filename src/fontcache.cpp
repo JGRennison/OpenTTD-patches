@@ -174,12 +174,12 @@ uint SpriteFontCache::GetGlyphWidth(GlyphID key)
 {
 	SpriteID sprite = this->GetUnicodeGlyph(key);
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
-	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + ScaleGUITrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
+	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + ScaleFontTrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
 }
 
 int SpriteFontCache::GetHeight() const
 {
-	return ScaleGUITrad(this->height);
+	return ScaleFontTrad(this->height);
 }
 
 bool SpriteFontCache::GetDrawGlyphShadow()
@@ -286,16 +286,18 @@ void FreeTypeFontCache::SetFontSize(FontSize fs, FT_Face face, int pixels)
 {
 	if (pixels == 0) {
 		/* Try to determine a good height based on the minimal height recommended by the font. */
-		int scaled_height = ScaleGUITrad(_default_font_height[this->fs]);
+		int scaled_height = ScaleFontTrad(_default_font_height[this->fs]);
 		pixels = scaled_height;
 
 		TT_Header *head = (TT_Header *)FT_Get_Sfnt_Table(this->face, ft_sfnt_head);
 		if (head != NULL) {
 			/* Font height is minimum height plus the difference between the default
 			 * height for this font size and the small size. */
-			int diff = scaled_height - ScaleGUITrad(_default_font_height[FS_SMALL]);
+			int diff = scaled_height - ScaleFontTrad(_default_font_height[FS_SMALL]);
 			pixels = Clamp(min(head->Lowest_Rec_PPEM, 20) + diff, scaled_height, MAX_FONT_SIZE);
 		}
+	} else {
+		pixels = ScaleFontTrad(pixels);
 	}
 	this->used_size = pixels;
 
@@ -425,6 +427,9 @@ FreeTypeFontCache::~FreeTypeFontCache()
  */
 void FreeTypeFontCache::ClearFontCache()
 {
+	/* Font scaling might have changed, determine font size anew if it was automatically selected. */
+	if (this->face != NULL) this->SetFontSize(this->fs, this->face, this->req_size);
+
 	if (this->glyph_to_sprite == NULL) return;
 
 	for (int i = 0; i < 256; i++) {
@@ -442,9 +447,6 @@ void FreeTypeFontCache::ClearFontCache()
 	this->glyph_to_sprite = NULL;
 
 	Layouter::ResetFontCache(this->fs);
-
-	/* GUI scaling might have changed, determine font size anew if it was automatically selected. */
-	if (this->face != NULL && this->req_size == 0) this->SetFontSize(this->fs, this->face, this->req_size);
 }
 
 FreeTypeFontCache::GlyphEntry *FreeTypeFontCache::GetGlyphPtr(GlyphID key)

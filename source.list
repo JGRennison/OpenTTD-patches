@@ -84,9 +84,6 @@ rev.cpp
 road.cpp
 roadstop.cpp
 screenshot.cpp
-#if SDL
-	sdl.cpp
-#end
 settings.cpp
 signal.cpp
 programmable_signals.cpp
@@ -338,7 +335,6 @@ roadveh.h
 safeguards.h
 scope.h
 screenshot.h
-sdl.h
 sound/sdl_s.h
 video/sdl_v.h
 schdispatch.h

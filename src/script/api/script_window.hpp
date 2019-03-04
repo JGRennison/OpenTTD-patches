@@ -1329,6 +1329,7 @@ public:
 		WID_FRW_TIMES_NAMES                          = ::WID_FRW_TIMES_NAMES,
 		WID_FRW_TIMES_CURRENT                        = ::WID_FRW_TIMES_CURRENT,
 		WID_FRW_TIMES_AVERAGE                        = ::WID_FRW_TIMES_AVERAGE,
+		WID_FRW_SCROLLBAR                            = ::WID_FRW_SCROLLBAR,
 	};
 
 	/** Widgets of the #FrametimeGraphWindow class. */
@@ -1463,7 +1464,8 @@ public:
 		WID_CPR_FOOTER                               = ::WID_CPR_FOOTER,                               ///< Footer.
 		WID_CPR_ENABLE_CARGOES                       = ::WID_CPR_ENABLE_CARGOES,                       ///< Enable cargoes button.
 		WID_CPR_DISABLE_CARGOES                      = ::WID_CPR_DISABLE_CARGOES,                      ///< Disable cargoes button.
-		WID_CPR_CARGO_FIRST                          = ::WID_CPR_CARGO_FIRST,                          ///< First cargo in the list.
+		WID_CPR_MATRIX                               = ::WID_CPR_MATRIX,                               ///< Cargo list.
+		WID_CPR_MATRIX_SCROLLBAR                     = ::WID_CPR_MATRIX_SCROLLBAR,                     ///< Cargo list scrollbar.
 	};
 
 	/** Widget of the #CompanyLeagueWindow class. */
@@ -2225,6 +2227,7 @@ public:
 		WID_GO_BASE_MUSIC_STATUS                     = ::WID_GO_BASE_MUSIC_STATUS,                     ///< Info about corrupted files etc.
 		WID_GO_BASE_MUSIC_TEXTFILE                   = ::WID_GO_BASE_MUSIC_TEXTFILE,                   ///< Open base music readme, changelog (+1) or license (+2).
 		WID_GO_BASE_MUSIC_DESCRIPTION                = ::WID_GO_BASE_MUSIC_DESCRIPTION,                ///< Description of selected base music set.
+		WID_GO_FONT_ZOOM_DROPDOWN                    = ::WID_GO_FONT_ZOOM_DROPDOWN,                    ///< Dropdown for the font zoom level.
 	};
 
 	/** Widgets of the #GameSettingsWindow class. */

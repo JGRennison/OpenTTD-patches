@@ -2284,8 +2284,11 @@ void CheckOrders(const Vehicle *v)
  * Removes an order from all vehicles. Triggers when, say, a station is removed.
  * @param type The type of the order (OT_GOTO_[STATION|DEPOT|WAYPOINT]).
  * @param destination The destination. Can be a StationID, DepotID or WaypointID.
+ * @param hangar Only used for airports in the destination.
+ *               When false, remove airport and hangar orders.
+ *               When true, remove either airport or hangar order.
  */
-void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination)
+void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool hangar)
 {
 	Vehicle *v;
 
@@ -2296,7 +2299,7 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination)
 	/* Go through all vehicles */
 	FOR_ALL_VEHICLES(v) {
 		Order *order = &v->current_order;
-		if ((v->type == VEH_AIRCRAFT && order->IsType(OT_GOTO_DEPOT) ? OT_GOTO_STATION : order->GetType()) == type &&
+		if ((v->type == VEH_AIRCRAFT && order->IsType(OT_GOTO_DEPOT) && !hangar ? OT_GOTO_STATION : order->GetType()) == type &&
 				v->current_order.GetDestination() == destination) {
 			order->MakeDummy();
 			SetWindowDirty(WC_VEHICLE_VIEW, v->index);
@@ -2308,12 +2311,12 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination)
 		RemoveVehicleOrdersIf(v, [&](const Order *o) {
 			OrderType ot = o->GetType();
 			if (ot == OT_GOTO_DEPOT && (o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
-			if (ot == OT_IMPLICIT || (v->type == VEH_AIRCRAFT && ot == OT_GOTO_DEPOT)) ot = OT_GOTO_STATION;
+			if (ot == OT_IMPLICIT || (v->type == VEH_AIRCRAFT && ot == OT_GOTO_DEPOT && !hangar)) ot = OT_GOTO_STATION;
 			return (ot == type && o->GetDestination() == destination);
 		});
 	}
 
-	OrderBackup::RemoveOrder(type, destination);
+	OrderBackup::RemoveOrder(type, destination, hangar);
 }
 
 /**

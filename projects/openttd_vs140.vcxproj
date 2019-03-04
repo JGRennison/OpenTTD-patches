@@ -422,7 +422,6 @@
     <ClCompile Include="..\src\road.cpp" />
     <ClCompile Include="..\src\roadstop.cpp" />
     <ClCompile Include="..\src\screenshot.cpp" />
-    <ClCompile Include="..\src\sdl.cpp" />
     <ClCompile Include="..\src\settings.cpp" />
     <ClCompile Include="..\src\signal.cpp" />
     <ClCompile Include="..\src\programmable_signals.cpp" />
@@ -648,7 +647,6 @@
     <ClInclude Include="..\src\safeguards.h" />
     <ClInclude Include="..\src\scope.h" />
     <ClInclude Include="..\src\screenshot.h" />
-    <ClInclude Include="..\src\sdl.h" />
     <ClInclude Include="..\src\sound\sdl_s.h" />
     <ClInclude Include="..\src\video\sdl_v.h" />
     <ClInclude Include="..\src\schdispatch.h" />

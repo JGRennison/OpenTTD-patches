@@ -590,6 +590,7 @@ public:
 		if (_savegame_sort_dirty) {
 			_savegame_sort_dirty = false;
 			SortSaveGameList(this->fios_items);
+			this->OnInvalidateData(SLIWD_FILTER_CHANGES);
 		}
 
 		this->DrawWidgets();

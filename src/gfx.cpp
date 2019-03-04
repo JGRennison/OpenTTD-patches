@@ -58,6 +58,7 @@ static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode,
 static ReusableBuffer<uint8> _cursor_backup;
 
 ZoomLevelByte _gui_zoom; ///< GUI Zoom level
+ZoomLevelByte _font_zoom; ///< Font Zoom level
 
 /**
  * The rect for repaint.
@@ -1130,13 +1131,14 @@ TextColour GetContrastColour(uint8 background, uint8 threshold)
  */
 void LoadStringWidthTable(bool monospace)
 {
+	ClearFontCache();
+
 	for (FontSize fs = monospace ? FS_MONO : FS_BEGIN; fs < (monospace ? FS_END : FS_MONO); fs++) {
 		for (uint i = 0; i != 224; i++) {
 			_stringwidth_table[fs][i] = GetGlyphWidth(fs, i + 32);
 		}
 	}
 
-	ClearFontCache();
 	ReInitAllWindows();
 }
 

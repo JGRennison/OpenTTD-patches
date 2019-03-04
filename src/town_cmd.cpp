@@ -64,6 +64,31 @@ CargoTypes _town_cargoes_accepted; ///< Bitmap of all cargoes accepted by houses
 TownPool _town_pool("Town");
 INSTANTIATE_POOL_METHODS(Town)
 
+/**
+ * Check if a town 'owns' a bridge.
+ * Bridges to not directly have an owner, so we check the tiles adjacent to the bridge ends.
+ * If either adjacent tile belongs to the town then it will be assumed that the town built
+ * the bridge.
+ * @param tile Bridge tile to test
+ * @param t Town we are interested in
+ * @return true if town 'owns' a bridge.
+ */
+static bool TestTownOwnsBridge(TileIndex tile, const Town *t)
+{
+	if (!IsTileOwner(tile, OWNER_TOWN)) return false;
+
+	TileIndex adjacent = tile + TileOffsByDiagDir(ReverseDiagDir(GetTunnelBridgeDirection(tile)));
+	bool town_owned = IsTileType(adjacent, MP_ROAD) && IsTileOwner(adjacent, OWNER_TOWN) && GetTownIndex(adjacent) == t->index;
+
+	if (!town_owned) {
+		/* Or other adjacent road */
+		TileIndex adjacent = tile + TileOffsByDiagDir(ReverseDiagDir(GetTunnelBridgeDirection(GetOtherTunnelBridgeEnd(tile))));
+		town_owned = IsTileType(adjacent, MP_ROAD) && IsTileOwner(adjacent, OWNER_TOWN) && GetTownIndex(adjacent) == t->index;
+	}
+
+	return town_owned;
+}
+
 Town::~Town()
 {
 	free(this->name);
@@ -95,7 +120,7 @@ Town::~Town()
 				break;
 
 			case MP_TUNNELBRIDGE:
-				assert_tile(!IsTileOwner(tile, OWNER_TOWN) || ClosestTownFromTile(tile, UINT_MAX) != this, tile);
+				assert_tile(!TestTownOwnsBridge(tile, this), tile);
 				break;
 
 			default:
@@ -1245,14 +1270,14 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 	const int delta = TileOffsByDiagDir(bridge_dir);
 
 	if (slope == SLOPE_FLAT) {
-		/* Bridges starting on flat tiles are only allowed when crossing rivers or rails. */
+		/* Bridges starting on flat tiles are only allowed when crossing rivers, rails or one-way roads. */
 		do {
 			if (bridge_length++ >= 4) {
-				/* Allow to cross rivers, not big lakes, nor large amounts of rails. */
+				/* Allow to cross rivers, not big lakes, nor large amounts of rails or one-way roads. */
 				return false;
 			}
 			bridge_tile += delta;
-		} while (IsValidTile(bridge_tile) && ((IsWaterTile(bridge_tile) && !IsSea(bridge_tile)) || (_settings_game.economy.town_bridge_over_rail && IsPlainRailTile(bridge_tile))));
+		} while (IsValidTile(bridge_tile) && ((IsWaterTile(bridge_tile) && !IsSea(bridge_tile)) || IsPlainRailTile(bridge_tile) || (IsNormalRoadTile(bridge_tile) && GetDisallowedRoadDirections(bridge_tile) != DRD_NONE)));
 	} else {
 		do {
 			if (bridge_length++ >= 11) {
@@ -1260,7 +1285,7 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 				return false;
 			}
 			bridge_tile += delta;
-		} while (IsValidTile(bridge_tile) && (IsWaterTile(bridge_tile) || (_settings_game.economy.town_bridge_over_rail && IsPlainRailTile(bridge_tile))));
+		} while (IsValidTile(bridge_tile) && (IsWaterTile(bridge_tile) || IsPlainRailTile(bridge_tile) || (IsNormalRoadTile(bridge_tile) && GetDisallowedRoadDirections(bridge_tile) != DRD_NONE)));
 	}
 
 	/* no water tiles in between? */
@@ -2984,16 +3009,23 @@ CommandCost CmdDeleteTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		if (d->town == t) return CMD_ERROR;
 	}
 
-	/* Check all tiles for town ownership. */
+	/* Check all tiles for town ownership. First check for bridge tiles, as
+	 * these do not directly have an owner so we need to check adjacent
+	 * tiles. This won't work correctly in the same loop if the adjacent
+	 * tile was already deleted earlier in the loop. */
+	for (TileIndex tile = 0; tile < MapSize(); ++tile) {
+		if (IsTileType(tile, MP_TUNNELBRIDGE) && TestTownOwnsBridge(tile, t)) {
+			CommandCost ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+			if (ret.Failed()) return ret;
+		}
+	}
+
+	/* Check all remaining tiles for town ownership. */
 	for (TileIndex tile = 0; tile < MapSize(); ++tile) {
 		bool try_clear = false;
 		switch (GetTileType(tile)) {
 			case MP_ROAD:
 				try_clear = HasTownOwnedRoad(tile) && GetTownIndex(tile) == t->index;
-				break;
-
-			case MP_TUNNELBRIDGE:
-				try_clear = IsTileOwner(tile, OWNER_TOWN) && ClosestTownFromTile(tile, UINT_MAX) == t;
 				break;
 
 			case MP_HOUSE:

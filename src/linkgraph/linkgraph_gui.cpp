@@ -74,6 +74,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 	if (!incremental) {
 		this->cached_links.clear();
 		this->cached_stations.clear();
+		this->last_update_number = GetWindowUpdateNumber();
 	}
 	if (this->company_mask == 0) return;
 
@@ -344,6 +345,10 @@ void LinkGraphOverlay::RefreshDrawCache()
  */
 void LinkGraphOverlay::Draw(const DrawPixelInfo *dpi)
 {
+	if (this->dirty) {
+		this->RebuildCache();
+		this->dirty = false;
+	}
 	if (this->last_update_number != GetWindowUpdateNumber()) {
 		this->last_update_number = GetWindowUpdateNumber();
 		this->RefreshDrawCache();

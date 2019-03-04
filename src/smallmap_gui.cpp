@@ -1194,7 +1194,7 @@ void SmallMapWindow::SwitchMapType(SmallMapType map_type)
 
 	this->SetupWidgetData();
 
-	if (map_type == SMT_LINKSTATS) this->overlay->RebuildCache();
+	if (map_type == SMT_LINKSTATS) this->overlay->SetDirty();
 	if (map_type != SMT_INDUSTRY) this->BreakIndustryChainLink();
 	this->SetDirty();
 }
@@ -1486,7 +1486,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 		if (this->overlay->GetCompanyMask() != company_mask) {
 			this->overlay->SetCompanyMask(company_mask);
 		} else {
-			this->overlay->RebuildCache();
+			this->overlay->SetDirty();
 		}
 	}
 	_smallmap_industry_highlight_state = !_smallmap_industry_highlight_state;

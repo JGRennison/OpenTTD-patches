@@ -83,9 +83,15 @@ if [ -d "$ROOT_DIR/.git" ]; then
 	if [ -n "$TAG" ]; then
 		VERSION="${TAG}"
 		ISTAG="1"
+		if [ -n "`echo \"${TAG}\" | grep \"^[0-9.]*$\"`" ]; then
+			ISSTABLETAG="1"
+		else
+			ISSTABLETAG="0"
+		fi
 	else
 		VERSION="${ISODATE}-${BRANCH}${hashprefix}${SHORTHASH}"
 		ISTAG="0"
+		ISSTABLETAG="0"
 	fi
 elif [ -f "$ROOT_DIR/.ottdrev-vc" ]; then
 	VERSION_DATA="`cat "$ROOT_DIR/.ottdrev-vc" | sed -n -e '1 p;'`"
@@ -95,6 +101,7 @@ elif [ -f "$ROOT_DIR/.ottdrev-vc" ]; then
 	MODIFIED="`echo "$VERSION_DATA" | cut -f 3 -d'	'`"
 	HASH="`echo "$VERSION_DATA" | cut -f 4 -d'	'`"
 	ISTAG="`echo "$VERSION_DATA" | cut -f 5 -d'	'`"
+	ISSTABLETAG="`echo "$VERSION_DATA" | cut -f 6 -d'	'`"
 	if [ "$MODIFIED" = "2" ]; then
 		VERSION="`echo "$VERSION" | sed -e 's/M$//'`"
 	fi
@@ -121,10 +128,11 @@ else
 	TAG=""
 	VERSION=""
 	ISTAG="0"
+	ISSTABLETAG="0"
 fi
 
 if [ "$MODIFIED" -eq "2" ]; then
 	VERSION="${VERSION}M"
 fi
 
-echo "$VERSION	$ISODATE	$MODIFIED	$HASH	$ISTAG"
+echo "$VERSION	$ISODATE	$MODIFIED	$HASH	$ISTAG	$ISSTABLETAG"

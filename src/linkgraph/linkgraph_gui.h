@@ -75,6 +75,9 @@ public:
 	void SetCargoMask(CargoTypes cargo_mask);
 	void SetCompanyMask(uint32 company_mask);
 
+	/** Mark the linkgraph dirty to be rebuilt next time Draw() is called. */
+	void SetDirty() { this->dirty = true; }
+
 	/** Get a bitmask of the currently shown cargoes. */
 	CargoTypes GetCargoMask() { return this->cargo_mask; }
 
@@ -90,6 +93,7 @@ protected:
 	StationSupplyList cached_stations; ///< Cache for stations to be drawn.
 	Rect cached_region;                ///< Region covered by cached_links and cached_stations.
 	uint scale;                        ///< Width of link lines.
+	bool dirty;                        ///< Set if overlay should be rebuilt.
 	uint64 last_update_number = 0;     ///< Last window update number
 
 	Point GetStationMiddle(const Station *st) const;

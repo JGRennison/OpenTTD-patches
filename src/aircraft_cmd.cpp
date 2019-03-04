@@ -1370,19 +1370,17 @@ static void CrashAirplane(Aircraft *v)
  */
 static void MaybeCrashAirplane(Aircraft *v)
 {
-	if (_settings_game.vehicle.plane_crashes == 0) return;
 
 	Station *st = Station::Get(v->targetairport);
 
-	/* FIXME -- MaybeCrashAirplane -> increase crashing chances of very modern airplanes on smaller than AT_METROPOLITAN airports */
-	uint32 prob = (0x4000 << _settings_game.vehicle.plane_crashes);
-
+	uint32 prob;
 	if ((st->airport.GetFTA()->flags & AirportFTAClass::SHORT_STRIP) &&
 			(AircraftVehInfo(v->engine_type)->subtype & AIR_FAST) &&
 			!_cheats.no_jetcrash.value) {
-		prob /= 20;
+		prob = 3276;
 	} else {
-		prob /= 1500;
+		if (_settings_game.vehicle.plane_crashes == 0) return;
+		prob = (0x4000 << _settings_game.vehicle.plane_crashes) / 1500;
 	}
 	if (_settings_game.vehicle.improved_breakdowns && v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_AIRCRAFT_EM_LANDING) {
 		/* Airplanes that are attempting an emergency landing have a 2% chance to crash */
@@ -2174,7 +2172,19 @@ void UpdateAirplanesOnNewStation(const Station *st)
 	FOR_ALL_AIRCRAFT(v) {
 		if (!v->IsNormalAircraft() || v->targetairport != st->index) continue;
 		assert(v->state == FLYING);
+
+		Order *o = &v->current_order;
+		/* The aircraft is heading to a hangar, but the new station doesn't have one,
+		 * or the aircraft can't land on the new station. Cancel current order. */
+		if (o->IsType(OT_GOTO_DEPOT) && !(o->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) && o->GetDestination() == st->index &&
+				(!st->airport.HasHangar() || !CanVehicleUseStation(v, st))) {
+			o->MakeDummy();
+			SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+		}
 		v->pos = v->previous_pos = AircraftGetEntryPoint(v, ap, rotation);
 		UpdateAircraftCache(v);
 	}
+
+	/* Heliports don't have a hangar. Invalidate all go to hangar orders from all aircraft. */
+	if (!st->airport.HasHangar()) RemoveOrderFromAllVehicles(OT_GOTO_DEPOT, st->index, true);
 }
