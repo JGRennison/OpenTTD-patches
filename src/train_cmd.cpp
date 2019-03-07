@@ -4127,13 +4127,13 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if (v->Next() == NULL && !(v->track & TRACK_BIT_WORMHOLE)) ClearPathReservation(v, v->tile, v->GetVehicleTrackdir(), true);
 
 					v->tile = gp.new_tile;
-
-					if (GetTileRailTypeByTrackBit(gp.new_tile, chosen_track) != GetTileRailTypeByTrackBit(gp.old_tile, v->track)) {
-						v->First()->ConsistChanged(CCF_TRACK);
-					}
-
 					v->track = chosen_track;
 					assert(v->track);
+
+					if (GetTileRailTypeByTrackBit(gp.new_tile, chosen_track) != GetTileRailTypeByTrackBit(gp.old_tile, old_trackbits)) {
+						/* v->track and v->tile must both be valid and consistent before this is called */
+						v->First()->ConsistChanged(CCF_TRACK);
+					}
 				}
 
 				/* We need to update signal status, but after the vehicle position hash
