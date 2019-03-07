@@ -218,7 +218,7 @@ RailType GenericGetRailTypeByTrackBit(TileIndex t, TrackBits tb, bool return_inv
 	} else if (IsRailTunnelBridgeTile(t)) {
 		TrackBits bits = GetTunnelBridgeTrackBits(t);
 		if (bits == TRACK_BIT_HORZ || bits == TRACK_BIT_VERT) {
-			return (tb & GetAcrossBridgePossibleTrackBits(t)) ? GetRailType(t) : GetSecondaryRailType(t);
+			return (tb & (GetAcrossBridgePossibleTrackBits(t) | TRACK_BIT_WORMHOLE)) ? GetRailType(t) : GetSecondaryRailType(t);
 		} else {
 			return GetRailType(t);
 		}
