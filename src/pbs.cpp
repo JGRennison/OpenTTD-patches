@@ -406,7 +406,7 @@ Train *GetTrainForReservation(TileIndex tile, Track track)
 	assert_msg_tile(HasReservedTracks(tile, TrackToTrackBits(track)), tile, "track: %u", track);
 	Trackdir  trackdir = TrackToTrackdir(track);
 
-	RailTypes rts = GetRailTypeInfo(GetTileRailType(tile))->compatible_railtypes;
+	RailTypes rts = GetRailTypeInfo(GetTileRailTypeByTrack(tile, track))->compatible_railtypes;
 
 	/* Follow the path from tile to both ends, one of the end tiles should
 	 * have a train on it. We need FollowReservation to ignore one-way signals
