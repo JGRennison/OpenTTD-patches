@@ -517,7 +517,7 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	VehicleID veh = GB(p1, 0, 16);
+	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
