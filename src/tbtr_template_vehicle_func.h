@@ -26,8 +26,8 @@ Money CalculateOverallTemplateCost(const TemplateVehicle*);
 void DrawTemplate(const TemplateVehicle*, int, int, int);
 
 TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt);
-
 Train* DeleteVirtualTrain(Train*, Train *);
+void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev, Train *virt);
 
 CommandCost CmdTemplateReplaceVehicle(Train*, bool, DoCommandFlag);
 
