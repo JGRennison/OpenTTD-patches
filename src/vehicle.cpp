@@ -3675,14 +3675,18 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	auto dump = [&](char c, bool flag) {
 		if (flag) b += seprintf(b, last, "%c", c);
 	};
-	b += seprintf(b, last, "st:");
-	dump('F', HasBit(this->subtype, GVSF_FRONT));
-	dump('A', HasBit(this->subtype, GVSF_ARTICULATED_PART));
-	dump('W', HasBit(this->subtype, GVSF_WAGON));
-	dump('E', HasBit(this->subtype, GVSF_ENGINE));
-	dump('f', HasBit(this->subtype, GVSF_FREE_WAGON));
-	dump('M', HasBit(this->subtype, GVSF_MULTIHEADED));
-	dump('V', HasBit(this->subtype, GVSF_VIRTUAL));
+	if (this->IsGroundVehicle()) {
+		b += seprintf(b, last, "st:");
+		dump('F', HasBit(this->subtype, GVSF_FRONT));
+		dump('A', HasBit(this->subtype, GVSF_ARTICULATED_PART));
+		dump('W', HasBit(this->subtype, GVSF_WAGON));
+		dump('E', HasBit(this->subtype, GVSF_ENGINE));
+		dump('f', HasBit(this->subtype, GVSF_FREE_WAGON));
+		dump('M', HasBit(this->subtype, GVSF_MULTIHEADED));
+		dump('V', HasBit(this->subtype, GVSF_VIRTUAL));
+	} else {
+		b += seprintf(b, last, "st:%X", this->subtype);
+	}
 	b += seprintf(b, last, ", vs:");
 	dump('H', this->vehstatus & VS_HIDDEN);
 	dump('S', this->vehstatus & VS_STOPPED);
