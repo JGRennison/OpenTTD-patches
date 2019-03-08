@@ -838,34 +838,6 @@ static void CloneVehicleName(const Vehicle *src, Vehicle *dst)
 	/* All done. If we didn't find a name, it'll just use its default. */
 }
 
-inline void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev, Train *virt)
-{
-	if (prev) {
-		prev->SetNext(tmp);
-		tmp->SetPrev(prev);
-		tmp->SetFirst(prev->First());
-	}
-	tmp->railtype = virt->railtype;
-	tmp->owner = virt->owner;
-	tmp->value = virt->value;
-
-	// set the subtype but also clear the virtual flag while doing it
-	tmp->subtype = virt->subtype & ~(1 << GVSF_VIRTUAL);
-	// set the cargo type and capacity
-	tmp->cargo_type = virt->cargo_type;
-	tmp->cargo_subtype = virt->cargo_subtype;
-	tmp->cargo_cap = virt->cargo_cap;
-
-	const GroundVehicleCache *gcache = virt->GetGroundVehicleCache();
-	tmp->max_speed = virt->GetDisplayMaxSpeed();
-	tmp->power = gcache->cached_power;
-	tmp->weight = gcache->cached_weight;
-	tmp->max_te = gcache->cached_max_te / 1000;
-
-	virt->GetImage(DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
-	tmp->image_dimensions.SetFromTrain(virt);
-}
-
 /**
  * Toggles 'reuse depot vehicles' on a template vehicle.
  * @param tile unused

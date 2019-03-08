@@ -141,7 +141,7 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 }
 
 // copy important stuff from the virtual vehicle to the template
-inline void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev, Train *virt)
+void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev, Train *virt)
 {
 	if (prev) {
 		prev->SetNext(tmp);
