@@ -3783,7 +3783,7 @@ void VpSetPresizeRange(TileIndex from, TileIndex to)
 	_thd.next_drawstyle = HT_RECT;
 
 	/* show measurement only if there is any length to speak of */
-	if (distance > 1) ShowMeasurementTooltips(STR_MEASURE_LENGTH, 1, &distance, TCC_HOVER);
+	if (distance > 1) ShowMeasurementTooltips(STR_MEASURE_LENGTH, 1, &distance, _settings_client.gui.hover_delay_ms == 0 ? TCC_NEXT_LOOP : TCC_HOVER);
 }
 
 static void VpStartPreSizing()

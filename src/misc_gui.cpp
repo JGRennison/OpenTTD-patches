@@ -774,6 +774,7 @@ struct TooltipsWindow : public Window
 			case TCC_RIGHT_CLICK: if (!_right_button_down) delete this; break;
 			case TCC_LEFT_CLICK: if (!_left_button_down) delete this; break;
 			case TCC_HOVER: if (!_mouse_hovering) delete this; break;
+			case TCC_NEXT_LOOP: this->delete_next_mouse_loop = true; break;
 
 			case TCC_HOVER_VIEWPORT:
 				if (_settings_client.gui.hover_delay_ms == 0) {
