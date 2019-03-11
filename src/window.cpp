@@ -3040,6 +3040,8 @@ void HandleMouseEvents()
 				_mouse_hovering = true;
 			}
 		}
+	} else {
+		_mouse_hovering = false;
 	}
 
 	/* Handle sprite picker before any GUI interaction */
