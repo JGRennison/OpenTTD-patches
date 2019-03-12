@@ -29,6 +29,8 @@ enum ZoningEvaluationMode {
 	ZEM_TRACERESTRICT, ///< Check for restricted signals
 	ZEM_2x2_GRID,      ///< Show 2x2 town road grid
 	ZEM_3x3_GRID,      ///< Show 3x3 town road grid
+
+	ZEM_END,           ///< End marker
 };
 
 /**

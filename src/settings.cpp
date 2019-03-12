@@ -66,6 +66,7 @@
 #include "strings_func.h"
 #include "string_func.h"
 #include "debug.h"
+#include "zoning.h"
 
 #include "void_map.h"
 #include "station_base.h"
