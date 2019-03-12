@@ -438,12 +438,11 @@ OpenTTD has been ported to several platforms and operating systems. It should
 not be very difficult to port it to a new platform. The currently working
 platforms are:
 
-- BeOS (SDL or Allegro)
 - DOS (Allegro)
 - FreeBSD (SDL)
+- Haiku (SDL)
 - Linux (SDL or Allegro)
 - macOS (universal) (Cocoa video and sound drivers)
-- MorphOS (SDL)
 - OpenBSD (SDL)
 - OS/2 (SDL)
 - Windows (Win32 GDI (faster) or SDL or Allegro)
@@ -808,7 +807,7 @@ and it should build automatically. In case you want to build with SDL support
 you need to add WITH_SDL to the project settings.
 
 PNG (WITH_PNG), ZLIB (WITH_ZLIB), LZO (WITH_LZO), Freetype (WITH_FREETYPE) and
-LZMA (WITH_LZMA) support is enabled by default. For these to work you need their
+libLZMA (WITH_LIBLZMA) support is enabled by default. For these to work you need their
 development files. To get them just use vcpkg from https://github.com/Microsoft/vcpkg
 using x86-windows-static and x64-windows-static triplets.
 For more help with VS see docs/Readme_Windows_MSVC.md.
@@ -833,16 +832,9 @@ However, for the first build one has to do a '`./configure`' first.
 To make a universal binary type '`./configure --enabled-universal`'
 instead of '`./configure`'.
 
-### BeOS:
+### Haiku:
 
 Use '`make`', but do a '`./configure`' before the first build.
-
-### MorphOS:
-
-Use '`make`'. However, for the first build one has to do a '`./configure`'
-first. Note that you need the MorphOS SDK, latest libnix updates (else C++
-parts of OpenTTD will not build) and the powersdl.library SDK. Optionally libz,
-libpng and freetype2 developer files.
 
 ### OS/2:
 

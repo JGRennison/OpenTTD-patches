@@ -22,7 +22,7 @@
 #include "../safeguards.h"
 
 
-void DropDownListItem::Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+void DropDownListItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 {
 	int c1 = _colour_gradient[bg_colour][3];
 	int c2 = _colour_gradient[bg_colour][7];
@@ -39,7 +39,7 @@ uint DropDownListStringItem::Width() const
 	return GetStringBoundingBox(buffer).width;
 }
 
-void DropDownListStringItem::Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+void DropDownListStringItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 {
 	DrawString(left + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, top, this->String(), sel ? TC_WHITE : TC_BLACK);
 }
@@ -69,6 +69,40 @@ StringID DropDownListCharStringItem::String() const
 {
 	SetDParamStr(0, this->raw_string);
 	return this->string;
+}
+
+DropDownListIconItem::DropDownListIconItem(SpriteID sprite, PaletteID pal, StringID string, int result, bool masked) : DropDownListParamStringItem(string, result, masked), sprite(sprite), pal(pal)
+{
+	this->dim = GetSpriteSize(sprite);
+	if (this->dim.height < (uint)FONT_HEIGHT_NORMAL) {
+		this->sprite_y = (FONT_HEIGHT_NORMAL - dim.height) / 2;
+		this->text_y = 0;
+	} else {
+		this->sprite_y = 0;
+		this->text_y = (dim.height - FONT_HEIGHT_NORMAL) / 2;
+	}
+}
+
+uint DropDownListIconItem::Height(uint width) const
+{
+	return max(this->dim.height, (uint)FONT_HEIGHT_NORMAL);
+}
+
+uint DropDownListIconItem::Width() const
+{
+	return DropDownListStringItem::Width() + this->dim.width + WD_FRAMERECT_LEFT;
+}
+
+void DropDownListIconItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
+{
+	bool rtl = _current_text_dir == TD_RTL;
+	DrawSprite(this->sprite, this->pal, rtl ? right - this->dim.width - WD_FRAMERECT_RIGHT : left + WD_FRAMERECT_LEFT, top + this->sprite_y);
+	DrawString(left + WD_FRAMERECT_LEFT + (rtl ? 0 : (this->dim.width + WD_FRAMERECT_LEFT)), right - WD_FRAMERECT_RIGHT - (rtl ? (this->dim.width + WD_FRAMERECT_RIGHT) : 0), top + this->text_y, this->String(), sel ? TC_WHITE : TC_BLACK);
+}
+
+void DropDownListIconItem::SetDimension(Dimension d)
+{
+	this->dim = d;
 }
 
 static const NWidgetPart _nested_dropdown_menu_widgets[] = {

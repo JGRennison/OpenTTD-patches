@@ -28,6 +28,9 @@
 #include "core/pool_type.hpp"
 #include "game/game.hpp"
 #include "linkgraph/linkgraphschedule.h"
+#include "station_kdtree.h"
+#include "town_kdtree.h"
+#include "viewport_kdtree.h"
 #include "tracerestrict.h"
 #include "programmable_signals.h"
 #include "viewport_func.h"
@@ -68,7 +71,6 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	AllocateMap(size_x, size_y);
 
 	ViewportMapClearTunnelCache();
-	ViewportClearStationSignCache();
 	ClearCommandLog();
 
 	_pause_mode = PM_UNPAUSED;
@@ -91,6 +93,10 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	ClearBridgeSimulatedSignalMapping();
 	ClearCargoPacketDeferredPayments();
 	PoolBase::Clean(PT_NORMAL);
+
+	RebuildStationKdtree();
+	RebuildTownKdtree();
+	RebuildViewportKdtree();
 
 	FreeSignalPrograms();
 	FreeSignalDependencies();

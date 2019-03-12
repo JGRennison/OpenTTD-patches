@@ -1835,6 +1835,7 @@ static SettingsContainer &GetSettingsTree()
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
 				towns->Add(new SettingEntry("economy.found_town"));
+				towns->Add(new SettingEntry("economy.town_cargogen_mode"));
 				towns->Add(new SettingEntry("economy.town_cargo_scale_factor"));
 				towns->Add(new SettingEntry("economy.random_road_reconstruction"));
 			}
@@ -1846,6 +1847,7 @@ static SettingsContainer &GetSettingsTree()
 				industries->Add(new SettingEntry("economy.multiple_industry_per_town"));
 				industries->Add(new SettingEntry("game_creation.oil_refinery_limit"));
 				industries->Add(new SettingEntry("economy.smooth_economy"));
+				industries->Add(new SettingEntry("station.serve_neutral_industries"));
 			}
 
 			SettingsPage *cdist = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST));

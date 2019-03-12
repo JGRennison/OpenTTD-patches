@@ -1192,6 +1192,8 @@ STR_CONFIG_SETTING_AUTOSLOPE                                    :Allow landscapi
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Allow landscaping under buildings and tracks without removing them
 STR_CONFIG_SETTING_CATCHMENT                                    :Allow more realistically sized catchment areas: {STRING2}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Have differently sized catchment areas for different types of stations and airports
+STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Company stations can serve industries with attached neutral stations: {STRING2}
+STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :When enabled, industries with attached stations (such as Oil Rigs) may also be served by company owned stations built nearby. When disabled, these industries may only be served by their attached stations. Any nearby company stations won't be able to serve them, nor will the attached station serve anything else other than the industry
 STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :Increase station catchment radius: {STRING2}
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :Increase radius of station catchment areas by this many tiles
 STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :Station rating tolerance to waiting time depends on cargo class: {STRING2}
@@ -1730,6 +1732,10 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Enabling this s
 STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Forbidden
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Allowed
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Allowed, custom town layout
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Town cargo generation: {STRING2}
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :How much cargo is produced by houses in towns, relative to the overall population of the town.{}Quadratic growth: A town twice the size generates four times as many passengers.{}Linear growth: A town twice the size generates twice the amount of passengers.
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :Quadratic (original)
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :Linear
 STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :Town cargo generation factor (less < 0 < more): {STRING2}
 STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :Passenger, mail, and other town cargo production is scaled by approximately 2^factor (exponential)
 
@@ -2016,10 +2022,7 @@ STR_OSNAME_WINDOWS                                              :Windows
 STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 

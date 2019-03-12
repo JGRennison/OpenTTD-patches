@@ -482,6 +482,8 @@ struct YAPFSettings {
 	uint32 rail_longer_platform_per_tile_penalty;  ///< penalty for longer  station platform than train (per tile)
 	uint32 rail_shorter_platform_penalty;          ///< penalty for shorter station platform than train
 	uint32 rail_shorter_platform_per_tile_penalty; ///< penalty for shorter station platform than train (per tile)
+	uint32 ship_curve45_penalty;                   ///< penalty for 45-deg curve for ships
+	uint32 ship_curve90_penalty;                   ///< penalty for 90-deg curve for ships
 };
 
 /** Settings related to all pathfinders. */
@@ -572,6 +574,7 @@ struct EconomySettings {
 	uint8  larger_towns;                     ///< the number of cities to build. These start off larger and grow twice as fast
 	uint8  initial_city_size;                ///< multiplier for the initial size of the cities compared to towns
 	TownLayoutByte town_layout;              ///< select town layout, @see TownLayout
+	TownCargoGenMode town_cargogen_mode;     ///< algorithm for generating cargo from houses, @see TownCargoGenMode
 	bool   allow_town_roads;                 ///< towns are allowed to build roads (always allowed when generating world / in SE)
 	uint16  town_min_distance;               ///< minimum distance between towns
 	TownFoundingByte found_town;             ///< town founding, @see TownFounding
@@ -612,6 +615,7 @@ struct LinkGraphSettings {
 /** Settings related to stations. */
 struct StationSettings {
 	bool   modified_catchment;               ///< different-size catchment areas
+	bool   serve_neutral_industries;         ///< company stations can serve industries with attached neutral stations
 	bool   adjacent_stations;                ///< allow stations to be built directly adjacent to other stations
 	bool   distant_join_stations;            ///< allow to join non-adjacent stations
 	bool   never_expire_airports;            ///< never expire airports

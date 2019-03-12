@@ -573,15 +573,11 @@ bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type,
 			if (s->cargo_type != cargo_type || s->src_type != src_type || s->src != src) continue;
 			if (s->IsAwarded() && s->awarded != company) continue;
 
-			Rect rect = st->GetCatchmentRect();
-
-			for (int y = rect.top; y <= rect.bottom; y++) {
-				for (int x = rect.left; x <= rect.right; x++) {
-					TileIndex tile = TileXY(x, y);
-					if (!IsTileType(tile, MP_HOUSE)) continue;
-					const Town *t = Town::GetByTile(tile);
-					if (t->cache.part_of_subsidy & POS_DST) towns_near.Include(t);
-				}
+			BitmapTileIterator it(st->catchment_tiles);
+			for (TileIndex tile = it; tile != INVALID_TILE; tile = ++it) {
+				if (!IsTileType(tile, MP_HOUSE)) continue;
+				const Town *t = Town::GetByTile(tile);
+				if (t->cache.part_of_subsidy & POS_DST) towns_near.Include(t);
 			}
 			break;
 		}
@@ -596,9 +592,9 @@ bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type,
 		if (s->cargo_type == cargo_type && s->src_type == src_type && s->src == src && (!s->IsAwarded() || s->awarded == company)) {
 			switch (s->dst_type) {
 				case ST_INDUSTRY:
-					for (const Industry * const *ip = st->industries_near.Begin(); ip != st->industries_near.End(); ip++) {
-						if (s->dst == (*ip)->index) {
-							assert((*ip)->part_of_subsidy & POS_DST);
+					for (Industry *ind : st->industries_near) {
+						if (s->dst == ind->index) {
+							assert(ind->part_of_subsidy & POS_DST);
 							subsidised = true;
 							if (!s->IsAwarded()) s->AwardTo(company);
 						}

@@ -20,8 +20,10 @@
 #include "linkgraph/linkgraph_type.h"
 #include "newgrf_storage.h"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "bitmap_type.h"
 #include <map>
 #include <vector>
+#include <set>
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
@@ -445,7 +447,11 @@ private:
 	}
 };
 
-typedef SmallVector<Industry *, 2> IndustryVector;
+struct IndustryCompare {
+	bool operator() (const Industry *lhs, const Industry *rhs) const;
+};
+
+typedef std::set<Industry *, IndustryCompare> IndustryList;
 
 /** Station data structure */
 struct Station FINAL : SpecializedStation<Station, false> {
@@ -468,6 +474,8 @@ public:
 
 	IndustryType indtype;   ///< Industry type to get the name from
 
+	BitmapTileArea catchment_tiles; ///< NOSAVE: Set of individual tiles covered by catchment area
+
 	StationHadVehicleOfTypeByte had_vehicle_of_type;
 
 	byte time_since_load;
@@ -477,7 +485,8 @@ public:
 	GoodsEntry goods[NUM_CARGO];  ///< Goods at this station
 	CargoTypes always_accepted;       ///< Bitmask of always accepted cargo types (by houses, HQs, industry tiles when industry doesn't accept cargo)
 
-	IndustryVector industries_near; ///< Cached list of industries near the station that can accept cargo, @see DeliverGoodsToIndustry()
+	IndustryList industries_near; ///< Cached list of industries near the station that can accept cargo, @see DeliverGoodsToIndustry()
+	Industry *industry;           ///< NOSAVE: Associated industry for neutral stations. (Rebuilt on load from Industry->st)
 
 	Station(TileIndex tile = INVALID_TILE);
 	~Station();
@@ -492,8 +501,8 @@ public:
 
 	/* virtual */ uint GetPlatformLength(TileIndex tile, DiagDirection dir) const;
 	/* virtual */ uint GetPlatformLength(TileIndex tile) const;
-	void RecomputeIndustriesNear();
-	static void RecomputeIndustriesNearForAll();
+	void RecomputeCatchment();
+	static void RecomputeCatchmentForAll();
 
 	Dock *GetPrimaryDock() const { return docks; }
 
@@ -502,6 +511,14 @@ public:
 	inline Rect GetCatchmentRect() const
 	{
 		return GetCatchmentRectUsingRadius(this->GetCatchmentRadius());
+	}
+
+	bool CatchmentCoversTown(TownID t) const;
+	void RemoveFromAllNearbyLists();
+
+	inline bool TileIsInCatchment(TileIndex tile) const
+	{
+		return this->catchment_tiles.HasTile(tile);
 	}
 
 	/* virtual */ inline bool TileBelongsToRailStation(TileIndex tile) const
@@ -553,5 +570,7 @@ public:
 		return new AirportTileIterator(*this);
 	}
 };
+
+void RebuildStationKdtree();
 
 #endif /* STATION_BASE_H */

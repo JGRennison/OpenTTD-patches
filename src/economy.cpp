@@ -1076,8 +1076,9 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 
 	uint accepted = 0;
 
-	for (uint i = 0; i < st->industries_near.Length() && num_pieces != 0; i++) {
-		Industry *ind = st->industries_near[i];
+	for (Industry *ind : st->industries_near) {
+		if (num_pieces == 0) break;
+
 		if (ind->index == source) continue;
 
 		uint cargo_index;

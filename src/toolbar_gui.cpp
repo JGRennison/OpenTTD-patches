@@ -99,14 +99,12 @@ public:
 		this->checkmark_width = GetStringBoundingBox(STR_JUST_CHECKMARK).width + 3;
 	}
 
-	virtual ~DropDownListCheckedItem() {}
-
 	uint Width() const
 	{
 		return DropDownListStringItem::Width() + this->checkmark_width;
 	}
 
-	void Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 	{
 		bool rtl = _current_text_dir == TD_RTL;
 		if (this->checked) {
@@ -131,8 +129,6 @@ public:
 		this->lock_size = GetSpriteSize(SPR_LOCK);
 	}
 
-	virtual ~DropDownListCompanyItem() {}
-
 	bool Selectable() const
 	{
 		return true;
@@ -151,7 +147,7 @@ public:
 		return max(max(this->icon_size.height, this->lock_size.height) + 2U, (uint)FONT_HEIGHT_NORMAL);
 	}
 
-	void Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 	{
 		CompanyID company = (CompanyID)this->result;
 		bool rtl = _current_text_dir == TD_RTL;
@@ -920,7 +916,7 @@ static CallBackFunction ToolbarBuildRoadClick(Window *w)
 	DropDownList *list = new DropDownList();
 
 	/* Road is always visible and available. */
-	*list->Append() = new DropDownListStringItem(STR_ROAD_MENU_ROAD_CONSTRUCTION, ROADTYPE_ROAD, false);
+	*list->Append() = new DropDownListIconItem(SPR_IMG_ROAD_X_DIR, PAL_NONE, STR_ROAD_MENU_ROAD_CONSTRUCTION, ROADTYPE_ROAD, false);
 
 	/* Tram is only visible when there will be a tram, and available when that has been introduced. */
 	Engine *e;
@@ -928,7 +924,7 @@ static CallBackFunction ToolbarBuildRoadClick(Window *w)
 		if (!HasBit(e->info.climates, _settings_game.game_creation.landscape)) continue;
 		if (!HasBit(e->info.misc_flags, EF_ROAD_TRAM)) continue;
 
-		*list->Append() = new DropDownListStringItem(STR_ROAD_MENU_TRAM_CONSTRUCTION, ROADTYPE_TRAM, !HasBit(c->avail_roadtypes, ROADTYPE_TRAM));
+		*list->Append() = new DropDownListIconItem(SPR_IMG_TRAMWAY_X_DIR, PAL_NONE, STR_ROAD_MENU_TRAM_CONSTRUCTION, ROADTYPE_TRAM, !HasBit(c->avail_roadtypes, ROADTYPE_TRAM));
 		break;
 	}
 	ShowDropDownList(w, list, _last_built_roadtype, WID_TN_ROADS, 140, true, true);

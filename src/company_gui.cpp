@@ -523,8 +523,6 @@ class DropDownListColourItem : public DropDownListItem {
 public:
 	DropDownListColourItem(int result, bool masked) : DropDownListItem(result, masked) {}
 
-	virtual ~DropDownListColourItem() {}
-
 	StringID String() const
 	{
 		return this->result >= COLOUR_END ? STR_COLOUR_DEFAULT : _colour_dropdown[this->result];
@@ -540,7 +538,7 @@ public:
 		return true;
 	}
 
-	void Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 	{
 		bool rtl = _current_text_dir == TD_RTL;
 		int height = bottom - top;

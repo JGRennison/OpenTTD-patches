@@ -111,7 +111,6 @@ Point GetViewportStationMiddle(const ViewPort *vp, const Station *st);
 void ShowTooltipForTile(Window *w, const TileIndex tile);
 
 void ViewportMapClearTunnelCache();
-void ViewportClearStationSignCache();
 void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile);
 
 void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal);

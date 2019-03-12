@@ -94,6 +94,7 @@
 #include "zoning.h"
 #include "window_gui.h"
 #include "linkgraph/linkgraph_gui.h"
+#include "viewport_kdtree.h"
 #include "viewport_sprite_sorter.h"
 #include "bridge_map.h"
 #include "company_base.h"
@@ -118,6 +119,10 @@
 #include "safeguards.h"
 
 Point _tile_fract_coords;
+
+
+ViewportSignKdtree _viewport_sign_kdtree(&Kdtree_ViewportSignXYFunc);
+static int _viewport_sign_maxwidth = 0;
 
 
 static const int MAX_TILE_EXTENT_LEFT   = ZOOM_LVL_BASE * TILE_PIXELS;                     ///< Maximum left   extent of tile relative to north corner.
@@ -263,18 +268,6 @@ std::vector<DrawnPathRouteTileLine> _vp_route_paths;
 std::vector<DrawnPathRouteTileLine> _vp_route_paths_last_mark_dirty;
 
 static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines);
-
-struct ViewportStationSignCacheEntry {
-	int32 top;             ///< The top of the sign
-	int32 left;            ///< The left bound of the sign
-	int32 right;           ///< The right bound of the sign
-	StationID id;          ///< Station ID
-};
-
-static byte _viewport_station_sign_cache_display_mode = 0;
-static const byte VIEWPORT_STATION_SIGN_CACHE_DISPLAY_MODE_MASK = ((1 << DO_SHOW_STATION_NAMES) | (1 << DO_SHOW_WAYPOINT_NAMES) | (1 << DO_SHOW_COMPETITOR_SIGNS));
-static OwnerByte _viewport_station_sign_cache_local_company { INVALID_OWNER };
-static std::vector<ViewportStationSignCacheEntry> _viewport_station_sign_cache;
 
 TileHighlightData _thd;
 static TileInfo *_cur_ti;
@@ -1349,133 +1342,115 @@ void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const Vie
 	}
 }
 
-struct ViewportAddStringApproxBoundsChecker {
-	int top;
-	int bottom;
-
-	ViewportAddStringApproxBoundsChecker(const DrawPixelInfo *dpi)
-	{
-		this->top    = dpi->top - ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM, dpi->zoom);
-		this->bottom = dpi->top + dpi->height;
-	}
-
-	bool IsSignMaybeOnScreen(const ViewportSign *sign) const
-	{
-		return !(this->bottom < sign->top || this->top > sign->top);
-	}
-};
-
-struct ViewportStationSignCacheApproxBoundsChecker {
-	int top;
-	int bottom;
-	int left;
-	int right;
-
-	ViewportStationSignCacheApproxBoundsChecker(const DrawPixelInfo *dpi)
-	{
-		this->top    = dpi->top - ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM, dpi->zoom);
-		this->bottom = dpi->top + dpi->height;
-		this->left   = dpi->left;
-		this->right  = dpi->left + dpi->width;
-	}
-
-	bool IsStationSignCacheEntryMaybeOnScreen(const ViewportStationSignCacheEntry *sign) const
-	{
-		return !(this->bottom < sign->top || this->top > sign->top || this->right < sign->left || this->left > sign->right);
-	}
-};
-
-static void ViewportAddTownNames(DrawPixelInfo *dpi)
+static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 {
-	if (!HasBit(_display_opt, DO_SHOW_TOWN_NAMES) || _game_mode == GM_MENU) return;
+	/* Pessimistically always use normal font, but also assume small font is never larger in either dimension */
+	const int fh = FONT_HEIGHT_NORMAL;
+	const int max_tw = _viewport_sign_maxwidth / 2 + 1;
+	const int expand_y = ScaleByZoom(VPSM_TOP + fh + VPSM_BOTTOM, zoom);
+	const int expand_x = ScaleByZoom(VPSM_LEFT + max_tw + VPSM_RIGHT, zoom);
 
-	ViewportAddStringApproxBoundsChecker checker(dpi);
+	r.left -= expand_x;
+	r.right += expand_x;
+	r.top -= expand_y;
+	r.bottom += expand_y;
 
-	const Town *t;
-	FOR_ALL_TOWNS(t) {
-		if (!checker.IsSignMaybeOnScreen(&t->cache.sign)) continue;
-		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
-				t->Label(), t->SmallLabel(), STR_VIEWPORT_TOWN_TINY_BLACK,
-				t->index, t->cache.population);
-	}
+	return r;
 }
 
-void ViewportClearStationSignCache()
+static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 {
-	_viewport_station_sign_cache.clear();
-	_viewport_station_sign_cache_display_mode = 0;
-	_viewport_station_sign_cache_local_company = INVALID_OWNER;
-}
+	Rect search_rect{ dpi->left, dpi->top, dpi->left + dpi->width, dpi->top + dpi->height };
+	search_rect = ExpandRectWithViewportSignMargins(search_rect, dpi->zoom);
 
-void ViewportFillStationSignCache()
-{
-	_viewport_station_sign_cache.clear();
-	_viewport_station_sign_cache_display_mode = _display_opt & VIEWPORT_STATION_SIGN_CACHE_DISPLAY_MODE_MASK;
-	_viewport_station_sign_cache_local_company = _local_company;
+	bool show_stations = HasBit(_display_opt, DO_SHOW_STATION_NAMES) && _game_mode != GM_MENU && !towns_only;
+	bool show_waypoints = HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) && _game_mode != GM_MENU && !towns_only;
+	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _game_mode != GM_MENU;
+	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS) && !towns_only;
+	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && !towns_only;
 
 	const BaseStation *st;
-	FOR_ALL_BASE_STATIONS(st) {
-		/* Check whether the base station is a station or a waypoint */
-		bool is_station = Station::IsExpected(st);
-
-		/* Don't draw if the display options are disabled */
-		if (!HasBit(_display_opt, is_station ? DO_SHOW_STATION_NAMES : DO_SHOW_WAYPOINT_NAMES)) continue;
-
-		/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != st->owner && st->owner != OWNER_NONE) continue;
-
-		int sign_half_width = max(ScaleByZoom(st->sign.width_normal, ZOOM_LVL_OUT_8X), ScaleByZoom(st->sign.width_small, ZOOM_LVL_DRAW_SPR)) / 2;
-		_viewport_station_sign_cache.push_back({ st->sign.top, st->sign.center - sign_half_width, st->sign.center + sign_half_width, st->index });
-	}
-}
-
-static void ViewportAddStationNames(DrawPixelInfo *dpi)
-{
-	if (!(HasBit(_display_opt, DO_SHOW_STATION_NAMES) || HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)) || _game_mode == GM_MENU) return;
-
-	if (_viewport_station_sign_cache_display_mode != (_display_opt & VIEWPORT_STATION_SIGN_CACHE_DISPLAY_MODE_MASK) || _viewport_station_sign_cache_local_company != _local_company) {
-		ViewportFillStationSignCache();
-	}
-
-	ViewportStationSignCacheApproxBoundsChecker checker(dpi);
-
-	for (const ViewportStationSignCacheEntry &entry : _viewport_station_sign_cache) {
-
-		if (!checker.IsStationSignCacheEntryMaybeOnScreen(&entry)) continue;
-
-		const BaseStation *st = BaseStation::Get(entry.id);
-		bool is_station = Station::IsExpected(st);
-
-		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
-				is_station ? STR_VIEWPORT_STATION : STR_VIEWPORT_WAYPOINT,
-				(is_station ? STR_VIEWPORT_STATION : STR_VIEWPORT_WAYPOINT) + 1, STR_NULL,
-				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
-	}
-}
-
-
-static void ViewportAddSigns(DrawPixelInfo *dpi)
-{
-	/* Signs are turned off or are invisible */
-	if (!HasBit(_display_opt, DO_SHOW_SIGNS) || IsInvisibilitySet(TO_SIGNS)) return;
-
-	ViewportAddStringApproxBoundsChecker checker(dpi);
-
 	const Sign *si;
-	FOR_ALL_SIGNS(si) {
-		/* Don't draw if sign is owned by another company and competitor signs should be hidden.
-		 * Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
-		 * companies can leave OWNER_NONE signs after them. */
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != si->owner && si->owner != OWNER_DEITY) continue;
 
-		if (!checker.IsSignMaybeOnScreen(&si->sign)) continue;
+	/* Collect all the items first and draw afterwards, to ensure layering */
+	std::vector<const BaseStation *> stations;
+	std::vector<const Town *> towns;
+	std::vector<const Sign *> signs;
 
+	_viewport_sign_kdtree.FindContained(search_rect.left, search_rect.top, search_rect.right, search_rect.bottom, [&](const ViewportSignKdtreeItem & item) {
+		switch (item.type) {
+			case ViewportSignKdtreeItem::VKI_STATION:
+				if (!show_stations) break;
+				st = BaseStation::Get(item.id.station);
+
+				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
+				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+
+				stations.push_back(st);
+				break;
+
+			case ViewportSignKdtreeItem::VKI_WAYPOINT:
+				if (!show_waypoints) break;
+				st = BaseStation::Get(item.id.station);
+
+				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
+				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+
+				stations.push_back(st);
+				break;
+
+			case ViewportSignKdtreeItem::VKI_TOWN:
+				if (!show_towns) break;
+				towns.push_back(Town::Get(item.id.town));
+				break;
+
+			case ViewportSignKdtreeItem::VKI_SIGN:
+				if (!show_signs) break;
+				si = Sign::Get(item.id.sign);
+
+				/* Don't draw if sign is owned by another company and competitor signs should be hidden.
+				* Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
+				* companies can leave OWNER_NONE signs after them. */
+				if (!show_competitors && _local_company != si->owner && si->owner != OWNER_DEITY) break;
+
+				signs.push_back(si);
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+	});
+
+	/* Layering order (bottom to top): Town names, signs, stations */
+
+	for (const auto *t : towns) {
+		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
+			t->Label(), t->SmallLabel(), STR_VIEWPORT_TOWN_TINY_BLACK,
+			t->index, t->cache.population);
+	}
+
+	for (const auto *si : signs) {
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &si->sign,
-				STR_WHITE_SIGN,
-				(IsTransparencySet(TO_SIGNS) || si->owner == OWNER_DEITY) ? STR_VIEWPORT_SIGN_SMALL_WHITE : STR_VIEWPORT_SIGN_SMALL_BLACK, STR_NULL,
-				si->index, 0, (si->owner == OWNER_NONE) ? COLOUR_GREY : (si->owner == OWNER_DEITY ? INVALID_COLOUR : _company_colours[si->owner]));
+			STR_WHITE_SIGN,
+			(IsTransparencySet(TO_SIGNS) || si->owner == OWNER_DEITY) ? STR_VIEWPORT_SIGN_SMALL_WHITE : STR_VIEWPORT_SIGN_SMALL_BLACK, STR_NULL,
+			si->index, 0, (si->owner == OWNER_NONE) ? COLOUR_GREY : (si->owner == OWNER_DEITY ? INVALID_COLOUR : _company_colours[si->owner]));
+	}
+
+	for (const auto *st : stations) {
+		if (Station::IsExpected(st)) {
+			/* Station */
+			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
+				STR_VIEWPORT_STATION, STR_VIEWPORT_STATION + 1, STR_NULL,
+				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
+		} else {
+			/* Waypoint */
+			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
+				STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT + 1, STR_NULL,
+				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
+		}
 	}
 }
+
 
 /**
  * Update the position of the viewport sign.
@@ -2615,15 +2590,13 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 		}
 		ViewportMapDrawVehicles(&_vd.dpi);
 		if (_scrolling_viewport && _settings_client.gui.show_scrolling_viewport_on_map) ViewportMapDrawScrollingViewportBox(vp);
-		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddTownNames(&_vd.dpi);
+		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddKdtreeSigns(&_vd.dpi, true);
 	} else {
 		/* Classic rendering. */
 		ViewportAddLandscape();
 		ViewportAddVehicles(&_vd.dpi);
 
-		ViewportAddTownNames(&_vd.dpi);
-		ViewportAddStationNames(&_vd.dpi);
-		ViewportAddSigns(&_vd.dpi);
+		ViewportAddKdtreeSigns(&_vd.dpi, false);
 
 		DrawTextEffects(&_vd.dpi);
 
@@ -3206,75 +3179,202 @@ static bool CheckClickOnViewportSign(const ViewPort *vp, int x, int y, const Vie
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, vp->zoom);
 	int sign_height = ScaleByZoom(VPSM_TOP + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + VPSM_BOTTOM, vp->zoom);
 
-	x = ScaleByZoom(x - vp->left, vp->zoom) + vp->virtual_left;
-	y = ScaleByZoom(y - vp->top, vp->zoom) + vp->virtual_top;
-
 	return y >= sign->top && y < sign->top + sign_height &&
 			x >= sign->center - sign_half_width && x < sign->center + sign_half_width;
 }
 
-static bool CheckClickOnTown(const ViewPort *vp, int x, int y)
+
+/**
+ * Check whether any viewport sign was clicked, and dispatch the click.
+ * @param vp the clicked viewport
+ * @param x X position of click
+ * @param y Y position of click
+ * @return true if the sign was hit
+ */
+static bool CheckClickOnViewportSign(const ViewPort *vp, int x, int y)
 {
-	if (!HasBit(_display_opt, DO_SHOW_TOWN_NAMES)) return false;
+	x = ScaleByZoom(x - vp->left, vp->zoom) + vp->virtual_left;
+	y = ScaleByZoom(y - vp->top, vp->zoom) + vp->virtual_top;
 
-	const Town *t;
-	FOR_ALL_TOWNS(t) {
-		if (CheckClickOnViewportSign(vp, x, y, &t->cache.sign)) {
-			ShowTownViewWindow(t->index);
-			return true;
+	Rect search_rect{ x - 1, y - 1, x + 1, y + 1 };
+	search_rect = ExpandRectWithViewportSignMargins(search_rect, vp->zoom);
+
+	bool show_stations = HasBit(_display_opt, DO_SHOW_STATION_NAMES) && _game_mode != GM_MENU;
+	bool show_waypoints = HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) && _game_mode != GM_MENU;
+	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _game_mode != GM_MENU;
+	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS);
+	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS);
+
+	/* Topmost of each type that was hit */
+	BaseStation *st = NULL, *last_st = NULL;
+	Town *t = NULL, *last_t = NULL;
+	Sign *si = NULL, *last_si = NULL;
+
+	/* See ViewportAddKdtreeSigns() for details on the search logic */
+	_viewport_sign_kdtree.FindContained(search_rect.left, search_rect.top, search_rect.right, search_rect.bottom, [&](const ViewportSignKdtreeItem & item) {
+		switch (item.type) {
+			case ViewportSignKdtreeItem::VKI_STATION:
+				if (!show_stations) break;
+				st = BaseStation::Get(item.id.station);
+				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+				if (CheckClickOnViewportSign(vp, x, y, &st->sign)) last_st = st;
+				break;
+
+			case ViewportSignKdtreeItem::VKI_WAYPOINT:
+				if (!show_waypoints) break;
+				st = BaseStation::Get(item.id.station);
+				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+				if (CheckClickOnViewportSign(vp, x, y, &st->sign)) last_st = st;
+				break;
+
+			case ViewportSignKdtreeItem::VKI_TOWN:
+				if (!show_towns) break;
+				t = Town::Get(item.id.town);
+				if (CheckClickOnViewportSign(vp, x, y, &t->cache.sign)) last_t = t;
+				break;
+
+			case ViewportSignKdtreeItem::VKI_SIGN:
+				if (!show_signs) break;
+				si = Sign::Get(item.id.sign);
+				if (!show_competitors && _local_company != si->owner && si->owner != OWNER_DEITY) break;
+				if (CheckClickOnViewportSign(vp, x, y, &si->sign)) last_si = si;
+				break;
+
+			default:
+				NOT_REACHED();
 		}
-	}
+	});
 
-	return false;
+	/* Select which hit to handle based on priority */
+	if (last_st != NULL) {
+		if (Station::IsExpected(last_st)) {
+			ShowStationViewWindow(last_st->index);
+		} else {
+			ShowWaypointWindow(Waypoint::From(last_st));
+		}
+		return true;
+	} else if (last_t != NULL) {
+		ShowTownViewWindow(last_t->index);
+		return true;
+	} else if (last_si != NULL) {
+		HandleClickOnSign(last_si);
+		return true;
+	} else {
+		return false;
+	}
 }
 
-static bool CheckClickOnStation(const ViewPort *vp, int x, int y)
+
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 {
-	if (!(HasBit(_display_opt, DO_SHOW_STATION_NAMES) || HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)) || IsInvisibilitySet(TO_SIGNS)) return false;
+	ViewportSignKdtreeItem item;
+	item.type = VKI_STATION;
+	item.id.station = id;
 
-	const BaseStation *st;
-	FOR_ALL_BASE_STATIONS(st) {
-		/* Check whether the base station is a station or a waypoint */
-		bool is_station = Station::IsExpected(st);
+	const Station *st = Station::Get(id);
+	Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
 
-		/* Don't check if the display options are disabled */
-		if (!HasBit(_display_opt, is_station ? DO_SHOW_STATION_NAMES : DO_SHOW_WAYPOINT_NAMES)) continue;
+	pt.y -= 32 * ZOOM_LVL_BASE;
+	if ((st->facilities & FACIL_AIRPORT) && st->airport.type == AT_OILRIG) pt.y -= 16 * ZOOM_LVL_BASE;
 
-		/* Don't check if competitor signs are not shown and the sign isn't owned by the local company */
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != st->owner && st->owner != OWNER_NONE) continue;
+	item.center = pt.x;
+	item.top = pt.y;
 
-		if (CheckClickOnViewportSign(vp, x, y, &st->sign)) {
-			if (is_station) {
-				ShowStationViewWindow(st->index);
-			} else {
-				ShowWaypointWindow(Waypoint::From(st));
-			}
-			return true;
-		}
-	}
+	/* Assume the sign can be a candidate for drawing, so measure its width */
+	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
 
-	return false;
+	return item;
 }
 
-
-static bool CheckClickOnSign(const ViewPort *vp, int x, int y)
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 {
-	/* Signs are turned off, or they are transparent and invisibility is ON, or company is a spectator */
-	if (!HasBit(_display_opt, DO_SHOW_SIGNS) || IsInvisibilitySet(TO_SIGNS) || _local_company == COMPANY_SPECTATOR) return false;
+	ViewportSignKdtreeItem item;
+	item.type = VKI_WAYPOINT;
+	item.id.station = id;
 
-	const Sign *si;
-	FOR_ALL_SIGNS(si) {
-		/* If competitor signs are hidden, don't check signs that aren't owned by local company */
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != si->owner && si->owner != OWNER_DEITY) continue;
-		if (si->owner == OWNER_DEITY && _game_mode != GM_EDITOR) continue;
+	const Waypoint *st = Waypoint::Get(id);
+	Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
 
-		if (CheckClickOnViewportSign(vp, x, y, &si->sign)) {
-			HandleClickOnSign(si);
-			return true;
-		}
+	pt.y -= 32 * ZOOM_LVL_BASE;
+
+	item.center = pt.x;
+	item.top = pt.y;
+
+	/* Assume the sign can be a candidate for drawing, so measure its width */
+	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
+
+	return item;
+}
+
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeTown(TownID id)
+{
+	ViewportSignKdtreeItem item;
+	item.type = VKI_TOWN;
+	item.id.town = id;
+
+	const Town *town = Town::Get(id);
+	Point pt = RemapCoords2(TileX(town->xy) * TILE_SIZE, TileY(town->xy) * TILE_SIZE);
+
+	pt.y -= 24 * ZOOM_LVL_BASE;
+
+	item.center = pt.x;
+	item.top = pt.y;
+
+	/* Assume the sign can be a candidate for drawing, so measure its width */
+	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, town->cache.sign.width_normal);
+
+	return item;
+}
+
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeSign(SignID id)
+{
+	ViewportSignKdtreeItem item;
+	item.type = VKI_SIGN;
+	item.id.sign = id;
+
+	const Sign *sign = Sign::Get(id);
+	Point pt = RemapCoords(sign->x, sign->y, sign->z);
+
+	pt.y -= 6 * ZOOM_LVL_BASE;
+
+	item.center = pt.x;
+	item.top = pt.y;
+
+	/* Assume the sign can be a candidate for drawing, so measure its width */
+	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, sign->sign.width_normal);
+
+	return item;
+}
+
+void RebuildViewportKdtree()
+{
+	/* Reset biggest size sign seen */
+	_viewport_sign_maxwidth = 0;
+
+	std::vector<ViewportSignKdtreeItem> items;
+	items.reserve(BaseStation::GetNumItems() + Town::GetNumItems() + Sign::GetNumItems());
+
+	const Station *st;
+	FOR_ALL_STATIONS(st) {
+		items.push_back(ViewportSignKdtreeItem::MakeStation(st->index));
 	}
 
-	return false;
+	const Waypoint *wp;
+	FOR_ALL_WAYPOINTS(wp) {
+		items.push_back(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
+	}
+
+	const Town *town;
+	FOR_ALL_TOWNS(town) {
+		items.push_back(ViewportSignKdtreeItem::MakeTown(town->index));
+	}
+
+	const Sign *sign;
+	FOR_ALL_SIGNS(sign) {
+		items.push_back(ViewportSignKdtreeItem::MakeSign(sign->index));
+	}
+
+	_viewport_sign_kdtree.Build(items.begin(), items.end());
 }
 
 
@@ -3358,9 +3458,7 @@ bool HandleViewportClicked(const ViewPort *vp, int x, int y, bool double_click)
 		return true;
 	}
 
-	if (CheckClickOnTown(vp, x, y)) return true;
-	if (CheckClickOnStation(vp, x, y)) return true;
-	if (CheckClickOnSign(vp, x, y)) return true;
+	if (CheckClickOnViewportSign(vp, x, y)) return true;
 	bool result = CheckClickOnLandscape(vp, x, y);
 
 	if (v != NULL) {

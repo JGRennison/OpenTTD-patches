@@ -92,6 +92,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	CargoTypes cargo_produced;       ///< Bitmap of all cargoes produced by houses in this town.
 	AcceptanceMatrix cargo_accepted; ///< Bitmap of cargoes accepted by houses for each 4*4 map square of the town.
 	CargoTypes cargo_accepted_total; ///< NOSAVE: Bitmap of all cargoes accepted by houses in this town.
+	StationList stations_near;       ///< NOSAVE: List of nearby stations.
 
 	uint16 time_until_rebuild;     ///< time until we rebuild a house
 
@@ -171,6 +172,9 @@ uint32 GetWorldPopulation();
 void UpdateAllTownVirtCoords();
 void ShowTownViewWindow(TownID town);
 void ExpandTown(Town *t);
+
+void RebuildTownKdtree();
+
 
 /**
  * Action types that a company must ask permission for to a town authority.
