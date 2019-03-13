@@ -2100,7 +2100,6 @@ STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nieuw bedrijf
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Uit het spel schoppen
 STR_NETWORK_CLIENTLIST_BAN                                      :Verbannen
-STR_NETWORK_CLIENTLIST_GIVE_MONEY                               :Geld geven
 STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Met iedereen praten
 STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Met bedrijf praten
 STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privébericht
@@ -3328,7 +3327,7 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Hoofdkan
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Hoofdkantoor verplaatsen voor 1% van de bedrijfswaarde. Shift+klik geeft de verwachte kosten zonder hoofdkantoor te verplaatsen.
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Details
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Gedetailleerde aantallen infrastructuur bekijken
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Geef geld
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Geld geven
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nieuw gezicht
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Nieuw gezicht voor directeur kiezen

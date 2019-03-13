@@ -2080,8 +2080,6 @@ STR_NETWORK_SERVER                                              :サーバー
 STR_NETWORK_CLIENT                                              :クライアント
 STR_NETWORK_SPECTATORS                                          :観覧者
 
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}観覧者
-
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}入力したパスワードを保存しない
 STR_COMPANY_PASSWORD_OK                                         :{BLACK}会社パスワードを変更
@@ -3197,10 +3195,10 @@ STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICL
 STR_DEPARTURES_CALLING_AT                                       :{TINY_FONT}{ORANGE}停車場:
 STR_DEPARTURES_CALLING_AT_LARGE                                 :{ORANGE}停車場:
 STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
-STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STATION}
-STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} 終点、{STATION}でございます
-STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{RAW_STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{RAW_STRING}.
+STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STATION}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} 終点、{STATION}でございます
+STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{STRING}.
+STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{STRING}.
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
