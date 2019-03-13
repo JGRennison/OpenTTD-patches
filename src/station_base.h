@@ -20,10 +20,10 @@
 #include "linkgraph/linkgraph_type.h"
 #include "newgrf_storage.h"
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 #include "bitmap_type.h"
 #include <map>
 #include <vector>
-#include <set>
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
@@ -451,7 +451,7 @@ struct IndustryCompare {
 	bool operator() (const Industry *lhs, const Industry *rhs) const;
 };
 
-typedef std::set<Industry *, IndustryCompare> IndustryList;
+typedef btree::btree_set<Industry *, IndustryCompare> IndustryList;
 
 /** Station data structure */
 struct Station FINAL : SpecializedStation<Station, false> {

@@ -14,7 +14,7 @@
 
 #include "core/smallstack_type.hpp"
 #include "tilearea_type.h"
-#include <set>
+#include "3rdparty/cpp-btree/btree_set.h"
 
 typedef uint16 StationID;
 typedef uint16 RoadStopID;
@@ -97,7 +97,7 @@ struct StationCompare {
 };
 
 /** List of stations */
-typedef std::set<Station *, StationCompare> StationList;
+typedef btree::btree_set<Station *, StationCompare> StationList;
 
 /**
  * Structure contains cached list of stations nearby. The list

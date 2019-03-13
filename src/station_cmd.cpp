@@ -4068,7 +4068,7 @@ void FindStationsAroundTiles(const TileArea &location, StationList *stations, bo
 	uint x = TileX(location.tile);
 	uint y = TileY(location.tile);
 
-	std::set<StationID> seen_stations;
+	btree::btree_set<StationID> seen_stations;
 
 	/* Scan an area around the building covering the maximum possible station
 	 * to find the possible nearby stations. */
