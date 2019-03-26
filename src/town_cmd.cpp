@@ -648,9 +648,6 @@ static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &
 		amount = amount << cf;
 	}
 
-	// with the adjustments above, this should never happen
-	assert(amount > 0);
-
 	// calculate for town stats
 
 	switch (ct) {
