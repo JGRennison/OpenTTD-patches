@@ -102,6 +102,12 @@ elif [ -f "$ROOT_DIR/.ottdrev-vc" ]; then
 	HASH="`echo "$VERSION_DATA" | cut -f 4 -d'	'`"
 	ISTAG="`echo "$VERSION_DATA" | cut -f 5 -d'	'`"
 	ISSTABLETAG="`echo "$VERSION_DATA" | cut -f 6 -d'	'`"
+	if [ -z "$ISTAG" ]; then
+		ISTAG="0"
+	fi
+	if [ -z "$ISSTABLETAG" ]; then
+		ISSTABLETAG="0"
+	fi
 	if [ "$MODIFIED" = "2" ]; then
 		VERSION="`echo "$VERSION" | sed -e 's/M$//'`"
 	fi
