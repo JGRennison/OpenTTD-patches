@@ -1022,6 +1022,8 @@ Vehicle::~Vehicle()
 
 	if (this->type != VEH_EFFECT) InvalidateVehicleTickCaches();
 
+	if (this->type == VEH_DISASTER) RemoveFromOtherVehicleTickCache(this);
+
 	if (this->breakdowns_since_last_service) _vehicles_to_pay_repair.erase(this);
 
 	if (this->type < VEH_BEGIN || this->type >= VEH_COMPANY_END) {
@@ -1143,6 +1145,13 @@ void ClearVehicleTickCaches()
 	_tick_ship_cache.clear();
 	_tick_effect_veh_cache.clear();
 	_tick_other_veh_cache.clear();
+}
+
+void RemoveFromOtherVehicleTickCache(const Vehicle *v)
+{
+	for (auto &u : _tick_other_veh_cache) {
+		if (u == v) u = nullptr;
+	}
 }
 
 void RebuildVehicleTickCaches()
@@ -1300,6 +1309,7 @@ void CallVehicleTicks()
 	}
 	{
 		for (Vehicle *u : _tick_other_veh_cache) {
+			if (!u) continue;
 			v = u;
 			u->Tick();
 		}

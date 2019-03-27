@@ -1299,5 +1299,6 @@ inline void InvalidateVehicleTickCaches()
 }
 
 void ClearVehicleTickCaches();
+void RemoveFromOtherVehicleTickCache(const Vehicle *v);
 
 #endif /* VEHICLE_BASE_H */
