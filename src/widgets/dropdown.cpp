@@ -152,7 +152,7 @@ struct DropdownWindow : Window {
 	DropdownWindow(Window *parent, const DropDownList *list, int selected, int button, bool instant_close, const Point &position, const Dimension &size, Colours wi_colour, bool scroll, DropDownSyncFocus sync_parent_focus)
 			: Window(&_dropdown_desc)
 	{
-		assert(list->Length() > 0);
+		assert(list->size() > 0);
 
 		this->position = position;
 		this->parent_wnd_class = parent->window_class;
@@ -178,14 +178,13 @@ struct DropdownWindow : Window {
 
 		/* Total length of list */
 		int list_height = 0;
-		for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
-			const DropDownListItem *item = *it;
+		for (const DropDownListItem *item : *list) {
 			list_height += item->Height(items_width);
 		}
 
 		/* Capacity is the average number of items visible */
-		this->vscroll->SetCapacity(size.height * (uint16)list->Length() / list_height);
-		this->vscroll->SetCount((uint16)list->Length());
+		this->vscroll->SetCapacity(size.height * (uint16)list->size() / list_height);
+		this->vscroll->SetCount((uint16)list->size());
 
 		this->parent_button    = button;
 		this->list             = list;
@@ -235,13 +234,10 @@ struct DropdownWindow : Window {
 		int width = nwi->current_x - 4;
 		int pos   = this->vscroll->GetPosition();
 
-		const DropDownList *list = this->list;
-
-		for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
+		for (const DropDownListItem *item : *this->list) {
 			/* Skip items that are scrolled up */
 			if (--pos >= 0) continue;
 
-			const DropDownListItem *item = *it;
 			int item_height = item->Height(width);
 
 			if (y < item_height) {
@@ -264,8 +260,7 @@ struct DropdownWindow : Window {
 
 		int y = r.top + 2;
 		int pos = this->vscroll->GetPosition();
-		for (const DropDownListItem * const *it = this->list->Begin(); it != this->list->End(); ++it) {
-			const DropDownListItem *item = *it;
+		for (const DropDownListItem *item : *this->list) {
 			int item_height = item->Height(r.right - r.left + 1);
 
 			/* Skip items that are scrolled up */
@@ -410,8 +405,7 @@ void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int b
 	/* Total height of list */
 	uint height = 0;
 
-	for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
-		const DropDownListItem *item = *it;
+	for (const DropDownListItem *item : *list) {
 		height += item->Height(width);
 		if (auto_width) max_item_width = max(max_item_width, item->Width() + 5);
 	}
@@ -439,7 +433,7 @@ void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int b
 		/* If the dropdown doesn't fully fit, we need a dropdown. */
 		if (height > available_height) {
 			scroll = true;
-			uint avg_height = height / list->Length();
+			uint avg_height = height / list->size();
 
 			/* Check at least there is space for one item. */
 			assert(available_height >= avg_height);
@@ -530,12 +524,12 @@ void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int butt
 
 	for (uint i = 0; strings[i] != INVALID_STRING_ID; i++) {
 		if (i >= 32 || !HasBit(hidden_mask, i)) {
-			*list->Append() = new DropDownListStringItem(strings[i], i, i < 32 && HasBit(disabled_mask, i));
+			list->push_back(new DropDownListStringItem(strings[i], i, i < 32 && HasBit(disabled_mask, i)));
 		}
 	}
 
 	/* No entries in the list? */
-	if (list->Length() == 0) {
+	if (list->size() == 0) {
 		delete list;
 		return;
 	}

@@ -209,7 +209,7 @@ struct GuiInstruction {
 	uint indent;
 };
 
-typedef SmallVector<GuiInstruction, 4> GuiInstructionList;
+typedef std::vector<GuiInstruction> GuiInstructionList;
 
 class ProgramWindow: public Window {
 public:
@@ -555,14 +555,12 @@ public:
 		int y = r.top + WD_FRAMERECT_TOP;
 		int line_height = this->GetWidget<NWidgetBase>(PROGRAM_WIDGET_INSTRUCTION_LIST)->resize_y;
 
-		int no = this->vscroll->GetPosition();
-
-		for (const GuiInstruction *i = instructions.Begin() + no, *e = instructions.End();
-				i != e; ++i, no++) {
+		for (int no = this->vscroll->GetPosition(); no < (int) instructions.size(); no++) {
+			const GuiInstruction &i = instructions[no];
 			/* Don't draw anything if it extends past the end of the window. */
 			if (!this->vscroll->IsVisible(no)) break;
 
-			DrawInstructionString(i->insn, y, no == this->selected_instruction, i->indent, r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT);
+			DrawInstructionString(i.insn, y, no == this->selected_instruction, i.indent, r.left + WD_FRAMETEXT_LEFT, r.right - WD_FRAMETEXT_RIGHT);
 			y += line_height;
 		}
 	}
@@ -593,7 +591,7 @@ private:
 	SignalInstruction *GetSelected() const
 	{
 		if (this->selected_instruction == -1
-				|| this->selected_instruction >= int(this->instructions.Length()))
+				|| this->selected_instruction >= int(this->instructions.size()))
 			return NULL;
 
 		return this->instructions[this->selected_instruction].insn;
@@ -613,13 +611,13 @@ private:
 
 		sel += this->vscroll->GetPosition();
 
-		return (sel <= int(this->instructions.Length()) && sel >= 0) ? sel : -1;
+		return (sel <= int(this->instructions.size()) && sel >= 0) ? sel : -1;
 	}
 
 	void RebuildInstructionList()
 	{
-		uint old_len = this->instructions.Length();
-		this->instructions.Clear();
+		uint old_len = this->instructions.size();
+		this->instructions.clear();
 		SignalInstruction *insn = program->first_instruction;
 		uint indent = 0;
 
@@ -629,7 +627,8 @@ private:
 				case PSO_FIRST:
 				case PSO_LAST: {
 					SignalSpecial *s = static_cast<SignalSpecial*>(insn);
-					GuiInstruction *gi = this->instructions.Append();
+					this->instructions.emplace_back();
+					GuiInstruction *gi = &(this->instructions.back());
 					gi->insn   = s;
 					gi->indent = indent;
 					insn = s->next;
@@ -638,7 +637,8 @@ private:
 
 				case PSO_IF: {
 					SignalIf *i = static_cast<SignalIf*>(insn);
-					GuiInstruction *gi = this->instructions.Append();
+					this->instructions.emplace_back();
+					GuiInstruction *gi = &(this->instructions.back());
 					gi->insn   = i;
 					gi->indent = indent++;
 					insn = i->if_true;
@@ -647,7 +647,8 @@ private:
 
 				case PSO_IF_ELSE: {
 					SignalIf::PseudoInstruction *p = static_cast<SignalIf::PseudoInstruction*>(insn);
-					GuiInstruction *gi = this->instructions.Append();
+					this->instructions.emplace_back();
+					GuiInstruction *gi = &(this->instructions.back());
 					gi->insn   = p;
 					gi->indent = indent - 1;
 					insn = p->block->if_false;
@@ -656,7 +657,8 @@ private:
 
 				case PSO_IF_ENDIF: {
 					SignalIf::PseudoInstruction *p = static_cast<SignalIf::PseudoInstruction*>(insn);
-					GuiInstruction *gi = this->instructions.Append();
+					this->instructions.emplace_back();
+					GuiInstruction *gi = &(this->instructions.back());
 					gi->insn   = p;
 					gi->indent = --indent;
 					insn = p->block->after;
@@ -665,7 +667,8 @@ private:
 
 				case PSO_SET_SIGNAL: {
 					SignalSet *s = static_cast<SignalSet*>(insn);
-					GuiInstruction *gi = this->instructions.Append();
+					this->instructions.emplace_back();
+					GuiInstruction *gi = &(this->instructions.back());
 					gi->insn   = s;
 					gi->indent = indent;
 					insn = s->next;
@@ -676,8 +679,8 @@ private:
 			}
 		} while (insn);
 
-		this->vscroll->SetCount(this->instructions.Length());
-		if (this->instructions.Length() != old_len)
+		this->vscroll->SetCount(this->instructions.size());
+		if (this->instructions.size() != old_len)
 			selected_instruction = -1;
 		UpdateButtonState();
 	}

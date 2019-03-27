@@ -1635,7 +1635,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}กา�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}คู่แข่ง
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}ผู้เล่นคอมพิวเตอร์
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :ดั้งเดิม
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(แนะนำ)
 
@@ -1718,7 +1717,6 @@ STR_QUIT_NO                                                     :{BLACK}ไม�
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
 STR_OSNAME_HAIKU                                                :ระบบปฏิบัติการ Haiku
@@ -3318,10 +3316,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}ซื�
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}ซื้อเรือ
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}ซื้อเครื่องบิน
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}ซื้อรถไฟที่เลือกไว้ เมื่อกด Shift+คลิกเมาส์ จะแสดงมูลค่าโดยประมาณโดยไม่ทำการซื้อ
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}ซื้อรถที่เลือกไว้ เมื่อกด Shift+คลิกเมาส์ จะแสดงมูลค่าโดยประมาณโดยไม่ทำการซื้อ
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}ซื้อเรือที่เลือกไว้ เมื่อกด Shift+คลิกเมาส์ จะแสดงมูลค่าโดยประมาณโดยไม่ทำการซื้อ
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}ซื้อเครื่องบินที่เลือกไว้ เมื่อกด Shift+คลิกเมาส์ จะแสดงมูลค่าโดยประมาณโดยไม่ทำการซื้อ
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}เปลี่ยนชื่อ
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}เปลี่ยนชื่อ

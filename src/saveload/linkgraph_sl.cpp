@@ -58,11 +58,11 @@ void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj)
  */
 const SaveLoad *GetLinkGraphJobDesc()
 {
-	static SmallVector<SaveLoad, 16> saveloads;
+	static std::vector<SaveLoad> saveloads;
 	static const char *prefix = "linkgraph.";
 
 	/* Build the SaveLoad array on first call and don't touch it later on */
-	if (saveloads.Length() == 0) {
+	if (saveloads.size() == 0) {
 		size_t offset_gamesettings = cpp_offsetof(GameSettings, linkgraph);
 		size_t offset_component = cpp_offsetof(LinkGraphJob, settings);
 
@@ -76,7 +76,7 @@ const SaveLoad *GetLinkGraphJobDesc()
 				char *&address = reinterpret_cast<char *&>(sl.address);
 				address -= offset_gamesettings;
 				address += offset_component;
-				*(saveloads.Append()) = sl;
+				saveloads.push_back(sl);
 			}
 			desc = GetSettingDescription(++setting);
 		}
@@ -90,8 +90,8 @@ const SaveLoad *GetLinkGraphJobDesc()
 
 		int i = 0;
 		do {
-			*(saveloads.Append()) = job_desc[i++];
-		} while (saveloads[saveloads.Length() - 1].cmd != SL_END);
+			saveloads.push_back(job_desc[i++]);
+		} while (saveloads[saveloads.size() - 1].cmd != SL_END);
 	}
 
 	return &saveloads[0];

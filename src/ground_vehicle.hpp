@@ -93,7 +93,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 
 	void PowerChanged();
 	void CargoChanged();
-	bool IsChainInDepot() const;
+	bool IsChainInDepot() const override;
 
 	void CalculatePower(uint32& power, uint32& max_te, bool breakdowns) const;
 
@@ -104,7 +104,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 	 * @param flooded was this vehicle flooded?
 	 * @return number of victims
 	 */
-	/* virtual */ uint Crash(bool flooded)
+	uint Crash(bool flooded) override
 	{
 		/* Crashed vehicles aren't going up or down */
 		for (T *v = T::From(this); v != NULL; v = v->Next()) {

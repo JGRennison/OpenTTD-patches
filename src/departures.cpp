@@ -153,8 +153,8 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 {
 	/* Seperate departure by each shared order group */
 	std::map<uint32, std::vector<Departure*>> separated_departure;
-	for (Departure** departure = departure_list->Begin(); departure != departure_list->End(); departure++) {
-		separated_departure[(*departure)->vehicle->orders.list->index].push_back(*departure);
+	for (Departure* departure : *departure_list) {
+		separated_departure[departure->vehicle->orders.list->index].push_back(departure);
 	}
 
 	for (auto& pair : separated_departure) {
@@ -190,7 +190,7 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 	}
 
 	/* Re-sort the departure list */
-	QSortT<Departure*>(departure_list->Begin(), departure_list->Length(), [](Departure * const *a, Departure * const *b) -> int {
+	QSortT<Departure*>(departure_list->data(), departure_list->size(), [](Departure * const *a, Departure * const *b) -> int {
 		return (*a)->scheduled_date - (*b)->scheduled_date;
 	});
 }
@@ -215,12 +215,12 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 	/* Having written that, it's not exactly slow at the moment. */
 
 	/* The list of departures which will be returned as a result. */
-	SmallVector<Departure*, 32> *result = new SmallVector<Departure*, 32>();
+	std::vector<Departure*> *result = new std::vector<Departure*>();
 
 	if (!show_pax && !show_freight) return result;
 
 	/* A list of the next scheduled orders to be considered for inclusion in the departure list. */
-	SmallVector<OrderDate*, 32> next_orders;
+	std::vector<OrderDate*> next_orders;
 
 	/* The maximum possible date for departures to be scheduled to occur. */
 	DateTicksScaled max_date = _settings_client.gui.max_departure_time * DAY_TICKS * _settings_game.economy.day_length_factor;
@@ -254,11 +254,11 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 		/* Get the first order for each vehicle for the station we're interested in that doesn't have No Loading set. */
 		/* We find the least order while we're at it. */
-		for (const Vehicle **v = vehicles.Begin(); v != vehicles.End(); v++) {
+		for (const Vehicle *v : vehicles) {
 			if (show_pax != show_freight) {
 				bool carries_passengers = false;
 
-				const Vehicle *u = *v;
+				const Vehicle *u = v;
 				while (u != NULL) {
 					if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
 						carries_passengers = true;
@@ -272,12 +272,12 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				}
 			}
 
-			const Order *order = (*v)->GetOrder((*v)->cur_implicit_order_index % (*v)->GetNumOrders());
-			DateTicks start_date = date_fract_scaled - (*v)->current_order_time;
-			if ((*v)->cur_timetable_order_index != INVALID_VEH_ORDER_ID && (*v)->cur_timetable_order_index != (*v)->cur_real_order_index) {
+			const Order *order = v->GetOrder(v->cur_implicit_order_index % v->GetNumOrders());
+			DateTicks start_date = date_fract_scaled - v->current_order_time;
+			if (v->cur_timetable_order_index != INVALID_VEH_ORDER_ID && v->cur_timetable_order_index != v->cur_real_order_index) {
 				/* vehicle is taking a conditional order branch, adjust start time to compensate */
-				const Order *real_current_order = (*v)->GetOrder((*v)->cur_real_order_index);
-				const Order *real_timetable_order = (*v)->GetOrder((*v)->cur_timetable_order_index);
+				const Order *real_current_order = v->GetOrder(v->cur_real_order_index);
+				const Order *real_timetable_order = v->GetOrder(v->cur_timetable_order_index);
 				assert(real_timetable_order->IsType(OT_CONDITIONAL));
 				start_date += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
 			}
@@ -286,30 +286,30 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 			uint waiting_time = 0;
 
 			/* If the vehicle is stopped in a depot, ignore it. */
-			if ((*v)->IsStoppedInDepot()) {
+			if (v->IsStoppedInDepot()) {
 				continue;
 			}
 
 			/* If the vehicle is heading for a depot to stop there, then its departures are cancelled. */
-			if ((*v)->current_order.IsType(OT_GOTO_DEPOT) && (*v)->current_order.GetDepotActionType() & ODATFB_HALT) {
+			if (v->current_order.IsType(OT_GOTO_DEPOT) && v->current_order.GetDepotActionType() & ODATFB_HALT) {
 				status = D_CANCELLED;
 			}
 
-			if ((*v)->current_order.IsAnyLoadingType()) {
+			if (v->current_order.IsAnyLoadingType()) {
 				/* Account for the vehicle having reached the current order and being in the loading phase. */
 				status = D_ARRIVED;
-				start_date -= order->GetTravelTime() + (((*v)->lateness_counter < 0) ? (*v)->lateness_counter : 0);
+				start_date -= order->GetTravelTime() + ((v->lateness_counter < 0) ? v->lateness_counter : 0);
 			}
 
 			/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
 			/* We only need to consider each order at most once. */
-			for (int i = (*v)->GetNumOrders(); i > 0; --i) {
-				if (VehicleSetNextDepartureTime(&start_date, &waiting_time, date_only_scaled, *v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch)) {
+			for (int i = v->GetNumOrders(); i > 0; --i) {
+				if (VehicleSetNextDepartureTime(&start_date, &waiting_time, date_only_scaled, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch)) {
 					should_reset_lateness = true;
 				}
 
 				/* If the scheduled departure date is too far in the future, stop. */
-				if (start_date - (*v)->lateness_counter > max_date) {
+				if (start_date - v->lateness_counter > max_date) {
 					break;
 				}
 
@@ -325,7 +325,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 								if (status != D_CANCELLED) {
 									status = D_TRAVELLING;
 								}
-								order = (*v)->GetOrder(order->GetConditionSkipToOrder());
+								order = v->GetOrder(order->GetConditionSkipToOrder());
 								if (order == NULL) {
 									break;
 								}
@@ -339,7 +339,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 								if (status != D_CANCELLED) {
 									status = D_TRAVELLING;
 								}
-								order = (order->next == NULL) ? (*v)->GetFirstOrder() : order->next;
+								order = (order->next == NULL) ? v->GetFirstOrder() : order->next;
 								continue;
 							}
 					}
@@ -347,7 +347,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 				/* Skip it if it's an automatic order. */
 				if (order->IsType(OT_IMPLICIT)) {
-					order = (order->next == NULL) ? (*v)->GetFirstOrder() : order->next;
+					order = (order->next == NULL) ? v->GetFirstOrder() : order->next;
 					continue;
 				}
 
@@ -368,10 +368,10 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 
 					OrderDate *od = new OrderDate();
 					od->order = order;
-					od->v = *v;
+					od->v = v;
 					/* We store the expected date for now, so that vehicles will be shown in order of expected time. */
 					od->expected_date = start_date;
-					od->lateness = (*v)->lateness_counter > 0 ? (*v)->lateness_counter : 0;
+					od->lateness = v->lateness_counter > 0 ? v->lateness_counter : 0;
 					od->status = status;
 					od->scheduled_waiting_time = waiting_time;
 
@@ -381,8 +381,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 					}
 
 					/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
-					if (!should_reset_lateness && (*v)->lateness_counter < 0 && !(*v)->current_order.IsAnyLoadingType()) {
-						od->expected_date -= (*v)->lateness_counter;
+					if (!should_reset_lateness && v->lateness_counter < 0 && !v->current_order.IsAnyLoadingType()) {
+						od->expected_date -= v->lateness_counter;
 					}
 
 					/* Update least_order if this is the current least order. */
@@ -393,7 +393,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 						least_order = od;
 					}
 
-					*(next_orders.Append(1)) = od;
+					next_orders.push_back(od);
 
 					/* We're done with this vehicle. */
 					break;
@@ -402,14 +402,14 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 					if (status != D_CANCELLED) {
 						status = D_TRAVELLING;
 					}
-					order = (order->next == NULL) ? (*v)->GetFirstOrder() : order->next;
+					order = (order->next == NULL) ? v->GetFirstOrder() : order->next;
 				}
 			}
 		}
 	}
 
 	/* No suitable orders found? Then stop. */
-	if (next_orders.Length() == 0) {
+	if (next_orders.size() == 0) {
 		return result;
 	}
 
@@ -418,15 +418,15 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 	for(int i = 10000; i > 0; --i) {
 		/* I should probably try to convince you that this loop always terminates regardless of the safeguard. */
 		/* 1. next_orders contains at least one element. */
-		/* 2. The loop terminates if result->Length() exceeds a fixed (for this loop) value, or if the least order's scheduled date is later than max_date. */
+		/* 2. The loop terminates if result->size() exceeds a fixed (for this loop) value, or if the least order's scheduled date is later than max_date. */
 		/*    (We ignore the case that the least order's scheduled date has overflown, as it is a relative rather than absolute date.) */
-		/* 3. Every time we loop round, either result->Length() will have increased -OR- we will have increased the expected_date of one of the elements of next_orders. */
+		/* 3. Every time we loop round, either result->size() will have increased -OR- we will have increased the expected_date of one of the elements of next_orders. */
 		/* 4. Therefore the loop must eventually terminate. */
 
 		/* least_order is the best candidate for the next departure. */
 
 		/* First, we check if we can stop looking for departures yet. */
-		if (result->Length() >= _settings_client.gui.max_departures ||
+		if (result->size() >= _settings_client.gui.max_departures ||
 				least_order->expected_date - least_order->lateness > max_date) {
 			break;
 		}
@@ -469,7 +469,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				/* If we reach the order at which the departure occurs again, then use the departure station as the terminus. */
 				if (order == least_order->order) {
 					/* If we're not calling anywhere, then skip this departure. */
-					found_terminus = (d->calling_at.Length() > 0);
+					found_terminus = (d->calling_at.size() > 0);
 					break;
 				}
 
@@ -504,7 +504,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 						order->GetNonStopType() != ONSF_NO_STOP_AT_ANY_STATION &&
 						order->GetNonStopType() != ONSF_NO_STOP_AT_DESTINATION_STATION) {
 					/* If we're not calling anywhere, then skip this departure. */
-					found_terminus = (d->calling_at.Length() > 0);
+					found_terminus = (d->calling_at.size() > 0);
 					break;
 				}
 
@@ -537,7 +537,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				}
 
 				/* If this order's station is already in the calling, then the previous called at station is the terminus. */
-				if (d->calling_at.Contains(c)) {
+				if (std::find(d->calling_at.begin(), d->calling_at.end(), c) != d->calling_at.end()) {
 					found_terminus = true;
 					break;
 				}
@@ -551,13 +551,13 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 						d->via = (StationID)order->GetDestination();
 					}
 					d->terminus = c;
-					*(d->calling_at.Append(1)) = c;
+					d->calling_at.push_back(c);
 				}
 
 				/* If we unload all at this station, then it is the terminus. */
 				if (order->GetType() == OT_GOTO_STATION &&
 						order->GetUnloadType() == OUFB_UNLOAD) {
-					if (d->calling_at.Length() > 0) {
+					if (d->calling_at.size() > 0) {
 						found_terminus = true;
 					}
 					break;
@@ -574,8 +574,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				bool duplicate = false;
 
 				if (_settings_client.gui.departure_merge_identical) {
-					for (uint i = 0; i < result->Length(); ++i) {
-						if (*d == **(result->Get(i))) {
+					for (uint i = 0; i < result->size(); ++i) {
+						if (*d == *((*result)[i])) {
 							duplicate = true;
 							break;
 						}
@@ -583,17 +583,17 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				}
 
 				if (!duplicate) {
-					*(result->Append(1)) = d;
+					result->push_back(d);
 
 					if (_settings_client.gui.departure_smart_terminus && type == D_DEPARTURE) {
-						for (uint i = 0; i < result->Length()-1; ++i) {
-							Departure *d_first = *(result->Get(i));
-							uint k = d_first->calling_at.Length()-2;
-							for (uint j = d->calling_at.Length(); j > 0; --j) {
-								CallAt c = CallAt(*(d->calling_at.Get(j-1)));
+						for (uint i = 0; i < result->size() - 1; ++i) {
+							Departure *d_first = (*result)[i];
+							uint k = d_first->calling_at.size() - 2;
+							for (uint j = d->calling_at.size(); j > 0; --j) {
+								CallAt c = CallAt(d->calling_at[j - 1]);
 
-								if (d_first->terminus >= c && d_first->calling_at.Length() >= 2) {
-									d_first->terminus = CallAt(*(d_first->calling_at.Get(k)));
+								if (d_first->terminus >= c && d_first->calling_at.size() >= 2) {
+									d_first->terminus = CallAt(d_first->calling_at[k]);
 
 									if (k == 0) break;
 
@@ -666,7 +666,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				if (order->GetType() == OT_GOTO_STATION &&
 						(order->GetLoadType() != OLFB_NO_LOAD ||
 						_settings_client.gui.departure_show_all_stops)) {
-					*(d->calling_at.Append(1)) = CallAt((StationID)order->GetDestination());
+					d->calling_at.push_back(CallAt((StationID)order->GetDestination()));
 				}
 
 				order = (order->next == NULL) ? least_order->v->GetFirstOrder() : order->next;
@@ -678,8 +678,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				bool duplicate = false;
 
 				if (_settings_client.gui.departure_merge_identical) {
-					for (uint i = 0; i < result->Length(); ++i) {
-						if (*d == **(result->Get(i))) {
+					for (uint i = 0; i < result->size(); ++i) {
+						if (*d == *((*result)[i])) {
 							duplicate = true;
 							break;
 						}
@@ -687,7 +687,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 				}
 
 				if (!duplicate) {
-					*(result->Append(1)) = d;
+					result->push_back(d);
 				}
 			}
 		}
@@ -784,8 +784,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 		}
 
 		/* Find the new least order. */
-		for (uint i = 0; i < next_orders.Length(); ++i) {
-			OrderDate *od = *(next_orders.Get(i));
+		for (uint i = 0; i < next_orders.size(); ++i) {
+			OrderDate *od = next_orders[i];
 
 			DateTicks lod = least_order->expected_date - least_order->lateness;
 			DateTicks odd = od->expected_date - od->lateness;
@@ -802,8 +802,8 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 	}
 
 	/* Avoid leaking OrderDate structs */
-	for (uint i = 0; i < next_orders.Length(); ++i) {
-		OrderDate *od = *(next_orders.Get(i));
+	for (uint i = 0; i < next_orders.size(); ++i) {
+		OrderDate *od = next_orders[i];
 		delete od;
 	}
 

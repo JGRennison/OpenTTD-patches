@@ -178,14 +178,14 @@ void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 SignalInstruction::SignalInstruction(SignalProgram *prog, SignalOpcode op)
 	: opcode(op), previous(NULL), program(prog)
 {
-	*program->instructions.Append() = this;
+	program->instructions.push_back(this);
 }
 
 SignalInstruction::~SignalInstruction()
 {
-	SignalInstruction** pthis = program->instructions.Find(this);
-	assert(pthis != program->instructions.End());
-	program->instructions.Erase(pthis);
+	auto pthis = std::find(program->instructions.begin(), program->instructions.end(), this);
+	assert(pthis != program->instructions.end());
+	program->instructions.erase(pthis);
 }
 
 void SignalInstruction::Insert(SignalInstruction *before_insn)
@@ -416,9 +416,7 @@ SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green
 void RemoveProgramDependencies(SignalReference dependency_target, SignalReference signal_to_update)
 {
 	SignalProgram *prog = GetSignalProgram(signal_to_update);
-	for (SignalInstruction **b = prog->instructions.Begin(), **i = b, **e = prog->instructions.End();
-			i != e; i++) {
-		SignalInstruction *insn = *i;
+	for (SignalInstruction *insn : prog->instructions) {
 		if (insn->Opcode() == PSO_IF) {
 			SignalIf* ifi = static_cast<SignalIf*>(insn);
 			if (ifi->condition->ConditionCode() == PSC_SIGNAL_STATE) {
@@ -437,11 +435,9 @@ void RemoveProgramDependencies(SignalReference dependency_target, SignalReferenc
 void SignalProgram::DebugPrintProgram()
 {
 	DEBUG(misc, 5, "Program %p listing", this);
-	for (SignalInstruction **b = this->instructions.Begin(), **i = b, **e = this->instructions.End();
-			i != e; i++)
-	{
-		SignalInstruction *insn = *i;
-		DEBUG(misc, 5, " %ld: Opcode %d, prev %d", long(i - b), int(insn->Opcode()),
+	for (size_t i = 0; i < this->instructions.size(); i++) {
+		SignalInstruction *insn = this->instructions[i];
+		DEBUG(misc, 5, " %d: Opcode %d, prev %d", int(i), int(insn->Opcode()),
 					int(insn->Previous() ? insn->Previous()->Id() : -1));
 	}
 }
@@ -475,7 +471,7 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
 	if (!prog)
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-	if (instruction_id >= prog->instructions.Length())
+	if (instruction_id >= prog->instructions.size())
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
 
 	bool exec = (flags & DC_EXEC) != 0;
@@ -550,7 +546,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	if (!prog)
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
 
-	if (instruction_id > prog->instructions.Length())
+	if (instruction_id > prog->instructions.size())
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
 
 	bool exec = (flags & DC_EXEC) != 0;
@@ -672,7 +668,7 @@ CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	if (!prog)
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
 
-	if (instruction_id > prog->instructions.Length())
+	if (instruction_id > prog->instructions.size())
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
 
 	bool exec = (flags & DC_EXEC) != 0;

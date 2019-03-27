@@ -495,12 +495,14 @@ public:
 
 	void MarkTilesDirty(bool cargo_change) const;
 
-	void UpdateVirtCoord();
+	void UpdateVirtCoord() override;
+
+	void MoveSign(TileIndex new_xy) override;
 
 	void AfterStationTileSetChange(bool adding, StationType type);
 
-	/* virtual */ uint GetPlatformLength(TileIndex tile, DiagDirection dir) const;
-	/* virtual */ uint GetPlatformLength(TileIndex tile) const;
+	uint GetPlatformLength(TileIndex tile, DiagDirection dir) const override;
+	uint GetPlatformLength(TileIndex tile) const override;
 	void RecomputeCatchment();
 	static void RecomputeCatchmentForAll();
 
@@ -521,7 +523,7 @@ public:
 		return this->catchment_tiles.HasTile(tile);
 	}
 
-	/* virtual */ inline bool TileBelongsToRailStation(TileIndex tile) const
+	inline bool TileBelongsToRailStation(TileIndex tile) const override
 	{
 		return IsRailStationTile(tile) && GetStationIndex(tile) == this->index;
 	}
@@ -534,9 +536,9 @@ public:
 	bool IsDockingTile(TileIndex tile) const;
 	bool IsWithinRangeOfDockingTile(TileIndex tile, uint max_distance) const;
 
-	/* virtual */ uint32 GetNewGRFVariable(const ResolverObject &object, byte variable, byte parameter, bool *available) const;
+	uint32 GetNewGRFVariable(const ResolverObject &object, byte variable, byte parameter, bool *available) const override;
 
-	/* virtual */ void GetTileArea(TileArea *ta, StationType type) const;
+	void GetTileArea(TileArea *ta, StationType type) const override;
 };
 
 #define FOR_ALL_STATIONS(var) FOR_ALL_BASE_STATIONS_OF_TYPE(Station, var)

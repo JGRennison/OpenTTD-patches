@@ -88,7 +88,7 @@ SpecialMouseMode _special_mouse_mode; ///< Mode of the mouse.
  * List of all WindowDescs.
  * This is a pointer to ensure initialisation order with the various static WindowDesc instances.
  */
-static SmallVector<WindowDesc*, 16> *_window_descs = NULL;
+static std::vector<WindowDesc*> *_window_descs = NULL;
 
 /** Config file to store WindowDesc */
 char *_windows_file;
@@ -111,13 +111,13 @@ WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_wi
 	default_width_trad(def_width_trad),
 	default_height_trad(def_height_trad)
 {
-	if (_window_descs == NULL) _window_descs = new SmallVector<WindowDesc*, 16>();
-	*_window_descs->Append() = this;
+	if (_window_descs == NULL) _window_descs = new std::vector<WindowDesc*>();
+	_window_descs->push_back(this);
 }
 
 WindowDesc::~WindowDesc()
 {
-	_window_descs->Erase(_window_descs->Find(this));
+	_window_descs->erase(std::find(_window_descs->begin(), _window_descs->end(), this));
 }
 
 /**
@@ -147,9 +147,9 @@ void WindowDesc::LoadFromConfig()
 {
 	IniFile *ini = new IniFile();
 	ini->LoadFromDisk(_windows_file, NO_DIRECTORY);
-	for (WindowDesc **it = _window_descs->Begin(); it != _window_descs->End(); ++it) {
-		if ((*it)->ini_key == NULL) continue;
-		IniLoadWindowSettings(ini, (*it)->ini_key, *it);
+	for (WindowDesc *wd : *_window_descs) {
+		if (wd->ini_key == NULL) continue;
+		IniLoadWindowSettings(ini, wd->ini_key, wd);
 	}
 	delete ini;
 }
@@ -169,13 +169,13 @@ static int CDECL DescSorter(WindowDesc * const *a, WindowDesc * const *b)
 void WindowDesc::SaveToConfig()
 {
 	/* Sort the stuff to get a nice ini file on first write */
-	QSortT(_window_descs->Begin(), _window_descs->Length(), DescSorter);
+	QSortT(_window_descs->data(), _window_descs->size(), DescSorter);
 
 	IniFile *ini = new IniFile();
 	ini->LoadFromDisk(_windows_file, NO_DIRECTORY);
-	for (WindowDesc **it = _window_descs->Begin(); it != _window_descs->End(); ++it) {
-		if ((*it)->ini_key == NULL) continue;
-		IniSaveWindowSettings(ini, (*it)->ini_key, *it);
+	for (WindowDesc *wd : *_window_descs) {
+		if (wd->ini_key == NULL) continue;
+		IniSaveWindowSettings(ini, wd->ini_key, wd);
 	}
 	ini->SaveToDisk(_windows_file);
 	delete ini;
@@ -333,8 +333,8 @@ Scrollbar *Window::GetScrollbar(uint widnum)
  */
 const QueryString *Window::GetQueryString(uint widnum) const
 {
-	const SmallMap<int, QueryString*>::Pair *query = this->querystrings.Find(widnum);
-	return query != this->querystrings.End() ? query->second : NULL;
+	auto query = this->querystrings.Find(widnum);
+	return query != this->querystrings.end() ? query->second : NULL;
 }
 
 /**
@@ -773,16 +773,17 @@ static void DispatchRightClickEvent(Window *w, int x, int y)
 	NWidgetCore *wid = w->nested_root->GetWidgetFromPos(x, y);
 	if (wid == NULL) return;
 
+	Point pt = { x, y };
+
 	/* No widget to handle, or the window is not interested in it. */
 	if (wid->index >= 0) {
-		Point pt = { x, y };
 		if (w->OnRightClick(pt, wid->index)) return;
 	}
 
 	/* Right-click close is enabled and there is a closebox */
 	if (_settings_client.gui.right_mouse_wnd_close && w->nested_root->GetWidgetOfType(WWT_CLOSEBOX)) {
 		delete w;
-	} else if (_settings_client.gui.hover_delay_ms == 0 && wid->tool_tip != 0) {
+	} else if (_settings_client.gui.hover_delay_ms == 0 && !w->OnTooltip(pt, wid->index, TCC_RIGHT_CLICK) && wid->tool_tip != 0) {
 		GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
 	}
 }
@@ -800,8 +801,10 @@ static void DispatchHoverEvent(Window *w, int x, int y)
 	/* No widget to handle */
 	if (wid == NULL) return;
 
+	Point pt = { x, y };
+
 	/* Show the tooltip if there is any */
-	if (wid->tool_tip != 0) {
+	if (!w->OnTooltip(pt, wid->index, TCC_HOVER) && wid->tool_tip != 0) {
 		GuiShowTooltips(w, wid->tool_tip);
 		return;
 	}
@@ -809,7 +812,6 @@ static void DispatchHoverEvent(Window *w, int x, int y)
 	/* Widget has no index, so the window is not interested in it. */
 	if (wid->index < 0) return;
 
-	Point pt = { x, y };
 	w->OnHover(pt, wid->index);
 }
 
@@ -1949,8 +1951,8 @@ static void DecreaseWindowCounters()
 		}
 
 		/* Handle editboxes */
-		for (SmallMap<int, QueryString*>::Pair *it = w->querystrings.Begin(); it != w->querystrings.End(); ++it) {
-			it->second->HandleEditBox(w, it->first);
+		for (SmallMap<int, QueryString*>::Pair &pair : w->querystrings) {
+			pair.second->HandleEditBox(w, pair.first);
 		}
 
 		w->OnMouseLoop();
@@ -3056,7 +3058,7 @@ void HandleMouseEvents()
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 		_newgrf_debug_sprite_picker.clicked_pixel = blitter->MoveTo(_screen.dst_ptr, _cursor.pos.x, _cursor.pos.y);
 		_newgrf_debug_sprite_picker.click_time = _realtime_tick;
-		_newgrf_debug_sprite_picker.sprites.Clear();
+		_newgrf_debug_sprite_picker.sprites.clear();
 		_newgrf_debug_sprite_picker.mode = SPM_REDRAW;
 		MarkWholeScreenDirty();
 	} else {
@@ -3156,13 +3158,11 @@ void UpdateWindows()
 
 	CallWindowRealtimeTickEvent(delta_ms);
 
-#ifdef ENABLE_NETWORK
 	static GUITimer network_message_timer = GUITimer(1);
 	if (network_message_timer.Elapsed(delta_ms)) {
 		network_message_timer.SetInterval(1000);
 		NetworkChatMessageLoop();
 	}
-#endif
 
 	Window *w;
 
@@ -3282,7 +3282,7 @@ void Window::InvalidateData(int data, bool gui_scope)
 	this->SetDirty();
 	if (!gui_scope) {
 		/* Schedule GUI-scope invalidation for next redraw. */
-		*this->scheduled_invalidation_data.Append() = data;
+		this->scheduled_invalidation_data.push_back(data);
 	}
 	this->OnInvalidateData(data, gui_scope);
 }
@@ -3292,10 +3292,11 @@ void Window::InvalidateData(int data, bool gui_scope)
  */
 void Window::ProcessScheduledInvalidations()
 {
-	for (int *data = this->scheduled_invalidation_data.Begin(); this->window_class != WC_INVALID && data != this->scheduled_invalidation_data.End(); data++) {
-		this->OnInvalidateData(*data, true);
+	for (int data : this->scheduled_invalidation_data) {
+		if (this->window_class == WC_INVALID) break;
+		this->OnInvalidateData(data, true);
 	}
-	this->scheduled_invalidation_data.Clear();
+	this->scheduled_invalidation_data.clear();
 }
 
 /**
@@ -3483,10 +3484,9 @@ void ReInitAllWindows()
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		w->ReInit();
 	}
-#ifdef ENABLE_NETWORK
+
 	void NetworkReInitChatBoxSize();
 	NetworkReInitChatBoxSize();
-#endif
 
 	/* Make sure essential parts of all windows are visible */
 	RelocateAllWindows(_cur_resolution.width, _cur_resolution.height);

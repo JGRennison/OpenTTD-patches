@@ -9,8 +9,6 @@
 
 /** @file network_server.cpp Server part of the network protocol. */
 
-#ifdef ENABLE_NETWORK
-
 #include "../stdafx.h"
 #include "../strings_func.h"
 #include "../date_func.h"
@@ -165,7 +163,7 @@ struct PacketWriter : SaveFilter {
 		this->current = NULL;
 	}
 
-	/* virtual */ void Write(byte *buf, size_t size)
+	void Write(byte *buf, size_t size) override
 	{
 		/* We want to abort the saving when the socket is closed. */
 		if (this->cs == NULL) SlError(STR_NETWORK_ERROR_LOSTCONNECTION);
@@ -192,7 +190,7 @@ struct PacketWriter : SaveFilter {
 		this->total_size += size;
 	}
 
-	/* virtual */ void Finish()
+	void Finish() override
 	{
 		/* We want to abort the saving when the socket is closed. */
 		if (this->cs == NULL) SlError(STR_NETWORK_ERROR_LOSTCONNECTION);
@@ -2104,13 +2102,13 @@ uint NetworkServerKickOrBanIP(const char *ip, bool ban)
 	/* Add address to ban-list */
 	if (ban) {
 		bool contains = false;
-		for (char **iter = _network_ban_list.Begin(); iter != _network_ban_list.End(); iter++) {
-			if (strcmp(*iter, ip) == 0) {
+		for (char *iter : _network_ban_list) {
+			if (strcmp(iter, ip) == 0) {
 				contains = true;
 				break;
 			}
 		}
-		if (!contains) *_network_ban_list.Append() = stredup(ip);
+		if (!contains) _network_ban_list.push_back(stredup(ip));
 	}
 
 	uint n = 0;
@@ -2213,5 +2211,3 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		NetworkServerSendChat(NETWORK_ACTION_COMPANY_NEW, DESTTYPE_BROADCAST, 0, "", ci->client_id, c->index + 1);
 	}
 }
-
-#endif /* ENABLE_NETWORK */

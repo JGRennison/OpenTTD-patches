@@ -89,8 +89,6 @@ static ConsoleFileList _console_file_list; ///< File storage cache for the conso
  * command hooks
  ****************/
 
-#ifdef ENABLE_NETWORK
-
 /**
  * Check network availability and inform in console about failure of detection.
  * @return Network availability.
@@ -162,10 +160,6 @@ DEF_CONSOLE_HOOK(ConHookNoNetwork)
 	return CHR_ALLOW;
 }
 
-#else
-#	define ConHookNoNetwork NULL
-#endif /* ENABLE_NETWORK */
-
 DEF_CONSOLE_HOOK(ConHookNewGRFDeveloperTool)
 {
 	if (_settings_client.gui.newgrf_developer_tools) {
@@ -173,11 +167,7 @@ DEF_CONSOLE_HOOK(ConHookNewGRFDeveloperTool)
 			if (echo) IConsoleError("This command is only available in game and editor.");
 			return CHR_DISALLOW;
 		}
-#ifdef ENABLE_NETWORK
 		return ConHookNoNetwork(echo);
-#else
-		return CHR_ALLOW;
-#endif
 	}
 	return CHR_HIDE;
 }
@@ -482,7 +472,6 @@ DEF_CONSOLE_CMD(ConClearBuffer)
 /**********************************
  * Network Core Console Commands
  **********************************/
-#ifdef ENABLE_NETWORK
 
 static bool ConKickOrBan(const char *argv, bool ban)
 {
@@ -566,21 +555,21 @@ DEF_CONSOLE_CMD(ConUnBan)
 
 	/* Try by IP. */
 	uint index;
-	for (index = 0; index < _network_ban_list.Length(); index++) {
+	for (index = 0; index < _network_ban_list.size(); index++) {
 		if (strcmp(_network_ban_list[index], argv[1]) == 0) break;
 	}
 
 	/* Try by index. */
-	if (index >= _network_ban_list.Length()) {
+	if (index >= _network_ban_list.size()) {
 		index = atoi(argv[1]) - 1U; // let it wrap
 	}
 
-	if (index < _network_ban_list.Length()) {
+	if (index < _network_ban_list.size()) {
 		char msg[64];
 		seprintf(msg, lastof(msg), "Unbanned %s", _network_ban_list[index]);
 		IConsolePrint(CC_DEFAULT, msg);
 		free(_network_ban_list[index]);
-		_network_ban_list.Erase(_network_ban_list.Get(index));
+		_network_ban_list.erase(_network_ban_list.begin() + index);
 	} else {
 		IConsolePrint(CC_DEFAULT, "Invalid list index or IP not in ban-list.");
 		IConsolePrint(CC_DEFAULT, "For a list of banned IP's, see the command 'banlist'");
@@ -599,8 +588,8 @@ DEF_CONSOLE_CMD(ConBanList)
 	IConsolePrint(CC_DEFAULT, "Banlist: ");
 
 	uint i = 1;
-	for (char **iter = _network_ban_list.Begin(); iter != _network_ban_list.End(); iter++, i++) {
-		IConsolePrintF(CC_DEFAULT, "  %d) %s", i, *iter);
+	for (char *entry : _network_ban_list) {
+		IConsolePrintF(CC_DEFAULT, "  %d) %s", i, entry);
 	}
 
 	return true;
@@ -932,8 +921,6 @@ DEF_CONSOLE_CMD(ConNetworkConnect)
 
 	return true;
 }
-
-#endif /* ENABLE_NETWORK */
 
 /*********************************
  *  script file console commands
@@ -1571,12 +1558,9 @@ DEF_CONSOLE_CMD(ConCompanies)
 		const char *password_state = "";
 		if (c->is_ai) {
 			password_state = "AI";
-		}
-#ifdef ENABLE_NETWORK
-		else if (_network_server) {
+		} else if (_network_server) {
 				password_state = StrEmpty(_network_company_states[c->index].password) ? "unprotected" : "protected";
 		}
-#endif
 
 		char colour[512];
 		GetString(colour, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(colour));
@@ -1592,8 +1576,6 @@ DEF_CONSOLE_CMD(ConCompanies)
 
 	return true;
 }
-
-#ifdef ENABLE_NETWORK
 
 DEF_CONSOLE_CMD(ConSay)
 {
@@ -1836,7 +1818,6 @@ DEF_CONSOLE_CMD(ConContent)
 	return false;
 }
 #endif /* defined(WITH_ZLIB) */
-#endif /* ENABLE_NETWORK */
 
 DEF_CONSOLE_CMD(ConSetting)
 {
@@ -2132,7 +2113,7 @@ void IConsoleStdLibRegister()
 	IConsoleAliasRegister("players",       "companies");
 
 	/* networking functions */
-#ifdef ENABLE_NETWORK
+
 /* Content downloading is only available with ZLIB */
 #if defined(WITH_ZLIB)
 	IConsoleCmdRegister("content",         ConContent);
@@ -2190,7 +2171,6 @@ void IConsoleStdLibRegister()
 	IConsoleAliasRegister("restart_game_year",     "setting restart_game_year %+");
 	IConsoleAliasRegister("min_players",           "setting min_active_clients %+");
 	IConsoleAliasRegister("reload_cfg",            "setting reload_cfg %+");
-#endif /* ENABLE_NETWORK */
 
 	/* debugging stuff */
 #ifdef _DEBUG

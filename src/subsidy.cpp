@@ -564,7 +564,7 @@ bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type,
 
 	/* Remember all towns near this station (at least one house in its catchment radius)
 	 * which are destination of subsidised path. Do that only if needed */
-	SmallVector<const Town *, 2> towns_near;
+	std::vector<const Town *> towns_near;
 	if (!st->rect.IsEmpty()) {
 		Subsidy *s;
 		FOR_ALL_SUBSIDIES(s) {
@@ -577,7 +577,7 @@ bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type,
 			for (TileIndex tile = it; tile != INVALID_TILE; tile = ++it) {
 				if (!IsTileType(tile, MP_HOUSE)) continue;
 				const Town *t = Town::GetByTile(tile);
-				if (t->cache.part_of_subsidy & POS_DST) towns_near.Include(t);
+				if (t->cache.part_of_subsidy & POS_DST) include(towns_near, t);
 			}
 			break;
 		}
@@ -601,9 +601,9 @@ bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type,
 					}
 					break;
 				case ST_TOWN:
-					for (const Town * const *tp = towns_near.Begin(); tp != towns_near.End(); tp++) {
-						if (s->dst == (*tp)->index) {
-							assert((*tp)->cache.part_of_subsidy & POS_DST);
+					for (const Town *tp : towns_near) {
+						if (s->dst == tp->index) {
+							assert(tp->cache.part_of_subsidy & POS_DST);
 							subsidised = true;
 							if (!s->IsAwarded()) s->AwardTo(company);
 						}

@@ -123,10 +123,8 @@ static void Save_SPRG()
 
 		WriteVLI(b, prog->tile);
 		WriteVLI(b, prog->track);
-		WriteVLI(b, prog->instructions.Length());
-		for(SignalInstruction **j = prog->instructions.Begin(), **je = prog->instructions.End();
-				j != je; ++j) {
-			SignalInstruction *insn = *j;
+		WriteVLI(b, prog->instructions.size());
+		for (SignalInstruction *insn : prog->instructions) {
 			WriteVLI(b, insn->Opcode());
 			if(insn->Opcode() != PSO_FIRST)
 				WriteVLI(b, insn->Previous()->Id());
@@ -190,26 +188,26 @@ struct Fixup {
 	SignalInstruction **ptr;
 };
 
-typedef SmallVector<Fixup, 4> FixupList;
+typedef std::vector<Fixup> FixupList;
 
 template<typename T>
 static void MakeFixup(FixupList &l, T *&ir, uint id, SignalOpcode op = PSO_INVALID)
 {
 	ir = reinterpret_cast<T*>(id);
-	new(l.Append()) Fixup(reinterpret_cast<SignalInstruction**>(&ir), op);
+	l.emplace_back(reinterpret_cast<SignalInstruction**>(&ir), op);
 }
 
 static void DoFixups(FixupList &l, InstructionList &il)
 {
-	for(Fixup *i = l.Begin(), *e = l.End(); i != e; ++i) {
-		uint id = reinterpret_cast<size_t>(*i->ptr);
-		if(id >= il.Length())
+	for (Fixup &i : l) {
+		uint id = reinterpret_cast<size_t>(*(i.ptr));
+		if (id >= il.size())
 			NOT_REACHED();
 
-		*i->ptr = il[id];
+		*(i.ptr) = il[id];
 
-		if(i->type != PSO_INVALID && (*i->ptr)->Opcode() != i->type) {
-			DEBUG(sl, 0, "Expected Id %d to be %d, but was in fact %d", id, i->type, (*i->ptr)->Opcode());
+		if (i.type != PSO_INVALID && (*(i.ptr))->Opcode() != i.type) {
+			DEBUG(sl, 0, "Expected Id %d to be %d, but was in fact %d", id, i.type, (*(i.ptr))->Opcode());
 			NOT_REACHED();
 		}
 	}

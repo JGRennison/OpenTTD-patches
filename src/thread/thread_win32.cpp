@@ -56,7 +56,7 @@ public:
 		ResumeThread(this->thread);
 	}
 
-	/* virtual */ ~ThreadObject_Win32()
+	~ThreadObject_Win32() override
 	{
 		if (this->thread != NULL) {
 			CloseHandle(this->thread);
@@ -64,14 +64,14 @@ public:
 		}
 	}
 
-	/* virtual */ bool Exit()
+	bool Exit() override
 	{
 		assert(GetCurrentThreadId() == this->id);
 		/* For now we terminate by throwing an error, gives much cleaner cleanup */
 		throw OTTDThreadExitSignal();
 	}
 
-	/* virtual */ void Join()
+	void Join() override
 	{
 		/* You cannot join yourself */
 		assert(GetCurrentThreadId() != this->id);
@@ -133,13 +133,13 @@ public:
 		this->event = CreateEvent(NULL, FALSE, FALSE, NULL);
 	}
 
-	/* virtual */ ~ThreadMutex_Win32()
+	~ThreadMutex_Win32() override
 	{
 		DeleteCriticalSection(&this->critical_section);
 		CloseHandle(this->event);
 	}
 
-	/* virtual */ void BeginCritical(bool allow_recursive = false)
+	void BeginCritical(bool allow_recursive = false) override
 	{
 		/* windows mutex is recursive by itself */
 		EnterCriticalSection(&this->critical_section);
@@ -147,14 +147,14 @@ public:
 		if (!allow_recursive && this->recursive_count != 1) NOT_REACHED();
 	}
 
-	/* virtual */ void EndCritical(bool allow_recursive = false)
+	void EndCritical(bool allow_recursive = false) override
 	{
 		if (!allow_recursive && this->recursive_count != 1) NOT_REACHED();
 		this->recursive_count--;
 		LeaveCriticalSection(&this->critical_section);
 	}
 
-	/* virtual */ void WaitForSignal()
+	void WaitForSignal() override
 	{
 		assert(this->recursive_count == 1); // Do we need to call Begin/EndCritical multiple times otherwise?
 		this->EndCritical();
@@ -162,7 +162,7 @@ public:
 		this->BeginCritical();
 	}
 
-	/* virtual */ void SendSignal()
+	void SendSignal() override
 	{
 		SetEvent(this->event);
 	}

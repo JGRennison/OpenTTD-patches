@@ -1000,10 +1000,6 @@ static bool ChangeWorkingDirectoryToExecutable(const char *exe)
 	char *s = strrchr(tmp, PATHSEPCHAR);
 	if (s != NULL) {
 		*s = '\0';
-#if defined(__DJGPP__)
-		/* If we want to go to the root, we can't use cd C:, but we must use '/' */
-		if (s > tmp && *(s - 1) == ':') chdir("/");
-#endif
 		if (chdir(tmp) != 0) {
 			DEBUG(misc, 0, "Directory with the binary does not exist?");
 		} else {
@@ -1056,7 +1052,7 @@ void DetermineBasePaths(const char *exe)
 	AppendPathSeparator(tmp, lastof(tmp));
 	_searchpaths[SP_PERSONAL_DIR_XDG] = stredup(tmp);
 #endif
-#if defined(DOS) || defined(OS2) || !defined(WITH_PERSONAL_DIR)
+#if defined(OS2) || !defined(WITH_PERSONAL_DIR)
 	_searchpaths[SP_PERSONAL_DIR] = NULL;
 #else
 #ifdef __HAIKU__
@@ -1244,7 +1240,6 @@ void DeterminePaths(const char *exe)
 
 	/* If we have network we make a directory for the autodownloading of content */
 	_searchpaths[SP_AUTODOWNLOAD_DIR] = str_fmt("%s%s", _personal_dir, "content_download" PATHSEP);
-#ifdef ENABLE_NETWORK
 	FioCreateDirectory(_searchpaths[SP_AUTODOWNLOAD_DIR]);
 
 	/* Create the directory for each of the types of content */
@@ -1257,14 +1252,6 @@ void DeterminePaths(const char *exe)
 
 	extern char *_log_file;
 	_log_file = str_fmt("%sopenttd.log",  _personal_dir);
-#else /* ENABLE_NETWORK */
-	/* If we don't have networking, we don't need to make the directory. But
-	 * if it exists we keep it, otherwise remove it from the search paths. */
-	if (!FileExists(_searchpaths[SP_AUTODOWNLOAD_DIR]))  {
-		free(_searchpaths[SP_AUTODOWNLOAD_DIR]);
-		_searchpaths[SP_AUTODOWNLOAD_DIR] = NULL;
-	}
-#endif /* ENABLE_NETWORK */
 }
 
 /**

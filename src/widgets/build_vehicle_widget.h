@@ -26,8 +26,6 @@ enum BuildVehicleWidgets {
 	WID_BV_SHOW_HIDE,                 ///< Button to hide or show the selected engine.
 	WID_BV_BUILD_SEL,                 ///< Build button.
 	WID_BV_RENAME,                    ///< Rename button.
-	WID_BV_BUILD_REFIT,
-	WID_BV_BUILD_REFIT_SEL,
 };
 
 #endif /* WIDGETS_BUILD_VEHICLE_WIDGET_H */

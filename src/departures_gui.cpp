@@ -274,7 +274,7 @@ public:
 
 				id_v += this->vscroll->GetPosition();
 
-				if (id_v >= (this->departures->Length() + this->arrivals->Length())) return; // click out of list bound
+				if (id_v >= (this->departures->size() + this->arrivals->size())) return; // click out of list bound
 
 				uint departure = 0;
 				uint arrival = 0;
@@ -283,9 +283,9 @@ public:
 				for (uint i = 0; i <= id_v; ++i) {
 					const Departure *d;
 
-					if (arrival == this->arrivals->Length()) {
+					if (arrival == this->arrivals->size()) {
 						d = (*(this->departures))[departure++];
-					} else if (departure == this->departures->Length()) {
+					} else if (departure == this->departures->size()) {
 						d = (*(this->arrivals))[arrival++];
 					} else {
 						d = (*(this->departures))[departure];
@@ -384,7 +384,7 @@ public:
 			this->EnableWidget(WID_DB_SHOW_DEPS);
 		}
 
-		this->vscroll->SetCount(min(_settings_client.gui.max_departures, this->departures->Length() + this->arrivals->Length()));
+		this->vscroll->SetCount(min(_settings_client.gui.max_departures, this->departures->size() + this->arrivals->size()));
 		this->DrawWidgets();
 	}
 
@@ -485,18 +485,18 @@ uint DeparturesWindow<Twaypoint>::GetMinWidth() const
 				continue;
 			}
 
-			for (const Vehicle **v = vehicles.Begin(); v != vehicles.End(); v++) {
-				SetDParam(0, (uint64)((*v)->index));
+			for (const Vehicle *v : vehicles) {
+				SetDParam(0, (uint64)(v->index));
 				int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width;
 				if (_settings_client.gui.departure_show_vehicle && width > veh_width) veh_width = width;
 
-				if ((*v)->group_id != INVALID_GROUP && (*v)->group_id != DEFAULT_GROUP) {
-					SetDParam(0, (uint64)((*v)->group_id));
+				if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP) {
+					SetDParam(0, (uint64)(v->group_id));
 					width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width;
 					if (_settings_client.gui.departure_show_group && width > group_width) group_width = width;
 				}
 
-				SetDParam(0, (uint64)((*v)->owner));
+				SetDParam(0, (uint64)(v->owner));
 				width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width;
 				if (_settings_client.gui.departure_show_company && width > toc_width) toc_width = width;
 			}
@@ -515,13 +515,12 @@ template<bool Twaypoint>
 void DeparturesWindow<Twaypoint>::DeleteDeparturesList(DepartureList *list)
 {
 	/* SmallVector uses free rather than delete on its contents (which doesn't invoke the destructor), so we need to delete each departure manually. */
-	for (uint i = 0; i < list->Length(); ++i) {
-		Departure **d = list->Get(i);
+	for (uint i = 0; i < list->size(); ++i) {
+		Departure **d = &(*list)[i];
 		delete *d;
 		/* Make sure a double free doesn't happen. */
 		*d = NULL;
 	}
-	list->Reset();
 	delete list;
 	list = NULL;
 }
@@ -543,7 +542,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	int text_right = right - (rtl ? text_offset :           0);
 
 	int y = r.top + 1;
-	uint max_departures = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->departures->Length() + this->arrivals->Length());
+	uint max_departures = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->departures->size() + this->arrivals->size());
 
 	if (max_departures > _settings_client.gui.max_departures) {
 		max_departures = _settings_client.gui.max_departures;
@@ -618,18 +617,18 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 				continue;
 			}
 
-			for (const Vehicle **v = vehicles.Begin(); v != vehicles.End(); v++) {
-				SetDParam(0, (uint64)((*v)->index));
+			for (const Vehicle *v : vehicles) {
+				SetDParam(0, (uint64)(v->index));
 				int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width;
 				if (_settings_client.gui.departure_show_vehicle && width > veh_width) veh_width = width;
 
-				if ((*v)->group_id != INVALID_GROUP && (*v)->group_id != DEFAULT_GROUP) {
-					SetDParam(0, (uint64)((*v)->group_id));
+				if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP) {
+					SetDParam(0, (uint64)(v->group_id));
 					width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width;
 					if (_settings_client.gui.departure_show_group && width > group_width) group_width = width;
 				}
 
-				SetDParam(0, (uint64)((*v)->owner));
+				SetDParam(0, (uint64)(v->owner));
 				width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width;
 				if (_settings_client.gui.departure_show_company && width > toc_width) toc_width = width;
 			}
@@ -646,9 +645,9 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	for (uint i = 0; i < max_departures; ++i) {
 		const Departure *d;
 
-		if (arrival == this->arrivals->Length()) {
+		if (arrival == this->arrivals->size()) {
 			d = (*(this->departures))[departure++];
-		} else if (departure == this->departures->Length()) {
+		} else if (departure == this->departures->size()) {
 			d = (*(this->arrivals))[arrival++];
 		} else {
 			d = (*(this->departures))[departure];
@@ -851,23 +850,23 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		/* STR_DEPARTURES_CALLING_AT_LAST_STATION :{STATION} & {RAW_STRING}*/
 		char buffer[512], scratch[512];
 
-		if (d->calling_at.Length() != 0) {
-			SetDParam(0, (uint64)(*d->calling_at.Get(0)).station);
+		if (d->calling_at.size() != 0) {
+			SetDParam(0, (uint64)(d->calling_at[0]).station);
 			GetString(scratch, STR_DEPARTURES_CALLING_AT_FIRST_STATION, lastof(scratch));
 
 			StationID continuesTo = INVALID_STATION;
 
-			if (d->calling_at.Get(0)->station == d->terminus.station && d->calling_at.Length() > 1) {
-				continuesTo = d->calling_at.Get(d->calling_at.Length() - 1)->station;
-			} else if (d->calling_at.Length() > 1) {
+			if (d->calling_at[0].station == d->terminus.station && d->calling_at.size() > 1) {
+				continuesTo = d->calling_at[d->calling_at.size() - 1].station;
+			} else if (d->calling_at.size() > 1) {
 				/* There's more than one stop. */
 
 				uint i;
 				/* For all but the last station, write out ", <station>". */
-				for (i = 1; i < d->calling_at.Length() - 1; ++i) {
-					StationID s = d->calling_at.Get(i)->station;
+				for (i = 1; i < d->calling_at.size() - 1; ++i) {
+					StationID s = d->calling_at[i].station;
 					if (s == d->terminus.station) {
-						continuesTo = d->calling_at.Get(d->calling_at.Length() - 1)->station;
+						continuesTo = d->calling_at[d->calling_at.size() - 1].station;
 						break;
 					}
 					SetDParam(0, (uint64)scratch);
@@ -878,7 +877,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 
 				/* Finally, finish off with " and <station>". */
 				SetDParam(0, (uint64)scratch);
-				SetDParam(1, (uint64)d->calling_at.Get(i)->station);
+				SetDParam(1, (uint64)d->calling_at[i].station);
 				GetString(buffer, STR_DEPARTURES_CALLING_AT_LAST_STATION, lastof(buffer));
 				strncpy(scratch, buffer, sizeof(scratch));
 			}

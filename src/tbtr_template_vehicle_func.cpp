@@ -91,17 +91,17 @@ void tbtr_debug_pvt (const Train *printme)
 
 void BuildTemplateGuiList(GUITemplateList *list, Scrollbar *vscroll, Owner oid, RailType railtype)
 {
-	list->Clear();
+	list->clear();
 	const TemplateVehicle *tv;
 
 	FOR_ALL_TEMPLATES(tv) {
 		if (tv->owner == oid && (tv->IsPrimaryVehicle() || tv->IsFreeWagonChain()) && TemplateVehicleContainsEngineOfRailtype(tv, railtype)) {
-			*list->Append() = tv;
+			list->push_back(tv);
 		}
 	}
 
 	list->RebuildDone();
-	if (vscroll) vscroll->SetCount(list->Length());
+	if (vscroll) vscroll->SetCount(list->size());
 }
 
 Money CalculateOverallTemplateCost(const TemplateVehicle *tv)

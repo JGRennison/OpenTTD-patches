@@ -431,6 +431,23 @@ void Station::UpdateVirtCoord()
 	SetWindowDirty(WC_STATION_VIEW, this->index);
 }
 
+/**
+ * Move the station main coordinate somewhere else.
+ * @param new_xy new tile location of the sign
+ */
+void Station::MoveSign(TileIndex new_xy)
+{
+	if (this->xy == new_xy) return;
+
+	_viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
+	_station_kdtree.Remove(this->index);
+
+	this->BaseStation::MoveSign(new_xy);
+
+	_station_kdtree.Insert(this->index);
+	_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(this->index));
+}
+
 /** Update the virtual coords needed to draw the station sign for all stations. */
 void UpdateAllStationVirtCoords()
 {
@@ -674,14 +691,7 @@ static void UpdateStationSignCoord(BaseStation *st)
 
 	/* clamp sign coord to be inside the station rect */
 	TileIndex new_xy = TileXY(ClampU(TileX(st->xy), r->left, r->right), ClampU(TileY(st->xy), r->top, r->bottom));
-	if (new_xy != st->xy) {
-		_viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(st->index));
-		_station_kdtree.Remove(st->index);
-		st->xy = new_xy;
-		_station_kdtree.Insert(st->index);
-		_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(st->index));
-		st->UpdateVirtCoord();
-	}
+	st->MoveSign(new_xy);
 
 	if (!Station::IsExpected(st)) return;
 	Station *full_station = Station::From(st);
@@ -910,7 +920,7 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
  * @param numtracks Number of platforms.
  * @return The cost in case of success, or an error code if it failed.
  */
-static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag flags, Axis axis, StationID *station, RailType rt, SmallVector<Train *, 4> &affected_vehicles, StationClassID spec_class, byte spec_index, byte plat_len, byte numtracks)
+static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag flags, Axis axis, StationID *station, RailType rt, std::vector<Train *> &affected_vehicles, StationClassID spec_class, byte spec_index, byte plat_len, byte numtracks)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	int allowed_z = -1;
@@ -965,7 +975,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 					if (HasBit(GetRailReservationTrackBits(tile_cur), track)) {
 						Train *v = GetTrainForReservation(tile_cur, track);
 						if (v != NULL) {
-							*affected_vehicles.Append() = v;
+							affected_vehicles.push_back(v);
 						}
 					}
 					CommandCost ret = DoCommand(tile_cur, 0, track, flags, CMD_REMOVE_SINGLE_RAIL);
@@ -1380,7 +1390,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 
 	/* Make sure the area below consists of clear tiles. (OR tiles belonging to a certain rail station) */
 	StationID est = INVALID_STATION;
-	SmallVector<Train *, 4> affected_vehicles;
+	std::vector<Train *> affected_vehicles;
 
 	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
 
@@ -1473,7 +1483,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 					/* Check for trains having a reservation for this tile. */
 					Train *v = GetTrainForReservation(tile, AxisToTrack(GetRailStationAxis(tile)));
 					if (v != NULL) {
-						*affected_vehicles.Append() = v;
+						affected_vehicles.push_back(v);
 						FreeTrainReservation(v);
 					}
 				}
@@ -1523,7 +1533,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 			tile_track += tile_delta ^ TileDiffXY(1, 1); // perpendicular to tile_delta
 		} while (--numtracks);
 
-		for (uint i = 0; i < affected_vehicles.Length(); ++i) {
+		for (uint i = 0; i < affected_vehicles.size(); ++i) {
 			/* Restore reservations of trains. */
 			RestoreTrainReservation(affected_vehicles[i]);
 		}
@@ -1635,7 +1645,7 @@ restart:
  * @return the number of cleared tiles or an error.
  */
 template <class T>
-CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected_stations, DoCommandFlag flags, Money removal_cost, bool keep_rail)
+CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_stations, DoCommandFlag flags, Money removal_cost, bool keep_rail)
 {
 	/* Count of the number of tiles removed */
 	int quantity = 0;
@@ -1675,7 +1685,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected
 		}
 
 		if (flags & DC_EXEC) {
-			bool already_affected = affected_stations.Include(st);
+			bool already_affected = include(affected_stations, st);
 			if (!already_affected) ZoningMarkDirtyStationCoverageArea(st);
 
 			/* read variables before the station tile is removed */
@@ -1711,8 +1721,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, SmallVector<T *, 4> &affected
 
 	if (quantity == 0) return error.Failed() ? error : CommandCost(STR_ERROR_THERE_IS_NO_STATION);
 
-	for (T **stp = affected_stations.Begin(); stp != affected_stations.End(); stp++) {
-		T *st = *stp;
+	for (T *st : affected_stations) {
 
 		/* now we need to make the "spanned" area of the railway station smaller
 		 * if we deleted something at the edges.
@@ -1750,14 +1759,13 @@ CommandCost CmdRemoveFromRailStation(TileIndex start, DoCommandFlag flags, uint3
 	if (start >= MapSize() || end >= MapSize()) return CMD_ERROR;
 
 	TileArea ta(start, end);
-	SmallVector<Station *, 4> affected_stations;
+	std::vector<Station *> affected_stations;
 
 	CommandCost ret = RemoveFromRailBaseStation(ta, affected_stations, flags, _price[PR_CLEAR_STATION_RAIL], HasBit(p2, 0));
 	if (ret.Failed()) return ret;
 
 	/* Do all station specific functions here. */
-	for (Station **stp = affected_stations.Begin(); stp != affected_stations.End(); stp++) {
-		Station *st = *stp;
+	for (Station *st : affected_stations) {
 
 		if (st->train_station.tile == INVALID_TILE) SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_TRAINS);
 		st->MarkTilesDirty(false);
@@ -1785,7 +1793,7 @@ CommandCost CmdRemoveFromRailWaypoint(TileIndex start, DoCommandFlag flags, uint
 	if (start >= MapSize() || end >= MapSize()) return CMD_ERROR;
 
 	TileArea ta(start, end);
-	SmallVector<Waypoint *, 4> affected_stations;
+	std::vector<Waypoint *> affected_stations;
 
 	return RemoveFromRailBaseStation(ta, affected_stations, flags, _price[PR_CLEAR_WAYPOINT_RAIL], HasBit(p2, 0));
 }
@@ -1818,7 +1826,7 @@ CommandCost RemoveRailStation(T *st, DoCommandFlag flags, Money removal_cost)
 	TILE_AREA_LOOP(tile, ta) {
 		/* only remove tiles that are actually train station tiles */
 		if (st->TileBelongsToRailStation(tile)) {
-			SmallVector<T*, 4> affected_stations; // dummy
+			std::vector<T*> affected_stations; // dummy
 			CommandCost ret = RemoveFromRailBaseStation(TileArea(tile, 1, 1), affected_stations, flags, removal_cost, false);
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret);
@@ -3758,7 +3766,7 @@ void DeleteStaleLinks(Station *from)
 					/* Have all vehicles refresh their next hops before deciding to
 					 * remove the node. */
 					OrderList *l;
-					SmallVector<Vehicle *, 32> vehicles;
+					std::vector<Vehicle *> vehicles;
 					FOR_ALL_ORDER_LISTS(l) {
 						bool found_from = false;
 						bool found_to = false;
@@ -3773,11 +3781,11 @@ void DeleteStaleLinks(Station *from)
 							}
 						}
 						if (!found_to || !found_from) continue;
-						*(vehicles.Append()) = l->GetFirstSharedVehicle();
+						vehicles.push_back(l->GetFirstSharedVehicle());
 					}
 
-					Vehicle **iter = vehicles.Begin();
-					while (iter != vehicles.End()) {
+					auto iter = vehicles.begin();
+					while (iter != vehicles.end()) {
 						Vehicle *v = *iter;
 
 						LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
@@ -3791,10 +3799,10 @@ void DeleteStaleLinks(Station *from)
 							*iter = next_shared;
 							++iter;
 						} else {
-							vehicles.Erase(iter);
+							iter = vehicles.erase(iter);
 						}
 
-						if (iter == vehicles.End()) iter = vehicles.Begin();
+						if (iter == vehicles.end()) iter = vehicles.begin();
 					}
 				}
 

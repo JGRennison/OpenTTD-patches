@@ -481,7 +481,7 @@ static DropDownList *GetGroupDropDownList(Owner owner, GroupID group_id, int &se
 	const Group *g;
 	FOR_ALL_GROUPS(g) {
 		if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
-			*list.Append() = g;
+			list.push_back(g);
 		}
 	}
 
@@ -492,14 +492,14 @@ static DropDownList *GetGroupDropDownList(Owner owner, GroupID group_id, int &se
 	selected = -1;
 
 	if (group_id == DEFAULT_GROUP) selected = DEFAULT_GROUP;
-	*dlist->Append() = new DropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false);
+	dlist->push_back(new DropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
 
-	for (size_t i = 0; i < list.Length(); ++i) {
+	for (size_t i = 0; i < list.size(); ++i) {
 		const Group *g = list[i];
 		if (group_id == g->index) selected = group_id;
 		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_GROUP_NAME, g->index, false);
 		item->SetParam(0, g->index);
-		*dlist->Append() = item;
+		dlist->push_back(item);
 	}
 
 	return dlist;
@@ -523,11 +523,11 @@ DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int 
 	const TraceRestrictSlot *slot;
 	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
 		if (slot->owner == owner) {
-			*list.Append() = slot;
+			list.push_back(slot);
 		}
 	}
 
-	if (list.Length() == 0) return NULL;
+	if (list.size() == 0) return NULL;
 
 	list.ForceResort();
 	list.Sort(&SlotNameSorter);
@@ -535,12 +535,12 @@ DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int 
 	DropDownList *dlist = new DropDownList();
 	selected = -1;
 
-	for (size_t i = 0; i < list.Length(); ++i) {
+	for (size_t i = 0; i < list.size(); ++i) {
 		const TraceRestrictSlot *s = list[i];
 		if (slot_id == s->index) selected = slot_id;
 		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TRACE_RESTRICT_SLOT_NAME, s->index, false);
 		item->SetParam(0, s->index);
-		*dlist->Append() = item;
+		dlist->push_back(item);
 	}
 
 	return dlist;
@@ -2550,10 +2550,10 @@ private:
 
 		Company *c;
 		FOR_ALL_COMPANIES(c) {
-			*(list->Append()) = MakeCompanyDropDownListItem(c->index);
+			list->push_back(MakeCompanyDropDownListItem(c->index));
 			if (c->index == value) missing_ok = true;
 		}
-		*(list->Append()) = new DropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY, false);
+		list->push_back(new DropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY, false));
 		if (INVALID_COMPANY == value) missing_ok = true;
 
 		assert(missing_ok == true);
@@ -2845,18 +2845,18 @@ private:
 	{
 		if (!this->slots.NeedRebuild()) return;
 
-		this->slots.Clear();
+		this->slots.clear();
 
 		const TraceRestrictSlot *slot;
 		FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
 			if (slot->owner == owner) {
-				*(this->slots.Append()) = slot;
+				this->slots.push_back(slot);
 			}
 		}
 
 		this->slots.ForceResort();
 		this->slots.Sort(&SlotNameSorter);
-		this->slots.Compact();
+		this->slots.shrink_to_fit();
 		this->slots.RebuildDone();
 	}
 
@@ -3066,8 +3066,8 @@ public:
 
 		this->BuildSlotList(this->owner);
 
-		this->slot_sb->SetCount(this->slots.Length());
-		this->vscroll->SetCount(this->vehicles.Length());
+		this->slot_sb->SetCount(this->slots.size());
+		this->vscroll->SetCount(this->vehicles.size());
 
 		/* Disable the slot specific function when we select all vehicles */
 		this->SetWidgetsDisabledState(this->vli.index == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID || _local_company != this->vli.company,
@@ -3103,7 +3103,7 @@ public:
 
 			case WID_TRSL_LIST_SLOTS: {
 				int y1 = r.top + WD_FRAMERECT_TOP;
-				int max = min(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), this->slots.Length());
+				int max = min(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), this->slots.size());
 				for (int i = this->slot_sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictSlot *slot = this->slots[i];
 
@@ -3162,7 +3162,7 @@ public:
 
 			case WID_TRSL_LIST_SLOTS: { // Matrix Slot
 				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0, this->tiny_step_height);
-				if (id_s >= this->slots.Length()) return;
+				if (id_s >= this->slots.size()) return;
 
 				this->slot_sel = this->vli.index = this->slots[id_s]->index;
 
@@ -3173,7 +3173,7 @@ public:
 
 			case WID_TRSL_LIST_VEHICLE: { // Matrix Vehicle
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_VEHICLE);
-				if (id_v >= this->vehicles.Length()) return; // click out of list bound
+				if (id_v >= this->vehicles.size()) return; // click out of list bound
 
 				const Vehicle *v = this->vehicles[id_v];
 				if (VehicleClicked(v)) break;
@@ -3230,7 +3230,7 @@ public:
 				this->SetDirty();
 
 				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0, this->tiny_step_height);
-				if (id_s >= this->slots.Length()) return; // click out of list bound
+				if (id_s >= this->slots.size()) return; // click out of list bound
 
 				if (_ctrl_pressed) {
 					// remove from old group
@@ -3247,7 +3247,7 @@ public:
 				this->SetDirty();
 
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_VEHICLE);
-				if (id_v >= this->vehicles.Length()) return; // click out of list bound
+				if (id_v >= this->vehicles.size()) return; // click out of list bound
 
 				const Vehicle *v = this->vehicles[id_v];
 				if (!VehicleClicked(v) && vindex == v->index) {
@@ -3331,7 +3331,7 @@ public:
 
 			case WID_TRSL_LIST_SLOTS: { // ... the list of slots.
 				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0, this->tiny_step_height);
-				if (id_s < this->slots.Length()) new_slot_over = this->slots[id_s]->index;
+				if (id_s < this->slots.size()) new_slot_over = this->slots[id_s]->index;
 				break;
 			}
 		}

@@ -26,7 +26,7 @@
 #include "safeguards.h"
 
 /// List of signals dependent upon this one
-typedef SmallVector<SignalReference, 4>     SignalDependencyList;
+typedef std::vector<SignalReference>     SignalDependencyList;
 
 /// Map of dependencies. The key identifies the signal,
 /// the value is a list of all of the signals which depend upon that signal.
@@ -825,21 +825,21 @@ void AddSignalDependency(SignalReference on, SignalReference dep)
 {
 	assert(GetTileOwner(on.tile) == GetTileOwner(dep.tile));
 	SignalDependencyList &dependencies = _signal_dependencies[on];
-	(*dependencies.Append()) = dep;
+	dependencies.push_back(dep);
 }
 
 void RemoveSignalDependency(SignalReference on, SignalReference dep)
 {
 	SignalDependencyList &dependencies = _signal_dependencies[on];
-	SignalReference *ob = dependencies.Find(dep);
+	auto ob = std::find(dependencies.begin(), dependencies.end(), dep);
 
 	// Destroying both signals in same command
-	if(ob == dependencies.End())
-		return;
+	if (ob == dependencies.end()) return;
 
-	dependencies.Erase(ob);
-	if (dependencies.Length() == 0)
+	dependencies.erase(ob);
+	if (dependencies.size() == 0) {
 		_signal_dependencies.erase(on);
+	}
 }
 
 void FreeSignalDependencies()
@@ -853,13 +853,12 @@ static void MarkDependencidesForUpdate(SignalReference on)
 	if (f == _signal_dependencies.end()) return;
 
 	SignalDependencyList &dependencies = f->second;
-	for (SignalReference *i = dependencies.Begin(), *e = dependencies.End();
-			i != e; ++i) {
-		assert(GetTileOwner(i->tile) == GetTileOwner(on.tile));
+	for (const SignalReference &i : dependencies) {
+		assert(GetTileOwner(i.tile) == GetTileOwner(on.tile));
 
-		Trackdir td = TrackToTrackdir(i->track);
-		_globset.Add(i->tile, TrackdirToExitdir(td));
-		_globset.Add(i->tile, TrackdirToExitdir(ReverseTrackdir(td)));
+		Trackdir td = TrackToTrackdir(i.track);
+		_globset.Add(i.tile, TrackdirToExitdir(td));
+		_globset.Add(i.tile, TrackdirToExitdir(ReverseTrackdir(td)));
 	}
 }
 
@@ -900,9 +899,9 @@ void CheckRemoveSignal(TileIndex tile, Track track)
 	if (i != e) {
 		SignalDependencyList &dependencies = i->second;
 
-		for (SignalReference *ir = dependencies.Begin(), *er = dependencies.End(); ir != er; ++ir) {
-			assert(GetTileOwner(ir->tile) == GetTileOwner(tile));
-			NotifyRemovingDependentSignal(thisRef, *ir);
+		for (const SignalReference &ir : dependencies) {
+			assert(GetTileOwner(ir.tile) == GetTileOwner(tile));
+			NotifyRemovingDependentSignal(thisRef, ir);
 		}
 
 		_signal_dependencies.erase(i);

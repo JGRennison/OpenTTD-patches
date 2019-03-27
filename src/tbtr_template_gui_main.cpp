@@ -194,7 +194,7 @@ private:
 	GUIGroupList groups;          ///< List of groups
 	uint unitnumber_digits;
 
-	SmallVector<int, 16> indents; ///< Indentation levels
+	std::vector<int> indents; ///< Indentation levels
 
 	short matrixContentLeftMargin;
 	int bottom_matrix_item_size = 0;
@@ -323,7 +323,7 @@ public:
 		/* Show the selected railtype in the pulldown menu */
 		this->GetWidget<NWidgetCore>(TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN)->widget_data = (this->sel_railtype == INVALID_RAILTYPE) ? STR_REPLACE_ALL_RAILTYPE : GetRailTypeInfo(this->sel_railtype)->strings.replace_text;
 
-		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.Length())) {
+		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.size())) {
 			this->vscroll[2]->SetCount(24);
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
@@ -360,7 +360,7 @@ public:
 
 		switch (widget) {
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
 					DoCommandP(0, template_index, 0, CMD_TOGGLE_REUSE_DEPOT_VEHICLES, NULL);
@@ -368,7 +368,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
 					DoCommandP(0, template_index, 0, CMD_TOGGLE_KEEP_REMAINING_VEHICLES, NULL);
@@ -376,7 +376,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
 					DoCommandP(0, template_index, 0, CMD_TOGGLE_REFIT_AS_TEMPLATE, NULL);
@@ -384,7 +384,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
 					DoCommandP(0, template_index, 0, CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, NULL);
@@ -398,7 +398,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_EDIT: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					editInProgress = true;
 					TemplateVehicle *sel = TemplateVehicle::Get(((this->templates)[selected_template_index])->index);
 					ShowTemplateCreateWindow(sel, &editInProgress);
@@ -419,7 +419,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_BUTTONS_DELETE:
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length()) && !editInProgress) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size()) && !editInProgress) {
 
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
@@ -436,9 +436,9 @@ public:
 				break;
 			case TRW_WIDGET_TOP_MATRIX: {
 				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (WD_MATRIX_TOP + FONT_HEIGHT_NORMAL+ WD_MATRIX_BOTTOM) ) + this->vscroll[0]->GetPosition();
-				if (newindex == this->selected_group_index || newindex >= this->groups.Length()) {
+				if (newindex == this->selected_group_index || newindex >= this->groups.size()) {
 					this->selected_group_index = -1;
-				} else if (newindex < this->groups.Length()) {
+				} else if (newindex < this->groups.size()) {
 					this->selected_group_index = newindex;
 				}
 				this->UpdateButtonState();
@@ -446,17 +446,17 @@ public:
 			}
 			case TRW_WIDGET_BOTTOM_MATRIX: {
 				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_BOTTOM_MATRIX]->pos_y) / this->bottom_matrix_item_size) + this->vscroll[1]->GetPosition();
-				if (newindex == this->selected_template_index || newindex >= templates.Length()) {
+				if (newindex == this->selected_template_index || newindex >= templates.size()) {
 					this->selected_template_index = -1;
-				} else if (newindex < templates.Length()) {
+				} else if (newindex < templates.size()) {
 					this->selected_template_index = newindex;
 				}
 				this->UpdateButtonState();
 				break;
 			}
 			case TRW_WIDGET_START: {
-				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length()) &&
-						(this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.Length())) {
+				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size()) &&
+						(this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.size())) {
 					uint32 tv_index = ((this->templates)[selected_template_index])->index;
 					int current_group_index = (this->groups)[this->selected_group_index]->index;
 
@@ -466,7 +466,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_STOP:
-				if ((this->selected_group_index < 0) || (this->selected_group_index >= (short)this->groups.Length())) {
+				if ((this->selected_group_index < 0) || (this->selected_group_index >= (short)this->groups.size())) {
 					return;
 				}
 
@@ -540,7 +540,7 @@ public:
 		TemplateReplacement *tr = GetTemplateReplacementByGroupID(gid);
 		if (!tr) return -1;
 
-		for (uint32 i = 0; i < this->templates.Length(); ++i) {
+		for (uint32 i = 0; i < this->templates.size(); ++i) {
 			if (templates[i]->index == tr->sel_template) {
 				return i;
 			}
@@ -550,11 +550,11 @@ public:
 
 	void AddParents(GUIGroupList *source, GroupID parent, int indent)
 	{
-		for (const Group **g = source->Begin(); g != source->End(); g++) {
-			if ((*g)->parent == parent) {
-				*this->groups.Append() = *g;
-				*this->indents.Append() = indent;
-				AddParents(source, (*g)->index, indent + 1);
+		for (const Group *g : *source) {
+			if (g->parent == parent) {
+				this->groups.push_back(g);
+				this->indents.push_back(indent);
+				AddParents(source, g->index, indent + 1);
 			}
 		}
 	}
@@ -586,15 +586,15 @@ public:
 	{
 		if (!this->groups.NeedRebuild()) return;
 
-		this->groups.Clear();
-		this->indents.Clear();
+		this->groups.clear();
+		this->indents.clear();
 
 		GUIGroupList list;
 
 		const Group *g;
 		FOR_ALL_GROUPS(g) {
 			if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
-				*list.Append() = g;
+				list.push_back(g);
 			}
 		}
 
@@ -603,9 +603,9 @@ public:
 
 		AddParents(&list, INVALID_GROUP, 0);
 
-		this->groups.Compact();
+		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
-		this->vscroll[0]->SetCount(groups.Length());
+		this->vscroll[0]->SetCount(groups.size());
 	}
 
 	void DrawAllGroupsFunction(const Rect &r) const
@@ -613,7 +613,7 @@ public:
 		int left = r.left + WD_MATRIX_LEFT;
 		int right = r.right - WD_MATRIX_RIGHT;
 		int y = r.top;
-		int max = min(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.Length());
+		int max = min(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.size());
 
 		/* Then treat all groups defined by/for the current company */
 		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
@@ -663,7 +663,7 @@ public:
 		int y = r.top;
 
 		Scrollbar *draw_vscroll = vscroll[1];
-		uint max = min(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.Length());
+		uint max = min(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.size());
 
 		const TemplateVehicle *v;
 		for (uint i = draw_vscroll->GetPosition(); i < max; ++i) {
@@ -724,7 +724,7 @@ public:
 
 	void DrawTemplateInfo(const Rect &r) const
 	{
-		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.Length())) {
+		if ((this->selected_template_index < 0) || (this->selected_template_index >= (short)this->templates.size())) {
 			return;
 		}
 
@@ -777,8 +777,8 @@ public:
 
 	void UpdateButtonState()
 	{
-		bool selected_ok = (this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.Length());
-		bool group_ok = (this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.Length());
+		bool selected_ok = (this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size());
+		bool group_ok = (this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.size());
 
 		short g_id = -1;
 		if (group_ok) {

@@ -166,7 +166,7 @@ struct NewGRFParametersWindow : public Window {
 		clicked_row(UINT_MAX),
 		editable(editable)
 	{
-		this->action14present = (c->num_valid_params != lengthof(c->param) || c->param_info.Length() != 0);
+		this->action14present = (c->num_valid_params != lengthof(c->param) || c->param_info.size() != 0);
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NP_SCROLLBAR);
@@ -190,7 +190,7 @@ struct NewGRFParametersWindow : public Window {
 		return &dummy_parameter_info;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NP_NUMPAR_DEC:
@@ -220,7 +220,7 @@ struct NewGRFParametersWindow : public Window {
 			case WID_NP_DESCRIPTION:
 				/* Minimum size of 4 lines. The 500 is the default size of the window. */
 				Dimension suggestion = {500 - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT, (uint)FONT_HEIGHT_NORMAL * 4 + WD_TEXTPANEL_TOP + WD_TEXTPANEL_BOTTOM};
-				for (uint i = 0; i < this->grf_config->param_info.Length(); i++) {
+				for (uint i = 0; i < this->grf_config->param_info.size(); i++) {
 					const GRFParameterInfo *par_info = this->grf_config->param_info[i];
 					if (par_info == NULL) continue;
 					const char *desc = GetGRFStringFromGRFText(par_info->desc);
@@ -234,7 +234,7 @@ struct NewGRFParametersWindow : public Window {
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_NP_NUMPAR:
@@ -243,10 +243,10 @@ struct NewGRFParametersWindow : public Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget == WID_NP_DESCRIPTION) {
-			const GRFParameterInfo *par_info = (this->clicked_row < this->grf_config->param_info.Length()) ? this->grf_config->param_info[this->clicked_row] : NULL;
+			const GRFParameterInfo *par_info = (this->clicked_row < this->grf_config->param_info.size()) ? this->grf_config->param_info[this->clicked_row] : NULL;
 			if (par_info == NULL) return;
 			const char *desc = GetGRFStringFromGRFText(par_info->desc);
 			if (desc == NULL) return;
@@ -265,7 +265,7 @@ struct NewGRFParametersWindow : public Window {
 		int button_y_offset = (this->line_height - SETTING_BUTTON_HEIGHT) / 2;
 		int text_y_offset = (this->line_height - FONT_HEIGHT_NORMAL) / 2;
 		for (uint i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
-			GRFParameterInfo *par_info = (i < this->grf_config->param_info.Length()) ? this->grf_config->param_info[i] : NULL;
+			GRFParameterInfo *par_info = (i < this->grf_config->param_info.size()) ? this->grf_config->param_info[i] : NULL;
 			if (par_info == NULL) par_info = GetDummyParameterInfo(i);
 			uint32 current_value = par_info->GetValue(this->grf_config);
 			bool selected = (i == this->clicked_row);
@@ -304,7 +304,7 @@ struct NewGRFParametersWindow : public Window {
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (this->closing_dropdown) {
 			this->closing_dropdown = false;
@@ -313,7 +313,7 @@ struct NewGRFParametersWindow : public Window {
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_NP_NUMPAR_DEC:
@@ -350,7 +350,7 @@ struct NewGRFParametersWindow : public Window {
 				if (_current_text_dir == TD_RTL) x = wid->current_x - 1 - x;
 				x -= 4;
 
-				GRFParameterInfo *par_info = (num < this->grf_config->param_info.Length()) ? this->grf_config->param_info[num] : NULL;
+				GRFParameterInfo *par_info = (num < this->grf_config->param_info.size()) ? this->grf_config->param_info[num] : NULL;
 				if (par_info == NULL) par_info = GetDummyParameterInfo(num);
 
 				/* One of the arrows is clicked */
@@ -378,7 +378,7 @@ struct NewGRFParametersWindow : public Window {
 
 							DropDownList *list = new DropDownList();
 							for (uint32 i = par_info->min_value; i <= par_info->max_value; i++) {
-								*list->Append() = new DropDownListCharStringItem(GetGRFStringFromGRFText(par_info->value_names.Find(i)->second), i, false);
+								list->push_back(new DropDownListCharStringItem(GetGRFStringFromGRFText(par_info->value_names.Find(i)->second), i, false));
 							}
 
 							ShowDropDownListAt(this, list, old_val, -1, wi_rect, COLOUR_ORANGE, true);
@@ -427,27 +427,27 @@ struct NewGRFParametersWindow : public Window {
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (StrEmpty(str)) return;
 		int32 value = atoi(str);
-		GRFParameterInfo *par_info = ((uint)this->clicked_row < this->grf_config->param_info.Length()) ? this->grf_config->param_info[this->clicked_row] : NULL;
+		GRFParameterInfo *par_info = ((uint)this->clicked_row < this->grf_config->param_info.size()) ? this->grf_config->param_info[this->clicked_row] : NULL;
 		if (par_info == NULL) par_info = GetDummyParameterInfo(this->clicked_row);
 		uint32 val = Clamp<uint32>(value, par_info->min_value, par_info->max_value);
 		par_info->SetValue(this->grf_config, val);
 		this->SetDirty();
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		assert(this->clicked_dropdown);
-		GRFParameterInfo *par_info = ((uint)this->clicked_row < this->grf_config->param_info.Length()) ? this->grf_config->param_info[this->clicked_row] : NULL;
+		GRFParameterInfo *par_info = ((uint)this->clicked_row < this->grf_config->param_info.size()) ? this->grf_config->param_info[this->clicked_row] : NULL;
 		if (par_info == NULL) par_info = GetDummyParameterInfo(this->clicked_row);
 		par_info->SetValue(this->grf_config, index);
 		this->SetDirty();
 	}
 
-	virtual void OnDropdownClose(Point pt, int widget, int index, bool instant_close)
+	void OnDropdownClose(Point pt, int widget, int index, bool instant_close) override
 	{
 		/* We cannot raise the dropdown button just yet. OnClick needs some hint, whether
 		 * the same dropdown button was clicked again, and then not open the dropdown again.
@@ -458,7 +458,7 @@ struct NewGRFParametersWindow : public Window {
 		this->SetDirty();
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_NP_BACKGROUND);
 	}
@@ -468,7 +468,7 @@ struct NewGRFParametersWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		if (!this->action14present) {
@@ -483,7 +483,7 @@ struct NewGRFParametersWindow : public Window {
 		}
 	}
 
-	virtual void OnRealtimeTick(uint delta_ms)
+	void OnRealtimeTick(uint delta_ms) override
 	{
 		if (timeout.Elapsed(delta_ms)) {
 			this->clicked_button = UINT_MAX;
@@ -550,7 +550,7 @@ struct NewGRFTextfileWindow : public TextfileWindow {
 		this->LoadTextfile(textfile, NEWGRF_DIR);
 	}
 
-	/* virtual */ void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_TF_CAPTION) {
 			SetDParam(0, STR_CONTENT_TYPE_NEWGRF);
@@ -720,7 +720,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NS_FILE_LIST:
@@ -749,7 +749,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 			case WID_NS_PRESET_LIST: {
 				Dimension d = GetStringBoundingBox(STR_NUM_CUSTOM);
-				for (uint i = 0; i < _grf_preset_list.Length(); i++) {
+				for (uint i = 0; i < _grf_preset_list.size(); i++) {
 					if (_grf_preset_list[i] != NULL) {
 						SetDParamStr(0, _grf_preset_list[i]);
 						d = maxdim(d, GetStringBoundingBox(STR_JUST_RAW_STRING));
@@ -771,13 +771,13 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_NS_FILE_LIST);
 		this->vscroll2->SetCapacityFromWidget(this, WID_NS_AVAIL_LIST);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_NS_PRESET_LIST:
@@ -826,7 +826,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		return pal;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_NS_FILE_LIST: {
@@ -884,7 +884,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				int offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
 				uint y = r.top + WD_FRAMERECT_TOP;
 				uint min_index = this->vscroll2->GetPosition();
-				uint max_index = min(min_index + this->vscroll2->GetCapacity(), this->avails.Length());
+				uint max_index = min(min_index + this->vscroll2->GetCapacity(), this->avails.size());
 
 				for (uint i = min_index; i < max_index; i++) {
 					const GRFConfig *c = this->avails[i];
@@ -915,7 +915,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (widget >= WID_NS_NEWGRF_TEXTFILE && widget < WID_NS_NEWGRF_TEXTFILE + TFT_END) {
 			if (this->active_sel == NULL && this->avail_sel == NULL) return;
@@ -929,11 +929,11 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				DropDownList *list = new DropDownList();
 
 				/* Add 'None' option for clearing list */
-				*list->Append() = new DropDownListStringItem(STR_NONE, -1, false);
+				list->push_back(new DropDownListStringItem(STR_NONE, -1, false));
 
-				for (uint i = 0; i < _grf_preset_list.Length(); i++) {
+				for (uint i = 0; i < _grf_preset_list.size(); i++) {
 					if (_grf_preset_list[i] != NULL) {
-						*list->Append() = new DropDownListCharStringItem(_grf_preset_list[i], i, false);
+						list->push_back(new DropDownListCharStringItem(_grf_preset_list[i], i, false));
 					}
 				}
 
@@ -1071,7 +1071,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				uint i = this->vscroll2->GetScrolledRowFromWidget(pt.y, this, WID_NS_AVAIL_LIST);
 				this->active_sel = NULL;
 				DeleteWindowByClass(WC_GRF_PARAMETERS);
-				if (i < this->avails.Length()) {
+				if (i < this->avails.size()) {
 					if (this->avail_sel != this->avails[i]) DeleteWindowByClass(WC_TEXTFILE);
 					this->avail_sel = this->avails[i];
 					this->avail_pos = i;
@@ -1129,11 +1129,9 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				if (!_network_available) {
 					ShowErrorMessage(STR_NETWORK_ERROR_NOTAVAILABLE, INVALID_STRING_ID, WL_ERROR);
 				} else {
-#if defined(ENABLE_NETWORK)
 					this->DeleteChildWindows(WC_QUERY_STRING); // Remove the parameter query window
 
 					ShowMissingContentWindow(this->actives);
-#endif
 				}
 				break;
 
@@ -1144,7 +1142,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	virtual void OnNewGRFsScanned()
+	void OnNewGRFsScanned() override
 	{
 		if (this->active_sel == NULL) DeleteWindowByClass(WC_TEXTFILE);
 		this->avail_sel = NULL;
@@ -1153,7 +1151,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->DeleteChildWindows(WC_QUERY_STRING); // Remove the parameter query window
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		if (!this->editable) return;
 
@@ -1172,7 +1170,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->InvalidateData(GOID_NEWGRF_PRESET_LOADED);
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (str == NULL) return;
 
@@ -1180,7 +1178,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		GetGRFPresetList(&_grf_preset_list);
 
 		/* Switch to this preset */
-		for (uint i = 0; i < _grf_preset_list.Length(); i++) {
+		for (uint i = 0; i < _grf_preset_list.size(); i++) {
 			if (_grf_preset_list[i] != NULL && strcmp(_grf_preset_list[i], str) == 0) {
 				this->preset = i;
 				break;
@@ -1195,7 +1193,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 	 * @param data Information about the changed data. @see GameOptionsInvalidationData
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		switch (data) {
@@ -1301,7 +1299,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->SetWidgetDisabledState(WID_NS_PRESET_SAVE, has_missing);
 	}
 
-	virtual EventState OnKeyPress(WChar key, uint16 keycode)
+	EventState OnKeyPress(WChar key, uint16 keycode) override
 	{
 		if (!this->editable) return ES_NOT_HANDLED;
 
@@ -1313,7 +1311,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 			case WKC_DOWN:
 				/* scroll down by one */
-				if (this->avail_pos < (int)this->avails.Length() - 1) this->avail_pos++;
+				if (this->avail_pos < (int)this->avails.size() - 1) this->avail_pos++;
 				break;
 
 			case WKC_PAGEUP:
@@ -1323,7 +1321,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 			case WKC_PAGEDOWN:
 				/* scroll down a page */
-				this->avail_pos = min(this->avail_pos + this->vscroll2->GetCapacity(), (int)this->avails.Length() - 1);
+				this->avail_pos = min(this->avail_pos + this->vscroll2->GetCapacity(), (int)this->avails.size() - 1);
 				break;
 
 			case WKC_HOME:
@@ -1333,14 +1331,14 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 			case WKC_END:
 				/* jump to end */
-				this->avail_pos = this->avails.Length() - 1;
+				this->avail_pos = this->avails.size() - 1;
 				break;
 
 			default:
 				return ES_NOT_HANDLED;
 		}
 
-		if (this->avails.Length() == 0) this->avail_pos = -1;
+		if (this->avails.size() == 0) this->avail_pos = -1;
 		if (this->avail_pos >= 0) {
 			this->active_sel = NULL;
 			DeleteWindowByClass(WC_GRF_PARAMETERS);
@@ -1353,7 +1351,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		return ES_HANDLED;
 	}
 
-	virtual void OnEditboxChanged(int wid)
+	void OnEditboxChanged(int wid) override
 	{
 		if (!this->editable) return;
 
@@ -1363,7 +1361,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->InvalidateData(0);
 	}
 
-	virtual void OnDragDrop(Point pt, int widget)
+	void OnDragDrop(Point pt, int widget) override
 	{
 		if (!this->editable) return;
 
@@ -1411,7 +1409,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	virtual void OnMouseDrag(Point pt, int widget)
+	void OnMouseDrag(Point pt, int widget) override
 	{
 		if (!this->editable) return;
 
@@ -1461,7 +1459,7 @@ private:
 	{
 		if (!this->avails.NeedRebuild()) return;
 
-		this->avails.Clear();
+		this->avails.clear();
 
 		for (const GRFConfig *c = _all_grfs; c != NULL; c = c->next) {
 			bool found = false;
@@ -1469,7 +1467,7 @@ private:
 			if (found) continue;
 
 			if (_settings_client.gui.newgrf_show_old_versions) {
-				*this->avails.Append() = c;
+				this->avails.push_back(c);
 			} else {
 				const GRFConfig *best = FindGRFConfig(c->ident.grfid, HasBit(c->flags, GCF_INVALID) ? FGCM_NEWEST : FGCM_NEWEST_VALID);
 				/*
@@ -1480,22 +1478,24 @@ private:
 				 * show that NewGRF!.
 				 */
 				if (best->version == 0 || best->ident.HasGrfIdentifier(c->ident.grfid, c->ident.md5sum)) {
-					*this->avails.Append() = c;
+					this->avails.push_back(c);
 				}
 			}
 		}
 
 		this->avails.Filter(this->string_filter);
-		this->avails.Compact();
+		this->avails.shrink_to_fit();
 		this->avails.RebuildDone();
 		this->avails.Sort();
 
 		if (this->avail_sel != NULL) {
-			this->avail_pos = this->avails.FindIndex(this->avail_sel);
-			if (this->avail_pos < 0) this->avail_sel = NULL;
+			this->avail_pos = find_index(this->avails, this->avail_sel);
+			if (this->avail_pos == -1) {
+				this->avail_sel = NULL;
+			}
 		}
 
-		this->vscroll2->SetCount(this->avails.Length()); // Update the scrollbar
+		this->vscroll2->SetCount(this->avails.size()); // Update the scrollbar
 	}
 
 	/**
@@ -1536,7 +1536,7 @@ private:
 
 		/* Select next (or previous, if last one) item in the list. */
 		int new_pos = this->avail_pos + 1;
-		if (new_pos >= (int)this->avails.Length()) new_pos = this->avail_pos - 1;
+		if (new_pos >= (int)this->avails.size()) new_pos = this->avail_pos - 1;
 		this->avail_pos = new_pos;
 		if (new_pos >= 0) this->avail_sel = this->avails[new_pos];
 
@@ -1546,7 +1546,6 @@ private:
 	}
 };
 
-#if defined(ENABLE_NETWORK)
 /**
  * Show the content list window with all missing grfs from the given list.
  * @param list The list of grfs to check for missing / not exactly matching ones.
@@ -1564,11 +1563,10 @@ void ShowMissingContentWindow(const GRFConfig *list)
 		strecpy(ci->name, c->GetName(), lastof(ci->name));
 		ci->unique_id = BSWAP32(c->ident.grfid);
 		memcpy(ci->md5sum, HasBit(c->flags, GCF_COMPATIBLE) ? c->original_md5sum : c->ident.md5sum, sizeof(ci->md5sum));
-		*cv.Append() = ci;
+		cv.push_back(ci);
 	}
-	ShowNetworkContentListWindow(cv.Length() == 0 ? NULL : &cv, CONTENT_TYPE_NEWGRF);
+	ShowNetworkContentListWindow(cv.size() == 0 ? NULL : &cv, CONTENT_TYPE_NEWGRF);
 }
-#endif
 
 Listing NewGRFWindow::last_sorting     = {false, 0};
 Filtering NewGRFWindow::last_filtering = {false, 0};
@@ -1612,7 +1610,7 @@ public:
 		this->editable = true; // Temporary setting, 'real' value is set in SetupSmallestSize().
 	}
 
-	virtual void SetupSmallestSize(Window *w, bool init_array)
+	void SetupSmallestSize(Window *w, bool init_array) override
 	{
 		/* Copy state flag from the window. */
 		assert(dynamic_cast<NewGRFWindow *>(w) != NULL);
@@ -1655,7 +1653,7 @@ public:
 		this->smallest_y = ComputeMaxSize(min_acs_height, this->smallest_y + this->resize_y - 1, this->resize_y);
 	}
 
-	virtual void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl)
+	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl) override
 	{
 		this->StoreSizePosition(sizing, x, y, given_width, given_height);
 
@@ -1774,7 +1772,7 @@ public:
 		}
 	}
 
-	virtual NWidgetCore *GetWidgetFromPos(int x, int y)
+	NWidgetCore *GetWidgetFromPos(int x, int y) override
 	{
 		if (!IsInsideBS(x, this->pos_x, this->current_x) || !IsInsideBS(y, this->pos_y, this->current_y)) return NULL;
 
@@ -1784,7 +1782,7 @@ public:
 		return nw;
 	}
 
-	virtual void Draw(const Window *w)
+	void Draw(const Window *w) override
 	{
 		if (this->editable) this->avs->Draw(w);
 		this->acs->Draw(w);
@@ -2063,7 +2061,7 @@ struct SavePresetWindow : public Window {
 		GetGRFPresetList(&this->presets);
 		this->selected = -1;
 		if (initial_text != NULL) {
-			for (uint i = 0; i < this->presets.Length(); i++) {
+			for (uint i = 0; i < this->presets.size(); i++) {
 				if (!strcmp(initial_text, this->presets[i])) {
 					this->selected = i;
 					break;
@@ -2079,7 +2077,7 @@ struct SavePresetWindow : public Window {
 		this->vscroll = this->GetScrollbar(WID_SVP_SCROLLBAR);
 		this->FinishInitNested(0);
 
-		this->vscroll->SetCount(this->presets.Length());
+		this->vscroll->SetCount(this->presets.size());
 		this->SetFocusedWidget(WID_SVP_EDITBOX);
 		if (initial_text != NULL) this->presetname_editbox.text.Assign(initial_text);
 	}
@@ -2088,24 +2086,24 @@ struct SavePresetWindow : public Window {
 	{
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
 				resize->height = FONT_HEIGHT_NORMAL + 2U;
 				size->height = 0;
-				for (uint i = 0; i < this->presets.Length(); i++) {
+				for (uint i = 0; i < this->presets.size(); i++) {
 					Dimension d = GetStringBoundingBox(this->presets[i]);
 					size->width = max(size->width, d.width + WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT);
 					resize->height = max(resize->height, d.height);
 				}
-				size->height = ClampU(this->presets.Length(), 5, 20) * resize->height + 1;
+				size->height = ClampU(this->presets.size(), 5, 20) * resize->height + 1;
 				break;
 			}
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
@@ -2115,7 +2113,7 @@ struct SavePresetWindow : public Window {
 				int offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
 				uint y = r.top + WD_FRAMERECT_TOP;
 				uint min_index = this->vscroll->GetPosition();
-				uint max_index = min(min_index + this->vscroll->GetCapacity(), this->presets.Length());
+				uint max_index = min(min_index + this->vscroll->GetCapacity(), this->presets.size());
 
 				for (uint i = min_index; i < max_index; i++) {
 					if ((int)i == this->selected) GfxFillRect(r.left + 1, y, r.right - 1, y + step_height - 2, PC_DARK_BLUE);
@@ -2129,12 +2127,12 @@ struct SavePresetWindow : public Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
 				uint row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SVP_PRESET_LIST);
-				if (row < this->presets.Length()) {
+				if (row < this->presets.size()) {
 					this->selected = row;
 					this->presetname_editbox.text.Assign(this->presets[row]);
 					this->SetWidgetDirty(WID_SVP_PRESET_LIST);
@@ -2156,7 +2154,7 @@ struct SavePresetWindow : public Window {
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_SVP_PRESET_LIST);
 	}
@@ -2211,7 +2209,7 @@ struct ScanProgressWindow : public Window {
 		free(last_name);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SP_PROGRESS_BAR: {
@@ -2234,7 +2232,7 @@ struct ScanProgressWindow : public Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_SP_PROGRESS_BAR: {

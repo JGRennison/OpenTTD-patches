@@ -19,8 +19,6 @@
 #include "../../newgrf_config.h"
 #include "../../date_type.h"
 
-#ifdef ENABLE_NETWORK
-
 /**
  * The game information that is not generated on-the-fly and has to
  * be sent to the clients.
@@ -56,7 +54,5 @@ struct NetworkGameInfo : NetworkServerGameInfo {
 	byte spectators_max;                            ///< Max spectators allowed on server
 	byte map_set;                                   ///< Graphical set
 };
-
-#endif /* ENABLE_NETWORK */
 
 #endif /* NETWORK_CORE_GAME_H */

@@ -253,7 +253,6 @@ enum Commands {
 	CMD_PLANT_TREE,                   ///< plant a tree
 
 	CMD_BUILD_VEHICLE,                ///< build a vehicle
-	CMD_BUILD_VEHICLE_NT,             ///< build a vehicle (no test)
 	CMD_SELL_VEHICLE,                 ///< sell a vehicle
 	CMD_REFIT_VEHICLE,                ///< refit the cargo space of a vehicle
 	CMD_SEND_VEHICLE_TO_DEPOT,        ///< send a vehicle to a depot

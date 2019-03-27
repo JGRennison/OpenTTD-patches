@@ -22,8 +22,6 @@
 #include <string>
 #include <time.h>
 
-#ifdef ENABLE_NETWORK
-
 /** Enum with all types of UDP packets. The order MUST not be changed **/
 enum PacketUDPType {
 	PACKET_UDP_CLIENT_FIND_SERVER,   ///< Queries a game server for game information
@@ -71,7 +69,7 @@ protected:
 	};
 	std::vector<FragmentSet> fragments;
 
-	NetworkRecvStatus CloseConnection(bool error = true);
+	NetworkRecvStatus CloseConnection(bool error = true) override;
 
 	void ReceiveInvalidPacket(PacketUDPType, NetworkAddress *client_addr);
 
@@ -258,7 +256,7 @@ public:
 	virtual ~NetworkUDPSocketHandler() { this->Close(); }
 
 	bool Listen();
-	void Close();
+	void Close() override;
 
 	void SendPacket(Packet *p, NetworkAddress *recv, bool all = false, bool broadcast = false);
 	void ReceivePackets();
@@ -268,7 +266,5 @@ public:
 	void ReceiveNetworkGameInfo(Packet *p, NetworkGameInfo *info);
 	void ReceiveNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info);
 };
-
-#endif /* ENABLE_NETWORK */
 
 #endif /* NETWORK_CORE_UDP_H */

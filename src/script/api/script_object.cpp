@@ -303,10 +303,8 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	/* Are we only interested in the estimate costs? */
 	bool estimate_only = GetDoCommandMode() != NULL && !GetDoCommandMode()();
 
-#ifdef ENABLE_NETWORK
 	/* Only set p2 when the command does not come from the network. */
 	if (GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = UINT32_MAX;
-#endif
 
 	SCOPE_INFO_FMT([=], "ScriptObject::DoCommand: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, company: %s, cmd: 0x%X (%s), estimate_only: %d",
 			tile, TileX(tile), TileY(tile), p1, p2, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), estimate_only);

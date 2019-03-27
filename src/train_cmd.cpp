@@ -1036,7 +1036,7 @@ static Train *FindGoodVehiclePos(const Train *src)
 }
 
 /** Helper type for lists/vectors of trains */
-typedef SmallVector<Train *, 16> TrainList;
+typedef std::vector<Train *> TrainList;
 
 /**
  * Make a backup of a train into a train list.
@@ -1045,7 +1045,7 @@ typedef SmallVector<Train *, 16> TrainList;
  */
 static void MakeTrainBackup(TrainList &list, Train *t)
 {
-	for (; t != NULL; t = t->Next()) *list.Append() = t;
+	for (; t != NULL; t = t->Next()) list.push_back(t);
 }
 
 /**
@@ -1055,12 +1055,11 @@ static void MakeTrainBackup(TrainList &list, Train *t)
 static void RestoreTrainBackup(TrainList &list)
 {
 	/* No train, nothing to do. */
-	if (list.Length() == 0) return;
+	if (list.size() == 0) return;
 
 	Train *prev = NULL;
 	/* Iterate over the list and rebuild it. */
-	for (Train **iter = list.Begin(); iter != list.End(); iter++) {
-		Train *t = *iter;
+	for (Train *t : list) {
 		if (prev != NULL) {
 			prev->SetNext(t);
 		} else if (t->Previous() != NULL) {
@@ -5309,18 +5308,24 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID 
  * Build a virtual train vehicle.
  * @param tile unused
  * @param flags type of operation
- * @param p1 the engine ID to build
+ * @param p1 various bitstuffed data
+ *  bits  0-15: vehicle type being built.
+ *  bits 24-31: refit cargo type.
  * @param p2 unused
  * @param text unused
  * @return the cost of this operation or an error
  */
 CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	EngineID eid = p1;
+	EngineID eid = GB(p1, 0, 16);
 
 	if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
 		return_cmd_error(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
 	}
+
+	/* Validate the cargo type. */
+	CargoID cargo = GB(p1, 24, 8);
+	if (cargo >= NUM_CARGO && cargo != CT_INVALID) return CMD_ERROR;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -5332,12 +5337,10 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 			return_cmd_error(err);
 		}
 
-		if (text && text[0] == 'R') {
-			CargoID cargo = text[1];
-			if (cargo >= NUM_CARGO) return CMD_ERROR;
+		if (cargo != CT_INVALID) {
 			CargoID default_cargo = Engine::Get(eid)->GetDefaultCargoType();
 			if (default_cargo != cargo) {
-				CommandCost refit_res = CmdRefitVehicle(tile, flags, train->index, cargo | (1 << 5), NULL);
+				CommandCost refit_res = CmdRefitVehicle(tile, flags, train->index, cargo, NULL);
 				if (!refit_res.Succeeded()) return refit_res;
 			}
 		}

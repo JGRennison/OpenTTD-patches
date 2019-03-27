@@ -83,11 +83,11 @@ GRFConfig::GRFConfig(const GRFConfig &config) :
 	this->info->AddRef();
 	this->url->AddRef();
 	if (config.error != NULL) this->error = new GRFError(*config.error);
-	for (uint i = 0; i < config.param_info.Length(); i++) {
+	for (uint i = 0; i < config.param_info.size(); i++) {
 		if (config.param_info[i] == NULL) {
-			*this->param_info.Append() = NULL;
+			this->param_info.push_back(NULL);
 		} else {
-			*this->param_info.Append() = new GRFParameterInfo(*config.param_info[i]);
+			this->param_info.push_back(new GRFParameterInfo(*config.param_info[i]));
 		}
 	}
 }
@@ -104,7 +104,7 @@ GRFConfig::~GRFConfig()
 	this->info->Release();
 	this->url->Release();
 
-	for (uint i = 0; i < this->param_info.Length(); i++) delete this->param_info[i];
+	for (uint i = 0; i < this->param_info.size(); i++) delete this->param_info[i];
 }
 
 /**
@@ -155,7 +155,7 @@ void GRFConfig::SetParameterDefaults()
 
 	if (!this->has_param_defaults) return;
 
-	for (uint i = 0; i < this->param_info.Length(); i++) {
+	for (uint i = 0; i < this->param_info.size(); i++) {
 		if (this->param_info[i] == NULL) continue;
 		this->param_info[i]->SetValue(this, this->param_info[i]->def_value);
 	}
@@ -182,9 +182,9 @@ void GRFConfig::SetSuitablePalette()
  */
 void GRFConfig::FinalizeParameterInfo()
 {
-	for (GRFParameterInfo **info = this->param_info.Begin(); info != this->param_info.End(); ++info) {
-		if (*info == NULL) continue;
-		(*info)->Finalize();
+	for (GRFParameterInfo *info : this->param_info) {
+		if (info == NULL) continue;
+		info->Finalize();
 	}
 }
 
@@ -263,8 +263,8 @@ GRFParameterInfo::GRFParameterInfo(GRFParameterInfo &info) :
 	num_bit(info.num_bit),
 	complete_labels(info.complete_labels)
 {
-	for (uint i = 0; i < info.value_names.Length(); i++) {
-		SmallPair<uint32, GRFText *> *data = info.value_names.Get(i);
+	for (uint i = 0; i < info.value_names.size(); i++) {
+		SmallPair<uint32, GRFText *> *data = info.value_names.data() + i;
 		this->value_names.Insert(data->first, DuplicateGRFText(data->second));
 	}
 }
@@ -274,8 +274,8 @@ GRFParameterInfo::~GRFParameterInfo()
 {
 	CleanUpGRFText(this->name);
 	CleanUpGRFText(this->desc);
-	for (uint i = 0; i < this->value_names.Length(); i++) {
-		SmallPair<uint32, GRFText *> *data = this->value_names.Get(i);
+	for (uint i = 0; i < this->value_names.size(); i++) {
+		SmallPair<uint32, GRFText *> *data = this->value_names.data() + i;
 		CleanUpGRFText(data->second);
 	}
 }
@@ -611,11 +611,11 @@ compatible_grf:
 				c->min_loadable_version = f->min_loadable_version;
 				c->num_valid_params = f->num_valid_params;
 				c->has_param_defaults = f->has_param_defaults;
-				for (uint i = 0; i < f->param_info.Length(); i++) {
+				for (uint i = 0; i < f->param_info.size(); i++) {
 					if (f->param_info[i] == NULL) {
-						*c->param_info.Append() = NULL;
+						c->param_info.push_back(NULL);
 					} else {
-						*c->param_info.Append() = new GRFParameterInfo(*f->param_info[i]);
+						c->param_info.push_back(new GRFParameterInfo(*f->param_info[i]));
 					}
 				}
 			}
@@ -635,7 +635,7 @@ public:
 	{
 	}
 
-	/* virtual */ bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename);
+	bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename) override;
 
 	/** Do the scan for GRFs. */
 	static uint DoScan()
@@ -759,9 +759,7 @@ void DoScanNewGRFFiles(void *callback)
 
 		free(to_sort);
 
-#ifdef ENABLE_NETWORK
 		NetworkAfterNewGRFScan();
-#endif
 	}
 
 	_modal_progress_work_mutex->EndCritical();
@@ -828,8 +826,6 @@ const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const uint8
 	return best;
 }
 
-#ifdef ENABLE_NETWORK
-
 /** Structure for UnknownGRFs; this is a lightweight variant of GRFConfig */
 struct UnknownGRF : public GRFIdentifier {
 	UnknownGRF *next;     ///< The next unknown GRF.
@@ -878,9 +874,6 @@ GRFTextWrapper *FindUnknownGRFName(uint32 grfid, uint8 *md5sum, bool create)
 	unknown_grfs = grf;
 	return grf->name;
 }
-
-#endif /* ENABLE_NETWORK */
-
 
 /**
  * Retrieve a NewGRF from the current config by its grfid.

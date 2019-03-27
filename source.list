@@ -1105,8 +1105,6 @@ network/core/udp.h
 
 # Pathfinder
 pathfinder/follow_track.hpp
-pathfinder/opf/opf_ship.cpp
-pathfinder/opf/opf_ship.h
 pathfinder/pathfinder_func.h
 pathfinder/pathfinder_type.h
 pathfinder/pf_performance_timer.hpp
@@ -1172,10 +1170,7 @@ music/midifile.cpp
 	#if WIN32
 		music/win32_m.cpp
 	#else
-		#if DOS
-		#else
-			music/extmidi.cpp
-		#end
+		music/extmidi.cpp
 	#end
 	#if HAIKU
 		music/bemidi.cpp

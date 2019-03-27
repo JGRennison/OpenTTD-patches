@@ -1759,8 +1759,16 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	}
 
 	if (_generating_world) {
+		if (HasBit(indspec->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
+			IndustryProductionCallback(i, 1);
+			for (size_t ci = 0; ci < lengthof(i->last_month_production); ci++) {
+				i->last_month_production[ci] = i->produced_cargo_waiting[ci] * 8;
+				i->produced_cargo_waiting[ci] = 0;
+			}
+		}
+
 		for (size_t ci = 0; ci < lengthof(i->last_month_production); ci++) {
-			i->last_month_production[ci] = i->production_rate[ci] * 8;
+			i->last_month_production[ci] += i->production_rate[ci] * 8;
 		}
 	}
 
@@ -1884,7 +1892,7 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
 
 	*ip = NULL;
 
-	SmallVector<ClearedObjectArea, 1> object_areas(_cleared_object_areas);
+	std::vector<ClearedObjectArea> object_areas(_cleared_object_areas);
 	CommandCost ret = CheckIfIndustryTilesAreFree(tile, it, itspec_index, type, random_initial_bits, founder, creation_type, &custom_shape_check);
 	_cleared_object_areas = object_areas;
 	if (ret.Failed()) return ret;

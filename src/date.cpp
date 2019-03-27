@@ -210,9 +210,7 @@ static void OnNewYear()
 	VehiclesYearlyLoop();
 	TownsYearlyLoop();
 	InvalidateWindowClassesData(WC_BUILD_STATION);
-#ifdef ENABLE_NETWORK
 	if (_network_server) NetworkServerYearlyLoop();
-#endif /* ENABLE_NETWORK */
 
 	if (_cur_year == _settings_client.gui.semaphore_build_before) ResetSignalVariant();
 
@@ -232,11 +230,9 @@ static void OnNewYear()
 		LinkGraph *lg;
 		FOR_ALL_LINK_GRAPHS(lg) lg->ShiftDates(-days_this_year);
 
-#ifdef ENABLE_NETWORK
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
 		 *  all of them if the date is set back, else those messages will hang for ever */
 		NetworkInitChatMessage();
-#endif /* ENABLE_NETWORK */
 	}
 
 	if (_settings_client.gui.auto_euro) CheckSwitchToEuro();
@@ -260,9 +256,7 @@ static void OnNewMonth()
 	IndustryMonthlyLoop();
 	SubsidyMonthlyLoop();
 	StationMonthlyLoop();
-#ifdef ENABLE_NETWORK
 	if (_network_server) NetworkServerMonthlyLoop();
-#endif /* ENABLE_NETWORK */
 	IConsoleCmdExec("exec scripts/on_newmonth.scr 0");
 }
 
@@ -271,9 +265,7 @@ static void OnNewMonth()
  */
 static void OnNewDay()
 {
-#ifdef ENABLE_NETWORK
 	if (_network_server) NetworkServerDailyLoop();
-#endif /* ENABLE_NETWORK */
 
 	DisasterDailyLoop();
 	IndustryDailyLoop();

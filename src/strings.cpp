@@ -37,9 +37,7 @@
 #include "unit_conversion.h"
 #include "tracerestrict.h"
 #include "game/game_text.hpp"
-#ifdef ENABLE_NETWORK
-#	include "network/network_content_gui.h"
-#endif /* ENABLE_NETWORK */
+#include "network/network_content_gui.h"
 #include <stack>
 
 #include "table/strings.h"
@@ -80,7 +78,10 @@ int64 StringParameters::GetInt64(WChar type)
 		return 0;
 	}
 	if (this->type != NULL) {
-		assert(this->type[this->offset] == 0 || this->type[this->offset] == type);
+		if (this->type[this->offset] != 0 && this->type[this->offset] != type) {
+			DEBUG(misc, 0, "Trying to read string parameter with wrong type");
+			return 0;
+		}
 		this->type[this->offset] = type;
 	}
 	return this->data[this->offset++];
@@ -122,7 +123,8 @@ void SetDParamMaxValue(uint n, uint64 max_value, uint min_count, FontSize size)
  */
 void SetDParamMaxDigits(uint n, uint count, FontSize size)
 {
-	uint front, next;
+	uint front = 0;
+	uint next = 0;
 	GetBroadestDigit(&front, &next, size);
 	uint64 val = count > 1 ? front : next;
 	for (; count > 1; count--) {
@@ -1663,8 +1665,9 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 						}
 					}
 
-					int64 args_array[] = {STR_TOWN_NAME, st->town->index, st->index};
-					StringParameters tmp_params(args_array);
+					uint64 args_array[] = {STR_TOWN_NAME, st->town->index, st->index};
+					WChar types_array[] = {0, SCC_TOWN_NAME, SCC_NUM};
+					StringParameters tmp_params(args_array, 3, types_array);
 					buff = GetStringWithArgs(buff, str, &tmp_params, last);
 				}
 				break;
@@ -1941,11 +1944,7 @@ static char *GetSpecialNameString(char *buff, int ind, StringParameters *args, c
 	NOT_REACHED();
 }
 
-#ifdef ENABLE_NETWORK
 extern void SortNetworkLanguages();
-#else /* ENABLE_NETWORK */
-static inline void SortNetworkLanguages() {}
-#endif /* ENABLE_NETWORK */
 
 /**
  * Check whether the header is a valid header for OpenTTD.
@@ -2081,9 +2080,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	SortIndustryTypes();
 	BuildIndustriesLegend();
 	SortNetworkLanguages();
-#ifdef ENABLE_NETWORK
 	BuildContentTypeStringList();
-#endif /* ENABLE_NETWORK */
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
 	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);// Trace restrict slots window.
@@ -2145,8 +2142,8 @@ int CDECL StringIDSorter(const StringID *a, const StringID *b)
  */
 const LanguageMetadata *GetLanguage(byte newgrflangid)
 {
-	for (const LanguageMetadata *lang = _languages.Begin(); lang != _languages.End(); lang++) {
-		if (newgrflangid == lang->newgrflangid) return lang;
+	for (const LanguageMetadata &lang : _languages) {
+		if (newgrflangid == lang.newgrflangid) return &lang;
 	}
 
 	return NULL;
@@ -2201,7 +2198,7 @@ static void GetLanguageList(const char *path)
 			} else if (GetLanguage(lmd.newgrflangid) != NULL) {
 				DEBUG(misc, 3, "%s's language ID is already known", lmd.file);
 			} else {
-				*_languages.Append() = lmd;
+				_languages.push_back(lmd);
 			}
 		}
 		closedir(dir);
@@ -2221,7 +2218,7 @@ void InitializeLanguagePacks()
 		FioAppendDirectory(path, lastof(path), sp, LANG_DIR);
 		GetLanguageList(path);
 	}
-	if (_languages.Length() == 0) usererror("No available language packs (invalid versions?)");
+	if (_languages.size() == 0) usererror("No available language packs (invalid versions?)");
 
 	/* Acquire the locale of the current system */
 	const char *lang = GetCurrentLocale("LC_MESSAGES");
@@ -2229,22 +2226,22 @@ void InitializeLanguagePacks()
 
 	const LanguageMetadata *chosen_language   = NULL; ///< Matching the language in the configuration file or the current locale
 	const LanguageMetadata *language_fallback = NULL; ///< Using pt_PT for pt_BR locale when pt_BR is not available
-	const LanguageMetadata *en_GB_fallback    = _languages.Begin(); ///< Fallback when no locale-matching language has been found
+	const LanguageMetadata *en_GB_fallback    = _languages.data(); ///< Fallback when no locale-matching language has been found
 
 	/* Find a proper language. */
-	for (const LanguageMetadata *lng = _languages.Begin(); lng != _languages.End(); lng++) {
+	for (const LanguageMetadata &lng : _languages) {
 		/* We are trying to find a default language. The priority is by
 		 * configuration file, local environment and last, if nothing found,
 		 * English. */
-		const char *lang_file = strrchr(lng->file, PATHSEPCHAR) + 1;
+		const char *lang_file = strrchr(lng.file, PATHSEPCHAR) + 1;
 		if (strcmp(lang_file, _config_language_file) == 0) {
-			chosen_language = lng;
+			chosen_language = &lng;
 			break;
 		}
 
-		if (strcmp (lng->isocode, "en_GB") == 0) en_GB_fallback    = lng;
-		if (strncmp(lng->isocode, lang, 5) == 0) chosen_language   = lng;
-		if (strncmp(lng->isocode, lang, 2) == 0) language_fallback = lng;
+		if (strcmp (lng.isocode, "en_GB") == 0) en_GB_fallback    = &lng;
+		if (strncmp(lng.isocode, lang, 5) == 0) chosen_language   = &lng;
+		if (strncmp(lng.isocode, lang, 2) == 0) language_fallback = &lng;
 	}
 
 	/* We haven't found the language in the config nor the one in the locale.
@@ -2301,18 +2298,18 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 	uint i; ///< Iterator for the primary language tables.
 	uint j; ///< Iterator for the secondary language tables.
 
-	/* virtual */ void Reset()
+	void Reset() override
 	{
 		this->i = 0;
 		this->j = 0;
 	}
 
-	/* virtual */ FontSize DefaultSize()
+	FontSize DefaultSize() override
 	{
 		return FS_NORMAL;
 	}
 
-	/* virtual */ const char *NextString()
+	const char *NextString() override
 	{
 		if (this->i >= TEXT_TAB_END) return NULL;
 
@@ -2327,12 +2324,12 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 		return ret;
 	}
 
-	/* virtual */ bool Monospace()
+	bool Monospace() override
 	{
 		return false;
 	}
 
-	/* virtual */ void SetFontNames(FreeTypeSettings *settings, const char *font_name)
+	void SetFontNames(FreeTypeSettings *settings, const char *font_name) override
 	{
 #ifdef WITH_FREETYPE
 		strecpy(settings->small.font,  font_name, lastof(settings->small.font));

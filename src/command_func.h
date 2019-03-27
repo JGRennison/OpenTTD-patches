@@ -42,9 +42,7 @@ bool DoCommandP(const CommandContainer *container, bool my_cmd = true);
 
 CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length);
 
-#ifdef ENABLE_NETWORK
 void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, uint32 binary_length);
-#endif /* ENABLE_NETWORK */
 
 extern Money _additional_cash_required;
 

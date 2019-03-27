@@ -1851,7 +1851,6 @@ STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Compute
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Zusätzliche Kartenansicht
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastruktur-Sharing
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(empfohlen)
 
@@ -1951,7 +1950,6 @@ STR_QUIT_NO                                                     :{BLACK}Nein
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
 STR_OSNAME_HAIKU                                                :Haiku
@@ -3430,7 +3428,7 @@ STR_NEWGRF_ERROR_GRM_FAILED                                     :Die angefordert
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} wurde von {STRING} deaktiviert
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ungültiges oder unbekanntes Format für Spritelayout (Sprite {3:NUM})
 STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Zu viele Elemente in Eigenschaftswert-Liste (Sprite {3:NUM}, Eigenschaft {4:HEX})
-STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ungültige Produktions-Rückruffunktion (Sprite {3:NUM}, "{1:STRING}")
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ungültige Produktions-Rückruffunktion (Sprite {3:NUM}, "{2:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Achtung!
@@ -3987,12 +3985,6 @@ STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Neue Gru
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Ausgewählte Gruppe löschen
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Ausgewählte Gruppe umbenennen
 STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Farbschema der ausgewählten Gruppe ändern
-STR_GROUP_COLLAPSE                                              :{BLACK}Einklappen
-STR_GROUP_EXPAND                                                :{BLACK}Ausklappen
-STR_GROUP_EXPAND_ALL                                            :{BLACK}Alles ausklappen
-STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Alles einklappen
-STR_GROUP_COLLAPSE_TOOLTIP                                      :{BLACK}Klicke, um die ausgewählte Gruppe einzuklappen
-STR_GROUP_EXPAND_TOOLTIP                                        :{BLACK}Klicke, um die ausgewählte Gruppe auszuklappen
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Diese Gruppe von der automatischen Fahrzeugersetzung ausschließen
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Gruppe löschen
@@ -4055,10 +4047,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Fahrzeug
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Schiff kaufen
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Flugzeug kaufen
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Angewähltes Fahrzeug kaufen. Shift+Klick zeigt einen Kostenvoranschlag
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Ausgewähltes Fahrzeug kaufen. Shift+Klick zeigt einen Kostenvoranschlag
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Ausgewähltes Schiff kaufen. Shift+Klick zeigt einen Kostenvoranschlag
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Augewähltes Flugzeug kaufen. Shift schaltet zwischen Bauen und Kostenvoranschlag um
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Umbenennen
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Umbenennen

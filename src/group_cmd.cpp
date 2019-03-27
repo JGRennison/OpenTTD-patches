@@ -306,6 +306,7 @@ void PropagateChildLivery(const Group *g)
 Group::Group(Owner owner)
 {
 	this->owner = owner;
+	this->folded = false;
 }
 
 Group::~Group()
@@ -463,7 +464,7 @@ CommandCost CmdAlterGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 			/* Ensure request parent isn't child of group.
 			 * This is the only place that infinite loops are prevented. */
-			if (GroupIsInGroup(pg->index, g->index)) return CMD_ERROR;
+			if (GroupIsInGroup(pg->index, g->index)) return_cmd_error(STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION);
 		}
 
 		if (flags & DC_EXEC) {
@@ -522,7 +523,7 @@ CommandCost CmdCreateGroupFromList(TileIndex tile, DoCommandFlag flags, uint32 p
 			DoCommand(tile, g->index, 0, flags, CMD_ALTER_GROUP, text);
 		}
 
-		for (uint i = 0; i < list.Length(); i++) {
+		for (uint i = 0; i < list.size(); i++) {
 			const Vehicle *v = list[i];
 
 			/* Just try and don't care if some vehicle's can't be added. */
@@ -865,6 +866,60 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 		if (g->parent == id_g) count += GetGroupNumEngines(company, g->index, id_e);
 	}
 	return count + GroupStatistics::Get(company, id_g, e->type).num_engines[id_e];
+}
+
+/**
+ * Get the number of vehicles in the group with GroupID
+ * id_g and its sub-groups.
+ * @param company The company the group belongs to
+ * @param id_g The GroupID of the group used
+ * @param type The vehicle type of the group
+ * @return The number of vehicles in the group
+ */
+uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
+{
+	uint count = 0;
+	const Group *g;
+	FOR_ALL_GROUPS(g) {
+		if (g->parent == id_g) count += GetGroupNumVehicle(company, g->index, type);
+	}
+	return count + GroupStatistics::Get(company, id_g, type).num_vehicle;
+}
+
+/**
+ * Get the number of vehicles above profit minimum age in the group with GroupID
+ * id_g and its sub-groups.
+ * @param company The company the group belongs to
+ * @param id_g The GroupID of the group used
+ * @param type The vehicle type of the group
+ * @return The number of vehicles above profit minimum age in the group
+ */
+uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type)
+{
+	uint count = 0;
+	const Group *g;
+	FOR_ALL_GROUPS(g) {
+		if (g->parent == id_g) count += GetGroupNumProfitVehicle(company, g->index, type);
+	}
+	return count + GroupStatistics::Get(company, id_g, type).num_profit_vehicle;
+}
+
+/**
+ * Get last year's profit for the group with GroupID
+ * id_g and its sub-groups.
+ * @param company The company the group belongs to
+ * @param id_g The GroupID of the group used
+ * @param type The vehicle type of the group
+ * @return Last year's profit for the group
+ */
+Money GetGroupProfitLastYear(CompanyID company, GroupID id_g, VehicleType type)
+{
+	Money sum = 0;
+	const Group *g;
+	FOR_ALL_GROUPS(g) {
+		if (g->parent == id_g) sum += GetGroupProfitLastYear(company, g->index, type);
+	}
+	return sum + GroupStatistics::Get(company, id_g, type).profit_last_year;
 }
 
 void RemoveAllGroupsForCompany(const CompanyID company)

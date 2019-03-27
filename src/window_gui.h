@@ -277,6 +277,15 @@ struct ViewportData : ViewPort {
 
 struct QueryString;
 
+/* misc_gui.cpp */
+enum TooltipCloseCondition {
+	TCC_RIGHT_CLICK,
+	TCC_HOVER,
+	TCC_NONE,
+	TCC_HOVER_VIEWPORT,
+	TCC_NEXT_LOOP,
+};
+
 struct WindowBase {
 	WindowBase *z_front;             ///< The window in front of us in z-order.
 	WindowBase *z_back;              ///< The window behind us in z-order.
@@ -324,7 +333,7 @@ protected:
 	void InitializePositionSize(int x, int y, int min_width, int min_height);
 	virtual void FindWindowPlacementAndResize(int def_width, int def_height);
 
-	SmallVector<int, 4> scheduled_invalidation_data;  ///< Data of scheduled OnInvalidateData() calls.
+	std::vector<int> scheduled_invalidation_data;  ///< Data of scheduled OnInvalidateData() calls.
 
 public:
 	Window(WindowDesc *desc);
@@ -677,11 +686,19 @@ public:
 	virtual bool OnRightClick(Point pt, int widget) { return false; }
 
 	/**
-	 * The mouse is hovering over a widget in the window, perform an action for it, like opening a custom tooltip.
+	 * The mouse is hovering over a widget in the window, perform an action for it.
 	 * @param pt     The point where the mouse is hovering.
 	 * @param widget The widget where the mouse is hovering.
 	 */
 	virtual void OnHover(Point pt, int widget) {}
+
+	/**
+	 * Event to display a custom tooltip.
+	 * @param pt     The point where the mouse is located.
+	 * @param widget The widget where the mouse is located.
+	 * @return True if the event is handled, false if it is ignored.
+	 */
+	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) { return false; }
 
 	/**
 	 * An 'object' is being dragged at the provided position, highlight the target if possible.
@@ -917,15 +934,6 @@ Wcls *AllocateWindowDescFront(WindowDesc *desc, int window_number, bool return_e
 }
 
 void RelocateAllWindows(int neww, int newh);
-
-/* misc_gui.cpp */
-enum TooltipCloseCondition {
-	TCC_RIGHT_CLICK,
-	TCC_LEFT_CLICK,
-	TCC_HOVER,
-	TCC_HOVER_VIEWPORT,
-	TCC_NEXT_LOOP,
-};
 
 void GuiShowTooltips(Window *parent, StringID str, uint paramcount = 0, const uint64 params[] = NULL, TooltipCloseCondition close_tooltip = TCC_HOVER);
 

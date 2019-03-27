@@ -226,17 +226,17 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];
 	Action5TypeRemapSet action5_type_remaps;
-	AutoFreeSmallVector<const char *, 8> remap_unknown_property_names;
+	AutoFreeSmallVector<const char *> remap_unknown_property_names;
 
 	uint32 param[0x80];
 	uint param_end;  ///< one more than the highest set parameter
 
 	GRFLabel *label; ///< Pointer to the first label. This is a linked list, not an array.
 
-	SmallVector<CargoLabel, 4> cargo_list;          ///< Cargo translation table (local ID -> label)
+	std::vector<CargoLabel> cargo_list;             ///< Cargo translation table (local ID -> label)
 	uint8 cargo_map[NUM_CARGO];                     ///< Inverse cargo translation table (CargoID -> local ID)
 
-	SmallVector<RailTypeLabel, 4> railtype_list;    ///< Railtype translation table
+	std::vector<RailTypeLabel> railtype_list;       ///< Railtype translation table
 	RailTypeByte railtype_map[RAILTYPE_END];
 
 	CanalProperties canal_local_properties[CF_END]; ///< Canal properties as set by this NewGRF

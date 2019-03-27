@@ -30,7 +30,6 @@
 #include "sound_func.h"
 #include "ai/ai.hpp"
 #include "game/game.hpp"
-#include "pathfinder/opf/opf_ship.h"
 #include "engine_base.h"
 #include "company_base.h"
 #include "infrastructure_func.h"
@@ -41,6 +40,16 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+
+/** Directions to search towards given track bits and the ship's enter direction. */
+const DiagDirection _ship_search_directions[6][4] = {
+	{ DIAGDIR_NE,      INVALID_DIAGDIR, DIAGDIR_SW,      INVALID_DIAGDIR },
+	{ INVALID_DIAGDIR, DIAGDIR_SE,      INVALID_DIAGDIR, DIAGDIR_NW      },
+	{ INVALID_DIAGDIR, DIAGDIR_NE,      DIAGDIR_NW,      INVALID_DIAGDIR },
+	{ DIAGDIR_SE,      INVALID_DIAGDIR, INVALID_DIAGDIR, DIAGDIR_SW      },
+	{ DIAGDIR_NW,      DIAGDIR_SW,      INVALID_DIAGDIR, INVALID_DIAGDIR },
+	{ INVALID_DIAGDIR, INVALID_DIAGDIR, DIAGDIR_SE,      DIAGDIR_NE      },
+};
 
 /**
  * Determine the effective #WaterClass for a ship travelling on a tile.
@@ -178,7 +187,6 @@ static void CheckIfShipNeedsService(Vehicle *v)
 
 	uint max_distance;
 	switch (_settings_game.pf.pathfinder_for_ships) {
-		case VPF_OPF:  max_distance = 12; break;
 		case VPF_NPF:  max_distance = _settings_game.pf.npf.maximum_go_to_depot_penalty  / NPF_TILE_LENGTH;  break;
 		case VPF_YAPF: max_distance = _settings_game.pf.yapf.maximum_go_to_depot_penalty / YAPF_TILE_LENGTH; break;
 		default: NOT_REACHED();
@@ -377,9 +385,7 @@ static bool CheckShipLeaveDepot(Ship *v)
 	if (north_tracks && south_tracks) {
 		/* Ask pathfinder for best direction */
 		bool reverse = false;
-		bool path_found;
 		switch (_settings_game.pf.pathfinder_for_ships) {
-			case VPF_OPF: reverse = OPFShipChooseTrack(v, north_neighbour, north_dir, north_tracks, path_found) == INVALID_TRACK; break; // OPF always allows reversing
 			case VPF_NPF: reverse = NPFShipCheckReverse(v); break;
 			case VPF_YAPF: reverse = YapfShipCheckReverse(v); break;
 			default: NOT_REACHED();
@@ -512,7 +518,6 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 		}
 
 		switch (_settings_game.pf.pathfinder_for_ships) {
-			case VPF_OPF: track = OPFShipChooseTrack(v, tile, enterdir, tracks, path_found); break;
 			case VPF_NPF: track = NPFShipChooseTrack(v, path_found); break;
 			case VPF_YAPF: track = YapfShipChooseTrack(v, tile, enterdir, tracks, path_found, v->path); break;
 			default: NOT_REACHED();
@@ -534,8 +539,7 @@ static inline TrackBits GetAvailShipTracks(TileIndex tile, DiagDirection dir, Tr
 {
 	TrackBits tracks = GetTileShipTrackStatus(tile) & DiagdirReachesTracks(dir);
 
-	/* Do not remove 90 degree turns for OPF, as it isn't able to find paths taking it into account. */
-	if (_settings_game.pf.forbid_90_deg && _settings_game.pf.pathfinder_for_ships != VPF_OPF) tracks &= ~TrackCrossesTracks(TrackdirToTrack(trackdir));
+	if (_settings_game.pf.forbid_90_deg) tracks &= ~TrackCrossesTracks(TrackdirToTrack(trackdir));
 
 	return tracks;
 }

@@ -57,11 +57,10 @@ void LoadCheckData::Clear()
 	this->current_date = 0;
 	memset(&this->settings, 0, sizeof(this->settings));
 
-	const CompanyPropertiesMap::iterator end = this->companies.End();
-	for (CompanyPropertiesMap::iterator it = this->companies.Begin(); it != end; it++) {
-		delete it->second;
+	for (auto &pair : this->companies) {
+		delete pair.second;
 	}
-	companies.Clear();
+	companies.clear();
 
 	GamelogFree(this->gamelog_action, this->gamelog_actions);
 	this->gamelog_action = NULL;
@@ -281,7 +280,7 @@ private:
 
 	StringFilter string_filter; ///< Filter for available games.
 	QueryString filter_editbox; ///< Filter editbox;
-	SmallVector<bool, 32> fios_items_shown; ///< Map of the filtered out fios items
+	std::vector<bool> fios_items_shown; ///< Map of the filtered out fios items
 
 	static void SaveGameConfirmationCallback(Window *w, bool confirmed)
 	{
@@ -409,7 +408,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_SL_SORT_BYNAME:
@@ -439,12 +438,15 @@ public:
 				GfxFillRect(r.left + 1, r.top + 1, r.right, r.bottom, PC_BLACK);
 
 				uint y = r.top + WD_FRAMERECT_TOP;
-				for (uint pos = this->vscroll->GetPosition(); pos < this->fios_items.Length(); pos++) {
-					if (!this->fios_items_shown[pos]) {
+				uint scroll_pos = this->vscroll->GetPosition();
+				for (uint row = 0; row < this->fios_items.Length(); row++) {
+					if (!this->fios_items_shown[row]) {
 						/* The current item is filtered out : we do not show it */
+						scroll_pos++;
 						continue;
 					}
-					const FiosItem *item = this->fios_items.Get(pos);
+					if (row < scroll_pos) continue;
+					const FiosItem *item = this->fios_items.Get(row);
 
 					if (item == this->selected) {
 						GfxFillRect(r.left + 1, y, r.right, y + this->resize.step_height, PC_DARK_BLUE);
@@ -541,10 +543,9 @@ public:
 						if (y > y_max) break;
 
 						/* Companies / AIs */
-						CompanyPropertiesMap::const_iterator end = _load_check_data.companies.End();
-						for (CompanyPropertiesMap::const_iterator it = _load_check_data.companies.Begin(); it != end; it++) {
-							SetDParam(0, it->first + 1);
-							const CompanyProperties &c = *it->second;
+						for (auto &pair : _load_check_data.companies) {
+							SetDParam(0, pair.first + 1);
+							const CompanyProperties &c = *pair.second;
 							if (c.name != NULL) {
 								SetDParam(1, STR_JUST_RAW_STRING);
 								SetDParamStr(2, c.name);
@@ -563,7 +564,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SL_BACKGROUND:
@@ -585,7 +586,7 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (_savegame_sort_dirty) {
 			_savegame_sort_dirty = false;
@@ -596,7 +597,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_SL_SORT_BYNAME: // Sort save names by name
@@ -647,9 +648,7 @@ public:
 				if (!_network_available) {
 					ShowErrorMessage(STR_NETWORK_ERROR_NOTAVAILABLE, INVALID_STRING_ID, WL_ERROR);
 				} else if (_load_check_data.HasNewGrfs()) {
-#if defined(ENABLE_NETWORK)
 					ShowMissingContentWindow(_load_check_data.grfconfig);
-#endif
 				}
 				break;
 
@@ -711,14 +710,12 @@ public:
 				if (!_network_available) {
 					ShowErrorMessage(STR_NETWORK_ERROR_NOTAVAILABLE, INVALID_STRING_ID, WL_ERROR);
 				} else {
-#if defined(ENABLE_NETWORK)
 					assert(this->fop == SLO_LOAD);
 					switch (this->abstract_filetype) {
 						default: NOT_REACHED();
 						case FT_SCENARIO:  ShowNetworkContentListWindow(NULL, CONTENT_TYPE_SCENARIO);  break;
 						case FT_HEIGHTMAP: ShowNetworkContentListWindow(NULL, CONTENT_TYPE_HEIGHTMAP); break;
 					}
-#endif
 				}
 				break;
 
@@ -732,7 +729,7 @@ public:
 		}
 	}
 
-	virtual EventState OnKeyPress(WChar key, uint16 keycode)
+	EventState OnKeyPress(WChar key, uint16 keycode) override
 	{
 		if (keycode == WKC_ESC) {
 			delete this;
@@ -742,7 +739,7 @@ public:
 		return ES_NOT_HANDLED;
 	}
 
-	virtual void OnTimeout()
+	void OnTimeout() override
 	{
 		/* Widgets WID_SL_DELETE_SELECTION and WID_SL_SAVE_GAME only exist when saving to a file. */
 		if (this->fop != SLO_SAVE) return;
@@ -783,7 +780,7 @@ public:
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_SL_DRIVES_DIRECTORIES_LIST);
 	}
@@ -793,7 +790,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		switch (data) {
 			case SLIWD_RESCAN_FILES:
@@ -844,7 +841,7 @@ public:
 
 			case SLIWD_FILTER_CHANGES:
 				/* Filter changes */
-				this->fios_items_shown.Resize(this->fios_items.Length());
+				this->fios_items_shown.resize(this->fios_items.Length());
 				uint items_shown_count = 0; ///< The number of items shown in the list
 				/* We pass through every fios item */
 				for (uint i = 0; i < this->fios_items.Length(); i++) {
@@ -871,7 +868,7 @@ public:
 		}
 	}
 
-	virtual void OnEditboxChanged(int wid)
+	void OnEditboxChanged(int wid) override
 	{
 		if (wid == WID_SL_FILTER) {
 			this->string_filter.SetFilterTerm(this->filter_editbox.text.buf);

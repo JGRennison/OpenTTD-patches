@@ -407,28 +407,26 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	DateTicksScaled start_date_scaled = (_settings_game.economy.day_length_factor * (((DateTicksScaled)_date * DAY_TICKS) + _date_fract + (DateTicksScaled)(int32)p2)) + sub_ticks;
 
 	if (flags & DC_EXEC) {
-		SmallVector<Vehicle *, 8> vehs;
+		std::vector<Vehicle *> vehs;
 
 		if (timetable_all) {
 			for (Vehicle *w = v->orders.list->GetFirstSharedVehicle(); w != NULL; w = w->NextShared()) {
-				*vehs.Append() = w;
+				vehs.push_back(w);
 			}
 		} else {
-			*vehs.Append() = v;
+			vehs.push_back(v);
 		}
 
 		int total_duration = v->orders.list->GetTimetableTotalDuration();
-		int num_vehs = vehs.Length();
+		int num_vehs = vehs.size();
 
 		if (num_vehs >= 2) {
-			QSortT(vehs.Begin(), vehs.Length(), &VehicleTimetableSorter);
+			QSortT(vehs.data(), vehs.size(), &VehicleTimetableSorter);
 		}
 
-		int base = vehs.FindIndex(v);
+		int idx = vehs.begin() - std::find(vehs.begin(), vehs.end(), v);
 
-		for (Vehicle **viter = vehs.Begin(); viter != vehs.End(); viter++) {
-			int idx = (viter - vehs.Begin()) - base;
-			Vehicle *w = *viter;
+		for (Vehicle *w : vehs) {
 
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
@@ -440,6 +438,7 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			w->timetable_start = tt_start / _settings_game.economy.day_length_factor;
 			w->timetable_start_subticks = tt_start % _settings_game.economy.day_length_factor;
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
+			++idx;
 		}
 
 	}

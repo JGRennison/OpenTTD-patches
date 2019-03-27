@@ -889,9 +889,8 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		 * Do this for all tiles (like trees), not only objects. */
 		ClearedObjectArea *coa = FindClearedObject(end_tile);
 		if (coa == NULL) {
-			coa = _cleared_object_areas.Append();
-			coa->first_tile = end_tile;
-			coa->area = TileArea(end_tile, 1, 1);
+			/*C++17: coa = &*/ _cleared_object_areas.push_back({end_tile, TileArea(end_tile, 1, 1)});
+			coa = &_cleared_object_areas.back();
 		}
 
 		/* Hide the tile from the terraforming command */
@@ -907,8 +906,9 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		 * Deliberately clear the coa pointer to avoid leaving dangling pointers which could
 		 * inadvertently be dereferenced.
 		 */
-		assert(coa >= _cleared_object_areas.Begin() && coa < _cleared_object_areas.End());
-		size_t coa_index = coa - _cleared_object_areas.Begin();
+		ClearedObjectArea *begin = _cleared_object_areas.data();
+		assert(coa >= begin && coa < begin + _cleared_object_areas.size());
+		size_t coa_index = coa - begin;
 		assert(coa_index < UINT_MAX); // more than 2**32 cleared areas would be a bug in itself
 		coa = NULL;
 
@@ -1162,7 +1162,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		/* read this value before actual removal of bridge */
 		Owner owner = GetTileOwner(tile);
 		int height = GetBridgeHeight(tile);
-		SmallVector<Train *, 2> vehicles_affected;
+		std::vector<Train *> vehicles_affected;
 
 		if (rail) {
 			auto find_train_reservations = [&vehicles_affected](TileIndex tile) {
@@ -1172,7 +1172,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 					Train *v = GetTrainForReservation(tile, track);
 					if (v != NULL) {
 						FreeTrainTrackReservation(v);
-						*vehicles_affected.Append() = v;
+						vehicles_affected.push_back(v);
 					}
 				}
 			};
@@ -1222,7 +1222,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 			notify_track_change(tile, direction, tile_tracks);
 			notify_track_change(endtile, ReverseDiagDir(direction), endtile_tracks);
 
-			for (uint i = 0; i < vehicles_affected.Length(); ++i) {
+			for (uint i = 0; i < vehicles_affected.size(); ++i) {
 				TryPathReserve(vehicles_affected[i], true);
 			}
 		}

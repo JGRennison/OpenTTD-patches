@@ -194,11 +194,7 @@ CommandCost CmdClearOrderBackup(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	 * but compiled it. A network client has its own variable for the unique
 	 * client/user identifier. Finally if networking isn't compiled in the
 	 * default is just plain and simple: 0. */
-#ifdef ENABLE_NETWORK
 	uint32 user = _networking && !_network_server ? _network_own_client_id : CLIENT_ID_SERVER;
-#else
-	uint32 user = 0;
-#endif
 
 	OrderBackup *ob;
 	FOR_ALL_ORDER_BACKUPS(ob) {
@@ -268,6 +264,7 @@ CommandCost CmdClearOrderBackup(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		for (Order *order = ob->orders; order != NULL; order = order->next) {
 			OrderType ot = order->GetType();
 			if (ot == OT_GOTO_DEPOT && (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) continue;
+			if (ot == OT_GOTO_DEPOT && hangar && !IsHangarTile(ob->tile)) continue; // Not an aircraft? Can't have a hangar order.
 			if (ot == OT_IMPLICIT || (IsHangarTile(ob->tile) && ot == OT_GOTO_DEPOT && !hangar)) ot = OT_GOTO_STATION;
 			if (ot == type && order->GetDestination() == destination) {
 				/* Remove the order backup! If a station/depot gets removed, we can't/shouldn't restore those broken orders. */

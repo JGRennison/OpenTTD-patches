@@ -1191,7 +1191,7 @@ struct ListOrderChange {
 	uint target;      ///< local ID
 };
 
-static SmallVector<ListOrderChange, 16> _list_order_changes;
+static std::vector<ListOrderChange> _list_order_changes;
 
 /**
  * Record a vehicle ListOrderChange.
@@ -1202,9 +1202,7 @@ static SmallVector<ListOrderChange, 16> _list_order_changes;
 void AlterVehicleListOrder(EngineID engine, uint target)
 {
 	/* Add the list order change to a queue */
-	ListOrderChange *loc = _list_order_changes.Append();
-	loc->engine = engine;
-	loc->target = target;
+	_list_order_changes.push_back({engine, target});
 }
 
 /**
@@ -1215,17 +1213,17 @@ void AlterVehicleListOrder(EngineID engine, uint target)
  */
 static int CDECL EnginePreSort(const EngineID *a, const EngineID *b)
 {
-	const EngineIDMapping *id_a = _engine_mngr.Get(*a);
-	const EngineIDMapping *id_b = _engine_mngr.Get(*b);
+	const EngineIDMapping &id_a = _engine_mngr.at(*a);
+	const EngineIDMapping &id_b = _engine_mngr.at(*b);
 
 	/* 1. Sort by engine type */
-	if (id_a->type != id_b->type) return (int)id_a->type - (int)id_b->type;
+	if (id_a.type != id_b.type) return (int)id_a.type - (int)id_b.type;
 
 	/* 2. Sort by scope-GRFID */
-	if (id_a->grfid != id_b->grfid) return id_a->grfid < id_b->grfid ? -1 : 1;
+	if (id_a.grfid != id_b.grfid) return id_a.grfid < id_b.grfid ? -1 : 1;
 
 	/* 3. Sort by local ID */
-	return (int)id_a->internal_id - (int)id_b->internal_id;
+	return (int)id_a.internal_id - (int)id_b.internal_id;
 }
 
 /**
@@ -1234,32 +1232,31 @@ static int CDECL EnginePreSort(const EngineID *a, const EngineID *b)
 void CommitVehicleListOrderChanges()
 {
 	/* Pre-sort engines by scope-grfid and local index */
-	SmallVector<EngineID, 16> ordering;
+	std::vector<EngineID> ordering;
 	Engine *e;
 	FOR_ALL_ENGINES(e) {
-		*ordering.Append() = e->index;
+		ordering.push_back(e->index);
 	}
-	QSortT(ordering.Begin(), ordering.Length(), EnginePreSort);
+	QSortT(ordering.data(), ordering.size(), EnginePreSort);
 
 	/* Apply Insertion-Sort operations */
-	const ListOrderChange *end = _list_order_changes.End();
-	for (const ListOrderChange *it = _list_order_changes.Begin(); it != end; ++it) {
-		EngineID source = it->engine;
-		uint local_target = it->target;
+	for (const ListOrderChange &it : _list_order_changes) {
+		EngineID source = it.engine;
+		uint local_target = it.target;
 
-		const EngineIDMapping *id_source = _engine_mngr.Get(source);
+		const EngineIDMapping *id_source = _engine_mngr.data() + source;
 		if (id_source->internal_id == local_target) continue;
 
 		EngineID target = _engine_mngr.GetID(id_source->type, local_target, id_source->grfid);
 		if (target == INVALID_ENGINE) continue;
 
-		int source_index = ordering.FindIndex(source);
-		int target_index = ordering.FindIndex(target);
+		int source_index = find_index(ordering, source);
+		int target_index = find_index(ordering, target);
 
 		assert(source_index >= 0 && target_index >= 0);
 		assert(source_index != target_index);
 
-		EngineID *list = ordering.Begin();
+		EngineID *list = ordering.data();
 		if (source_index < target_index) {
 			--target_index;
 			for (int i = source_index; i < target_index; ++i) list[i] = list[i + 1];
@@ -1271,14 +1268,15 @@ void CommitVehicleListOrderChanges()
 	}
 
 	/* Store final sort-order */
-	const EngineID *idend = ordering.End();
 	uint index = 0;
-	for (const EngineID *it = ordering.Begin(); it != idend; ++it, ++index) {
-		Engine::Get(*it)->list_position = index;
+	for (const EngineID &eid : ordering) {
+		Engine::Get(eid)->list_position = index;
+		++index;
 	}
 
 	/* Clear out the queue */
-	_list_order_changes.Reset();
+	_list_order_changes.clear();
+	_list_order_changes.shrink_to_fit();
 }
 
 /**

@@ -166,10 +166,10 @@ enum SpriteCombineMode {
 	SPRITE_COMBINE_ACTIVE,   ///< %Sprite combining is active. #AddSortableSpriteToDraw outputs child sprites.
 };
 
-typedef SmallVector<TileSpriteToDraw, 64> TileSpriteToDrawVector;
-typedef SmallVector<StringSpriteToDraw, 4> StringSpriteToDrawVector;
-typedef SmallVector<ParentSpriteToDraw, 64> ParentSpriteToDrawVector;
-typedef SmallVector<ChildScreenSpriteToDraw, 16> ChildScreenSpriteToDrawVector;
+typedef std::vector<TileSpriteToDraw> TileSpriteToDrawVector;
+typedef std::vector<StringSpriteToDraw> StringSpriteToDrawVector;
+typedef std::vector<ParentSpriteToDraw> ParentSpriteToDrawVector;
+typedef std::vector<ChildScreenSpriteToDraw> ChildScreenSpriteToDrawVector;
 
 typedef std::vector<std::pair<int, OrderType> > RankOrderTypeList;
 typedef std::map<TileIndex, RankOrderTypeList> RouteStepsMap;
@@ -193,15 +193,15 @@ struct LineSnapPoint : Point {
 	uint8 dirs; ///< Allowed line directions, set of #Direction bits.
 };
 
-typedef SmallVector<LineSnapPoint, 4> LineSnapPoints; ///< Set of snapping points
+typedef std::vector<LineSnapPoint> LineSnapPoints; ///< Set of snapping points
 
 /** Coordinates of a polyline track made of 2 connected line segments. */
 struct PolylineInfo {
 	Point start;           ///< The point where the first segment starts (as given in LineSnapPoint).
 	Direction first_dir;   ///< Direction of the first line segment.
-	uint first_len;        ///< Length of the first segment - number of track pieces.
+	uint first_len;        ///< size of the first segment - number of track pieces.
 	Direction second_dir;  ///< Direction of the second line segment.
-	uint second_len;       ///< Length of the second segment - number of track pieces.
+	uint second_len;       ///< size of the second segment - number of track pieces.
 };
 
 /** Data structure storing rendering information */
@@ -607,13 +607,14 @@ static void AddTileSpriteToDraw(SpriteID image, PaletteID pal, int32 x, int32 y,
 {
 	assert((image & SPRITE_MASK) < MAX_SPRITES);
 
-	TileSpriteToDraw *ts = _vd.tile_sprites_to_draw.Append();
-	ts->image = image;
-	ts->pal = pal;
-	ts->sub = sub;
+	/*C++17: TileSpriteToDraw &ts = */ _vd.tile_sprites_to_draw.emplace_back();
+	TileSpriteToDraw &ts = _vd.tile_sprites_to_draw.back();
+	ts.image = image;
+	ts.pal = pal;
+	ts.sub = sub;
 	Point pt = RemapCoords(x, y, z);
-	ts->x = pt.x + extra_offs_x;
-	ts->y = pt.y + extra_offs_y;
+	ts.x = pt.x + extra_offs_x;
+	ts.y = pt.y + extra_offs_y;
 }
 
 /**
@@ -706,7 +707,7 @@ void OffsetGroundSprite(int x, int y)
 	}
 
 	/* _vd.last_child == NULL if foundation sprite was clipped by the viewport bounds */
-	if (_vd.last_child != NULL) _vd.foundation[_vd.foundation_part] = _vd.parent_sprites_to_draw.Length() - 1;
+	if (_vd.last_child != NULL) _vd.foundation[_vd.foundation_part] = _vd.parent_sprites_to_draw.size() - 1;
 
 	_vd.foundation_offset[_vd.foundation_part].x = x * ZOOM_LVL_BASE;
 	_vd.foundation_offset[_vd.foundation_part].y = y * ZOOM_LVL_BASE;
@@ -735,8 +736,8 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
 			pt.y + spr->y_offs + spr->height <= _vd.dpi.top)
 		return;
 
-	const ParentSpriteToDraw *pstd = _vd.parent_sprites_to_draw.End() - 1;
-	AddChildSpriteScreen(image, pal, pt.x - pstd->left, pt.y - pstd->top, false, sub, false);
+	const ParentSpriteToDraw &pstd = _vd.parent_sprites_to_draw.back();
+	AddChildSpriteScreen(image, pal, pt.x - pstd.left, pt.y - pstd.top, false, sub, false);
 }
 
 /**
@@ -816,29 +817,30 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		return;
 	}
 
-	ParentSpriteToDraw *ps = _vd.parent_sprites_to_draw.Append();
-	ps->x = tmp_x;
-	ps->y = tmp_y;
+	/*C++17: ParentSpriteToDraw &ps = */ _vd.parent_sprites_to_draw.emplace_back();
+	ParentSpriteToDraw &ps = _vd.parent_sprites_to_draw.back();
+	ps.x = tmp_x;
+	ps.y = tmp_y;
 
-	ps->left = tmp_left;
-	ps->top  = tmp_top;
+	ps.left = tmp_left;
+	ps.top  = tmp_top;
 
-	ps->image = image;
-	ps->pal = pal;
-	ps->sub = sub;
-	ps->xmin = x + bb_offset_x;
-	ps->xmax = x + max(bb_offset_x, w) - 1;
+	ps.image = image;
+	ps.pal = pal;
+	ps.sub = sub;
+	ps.xmin = x + bb_offset_x;
+	ps.xmax = x + max(bb_offset_x, w) - 1;
 
-	ps->ymin = y + bb_offset_y;
-	ps->ymax = y + max(bb_offset_y, h) - 1;
+	ps.ymin = y + bb_offset_y;
+	ps.ymax = y + max(bb_offset_y, h) - 1;
 
-	ps->zmin = z + bb_offset_z;
-	ps->zmax = z + max(bb_offset_z, dz) - 1;
+	ps.zmin = z + bb_offset_z;
+	ps.zmax = z + max(bb_offset_z, dz) - 1;
 
-	ps->comparison_done = false;
-	ps->first_child = -1;
+	ps.comparison_done = false;
+	ps.first_child = -1;
 
-	_vd.last_child = &ps->first_child;
+	_vd.last_child = &ps.first_child;
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) _vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
 }
@@ -936,35 +938,37 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 		pal = PALETTE_TO_TRANSPARENT;
 	}
 
-	*_vd.last_child = _vd.child_screen_sprites_to_draw.Length();
+	*_vd.last_child = _vd.child_screen_sprites_to_draw.size();
 
-	ChildScreenSpriteToDraw *cs = _vd.child_screen_sprites_to_draw.Append();
-	cs->image = image;
-	cs->pal = pal;
-	cs->sub = sub;
-	cs->x = scale ? x * ZOOM_LVL_BASE : x;
-	cs->y = scale ? y * ZOOM_LVL_BASE : y;
-	cs->next = -1;
+	/*C++17: ChildScreenSpriteToDraw &cs = */ _vd.child_screen_sprites_to_draw.emplace_back();
+	ChildScreenSpriteToDraw &cs = _vd.child_screen_sprites_to_draw.back();
+	cs.image = image;
+	cs.pal = pal;
+	cs.sub = sub;
+	cs.x = scale ? x * ZOOM_LVL_BASE : x;
+	cs.y = scale ? y * ZOOM_LVL_BASE : y;
+	cs.next = -1;
 
 	/* Append the sprite to the active ChildSprite list.
 	 * If the active ParentSprite is a foundation, update last_foundation_child as well.
 	 * Note: ChildSprites of foundations are NOT sequential in the vector, as selection sprites are added at last. */
-	if (_vd.last_foundation_child[0] == _vd.last_child) _vd.last_foundation_child[0] = &cs->next;
-	if (_vd.last_foundation_child[1] == _vd.last_child) _vd.last_foundation_child[1] = &cs->next;
-	_vd.last_child = &cs->next;
+	if (_vd.last_foundation_child[0] == _vd.last_child) _vd.last_foundation_child[0] = &cs.next;
+	if (_vd.last_foundation_child[1] == _vd.last_child) _vd.last_foundation_child[1] = &cs.next;
+	_vd.last_child = &cs.next;
 }
 
 static void AddStringToDraw(int x, int y, StringID string, uint64 params_1, uint64 params_2, Colours colour, uint16 width)
 {
 	assert(width != 0);
-	StringSpriteToDraw *ss = _vd.string_sprites_to_draw.Append();
-	ss->string = string;
-	ss->x = x;
-	ss->y = y;
-	ss->params[0] = params_1;
-	ss->params[1] = params_2;
-	ss->width = width;
-	ss->colour = colour;
+	/*C++17: StringSpriteToDraw &ss = */ _vd.string_sprites_to_draw.emplace_back();
+	StringSpriteToDraw &ss = _vd.string_sprites_to_draw.back();
+	ss.string = string;
+	ss.x = x;
+	ss.y = y;
+	ss.params[0] = params_1;
+	ss.params[1] = params_2;
+	ss.width = width;
+	ss.colour = colour;
 }
 
 
@@ -1508,9 +1512,8 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 
 static void ViewportDrawTileSprites(const TileSpriteToDrawVector *tstdv)
 {
-	const TileSpriteToDraw *tsend = tstdv->End();
-	for (const TileSpriteToDraw *ts = tstdv->Begin(); ts != tsend; ++ts) {
-		DrawSpriteViewport(ts->image, ts->pal, ts->x, ts->y, ts->sub);
+	for (const TileSpriteToDraw &ts : *tstdv) {
+		DrawSpriteViewport(ts.image, ts.pal, ts.x, ts.y, ts.sub);
 	}
 }
 
@@ -1523,8 +1526,8 @@ static bool ViewportSortParentSpritesChecker()
 /** Sort parent sprites pointer array */
 static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 {
-	ParentSpriteToDraw **psdvend = psdv->End();
-	ParentSpriteToDraw **psd = psdv->Begin();
+	auto psdvend = psdv->end();
+	auto psd = psdv->begin();
 	while (psd != psdvend) {
 		ParentSpriteToDraw *ps = *psd;
 
@@ -1535,7 +1538,7 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 
 		ps->comparison_done = true;
 
-		for (ParentSpriteToDraw **psd2 = psd + 1; psd2 != psdvend; psd2++) {
+		for (auto psd2 = psd + 1; psd2 != psdvend; psd2++) {
 			ParentSpriteToDraw *ps2 = *psd2;
 
 			if (ps2->comparison_done) continue;
@@ -1570,7 +1573,7 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 
 			/* Move ps2 in front of ps */
 			ParentSpriteToDraw *temp = ps2;
-			for (ParentSpriteToDraw **psd3 = psd2; psd3 > psd; psd3--) {
+			for (auto psd3 = psd2; psd3 > psd; psd3--) {
 				*psd3 = *(psd3 - 1);
 			}
 			*psd = temp;
@@ -1580,14 +1583,12 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 
 static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const ChildScreenSpriteToDrawVector *csstdv)
 {
-	const ParentSpriteToDraw * const *psd_end = psd->End();
-	for (const ParentSpriteToDraw * const *it = psd->Begin(); it != psd_end; it++) {
-		const ParentSpriteToDraw *ps = *it;
+	for (const ParentSpriteToDraw *ps : *psd) {
 		if (ps->image != SPR_EMPTY_BOUNDING_BOX) DrawSpriteViewport(ps->image, ps->pal, ps->x, ps->y, ps->sub);
 
 		int child_idx = ps->first_child;
 		while (child_idx >= 0) {
-			const ChildScreenSpriteToDraw *cs = csstdv->Get(child_idx);
+			const ChildScreenSpriteToDraw *cs = csstdv->data() + child_idx;
 			child_idx = cs->next;
 			DrawSpriteViewport(cs->image, cs->pal, ps->left + cs->x, ps->top + cs->y, cs->sub);
 		}
@@ -1600,9 +1601,7 @@ static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const
  */
 static void ViewportDrawBoundingBoxes(const ParentSpriteToSortVector *psd)
 {
-	const ParentSpriteToDraw * const *psd_end = psd->End();
-	for (const ParentSpriteToDraw * const *it = psd->Begin(); it != psd_end; it++) {
-		const ParentSpriteToDraw *ps = *it;
+	for (const ParentSpriteToDraw *ps : *psd) {
 		Point pt1 = RemapCoords(ps->xmax + 1, ps->ymax + 1, ps->zmax + 1); // top front corner
 		Point pt2 = RemapCoords(ps->xmin    , ps->ymax + 1, ps->zmax + 1); // top left corner
 		Point pt3 = RemapCoords(ps->xmax + 1, ps->ymin    , ps->zmax + 1); // top right corner
@@ -1632,15 +1631,16 @@ static void ViewportMapStoreBridgeTunnel(const ViewPort * const vp, const TileIn
 
 	/* Check if already stored */
 	TunnelBridgeToMapVector * const tbtmv = tile_is_tunnel ? &_vd.tunnel_to_map : &_vd.bridge_to_map;
-	TunnelBridgeToMap *tbtm = tbtmv->Begin();
-	const TunnelBridgeToMap * const tbtm_end = tbtmv->End();
+	TunnelBridgeToMap *tbtm = tbtmv->data();
+	const TunnelBridgeToMap * const tbtm_end = tbtmv->data() + tbtmv->size();
 	while (tbtm != tbtm_end) {
 		if (tile == tbtm->from_tile || tile == tbtm->to_tile) return;
 		tbtm++;
 	}
 
 	/* It's a new one, add it to the list */
-	tbtm = tbtmv->Append();
+	tbtmv->emplace_back();
+	tbtm = &(tbtmv->back());
 	TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 
 	/* ensure deterministic ordering, to avoid render flicker */
@@ -1655,15 +1655,15 @@ static void ViewportMapStoreBridgeTunnel(const ViewPort * const vp, const TileIn
 
 void ViewportMapClearTunnelCache()
 {
-	_vd.tunnel_to_map.Clear();
+	_vd.tunnel_to_map.clear();
 }
 
 void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile)
 {
 	TunnelBridgeToMapVector * const tbtmv = &_vd.tunnel_to_map;
-	for (TunnelBridgeToMap *tbtm = tbtmv->Begin(); tbtm != tbtmv->End(); tbtm++) {
+	for (auto tbtm = tbtmv->begin(); tbtm != tbtmv->end(); tbtm++) {
 		if (tbtm->from_tile == tile || tbtm->to_tile == tile) {
-			tbtmv->Erase(tbtm);
+			tbtmv->erase(tbtm);
 			tbtm--;
 		}
 	}
@@ -1693,38 +1693,37 @@ static void ViewportDrawDirtyBlocks()
 
 static void ViewportDrawStrings(ZoomLevel zoom, const StringSpriteToDrawVector *sstdv)
 {
-	const StringSpriteToDraw *ssend = sstdv->End();
-	for (const StringSpriteToDraw *ss = sstdv->Begin(); ss != ssend; ++ss) {
+	for (const StringSpriteToDraw &ss : *sstdv) {
 		TextColour colour = TC_BLACK;
-		bool small = HasBit(ss->width, 15);
-		int w = GB(ss->width, 0, 15);
-		int x = UnScaleByZoom(ss->x, zoom);
-		int y = UnScaleByZoom(ss->y, zoom);
+		bool small = HasBit(ss.width, 15);
+		int w = GB(ss.width, 0, 15);
+		int x = UnScaleByZoom(ss.x, zoom);
+		int y = UnScaleByZoom(ss.y, zoom);
 		int h = VPSM_TOP + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + VPSM_BOTTOM;
 
-		SetDParam(0, ss->params[0]);
-		SetDParam(1, ss->params[1]);
+		SetDParam(0, ss.params[0]);
+		SetDParam(1, ss.params[1]);
 
-		if (ss->colour != INVALID_COLOUR) {
+		if (ss.colour != INVALID_COLOUR) {
 			/* Do not draw signs nor station names if they are set invisible */
-			if (IsInvisibilitySet(TO_SIGNS) && ss->string != STR_WHITE_SIGN) continue;
+			if (IsInvisibilitySet(TO_SIGNS) && ss.string != STR_WHITE_SIGN) continue;
 
-			if (IsTransparencySet(TO_SIGNS) && ss->string != STR_WHITE_SIGN) {
+			if (IsTransparencySet(TO_SIGNS) && ss.string != STR_WHITE_SIGN) {
 				/* Don't draw the rectangle.
 				 * Real colours need the TC_IS_PALETTE_COLOUR flag.
 				 * Otherwise colours from _string_colourmap are assumed. */
-				colour = (TextColour)_colour_gradient[ss->colour][6] | TC_IS_PALETTE_COLOUR;
+				colour = (TextColour)_colour_gradient[ss.colour][6] | TC_IS_PALETTE_COLOUR;
 			} else {
 				/* Draw the rectangle if 'transparent station signs' is off,
 				 * or if we are drawing a general text sign (STR_WHITE_SIGN). */
 				DrawFrameRect(
-					x, y, x + w, y + h, ss->colour,
+					x, y, x + w, y + h, ss.colour,
 					IsTransparencySet(TO_SIGNS) ? FR_TRANSPARENT : FR_NONE
 				);
 			}
 		}
 
-		DrawString(x + VPSM_LEFT, x + w - 1 - VPSM_RIGHT, y + VPSM_TOP, ss->string, colour, SA_HOR_CENTER);
+		DrawString(x + VPSM_LEFT, x + w - 1 - VPSM_RIGHT, y + VPSM_TOP, ss.string, colour, SA_HOR_CENTER);
 	}
 }
 
@@ -2254,13 +2253,11 @@ static inline void ViewportMapStoreBridgeAboveTile(const ViewPort * const vp, co
 	if (!_settings_client.gui.show_bridges_on_map) return;
 
 	/* Check existing stored bridges */
-	TunnelBridgeToMap *tbtm = _vd.bridge_to_map.Begin();
-	TunnelBridgeToMap *tbtm_end = _vd.bridge_to_map.End();
-	for (; tbtm != tbtm_end; ++tbtm) {
-		if (!IsBridge(tbtm->from_tile)) continue;
+	for (const TunnelBridgeToMap &tbtm : _vd.bridge_to_map) {
+		if (!IsBridge(tbtm.from_tile)) continue;
 
-		TileIndex from = tbtm->from_tile;
-		TileIndex to = tbtm->to_tile;
+		TileIndex from = tbtm.from_tile;
+		TileIndex to = tbtm.to_tile;
 		if (TileX(from) == TileX(to) && TileX(from) == TileX(tile)) {
 			if (TileY(from) > TileY(to)) std::swap(from, to);
 			if (TileY(from) <= TileY(tile) && TileY(tile) <= TileY(to)) return; /* already covered */
@@ -2521,12 +2518,11 @@ void ViewportMapDraw(const ViewPort * const vp)
 	} while (++j < h);
 
 	/* Render tunnels */
-	if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map.Length() != 0) {
-		const TunnelBridgeToMap * const tbtm_end = _vd.tunnel_to_map.End();
-		for (const TunnelBridgeToMap *tbtm = _vd.tunnel_to_map.Begin(); tbtm != tbtm_end; tbtm++) { // For each tunnel
-			const int tunnel_z = GetTileZ(tbtm->from_tile) * TILE_HEIGHT;
-			const Point pt_from = RemapCoords(TileX(tbtm->from_tile) * TILE_SIZE, TileY(tbtm->from_tile) * TILE_SIZE, tunnel_z);
-			const Point pt_to = RemapCoords(TileX(tbtm->to_tile) * TILE_SIZE, TileY(tbtm->to_tile) * TILE_SIZE, tunnel_z);
+	if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map.size() != 0) {
+		for (const TunnelBridgeToMap &tbtm : _vd.tunnel_to_map) { // For each tunnel
+			const int tunnel_z = GetTileZ(tbtm.from_tile) * TILE_HEIGHT;
+			const Point pt_from = RemapCoords(TileX(tbtm.from_tile) * TILE_SIZE, TileY(tbtm.from_tile) * TILE_SIZE, tunnel_z);
+			const Point pt_to = RemapCoords(TileX(tbtm.to_tile) * TILE_SIZE, TileY(tbtm.to_tile) * TILE_SIZE, tunnel_z);
 
 			/* check if tunnel is wholly outside redrawing area */
 			const int x_from = UnScaleByZoomLower(pt_from.x - _vd.dpi.left, _vd.dpi.zoom);
@@ -2536,15 +2532,14 @@ void ViewportMapDraw(const ViewPort * const vp)
 			const int y_to = UnScaleByZoomLower(pt_to.y - _vd.dpi.top, _vd.dpi.zoom);
 			if ((y_from < 0 && y_to < 0) || (y_from > h && y_to > h)) continue;
 
-			ViewportMapDrawBridgeTunnel(vp, tbtm, tunnel_z, true, w, h, blitter);
+			ViewportMapDrawBridgeTunnel(vp, &tbtm, tunnel_z, true, w, h, blitter);
 		}
 	}
 
 	/* Render bridges */
-	if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map.Length() != 0) {
-		const TunnelBridgeToMap * const tbtm_end = _vd.bridge_to_map.End();
-		for (const TunnelBridgeToMap *tbtm = _vd.bridge_to_map.Begin(); tbtm != tbtm_end; tbtm++) { // For each bridge
-			ViewportMapDrawBridgeTunnel(vp, tbtm, (GetBridgeHeight(tbtm->from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
+	if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map.size() != 0) {
+		for (const TunnelBridgeToMap &tbtm : _vd.bridge_to_map) { // For each bridge
+			ViewportMapDrawBridgeTunnel(vp, &tbtm, (GetBridgeHeight(tbtm.from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
 		}
 	}
 }
@@ -2600,11 +2595,10 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 
 		DrawTextEffects(&_vd.dpi);
 
-		if (_vd.tile_sprites_to_draw.Length() != 0) ViewportDrawTileSprites(&_vd.tile_sprites_to_draw);
+		if (_vd.tile_sprites_to_draw.size() != 0) ViewportDrawTileSprites(&_vd.tile_sprites_to_draw);
 
-		ParentSpriteToDraw *psd_end = _vd.parent_sprites_to_draw.End();
-		for (ParentSpriteToDraw *it = _vd.parent_sprites_to_draw.Begin(); it != psd_end; it++) {
-			*_vd.parent_sprites_to_sort.Append() = it;
+		for (auto &psd : _vd.parent_sprites_to_draw) {
+			_vd.parent_sprites_to_sort.push_back(&psd);
 		}
 
 		_vp_sprite_sorter(&_vd.parent_sprites_to_sort);
@@ -2629,7 +2623,7 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 	}
 
 	if (_settings_client.gui.show_vehicle_route) ViewportMapDrawVehicleRoute(vp);
-	if (_vd.string_sprites_to_draw.Length() != 0) {
+	if (_vd.string_sprites_to_draw.size() != 0) {
 		/* translate to world coordinates */
 		dp.left = UnScaleByZoom(_vd.dpi.left, zoom);
 		dp.top = UnScaleByZoom(_vd.dpi.top, zoom);
@@ -2640,12 +2634,12 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 
 	_cur_dpi = old_dpi;
 
-	_vd.bridge_to_map.Clear();
-	_vd.string_sprites_to_draw.Clear();
-	_vd.tile_sprites_to_draw.Clear();
-	_vd.parent_sprites_to_draw.Clear();
-	_vd.parent_sprites_to_sort.Clear();
-	_vd.child_screen_sprites_to_draw.Clear();
+	_vd.bridge_to_map.clear();
+	_vd.string_sprites_to_draw.clear();
+	_vd.tile_sprites_to_draw.clear();
+	_vd.parent_sprites_to_draw.clear();
+	_vd.parent_sprites_to_sort.clear();
+	_vd.child_screen_sprites_to_draw.clear();
 }
 
 /**
@@ -3815,10 +3809,15 @@ void UpdateTileSelection()
  * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
  * @param close_cond Condition for closing this tooltip.
  */
-static inline void ShowMeasurementTooltips(StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_cond = TCC_LEFT_CLICK)
+static inline void ShowMeasurementTooltips(StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_cond = TCC_NONE)
 {
 	if (!_settings_client.gui.measure_tooltip) return;
 	GuiShowTooltips(_thd.GetCallbackWnd(), str, paramcount, params, close_cond);
+}
+
+static void HideMeasurementTooltips()
+{
+	DeleteWindowById(WC_TOOLTIPS, 0);
 }
 
 /** highlighting tiles while only going over them with the mouse */
@@ -3881,7 +3880,11 @@ void VpSetPresizeRange(TileIndex from, TileIndex to)
 	_thd.next_drawstyle = HT_RECT;
 
 	/* show measurement only if there is any length to speak of */
-	if (distance > 1) ShowMeasurementTooltips(STR_MEASURE_LENGTH, 1, &distance, _settings_client.gui.hover_delay_ms == 0 ? TCC_NEXT_LOOP : TCC_HOVER);
+	if (distance > 1) {
+		ShowMeasurementTooltips(STR_MEASURE_LENGTH, 1, &distance);
+	} else {
+		HideMeasurementTooltips();
+	}
 }
 
 static void VpStartPreSizing()
@@ -4044,7 +4047,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 	return (int)(h1 - h0) * TILE_HEIGHT_STEP;
 }
 
-static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TCC_LEFT_CLICK, bool show_single_tile_length = false)
+static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TCC_NONE, bool show_single_tile_length = false)
 {
 	static const StringID measure_strings_length[] = {STR_NULL, STR_MEASURE_LENGTH, STR_MEASURE_LENGTH_HEIGHTDIFF};
 
@@ -4478,10 +4481,10 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	if (_current_snap_lock.x != -1) {
 		snap_point = FindBestPolyline(pt, &_current_snap_lock, 1, &line);
 	} else if (snap_mode == RSM_SNAP_TO_TILE) {
-		snap_point = FindBestPolyline(pt, _tile_snap_points.Begin(), _tile_snap_points.Length(), &line);
+		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), _tile_snap_points.size(), &line);
 	} else {
 		assert(snap_mode == RSM_SNAP_TO_RAIL);
-		snap_point = FindBestPolyline(pt, _rail_snap_points.Begin(), _rail_snap_points.Length(), &line);
+		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), _rail_snap_points.size(), &line);
 	}
 
 	if (snap_point == NULL) return HT_NONE; // no match
@@ -4646,7 +4649,7 @@ calc_heightdiff_single_direction:;
 			params[index++] = GetTileMaxZ(t1) * TILE_HEIGHT_STEP;
 			params[index++] = heightdiff;
 			//Show always the measurement tooltip
-			GuiShowTooltips(_thd.GetCallbackWnd(),STR_MEASURE_DIST_HEIGHTDIFF, index, params, TCC_LEFT_CLICK);
+			GuiShowTooltips(_thd.GetCallbackWnd(),STR_MEASURE_DIST_HEIGHTDIFF, index, params, TCC_NONE);
 			break;
 		}
 
@@ -4768,6 +4771,7 @@ EventState VpHandlePlaceSizingDrag()
 		if (GetRailSnapMode() == RSM_SNAP_TO_TILE) SetRailSnapMode(RSM_NO_SNAP);
 		if (_thd.drawstyle == HT_NONE) return ES_HANDLED;
 	}
+	HideMeasurementTooltips();
 
 	w->OnPlaceMouseUp(_thd.select_method, _thd.select_proc, _thd.selend, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y));
 	return ES_HANDLED;
@@ -4806,7 +4810,10 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 		 * this function might in some cases reset the newly set object to
 		 * place or not properly reset the original selection. */
 		_thd.window_class = WC_INVALID;
-		if (w != NULL) w->OnPlaceObjectAbort();
+		if (w != NULL) {
+			w->OnPlaceObjectAbort();
+			HideMeasurementTooltips();
+		}
 	}
 
 	/* Mark the old selection dirty, in case the selection shape or colour changes */
@@ -4917,12 +4924,8 @@ CommandCost CmdScrollViewport(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 			if (_local_company != (CompanyID)p2) return CommandCost();
 			break;
 		case VST_CLIENT:
-#ifdef ENABLE_NETWORK
 			if (_network_own_client_id != (ClientID)p2) return CommandCost();
 			break;
-#else
-			return CommandCost();
-#endif
 		default:
 			return CMD_ERROR;
 	}
@@ -4979,12 +4982,11 @@ void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track
 		LineSnapPoint snap_start = LineSnapPointAtRailTrackEndpoint(start_tile, TrackdirToExitdir(exit_trackdir_at_start), bidirectional_exit);
 		LineSnapPoint snap_end = LineSnapPointAtRailTrackEndpoint(end_tile, TrackdirToExitdir(exit_trackdir_at_end), bidirectional_exit);
 		/* Find if we already had these coordinates before. */
-		LineSnapPoint *snap;
 		bool had_start = false;
 		bool had_end = false;
-		for (snap = _rail_snap_points.Begin(); snap != _rail_snap_points.End(); snap++) {
-			had_start |= (snap->x == snap_start.x && snap->y == snap_start.y);
-			had_end |= (snap->x == snap_end.x && snap->y == snap_end.y);
+		for (const LineSnapPoint &snap : _rail_snap_points) {
+			had_start |= (snap.x == snap_start.x && snap.y == snap_start.y);
+			had_end |= (snap.x == snap_end.x && snap.y == snap_end.y);
 		}
 		/* Create new snap point set. */
 		if (had_start && had_end) {
@@ -4992,9 +4994,9 @@ void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track
 			SetRailSnapMode(RSM_NO_SNAP);
 		} else {
 			/* include only new points */
-			_rail_snap_points.Clear();
-			if (!had_start) *_rail_snap_points.Append() = snap_start;
-			if (!had_end) *_rail_snap_points.Append() = snap_end;
+			_rail_snap_points.clear();
+			if (!had_start) _rail_snap_points.push_back(snap_start);
+			if (!had_end) _rail_snap_points.push_back(snap_end);
 			SetRailSnapMode(RSM_SNAP_TO_RAIL);
 		}
 	}
@@ -5007,8 +5009,8 @@ bool CurrentlySnappingRailPlacement()
 
 static RailSnapMode GetRailSnapMode()
 {
-	if (_rail_snap_mode == RSM_SNAP_TO_TILE && _tile_snap_points.Length() == 0) return RSM_NO_SNAP;
-	if (_rail_snap_mode == RSM_SNAP_TO_RAIL && _rail_snap_points.Length() == 0) return RSM_NO_SNAP;
+	if (_rail_snap_mode == RSM_SNAP_TO_TILE && _tile_snap_points.size() == 0) return RSM_NO_SNAP;
+	if (_rail_snap_mode == RSM_SNAP_TO_RAIL && _rail_snap_points.size() == 0) return RSM_NO_SNAP;
 	return _rail_snap_mode;
 }
 
@@ -5023,26 +5025,26 @@ static void SetRailSnapMode(RailSnapMode mode)
 
 static TileIndex GetRailSnapTile()
 {
-	if (_tile_snap_points.Length() == 0) return INVALID_TILE;
+	if (_tile_snap_points.size() == 0) return INVALID_TILE;
 	return TileVirtXY(_tile_snap_points[DIAGDIR_NE].x, _tile_snap_points[DIAGDIR_NE].y);
 }
 
 static void SetRailSnapTile(TileIndex tile)
 {
-	_tile_snap_points.Clear();
+	_tile_snap_points.clear();
 	if (tile == INVALID_TILE) return;
 
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
-		LineSnapPoint *point = _tile_snap_points.Append();
-		*point = LineSnapPointAtRailTrackEndpoint(tile, dir, false);
-		point->dirs = ROR<uint8>(point->dirs, DIRDIFF_REVERSE);
+		_tile_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(tile, dir, false));
+		LineSnapPoint &point = _tile_snap_points.back();
+		point.dirs = ROR<uint8>(point.dirs, DIRDIFF_REVERSE);
 	}
 }
 
 void ResetRailPlacementSnapping()
 {
 	_rail_snap_mode = RSM_NO_SNAP;
-	_tile_snap_points.Clear();
-	_rail_snap_points.Clear();
+	_tile_snap_points.clear();
+	_rail_snap_points.clear();
 	_current_snap_lock.x = -1;
 }

@@ -105,7 +105,7 @@ public:
 		this->vscroll->SetCapacity((this->GetWidget<NWidgetBase>(WID_TA_COMMAND_LIST)->current_y - WD_FRAMERECT_TOP - WD_FRAMERECT_BOTTOM) / FONT_HEIGHT_NORMAL);
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		int numact;
 		uint buttons = GetMaskOfTownActions(&numact, _local_company, this->town);
@@ -186,12 +186,12 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_TA_CAPTION) SetDParam(0, this->window_number);
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_TA_ACTION_INFO:
@@ -226,7 +226,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TA_ACTION_INFO: {
@@ -260,7 +260,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_TA_COMMAND_LIST: {
@@ -283,7 +283,7 @@ public:
 		}
 	}
 
-	virtual void OnHundredthTick()
+	void OnHundredthTick() override
 	{
 		this->SetDirty();
 	}
@@ -327,12 +327,12 @@ public:
 		this->SetWidgetDisabledState(WID_TV_CHANGE_NAME, _networking && !_network_server);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_TV_CAPTION) SetDParam(0, this->town->index);
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_TV_INFO) return;
 
@@ -418,7 +418,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_TV_CENTER_VIEW: // scroll to location
@@ -457,7 +457,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TV_INFO:
@@ -507,7 +507,7 @@ public:
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		if (this->viewport != NULL) {
 			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_TV_VIEWPORT);
@@ -522,7 +522,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		/* Called when setting station noise or required cargoes have changed, in order to resize the window */
@@ -530,7 +530,7 @@ public:
 		this->ResizeWindowAsNeeded();
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (str == NULL) return;
 
@@ -656,16 +656,16 @@ private:
 	void BuildSortTownList()
 	{
 		if (this->towns.NeedRebuild()) {
-			this->towns.Clear();
+			this->towns.clear();
 
 			const Town *t;
 			FOR_ALL_TOWNS(t) {
-				*this->towns.Append() = t;
+				this->towns.push_back(t);
 			}
 
-			this->towns.Compact();
+			this->towns.shrink_to_fit();
 			this->towns.RebuildDone();
-			this->vscroll->SetCount(this->towns.Length()); // Update scrollbar as well.
+			this->vscroll->SetCount(this->towns.size()); // Update scrollbar as well.
 		}
 		/* Always sort the towns. */
 		this->last_town = NULL;
@@ -739,7 +739,7 @@ public:
 		this->FinishInitNested(0);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_TD_WORLD_POPULATION:
@@ -762,7 +762,7 @@ public:
 		return t->larger_town ? STR_TOWN_DIRECTORY_CITY : STR_TOWN_DIRECTORY_TOWN;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_TD_SORT_ORDER:
@@ -772,7 +772,7 @@ public:
 			case WID_TD_LIST: {
 				int n = 0;
 				int y = r.top + WD_FRAMERECT_TOP;
-				if (this->towns.Length() == 0) { // No towns available.
+				if (this->towns.size() == 0) { // No towns available.
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right, y, STR_TOWN_DIRECTORY_NONE);
 					break;
 				}
@@ -784,7 +784,7 @@ public:
 				int text_right = r.right - WD_FRAMERECT_RIGHT - (rtl ? icon_size.width + 2 : 0);
 				int icon_x = rtl ? r.right - WD_FRAMERECT_RIGHT - icon_size.width : r.left + WD_FRAMERECT_LEFT;
 
-				for (uint i = this->vscroll->GetPosition(); i < this->towns.Length(); i++) {
+				for (uint i = this->vscroll->GetPosition(); i < this->towns.size(); i++) {
 					const Town *t = this->towns[i];
 					assert(t->xy != INVALID_TILE);
 
@@ -810,7 +810,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TD_SORT_ORDER: {
@@ -832,7 +832,7 @@ public:
 			}
 			case WID_TD_LIST: {
 				Dimension d = GetStringBoundingBox(STR_TOWN_DIRECTORY_NONE);
-				for (uint i = 0; i < this->towns.Length(); i++) {
+				for (uint i = 0; i < this->towns.size(); i++) {
 					const Town *t = this->towns[i];
 
 					assert(t != NULL);
@@ -862,7 +862,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_TD_SORT_ORDER: // Click on sort order button
@@ -885,7 +885,7 @@ public:
 
 			case WID_TD_LIST: { // Click on Town Matrix
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TD_LIST, WD_FRAMERECT_TOP);
-				if (id_v >= this->towns.Length()) return; // click out of town bounds
+				if (id_v >= this->towns.size()) return; // click out of town bounds
 
 				const Town *t = this->towns[id_v];
 				assert(t != NULL);
@@ -899,7 +899,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		if (widget != WID_TD_SORT_CRITERIA) return;
 
@@ -910,19 +910,19 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (this->towns.NeedRebuild()) this->BuildSortTownList();
 		this->DrawWidgets();
 	}
 
-	virtual void OnHundredthTick()
+	void OnHundredthTick() override
 	{
 		this->BuildSortTownList();
 		this->SetDirty();
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_TD_LIST);
 	}
@@ -932,7 +932,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
@@ -1135,7 +1135,7 @@ public:
 		if (success && !_shift_pressed) this->RandomTownName();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_TF_NEW_TOWN:
@@ -1180,12 +1180,12 @@ public:
 		}
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		this->ExecuteFoundTownCommand(tile, false, STR_ERROR_CAN_T_FOUND_TOWN_HERE, CcFoundTown);
 	}
 
-	virtual void OnPlaceObjectAbort()
+	void OnPlaceObjectAbort() override
 	{
 		this->RaiseButtons();
 		this->UpdateButtons(false);
@@ -1196,7 +1196,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		this->UpdateButtons(true);
@@ -1216,9 +1216,9 @@ void ShowFoundTownWindow()
 	AllocateWindowDescFront<FoundTownWindow>(&_found_town_desc, 0);
 }
 
-class GUIHouseList : public SmallVector<HouseID, 32> {
+class GUIHouseList : public std::vector<HouseID> {
 protected:
-	SmallVector<uint16, 4> house_sets; ///< list of house sets, each item points the first house of the set in the houses array
+	std::vector<uint16> house_sets; ///< list of house sets, each item points the first house of the set in the houses array
 
 	static int CDECL HouseSorter(const HouseID *a, const HouseID *b)
 	{
@@ -1243,17 +1243,17 @@ protected:
 public:
 	GUIHouseList()
 	{
-		*this->house_sets.Append() = 0; // terminator
+		this->house_sets.push_back(0); // terminator
 	}
 
 	inline HouseID GetHouseAtOffset(uint house_set, uint house_offset) const
 	{
-		return *this->Get(this->house_sets[house_set] + house_offset);
+		return (*this)[this->house_sets[house_set] + house_offset];
 	}
 
 	uint NumHouseSets() const
 	{
-		return this->house_sets.Length() - 1; // last item is a terminator
+		return this->house_sets.size() - 1; // last item is a terminator
 	}
 
 	uint NumHousesInHouseSet(uint house_set) const
@@ -1303,7 +1303,7 @@ public:
 	void Build()
 	{
 		/* collect items */
-		this->Clear();
+		this->clear();
 		for (HouseID house = 0; house < NUM_HOUSES; house++) {
 			const HouseSpec *hs = HouseSpec::Get(house);
 			/* is the house enabled? */
@@ -1320,25 +1320,25 @@ public:
 			if (hs->min_year > hs->max_year) continue;
 
 			/* add the house */
-			*this->Append() = house;
+			this->push_back(house);
 		}
 
 		/* arrange items */
-		QSortT(this->Begin(), this->Length(), HouseSorter);
+		QSortT(this->data(), this->size(), HouseSorter);
 
 		/* list house sets */
-		this->house_sets.Clear();
+		this->house_sets.clear();
 		const GRFFile *last_set = NULL;
-		for (uint i = 0; i < this->Length(); i++) {
+		for (uint i = 0; i < this->size(); i++) {
 			const HouseSpec *hs = HouseSpec::Get((*this)[i]);
 			/* add house set */
-			if (this->house_sets.Length() == 0 || last_set != hs->grf_prop.grffile) {
+			if (this->house_sets.size() == 0 || last_set != hs->grf_prop.grffile) {
 				last_set = hs->grf_prop.grffile;
-				*this->house_sets.Append() = i;
+				this->house_sets.push_back(i);
 			}
 		}
 		/* put a terminator on the list to make counting easier */
-		*this->house_sets.Append() = this->Length();
+		this->house_sets.push_back(this->size());
 	}
 };
 
@@ -1358,7 +1358,7 @@ protected:
 		this->house_set = 0;
 		this->house_offset = 0;
 
-		if (this->house_list.Length() == 0) { // no houses at all?
+		if (this->house_list.size() == 0) { // no houses at all?
 			_cur_house = INVALID_HOUSE_ID;
 			this->display_house = _cur_house;
 			return;
@@ -1444,9 +1444,9 @@ public:
 				STR_HOUSE_BUILD_CUSTOM_CAPTION : STR_HOUSE_BUILD_CAPTION;
 
 		/* hide widgets if we have no houses to show */
-		this->SetShaded(this->house_list.Length() == 0);
+		this->SetShaded(this->house_list.size() == 0);
 
-		if (this->house_list.Length() != 0) {
+		if (this->house_list.size() != 0) {
 			/* show the list of house sets if we have at least 2 items to show */
 			this->GetWidget<NWidgetStacked>(WID_HP_HOUSE_SETS_SEL)->SetDisplayedPlane(this->house_list.NumHouseSets() > 1 ? 0 : SZSP_NONE);
 			/* set number of items in the list of house sets */
@@ -1804,7 +1804,7 @@ struct SelectTownWindow : Window {
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ST_SCROLLBAR);
-		this->vscroll->SetCount(this->towns.Length());
+		this->vscroll->SetCount(this->towns.size());
 		this->FinishInitNested();
 	}
 
@@ -1814,7 +1814,7 @@ struct SelectTownWindow : Window {
 
 		/* Determine the widest string */
 		Dimension d = { 0, 0 };
-		for (uint i = 0; i < this->towns.Length(); i++) {
+		for (uint i = 0; i < this->towns.size(); i++) {
 			SetDParam(0, this->towns[i]);
 			d = maxdim(d, GetStringBoundingBox(STR_SELECT_TOWN_LIST_ITEM));
 		}
@@ -1844,7 +1844,7 @@ struct SelectTownWindow : Window {
 		if (widget != WID_ST_PANEL) return;
 
 		uint pos = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_ST_PANEL, WD_FRAMERECT_TOP);
-		if (pos >= this->towns.Length()) return;
+		if (pos >= this->towns.size()) return;
 
 		/* Place a house */
 		SB(this->cmd.p1, 16, 16, this->towns[pos]);
@@ -1916,13 +1916,13 @@ static void PlaceProc_House(TileIndex tile)
 				if (dist >= best_dist) continue;
 				best_dist = dist;
 				best_zone = town_zone;
-				towns.Clear();
+				towns.clear();
 			}
-			*towns.Append() = t->index;
+			towns.push_back(t->index);
 		}
 	}
 
-	if (towns.Length() == 0) {
+	if (towns.size() == 0) {
 		ShowErrorMessage(STR_ERROR_CAN_T_BUILD_HOUSE_HERE, STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE, WL_INFO);
 		return;
 	}

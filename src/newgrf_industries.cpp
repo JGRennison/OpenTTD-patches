@@ -308,16 +308,22 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 		case 0x6A:
 		case 0x6B:
 		case 0x6C:
-		case 0x6D: {
+		case 0x6D:
+		case 0x70:
+		case 0x71: {
 			CargoID cargo = GetCargoTranslation(parameter, this->ro.grffile);
 			int index = this->industry->GetCargoProducedIndex(cargo);
 			if (index < 0) return 0; // invalid cargo
-			if (variable == 0x69) return this->industry->produced_cargo_waiting[index];
-			if (variable == 0x6A) return this->industry->this_month_production[index];
-			if (variable == 0x6B) return this->industry->this_month_transported[index];
-			if (variable == 0x6C) return this->industry->last_month_production[index];
-			if (variable == 0x6D) return this->industry->last_month_transported[index];
-			NOT_REACHED();
+			switch (variable) {
+				case 0x69: return this->industry->produced_cargo_waiting[index];
+				case 0x6A: return this->industry->this_month_production[index];
+				case 0x6B: return this->industry->this_month_transported[index];
+				case 0x6C: return this->industry->last_month_production[index];
+				case 0x6D: return this->industry->last_month_transported[index];
+				case 0x70: return this->industry->production_rate[index];
+				case 0x71: return this->industry->last_month_pct_transported[index];
+				default: NOT_REACHED();
+			}
 		}
 
 
@@ -604,6 +610,17 @@ void IndustryProductionCallback(Industry *ind, int reason)
 		const SpriteGroup *tgroup = object.Resolve();
 		if (tgroup == NULL || tgroup->type != SGT_INDUSTRY_PRODUCTION) break;
 		const IndustryProductionSpriteGroup *group = (const IndustryProductionSpriteGroup *)tgroup;
+
+		if (group->version == 0xFF) {
+			/* Result was marked invalid on load, display error message */
+			SetDParamStr(0, spec->grf_prop.grffile->filename);
+			SetDParam(1, spec->name);
+			SetDParam(2, ind->location.tile);
+			ShowErrorMessage(STR_NEWGRF_BUGGY, STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK, WL_WARNING);
+
+			/* abort the function early, this error isn't critical and will allow the game to continue to run */
+			break;
+		}
 
 		bool deref = (group->version >= 1);
 

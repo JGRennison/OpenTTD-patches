@@ -291,7 +291,7 @@ struct CompanyFinancesWindow : Window {
 		this->owner = (Owner)this->window_number;
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_CF_CAPTION:
@@ -310,7 +310,7 @@ struct CompanyFinancesWindow : Window {
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		int type = _settings_client.gui.expenses_layout;
 		switch (widget) {
@@ -338,7 +338,7 @@ struct CompanyFinancesWindow : Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_CF_EXPS_CATEGORY:
@@ -399,7 +399,7 @@ struct CompanyFinancesWindow : Window {
 		this->GetWidget<NWidgetStacked>(WID_CF_SEL_BUTTONS)->SetDisplayedPlane(plane);
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (!this->IsShaded()) {
 			if (!this->small) {
@@ -429,7 +429,7 @@ struct CompanyFinancesWindow : Window {
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_CF_TOGGLE_SIZE: // toggle size
@@ -458,7 +458,7 @@ struct CompanyFinancesWindow : Window {
 		}
 	}
 
-	virtual void OnHundredthTick()
+	void OnHundredthTick() override
 	{
 		const Company *c = Company::Get((CompanyID)this->window_number);
 		if (c->money > this->max_money) {
@@ -528,17 +528,17 @@ public:
 		return this->result >= COLOUR_END ? STR_COLOUR_DEFAULT : _colour_dropdown[this->result];
 	}
 
-	uint Height(uint width) const
+	uint Height(uint width) const override
 	{
 		return max(FONT_HEIGHT_NORMAL, ScaleGUITrad(12) + 2);
 	}
 
-	bool Selectable() const
+	bool Selectable() const override
 	{
 		return true;
 	}
 
-	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
+	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override
 	{
 		bool rtl = _current_text_dir == TD_RTL;
 		int height = bottom - top;
@@ -566,7 +566,7 @@ private:
 	uint rows;
 	uint line_height;
 	GUIGroupList groups;
-	SmallVector<int, 32> indents;
+	std::vector<int> indents;
 	Scrollbar *vscroll;
 
 	void ShowColourDropDownMenu(uint32 widget)
@@ -610,10 +610,10 @@ private:
 		if (default_livery != NULL) {
 			/* Add COLOUR_END to put the colour out of range, but also allow us to show what the default is */
 			default_col = (primary ? default_livery->colour1 : default_livery->colour2) + COLOUR_END;
-			*list->Append() = new DropDownListColourItem(default_col, false);
+			list->push_back(new DropDownListColourItem(default_col, false));
 		}
 		for (uint i = 0; i < lengthof(_colour_dropdown); i++) {
-			*list->Append() = new DropDownListColourItem(i, HasBit(used_colours, i));
+			list->push_back(new DropDownListColourItem(i, HasBit(used_colours, i)));
 		}
 
 		byte sel = (default_livery == NULL || HasBit(livery->in_use, primary ? 0 : 1)) ? (primary ? livery->colour1 : livery->colour2) : default_col;
@@ -644,11 +644,11 @@ private:
 
 	void AddChildren(GUIGroupList *source, GroupID parent, int indent)
 	{
-		for (const Group **g = source->Begin(); g != source->End(); g++) {
-			if ((*g)->parent != parent) continue;
-			*this->groups.Append() = *g;
-			*this->indents.Append() = indent;
-			AddChildren(source, (*g)->index, indent + 1);
+		for (const Group *g : *source) {
+			if (g->parent != parent) continue;
+			this->groups.push_back(g);
+			this->indents.push_back(indent);
+			AddChildren(source, g->index, indent + 1);
 		}
 	}
 
@@ -656,8 +656,8 @@ private:
 	{
 		if (!this->groups.NeedRebuild()) return;
 
-		this->groups.Clear();
-		this->indents.Clear();
+		this->groups.clear();
+		this->indents.clear();
 
 		if (this->livery_class >= LC_GROUP_RAIL) {
 			GUIGroupList list;
@@ -666,7 +666,7 @@ private:
 			const Group *g;
 			FOR_ALL_GROUPS(g) {
 				if (g->owner == owner && g->vehicle_type == vtype) {
-					*list.Append() = g;
+					list.push_back(g);
 				}
 			}
 
@@ -676,7 +676,7 @@ private:
 			AddChildren(&list, INVALID_GROUP, 0);
 		}
 
-		this->groups.Compact();
+		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
 	}
 
@@ -690,7 +690,7 @@ private:
 				}
 			}
 		} else {
-			this->rows = this->groups.Length();
+			this->rows = this->groups.size();
 		}
 
 		this->vscroll->SetCount(this->rows);
@@ -744,7 +744,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SCL_SPACER_DROPDOWN: {
@@ -797,7 +797,7 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		bool local = (CompanyID)this->window_number == _local_company;
 
@@ -811,7 +811,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_SCL_CAPTION:
@@ -851,7 +851,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_SCL_MATRIX) return;
 
@@ -906,7 +906,7 @@ public:
 				}
 			}
 		} else {
-			uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->groups.Length());
+			uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->groups.size());
 			for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
 				const Group *g = this->groups[i];
 				SetDParam(0, g->index);
@@ -915,7 +915,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			/* Livery Class buttons */
@@ -946,7 +946,7 @@ public:
 					this->groups.ForceRebuild();
 					this->BuildGroupList((CompanyID)this->window_number);
 
-					if (this->groups.Length() > 0) {
+					if (this->groups.size() > 0) {
 						this->sel = this->groups[0]->index;
 					}
 				}
@@ -989,12 +989,12 @@ public:
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_SCL_MATRIX);
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		bool local = (CompanyID)this->window_number == _local_company;
 		if (!local) return;
@@ -1020,7 +1020,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 
@@ -1033,7 +1033,7 @@ public:
 
 				if (!Group::IsValidID(this->sel)) {
 					this->sel = INVALID_GROUP;
-					if (this->groups.Length() > 0) this->sel = this->groups[0]->index;
+					if (this->groups.size() > 0) this->sel = this->groups[0]->index;
 				}
 
 				this->SetDirty();
@@ -1372,7 +1372,7 @@ public:
 		}
 	}
 
-	virtual void OnInit()
+	void OnInit() override
 	{
 		/* Size of the boolean yes/no button. */
 		Dimension yesno_dim = maxdim(GetStringBoundingBox(STR_FACE_YES), GetStringBoundingBox(STR_FACE_NO));
@@ -1395,7 +1395,7 @@ public:
 		this->number_dim = number_dim;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SCMF_FACE: {
@@ -1454,7 +1454,7 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		/* lower the non-selected gender button */
 		this->SetWidgetsLoweredState(!this->is_female, WID_SCMF_MALE, WID_SCMF_MALE2, WIDGET_LIST_END);
@@ -1515,7 +1515,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_SCMF_HAS_MOUSTACHE_EARRING_TEXT:
@@ -1604,7 +1604,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			/* Toggle size, advanced/simple face selection */
@@ -1713,7 +1713,7 @@ public:
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (str == NULL) return;
 		/* Set a new company manager face number */
@@ -1868,7 +1868,7 @@ struct CompanyInfrastructureWindow : Window
 		return total;
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_CI_CAPTION:
@@ -1877,7 +1877,7 @@ struct CompanyInfrastructureWindow : Window
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		const Company *c = Company::Get((CompanyID)this->window_number);
 
@@ -2000,7 +2000,7 @@ struct CompanyInfrastructureWindow : Window
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		const Company *c = Company::Get((CompanyID)this->window_number);
 		int y = r.top;
@@ -2103,7 +2103,7 @@ struct CompanyInfrastructureWindow : Window
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 
@@ -2282,7 +2282,7 @@ struct CompanyWindow : Window
 		this->OnInvalidateData();
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		const Company *c = Company::Get((CompanyID)this->window_number);
 		bool local = this->window_number == _local_company;
@@ -2357,7 +2357,7 @@ struct CompanyWindow : Window
 		this->DrawWidgets();
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_C_FACE: {
@@ -2410,15 +2410,13 @@ struct CompanyWindow : Window
 				break;
 			}
 
-#ifdef ENABLE_NETWORK
 			case WID_C_HAS_PASSWORD:
 				*size = maxdim(*size, GetSpriteSize(SPR_LOCK));
 				break;
-#endif /* ENABLE_NETWORK */
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		const Company *c = Company::Get((CompanyID)this->window_number);
 		switch (widget) {
@@ -2521,17 +2519,15 @@ struct CompanyWindow : Window
 				break;
 			}
 
-#ifdef ENABLE_NETWORK
 			case WID_C_HAS_PASSWORD:
 				if (_networking && NetworkCompanyIsPassworded(c->index)) {
 					DrawSprite(SPR_LOCK, PAL_NONE, r.left, r.top);
 				}
 				break;
-#endif /* ENABLE_NETWORK */
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_C_CAPTION:
@@ -2549,7 +2545,7 @@ struct CompanyWindow : Window
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_C_NEW_FACE: DoSelectCompanyManagerFace(this); break;
@@ -2622,7 +2618,6 @@ struct CompanyWindow : Window
 				DoCommandP(0, this->window_number, 0, CMD_SELL_SHARE_IN_COMPANY | CMD_MSG(STR_ERROR_CAN_T_SELL_25_SHARE_IN));
 				break;
 
-#ifdef ENABLE_NETWORK
 			case WID_C_COMPANY_PASSWORD:
 				if (this->window_number == _local_company) ShowNetworkCompanyPasswordWindow(this);
 				break;
@@ -2642,17 +2637,16 @@ struct CompanyWindow : Window
 				}
 				break;
 			}
-#endif /* ENABLE_NETWORK */
 		}
 	}
 
-	virtual void OnHundredthTick()
+	void OnHundredthTick() override
 	{
 		/* redraw the window every now and then */
 		this->SetDirty();
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		if (DoCommandP(tile, OBJECT_HQ, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS)) && !_shift_pressed) {
 			ResetObjectToPlace();
@@ -2660,12 +2654,12 @@ struct CompanyWindow : Window
 		}
 	}
 
-	virtual void OnPlaceObjectAbort()
+	void OnPlaceObjectAbort() override
 	{
 		this->RaiseButtons();
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (str == NULL) return;
 
@@ -2684,11 +2678,9 @@ struct CompanyWindow : Window
 				DoCommandP(0, 0, 0, CMD_RENAME_COMPANY | CMD_MSG(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME), NULL, str);
 				break;
 
-#ifdef ENABLE_NETWORK
 			case WID_C_COMPANY_JOIN:
 				NetworkClientRequestMove((CompanyID)this->window_number, str);
 				break;
-#endif /* ENABLE_NETWORK */
 		}
 	}
 
@@ -2698,7 +2690,7 @@ struct CompanyWindow : Window
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (this->window_number == _local_company) return;
 
@@ -2766,7 +2758,7 @@ struct BuyCompanyWindow : Window {
 		this->InitNested(window_number);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_BC_FACE:
@@ -2782,7 +2774,7 @@ struct BuyCompanyWindow : Window {
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_BC_CAPTION:
@@ -2792,7 +2784,7 @@ struct BuyCompanyWindow : Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_BC_FACE: {
@@ -2811,7 +2803,7 @@ struct BuyCompanyWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_BC_NO:

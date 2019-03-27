@@ -22,7 +22,7 @@
 
 #include "safeguards.h"
 
-static SmallVector<SoundEntry, 8> _sounds;
+static std::vector<SoundEntry> _sounds;
 
 
 /**
@@ -32,7 +32,7 @@ static SmallVector<SoundEntry, 8> _sounds;
  */
 SoundEntry *AllocateSound(uint num)
 {
-	SoundEntry *sound = _sounds.Append(num);
+	SoundEntry *sound = grow(_sounds, num);
 	MemSetT(sound, 0, num);
 	return sound;
 }
@@ -40,7 +40,7 @@ SoundEntry *AllocateSound(uint num)
 
 void InitializeSoundPool()
 {
-	_sounds.Clear();
+	_sounds.clear();
 
 	/* Copy original sound data to the pool */
 	SndCopyToPool();
@@ -49,14 +49,14 @@ void InitializeSoundPool()
 
 SoundEntry *GetSound(SoundID index)
 {
-	if (index >= _sounds.Length()) return NULL;
+	if (index >= _sounds.size()) return NULL;
 	return &_sounds[index];
 }
 
 
 uint GetNumSounds()
 {
-	return _sounds.Length();
+	return _sounds.size();
 }
 
 

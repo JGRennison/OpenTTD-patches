@@ -11,8 +11,6 @@
  * @file packet.cpp Basic functions to create, fill and read packets.
  */
 
-#ifdef ENABLE_NETWORK
-
 #include "../../stdafx.h"
 #include "../../string_func.h"
 #include "../../command_type.h"
@@ -373,5 +371,3 @@ void Packet::Recv_binary(std::string &buffer, size_t size)
 	buffer.assign((const char *) &this->buffer[this->pos], size);
 	this->pos += (PacketSize) size;
 }
-
-#endif /* ENABLE_NETWORK */

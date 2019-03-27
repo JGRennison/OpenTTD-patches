@@ -81,7 +81,7 @@ static inline int32 BigMulS(const int32 a, const int32 b, const uint8 shift)
 	return (int32)((int64)a * (int64)b >> shift);
 }
 
-typedef SmallVector<Industry *, 16> SmallIndustryList;
+typedef std::vector<Industry *> SmallIndustryList;
 
 /**
  * Score info, values used for computing the detailed performance rating.
@@ -264,7 +264,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 			/* Skip the total */
 			if (i == SCORE_TOTAL) continue;
 			/*  Check the score */
-			s = Clamp(_score_part[owner][i], 0, _score_info[i].needed) * _score_info[i].score / _score_info[i].needed;
+			s = Clamp<int64>(_score_part[owner][i], 0, _score_info[i].needed) * _score_info[i].score / _score_info[i].needed;
 			score += s;
 			total_score += _score_info[i].score;
 		}
@@ -296,10 +296,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	 * the client. This is needed as it needs to know whether "you" really
 	 * are the current local company. */
 	Backup<CompanyByte> cur_company(_current_company, old_owner, FILE_LINE);
-#ifdef ENABLE_NETWORK
 	/* In all cases, make spectators of clients connected to that company */
 	if (_networking) NetworkClientsToSpectators(old_owner);
-#endif /* ENABLE_NETWORK */
 	if (old_owner == _local_company) {
 		/* Single player cheated to AI company.
 		 * There are no spectators in single player, so we must pick some other company. */
@@ -1092,7 +1090,7 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 		if (IndustryTemporarilyRefusesCargo(ind, cargo_type)) continue;
 
 		/* Insert the industry into _cargo_delivery_destinations, if not yet contained */
-		_cargo_delivery_destinations.Include(ind);
+		include(_cargo_delivery_destinations, ind);
 
 		uint amount = min(num_pieces, 0xFFFFU - ind->incoming_cargo_waiting[cargo_index]);
 		ind->incoming_cargo_waiting[cargo_index] += amount;
@@ -2166,11 +2164,10 @@ void LoadUnloadStation(Station *st)
 	}
 
 	/* Call the production machinery of industries */
-	const Industry * const *isend = _cargo_delivery_destinations.End();
-	for (Industry **iid = _cargo_delivery_destinations.Begin(); iid != isend; iid++) {
-		TriggerIndustryProduction(*iid);
+	for (Industry *iid : _cargo_delivery_destinations) {
+		TriggerIndustryProduction(iid);
 	}
-	_cargo_delivery_destinations.Clear();
+	_cargo_delivery_destinations.clear();
 }
 
 /**

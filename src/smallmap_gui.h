@@ -46,7 +46,7 @@ struct TunnelBridgeToMap {
 	TileIndex from_tile;
 	TileIndex to_tile;
 };
-typedef SmallVector<TunnelBridgeToMap, 64> TunnelBridgeToMapVector;
+typedef std::vector<TunnelBridgeToMap> TunnelBridgeToMapVector;
 
 void BuildIndustriesLegend();
 void ShowSmallMap();
@@ -205,17 +205,17 @@ public:
 	void SmallMapCenterOnCurrentPos();
 	Point GetStationMiddle(const Station *st) const;
 
-	virtual void SetStringParameters(int widget) const;
-	virtual void OnInit();
-	virtual void OnPaint();
-	virtual void DrawWidget(const Rect &r, int widget) const;
-	virtual void OnClick(Point pt, int widget, int click_count);
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true);
-	virtual bool OnRightClick(Point pt, int widget);
-	virtual void OnMouseWheel(int wheel);
-	virtual void OnRealtimeTick(uint delta_ms);
-	virtual void OnScroll(Point delta);
-	virtual void OnMouseOver(Point pt, int widget);
+	void SetStringParameters(int widget) const override;
+	void OnInit() override;
+	void OnPaint() override;
+	void DrawWidget(const Rect &r, int widget) const override;
+	void OnClick(Point pt, int widget, int click_count) override;
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override;
+	bool OnRightClick(Point pt, int widget) override;
+	void OnMouseWheel(int wheel) override;
+	void OnRealtimeTick(uint delta_ms) override;
+	void OnScroll(Point delta) override;
+	void OnMouseOver(Point pt, int widget) override;
 
 	void TakeScreenshot();
 	void ScreenshotCallbackHandler(void *buf, uint y, uint pitch, uint n);

@@ -64,8 +64,8 @@ private:
 			if (!this->data[index].valid) return index;
 		}
 
-		if (index >= this->data.Length() && index < Tmax_size) {
-			this->data.Resize(index + 1);
+		if (index >= this->data.size() && index < Tmax_size) {
+			this->data.resize(index + 1);
 		}
 		return index;
 	}
@@ -77,7 +77,7 @@ private:
 	Tindex first_unused;
 	Tindex first_free;
 
-	SmallVector<SimplePoolPoolItem, Tgrowth_step> data;
+	std::vector<SimplePoolPoolItem> data;
 };
 
 /**
@@ -96,6 +96,7 @@ struct SmallStackItem {
 	 */
 	inline SmallStackItem(const Titem &value, Tindex next) :
 		next(next), value(value) {}
+	SmallStackItem() = default;
 };
 
 /**

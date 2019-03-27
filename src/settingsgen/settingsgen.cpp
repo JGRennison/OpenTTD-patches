@@ -103,7 +103,7 @@ public:
 	/** Clear the temporary storage. */
 	void Clear()
 	{
-		this->output_buffer.Clear();
+		this->output_buffer.clear();
 	}
 
 	/**
@@ -116,14 +116,15 @@ public:
 		if (length == 0) length = strlen(text);
 
 		if (length > 0 && this->BufferHasRoom()) {
-			int stored_size = this->output_buffer[this->output_buffer.Length() - 1].Add(text, length);
+			int stored_size = this->output_buffer[this->output_buffer.size() - 1].Add(text, length);
 			length -= stored_size;
 			text += stored_size;
 		}
 		while (length > 0) {
-			OutputBuffer *block = this->output_buffer.Append();
-			block->Clear(); // Initialize the new block.
-			int stored_size = block->Add(text, length);
+			/*C++17: OutputBuffer &block =*/ this->output_buffer.emplace_back();
+			OutputBuffer &block = this->output_buffer.back();
+			block.Clear(); // Initialize the new block.
+			int stored_size = block.Add(text, length);
 			length -= stored_size;
 			text += stored_size;
 		}
@@ -135,8 +136,8 @@ public:
 	 */
 	void Write(FILE *out_fp) const
 	{
-		for (const OutputBuffer *out_data = this->output_buffer.Begin(); out_data != this->output_buffer.End(); out_data++) {
-			out_data->Write(out_fp);
+		for (const OutputBuffer &out_data : output_buffer) {
+			out_data.Write(out_fp);
 		}
 	}
 
@@ -147,11 +148,11 @@ private:
 	 */
 	bool BufferHasRoom() const
 	{
-		uint num_blocks = this->output_buffer.Length();
+		uint num_blocks = this->output_buffer.size();
 		return num_blocks > 0 && this->output_buffer[num_blocks - 1].HasRoom();
 	}
 
-	typedef SmallVector<OutputBuffer, 2> OutputBufferVector; ///< Vector type for output buffers.
+	typedef std::vector<OutputBuffer> OutputBufferVector; ///< Vector type for output buffers.
 	OutputBufferVector output_buffer; ///< Vector of blocks containing the stored output.
 };
 

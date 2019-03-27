@@ -19,8 +19,6 @@
 #include "../../string_type.h"
 #include <string>
 
-#ifdef ENABLE_NETWORK
-
 typedef uint16 PacketSize; ///< Size of the whole packet.
 typedef uint8  PacketType; ///< Identifier for the packet
 
@@ -93,7 +91,5 @@ public:
 	void   Recv_binary(char *buffer, size_t size);
 	void   Recv_binary(std::string &buffer, size_t size);
 };
-
-#endif /* ENABLE_NETWORK */
 
 #endif /* NETWORK_CORE_PACKET_H */

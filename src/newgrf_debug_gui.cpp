@@ -48,7 +48,7 @@
 #include "safeguards.h"
 
 /** The sprite picker. */
-NewGrfDebugSpritePicker _newgrf_debug_sprite_picker = { SPM_NONE, NULL, 0, SmallVector<SpriteID, 256>() };
+NewGrfDebugSpritePicker _newgrf_debug_sprite_picker = { SPM_NONE, NULL, 0, std::vector<SpriteID>() };
 
 /**
  * Get the feature index related to the window number.
@@ -369,14 +369,14 @@ struct NewGRFInspectWindow : Window {
 		this->OnInvalidateData(0, true);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget != WID_NGRFI_CAPTION) return;
 
 		GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
@@ -416,7 +416,7 @@ struct NewGRFInspectWindow : Window {
 		::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (offset * this->resize.step_height), buf, TC_BLACK);
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
@@ -569,7 +569,7 @@ struct NewGRFInspectWindow : Window {
 		const_cast<NewGRFInspectWindow*>(this)->vscroll->SetCount(i);
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_NGRFI_PARENT: {
@@ -621,7 +621,7 @@ struct NewGRFInspectWindow : Window {
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (StrEmpty(str)) return;
 
@@ -629,7 +629,7 @@ struct NewGRFInspectWindow : Window {
 		this->SetDirty();
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_NGRFI_MAINPANEL, TOP_OFFSET + BOTTOM_OFFSET);
 	}
@@ -639,7 +639,7 @@ struct NewGRFInspectWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		if (this->HasChainIndex()) {
@@ -847,7 +847,7 @@ struct SpriteAlignerWindow : Window {
 		while (GetSpriteType(this->current_sprite) != ST_NORMAL) this->current_sprite++;
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		const Sprite *spr = GetSprite(this->current_sprite, ST_NORMAL);
 		switch (widget) {
@@ -865,8 +865,8 @@ struct SpriteAlignerWindow : Window {
 				/* Relative offset is new absolute offset - starting absolute offset.
 				 * Show 0, 0 as the relative offsets if entry is not in the map (meaning they have not been changed yet).
 				 */
-				const SmallPair<SpriteID, XyOffs> *key_offs_pair = this->offs_start_map.Find(this->current_sprite);
-				if (key_offs_pair != this->offs_start_map.End()) {
+				const auto key_offs_pair = this->offs_start_map.Find(this->current_sprite);
+				if (key_offs_pair != this->offs_start_map.end()) {
 					SetDParam(0, spr->x_offs - key_offs_pair->second.first);
 					SetDParam(1, spr->y_offs - key_offs_pair->second.second);
 				} else {
@@ -881,7 +881,7 @@ struct SpriteAlignerWindow : Window {
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_SA_LIST) return;
 
@@ -892,7 +892,7 @@ struct SpriteAlignerWindow : Window {
 		size->height = (1 + 200 / resize->height) * resize->height;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_SA_SPRITE: {
@@ -919,8 +919,8 @@ struct SpriteAlignerWindow : Window {
 				const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(widget);
 				int step_size = nwid->resize_y;
 
-				SmallVector<SpriteID, 256> &list = _newgrf_debug_sprite_picker.sprites;
-				int max = min<int>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), list.Length());
+				std::vector<SpriteID> &list = _newgrf_debug_sprite_picker.sprites;
+				int max = min<int>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), list.size());
 
 				int y = r.top + WD_FRAMERECT_TOP;
 				for (int i = this->vscroll->GetPosition(); i < max; i++) {
@@ -933,7 +933,7 @@ struct SpriteAlignerWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_SA_PREVIOUS:
@@ -965,7 +965,7 @@ struct SpriteAlignerWindow : Window {
 				int step_size = nwid->resize_y;
 
 				uint i = this->vscroll->GetPosition() + (pt.y - nwid->pos_y) / step_size;
-				if (i < _newgrf_debug_sprite_picker.sprites.Length()) {
+				if (i < _newgrf_debug_sprite_picker.sprites.size()) {
 					SpriteID spr = _newgrf_debug_sprite_picker.sprites[i];
 					if (GetSpriteType(spr) == ST_NORMAL) this->current_sprite = spr;
 				}
@@ -1011,13 +1011,13 @@ struct SpriteAlignerWindow : Window {
 
 			case WID_SA_RESET_REL:
 				/* Reset the starting offsets for the current sprite. */
-				this->offs_start_map.Erase(this->current_sprite);
+				this->offs_start_map.erase(this->offs_start_map.begin() + this->current_sprite);
 				this->SetDirty();
 				break;
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (StrEmpty(str)) return;
 
@@ -1034,17 +1034,17 @@ struct SpriteAlignerWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		if (data == 1) {
 			/* Sprite picker finished */
 			this->RaiseWidget(WID_SA_PICKER);
-			this->vscroll->SetCount(_newgrf_debug_sprite_picker.sprites.Length());
+			this->vscroll->SetCount(_newgrf_debug_sprite_picker.sprites.size());
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_SA_LIST);
 	}

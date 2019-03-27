@@ -49,7 +49,7 @@
 #include "safeguards.h"
 
 /** Helper type for lists/vectors of trains */
-typedef SmallVector<Train *, 16> TrainList;
+typedef std::vector<Train *> TrainList;
 
 RailtypeInfo _railtypes[RAILTYPE_END];
 RailType _sorted_railtypes[RAILTYPE_END];
@@ -166,7 +166,7 @@ RailType AllocateRailType(RailTypeLabel label)
 			/* Set up new rail type */
 			*rti = _original_railtypes[RAILTYPE_RAIL];
 			rti->label = label;
-			rti->alternate_labels.Clear();
+			rti->alternate_labels.clear();
 
 			/* Make us compatible with ourself. */
 			rti->powered_railtypes    = (RailTypes)(1LL << rt);
@@ -1976,7 +1976,7 @@ static Vehicle *UpdateTrainPowerProc(Vehicle *v, void *data)
 	if (v->type != VEH_TRAIN) return NULL;
 
 	TrainList *affected_trains = static_cast<TrainList*>(data);
-	affected_trains->Include(Train::From(v)->First());
+	include(*affected_trains, Train::From(v)->First());
 
 	return NULL;
 }
@@ -2048,7 +2048,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			continue;
 		}
 
-		SmallVector<Train *, 2> vehicles_affected;
+		std::vector<Train *> vehicles_affected;
 
 		auto find_train_reservations = [&vehicles_affected, &totype](TileIndex tile, TrackBits reserved) {
 			Track track;
@@ -2057,7 +2057,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				if (v != NULL && !HasPowerOnRail(v->railtype, totype)) {
 					/* No power on new rail type, reroute. */
 					FreeTrainTrackReservation(v);
-					*vehicles_affected.Append() = v;
+					vehicles_affected.push_back(v);
 				}
 			}
 		};
@@ -2208,15 +2208,15 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 		}
 
-		for (uint i = 0; i < vehicles_affected.Length(); ++i) {
+		for (uint i = 0; i < vehicles_affected.size(); ++i) {
 			TryPathReserve(vehicles_affected[i], true);
 		}
 	}
 
 	if (flags & DC_EXEC) {
 		/* Railtype changed, update trains as when entering different track */
-		for (Train **v = affected_trains.Begin(); v != affected_trains.End(); v++) {
-			(*v)->ConsistChanged(CCF_TRACK);
+		for (Train *v : affected_trains) {
+			v->ConsistChanged(CCF_TRACK);
 		}
 	}
 

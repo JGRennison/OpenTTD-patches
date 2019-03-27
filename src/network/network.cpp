@@ -11,8 +11,6 @@
 
 #include "../stdafx.h"
 
-#ifdef ENABLE_NETWORK
-
 #include "../strings_func.h"
 #include "../command_func.h"
 #include "../date_func.h"
@@ -597,12 +595,12 @@ class TCPQueryConnecter : TCPConnecter {
 public:
 	TCPQueryConnecter(const NetworkAddress &address) : TCPConnecter(address) {}
 
-	virtual void OnFailure()
+	void OnFailure() override
 	{
 		NetworkDisconnect();
 	}
 
-	virtual void OnConnect(SOCKET s)
+	void OnConnect(SOCKET s) override
 	{
 		_networking = true;
 		new ClientNetworkGameSocketHandler(s);
@@ -653,13 +651,13 @@ void NetworkAddServer(const char *b)
  */
 void GetBindAddresses(NetworkAddressList *addresses, uint16 port)
 {
-	for (char **iter = _network_bind_list.Begin(); iter != _network_bind_list.End(); iter++) {
-		*addresses->Append() = NetworkAddress(*iter, port);
+	for (char *iter : _network_bind_list) {
+		addresses->emplace_back(iter, port);
 	}
 
 	/* No address, so bind to everything. */
-	if (addresses->Length() == 0) {
-		*addresses->Append() = NetworkAddress("", port);
+	if (addresses->size() == 0) {
+		addresses->emplace_back("", port);
 	}
 }
 
@@ -671,7 +669,7 @@ void NetworkRebuildHostList()
 	_network_host_list.Clear();
 
 	for (NetworkGameList *item = _network_game_list; item != NULL; item = item->next) {
-		if (item->manually) *_network_host_list.Append() = stredup(item->address.GetAddressAsString(false));
+		if (item->manually) _network_host_list.push_back(stredup(item->address.GetAddressAsString(false)));
 	}
 }
 
@@ -680,12 +678,12 @@ class TCPClientConnecter : TCPConnecter {
 public:
 	TCPClientConnecter(const NetworkAddress &address) : TCPConnecter(address) {}
 
-	virtual void OnFailure()
+	void OnFailure() override
 	{
 		NetworkError(STR_NETWORK_ERROR_NOCONNECTION);
 	}
 
-	virtual void OnConnect(SOCKET s)
+	void OnConnect(SOCKET s) override
 	{
 		_networking = true;
 		new ClientNetworkGameSocketHandler(s);
@@ -1132,5 +1130,3 @@ bool IsNetworkCompatibleVersion(const char *other, bool extended)
 {
 	return strncmp(_openttd_revision, other, (extended ? NETWORK_LONG_REVISION_LENGTH : NETWORK_REVISION_LENGTH) - 1) == 0;
 }
-
-#endif /* ENABLE_NETWORK */

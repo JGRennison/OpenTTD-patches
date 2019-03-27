@@ -29,7 +29,7 @@ typedef enum {
 	D_ARRIVAL = 1,
 } DepartureType;
 
-typedef struct CallAt {
+struct CallAt {
 	StationID station;
 	DateTicks scheduled_date;
 
@@ -61,31 +61,27 @@ typedef struct CallAt {
 	inline bool operator==(StationID s) const {
 		return this->station == s;
 	}
-} CallAt;
+};
 
 /** A scheduled departure. */
-typedef struct Departure {
+struct Departure {
 	DateTicksScaled scheduled_date;        ///< The date this departure is scheduled to finish on (i.e. when the vehicle leaves the station)
 	Ticks lateness;                        ///< How delayed the departure is expected to be
 	CallAt terminus;                       ///< The station at which the vehicle will terminate following this departure
 	StationID via;                         ///< The station the departure should list as going via
-	SmallVector<CallAt, 32> calling_at;    ///< The stations both called at and unloaded at by the vehicle after this departure before it terminates
+	std::vector<CallAt> calling_at;        ///< The stations both called at and unloaded at by the vehicle after this departure before it terminates
 	DepartureStatus status;                ///< Whether the vehicle has arrived yet for this departure
 	DepartureType type;                    ///< The type of the departure (departure or arrival)
 	const Vehicle *vehicle;                ///< The vehicle performing this departure
 	const Order *order;                    ///< The order corresponding to this departure
 	uint scheduled_waiting_time;           ///< Scheduled waiting time if scheduled dispatch is used
-	Departure() : terminus(INVALID_STATION), via(INVALID_STATION), calling_at(), vehicle(NULL) { }
-	~Departure()
-	{
-		calling_at.Reset();
-	}
+	Departure() : terminus(INVALID_STATION), via(INVALID_STATION), vehicle(NULL), order(NULL) { }
 
 	inline bool operator==(const Departure& d) const {
-		if (this->calling_at.Length() != d.calling_at.Length()) return false;
+		if (this->calling_at.size() != d.calling_at.size()) return false;
 
-		for (uint i = 0; i < this->calling_at.Length(); ++i) {
-			if (*(this->calling_at.Get(i)) != *(d.calling_at.Get(i))) return false;
+		for (uint i = 0; i < this->calling_at.size(); ++i) {
+			if (this->calling_at[i] != d.calling_at[i]) return false;
 		}
 
 		return
@@ -95,8 +91,8 @@ typedef struct Departure {
 			this->type == d.type
 			;
 	}
-} Departure;
+};
 
-typedef SmallVector<Departure*, 32> DepartureList;
+typedef std::vector<Departure*> DepartureList;
 
 #endif /* DEPARTURES_TYPE_H */

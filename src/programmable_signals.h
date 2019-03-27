@@ -26,7 +26,7 @@ struct SignalVM;
 
 class SignalInstruction;
 class SignalSpecial;
-typedef SmallVector<SignalInstruction*, 4> InstructionList;
+typedef std::vector<SignalInstruction*> InstructionList;
 
 enum SignalProgramMgmtCode {
 	SPMC_REMOVE,      ///< Remove program
@@ -79,7 +79,7 @@ public:
 	/// Get the Id of this instruction
 	inline int Id() const
 	// Const cast is safe (perculiarity of SmallVector)
-	{ return program->instructions.FindIndex(const_cast<SignalInstruction*>(this)); }
+	{ return find_index(program->instructions, const_cast<SignalInstruction*>(this)); }
 
 	/// Insert this instruction, placing it before @p before_insn
 	virtual void Insert(SignalInstruction *before_insn);

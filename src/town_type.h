@@ -18,7 +18,7 @@
 typedef uint16 TownID;
 struct Town;
 
-typedef SmallVector<TownID, 8> TownList;
+typedef std::vector<TownID> TownList;
 
 /** Supported initial town sizes */
 enum TownSize {

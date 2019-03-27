@@ -808,19 +808,20 @@ void ResetVehicleColourMap()
  * List of vehicles that should check for autoreplace this tick.
  * Mapping of vehicle -> leave depot immediately after autoreplace.
  */
-typedef SmallMap<Vehicle *, bool, 4> AutoreplaceMap;
+typedef SmallMap<Vehicle *, bool> AutoreplaceMap;
 static AutoreplaceMap _vehicles_to_autoreplace;
 
 /**
  * List of vehicles that are issued for template replacement this tick.
  * Mapping is {vehicle : leave depot after replacement}
  */
-typedef SmallMap<Train *, bool, 4> TemplateReplacementMap;
+typedef SmallMap<Train *, bool> TemplateReplacementMap;
 static TemplateReplacementMap _vehicles_to_templatereplace;
 
 void InitializeVehicles()
 {
-	_vehicles_to_autoreplace.Reset();
+	_vehicles_to_autoreplace.clear();
+	_vehicles_to_autoreplace.shrink_to_fit();
 	ResetVehicleHash();
 }
 
@@ -1227,8 +1228,8 @@ void VehicleTickMotion(Vehicle *v, Vehicle *front)
 
 void CallVehicleTicks()
 {
-	_vehicles_to_autoreplace.Clear();
-	_vehicles_to_templatereplace.Clear();
+	_vehicles_to_autoreplace.clear();
+	_vehicles_to_templatereplace.clear();
 	_vehicles_to_pay_repair.clear();
 	_vehicles_to_sell.clear();
 
@@ -1346,8 +1347,8 @@ void CallVehicleTicks()
 
 	/* do Template Replacement */
 	Backup<CompanyByte> tmpl_cur_company(_current_company, FILE_LINE);
-	for (TemplateReplacementMap::iterator it = _vehicles_to_templatereplace.Begin(); it != _vehicles_to_templatereplace.End(); it++) {
-		Train *t = it->first;
+	for (auto &it : _vehicles_to_templatereplace) {
+		Train *t = it.first;
 
 		SCOPE_INFO_FMT([t], "CallVehicleTicks: template replace: %s", scope_dumper().VehicleInfo(t));
 
@@ -1360,9 +1361,9 @@ void CallVehicleTicks()
 
 		tmpl_cur_company.Change(t->owner);
 
-		bool stayInDepot = it->second;
+		bool stayInDepot = it.second;
 
-		it->first->vehstatus |= VS_STOPPED;
+		t->vehstatus |= VS_STOPPED;
 		CommandCost res = DoCommand(t->tile, t->index, stayInDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
 
 		if (res.Succeeded()) {
@@ -1390,8 +1391,8 @@ void CallVehicleTicks()
 
 	/* do Auto Replacement */
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
-	for (AutoreplaceMap::iterator it = _vehicles_to_autoreplace.Begin(); it != _vehicles_to_autoreplace.End(); it++) {
-		v = it->first;
+	for (auto &it : _vehicles_to_autoreplace) {
+		v = it.first;
 		/* Autoreplace needs the current company set as the vehicle owner */
 		cur_company.Change(v->owner);
 
@@ -1402,7 +1403,7 @@ void CallVehicleTicks()
 		/* Start vehicle if we stopped them in VehicleEnteredDepotThisTick()
 		 * We need to stop them between VehicleEnteredDepotThisTick() and here or we risk that
 		 * they are already leaving the depot again before being replaced. */
-		if (it->second) v->vehstatus &= ~VS_STOPPED;
+		if (it.second) v->vehstatus &= ~VS_STOPPED;
 
 		/* Store the position of the effect as the vehicle pointer will become invalid later */
 		int x = v->x_pos;
@@ -1995,8 +1996,11 @@ void AgeVehicle(Vehicle *v)
 	/* Don't warn about non-primary or not ours vehicles or vehicles that are crashed */
 	if (v->Previous() != NULL || v->owner != _local_company || (v->vehstatus & VS_CRASHED) != 0) return;
 
+	const Company *c = Company::Get(v->owner);
 	/* Don't warn if a renew is active */
-	if (Company::Get(v->owner)->settings.engine_renew && v->GetEngine()->company_avail != 0) return;
+	if (c->settings.engine_renew && v->GetEngine()->company_avail != 0) return;
+	/* Don't warn if a replacement is active */
+	if (EngineHasReplacementForCompany(c, v->engine_type, v->group_id)) return;
 
 	StringID str;
 	if (age == -DAYS_IN_LEAP_YEAR) {
@@ -3929,10 +3933,10 @@ void GetVehicleSet(VehicleSet &set, Vehicle *v, uint8 num_vehicles)
 		for (; u != NULL && num_vehicles > 0; num_vehicles--) {
 			do {
 				/* Include current vehicle in the selection. */
-				set.Include(u->index);
+				include(set, u->index);
 
 				/* If the vehicle is multiheaded, add the other part too. */
-				if (u->IsMultiheaded()) set.Include(u->other_multiheaded_part->index);
+				if (u->IsMultiheaded()) include(set, u->other_multiheaded_part->index);
 
 				u = u->Next();
 			} while (u != NULL && u->IsArticulatedPart());

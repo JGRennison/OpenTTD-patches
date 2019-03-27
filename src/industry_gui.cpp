@@ -403,12 +403,12 @@ public:
 		this->SetButtons();
 	}
 
-	virtual void OnInit()
+	void OnInit() override
 	{
 		this->SetupArrays();
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_DPI_MATRIX_WIDGET: {
@@ -477,7 +477,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_DPI_FUND_WIDGET:
@@ -494,7 +494,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_DPI_MATRIX_WIDGET: {
@@ -581,7 +581,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_DPI_MATRIX_WIDGET: {
@@ -635,13 +635,13 @@ public:
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		/* Adjust the number of items in the matrix depending of the resize */
 		this->vscroll->SetCapacityFromWidget(this, WID_DPI_MATRIX_WIDGET);
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		bool success = true;
 		/* We do not need to protect ourselves against "Random Many Industries" in this mode */
@@ -674,7 +674,7 @@ public:
 		if (success && !_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 	}
 
-	virtual void OnGameTick()
+	void OnGameTick() override
 	{
 		if (!this->timer_enabled) return;
 		if (--this->callback_timer == 0) {
@@ -697,12 +697,12 @@ public:
 		}
 	}
 
-	virtual void OnTimeout()
+	void OnTimeout() override
 	{
 		this->RaiseButtons();
 	}
 
-	virtual void OnPlaceObjectAbort()
+	void OnPlaceObjectAbort() override
 	{
 		this->RaiseButtons();
 	}
@@ -712,7 +712,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		this->SetupArrays();
@@ -787,7 +787,7 @@ public:
 		this->InvalidateData();
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		this->DrawWidgets();
 
@@ -924,17 +924,17 @@ public:
 		return y + WD_FRAMERECT_BOTTOM;
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_IV_CAPTION) SetDParam(0, this->window_number);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_IV_INFO) size->height = this->info_height;
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_IV_INFO: {
@@ -1039,14 +1039,14 @@ public:
 		}
 	}
 
-	virtual void OnTimeout()
+	void OnTimeout() override
 	{
 		this->clicked_line = IL_NONE;
 		this->clicked_button = 0;
 		this->SetDirty();
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		if (this->viewport != NULL) {
 			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
@@ -1056,7 +1056,7 @@ public:
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (StrEmpty(str)) return;
 
@@ -1082,7 +1082,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		const Industry *i = Industry::Get(this->window_number);
@@ -1094,12 +1094,12 @@ public:
 		}
 	}
 
-	virtual bool IsNewGRFInspectable() const
+	bool IsNewGRFInspectable() const override
 	{
 		return ::IsNewGRFInspectable(GSF_INDUSTRIES, this->window_number);
 	}
 
-	virtual void ShowNewGRFInspectWindow() const
+	void ShowNewGRFInspectWindow() const override
 	{
 		::ShowNewGRFInspectWindow(GSF_INDUSTRIES, this->window_number);
 	}
@@ -1202,16 +1202,16 @@ protected:
 	void BuildSortIndustriesList()
 	{
 		if (this->industries.NeedRebuild()) {
-			this->industries.Clear();
+			this->industries.clear();
 
 			const Industry *i;
 			FOR_ALL_INDUSTRIES(i) {
-				*this->industries.Append() = i;
+				this->industries.push_back(i);
 			}
 
-			this->industries.Compact();
+			this->industries.shrink_to_fit();
 			this->industries.RebuildDone();
-			this->vscroll->SetCount(this->industries.Length()); // Update scrollbar as well.
+			this->vscroll->SetCount(this->industries.size()); // Update scrollbar as well.
 		}
 
 		if (!this->industries.Sort()) return;
@@ -1357,12 +1357,12 @@ public:
 		this->last_sorting = this->industries.GetListing();
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_ID_DROPDOWN_CRITERIA) SetDParam(0, IndustryDirectoryWindow::sorter_names[this->industries.SortType()]);
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_ID_DROPDOWN_ORDER:
@@ -1372,11 +1372,11 @@ public:
 			case WID_ID_INDUSTRY_LIST: {
 				int n = 0;
 				int y = r.top + WD_FRAMERECT_TOP;
-				if (this->industries.Length() == 0) {
+				if (this->industries.size() == 0) {
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_INDUSTRY_DIRECTORY_NONE);
 					break;
 				}
-				for (uint i = this->vscroll->GetPosition(); i < this->industries.Length(); i++) {
+				for (uint i = this->vscroll->GetPosition(); i < this->industries.size(); i++) {
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, this->GetIndustryString(this->industries[i]));
 
 					y += this->resize.step_height;
@@ -1387,7 +1387,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_ID_DROPDOWN_ORDER: {
@@ -1411,7 +1411,7 @@ public:
 
 			case WID_ID_INDUSTRY_LIST: {
 				Dimension d = GetStringBoundingBox(STR_INDUSTRY_DIRECTORY_NONE);
-				for (uint i = 0; i < this->industries.Length(); i++) {
+				for (uint i = 0; i < this->industries.size(); i++) {
 					d = maxdim(d, GetStringBoundingBox(this->GetIndustryString(this->industries[i])));
 				}
 				resize->height = d.height;
@@ -1425,7 +1425,7 @@ public:
 	}
 
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_ID_DROPDOWN_ORDER:
@@ -1439,7 +1439,7 @@ public:
 
 			case WID_ID_INDUSTRY_LIST: {
 				uint p = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_ID_INDUSTRY_LIST, WD_FRAMERECT_TOP);
-				if (p < this->industries.Length()) {
+				if (p < this->industries.size()) {
 					if (_ctrl_pressed) {
 						ShowExtraViewPortWindow(this->industries[p]->location.tile);
 					} else {
@@ -1451,7 +1451,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		if (this->industries.SortType() != index) {
 			this->industries.SetSortType(index);
@@ -1459,18 +1459,18 @@ public:
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_ID_INDUSTRY_LIST);
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (this->industries.NeedRebuild()) this->BuildSortIndustriesList();
 		this->DrawWidgets();
 	}
 
-	virtual void OnHundredthTick()
+	void OnHundredthTick() override
 	{
 		this->industries.ForceResort();
 		this->BuildSortIndustriesList();
@@ -1481,7 +1481,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
@@ -2155,7 +2155,7 @@ next_cargo: ;
 struct IndustryCargoesWindow : public Window {
 	static const int HOR_TEXT_PADDING, VERT_TEXT_PADDING;
 
-	typedef SmallVector<CargoesRow, 4> Fields;
+	typedef std::vector<CargoesRow> Fields;
 
 	Fields fields;  ///< Fields to display in the #WID_IC_PANEL.
 	uint ind_cargo; ///< If less than #NUM_INDUSTRYTYPES, an industry type, else a cargo id + NUM_INDUSTRYTYPES.
@@ -2172,7 +2172,7 @@ struct IndustryCargoesWindow : public Window {
 		this->OnInvalidateData(id);
 	}
 
-	virtual void OnInit()
+	void OnInit() override
 	{
 		/* Initialize static CargoesField size variables. */
 		Dimension d = GetStringBoundingBox(STR_INDUSTRY_CARGOES_PRODUCERS);
@@ -2219,7 +2219,7 @@ struct IndustryCargoesWindow : public Window {
 		CargoesField::cargo_field_width = CargoesField::HOR_CARGO_BORDER_SPACE * 2 + CargoesField::HOR_CARGO_WIDTH * CargoesField::max_cargoes + CargoesField::HOR_CARGO_SPACE * (CargoesField::max_cargoes - 1);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_IC_PANEL:
@@ -2238,7 +2238,7 @@ struct IndustryCargoesWindow : public Window {
 
 
 	CargoesFieldType type; ///< Type of field.
-	virtual void SetStringParameters  (int widget) const
+	void SetStringParameters  (int widget) const override
 	{
 		if (widget != WID_IC_CAPTION) return;
 
@@ -2422,13 +2422,14 @@ struct IndustryCargoesWindow : public Window {
 		_displayed_industries.reset();
 		_displayed_industries.set(it);
 
-		this->fields.Clear();
-		CargoesRow *row = this->fields.Append();
-		row->columns[0].MakeHeader(STR_INDUSTRY_CARGOES_PRODUCERS);
-		row->columns[1].MakeEmpty(CFT_SMALL_EMPTY);
-		row->columns[2].MakeEmpty(CFT_SMALL_EMPTY);
-		row->columns[3].MakeEmpty(CFT_SMALL_EMPTY);
-		row->columns[4].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
+		this->fields.clear();
+		/*C++17: CargoesRow &row = */ this->fields.emplace_back();
+		CargoesRow &row = this->fields.back();
+		row.columns[0].MakeHeader(STR_INDUSTRY_CARGOES_PRODUCERS);
+		row.columns[1].MakeEmpty(CFT_SMALL_EMPTY);
+		row.columns[2].MakeEmpty(CFT_SMALL_EMPTY);
+		row.columns[3].MakeEmpty(CFT_SMALL_EMPTY);
+		row.columns[4].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
 
 		const IndustrySpec *central_sp = GetIndustrySpec(it);
 		bool houses_supply = HousesCanSupply(central_sp->accepts_cargo, lengthof(central_sp->accepts_cargo));
@@ -2438,12 +2439,13 @@ struct IndustryCargoesWindow : public Window {
 		int num_cust = CountMatchingAcceptingIndustries(central_sp->produced_cargo, lengthof(central_sp->produced_cargo)) + houses_accept;
 		int num_indrows = max(3, max(num_supp, num_cust)); // One is needed for the 'it' industry, and 2 for the cargo labels.
 		for (int i = 0; i < num_indrows; i++) {
-			CargoesRow *row = this->fields.Append();
-			row->columns[0].MakeEmpty(CFT_EMPTY);
-			row->columns[1].MakeCargo(central_sp->accepts_cargo, lengthof(central_sp->accepts_cargo));
-			row->columns[2].MakeEmpty(CFT_EMPTY);
-			row->columns[3].MakeCargo(central_sp->produced_cargo, lengthof(central_sp->produced_cargo));
-			row->columns[4].MakeEmpty(CFT_EMPTY);
+			/*C++17: CargoesRow &row = */ this->fields.emplace_back();
+			CargoesRow &row = this->fields.back();
+			row.columns[0].MakeEmpty(CFT_EMPTY);
+			row.columns[1].MakeCargo(central_sp->accepts_cargo, lengthof(central_sp->accepts_cargo));
+			row.columns[2].MakeEmpty(CFT_EMPTY);
+			row.columns[3].MakeCargo(central_sp->produced_cargo, lengthof(central_sp->produced_cargo));
+			row.columns[4].MakeEmpty(CFT_EMPTY);
 		}
 		/* Add central industry. */
 		int central_row = 1 + num_indrows / 2;
@@ -2500,13 +2502,14 @@ struct IndustryCargoesWindow : public Window {
 		this->ind_cargo = cid + NUM_INDUSTRYTYPES;
 		_displayed_industries.reset();
 
-		this->fields.Clear();
-		CargoesRow *row = this->fields.Append();
-		row->columns[0].MakeHeader(STR_INDUSTRY_CARGOES_PRODUCERS);
-		row->columns[1].MakeEmpty(CFT_SMALL_EMPTY);
-		row->columns[2].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
-		row->columns[3].MakeEmpty(CFT_SMALL_EMPTY);
-		row->columns[4].MakeEmpty(CFT_SMALL_EMPTY);
+		this->fields.clear();
+		/*C++17: CargoesRow &row = */ this->fields.emplace_back();
+		CargoesRow &row = this->fields.back();
+		row.columns[0].MakeHeader(STR_INDUSTRY_CARGOES_PRODUCERS);
+		row.columns[1].MakeEmpty(CFT_SMALL_EMPTY);
+		row.columns[2].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
+		row.columns[3].MakeEmpty(CFT_SMALL_EMPTY);
+		row.columns[4].MakeEmpty(CFT_SMALL_EMPTY);
 
 		bool houses_supply = HousesCanSupply(&cid, 1);
 		bool houses_accept = HousesCanAccept(&cid, 1);
@@ -2514,12 +2517,13 @@ struct IndustryCargoesWindow : public Window {
 		int num_cust = CountMatchingAcceptingIndustries(&cid, 1) + houses_accept;
 		int num_indrows = max(num_supp, num_cust);
 		for (int i = 0; i < num_indrows; i++) {
-			CargoesRow *row = this->fields.Append();
-			row->columns[0].MakeEmpty(CFT_EMPTY);
-			row->columns[1].MakeCargo(&cid, 1);
-			row->columns[2].MakeEmpty(CFT_EMPTY);
-			row->columns[3].MakeEmpty(CFT_EMPTY);
-			row->columns[4].MakeEmpty(CFT_EMPTY);
+			/*C++17: CargoesRow &row = */ this->fields.emplace_back();
+			CargoesRow &row = this->fields.back();
+			row.columns[0].MakeEmpty(CFT_EMPTY);
+			row.columns[1].MakeCargo(&cid, 1);
+			row.columns[2].MakeEmpty(CFT_EMPTY);
+			row.columns[3].MakeEmpty(CFT_EMPTY);
+			row.columns[4].MakeEmpty(CFT_EMPTY);
 		}
 
 		this->fields[num_indrows].MakeCargoLabel(0, false); // Add cargo labels at the left bottom.
@@ -2565,7 +2569,7 @@ struct IndustryCargoesWindow : public Window {
 	 * - data = NUM_INDUSTRYTYPES: Stop sending updates to the smallmap window.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		if (data == NUM_INDUSTRYTYPES) {
@@ -2580,7 +2584,7 @@ struct IndustryCargoesWindow : public Window {
 		this->ComputeIndustryDisplay(data);
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_IC_PANEL) return;
 
@@ -2597,7 +2601,7 @@ struct IndustryCargoesWindow : public Window {
 
 		const NWidgetBase *nwp = this->GetWidget<NWidgetBase>(WID_IC_PANEL);
 		int vpos = -this->vscroll->GetPosition() * nwp->resize_y;
-		for (uint i = 0; i < this->fields.Length(); i++) {
+		for (uint i = 0; i < this->fields.size(); i++) {
 			int row_height = (i == 0) ? CargoesField::small_height : CargoesField::normal_height;
 			if (vpos + row_height >= 0) {
 				int xpos = left_pos;
@@ -2639,7 +2643,7 @@ struct IndustryCargoesWindow : public Window {
 		if (pt.y < vpos) return false;
 
 		int row = (pt.y - vpos) / CargoesField::normal_height; // row is relative to row 1.
-		if (row + 1 >= (int)this->fields.Length()) return false;
+		if (row + 1 >= (int)this->fields.size()) return false;
 		vpos = pt.y - vpos - row * CargoesField::normal_height; // Position in the row + 1 field
 		row++; // rebase row to match index of this->fields.
 
@@ -2668,7 +2672,7 @@ struct IndustryCargoesWindow : public Window {
 		return true;
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_IC_PANEL: {
@@ -2716,9 +2720,9 @@ struct IndustryCargoesWindow : public Window {
 				DropDownList *lst = new DropDownList;
 				const CargoSpec *cs;
 				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
-					*lst->Append() = new DropDownListStringItem(cs->name, cs->Index(), false);
+					lst->push_back(new DropDownListStringItem(cs->name, cs->Index(), false));
 				}
-				if (lst->Length() == 0) {
+				if (lst->size() == 0) {
 					delete lst;
 					break;
 				}
@@ -2733,9 +2737,9 @@ struct IndustryCargoesWindow : public Window {
 					IndustryType ind = _sorted_industry_types[i];
 					const IndustrySpec *indsp = GetIndustrySpec(ind);
 					if (!indsp->enabled) continue;
-					*lst->Append() = new DropDownListStringItem(indsp->name, ind, false);
+					lst->push_back(new DropDownListStringItem(indsp->name, ind, false));
 				}
-				if (lst->Length() == 0) {
+				if (lst->size() == 0) {
 					delete lst;
 					break;
 				}
@@ -2746,7 +2750,7 @@ struct IndustryCargoesWindow : public Window {
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		if (index < 0) return;
 
@@ -2761,12 +2765,12 @@ struct IndustryCargoesWindow : public Window {
 		}
 	}
 
-	virtual void OnHover(Point pt, int widget)
+	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
-		if (widget != WID_IC_PANEL) return;
+		if (widget != WID_IC_PANEL) return false;
 
 		Point fieldxy, xy;
-		if (!CalculatePositionInWidget(pt, &fieldxy, &xy)) return;
+		if (!CalculatePositionInWidget(pt, &fieldxy, &xy)) return false;
 
 		const CargoesField *fld = this->fields[fieldxy.y].columns + fieldxy.x;
 		CargoID cid = INVALID_CARGO;
@@ -2785,9 +2789,9 @@ struct IndustryCargoesWindow : public Window {
 
 			case CFT_INDUSTRY:
 				if (fld->u.industry.ind_type < NUM_INDUSTRYTYPES && (this->ind_cargo >= NUM_INDUSTRYTYPES || fieldxy.x != 2)) {
-					GuiShowTooltips(this, STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP, 0, NULL, TCC_HOVER);
+					GuiShowTooltips(this, STR_INDUSTRY_CARGOES_INDUSTRY_TOOLTIP, 0, NULL, close_cond);
 				}
-				return;
+				return true;
 
 			default:
 				break;
@@ -2796,11 +2800,14 @@ struct IndustryCargoesWindow : public Window {
 			const CargoSpec *csp = CargoSpec::Get(cid);
 			uint64 params[5];
 			params[0] = csp->name;
-			GuiShowTooltips(this, STR_INDUSTRY_CARGOES_CARGO_TOOLTIP, 1, params, TCC_HOVER);
+			GuiShowTooltips(this, STR_INDUSTRY_CARGOES_CARGO_TOOLTIP, 1, params, close_cond);
+			return true;
 		}
+
+		return false;
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_IC_PANEL);
 	}

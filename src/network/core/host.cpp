@@ -9,8 +9,6 @@
 
 /** @file host.cpp Functions related to getting host specific data (IPs). */
 
-#ifdef ENABLE_NETWORK
-
 #include "../../stdafx.h"
 #include "../../debug.h"
 #include "address.h"
@@ -78,7 +76,7 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // BE
 				memset(&address, 0, sizeof(address));
 				((sockaddr_in*)&address)->sin_addr.s_addr = htonl(ip | ~netmask);
 				NetworkAddress addr(address, sizeof(sockaddr));
-				if (!broadcast->Contains(addr)) *broadcast->Append() = addr;
+				if (std::none_of(broadcast->begin(), broadcast->end(), [&addr](NetworkAddress const& elem) -> bool { return elem == addr; })) broadcast->push_back(addr);
 			}
 			if (read < 0) {
 				break;
@@ -102,7 +100,7 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // GE
 		if (ifa->ifa_broadaddr->sa_family != AF_INET) continue;
 
 		NetworkAddress addr(ifa->ifa_broadaddr, sizeof(sockaddr));
-		if (!broadcast->Contains(addr)) *broadcast->Append() = addr;
+		if (std::none_of(broadcast->begin(), broadcast->end(), [&addr](NetworkAddress const& elem) -> bool { return elem == addr; })) broadcast->push_back(addr);
 	}
 	freeifaddrs(ifap);
 }
@@ -138,7 +136,7 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // Wi
 		memcpy(&address, &ifo[j].iiAddress.Address, sizeof(sockaddr));
 		((sockaddr_in*)&address)->sin_addr.s_addr = ifo[j].iiAddress.AddressIn.sin_addr.s_addr | ~ifo[j].iiNetmask.AddressIn.sin_addr.s_addr;
 		NetworkAddress addr(address, sizeof(sockaddr));
-		if (!broadcast->Contains(addr)) *broadcast->Append() = addr;
+		if (std::none_of(broadcast->begin(), broadcast->end(), [&addr](NetworkAddress const& elem) -> bool { return elem == addr; })) broadcast->push_back(addr);
 	}
 
 	free(ifo);
@@ -176,7 +174,7 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // !G
 					(r.ifr_flags & IFF_BROADCAST) &&
 					ioctl(sock, SIOCGIFBRDADDR, &r) != -1) {
 				NetworkAddress addr(&r.ifr_broadaddr, sizeof(sockaddr));
-				if (!broadcast->Contains(addr)) *broadcast->Append() = addr;
+				if (std::none_of(broadcast->begin(), broadcast->end(), [&addr](NetworkAddress const& elem) -> bool { return elem == addr; })) *broadcast->Append() = addr;
 			}
 		}
 
@@ -202,10 +200,8 @@ void NetworkFindBroadcastIPs(NetworkAddressList *broadcast)
 	/* Now display to the debug all the detected ips */
 	DEBUG(net, 3, "Detected broadcast addresses:");
 	int i = 0;
-	for (NetworkAddress *addr = broadcast->Begin(); addr != broadcast->End(); addr++) {
-		addr->SetPort(NETWORK_DEFAULT_PORT);
-		DEBUG(net, 3, "%d) %s", i++, addr->GetHostname());
+	for (NetworkAddress &addr : *broadcast) {
+		addr.SetPort(NETWORK_DEFAULT_PORT);
+		DEBUG(net, 3, "%d) %s", i++, addr.GetHostname());
 	}
 }
-
-#endif /* ENABLE_NETWORK */

@@ -12,8 +12,6 @@
 #ifndef NETWORK_ADMIN_H
 #define NETWORK_ADMIN_H
 
-#ifdef ENABLE_NETWORK
-
 #include "network_internal.h"
 #include "core/tcp_listen.h"
 #include "core/tcp_admin.h"
@@ -28,14 +26,14 @@ extern NetworkAdminSocketPool _networkadminsocket_pool;
 /** Class for handling the server side of the game connection. */
 class ServerNetworkAdminSocketHandler : public NetworkAdminSocketPool::PoolItem<&_networkadminsocket_pool>, public NetworkAdminSocketHandler, public TCPListenHandler<ServerNetworkAdminSocketHandler, ADMIN_PACKET_SERVER_FULL, ADMIN_PACKET_SERVER_BANNED> {
 protected:
-	virtual NetworkRecvStatus Receive_ADMIN_JOIN(Packet *p);
-	virtual NetworkRecvStatus Receive_ADMIN_QUIT(Packet *p);
-	virtual NetworkRecvStatus Receive_ADMIN_UPDATE_FREQUENCY(Packet *p);
-	virtual NetworkRecvStatus Receive_ADMIN_POLL(Packet *p);
-	virtual NetworkRecvStatus Receive_ADMIN_CHAT(Packet *p);
-	virtual NetworkRecvStatus Receive_ADMIN_RCON(Packet *p);
-	virtual NetworkRecvStatus Receive_ADMIN_GAMESCRIPT(Packet *p);
-	virtual NetworkRecvStatus Receive_ADMIN_PING(Packet *p);
+	NetworkRecvStatus Receive_ADMIN_JOIN(Packet *p) override;
+	NetworkRecvStatus Receive_ADMIN_QUIT(Packet *p) override;
+	NetworkRecvStatus Receive_ADMIN_UPDATE_FREQUENCY(Packet *p) override;
+	NetworkRecvStatus Receive_ADMIN_POLL(Packet *p) override;
+	NetworkRecvStatus Receive_ADMIN_CHAT(Packet *p) override;
+	NetworkRecvStatus Receive_ADMIN_RCON(Packet *p) override;
+	NetworkRecvStatus Receive_ADMIN_GAMESCRIPT(Packet *p) override;
+	NetworkRecvStatus Receive_ADMIN_PING(Packet *p) override;
 
 	NetworkRecvStatus SendProtocol();
 	NetworkRecvStatus SendPong(uint32 d1);
@@ -124,5 +122,4 @@ void NetworkAdminConsole(const char *origin, const char *string);
 void NetworkAdminGameScript(const char *json);
 void NetworkAdminCmdLogging(const NetworkClientSocket *owner, const CommandPacket *cp);
 
-#endif /* ENABLE_NETWORK */
 #endif /* NETWORK_ADMIN_H */
