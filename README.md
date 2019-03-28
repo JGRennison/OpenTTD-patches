@@ -239,7 +239,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add GUI setting for when to ask for confirmation before overwriting an existing savegame file, add unique ID to savegames. (added in v0.29.1).  
   * Add game setting to allow only non-stop orders for trains and road vehicles. (added in v0.29.3).  
   * Various minor fixes, see changelog.  
-  * [NewGRF specification additions](docs/newgrf-additions.html).
+  * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
 
 * Translations  
