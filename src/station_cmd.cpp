@@ -514,21 +514,21 @@ CargoArray GetProductionAroundTiles(TileIndex tile, int w, int h, int rad)
 	assert(w > 0);
 	assert(h > 0);
 
+	btree::btree_set<IndustryID> industries;
 	TileArea ta(TileXY(x1, y1), TileXY(x2 - 1, y2 - 1));
 
 	/* Loop over all tiles to get the produced cargo of
 	 * everything except industries */
-	TILE_AREA_LOOP(tile, ta) AddProducedCargo(tile, produced);
+	TILE_AREA_LOOP(tile, ta) {
+		if (IsTileType(tile, MP_INDUSTRY)) industries.insert(GetIndustryIndex(tile));
+		AddProducedCargo(tile, produced);
+	}
 
-	/* Loop over the industries. They produce cargo for
-	 * anything that is within 'rad' from their bounding
-	 * box. As such if you have e.g. a oil well the tile
-	 * area loop might not hit an industry tile while
-	 * the industry would produce cargo for the station.
+	/* Loop over the seen industries. They produce cargo for
+	 * anything that is within 'rad' of any one of their tiles.
 	 */
-	const Industry *i;
-	FOR_ALL_INDUSTRIES(i) {
-		if (!ta.Intersects(i->location)) continue;
+	for (IndustryID industry : industries) {
+		const Industry *i = Industry::Get(industry);
 		/* Skip industry with neutral station */
 		if (i->neutral_station != NULL && !_settings_game.station.serve_neutral_industries) continue;
 
@@ -2268,17 +2268,14 @@ static uint GetMinimalAirportDistanceToTile(TileIterator &it, TileIndex town_til
  * The further you get, the less noise you generate.
  * So all those folks at city council can now happily slee...  work in their offices
  * @param as airport information
- * @param it An iterator over all airport tiles.
- * @param town_tile TileIndex of town's center, the one who will receive the airport's candidature
+ * @param distance minimum distance between town and airport
  * @return the noise that will be generated, according to distance
  */
-uint8 GetAirportNoiseLevelForTown(const AirportSpec *as, TileIterator &it, TileIndex town_tile)
+uint8 GetAirportNoiseLevelForDistance(const AirportSpec *as, uint distance)
 {
 	/* 0 cannot be accounted, and 1 is the lowest that can be reduced from town.
 	 * So no need to go any further*/
 	if (as->noise_level < 2) return as->noise_level;
-
-	uint distance = GetMinimalAirportDistanceToTile(it, town_tile);
 
 	/* The steps for measuring noise reduction are based on the "magical" (and arbitrary) 8 base distance
 	 * adding the town_council_tolerance 4 times, as a way to graduate, depending of the tolerance.
@@ -2300,13 +2297,14 @@ uint8 GetAirportNoiseLevelForTown(const AirportSpec *as, TileIterator &it, TileI
  * If two towns have the same distance, town with lower index is returned.
  * @param as airport's description
  * @param it An iterator over all airport tiles
+ * @param[out] mindist Minimum distance to town
  * @return nearest town to airport
  */
-Town *AirportGetNearestTown(const AirportSpec *as, const TileIterator &it)
+Town *AirportGetNearestTown(const AirportSpec *as, const TileIterator &it, uint &mindist)
 {
 	Town *t, *nearest = NULL;
 	uint add = as->size_x + as->size_y - 2; // GetMinimalAirportDistanceToTile can differ from DistanceManhattan by this much
-	uint mindist = UINT_MAX - add; // prevent overflow
+	mindist = UINT_MAX - add; // prevent overflow
 	FOR_ALL_TOWNS(t) {
 		if (DistanceManhattan(t->xy, it) < mindist + add) { // avoid calling GetMinimalAirportDistanceToTile too often
 			TileIterator *copy = it.Clone();
@@ -2335,8 +2333,9 @@ void UpdateAirportsNoise()
 		if (st->airport.tile != INVALID_TILE && st->airport.type != AT_OILRIG) {
 			const AirportSpec *as = st->airport.GetSpec();
 			AirportTileIterator it(st);
-			Town *nearest = AirportGetNearestTown(as, it);
-			nearest->noise_reached += GetAirportNoiseLevelForTown(as, it, nearest->xy);
+			uint dist;
+			Town *nearest = AirportGetNearestTown(as, it, dist);
+			nearest->noise_reached += GetAirportNoiseLevelForDistance(as, dist);
 		}
 	}
 }
@@ -2444,15 +2443,17 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	}
 
 	/* The noise level is the noise from the airport and reduce it to account for the distance to the town center. */
-	Town *nearest = AirportGetNearestTown(as, iter);
-	uint newnoise_level = nearest->noise_reached + GetAirportNoiseLevelForTown(as, iter, nearest->xy);
+	uint dist;
+	Town *nearest = AirportGetNearestTown(as, iter, dist);
+	uint newnoise_level = GetAirportNoiseLevelForDistance(as, dist);
 
 	if (action == AIRPORT_UPGRADE) {
 		const AirportSpec *old_as = st->airport.GetSpec();
 		AirportTileTableIterator old_iter(old_as->table[st->airport.layout], st->airport.tile);
-		Town *old_nearest = AirportGetNearestTown(old_as, old_iter);
+		uint old_dist;
+		Town *old_nearest = AirportGetNearestTown(old_as, old_iter, old_dist);
 		if (old_nearest == nearest) {
-			newnoise_level -= GetAirportNoiseLevelForTown(old_as, old_iter, nearest->xy);
+			newnoise_level -= GetAirportNoiseLevelForDistance(old_as, old_dist);
 		}
 	}
 
@@ -2500,10 +2501,11 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			/* delete old airport if upgrading */
 			const AirportSpec *old_as = st->airport.GetSpec();
 			AirportTileTableIterator old_iter(old_as->table[st->airport.layout], st->airport.tile);
-			Town *old_nearest = AirportGetNearestTown(old_as, old_iter);
+			uint old_dist;
+			Town *old_nearest = AirportGetNearestTown(old_as, old_iter, old_dist);
 
 			if (old_nearest != nearest) {
-				old_nearest->noise_reached -= GetAirportNoiseLevelForTown(old_as, old_iter, old_nearest->xy);
+				old_nearest->noise_reached -= GetAirportNoiseLevelForDistance(old_as, old_dist);
 				if (_settings_game.economy.station_noise_level) {
 					SetWindowDirty(WC_TOWN_VIEW, st->town->index);
 				}
@@ -2595,8 +2597,9 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		 * And as for construction, always remove it, even if the setting is not set, in order to avoid the
 		 * need of recalculation */
 		AirportTileIterator it(st);
-		Town *nearest = AirportGetNearestTown(as, it);
-		nearest->noise_reached -= GetAirportNoiseLevelForTown(as, it, nearest->xy);
+		uint dist;
+		Town *nearest = AirportGetNearestTown(as, it, dist);
+		nearest->noise_reached -= GetAirportNoiseLevelForDistance(as, dist);
 
 		TILE_AREA_LOOP(tile_cur, st->airport) {
 			if (IsHangarTile(tile_cur)) OrderBackup::Reset(tile_cur, false);

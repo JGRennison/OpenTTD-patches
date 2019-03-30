@@ -174,7 +174,7 @@ void BaseVehicleListWindow::BuildVehicleList()
 	this->unitnumber_digits = GetUnitNumberDigits(this->vehicles);
 
 	this->vehicles.RebuildDone();
-	this->vscroll->SetCount(this->vehicles.size());
+	this->vscroll->SetCount((uint)this->vehicles.size());
 }
 
 /** Cargo filter functions */
@@ -1658,7 +1658,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 	int vehicle_button_x = rtl ? right - GetSpriteSize(SPR_PROFIT_LOT).width : left;
 
 	int y = r.top;
-	uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->vehicles.size());
+	uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)this->vehicles.size());
 	for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
 		const Vehicle *v = this->vehicles[i];
 

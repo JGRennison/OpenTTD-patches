@@ -305,7 +305,7 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContent(uint &files, uin
 		bytes += ci->filesize;
 	}
 
-	files = content.size();
+	files = (uint)content.size();
 
 	/* If there's nothing to download, do nothing. */
 	if (files == 0) return;
@@ -323,7 +323,7 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContent(uint &files, uin
  */
 void ClientNetworkContentSocketHandler::DownloadSelectedContentHTTP(const ContentIDList &content)
 {
-	uint count = content.size();
+	uint count = (uint)content.size();
 
 	/* Allocate memory for the whole request.
 	 * Requests are "id\nid\n..." (as strings), so assume the maximum ID,
@@ -351,7 +351,7 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContentHTTP(const Conten
  */
 void ClientNetworkContentSocketHandler::DownloadSelectedContentFallback(const ContentIDList &content)
 {
-	uint count = content.size();
+	uint count = (uint)content.size();
 	const ContentID *content_ids = content.data();
 	this->Connect();
 

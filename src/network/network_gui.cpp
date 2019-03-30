@@ -271,7 +271,7 @@ protected:
 
 		this->servers.shrink_to_fit();
 		this->servers.RebuildDone();
-		this->vscroll->SetCount(this->servers.size());
+		this->vscroll->SetCount((int)this->servers.size());
 
 		/* Sort the list of network games as requested. */
 		this->servers.Sort();
@@ -712,7 +712,7 @@ public:
 			case WID_NG_INFO:    // Connectivity (green dot)
 				if (this->servers.SortType() == widget - WID_NG_NAME) {
 					this->servers.ToggleSortOrder();
-					if (this->list_pos != SLP_INVALID) this->list_pos = this->servers.size() - this->list_pos - 1;
+					if (this->list_pos != SLP_INVALID) this->list_pos = (ServerListPosition)this->servers.size() - this->list_pos - 1;
 				} else {
 					this->servers.SetSortType(widget - WID_NG_NAME);
 					this->servers.ForceResort();
@@ -849,7 +849,7 @@ public:
 					break;
 				case WKC_END:
 					/* jump to end */
-					this->list_pos = this->servers.size() - 1;
+					this->list_pos = (ServerListPosition)this->servers.size() - 1;
 					break;
 				default: NOT_REACHED();
 			}
@@ -1776,7 +1776,7 @@ struct NetworkClientListPopupWindow : Window {
 			d = maxdim(GetStringBoundingBox(action.name), d);
 		}
 
-		d.height *= this->actions.size();
+		d.height *= (uint)this->actions.size();
 		d.width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 		d.height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 		*size = d;

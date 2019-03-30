@@ -690,7 +690,7 @@ private:
 				}
 			}
 		} else {
-			this->rows = this->groups.size();
+			this->rows = (uint)this->groups.size();
 		}
 
 		this->vscroll->SetCount(this->rows);
@@ -906,7 +906,7 @@ public:
 				}
 			}
 		} else {
-			uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->groups.size());
+			uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)this->groups.size());
 			for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
 				const Group *g = this->groups[i];
 				SetDParam(0, g->index);
