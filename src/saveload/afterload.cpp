@@ -608,9 +608,6 @@ bool AfterLoadGame()
 
 	RebuildTownKdtree();
 	RebuildStationKdtree();
-	/* This needs to be done even before conversion, because some conversions will destroy objects
-	 * that otherwise won't exist in the tree. */
-	RebuildViewportKdtree();
 
 	if (IsSavegameVersionBefore(SLV_98)) GamelogGRFAddList(_grfconfig);
 
@@ -3681,6 +3678,9 @@ bool AfterLoadGame()
 		/* We keep id 0 for old savegames that don't have an id */
 		_settings_game.game_creation.generation_unique_id = _interactive_random.Next(UINT32_MAX-1) + 1; /* Generates between [1;UINT32_MAX] */
 	}
+
+	/* This needs to be done after conversion. */
+	RebuildViewportKdtree();
 
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();
