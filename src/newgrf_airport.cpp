@@ -100,6 +100,7 @@ AirportSpec AirportSpec::specs[NUM_AIRPORTS]; ///< Airport specifications.
 	assert(type < lengthof(AirportSpec::specs));
 	const AirportSpec *as = &AirportSpec::specs[type];
 	if (type >= NEW_AIRPORT_OFFSET && !as->enabled) {
+		if (_airport_mngr.GetGRFID(type) == 0) return as;
 		byte subst_id = _airport_mngr.GetSubstituteID(type);
 		if (subst_id == AT_INVALID) return as;
 		as = &AirportSpec::specs[subst_id];
@@ -127,6 +128,24 @@ bool AirportSpec::IsAvailable() const
 	if (_cur_year < this->min_year) return false;
 	if (_settings_game.station.never_expire_airports) return true;
 	return _cur_year <= this->max_year;
+}
+
+/**
+ * Check if the airport would be within the map bounds at the given tile.
+ * @param table Selected layout table. This affects airport rotation, and therefore dimenions.
+ * @param tile Top corner of the airport.
+ * @return true iff the airport would be within the map bounds at the given tile.
+ */
+bool AirportSpec::IsWithinMapBounds(byte table, TileIndex tile) const
+{
+	if (table >= this->num_table) return false;
+
+	byte w = this->size_x;
+	byte h = this->size_y;
+	if (this->rotation[table] == DIR_E || this->rotation[table] == DIR_W) Swap(w, h);
+
+	return TileX(tile) + w < MapSizeX() &&
+		TileY(tile) + h < MapSizeY();
 }
 
 /**
