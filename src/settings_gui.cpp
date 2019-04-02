@@ -987,7 +987,7 @@ void SettingEntry::Init(byte level)
 {
 	BaseSettingEntry::Init(level);
 	this->setting = GetSettingFromName(this->name, &this->index);
-	assert(this->setting != NULL);
+	assert_msg(this->setting != NULL, "name: %s", this->name);
 }
 
 /**
