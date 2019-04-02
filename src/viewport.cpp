@@ -122,6 +122,7 @@ Point _tile_fract_coords;
 
 
 ViewportSignKdtree _viewport_sign_kdtree(&Kdtree_ViewportSignXYFunc);
+bool _viewport_sign_kdtree_valid = false;
 static int _viewport_sign_maxwidth = 0;
 
 
@@ -3344,6 +3345,14 @@ void RebuildViewportKdtree()
 {
 	/* Reset biggest size sign seen */
 	_viewport_sign_maxwidth = 0;
+
+	if (_network_dedicated) {
+		_viewport_sign_kdtree_valid = false;
+		_viewport_sign_kdtree.Build<ViewportSignKdtreeItem*>(nullptr, nullptr);
+		return;
+	}
+
+	_viewport_sign_kdtree_valid = true;
 
 	std::vector<ViewportSignKdtreeItem> items;
 	items.reserve(BaseStation::GetNumItems() + Town::GetNumItems() + Sign::GetNumItems());

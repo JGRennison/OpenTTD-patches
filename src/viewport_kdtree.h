@@ -77,6 +77,7 @@ inline int32 Kdtree_ViewportSignXYFunc(const ViewportSignKdtreeItem &item, int d
 
 typedef Kdtree<ViewportSignKdtreeItem, decltype(&Kdtree_ViewportSignXYFunc), int32, int32> ViewportSignKdtree;
 extern ViewportSignKdtree _viewport_sign_kdtree;
+extern bool _viewport_sign_kdtree_valid;
 
 void RebuildViewportKdtree();
 

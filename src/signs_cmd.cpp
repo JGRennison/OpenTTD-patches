@@ -59,7 +59,7 @@ CommandCost CmdPlaceSign(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			si->name = stredup(text);
 		}
 		si->UpdateVirtCoord();
-		_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeSign(si->index));
+		if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeSign(si->index));
 		InvalidateWindowData(WC_SIGN_LIST, 0, 0);
 		_new_sign_id = si->index;
 	}
@@ -101,7 +101,7 @@ CommandCost CmdRenameSign(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	} else { // Delete sign
 		if (flags & DC_EXEC) {
 			si->sign.MarkDirty();
-			_viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeSign(si->index));
+			if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeSign(si->index));
 			delete si;
 
 			InvalidateWindowData(WC_SIGN_LIST, 0, 0);

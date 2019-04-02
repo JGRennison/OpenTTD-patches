@@ -609,6 +609,8 @@ bool AfterLoadGame()
 	RebuildTownKdtree();
 	RebuildStationKdtree();
 
+	_viewport_sign_kdtree_valid = false;
+
 	if (IsSavegameVersionBefore(SLV_98)) GamelogGRFAddList(_grfconfig);
 
 	if (IsSavegameVersionBefore(SLV_119)) {

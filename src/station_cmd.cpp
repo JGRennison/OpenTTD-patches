@@ -439,13 +439,13 @@ void Station::MoveSign(TileIndex new_xy)
 {
 	if (this->xy == new_xy) return;
 
-	_viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
+	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
 	_station_kdtree.Remove(this->index);
 
 	this->BaseStation::MoveSign(new_xy);
 
 	_station_kdtree.Insert(this->index);
-	_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(this->index));
+	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(this->index));
 }
 
 /** Update the virtual coords needed to draw the station sign for all stations. */
@@ -730,7 +730,7 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 		if (flags & DC_EXEC) {
 			*st = new Station(area.tile);
 			_station_kdtree.Insert((*st)->index);
-			_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation((*st)->index));
+			if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation((*st)->index));
 
 			(*st)->town = ClosestTownFromTile(area.tile, UINT_MAX);
 			(*st)->string_id = GenerateStationName(*st, area.tile, name_class);
@@ -4222,7 +4222,7 @@ void BuildOilRig(TileIndex tile)
 	st->rect.BeforeAddTile(tile, StationRect::ADD_FORCE);
 
 	st->UpdateVirtCoord();
-	_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(st->index));
+	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(st->index));
 	st->RecomputeCatchment();
 	UpdateStationAcceptance(st, false);
 	ZoningMarkDirtyStationCoverageArea(st);
