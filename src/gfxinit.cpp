@@ -50,6 +50,7 @@ static const SpriteID * const _landscape_spriteindexes[] = {
 /** file index of first user-added GRF file */
 int _first_user_grf_file_index;
 int _opengfx_grf_file_index;
+int _progsig_grf_file_index;
 
 /**
  * Load an old fashioned GRF file.
@@ -182,7 +183,13 @@ static void LoadSpriteTables()
 	LoadGrfFile(used_set->files[GFT_BASE].filename, 0, i++);
 
 	/* Progsignal sprites. */
+	_progsig_grf_file_index = i;
 	LoadGrfFile("progsignals.grf", SPR_PROGSIGNAL_BASE, i++);
+
+	/* Fill duplicate programmable signal graphics sprite block */
+	for (uint i = 0; i < PROGSIGNAL_SPRITE_COUNT; i++) {
+		DupSprite(SPR_PROGSIGNAL_BASE + i, SPR_DUP_PROGSIGNAL_BASE + i);
+	}
 
 	/* Tracerestrict sprites. */
 	LoadGrfFile("tracerestrict.grf", SPR_TRACERESTRICT_BASE, i++);
