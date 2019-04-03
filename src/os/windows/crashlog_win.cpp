@@ -325,10 +325,9 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 }
 
 #if defined(_MSC_VER) || defined(WITH_DBGHELP)
-#if defined(_MSC_VER)
 static const uint MAX_SYMBOL_LEN = 512;
 static const uint MAX_FRAMES     = 64;
-
+#if defined(_MSC_VER)
 #pragma warning(disable:4091)
 #endif
 #include <dbghelp.h>
