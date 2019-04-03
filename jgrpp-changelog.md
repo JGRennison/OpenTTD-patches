@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.30.0 (2019-04-03)
+* Fix crash which could occur when attempting to build a rail station partially off the map.
+* Fix crash which could occur when disaster vehicles were present.
+* Fix mass changing of rail waypoint orders.
+* Fix wrong rail type being used in some circumstances for dual rail type tiles.
+* Fix enabling/disabling timetable automation for a vehicle in some circumstances.
+* Fix viewport hovering and tunnel build viewport length tooltip when hover mode is set to right-click.
+* Fix the show town population in label setting not being followed when also showing the rating.
+* Fix display of restricted programmable signals which use NewGRF graphics.
+* Disallow ordering ordinary road vehicles to tram depots and vice versa.
+* Add UI setting for whether to open the new vehicle GUI when share-cloning.
+* Add company setting for whether to advance order when cloning/copying/sharing (if current depot is in order list).
+* Add client setting for the zoning overlay UI state.
+* Remove town builds bridges over rail setting, feature in trunk.
+* Add Japanese translations by Qwerty Asd.
+* Bump trunk base from commit 690d1dd6a4490821759a6025114e0dc3eb656293 to commit 24fc25164a7c4efbf78d28ce9a3dbc22d1f45f5f.
+
 ### v0.29.3 (2019-02-22)
 * Fix crash which could occur when disaster vehicles which emit effects were present.
 * Fix case where trains were unable to exit signalled bridge/tunnels.

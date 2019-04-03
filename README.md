@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.29.3
+## JGR's Patchpack version 0.30.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -185,7 +185,6 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Add a setting to disable removing sea/rivers (added in v0.21.0)
 
 * Town growth  
-  * Towns build bridges over rails [imported](https://www.tt-forums.net/viewtopic.php?f=33t=76052) (added in v0.21.0)  
   * Add very and extremely slow options to town growth rate setting. (added in v0.21.0)  
   * Add a setting to scale town growth rate by proportion of town cargo transported. (added in v0.21.0)
 
@@ -238,18 +237,23 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add setting to control if and how land purchasing is permitted. (added in v0.29.0).  
   * Add GUI setting for when to ask for confirmation before overwriting an existing savegame file, add unique ID to savegames. (added in v0.29.1).  
   * Add game setting to allow only non-stop orders for trains and road vehicles. (added in v0.29.3).  
+  * Disallow ordering ordinary road vehicles to tram depots and vice versa. (added in v0.30.0).  
+  * Add UI setting for whether to open the new vehicle GUI when share-cloning. (added in v0.30.0).  
+  * Add company setting for whether to advance order when cloning/copying/sharing (if current depot is in order list). (added in v0.30.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
 
 * Translations  
   * German (by Auge and Kruemelchen)  
-  * Korean (by kiwitreekor and TELK)
+  * Korean (by kiwitreekor and TELK)  
+  * Japanese (by Qwerty Asd)
 
 * Superseded features
   * Label threads with a descriptive name on supported Unixy platforms (added in v0.8.1), in trunk as of r27670.  
   * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator (added in v0.9.0), in trunk as of commit 17257b96.  
-  * Increase number of available rail track types from 16 to 32 [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.13.0), this is increased to 64 rail track types in trunk as of commit bf8d7df7, (added in v0.26.0).
+  * Increase number of available rail track types from 16 to 32 [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.13.0), this is increased to 64 rail track types in trunk as of commit bf8d7df7, (added in v0.26.0).  
+  * Towns build bridges over rails [imported](https://www.tt-forums.net/viewtopic.php?f=33t=76052) (added in v0.21.0), in trunk as of commit 50a0cf19.
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  
 * This is not guaranteed to be bug free  
