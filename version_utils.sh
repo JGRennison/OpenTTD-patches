@@ -120,11 +120,11 @@ if [ -n "$WRITE" ]; then
 fi
 
 function unignore_files {
-	git update-index --no-assume-unchanged README.md jgrpp-changelog.md
+	git update-index --no-assume-unchanged README.md jgrpp-changelog.md .ottdrev-vc
 }
 
 if [ -n "$RELEASETAG" ]; then
-	git update-index --assume-unchanged README.md jgrpp-changelog.md
+	git update-index --assume-unchanged README.md jgrpp-changelog.md .ottdrev-vc
 	trap unignore_files EXIT
 	if ! git diff-index --quiet HEAD; then
 		echo "Repo is dirty, aborting" >&2
