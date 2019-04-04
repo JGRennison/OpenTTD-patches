@@ -490,6 +490,7 @@ enum CommandLogEntryFlagEnum {
 	CLEF_ONLY_SENDING        = 0x10, ///< only sending
 	CLEF_MY_CMD              = 0x20, ///< locally generated command
 	CLEF_BINARY              = 0x40, ///< binary_length is > 0
+	CLEF_SCRIPT              = 0x80, ///< command run by AI/game script
 };
 DECLARE_ENUM_AS_BIT_SET(CommandLogEntryFlagEnum)
 typedef SimpleTinyEnumT<CommandLogEntryFlagEnum, byte> CommandLogEntryFlag;
@@ -549,9 +550,9 @@ char *DumpCommandLog(char *buffer, const char *last)
 		YearMonthDay ymd;
 		ConvertDateToYMD(entry.date, &ymd);
 		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i | ", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
-		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c | ",
-				fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'), fc(CLEF_ESTIMATE_ONLY, 'e'),
-				fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
+		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c%c | ",
+				fc(CLEF_SCRIPT, 'a'), fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
+				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
 		buffer += seprintf(buffer, last, " %7d x %7d, p1: 0x%08X, p2: 0x%08X, cc: %2u, lc: %2u, cmd: 0x%08X (%s)\n",
 				TileX(entry.tile), TileY(entry.tile), entry.p1, entry.p2, (uint) entry.current_company, (uint) entry.local_company, entry.cmd, GetCommandName(entry.cmd));
 	}
@@ -803,6 +804,18 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
 	if (!(cmd & CMD_NETWORK_COMMAND) && GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = CLIENT_ID_SERVER;
 
 	CommandCost res = DoCommandPInternal(tile, p1, p2, cmd, callback, text, my_cmd, estimate_only, binary_length);
+
+	CommandLogEntryFlag log_flags;
+	log_flags = CLEF_NONE;
+	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
+	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
+	if (only_sending) log_flags |= CLEF_ONLY_SENDING;
+	if (my_cmd) log_flags |= CLEF_MY_CMD;
+	if (binary_length > 0) log_flags |= CLEF_BINARY;
+	command_log[command_log_next] = CommandLogEntry(res, tile, p1, p2, cmd, log_flags);
+	command_log_next = (command_log_next + 1) % command_log.size();
+	command_log_count++;
+
 	if (res.Failed()) {
 		/* Only show the error when it's for us. */
 		StringID error_part1 = GB(cmd, 16, 16);
@@ -824,18 +837,24 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
 		callback(res, tile, p1, p2);
 	}
 
+	return res.Succeeded();
+}
+
+CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length)
+{
+	CommandCost res = DoCommandPInternal(tile, p1, p2, cmd, callback, text, my_cmd, estimate_only, binary_length);
+
 	CommandLogEntryFlag log_flags;
-	log_flags = CLEF_NONE;
+	log_flags = CLEF_SCRIPT;
 	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
 	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
-	if (only_sending) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
 	if (binary_length > 0) log_flags |= CLEF_BINARY;
 	command_log[command_log_next] = CommandLogEntry(res, tile, p1, p2, cmd, log_flags);
 	command_log_next = (command_log_next + 1) % command_log.size();
 	command_log_count++;
 
-	return res.Succeeded();
+	return res;
 }
 
 

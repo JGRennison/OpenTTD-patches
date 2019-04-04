@@ -310,7 +310,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 			tile, TileX(tile), TileY(tile), p1, p2, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), estimate_only);
 
 	/* Try to perform the command. */
-	CommandCost res = ::DoCommandPInternal(tile, p1, p2, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : NULL, text, false, estimate_only, 0);
+	CommandCost res = ::DoCommandPScript(tile, p1, p2, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : NULL, text, false, estimate_only, 0);
 
 	/* We failed; set the error and bail out */
 	if (res.Failed()) {

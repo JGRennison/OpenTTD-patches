@@ -40,6 +40,7 @@ CommandCost DoCommand(const CommandContainer *container, DoCommandFlag flags);
 bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback = NULL, const char *text = NULL, bool my_cmd = true, uint32 binary_length = 0);
 bool DoCommandP(const CommandContainer *container, bool my_cmd = true);
 
+CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length);
 CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length);
 
 void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, uint32 binary_length);
