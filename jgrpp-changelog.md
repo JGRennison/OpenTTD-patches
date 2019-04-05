@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.30.1 (2019-04-05)
+* Fix multiplayer desync when using build and refit (regression in v0.30.0).
+* Bump trunk base from commit 24fc25164a7c4efbf78d28ce9a3dbc22d1f45f5f to commit 66c60e52bac69b752f1dd7b7c599577fcbfa17a1.
+
 ### v0.30.0 (2019-04-03)
 * Fix crash which could occur when attempting to build a rail station partially off the map.
 * Fix crash which could occur when disaster vehicles were present.
