@@ -508,7 +508,7 @@ CommandCost CmdCreateGroupFromList(TileIndex tile, DoCommandFlag flags, uint32 p
 	if (!IsCompanyBuildableVehicleType(vli.vtype)) return CMD_ERROR;
 	if (!GenerateVehicleSortList(&list, vli)) return CMD_ERROR;
 
-	CommandCost ret = DoCommand(tile, vli.vtype, 0, flags, CMD_CREATE_GROUP);
+	CommandCost ret = DoCommand(tile, vli.vtype, INVALID_GROUP, flags, CMD_CREATE_GROUP);
 	if (ret.Failed()) return ret;
 
 	if (!StrEmpty(text)) {
