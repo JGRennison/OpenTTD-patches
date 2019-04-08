@@ -282,7 +282,7 @@ The minimum supported compiler versions are:
 * GCC: 4.7
 * clang: 3.3
 
-Sufficienty up-to-date versions of other compiler toolchains including MSVC and ICC should also work.
+Sufficiently up-to-date versions of other compiler toolchains including MSVC and ICC should also work.
 
 * * *
 
